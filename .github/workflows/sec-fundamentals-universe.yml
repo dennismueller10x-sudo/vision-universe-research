@@ -1,0 +1,526 @@
+name: SEC Fundamentals — Universum
+
+# Die Fundamentalschicht fuer das Produktuniversum.
+#
+# Zwei Jobs, und der Unterschied ist derselbe wie in universe-master.yml:
+#
+#   pruefen   Ohne Netz, bei jedem Push. Registry, EBITDA, Emittentenebene,
+#             Coverage-Rechnung - alles gegen synthetische Emittenten.
+#             Wird dieser Job rot, ist die Schicht kaputt, unabhaengig von
+#             jedem Abruf.
+#
+#   backfill  Nur auf Ansage. Holt die CIK-Zuordnung, baut Master und
+#             Emittentenstamm neu, ingestiert ueber den SEC-Sammelweg und
+#             misst danach die Coverage.
+#
+# WARUM DER BACKFILL NICHT AUTOMATISCH LAEUFT
+#
+# Er stellt je Emittent eine Anfrage an sec.gov. Bei 7.000 Emittenten sind
+# das rund 7.000 Anfragen fuer die Einreichungsuebersichten plus EINE fuer
+# das Sammelarchiv - bei fuenf Anfragen je Sekunde etwa 25 Minuten reine
+# Anfragezeit. Das gehoert an einen Knopf und nicht an einen Push.
+#
+# SEC FAIR ACCESS (§25, §4)
+#
+# Der Sammelweg ist Pflicht, nicht Kuer: --bulk macht aus einer
+# companyfacts-Anfrage je Emittent EINE fuer alle. Ohne ihn waeren es
+# doppelt so viele Anfragen fuer dieselben Daten.
+
+on:
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: 'CIK-Zuordnung holen und Fundamentaldaten ingestieren'
+        type: boolean
+        default: false
+      limit:
+        description: 'Hoechstens so viele Emittenten in diesem Lauf (leer = alle)'
+        type: string
+        default: '250'
+      since:
+        description: 'Nur Emittenten mit Einreichungen ab diesem Datum (leer = Voll-Backfill)'
+        type: string
+        default: ''
+  push:
+    branches:
+      - 'main'
+      - 'claude/**'
+    paths:
+      - 'scripts/quant/sec/**'
+      - 'scripts/quant/cli.py'
+      - 'scripts/quant/tests/**'
+      - 'quant/config/sec-metric-registry.json'
+      - 'quant/config/sec-universe.json'
+      - 'scripts/universe/build-issuer-master.mjs'
+      - 'scripts/universe/build-sec-universe.mjs'
+      - '.github/workflows/sec-fundamentals-universe.yml'
+  pull_request:
+    paths:
+      - 'scripts/quant/sec/**'
+      - 'quant/config/sec-metric-registry.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sec-fundamentals-universe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    name: Fundamentalschicht pruefen (ohne Netz)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Committete JSON-Dateien sind gueltig und markerfrei
+        # Liest, was im Zweig steht - nicht, was ein spaeterer Schritt
+        # daraus neu erzeugt. Lauf 34749245361 hatte Konfliktmarker in
+        # zwei JSON-Dateien committet, und jeder Schritt danach war gruen.
+        run: bash scripts/ci/pruefe-json.sh
+
+      - name: Python kompiliert
+        run: python3 -m compileall -q scripts/quant
+
+      - name: SEC-Tests
+        run: python3 scripts/quant/cli.py test
+
+      - name: Emittentenstamm
+        # Alle drei Suiten, nicht nur die eine. Lauf 34714903340 ist an
+        # zwei Tests gescheitert, die einen Stand festhielten statt eine
+        # Regel ("ohne Zuordnung ist nichts aufgeloest") - richtig,
+        # solange der Master keine eigenen CIKs trug, falsch seit dem
+        # Backfill. Der dritte Fall derselben Art steckte in
+        # sec-universe-scale, die hier gar nicht lief.
+        run: |
+          node scripts/universe/build-issuer-master.mjs
+          node --test \
+            quant/tests/company-master.test.mjs \
+            quant/tests/issuer-master.test.mjs \
+            quant/tests/sec-universe-scale.test.mjs \
+            quant/tests/persist-fundamentals.test.mjs
+
+      - name: Coverage gegen das Produktuniversum
+        # Laeuft mit leerem Faktenspeicher und muss trotzdem eine ehrliche
+        # Bilanz schreiben: 7.004 Produkttitel, 0 mit Fundamentaldaten.
+        # Ein Bericht, der ohne Daten nichts sagt, sagt auch mit Daten nichts.
+        run: python3 scripts/quant/cli.py coverage-universe
+
+      - name: Abgleich Fundamentals x Marktdaten
+        # Der Overlap war lange null, weil die Marktdatenseite nur als
+        # Summe vorlag. Jetzt ist er gerechnet - und bleibt es nur,
+        # wenn er bei jedem Lauf neu gerechnet wird. Marktdaten werden
+        # dabei READ-ONLY gelesen; dieser Schritt fasst R2 nicht an.
+        run: |
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+
+      - name: Der Abgleich trifft den abgenommenen Marktdatenstand
+        # §4. Die eigene Rechnung MUSS 6.997 und 5.963 treffen - die
+        # kanonische Quelle fuehrt ihre Ausnahmen namentlich, also ist
+        # das keine Naeherung. Trifft sie nicht, ist entweder das
+        # Produktuniversum ein anderes oder eine Ausnahmeliste
+        # unvollstaendig gelesen. Kein neuer Nenner ohne Ursache.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          a = json.load(open("quant/data/fundamentals/reconciliation.json"))
+          a = a["overlap"]["acceptedMarketDataState"]
+          if a["status"] != "CANONICAL_PER_INSTRUMENT":
+              sys.exit(f"Gerechnet wurde aus {a['status']} - das ist eine Stichprobe "
+                       "und keine Deckung.")
+          if not a["reconciled"]:
+              sys.exit(f"Abweichung vom abgenommenen Stand: {a['delta']}. "
+                       f"{a['explanation']}")
+          print(f"Abgestimmt gegen Lauf {a['sourceRunId']}: "
+                f"{a['computed']['HISTORICAL_CHART_AVAILABLE']} Kurshistorien, "
+                f"{a['computed']['TECHNICAL_HISTORY_ELIGIBLE']} technisch geeignet.")
+          PY
+
+      - name: Die fuenf Universen bleiben unterscheidbar
+        # §11. Der Satz "Vision Universe hat Fundamentaldaten fuer 7.004
+        # Aktien" ist falsch, und diese Pruefung sorgt dafuer, dass er
+        # auch dann falsch bleibt, wenn ihn jemand gern haette.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          r = json.load(open("quant/data/fundamentals/reconciliation.json"))
+          b = json.load(open("quant/data/fundamentals/backtest-readiness.json"))
+          q = json.load(open("quant/data/fundamentals/fundamental-quality.json"))
+          o = r["overlap"]
+          if o["FUNDAMENTAL_COMPANY_FACTS_AVAILABLE"] >= o["PRODUCT_TITLES"]:
+              sys.exit("Fundamentaldaten fuer JEDEN Produkttitel - das deckt der "
+                       "Bestand nicht (§11).")
+          if b["BACKTEST_PIT_FUNDAMENTAL_READY"] > o["FUNDAMENTAL_COMPANY_FACTS_AVAILABLE"]:
+              sys.exit("Mehr backtestfaehig als ueberhaupt Fundamentaldaten vorhanden.")
+          summe = sum(q["titles"]["byState"].values())
+          if summe != q["titles"]["denominator"]["PRODUCT_TITLES"]:
+              sys.exit(f"Die Titelzustaende decken {summe} von "
+                       f"{q['titles']['denominator']['PRODUCT_TITLES']} Titeln ab.")
+          print(f"Produktuniversum {o['PRODUCT_TITLES']}, davon "
+                f"{o['TECHNICAL_AND_FUNDAMENTAL']} technisch UND fundamental, "
+                f"{b['BACKTEST_PIT_FUNDAMENTAL_READY']} backtestfaehig.")
+          PY
+
+      - name: Der Nenner ist das Produktuniversum
+        # §19. Der bequemste Fehler waere, gegen den eigenen Bestand zu
+        # zaehlen - dann meldet die Pipeline immer volle Deckung.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          c = json.load(open("quant/data/fundamentals/coverage-report.json"))
+          titel = c["universe"]["PRODUCT_TITLES"]
+          verfuegbar = c["fundamentals"]["COMPANY_FACTS_AVAILABLE"]
+          if titel < 7000:
+              sys.exit(f"Produktuniversum nur {titel} Titel - der Master ist nicht synchron")
+          for name, row in c["metrics"].items():
+              if row["COUNT"] > titel:
+                  sys.exit(f"{name}: {row['COUNT']} von {titel} - mehr gedeckt als vorhanden")
+              if row["COUNT"] and row["PERCENT_OF_PRODUCT_UNIVERSE"] > 100:
+                  sys.exit(f"{name}: Prozentsatz ueber 100")
+          print(f"Nenner {titel}, davon {verfuegbar} mit Company Facts.")
+          PY
+
+      - name: Keine erfundene Coverage im Repository
+        # §19 als Pruefung: eine Zahl, die keiner gemessen hat, darf nicht
+        # als gemessen dastehen.
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          g = json.load(open("quant/data/fundamentals/gaps.json"))
+          if not g["providerDecision"].startswith("OFFEN"):
+              sys.exit("Der Gap Report faellt eine Providerentscheidung, ohne die "
+                       "Luecken gemessen zu haben (§20).")
+          o = json.load(open("quant/data/fundamentals/overlap.json"))
+          if o["TECHNICAL_AND_FUNDAMENTAL"] is not None and not o.get("unmeasured"):
+              print("Overlap gemessen.")
+          print("Gap Report haelt die Providerentscheidung offen.")
+          PY
+
+  backfill:
+    name: Fundamentaldaten holen (mit Zugang)
+    runs-on: ubuntu-latest
+    needs: pruefen
+    # ZWEI WEGE, EINE BEDINGUNG.
+    #
+    # workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei auf dem
+    # Default-Branch liegt. Vor einem Merge ist der Knopf also nicht da.
+    # Dieselbe Loesung wie in tiingo-scale.yml: die Marke [sec-backfill] in
+    # der Commit-Nachricht. OHNE MARKE LAEUFT DER BACKFILL NICHT - ein
+    # Workflow, der bei jedem Push 7.000 Anfragen an die SEC stellt, waere
+    # ein Fehler mit Ansage.
+    if: >
+      (github.event_name == 'workflow_dispatch' && inputs.backfill) ||
+      (github.event_name == 'push' &&
+       contains(github.event.head_commit.message, '[sec-backfill]'))
+    timeout-minutes: 350
+    # EINER NACH DEM ANDEREN, UND KEINER WIRD ABGEBROCHEN.
+    #
+    # Zwei Backfills zugleich teilen sich denselben Cache-Schluessel
+    # und denselben Zweig - der zweite ueberschreibt, was der erste
+    # gerade sichert. cancel-in-progress waere die andere Falle: eine
+    # Re-Normalisierung von 70 Minuten mittendrin abzubrechen verliert
+    # alles bis zum Checkpoint. Also Warteschlange, kein Abbruch.
+    concurrency:
+      group: sec-backfill
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # LADEN UND SICHERN GETRENNT, UND DAS SICHERN LAEUFT IMMER.
+      #
+      # actions/cache sichert in seinem Post-Schritt nur, wenn der Job
+      # durchlief. Der erste Produktivlauf ist nach 61 Minuten am
+      # Rueckgabewert gestorben - der Post-Schritt wurde uebersprungen,
+      # und 5.436 fertige Factbooks und ein 1,4 GB grosses Archiv waren
+      # weg. Genau der Lauf, der abbricht, ist der, dessen
+      # Zwischenstand man braucht.
+      - name: SEC-Zwischenspeicher laden
+        id: sec-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
+          restore-keys: |
+            sec-fundamentals-
+
+      - name: CIK-Zuordnung (zwei Anfragen fuer den ganzen US-Markt)
+        env:
+          # Ein nicht gesetztes Secret wuerde die Variable auf "" setzen und
+          # damit den sprechenden Standard-User-Agent ueberschreiben - die
+          # SEC weist Anfragen ohne Kontaktadresse ab.
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        # --require-source: ohne SEC-Verzeichnis gibt es nichts zu backfillen.
+        # Ohne die Marke endet der Abruf mit Rueckgabewert 0, der Lauf ginge
+        # weiter, ingestierte die fuenf Validierungstitel und meldete Erfolg.
+        run: node scripts/universe/build-cik-map.mjs --require-source
+
+      - name: Company Master und Emittentenstamm
+        run: |
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+
+      - name: SEC-Universum aus dem Master
+        run: |
+          if [ -n "${{ inputs.limit }}" ]; then
+            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.limit }}"
+          else
+            node scripts/universe/build-sec-universe.mjs
+          fi
+          python3 - <<'PY'
+          import json
+          u = json.load(open("quant/data/universe/sec-universe.json"))
+          print(f"Emittenten im SEC-Universum: {len(u['companies'])}")
+          print("Anfragebudget:", json.dumps(u["requestBudget"], indent=2))
+          PY
+
+      - name: Ingest ueber den Sammelweg
+        env:
+          # Ein nicht gesetztes Secret wuerde die Variable auf "" setzen und
+          # damit den sprechenden Standard-User-Agent ueberschreiben - die
+          # SEC weist Anfragen ohne Kontaktadresse ab.
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          if [ -n "${{ inputs.since }}" ]; then
+            python3 scripts/quant/cli.py update \
+              --since "${{ inputs.since }}" \
+              --universe quant/data/universe/sec-universe.json
+          else
+            python3 scripts/quant/cli.py ingest \
+              --universe quant/data/universe/sec-universe.json \
+              --skip-unresolved --bulk --max-failure-rate 0.05
+          fi
+
+      - name: Fehlerschlange einzeln nachholen (SEC-API, fair access)
+        # §8: erst der Sammelweg, dann der Rest einzeln. 40 Emittenten
+        # fehlen im Bulk-Archiv und standen drei Laeufe lang in der
+        # Schlange, weil der Versuchszaehler sie uebersprang. Ein
+        # companyfacts-404 ergibt ein leeres Factbook mit Status, kein
+        # Dauerfehler. Der Bericht sagt je Emittent, was die SEC gesagt hat.
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: python3 scripts/quant/cli.py retry --reset-attempts
+
+      # Vor der Messung und vor dem Commit - damit ein spaeterer
+      # Fehlschlag den teuer erkauften Bestand nicht mitnimmt.
+      - name: SEC-Zwischenspeicher sichern
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
+
+      # ---------------------------------------------------- DAUERHAFT
+      #
+      # Der Faktenspeicher lag bis hierher an genau EINEM Ort: in diesem
+      # Cache. Der wird nach sieben Tagen ohne Zugriff verdraengt und
+      # teilt sich 10 GB mit allem anderen. Ein Bestand, der nur dort
+      # liegt, ist nicht persistiert - er ist geparkt.
+      #
+      # Ab hier liegt er in R2, unter v1/sec/fundamentals/, mit
+      # demselben Treiber und derselben Nullkosten-Haertung wie die
+      # Kurshistorie. Der Kursstore v1/tiingo/ wird nicht angefasst -
+      # und das ist nachgewiesen, nicht versprochen: ein Zeuge um den
+      # Treiber wirft bei jedem fremden Schluessel.
+      - name: Sind die Zugangsdaten fuer die dauerhafte Ablage hinterlegt?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          fehlt=0
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET \
+                   VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; fehlt=1; fi
+          done
+          # Kein stilles Ueberspringen: ohne Ablage ist der Lauf nicht
+          # abgeschlossen, und das muss rot werden.
+          [ "$fehlt" -eq 0 ] || exit 1
+
+      - name: Dauerhafte Ablage - Fundamentals nach R2
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/sec/persist-fundamentals.mjs --push
+
+      # §21. Zurueckladen heisst nicht "die Datei existiert". Acht
+      # Emittenten unterschiedlicher Bauart kommen aus R2 zurueck - Large
+      # Cap, IFRS in EUR, 20-F, 40-F, Bank, Vermoegensverwalter,
+      # vorumsatzliche Biotech, 18 Jahre Historie -, werden als eigener
+      # Faktenspeicher gelesen, kanonisch abgeleitet und mit dem lokalen
+      # Stand verglichen. Das Netz ist dabei gesperrt.
+      - name: Persistenz-Abnahme - Reload ohne SEC
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/quant/sec/persist-fundamentals.mjs --reload \
+            0000320193,0000217410,0000932787,0000756894,0000072971,0000820027,0001279704,0000093410
+          python3 scripts/quant/cli.py verify-reload
+
+      - name: Coverage messen
+        run: python3 scripts/quant/cli.py coverage-universe
+
+      # ZUERST DIE GROESSE, DANN DER COMMIT - UND BEIDES VOR ALLEM
+      # OPTIONALEN.
+      #
+      # Lauf 34712221410 hat die Messung nach fuenf Minuten sauber
+      # beendet und das Ergebnis trotzdem verloren: der naechste
+      # Schritt, der nur den Validierungssatz auffrischt, hat den
+      # Runner umgebracht, und Commit und Bilanz standen dahinter.
+      # Ein OOM-Kill ist nicht abfangbar; `|| true` greift nicht, und
+      # `continue-on-error` auch nicht. Die einzige Verteidigung ist
+      # die Reihenfolge: was teuer erkauft und nicht wiederherstellbar
+      # ist, liegt im Zweig, bevor etwas Optionales laeuft.
+      - name: Unbekannte XBRL-Konzepte zaehlen
+        # Die Grundlage der Mapping-Arbeit, und zwar GEMESSEN. Ein
+        # Mapping aus dem Gedaechtnis trifft die Konzepte, an die man
+        # sich erinnert - nicht die, die vorkommen. Sortiert nach
+        # betroffenen EMITTENTEN: ein Konzept, das ein einziger
+        # Emittent zehntausendmal meldet, bringt gemappt einen Titel.
+        run: |
+          python3 scripts/quant/cli.py concepts --top 120 --only-unresolved \
+            --out quant/data/fundamentals/unmapped-concepts.json
+          echo "--- und ueber den ganzen Bestand ---"
+          python3 scripts/quant/cli.py concepts --top 40 \
+            --out quant/data/fundamentals/unmapped-concepts-all.json
+          # Die Emittenten, die nach der Feinklassifikation noch
+          # SEC-loesbar sind - ohne SPACs und Fonds, deren Vokabular
+          # sonst jede Liste dominiert. Erst der Abgleich benennt sie.
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+          echo "--- nur die noch SEC-loesbaren ---"
+          python3 scripts/quant/cli.py concepts --top 80 \
+            --ciks-file quant/data/fundamentals/sec-recoverable-fine.json \
+            --ciks-key ciksStillRecoverable \
+            --out quant/data/fundamentals/unmapped-concepts-recoverable.json
+          # Banken, Versicherer, REITs: Werte da, Umsatz-Tag nicht. Ihr
+          # Vokabular ist das, was die Branchenschicht braucht.
+          echo "--- WARUM die Perioden der noch loesbaren nicht platzierbar sind ---"
+          python3 scripts/quant/cli.py findings --limit 8 \
+            --ciks-file quant/data/fundamentals/sec-recoverable-fine.json \
+            --ciks-key ciksStillRecoverable \
+            --out quant/data/fundamentals/findings-recoverable.json
+          echo "--- Emittenten mit Werten, aber ohne revenue ---"
+          python3 scripts/quant/cli.py concepts --top 80 --without-metric revenue \
+            --out quant/data/fundamentals/unmapped-concepts-no-revenue.json
+          # Das Vokabular JE BRANCHE, nach SIC - daraus entsteht die
+          # Branchenschicht (§10), und daran wird sie nachgemessen.
+          echo "--- Banken (SIC 6020-6036) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6020-6036 \
+            --out quant/data/fundamentals/unmapped-concepts-banks.json
+          echo "--- Versicherer (SIC 6311-6399) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6311-6399 \
+            --out quant/data/fundamentals/unmapped-concepts-insurers.json
+          echo "--- REITs (SIC 6798) ---"
+          python3 scripts/quant/cli.py concepts --top 80 --sic 6798 \
+            --out quant/data/fundamentals/unmapped-concepts-reits.json
+
+      - name: Abgleich mit dem Marktdaten-Universum
+        run: |
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py reconcile
+
+      - name: Abschlussbericht aus den Artefakten rendern
+        # §25/§26: jede Zahl gelesen, keine getippt. Vorher = eingefrorene
+        # Baseline, Nachher = dieser Lauf.
+        run: python3 scripts/quant/cli.py final-report
+
+      - name: Groessenkontrolle nach der Messung
+        run: bash scripts/ci/pruefe-datengroesse.sh
+
+      - name: Messung committen
+        run: |
+          N=$(python3 -c 'import json;print(json.load(open("quant/data/fundamentals/coverage-report.json"))["fundamentals"]["COMPANY_FACTS_AVAILABLE"])')
+          bash scripts/ci/commit-and-push.sh \
+            "SEC Fundamentals: $N Emittenten mit Geschaeftszahlen aus Lauf ${{ github.run_id }}" \
+            quant/data/fundamentals quant/data/universe quant/data/sec \
+            docs/VU_SEC_FINAL_RECOVERY_REPORT.md
+
+      - name: Bestehende Produktartefakte auffrischen (nur der Validierungssatz)
+        # AUSDRUECKLICH BEGRENZT. `coverage`, `export` und `canonical`
+        # schreiben je Emittent rund 400 KB und halten die Factbooks im
+        # Speicher. Ueber 5.406 Emittenten bringt das den Runner um -
+        # genau das ist in Lauf 34712221410 passiert, weil cmd_coverage
+        # sein eigenes --universe nicht las. Der Filter greift jetzt,
+        # und _documents bricht ab, statt den Runner mitzunehmen.
+        #
+        # Rueckgabewert 2 heisst "nichts ingestiert" und ist hier kein
+        # Fehler; alles andere schon. `|| true` hat den NameError
+        # verdeckt, mit dem export und canonical monatelang gar nichts
+        # geschrieben haben.
+        run: |
+          for befehl in coverage export canonical; do
+            set +e
+            python3 scripts/quant/cli.py "$befehl" --universe quant/config/sec-universe.json
+            code=$?
+            set -e
+            if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then
+              echo "::error::cli.py $befehl endete mit $code"
+              exit "$code"
+            fi
+          done
+
+      - name: Groessenkontrolle vor dem zweiten Commit
+        run: bash scripts/ci/pruefe-datengroesse.sh
+
+      - name: Validierungsartefakte committen
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "SEC Fundamentals: Validierungssatz aufgefrischt (Lauf ${{ github.run_id }})" \
+            quant/data/fundamentals quant/data/universe quant/data/sec
+
+      - name: Bilanz
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          c = json.load(open("quant/data/fundamentals/coverage-report.json"))
+          h = json.load(open("quant/data/fundamentals/history-coverage.json"))
+          print("Produkttitel:            ", c["universe"]["PRODUCT_TITLES"])
+          print("CIK aufgeloest:          ", c["identity"]["CIK_RESOLVED"])
+          print("CIK ambig:               ", c["identity"]["CIK_AMBIGUOUS"])
+          print("Company Facts vorhanden: ", c["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
+          for name, row in c["metrics"].items():
+              print(f"  {name:<24} {row['COUNT']:>6}  {row['PERCENT_OF_PRODUCT_UNIVERSE']}%")
+          print("Jahrestiefe (Revenue):   ", h["annualOverall"])
+          print("Quartalstiefe:           ", h["quarterlyOverall"])
+          pit = c["pointInTime"]
+          print("PIT ready / partial / unavailable (Papiere): "
+                f"{pit['PIT_READY_SECURITIES']} / {pit['PIT_PARTIAL_SECURITIES']} / "
+                f"{pit['PIT_UNAVAILABLE_SECURITIES']}")
+          try:
+              r = json.load(open("quant/data/fundamentals/ingest-run.json"))
+              print("Anfragen:                ", json.dumps(r["requests"]))
+              print("Fehlgeschlagene Titel:   ", r["failures"]["FAILED_SECURITIES"])
+          except FileNotFoundError:
+              # Ein wiederaufgenommener Lauf, der nichts holen musste,
+              # schreibt keine Laufbilanz. Das ist kein Fehler.
+              print("Keine Laufbilanz - dieser Lauf hat nichts neu geholt.")
+          PY

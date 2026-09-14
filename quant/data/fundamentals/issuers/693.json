@@ -1,0 +1,476 @@
+{
+  "shard": "693",
+  "count": 3,
+  "issuers": [
+    {
+      "cik": "0000014693",
+      "name": "BROWN FORMAN CORP",
+      "sic": "2080",
+      "rawFacts": 20833,
+      "mappedFacts": 7545,
+      "unmappedFacts": 14043,
+      "calendarYears": 18,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "0430",
+      "tickers": [
+        "BF-B",
+        "BF-A"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2009-04-30",
+      "lastPeriodEnd": "2026-07-31",
+      "historyYears": 17.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 16.0
+        },
+        "net_income": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "revenue": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 16.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 67,
+          "firstAvailablePeriod": "2009-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 17.0
+        },
+        "total_assets": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 16.0
+        },
+        "total_debt": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2010-04-30",
+          "lastAvailablePeriod": "2026-04-30",
+          "historyYears": 16.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 634,
+        "MEDIUM": 135
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 769,
+        "resolvedValues": 769
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 14584,
+        "by_severity": {
+          "INFO": 14043,
+          "WARNING": 541
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 423,
+          "RESTATEMENT_CONFLICT": 118,
+          "UNKNOWN_CONCEPT": 14043
+        }
+      },
+      "latestFiling": {
+        "accession": "0000014693-26-000052",
+        "filing_date": "2026-09-02",
+        "form": "10-Q",
+        "periodic_filings": 134
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "fb2f99eb7887efd50de71a5b942600b86ed94e7c29f57740dd82f9547c3d66ee",
+      "issuerId": "iss_cik_0000014693"
+    },
+    {
+      "cik": "0001684693",
+      "name": "Sol-Gel Technologies Ltd.",
+      "sic": "2834",
+      "rawFacts": 2261,
+      "mappedFacts": 920,
+      "unmappedFacts": 1426,
+      "calendarYears": 11,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "SLGL"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2014-12-31",
+      "lastPeriodEnd": "2025-12-31",
+      "historyYears": 11.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "revenue": {
+          "annualPeriods": 9,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2017-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 8.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 1.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "total_assets": {
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2016-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 9.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "MEDIUM": 6,
+        "HIGH": 91
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 97,
+        "resolvedValues": 97
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 1515,
+        "by_severity": {
+          "INFO": 1426,
+          "WARNING": 89
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 69,
+          "RESTATEMENT_CONFLICT": 19,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 1426
+        }
+      },
+      "latestFiling": {
+        "accession": "0001178913-26-001552",
+        "filing_date": "2026-03-19",
+        "form": "20-F",
+        "periodic_filings": 10
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "eaf129fd09bdb30b41f40796f79cfe67ba0d2fba66b168b9293e20b17e9e3371",
+      "issuerId": "iss_cik_0001684693"
+    },
+    {
+      "cik": "0001894693",
+      "name": "SaverOne 2014 Ltd.",
+      "sic": "7371",
+      "rawFacts": 1381,
+      "mappedFacts": 295,
+      "unmappedFacts": 1151,
+      "calendarYears": 7,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "SVRE",
+        "SVREW"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 7,
+      "quarterlyPeriods": 7,
+      "firstPeriodEnd": "2019-12-31",
+      "lastPeriodEnd": "2025-12-31",
+      "historyYears": 6.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "revenue": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
+        "total_assets": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 54
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 54,
+        "resolvedValues": 54
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 1154,
+        "by_severity": {
+          "INFO": 1151,
+          "WARNING": 3
+        },
+        "by_code": {
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 2,
+          "UNKNOWN_CONCEPT": 1151
+        }
+      },
+      "latestFiling": {
+        "accession": "0001213900-26-035545",
+        "filing_date": "2026-03-27",
+        "form": "20-F",
+        "periodic_filings": 4
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "81e63cf9743a74dfd53051a6f20d9ba31fd4a3bd0b32a27bb82586df9407f6ec",
+      "issuerId": "iss_cik_0001894693"
+    }
+  ]
+}

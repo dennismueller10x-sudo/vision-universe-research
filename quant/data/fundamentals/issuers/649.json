@@ -1,0 +1,161 @@
+{
+  "shard": "649",
+  "count": 1,
+  "issuers": [
+    {
+      "cik": "0001967649",
+      "name": "Vestis Corp",
+      "sic": "5190",
+      "rawFacts": 4158,
+      "mappedFacts": 1237,
+      "unmappedFacts": 3023,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1003",
+      "tickers": [
+        "VSTS"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 5,
+      "quarterlyPeriods": 17,
+      "firstPeriodEnd": "2021-10-01",
+      "lastPeriodEnd": "2026-07-03",
+      "historyYears": 4.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08
+        },
+        "eps_diluted": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08
+        },
+        "free_cash_flow": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-09-29",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 2.08
+        },
+        "net_income": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08
+        },
+        "revenue": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 3.08
+        },
+        "short_term_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-09-29",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 2.08
+        },
+        "stockholders_equity": {
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2021-10-01",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 4.0
+        },
+        "total_assets": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-09-29",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 2.08
+        },
+        "total_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2023-09-29",
+          "lastAvailablePeriod": "2025-10-03",
+          "historyYears": 2.08,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 162
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 162,
+        "resolvedValues": 162
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 3044,
+        "by_severity": {
+          "INFO": 3023,
+          "WARNING": 21
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 18,
+          "PERIOD_MISMATCH": 3,
+          "UNKNOWN_CONCEPT": 3023
+        }
+      },
+      "latestFiling": {
+        "accession": "0001628280-26-055486",
+        "filing_date": "2026-08-11",
+        "form": "10-Q",
+        "periodic_filings": 12
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.9.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "249877a3387735996220585075888cd210093269f80f808a7eca354c7d86990d",
+      "issuerId": "iss_cik_0001967649"
+    }
+  ]
+}

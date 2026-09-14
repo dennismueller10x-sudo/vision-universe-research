@@ -75,6 +75,86 @@ Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
 wurden deshalb nicht gebaut.
 
+## Universe Expansion — 498 → 5.690 (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Der Grund für die 498 stand in zwei Zeilen Code, nicht beim Anbieter.**
+`build-market-factors.mjs` schreibt Faktor-Einzelzeilen nur bis 500 Titel
+ins Repository (Dateigröße, nicht Lizenz), und `build-discover-data.mjs`
+las genau die dadurch größte Datei: `factors-GATE_500.json`. 500
+ausgewählt, 2 ohne ausreichende Historie, 498 im Frontend — während der
+FULL-UNIVERSE-Lauf längst 5.684 Titel geholt hatte.
+Vollständige Herleitung: `docs/VU_UNIVERSE_EXPANSION.md`.
+
+| Stufe | Inhalt | Bericht |
+|---|---|---|
+| 1 | Company Master: stabile `instrumentId`, idempotenter Sync, Fähigkeitsmatrix, Qualitäts- und Deckungsbericht | `VU_UNIVERSE_EXPANSION.md` |
+| 2 | Suche und Aktienseite gegen den Master — lazy, scherbenweise | `VU_UNIVERSE_EXPANSION.md` |
+| 3 | CIK-Zuordnung und SEC-Universum aus dem Master, Sammelweg für companyfacts | `VU_SEC_UNIVERSE_SCALE.md` |
+
+| | vorher | nachher |
+|---|---|---|
+| Instrumente im ausgelieferten Universum | 498 | **5.690** |
+| Primärschlüssel | Ticker | `instrumentId` (`vu_<14 hex>`) |
+| delistete Titel | nicht geführt | 15, mit Datum |
+| Suche kennt | 498 | das ganze Universum |
+| Aktienseite öffnet | 498 | jedes Instrument im Master |
+| Firmennamen | 498 | 517 (SEC-Lauf schließt den Rest) |
+
+**Keine Obergrenze im Code.** `quant/config/company-master.json` führt
+`size.maxInstruments: null`, und die CI prüft sowohl diese Zeile als auch,
+dass kein `MAX_STOCKS`-artiges Konstrukt auftaucht.
+
+Gemessen bei 25.000 / 50.000 Instrumenten: Sync 196 / 449 ms, Indexbau
+21 / 56 ms, Suche 0,015 / 0,025 ms je Anfrage, **größte Suchscherbe 5 / 9
+KB** — der Browser lädt Kilobyte, nicht das Universum.
+
+**731 Quant-Tests, 118 Discover-Tests, 257 Python-Tests, 650 Prüfungen des
+Masters, 19 + 63 Browser-Prüfungen** — alles grün.
+
+Noch offen und ausschließlich ein Workflow-Lauf: `sec.gov` und
+`api.tiingo.com` sind aus der Bauumgebung nicht erreichbar. Der Job
+`sync` in `.github/workflows/universe-master.yml` holt das vollständige
+Anbieterverzeichnis (108.573 Zeilen) und die CIK-Zuordnung; erst danach
+stehen Firmennamen und CIK für das ganze US-Universum.
+
+## Fundamental Data Expansion (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Quelle der Wahrheit ist der akzeptierte US-Wertpapierstamm**, nicht mehr
+der 5.690er Stand: 7.803 Mitglieder, **7.004 Produkttitel**, 799
+bestätigte Nicht-Aktien. Der Company Master *konsumiert* diese
+Entscheidung — die Eignungsdatei nennt ihre Mitgliederliste mit sha256,
+und der Bau bricht ab, wenn sie abweicht.
+
+| | |
+|---|---:|
+| Instrumente (Listings) | 7.809 |
+| Mitglieder | 7.803 |
+| **Produkttitel** | **7.004** |
+| Emittenten mit CIK | 5 |
+| Emittenten mit Geschäftszahlen | 5 (18,25–18,75 Jahre, 73–76 Quartale) |
+| Metrikregistry | 27 → **40** Kennzahlen, EBITDA ableitbar |
+
+Drei Identitätsebenen: `instrumentId` (Listing), `masterMemberId`
+(Mitglied), `issuerId` (Gesellschaft = CIK). Produkttitel werden als
+**Mitglieder** gezählt — sechs Mitglieder liegen an zwei Börsen.
+
+**Drei echte Befunde aus dem Abgleich:** 308 Vorzugspapiere galten als
+Stammaktien (getrennte Tickerschreibweise `CTA-P-B`); 2.119 aus dem
+Wertpapierstamm angehängte Titel hätten einen Kursverlauf zugeschrieben
+bekommen, den es nie gab; die Screenerfähigkeit folgte der eigenen
+Klassifikation statt der Produktentscheidung und hätte 457 Optionsscheine
+in den Aktienscreener gelassen.
+
+Berichte: `docs/VU_FUNDAMENTAL_DATA_EXPANSION.md`,
+`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md`. Maschinenlesbar unter
+`quant/data/fundamentals/` und `quant/data/universe/`.
+
+**279 Python-Tests, 683 Master-Prüfungen, 118 Discover-Tests** — grün.
+Offen und ausschließlich ein Workflow-Lauf: `sec.gov` ist aus der
+Bauumgebung mit HTTP 403 gesperrt. `sec-fundamentals-universe.yml` mit
+`backfill: true` füllt 7.291 fehlende Firmennamen, die CIKs und die
+Fundamentalhistorie.
+
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
@@ -186,7 +266,12 @@ Integrationsstand fuers Preview: `docs/VU_REALTIME_PREVIEW_INTEGRATION.md`.
 
 ## In Progress
 
-Nichts. Alle drei Phasen sind abgeschlossen.
+Universe- und Fundamental-Expansion: gebaut, gemessen, geprüft. Was fehlt,
+sind **zwei Workflow-Läufe mit Zugang** — `universe-master.yml`
+(`sync: true`) und `sec-fundamentals-universe.yml` (`backfill: true`). Sie
+füllen Firmennamen, CIK und Fundamentalhistorie für das Produktuniversum.
+Ohne sie bleibt die gemessene Coverage bei 5 von 7.004, und genau so steht
+sie im Bericht.
 
 ## Known Limitations
 
