@@ -327,3 +327,34 @@ class IndexParserTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ScherbenUndAggregateTests(unittest.TestCase):
+    """Der taegliche Downstream rechnet Aggregate aus den Scherben - und trifft den vollen Lauf."""
+
+    def test_scherben_roundtrip(self):
+        from quant.sec import universe_coverage as uc
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        per = {"iss_cik_0000000001": {"cik": "0000000001", "name": "A", "metrics": {}},
+               "iss_cik_0000000902": {"cik": "0000000902", "name": "B", "metrics": {}}}
+        self.assertEqual(uc.write_issuer_shards(root, per), 2)
+        wieder = uc.load_issuer_shards(root)
+        self.assertEqual(set(wieder), set(per))
+        self.assertEqual(wieder["iss_cik_0000000902"]["name"], "B")
+
+    def test_aggregate_aus_den_committeten_scherben_treffen_den_bericht(self):
+        from quant.sec import universe_coverage as uc
+        root = Path(__file__).resolve().parents[3]
+        shards = uc.load_issuer_shards(root)
+        if not shards or not (root / "quant" / "data" / "fundamentals" / "coverage-report.json").exists():
+            self.skipTest("keine committeten Scherben")
+        universe = uc.load_universe(root)
+        if not universe["present"]:
+            self.skipTest("kein Company Master")
+        reports = uc.reports_from_records(root, shards, universe=universe)
+        erwartet = json.loads((root / "quant" / "data" / "fundamentals" / "coverage-report.json").read_text())
+        self.assertEqual(reports["coverage"]["fundamentals"]["COMPANY_FACTS_AVAILABLE"],
+                         erwartet["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
+        self.assertEqual(reports["coverage"]["metrics"]["revenue"]["COUNT"],
+                         erwartet["metrics"]["revenue"]["COUNT"])

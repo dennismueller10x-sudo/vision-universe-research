@@ -280,6 +280,43 @@ export async function reload(driver, { ciks, localByCik, outDir, log }) {
   return { results, spent: budget.spent };
 }
 
+/* --------------------------------------------------------------- RESTORE
+
+   Der lokale Speicher ist ein Cache. Faellt er weg (Actions-Cache nach
+   sieben Tagen verdraengt, neuer Runner), kommt er aus R2 zurueck -
+   Objekt fuer Objekt, nur was fehlt oder abweicht. Das ist der Grund,
+   warum der Normalbetrieb keinen Full Backfill mehr braucht. */
+export async function restore(driver, { localDir, log, parallel = PARALLEL_UPLOADS }) {
+  const say = typeof log === "function" ? log : () => {};
+  const budget = createBudget({ classBOperations: 200000 });
+  const index = await readIndex(driver, budget);
+  const objects = index.objects || {};
+  mkdirSync(localDir, { recursive: true });
+  const local = Object.fromEntries(localFacts(localDir).map((f) => [f.cik, f]));
+  const pending = Object.values(objects).filter((o) => {
+    const have = local[o.key.slice(FACTS_PREFIX.length, -".json.gz".length)];
+    return !have || have.sha256 !== o.sha256;
+  });
+  let restored = 0, mismatched = 0, next = 0;
+  async function worker() {
+    while (next < pending.length) {
+      const o = pending[next++];
+      const cik = o.key.slice(FACTS_PREFIX.length, -".json.gz".length);
+      budget.consumeClassB(1, "GET " + o.key);
+      const buf = await driver.get(o.key);
+      if (!buf) { mismatched++; continue; }
+      if (sha256(buf) !== o.sha256) { mismatched++; continue; }
+      writeFileSync(join(localDir, cik + ".json.gz"), buf);
+      budget.noteDownload ? budget.noteDownload(buf.length) : null;
+      restored++;
+      if (restored % 500 === 0) say(`  ${restored}/${pending.length} wiederhergestellt`);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(parallel, pending.length) }, worker));
+  return { indexObjects: Object.keys(objects).length, alreadyLocal: Object.keys(objects).length - pending.length,
+           restored, mismatched, spent: budget.spent };
+}
+
 /* ------------------------------------------------------------------ MAIN */
 function arg(name, dflt) {
   const i = process.argv.indexOf(name);
@@ -292,6 +329,7 @@ async function main() {
   const dryRun = has("--dry-run");
   const doPush = has("--push");
   const reloadCiks = (arg("--reload", "") || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const doRestore = has("--restore");
   const touched = [];
   const raw = await makeDriver({ fsRoot });
   const driver = witness(raw, PREFIX + "/", touched);
@@ -311,6 +349,15 @@ async function main() {
                    endpointKind: fsRoot ? "fs" : "s3", prefix: PREFIX, localFactbooks: facts.length };
   if (!doPush && previous.push) { report.push = previous.push; report.persisted = previous.persisted; }
   if (!reloadCiks.length && previous.reload) report.reload = previous.reload;
+  if (!doRestore && previous.restore) report.restore = previous.restore;
+
+  if (doRestore) {
+    const r = await restore(driver, { localDir: FACT_DIR, log: (m) => console.log(m) });
+    console.log(`\n  RESTORE: ${r.restored} wiederhergestellt, ${r.alreadyLocal} schon lokal, ` +
+                `${r.mismatched} nicht lesbar, ${r.indexObjects} Objekte im Index`);
+    report.restore = r;
+    if (r.mismatched > 0) { console.error("  FEHLER: nicht alle Objekte aus R2 lesbar."); process.exitCode = 1; }
+  }
 
   if (doPush) {
     const r = await push(driver, { facts, dryRun, log: touched });

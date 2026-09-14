@@ -196,3 +196,37 @@ test("ein Array als log (wie main es reicht) bricht den Push nicht ab, auch nich
   assert.equal(r.changed, 501);
   assert.equal(r.objectCount, 501);
 });
+
+
+test("restore holt aus R2 zurueck, was lokal fehlt - byte-gleich, sha256 geprueft", async () => {
+  const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync, readdirSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { gzipSync } = await import("node:zlib");
+  const { localFacts, push, restore, witness, PREFIX } = await import("../../scripts/quant/sec/persist-fundamentals.mjs");
+  const { createFsDriver } = await import("../../scripts/market/storage/fs-driver.mjs");
+  const root = mkdtempSync(join(tmpdir(), "vu-persist-restore-"));
+  const facts = join(root, "facts"); mkdirSync(facts);
+  for (let i = 0; i < 7; i++) {
+    const cik = String(2000 + i).padStart(10, "0");
+    writeFileSync(join(facts, cik + ".json.gz"), gzipSync(Buffer.from(JSON.stringify({ cik, versions: { normalization_logic: "t" },
+      factbook: { timelines: [] }, quality: { summary: { total: 0 } }, filing_index: [], profile: {}, marker: i }))));
+  }
+  const driver = witness(createFsDriver(join(root, "bucket")), PREFIX + "/", []);
+  await push(driver, { facts: localFacts(facts) });
+  const original = Object.fromEntries(readdirSync(facts).map((f) => [f, readFileSync(join(facts, f))]));
+  // Zwei Objekte gehen lokal verloren, eines wird beschaedigt.
+  rmSync(join(facts, "0000002001.json.gz")); rmSync(join(facts, "0000002005.json.gz"));
+  writeFileSync(join(facts, "0000002003.json.gz"), gzipSync(Buffer.from("{}")));
+  const r = await restore(driver, { localDir: facts });
+  assert.equal(r.restored, 3);
+  assert.equal(r.alreadyLocal, 4);
+  assert.equal(r.mismatched, 0);
+  for (const [name, buf] of Object.entries(original)) {
+    assert.ok(readFileSync(join(facts, name)).equals(buf), name + " ist nicht byte-gleich");
+  }
+  // Ein zweiter Restore hat nichts zu tun.
+  const again = await restore(driver, { localDir: facts });
+  assert.equal(again.restored, 0);
+  assert.equal(again.spent.classB, 1);
+});
