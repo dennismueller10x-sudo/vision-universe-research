@@ -1,6 +1,6 @@
 {
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-09-14T05:59:49.523Z",
+  "generatedAt": "2026-09-14T06:03:26.543Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.1.0",
@@ -11,20 +11,19 @@
     "companyMasterTotal": 7803,
     "productUniverse": 7004,
     "activeEquities": 6477,
-    "withName": 6980,
-    "withoutName": 24,
-    "pct": 99.66,
-    "activeWithName": 6454,
-    "activePct": 99.64,
+    "withName": 6981,
+    "withoutName": 23,
+    "pct": 99.67,
+    "activeWithName": 6455,
+    "activePct": 99.66,
     "bySource": {
-      "TIINGO_METADATA": 6773,
-      "SEC_COMPANY_TICKERS": 207
+      "TIINGO_METADATA": 6776,
+      "SEC_COMPANY_TICKERS": 205
     },
     "conflicts": 194,
     "unresolvedReasons": {
-      "PROVIDER_HAS_NO_NAME": 20,
-      "NO_SOURCE": 2,
-      "PROVIDER_NOT_QUERIED_YET": 2
+      "PROVIDER_HAS_NO_NAME": 21,
+      "NO_SOURCE": 2
     },
     "rejectedRules": {
       "VU_CURATED:TICKER_AS_NAME": 1,
@@ -34,8 +33,23 @@
     }
   },
   "stats": {
-    "sec": null,
-    "tiingo": null
+    "sec": {
+      "entries": 10426,
+      "matched": 5603,
+      "unmatched": 1401,
+      "asOf": "2026-09-14",
+      "source": "https://www.sec.gov/files/company_tickers_exchange.json"
+    },
+    "tiingo": {
+      "requested": 4,
+      "named": 3,
+      "noName": 1,
+      "unavailable": 0,
+      "mismatch": 0,
+      "budget": 7000,
+      "skipped": 7000,
+      "remaining": 0
+    }
   },
   "spotCheck": [
     {

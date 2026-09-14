@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-14T05:55:11.167Z",
+  "generatedAt": "2026-09-14T06:04:06.498Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.1.0",
@@ -12,7 +12,7 @@
     "ingestStatus": "2026-09-13T21:04:18.454Z",
     "factors": "2026-09-13T21:04:31.031Z",
     "intradaySession": "2026-09-11",
-    "discover": "2026-09-14T05:55:09.090Z"
+    "discover": "2026-09-14T06:04:04.680Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -29,7 +29,7 @@
     "fundamentals": 5,
     "discoverEligible": 6406,
     "stockPages": 6514,
-    "namesMissing": 508,
+    "namesMissing": 23,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
@@ -37,7 +37,6 @@
     "NOT_IN_LIVE_SCOPE": 4961,
     "NO_IEX_BARS": 1816,
     "INSUFFICIENT_HISTORY": 857,
-    "NAME_MISSING": 508,
     "NO_DISCOVER_CARD": 490,
     "NO_STOCK_PAGE": 490,
     "NO_FACTOR_ROW:SOURCE_MISSING": 369,
@@ -46,6 +45,7 @@
     "NO_FACTOR_ROW:FAIL": 117,
     "NOT_TRADING:STALE_SERIES": 108,
     "NO_COMPACT_SERIES": 83,
+    "NAME_MISSING": 23,
     "QUALITY_REJECTED:too_few_bars": 5,
     "NO_FACTOR_ROW": 3,
     "NOT_INGESTED_YET": 1,
