@@ -383,7 +383,7 @@
     var f = detail.fundamentals;
     if (!f || !f.available || !f.health || !f.health.available) return [];
     var tonVon = { "Sehr stark": "up", "Stark": "up", "Sehr solide": "up", "Solide": null, "Rückkäufe": "up", "Gering": null,
-                   "Flach": null, "Knapp": null, "Moderat": "warm", "Belastet": "warm", "Hoch": "warm", "Angespannt": "down", "Negativ": "down", "Ruecklaeufig": "down" };
+                   "Flach": null, "Knapp": null, "Moderat": "warm", "Belastet": "warm", "Hoch": "warm", "Angespannt": "down", "Negativ": "down", "Rückläufig": "down" };
     return f.health.categories.filter(function (c) { return c.id !== "growth"; }).map(function (c) {
       return { id: "f_" + c.id, label: c.label, wert: c.grade, ton: tonVon[c.grade] || null, beleg: c.detail };
     });

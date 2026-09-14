@@ -653,7 +653,7 @@
   "home": {
     "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln.",
     "chunkSizes": [
-      6,
+      7,
       7
     ],
     "surfaces": [
@@ -679,6 +679,12 @@
         "show": 10
       },
       {
+        "type": "row",
+        "rowId": "umsatz-waechst-stark",
+        "variant": "poster",
+        "show": 10
+      },
+      {
         "type": "story",
         "kicker": "DIE ENTWICKLUNG",
         "title": "Was das Unternehmen gemacht hat",
@@ -689,20 +695,14 @@
         ]
       },
       {
-        "type": "row",
-        "rowId": "umsatz-waechst-stark",
-        "variant": "poster",
+        "type": "theme",
+        "rowId": "thema-ki",
         "show": 10
       },
       {
         "type": "row",
         "rowId": "gewinne-beschleunigen",
         "variant": "wide",
-        "show": 10
-      },
-      {
-        "type": "theme",
-        "rowId": "thema-ki",
         "show": 10
       },
       {

@@ -762,7 +762,9 @@ await check("die Waage zeigt beide Seiten", async () => {
   const contra = await desktop.$$(".dx-waage-spalte--contra li");
   assert(pro.length > 0, "keine Gruende dafuer");
   assert(contra.length > 0, "keine Gegenpunkte — eine Seite ohne Risiko ist Werbung");
-  const fuss = await desktop.textContent(".dx-waage + .dx-kapitel-fuss, .dx-chapter .dx-kapitel-fuss");
+  /* Der Fuss des Waage-Kapitels - nicht der erste Kapitelfuss der Seite
+     (Damals vs. heute und Journey stehen jetzt davor). */
+  const fuss = await desktop.$eval(".dx-waage", (n) => { const k = n.closest(".dx-chapter") || n.parentElement; const f = k.querySelector(".dx-kapitel-fuss"); return f ? f.textContent : ""; });
   assert(/keine Anlageempfehlung/.test(fuss || ""),
     "der Seite fehlt die Klarstellung, dass sie nicht empfiehlt");
 });
@@ -773,8 +775,28 @@ await check("Geschaeftszahlen erscheinen nur, wo es welche gibt", async () => {
   const text = await desktop.textContent(".dx-firma");
   assert(/Mrd|Mio/.test(text), "die Umsatzzahl ist nicht lesbar formatiert: " + text);
 
-  /* Und die Gegenprobe: ein Titel ohne Fundamentaldaten erfindet keine. */
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/VLO", { waitUntil: "networkidle" });
+  /* Und die Gegenprobe: ein Titel ohne Fundamentaldaten erfindet keine.
+     Welcher das ist, sagen die Daten (kein CIK im Consumer-Index), nicht
+     eine feste Liste - seit die SEC-Bundles das Produktuniversum abdecken,
+     hat fast jeder bekannte Name Geschaeftszahlen. */
+  const ohneSymbol = await desktop.evaluate(async () => {
+    const idx = await (await fetch("/quant/data/sec/consumer/index.json")).json();
+    const leaders = await (await fetch("/discover/data/rows/US_REAL/market-leaders.json")).json();
+    const kandidaten = (leaders.cards || []).map((c) => c.symbol).filter((s) => !idx.byTicker[s]);
+    for (const s of kandidaten) {
+      const d = await (await fetch("/discover/data/stocks/US_REAL/" + s + ".json")).json();
+      if (d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED") return s;
+    }
+    const alle = await (await fetch("/discover/data/search/US_REAL.json")).json();
+    for (const e of (alle.entries || []).slice(0, 400)) {
+      const s = e.symbol || e.s; if (!s || idx.byTicker[s]) continue;
+      const d = await (await fetch("/discover/data/stocks/US_REAL/" + s + ".json")).json().catch(() => null);
+      if (d && d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED") return s;
+    }
+    return null;
+  });
+  assert(ohneSymbol, "kein Titel ohne Geschaeftszahlen gefunden");
+  await desktop.goto(BASE + "/discover/#/s/US_REAL/" + ohneSymbol, { waitUntil: "networkidle" });
   await desktop.waitForSelector(".dx-30", { timeout: 12000 });
   const ohne = await desktop.$$(".dx-firma > div");
   assert(ohne.length === 0, "fuer einen Titel ohne Geschaeftszahlen stehen trotzdem welche da");

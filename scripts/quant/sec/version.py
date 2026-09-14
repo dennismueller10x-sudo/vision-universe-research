@@ -35,7 +35,15 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         NVDA's 10-Ks for the years ending January 2011 to January 2014 tag it
 #         one year low, which produced two fiscal years labelled 2010, no 2014,
 #         and four years off by one.
-NORMALIZATION_LOGIC_VERSION = "1.5.0"
+#
+# 1.6.0 — fiscal-year boundaries are learned from annual reports (10-K, 20-F,
+#         40-F and their amendments) only, and a twelve-month period that does
+#         not end on a fiscal year end is no longer labelled FY. Amazon's 10-Qs
+#         disclose trailing-twelve-month net income and cash flows; accepting
+#         those split the calendar into six-month "years", relabelled Q2 as Q1
+#         and overwrote FY2025 with a June figure. Measured on the bulk archive:
+#         ~250 of 5 066 companies carried at least one such mislabelled year.
+NORMALIZATION_LOGIC_VERSION = "1.6.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -64,7 +72,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2afb58fcf5a4f9bdf9d463ec3abc58694452b757a47da85d0c700a5637cef3cd"
+    "2b3b39c49822dcf3972301af7b0261e7f243d8faa6913bdc10f837fe720f25c3"
 )
 
 

@@ -1325,30 +1325,25 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
          erzaehlen - aus einer fundamentalen Reihe, bekannter Name zuerst,
          mindestens zwei belegte Saetze. Ohne Kandidaten keine Flaeche. */
       const quellen = (step.rowIds || ["langfristige-compounder", "umsatz-waechst-stark", "gewinne-beschleunigen"]);
-      let gewaehlt = null;
+      const kandidaten = [];
       for (const rid of quellen) {
         const row = rowsById.get(rid);
         if (!row || !row.cards) continue;
-        const kandidaten = row.cards.map((c) => universe.stocks.find((s) => s.symbol === c.symbol)).filter((s) => s && s.fundamentalModel);
-        kandidaten.sort((a, b) => ((a.recognitionTier || 3) - (b.recognitionTier || 3)) || (a.symbol < b.symbol ? -1 : 1));
-        for (const s of kandidaten) {
+        const liste = row.cards.map((c) => universe.stocks.find((s) => s.symbol === c.symbol)).filter((s) => s && s.fundamentalModel);
+        liste.sort((a, b) => ((a.recognitionTier || 3) - (b.recognitionTier || 3)) || (a.symbol < b.symbol ? -1 : 1));
+        for (const s of liste) {
+          if (kandidaten.some((k) => k.stock.symbol === s.symbol)) continue;
           const st = Fundamentals.story(s.fundamentalModel);
-          if (st.available && st.statements.length >= 2) { gewaehlt = { stock: s, story: st, rowId: rid, row }; break; }
+          if (st.available && st.statements.length >= 2) kandidaten.push({ stock: s, story: st, rowId: rid, row });
         }
-        if (gewaehlt) break;
       }
-      if (!gewaehlt) continue;
-      const s = gewaehlt.stock;
-      const cmp = Fundamentals.compare(s.fundamentalModel);
-      const card = Object.assign(Contract.toCard(s), { priceSeries: seriesRef(s.priceSeries, "1J", U, s.symbol, s.seriesPath),
-                                                       plain: Klartext.karte(s, { rowId: gewaehlt.rowId }) });
-      surfaces.push({ type: "story", id: "story", rowId: gewaehlt.rowId, pure: true, show: 1, cards: [card],
+      if (!kandidaten.length) continue;
+      /* Wie die grosse Karte wird der Titel erst NACH der Diversity gewaehlt
+         (siehe unten): der erste Kandidat, der weder die Eingangsflaeche traegt
+         noch eine Reihe anfuehrt. */
+      surfaces.push({ type: "story", id: "story", pure: true, show: 1, cards: [], quelle: kandidaten,
                       kicker: step.kicker || "DIE ENTWICKLUNG", title: step.title || "Was das Unternehmen gemacht hat",
-                      world: "fundamentals",
-                      story: { statements: gewaehlt.story.statements.slice(0, 3).map((x) => ({ id: x.id, text: x.text, evidence: x.evidence })),
-                               horizon: gewaehlt.story.horizon, asOf: gewaehlt.story.asOf, source: gewaehlt.story.source },
-                      compare: cmp.available ? { horizon: cmp.horizon, rows: cmp.rows.filter((r) => ["revenue", "net_income", "operating_margin", "free_cash_flow"].includes(r.id)).slice(0, 4) } : null,
-                      href: "#/s/" + U + "/" + s.symbol, sourceRow: { rowId: gewaehlt.rowId, title: gewaehlt.row.title } });
+                      world: "fundamentals" });
       continue;
     }
     if (step.type === "immersive") {
@@ -1420,6 +1415,22 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
     if (i < 2 && v.type !== "hero") fuehrt.add(c.symbol);
   }));
   diversified.forEach((v) => {
+    if (v.type === "story") {
+      const frei = (k) => !heroSymbols.has(k.stock.symbol) && !fuehrt.has(k.stock.symbol) && (gesehen[k.stock.symbol] || 0) < 2;
+      const wahl = v.quelle.find(frei) || v.quelle[0];
+      delete v.quelle;
+      const s = wahl.stock;
+      const cmp = Fundamentals.compare(s.fundamentalModel);
+      v.cards = [Object.assign(Contract.toCard(s), { priceSeries: seriesRef(s.priceSeries, "1J", U, s.symbol, s.seriesPath),
+                                                     plain: Klartext.karte(s, { rowId: wahl.rowId }) })];
+      v.rowId = wahl.rowId;
+      v.story = { statements: wahl.story.statements.slice(0, 3).map((x) => ({ id: x.id, text: x.text, evidence: x.evidence })),
+                  horizon: wahl.story.horizon, asOf: wahl.story.asOf, source: wahl.story.source };
+      v.compare = cmp.available ? { horizon: cmp.horizon, rows: cmp.rows.filter((r) => ["revenue", "net_income", "operating_margin", "free_cash_flow"].includes(r.id)).slice(0, 4) } : null;
+      v.href = "#/s/" + U + "/" + s.symbol;
+      v.sourceRow = { rowId: wahl.rowId, title: wahl.row.title };
+      return;
+    }
     if (v.type !== "featured-card") return;
     const frei = (c) => !heroSymbols.has(c.symbol) && !fuehrt.has(c.symbol) && (gesehen[c.symbol] || 0) < 2;
     const wahl = v.quelle.find((c) => frei(c) && c.was) || v.quelle.find(frei);
@@ -1431,7 +1442,8 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
   });
   const behalten = diversified.filter((s) =>
     s.type === "hero" || s.type === "immersive" || s.type === "sectors" ||
-    (s.type === "featured-card" && s.cards.length === 1) || s.cards.length >= 3);
+    (s.type === "featured-card" && s.cards.length === 1) || (s.type === "story" && s.cards.length === 1) ||
+    s.cards.length >= 3);
   /* Die Karten der Startseite tragen keine `config`-Objekte und keine
      Hilfsfelder; was bleibt, ist genau das, was die Oberflaeche liest. */
   const hidden = diversified.reduce((n, s) => n + (s.hidden || 0), 0);
@@ -1742,12 +1754,24 @@ for (const universe of universes) {
      scrollt. */
   const home = buildHome(universe, rowsById, sectorPayload, featured);
   const chunkSizes = (METHODOLOGY.home && METHODOLOGY.home.chunkSizes) || [6, 7];
+  /* Ein Stueck ist durch Anzahl UND Groesse begrenzt: das erste muss klein
+     bleiben, auch wenn ein Universum (das Modelluniversum traegt seine
+     Reihen in den Karten) mehr Bytes je Flaeche hat. Ab drei Flaechen darf
+     ein Stueck enden, wenn die naechste Flaeche die Grenze sprengen wuerde. */
+  const chunkMaxBytes = (METHODOLOGY.home && METHODOLOGY.home.chunkMaxBytes) || 300 * 1024;
   const stuecke = [];
   let rest = home.surfaces.slice();
   for (let i = 0; rest.length; i++) {
     const n = i < chunkSizes.length ? chunkSizes[i] : rest.length;
-    stuecke.push(rest.slice(0, n));
-    rest = rest.slice(n);
+    const teil = [];
+    let bytes = 0;
+    while (rest.length && teil.length < n) {
+      const next = Buffer.byteLength(JSON.stringify(rest[0]));
+      if (teil.length >= 3 && i < chunkSizes.length && bytes + next > chunkMaxBytes) break;
+      teil.push(rest.shift());
+      bytes += next;
+    }
+    stuecke.push(teil);
   }
   const chunkNames = stuecke.map((_, i) => `home/${universe.universeId}${i ? "." + (i + 1) : ""}.json`);
   stuecke.forEach((teil, i) => {

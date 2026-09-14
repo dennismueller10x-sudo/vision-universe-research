@@ -230,8 +230,8 @@
     /* Gewinn schneller als Umsatz. */
     if (rev[h.from] && rev[h.to] && ni[h.from] && ni[h.to] && rev[h.from].v > 0 && ni[h.from].v > 0 && ni[h.to].v > 0) {
       var gr = pct(rev[h.to].v, rev[h.from].v), gn = pct(ni[h.to].v, ni[h.from].v);
-      if (gn > gr + 0.1) add("profit_faster", "Der Gewinn waechst schneller als der Umsatz.", ni[h.from], ni[h.to], "net_income " + fmtPct(gn) + " vs. revenue " + fmtPct(gr) + " ueber " + h.years + " Jahre", { profitGrowth: gn, revenueGrowth: gr });
-      else if (gr > gn + 0.1) add("profit_slower", "Der Umsatz waechst schneller als der Gewinn.", ni[h.from], ni[h.to], "net_income " + fmtPct(gn) + " vs. revenue " + fmtPct(gr) + " ueber " + h.years + " Jahre", { profitGrowth: gn, revenueGrowth: gr });
+      if (gn > gr + 0.1) add("profit_faster", "Der Gewinn wächst schneller als der Umsatz.", ni[h.from], ni[h.to], "net_income " + fmtPct(gn) + " vs. revenue " + fmtPct(gr) + " ueber " + h.years + " Jahre", { profitGrowth: gn, revenueGrowth: gr });
+      else if (gr > gn + 0.1) add("profit_slower", "Der Umsatz wächst schneller als der Gewinn.", ni[h.from], ni[h.to], "net_income " + fmtPct(gn) + " vs. revenue " + fmtPct(gr) + " ueber " + h.years + " Jahre", { profitGrowth: gn, revenueGrowth: gr });
     }
     /* Vom Verlust in den Gewinn (und umgekehrt). */
     if (ni[h.from] && ni[h.to] && ni[h.from].v < 0 && ni[h.to].v > 0) add("turned_profitable", "Das Unternehmen schreibt heute Gewinn - vor " + h.years + " Jahren war es ein Verlust.", ni[h.from], ni[h.to], "net_income FY " + h.from + " < 0, FY " + h.to + " > 0");
@@ -245,15 +245,15 @@
     /* Free Cashflow zuletzt. */
     if (prev !== null && fcf[prev] && fcf[latest]) {
       var df = pct(fcf[latest].v, fcf[prev].v);
-      if (fcf[prev].v > 0 && fcf[latest].v > 0 && df <= -0.15) add("fcf_down", "Der freie Cashflow ist zuletzt zurueckgegangen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
-      else if (fcf[prev].v > 0 && fcf[latest].v > 0 && df >= 0.15) add("fcf_up", "Der freie Cashflow ist zuletzt kraeftig gestiegen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
+      if (fcf[prev].v > 0 && fcf[latest].v > 0 && df <= -0.15) add("fcf_down", "Der freie Cashflow ist zuletzt zurückgegangen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
+      else if (fcf[prev].v > 0 && fcf[latest].v > 0 && df >= 0.15) add("fcf_up", "Der freie Cashflow ist zuletzt kräftig gestiegen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
       else if (fcf[latest].v < 0) add("fcf_negative", "Der freie Cashflow war im letzten Geschaeftsjahr negativ.", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " < 0");
     }
     /* Aktienanzahl. */
     if (sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
       var ds = pct(sh[h.to].v, sh[h.from].v);
       if (ds >= 0.05) add("shares_up", "Die Zahl der ausstehenden Aktien ist gestiegen (" + fmtPct(ds) + " in " + h.years + " Jahren).", sh[h.from], sh[h.to], "shares FY " + h.to + " / FY " + h.from + " - 1", { change: ds });
-      else if (ds <= -0.05) add("shares_down", "Die Zahl der Aktien ist gesunken - das Unternehmen kauft Aktien zurueck (" + fmtPct(ds) + " in " + h.years + " Jahren).", sh[h.from], sh[h.to], "shares FY " + h.to + " / FY " + h.from + " - 1", { change: ds });
+      else if (ds <= -0.05) add("shares_down", "Die Zahl der Aktien ist gesunken - das Unternehmen kauft Aktien zurück (" + fmtPct(ds) + " in " + h.years + " Jahren).", sh[h.from], sh[h.to], "shares FY " + h.to + " / FY " + h.from + " - 1", { change: ds });
     }
     /* Verschuldung schneller als Gewinn. */
     if (debt[h.from] && debt[h.to] && ni[h.from] && ni[h.to] && debt[h.from].v > 0 && ni[h.from].v > 0 && ni[h.to].v > 0) {
@@ -271,10 +271,10 @@
      "Cashflow" die FCF-Marge des letzten FY, "Bilanz" Nettoschulden zu FCF,
      "Verwaesserung" die Aktienanzahl ueber den Horizont. */
   var THRESHOLDS = {
-    growth:        [[0.20, "Sehr stark"], [0.10, "Stark"], [0.03, "Solide"], [0.0, "Flach"], [-Infinity, "Ruecklaeufig"]],
+    growth:        [[0.20, "Sehr stark"], [0.10, "Stark"], [0.03, "Solide"], [0.0, "Flach"], [-Infinity, "Rückläufig"]],
     profitability: [[0.20, "Sehr stark"], [0.10, "Stark"], [0.03, "Solide"], [0.0, "Knapp"], [-Infinity, "Negativ"]],
     cashflow:      [[0.15, "Sehr stark"], [0.08, "Stark"], [0.0001, "Solide"], [-Infinity, "Negativ"]],
-    dilution:      [[-0.03, "Rueckkaeufe"], [0.02, "Gering"], [0.10, "Moderat"], [Infinity, "Hoch"]]
+    dilution:      [[-0.03, "Rückkäufe"], [0.02, "Gering"], [0.10, "Moderat"], [Infinity, "Hoch"]]
   };
   function grade(table, x) {
     for (var i = 0; i < table.length; i++) if (x >= table[i][0]) return table[i][1];
@@ -295,7 +295,7 @@
     if (h && rev[h.from] && rev[h.to]) {
       var c = cagr(rev[h.from].v, rev[h.to].v, h.years);
       if (c !== null) cats.push({ id: "growth", label: "Wachstum", grade: grade(THRESHOLDS.growth, c), value: c, unit: "cagr",
-        detail: "Umsatz " + fmtPct(c) + " pro Jahr ueber " + h.years + " Jahre", evidence: evidence(rev[h.from], rev[h.to], model, "CAGR revenue FY " + h.from + " -> FY " + h.to), thresholds: THRESHOLDS.growth });
+        detail: "Umsatz " + fmtPct(c) + " pro Jahr über " + h.years + " Jahre", evidence: evidence(rev[h.from], rev[h.to], model, "CAGR revenue FY " + h.from + " -> FY " + h.to), thresholds: THRESHOLDS.growth });
     }
     if (rev[latest] && ni[latest] && rev[latest].v > 0) {
       var nm = ni[latest].v / rev[latest].v;
@@ -321,7 +321,7 @@
     }
     if (h && sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
       var ds = pct(sh[h.to].v, sh[h.from].v);
-      cats.push({ id: "dilution", label: "Verwaesserung", grade: gradeUp(THRESHOLDS.dilution, ds), value: ds, unit: "pct",
+      cats.push({ id: "dilution", label: "Verwässerung", grade: gradeUp(THRESHOLDS.dilution, ds), value: ds, unit: "pct",
         detail: "Aktienanzahl " + fmtPct(ds) + " in " + h.years + " Jahren", evidence: evidence(sh[h.from], sh[h.to], model, "shares FY " + h.to + " / FY " + h.from + " - 1"), thresholds: THRESHOLDS.dilution });
     }
     return { available: cats.length > 0, horizon: h, categories: cats, asOf: model.asOf, source: model.source, version: VERSION };

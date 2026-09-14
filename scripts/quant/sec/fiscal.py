@@ -41,6 +41,14 @@ FY_BOUNDARY_TOLERANCE_DAYS = 5
 
 QUARTER_LENGTH_DAYS = 91.31
 
+# Forms whose annual-duration facts define fiscal-year boundaries.
+ANNUAL_FORMS = ("10-K", "20-F", "40-F", "10-KT", "10-K405")
+
+
+def _base_form(form):
+    """'10-K/A' -> '10-K'; None -> ''."""
+    return str(form or "").split("/")[0].strip().upper()
+
 
 def parse_date(value):
     if value is None:
@@ -100,6 +108,14 @@ class FiscalCalendar:
         for fact in raw_facts:
             kind = classify_duration(fact.start, fact.end)
             if kind != "FY":
+                continue
+            # Fiscal-year boundaries are learned from annual reports only. A
+            # 10-Q can carry twelve-month figures too (Amazon discloses trailing
+            # twelve-month net income and cash flows every quarter); those end
+            # mid-year and are not fiscal years. Measured on the bulk archive,
+            # accepting them split Amazon's calendar into six-month "years",
+            # relabelled Q2 as Q1 and overwrote FY2025 with a June figure.
+            if _base_form(fact.form) not in ANNUAL_FORMS:
                 continue
             end = parse_date(fact.end)
             annual_ends.add(end)
@@ -240,6 +256,12 @@ class FiscalCalendar:
         index = int(round(elapsed / QUARTER_LENGTH_DAYS))
         return min(4, max(1, index))
 
+    def _is_extrapolated_fy_end(self, period_end):
+        """A projected year end (no annual report yet) still counts as FY end."""
+        period_end = parse_date(period_end)
+        tolerance = FY_BOUNDARY_TOLERANCE_DAYS
+        return any(abs((period_end - end).days) <= tolerance for end in self._extrapolated)
+
     def period_end_is_fy_end(self, period_end):
         period_end = parse_date(period_end)
         tolerance = timedelta(days=FY_BOUNDARY_TOLERANCE_DAYS)
@@ -292,6 +314,12 @@ class FiscalCalendar:
             return None, None, kind
 
         if kind == "FY":
+            # A twelve-month period that does not end on a fiscal year end is a
+            # trailing-twelve-month disclosure, not a fiscal year. It must not
+            # become the FY value (it would overwrite the real one under the
+            # as-of-latest restatement policy) and it must not be a quarter.
+            if not self.period_end_is_fy_end(end) and not self._is_extrapolated_fy_end(end):
+                return fiscal_year, None, kind
             return fiscal_year, "FY", kind
         if kind == "H":
             return fiscal_year, "YTD2", kind

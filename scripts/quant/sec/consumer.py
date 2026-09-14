@@ -57,6 +57,8 @@ DEFAULT_ANNUAL_YEARS = 13     # ten comparisons need eleven COMPLETE fiscal year
                               # the factbook's last one or two are usually partial
                               # (quarters only), so the window carries a buffer
 DEFAULT_QUARTERS = 8
+# A trailing-twelve-month window older than this (against the as-of date) is history, not "trailing".
+TTM_MAX_AGE_DAYS = 400
 
 
 def _utcnow():
@@ -121,6 +123,24 @@ def _ttm(resolver, registry, as_of, policy):
         row["kind"] = "INSTANT" if definition is not None and definition.kind == KIND_INSTANT else "TTM"
         row["unit"] = fact.unit
         out[metric] = row
+    # One TTM window for the whole bundle: every trailing sum must end in the
+    # same quarter. A metric whose last four standalone quarters lie years back
+    # (JPMorgan's revenue concept stops in 2014 while net income continues) would
+    # otherwise stand next to current figures as if it were current. Keep the
+    # newest window, drop the rest; and drop a window older than 400 days
+    # against the as-of date - "trailing" means trailing.
+    windows = sorted({(row["end"], row["through"]) for row in out.values()
+                      if row.get("kind") == "TTM" and row.get("through")}, reverse=True)
+    if windows:
+        newest_end, newest_through = windows[0]
+        stale = (date.fromisoformat(str(as_of)[:10]) - date.fromisoformat(newest_end)).days > TTM_MAX_AGE_DAYS
+        for metric in list(out.keys()):
+            row = out[metric]
+            if row.get("kind") != "TTM":
+                continue
+            if stale or row.get("through") != newest_through:
+                del out[metric]
+        through = None if stale else newest_through
     # Derived TTM only from complete TTM inputs - never a mix of periods.
     if "operating_cash_flow" in out and "capital_expenditures" in out \
             and out["operating_cash_flow"].get("through") == out["capital_expenditures"].get("through"):

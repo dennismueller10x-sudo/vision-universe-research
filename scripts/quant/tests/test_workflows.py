@@ -200,11 +200,35 @@ class DataBudgetTests(unittest.TestCase):
 
     BUDGET_KB = 8192
     MAX_FILE_BYTES = 2 * 1024 * 1024
+    # The consumer fundamentals (one compact bundle per company of the product
+    # universe, ~5 000 files of 15-25 KB, refreshed weekly by
+    # sec-consumer-fundamentals.yml) are a deliberate exception with their own
+    # budget: they are the fundamental layer of the public site, not review
+    # material. Whether they stay in the repository or move to an object store
+    # is an owner decision recorded in docs/VU_DISCOVER_V3_NETFLIX_BUILD.md.
+    CONSUMER_BUDGET_KB = 160 * 1024
+    CONSUMER_DIR = "consumer"
 
     @classmethod
     def files(cls):
-        return [p for p in (ROOT / "quant" / "data" / "sec").rglob("*")
+        root = ROOT / "quant" / "data" / "sec"
+        return [p for p in root.rglob("*")
+                if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts]
+
+    @classmethod
+    def consumer_files(cls):
+        return [p for p in (ROOT / "quant" / "data" / "sec" / cls.CONSUMER_DIR).rglob("*")
                 if p.is_file()]
+
+    def test_the_consumer_bundles_stay_within_their_own_budget(self):
+        files = self.consumer_files()
+        if not files:
+            self.skipTest("no consumer bundles committed")
+        total = sum(p.stat().st_size for p in files) // 1024
+        self.assertLessEqual(total, self.CONSUMER_BUDGET_KB,
+                             f"quant/data/sec/consumer is {total}KB, over the {self.CONSUMER_BUDGET_KB}KB budget")
+        for path in files:
+            self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
 
     def test_no_single_artifact_is_too_large_to_review(self):
         for path in self.files():

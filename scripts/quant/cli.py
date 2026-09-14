@@ -567,6 +567,7 @@ def cmd_consumer(args):
     coverage["versions"] = version_stamp(registry.version)
     coverage["namesLayer"] = str(names_file.relative_to(ROOT)) if names_file.is_absolute() else str(names_file)
     _write(out_dir / "index.json", {"schema": consumer_module.SCHEMA, "generated_at_utc": _utcnow(),
+                                    "versions": version_stamp(registry.version),
                                     "asOf": as_of, "count": len(index_rows), "byTicker": by_ticker})
     _write(DATA_DIR / "consumer_coverage.json", coverage)
     print(f"  fertig: {len(index_rows)} Bundles, {len(failures)} Fehler, {len(unmatched)} CIKs nicht im Archiv")
