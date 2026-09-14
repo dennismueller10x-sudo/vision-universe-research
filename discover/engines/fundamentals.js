@@ -31,7 +31,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var VERSION = "fundamentals-1.0.0";
+  var VERSION = "fundamentals-1.1.0";
   var SOURCE = "sec_edgar:companyfacts";
 
   /* ------------------------------------------------------------ Lesen */
@@ -130,6 +130,48 @@
     return null;
   }
 
+  /**
+   * Sprung in der Aktienanzahl zwischen zwei Geschaeftsjahren: ein Split,
+   * ein Reverse Split oder eine Kapitalmassnahme. Die SEC-Zeitreihe ist
+   * NICHT splitbereinigt ueber die Jahre hinweg (jeder Wert steht so, wie
+   * er damals berichtet wurde), also sind Gewinn je Aktie und Aktienanzahl
+   * ueber einen solchen Sprung hinweg nicht vergleichbar. NVIDIA: 569 Mio.
+   * Aktien FY2016, 24,5 Mrd. FY2026 - das ist kein Wachstum, das sind zwei
+   * Splits. Schwelle: Faktor >= 1,5 oder <= 1/1,5 von einem FY zum naechsten.
+   */
+  /**
+   * Zwei "Geschaeftsjahre", deren Enden weniger als 300 Tage auseinanderliegen,
+   * sind kein Jahresvergleich: bei einem Wechsel des Geschaeftsjahresendes
+   * (VF Corp Dezember -> Maerz 2019, L3Harris Juni -> Dezember 2019) traegt
+   * die SEC-Reihe fuer das Uebergangsjahr einen Zwoelfmonatswert, der sich
+   * mit dem Vorjahr ueberschneidet. 53 von 5 066 Unternehmen im Bulk-Lauf.
+   */
+  var MIN_YEAR_GAP_DAYS = 300;
+  function yearsAdjacent(model, y0, y1) {
+    var series = model.annual.revenue || model.annual.net_income || [];
+    var m = byYear(series);
+    if (!m[y0] || !m[y1] || !m[y0].end || !m[y1].end) return true;
+    var d = (new Date(m[y1].end) - new Date(m[y0].end)) / 86400000;
+    return d >= MIN_YEAR_GAP_DAYS;
+  }
+  var SHARE_JUMP_FACTOR = 1.5;
+  function shareDiscontinuity(model, from, to) {
+    var series = model.annual.diluted_weighted_average_shares || model.annual.shares_outstanding || [];
+    var m = byYear(series), years = Object.keys(m).map(Number).sort(function (a, b) { return a - b; });
+    for (var i = 1; i < years.length; i++) {
+      var y0 = years[i - 1], y1 = years[i];
+      if (y1 <= from || y0 >= to) continue;
+      if (!(m[y0].v > 0) || !(m[y1].v > 0)) continue;
+      var ratio = m[y1].v / m[y0].v;
+      if (ratio >= SHARE_JUMP_FACTOR || ratio <= 1 / SHARE_JUMP_FACTOR) {
+        return { fromFy: y0, toFy: y1, ratio: ratio,
+                 note: "Gewinn je Aktie und Aktienanzahl sind über diesen Zeitraum nicht vergleichbar: zwischen den berichteten Werten für Geschäftsjahr " + y0 + " und " + y1 +
+                       " springt die Aktienanzahl um den Faktor " + ratio.toFixed(1).replace(".", ",") + " — ein Aktiensplit oder eine Kapitalmaßnahme, die die SEC-Zeitreihe nicht rückwirkend bereinigt." };
+      }
+    }
+    return null;
+  }
+
   /* ------------------------------------------------------------ DAMALS VS. HEUTE */
 
   var COMPARE_ROWS = [
@@ -146,7 +188,9 @@
     var h = model && horizon(model);
     if (!h) return { available: false, reason: "NO_ANNUAL_HISTORY" };
     var out = [];
+    var jump = shareDiscontinuity(model, h.from, h.to);
     COMPARE_ROWS.forEach(function (def) {
+      if (jump && (def.kind === "per_share" || def.kind === "shares")) return;
       var series = def.kind === "margin" ? marginSeries(model, def.metric) : (model.annual[def.metric] || []);
       if (!series.length && def.fallback) series = model.annual[def.fallback] || [];
       var m = byYear(series);
@@ -165,7 +209,8 @@
       }
       out.push(row);
     });
-    return { available: out.length > 0, horizon: h, rows: out, asOf: model.asOf, source: model.source, version: VERSION };
+    return { available: out.length > 0, horizon: h, rows: out, note: jump ? jump.note : null, shareJump: jump,
+             asOf: model.asOf, source: model.source, version: VERSION };
   }
 
   /* ------------------------------------------------------------ JOURNEY */
@@ -188,13 +233,26 @@
     var available = Object.keys(tracks).filter(function (k) {
       return k === "margins" ? (tracks.margins.gross.length || tracks.margins.operating.length || tracks.margins.net.length) : tracks[k].length >= 2;
     });
+    var first = model.years[0], last = model.years[model.years.length - 1];
+    var jump = shareDiscontinuity(model, first, last);
     return { available: available.length > 0, tracks: tracks, availableTracks: available, years: model.years.slice(),
+             caveats: jump ? { eps_diluted: jump.note, shares: jump.note } : {},
              units: model.units, asOf: model.asOf, source: model.source, version: VERSION };
   }
 
   /* ------------------------------------------------------------ STORY */
 
   function fmtPct(x) { return (x >= 0 ? "+" : "") + (x * 100).toFixed(0).replace(".", ",") + " %"; }
+  /* "mehr als verdoppelt" fuer +4 210 % waere eine Untertreibung, die sich
+     wie Desinteresse liest: das Vielfache wird ausgesprochen. */
+  function vielfaches(m) {
+    if (m >= 100) return "um ein Vielfaches gesteigert (auf das " + Math.floor(m) + "-Fache)";
+    if (m >= 10) return "auf das " + Math.floor(m) + "-Fache gesteigert";
+    if (m >= 5) return "mehr als verfünffacht";
+    if (m >= 4) return "mehr als vervierfacht";
+    if (m >= 3) return "mehr als verdreifacht";
+    return "mehr als verdoppelt";
+  }
 
   /**
    * Nur Saetze, die rechnerisch aus zwei benannten Perioden folgen. Jede
@@ -222,7 +280,7 @@
     if (rev[h.from] && rev[h.to] && rev[h.from].v > 0) {
       var g = pct(rev[h.to].v, rev[h.from].v);
       var jahre = h.years;
-      if (g >= 1) add("revenue_doubled", "Der Umsatz hat sich in " + jahre + " Jahren mehr als verdoppelt.", rev[h.from], rev[h.to], "revenue FY " + h.to + " / FY " + h.from + " - 1 = " + fmtPct(g), { growth: g, years: jahre });
+      if (g >= 1) add("revenue_doubled", "Der Umsatz hat sich in " + jahre + " Jahren " + vielfaches(1 + g) + ".", rev[h.from], rev[h.to], "revenue FY " + h.to + " / FY " + h.from + " - 1 = " + fmtPct(g), { growth: g, years: jahre, multiple: 1 + g });
       else if (g >= 0.25) add("revenue_up", "Der Umsatz ist in " + jahre + " Jahren um " + fmtPct(g) + " gewachsen.", rev[h.from], rev[h.to], "revenue FY " + h.to + " / FY " + h.from + " - 1", { growth: g, years: jahre });
       else if (g <= -0.15) add("revenue_down", "Der Umsatz liegt heute " + fmtPct(g) + " unter dem Stand vor " + jahre + " Jahren.", rev[h.from], rev[h.to], "revenue FY " + h.to + " / FY " + h.from + " - 1", { growth: g, years: jahre });
       else add("revenue_flat", "Der Umsatz hat sich in " + jahre + " Jahren kaum veraendert (" + fmtPct(g) + ").", rev[h.from], rev[h.to], "revenue FY " + h.to + " / FY " + h.from + " - 1", { growth: g, years: jahre });
@@ -242,15 +300,15 @@
       if (dpp >= 3) add("margin_up", "Die operative Marge ist deutlich gestiegen (" + dpp.toFixed(1).replace(".", ",") + " Prozentpunkte).", opm[h.from], opm[h.to], "operating_income / revenue, FY " + h.to + " minus FY " + h.from, { pp: dpp });
       else if (dpp <= -3) add("margin_down", "Die operative Marge ist deutlich gesunken (" + dpp.toFixed(1).replace(".", ",") + " Prozentpunkte).", opm[h.from], opm[h.to], "operating_income / revenue, FY " + h.to + " minus FY " + h.from, { pp: dpp });
     }
-    /* Free Cashflow zuletzt. */
-    if (prev !== null && fcf[prev] && fcf[latest]) {
+    /* Free Cashflow zuletzt - nur wenn das Vorjahr ein volles Jahr davor liegt. */
+    if (prev !== null && fcf[prev] && fcf[latest] && yearsAdjacent(model, prev, latest)) {
       var df = pct(fcf[latest].v, fcf[prev].v);
       if (fcf[prev].v > 0 && fcf[latest].v > 0 && df <= -0.15) add("fcf_down", "Der freie Cashflow ist zuletzt zurückgegangen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
       else if (fcf[prev].v > 0 && fcf[latest].v > 0 && df >= 0.15) add("fcf_up", "Der freie Cashflow ist zuletzt kräftig gestiegen (" + fmtPct(df) + ").", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " / FY " + prev + " - 1", { change: df });
       else if (fcf[latest].v < 0) add("fcf_negative", "Der freie Cashflow war im letzten Geschaeftsjahr negativ.", fcf[prev], fcf[latest], "free_cash_flow FY " + latest + " < 0");
     }
-    /* Aktienanzahl. */
-    if (sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
+    /* Aktienanzahl - nur ohne Split/Kapitalmassnahme im Zeitraum. */
+    if (!shareDiscontinuity(model, h.from, h.to) && sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
       var ds = pct(sh[h.to].v, sh[h.from].v);
       if (ds >= 0.05) add("shares_up", "Die Zahl der ausstehenden Aktien ist gestiegen (" + fmtPct(ds) + " in " + h.years + " Jahren).", sh[h.from], sh[h.to], "shares FY " + h.to + " / FY " + h.from + " - 1", { change: ds });
       else if (ds <= -0.05) add("shares_down", "Die Zahl der Aktien ist gesunken - das Unternehmen kauft Aktien zurück (" + fmtPct(ds) + " in " + h.years + " Jahren).", sh[h.from], sh[h.to], "shares FY " + h.to + " / FY " + h.from + " - 1", { change: ds });
@@ -319,12 +377,14 @@
         evidence: evidence(nd[latest], nd[latest], model, "net_debt FY " + latest + (fcf[latest] ? " / free_cash_flow FY " + latest : "")),
         thresholds: [["net cash", "Sehr solide"], ["<= 2x FCF", "Solide"], ["<= 4x FCF", "Belastet"], ["> 4x FCF oder FCF <= 0", "Angespannt"]] });
     }
-    if (h && sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
+    var jump = h && shareDiscontinuity(model, h.from, h.to);
+    if (h && !jump && sh[h.from] && sh[h.to] && sh[h.from].v > 0) {
       var ds = pct(sh[h.to].v, sh[h.from].v);
       cats.push({ id: "dilution", label: "Verwässerung", grade: gradeUp(THRESHOLDS.dilution, ds), value: ds, unit: "pct",
         detail: "Aktienanzahl " + fmtPct(ds) + " in " + h.years + " Jahren", evidence: evidence(sh[h.from], sh[h.to], model, "shares FY " + h.to + " / FY " + h.from + " - 1"), thresholds: THRESHOLDS.dilution });
     }
-    return { available: cats.length > 0, horizon: h, categories: cats, asOf: model.asOf, source: model.source, version: VERSION };
+    return { available: cats.length > 0, horizon: h, categories: cats, omitted: jump ? { dilution: jump.note } : {},
+             asOf: model.asOf, source: model.source, version: VERSION };
   }
 
   /* ------------------------------------------------------------ LATEST */
@@ -372,7 +432,8 @@
     if (r10 !== null) out.revenueGrowth10y = { value: r10, evidence: evidence(rev[latest - 10], rev[latest], model, "CAGR revenue 10J") };
     if (nm !== null) out.netMargin = { value: nm, evidence: evidence(ni[latest], rev[latest], model, "net_income / revenue FY " + latest) };
     if (fm !== null) out.fcfMargin = { value: fm, evidence: evidence(fcf[latest], rev[latest], model, "free_cash_flow / revenue FY " + latest) };
-    if (has(ni, latest) && has(ni, latest - 1) && has(ni, latest - 2) && ni[latest - 2].v > 0 && ni[latest - 1].v > 0 && ni[latest].v > 0) {
+    if (has(ni, latest) && has(ni, latest - 1) && has(ni, latest - 2) && ni[latest - 2].v > 0 && ni[latest - 1].v > 0 && ni[latest].v > 0 &&
+        yearsAdjacent(model, latest - 2, latest - 1) && yearsAdjacent(model, latest - 1, latest)) {
       var g1 = pct(ni[latest - 1].v, ni[latest - 2].v), g2 = pct(ni[latest].v, ni[latest - 1].v);
       out.earningsAcceleration = { value: g2 - g1, latestGrowth: g2, priorGrowth: g1, evidence: evidence(ni[latest - 2], ni[latest], model, "net_income Wachstum FY" + latest + " (" + fmtPct(g2) + ") vs. FY" + (latest - 1) + " (" + fmtPct(g1) + ")") };
     }
@@ -427,7 +488,7 @@
   var api = { VERSION: VERSION, SOURCE: SOURCE, THRESHOLDS: THRESHOLDS, COMPARE_ROWS: COMPARE_ROWS,
               fromBundle: fromBundle, horizon: horizon, compare: compare, journey: journey, story: story,
               health: health, latest: latest, signals: signals, priceVsFundamentals: priceVsFundamentals,
-              capabilities: capabilities, marginSeries: marginSeries, cagr: cagr };
+              capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr };
   if (isNode) module.exports = api;
   else {
     global.VUDiscover = global.VUDiscover || {};

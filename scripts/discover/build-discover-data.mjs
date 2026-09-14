@@ -533,6 +533,8 @@ function attachFundamentals(stock, model) {
   const sig = Fundamentals.signals(model);
   const m = stock.metrics;
   const v = (x) => (x && isNum(x.value)) ? x.value : null;
+  const revRows = model.annual.revenue || [];
+  m.f_revenue = revRows.length ? revRows[revRows.length - 1].v : null;
   m.f_revenueGrowth3y = v(sig.revenueGrowth3y);
   m.f_revenueGrowth10y = v(sig.revenueGrowth10y);
   m.f_netMargin = v(sig.netMargin);
@@ -607,7 +609,7 @@ function applyValuationContext(universe) {
   const pss = universe.stocks.map((s) => s.metrics.f_ps).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
   const median = (arr) => arr.length ? arr[Math.floor(arr.length / 2)] : null;
   universe.valuationContext = { peMedian: median(pes), psMedian: median(pss), peCount: pes.length, psCount: pss.length,
-                                rule: "deutlich hoeher: KGV > 1,5 x Median; guenstiger: KGV < 0,67 x Median; sonst im Bereich des Markts" };
+                                rule: "deutlich höher: KGV > 1,5 × Median; günstiger: KGV < 0,67 × Median; sonst im Bereich des Markts" };
   for (const s of universe.stocks) {
     if (!s.fundamentalValuation || !s.fundamentalValuation.available) continue;
     const b = s.fundamentalValuation;
@@ -907,6 +909,18 @@ function discoveryEligibility(stock) {
 }
 
 
+/* Die Basis einer fundamentalen Sammlung: ein Unternehmen, das im letzten
+   Geschaeftsjahr mindestens 100 Mio. $ umgesetzt hat, und ein Wachstum
+   ohne Basiseffekt (<= 300 % pro Jahr). CorMedix mit +1 583 % p. a. auf
+   einer Basis von wenigen Millionen ist eine wahre Zahl und trotzdem
+   keine Entdeckung, die "Umsatz waechst stark" anfuehren sollte. */
+const FUND_MIN_REVENUE_USD = 100e6, FUND_MAX_GROWTH = 3.0;
+function fundBasis(s) {
+  const m = s.metrics;
+  if (!isNum(m.f_revenue) || m.f_revenue < FUND_MIN_REVENUE_USD) return false;
+  if (isNum(m.f_revenueGrowth3y) && m.f_revenueGrowth3y > FUND_MAX_GROWTH) return false;
+  return true;
+}
 const ROW_FILTERS = {
   nearOrAtHigh: (s) => s.signals.new52WeekHigh || s.signals.nearHigh ||
     (isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh >= -METHODOLOGY.high52w.watchPct),
@@ -948,20 +962,21 @@ const ROW_FILTERS = {
      Kennzahlen, die aus Geschaeftsjahren der SEC-Bundles gerechnet sind;
      ein Titel ohne Bundle faellt durch (null). Der Wortlaut steht in der
      Methodik (rows[].rule). */
-  fundUmsatz: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.15,
-  fundGewinne: (s) => isNum(s.metrics.f_earningsAcceleration) && s.metrics.f_earningsAcceleration >= 0.05 &&
+  fundUmsatz: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.15,
+  fundGewinne: (s) => fundBasis(s) && isNum(s.metrics.f_earningsAcceleration) && s.metrics.f_earningsAcceleration >= 0.05 &&
     isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
-  fundMargen: (s) => isNum(s.metrics.f_marginExpansion3y) && s.metrics.f_marginExpansion3y >= 2,
-  fundCashflow: (s) => isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin >= 0.15 && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
-  fundQualitaetWachstum: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+  fundMargen: (s) => fundBasis(s) && isNum(s.metrics.f_marginExpansion3y) && s.metrics.f_marginExpansion3y >= 2 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= -0.25,
+  fundCashflow: (s) => fundBasis(s) && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin >= 0.15 && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
+  fundQualitaetWachstum: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
     isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10,
-  fundCompounder: (s) => s.signals.compounder === true,
-  fundProfitablesWachstum: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+  fundCompounder: (s) => fundBasis(s) && s.signals.compounder === true,
+  fundProfitablesWachstum: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
     isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.05 && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin > 0,
-  fundTurnaround: (s) => s.signals.turnaround === true,
-  fundQualitaetPreis: (s) => isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10 &&
+  fundTurnaround: (s) => fundBasis(s) && s.signals.turnaround === true,
+  fundQualitaetPreis: (s) => fundBasis(s) && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10 &&
     isNum(s.metrics.f_pe) && s.metrics.f_pe > 0 && s.metrics.f_pe <= 20,
-  fundBilanzWachstum: (s) => s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
+  fundBilanzWachstum: (s) => fundBasis(s) && s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
 };
 
 function buildRow(universe, config) {
@@ -1640,6 +1655,9 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
     fundamentals: fundamentalsDetail(universe, stock),
+    /* Der belegte Satz aus den Abschluessen - auf der Karte, im Hero der
+       Startseite und im Kopf der Aktienseite derselbe. */
+    hook: stock.hook || null,
     discoveryEligible: stock.discoveryEligible !== false,
     ineligibleReason: stock.ineligibleReason || null,
     ineligibleMessage: stock.ineligibleMessage || null,

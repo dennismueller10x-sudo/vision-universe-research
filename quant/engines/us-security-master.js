@@ -51,7 +51,7 @@
     ? require("./instrument-classification.js")
     : global.VUInstrumentClassification;
 
-  var VERSION = "us-security-master-1.1.0";
+  var VERSION = "us-security-master-1.2.0";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
@@ -174,7 +174,12 @@
 
      Ohne diesen Beleg bleibt es ein Verdacht: die Zeile wird als
      Verdachtsfall gefuehrt und landet in REVIEW, nicht im Ausschluss. */
-  var FIFTH_LETTER = { W: "WARRANT", R: "RIGHT", U: "UNIT" };
+  /* P/O/N/M: erstes bis viertes Vorzugspapier (NASDAQ-Suffixcode). Gefunden
+     in der Screenshot-Pruefung der fundamentalen Sammlungen: FCNCP, FCNCO,
+     FCNCN (First Citizens), AGNCN/AGNCM/AGNCO/AGNCP, CHSCP/CHSCO/CHSCN/CHSCM
+     standen als Stammaktien in "Qualitaet zum vernuenftigen Preis" - 115
+     Titel des Produktuniversums, ausnahmslos Vorzuege. */
+  var FIFTH_LETTER = { W: "WARRANT", R: "RIGHT", U: "UNIT", P: "PREFERRED", O: "PREFERRED", N: "PREFERRED", M: "PREFERRED" };
 
   function nasdaqFifthLetter(ticker, listedRoots) {
     var t = upper(ticker);
@@ -363,7 +368,7 @@
         confidence = "LOW";
         reasons.push("Fuenfstelliger NASDAQ-Ticker auf '" + fifth.marker + "', aber der Stamm " +
                      fifth.root + " ist NICHT gelistet. Der Suffix allein belegt die Gattung " +
-                     "nicht - es gibt Gesellschaften, deren Name auf W, R oder U endet.");
+                     "nicht - es gibt Gesellschaften, deren Name auf W, R, U, P, O, N oder M endet.");
         flags.push("NASDAQ_FIFTH_LETTER_UNCONFIRMED");
       }
     } else if (marker && marker.type && marker.basis === "tickerSuffix3") {

@@ -126,3 +126,50 @@ test("FU10 · Capabilities aus der Coverage des Bundles", () => {
   assert.ok(cj.HAS_FUNDAMENTALS_3Y && !cj.HAS_FUNDAMENTALS_5Y);
   assert.deepEqual(F.capabilities(null), { HAS_FUNDAMENTALS: false });
 });
+
+test("FU11 · Aktiensplit im Zeitraum: keine Vergleiche je Aktie, kein Verwaesserungs-Urteil, aber ein benannter Grund", () => {
+  /* Dieselbe Emittentin, ab FY2021 viermal so viele Aktien (Split 4:1, nicht
+     rueckwirkend bereinigt - so liefert es die SEC-Zeitreihe). */
+  const split = JSON.parse(JSON.stringify(wachsend));
+  for (const key of ["diluted_weighted_average_shares", "shares_outstanding"]) {
+    if (!split.annual[key]) continue;
+    split.annual[key] = split.annual[key].map((r) => (r[0] >= 2021 ? [r[0], r[1], r[2], r[3] * 4, r[4], r[5], r[6]] : r));
+  }
+  const S = F.fromBundle(split);
+  const jump = F.shareDiscontinuity(S, 2015, 2025);
+  assert.ok(jump && jump.fromFy === 2020 && jump.toFy === 2021 && Math.abs(jump.ratio - 4) < 1e-9, JSON.stringify(jump));
+  const c = F.compare(S);
+  assert.ok(!c.rows.some((r) => r.id === "eps_diluted" || r.id === "shares"), "je-Aktie-Zeilen fallen weg");
+  assert.ok(c.rows.some((r) => r.id === "revenue"), "Umsatz bleibt vergleichbar");
+  assert.match(c.note, /Aktiensplit|Kapitalmaßnahme/);
+  const st = F.story(S).statements.map((x) => x.id);
+  assert.ok(!st.includes("shares_up") && !st.includes("shares_down"), st.join(","));
+  const h = F.health(S);
+  assert.ok(!h.categories.some((x) => x.id === "dilution")); assert.ok(h.omitted.dilution);
+  assert.ok(F.journey(S).caveats.shares);
+  /* Ohne Sprung: alles wie gehabt. */
+  assert.equal(F.shareDiscontinuity(M, 2015, 2025), null);
+  assert.ok(F.compare(M).rows.some((r) => r.id === "shares"));
+  assert.equal(F.compare(M).note, null);
+});
+
+test("FU12 · Das Vielfache wird ausgesprochen, nicht untertrieben", () => {
+  const s = F.story(M).statements.find((x) => x.id === "revenue_doubled");
+  assert.ok(s && /verdreifacht/.test(s.text), "1,12^10 = 3,1: " + (s && s.text));
+  assert.ok(Math.abs(s.multiple - Math.pow(1.12, 10)) < 1e-6);
+});
+
+test("FU13 · Wechsel des Geschaeftsjahresendes: kein Jahresvergleich ueber ein Uebergangsjahr", () => {
+  /* FY2024 endet im Maerz 2024 statt im Dezember 2023: nur drei Monate nach
+     FY2023 - ein Zwoelfmonatswert, der sich mit dem Vorjahr ueberschneidet. */
+  const wechsel = JSON.parse(JSON.stringify(wachsend));
+  for (const key of Object.keys(wechsel.annual)) {
+    wechsel.annual[key] = wechsel.annual[key].map((r) => (r[0] === 2024 ? [r[0], r[1], "2024-03-31", r[3], r[4], r[5], r[6]] : r));
+  }
+  const W = F.fromBundle(wechsel);
+  assert.equal(F.yearsAdjacent ? F.yearsAdjacent(W, 2023, 2024) : false, false);
+  assert.ok(!F.story(W).statements.some((x) => x.id === "fcf_up" || x.id === "fcf_down") || F.story(W).statements.every((x) => x.id !== "fcf_up" || x.evidence.periodStart.fy !== 2024),
+    "kein FCF-Jahresvergleich gegen ein Uebergangsjahr");
+  assert.ok(!F.signals(W).earningsAcceleration, "keine Gewinnbeschleunigung ueber ein Uebergangsjahr");
+  assert.ok(F.signals(M).earningsAcceleration, "die Referenz hat sie");
+});

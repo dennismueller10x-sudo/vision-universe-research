@@ -14,7 +14,7 @@ Stand: 14.09.2026 · Branch `claude/vision-universe-discover-v3` · nicht gemerg
 | Universum der SEC-Pipeline | `quant/config/sec-universe.json` | 5 Titel |
 | Andere Branches (`claude/sec-financial-data-core-qiizhj`, `codex/sec-master-universe-large`) | canonical = 5, Universum = 5 | kein Branch trägt mehr als die fünf Titel; nichts zu übernehmen, kein Konflikt |
 | Discover-Anbindung | `discover/engines/unternehmen.js` (`ausSecFakten`), `einordnung.js` (30 Sekunden, Waage) | funktionierend, aber auf 5 Titel begrenzt |
-| CIK-Zuordnung | Namensschicht `security-master/company-names.json` (SEC-Tickerverzeichnis, Ticker + Börse) | 5 516 Titel des Produktuniversums mit CIK, 1 362 ohne (Preferreds, ADR ohne 10-K/20-F-Fakten, Trusts, Auslandstitel) |
+| CIK-Zuordnung | Namensschicht `security-master/company-names.json` (SEC-Tickerverzeichnis, Ticker + Börse) | 5 516 Titel des Produktuniversums (Bulk-Lauf, 6 878) mit CIK, 1 362 ohne (Preferreds, ADR ohne 10-K/20-F-Fakten, Trusts, Auslandstitel) |
 
 Entscheidung: **keine zweite SEC-Architektur.** Die bestehende Pipeline bekommt eine zweite, schlanke Ausgabe.
 
@@ -33,7 +33,7 @@ Entscheidung: **keine zweite SEC-Architektur.** Die bestehende Pipeline bekommt 
 * Workflow `.github/workflows/sec-consumer-fundamentals.yml` (Dispatch, montags 07:30 UTC, Push-Marke `[sec-consumer]`): Offline-Tests → Bundles → Discover-Build → Matrix → Guards → Regressionen → Commit.
 * Offline-Tests: `scripts/quant/tests/test_consumer.py` (synthetische Emittentin; Annual/Quarterly/TTM-Trennung, PIT, keine Nullen, Horizonte, Coverage-Grid, Größe).
 
-## 3. Fundamentals-Engine (`discover/engines/fundamentals.js`, `fundamentals-1.0.0`)
+## 3. Fundamentals-Engine (`discover/engines/fundamentals.js`, `fundamentals-1.1.0`)
 
 Deterministisch, ohne Sprachmodell, im Build gerechnet und mit der Seite ausgeliefert.
 
@@ -41,8 +41,10 @@ Deterministisch, ohne Sprachmodell, im Build gerechnet und mit der Seite ausgeli
 |---|---|
 | Horizont | 10 Jahre, wenn FY(t−10) auf der Umsatzreihe existiert; sonst 5; sonst 3; sonst erste vs. letzte valide Periode |
 | Damals vs. heute | Umsatz, Nettogewinn, operative Marge, Free Cashflow, Gewinn je Aktie, Aktienanzahl, Nettoschulden — nur Zeilen mit beiden Werten; Veränderung absolut, in %, CAGR bzw. Prozentpunkte; Beleg je Zeile |
+| Aktiensplit-Erkennung | Die SEC-Zeitreihe ist nicht rückwirkend splitbereinigt (NVIDIA: 569 Mio. Aktien FY2016, 24,5 Mrd. FY2026). Springt die Aktienanzahl von einem FY zum nächsten um den Faktor ≥ 1,5 oder ≤ 1/1,5, gelten Gewinn je Aktie und Aktienanzahl über diesen Zeitraum als nicht vergleichbar: keine Damals-vs.-heute-Zeile, kein Story-Satz zur Aktienanzahl, kein Verwässerungs-Urteil, Journey-Reiter mit Hinweis — und der Grund steht auf der Seite (`compare.note`, `health.omitted`, `journey.caveats`). Echte Verwässerung ≥ 50 % in einem Jahr fällt damit ebenfalls weg — lieber eine fehlende als eine falsche Aussage |
 | Journey | Jahresreihen: Umsatz, Nettogewinn, Free Cashflow, operativer Cashflow, EPS, Margen (nur Zähler/Nenner desselben FY), Kasse, Schulden, Aktien |
-| Story | Sätze nur aus zwei benannten Perioden: Umsatz verdoppelt (+100 %), gewachsen (≥ +25 %), gesunken (≤ −15 %), kaum verändert; Gewinn schneller/langsamer als Umsatz (Δ ≥ 10 Pp.); Wende in den Gewinn/Verlust; operative Marge ± 3 Pp.; FCF zuletzt ± 15 % oder negativ; Aktienanzahl ± 5 %; Verschuldung schneller als Gewinn (Δ ≥ 25 Pp. und ≥ +25 %). Jede Aussage: metric, periodStart, periodEnd, valueStart, valueEnd, calculation, source, asOf, version |
+| Übergangsjahre | Wechselt ein Emittent das Geschäftsjahresende (VF Corp Dezember → März 2019, L3Harris Juni → Dezember 2019), liegen zwei „Geschäftsjahre" weniger als 300 Tage auseinander und überschneiden sich. Über ein solches Paar gibt es keinen Jahresvergleich (FCF zuletzt, Gewinnbeschleunigung); 53 von 5 066 Unternehmen im Bulk-Lauf |
+| Story | Sätze nur aus zwei benannten Perioden: Umsatz verdoppelt (+100 %; ab ×3 „verdreifacht", ×4, ×5, ab ×10 „auf das N-Fache"), gewachsen (≥ +25 %), gesunken (≤ −15 %), kaum verändert; Gewinn schneller/langsamer als Umsatz (Δ ≥ 10 Pp.); Wende in den Gewinn/Verlust; operative Marge ± 3 Pp.; FCF zuletzt ± 15 % oder negativ; Aktienanzahl ± 5 %; Verschuldung schneller als Gewinn (Δ ≥ 25 Pp. und ≥ +25 %). Jede Aussage: metric, periodStart, periodEnd, valueStart, valueEnd, calculation, source, asOf, version |
 | Health | Wachstum (Umsatz-CAGR über den Horizont): ≥ 20 % Sehr stark, ≥ 10 % Stark, ≥ 3 % Solide, ≥ 0 Flach, sonst Rückläufig · Profitabilität (Nettomarge FY): ≥ 20 / 10 / 3 / 0 % · Cashflow (FCF-Marge FY): ≥ 15 % Sehr stark, ≥ 8 % Stark, > 0 Solide, sonst Negativ · Bilanz: Nettokasse Sehr solide, Nettoschulden ≤ 2× FCF Solide, ≤ 4× Belastet, sonst Angespannt · Verwässerung (Aktien über den Horizont): ≤ −3 % Rückkäufe, ≤ +2 % Gering, ≤ +10 % Moderat, sonst Hoch |
 | Signale (Sammlungen) | Umsatz-CAGR 3J/10J, Nettomarge, FCF-Marge, Gewinnbeschleunigung (Wachstum FY(t) − FY(t−1)), Margenausweitung 3J, FCF > 0 in drei FY, Turnaround (FY(t−2) < 0, FY(t) > 0), Nettokasse, Compounder (10J ≥ 10 % und jedes FY profitabel) |
 | Kurs + Fundamentals | Kursänderung über die ausgelieferte Reihe neben Umsatz-/Gewinnänderung der Geschäftsjahre, die vor Start- und Endpunkt endeten; ausdrücklich ohne Kausalität |
@@ -52,13 +54,13 @@ Tests: `discover/tests/fundamentals.test.mjs` (FU1–FU10) auf synthetischen Bun
 
 ## 4. Fundamentale Sammlungen (Discover)
 
-Nur aus Geschäftsjahren; eine Reihe erscheint erst ab fünf Titeln (`minMembers`).
+Nur aus Geschäftsjahren; eine Reihe erscheint erst ab fünf Titeln (`minMembers`). Basis jeder Reihe: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr und Umsatz-CAGR 3 J ≤ 300 % — CorMedix mit +1 583 % p. a. auf einer Basis von wenigen Millionen ist eine wahre Zahl und trotzdem keine Entdeckung, die „Umsatz wächst stark" anführen sollte (Befund der Screenshot-Prüfung, `fundBasis()` im Build).
 
 | Reihe | Regel |
 |---|---|
 | Umsatz wächst stark | Umsatz-CAGR 3J ≥ 15 % |
 | Gewinne beschleunigen | Gewinnwachstum FY(t) − FY(t−1) ≥ 5 Pp., Nettomarge > 0 |
-| Margen werden stärker | operative Marge FY(t) − FY(t−3) ≥ 2 Pp. |
+| Margen werden stärker | operative Marge FY(t) − FY(t−3) ≥ 2 Pp., Nettomarge ≥ −25 % |
 | Cashflow-Maschinen | FCF-Marge FY ≥ 15 %, Nettomarge > 0 |
 | Qualität + Wachstum | Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 10 % |
 | Langfristige Compounder | Umsatz-CAGR 10J ≥ 10 %, Nettogewinn > 0 in jedem FY |

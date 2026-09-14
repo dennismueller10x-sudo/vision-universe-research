@@ -1,11 +1,11 @@
 {
  "version": "company-names-1.0.0",
- "generatedAt": "2026-09-14T11:04:45.468Z",
+ "generatedAt": "2026-09-14T16:39:47.290Z",
  "master": {
   "file": "quant/data/market/security-master/eligibility.json",
-  "version": "us-security-master-1.1.0",
-  "sha256": "1662289650101be4c72412ada4baf638f86802b56152bf3631a0007590b4212e",
-  "productUniverse": 6878
+  "version": "us-security-master-1.2.0",
+  "sha256": "d52172a2d1b15018deb56eeeeadaaae00c6c65d759d41efba34918dec012c7f3",
+  "productUniverse": 6875
  },
  "sourcePriority": [
   "TIINGO_METADATA",
@@ -24,23 +24,22 @@
  },
  "counts": {
   "rows": 7803,
-  "productRows": 6878,
+  "productRows": 6875,
   "resolved": 6855,
-  "unresolved": 23,
+  "unresolved": 20,
   "bySource": {
    "TIINGO_METADATA": 6650,
    "SEC_COMPANY_TICKERS": 205
   },
   "conflicts": 194,
   "unresolvedReasons": {
-   "PROVIDER_HAS_NO_NAME": 21,
-   "ALL_CANDIDATES_REJECTED": 2
+   "PROVIDER_HAS_NO_NAME": 20
   },
   "rejectedRules": {
    "VU_CURATED:TICKER_AS_NAME": 1,
    "SEC_COMPANY_TICKERS:TICKER_LIKE": 1,
    "SEC_COMPANY_TICKERS:TICKER_AS_NAME": 2,
-   "TIINGO_METADATA:TICKER_AS_NAME": 4
+   "TIINGO_METADATA:TICKER_AS_NAME": 2
   }
  },
  "rows": [
@@ -222381,14 +222380,14 @@
    "ticker": "ZAZZT",
    "exchange": "NASDAQ",
    "providerSymbol": "ZAZZT",
-   "inProductUniverse": true,
+   "inProductUniverse": false,
    "companyName": null,
    "displayName": null,
    "nameSource": null,
    "nameAsOf": null,
    "cik": null,
-   "status": "UNRESOLVED",
-   "reason": "ALL_CANDIDATES_REJECTED",
+   "status": "NOT_IN_PRODUCT_UNIVERSE",
+   "reason": null,
    "nameConflict": null,
    "confirmedBy": null,
    "candidates": {
@@ -222522,14 +222521,14 @@
    "ticker": "ZBZZT",
    "exchange": "NASDAQ",
    "providerSymbol": "ZBZZT",
-   "inProductUniverse": true,
+   "inProductUniverse": false,
    "companyName": null,
    "displayName": null,
    "nameSource": null,
    "nameAsOf": null,
    "cik": null,
-   "status": "UNRESOLVED",
-   "reason": "ALL_CANDIDATES_REJECTED",
+   "status": "NOT_IN_PRODUCT_UNIVERSE",
+   "reason": null,
    "nameConflict": null,
    "confirmedBy": null,
    "candidates": {
@@ -223911,14 +223910,14 @@
    "ticker": "ZTST",
    "exchange": "BATS",
    "providerSymbol": "ZTST",
-   "inProductUniverse": true,
+   "inProductUniverse": false,
    "companyName": null,
    "displayName": null,
    "nameSource": null,
    "nameAsOf": null,
    "cik": null,
-   "status": "UNRESOLVED",
-   "reason": "PROVIDER_HAS_NO_NAME",
+   "status": "NOT_IN_PRODUCT_UNIVERSE",
+   "reason": null,
    "nameConflict": null,
    "confirmedBy": null,
    "candidates": {

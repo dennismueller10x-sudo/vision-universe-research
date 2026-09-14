@@ -45,7 +45,7 @@ export const HANDOVER = {
   commit: "2e22a2e69ce3fd164a89dc118e00ced565ad9e95",
   consumedBy: "claude/full-universe-proof-y8ncfa (scripts/realtime/build-product-symbols.mjs)",
   file: SECURITY_MASTER_FILE,
-  version: "us-security-master-1.1.0",
+  version: "us-security-master-1.2.0",
   rule: "Produktuniversum = alle Entscheidungen ausser EXCLUDED",
   expectedCounts: { universeMembers: 7803, productUniverse: 7004,
                     ELIGIBLE: 6477, SEPARATE_CLASS: 308, REVIEW: 219, EXCLUDED: 799 },

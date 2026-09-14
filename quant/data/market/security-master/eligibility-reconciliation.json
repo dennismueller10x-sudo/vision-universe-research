@@ -1,18 +1,16 @@
 {
- "generatedAt": "2026-09-14T11:04:09.344Z",
- "version": "us-security-master-1.1.0",
+ "generatedAt": "2026-09-14T16:39:33.755Z",
+ "version": "us-security-master-1.2.0",
  "today": "2026-09-14",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "comparedAgainst": {
   "kind": "PREVIOUS_ELIGIBILITY_RUN",
-  "generatedAt": "2026-09-14T11:00:49.403Z"
+  "generatedAt": "2026-09-14T16:39:03.976Z"
  },
  "totals": {
   "universeMembers": 7803,
-  "changed": 29,
-  "SEPARATE_CLASS->EXCLUDED": 25,
-  "SEPARATE_CLASS->REVIEW": 3,
-  "SEPARATE_CLASS->ELIGIBLE": 1
+  "changed": 70,
+  "REVIEW->EXCLUDED": 70
  },
  "invariants": {
   "noMemberRemoved": true,
@@ -22,423 +20,1052 @@
  },
  "changes": [
   {
-   "ticker": "ALFUU",
+   "ticker": "LTRYW",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2018-06-13",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "ILLRW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2019-07-30",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CELGR",
+   "exchange": "NYSE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2019-12-02",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SYTAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2020-09-25",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CYTHW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2020-12-09",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "GRDIW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-03-03",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SPWRW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-04-19",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "MITAU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
    "to": "EXCLUDED",
    "instrument_type": "UNIT",
    "classification_confidence": "HIGH",
    "reason": "CONFIRMED_NON_EQUITY:UNIT",
    "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
    ],
-   "start_date": "2024-06-11",
+   "start_date": "2021-06-23",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   },
   {
-   "ticker": "ALFUW",
+   "ticker": "IMAQU",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-07-29",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "HWELW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
    "to": "EXCLUDED",
    "instrument_type": "WARRANT",
    "classification_confidence": "HIGH",
    "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-09-23",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "GATEU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-10-01",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "FIACU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-10-28",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "GATEW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-11-22",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "MCAGR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-12-06",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "APXIU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-12-07",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "FIACW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2021-12-20",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "APXIW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-01-28",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "PLAOU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-03-10",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "BWAQW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-03-16",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "MSSAU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-04-01",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "DECAU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-04-07",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CLRCU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-04-28",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "PLAOW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-05-04",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "EMCGU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2022-08-10",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "DISTR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-03-30",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "ALCYW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-06-26",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "NETDU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-07-14",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "BUJAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-08-21",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "FMSTW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-08-22",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "NETDW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-09-05",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "AESPU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-06-03",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "AIFER",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-03-12",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "APACR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-11-21",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "APMCU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-06-03",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "ASPCR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-01-03",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "AXINU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-06-18",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "BACCU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-06-13",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "BACQU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-11-01",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CAPNR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-10-24",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CAPNU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-09-20",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CAPTW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-11-16",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CNCKW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-12-11",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CRANR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-01-12",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "CRANU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-12-16",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "DFNSW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-12-26",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "EMISR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-10-23",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "ENGNW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-11-01",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "FTHAU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-04-30",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "FTHAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-06-22",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "IGACR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-12-22",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "IMSRW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-10-10",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "KTWOR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-02-25",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "KTWOU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-01-29",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "LOKVW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-04-21",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "LSEAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2023-10-12",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "NUCLW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-02-25",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "PELIR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-06-12",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "PITAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-07-30",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SHOTR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-07-17",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SHOTU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-06-10",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SIMAU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-07-10",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SIMAW",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2024-08-30",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SZZLR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-05-23",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "SZZLU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2025-04-02",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "TWLVR",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "RIGHT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
+   "start_date": "2026-01-09",
+   "historyRetained": true,
+   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
+  },
+  {
+   "ticker": "VLOSU",
+   "exchange": "NASDAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "UNIT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:UNIT",
+   "evidence": [
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
+   ],
    "start_date": "2024-08-01",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   },
   {
-   "ticker": "BIDWR",
+   "ticker": "VLOSW",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "REVIEW",
-   "instrument_type": "RIGHT",
-   "classification_confidence": "LOW",
-   "reason": "UNCONFIRMED:CLASS_RIGHT_NOT_AN_EQUITY",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "instrument_type": "WARRANT",
+   "classification_confidence": "HIGH",
+   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
    "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
    ],
-   "start_date": "2026-07-20",
+   "start_date": "2024-09-23",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   },
   {
-   "ticker": "BIDWU",
+   "ticker": "VMCAU",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
+   "from": "REVIEW",
    "to": "EXCLUDED",
    "instrument_type": "UNIT",
    "classification_confidence": "HIGH",
    "reason": "CONFIRMED_NON_EQUITY:UNIT",
    "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-05-29",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "CAQUU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
    ],
    "start_date": "2026-02-06",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   },
   {
-   "ticker": "CAQUW",
+   "ticker": "WSTNR",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "WARRANT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
-   "start_date": "2026-04-01",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "CATLU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-07-28",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "FVNNU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2024-09-12",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "GTERU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2025-07-09",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "HONDU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2024-08-16",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "IPHXU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-08-28",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "JABRR",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
+   "from": "REVIEW",
    "to": "EXCLUDED",
    "instrument_type": "RIGHT",
    "classification_confidence": "HIGH",
    "reason": "CONFIRMED_NON_EQUITY:RIGHT",
    "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
    ],
-   "start_date": "2026-08-31",
+   "start_date": "2025-12-31",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   },
   {
-   "ticker": "JABRU",
+   "ticker": "WSTNU",
    "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
+   "from": "REVIEW",
    "to": "EXCLUDED",
    "instrument_type": "UNIT",
    "classification_confidence": "HIGH",
    "reason": "CONFIRMED_NON_EQUITY:UNIT",
    "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
+    "NASDAQ_FIFTH_LETTER_ROOT_LISTED"
    ],
-   "start_date": "2026-08-31",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "JABRW",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "WARRANT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
-   "start_date": "2026-08-31",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "MTAKU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-07-24",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "MYXXR",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "RIGHT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:RIGHT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-05-15",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "MYXXU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-04-14",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "MYXXW",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "WARRANT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
-   "start_date": "2026-05-15",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "NMPAR",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "REVIEW",
-   "instrument_type": "RIGHT",
-   "classification_confidence": "LOW",
-   "reason": "UNCONFIRMED:CLASS_RIGHT_NOT_AN_EQUITY",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2025-09-03",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "NMPAU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2025-07-01",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "OCLTU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-08-07",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "OIMAU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-01-14",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "OIMAW",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "WARRANT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
-   "start_date": "2026-03-09",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "RNAQU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-08-27",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "TLACU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2026-09-01",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "WTGUR",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "REVIEW",
-   "instrument_type": "RIGHT",
-   "classification_confidence": "LOW",
-   "reason": "UNCONFIRMED:CLASS_RIGHT_NOT_AN_EQUITY",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2025-07-21",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "WTGUU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "UNIT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:UNIT",
-   "evidence": [
-    "NASDAQ_FIFTH_LETTER_UNCONFIRMED"
-   ],
-   "start_date": "2025-05-29",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "ZKPU",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "ELIGIBLE",
-   "instrument_type": "EQUITY_COMMON",
-   "classification_confidence": "HIGH",
-   "reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence": [],
-   "start_date": "2026-01-09",
-   "historyRetained": true,
-   "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
-  },
-  {
-   "ticker": "ZKPW",
-   "exchange": "NASDAQ",
-   "from": "SEPARATE_CLASS",
-   "to": "EXCLUDED",
-   "instrument_type": "WARRANT",
-   "classification_confidence": "HIGH",
-   "reason": "CONFIRMED_NON_EQUITY:WARRANT",
-   "evidence": [],
-   "start_date": "2026-02-04",
+   "start_date": "2025-11-04",
    "historyRetained": true,
    "historyNote": "Die Historie in R2 bleibt bestehen. Diese Aenderung betrifft ausschliesslich die Produktzugehoerigkeit."
   }

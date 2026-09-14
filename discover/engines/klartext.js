@@ -106,7 +106,9 @@
     for (var i = 0; i < folge.length; i++) {
       var key = folge[i];
       if (isNum(m[key])) {
-        return { wert: prozent(m[key]), label: MONATE[key], roh: m[key], quelle: key,
+        /* Eine Marge traegt kein Pluszeichen: "73 % Nettomarge", nicht "+73 %". */
+        var marge = key === "f_netMargin" || key === "f_fcfMargin";
+        return { wert: marge ? prozent(m[key], false) : prozent(m[key]), label: MONATE[key], roh: m[key], quelle: key,
                  ton: m[key] > 0 ? "up" : (m[key] < 0 ? "down" : null) };
       }
     }

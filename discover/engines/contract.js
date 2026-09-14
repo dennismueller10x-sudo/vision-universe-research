@@ -58,7 +58,7 @@
     "relativeStrengthPercentile",
     /* Fundamental (Praefix f_): Geschaeftsjahre der SEC-Pipeline; Bewertung
        aus Kurs und Fundamentals. null, wo die Reihe fehlt - nie geschaetzt. */
-    "f_revenueGrowth3y", "f_revenueGrowth10y", "f_revenueGrowthTTM", "f_netMargin", "f_fcfMargin",
+    "f_revenue", "f_revenueGrowth3y", "f_revenueGrowth10y", "f_revenueGrowthTTM", "f_netMargin", "f_fcfMargin",
     "f_earningsAcceleration", "f_marginExpansion3y", "f_roe", "f_pe", "f_ps", "f_fcfYield"
   ];
 

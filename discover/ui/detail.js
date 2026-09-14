@@ -300,6 +300,13 @@
             el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
             document.createTextNode(text.story)
           ]) : null,
+          /* Fundamentaler Kontext im Kopf: ein Satz aus den Jahresabschluessen,
+             mit den Geschaeftsjahren, aus denen er stammt (nie ohne). */
+          detail.hook && detail.hook.text ? el("p", { class: "dx-dhero-hook" }, [
+            el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+            document.createTextNode(detail.hook.text),
+            el("span", { class: "dx-hero-hook-src", text: "Geschäftsjahre " + detail.hook.from + "–" + detail.hook.to })
+          ]) : null,
           el("div", { class: "dx-dhero-sigs" },
              (detail.badges || []).map(function (b) { return C().signalChip(b); }))
         ]),

@@ -115,6 +115,8 @@
       }))
     ]);
     section.appendChild(tabelle);
+    /* Ein Split im Zeitraum: die Je-Aktie-Zeilen fehlen, und der Grund steht da. */
+    if (c.note) section.appendChild(el("p", { class: "dx-damals-note", text: c.note }));
     section.appendChild(quelleFuss(f, "Vor-Ort-Perioden sind Geschäftsjahresenden (" +
       (c.rows[0].then.end || "") + " und " + (c.rows[0].now.end || "") + "). Nur tatsächlich berichtete Werte; eine fehlende Zeile ist eine fehlende Zahl."));
     return section;
@@ -223,11 +225,14 @@
         var p = spurPunkte(j.tracks, sp.id);
         bild.appendChild(balken(p, { label: sp.label + " je Geschäftsjahr", format: sp.fmt }));
         var erst = p[0], letzt = p[p.length - 1];
+        var caveat = (j.caveats || {})[sp.id] || null;
         bild.appendChild(el("p", { class: "dx-journey-legende" }, [
           el("span", {}, [el("b", { text: "GJ " + erst.fy }), document.createTextNode(" " + sp.fmt(erst.v))]),
           el("span", {}, [el("b", { text: "GJ " + letzt.fy }), document.createTextNode(" " + sp.fmt(letzt.v))]),
-          (isNum(erst.v) && erst.v > 0 && isNum(letzt.v)) ? el("span", { class: ton(letzt.v / erst.v - 1) }, [el("b", { text: prozent(letzt.v / erst.v - 1) }), document.createTextNode(" über " + (letzt.fy - erst.fy) + " Jahre")]) : null
+          /* Ueber einen Split hinweg gibt es keine Veraenderung in Prozent. */
+          (!caveat && isNum(erst.v) && erst.v > 0 && isNum(letzt.v)) ? el("span", { class: ton(letzt.v / erst.v - 1) }, [el("b", { text: prozent(letzt.v / erst.v - 1) }), document.createTextNode(" über " + (letzt.fy - erst.fy) + " Jahre")]) : null
         ]));
+        if (caveat) bild.appendChild(el("p", { class: "dx-journey-caveat", text: caveat }));
       }
       bild.appendChild(el("p", { class: "dx-journey-frage", text: sp.frage }));
     }

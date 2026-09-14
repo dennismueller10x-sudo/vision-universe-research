@@ -112,6 +112,7 @@ console.log(`  Universum: ${members.length} Mitglieder (${UNIVERSE_FILE.replace(
 let masterRows = null;
 let rootEvidence = "UNIVERSE_AND_BASELINE_ONLY";
 let masterRejected = null;
+let masterRejudge = null;
 if (existsSync(MASTER_FILE)) {
   const m = JSON.parse(readFileSync(MASTER_FILE, "utf8"));
   /* Ein Stamm aus einer aelteren Klassiererversion traegt aeltere
@@ -120,19 +121,23 @@ if (existsSync(MASTER_FILE)) {
      Klassierer falsch eingeordnet hat. Er wird deshalb nicht
      "vorsichtshalber" benutzt, sondern abgelehnt - laut. */
   if (m.version !== Master.VERSION) {
-    masterRejected = { file: MASTER_FILE.replace(root + "/", ""),
-                       found: m.version || null, expected: Master.VERSION,
-                       rows: (m.rows || []).length };
-    console.log(`  Arbeitsablage VERWORFEN: Version ${m.version} != ${Master.VERSION}.`);
-    console.log("    Aeltere Urteile werden nicht uebernommen. Die Eignung wird " +
-                "aus den Universumszeilen neu bestimmt.");
-  } else {
-    masterRows = m.rows || null;
-    if (masterRows && masterRows.length) {
-      rootEvidence = "PROVIDER_SUPPORTED_TICKERS";
-      console.log(`  Stamm aus Arbeitsablage: ${masterRows.length} Anbieterzeilen ` +
-                  `(Version ${m.version})`);
-    }
+    /* Eine aeltere Klassiererversion traegt aeltere Urteile. Sie werden
+       nicht uebernommen - aber die Anbieterzeilen selbst (Ticker, Boerse,
+       Gattung, Name, Laufzeit, Aktivitaet) sind Belege, keine Urteile.
+       Jede Zeile wird mit dem aktuellen Klassierer NEU beurteilt; so
+       greift die Korrektur genau dort, wo der alte Klassierer irrte,
+       ohne die Anbieterliste neu zu erheben (Lizenz, Netz). */
+    masterRejudge = { file: MASTER_FILE.replace(root + "/", ""),
+                      found: m.version || null, expected: Master.VERSION,
+                      rows: (m.rows || []).length };
+    console.log(`  Arbeitsablage aus Version ${m.version} != ${Master.VERSION}: ` +
+                "die Anbieterzeilen werden mit dem aktuellen Klassierer neu beurteilt.");
+  }
+  masterRows = m.rows || null;
+  if (masterRows && masterRows.length) {
+    rootEvidence = "PROVIDER_SUPPORTED_TICKERS";
+    console.log(`  Stamm aus Arbeitsablage: ${masterRows.length} Anbieterzeilen ` +
+                `(Version ${m.version})`);
   }
 }
 if (!masterRows) {
@@ -228,6 +233,46 @@ function judge(sec) {
     if (group && group.length === 1) row = group[0];
   }
 
+  if (row && masterRejudge) {
+    const c = Master.classifySecurity({
+      ticker: row.ticker || sec.ticker, exchange: row.exchange || sec.exchange,
+      assetType: row.asset_type || sec.assetType, name: row.security_name || sec.company || null,
+      currency: row.currency || sec.currency, startDate: row.start_date || sec.startDate,
+      endDate: row.end_date || sec.endDate || null,
+      active: row.active_status === "ACTIVE" ? true : row.active_status === "INACTIVE" ? false : undefined
+    }, CLASSIFY_OPTS);
+    /* Dieselbe Gattung, aber der Stamm hatte den staerkeren Beleg (er
+       sah die ganze Anbieterliste, samt Staemmen ausserhalb des
+       Universums): dann bleibt sein Befund - ein Warrant, dessen Stamm
+       der Anbieter fuehrt, wird nicht zum Verdacht, weil dieses Skript
+       den Stamm nicht kennt. */
+    const staerker = c.instrumentType === row.instrument_type &&
+      row.classification_status === "CLASSIFIED" && c.classificationStatus !== "CLASSIFIED";
+    if (staerker) {
+      return {
+        instrumentType: row.instrument_type,
+        classificationStatus: row.classification_status,
+        confidence: row.classification_confidence,
+        activeStatus: row.active_status,
+        policyBucket: row.policy_bucket,
+        eligible: row.eligible_us_equity === true,
+        reason: row.eligibility_reason,
+        flags: (row.review_flags || []).concat(["MASTER_REJUDGED:SAME_TYPE_STRONGER_EVIDENCE"]),
+        source: "SECURITY_MASTER_REJUDGED"
+      };
+    }
+    return {
+      instrumentType: c.instrumentType,
+      classificationStatus: c.classificationStatus,
+      confidence: c.classificationConfidence,
+      activeStatus: row.active_status || (c.active === null ? "UNKNOWN" : c.active ? "ACTIVE" : "INACTIVE"),
+      policyBucket: c.policyBucket,
+      eligible: c.eligibleUsEquity === true,
+      reason: c.eligibilityReason,
+      flags: (c.flags || []).concat(["MASTER_REJUDGED:" + (row.instrument_type || "?")]),
+      source: "SECURITY_MASTER_REJUDGED"
+    };
+  }
   if (row) {
     return {
       instrumentType: row.instrument_type,
@@ -406,7 +451,7 @@ const eligibility = {
   tiingoPriceRequests: 0,
   scope: "US_LISTED_EQUITIES_PRODUCT_ELIGIBILITY",
   rootEvidence,
-  securityMasterRejected: masterRejected,
+  securityMasterRejected: masterRejected, securityMasterRejudged: masterRejudge,
   listedRootCount: Object.keys(listedRoots).length,
   nameLayer: Object.assign({}, nameLayerInfo, { reclassified: nameReclassified }),
   nonDestructive: {

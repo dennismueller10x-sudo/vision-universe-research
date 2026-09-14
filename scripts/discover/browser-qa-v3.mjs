@@ -196,6 +196,10 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
   ok("Lazy: beim Scrollen kommen Reihen nach, keine doppelt", danach.requests > stand.requests && danach.requests === new Set(serien).size, JSON.stringify(danach));
   /* Golden Five im realen Universum: Linie kommt nach dem Laden */
   await lz.goto(BASE + "/discover/#/c/US_REAL/thema-ki", { waitUntil: "networkidle" }); await warten(lz, 900);
+  /* Die Karte kann unterhalb der Falz liegen (Reihenfolge der Reihe ist Daten,
+     nicht Testannahme): sichtbar machen, dann laedt sie. */
+  await lz.evaluate(() => { const p = document.querySelector('.dx-poster[data-symbol="NVDA"]'); if (p) p.scrollIntoView({ block: "center" }); });
+  await lz.waitForLoadState("networkidle"); await warten(lz, 900);
   const nvda = await lz.evaluate(() => { const m = document.querySelector('.dx-poster[data-symbol="NVDA"] .dx-art, .dx-poster[data-symbol="NVDA"] [data-art]'); return m ? m.getAttribute("data-art") : null; });
   ok("Lazy: NVDA-Karte zeichnet nach dem Laden eine echte Linie (Tagesreihe oder Tagesverlauf)", nvda === "price" || nvda === "intraday", String(nvda));
   /* Eine Karte ohne Reihe und ohne Snapshot - welche, entscheiden die

@@ -1712,3 +1712,49 @@ body.dx-feed-aktiv{overflow:hidden}
 /* Next Discovery */
 .dx-chapter--next .dx-rail-head { margin-top:18px; }
 .dx-because .dx-rail-head h2 { color:var(--discover-text); }
+
+/* Hinweis unter "Damals vs. heute": Split oder Kapitalmassnahme im Zeitraum */
+.dx-damals-note { margin:12px 0 0; padding:10px 12px; border-left:2px solid #e8b44c; background:rgba(232,180,76,.08); color:var(--discover-muted); font-size:13px; line-height:1.5; }
+.dx-journey-caveat { margin:8px 0 0; color:var(--discover-muted); font-size:12.5px; line-height:1.5; border-left:2px solid #e8b44c; padding-left:10px; }
+/* Weiter entdecken: lange Gruppentitel (Themenname) duerfen umbrechen */
+.dx-chapter--next .dx-rail-head { flex-wrap:wrap; }
+.dx-chapter--next .dx-rail-head h2 { white-space:normal; overflow:visible; text-overflow:clip; }
+/* Aktienseite: der fundamentale Satz im Kopf */
+.dx-dhero-hook { display:flex; gap:10px; align-items:flex-start; margin:8px 0 14px; max-width:620px; font-size:16px; line-height:1.4; color:var(--discover-text); }
+.dx-dhero-hook .dx-hook-mark { margin-top:8px; }
+@media (max-width:860px) { .dx-dhero-hook { font-size:15px; margin:6px 0 12px; } }
+/* Hook: die Quelle (Geschaeftsjahre) steht als eigene Zeile unter dem Satz */
+.dx-hero-hook, .dx-dhero-hook, .dx-hook { flex-wrap:wrap; }
+.dx-hero-hook .dx-hero-hook-src, .dx-dhero-hook .dx-hero-hook-src, .dx-hook .dx-hook-src { flex-basis:100%; padding-left:18px; margin-top:2px; }
+/* Story-Flaeche auf dem Telefon: Tabelle und Fusszeile bleiben in der Karte */
+.dx-story-card > * { min-width:0; }
+.dx-story-media { min-width:0; overflow-x:auto; }
+.dx-story-caption { overflow-wrap:anywhere; }
+@media (max-width:640px) {
+  .dx-story-card { padding:20px 16px; }
+  .dx-story-card .dx-damals th, .dx-story-card .dx-damals td { padding:9px 4px; font-size:13.5px; }
+  .dx-story-card .dx-damals thead th { font-size:10.5px; letter-spacing:.04em; }
+  .dx-story-caption { font-size:11.5px; }
+  .dx-story-name { font-size:clamp(26px,7.6vw,34px); }
+}
+/* Hook auf der Karte: buendig mit Satz und Zahl */
+.dx-poster .dx-hook { margin:6px 16px 6px; }
+.dx-poster--wide .dx-hook { margin:8px 18px 6px; }
+/* Telefon: die Eingangsflaeche bleibt kompakt genug, dass die erste Reihe
+   im ersten Bild beginnt (Browser-QA: Reihenkopf < 844 px). */
+@media (max-width:860px) {
+  .dx-hero-inner { padding:16px var(--discover-gutter) 18px; gap:8px; }
+  .dx-hero-line { margin-bottom:10px; }
+  .dx-hero-hook { margin:4px 0 6px; font-size:14.5px; }
+  .dx-hero-hook .dx-hero-hook-src { font-size:11.5px; margin-top:0; }
+  .dx-hero-belege { margin-bottom:12px; }
+  .dx-hero-caption { display:none; }
+  .dx-hero-live-label { margin-top:2px; }
+  .dx-page > .dx-rail-section:first-child { margin-top:18px; }
+}
+/* Hook-Layout: Marke links, Satz rechts, Quelle darunter in der Satzspalte */
+.dx-hero-hook, .dx-dhero-hook, .dx-poster .dx-hook, .dx-feed-hook {
+  display:grid; grid-template-columns:8px minmax(0,1fr); column-gap:10px; align-items:start; flex-wrap:initial;
+}
+.dx-hero-hook .dx-hook-mark, .dx-dhero-hook .dx-hook-mark, .dx-poster .dx-hook .dx-hook-mark, .dx-feed-hook .dx-hook-mark { grid-column:1; margin-top:7px; }
+.dx-hero-hook .dx-hero-hook-src, .dx-dhero-hook .dx-hero-hook-src, .dx-hook .dx-hook-src { grid-column:2; flex-basis:auto; padding-left:0; }

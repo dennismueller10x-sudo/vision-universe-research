@@ -119,7 +119,18 @@ test("SM62 der Abgleich sagt, dass er nichts angefasst hat - und nennt die Phase
   const recon = JSON.parse(readFileSync(RECON, "utf8"));
   const baseline = baselineOf(recon);
   assert.equal(recon.phase, "DISCOVERY_ONLY_NO_BACKFILL");
-  assert.equal(recon.version, Master.VERSION);
+  /* Der Abgleich traegt die Klassiererversion seines Laufs. Eine aeltere
+     Version ist zulaessig, wenn die Eignungsrechnung dokumentiert, dass sie
+     die Anbieterzeilen mit der aktuellen Version neu beurteilt hat
+     (securityMasterRejudged) - die Anbieterliste wird nicht fuer jede
+     Regelaenderung neu erhoben. */
+  const elig = JSON.parse(readFileSync(join(root, "quant", "data", "market", "security-master", "eligibility.json"), "utf8"));
+  if (recon.version !== Master.VERSION) {
+    assert.ok(elig.securityMasterRejudged, "aeltere Abgleichsversion ohne dokumentierte Neubeurteilung");
+    assert.equal(elig.securityMasterRejudged.found, recon.version);
+    assert.equal(elig.securityMasterRejudged.expected, Master.VERSION);
+    assert.equal(elig.version, Master.VERSION);
+  }
   assert.equal(recon.nonDestructive.baselineCount, baseline.length);
   assert.equal(recon.nonDestructive.baselinePreserved, baseline.length);
   assert.equal(recon.nonDestructive.baselineRemoved, 0);
