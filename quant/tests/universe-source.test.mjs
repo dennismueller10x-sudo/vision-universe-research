@@ -2,6 +2,7 @@
    bestehende Stand, mit benanntem Uebergabepunkt. Nie eine eigene Liste. */
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -72,8 +73,9 @@ test("US5 · Das Repository loest heute auf eine echte Quelle auf - keine Zahl i
   const r = resolveProductUniverse(root);
   assert.equal(r.source, "SECURITY_MASTER", "seit der Uebernahme ist der Company Master die Quelle");
   assert.equal(r.handover.status, "INTEGRATED");
-  assert.equal(r.counts.productUniverse, 7004);
-  assert.ok(r.securities.length > 1000, "Produktuniversum ist keine Vorfuehrliste");
+  const datei = JSON.parse(readFileSync(join(root, r.file), "utf8"));
+  assert.equal(r.counts.productUniverse, datei.counts.productUniverse, "Zaehlung = Quelle");
+  assert.ok(r.counts.productUniverse > 6500, "Produktuniversum ist keine Vorfuehrliste");
   assert.ok(r.securities.every((s) => s.securityId && s.ticker));
   assert.equal(new Set(r.securities.map((s) => s.ticker)).size, r.securities.length, "kein Ticker doppelt");
   /* Der Uebergabepunkt ist entweder eingeloest oder exakt benannt. */
@@ -91,6 +93,7 @@ test("US6 · Kuratierte Sektoren bleiben am Titel: Overlay je securityId, ohne M
   assert.ok(mitSektor.every((s) => typeof s.sector === "string" && s.sector.length));
   const aapl = r.securities.find((s) => s.ticker === "AAPL");
   assert.equal(aapl.sector, "Technology");
-  assert.equal(r.counts.productUniverse, 7004, "das Overlay aendert die Mitgliedschaft nicht");
+  const datei = JSON.parse(readFileSync(join(root, r.file), "utf8"));
+  assert.equal(r.counts.productUniverse, datei.counts.productUniverse, "das Overlay aendert die Mitgliedschaft nicht");
   assert.ok(r.securities.filter((s) => !s.sector).every((s) => !s.sectorStatus), "kein geratener Status");
 });

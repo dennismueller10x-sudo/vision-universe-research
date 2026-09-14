@@ -31,7 +31,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveProductUniverse, SECURITY_MASTER_FILE } from "./universe-source.mjs";
+import { resolveProductUniverse, SECURITY_MASTER_FILE, isConsumerInstrument } from "./universe-source.mjs";
 
 export const MATRIX_VERSION = "capability-matrix-1.0.0";
 export const CAPABILITIES = ["HAS_PROVIDER_MAPPING", "HAS_MARKET_DATA", "HAS_HISTORICAL", "HAS_INTRADAY", "HAS_LIVE",
@@ -95,7 +95,7 @@ export function buildCapabilityMatrix(opt) {
     const gaps = [];
     const cap = {};
 
-    cap.HAS_PROVIDER_MAPPING = !!e.ticker && e.evidence_source === "SECURITY_MASTER";
+    cap.HAS_PROVIDER_MAPPING = !!e.ticker && String(e.evidence_source || "").startsWith("SECURITY_MASTER");
     if (!cap.HAS_PROVIDER_MAPPING) gaps.push("PROVIDER_MAPPING_MISSING");
     if (!inProduct) gaps.push("NOT_IN_PRODUCT_UNIVERSE:" + (e.instrument_type || e.product_eligibility));
     if (e.active_status === "INACTIVE") gaps.push("INACTIVE");
@@ -139,7 +139,11 @@ export function buildCapabilityMatrix(opt) {
     cap.HAS_NAME = !!((disc && disc.n) || companyNames.has(id));
     if (!cap.HAS_NAME) gaps.push("NAME_MISSING");
     cap.DISCOVER_ELIGIBLE = !!disc && !notTrading.has(sym);
-    if (!cap.DISCOVER_ELIGIBLE && inProduct) gaps.push(disc ? "NOT_TRADING:" + notTrading.get(sym) : "NO_DISCOVER_CARD");
+    if (!cap.DISCOVER_ELIGIBLE && inProduct) {
+      gaps.push(disc ? "NOT_TRADING:" + notTrading.get(sym)
+              : !isConsumerInstrument(e.instrument_type) ? "NOT_CONSUMER_INSTRUMENT:" + (e.instrument_type || "UNKNOWN")
+              : "NO_DISCOVER_CARD");
+    }
     cap.HAS_STOCK_PAGE = stockPages.has(sym);
     if (!cap.HAS_STOCK_PAGE && inProduct) gaps.push("NO_STOCK_PAGE");
 

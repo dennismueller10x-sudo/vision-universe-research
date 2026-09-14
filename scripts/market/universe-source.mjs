@@ -93,7 +93,8 @@ function fromSecurityMaster(root, file) {
       securityId: e.securityId || "ref_" + e.ticker, ticker: String(e.ticker).toUpperCase(),
       providerSymbol: e.providerSymbol || String(e.ticker).toUpperCase(),
       exchange: e.exchange || null, mic: e.mic || null, eligibility: klasse,
-      instrumentType: e.instrument_type || null
+      instrumentType: e.instrument_type || null, activeStatus: e.active_status || null,
+      consumer: isConsumerInstrument(e.instrument_type)
     });
   }
   /* Gegenprobe gegen die Zaehlung der Quelle - eine Projektion, die von
@@ -195,6 +196,19 @@ function fromScaleUniverse(root, file, name) {
                HANDOVER.version + ", " + HANDOVER.expectedCounts.productUniverse + " Titel)."
     })
   };
+}
+
+/**
+ * Consumer-Instrumentenpolitik: Discover, Suche, Collections, Aehnlichkeit
+ * und Empfehlungen zeigen Unternehmen. Ein Vorzugspapier, ein Warrant,
+ * eine Unit, ein Right, ein ETF/ETN/CEF, ein Index oder ein Testpapier ist
+ * keins - es bleibt im Produktuniversum (Kurse, Faktoren, Aktienseite je
+ * nach Capability), aber nicht auf den Consumer-Flaechen. Eine Regel ueber
+ * die Gattung des Company Masters, keine Liste.
+ */
+export const CONSUMER_INSTRUMENT_TYPES = ["EQUITY_COMMON", "ADR", "REIT", "TRUST", "SPAC", "UNKNOWN", "OTHER"];
+export function isConsumerInstrument(instrumentType) {
+  return CONSUMER_INSTRUMENT_TYPES.includes(String(instrumentType || "UNKNOWN").toUpperCase());
 }
 
 /**

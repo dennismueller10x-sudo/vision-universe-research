@@ -46,6 +46,14 @@ test("CN2 · displayName kuerzt nur die Rechtsform und erhaelt den Klassenzusatz
 test("CN2b · Kuerzung laesst keinen Rumpf zurueck, der wie ein Ticker aussieht", () => {
   assert.equal(CN.deriveDisplayName("ABCD Inc"), "ABCD Inc");
   assert.equal(CN.deriveDisplayName("AT&T Inc."), "AT&T");
+  /* Anzeige-Schreibweise: deterministisch, ohne die Identitaet anzufassen. */
+  assert.equal(CN.deriveDisplayName("Lilly(Eli) & Company", "LLY"), "Eli Lilly & Company");
+  assert.equal(CN.deriveDisplayName("Walt Disney Co (The)", "DIS"), "Walt Disney");
+  assert.equal(CN.deriveDisplayName("THOMSON REUTERS CORP /CAN/", "TRI"), "Thomson Reuters");
+  assert.equal(CN.deriveDisplayName("MICRON TECHNOLOGY INC", "MU"), "Micron Technology");
+  assert.equal(CN.deriveDisplayName("SLB LIMITED/NV", "SLB"), "SLB Limited");
+  assert.equal(CN.polish("IBM", "IBM"), "IBM");
+  assert.equal(CN.deriveDisplayName("AECOM", "ACM"), "AECOM");
   assert.equal(CN.deriveDisplayName("AON PLC", "AON"), "AON PLC", "Rumpf = Ticker: der volle Name bleibt");
   assert.equal(CN.deriveDisplayName("Aon plc", "AON"), "Aon plc");
 });
@@ -135,10 +143,10 @@ test("CN5 · Anbieter-Stammdaten: nur bei gleichem Symbol; kein Name -> kein Nam
     };
     const provider = { getMetadata: (id) => Promise.resolve(antworten[id] || { available: false, reason: "notInFixture" }) };
     process.env.TIINGO_API_KEY = process.env.TIINGO_API_KEY || "test-key";
-    const { out } = await CN.buildCompanyNames({ root: dir, tiingo: true, provider, maxRequests: 7004, concurrency: 2,
+    const { out } = await CN.buildCompanyNames({ root: dir, tiingo: true, provider, maxRequests: 8000, concurrency: 2,
                                                  now: () => new Date("2026-09-14T06:00:00Z") });
     const zeile = (t) => out.rows.find((r) => r.ticker === t);
-    assert.equal(out.stats.tiingo.requested, 7004, "jeder offene Titel wird genau einmal gefragt");
+    assert.equal(out.stats.tiingo.requested, out.counts.productRows, "jeder offene Produkttitel wird genau einmal gefragt");
     assert.equal(zeile("AAPL").nameSource, "TIINGO_METADATA"); assert.equal(zeile("AAPL").nameAsOf, "2026-09-14");
     assert.equal(zeile("V").companyName, "Visa Inc"); assert.equal(zeile("V").displayName, "Visa");
     assert.equal(zeile("PLTR").candidates.TIINGO_METADATA.name, null, "fremdes Symbol wird nicht uebernommen");
@@ -146,7 +154,8 @@ test("CN5 · Anbieter-Stammdaten: nur bei gleichem Symbol; kein Name -> kein Nam
     assert.equal(zeile("NFLX").status, "UNRESOLVED"); assert.equal(zeile("NFLX").reason, "PROVIDER_HAS_NO_NAME");
     assert.equal(zeile("MU").candidates.TIINGO_METADATA.reason, "rateLimited");
     assert.ok(out.rows.every((r) => r.status !== "RESOLVED" || (r.companyName && r.nameSource && r.nameAsOf)), "Herkunft fehlt");
-    assert.equal(out.rows.length, 7004, "Zeilen = Produktuniversum");
+    assert.equal(out.rows.filter((r) => r.inProductUniverse).length, out.counts.productRows, "Produktzeilen = Produktuniversum");
+    assert.ok(out.rows.length > out.counts.productRows, "auch ausgeschlossene Master-Zeilen behalten ihren Namen");
     /* Zweiter Lauf ohne Anbieter: Kandidaten bleiben, Ergebnis identisch. */
     const zwei = await CN.buildCompanyNames({ root: dir, now: () => new Date("2026-09-14T07:00:00Z") });
     assert.equal(zwei.out.rows.find((r) => r.ticker === "AAPL").companyName, "Apple Inc");
@@ -161,9 +170,11 @@ test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name,
   assert.deepEqual(layer.sourcePriority, CN.SOURCE_PRIORITY);
   assert.equal(layer.master.sha256, u.sha256, "Namensschicht gehoert zu diesem Master");
   const ids = new Set(u.securities.map((s) => s.securityId));
-  assert.equal(layer.rows.length, ids.size);
+  assert.equal(layer.rows.filter((r) => r.inProductUniverse).length, ids.size);
+  assert.equal(layer.rows.length, u.counts.universeMembers, "eine Zeile je Master-Entscheidung");
   const gesehen = new Map();
   for (const r of layer.rows) {
+    if (!r.inProductUniverse) { assert.ok(!ids.has(r.securityId)); assert.ok(["RESOLVED_OUTSIDE_PRODUCT", "NOT_IN_PRODUCT_UNIVERSE"].includes(r.status)); continue; }
     assert.ok(ids.has(r.securityId), r.securityId + " nicht im Produktuniversum");
     assert.ok(!gesehen.has(r.securityId), "securityId doppelt"); gesehen.set(r.securityId, r.companyName);
     if (r.status === "RESOLVED") {
@@ -183,12 +194,12 @@ test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name,
     assert.ok(ra && rb); assert.notEqual(ra.securityId, rb.securityId);
   }
   /* Mitgliedschaft und Sektor-Overlay unveraendert. */
-  assert.equal(u.counts.productUniverse, 7004);
+  assert.equal(u.counts.productUniverse, ids.size);
   assert.equal(u.securities.filter((s) => s.sectorStatus === "CURATED").length, u.curatedSectors.securities);
   assert.equal(u.companyNames.resolved, layer.counts.resolved);
   assert.ok(u.securities.every((s) => !s.companyName || s.companyName.toUpperCase() !== s.ticker));
   const summary = readJSON(join(root, CN.SUMMARY_FILE));
   assert.equal(summary.coverage.withName, layer.counts.resolved);
-  assert.equal(summary.coverage.productUniverse, 7004);
+  assert.equal(summary.coverage.productUniverse, ids.size);
   assert.equal(summary.spotCheck.length, CN.SPOT_CHECK.length);
 });

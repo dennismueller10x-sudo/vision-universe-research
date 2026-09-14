@@ -375,6 +375,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   };
 
   const stocks = [];
+  const consumerPolicy = { allowed: 0, excludedByType: {} };
   for (const sec of factors.securities) {
     /* Nur Titel des Produktuniversums: was der Company Master ausschliesst
        (Warrants, Units, Rights, Testwerte), bekommt keine Karte - auch wenn
@@ -382,6 +383,14 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     if (!byTicker.has(sec.ticker)) continue;
     const values = sec.values || {};
     const ref = byTicker.get(sec.ticker) || {};
+    /* Consumer-Instrumentenpolitik (universe-source.mjs): Discover zeigt
+       Unternehmen, keine Vorzugspapiere, Units, Warrants, Fonds. */
+    if (ref.consumer === false) {
+      const typ = ref.instrumentType || "UNKNOWN";
+      consumerPolicy.excludedByType[typ] = (consumerPolicy.excludedByType[typ] || 0) + 1;
+      continue;
+    }
+    consumerPolicy.allowed++;
     const metrics = flatMetrics(values);
     const scores = scoreAll(metrics, values);
     const named = nameMap.get(sec.ticker);
@@ -469,6 +478,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     universeSource: { source: universeSource.source, file: universeSource.file, version: universeSource.version,
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
+    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs" }),
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
     provider: factors.provider,
@@ -1637,6 +1647,7 @@ const meta = {
     securities: u.stocks.length,
     withPriceSeries: u.stocks.filter((s) => s.hasPriceSeries).length,
     withCompanyName: u.stocks.filter((s) => s.companyName).length,
+    consumerPolicy: u.consumerPolicy || null,
     curatedSectors: u.sectors.size,
     notTradingExcluded: u.stocks.filter((s) => s.discoveryEligible === false)
       .map((s) => ({ symbol: s.symbol, reason: s.ineligibleReason })),

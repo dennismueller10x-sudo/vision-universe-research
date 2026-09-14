@@ -195,8 +195,19 @@
      enthaelt. Weiter gefasst wuerde die Regel echte Gesellschaften
      treffen, und ein faelschlich ausgeschlossenes Unternehmen ist
      teurer als ein durchgerutschtes Testpapier. */
-  function looksLikeTestSecurity(ticker) {
-    return /^[A-Z]?TEST[0-9]?(-[A-Z])?$/.test(upper(ticker));
+  function looksLikeTestSecurity(ticker, name) {
+    var t = upper(ticker);
+    if (/^[A-Z]?TEST[0-9]?(-[A-Z])?$/.test(t)) return true;
+    /* Die Testsymbole der NASDAQ (ZAZZT ... ZZZZT, ZVZZT) und die
+       Symbologie-Tests der Boersen: eine feste Form, kein Unternehmen. */
+    if (/^Z[A-Z]ZZT$/.test(t) || /^ZXYZ(-[A-Z])?$/.test(t) || t === "ZTST" || t === "ZBZX" || t === "ZVV") return true;
+    /* Der Name des Anbieters sagt es selbst ("NASDAQ TEST STOCK",
+       "LISTED TEST SYMBOL", "NYSE LISTED TEST", "Bats Listed Test",
+       "Super Montage IPO X Tst Security"). Eng gefasst auf TEST als
+       eigenes Wort neben STOCK/SYMBOL/SECURITY/LISTED. */
+    var n = norm(name);
+    if (n && /\b(TEST (STOCK|SYMBOL|SECURITY|ISSUE)|LISTED TEST|SYMBOLOGY TEST|TST SECURITY)\b/i.test(n)) return true;
+    return false;
   }
 
   /* Der Stammbeleg. Aus einer Menge von Zeilen (Anbieterliste UND
@@ -238,13 +249,16 @@
     { type: "ETN",         re: /\b(ETN|EXCHANGE[- ]TRADED NOTES?)\b/i },
     { type: "ETP",         re: /\b(ETP|EXCHANGE[- ]TRADED (PRODUCT|COMMODIT(Y|IES))S?)\b/i },
     { type: "CEF",         re: /\b(CLOSED[- ]END|CEF)\b/i },
-    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
-    { type: "REIT",        re: /\b(REIT|REAL ESTATE INVESTMENT TRUST)\b/i },
-    { type: "SPAC",        re: /\b(SPAC|ACQUISITION CORP|ACQUISITION COMPANY|BLANK CHECK)\b/i },
+    /* Die Form des Papiers vor der Art des Emittenten: "Centurion
+       Acquisition Corp - Units" ist eine Unit (eines SPAC), "US Bancorp
+       Depositary Shares ... Pfd" ein Vorzugspapier (kein ADR). */
     { type: "PREFERRED",   re: /\b(PREFERRED|PFD|PREF\.)/i },
     { type: "WARRANT",     re: /\bWARRANTS?\b/i },
     { type: "RIGHT",       re: /\bRIGHTS?\b/i },
     { type: "UNIT",        re: /\bUNITS?\b/i },
+    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
+    { type: "REIT",        re: /\b(REIT|REAL ESTATE INVESTMENT TRUST)\b/i },
+    { type: "SPAC",        re: /\b(SPAC|ACQUISITION CORP|ACQUISITION COMPANY|BLANK CHECK)\b/i },
     { type: "ETF",         re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
     { type: "MUTUAL_FUND", re: /\b(MUTUAL FUND|FUND|PORTFOLIO)\b/i },
     { type: "TRUST",       re: /\bTRUSTS?\b/i }
@@ -328,9 +342,9 @@
 
     /* 2. Testpapier des Anbieters. Es ist kein Wertpapier und gehoert in
        keine Zaehlung. */
-    if (looksLikeTestSecurity(ticker)) {
+    if (looksLikeTestSecurity(ticker, name)) {
       cls = "TEST_SECURITY"; confidence = "HIGH";
-      reasons.push("Tickerform weist das Papier als Testeintrag des Anbieters aus.");
+      reasons.push("Tickerform oder Anbietername weist das Papier als Testeintrag der Boerse aus.");
       flags.push("PROVIDER_TEST_SECURITY");
     } else if (looksLikeIndex(ticker)) {
       cls = "INDEX"; confidence = "HIGH";

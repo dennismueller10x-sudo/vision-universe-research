@@ -84,6 +84,7 @@ const MASTER_FILE = arg("--master",
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "security-master"));
 const SCALE_DIR = arg("--scale-out", join(root, "quant", "data", "market", "scale"));
 const PREVIOUS = arg("--previous", join(OUT_DIR, "eligibility.json"));
+const NAMES_FILE = arg("--names", join(OUT_DIR, "company-names.json"));
 
 const stamp = new Date().toISOString();
 const sha = (b) => createHash("sha256").update(b).digest("hex");
@@ -162,6 +163,60 @@ if (masterRows) {
 
 const CLASSIFY_OPTS = { today: TODAY, listedRoots };
 
+/* Die kanonische Namensschicht (build-company-names.mjs) als zweiter Beleg:
+   der Stamm wurde ohne Firmennamen klassifiziert. Mit Namen greifen die
+   Namensregeln des Klassierers (Warrant, Unit, Right, ETN, CEF, Trust,
+   REIT, SPAC, Testpapier ...). Das ist derselbe Klassierer, dieselben
+   Regeln - nur mit dem Beleg, der vorher fehlte. Keine Liste im Frontend,
+   keine Sonderfaelle: eine Zeile wird umgestuft, wenn der Klassierer mit
+   Namen zu einer anderen Gattung kommt. */
+const layerNames = new Map();
+let nameLayerInfo = { file: null, present: false, names: 0 };
+if (existsSync(NAMES_FILE)) {
+  const raw = readFileSync(NAMES_FILE);
+  const layer = JSON.parse(raw.toString("utf8"));
+  for (const r of layer.rows || []) if (r.companyName) layerNames.set(r.securityId, r.companyName);
+  nameLayerInfo = { file: NAMES_FILE.replace(root + "/", ""), present: true, version: layer.version || null,
+                    generatedAt: layer.generatedAt || null, sha256: sha(raw), names: layerNames.size };
+  console.log(`  Namensschicht: ${layerNames.size} Firmennamen (${nameLayerInfo.file})`);
+} else {
+  console.log("  Namensschicht: nicht vorhanden - Klassifikation ohne Firmennamen.");
+}
+const nameReclassified = {};
+
+function withName(sec, j) {
+  const name = layerNames.get(sec.securityId);
+  if (!name) return j;
+  const c = Master.classifySecurity({
+    ticker: sec.ticker, exchange: sec.exchange, assetType: sec.assetType,
+    name, currency: sec.currency, startDate: sec.startDate, endDate: sec.endDate || null,
+    active: j.activeStatus === "ACTIVE" ? true : j.activeStatus === "INACTIVE" ? false : undefined
+  }, CLASSIFY_OPTS);
+  /* Umstufen, wenn der Name die Gattung aendert ODER einen Verdacht
+     bestaetigt (REVIEW -> belegt): ein Warrant, der ohne Namen nur
+     "Verdacht" war, ist mit dem Namen "... Warrants (2027)" belegt. */
+  const bestaetigt = c.classificationStatus === "CLASSIFIED" && j.classificationStatus !== "CLASSIFIED";
+  if (c.instrumentType === j.instrumentType && !bestaetigt) return j;
+  /* Die Form aus dem Tickerkennzeichen (-P-, W, U, R) steht ueber der Art
+     des Emittenten im Namen: "CDR-P-B Cedar Realty Trust" bleibt ein
+     Vorzugspapier, kein Trust. */
+  const FORM = ["PREFERRED", "WARRANT", "UNIT", "RIGHT"];
+  if (FORM.includes(j.instrumentType) && !FORM.includes(c.instrumentType) && c.instrumentType !== "TEST_SECURITY") return j;
+  const k = j.instrumentType + "->" + c.instrumentType + (bestaetigt ? " (bestaetigt)" : "");
+  nameReclassified[k] = (nameReclassified[k] || 0) + 1;
+  return {
+    instrumentType: c.instrumentType,
+    classificationStatus: c.classificationStatus,
+    confidence: c.classificationConfidence,
+    activeStatus: j.activeStatus,
+    policyBucket: c.policyBucket,
+    eligible: c.eligibleUsEquity === true,
+    reason: c.eligibilityReason,
+    flags: (c.flags || []).concat(["NAME_LAYER_RECLASSIFIED:" + j.instrumentType]),
+    source: j.source + "+NAME_LAYER"
+  };
+}
+
 function judge(sec) {
   const t = String(sec.ticker || "").toUpperCase();
   const ex = String(sec.exchange || "").toUpperCase();
@@ -222,7 +277,7 @@ const reviewByReason = {};
 
 for (const sec of members) {
   const t = String(sec.ticker || "").toUpperCase();
-  const j = judge(sec);
+  const j = withName(sec, judge(sec));
 
   /* Die Entscheidung faellt im Klassierer, nicht hier. Sie dort zu
      halten heisst, dass ein Test sie angreifen kann, ohne dieses
@@ -353,6 +408,7 @@ const eligibility = {
   rootEvidence,
   securityMasterRejected: masterRejected,
   listedRootCount: Object.keys(listedRoots).length,
+  nameLayer: Object.assign({}, nameLayerInfo, { reclassified: nameReclassified }),
   nonDestructive: {
     universeFile: UNIVERSE_FILE.replace(root + "/", ""),
     universeMembersBefore: members.length,
