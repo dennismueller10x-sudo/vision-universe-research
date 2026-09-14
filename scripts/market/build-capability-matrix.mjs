@@ -14,7 +14,7 @@
      HAS_LIVE               im Discover-Live-Umfang (Snapshot-Refresh waehrend der Sitzung) UND Snapshot
      HAS_FACTORS            Faktorzeile (market-factors) vorhanden
      HAS_FUNDAMENTALS       SEC-Kanon (quant/data/sec/canonical_index.json) vorhanden
-     HAS_NAME               Firmenname ausgeliefert
+     HAS_NAME               Firmenname ausgeliefert (Namensschicht company-names.json oder Discover-Suchindex)
      DISCOVER_ELIGIBLE      Karte im realen Discover-Universum, nicht als nicht handelbar ausgewiesen
      HAS_STOCK_PAGE         Detailseite ausgeliefert
 
@@ -73,6 +73,11 @@ export function buildCapabilityMatrix(opt) {
   const secTickers = new Set((sec && sec.companies || []).map((c) => c.ticker));
   const search = maybeJSON(join(root, "discover", "data", "search", "US_REAL.json"));
   const discoverEntries = new Map((search && search.entries || []).map((e) => [e.s, e]));
+  /* Kanonische Namensschicht zum Company Master: ein Name gilt als
+     ausgeliefert, wenn er dort RESOLVED ist oder im Discover-Suchindex steht. */
+  const namesFile = join(root, "quant", "data", "market", "security-master", "company-names.json");
+  const companyNames = new Set(existsSync(namesFile)
+    ? (readJSON(namesFile).rows || []).filter((r) => r.status === "RESOLVED" && r.companyName).map((r) => r.securityId) : []);
   const meta = maybeJSON(join(root, "discover", "data", "meta.json"));
   const realMeta = meta ? (meta.universes || []).find((u) => u.universeId === "US_REAL") : null;
   const notTrading = new Map((realMeta && realMeta.notTradingExcluded || []).map((x) => [x.symbol, x.reason]));
@@ -131,7 +136,7 @@ export function buildCapabilityMatrix(opt) {
     if (!cap.HAS_FUNDAMENTALS) gaps.push("NO_FUNDAMENTALS");
 
     const disc = discoverEntries.get(sym) || null;
-    cap.HAS_NAME = !!(disc && disc.n);
+    cap.HAS_NAME = !!((disc && disc.n) || companyNames.has(id));
     if (!cap.HAS_NAME) gaps.push("NAME_MISSING");
     cap.DISCOVER_ELIGIBLE = !!disc && !notTrading.has(sym);
     if (!cap.DISCOVER_ELIGIBLE && inProduct) gaps.push(disc ? "NOT_TRADING:" + notTrading.get(sym) : "NO_DISCOVER_CARD");

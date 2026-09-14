@@ -57,7 +57,7 @@ test("CN3 · Vorrang ist deterministisch: Anbieter vor SEC vor kuratiert; Verwor
   const a = CN.resolveName("PLTR", alle), b = CN.resolveName("PLTR", JSON.parse(JSON.stringify(alle)));
   assert.deepEqual(a, b, "gleiche Kandidaten, gleiches Ergebnis");
   assert.equal(a.nameSource, "TIINGO_METADATA"); assert.equal(a.companyName, "Palantir Technologies Inc");
-  assert.equal(a.displayName, "Palantir Technologies"); assert.equal(a.cik, null);
+  assert.equal(a.displayName, "Palantir Technologies"); assert.equal(a.cik, "0001321655", "die CIK reist mit, auch beim Anbieter-Namen");
   const ohneAnbieter = CN.resolveName("PLTR", { SEC_COMPANY_TICKERS: alle.SEC_COMPANY_TICKERS, VU_CURATED: alle.VU_CURATED });
   assert.equal(ohneAnbieter.nameSource, "SEC_COMPANY_TICKERS"); assert.equal(ohneAnbieter.cik, "0001321655");
   const nurKuratiert = CN.resolveName("PLTR", { VU_CURATED: alle.VU_CURATED });
@@ -67,6 +67,32 @@ test("CN3 · Vorrang ist deterministisch: Anbieter vor SEC vor kuratiert; Verwor
   assert.equal(schlecht.nameSource, "VU_CURATED"); assert.deepEqual(schlecht.rejected, ["TIINGO_METADATA:TICKER_AS_NAME"]);
   const nichts = CN.resolveName("PLTR", { TIINGO_METADATA: { name: null, reason: "unavailable" } });
   assert.equal(nichts.companyName, null); assert.equal(nichts.nameSource, null);
+});
+
+test("CN3b · Widerspruch Anbieter/SEC: der heutige SEC-Registrant gewinnt, Einigkeit laesst den Anbieter vorn", () => {
+  assert.ok(CN.namesAgree("Kimberly-Clark Corp", "KIMBERLY CLARK CORP"));
+  assert.ok(CN.namesAgree("Inter Parfums Inc", "INTERPARFUMS INC"));
+  assert.ok(CN.namesAgree("Thomson-Reuters Corp", "THOMSON REUTERS CORP /CAN/"));
+  assert.ok(CN.namesAgree("Alphabet Inc - Class A", "Alphabet Inc."));
+  assert.ok(!CN.namesAgree("Microstrategy Inc", "Strategy Inc"));
+  assert.ok(!CN.namesAgree("Pluralsight Inc - Class A", "PERSHING SQUARE INC."));
+  assert.ok(!CN.namesAgree("New York Community Bancorp Inc", "FLAGSTAR BANK, NATIONAL ASSOCIATION"));
+  const einig = CN.resolveName("KMB", { TIINGO_METADATA: { name: "Kimberly-Clark Corp", asOf: "2026-09-14" },
+                                         SEC_COMPANY_TICKERS: { name: "KIMBERLY CLARK CORP", cik: "0000055785", asOf: "2026-09-14" } });
+  assert.equal(einig.nameSource, "TIINGO_METADATA"); assert.equal(einig.companyName, "Kimberly-Clark Corp");
+  assert.equal(einig.cik, "0000055785", "CIK reist auch bei Anbieter-Name mit"); assert.equal(einig.nameConflict, null);
+  const streit = CN.resolveName("STRK", { TIINGO_METADATA: { name: "Microstrategy Inc", asOf: "2026-09-14" },
+                                           SEC_COMPANY_TICKERS: { name: "Strategy Inc", cik: "0001050446", asOf: "2026-09-14" } });
+  assert.equal(streit.nameSource, "SEC_COMPANY_TICKERS"); assert.equal(streit.companyName, "Strategy Inc");
+  assert.deepEqual(streit.nameConflict, { provider: "Microstrategy Inc", sec: "Strategy Inc", resolvedBy: "SEC_COMPANY_TICKERS" });
+  /* Kurzer Versalien-Name nur mit Bestaetigung durch eine zweite Quelle. */
+  const aecom = CN.resolveName("ACM", { TIINGO_METADATA: { name: "AECOM", asOf: "2026-09-14" }, SEC_COMPANY_TICKERS: { name: "AECOM", cik: "0000868857", asOf: "2026-09-14" } });
+  assert.equal(aecom.companyName, "AECOM"); assert.equal(aecom.nameSource, "TIINGO_METADATA"); assert.deepEqual(aecom.confirmedBy, ["SEC_COMPANY_TICKERS"]);
+  const allein = CN.resolveName("ACM", { TIINGO_METADATA: { name: "AECOM", asOf: "2026-09-14" } });
+  assert.equal(allein.companyName, null); assert.deepEqual(allein.rejected, ["TIINGO_METADATA:TICKER_LIKE"]);
+  /* Der Widerspruch ist deterministisch: gleiche Eingabe, gleiche Ausgabe. */
+  assert.deepEqual(streit, CN.resolveName("STRK", JSON.parse(JSON.stringify({ TIINGO_METADATA: { name: "Microstrategy Inc", asOf: "2026-09-14" },
+                                           SEC_COMPANY_TICKERS: { name: "Strategy Inc", cik: "0001050446", asOf: "2026-09-14" } }))));
 });
 
 test("CN4 · SEC-Zuordnung nur ueber Schluessel: Ticker + Boersenfamilie, nie bei Widerspruch oder Mehrdeutigkeit", () => {
@@ -141,10 +167,12 @@ test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name,
     assert.ok(ids.has(r.securityId), r.securityId + " nicht im Produktuniversum");
     assert.ok(!gesehen.has(r.securityId), "securityId doppelt"); gesehen.set(r.securityId, r.companyName);
     if (r.status === "RESOLVED") {
-      assert.ok(CN.validName(r.companyName, r.ticker).ok, r.ticker + ": " + r.companyName);
-      assert.ok(r.displayName && CN.validName(r.displayName, r.ticker).ok, r.ticker + " displayName: " + r.displayName);
+      const v = CN.validName(r.companyName, r.ticker);
+      assert.ok(v.ok || (v.reason === "TICKER_LIKE" && r.confirmedBy && r.confirmedBy.length), r.ticker + ": " + r.companyName);
+      assert.ok(r.displayName && r.displayName.trim().length >= 2 && !CN.validName(r.displayName, r.ticker).reason?.startsWith("TICKER_AS"), r.ticker + " displayName: " + r.displayName);
       assert.ok(CN.SOURCE_PRIORITY.includes(r.nameSource)); assert.match(r.nameAsOf, /^\d{4}-\d{2}-\d{2}$/);
       assert.deepEqual(CN.resolveName(r.ticker, r.candidates).companyName, r.companyName, r.ticker + ": Vorrang nachgerechnet");
+      if (r.nameConflict) assert.equal(r.nameSource, "SEC_COMPANY_TICKERS", r.ticker + ": Widerspruch nicht per SEC geloest");
     } else {
       assert.equal(r.companyName, null); assert.ok(r.reason, r.ticker + " ohne Grund");
     }

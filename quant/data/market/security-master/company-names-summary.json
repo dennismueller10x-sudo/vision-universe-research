@@ -1,6 +1,6 @@
 {
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-09-14T05:54:25.827Z",
+  "generatedAt": "2026-09-14T05:59:49.523Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.1.0",
@@ -11,45 +11,31 @@
     "companyMasterTotal": 7803,
     "productUniverse": 7004,
     "activeEquities": 6477,
-    "withName": 6979,
-    "withoutName": 25,
-    "pct": 99.64,
-    "activeWithName": 6453,
-    "activePct": 99.63,
+    "withName": 6980,
+    "withoutName": 24,
+    "pct": 99.66,
+    "activeWithName": 6454,
+    "activePct": 99.64,
     "bySource": {
-      "TIINGO_METADATA": 6966,
-      "SEC_COMPANY_TICKERS": 13
+      "TIINGO_METADATA": 6773,
+      "SEC_COMPANY_TICKERS": 207
     },
+    "conflicts": 194,
     "unresolvedReasons": {
-      "ALL_CANDIDATES_REJECTED": 1,
       "PROVIDER_HAS_NO_NAME": 20,
       "NO_SOURCE": 2,
-      "PROVIDER_BUDGET_EXHAUSTED": 2
+      "PROVIDER_NOT_QUERIED_YET": 2
     },
     "rejectedRules": {
-      "TIINGO_METADATA:TICKER_LIKE": 1,
+      "VU_CURATED:TICKER_AS_NAME": 1,
       "SEC_COMPANY_TICKERS:TICKER_LIKE": 1,
+      "SEC_COMPANY_TICKERS:TICKER_AS_NAME": 2,
       "TIINGO_METADATA:TICKER_AS_NAME": 4
     }
   },
   "stats": {
-    "sec": {
-      "entries": 10426,
-      "matched": 5603,
-      "unmatched": 1401,
-      "asOf": "2026-09-14",
-      "source": "https://www.sec.gov/files/company_tickers_exchange.json"
-    },
-    "tiingo": {
-      "requested": 7000,
-      "named": 6971,
-      "noName": 29,
-      "unavailable": 0,
-      "mismatch": 0,
-      "budget": 7000,
-      "skipped": 0,
-      "remaining": 4
-    }
+    "sec": null,
+    "tiingo": null
   },
   "spotCheck": [
     {
@@ -60,7 +46,7 @@
       "displayName": "Apple",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000320193",
       "status": "RESOLVED",
       "reason": null
     },
@@ -72,7 +58,7 @@
       "displayName": "Microsoft",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000789019",
       "status": "RESOLVED",
       "reason": null
     },
@@ -84,7 +70,7 @@
       "displayName": "NVIDIA Corp",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001045810",
       "status": "RESOLVED",
       "reason": null
     },
@@ -96,7 +82,7 @@
       "displayName": "Amazon.com",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001018724",
       "status": "RESOLVED",
       "reason": null
     },
@@ -108,7 +94,7 @@
       "displayName": "Alphabet Class A",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001652044",
       "status": "RESOLVED",
       "reason": null
     },
@@ -120,7 +106,7 @@
       "displayName": "Meta Platforms Class A",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001326801",
       "status": "RESOLVED",
       "reason": null
     },
@@ -132,7 +118,7 @@
       "displayName": "Tesla",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001318605",
       "status": "RESOLVED",
       "reason": null
     },
@@ -144,7 +130,7 @@
       "displayName": "Advanced Micro Devices",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000002488",
       "status": "RESOLVED",
       "reason": null
     },
@@ -156,7 +142,7 @@
       "displayName": "Palantir Technologies Class A",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001321655",
       "status": "RESOLVED",
       "reason": null
     },
@@ -168,7 +154,7 @@
       "displayName": "Broadcom",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001730168",
       "status": "RESOLVED",
       "reason": null
     },
@@ -180,7 +166,7 @@
       "displayName": "Lilly(Eli) & Company",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000059478",
       "status": "RESOLVED",
       "reason": null
     },
@@ -192,7 +178,7 @@
       "displayName": "Walmart",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000104169",
       "status": "RESOLVED",
       "reason": null
     },
@@ -204,7 +190,7 @@
       "displayName": "JPMorgan Chase & Company",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000019617",
       "status": "RESOLVED",
       "reason": null
     },
@@ -216,7 +202,7 @@
       "displayName": "Visa Class A",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001403161",
       "status": "RESOLVED",
       "reason": null
     },
@@ -228,7 +214,7 @@
       "displayName": "Micron Technology",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000723125",
       "status": "RESOLVED",
       "reason": null
     },
@@ -240,7 +226,7 @@
       "displayName": "Netflix",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001065280",
       "status": "RESOLVED",
       "reason": null
     },
@@ -252,7 +238,7 @@
       "displayName": "Oracle",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001341439",
       "status": "RESOLVED",
       "reason": null
     },
@@ -264,7 +250,7 @@
       "displayName": "Salesforce",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001108524",
       "status": "RESOLVED",
       "reason": null
     },
@@ -276,7 +262,7 @@
       "displayName": "Costco Wholesale",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000909832",
       "status": "RESOLVED",
       "reason": null
     },
@@ -288,7 +274,7 @@
       "displayName": "Unitedhealth Group",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000731766",
       "status": "RESOLVED",
       "reason": null
     },
@@ -300,7 +286,7 @@
       "displayName": "Exxon Mobil",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0002115436",
       "status": "RESOLVED",
       "reason": null
     },
@@ -312,7 +298,7 @@
       "displayName": "Coca-Cola",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000021344",
       "status": "RESOLVED",
       "reason": null
     },
@@ -324,7 +310,7 @@
       "displayName": "Walt Disney Co (The)",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0001744489",
       "status": "RESOLVED",
       "reason": null
     },
@@ -336,7 +322,7 @@
       "displayName": "Intel",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000050863",
       "status": "RESOLVED",
       "reason": null
     },
@@ -348,7 +334,7 @@
       "displayName": "Qualcomm",
       "nameSource": "TIINGO_METADATA",
       "nameAsOf": "2026-09-14",
-      "cik": null,
+      "cik": "0000804328",
       "status": "RESOLVED",
       "reason": null
     }
