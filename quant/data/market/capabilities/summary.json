@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-14T11:06:04.849Z",
+  "generatedAt": "2026-09-14T12:39:35.346Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.1.0",
@@ -12,7 +12,7 @@
     "ingestStatus": "2026-09-13T21:04:18.454Z",
     "factors": "2026-09-13T21:04:31.031Z",
     "intradaySession": "2026-09-11",
-    "discover": "2026-09-14T11:06:01.830Z"
+    "discover": "2026-09-14T12:39:31.312Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -24,24 +24,28 @@
     "historicalAvailable": 5616,
     "historicalQualityAccepted": 6513,
     "intradayAvailable": 5177,
-    "liveCapable": 227,
+    "liveCapable": 441,
     "factorEligible": 6400,
-    "fundamentals": 5,
+    "fundamentals": 5376,
+    "fundamentals10y": 2155,
+    "fundamentals5y": 3170,
+    "fundamentalsTtm": 5091,
     "discoverEligible": 5976,
     "stockPages": 6071,
     "namesMissing": 23,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_FUNDAMENTALS": 6873,
-    "NOT_IN_LIVE_SCOPE": 4950,
+    "NOT_IN_LIVE_SCOPE": 4736,
     "NO_IEX_BARS": 1701,
+    "NO_FUNDAMENTALS:NO_CIK": 1362,
     "INSUFFICIENT_HISTORY": 822,
     "NO_STOCK_PAGE": 807,
     "NO_DISCOVER_CARD": 474,
     "NO_FACTOR_ROW:SOURCE_MISSING": 366,
     "QUALITY_REJECTED:adjustmentContradicted: adjustment_status_contradicted": 362,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 318,
+    "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 140,
     "INACTIVE": 120,
     "NO_FACTOR_ROW:FAIL": 108,
     "NOT_TRADING:STALE_SERIES": 95,
@@ -69,6 +73,9 @@
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
@@ -88,6 +95,9 @@
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
@@ -107,6 +117,9 @@
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
@@ -125,14 +138,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "Alphabet",
@@ -146,14 +160,16 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {
@@ -166,17 +182,17 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "Tesla",
@@ -190,14 +206,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "AMD",
@@ -211,14 +228,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "Palantir",
@@ -232,14 +250,16 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": false,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {
@@ -254,14 +274,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": false,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "Eli Lilly",
@@ -275,14 +296,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "Walmart",
@@ -296,14 +318,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     },
     {
       "name": "JPMorgan",
@@ -318,6 +341,9 @@
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
@@ -336,14 +362,16 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {
@@ -358,14 +386,15 @@
         "HAS_INTRADAY": true,
         "HAS_LIVE": true,
         "HAS_FACTORS": true,
-        "HAS_FUNDAMENTALS": false,
+        "HAS_FUNDAMENTALS": true,
+        "HAS_FUNDAMENTALS_5Y": true,
+        "HAS_FUNDAMENTALS_10Y": true,
+        "HAS_TTM": true,
         "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_FUNDAMENTALS"
-      ]
+      "gaps": []
     }
   ],
   "note": "Gemessen aus den ausgelieferten Artefakten; keine Spalte ist vermutet. HAS_LIVE heisst: Snapshot-Refresh waehrend der Sitzung (Discover-Live-Umfang), kein Strom."
