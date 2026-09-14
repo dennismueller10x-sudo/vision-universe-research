@@ -55,6 +55,7 @@ const Indicators = require(join(root, "discover", "engines", "indicators.js"));
 const TI = require(join(root, "discover", "engines", "technical-intelligence.js"));
 const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"));
+const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"));
 const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 
 const OUT = join(root, "discover", "data");
@@ -470,14 +471,31 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     stock.scoreDetail = scores;
     stock.rawValues = values;
     stock.seriesPath = seriesPath;
+    /* Kursspanne der ausgelieferten Reihe - fuer "Kurs + Fundamentals". */
+    const dated = goldenDated || kompaktDated;
+    if (dated && dated.length >= 2) {
+      stock.priceRange = { start: { date: dated[0].date, close: dated[0].close },
+                           end: { date: dated[dated.length - 1].date, close: dated[dated.length - 1].close } };
+    }
+    attachFundamentals(stock, FUNDAMENTALS.get(sec.ticker) || null);
     stocks.push(stock);
   }
+  const fundamentalsCoverage = {
+    withFundamentals: stocks.filter((s) => s.signals.fundamentals).length,
+    h3: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_3Y).length,
+    h5: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_5Y).length,
+    h10: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_10Y).length,
+    ttm: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_TTM).length,
+    withValuation: stocks.filter((s) => isNum(s.metrics.f_pe)).length,
+    source: FUNDAMENTALS.size ? "quant/data/sec/consumer" : null
+  };
 
   return {
     universeId: "US_REAL",
     universeSource: { source: universeSource.source, file: universeSource.file, version: universeSource.version,
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
+    fundamentalsCoverage,
     consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs" }),
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
@@ -496,9 +514,140 @@ function withheldMetricStatus(metrics, fieldStatus) {
   const out = {};
   for (const key of Contract.METRICS) {
     if (isNum(metrics[key])) { out[key] = "CALCULATED"; continue; }
-    out[key] = "INSUFFICIENT_HISTORY";
+    out[key] = key.indexOf("f_") === 0 ? "SOURCE_MISSING" : "INSUFFICIENT_HISTORY";
   }
   return out;
+}
+
+/* =========================================================== Fundamentals
+
+   Was das Unternehmen gemacht hat - aus dem Consumer-Bundle der SEC-
+   Pipeline, gerechnet von discover/engines/fundamentals.js. Am Titel
+   haengen die Kennzahlen (Praefix f_), die Signale fuer Sammlungen, der
+   Karten-Hook und die Bewertung aus Kurs und Fundamentals. Fehlt das
+   Bundle, bleibt alles null/false und die Statusfelder sagen SOURCE_MISSING. */
+function attachFundamentals(stock, model) {
+  stock.fundamentalModel = model || null;
+  stock.fundamentalCapabilities = Fundamentals.capabilities(model);
+  if (!model) return;
+  const sig = Fundamentals.signals(model);
+  const m = stock.metrics;
+  const v = (x) => (x && isNum(x.value)) ? x.value : null;
+  m.f_revenueGrowth3y = v(sig.revenueGrowth3y);
+  m.f_revenueGrowth10y = v(sig.revenueGrowth10y);
+  m.f_netMargin = v(sig.netMargin);
+  m.f_fcfMargin = v(sig.fcfMargin);
+  m.f_earningsAcceleration = v(sig.earningsAcceleration);
+  m.f_marginExpansion3y = v(sig.marginExpansion3y);
+  const latest = Fundamentals.latest(model);
+  m.f_roe = latest.derived && isNum(latest.derived.roe) ? latest.derived.roe : null;
+  const g = Unternehmen.ausConsumerBundle(model, { preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price) });
+  m.f_revenueGrowthTTM = isNum(g.umsatzWachstum) ? g.umsatzWachstum : null;
+  /* Bewertung: Kurs x Aktien gegen Umsatz/FCF, Kurs gegen Gewinn je Aktie.
+     Basis (TTM oder FY) steht dran; nichts wird gemischt. */
+  const preis = Contract.valueOf(stock.price);
+  const bewertung = valuationOf(model, g, preis);
+  m.f_pe = bewertung.pe ? bewertung.pe.value : null;
+  m.f_ps = bewertung.ps ? bewertung.ps.value : null;
+  m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
+  stock.fundamentalValuation = bewertung;
+  stock.geschaeftszahlenKompakt = g;
+  stock.signals.fundamentals = true;
+  stock.signals.compounder = !!(sig.compounder && sig.compounder.value === true);
+  stock.signals.turnaround = !!(sig.turnaround && sig.turnaround.value === true);
+  stock.signals.netCash = !!(sig.netCash && sig.netCash.value === true);
+  for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) stock.metricStatus[key] = isNum(m[key]) ? "CALCULATED" : "SOURCE_MISSING";
+  stock.hook = fundamentalHook(model, sig);
+}
+
+function valuationOf(model, g, preis) {
+  const out = { available: false, basis: g.basis || null };
+  if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
+  const M = 1e6;
+  const aktienReihe = (model.annual.shares_outstanding && model.annual.shares_outstanding.length) ? model.annual.shares_outstanding
+                    : (model.annual.diluted_weighted_average_shares || []);
+  const aktien = aktienReihe.length ? aktienReihe[aktienReihe.length - 1] : null;
+  if (aktien && aktien.v > 0) {
+    out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
+    if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
+    const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
+              : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
+    if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
+  }
+  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
+  else out.peReason = g.kgvStatus;
+  out.available = !!(out.pe || out.ps || out.fcfYield);
+  out.price = preis;
+  return out;
+}
+
+/* Der Einstieg in die Geschichte: EIN belegter Satz, EINE Zahl. */
+function fundamentalHook(model, sig) {
+  const story = Fundamentals.story(model);
+  const bevorzugt = ["revenue_doubled", "profit_faster", "turned_profitable", "margin_up", "shares_down", "revenue_up", "fcf_up"];
+  for (const id of bevorzugt) {
+    const s = (story.statements || []).find((x) => x.id === id);
+    if (s) return { id: s.id, text: s.text, metric: s.evidence.metric, from: s.evidence.periodStart.fy, to: s.evidence.periodEnd.fy,
+                    valueStart: s.evidence.valueStart, valueEnd: s.evidence.valueEnd, source: s.evidence.source, asOf: s.evidence.asOf };
+  }
+  if (sig.revenueGrowth3y && isNum(sig.revenueGrowth3y.value)) {
+    const g = sig.revenueGrowth3y;
+    return { id: "revenue_cagr_3y", text: "Umsatz " + (g.value >= 0 ? "+" : "") + Math.round(g.value * 100) + " % pro Jahr über drei Jahre",
+             metric: "revenue", from: g.evidence.periodStart.fy, to: g.evidence.periodEnd.fy, valueStart: g.evidence.valueStart, valueEnd: g.evidence.valueEnd,
+             source: g.evidence.source, asOf: g.evidence.asOf };
+  }
+  return null;
+}
+
+/* Bewertung im Vergleich: der Median des Universums als Massstab - eine
+   Aussage wie "deutlich hoeher bewertet als der breite Markt" braucht
+   genau diesen Vergleich, sonst ist sie eine Behauptung. */
+function applyValuationContext(universe) {
+  const pes = universe.stocks.map((s) => s.metrics.f_pe).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
+  const pss = universe.stocks.map((s) => s.metrics.f_ps).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
+  const median = (arr) => arr.length ? arr[Math.floor(arr.length / 2)] : null;
+  universe.valuationContext = { peMedian: median(pes), psMedian: median(pss), peCount: pes.length, psCount: pss.length,
+                                rule: "deutlich hoeher: KGV > 1,5 x Median; guenstiger: KGV < 0,67 x Median; sonst im Bereich des Markts" };
+  for (const s of universe.stocks) {
+    if (!s.fundamentalValuation || !s.fundamentalValuation.available) continue;
+    const b = s.fundamentalValuation;
+    const pm = universe.valuationContext.peMedian;
+    if (b.pe && isNum(pm) && pm > 0) {
+      const x = b.pe.value / pm;
+      b.relative = { peVsMedian: x, peMedian: pm, universeCount: pes.length,
+                     label: b.pe.value <= 0 ? "Kein Gewinn" : x > 1.5 ? "Deutlich höher bewertet als der breite Markt"
+                          : x < 0.67 ? "Günstiger bewertet als der breite Markt" : "Im Bereich des breiten Markts",
+                     stufe: b.pe.value <= 0 ? "negativ" : x > 1.5 ? "hoch" : x < 0.67 ? "niedrig" : "mittel" };
+    } else if (b.peReason) {
+      b.relative = { label: null, stufe: null, reason: b.peReason };
+    }
+  }
+  return universe;
+}
+
+/* Der Fundamentals-Block der Aktienseite. */
+function fundamentalsDetail(universe, stock) {
+  const model = stock.fundamentalModel;
+  if (!model) {
+    return { available: false, reason: "SOURCE_MISSING",
+             message: "Für diesen Titel liegen keine Geschäftszahlen der SEC vor (kein CIK, keine XBRL-Fakten oder nicht im Companyfacts-Archiv)." };
+  }
+  const compare = Fundamentals.compare(model);
+  const journey = Fundamentals.journey(model);
+  const story = Fundamentals.story(model);
+  const health = Fundamentals.health(model);
+  const latest = Fundamentals.latest(model);
+  const pvf = stock.priceRange ? Fundamentals.priceVsFundamentals(model, stock.priceRange.start, stock.priceRange.end) : { available: false };
+  return {
+    available: true, version: Fundamentals.VERSION, source: model.source, asOf: model.asOf, cik: model.cik,
+    capabilities: stock.fundamentalCapabilities,
+    fiscalYears: model.years, latestFiscalYear: model.years[model.years.length - 1] || null,
+    ttmThrough: (model.coverage && model.coverage.ttmThrough) || null,
+    units: model.units,
+    compare, journey, story, health, latest,
+    valuation: Object.assign({ context: universe.valuationContext || null }, stock.fundamentalValuation || { available: false }),
+    priceVsFundamentals: pvf
+  };
 }
 
 /* ==================================================== Universum: MODELL */
@@ -793,7 +942,26 @@ const ROW_FILTERS = {
     isNum(s.metrics.leadershipPercentile) && s.metrics.leadershipPercentile >= 85,
   /* Steht in der Themenliste. Mehr prueft ein Thema nicht - es ist eine
      Zuordnung, und die Reihe zeigt, was die Zahlen dazu sagen. */
-  thema: (s, config) => Array.isArray(config.tickers) && config.tickers.indexOf(s.symbol) !== -1
+  thema: (s, config) => Array.isArray(config.tickers) && config.tickers.indexOf(s.symbol) !== -1,
+
+  /* FUNDAMENTAL (discover/engines/fundamentals.js). Jede Regel liest nur
+     Kennzahlen, die aus Geschaeftsjahren der SEC-Bundles gerechnet sind;
+     ein Titel ohne Bundle faellt durch (null). Der Wortlaut steht in der
+     Methodik (rows[].rule). */
+  fundUmsatz: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.15,
+  fundGewinne: (s) => isNum(s.metrics.f_earningsAcceleration) && s.metrics.f_earningsAcceleration >= 0.05 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
+  fundMargen: (s) => isNum(s.metrics.f_marginExpansion3y) && s.metrics.f_marginExpansion3y >= 2,
+  fundCashflow: (s) => isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin >= 0.15 && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
+  fundQualitaetWachstum: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10,
+  fundCompounder: (s) => s.signals.compounder === true,
+  fundProfitablesWachstum: (s) => isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.05 && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin > 0,
+  fundTurnaround: (s) => s.signals.turnaround === true,
+  fundQualitaetPreis: (s) => isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10 &&
+    isNum(s.metrics.f_pe) && s.metrics.f_pe > 0 && s.metrics.f_pe <= 20,
+  fundBilanzWachstum: (s) => s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
 };
 
 function buildRow(universe, config) {
@@ -1110,7 +1278,7 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
 
     const row = rowsById.get(step.rowId);
     if (!row || !row.cards || !row.cards.length) continue;
-    if (row.config && row.config.theme && row.coverage.matched < (row.config.minMembers || 5)) continue;
+    if (row.config && (row.config.theme || row.config.minMembers) && row.coverage.matched < (row.config.minMembers || 5)) continue;
 
     if (step.type === "featured-card") {
       /* Die eine grosse Karte wird erst NACH der Diversity gefuellt: sie
@@ -1199,9 +1367,38 @@ function secFaktenIndex() {
   return map;
 }
 
-function geschaeftszahlen(stock, secFakten, modellzeilen) {
+/* Die kompakten Consumer-Bundles der SEC-Pipeline (scripts/quant/sec/consumer.py):
+   je Ticker ein Lesemodell der Fundamentals-Engine. Fehlt das Verzeichnis,
+   fehlen die Fundamentals - die Seite sagt es, statt zu schaetzen. */
+function consumerFundamentalsIndex() {
+  const dir = join(root, "quant", "data", "sec", "consumer");
+  const map = new Map();
+  const indexFile = join(dir, "index.json");
+  if (!existsSync(indexFile)) return map;
+  const index = readJSON(indexFile);
+  const cache = new Map();
+  for (const [ticker, entry] of Object.entries(index.byTicker || {})) {
+    const file = join(root, "quant", "data", "sec", entry.file);
+    if (!existsSync(file)) continue;
+    let model = cache.get(file);
+    if (model === undefined) {
+      try { model = Fundamentals.fromBundle(readJSON(file)); } catch (err) { model = null; }
+      cache.set(file, model);
+    }
+    if (model) map.set(ticker, model);
+  }
+  return map;
+}
+
+function geschaeftszahlen(stock, secFakten, modellzeilen, fundamentalsByTicker) {
   if (stock.dataMode === "mock") {
     return Unternehmen.ausModellzeile(modellzeilen.get(stock.symbol) || null);
+  }
+  const model = fundamentalsByTicker && fundamentalsByTicker.get(stock.symbol);
+  if (model) {
+    return Unternehmen.ausConsumerBundle(model, {
+      preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price)
+    });
   }
   const fakten = secFakten.get(stock.symbol);
   if (!fakten) {
@@ -1325,6 +1522,7 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     similar: buildSimilar(universe, stock, 8),
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
+    fundamentals: fundamentalsDetail(universe, stock),
     discoveryEligible: stock.discoveryEligible !== false,
     ineligibleReason: stock.ineligibleReason || null,
     ineligibleMessage: stock.ineligibleMessage || null,
@@ -1370,9 +1568,11 @@ mkdirSync(OUT, { recursive: true });
 
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");
 const nameMap = buildNameMap();
+const FUNDAMENTALS = consumerFundamentalsIndex();
+console.log(`     Fundamentals (SEC Consumer): ${FUNDAMENTALS.size} Titel`);
 const goldenBars = loadGoldenPreviewBars();
 const compact = discoverSeriesIndex();
-const real = applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact));
+const real = applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact)));
 console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
             `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
             `(${goldenBars.size} volle Historie, ${compact.size} kompakt)`);
@@ -1573,7 +1773,7 @@ for (const universe of universes) {
   for (const stock of universe.stocks) {
     if (!symbols.has(stock.symbol)) continue;
     const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
-    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen);
+    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen, FUNDAMENTALS);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
   }
@@ -1653,6 +1853,8 @@ const meta = {
       .map((s) => ({ symbol: s.symbol, reason: s.ineligibleReason })),
     detailPages: detailSets.get(u.universeId).size,
     factorCoverage: u.factorCoverage || null,
+    fundamentalsCoverage: u.fundamentalsCoverage || null,
+    valuationContext: u.valuationContext || null,
     universeSource: u.universeSource ? { source: u.universeSource.source, file: u.universeSource.file,
                                          version: u.universeSource.version, counts: u.universeSource.counts,
                                          handover: u.universeSource.handover } : null,

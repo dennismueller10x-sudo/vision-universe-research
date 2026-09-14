@@ -43,7 +43,9 @@
 
   var SIGNALS = [
     "new52WeekHigh", "nearHigh", "marketLeader", "momentumLeader",
-    "relativeStrengthLeader", "breakout", "trendIntact", "sectorLeader"
+    "relativeStrengthLeader", "breakout", "trendIntact", "sectorLeader",
+    /* Fundamental (discover/engines/fundamentals.js, aus dem SEC-Consumer-Bundle) */
+    "fundamentals", "compounder", "turnaround", "netCash"
   ];
 
   var METRICS = [
@@ -53,7 +55,11 @@
     "volatility252d", "maxDrawdown252d", "volumeRatio20over60", "volumeSpikeRatio",
     "trendAlignment", "leadershipScore", "momentumScore", "relativeStrengthScore",
     "breakoutScore", "leadershipPercentile", "momentumPercentile",
-    "relativeStrengthPercentile"
+    "relativeStrengthPercentile",
+    /* Fundamental (Praefix f_): Geschaeftsjahre der SEC-Pipeline; Bewertung
+       aus Kurs und Fundamentals. null, wo die Reihe fehlt - nie geschaetzt. */
+    "f_revenueGrowth3y", "f_revenueGrowth10y", "f_revenueGrowthTTM", "f_netMargin", "f_fcfMargin",
+    "f_earningsAcceleration", "f_marginExpansion3y", "f_roe", "f_pe", "f_ps", "f_fcfYield"
   ];
 
   /* Technical-Intelligence-Zustaende (§7). Bewusst dieselben vier Worte wie
@@ -272,6 +278,9 @@
       was: stock.was || null,
       recognitionTier: stock.recognitionTier || null,
       world: stock.world || null,
+      /* Der fundamentale Einstieg in die Geschichte des Titels: ein Satz,
+         eine Zahl, mit Beleg - gefuellt vom Build aus der Fundamentals-Engine. */
+      hook: stock.hook || null,
       signals: stock.signals,
       metrics: stock.metrics,
       metricStatus: stock.metricStatus,

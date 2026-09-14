@@ -35,7 +35,8 @@ import { resolveProductUniverse, SECURITY_MASTER_FILE, isConsumerInstrument } fr
 
 export const MATRIX_VERSION = "capability-matrix-1.0.0";
 export const CAPABILITIES = ["HAS_PROVIDER_MAPPING", "HAS_MARKET_DATA", "HAS_HISTORICAL", "HAS_INTRADAY", "HAS_LIVE",
-                             "HAS_FACTORS", "HAS_FUNDAMENTALS", "HAS_NAME", "DISCOVER_ELIGIBLE", "HAS_STOCK_PAGE"];
+                             "HAS_FACTORS", "HAS_FUNDAMENTALS", "HAS_FUNDAMENTALS_5Y", "HAS_FUNDAMENTALS_10Y", "HAS_TTM",
+                             "HAS_NAME", "DISCOVER_ELIGIBLE", "HAS_STOCK_PAGE"];
 /* Bekannte Titel, die im Master auffindbar sein und ihre Faehigkeiten
    korrekt ausweisen muessen (Auftrag vom 13.09.2026). */
 export const SPOT_CHECK = [
@@ -75,7 +76,14 @@ export function buildCapabilityMatrix(opt) {
   const discoverEntries = new Map((search && search.entries || []).map((e) => [e.s, e]));
   /* Kanonische Namensschicht zum Company Master: ein Name gilt als
      ausgeliefert, wenn er dort RESOLVED ist oder im Discover-Suchindex steht. */
+  const consumerIndexFile = join(root, "quant", "data", "sec", "consumer", "index.json");
+  const consumerByTicker = new Map(existsSync(consumerIndexFile)
+    ? Object.entries(readJSON(consumerIndexFile).byTicker || {}) : []);
+  const consumerCoverageFile = join(root, "quant", "data", "sec", "consumer_coverage.json");
+  const consumerCoverage = existsSync(consumerCoverageFile) ? readJSON(consumerCoverageFile) : null;
   const namesFile = join(root, "quant", "data", "market", "security-master", "company-names.json");
+  const namesCik = new Set(existsSync(namesFile)
+    ? (readJSON(namesFile).rows || []).filter((r) => r.cik).map((r) => r.securityId) : []);
   const companyNames = new Set(existsSync(namesFile)
     ? (readJSON(namesFile).rows || []).filter((r) => r.status === "RESOLVED" && r.companyName).map((r) => r.securityId) : []);
   const meta = maybeJSON(join(root, "discover", "data", "meta.json"));
@@ -132,8 +140,16 @@ export function buildCapabilityMatrix(opt) {
       const sk = factorSkipped.get(id);
       gaps.push(sk ? "NO_FACTOR_ROW:" + sk.reason : cap.HAS_MARKET_DATA ? "NO_FACTOR_ROW" : "NO_FACTOR_ROW:NO_MARKET_DATA");
     }
-    cap.HAS_FUNDAMENTALS = secTickers.has(sym);
-    if (!cap.HAS_FUNDAMENTALS) gaps.push("NO_FUNDAMENTALS");
+    /* Fundamentals: das Consumer-Bundle der SEC-Pipeline (quant/data/sec/consumer)
+       oder - fuer die kanonischen Referenztitel - der SEC-Bestand. */
+    const fb = consumerByTicker.get(sym) || null;
+    cap.HAS_FUNDAMENTALS = !!fb || secTickers.has(sym);
+    cap.HAS_FUNDAMENTALS_10Y = !!(fb && fb.h10);
+    cap.HAS_FUNDAMENTALS_5Y = !!(fb && fb.h5);
+    cap.HAS_TTM = !!(fb && fb.ttm);
+    if (!cap.HAS_FUNDAMENTALS && inProduct) {
+      gaps.push(consumerCoverage ? (namesCik.has(id) ? "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS" : "NO_FUNDAMENTALS:NO_CIK") : "NO_FUNDAMENTALS:NOT_RUN_YET");
+    }
 
     const disc = discoverEntries.get(sym) || null;
     cap.HAS_NAME = !!((disc && disc.n) || companyNames.has(id));
@@ -183,6 +199,9 @@ export function buildCapabilityMatrix(opt) {
       liveCapable: count(inProduct, (r) => r.HAS_LIVE),
       factorEligible: count(inProduct, (r) => r.HAS_FACTORS),
       fundamentals: count(inProduct, (r) => r.HAS_FUNDAMENTALS),
+      fundamentals10y: count(inProduct, (r) => r.HAS_FUNDAMENTALS_10Y),
+      fundamentals5y: count(inProduct, (r) => r.HAS_FUNDAMENTALS_5Y),
+      fundamentalsTtm: count(inProduct, (r) => r.HAS_TTM),
       discoverEligible: count(inProduct, (r) => r.DISCOVER_ELIGIBLE),
       stockPages: count(inProduct, (r) => r.HAS_STOCK_PAGE),
       namesMissing: count(inProduct, (r) => !r.HAS_NAME),

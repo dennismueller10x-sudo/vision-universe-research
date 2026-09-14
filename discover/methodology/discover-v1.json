@@ -369,6 +369,170 @@
       "world": "momentum",
       "microRange": "6M",
       "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85"
+    },
+    {
+      "id": "umsatz-waechst-stark",
+      "title": "UMSATZ WÄCHST STARK",
+      "subtitle": "Unternehmen, deren Umsatz über drei Geschäftsjahre um mindestens 15 % pro Jahr gewachsen ist.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundUmsatz",
+      "require": [
+        "f_revenueGrowth3y"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse)."
+    },
+    {
+      "id": "gewinne-beschleunigen",
+      "title": "GEWINNE BESCHLEUNIGEN",
+      "subtitle": "Der Gewinn wuchs im letzten Geschäftsjahr schneller als im Jahr davor.",
+      "sort": "f_earningsAcceleration",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundGewinne",
+      "require": [
+        "f_earningsAcceleration"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0."
+    },
+    {
+      "id": "margen-werden-staerker",
+      "title": "MARGEN WERDEN STÄRKER",
+      "subtitle": "Die operative Marge ist über drei Geschäftsjahre um mindestens zwei Prozentpunkte gestiegen.",
+      "sort": "f_marginExpansion3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundMargen",
+      "require": [
+        "f_marginExpansion3y"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte."
+    },
+    {
+      "id": "cashflow-maschinen",
+      "title": "CASHFLOW-MASCHINEN",
+      "subtitle": "Mindestens 15 Cent freier Cashflow je Dollar Umsatz im letzten Geschäftsjahr.",
+      "sort": "f_fcfMargin",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundCashflow",
+      "require": [
+        "f_fcfMargin"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0."
+    },
+    {
+      "id": "qualitaet-wachstum",
+      "title": "QUALITÄT + WACHSTUM",
+      "subtitle": "Zweistelliges Umsatzwachstum und mindestens zehn Prozent Nettomarge.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundQualitaetWachstum",
+      "require": [
+        "f_revenueGrowth3y",
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %."
+    },
+    {
+      "id": "langfristige-compounder",
+      "title": "LANGFRISTIGE COMPOUNDER",
+      "subtitle": "Zehn Jahre Umsatzwachstum von mindestens zehn Prozent pro Jahr, in jedem Jahr profitabel.",
+      "sort": "f_revenueGrowth10y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundCompounder",
+      "require": [
+        "f_revenueGrowth10y"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre."
+    },
+    {
+      "id": "profitables-wachstum",
+      "title": "PROFITABLES WACHSTUM",
+      "subtitle": "Wächst, verdient Geld und erzeugt freien Cashflow.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundProfitablesWachstum",
+      "require": [
+        "f_revenueGrowth3y",
+        "f_netMargin",
+        "f_fcfMargin"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0."
+    },
+    {
+      "id": "fundamentale-turnarounds",
+      "title": "FUNDAMENTALE TURNAROUNDS",
+      "subtitle": "Vor zwei Jahren Verlust, heute Gewinn.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundTurnaround",
+      "require": [
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Nettogewinn FY(t−2) < 0 und FY(t) > 0."
+    },
+    {
+      "id": "qualitaet-zum-preis",
+      "title": "QUALITÄT ZUM VERNÜNFTIGEN PREIS",
+      "subtitle": "Mindestens zehn Prozent Nettomarge bei einem Kurs-Gewinn-Verhältnis bis 20.",
+      "sort": "f_pe",
+      "direction": "asc",
+      "limit": 30,
+      "filter": "fundQualitaetPreis",
+      "require": [
+        "f_pe",
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20."
+    },
+    {
+      "id": "starke-bilanz-wachstum",
+      "title": "STARKE BILANZ + WACHSTUM",
+      "subtitle": "Mehr Kasse als Schulden und zweistelliges Umsatzwachstum.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundBilanzWachstum",
+      "require": [
+        "f_revenueGrowth3y"
+      ],
+      "minMembers": 5,
+      "world": "fundamentals",
+      "microRange": "1J",
+      "rule": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %."
     }
   ],
   "sectorRows": {
@@ -443,6 +607,10 @@
       "risk": {
         "label": "Schwäche / Risiko",
         "hint": "Coral"
+      },
+      "fundamentals": {
+        "label": "Unternehmensentwicklung",
+        "hint": "Gold / Warm Amber"
       }
     },
     "sectorWorlds": {
@@ -605,5 +773,17 @@
         "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, endlich viele."
       }
     ]
+  },
+  "fundamentals": {
+    "note": "Fundamentale Reihen lesen nur Kennzahlen aus SEC-Jahresabschluessen (discover/engines/fundamentals.js, quant/data/sec/consumer). Eine Reihe erscheint erst ab minMembers Titeln - keine Sammlung ohne Datenbasis.",
+    "engine": "fundamentals-1.0.0",
+    "health": {
+      "growth": "Umsatz-CAGR über den adaptiven Horizont: ≥20 % Sehr stark, ≥10 % Stark, ≥3 % Solide, ≥0 Flach, sonst Rückläufig",
+      "profitability": "Nettomarge FY: ≥20 % Sehr stark, ≥10 % Stark, ≥3 % Solide, ≥0 Knapp, sonst Negativ",
+      "cashflow": "FCF-Marge FY: ≥15 % Sehr stark, ≥8 % Stark, >0 Solide, sonst Negativ",
+      "balance": "Nettokasse Sehr solide; Nettoschulden ≤2× FCF Solide; ≤4× Belastet; sonst Angespannt",
+      "dilution": "Aktienanzahl über den Horizont: ≤−3 % Rückkäufe, ≤+2 % Gering, ≤+10 % Moderat, sonst Hoch"
+    },
+    "valuation": "KGV gegen den Median des Universums: >1,5× deutlich höher, <0,67× günstiger, sonst im Bereich des Markts"
   }
 }

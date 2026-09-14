@@ -200,6 +200,99 @@
     };
   }
 
+  /**
+   * Dasselbe Bild aus dem kompakten Consumer-Bundle der SEC-Pipeline
+   * (discover/engines/fundamentals.js, fromBundle). Zwoelfmonatswerte
+   * kommen aus der TTM-Schicht des Bundles (vier juengste Standalone-
+   * Quartale, benannt "durch FYxxxxQn"); das Wachstum vergleicht mit den
+   * vier Quartalen davor, wenn acht vorliegen - sonst Geschaeftsjahr gegen
+   * Vorjahr, und die Basis steht dran. Annual und TTM werden nie gemischt.
+   *
+   * @param {object} model  Fundamentals.fromBundle(bundle)
+   * @param {object} [opt]  { preis, preisStatus }
+   */
+  function ausConsumerBundle(model, opt) {
+    opt = opt || {};
+    if (!model || !model.years || !model.years.length) {
+      return leer(STATUS.SOURCE_MISSING, "Für diesen Titel liegen keine Geschäftszahlen vor.");
+    }
+    var M = 1e6;
+    var ttm = model.ttm || {};
+    var q = model.quarterly || {};
+    var a = model.annual || {};
+    function jahr(metrik, fy) {
+      var reihe = a[metrik] || [];
+      for (var i = 0; i < reihe.length; i++) if (reihe[i].fy === fy) return reihe[i];
+      return null;
+    }
+    function summe(reihe, von, bis) { /* Indizes [von, bis) in einer aufsteigenden Quartalsreihe */
+      var s = 0; for (var i = von; i < bis; i++) s += reihe[i].v; return s;
+    }
+    var latestFy = model.years[model.years.length - 1];
+    var basis, zeitraum, umsatz, gewinn, umsatzVor, gewinnVor;
+    if (ttm.revenue && ttm.net_income && isNum(ttm.revenue.v) && isNum(ttm.net_income.v)) {
+      basis = "TTM";
+      umsatz = ttm.revenue.v; gewinn = ttm.net_income.v;
+      zeitraum = { von: null, bis: ttm.revenue.end, durch: ttm.revenue.through || null };
+      var qr = q.revenue || [], qn = q.net_income || [];
+      if (qr.length >= 8 && qn.length >= 8) {
+        umsatzVor = summe(qr, qr.length - 8, qr.length - 4);
+        gewinnVor = summe(qn, qn.length - 8, qn.length - 4);
+        zeitraum.von = qr[qr.length - 5].end;   /* Ende des Quartals vor dem TTM-Fenster */
+      } else {
+        /* Ohne acht Quartale gibt es kein TTM-Wachstum. Ein Vergleich TTM
+           gegen ein Geschaeftsjahr waere eine Vermischung - also keiner. */
+        umsatzVor = null; gewinnVor = null;
+      }
+    } else {
+      var r = jahr("revenue", latestFy), n = jahr("net_income", latestFy);
+      if (!r || !n) return leer(STATUS.INSUFFICIENT_HISTORY, "Es liegen keine vollständigen Jahreszahlen vor.");
+      basis = "FY";
+      umsatz = r.v; gewinn = n.v;
+      zeitraum = { von: null, bis: r.end, fy: latestFy };
+      var rv = jahr("revenue", latestFy - 1), nv = jahr("net_income", latestFy - 1);
+      umsatzVor = rv ? rv.v : null; gewinnVor = nv ? nv.v : null;
+    }
+    var aktienReihe = a.shares_outstanding && a.shares_outstanding.length ? a.shares_outstanding
+                    : (a.diluted_weighted_average_shares || []);
+    var aktien = aktienReihe.length ? aktienReihe[aktienReihe.length - 1].v : null;
+    var gewinnJeAktie = (ttm.eps_diluted && isNum(ttm.eps_diluted.v)) ? ttm.eps_diluted.v
+                      : (basis === "FY" && jahr("eps_diluted", latestFy)) ? jahr("eps_diluted", latestFy).v
+                      : (isNum(aktien) && aktien > 0 ? gewinn / aktien : null);
+    var kgv = null, kgvStatus = STATUS.SOURCE_MISSING;
+    if (!isNum(opt.preis)) {
+      kgvStatus = opt.preisStatus === STATUS.WITHHELD_REDISTRIBUTION ? STATUS.WITHHELD_REDISTRIBUTION : STATUS.SOURCE_MISSING;
+    } else if (!isNum(gewinnJeAktie) || gewinnJeAktie <= 0) {
+      kgvStatus = STATUS.SOURCE_MISSING;
+    } else { kgv = opt.preis / gewinnJeAktie; kgvStatus = STATUS.CALCULATED; }
+    /* Dividendenrendite: gezahlte Dividende (FY) zu Marktwert (Kurs x Aktien). */
+    var divRow = jahr("dividends_paid", latestFy);
+    var divRendite = null, divStatus = STATUS.SOURCE_MISSING;
+    if (divRow && isNum(opt.preis) && isNum(aktien) && aktien > 0 && opt.preis > 0) {
+      divRendite = Math.abs(divRow.v) / (opt.preis * aktien); divStatus = STATUS.CALCULATED;
+    }
+    return {
+      engineVersion: ENGINE_VERSION,
+      quelle: "SEC_CONSUMER",
+      status: STATUS.CALCULATED,
+      basis: basis,
+      zeitraum: zeitraum,
+      umsatzTTM: round(umsatz / M, 2),
+      gewinnTTM: round(gewinn / M, 2),
+      einheit: "usd_m",
+      umsatzWachstum: round(wachstum(umsatz, umsatzVor), 4),
+      gewinnWachstum: round(wachstum(gewinn, gewinnVor), 4),
+      marge: round(umsatz > 0 ? gewinn / umsatz : null, 4),
+      gewinnJeAktie: round(gewinnJeAktie, 4),
+      kgv: round(kgv, 2),
+      kgvStatus: kgvStatus,
+      dividendenRendite: round(divRendite, 4),
+      dividendenRenditeStatus: divStatus,
+      asOf: model.asOf || null,
+      message: null
+    };
+  }
+
   function leer(status, message) {
     return {
       engineVersion: ENGINE_VERSION, quelle: null, status: status,
@@ -213,7 +306,7 @@
 
   var api = {
     ENGINE_VERSION: ENGINE_VERSION, STATUS: STATUS,
-    ausSecFakten: ausSecFakten, ausModellzeile: ausModellzeile, leer: leer,
+    ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, ausModellzeile: ausModellzeile, leer: leer,
     zwoelfMonate: zwoelfMonate, wachstum: wachstum
   };
 
