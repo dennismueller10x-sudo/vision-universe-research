@@ -22,7 +22,6 @@ import sys
 from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
-from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -792,6 +791,17 @@ def cmd_daily(args):
     return 1 if report["STATUS"] == daily.STATUS_FAILURE else 0
 
 
+def _unterbefehl(*argv):
+    """Namespace eines Unterbefehls so, wie ihn die Kommandozeile baute.
+
+    Der Downstream ruft reconcile und canonical als Funktionen; ein von
+    Hand gebauter Namespace vergisst Defaults, sobald ein Parser ein
+    Argument dazubekommt (Lauf 34810787817: kein `today`). Der Parser
+    selbst vergisst nichts.
+    """
+    return build_parser().parse_args(list(argv))
+
+
 def cmd_daily_downstream(args):
     """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
 
@@ -821,11 +831,10 @@ def cmd_daily_downstream(args):
                                                           universe=universe)
         _write_universe_reports(reports, registry)
         # 2. Abgleich mit dem Marktdaten-Universum (liest die Scherben).
-        cmd_reconcile(SimpleNamespace())
+        cmd_reconcile(_unterbefehl("reconcile"))
         # 3. Kanonische Buendel: nur Emittenten mit neuem Filing UND vorhandenem Buendel.
         if ciks:
-            cmd_canonical(SimpleNamespace(universe=None, ciks=",".join(ciks), only_existing=True,
-                                          annual_years=12, quarterly_years=None))
+            cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks), "--only-existing"))
 
     # 4. Persistenz- und Reload-Zahlen dieses Laufs in den Bericht.
     persistence = {}
@@ -836,14 +845,33 @@ def cmd_daily_downstream(args):
     pfad = ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json"
     if pfad.exists():
         reload_report = json.loads(pfad.read_text(encoding="utf-8"))
-    push = persistence.get("push") or {}
+    # Persistenz- und Reload-Nachweise zaehlen nur, wenn sie in DIESEM Lauf
+    # entstanden: ein Bericht aus dem Repository (letzter Voll-Lauf) darf
+    # sich nicht als heutiger ausgeben.
+    lauf_zeit = (latest.get("LAST_SUCCESSFUL_RUN") or latest.get("RUN_DATE") or "")[:19]
+    push_zeit = (persistence.get("generatedAt") or "")[:19]
+    push = persistence.get("push") if push_zeit >= lauf_zeit else None
+    push = push or {}
     latest["R2_OBJECTS_WRITTEN"] = push.get("changed")
     latest["R2_OBJECTS_UNCHANGED"] = push.get("unchanged")
-    latest["R2_PERSISTENCE"] = "PASS" if push and push.get("changed", 0) >= len(ciks) else (
-        "SKIPPED" if not ciks else "FAIL")
-    latest["RELOAD_WITHOUT_SEC_REFETCH"] = reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")
-    latest["RELOAD_SAMPLE"] = {"requested": reload_report.get("requested"),
-                               "passed": reload_report.get("passed")}
+    if push:
+        latest["R2_PERSISTENCE"] = "PASS" if push.get("changed", 0) >= len(ciks) else "FAIL"
+    else:
+        latest["R2_PERSISTENCE"] = "NOT_NEEDED" if not ciks else "MISSING"
+    reload_zeit = (reload_report.get("generated_at_utc") or "")[:19]
+    if not ciks:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = "NOT_NEEDED"
+        latest["RELOAD_SAMPLE"] = {"requested": 0, "passed": 0,
+                                   "lastVerified": reload_zeit or None,
+                                   "lastResult": reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")}
+    elif reload_zeit >= lauf_zeit:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")
+        latest["RELOAD_SAMPLE"] = {"requested": reload_report.get("requested"),
+                                   "passed": reload_report.get("passed")}
+    else:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = "MISSING"
+        latest["RELOAD_SAMPLE"] = {"requested": len(ciks), "passed": 0,
+                                   "lastVerified": reload_zeit or None}
     latest["DOWNSTREAM_INVALIDATIONS"] = len(ciks)
     latest["DOWNSTREAM_TARGETS"] = list(daily.DOWNSTREAM_TARGETS)
     latest["DOWNSTREAM_RUNTIME_SECONDS"] = round(

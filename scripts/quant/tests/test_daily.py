@@ -396,3 +396,25 @@ class ErwarteteStatusTests(unittest.TestCase):
             client.get_bytes("https://www.sec.gov/x", use_cache=False, expected_statuses=(403,))
         self.assertEqual(ctx.exception.status, 403)
         self.assertEqual(len(aufrufe), 1)
+
+
+class DownstreamUnterbefehleTests(unittest.TestCase):
+    """Der Downstream ruft reconcile und canonical mit Parser-Namespaces - Defaults inklusive."""
+
+    def test_namespaces_kommen_aus_dem_parser(self):
+        from quant import cli
+        rec = cli._unterbefehl("reconcile")
+        self.assertIsNone(rec.today)
+        self.assertEqual(rec.min_years, 3)
+        can = cli._unterbefehl("canonical", "--ciks", "0000000001,0000000002", "--only-existing")
+        self.assertTrue(can.only_existing)
+        self.assertEqual(can.annual_years, 12)
+        self.assertIsNone(can.quarterly_years)
+        self.assertIsNone(can.universe)
+
+    def test_kein_handgebauter_namespace_im_downstream(self):
+        import inspect
+        from quant import cli
+        quelle = inspect.getsource(cli.cmd_daily_downstream)
+        self.assertNotIn("SimpleNamespace(", quelle)
+        self.assertIn("_unterbefehl(", quelle)

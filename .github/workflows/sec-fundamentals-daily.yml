@@ -36,6 +36,7 @@ on:
     paths:
       - '.github/workflows/sec-fundamentals-daily.yml'
       - 'scripts/quant/sec/daily.py'
+      - 'scripts/quant/cli.py'
   workflow_dispatch:
     inputs:
       since:
