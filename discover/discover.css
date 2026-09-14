@@ -1605,8 +1605,25 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-feed-hook { margin-top:10px; font-size:15px; }
 
 /* Eingangsflaeche: groesser, cineastischer */
-.dx-hero { --discover-hero-height:min(78vh,720px); }
-.dx-hero-title { font-size:clamp(40px,6.2vw,84px); letter-spacing:-.02em; line-height:.98; }
+.dx-hero { --discover-hero-height:min(70vh,660px); }
+.dx-hero-title { font-size:clamp(40px,5.6vw,80px); letter-spacing:-.02em; line-height:.98; }
+/* Auf dem Desktop bleibt die erste Reihe unter der Eingangsflaeche sichtbar
+   (angeschnitten, wie bei einer Streaming-Startseite): kompaktere Innenabstaende. */
+@media (min-width:861px) {
+  .dx-hero-inner { padding:36px var(--discover-gutter) 52px; gap:40px; }
+  .dx-hero-sym { margin-bottom:16px; }
+  .dx-hero-line { margin-bottom:18px; }
+  .dx-hero-zahl b { font-size:clamp(40px,4.6vw,60px); }
+  .dx-hero-media { min-height:260px; }
+  .dx-hero-chart { height:clamp(200px,28vh,300px); }
+  .dx-page > .dx-inline-note:first-child { margin-top:0; }
+  /* Die erste Reihe schiebt sich in den Verlauf der Eingangsflaeche. */
+  .dx-page { position:relative; z-index:2; }
+  .dx-page > .dx-rail-section:first-child { margin-top:-40px; }
+  /* Die Punkte der Eingangsflaeche wandern nach oben rechts, damit die
+     angeschnittene erste Reihe frei bleibt. */
+  .dx-hero-nav { left:auto; right:var(--discover-gutter); bottom:auto; top:26px; }
+}
 @media (max-width:860px) { .dx-hero-title { font-size:clamp(34px,10vw,52px); } }
 
 /* Story-Flaeche: DIE ENTWICKLUNG */
