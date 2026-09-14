@@ -53,7 +53,9 @@ QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income"
                      "operating_cash_flow", "capital_expenditures", "free_cash_flow",
                      "cash_and_equivalents", "total_debt", "shares_outstanding")
 
-DEFAULT_ANNUAL_YEARS = 11     # ten comparisons need eleven fiscal years
+DEFAULT_ANNUAL_YEARS = 13     # ten comparisons need eleven COMPLETE fiscal years;
+                              # the factbook's last one or two are usually partial
+                              # (quarters only), so the window carries a buffer
 DEFAULT_QUARTERS = 8
 
 

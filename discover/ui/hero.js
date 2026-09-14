@@ -160,6 +160,13 @@
         el("span", { text: text.zahl.label })
       ]) : null,
       el("p", { class: "dx-hero-line", text: text.story || kopf.line }),
+      /* Der fundamentale Kontext: was das Unternehmen gemacht hat - ein
+         belegter Satz aus den Jahresabschluessen, wo einer vorliegt. */
+      stock.hook && stock.hook.text ? el("p", { class: "dx-hero-hook" }, [
+        el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+        document.createTextNode(stock.hook.text),
+        el("span", { class: "dx-hero-hook-src", text: " · Geschäftsjahre " + stock.hook.from + "–" + stock.hook.to })
+      ]) : null,
       belege.length ? el("ul", { class: "dx-hero-belege" }, belege) : null,
       el("div", { class: "dx-cta" }, [
         el("a", { class: "dx-btn",

@@ -51,6 +51,7 @@
       case "featured-card": return featured(surface, ctx);
       case "sectors": return sectors(surface, ctx);
       case "immersive": return immersive(surface, ctx);
+      case "story": return story(surface, ctx);
       default: return null;
     }
   }
@@ -65,9 +66,11 @@
 
   /* ---------------------------------------------------------- Rangliste */
   function ranking(surface, ctx) {
-    var konfig = (ctx.meta && ctx.meta.topTen) || {};
+    /* Die Signature-Rangliste traegt den Titel der Methodik; jede weitere
+       Rangliste (z. B. TOP 10 CASHFLOW-MASCHINEN) den ihrer Flaeche. */
+    var konfig = (surface.id === "top-10" && ctx.meta && ctx.meta.topTen) || {};
     var payload = Object.assign(rowPayload(surface, ctx), {
-      rowId: "top-10", title: konfig.title || surface.title,
+      rowId: surface.id === "top-10" ? "top-10" : surface.rowId, title: konfig.title || surface.title,
       subtitle: konfig.subtitle || surface.subtitle
     });
     var section = C().rail(payload, { variant: "rank", universeId: ctx.universeId,
@@ -201,6 +204,112 @@
     return markieren(section, surface);
   }
 
+  /* ------------------------------------------- Die Entwicklung (Story) */
+  /**
+   * EIN Unternehmen, dessen Zahlen eine Geschichte erzaehlen: die Karte,
+   * die belegten Saetze der Fundamental Story und DAMALS VS. HEUTE in vier
+   * Zeilen. Alles aus dem Build (fundamentals.js); hier wird gezeichnet.
+   */
+  function fmtGeld(v, unit) {
+    if (!isNum(v)) return "–";
+    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
+    if (unit === "shares") return Math.abs(v) >= 1e9 ? (v / 1e9).toFixed(2).replace(".", ",") + " Mrd." : (v / 1e6).toFixed(0) + " Mio.";
+    var a = Math.abs(v);
+    if (a >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd. $";
+    if (a >= 1e6) return (v / 1e6).toFixed(0) + " Mio. $";
+    return Math.round(v).toLocaleString("de-DE") + " $";
+  }
+  function fmtWert(row, seite) {
+    var v = row[seite].value;
+    if (row.kind === "margin") return isNum(v) ? (v * 100).toFixed(1).replace(".", ",") + " %" : "–";
+    return fmtGeld(v, row.unit);
+  }
+  function fmtAenderung(row) {
+    var c = row.change || {};
+    if (row.kind === "margin") return isNum(c.pp) ? ((c.pp >= 0 ? "+" : "") + c.pp.toFixed(1).replace(".", ",") + " Pp.") : "–";
+    if (isNum(c.pct)) return (c.pct >= 0 ? "+" : "") + Math.round(c.pct * 100) + " %";
+    if (isNum(c.abs)) return (c.abs >= 0 ? "+" : "") + fmtGeld(c.abs, row.unit);
+    return "–";
+  }
+  function story(surface, ctx) {
+    var card = (surface.cards || [])[0];
+    if (!card || !surface.story) return null;
+    var section = el("section", { class: "dx-story-surface dx-fade", "data-world": "fundamentals" });
+    section.appendChild(el("div", { class: "dx-story-bg", "aria-hidden": "true" }));
+    var name = card.companyName || card.symbol;
+    var h = surface.story.horizon;
+    var jahre = h ? (h.from + " → " + h.to) : "";
+    var saetze = el("ul", { class: "dx-story-list" }, (surface.story.statements || []).map(function (s) {
+      return el("li", {}, [el("i", { class: "dx-story-dot", "aria-hidden": "true" }), document.createTextNode(s.text)]);
+    }));
+    var tabelle = null;
+    if (surface.compare && surface.compare.rows && surface.compare.rows.length) {
+      tabelle = el("table", { class: "dx-damals" }, [
+        el("thead", {}, [el("tr", {}, [
+          el("th", { text: "" }), el("th", { text: "Vor " + surface.compare.horizon.years + " Jahren" }), el("th", { text: "Heute" }), el("th", { text: "Veränderung" })
+        ])]),
+        el("tbody", {}, surface.compare.rows.map(function (r) {
+          var ton = r.kind === "margin" ? (r.change.pp > 0 ? "up" : r.change.pp < 0 ? "down" : "") : (isNum(r.change.pct) ? (r.change.pct > 0 ? "up" : r.change.pct < 0 ? "down" : "") : "");
+          return el("tr", {}, [
+            el("th", { scope: "row", text: r.label }),
+            el("td", { class: "num", text: fmtWert(r, "then") }),
+            el("td", { class: "num", text: fmtWert(r, "now") }),
+            el("td", { class: "num " + ton, text: fmtAenderung(r) })
+          ]);
+        }))
+      ]);
+    }
+    var link = el("a", { class: "dx-story-card", href: surface.href || "#/s/" + ctx.universeId + "/" + card.symbol,
+                         "data-symbol": card.symbol, "aria-label": name + " — die Entwicklung ansehen" }, [
+      el("div", { class: "dx-story-copy" }, [
+        el("p", { class: "dx-kicker", text: surface.kicker || "Die Entwicklung" }),
+        el("h2", { class: "dx-story-name", text: name }),
+        el("p", { class: "dx-story-sub", text: card.symbol + (card.sector ? " · " + card.sector : "") + (jahre ? " · Geschäftsjahre " + jahre : "") }),
+        saetze,
+        el("span", { class: "dx-btn dx-story-cta" }, [document.createTextNode(name + " verstehen"), document.createTextNode(" →")])
+      ]),
+      el("div", { class: "dx-story-media" }, [
+        tabelle,
+        el("p", { class: "dx-story-caption", text: "Aus den Jahresabschlüssen bei der SEC (Geschäftsjahre" + (jahre ? " " + jahre : "") +
+          "), Stand " + (surface.story.asOf || "") + ". Jeder Satz ist rechnerisch belegt; die Aktienseite zeigt die Belege." })
+      ])
+    ]);
+    link.addEventListener("click", function () {
+      if (D.Analytics) D.Analytics.track("card_open", { universeId: ctx.universeId, rowId: surface.rowId, symbol: card.symbol, position: 1 });
+    });
+    section.appendChild(link);
+    return markieren(section, surface);
+  }
+
+  /* ------------------------------------ Weil du ... angesehen hast */
+  /**
+   * Die einzige Personalisierung, die es heute ehrlich gibt: das Geraet
+   * erinnert sich, was man zuletzt geoeffnet hat, und die Aktienseite
+   * dieses Titels traegt seine Nachbarn (discoverNext, im Build gerechnet).
+   * Kein Konto, keine Uebertragung, keine Behauptung ueber Vorlieben.
+   */
+  function becauseYouViewed(memory, ctx) {
+    var eintraege = memory ? memory.recent(ctx.universeId) : [];
+    var letzter = eintraege && eintraege[0];
+    if (!letzter) return null;
+    var section = el("section", { class: "dx-rail-section dx-fade dx-because", "data-surface": "because",
+                                  "data-surface-type": "because", "data-world": letzter.world || null });
+    section.appendChild(C().railHead("WEIL DU " + (letzter.companyName || letzter.symbol).toUpperCase() + " ANGESEHEN HAST",
+      "Ähnliche Aktien nach Kursverhalten, Wachstum, Marge und Bewertung — vom Gerät gemerkt, nirgends übertragen.", {}));
+    var track = el("div", { class: "dx-rail", role: "list", "aria-label": "Ähnlich wie " + letzter.symbol });
+    section.appendChild(C().withRailNav(track, { label: "because", universeId: ctx.universeId }));
+    S.loadJSON("/discover/data/stocks/" + letzter.universeId + "/" + letzter.symbol + ".json").then(function (detail) {
+      var karten = (detail.discoverNext && detail.discoverNext.similar && detail.discoverNext.similar.cards) || detail.similar || [];
+      if (!karten.length) { section.remove(); return; }
+      karten.slice(0, 10).forEach(function (card, i) {
+        var item = C().poster(card, { rowId: "because", universeId: ctx.universeId, variant: "compact", position: i + 1 });
+        item.setAttribute("role", "listitem");
+        track.appendChild(item);
+      });
+    }).catch(function () { section.remove(); });
+    return section;
+  }
+
   /* --------------------------------------------------- Einzeln entdecken */
   function immersive(surface, ctx) {
     var section = el("section", { class: "dx-immersive dx-fade" }, [
@@ -251,7 +360,7 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Surfaces = { render: render, recent: recent, ranking: ranking, row: row,
-                                 theme: theme, featured: featured, sectors: sectors,
-                                 immersive: immersive };
+  global.VUDiscover.Surfaces = { render: render, recent: recent, becauseYouViewed: becauseYouViewed,
+                                 ranking: ranking, row: row, theme: theme, featured: featured,
+                                 sectors: sectors, immersive: immersive, story: story };
 })(window);

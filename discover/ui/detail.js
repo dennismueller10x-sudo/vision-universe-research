@@ -171,12 +171,20 @@
        keine Belege), gibt null zurueck - und faellt dann weg, statt die
        Seite zu Fall zu bringen. Im grossen Universum ist das der
        Normalfall fuer viele Titel ohne Discovery-Signal. */
+    /* Die Streaming-Reihenfolge (Auftrag §36): Kopf, warum interessant,
+       Kurs, in 30 Sekunden, das Unternehmen, damals vs. heute, die
+       Entwicklung, heute, Bewertung, dafuer und dagegen, dann Quant und
+       Technik, dann die naechste Aktie. */
+    var DF = D.DetailFundamentals || {};
     var kapitel = function (node) { if (node) root.appendChild(node); };
     kapitel(why(detail));
     kapitel(ueberblick(detail));
-    kapitel(waage(detail));
     kapitel(unternehmen(detail));
-    kapitel(continueDiscovery(detail, options));
+    if (DF.damalsHeute) kapitel(DF.damalsHeute(detail));
+    if (DF.journey) kapitel(DF.journey(detail));
+    if (DF.heute) kapitel(DF.heute(detail));
+    if (DF.bewertung) kapitel(DF.bewertung(detail));
+    kapitel(waage(detail));
 
     /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
        kommt mit einem Wisch. */
@@ -184,6 +192,8 @@
     kapitel(belege(detail));
     kapitel(panels(detail));
     kapitel(technicalIntelligence(detail));
+    kapitel(continueDiscovery(detail, options));
+    if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
     kapitel(provenance(detail));
 
     /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
@@ -407,7 +417,12 @@
     ]);
 
     var gitter = el("div", { class: "dx-30" });
-    daten.zeilen.forEach(function (z) {
+    /* Profitabilitaet, Cashflow, Bilanz, Verwaesserung aus den
+       Jahresabschluessen (detail-fundamentals.js) - nur wo Daten vorliegen. */
+    var DF = D.DetailFundamentals;
+    var zusatz = DF && DF.healthZeilen ? DF.healthZeilen(detail) : [];
+    var zeilen = daten.zeilen.slice(0, 2).concat(zusatz).concat(daten.zeilen.slice(2));
+    zeilen.forEach(function (z) {
       var erklaerung = D.Einordnung.erklaerung(z.id);
       var zelle = el("div", { class: "dx-30-zelle" + (z.wert ? "" : " dx-30-zelle--leer") }, [
         el("span", { class: "dx-30-label", text: z.label }),
@@ -440,6 +455,14 @@
   function waage(detail) {
     if (!D.Einordnung) return null;
     var w = D.Einordnung.waage(detail);
+    /* Belegte Chancen und Risiken aus den Fundamentals dazu (ohne Dopplung). */
+    var DF = D.DetailFundamentals;
+    if (DF && DF.waageZeilen) {
+      var extra = DF.waageZeilen(detail);
+      var ids = {}; w.dafuer.concat(w.beachten).forEach(function (e) { ids[e.id] = true; });
+      extra.dafuer.forEach(function (e) { if (!ids[e.id]) w.dafuer.push(e); });
+      extra.beachten.forEach(function (e) { if (!ids[e.id]) w.beachten.push(e); });
+    }
     if (!w.dafuer.length && !w.beachten.length) return null;
 
     function spalte(titel, eintraege, art) {
@@ -462,7 +485,8 @@
     }
 
     return el("section", { class: "dx-chapter dx-fade" }, [
-      el("h2", { text: "Dafür und dagegen" }),
+      el("p", { class: "dx-kicker", text: "Chancen und Risiken" }),
+      el("h2", { text: "Was dafür spricht — und was dagegen" }),
       el("div", { class: "dx-waage" }, [
         spalte("Das spricht dafür", w.dafuer, "pro"),
         spalte("Das sollte man beachten", w.beachten, "contra")
@@ -484,9 +508,14 @@
     if (!g) return null;
     var name = detail.companyName || detail.symbol;
     var section = el("section", { class: "dx-chapter dx-fade" }, [
-      el("h2", { text: "Das Unternehmen" })
+      el("p", { class: "dx-kicker", text: "Das Unternehmen" }),
+      el("h2", { text: "Was macht " + name + "?" })
     ]);
-
+    /* Womit die Firma Geld verdient (redaktionell) und wo sie steht. */
+    var beschreibung = [detail.was || null, detail.sector ? "Sektor " + detail.sector : null, detail.industry ? "Branche " + detail.industry : null,
+                        detail.exchange ? "Notiert an der " + detail.exchange : null].filter(Boolean);
+    if (beschreibung.length) section.appendChild(el("p", { class: "dx-chapter-lead", text: beschreibung.join(" · ") }));
+    else section.appendChild(el("p", { class: "dx-chapter-lead dx-why-empty", text: "Für diesen Titel ist keine Beschreibung des Geschäfts hinterlegt — erfunden wird keine." }));
     if (g.status !== "CALCULATED") {
       section.appendChild(el("p", { class: "dx-why-empty",
         text: g.message || "Für diesen Titel liegen keine Geschäftszahlen vor. Vision Universe " +
@@ -496,11 +525,11 @@
 
     var K = D.Klartext;
     var zahlen = [
-      { label: "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
-        zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + " gegenüber dem Vorjahr" : null,
+      { label: g.basis === "FY" ? "Umsatz (Geschäftsjahr)" : "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
+        zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.umsatzWachstum) },
-      { label: "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
-        zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + " gegenüber dem Vorjahr" : null,
+      { label: g.basis === "FY" ? "Gewinn (Geschäftsjahr)" : "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
+        zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.gewinnWachstum) },
       { label: "Vom Umsatz bleibt als Gewinn", wert: isNum(g.marge) ? K.prozent(g.marge, false) : "–",
         zusatz: null, ton: null },
@@ -524,7 +553,13 @@
     });
     section.appendChild(gitter);
 
-    var quelle = g.quelle === "SEC_CANONICAL"
+    var quelle = g.quelle === "SEC_CONSUMER"
+      ? (g.basis === "TTM"
+          ? "Aus den Quartals- und Jahresberichten bei der SEC. Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen" +
+            (g.zeitraum && g.zeitraum.durch ? " (bis " + g.zeitraum.durch.replace("FY", "GJ ").replace("Q", " Q") + ")" : "") +
+            "; das Wachstum vergleicht mit den vier Quartalen davor."
+          : "Aus dem Jahresabschluss bei der SEC (Geschäftsjahr " + (g.zeitraum && g.zeitraum.fy ? g.zeitraum.fy : "") + "); Zwölfmonatswerte liegen für diesen Titel nicht vor.")
+      : g.quelle === "SEC_CANONICAL"
       ? "Aus den Quartalsberichten bei der SEC, Zeitraum " +
         (g.zeitraum && g.zeitraum.von ? g.zeitraum.von + " bis " + g.zeitraum.bis : "unbekannt") +
         ". Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen."

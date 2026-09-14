@@ -151,6 +151,13 @@
         ]) : null,
         text.story ? el("p", { class: "dx-feed-satz", text: text.story }) : null,
         karte.was ? el("p", { class: "dx-was-line", text: karte.was }) : null,
+        /* Was das Unternehmen gemacht hat - der belegte Satz aus den
+           Jahresabschluessen, wo einer vorliegt. */
+        karte.hook && karte.hook.text ? el("p", { class: "dx-hook dx-feed-hook" }, [
+          el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+          document.createTextNode(karte.hook.text),
+          el("span", { class: "dx-hook-src", text: " · GJ " + karte.hook.from + "–" + karte.hook.to })
+        ]) : null,
         el("div", { class: "dx-feed-bild" }, [
           C().lazyArtwork(karte, { width: 720, height: 260, ticker: true, scale: "hero" })
         ]),

@@ -651,7 +651,7 @@
     }
   },
   "home": {
-    "note": "Die Dramaturgie der Startseite (V3). Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; die Reihenfolge innerhalb der Auswahl bestimmt relevance.js (innerhalb qualifizierter Titel), die Verteilung ueber die Seite die Cross-Collection-Diversity. Nummerierte Ranglisten (ranking) bleiben reine Kennzahl-Reihenfolge.",
+    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln.",
     "chunkSizes": [
       6,
       7
@@ -661,15 +661,15 @@
         "type": "hero"
       },
       {
-        "type": "ranking",
-        "rowId": "market-leaders",
-        "id": "top-10",
-        "show": 10
-      },
-      {
         "type": "row",
         "rowId": "bekannte-namen",
         "variant": "wide",
+        "show": 10
+      },
+      {
+        "type": "ranking",
+        "rowId": "market-leaders",
+        "id": "top-10",
         "show": 10
       },
       {
@@ -679,10 +679,26 @@
         "show": 10
       },
       {
+        "type": "story",
+        "kicker": "DIE ENTWICKLUNG",
+        "title": "Was das Unternehmen gemacht hat",
+        "rowIds": [
+          "langfristige-compounder",
+          "umsatz-waechst-stark",
+          "gewinne-beschleunigen"
+        ]
+      },
+      {
         "type": "row",
-        "rowId": "breakout-watch",
-        "variant": "compact",
-        "show": 12
+        "rowId": "umsatz-waechst-stark",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "gewinne-beschleunigen",
+        "variant": "wide",
+        "show": 10
       },
       {
         "type": "theme",
@@ -691,18 +707,31 @@
       },
       {
         "type": "row",
-        "rowId": "momentum-leaders",
+        "rowId": "breakout-watch",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "ranking",
+        "rowId": "cashflow-maschinen",
+        "id": "top-10-cashflow",
+        "show": 10,
+        "title": "TOP 10 · CASHFLOW-MASCHINEN"
+      },
+      {
+        "type": "featured-card",
+        "rowId": "qualitaet-wachstum",
+        "kicker": "QUALITÄT + WACHSTUM"
+      },
+      {
+        "type": "row",
+        "rowId": "margen-werden-staerker",
         "variant": "poster",
         "show": 10
       },
       {
-        "type": "featured-card",
-        "rowId": "bekannte-namen",
-        "kicker": "IM BLICK"
-      },
-      {
         "type": "row",
-        "rowId": "relative-strength",
+        "rowId": "momentum-leaders",
         "variant": "compact",
         "show": 12
       },
@@ -713,29 +742,18 @@
       },
       {
         "type": "row",
-        "rowId": "comeback",
-        "variant": "poster",
+        "rowId": "langfristige-compounder",
+        "variant": "wide",
         "show": 10
       },
       {
         "type": "row",
-        "rowId": "trend-quality",
+        "rowId": "relative-strength",
         "variant": "compact",
         "show": 12
       },
       {
-        "type": "theme",
-        "rowId": "thema-mobilitaet",
-        "show": 10
-      },
-      {
         "type": "sectors"
-      },
-      {
-        "type": "row",
-        "rowId": "ueberraschungen",
-        "variant": "poster",
-        "show": 10
       },
       {
         "type": "sector-row",
@@ -747,6 +765,29 @@
         "type": "sector-row",
         "sector": "Health Care",
         "title": "GESUNDHEIT",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "qualitaet-zum-preis",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "comeback",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "fundamentale-turnarounds",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-mobilitaet",
         "show": 10
       },
       {
@@ -762,15 +803,40 @@
         "show": 10
       },
       {
+        "type": "row",
+        "rowId": "starke-bilanz-wachstum",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "trend-quality",
+        "variant": "compact",
+        "show": 12
+      },
+      {
         "type": "sector-row",
         "sector": "Consumer Discretionary",
         "title": "KONSUM",
         "show": 10
       },
       {
+        "type": "row",
+        "rowId": "ueberraschungen",
+        "variant": "poster",
+        "show": 10,
+        "title": "UNTER DEM RADAR"
+      },
+      {
+        "type": "row",
+        "rowId": "profitables-wachstum",
+        "variant": "compact",
+        "show": 12
+      },
+      {
         "type": "immersive",
-        "title": "NOCH NICHTS GEFUNDEN?",
-        "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, endlich viele."
+        "title": "Noch nichts gefunden?",
+        "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, mit Kurs, Geschichte und Zahlen."
       }
     ]
   },

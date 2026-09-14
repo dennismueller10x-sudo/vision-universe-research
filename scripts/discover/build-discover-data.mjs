@@ -1096,6 +1096,79 @@ function buildMemberships(universe) {
  * Geschaeftsmodell - der Vergleich ist ausdruecklich einer des
  * Kursverhaltens, und die Ueberschrift sagt das.
  */
+/* ================================================= Next Discovery
+
+   Eine Aktie fuehrt zur naechsten. Deterministische Aehnlichkeit ueber
+   das, was vorliegt: Sektor, Kursverhalten (Leadership-Perzentil,
+   Volatilitaet), Fundamentals (Umsatzwachstum, Nettomarge, Bewertung).
+   Fehlt eine Dimension, faellt sie aus dem Abstand - sie wird nicht
+   geschaetzt. Jede Liste sagt, wonach sie sortiert ist. */
+function similarityDistance(a, b) {
+  const dims = [
+    ["leadershipPercentile", 100], ["volatility252d", 0.6], ["f_revenueGrowth3y", 0.5], ["f_netMargin", 0.4]
+  ];
+  let sum = 0, n = 0;
+  for (const [k, scale] of dims) {
+    const x = a.metrics[k], y = b.metrics[k];
+    if (!isNum(x) || !isNum(y)) continue;
+    sum += Math.pow((x - y) / scale, 2); n++;
+  }
+  const pa = a.metrics.f_pe, pb = b.metrics.f_pe;
+  if (isNum(pa) && isNum(pb) && pa > 0 && pb > 0) { sum += Math.pow((Math.log(pa) - Math.log(pb)) / 1.0, 2); n++; }
+  if (!n) return null;
+  return Math.sqrt(sum / n);
+}
+
+function buildNextDiscovery(universe, stock, anzahl) {
+  const n = anzahl || 8;
+  const pool = universe.stocks.filter((o) => o.symbol !== stock.symbol && o.discoveryEligible !== false);
+  const mini = (o) => Contract.toMiniCard(o);
+  const sektor = stock.sectorStatus === "CURATED" && stock.sector ? stock.sector : null;
+  const out = { basis: [] };
+
+  /* Aehnliche Aktien: kleinster Abstand, Sektor zuerst. */
+  const mitAbstand = pool.map((o) => ({ o, d: similarityDistance(stock, o) })).filter((x) => x.d !== null);
+  const sortiert = mitAbstand.sort((x, y) => (x.o.sector === sektor ? 0 : 1) - (y.o.sector === sektor ? 0 : 1) || x.d - y.d || (x.o.symbol < y.o.symbol ? -1 : 1));
+  out.similar = { title: "Ähnliche Aktien", rule: "kleinster Abstand über Kursverhalten, Wachstum, Marge und Bewertung; gleicher Sektor zuerst",
+                  cards: sortiert.slice(0, n).map((x) => mini(x.o)) };
+
+  /* Gleicher Sektor: die staerksten Titel des Sektors. */
+  if (sektor) {
+    const gleich = pool.filter((o) => o.sector === sektor && isNum(o.metrics.leadershipScore))
+      .sort((a, b) => b.metrics.leadershipScore - a.metrics.leadershipScore);
+    if (gleich.length) out.sameSector = { title: "Mehr aus " + sektor, sector: sektor, rule: "staerkste Titel des Sektors nach Leadership Score", cards: gleich.slice(0, n).map(mini) };
+  }
+
+  /* Gleiches Thema: aus den redaktionellen Themenlisten. */
+  const themen = ROWS.filter((r) => r.theme && Array.isArray(r.tickers) && r.tickers.indexOf(stock.symbol) !== -1);
+  if (themen.length) {
+    const th = themen[0];
+    const mitglieder = pool.filter((o) => th.tickers.indexOf(o.symbol) !== -1);
+    if (mitglieder.length) out.sameTheme = { title: "Gleiches Thema · " + th.title, rowId: th.id, rule: "redaktionelle Themenliste " + th.id, cards: mitglieder.slice(0, n).map(mini) };
+  }
+
+  /* Aehnliches Wachstum / aehnliche Qualitaet: nur mit Fundamentals. */
+  const g = stock.metrics.f_revenueGrowth3y, m = stock.metrics.f_netMargin, pe = stock.metrics.f_pe;
+  if (isNum(g)) {
+    const nah = pool.filter((o) => isNum(o.metrics.f_revenueGrowth3y) && Math.abs(o.metrics.f_revenueGrowth3y - g) <= 0.05)
+      .sort((a, b) => Math.abs(a.metrics.f_revenueGrowth3y - g) - Math.abs(b.metrics.f_revenueGrowth3y - g) || (a.symbol < b.symbol ? -1 : 1));
+    if (nah.length) out.similarGrowth = { title: "Ähnliches Umsatzwachstum", rule: "Umsatz-CAGR 3J innerhalb von ±5 Prozentpunkten", cards: nah.slice(0, n).map(mini) };
+  }
+  if (isNum(m)) {
+    const nah = pool.filter((o) => isNum(o.metrics.f_netMargin) && Math.abs(o.metrics.f_netMargin - m) <= 0.03 && (!sektor || o.sector === sektor))
+      .sort((a, b) => Math.abs(a.metrics.f_netMargin - m) - Math.abs(b.metrics.f_netMargin - m) || (a.symbol < b.symbol ? -1 : 1));
+    if (nah.length >= 3) out.similarQuality = { title: "Ähnliche Profitabilität", rule: "Nettomarge innerhalb von ±3 Prozentpunkten" + (sektor ? ", gleicher Sektor" : ""), cards: nah.slice(0, n).map(mini) };
+  }
+  if (isNum(pe) && pe > 0) {
+    const guenstiger = pool.filter((o) => isNum(o.metrics.f_pe) && o.metrics.f_pe > 0 && o.metrics.f_pe < pe * 0.8 &&
+                                          isNum(o.metrics.f_netMargin) && o.metrics.f_netMargin >= 0.05 && (!sektor || o.sector === sektor))
+      .sort((a, b) => a.metrics.f_pe - b.metrics.f_pe || (a.symbol < b.symbol ? -1 : 1));
+    if (guenstiger.length >= 3) out.cheaperAlternatives = { title: "Günstiger bewertete Alternativen", rule: "KGV unter 80 % des eigenen, Nettomarge ≥ 5 %" + (sektor ? ", gleicher Sektor" : ""), cards: guenstiger.slice(0, n).map(mini) };
+  }
+  out.basis = Object.keys(out).filter((k) => k !== "basis");
+  return out;
+}
+
 function buildSimilar(universe, stock, anzahl) {
   const score = stock.metrics.leadershipScore;
   if (!isNum(score)) return [];
@@ -1247,6 +1320,37 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
                       cards: featured, title: null });
       continue;
     }
+    if (step.type === "story") {
+      /* DIE ENTWICKLUNG: ein Unternehmen, dessen Zahlen eine Geschichte
+         erzaehlen - aus einer fundamentalen Reihe, bekannter Name zuerst,
+         mindestens zwei belegte Saetze. Ohne Kandidaten keine Flaeche. */
+      const quellen = (step.rowIds || ["langfristige-compounder", "umsatz-waechst-stark", "gewinne-beschleunigen"]);
+      let gewaehlt = null;
+      for (const rid of quellen) {
+        const row = rowsById.get(rid);
+        if (!row || !row.cards) continue;
+        const kandidaten = row.cards.map((c) => universe.stocks.find((s) => s.symbol === c.symbol)).filter((s) => s && s.fundamentalModel);
+        kandidaten.sort((a, b) => ((a.recognitionTier || 3) - (b.recognitionTier || 3)) || (a.symbol < b.symbol ? -1 : 1));
+        for (const s of kandidaten) {
+          const st = Fundamentals.story(s.fundamentalModel);
+          if (st.available && st.statements.length >= 2) { gewaehlt = { stock: s, story: st, rowId: rid, row }; break; }
+        }
+        if (gewaehlt) break;
+      }
+      if (!gewaehlt) continue;
+      const s = gewaehlt.stock;
+      const cmp = Fundamentals.compare(s.fundamentalModel);
+      const card = Object.assign(Contract.toCard(s), { priceSeries: seriesRef(s.priceSeries, "1J", U, s.symbol, s.seriesPath),
+                                                       plain: Klartext.karte(s, { rowId: gewaehlt.rowId }) });
+      surfaces.push({ type: "story", id: "story", rowId: gewaehlt.rowId, pure: true, show: 1, cards: [card],
+                      kicker: step.kicker || "DIE ENTWICKLUNG", title: step.title || "Was das Unternehmen gemacht hat",
+                      world: "fundamentals",
+                      story: { statements: gewaehlt.story.statements.slice(0, 3).map((x) => ({ id: x.id, text: x.text, evidence: x.evidence })),
+                               horizon: gewaehlt.story.horizon, asOf: gewaehlt.story.asOf, source: gewaehlt.story.source },
+                      compare: cmp.available ? { horizon: cmp.horizon, rows: cmp.rows.filter((r) => ["revenue", "net_income", "operating_margin", "free_cash_flow"].includes(r.id)).slice(0, 4) } : null,
+                      href: "#/s/" + U + "/" + s.symbol, sourceRow: { rowId: gewaehlt.rowId, title: gewaehlt.row.title } });
+      continue;
+    }
     if (step.type === "immersive") {
       surfaces.push({ type: "immersive", id: "immersive", pure: true, show: 0, cards: [],
                       title: step.title, lead: step.lead, href: "#/einzeln/" + U });
@@ -1296,7 +1400,7 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
       : Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards;
     surfaces.push({
       type: step.type, variant: step.variant || null, id: step.id || row.rowId, rowId: row.rowId,
-      title: row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
+      title: step.title || row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
       theme: row.theme || null, editorial: row.editorial === true, rule: row.rule || null,
       cards: ordered, show: step.show || 10, pure, total: row.coverage.matched,
       href: "#/c/" + U + "/" + row.rowId
@@ -1520,6 +1624,7 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     /* Weiter entdecken: wo steht dieser Titel noch, und wer steht ihm nahe? */
     memberships: (memberships && memberships.get(stock.symbol)) || [],
     similar: buildSimilar(universe, stock, 8),
+    discoverNext: buildNextDiscovery(universe, stock, 8),
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
     fundamentals: fundamentalsDetail(universe, stock),

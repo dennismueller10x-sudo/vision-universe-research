@@ -307,9 +307,13 @@
       if (beobachter) beobachter.observe(node);
       /* "Zuletzt angesehen" direkt nach der Rangliste - dort, wo man
          beim zweiten Besuch weitermachen will. */
-      if (surface.type === "ranking" && state.memory) {
+      if (surface.type === "ranking" && surface.id === "top-10" && state.memory) {
         var zuletzt = D.Surfaces.recent(state.memory, ctx);
         if (zuletzt) body.appendChild(zuletzt);
+        /* Die eine ehrliche Personalisierung: Nachbarn des zuletzt
+           geoeffneten Titels, vom Geraet gemerkt (engines/memory.js). */
+        var weil = D.Surfaces.becauseYouViewed ? D.Surfaces.becauseYouViewed(state.memory, ctx) : null;
+        if (weil) body.appendChild(weil);
       }
     }
 

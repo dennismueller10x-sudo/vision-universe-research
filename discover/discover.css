@@ -1585,3 +1585,113 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-live-label{font-size:9px;left:10px;top:4px}
   .dx-intraday-chart{max-height:280px}
 }
+
+/* =====================================================================
+   V3 · NETFLIX-RHYTHMUS: Fundamentals auf Karte, Eingangsflaeche, Story-
+   Flaeche, Aktienseite (Damals vs. heute, Journey, Heute, Bewertung,
+   Next Discovery). Dunkle, cineastische Flaechen; die Welt "fundamentals"
+   traegt Gold.
+   ===================================================================== */
+.dx [data-world="fundamentals"] { --world:#e8b44c; --world-soft:rgba(232,180,76,.16); --world-ink:#f3d58b; }
+
+/* Hook: der belegte Satz aus den Jahresabschluessen */
+.dx-hook { display:flex; gap:8px; align-items:flex-start; margin:6px 0 0; font-size:13px; line-height:1.35; color:var(--discover-text); }
+.dx-hook-mark { flex:0 0 auto; width:8px; height:8px; margin-top:6px; border-radius:2px; background:#e8b44c; transform:rotate(45deg); }
+.dx-hook-src, .dx-hero-hook-src { color:var(--discover-dim); font-size:12px; }
+.dx-poster .dx-hook { margin:4px 0 6px; }
+.dx-poster--wide .dx-hook { font-size:14px; }
+.dx-hero-hook { display:flex; gap:10px; align-items:flex-start; margin:10px 0 0; max-width:560px; font-size:15px; line-height:1.4; color:var(--discover-text); }
+.dx-hero-hook .dx-hook-mark { margin-top:8px; }
+.dx-feed-hook { margin-top:10px; font-size:15px; }
+
+/* Eingangsflaeche: groesser, cineastischer */
+.dx-hero { --discover-hero-height:min(78vh,720px); }
+.dx-hero-title { font-size:clamp(40px,6.2vw,84px); letter-spacing:-.02em; line-height:.98; }
+@media (max-width:860px) { .dx-hero-title { font-size:clamp(34px,10vw,52px); } }
+
+/* Story-Flaeche: DIE ENTWICKLUNG */
+.dx-story-surface { position:relative; margin:56px 0; padding:0 var(--discover-gutter); }
+.dx-story-bg { position:absolute; inset:0; background:
+  radial-gradient(60% 120% at 12% 0%, var(--world-soft), transparent 60%),
+  linear-gradient(180deg, transparent, rgba(232,180,76,.06) 40%, transparent); pointer-events:none; }
+.dx-story-card { position:relative; display:grid; grid-template-columns:1.1fr 1fr; gap:36px; align-items:center;
+  padding:40px; border-radius:var(--discover-radius-lg); background:linear-gradient(135deg,#17161a,#0e0e11);
+  border:1px solid var(--discover-line); color:inherit; text-decoration:none; overflow:hidden; }
+.dx-story-card:hover { border-color:var(--discover-line-strong); }
+.dx-story-name { font-size:clamp(30px,3.6vw,52px); line-height:1; letter-spacing:-.02em; margin:6px 0 4px; }
+.dx-story-sub { color:var(--discover-muted); margin:0 0 18px; font-size:14px; }
+.dx-story-list { list-style:none; margin:0 0 22px; padding:0; display:grid; gap:10px; }
+.dx-story-list li { display:flex; gap:12px; align-items:flex-start; font-size:17px; line-height:1.4; }
+.dx-story-list .dx-story-dot { margin-top:8px; background:var(--world,#e8b44c); }
+.dx-story-list--detail li { font-size:16px; }
+.dx-story-list--detail small { color:var(--discover-dim); white-space:nowrap; margin-left:auto; padding-left:12px; }
+.dx-story-caption { color:var(--discover-dim); font-size:12px; margin:12px 0 0; }
+.dx-story-cta { align-self:flex-start; }
+@media (max-width:860px) { .dx-story-card { grid-template-columns:1fr; padding:24px; gap:22px; } .dx-story-list li { font-size:15px; } }
+
+/* Damals vs. heute */
+.dx-damals { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+.dx-damals th, .dx-damals td { padding:10px 8px; text-align:right; border-bottom:1px solid var(--discover-line); vertical-align:top; }
+.dx-damals th:first-child, .dx-damals td:first-child { text-align:left; }
+.dx-damals thead th { color:var(--discover-muted); font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+.dx-damals thead th b { display:block; color:var(--discover-text); font-size:13px; }
+.dx-damals thead th span { display:block; color:var(--discover-dim); font-size:11px; }
+.dx-damals tbody th { font-weight:600; }
+.dx-damals tbody th span { display:block; color:var(--discover-dim); font-size:12px; font-weight:400; }
+.dx-damals td b { display:block; }
+.dx-damals td span { display:block; color:var(--discover-dim); font-size:12px; }
+.dx-damals--gross td, .dx-damals--gross th { padding:14px 10px; font-size:17px; }
+.dx-damals--gross tbody th { font-size:15px; }
+.dx-damals .up { color:var(--discover-up); } .dx-damals .down { color:var(--discover-down); }
+@media (max-width:640px) { .dx-damals--gross td, .dx-damals--gross th { padding:10px 6px; font-size:14px; } .dx-damals thead th b { font-size:12px; } }
+
+/* Kapitel-Kicker/Lead */
+.dx-chapter > .dx-kicker { margin-bottom:6px; color:var(--world,#e8b44c); }
+.dx-chapter-lead { color:var(--discover-muted); font-size:15px; line-height:1.5; margin:0 0 18px; max-width:720px; }
+
+/* Journey */
+.dx-journey { margin:8px 0 20px; }
+.dx-journey-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.dx-journey-tab { border:1px solid var(--discover-line); background:transparent; color:var(--discover-muted); border-radius:999px;
+  padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
+.dx-journey-tab[aria-selected="true"] { background:var(--discover-text); color:#0a0a0c; border-color:transparent; }
+.dx-journey-bild { background:var(--discover-surface); border:1px solid var(--discover-line); border-radius:var(--discover-radius); padding:16px; }
+.dx-journey-svg { width:100%; height:auto; display:block; }
+.dx-journey-bar { fill:var(--world,#e8b44c); opacity:.72; }
+.dx-journey-bar.last { opacity:1; }
+.dx-journey-bar.down { fill:var(--discover-down); }
+.dx-journey-axis { stroke:var(--discover-line-strong); stroke-width:1; }
+.dx-journey-year { fill:var(--discover-dim); font-size:11px; }
+.dx-journey-doppel { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.dx-journey-doppel h4 { margin:0 0 6px; font-size:13px; color:var(--discover-muted); font-weight:500; }
+@media (max-width:640px) { .dx-journey-doppel { grid-template-columns:1fr; } }
+.dx-journey-legende { display:flex; gap:22px; flex-wrap:wrap; margin:12px 0 0; font-size:14px; color:var(--discover-muted); }
+.dx-journey-legende b { color:var(--discover-text); margin-right:6px; }
+.dx-journey-legende .up b, .dx-journey-legende .up { color:var(--discover-up); }
+.dx-journey-legende .down b, .dx-journey-legende .down { color:var(--discover-down); }
+.dx-journey-frage { margin:10px 0 0; color:var(--discover-dim); font-size:13px; }
+
+/* Kurs + Fundamentals */
+.dx-pvf { margin:26px 0 8px; padding:18px 20px; border-radius:var(--discover-radius); background:linear-gradient(135deg,rgba(232,180,76,.10),rgba(111,157,255,.08)); border:1px solid var(--discover-line); }
+.dx-pvf h3 { margin:0 0 14px; font-size:16px; line-height:1.4; }
+.dx-pvf-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+.dx-pvf-grid span { display:block; color:var(--discover-muted); font-size:12px; margin-bottom:4px; }
+.dx-pvf-grid b { font-size:24px; }
+
+/* Health (Heute) */
+.dx-health { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:6px 0 18px; }
+.dx-health-zelle { padding:14px; border-radius:var(--discover-radius); background:var(--discover-surface); border:1px solid var(--discover-line); }
+.dx-health-zelle .dx-30-wert { display:block; font-size:20px; margin:4px 0 6px; }
+.dx-health-zelle[data-grade="Sehr stark"] .dx-30-wert, .dx-health-zelle[data-grade="Stark"] .dx-30-wert, .dx-health-zelle[data-grade="Sehr solide"] .dx-30-wert, .dx-health-zelle[data-grade="Rueckkaeufe"] .dx-30-wert { color:var(--discover-up); }
+.dx-health-zelle[data-grade="Angespannt"] .dx-30-wert, .dx-health-zelle[data-grade="Negativ"] .dx-30-wert, .dx-health-zelle[data-grade="Ruecklaeufig"] .dx-30-wert { color:var(--discover-down); }
+.dx-health-zelle[data-grade="Belastet"] .dx-30-wert, .dx-health-zelle[data-grade="Hoch"] .dx-30-wert, .dx-health-zelle[data-grade="Moderat"] .dx-30-wert { color:var(--discover-warm); }
+.dx-firma--heute { grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+
+/* Bewertung */
+.dx-bewertung-satz { font-size:18px; line-height:1.45; margin:0 0 18px; padding:16px 18px; border-left:3px solid var(--world,#e8b44c); background:var(--discover-surface); border-radius:0 var(--discover-radius) var(--discover-radius) 0; }
+.dx-bewertung-satz[data-stufe="hoch"] { border-left-color:var(--discover-warm); }
+.dx-bewertung-satz[data-stufe="niedrig"] { border-left-color:var(--discover-up); }
+
+/* Next Discovery */
+.dx-chapter--next .dx-rail-head { margin-top:18px; }
+.dx-because .dx-rail-head h2 { color:var(--discover-text); }
