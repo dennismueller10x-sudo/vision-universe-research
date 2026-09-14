@@ -130,3 +130,41 @@ Teile sind je einzeln real belegt; der nächste Handelstag liefert den
 Durchgang in einem Stück. Der Cron wird erst aktiv, wenn der Workflow
 auf dem Standardzweig liegt; bis dahin löst ein Push auf
 `sec-fundamentals-daily.yml`, `daily.py` oder `cli.py` einen Lauf aus.
+
+## 8 — Produktionsbetrieb auf main
+
+Integriert mit PR #93 (Merge-Commit `4ed2003d`, 2026-09-14 10:51 UTC).
+Der erste Lauf auf `main` war ein manueller `workflow_dispatch`
+(Lauf 34835251753, 10:51–10:58 UTC, Ergebnis-Commit `87f62e92`):
+
+| Schritt | Ergebnis |
+|---|---|
+| Actions-Cache | leer (Caches anderer Zweige sind auf `main` nicht sichtbar) |
+| Wiederherstellung aus R2 | 5.480 von 5.480 Objekten, 0 lokal vorhanden, 0 sha256-Abweichungen, 4,5 min |
+| Daily State | aus `_daily-state.json` in R2 (`STATE_BOOTSTRAPPED 0`, `LAST_SEC_CHECK 2026-09-14`) |
+| Erkennung | 2 SEC-Anfragen, Tagesindex 2026-09-14 noch nicht veröffentlicht, 0 Änderungen |
+| Emittenten | 5.479 geprüft, 0 geändert, 0 aktualisiert, `UNCHANGED_ISSUERS_REPROCESSED 0` |
+| R2-Push | 0 geschrieben, 5.480 unverändert |
+| Downstream | 0 Invalidierungen, Manifest geschrieben |
+| Laufzeit | 2,6 s Incremental (plus 4,5 min einmalige Wiederherstellung) |
+| Commit | State, Health Report, Manifest auf `main` |
+
+Damit ist auch der Verlust des Zwischenspeichers real geprobt: der
+Faktenspeicher kommt aus R2, nicht von der SEC. Kein Full Backfill im
+Normalbetrieb.
+
+| Produktionsprüfung | Stand |
+|---|---|
+| Workflow auf `main` | `.github/workflows/sec-fundamentals-daily.yml`, Status `active` |
+| Cron | `15 6 * * *` UTC, wird von GitHub ab dem Merge ausgewertet; erste planmäßige Auslösung 2026-09-15 06:15 UTC |
+| Manueller Dispatch | verfügbar (Inputs `since`, `ciks`, `dry_run`); mit Lauf 34835251753 belegt |
+| Secrets | `VU_HISTORY_S3_ENDPOINT/BUCKET/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY` als Repository-Secrets; Prüfschritt grün |
+| R2 erreichbar | Restore 5.480/5.480 und Push-Index gelesen |
+| CI auf dem Merge-Commit | Quant CI, SEC Fundamentals CI, Discover CI, Company Master, Universum: grün |
+| Architektur | Price-R2-Store, Eligibility-Regeln und Frontend-Logik unverändert; der Lauf schreibt nur `quant/data/fundamentals`, `quant/data/universe`, `quant/data/sec` |
+
+Der Push-Trigger für `claude/**`-Zweige bleibt als Entwicklungsweg
+bestehen: ein Push auf den Lifecycle löst dort weiterhin einen echten
+Lauf aus, ohne den Betrieb auf `main` zu berühren.
+
+**SEC_DAILY_PRODUCTION_READY = PASS**
