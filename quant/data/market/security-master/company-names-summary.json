@@ -1,0 +1,336 @@
+{
+  "version": "company-names-1.0.0",
+  "generatedAt": "2026-09-14T04:39:15.911Z",
+  "master": {
+    "file": "quant/data/market/security-master/eligibility.json",
+    "version": "us-security-master-1.1.0",
+    "sha256": "b0e2b5c12a0194db657e64e25bb46dda6394df89166e1555372ed739243a4bb3",
+    "productUniverse": 7004
+  },
+  "coverage": {
+    "companyMasterTotal": 7803,
+    "productUniverse": 7004,
+    "activeEquities": 6477,
+    "withName": 515,
+    "withoutName": 6489,
+    "pct": 7.35,
+    "activeWithName": 512,
+    "activePct": 7.9,
+    "bySource": {
+      "VU_CURATED": 515
+    },
+    "unresolvedReasons": {
+      "PROVIDER_NOT_QUERIED_YET": 6489
+    },
+    "rejectedRules": {
+      "VU_CURATED:TICKER_AS_NAME": 1
+    }
+  },
+  "stats": {
+    "sec": null,
+    "tiingo": null
+  },
+  "spotCheck": [
+    {
+      "ticker": "AAPL",
+      "securityId": "ref_AAPL",
+      "providerSymbol": "AAPL",
+      "companyName": "Apple Inc.",
+      "displayName": "Apple",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "MSFT",
+      "securityId": "ref_MSFT",
+      "providerSymbol": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "displayName": "Microsoft",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "NVDA",
+      "securityId": "ref_NVDA",
+      "providerSymbol": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "displayName": "NVIDIA Corporation",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "AMZN",
+      "securityId": "ref_AMZN",
+      "providerSymbol": "AMZN",
+      "companyName": "Amazon.com Inc.",
+      "displayName": "Amazon.com",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "GOOGL",
+      "securityId": "ref_GOOGL",
+      "providerSymbol": "GOOGL",
+      "companyName": "Alphabet Inc. Class A",
+      "displayName": "Alphabet Inc. Class A",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "META",
+      "securityId": "ref_META",
+      "providerSymbol": "META",
+      "companyName": "Meta Platforms Inc.",
+      "displayName": "Meta Platforms",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "TSLA",
+      "securityId": "ref_TSLA",
+      "providerSymbol": "TSLA",
+      "companyName": "Tesla Inc.",
+      "displayName": "Tesla",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "AMD",
+      "securityId": "ref_AMD",
+      "providerSymbol": "AMD",
+      "companyName": "Advanced Micro Devices",
+      "displayName": "Advanced Micro Devices",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "PLTR",
+      "securityId": "ref_PLTR",
+      "providerSymbol": "PLTR",
+      "companyName": "Palantir",
+      "displayName": "Palantir",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "AVGO",
+      "securityId": "ref_AVGO",
+      "providerSymbol": "AVGO",
+      "companyName": "Broadcom Inc.",
+      "displayName": "Broadcom",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "LLY",
+      "securityId": "ref_LLY",
+      "providerSymbol": "LLY",
+      "companyName": "Eli Lilly and Company",
+      "displayName": "Eli Lilly and Company",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "WMT",
+      "securityId": "ref_WMT",
+      "providerSymbol": "WMT",
+      "companyName": "Walmart Inc.",
+      "displayName": "Walmart",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "JPM",
+      "securityId": "ref_JPM",
+      "providerSymbol": "JPM",
+      "companyName": "JPMorgan Chase & Co.",
+      "displayName": "JPMorgan Chase & Co.",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "V",
+      "securityId": "ref_V",
+      "providerSymbol": "V",
+      "companyName": null,
+      "displayName": null,
+      "nameSource": null,
+      "nameAsOf": null,
+      "cik": null,
+      "status": "UNRESOLVED",
+      "reason": "PROVIDER_NOT_QUERIED_YET"
+    },
+    {
+      "ticker": "MU",
+      "securityId": "ref_MU",
+      "providerSymbol": "MU",
+      "companyName": "Micron Technology",
+      "displayName": "Micron Technology",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "NFLX",
+      "securityId": "ref_NFLX",
+      "providerSymbol": "NFLX",
+      "companyName": null,
+      "displayName": null,
+      "nameSource": null,
+      "nameAsOf": null,
+      "cik": null,
+      "status": "UNRESOLVED",
+      "reason": "PROVIDER_NOT_QUERIED_YET"
+    },
+    {
+      "ticker": "ORCL",
+      "securityId": "ref_ORCL",
+      "providerSymbol": "ORCL",
+      "companyName": "Oracle Corporation",
+      "displayName": "Oracle",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "CRM",
+      "securityId": "ref_CRM",
+      "providerSymbol": "CRM",
+      "companyName": "Salesforce Inc.",
+      "displayName": "Salesforce",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "COST",
+      "securityId": "ref_COST",
+      "providerSymbol": "COST",
+      "companyName": "Costco Wholesale",
+      "displayName": "Costco Wholesale",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "UNH",
+      "securityId": "ref_UNH",
+      "providerSymbol": "UNH",
+      "companyName": "UnitedHealth Group Inc.",
+      "displayName": "UnitedHealth Group",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "XOM",
+      "securityId": "ref_XOM",
+      "providerSymbol": "XOM",
+      "companyName": "Exxon Mobil Corporation",
+      "displayName": "Exxon Mobil",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "KO",
+      "securityId": "ref_KO",
+      "providerSymbol": "KO",
+      "companyName": "Coca-Cola Company",
+      "displayName": "Coca-Cola",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "DIS",
+      "securityId": "ref_DIS",
+      "providerSymbol": "DIS",
+      "companyName": "The Walt Disney Company",
+      "displayName": "The Walt Disney",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "INTC",
+      "securityId": "ref_INTC",
+      "providerSymbol": "INTC",
+      "companyName": "Intel Corporation",
+      "displayName": "Intel",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    },
+    {
+      "ticker": "QCOM",
+      "securityId": "ref_QCOM",
+      "providerSymbol": "QCOM",
+      "companyName": "Qualcomm Inc.",
+      "displayName": "Qualcomm",
+      "nameSource": "VU_CURATED",
+      "nameAsOf": "2026-09-14",
+      "cik": null,
+      "status": "RESOLVED",
+      "reason": null
+    }
+  ],
+  "note": "Jeder Name traegt Quelle und Datum; kein Ticker wurde als Name gespeichert; die Mitgliedschaft des Produktuniversums ist unveraendert."
+}

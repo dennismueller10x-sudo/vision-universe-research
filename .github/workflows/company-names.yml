@@ -1,0 +1,103 @@
+name: Company-Namen (kanonische Namensschicht zum Company Master)
+
+# Company Name Enrichment: je Titel des Produktuniversums ein echter
+# Unternehmensname mit Herkunft - aus den Stammdaten des Anbieters
+# (Tiingo, getMetadata), dem SEC-Tickerverzeichnis und den kuratierten
+# Repository-Namen. Aendert keine Mitgliedschaft, keine Kurse, keine
+# Faktoren, keine Intraday-Daten (scripts/market/build-company-names.mjs).
+#
+# Ein Titel kostet eine Anbieter-Anfrage; die Datei ist die Wiederaufnahme
+# (Kandidaten bleiben, nur Offenes wird angefragt). Der Lauf teilt sich das
+# Stundenkontingent mit dem Marktdaten-Refresh - deshalb ein eigener Lauf.
+#
+# Ausloeser: Dispatch oder ein Push mit der Marke `[company-names]`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_requests:
+        description: 'Obergrenze Tiingo-Anfragen je Lauf'
+        type: string
+        default: '7000'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  names:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[company-names]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then echo "TIINGO_API_KEY fehlt (Repository-Secret)."; exit 1; fi
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      - name: Namensschicht (Anbieter-Stammdaten + SEC-Tickerverzeichnis + kuratierte Namen)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: node scripts/market/build-company-names.mjs --tiingo --sec --max-requests=${{ github.event.inputs.max_requests || '7000' }} --concurrency=4
+
+      - name: Discover-Daten mit Namen neu bauen
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Capability Matrix je Instrument
+        run: node scripts/market/build-capability-matrix.mjs
+
+      - name: Kein Schluessel in den Artefakten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Regressionssuite
+        run: |
+          node --test "quant/tests/*.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json \
+                  discover/data quant/data/market/capabilities
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const s=require("./quant/data/market/security-master/company-names-summary.json").coverage; console.log(s.withName+"/"+s.productUniverse+" ("+s.pct+" %), "+JSON.stringify(s.bySource))')
+          git commit -m "Company-Namen: $Z"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Company-Namen'
+            echo ''
+            if [ -f quant/data/market/security-master/company-names-summary.json ]; then
+              node -e 'const s=require("./quant/data/market/security-master/company-names-summary.json"); const c=s.coverage; console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Produktuniversum | "+c.productUniverse+" |"); console.log("| mit Namen | "+c.withName+" ("+c.pct+" %) |"); console.log("| ohne Namen | "+c.withoutName+" |"); console.log("| nach Quelle | "+JSON.stringify(c.bySource)+" |"); console.log("| offen | "+JSON.stringify(c.unresolvedReasons)+" |"); console.log(""); for (const x of s.spotCheck) console.log("- "+x.ticker+": "+(x.companyName||"-")+" ("+(x.nameSource||x.reason||x.status)+")");'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

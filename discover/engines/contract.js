@@ -107,6 +107,8 @@
       securityId: raw.securityId || null,
       companyName: raw.companyName || null,
       companyNameStatus: raw.companyName ? "CALCULATED" : (raw.companyNameStatus || "SOURCE_MISSING"),
+      legalName: raw.legalName || null,
+      nameSource: raw.nameSource || null,
       universeId: raw.universeId || null,
       dataMode: DATA_MODES.indexOf(raw.dataMode) === -1 ? "mock" : raw.dataMode,
       isMock: raw.dataMode !== "real",

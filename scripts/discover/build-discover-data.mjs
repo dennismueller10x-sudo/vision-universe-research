@@ -410,8 +410,13 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
       securityId: sec.securityId,
-      companyName: named ? named.name : null,
-      companyNameStatus: named ? "CALCULATED" : "SOURCE_MISSING",
+      /* Name: displayName der kanonischen Namensschicht, sonst ihr
+         companyName, sonst die Repository-Namensquellen, sonst nichts -
+         der Ticker wird nie als Name eingetragen. */
+      companyName: ref.displayName || ref.companyName || (named ? named.name : null),
+      companyNameStatus: (ref.companyName || named) ? "CALCULATED" : "SOURCE_MISSING",
+      legalName: ref.companyName || null,
+      nameSource: ref.nameSource || (named ? named.source : null),
       universeId: "US_REAL",
       dataMode: "real",
       provider: factors.provider || "tiingo",
@@ -1265,6 +1270,8 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     methodologyVersion: METHODOLOGY.methodologyVersion,
     symbol: stock.symbol, companyName: stock.companyName,
     companyNameStatus: stock.companyNameStatus,
+    legalName: stock.legalName || null,
+    nameSource: stock.nameSource || null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     dataMode: stock.dataMode, provider: stock.provider, exchange: stock.exchange,
     sector: stock.sector, sectorStatus: stock.sectorStatus, industry: stock.industry,

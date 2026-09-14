@@ -106,11 +106,13 @@ function fromSecurityMaster(root, file) {
   }
   securities.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
   const kuratiert = overlayCuratedSectors(root, securities);
+  const namen = overlayCompanyNames(root, securities);
   return {
     source: "SECURITY_MASTER", file: SECURITY_MASTER_FILE, version: quelle.version || null,
     generatedAt: quelle.generatedAt || null, securities, counts,
     sha256: createHash("sha256").update(roh).digest("hex"),
     curatedSectors: kuratiert,
+    companyNames: namen,
     handover: Object.assign({}, HANDOVER, { status: "INTEGRATED" })
   };
 }
@@ -140,6 +142,35 @@ function overlayCuratedSectors(root, securities) {
     n++;
   }
   return { file: CURATED_SECTOR_FILE, present: true, securities: n };
+}
+
+/**
+ * Firmennamen: die kanonische Namensschicht zum Company Master
+ * (scripts/market/build-company-names.mjs). Je securityId companyName
+ * (gelieferter Name), displayName (ohne Rechtsform), nameSource, nameAsOf.
+ * Nur RESOLVED-Zeilen; nie ein Ticker als Name; die Mitgliedschaft bleibt
+ * unberuehrt. Ohne Datei bleibt der Name SOURCE_MISSING.
+ */
+const COMPANY_NAMES_FILE = "quant/data/market/security-master/company-names.json";
+function overlayCompanyNames(root, securities) {
+  const file = join(root, COMPANY_NAMES_FILE);
+  if (!existsSync(file)) return { file: COMPANY_NAMES_FILE, present: false, resolved: 0 };
+  const layer = JSON.parse(readFileSync(file, "utf8"));
+  const byId = new Map();
+  for (const r of layer.rows || []) {
+    if (r.status !== "RESOLVED" || !r.companyName) continue;
+    if (String(r.companyName).trim().toUpperCase() === String(r.ticker).toUpperCase()) continue;
+    byId.set(r.securityId, r);
+  }
+  let n = 0;
+  for (const s of securities) {
+    const r = byId.get(s.securityId);
+    if (!r) continue;
+    s.companyName = r.companyName; s.displayName = r.displayName || r.companyName;
+    s.nameSource = r.nameSource; s.nameAsOf = r.nameAsOf || null;
+    n++;
+  }
+  return { file: COMPANY_NAMES_FILE, present: true, version: layer.version || null, generatedAt: layer.generatedAt || null, resolved: n };
 }
 
 function fromScaleUniverse(root, file, name) {
