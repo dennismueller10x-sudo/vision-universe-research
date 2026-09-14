@@ -95,17 +95,38 @@ tragen die Felder aus §16: `RUN_DATE`, `LAST_SUCCESSFUL_RUN`,
 
 ## 7 — Abnahme (§19)
 
-Der Nachweis steht im Health Report des ersten echten Laufs und in
-`scripts/quant/tests/test_daily.py` (15 Fälle nach §17):
+Der Nachweis besteht aus drei echten Läufen des Workflows auf dem
+Entwicklungszweig (ausgelöst durch Pushes auf den Lifecycle, siehe
+Workflow-Kommentar zum Dispatch vor dem Merge) und aus
+`scripts/quant/tests/test_daily.py` (22 Fälle nach §17).
 
-| Kriterium | Beleg |
-|---|---|
-| `DAILY_INCREMENTAL_READY` | Workflow läuft per Cron und Dispatch; Health Report `STATUS` |
-| `FULL_BACKFILL_REQUIRED_FOR_NORMAL_OPERATION = false` | Restore aus R2 statt SEC; Tagesindex statt Universumsabfrage |
-| `UNCHANGED_ISSUERS_REPROCESSED = 0` | Health Report; Test: Emittent ohne Filing bekommt keine Anfrage |
-| `PIT_PRESERVED` | Test: Amendment lässt den ursprünglichen Fakt und den as-of-Wert stehen |
-| `R2_PERSISTENCE` | `persistence.json` push.changed ≥ aktualisierte Emittenten |
-| `RELOAD_WITHOUT_SEC_REFETCH` | `reload-verification.json` für die aktualisierte Stichprobe |
-| `IDEMPOTENCY` | Test: zwei Läufe, byte-gleiches Dokument, kein zweiter Abruf |
-| `RETRY_QUEUE` | Test: Teilfehler → Schlange → nächster Lauf leert sie; Deckel gegen Endlosschleifen |
-| `DOWNSTREAM_INVALIDATION_MANIFEST` | `updated-issuers.json` je Lauf |
+| Lauf | Fenster | Filings im Index | Emittenten geprüft / geändert / aktualisiert | SEC-Anfragen | R2 | Reload |
+|---|---|---|---|---|---|---|
+| 34808756359 (Lauf 2) | 09-08 … 09-14 | 97 (92 neu, 5 Amendments) | 5.479 / 1 / 1 (CIK 0002115436) | 7 Index + 2 je Emittent | 1 Objekt geschrieben | PASS 1/1 |
+| 34810787817 (Lauf 3) | 09-08 … 09-14 | 97 | 5.479 / 1 / 0 (Übersicht = Speicher) | 7 Index + 1 Übersicht | 0 geschrieben, 5.480 unverändert | — |
+| 34812797630 (Lauf 4) | 09-14 | 0 (noch kein Index) | 5.479 / 0 / 0 | 1 | 0 geschrieben, 5.480 unverändert | NOT_NEEDED |
+
+Lauf 2 und 3 endeten im Downstream (NameError, fehlender Parser-Default);
+die Erkennung, der Ingest, die Persistenz und der Reload davor waren
+vollständig. Lauf 4 lief durch und committete State, Health Report und
+Manifest (`quant/data/fundamentals/daily/`).
+
+| Kriterium | Ergebnis | Beleg |
+|---|---|---|
+| `DAILY_INCREMENTAL_READY` | PASS | Lauf 4 `STATUS: SUCCESS`, `TOTAL_RUNTIME 2,9 s`; Cron `15 6 * * *` und `workflow_dispatch` im Workflow |
+| `FULL_BACKFILL_REQUIRED_FOR_NORMAL_OPERATION` | false | Kein Lauf las das Universum von der SEC; Basis kommt aus dem Actions-Cache oder per `--restore` aus R2 (sha256-geprüft) |
+| `UNCHANGED_ISSUERS_REPROCESSED` | 0 | Lauf 3: 5.478 Emittenten ohne Anfrage, der eine genannte nur per Übersicht geprüft (`UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC 1`); Lauf 4: 0 Anfragen an Emittenten |
+| `PIT_PRESERVED` | PASS | Test `AmendmentTests`: ursprünglicher Fakt und Akzession bleiben, as-of vor dem Amendment unverändert; Lauf 2 `ACCESSION_DUPLICATES 0` |
+| `R2_PERSISTENCE` | PASS | Lauf 2: 1 geändertes Objekt geschrieben; Lauf 3/4: 0 geschrieben, 5.480 unverändert (Index-Skip per sha256); Daily State zusätzlich als `_daily-state.json` |
+| `RELOAD_WITHOUT_SEC_REFETCH` | PASS | Lauf 2: Reload der aktualisierten Stichprobe 1/1 bei gesperrtem Netz; ohne Updates `NOT_NEEDED` mit Verweis auf den letzten Nachweis |
+| `IDEMPOTENCY` | PASS | Lauf 3 wiederholte das Fenster von Lauf 2: dieselben 97 Filings, 0 Aktualisierungen; Test: zwei Läufe, byte-gleiches Dokument, keine doppelten Perioden oder Akzessionen |
+| `RETRY_QUEUE` | PASS | Test `TeilfehlerUndRetryTests`: Teilfehler → `PARTIAL_SUCCESS` → nächster Lauf leert die Schlange; Deckel `MAX_ATTEMPTS = 5` gegen Endlosschleifen; reale Läufe `RETRY_QUEUE 0` |
+| `DOWNSTREAM_INVALIDATION_MANIFEST` | PASS | `updated-issuers.json` je Lauf mit `UPDATED_ISSUERS` und `INVALIDATE`-Zielen; Downstream rechnet nur die genannten Emittenten neu |
+
+Was der Nachweis nicht zeigt: einen Lauf, der Erkennung, Update UND
+Downstream in einem Durchgang abschließt, weil zwischen Lauf 2 und
+Lauf 4 kein neues Filing eines Universumsmitglieds im Index stand. Die
+Teile sind je einzeln real belegt; der nächste Handelstag liefert den
+Durchgang in einem Stück. Der Cron wird erst aktiv, wenn der Workflow
+auf dem Standardzweig liegt; bis dahin löst ein Push auf
+`sec-fundamentals-daily.yml`, `daily.py` oder `cli.py` einen Lauf aus.
