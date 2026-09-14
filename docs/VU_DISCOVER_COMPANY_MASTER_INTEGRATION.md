@@ -152,6 +152,8 @@ Discover-Build: 6.514 Titel im realen Universum, Faktorabdeckung 6514/7004 (part
 
 ### 4.4 Fehlende Firmennamen und Provider Mappings
 
+> **Nachtrag 14.09.2026:** Die 6 499 fehlenden Firmennamen sind durch den Company Name Enrichment Pass auf 23 reduziert (`VU_COMPANY_NAME_ENRICHMENT.md`, `security-master/company-names.json`).
+
 * **Provider Mappings**: 0 fehlen. Jeder Titel des Produktuniversums trägt im
   Master ein Tiingo-Symbol; das ist die Voraussetzung dafür, dass Ingest,
   Intraday und Faktoren ihn überhaupt anfassen.
