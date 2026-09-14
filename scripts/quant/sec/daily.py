@@ -49,6 +49,7 @@ WATCHED_FORMS = PERIODIC_FORMS
 # teure, aber vollstaendige Weg, und er ist ausdruecklich nicht der
 # Normalfall.
 MAX_INDEX_DAYS = 45
+FIRST_RUN_LOOKBACK_DAYS = 7
 # Ein Emittent, der so oft hintereinander scheitert, bleibt in der
 # Schlange stehen und wird im Bericht genannt - nicht endlos versucht.
 MAX_ATTEMPTS = 5
@@ -284,7 +285,10 @@ def run_daily(pipeline, client, universe_ciks, state, today=None, since=None,
     # --- 1. Aenderungen erkennen
     if since is None:
         last = state.get("LAST_SEC_CHECK")
-        since = (date.fromisoformat(last) if last else today - timedelta(days=1))
+        # Der erste Lauf ohne State schaut eine Woche zurueck: die Basis
+        # stammt aus dem Sammelarchiv, und dessen Stand ist bis zu einige
+        # Tage alt. Danach beginnt jeder Lauf beim letzten Check.
+        since = (date.fromisoformat(last) if last else today - timedelta(days=FIRST_RUN_LOOKBACK_DAYS))
     if today - since > timedelta(days=MAX_INDEX_DAYS):
         say(f"  Letzter Index-Check liegt {(today - since).days} Tage zurueck - "
             f"Tagesindex nur fuer die letzten {MAX_INDEX_DAYS} Tage.")

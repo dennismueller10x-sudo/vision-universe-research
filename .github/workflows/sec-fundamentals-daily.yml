@@ -27,6 +27,15 @@ name: SEC Fundamentals — Daily Incremental
 on:
   schedule:
     - cron: '15 6 * * *'
+  # Vor dem Merge auf main kennt die GitHub-API den Workflow fuer einen
+  # Dispatch nicht (404). Ein Push, der den Lifecycle selbst aendert,
+  # loest deshalb einen echten Lauf aus - das ist zugleich der Nachweis.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/sec-fundamentals-daily.yml'
+      - 'scripts/quant/sec/daily.py'
   workflow_dispatch:
     inputs:
       since:
