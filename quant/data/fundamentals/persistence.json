@@ -1,6 +1,6 @@
 {
   "version": "fundamentals-store-1.0.0",
-  "generatedAt": "2026-09-14T06:19:32.427Z",
+  "generatedAt": "2026-09-14T10:58:14.665Z",
   "driver": "s3",
   "endpointKind": "s3",
   "prefix": "v1/sec/fundamentals",
@@ -301,20 +301,20 @@
   },
   "restore": {
     "indexObjects": 5480,
-    "alreadyLocal": 5480,
-    "restored": 0,
+    "alreadyLocal": 0,
+    "restored": 5480,
     "mismatched": 0,
     "spent": {
       "classA": 0,
-      "classB": 1,
+      "classB": 5481,
       "bytesUploaded": 0,
-      "bytesDownloaded": 0,
+      "bytesDownloaded": 639734204,
       "writesSkipped": 0
     }
   },
   "dailyState": {
     "key": "v1/sec/fundamentals/_daily-state.json",
-    "bytes": 1542720,
+    "bytes": 1542857,
     "pushed": true
   },
   "push": {
