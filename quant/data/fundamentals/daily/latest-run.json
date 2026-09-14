@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "RUN_DATE": "2026-09-14",
+  "RUN_STARTED_AT": "2026-09-14T06:19:31+00:00",
+  "STATUS": "SUCCESS",
+  "DRY_RUN": false,
+  "LAST_SUCCESSFUL_RUN": "2026-09-14T06:19:31+00:00",
+  "LAST_SEC_CHECK": "2026-09-14",
+  "SEC_INDEX": {
+    "daysChecked": [],
+    "daysWithoutIndex": [
+      "2026-09-14"
+    ],
+    "indexRows": 0
+  },
+  "SEC_CHANGES_FOUND": 0,
+  "NEW_FILINGS": 0,
+  "AMENDMENTS_FOUND": 0,
+  "ISSUERS_CHECKED": 5479,
+  "ISSUERS_CHANGED": 0,
+  "NEW_ISSUERS": 0,
+  "RETRIED": 0,
+  "ISSUERS_UPDATED": 0,
+  "NO_CHANGE": 5479,
+  "UNCHANGED_ISSUERS_REPROCESSED": 0,
+  "UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC": 0,
+  "FAILED_ISSUERS": 0,
+  "RETRY_QUEUE": 0,
+  "FACTBOOKS_UPDATED": 0,
+  "ANNUAL_HISTORIES_UPDATED": 0,
+  "QUARTERLY_HISTORIES_UPDATED": 0,
+  "PIT_HISTORIES_UPDATED": 0,
+  "ACCESSION_DUPLICATES": 0,
+  "STATE_BOOTSTRAPPED": 0,
+  "NORMALIZATION_LOGIC_VERSION": "1.9.0",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.9.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "updated": [],
+  "unchanged": [],
+  "failed": [],
+  "retryQueue": [],
+  "requests": {
+    "requests": 1,
+    "cache_hits": 1,
+    "retries": 0,
+    "deduplicated": 0
+  },
+  "TOTAL_RUNTIME_SECONDS": 0.3,
+  "UNIVERSE_SKIPPED_WITHOUT_CIK": 0,
+  "R2_OBJECTS_WRITTEN": 0,
+  "R2_OBJECTS_UNCHANGED": 5480,
+  "R2_PERSISTENCE": "PASS",
+  "RELOAD_WITHOUT_SEC_REFETCH": "NOT_NEEDED",
+  "RELOAD_SAMPLE": {
+    "requested": 0,
+    "passed": 0,
+    "lastVerified": "2026-09-13T19:11:17",
+    "lastResult": "PASS"
+  },
+  "DOWNSTREAM_INVALIDATIONS": 0,
+  "DOWNSTREAM_TARGETS": [
+    "Fundamental History",
+    "Quant",
+    "Factor DNA",
+    "Screener",
+    "Rankings",
+    "Compare",
+    "Strategy Lab",
+    "Backtesting Data",
+    "Atlas / AI"
+  ],
+  "DOWNSTREAM_RUNTIME_SECONDS": 2.6,
+  "TOTAL_RUNTIME": 2.9
+}

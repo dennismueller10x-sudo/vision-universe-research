@@ -1,74 +1,10 @@
 {
   "version": "fundamentals-store-1.0.0",
-  "generatedAt": "2026-09-13T19:10:40.860Z",
+  "generatedAt": "2026-09-14T06:19:32.427Z",
   "driver": "s3",
   "endpointKind": "s3",
   "prefix": "v1/sec/fundamentals",
-  "localFactbooks": 5479,
-  "push": {
-    "changed": 42,
-    "unchanged": 5437,
-    "objectCount": 5479,
-    "bytesUploaded": 71310,
-    "dryRun": false,
-    "spent": {
-      "classA": 44,
-      "classB": 1,
-      "bytesUploaded": 71310,
-      "bytesDownloaded": 0,
-      "writesSkipped": 5437
-    }
-  },
-  "persisted": {
-    "PERSISTED_ISSUERS": 5479,
-    "PERSISTED_ANNUAL_HISTORIES": 5299,
-    "PERSISTED_QUARTERLY_HISTORIES": 5333,
-    "PERSISTED_PIT_HISTORIES": 5333,
-    "PERSISTED_METADATA": 5384,
-    "PERSISTED_STORAGE_BYTES": 639727781,
-    "PERSISTENCE_LOCATION": "r2:vision-universe-history/v1/sec/fundamentals/",
-    "byNormalizationVersion": {
-      "1.9.0": 5479
-    },
-    "currencies": {
-      "USD": 4974,
-      "TWD": 9,
-      "CAD": 122,
-      "EUR": 92,
-      "INR": 7,
-      "JPY": 20,
-      "PHP": 1,
-      "GBP": 30,
-      "ZAR": 5,
-      "DKK": 2,
-      "NZD": 1,
-      "SEK": 2,
-      "CNY": 178,
-      "MXN": 13,
-      "KRW": 10,
-      "CLP": 5,
-      "AFN": 3,
-      "ARS": 12,
-      "BRL": 28,
-      "ILS": 15,
-      "PEN": 4,
-      "IDR": 1,
-      "TRY": 3,
-      "AUD": 19,
-      "COP": 3,
-      "HKD": 36,
-      "RUB": 1,
-      "CHF": 8,
-      "SAR": 1,
-      "BSD": 1,
-      "SGD": 26,
-      "VND": 2,
-      "MYR": 5,
-      "KZT": 1,
-      "AED": 1,
-      "MOP": 1
-    }
-  },
+  "localFactbooks": 5480,
   "reload": {
     "requested": 8,
     "passed": 8,
@@ -363,9 +299,91 @@
       "writesSkipped": 0
     }
   },
+  "restore": {
+    "indexObjects": 5480,
+    "alreadyLocal": 5480,
+    "restored": 0,
+    "mismatched": 0,
+    "spent": {
+      "classA": 0,
+      "classB": 1,
+      "bytesUploaded": 0,
+      "bytesDownloaded": 0,
+      "writesSkipped": 0
+    }
+  },
+  "dailyState": {
+    "key": "v1/sec/fundamentals/_daily-state.json",
+    "bytes": 1542720,
+    "pushed": true
+  },
+  "push": {
+    "changed": 0,
+    "unchanged": 5480,
+    "objectCount": 5480,
+    "bytesUploaded": 0,
+    "dryRun": false,
+    "spent": {
+      "classA": 0,
+      "classB": 1,
+      "bytesUploaded": 0,
+      "bytesDownloaded": 0,
+      "writesSkipped": 5480
+    }
+  },
+  "persisted": {
+    "PERSISTED_ISSUERS": 5480,
+    "PERSISTED_ANNUAL_HISTORIES": 5300,
+    "PERSISTED_QUARTERLY_HISTORIES": 5334,
+    "PERSISTED_PIT_HISTORIES": 5334,
+    "PERSISTED_METADATA": 5385,
+    "PERSISTED_STORAGE_BYTES": 639734204,
+    "PERSISTENCE_LOCATION": "r2:vision-universe-history/v1/sec/fundamentals/",
+    "byNormalizationVersion": {
+      "1.9.0": 5480
+    },
+    "currencies": {
+      "USD": 4975,
+      "TWD": 9,
+      "CAD": 122,
+      "EUR": 92,
+      "INR": 7,
+      "JPY": 20,
+      "PHP": 1,
+      "GBP": 30,
+      "ZAR": 5,
+      "DKK": 2,
+      "NZD": 1,
+      "SEK": 2,
+      "CNY": 178,
+      "MXN": 13,
+      "KRW": 10,
+      "CLP": 5,
+      "AFN": 3,
+      "ARS": 12,
+      "BRL": 28,
+      "ILS": 15,
+      "PEN": 4,
+      "IDR": 1,
+      "TRY": 3,
+      "AUD": 19,
+      "COP": 3,
+      "HKD": 36,
+      "RUB": 1,
+      "CHF": 8,
+      "SAR": 1,
+      "BSD": 1,
+      "SGD": 26,
+      "VND": 2,
+      "MYR": 5,
+      "KZT": 1,
+      "AED": 1,
+      "MOP": 1
+    }
+  },
   "witness": {
     "allowedPrefix": "v1/sec/fundamentals/",
-    "touchedKeys": 8,
+    "touchedKeys": 2,
     "keysOutsidePrefix": 0,
     "priceStoreUntouched": true,
     "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb von v1/sec/fundamentals/. Dass hier 0 steht, ist deshalb kein Zaehlergebnis, sondern eine Eigenschaft: das Skript KANN v1/tiingo/ nicht anfassen."
