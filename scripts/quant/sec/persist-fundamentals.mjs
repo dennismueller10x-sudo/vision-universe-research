@@ -49,6 +49,11 @@ export const PREFIX = "v1/sec/fundamentals";
 export const FACTS_PREFIX = PREFIX + "/facts/";
 export const INDEX_KEY = PREFIX + "/_index.json.gz";
 export const MANIFEST_KEY = PREFIX + "/_manifest.json";
+/* Der Processing State des taeglichen Laufs. Er liegt im Repository
+   (lesbar) und hier (dauerhaft): ein gescheiterter Commit-Schritt darf
+   nicht vergessen, welche Filings schon verarbeitet sind. */
+const DAILY_STATE_KEY = PREFIX + "/_daily-state.json";
+const DAILY_STATE_PATH = join(root, "quant", "data", "fundamentals", "daily", "state.json");
 
 const FACT_DIR = process.env.SEC_FACT_DIR || join(root, "quant", "data", "sec", "facts");
 const RELOAD_DIR = process.env.SEC_RELOAD_DIR || join(root, ".sec-reload", "facts");
@@ -357,6 +362,22 @@ async function main() {
                 `${r.mismatched} nicht lesbar, ${r.indexObjects} Objekte im Index`);
     report.restore = r;
     if (r.mismatched > 0) { console.error("  FEHLER: nicht alle Objekte aus R2 lesbar."); process.exitCode = 1; }
+  }
+
+  if (doPush && !dryRun && existsSync(DAILY_STATE_PATH)) {
+    const buf = readFileSync(DAILY_STATE_PATH);
+    await driver.put(DAILY_STATE_KEY, buf, { contentType: "application/json" });
+    report.dailyState = { key: DAILY_STATE_KEY, bytes: buf.length, pushed: true };
+    console.log(`  Daily-State nach ${DAILY_STATE_KEY} (${buf.length} B)`);
+  }
+  if (doRestore && !existsSync(DAILY_STATE_PATH)) {
+    const buf = await driver.get(DAILY_STATE_KEY);
+    if (buf) {
+      mkdirSync(dirname(DAILY_STATE_PATH), { recursive: true });
+      writeFileSync(DAILY_STATE_PATH, buf);
+      report.dailyState = { key: DAILY_STATE_KEY, bytes: buf.length, restored: true };
+      console.log(`  Daily-State aus ${DAILY_STATE_KEY} wiederhergestellt (${buf.length} B)`);
+    }
   }
 
   if (doPush) {

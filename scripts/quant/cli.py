@@ -1101,7 +1101,7 @@ def _write_universe_reports(reports, registry):
     # Die Emittentenbilanz in Scherben - eine Zeile je Emittent, nicht die
     # volle Historie. Die gehoert in die Arbeitsablage: 400 KB je Emittent
     # mal 7.000 waeren 2,8 GB, und ein Git-Repository ist kein Datenspeicher.
-    universe_coverage.write_issuer_shards(ROOT, reports["perIssuer"])
+    shards = universe_coverage.write_issuer_shards(ROOT, reports["perIssuer"])
 
     _write(out / "manifest.json", {
         "generated_at_utc": now,
@@ -1119,7 +1119,7 @@ def _write_universe_reports(reports, registry):
         "totals": {
             "productTitles": reports["members"],
             "issuersWithFundamentals": len(reports["perIssuer"]),
-            "shards": len(shards),
+            "shards": shards,
         },
     })
 

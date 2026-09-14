@@ -420,7 +420,12 @@ def run_daily(pipeline, client, universe_ciks, state, today=None, since=None,
         "RETRIED": plan["retried"],
         "ISSUERS_UPDATED": len(updated),
         "NO_CHANGE": len(universe_ciks) - len(todo) + len(unchanged),
+        # Neu normalisiert wird nur, wenn die Filing-Signatur sich geaendert
+        # hat (pipeline._is_current). Ein Emittent, den der Index nannte und
+        # dessen Uebersicht dasselbe sagte wie der Speicher, kostete eine
+        # Anfrage und keine Normalisierung.
         "UNCHANGED_ISSUERS_REPROCESSED": 0,
+        "UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC": len(unchanged),
         "FAILED_ISSUERS": len(failed),
         "RETRY_QUEUE": len(retry_queue),
         "FACTBOOKS_UPDATED": len(updated),
