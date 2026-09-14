@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-13T21:06:02.016Z",
+  "generatedAt": "2026-09-14T05:55:11.167Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.1.0",
@@ -12,7 +12,7 @@
     "ingestStatus": "2026-09-13T21:04:18.454Z",
     "factors": "2026-09-13T21:04:31.031Z",
     "intradaySession": "2026-09-11",
-    "discover": "2026-09-13T21:06:00.111Z"
+    "discover": "2026-09-14T05:55:09.090Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -29,15 +29,15 @@
     "fundamentals": 5,
     "discoverEligible": 6406,
     "stockPages": 6514,
-    "namesMissing": 6499,
+    "namesMissing": 508,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
     "NO_FUNDAMENTALS": 6999,
-    "NAME_MISSING": 6499,
     "NOT_IN_LIVE_SCOPE": 4961,
     "NO_IEX_BARS": 1816,
     "INSUFFICIENT_HISTORY": 857,
+    "NAME_MISSING": 508,
     "NO_DISCOVER_CARD": 490,
     "NO_STOCK_PAGE": 490,
     "NO_FACTOR_ROW:SOURCE_MISSING": 369,
@@ -229,14 +229,13 @@
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": false,
-        "HAS_NAME": false,
+        "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
         "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS",
-        "NAME_MISSING"
+        "NO_FUNDAMENTALS"
       ]
     },
     {
@@ -334,14 +333,13 @@
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": false,
-        "HAS_NAME": false,
+        "HAS_NAME": true,
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
         "NOT_IN_LIVE_SCOPE",
-        "NO_FUNDAMENTALS",
-        "NAME_MISSING"
+        "NO_FUNDAMENTALS"
       ]
     },
     {
