@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Das Brand Brain als Daten (§11). Die Grenzwerte sind Konfiguration und kein Geschmack - eine Aenderung ist ein Commit mit Begruendung.",
+  "identity": {
+    "attributes": ["modern", "hochwertig", "technologieorientiert", "Investment Intelligence",
+                   "visuell stark", "verstaendlich", "datenorientiert", "zukunftsgerichtet"],
+    "notAttributes": ["Clickbait", "Casino-Aesthetik", "Renditeversprechen", "austauschbare KI-Texte",
+                      "erfundene Fakten", "kuenstlicher Zeitdruck"]
+  },
+  "hookPolicy": {
+    "strongHooksAllowed": true,
+    "rule": "Eine Hook darf stark sein. Sie darf nicht mehr versprechen, als der Text einloest. Die Pruefung dafuer steht in social/engines/brand.js (HOOK_PROMISES) und ist blockierend, nicht beratend.",
+    "learningNote": "Welche starken Hooks funktionieren, lernt das System aus Ergebnissen - ohne die Einloesungspflicht zu lockern. Diese Pflicht ist nach §51 invariant."
+  },
+  "limits": {
+    "maxExclamations": 1,
+    "maxConsecutiveCapsWords": 2,
+    "maxEmojiPerHundredChars": 2,
+    "minCaptionLength": 80,
+    "maxHookLength": 120,
+    "maxHashtags": 12
+  },
+  "atlas": {
+    "asset": "assets/atlas.png",
+    "rule": "Original-Asset -> Referenz -> kontrollierte Transformation. NIEMALS Textprompt -> neue Atlas-Version (§12).",
+    "allowedTransforms": ["crop", "scale", "recolor-background", "compose-with-chart",
+                          "compose-with-typography", "reframe"],
+    "approvedVariants": []
+  },
+  "assetRegistry": {
+    "note": "Vorbereitet nach §12. Eingetragen ist nur, was im Repository tatsaechlich liegt - eine Registry mit Wunschassets waere eine Liste von Ausreden.",
+    "entries": [
+      { "id": "atlas", "path": "assets/atlas.png", "type": "character", "controlled": true },
+      { "id": "logo", "path": "assets/vision-universe-logo.png", "type": "logo", "controlled": true }
+    ],
+    "missing": ["Brand Templates", "Fonts", "freigegebene Szenen", "Chart-Vorlagen fuer Social-Formate"]
+  }
+}

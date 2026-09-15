@@ -1,0 +1,562 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — scripts/social/run-social-cycle.mjs
+
+   DER KREISLAUF ALS EIN LAUF (§2, §54)
+
+     SIGNALE -> GELEGENHEITEN -> STRATEGIE -> CONTENT -> VALIDIERUNG
+             -> TERMINIERUNG -> VEROEFFENTLICHUNG -> MESSUNG -> LERNEN
+
+   Dieses Skript ist der Orchestrator aus §39 — kein Agent mit einem
+   Mega-Prompt, sondern die Reihenfolge, in der die Engines einander
+   ihre Contracts uebergeben.
+
+   -------------------------------------------------------------------------
+   WAS ES TUT UND WAS NICHT
+   -------------------------------------------------------------------------
+
+   Es VEROEFFENTLICHT NICHTS, solange der Kill Switch aus ist und die
+   wirksame Autonomiestufe unter 4 liegt. Beides ist heute der Fall, und
+   beides prueft das Skript selbst — nicht der Aufrufer.
+
+   Mit `--provider mock` laeuft der vollstaendige Pfad inklusive
+   "Veroeffentlichung" gegen den Mock. Das ist der Nachweis aus §53: der
+   Kreislauf traegt, und der erste Provider kann ihn durchlaufen.
+
+   -------------------------------------------------------------------------
+   AUSFUEHREN
+   -------------------------------------------------------------------------
+
+     node scripts/social/run-social-cycle.mjs               Trockenlauf
+     node scripts/social/run-social-cycle.mjs --provider mock
+     node scripts/social/run-social-cycle.mjs --out social/data
+
+   Ohne `--out` wird nichts geschrieben. Ein Lauf, der ungefragt
+   Artefakte anlegt, ist im Zweifel der Lauf, der die Produktionsdaten
+   ueberschreibt (MASTER §31.10).
+   ========================================================================= */
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+const Schema       = require(join(ROOT, "social/engines/schema.js"));
+const Signals      = require(join(ROOT, "social/engines/signals.js"));
+const TrendScore   = require(join(ROOT, "social/engines/trend-score.js"));
+const Opportunity  = require(join(ROOT, "social/engines/opportunity.js"));
+const Strategy     = require(join(ROOT, "social/engines/strategy.js"));
+const Content      = require(join(ROOT, "social/engines/content.js"));
+const Memory       = require(join(ROOT, "social/engines/memory.js"));
+const Fatigue      = require(join(ROOT, "social/engines/fatigue.js"));
+const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
+const Analytics    = require(join(ROOT, "social/engines/analytics.js"));
+const Performance  = require(join(ROOT, "social/engines/performance.js"));
+const Learning     = require(join(ROOT, "social/engines/learning.js"));
+const Explain      = require(join(ROOT, "social/engines/explain.js"));
+const Health       = require(join(ROOT, "social/engines/health.js"));
+const Autonomy     = require(join(ROOT, "social/engines/autonomy.js"));
+const KillSwitch   = require(join(ROOT, "social/engines/kill-switch.js"));
+const AuditLog     = require(join(ROOT, "social/engines/audit-log.js"));
+const ProviderCore = require(join(ROOT, "social/engines/provider.js"));
+const Capabilities = require(join(ROOT, "social/engines/capabilities.js"));
+const Brand        = require(join(ROOT, "social/engines/brand.js"));
+
+/* ---------------------------------------------------------------- CLI */
+const argv = process.argv.slice(2);
+function arg(name, fallback) {
+  const i = argv.indexOf(name);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
+}
+const flag = (name) => argv.includes(name);
+
+const PROVIDER_ID = arg("--provider", null);
+const OUT_DIR = arg("--out", null);
+const NOW = arg("--now", new Date().toISOString());
+const VERBOSE = flag("--verbose");
+
+const log = (...parts) => console.log(...parts);
+const detail = (...parts) => { if (VERBOSE) console.log("   ", ...parts); };
+
+/* ------------------------------------------------------ Konfiguration */
+function readJson(relativePath, fallback) {
+  const file = join(ROOT, relativePath);
+  if (!existsSync(file)) return fallback;
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+const killSwitchConfig = readJson("social/config/kill-switch.json", { gates: {} });
+const autonomyConfig = readJson("social/config/autonomy.json", { desiredLevel: 0 });
+const killSwitch = KillSwitch.fromConfig(killSwitchConfig);
+const auditLog = AuditLog.createLog();
+const now = () => new Date(NOW);
+
+/* ----------------------------------------------------------- Provider */
+function buildRegistry() {
+  const registry = ProviderCore.createRegistry();
+  if (PROVIDER_ID === "mock") {
+    const { createMockProvider } = require(join(ROOT, "social/providers/mock/adapter.js"));
+    registry.register(createMockProvider({ now }));
+  } else if (PROVIDER_ID === "meta") {
+    const Meta = require(join(ROOT, "social/providers/meta/adapter.js"));
+    registry.register(Meta.createMetaProvider({
+      /* Die Werte kommen aus der Umgebung und werden NIE ausgegeben. */
+      appId: process.env[Meta.SECRET_NAMES.appId] || null,
+      appSecret: process.env[Meta.SECRET_NAMES.appSecret] || null,
+      tokenProvider: () => process.env[Meta.SECRET_NAMES.accessToken] || null,
+      now
+    }));
+  }
+  return registry;
+}
+
+/* =====================================================================
+   STUFE 1 — SIGNALE
+   ===================================================================== */
+
+/**
+ * Liest interne VU-Ereignisse.
+ *
+ * HEUTE: aus einer Datei, die ein eigener Lauf erzeugt
+ * (scripts/social/collect-vu-signals.mjs). Dieses Skript erfindet keine
+ * Ereignisse und liest die VU-Artefakte nicht selbst — die Trennung ist
+ * Absicht: ein Lauf, der sammelt UND entscheidet, laesst sich nicht
+ * einzeln pruefen.
+ */
+function loadSignals() {
+  const file = join(ROOT, "social/data/signals.json");
+  if (!existsSync(file)) {
+    return { signals: [], internal: {}, reason:
+      "Keine Signaldatei vorhanden (social/data/signals.json). " +
+      "Erzeugen mit: node scripts/social/collect-vu-signals.mjs --out social/data" };
+  }
+  const raw = JSON.parse(readFileSync(file, "utf8"));
+  const signals = [];
+  const internal = {};
+  const rejected = [];
+
+  for (const event of raw.events || []) {
+    const res = Signals.fromInternalEvent(event, { now: NOW });
+    if (!res.ok) { rejected.push({ event: event.type, reason: res.reason }); continue; }
+    signals.push(res.signal);
+    internal[res.signal.signalId] = res.internal;
+  }
+  for (const external of raw.externalSignals || []) {
+    const res = Signals.fromExternalSignal(external, { now: NOW });
+    if (!res.ok) { rejected.push({ event: external.topic, reason: res.reason }); continue; }
+    signals.push(res.signal);
+  }
+  return { signals, internal, rejected, generatedAt: raw.generatedAt || null, reason: null };
+}
+
+/* =====================================================================
+   STUFE 2 — GELEGENHEITEN
+   ===================================================================== */
+
+/**
+ * Plattformpassung — eine MESSUNG, keine Schaetzung.
+ *
+ * Sie fragt den Adapter, was er kann, und das Signal, was es braucht.
+ * Ein Beitrag, der ein Diagramm tragen soll, braucht publishImage; ein
+ * Provider ohne diese Faehigkeit ist keine Plattform fuer diesen Beitrag.
+ *
+ * Ohne registrierten Provider gibt es KEINE Zahl — dann ist die Passung
+ * unbekannt und nicht "mittel".
+ */
+function measurePlatformFit(registry, providerId) {
+  if (!providerId || !registry.has(providerId)) return null;
+  const caps = registry.get(providerId).capabilities;
+  /* Die Faehigkeiten, die ein VU-Beitrag im Kern braucht. */
+  const needed = ["publishImage", "publishCarousel", "altText"];
+  const scores = needed.map((cap) => {
+    if (Capabilities.supports(caps, "publish", cap)) return 1;
+    if (Capabilities.usable(caps, "publish", cap)) return 0.6;
+    if (Capabilities.unknown(caps, "publish", cap)) return null;
+    return 0;
+  });
+  const known = scores.filter((s) => s !== null);
+  if (known.length === 0) return null;
+  /* Analytics zaehlt mit: eine Plattform, deren Wirkung wir nicht messen
+     koennen, passt schlechter zu einem lernenden System. */
+  const analytics = Capabilities.supports(caps, "analytics", "postInsights") ? 1
+                  : (Capabilities.usable(caps, "analytics", "postInsights") ? 0.6 : 0);
+  const publishFit = known.reduce((a, b) => a + b, 0) / known.length;
+  return Math.round((0.7 * publishFit + 0.3 * analytics) * 100) / 100;
+}
+
+/**
+ * Markenpassung auf Themenebene — ebenfalls eine Messung.
+ *
+ * Sie prueft das THEMA gegen das Markenregister, bevor ein Text
+ * existiert. Ein Thema, das sich nur im Casino-Register erzaehlen laesst,
+ * soll gar nicht erst in die Content-Pipeline.
+ */
+function measureBrandFit(topic, entities) {
+  const probe = [topic].concat(entities || []).join(" ");
+  const check = Brand.check({ hook: "", caption: probe, thesis: "" });
+  /* Der Brand-Score ist 0..100 und hier nur so weit belastbar, wie ein
+     Thema ohne Text es zulaesst — deshalb gedeckelt, nicht durchgereicht. */
+  const blocking = check.blocking.filter((b) => !b.id.startsWith("unfulfilled") &&
+                                                b.id !== "hook-without-body");
+  if (blocking.length > 0) return 0;
+  return Math.min(0.9, check.score / 100);
+}
+
+function buildOpportunities(signals, internal, memory, registry, providerId) {
+  const clusters = Signals.cluster(signals);
+  const out = [];
+
+  for (const cluster of clusters) {
+    const primary = signals.find((s) => cluster.signalIds.includes(s.signalId));
+    const meta = internal[primary.signalId] || {};
+
+    /* Der externe Trend Score. Er darf fehlen — dann traegt die
+       Gelegenheit das interne Signal allein (Opportunity: requiresAnyOf). */
+    const externalSignal = signals.find(
+      (s) => cluster.signalIds.includes(s.signalId) && s.signalClass === "SOCIAL");
+    const trend = externalSignal
+      ? TrendScore.score(externalSignal, {
+          marketRelevance: null, vuRelevance: null, audienceFit: null, brandRisk: null,
+          daysSinceOwnCoverage: memory.daysSinceTopic(cluster.topic, NOW),
+          ownPostsOnTopic: memory.countTopic(cluster.topic, 14, NOW)
+        }, { now: NOW })
+      : { available: false, score: null,
+          explanation: "Kein externes Social-Signal zu diesem Thema — die Quelle ist nicht angebunden." };
+
+    const comparable = memory.comparablePerformance({ archetype: null, platform: "instagram" });
+    const daysSince = memory.daysSinceTopic(cluster.topic, NOW);
+
+    const score = Opportunity.score({
+      trendScore: trend.score,
+      vuSignalStrength: meta.strength,
+      /* Publikumsinteresse braucht Publikumssignale. Die Quelle ist nicht
+         angebunden — also null und nicht 0.5 (§45). */
+      audienceInterest: null,
+      historicalPerformance: comparable.mean === null ? null : comparable.mean / 100,
+      historicalSampleSize: comparable.sampleSize,
+      platformFit: measurePlatformFit(registry, providerId),
+      hoursSinceTrigger: primary.observedAt
+        ? (Date.parse(NOW) - Date.parse(primary.observedAt)) / 3600000 : null,
+      contentGap: daysSince === null ? 1 : Math.min(1, daysSince / 30),
+      brandFit: measureBrandFit(cluster.topic, cluster.entities)
+    });
+
+    out.push({
+      opportunity: Schema.contentOpportunity({
+        opportunityId: "opp_" + cluster.key.toLowerCase().replace(/[^a-z0-9]/g, "") + "_" +
+                        String(NOW).slice(0, 10),
+        createdAt: NOW,
+        topic: cluster.topic,
+        entities: cluster.entities,
+        signalIds: cluster.signalIds,
+        score: score.score,
+        components: {},
+        timeSensitivity: meta.timeSensitivity || "TIMELY",
+        provenance: cluster.provenance,
+        explanation: score.explanation
+      }),
+      score,
+      trend,
+      internal: meta,
+      cluster
+    });
+  }
+  return out;
+}
+
+/* =====================================================================
+   DER LAUF
+   ===================================================================== */
+
+async function main() {
+  log("VISION UNIVERSE SOCIAL — Zyklus");
+  log("Zeitpunkt:", NOW);
+  log("Provider: ", PROVIDER_ID || "(keiner — Trockenlauf)");
+  log("");
+
+  const componentStates = {};
+  const registry = buildRegistry();
+
+  /* ---------------------------------------------------- 0. Zustand */
+  const providerHealth = await registry.healthAll();
+  for (const health of providerHealth) {
+    const state = health.status === "ok" ? "PASS"
+                : health.status === "degraded" ? "WARNING"
+                : health.status === "not_configured" ? "UNAVAILABLE" : "FAIL";
+    for (const component of ["providers.auth", "providers.publishing",
+                             "providers.analytics", "providers.audience"]) {
+      componentStates[component] = {
+        state, dataSource: health.provider, lastSuccessAt: health.lastSuccessAt,
+        failureMode: state === "PASS" ? null : health.message,
+        nextAction: health.missing && health.missing.length
+          ? "Fehlende Secrets hinterlegen: " + health.missing.join(", ")
+          : null
+      };
+    }
+    log("Provider " + health.provider + ": " + health.status +
+        (health.missing && health.missing.length ? "  (fehlt: " + health.missing.join(", ") + ")" : ""));
+  }
+  componentStates.killSwitch = { lastSuccessAt: NOW, dataSource: "social/config/kill-switch.json" };
+
+  /* ---------------------------------------------------- 1. Signale */
+  const signalData = loadSignals();
+  if (signalData.reason) {
+    log("\nSignale: KEINE — " + signalData.reason);
+    componentStates["signals.internal"] = { lastSuccessAt: null, failureMode: signalData.reason };
+  } else {
+    log("\nSignale: " + signalData.signals.length +
+        (signalData.rejected.length ? "  (" + signalData.rejected.length + " abgewiesen)" : ""));
+    for (const r of signalData.rejected || []) detail("abgewiesen:", r.event, "—", r.reason);
+    componentStates["signals.internal"] = {
+      lastSuccessAt: signalData.signals.length ? (signalData.generatedAt || NOW) : null,
+      dataSource: "social/data/signals.json",
+      failureMode: signalData.signals.length ? null : "Die Datei enthaelt keine verwertbaren Ereignisse."
+    };
+  }
+  /* Nicht angebundene Quellen melden sich selbst (§45). */
+  for (const id of Object.keys(Signals.PLANNED_SOURCES)) {
+    if (!componentStates[id]) {
+      const status = Signals.plannedSourceStatus(id);
+      componentStates[id] = { state: "UNAVAILABLE", failureMode: status.failureMode,
+                              nextAction: status.nextAction };
+    }
+  }
+
+  /* -------------------------------------------- 2. Gedaechtnis laden */
+  const memoryFile = join(ROOT, "social/data/content-memory.json");
+  const memory = Memory.createMemory(
+    existsSync(memoryFile) ? JSON.parse(readFileSync(memoryFile, "utf8")).entries || [] : []);
+  log("Gedaechtnis: " + memory.size() + " frueherer Beitrag/Beitraege");
+
+  /* ------------------------------------------------ 3. Gelegenheiten */
+  const candidates = buildOpportunities(signalData.signals, signalData.internal, memory,
+                                        registry, PROVIDER_ID || "mock");
+  const proposable = candidates.filter((c) => c.score.proposable);
+  log("\nGelegenheiten: " + candidates.length + " geprueft, " + proposable.length + " vorschlagsfaehig");
+  for (const c of candidates) detail(c.opportunity.topic, "—", c.score.explanation);
+
+  componentStates["intelligence.trend"] = {
+    state: candidates.some((c) => c.trend.available) ? "PASS" : "UNAVAILABLE",
+    failureMode: candidates.some((c) => c.trend.available) ? null
+      : "Keine externe Trendquelle angebunden; der Trend Score enthaelt sich (§45).",
+    lastSuccessAt: candidates.some((c) => c.trend.available) ? NOW : null
+  };
+  componentStates["intelligence.opportunity"] = {
+    lastSuccessAt: candidates.length ? NOW : null,
+    failureMode: candidates.length ? null : "Keine Signale, also keine Gelegenheiten."
+  };
+
+  /* --------------------------------------- 4. Strategie und Content */
+  const packages = [];
+  const rejections = [];
+
+  for (const candidate of Opportunity.prioritize(
+      proposable.map((c) => Object.assign({}, c.score, { topic: c.opportunity.topic, ref: c })),
+      { limit: 5, maxPerTopic: 1 })) {
+    const c = candidate.ref;
+    const opportunity = c.opportunity;
+
+    const strategyDecision = Strategy.decide({
+      opportunityId: opportunity.opportunityId,
+      timeSensitivity: opportunity.timeSensitivity,
+      hasNumbers: c.internal.hasNumbers === true,
+      platform: "instagram"
+    }, {
+      archetypeKnowledge: {},
+      recentArchetypeUsage: memory.distribution("archetype", 30, NOW),
+      timingKnowledge: null
+    }, { currentHour: new Date(NOW).getUTCHours() });
+
+    if (!strategyDecision.decidable) {
+      rejections.push({ topic: opportunity.topic, stage: "STRATEGY", reason: strategyDecision.explanation });
+      continue;
+    }
+
+    const sources = opportunity.provenance.map((p) => ({
+      source: p.source, provider: p.provider, entity: p.entity, metric: p.metric,
+      value: p.value, unit: p.unit, state: p.state, observedAt: p.observedAt
+    }));
+
+    const result = Content.run({
+      opportunity, sources, strategyDecision,
+      visualAvailability: { timeSeries: false, keyNumber: sources.some((s) => s.value !== null) },
+      recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
+      writer: Content.createTemplateWriter()
+    }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+
+    if (!result.ok) {
+      rejections.push({ topic: opportunity.topic, stage: result.failedStage, reason: result.explanation });
+      continue;
+    }
+
+    /* Die Wiederholungssperre laeuft NACH der Pipeline: sie braucht den
+       fertigen Text, um Aehnlichkeit zu messen. */
+    const fatigue = Fatigue.check({
+      topic: result.package.topic, entities: opportunity.entities,
+      archetype: result.package.archetype, visualType: result.package.visualType,
+      hook: result.package.hook, caption: result.package.caption
+    }, memory, { now: NOW });
+
+    if (!fatigue.passed) {
+      rejections.push({ topic: opportunity.topic, stage: "FATIGUE", reason: fatigue.explanation });
+      continue;
+    }
+    result.package.validation.fatigueCheck = { passed: true, explanation: fatigue.explanation };
+
+    packages.push({ candidate: c, strategyDecision, result, fatigue });
+  }
+
+  log("\nContent: " + packages.length + " Paket(e) erzeugt, " + rejections.length + " verworfen");
+  for (const r of rejections) log("   verworfen [" + r.stage + "] " + r.topic + ": " + r.reason);
+
+  componentStates["content.pipeline"] = {
+    lastSuccessAt: packages.length ? NOW : null,
+    failureMode: packages.length ? null
+      : (candidates.length ? "Alle Kandidaten sind an einer Pruefstufe gescheitert." : "Keine Kandidaten.")
+  };
+  componentStates["content.validation"] = {
+    lastSuccessAt: packages.length ? NOW : null,
+    failureMode: packages.length ? null : "Keine Pakete zu pruefen."
+  };
+  componentStates.scheduler = { lastSuccessAt: packages.length ? NOW : null,
+    failureMode: packages.length ? null : "Nichts zu terminieren." };
+  componentStates.queue = { lastSuccessAt: NOW };
+
+  /* ------------------------------------------ 5. Autonomie und Gate */
+  const matrix = Health.buildMatrix(componentStates, { now: NOW });
+  const readiness = Health.toAutonomyReadiness(matrix, {
+    rollbackPresent: true,      /* learning.rollback() ist implementiert und getestet */
+    learningValidated: false,
+    experimentsValidated: false
+  });
+  const autonomy = Autonomy.effectiveLevel(autonomyConfig.desiredLevel || 0, readiness);
+
+  log("\nSystemzustand: " + matrix.overall);
+  log("Autonomie:     " + autonomy.explanation);
+
+  /* ------------------------------------------ 6. Veroeffentlichung */
+  const publicationsFile = join(ROOT, "social/data/publications.json");
+  const orchestrator = Publishing.createOrchestrator({
+    registry, killSwitch, auditLog, now,
+    publications: existsSync(publicationsFile)
+      ? JSON.parse(readFileSync(publicationsFile, "utf8")).publications || [] : []
+  });
+
+  const published = [];
+  for (const entry of packages) {
+    const pkg = entry.result.package;
+    const providerId = PROVIDER_ID || "mock";
+    const accountId = providerId === "mock" ? "mock_account_1"
+                    : (process.env.META_IG_ACCOUNT_ID ? "meta:" + process.env.META_IG_ACCOUNT_ID : null);
+
+    if (!accountId) {
+      log("   " + pkg.topic + ": kein Zielkonto — es wird nichts veroeffentlicht.");
+      continue;
+    }
+
+    const intent = orchestrator.intend({
+      packageId: pkg.packageId, providerId, accountId,
+      scheduledFor: null, autonomyLevel: autonomy.effective,
+      strategyVersion: entry.strategyDecision.parametersVersion
+    });
+    if (!intent.created) {
+      log("   " + pkg.topic + ": bereits geplant (" + intent.reason + ")");
+      continue;
+    }
+    orchestrator.transition(intent.publication.publicationId, "DRAFT");
+    orchestrator.transition(intent.publication.publicationId, "VALIDATED");
+    orchestrator.transition(intent.publication.publicationId, "READY");
+
+    const gate = killSwitch.allows(providerId, "publish");
+    const mayPublish = gate.allowed && Autonomy.allowsUnattendedPublish(autonomy.effective);
+
+    if (!mayPublish) {
+      log("   " + pkg.topic + ": bleibt in READY — " +
+          (!gate.allowed ? gate.reason : "Autonomiestufe " + autonomy.effective + " genuegt nicht."));
+      auditLog.record({
+        decision: "cycle.hold", inputs: [pkg.packageId], provider: providerId, result: "blocked",
+        autonomyLevel: autonomy.effective,
+        reason: !gate.allowed ? gate.reason : "Autonomiestufe zu niedrig fuer unbeaufsichtigtes Posten."
+      });
+      continue;
+    }
+
+    const media = { type: "IMAGE", url: pkg.assets[0] || "https://example.invalid/platzhalter.jpg",
+                    caption: pkg.caption };
+    const res = await orchestrator.publish(intent.publication.publicationId, media,
+      { producedBy: "run-social-cycle" });
+    log("   " + pkg.topic + ": " + (res.ok ? "veroeffentlicht" : "fehlgeschlagen — " + res.message));
+    if (res.ok) published.push({ publication: res.publication, package: pkg });
+  }
+
+  /* ------------------------------------------------ 7. Erklaerungen */
+  log("\n--- WARUM DIESE BEITRAEGE ---");
+  for (const entry of packages) {
+    const explanation = Explain.whyThisPost({
+      package: entry.result.package,
+      trend: entry.candidate.trend,
+      opportunity: entry.candidate.score,
+      strategy: entry.strategyDecision,
+      fact: entry.result.package.validation.factCheck,
+      brand: entry.result.package.validation.brandCheck,
+      fatigue: entry.fatigue,
+      visual: entry.result.visual,
+      autonomy,
+      killSwitch: killSwitch.allows(PROVIDER_ID || "mock", "publish")
+    });
+    log("\n" + entry.result.package.topic);
+    log("  " + explanation.summary);
+    for (const section of explanation.sections) log("  " + section.title + ": " + section.text);
+  }
+
+  /* ---------------------------------------------------- 8. Artefakte */
+  const report = {
+    generatedAt: NOW,
+    provider: PROVIDER_ID,
+    health: matrix,
+    autonomy,
+    signals: signalData.signals.length,
+    opportunities: candidates.map((c) => ({
+      opportunityId: c.opportunity.opportunityId, topic: c.opportunity.topic,
+      score: c.score.score, proposable: c.score.proposable, explanation: c.score.explanation
+    })),
+    packages: packages.map((p) => ({
+      packageId: p.result.package.packageId, topic: p.result.package.topic,
+      archetype: p.result.package.archetype, visualType: p.result.package.visualType,
+      hook: p.result.package.hook
+    })),
+    rejections,
+    published: published.map((p) => ({
+      publicationId: p.publication.publicationId, state: p.publication.state,
+      externalPostId: p.publication.externalPostId
+    })),
+    auditEntries: auditLog.size()
+  };
+
+  if (OUT_DIR) {
+    const dir = join(ROOT, OUT_DIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "cycle-report.json"), JSON.stringify(report, null, 2) + "\n");
+    writeFileSync(join(dir, "publications.json"),
+      JSON.stringify({ generatedAt: NOW, publications: orchestrator.all() }, null, 2) + "\n");
+    writeFileSync(join(dir, "audit-log.json"),
+      JSON.stringify({ generatedAt: NOW, entries: auditLog.entries() }, null, 2) + "\n");
+    writeFileSync(join(dir, "health.json"), JSON.stringify(matrix, null, 2) + "\n");
+    log("\nGeschrieben nach " + OUT_DIR + "/");
+  } else {
+    log("\n(Kein --out: es wurde nichts geschrieben.)");
+  }
+
+  log("\nZusammenfassung: " + report.signals + " Signale, " + report.opportunities.length +
+      " Gelegenheiten, " + report.packages.length + " Pakete, " + report.published.length +
+      " veroeffentlicht, Systemzustand " + matrix.overall + ", Autonomie " + autonomy.effective + ".");
+}
+
+main().catch((err) => {
+  /* Ein Fehler hier ist ein Baufehler, kein Betriebszustand — er soll
+     den Lauf rot machen. Die Meldung wird gekuerzt, damit ein Stacktrace
+     keine Umgebungswerte mitschleppt. */
+  console.error("Zyklus abgebrochen:", String(err && err.message).slice(0, 400));
+  process.exitCode = 1;
+});
