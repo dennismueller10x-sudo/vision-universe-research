@@ -116,6 +116,22 @@ async function main() {
   record("Worker antwortet", "PASS", "HTTP 200 auf /health");
   record("Worker meldet sich als lebendig", health.body.alive === true ? "PASS" : "FAIL");
 
+  /* Welcher Meta-Dialog gilt. Das ist seit dem Business-Login-Befund die
+     erste Frage bei jeder Redirect-URI-Ablehnung: ein klassischer Link
+     gegen eine Business-Konfiguration wird abgelehnt, und die Ablehnung
+     sieht aus wie ein Problem mit der Adresse. */
+  report.loginMode = health.body.loginMode || null;
+  if (report.loginMode === "business") {
+    record("Meta-Dialog", "PASS", "Business-Anmeldung (config_id) — die Rechte stehen in der Konfiguration.");
+  } else if (report.loginMode === "classic") {
+    record("Meta-Dialog", "WARN",
+      "Klassische Anmeldung (scope). Wurde bei Meta eine Login-for-Business-Konfiguration " +
+      "angelegt, ist das der falsche Dialog: META_LOGIN_CONFIG_ID setzen.");
+  } else {
+    record("Meta-Dialog", "WARN",
+      "Der Worker meldet keinen loginMode — er laeuft in einer Fassung vor dieser Pruefung.");
+  }
+
   report.workerConfigured = health.body.configured === true;
   report.missingConfiguration = health.body.missingConfiguration || [];
   report.weakConfiguration = health.body.weakConfiguration || [];
