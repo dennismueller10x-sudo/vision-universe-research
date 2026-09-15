@@ -35,7 +35,7 @@ KV-Namespace `582accaa66bf471a833b3813a6d2a45b`, gebunden als `VU_SOCIAL_KV`.
 - Ein Instagram-Konto, das ein **Professional-Konto** ist (Business oder Creator).
 - Eine **Facebook-Seite**, die mit diesem Instagram-Konto verbunden ist.
 
-Wenn Instagram und Facebook-Seite nicht verbunden sind, bricht Schritt 3 mit einer
+Wenn Instagram und Facebook-Seite nicht verbunden sind, bricht Schritt 4 mit einer
 klaren Meldung ab und speichert nichts. Das ist dann eine Einrichtungsfrage in der
 Meta-Business-Suite, kein Fehler dieses Systems.
 
@@ -72,7 +72,7 @@ Der Workflow koennte einen starken Schluessel erzeugen und als Cloudflare-Secret
 setzen — technisch ist das kein Problem. Er koennte ihn Ihnen aber nicht geben.
 Cloudflare-Secrets sind nur schreibbar, nicht lesbar; jeder andere Weg zu Ihnen
 fuehrt durch die GitHub-Ausgabe, und damit waere der Schluessel dort, wo er nicht
-sein soll. Ein Schluessel, den Sie in Schritt 3 brauchen und niemand kennt, ist
+sein soll. Ein Schluessel, den Sie in Schritt 4 brauchen und niemand kennt, ist
 kein Schluessel, sondern ein Schloss ohne Zugang.
 
 Deshalb entsteht er bei Ihnen und bleibt bei Ihnen.
@@ -86,11 +86,11 @@ openssl rand -hex 32
 ```
 
 64 Zeichen, nur `0-9a-f`. **Legen Sie den Wert zuerst in Ihrem Passwortmanager
-ab** — Sie brauchen ihn in Schritt 3, und lesen koennen Sie ihn danach nirgends
+ab** — Sie brauchen ihn in Schritt 4, und lesen koennen Sie ihn danach nirgends
 mehr.
 
 `-hex` statt `-base64` hat einen Grund: base64 erzeugt `+`, `/` und `=`. Genau
-diese drei Zeichen haben in einer URL eine eigene Bedeutung, und in Schritt 3
+diese drei Zeichen haben in einer URL eine eigene Bedeutung, und in Schritt 4
 steht der Schluessel in einer URL. Ein Schluessel, der beim Anklicken still
 verstuemmelt wird, kostet eine halbe Stunde Fehlersuche an der falschen Stelle.
 
@@ -114,11 +114,60 @@ Danach ist `/health` immer noch offen, aber `missingConfiguration` ist leer.
 
 ---
 
-## Schritt 2 — Redirect-URI in der Meta-App eintragen
+## Schritt 2 — Konfigurations-ID hinterlegen
+
+Sie haben bei Meta eine **Facebook-Login-for-Business-Konfiguration** angelegt.
+Das ist ein anderer Dialog als die klassische Facebook-Anmeldung, und er wird
+anders aufgerufen: die Rechte stehen dann in Ihrer Konfiguration, und die Adresse
+nennt nur deren `config_id`. `scope` darf dabei nicht mitgeschickt werden.
+
+Die vollstaendige Analyse steht in
+[`VU_SOCIAL_META_LOGIN_DIAGNOSE.md`](VU_SOCIAL_META_LOGIN_DIAGNOSE.md).
+
+Eintragen in `workers/vision-universe-social/wrangler.toml`:
+
+```toml
+META_LOGIN_CONFIG_ID = "IHRE-KONFIGURATIONS-ID"
+```
+
+Das ist eine **Variable, kein Secret**: die ID steht im Dialog-Link, den jeder
+Nutzer ohnehin sieht, und ist ohne App-Secret wertlos.
+
+Pruefen, welcher Dialog gilt — ohne Schluessel:
+
+```
+https://vision-universe-social.little-credit-15d3.workers.dev/health
+```
+
+Erwartet: `"loginMode": "business"`. Steht dort `"classic"`, ist die ID nicht
+angekommen.
+
+### Rechte in der Konfiguration
+
+Ihre Konfiguration traegt `instagram_basic`, `instagram_content_publish` und
+`instagram_manage_insights`. Es fehlt **`pages_show_list`**.
+
+Der Weg zum Instagram-Konto fuehrt ueber die Facebook-Seite: `/me/accounts`
+liefert die Seite und daran haengend das Instagram-Konto. Ohne
+`pages_show_list` antwortet Meta dort mit einer leeren Liste — nicht mit einem
+Fehler. Ohne dieses Recht kann die Verbindung nicht zustande kommen.
+
+`instagram_manage_comments` fehlt ebenfalls. Das ist unschaedlich: es gehoert
+nicht zu den Grundrechten. Die davon abhaengigen Faehigkeiten stehen dann auf
+`null` — ungeprueft, nicht "nicht verfuegbar".
+
+---
+
+## Schritt 3 — Redirect-URI in der Meta-App eintragen
 
 Diese Adresse muss **zeichengenau** in Ihrer Meta-App stehen. Meta vergleicht sie
 Zeichen fuer Zeichen; ein zusaetzlicher Schraegstrich am Ende genuegt fuer eine
 Absage.
+
+> **Bevor Sie hier weiter suchen:** bis jetzt hat der Worker den *klassischen*
+> Dialog aufgerufen. Jede bisherige Ablehnung beantwortet damit die falsche
+> Frage. Setzen Sie erst Schritt 2, dann pruefen Sie erneut — moeglicherweise
+> war die URI die ganze Zeit in Ordnung.
 
 Im Meta-App-Dashboard:
 
@@ -139,7 +188,7 @@ Speichern nicht vergessen.
 
 ---
 
-## Schritt 3 — DAS OWNER GATE: Autorisieren
+## Schritt 4 — DAS OWNER GATE: Autorisieren
 
 > **Dies ist der Schritt, der Ihre persoenliche Meta-Autorisierung verlangt.**
 > Er kann nicht automatisiert werden — und er soll es nicht.
@@ -239,7 +288,7 @@ gespeichert**, und eine bestehende Verbindung ist unveraendert.
 
 ---
 
-## Schritt 4 — Verifizieren
+## Schritt 5 — Verifizieren
 
 ```bash
 curl -s -H "Authorization: Bearer $VU_SOCIAL_ADMIN_KEY" \
@@ -270,7 +319,7 @@ Feld `note` sagt bei jeder, was los war.
 
 ---
 
-## Schritt 5 — Den Zustand ins Repository holen
+## Schritt 6 — Den Zustand ins Repository holen
 
 Damit das Command Center die Verbindung anzeigt, hinterlegen Sie zwei
 **GitHub-Actions-Secrets** (Settings → Secrets and variables → Actions):
@@ -296,7 +345,7 @@ Meta-Verbindung**.
 
 ---
 
-## Schritt 6 — Zielkonto festnageln (empfohlen)
+## Schritt 7 — Zielkonto festnageln (empfohlen)
 
 Sobald die Instagram-Account-ID bekannt ist, tragen Sie sie in `wrangler.toml`
 ein:
@@ -345,13 +394,13 @@ nichts heraus.
 
 | Kriterium | Nachweis | Haengt an |
 |---|---|---|
-| OAuth produktiv funktionsfaehig | Schritt 3 endet auf "Die Verbindung steht." | Schritt 1, 2, 3 |
-| Instagram-Konto verbunden | Kontoname und ID auf der Erfolgsseite | Schritt 3 |
-| Token sicher gespeichert | Cloudflare KV; kein Endpunkt gibt ihn heraus | Schritt 3 |
-| Instagram-Konto automatisch aufgeloest | ueber die Facebook-Seite, ohne Handeingabe | Schritt 3 |
-| Reale Permissions verifiziert | Schritt 4, Zeile "Tatsaechliche Rechte" | Schritt 3 |
-| Insights lesbar | Schritt 4, "Insights Capability" | Schritt 3 |
-| Publishing Capability nachgewiesen | Schritt 4, ueber das erteilte Recht | Schritt 3 |
+| OAuth produktiv funktionsfaehig | Schritt 4 endet auf "Die Verbindung steht." | Schritt 1-4 |
+| Instagram-Konto verbunden | Kontoname und ID auf der Erfolgsseite | Schritt 4 |
+| Token sicher gespeichert | Cloudflare KV; kein Endpunkt gibt ihn heraus | Schritt 4 |
+| Instagram-Konto automatisch aufgeloest | ueber die Facebook-Seite, ohne Handeingabe | Schritt 4 |
+| Reale Permissions verifiziert | Schritt 5, Zeile "Tatsaechliche Rechte" | Schritt 4 |
+| Insights lesbar | Schritt 5, "Insights Capability" | Schritt 4 |
+| Publishing Capability nachgewiesen | Schritt 5, ueber das erteilte Recht | Schritt 4 |
 
 Alle sieben haengen an derselben Handlung: Ihrer Autorisierung bei Meta. Bis
 dahin steht in der Faehigkeitsmatrix ueberall `null` — **ungeprueft**, nicht
