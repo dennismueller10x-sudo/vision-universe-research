@@ -1,0 +1,4542 @@
+{
+ "schemaVersion": "index-membership-1.0.0",
+ "engineVersion": "index-membership-1.0.0",
+ "indexId": "SP500",
+ "indexName": "S&P 500",
+ "source": "ETF_HOLDINGS",
+ "proxy": {
+  "etf": "SPY",
+  "issuer": "State Street (SPDR)",
+  "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
+  "format": "SSGA_XLSX"
+ },
+ "asOf": "2026-09-15",
+ "asOfSource": "FETCH_DATE",
+ "fetchedAt": "2026-09-15T11:05:38.631Z",
+ "holdingsCount": 504,
+ "memberCount": 498,
+ "unmatchedCount": 6,
+ "members": [
+  {
+   "symbol": "NVDA",
+   "securityId": "ref_NVDA",
+   "name": "NVIDIA CORP",
+   "weight": 7.777528,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NVDA"
+  },
+  {
+   "symbol": "AAPL",
+   "securityId": "ref_AAPL",
+   "name": "APPLE INC",
+   "weight": 7.446442,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AAPL"
+  },
+  {
+   "symbol": "MSFT",
+   "securityId": "ref_MSFT",
+   "name": "MICROSOFT CORP",
+   "weight": 5.714698,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MSFT"
+  },
+  {
+   "symbol": "AMZN",
+   "securityId": "ref_AMZN",
+   "name": "AMAZON.COM INC",
+   "weight": 3.777991,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMZN"
+  },
+  {
+   "symbol": "GOOGL",
+   "securityId": "ref_GOOGL",
+   "name": "ALPHABET INC CL A",
+   "weight": 3.118531,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GOOGL"
+  },
+  {
+   "symbol": "GOOG",
+   "securityId": "ref_GOOG",
+   "name": "ALPHABET INC CL C",
+   "weight": 2.487183,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GOOG"
+  },
+  {
+   "symbol": "AVGO",
+   "securityId": "ref_AVGO",
+   "name": "BROADCOM INC",
+   "weight": 2.484413,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AVGO"
+  },
+  {
+   "symbol": "META",
+   "securityId": "ref_META",
+   "name": "META PLATFORMS INC CLASS A",
+   "weight": 2.224915,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "META"
+  },
+  {
+   "symbol": "MU",
+   "securityId": "ref_MU",
+   "name": "MICRON TECHNOLOGY INC",
+   "weight": 1.586124,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MU"
+  },
+  {
+   "symbol": "TSLA",
+   "securityId": "ref_TSLA",
+   "name": "TESLA INC",
+   "weight": 1.538231,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TSLA"
+  },
+  {
+   "symbol": "BRK-B",
+   "securityId": "ref_BRK_B",
+   "name": "BERKSHIRE HATHAWAY INC CL B",
+   "weight": 1.436966,
+   "sector": "-",
+   "matched": "SEPARATOR",
+   "sourceTicker": "BRK.B"
+  },
+  {
+   "symbol": "JPM",
+   "securityId": "ref_JPM",
+   "name": "JPMORGAN CHASE + CO",
+   "weight": 1.427989,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JPM"
+  },
+  {
+   "symbol": "LLY",
+   "securityId": "ref_LLY",
+   "name": "ELI LILLY + CO",
+   "weight": 1.370552,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LLY"
+  },
+  {
+   "symbol": "AMD",
+   "securityId": "ref_AMD",
+   "name": "ADVANCED MICRO DEVICES",
+   "weight": 1.224575,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMD"
+  },
+  {
+   "symbol": "XOM",
+   "securityId": "ref_XOM",
+   "name": "EXXONMOBIL HOLDINGS CORP",
+   "weight": 1.041416,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "XOM"
+  },
+  {
+   "symbol": "JNJ",
+   "securityId": "ref_JNJ",
+   "name": "JOHNSON + JOHNSON",
+   "weight": 0.975717,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JNJ"
+  },
+  {
+   "symbol": "V",
+   "securityId": "ref_V",
+   "name": "VISA INC CLASS A SHARES",
+   "weight": 0.947894,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "V"
+  },
+  {
+   "symbol": "INTC",
+   "securityId": "ref_INTC",
+   "name": "INTEL CORP",
+   "weight": 0.730514,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "INTC"
+  },
+  {
+   "symbol": "WMT",
+   "securityId": "ref_WMT",
+   "name": "WALMART INC",
+   "weight": 0.727786,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WMT"
+  },
+  {
+   "symbol": "MA",
+   "securityId": "ref_MA",
+   "name": "MASTERCARD INC   A",
+   "weight": 0.705355,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MA"
+  },
+  {
+   "symbol": "ABBV",
+   "securityId": "ref_ABBV",
+   "name": "ABBVIE INC",
+   "weight": 0.703835,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ABBV"
+  },
+  {
+   "symbol": "CSCO",
+   "securityId": "ref_CSCO",
+   "name": "CISCO SYSTEMS INC",
+   "weight": 0.661578,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CSCO"
+  },
+  {
+   "symbol": "COST",
+   "securityId": "ref_COST",
+   "name": "COSTCO WHOLESALE CORP",
+   "weight": 0.620408,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COST"
+  },
+  {
+   "symbol": "PLTR",
+   "securityId": "ref_PLTR",
+   "name": "PALANTIR TECHNOLOGIES INC A",
+   "weight": 0.605524,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PLTR"
+  },
+  {
+   "symbol": "CVX",
+   "securityId": "ref_CVX",
+   "name": "CHEVRON CORP",
+   "weight": 0.604443,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CVX"
+  },
+  {
+   "symbol": "BAC",
+   "securityId": "ref_BAC",
+   "name": "BANK OF AMERICA CORP",
+   "weight": 0.590875,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BAC"
+  },
+  {
+   "symbol": "CAT",
+   "securityId": "ref_CAT",
+   "name": "CATERPILLAR INC",
+   "weight": 0.549515,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CAT"
+  },
+  {
+   "symbol": "MRK",
+   "securityId": "ref_MRK",
+   "name": "MERCK + CO. INC.",
+   "weight": 0.541379,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MRK"
+  },
+  {
+   "symbol": "UNH",
+   "securityId": "ref_UNH",
+   "name": "UNITEDHEALTH GROUP INC",
+   "weight": 0.530047,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UNH"
+  },
+  {
+   "symbol": "KO",
+   "securityId": "ref_KO",
+   "name": "COCA COLA CO/THE",
+   "weight": 0.523325,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KO"
+  },
+  {
+   "symbol": "LRCX",
+   "securityId": "ref_LRCX",
+   "name": "LAM RESEARCH CORP",
+   "weight": 0.520659,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LRCX"
+  },
+  {
+   "symbol": "PG",
+   "securityId": "ref_PG",
+   "name": "PROCTER + GAMBLE CO/THE",
+   "weight": 0.51776,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PG"
+  },
+  {
+   "symbol": "NFLX",
+   "securityId": "ref_NFLX",
+   "name": "NETFLIX INC",
+   "weight": 0.514611,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NFLX"
+  },
+  {
+   "symbol": "AMAT",
+   "securityId": "ref_AMAT",
+   "name": "APPLIED MATERIALS INC",
+   "weight": 0.512528,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMAT"
+  },
+  {
+   "symbol": "GE",
+   "securityId": "ref_GE",
+   "name": "GENERAL ELECTRIC",
+   "weight": 0.504193,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GE"
+  },
+  {
+   "symbol": "HD",
+   "securityId": "ref_HD",
+   "name": "HOME DEPOT INC",
+   "weight": 0.471132,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HD"
+  },
+  {
+   "symbol": "PM",
+   "securityId": "ref_PM",
+   "name": "PHILIP MORRIS INTERNATIONAL",
+   "weight": 0.462114,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PM"
+  },
+  {
+   "symbol": "PANW",
+   "securityId": "ref_PANW",
+   "name": "PALO ALTO NETWORKS INC",
+   "weight": 0.461456,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PANW"
+  },
+  {
+   "symbol": "GS",
+   "securityId": "ref_GS",
+   "name": "GOLDMAN SACHS GROUP INC",
+   "weight": 0.44367,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GS"
+  },
+  {
+   "symbol": "WFC",
+   "securityId": "ref_WFC",
+   "name": "WELLS FARGO + CO",
+   "weight": 0.413051,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WFC"
+  },
+  {
+   "symbol": "RTX",
+   "securityId": "ref_RTX",
+   "name": "RTX CORP",
+   "weight": 0.400418,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RTX"
+  },
+  {
+   "symbol": "MS",
+   "securityId": "ref_MS",
+   "name": "MORGAN STANLEY",
+   "weight": 0.376777,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MS"
+  },
+  {
+   "symbol": "ORCL",
+   "securityId": "ref_ORCL",
+   "name": "ORACLE CORP",
+   "weight": 0.374104,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ORCL"
+  },
+  {
+   "symbol": "TXN",
+   "securityId": "ref_TXN",
+   "name": "TEXAS INSTRUMENTS INC",
+   "weight": 0.364886,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TXN"
+  },
+  {
+   "symbol": "CRWD",
+   "securityId": "ref_CRWD",
+   "name": "CROWDSTRIKE HOLDINGS INC   A",
+   "weight": 0.364745,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CRWD"
+  },
+  {
+   "symbol": "GEV",
+   "securityId": "ref_GEV",
+   "name": "GE VERNOVA INC",
+   "weight": 0.357928,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GEV"
+  },
+  {
+   "symbol": "IBM",
+   "securityId": "ref_IBM",
+   "name": "INTL BUSINESS MACHINES CORP",
+   "weight": 0.356176,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IBM"
+  },
+  {
+   "symbol": "C",
+   "securityId": "ref_C",
+   "name": "CITIGROUP INC",
+   "weight": 0.353382,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "C"
+  },
+  {
+   "symbol": "TMO",
+   "securityId": "ref_TMO",
+   "name": "THERMO FISHER SCIENTIFIC INC",
+   "weight": 0.346784,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TMO"
+  },
+  {
+   "symbol": "KLAC",
+   "securityId": "ref_KLAC",
+   "name": "KLA CORP",
+   "weight": 0.336193,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KLAC"
+  },
+  {
+   "symbol": "LIN",
+   "securityId": "ref_LIN",
+   "name": "LINDE PLC",
+   "weight": 0.326665,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LIN"
+  },
+  {
+   "symbol": "VZ",
+   "securityId": "ref_VZ",
+   "name": "VERIZON COMMUNICATIONS INC",
+   "weight": 0.325918,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VZ"
+  },
+  {
+   "symbol": "CRM",
+   "securityId": "ref_CRM",
+   "name": "SALESFORCE INC",
+   "weight": 0.322918,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CRM"
+  },
+  {
+   "symbol": "AMGN",
+   "securityId": "ref_AMGN",
+   "name": "AMGEN INC",
+   "weight": 0.313434,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMGN"
+  },
+  {
+   "symbol": "ANET",
+   "securityId": "ref_ANET",
+   "name": "ARISTA NETWORKS INC",
+   "weight": 0.295118,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ANET"
+  },
+  {
+   "symbol": "APH",
+   "securityId": "ref_APH",
+   "name": "AMPHENOL CORP CL A",
+   "weight": 0.294128,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APH"
+  },
+  {
+   "symbol": "MRVL",
+   "securityId": "ref_MRVL",
+   "name": "MARVELL TECHNOLOGY INC",
+   "weight": 0.291451,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MRVL"
+  },
+  {
+   "symbol": "QCOM",
+   "securityId": "ref_QCOM",
+   "name": "QUALCOMM INC",
+   "weight": 0.288928,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "QCOM"
+  },
+  {
+   "symbol": "DIS",
+   "securityId": "ref_DIS",
+   "name": "WALT DISNEY CO/THE",
+   "weight": 0.286946,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DIS"
+  },
+  {
+   "symbol": "PEP",
+   "securityId": "ref_PEP",
+   "name": "PEPSICO INC",
+   "weight": 0.283575,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PEP"
+  },
+  {
+   "symbol": "T",
+   "securityId": "ref_T",
+   "name": "AT+T INC",
+   "weight": 0.280287,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "T"
+  },
+  {
+   "symbol": "MCD",
+   "securityId": "ref_MCD",
+   "name": "MCDONALD S CORP",
+   "weight": 0.278413,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MCD"
+  },
+  {
+   "symbol": "GILD",
+   "securityId": "ref_GILD",
+   "name": "GILEAD SCIENCES INC",
+   "weight": 0.275049,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GILD"
+  },
+  {
+   "symbol": "STX",
+   "securityId": "ref_STX",
+   "name": "SEAGATE TECHNOLOGY HOLDINGS",
+   "weight": 0.274794,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "STX"
+  },
+  {
+   "symbol": "ABT",
+   "securityId": "ref_ABT",
+   "name": "ABBOTT LABORATORIES",
+   "weight": 0.273258,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ABT"
+  },
+  {
+   "symbol": "ADI",
+   "securityId": "ref_ADI",
+   "name": "ANALOG DEVICES INC",
+   "weight": 0.268209,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ADI"
+  },
+  {
+   "symbol": "SCHW",
+   "securityId": "ref_SCHW",
+   "name": "SCHWAB (CHARLES) CORP",
+   "weight": 0.266952,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SCHW"
+  },
+  {
+   "symbol": "AXP",
+   "securityId": "ref_AXP",
+   "name": "AMERICAN EXPRESS CO",
+   "weight": 0.265461,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AXP"
+  },
+  {
+   "symbol": "DE",
+   "securityId": "ref_DE",
+   "name": "DEERE + CO",
+   "weight": 0.260464,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DE"
+  },
+  {
+   "symbol": "NEE",
+   "securityId": "ref_NEE",
+   "name": "NEXTERA ENERGY INC",
+   "weight": 0.259034,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NEE"
+  },
+  {
+   "symbol": "UNP",
+   "securityId": "ref_UNP",
+   "name": "UNION PACIFIC CORP",
+   "weight": 0.257551,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UNP"
+  },
+  {
+   "symbol": "COP",
+   "securityId": "ref_COP",
+   "name": "CONOCOPHILLIPS",
+   "weight": 0.25334,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COP"
+  },
+  {
+   "symbol": "BA",
+   "securityId": "ref_BA",
+   "name": "BOEING CO/THE",
+   "weight": 0.25224,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BA"
+  },
+  {
+   "symbol": "WELL",
+   "securityId": "ref_WELL",
+   "name": "WELLTOWER INC",
+   "weight": 0.251561,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WELL"
+  },
+  {
+   "symbol": "PFE",
+   "securityId": "ref_PFE",
+   "name": "PFIZER INC",
+   "weight": 0.240293,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PFE"
+  },
+  {
+   "symbol": "DELL",
+   "securityId": "ref_DELL",
+   "name": "DELL TECHNOLOGIES  C",
+   "weight": 0.235131,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DELL"
+  },
+  {
+   "symbol": "BLK",
+   "securityId": "ref_BLK",
+   "name": "BLACKROCK INC",
+   "weight": 0.234079,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BLK"
+  },
+  {
+   "symbol": "ETN",
+   "securityId": "ref_ETN",
+   "name": "EATON CORP PLC",
+   "weight": 0.232307,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ETN"
+  },
+  {
+   "symbol": "UBER",
+   "securityId": "ref_UBER",
+   "name": "UBER TECHNOLOGIES INC",
+   "weight": 0.224956,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UBER"
+  },
+  {
+   "symbol": "WDC",
+   "securityId": "ref_WDC",
+   "name": "WESTERN DIGITAL CORP",
+   "weight": 0.223842,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WDC"
+  },
+  {
+   "symbol": "NOW",
+   "securityId": "ref_NOW",
+   "name": "SERVICENOW INC",
+   "weight": 0.223337,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NOW"
+  },
+  {
+   "symbol": "TJX",
+   "securityId": "ref_TJX",
+   "name": "TJX COMPANIES INC",
+   "weight": 0.211999,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TJX"
+  },
+  {
+   "symbol": "BKNG",
+   "securityId": "ref_BKNG",
+   "name": "BOOKING HOLDINGS INC",
+   "weight": 0.206747,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BKNG"
+  },
+  {
+   "symbol": "ISRG",
+   "securityId": "ref_ISRG",
+   "name": "INTUITIVE SURGICAL INC",
+   "weight": 0.203567,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ISRG"
+  },
+  {
+   "symbol": "VRTX",
+   "securityId": "ref_VRTX",
+   "name": "VERTEX PHARMACEUTICALS INC",
+   "weight": 0.20051,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VRTX"
+  },
+  {
+   "symbol": "NEM",
+   "securityId": "ref_NEM",
+   "name": "NEWMONT CORP",
+   "weight": 0.199791,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NEM"
+  },
+  {
+   "symbol": "BMY",
+   "securityId": "ref_BMY",
+   "name": "BRISTOL MYERS SQUIBB CO",
+   "weight": 0.199058,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BMY"
+  },
+  {
+   "symbol": "PGR",
+   "securityId": "ref_PGR",
+   "name": "PROGRESSIVE CORP",
+   "weight": 0.19639,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PGR"
+  },
+  {
+   "symbol": "COF",
+   "securityId": "ref_COF",
+   "name": "CAPITAL ONE FINANCIAL CORP",
+   "weight": 0.195669,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COF"
+  },
+  {
+   "symbol": "PLD",
+   "securityId": "ref_PLD",
+   "name": "PROLOGIS INC",
+   "weight": 0.194916,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PLD"
+  },
+  {
+   "symbol": "DHR",
+   "securityId": "ref_DHR",
+   "name": "DANAHER CORP",
+   "weight": 0.194693,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DHR"
+  },
+  {
+   "symbol": "SPGI",
+   "securityId": "ref_SPGI",
+   "name": "S+P GLOBAL INC",
+   "weight": 0.192974,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SPGI"
+  },
+  {
+   "symbol": "CB",
+   "securityId": "ref_CB",
+   "name": "CHUBB LTD",
+   "weight": 0.187507,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CB"
+  },
+  {
+   "symbol": "CVS",
+   "securityId": "ref_CVS",
+   "name": "CVS HEALTH CORP",
+   "weight": 0.185388,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CVS"
+  },
+  {
+   "symbol": "MDT",
+   "securityId": "ref_MDT",
+   "name": "MEDTRONIC PLC",
+   "weight": 0.183117,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MDT"
+  },
+  {
+   "symbol": "ACN",
+   "securityId": "ref_ACN",
+   "name": "ACCENTURE PLC CL A",
+   "weight": 0.182022,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ACN"
+  },
+  {
+   "symbol": "PH",
+   "securityId": "ref_PH",
+   "name": "PARKER HANNIFIN CORP",
+   "weight": 0.178097,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PH"
+  },
+  {
+   "symbol": "MO",
+   "securityId": "ref_MO",
+   "name": "ALTRIA GROUP INC",
+   "weight": 0.176456,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MO"
+  },
+  {
+   "symbol": "MPC",
+   "securityId": "ref_MPC",
+   "name": "MARATHON PETROLEUM CORP",
+   "weight": 0.175954,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MPC"
+  },
+  {
+   "symbol": "VLO",
+   "securityId": "ref_VLO",
+   "name": "VALERO ENERGY CORP",
+   "weight": 0.172863,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VLO"
+  },
+  {
+   "symbol": "SBUX",
+   "securityId": "ref_SBUX",
+   "name": "STARBUCKS CORP",
+   "weight": 0.171694,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SBUX"
+  },
+  {
+   "symbol": "GLW",
+   "securityId": "ref_GLW",
+   "name": "CORNING INC",
+   "weight": 0.17103,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GLW"
+  },
+  {
+   "symbol": "LOW",
+   "securityId": "ref_LOW",
+   "name": "LOWE S COS INC",
+   "weight": 0.16877,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LOW"
+  },
+  {
+   "symbol": "ADP",
+   "securityId": "ref_ADP",
+   "name": "AUTOMATIC DATA PROCESSING",
+   "weight": 0.168129,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ADP"
+  },
+  {
+   "symbol": "MCK",
+   "securityId": "ref_MCK",
+   "name": "MCKESSON CORP",
+   "weight": 0.166546,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MCK"
+  },
+  {
+   "symbol": "LMT",
+   "securityId": "ref_LMT",
+   "name": "LOCKHEED MARTIN CORP",
+   "weight": 0.163432,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LMT"
+  },
+  {
+   "symbol": "ADBE",
+   "securityId": "ref_ADBE",
+   "name": "ADOBE INC",
+   "weight": 0.163209,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ADBE"
+  },
+  {
+   "symbol": "FTNT",
+   "securityId": "ref_FTNT",
+   "name": "FORTINET INC",
+   "weight": 0.161099,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FTNT"
+  },
+  {
+   "symbol": "PSX",
+   "securityId": "ref_PSX",
+   "name": "PHILLIPS 66",
+   "weight": 0.157035,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PSX"
+  },
+  {
+   "symbol": "CME",
+   "securityId": "ref_CME",
+   "name": "CME GROUP INC",
+   "weight": 0.154482,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CME"
+  },
+  {
+   "symbol": "FCX",
+   "securityId": "ref_FCX",
+   "name": "FREEPORT MCMORAN INC",
+   "weight": 0.151887,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FCX"
+  },
+  {
+   "symbol": "EQIX",
+   "securityId": "ref_EQIX",
+   "name": "EQUINIX INC",
+   "weight": 0.149938,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EQIX"
+  },
+  {
+   "symbol": "SO",
+   "securityId": "ref_SO",
+   "name": "SOUTHERN CO/THE",
+   "weight": 0.149106,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SO"
+  },
+  {
+   "symbol": "PNC",
+   "securityId": "ref_PNC",
+   "name": "PNC FINANCIAL SERVICES GROUP",
+   "weight": 0.148191,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PNC"
+  },
+  {
+   "symbol": "USB",
+   "securityId": "ref_USB",
+   "name": "US BANCORP",
+   "weight": 0.14792,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "USB"
+  },
+  {
+   "symbol": "SYK",
+   "securityId": "ref_SYK",
+   "name": "STRYKER CORP",
+   "weight": 0.147875,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SYK"
+  },
+  {
+   "symbol": "BX",
+   "securityId": "ref_BX",
+   "name": "BLACKSTONE INC",
+   "weight": 0.144899,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BX"
+  },
+  {
+   "symbol": "TT",
+   "securityId": "ref_TT",
+   "name": "TRANE TECHNOLOGIES PLC",
+   "weight": 0.14316,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TT"
+  },
+  {
+   "symbol": "INTU",
+   "securityId": "ref_INTU",
+   "name": "INTUIT INC",
+   "weight": 0.142906,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "INTU"
+  },
+  {
+   "symbol": "PWR",
+   "securityId": "ref_PWR",
+   "name": "QUANTA SERVICES INC",
+   "weight": 0.141904,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PWR"
+  },
+  {
+   "symbol": "DUK",
+   "securityId": "ref_DUK",
+   "name": "DUKE ENERGY CORP",
+   "weight": 0.141046,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DUK"
+  },
+  {
+   "symbol": "ELV",
+   "securityId": "ref_ELV",
+   "name": "ELEVANCE HEALTH INC",
+   "weight": 0.140385,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ELV"
+  },
+  {
+   "symbol": "VRT",
+   "securityId": "ref_VRT",
+   "name": "VERTIV HOLDINGS CO A",
+   "weight": 0.138861,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VRT"
+  },
+  {
+   "symbol": "CSX",
+   "securityId": "ref_CSX",
+   "name": "CSX CORP",
+   "weight": 0.138482,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CSX"
+  },
+  {
+   "symbol": "HWM",
+   "securityId": "ref_HWM",
+   "name": "HOWMET AEROSPACE INC",
+   "weight": 0.138178,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HWM"
+  },
+  {
+   "symbol": "GD",
+   "securityId": "ref_GD",
+   "name": "GENERAL DYNAMICS CORP",
+   "weight": 0.137995,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GD"
+  },
+  {
+   "symbol": "HOOD",
+   "securityId": "ref_HOOD",
+   "name": "ROBINHOOD MARKETS INC   A",
+   "weight": 0.137503,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HOOD"
+  },
+  {
+   "symbol": "APP",
+   "securityId": "ref_APP",
+   "name": "APPLOVIN CORP CLASS A",
+   "weight": 0.137025,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APP"
+  },
+  {
+   "symbol": "ICE",
+   "securityId": "ref_ICE",
+   "name": "INTERCONTINENTAL EXCHANGE IN",
+   "weight": 0.13594,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ICE"
+  },
+  {
+   "symbol": "CMCSA",
+   "securityId": "ref_CMCSA",
+   "name": "COMCAST CORP CLASS A",
+   "weight": 0.135068,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CMCSA"
+  },
+  {
+   "symbol": "WMB",
+   "securityId": "ref_WMB",
+   "name": "WILLIAMS COS INC",
+   "weight": 0.133851,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WMB"
+  },
+  {
+   "symbol": "MRSH",
+   "securityId": "ref_MRSH",
+   "name": "MARSH + MCLENNAN COS",
+   "weight": 0.132455,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MRSH"
+  },
+  {
+   "symbol": "TMUS",
+   "securityId": "ref_TMUS",
+   "name": "T MOBILE US INC",
+   "weight": 0.129698,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TMUS"
+  },
+  {
+   "symbol": "CEG",
+   "securityId": "ref_CEG",
+   "name": "CONSTELLATION ENERGY",
+   "weight": 0.128868,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CEG"
+  },
+  {
+   "symbol": "MMM",
+   "securityId": "ref_MMM",
+   "name": "3M CO",
+   "weight": 0.128758,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MMM"
+  },
+  {
+   "symbol": "JCI",
+   "securityId": "ref_JCI",
+   "name": "JOHNSON CONTROLS INTERNATION",
+   "weight": 0.128074,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JCI"
+  },
+  {
+   "symbol": "EMR",
+   "securityId": "ref_EMR",
+   "name": "EMERSON ELECTRIC CO",
+   "weight": 0.126576,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EMR"
+  },
+  {
+   "symbol": "AMT",
+   "securityId": "ref_AMT",
+   "name": "AMERICAN TOWER CORP",
+   "weight": 0.12561,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMT"
+  },
+  {
+   "symbol": "WM",
+   "securityId": "ref_WM",
+   "name": "WASTE MANAGEMENT INC",
+   "weight": 0.122771,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WM"
+  },
+  {
+   "symbol": "TRV",
+   "securityId": "ref_TRV",
+   "name": "TRAVELERS COS INC/THE",
+   "weight": 0.122485,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TRV"
+  },
+  {
+   "symbol": "MDLZ",
+   "securityId": "ref_MDLZ",
+   "name": "MONDELEZ INTERNATIONAL INC A",
+   "weight": 0.121715,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MDLZ"
+  },
+  {
+   "symbol": "SLB",
+   "securityId": "ref_SLB",
+   "name": "SLB LTD",
+   "weight": 0.121465,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SLB"
+  },
+  {
+   "symbol": "REGN",
+   "securityId": "ref_REGN",
+   "name": "REGENERON PHARMACEUTICALS",
+   "weight": 0.120858,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "REGN"
+  },
+  {
+   "symbol": "EOG",
+   "securityId": "ref_EOG",
+   "name": "EOG RESOURCES INC",
+   "weight": 0.120558,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EOG"
+  },
+  {
+   "symbol": "MSI",
+   "securityId": "ref_MSI",
+   "name": "MOTOROLA SOLUTIONS INC",
+   "weight": 0.119887,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MSI"
+  },
+  {
+   "symbol": "GM",
+   "securityId": "ref_GM",
+   "name": "GENERAL MOTORS CO",
+   "weight": 0.119752,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GM"
+  },
+  {
+   "symbol": "DASH",
+   "securityId": "ref_DASH",
+   "name": "DOORDASH INC   A",
+   "weight": 0.117361,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DASH"
+  },
+  {
+   "symbol": "CDNS",
+   "securityId": "ref_CDNS",
+   "name": "CADENCE DESIGN SYS INC",
+   "weight": 0.117285,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CDNS"
+  },
+  {
+   "symbol": "CI",
+   "securityId": "ref_CI",
+   "name": "THE CIGNA GROUP",
+   "weight": 0.116905,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CI"
+  },
+  {
+   "symbol": "UPS",
+   "securityId": "ref_UPS",
+   "name": "UNITED PARCEL SERVICE CL B",
+   "weight": 0.116562,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UPS"
+  },
+  {
+   "symbol": "DDOG",
+   "securityId": "ref_DDOG",
+   "name": "DATADOG INC   CLASS A",
+   "weight": 0.115973,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DDOG"
+  },
+  {
+   "symbol": "CMI",
+   "securityId": "ref_CMI",
+   "name": "CUMMINS INC",
+   "weight": 0.113772,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CMI"
+  },
+  {
+   "symbol": "MAR",
+   "securityId": "ref_MAR",
+   "name": "MARRIOTT INTERNATIONAL  CL A",
+   "weight": 0.113544,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MAR"
+  },
+  {
+   "symbol": "SHW",
+   "securityId": "ref_SHW",
+   "name": "SHERWIN WILLIAMS CO/THE",
+   "weight": 0.113416,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SHW"
+  },
+  {
+   "symbol": "ROST",
+   "securityId": "ref_ROST",
+   "name": "ROSS STORES INC",
+   "weight": 0.112926,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ROST"
+  },
+  {
+   "symbol": "HPE",
+   "securityId": "ref_HPE",
+   "name": "HEWLETT PACKARD ENTERPRISE",
+   "weight": 0.111991,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HPE"
+  },
+  {
+   "symbol": "SNPS",
+   "securityId": "ref_SNPS",
+   "name": "SYNOPSYS INC",
+   "weight": 0.111335,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SNPS"
+  },
+  {
+   "symbol": "ORLY",
+   "securityId": "ref_ORLY",
+   "name": "O REILLY AUTOMOTIVE INC",
+   "weight": 0.110134,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ORLY"
+  },
+  {
+   "symbol": "TGT",
+   "securityId": "ref_TGT",
+   "name": "TARGET CORP",
+   "weight": 0.109629,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TGT"
+  },
+  {
+   "symbol": "MCO",
+   "securityId": "ref_MCO",
+   "name": "MOODY S CORP",
+   "weight": 0.10941,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MCO"
+  },
+  {
+   "symbol": "NSC",
+   "securityId": "ref_NSC",
+   "name": "NORFOLK SOUTHERN CORP",
+   "weight": 0.109269,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NSC"
+  },
+  {
+   "symbol": "ABNB",
+   "securityId": "ref_ABNB",
+   "name": "AIRBNB INC CLASS A",
+   "weight": 0.108669,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ABNB"
+  },
+  {
+   "symbol": "HLT",
+   "securityId": "ref_HLT",
+   "name": "HILTON WORLDWIDE HOLDINGS IN",
+   "weight": 0.107742,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HLT"
+  },
+  {
+   "symbol": "KKR",
+   "securityId": "ref_KKR",
+   "name": "KKR + CO INC",
+   "weight": 0.10774,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KKR"
+  },
+  {
+   "symbol": "ITW",
+   "securityId": "ref_ITW",
+   "name": "ILLINOIS TOOL WORKS",
+   "weight": 0.107333,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ITW"
+  },
+  {
+   "symbol": "NOC",
+   "securityId": "ref_NOC",
+   "name": "NORTHROP GRUMMAN CORP",
+   "weight": 0.107273,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NOC"
+  },
+  {
+   "symbol": "CL",
+   "securityId": "ref_CL",
+   "name": "COLGATE PALMOLIVE CO",
+   "weight": 0.107165,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CL"
+  },
+  {
+   "symbol": "WBD",
+   "securityId": "ref_WBD",
+   "name": "WARNER BROS DISCOVERY INC",
+   "weight": 0.106117,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WBD"
+  },
+  {
+   "symbol": "ECL",
+   "securityId": "ref_ECL",
+   "name": "ECOLAB INC",
+   "weight": 0.106058,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ECL"
+  },
+  {
+   "symbol": "FDX",
+   "securityId": "ref_FDX",
+   "name": "FEDEX CORP",
+   "weight": 0.104544,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FDX"
+  },
+  {
+   "symbol": "CTAS",
+   "securityId": "ref_CTAS",
+   "name": "CINTAS CORP",
+   "weight": 0.103802,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CTAS"
+  },
+  {
+   "symbol": "BSX",
+   "securityId": "ref_BSX",
+   "name": "BOSTON SCIENTIFIC CORP",
+   "weight": 0.102028,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BSX"
+  },
+  {
+   "symbol": "AON",
+   "securityId": "ref_AON",
+   "name": "AON PLC CLASS A",
+   "weight": 0.101392,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AON"
+  },
+  {
+   "symbol": "ALL",
+   "securityId": "ref_ALL",
+   "name": "ALLSTATE CORP",
+   "weight": 0.101382,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ALL"
+  },
+  {
+   "symbol": "AEP",
+   "securityId": "ref_AEP",
+   "name": "AMERICAN ELECTRIC POWER",
+   "weight": 0.101334,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AEP"
+  },
+  {
+   "symbol": "SPG",
+   "securityId": "ref_SPG",
+   "name": "SIMON PROPERTY GROUP INC",
+   "weight": 0.10128,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SPG"
+  },
+  {
+   "symbol": "HCA",
+   "securityId": "ref_HCA",
+   "name": "HCA HEALTHCARE INC",
+   "weight": 0.100678,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HCA"
+  },
+  {
+   "symbol": "AJG",
+   "securityId": "ref_AJG",
+   "name": "ARTHUR J GALLAGHER + CO",
+   "weight": 0.099158,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AJG"
+  },
+  {
+   "symbol": "LITE",
+   "securityId": "ref_LITE",
+   "name": "LUMENTUM HOLDINGS INC",
+   "weight": 0.098982,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LITE"
+  },
+  {
+   "symbol": "PCAR",
+   "securityId": "ref_PCAR",
+   "name": "PACCAR INC",
+   "weight": 0.098524,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PCAR"
+  },
+  {
+   "symbol": "APD",
+   "securityId": "ref_APD",
+   "name": "AIR PRODUCTS + CHEMICALS INC",
+   "weight": 0.097458,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APD"
+  },
+  {
+   "symbol": "HON",
+   "securityId": "ref_HON",
+   "name": "HONEYWELL INTERNATIONAL INC",
+   "weight": 0.09722,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HON"
+  },
+  {
+   "symbol": "RCL",
+   "securityId": "ref_RCL",
+   "name": "ROYAL CARIBBEAN CRUISES LTD",
+   "weight": 0.097062,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RCL"
+  },
+  {
+   "symbol": "COR",
+   "securityId": "ref_COR",
+   "name": "CENCORA INC",
+   "weight": 0.096722,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COR"
+  },
+  {
+   "symbol": "MNST",
+   "securityId": "ref_MNST",
+   "name": "MONSTER BEVERAGE CORP",
+   "weight": 0.096117,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MNST"
+  },
+  {
+   "symbol": "TFC",
+   "securityId": "ref_TFC",
+   "name": "TRUIST FINANCIAL CORP",
+   "weight": 0.09511,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TFC"
+  },
+  {
+   "symbol": "URI",
+   "securityId": "ref_URI",
+   "name": "UNITED RENTALS INC",
+   "weight": 0.094837,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "URI"
+  },
+  {
+   "symbol": "TDG",
+   "securityId": "ref_TDG",
+   "name": "TRANSDIGM GROUP INC",
+   "weight": 0.094666,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TDG"
+  },
+  {
+   "symbol": "DLR",
+   "securityId": "ref_DLR",
+   "name": "DIGITAL REALTY TRUST INC",
+   "weight": 0.094226,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DLR"
+  },
+  {
+   "symbol": "TRGP",
+   "securityId": "ref_TRGP",
+   "name": "TARGA RESOURCES CORP",
+   "weight": 0.093939,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TRGP"
+  },
+  {
+   "symbol": "OKE",
+   "securityId": "ref_OKE",
+   "name": "ONEOK INC",
+   "weight": 0.09309,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "OKE"
+  },
+  {
+   "symbol": "KMI",
+   "securityId": "ref_KMI",
+   "name": "KINDER MORGAN INC",
+   "weight": 0.092362,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KMI"
+  },
+  {
+   "symbol": "CRH",
+   "securityId": "ref_CRH",
+   "name": "CRH PLC",
+   "weight": 0.090594,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CRH"
+  },
+  {
+   "symbol": "TEL",
+   "securityId": "ref_TEL",
+   "name": "TE CONNECTIVITY PLC",
+   "weight": 0.090451,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TEL"
+  },
+  {
+   "symbol": "APO",
+   "securityId": "ref_APO",
+   "name": "APOLLO GLOBAL MANAGEMENT INC",
+   "weight": 0.090169,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APO"
+  },
+  {
+   "symbol": "NUE",
+   "securityId": "ref_NUE",
+   "name": "NUCOR CORP",
+   "weight": 0.088363,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NUE"
+  },
+  {
+   "symbol": "DVN",
+   "securityId": "ref_DVN",
+   "name": "DEVON ENERGY CORP",
+   "weight": 0.086549,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DVN"
+  },
+  {
+   "symbol": "FAST",
+   "securityId": "ref_FAST",
+   "name": "FASTENAL CO",
+   "weight": 0.086484,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FAST"
+  },
+  {
+   "symbol": "D",
+   "securityId": "ref_D",
+   "name": "DOMINION ENERGY INC",
+   "weight": 0.086385,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "D"
+  },
+  {
+   "symbol": "NXPI",
+   "securityId": "ref_NXPI",
+   "name": "NXP SEMICONDUCTORS NV",
+   "weight": 0.086277,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NXPI"
+  },
+  {
+   "symbol": "BKR",
+   "securityId": "ref_BKR",
+   "name": "BAKER HUGHES CO",
+   "weight": 0.085846,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BKR"
+  },
+  {
+   "symbol": "MPWR",
+   "securityId": "ref_MPWR",
+   "name": "MONOLITHIC POWER SYSTEMS INC",
+   "weight": 0.085535,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MPWR"
+  },
+  {
+   "symbol": "FIX",
+   "securityId": "ref_FIX",
+   "name": "COMFORT SYSTEMS USA INC",
+   "weight": 0.084707,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FIX"
+  },
+  {
+   "symbol": "GWW",
+   "securityId": "ref_GWW",
+   "name": "WW GRAINGER INC",
+   "weight": 0.084532,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GWW"
+  },
+  {
+   "symbol": "O",
+   "securityId": "ref_O",
+   "name": "REALTY INCOME CORP",
+   "weight": 0.084213,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "O"
+  },
+  {
+   "symbol": "CTVA",
+   "securityId": "ref_CTVA",
+   "name": "CORTEVA INC",
+   "weight": 0.084121,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CTVA"
+  },
+  {
+   "symbol": "CAH",
+   "securityId": "ref_CAH",
+   "name": "CARDINAL HEALTH INC",
+   "weight": 0.083831,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CAH"
+  },
+  {
+   "symbol": "SRE",
+   "securityId": "ref_SRE",
+   "name": "SEMPRA",
+   "weight": 0.082665,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SRE"
+  },
+  {
+   "symbol": "F",
+   "securityId": "ref_F",
+   "name": "FORD MOTOR CO",
+   "weight": 0.082657,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "F"
+  },
+  {
+   "symbol": "KEYS",
+   "securityId": "ref_KEYS",
+   "name": "KEYSIGHT TECHNOLOGIES IN",
+   "weight": 0.082109,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KEYS"
+  },
+  {
+   "symbol": "AFL",
+   "securityId": "ref_AFL",
+   "name": "AFLAC INC",
+   "weight": 0.081668,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AFL"
+  },
+  {
+   "symbol": "AME",
+   "securityId": "ref_AME",
+   "name": "AMETEK INC",
+   "weight": 0.081487,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AME"
+  },
+  {
+   "symbol": "MET",
+   "securityId": "ref_MET",
+   "name": "METLIFE INC",
+   "weight": 0.0805,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MET"
+  },
+  {
+   "symbol": "COHR",
+   "securityId": "ref_COHR",
+   "name": "COHERENT CORP",
+   "weight": 0.079434,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COHR"
+  },
+  {
+   "symbol": "DAL",
+   "securityId": "ref_DAL",
+   "name": "DELTA AIR LINES INC",
+   "weight": 0.079373,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DAL"
+  },
+  {
+   "symbol": "STT",
+   "securityId": "ref_STT",
+   "name": "STATE STREET CORP",
+   "weight": 0.079344,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "STT"
+  },
+  {
+   "symbol": "HONA",
+   "securityId": "ref_HONA",
+   "name": "HONEYWELL AEROSPACE INC",
+   "weight": 0.079213,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HONA"
+  },
+  {
+   "symbol": "MRNA",
+   "securityId": "ref_MRNA",
+   "name": "MODERNA INC",
+   "weight": 0.078941,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MRNA"
+  },
+  {
+   "symbol": "TER",
+   "securityId": "ref_TER",
+   "name": "TERADYNE INC",
+   "weight": 0.078496,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TER"
+  },
+  {
+   "symbol": "CVNA",
+   "securityId": "ref_CVNA",
+   "name": "CARVANA CO",
+   "weight": 0.077349,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CVNA"
+  },
+  {
+   "symbol": "BDX",
+   "securityId": "ref_BDX",
+   "name": "BECTON DICKINSON AND CO",
+   "weight": 0.0768,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BDX"
+  },
+  {
+   "symbol": "AMP",
+   "securityId": "ref_AMP",
+   "name": "AMERIPRISE FINANCIAL INC",
+   "weight": 0.076503,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMP"
+  },
+  {
+   "symbol": "EW",
+   "securityId": "ref_EW",
+   "name": "EDWARDS LIFESCIENCES CORP",
+   "weight": 0.075035,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EW"
+  },
+  {
+   "symbol": "FITB",
+   "securityId": "ref_FITB",
+   "name": "FIFTH THIRD BANCORP",
+   "weight": 0.074916,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FITB"
+  },
+  {
+   "symbol": "PSA",
+   "securityId": "ref_PSA",
+   "name": "PUBLIC STORAGE",
+   "weight": 0.074724,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PSA"
+  },
+  {
+   "symbol": "HUM",
+   "securityId": "ref_HUM",
+   "name": "HUMANA INC",
+   "weight": 0.074479,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HUM"
+  },
+  {
+   "symbol": "AZO",
+   "securityId": "ref_AZO",
+   "name": "AUTOZONE INC",
+   "weight": 0.074407,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AZO"
+  },
+  {
+   "symbol": "EBAY",
+   "securityId": "ref_EBAY",
+   "name": "EBAY INC",
+   "weight": 0.073733,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EBAY"
+  },
+  {
+   "symbol": "ADSK",
+   "securityId": "ref_ADSK",
+   "name": "AUTODESK INC",
+   "weight": 0.073647,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ADSK"
+  },
+  {
+   "symbol": "VMRK",
+   "securityId": "ref_VMRK",
+   "name": "VIVMARK RESIDENTIAL",
+   "weight": 0.073578,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VMRK"
+  },
+  {
+   "symbol": "PYPL",
+   "securityId": "ref_PYPL",
+   "name": "PAYPAL HOLDINGS INC",
+   "weight": 0.07262,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PYPL"
+  },
+  {
+   "symbol": "CMG",
+   "securityId": "ref_CMG",
+   "name": "CHIPOTLE MEXICAN GRILL INC",
+   "weight": 0.072375,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CMG"
+  },
+  {
+   "symbol": "ETR",
+   "securityId": "ref_ETR",
+   "name": "ENTERGY CORP",
+   "weight": 0.072306,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ETR"
+  },
+  {
+   "symbol": "WAB",
+   "securityId": "ref_WAB",
+   "name": "WABTEC CORP",
+   "weight": 0.071974,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WAB"
+  },
+  {
+   "symbol": "ROK",
+   "securityId": "ref_ROK",
+   "name": "ROCKWELL AUTOMATION INC",
+   "weight": 0.070998,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ROK"
+  },
+  {
+   "symbol": "LHX",
+   "securityId": "ref_LHX",
+   "name": "L3HARRIS TECHNOLOGIES INC",
+   "weight": 0.070664,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LHX"
+  },
+  {
+   "symbol": "XEL",
+   "securityId": "ref_XEL",
+   "name": "XCEL ENERGY INC",
+   "weight": 0.069982,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "XEL"
+  },
+  {
+   "symbol": "GRMN",
+   "securityId": "ref_GRMN",
+   "name": "GARMIN LTD",
+   "weight": 0.06979,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GRMN"
+  },
+  {
+   "symbol": "RSG",
+   "securityId": "ref_RSG",
+   "name": "REPUBLIC SERVICES INC",
+   "weight": 0.068821,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RSG"
+  },
+  {
+   "symbol": "CIEN",
+   "securityId": "ref_CIEN",
+   "name": "CIENA CORP",
+   "weight": 0.068712,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CIEN"
+  },
+  {
+   "symbol": "OXY",
+   "securityId": "ref_OXY",
+   "name": "OCCIDENTAL PETROLEUM CORP",
+   "weight": 0.068353,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "OXY"
+  },
+  {
+   "symbol": "CARR",
+   "securityId": "ref_CARR",
+   "name": "CARRIER GLOBAL CORP",
+   "weight": 0.068117,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CARR"
+  },
+  {
+   "symbol": "VST",
+   "securityId": "ref_VST",
+   "name": "VISTRA CORP",
+   "weight": 0.06797,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VST"
+  },
+  {
+   "symbol": "NKE",
+   "securityId": "ref_NKE",
+   "name": "NIKE INC  CL B",
+   "weight": 0.067718,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NKE"
+  },
+  {
+   "symbol": "IQV",
+   "securityId": "ref_IQV",
+   "name": "IQVIA HOLDINGS INC",
+   "weight": 0.06757,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IQV"
+  },
+  {
+   "symbol": "EXC",
+   "securityId": "ref_EXC",
+   "name": "EXELON CORP",
+   "weight": 0.066606,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EXC"
+  },
+  {
+   "symbol": "VTR",
+   "securityId": "ref_VTR",
+   "name": "VENTAS INC",
+   "weight": 0.066009,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VTR"
+  },
+  {
+   "symbol": "KDP",
+   "securityId": "ref_KDP",
+   "name": "KEURIG DR PEPPER INC",
+   "weight": 0.06547,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KDP"
+  },
+  {
+   "symbol": "FERG",
+   "securityId": "ref_FERG",
+   "name": "FERGUSON ENTERPRISES INC",
+   "weight": 0.065345,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FERG"
+  },
+  {
+   "symbol": "COIN",
+   "securityId": "ref_COIN",
+   "name": "COINBASE GLOBAL INC  CLASS A",
+   "weight": 0.064887,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COIN"
+  },
+  {
+   "symbol": "XYZ",
+   "securityId": "ref_XYZ",
+   "name": "BLOCK INC",
+   "weight": 0.064823,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "XYZ"
+  },
+  {
+   "symbol": "ADM",
+   "securityId": "ref_ADM",
+   "name": "ARCHER DANIELS MIDLAND CO",
+   "weight": 0.063474,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ADM"
+  },
+  {
+   "symbol": "A",
+   "securityId": "ref_A",
+   "name": "AGILENT TECHNOLOGIES INC",
+   "weight": 0.063218,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "A"
+  },
+  {
+   "symbol": "PRU",
+   "securityId": "ref_PRU",
+   "name": "PRUDENTIAL FINANCIAL INC",
+   "weight": 0.063182,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PRU"
+  },
+  {
+   "symbol": "CBRE",
+   "securityId": "ref_CBRE",
+   "name": "CBRE GROUP INC   A",
+   "weight": 0.062869,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CBRE"
+  },
+  {
+   "symbol": "NDAQ",
+   "securityId": "ref_NDAQ",
+   "name": "NASDAQ INC",
+   "weight": 0.062339,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NDAQ"
+  },
+  {
+   "symbol": "AIG",
+   "securityId": "ref_AIG",
+   "name": "AMERICAN INTERNATIONAL GROUP",
+   "weight": 0.061632,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AIG"
+  },
+  {
+   "symbol": "IBKR",
+   "securityId": "ref_IBKR",
+   "name": "INTERACTIVE BROKERS GRO CL A",
+   "weight": 0.061599,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IBKR"
+  },
+  {
+   "symbol": "YUM",
+   "securityId": "ref_YUM",
+   "name": "YUM  BRANDS INC",
+   "weight": 0.061459,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "YUM"
+  },
+  {
+   "symbol": "MSCI",
+   "securityId": "ref_MSCI",
+   "name": "MSCI INC",
+   "weight": 0.061406,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MSCI"
+  },
+  {
+   "symbol": "WAT",
+   "securityId": "ref_WAT",
+   "name": "WATERS CORP",
+   "weight": 0.061262,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WAT"
+  },
+  {
+   "symbol": "IDXX",
+   "securityId": "ref_IDXX",
+   "name": "IDEXX LABORATORIES INC",
+   "weight": 0.06126,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IDXX"
+  },
+  {
+   "symbol": "SYY",
+   "securityId": "ref_SYY",
+   "name": "SYSCO CORP",
+   "weight": 0.060868,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SYY"
+  },
+  {
+   "symbol": "FANG",
+   "securityId": "ref_FANG",
+   "name": "DIAMONDBACK ENERGY INC",
+   "weight": 0.060837,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FANG"
+  },
+  {
+   "symbol": "VEEV",
+   "securityId": "ref_VEEV",
+   "name": "VEEVA SYSTEMS INC CLASS A",
+   "weight": 0.060778,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VEEV"
+  },
+  {
+   "symbol": "FLEX",
+   "securityId": "ref_FLEX",
+   "name": "FLEX LTD",
+   "weight": 0.060684,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FLEX"
+  },
+  {
+   "symbol": "ROP",
+   "securityId": "ref_ROP",
+   "name": "ROPER TECHNOLOGIES INC",
+   "weight": 0.060662,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ROP"
+  },
+  {
+   "symbol": "WDAY",
+   "securityId": "ref_WDAY",
+   "name": "WORKDAY INC CLASS A",
+   "weight": 0.060281,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WDAY"
+  },
+  {
+   "symbol": "AXON",
+   "securityId": "ref_AXON",
+   "name": "AXON ENTERPRISE INC",
+   "weight": 0.060214,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AXON"
+  },
+  {
+   "symbol": "ED",
+   "securityId": "ref_ED",
+   "name": "CONSOLIDATED EDISON INC",
+   "weight": 0.059408,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ED"
+  },
+  {
+   "symbol": "TTWO",
+   "securityId": "ref_TTWO",
+   "name": "TAKE TWO INTERACTIVE SOFTWRE",
+   "weight": 0.059125,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TTWO"
+  },
+  {
+   "symbol": "MCHP",
+   "securityId": "ref_MCHP",
+   "name": "MICROCHIP TECHNOLOGY INC",
+   "weight": 0.058943,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MCHP"
+  },
+  {
+   "symbol": "PAYX",
+   "securityId": "ref_PAYX",
+   "name": "PAYCHEX INC",
+   "weight": 0.058241,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PAYX"
+  },
+  {
+   "symbol": "HIG",
+   "securityId": "ref_HIG",
+   "name": "HARTFORD INSURANCE GROUP INC",
+   "weight": 0.057473,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HIG"
+  },
+  {
+   "symbol": "NTAP",
+   "securityId": "ref_NTAP",
+   "name": "NETAPP INC",
+   "weight": 0.056689,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NTAP"
+  },
+  {
+   "symbol": "DHI",
+   "securityId": "ref_DHI",
+   "name": "DR HORTON INC",
+   "weight": 0.056024,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DHI"
+  },
+  {
+   "symbol": "UAL",
+   "securityId": "ref_UAL",
+   "name": "UNITED AIRLINES HOLDINGS INC",
+   "weight": 0.053886,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UAL"
+  },
+  {
+   "symbol": "PEG",
+   "securityId": "ref_PEG",
+   "name": "PUBLIC SERVICE ENTERPRISE GP",
+   "weight": 0.053852,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PEG"
+  },
+  {
+   "symbol": "MTB",
+   "securityId": "ref_MTB",
+   "name": "M + T BANK CORP",
+   "weight": 0.053071,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MTB"
+  },
+  {
+   "symbol": "KR",
+   "securityId": "ref_KR",
+   "name": "KROGER CO",
+   "weight": 0.052649,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KR"
+  },
+  {
+   "symbol": "KVUE",
+   "securityId": "ref_KVUE",
+   "name": "KENVUE INC",
+   "weight": 0.052398,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KVUE"
+  },
+  {
+   "symbol": "WEC",
+   "securityId": "ref_WEC",
+   "name": "WEC ENERGY GROUP INC",
+   "weight": 0.0522,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WEC"
+  },
+  {
+   "symbol": "ACGL",
+   "securityId": "ref_ACGL",
+   "name": "ARCH CAPITAL GROUP LTD",
+   "weight": 0.051941,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ACGL"
+  },
+  {
+   "symbol": "HBAN",
+   "securityId": "ref_HBAN",
+   "name": "HUNTINGTON BANCSHARES INC",
+   "weight": 0.0518,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HBAN"
+  },
+  {
+   "symbol": "NTRS",
+   "securityId": "ref_NTRS",
+   "name": "NORTHERN TRUST CORP",
+   "weight": 0.051231,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NTRS"
+  },
+  {
+   "symbol": "EME",
+   "securityId": "ref_EME",
+   "name": "EMCOR GROUP INC",
+   "weight": 0.050783,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EME"
+  },
+  {
+   "symbol": "ODFL",
+   "securityId": "ref_ODFL",
+   "name": "OLD DOMINION FREIGHT LINE",
+   "weight": 0.050726,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ODFL"
+  },
+  {
+   "symbol": "EQT",
+   "securityId": "ref_EQT",
+   "name": "EQT CORP",
+   "weight": 0.05071,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EQT"
+  },
+  {
+   "symbol": "IRM",
+   "securityId": "ref_IRM",
+   "name": "IRON MOUNTAIN INC",
+   "weight": 0.050406,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IRM"
+  },
+  {
+   "symbol": "EXPE",
+   "securityId": "ref_EXPE",
+   "name": "EXPEDIA GROUP INC",
+   "weight": 0.050212,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EXPE"
+  },
+  {
+   "symbol": "KMB",
+   "securityId": "ref_KMB",
+   "name": "KIMBERLY CLARK CORP",
+   "weight": 0.050115,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KMB"
+  },
+  {
+   "symbol": "DXCM",
+   "securityId": "ref_DXCM",
+   "name": "DEXCOM INC",
+   "weight": 0.049624,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DXCM"
+  },
+  {
+   "symbol": "CNC",
+   "securityId": "ref_CNC",
+   "name": "CENTENE CORP",
+   "weight": 0.049545,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CNC"
+  },
+  {
+   "symbol": "VMC",
+   "securityId": "ref_VMC",
+   "name": "VULCAN MATERIALS CO",
+   "weight": 0.04953,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VMC"
+  },
+  {
+   "symbol": "RMD",
+   "securityId": "ref_RMD",
+   "name": "RESMED INC",
+   "weight": 0.049285,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RMD"
+  },
+  {
+   "symbol": "BIIB",
+   "securityId": "ref_BIIB",
+   "name": "BIOGEN INC",
+   "weight": 0.048972,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BIIB"
+  },
+  {
+   "symbol": "CCI",
+   "securityId": "ref_CCI",
+   "name": "CROWN CASTLE INC",
+   "weight": 0.048703,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CCI"
+  },
+  {
+   "symbol": "STLD",
+   "securityId": "ref_STLD",
+   "name": "STEEL DYNAMICS INC",
+   "weight": 0.04846,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "STLD"
+  },
+  {
+   "symbol": "JBL",
+   "securityId": "ref_JBL",
+   "name": "JABIL INC",
+   "weight": 0.048021,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JBL"
+  },
+  {
+   "symbol": "HPQ",
+   "securityId": "ref_HPQ",
+   "name": "HP INC",
+   "weight": 0.047438,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HPQ"
+  },
+  {
+   "symbol": "ZTS",
+   "securityId": "ref_ZTS",
+   "name": "ZOETIS INC",
+   "weight": 0.04706,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ZTS"
+  },
+  {
+   "symbol": "WTW",
+   "securityId": "ref_WTW",
+   "name": "WILLIS TOWERS WATSON PLC",
+   "weight": 0.046595,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WTW"
+  },
+  {
+   "symbol": "CTSH",
+   "securityId": "ref_CTSH",
+   "name": "COGNIZANT TECH SOLUTIONS A",
+   "weight": 0.046286,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CTSH"
+  },
+  {
+   "symbol": "MLM",
+   "securityId": "ref_MLM",
+   "name": "MARTIN MARIETTA MATERIALS",
+   "weight": 0.045839,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MLM"
+  },
+  {
+   "symbol": "PCG",
+   "securityId": "ref_PCG",
+   "name": "P G + E CORP",
+   "weight": 0.045636,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PCG"
+  },
+  {
+   "symbol": "CBOE",
+   "securityId": "ref_CBOE",
+   "name": "CBOE GLOBAL MARKETS INC",
+   "weight": 0.045457,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CBOE"
+  },
+  {
+   "symbol": "CFG",
+   "securityId": "ref_CFG",
+   "name": "CITIZENS FINANCIAL GROUP",
+   "weight": 0.045452,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CFG"
+  },
+  {
+   "symbol": "RJF",
+   "securityId": "ref_RJF",
+   "name": "RAYMOND JAMES FINANCIAL INC",
+   "weight": 0.045148,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RJF"
+  },
+  {
+   "symbol": "HAL",
+   "securityId": "ref_HAL",
+   "name": "HALLIBURTON CO",
+   "weight": 0.04455,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HAL"
+  },
+  {
+   "symbol": "GEHC",
+   "securityId": "ref_GEHC",
+   "name": "GE HEALTHCARE TECHNOLOGY",
+   "weight": 0.044537,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GEHC"
+  },
+  {
+   "symbol": "EXR",
+   "securityId": "ref_EXR",
+   "name": "EXTRA SPACE STORAGE INC",
+   "weight": 0.044347,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EXR"
+  },
+  {
+   "symbol": "CCL",
+   "securityId": "ref_CCL",
+   "name": "CARNIVAL CORP LTD",
+   "weight": 0.044067,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CCL"
+  },
+  {
+   "symbol": "AEE",
+   "securityId": "ref_AEE",
+   "name": "AMEREN CORPORATION",
+   "weight": 0.04383,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AEE"
+  },
+  {
+   "symbol": "DG",
+   "securityId": "ref_DG",
+   "name": "DOLLAR GENERAL CORP",
+   "weight": 0.043398,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DG"
+  },
+  {
+   "symbol": "CPRT",
+   "securityId": "ref_CPRT",
+   "name": "COPART INC",
+   "weight": 0.04285,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CPRT"
+  },
+  {
+   "symbol": "ON",
+   "securityId": "ref_ON",
+   "name": "ON SEMICONDUCTOR",
+   "weight": 0.042786,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ON"
+  },
+  {
+   "symbol": "ARES",
+   "securityId": "ref_ARES",
+   "name": "ARES MANAGEMENT CORP   A",
+   "weight": 0.042267,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ARES"
+  },
+  {
+   "symbol": "TDY",
+   "securityId": "ref_TDY",
+   "name": "TELEDYNE TECHNOLOGIES INC",
+   "weight": 0.042159,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TDY"
+  },
+  {
+   "symbol": "VICI",
+   "securityId": "ref_VICI",
+   "name": "VICI PROPERTIES INC",
+   "weight": 0.041652,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VICI"
+  },
+  {
+   "symbol": "DTE",
+   "securityId": "ref_DTE",
+   "name": "DTE ENERGY COMPANY",
+   "weight": 0.041569,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DTE"
+  },
+  {
+   "symbol": "ATO",
+   "securityId": "ref_ATO",
+   "name": "ATMOS ENERGY CORP",
+   "weight": 0.04145,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ATO"
+  },
+  {
+   "symbol": "FISV",
+   "securityId": "ref_FISV",
+   "name": "FISERV INC",
+   "weight": 0.041431,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FISV"
+  },
+  {
+   "symbol": "LYV",
+   "securityId": "ref_LYV",
+   "name": "LIVE NATION ENTERTAINMENT IN",
+   "weight": 0.041355,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LYV"
+  },
+  {
+   "symbol": "AWK",
+   "securityId": "ref_AWK",
+   "name": "AMERICAN WATER WORKS CO INC",
+   "weight": 0.041333,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AWK"
+  },
+  {
+   "symbol": "WSM",
+   "securityId": "ref_WSM",
+   "name": "WILLIAMS SONOMA INC",
+   "weight": 0.041158,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WSM"
+  },
+  {
+   "symbol": "CPAY",
+   "securityId": "ref_CPAY",
+   "name": "CORPAY INC",
+   "weight": 0.041094,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CPAY"
+  },
+  {
+   "symbol": "OTIS",
+   "securityId": "ref_OTIS",
+   "name": "OTIS WORLDWIDE CORP",
+   "weight": 0.04103,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "OTIS"
+  },
+  {
+   "symbol": "CINF",
+   "securityId": "ref_CINF",
+   "name": "CINCINNATI FINANCIAL CORP",
+   "weight": 0.040551,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CINF"
+  },
+  {
+   "symbol": "DGX",
+   "securityId": "ref_DGX",
+   "name": "QUEST DIAGNOSTICS INC",
+   "weight": 0.040122,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DGX"
+  },
+  {
+   "symbol": "LH",
+   "securityId": "ref_LH",
+   "name": "LABCORP HOLDINGS INC",
+   "weight": 0.039413,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LH"
+  },
+  {
+   "symbol": "MTD",
+   "securityId": "ref_MTD",
+   "name": "METTLER TOLEDO INTERNATIONAL",
+   "weight": 0.039374,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MTD"
+  },
+  {
+   "symbol": "HSY",
+   "securityId": "ref_HSY",
+   "name": "HERSHEY CO/THE",
+   "weight": 0.039298,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HSY"
+  },
+  {
+   "symbol": "ES",
+   "securityId": "ref_ES",
+   "name": "EVERSOURCE ENERGY",
+   "weight": 0.0391,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ES"
+  },
+  {
+   "symbol": "IR",
+   "securityId": "ref_IR",
+   "name": "INGERSOLL RAND INC",
+   "weight": 0.0391,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IR"
+  },
+  {
+   "symbol": "RF",
+   "securityId": "ref_RF",
+   "name": "REGIONS FINANCIAL CORP",
+   "weight": 0.039049,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RF"
+  },
+  {
+   "symbol": "XYL",
+   "securityId": "ref_XYL",
+   "name": "XYLEM INC",
+   "weight": 0.038933,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "XYL"
+  },
+  {
+   "symbol": "SYF",
+   "securityId": "ref_SYF",
+   "name": "SYNCHRONY FINANCIAL",
+   "weight": 0.038892,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SYF"
+  },
+  {
+   "symbol": "DOV",
+   "securityId": "ref_DOV",
+   "name": "DOVER CORP",
+   "weight": 0.038842,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DOV"
+  },
+  {
+   "symbol": "PPL",
+   "securityId": "ref_PPL",
+   "name": "PPL CORP",
+   "weight": 0.038736,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PPL"
+  },
+  {
+   "symbol": "EXPD",
+   "securityId": "ref_EXPD",
+   "name": "EXPEDITORS INTL WASH INC",
+   "weight": 0.038587,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EXPD"
+  },
+  {
+   "symbol": "CNP",
+   "securityId": "ref_CNP",
+   "name": "CENTERPOINT ENERGY INC",
+   "weight": 0.038511,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CNP"
+  },
+  {
+   "symbol": "WST",
+   "securityId": "ref_WST",
+   "name": "WEST PHARMACEUTICAL SERVICES",
+   "weight": 0.038237,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WST"
+  },
+  {
+   "symbol": "DRI",
+   "securityId": "ref_DRI",
+   "name": "DARDEN RESTAURANTS INC",
+   "weight": 0.038138,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DRI"
+  },
+  {
+   "symbol": "VRSN",
+   "securityId": "ref_VRSN",
+   "name": "VERISIGN INC",
+   "weight": 0.037249,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VRSN"
+  },
+  {
+   "symbol": "VRSK",
+   "securityId": "ref_VRSK",
+   "name": "VERISK ANALYTICS INC",
+   "weight": 0.037241,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VRSK"
+  },
+  {
+   "symbol": "EL",
+   "securityId": "ref_EL",
+   "name": "ESTEE LAUDER COMPANIES CL A",
+   "weight": 0.036893,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EL"
+  },
+  {
+   "symbol": "ULTA",
+   "securityId": "ref_ULTA",
+   "name": "ULTA BEAUTY INC",
+   "weight": 0.036404,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ULTA"
+  },
+  {
+   "symbol": "TPR",
+   "securityId": "ref_TPR",
+   "name": "TAPESTRY INC",
+   "weight": 0.036356,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TPR"
+  },
+  {
+   "symbol": "FE",
+   "securityId": "ref_FE",
+   "name": "FIRSTENERGY CORP",
+   "weight": 0.036354,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FE"
+  },
+  {
+   "symbol": "PPG",
+   "securityId": "ref_PPG",
+   "name": "PPG INDUSTRIES INC",
+   "weight": 0.035745,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PPG"
+  },
+  {
+   "symbol": "HUBB",
+   "securityId": "ref_HUBB",
+   "name": "HUBBELL INC",
+   "weight": 0.035635,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HUBB"
+  },
+  {
+   "symbol": "FICO",
+   "securityId": "ref_FICO",
+   "name": "FAIR ISAAC CORP",
+   "weight": 0.035349,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FICO"
+  },
+  {
+   "symbol": "FFIV",
+   "securityId": "ref_FFIV",
+   "name": "F5 INC",
+   "weight": 0.035333,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FFIV"
+  },
+  {
+   "symbol": "OMC",
+   "securityId": "ref_OMC",
+   "name": "OMNICOM GROUP",
+   "weight": 0.035205,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "OMC"
+  },
+  {
+   "symbol": "CASY",
+   "securityId": "ref_CASY",
+   "name": "CASEY S GENERAL STORES INC",
+   "weight": 0.035058,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CASY"
+  },
+  {
+   "symbol": "PFG",
+   "securityId": "ref_PFG",
+   "name": "PRINCIPAL FINANCIAL GROUP",
+   "weight": 0.035002,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PFG"
+  },
+  {
+   "symbol": "SW",
+   "securityId": "ref_SW",
+   "name": "SMURFIT WESTROCK PLC",
+   "weight": 0.034987,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SW"
+  },
+  {
+   "symbol": "PHM",
+   "securityId": "ref_PHM",
+   "name": "PULTEGROUP INC",
+   "weight": 0.034442,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PHM"
+  },
+  {
+   "symbol": "TROW",
+   "securityId": "ref_TROW",
+   "name": "T ROWE PRICE GROUP INC",
+   "weight": 0.034116,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TROW"
+  },
+  {
+   "symbol": "EXE",
+   "securityId": "ref_EXE",
+   "name": "EXPAND ENERGY CORP",
+   "weight": 0.034073,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EXE"
+  },
+  {
+   "symbol": "CHD",
+   "securityId": "ref_CHD",
+   "name": "CHURCH + DWIGHT CO INC",
+   "weight": 0.034059,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CHD"
+  },
+  {
+   "symbol": "FSLR",
+   "securityId": "ref_FSLR",
+   "name": "FIRST SOLAR INC",
+   "weight": 0.033869,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FSLR"
+  },
+  {
+   "symbol": "EIX",
+   "securityId": "ref_EIX",
+   "name": "EDISON INTERNATIONAL",
+   "weight": 0.03291,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EIX"
+  },
+  {
+   "symbol": "DLTR",
+   "securityId": "ref_DLTR",
+   "name": "DOLLAR TREE INC",
+   "weight": 0.032884,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DLTR"
+  },
+  {
+   "symbol": "IFF",
+   "securityId": "ref_IFF",
+   "name": "INTL FLAVORS + FRAGRANCES",
+   "weight": 0.032532,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IFF"
+  },
+  {
+   "symbol": "TPL",
+   "securityId": "ref_TPL",
+   "name": "TEXAS PACIFIC LAND CORP",
+   "weight": 0.032234,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TPL"
+  },
+  {
+   "symbol": "RDDT",
+   "securityId": "ref_RDDT",
+   "name": "REDDIT INC CL A",
+   "weight": 0.032209,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RDDT"
+  },
+  {
+   "symbol": "GPN",
+   "securityId": "ref_GPN",
+   "name": "GLOBAL PAYMENTS INC",
+   "weight": 0.031955,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GPN"
+  },
+  {
+   "symbol": "STE",
+   "securityId": "ref_STE",
+   "name": "STERIS PLC",
+   "weight": 0.031932,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "STE"
+  },
+  {
+   "symbol": "WRB",
+   "securityId": "ref_WRB",
+   "name": "WR BERKLEY CORP",
+   "weight": 0.031756,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WRB"
+  },
+  {
+   "symbol": "KHC",
+   "securityId": "ref_KHC",
+   "name": "KRAFT HEINZ CO/THE",
+   "weight": 0.031672,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KHC"
+  },
+  {
+   "symbol": "DOW",
+   "securityId": "ref_DOW",
+   "name": "DOW INC",
+   "weight": 0.031627,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DOW"
+  },
+  {
+   "symbol": "SMCI",
+   "securityId": "ref_SMCI",
+   "name": "SUPER MICRO COMPUTER INC",
+   "weight": 0.031503,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SMCI"
+  },
+  {
+   "symbol": "CMS",
+   "securityId": "ref_CMS",
+   "name": "CMS ENERGY CORP",
+   "weight": 0.031307,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CMS"
+  },
+  {
+   "symbol": "PKG",
+   "securityId": "ref_PKG",
+   "name": "PACKAGING CORP OF AMERICA",
+   "weight": 0.031261,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PKG"
+  },
+  {
+   "symbol": "EFX",
+   "securityId": "ref_EFX",
+   "name": "EQUIFAX INC",
+   "weight": 0.031259,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EFX"
+  },
+  {
+   "symbol": "JBHT",
+   "securityId": "ref_JBHT",
+   "name": "HUNT (JB) TRANSPRT SVCS INC",
+   "weight": 0.031198,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JBHT"
+  },
+  {
+   "symbol": "INCY",
+   "securityId": "ref_INCY",
+   "name": "INCYTE CORP",
+   "weight": 0.031026,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "INCY"
+  },
+  {
+   "symbol": "KEY",
+   "securityId": "ref_KEY",
+   "name": "KEYCORP",
+   "weight": 0.030795,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KEY"
+  },
+  {
+   "symbol": "BR",
+   "securityId": "ref_BR",
+   "name": "BROADRIDGE FINANCIAL SOLUTIO",
+   "weight": 0.030732,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BR"
+  },
+  {
+   "symbol": "CF",
+   "securityId": "ref_CF",
+   "name": "CF INDUSTRIES HOLDINGS INC",
+   "weight": 0.030722,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CF"
+  },
+  {
+   "symbol": "BRO",
+   "securityId": "ref_BRO",
+   "name": "BROWN + BROWN INC",
+   "weight": 0.03035,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BRO"
+  },
+  {
+   "symbol": "FIS",
+   "securityId": "ref_FIS",
+   "name": "FIDELITY NATIONAL INFO SERV",
+   "weight": 0.030072,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FIS"
+  },
+  {
+   "symbol": "NI",
+   "securityId": "ref_NI",
+   "name": "NISOURCE INC",
+   "weight": 0.029919,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NI"
+  },
+  {
+   "symbol": "SNA",
+   "securityId": "ref_SNA",
+   "name": "SNAP ON INC",
+   "weight": 0.029818,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SNA"
+  },
+  {
+   "symbol": "GIS",
+   "securityId": "ref_GIS",
+   "name": "GENERAL MILLS INC",
+   "weight": 0.029656,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GIS"
+  },
+  {
+   "symbol": "SBAC",
+   "securityId": "ref_SBAC",
+   "name": "SBA COMMUNICATIONS CORP",
+   "weight": 0.029578,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SBAC"
+  },
+  {
+   "symbol": "AMCR",
+   "securityId": "ref_AMCR",
+   "name": "AMCOR PLC",
+   "weight": 0.029557,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMCR"
+  },
+  {
+   "symbol": "VTRS",
+   "securityId": "ref_VTRS",
+   "name": "VIATRIS INC",
+   "weight": 0.029531,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "VTRS"
+  },
+  {
+   "symbol": "CDW",
+   "securityId": "ref_CDW",
+   "name": "CDW CORP/DE",
+   "weight": 0.029529,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CDW"
+  },
+  {
+   "symbol": "LUV",
+   "securityId": "ref_LUV",
+   "name": "SOUTHWEST AIRLINES CO",
+   "weight": 0.029424,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LUV"
+  },
+  {
+   "symbol": "ZBH",
+   "securityId": "ref_ZBH",
+   "name": "ZIMMER BIOMET HOLDINGS INC",
+   "weight": 0.028457,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ZBH"
+  },
+  {
+   "symbol": "BBY",
+   "securityId": "ref_BBY",
+   "name": "BEST BUY CO INC",
+   "weight": 0.028413,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BBY"
+  },
+  {
+   "symbol": "EVRG",
+   "securityId": "ref_EVRG",
+   "name": "EVERGY INC",
+   "weight": 0.028407,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EVRG"
+  },
+  {
+   "symbol": "CHRW",
+   "securityId": "ref_CHRW",
+   "name": "C.H. ROBINSON WORLDWIDE INC",
+   "weight": 0.02825,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CHRW"
+  },
+  {
+   "symbol": "L",
+   "securityId": "ref_L",
+   "name": "LOEWS CORP",
+   "weight": 0.028077,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "L"
+  },
+  {
+   "symbol": "GPC",
+   "securityId": "ref_GPC",
+   "name": "GENUINE PARTS CO",
+   "weight": 0.027937,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GPC"
+  },
+  {
+   "symbol": "IP",
+   "securityId": "ref_IP",
+   "name": "INTERNATIONAL PAPER CO",
+   "weight": 0.027575,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IP"
+  },
+  {
+   "symbol": "TSCO",
+   "securityId": "ref_TSCO",
+   "name": "TRACTOR SUPPLY COMPANY",
+   "weight": 0.027034,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TSCO"
+  },
+  {
+   "symbol": "ESS",
+   "securityId": "ref_ESS",
+   "name": "ESSEX PROPERTY TRUST INC",
+   "weight": 0.026989,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ESS"
+  },
+  {
+   "symbol": "STZ",
+   "securityId": "ref_STZ",
+   "name": "CONSTELLATION BRANDS INC A",
+   "weight": 0.026564,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "STZ"
+  },
+  {
+   "symbol": "LEN",
+   "securityId": "ref_LEN",
+   "name": "LENNAR CORP A",
+   "weight": 0.026237,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LEN"
+  },
+  {
+   "symbol": "GEN",
+   "securityId": "ref_GEN",
+   "name": "GEN DIGITAL INC",
+   "weight": 0.026233,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GEN"
+  },
+  {
+   "symbol": "LNT",
+   "securityId": "ref_LNT",
+   "name": "ALLIANT ENERGY CORP",
+   "weight": 0.026188,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LNT"
+  },
+  {
+   "symbol": "J",
+   "securityId": "ref_J",
+   "name": "JACOBS SOLUTIONS INC",
+   "weight": 0.025916,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "J"
+  },
+  {
+   "symbol": "NVR",
+   "securityId": "ref_NVR",
+   "name": "NVR INC",
+   "weight": 0.025799,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NVR"
+  },
+  {
+   "symbol": "DD",
+   "securityId": "ref_DD",
+   "name": "DUPONT DE NEMOURS INC",
+   "weight": 0.025688,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DD"
+  },
+  {
+   "symbol": "FTV",
+   "securityId": "ref_FTV",
+   "name": "FORTIVE CORP",
+   "weight": 0.025639,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FTV"
+  },
+  {
+   "symbol": "ZBRA",
+   "securityId": "ref_ZBRA",
+   "name": "ZEBRA TECHNOLOGIES CORP CL A",
+   "weight": 0.025547,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ZBRA"
+  },
+  {
+   "symbol": "LDOS",
+   "securityId": "ref_LDOS",
+   "name": "LEIDOS HOLDINGS INC",
+   "weight": 0.025377,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LDOS"
+  },
+  {
+   "symbol": "BG",
+   "securityId": "ref_BG",
+   "name": "BUNGE GLOBAL SA",
+   "weight": 0.025166,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BG"
+  },
+  {
+   "symbol": "IEX",
+   "securityId": "ref_IEX",
+   "name": "IDEX CORP",
+   "weight": 0.025054,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IEX"
+  },
+  {
+   "symbol": "CHTR",
+   "securityId": "ref_CHTR",
+   "name": "CHARTER COMMUNICATIONS INC A",
+   "weight": 0.024931,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CHTR"
+  },
+  {
+   "symbol": "NDSN",
+   "securityId": "ref_NDSN",
+   "name": "NORDSON CORP",
+   "weight": 0.024904,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NDSN"
+  },
+  {
+   "symbol": "LYB",
+   "securityId": "ref_LYB",
+   "name": "LYONDELLBASELL INDU CL A",
+   "weight": 0.02478,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LYB"
+  },
+  {
+   "symbol": "BALL",
+   "securityId": "ref_BALL",
+   "name": "BALL CORP",
+   "weight": 0.024628,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BALL"
+  },
+  {
+   "symbol": "APA",
+   "securityId": "ref_APA",
+   "name": "APA CORP",
+   "weight": 0.024253,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APA"
+  },
+  {
+   "symbol": "WY",
+   "securityId": "ref_WY",
+   "name": "WEYERHAEUSER CO",
+   "weight": 0.02424,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WY"
+  },
+  {
+   "symbol": "PTC",
+   "securityId": "ref_PTC",
+   "name": "PTC INC",
+   "weight": 0.024052,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PTC"
+  },
+  {
+   "symbol": "KIM",
+   "securityId": "ref_KIM",
+   "name": "KIMCO REALTY CORP",
+   "weight": 0.023862,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KIM"
+  },
+  {
+   "symbol": "AKAM",
+   "securityId": "ref_AKAM",
+   "name": "AKAMAI TECHNOLOGIES INC",
+   "weight": 0.023385,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AKAM"
+  },
+  {
+   "symbol": "TYL",
+   "securityId": "ref_TYL",
+   "name": "TYLER TECHNOLOGIES INC",
+   "weight": 0.023086,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TYL"
+  },
+  {
+   "symbol": "INVH",
+   "securityId": "ref_INVH",
+   "name": "INVITATION HOMES INC",
+   "weight": 0.022977,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "INVH"
+  },
+  {
+   "symbol": "EG",
+   "securityId": "ref_EG",
+   "name": "EVEREST GROUP LTD",
+   "weight": 0.022887,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "EG"
+  },
+  {
+   "symbol": "TSN",
+   "securityId": "ref_TSN",
+   "name": "TYSON FOODS INC CL A",
+   "weight": 0.022853,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TSN"
+  },
+  {
+   "symbol": "MAA",
+   "securityId": "ref_MAA",
+   "name": "MID AMERICA APARTMENT COMM",
+   "weight": 0.022268,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MAA"
+  },
+  {
+   "symbol": "RVTY",
+   "securityId": "ref_RVTY",
+   "name": "REVVITY INC",
+   "weight": 0.021846,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RVTY"
+  },
+  {
+   "symbol": "HST",
+   "securityId": "ref_HST",
+   "name": "HOST HOTELS + RESORTS INC",
+   "weight": 0.021706,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HST"
+  },
+  {
+   "symbol": "DOC",
+   "securityId": "ref_DOC",
+   "name": "HEALTHPEAK PROPERTIES INC",
+   "weight": 0.021482,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DOC"
+  },
+  {
+   "symbol": "MAS",
+   "securityId": "ref_MAS",
+   "name": "MASCO CORP",
+   "weight": 0.021406,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MAS"
+  },
+  {
+   "symbol": "AIZ",
+   "securityId": "ref_AIZ",
+   "name": "ASSURANT INC",
+   "weight": 0.021395,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AIZ"
+  },
+  {
+   "symbol": "FDXF",
+   "securityId": "ref_FDXF",
+   "name": "FEDEX FREIGHT HOLDING CO",
+   "weight": 0.021376,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FDXF"
+  },
+  {
+   "symbol": "IVZ",
+   "securityId": "ref_IVZ",
+   "name": "INVESCO LTD",
+   "weight": 0.02133,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IVZ"
+  },
+  {
+   "symbol": "TXT",
+   "securityId": "ref_TXT",
+   "name": "TEXTRON INC",
+   "weight": 0.021304,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TXT"
+  },
+  {
+   "symbol": "GDDY",
+   "securityId": "ref_GDDY",
+   "name": "GODADDY INC   CLASS A",
+   "weight": 0.02108,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GDDY"
+  },
+  {
+   "symbol": "SWK",
+   "securityId": "ref_SWK",
+   "name": "STANLEY BLACK + DECKER INC",
+   "weight": 0.021055,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SWK"
+  },
+  {
+   "symbol": "TRMB",
+   "securityId": "ref_TRMB",
+   "name": "TRIMBLE INC",
+   "weight": 0.020864,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TRMB"
+  },
+  {
+   "symbol": "FOXA",
+   "securityId": "ref_FOXA",
+   "name": "FOX CORP   CLASS A",
+   "weight": 0.020833,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FOXA"
+  },
+  {
+   "symbol": "ALB",
+   "securityId": "ref_ALB",
+   "name": "ALBEMARLE CORP",
+   "weight": 0.020642,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ALB"
+  },
+  {
+   "symbol": "GL",
+   "securityId": "ref_GL",
+   "name": "GLOBE LIFE INC",
+   "weight": 0.020459,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GL"
+  },
+  {
+   "symbol": "RL",
+   "securityId": "ref_RL",
+   "name": "RALPH LAUREN CORP",
+   "weight": 0.020161,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "RL"
+  },
+  {
+   "symbol": "SOLV",
+   "securityId": "ref_SOLV",
+   "name": "SOLVENTUM CORP",
+   "weight": 0.020143,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SOLV"
+  },
+  {
+   "symbol": "IT",
+   "securityId": "ref_IT",
+   "name": "GARTNER INC",
+   "weight": 0.020108,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IT"
+  },
+  {
+   "symbol": "ALLE",
+   "securityId": "ref_ALLE",
+   "name": "ALLEGION PLC",
+   "weight": 0.020046,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ALLE"
+  },
+  {
+   "symbol": "CRL",
+   "securityId": "ref_CRL",
+   "name": "CHARLES RIVER LABORATORIES",
+   "weight": 0.020045,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CRL"
+  },
+  {
+   "symbol": "AVY",
+   "securityId": "ref_AVY",
+   "name": "AVERY DENNISON CORP",
+   "weight": 0.019916,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AVY"
+  },
+  {
+   "symbol": "SJM",
+   "securityId": "ref_SJM",
+   "name": "JM SMUCKER CO/THE",
+   "weight": 0.019714,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SJM"
+  },
+  {
+   "symbol": "CSGP",
+   "securityId": "ref_CSGP",
+   "name": "COSTAR GROUP INC",
+   "weight": 0.019614,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CSGP"
+  },
+  {
+   "symbol": "MKC",
+   "securityId": "ref_MKC",
+   "name": "MCCORMICK + CO NON VTG SHRS",
+   "weight": 0.019561,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MKC"
+  },
+  {
+   "symbol": "ECHO",
+   "securityId": "ref_ECHO",
+   "name": "ECHOSTAR CORP A",
+   "weight": 0.019328,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ECHO"
+  },
+  {
+   "symbol": "LVS",
+   "securityId": "ref_LVS",
+   "name": "LAS VEGAS SANDS CORP",
+   "weight": 0.019264,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LVS"
+  },
+  {
+   "symbol": "BAX",
+   "securityId": "ref_BAX",
+   "name": "BAXTER INTERNATIONAL INC",
+   "weight": 0.018863,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BAX"
+  },
+  {
+   "symbol": "REG",
+   "securityId": "ref_REG",
+   "name": "REGENCY CENTERS CORP",
+   "weight": 0.018714,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "REG"
+  },
+  {
+   "symbol": "TKO",
+   "securityId": "ref_TKO",
+   "name": "TKO GROUP HOLDINGS INC",
+   "weight": 0.018504,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TKO"
+  },
+  {
+   "symbol": "HAS",
+   "securityId": "ref_HAS",
+   "name": "HASBRO INC",
+   "weight": 0.018447,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HAS"
+  },
+  {
+   "symbol": "SWKS",
+   "securityId": "ref_SWKS",
+   "name": "SKYWORKS SOLUTIONS INC",
+   "weight": 0.018163,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SWKS"
+  },
+  {
+   "symbol": "JKHY",
+   "securityId": "ref_JKHY",
+   "name": "JACK HENRY + ASSOCIATES INC",
+   "weight": 0.017811,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JKHY"
+  },
+  {
+   "symbol": "PNW",
+   "securityId": "ref_PNW",
+   "name": "PINNACLE WEST CAPITAL",
+   "weight": 0.017627,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PNW"
+  },
+  {
+   "symbol": "LII",
+   "securityId": "ref_LII",
+   "name": "LENNOX INTERNATIONAL INC",
+   "weight": 0.017625,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LII"
+  },
+  {
+   "symbol": "DECK",
+   "securityId": "ref_DECK",
+   "name": "DECKERS OUTDOOR CORP",
+   "weight": 0.017358,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DECK"
+  },
+  {
+   "symbol": "TECH",
+   "securityId": "ref_TECH",
+   "name": "BIO TECHNE CORP",
+   "weight": 0.017271,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TECH"
+  },
+  {
+   "symbol": "NWSA",
+   "securityId": "ref_NWSA",
+   "name": "NEWS CORP   CLASS A",
+   "weight": 0.01699,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NWSA"
+  },
+  {
+   "symbol": "HII",
+   "securityId": "ref_HII",
+   "name": "HUNTINGTON INGALLS INDUSTRIE",
+   "weight": 0.016734,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HII"
+  },
+  {
+   "symbol": "CLX",
+   "securityId": "ref_CLX",
+   "name": "CLOROX COMPANY",
+   "weight": 0.016544,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CLX"
+  },
+  {
+   "symbol": "COO",
+   "securityId": "ref_COO",
+   "name": "COOPER COS INC/THE",
+   "weight": 0.016116,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "COO"
+  },
+  {
+   "symbol": "AES",
+   "securityId": "ref_AES",
+   "name": "AES CORP",
+   "weight": 0.016082,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AES"
+  },
+  {
+   "symbol": "LULU",
+   "securityId": "ref_LULU",
+   "name": "LULULEMON ATHLETICA INC",
+   "weight": 0.016006,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "LULU"
+  },
+  {
+   "symbol": "CPT",
+   "securityId": "ref_CPT",
+   "name": "CAMDEN PROPERTY TRUST",
+   "weight": 0.0159,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CPT"
+  },
+  {
+   "symbol": "UDR",
+   "securityId": "ref_UDR",
+   "name": "UDR INC",
+   "weight": 0.015869,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UDR"
+  },
+  {
+   "symbol": "ROL",
+   "securityId": "ref_ROL",
+   "name": "ROLLINS INC",
+   "weight": 0.015803,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ROL"
+  },
+  {
+   "symbol": "GNRC",
+   "securityId": "ref_GNRC",
+   "name": "GENERAC HOLDINGS INC",
+   "weight": 0.015727,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GNRC"
+  },
+  {
+   "symbol": "BEN",
+   "securityId": "ref_BEN",
+   "name": "FRANKLIN TEMPLETON INC",
+   "weight": 0.015638,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BEN"
+  },
+  {
+   "symbol": "FDS",
+   "securityId": "ref_FDS",
+   "name": "FACTSET RESEARCH SYSTEMS INC",
+   "weight": 0.01537,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FDS"
+  },
+  {
+   "symbol": "ALGN",
+   "securityId": "ref_ALGN",
+   "name": "ALIGN TECHNOLOGY INC",
+   "weight": 0.015362,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ALGN"
+  },
+  {
+   "symbol": "DPZ",
+   "securityId": "ref_DPZ",
+   "name": "DOMINO S PIZZA INC",
+   "weight": 0.015011,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DPZ"
+  },
+  {
+   "symbol": "PODD",
+   "securityId": "ref_PODD",
+   "name": "INSULET CORP",
+   "weight": 0.014542,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PODD"
+  },
+  {
+   "symbol": "BXP",
+   "securityId": "ref_BXP",
+   "name": "BXP INC",
+   "weight": 0.014525,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BXP"
+  },
+  {
+   "symbol": "APTV",
+   "securityId": "ref_APTV",
+   "name": "APTIV PLC",
+   "weight": 0.014461,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "APTV"
+  },
+  {
+   "symbol": "UHS",
+   "securityId": "ref_UHS",
+   "name": "UNIVERSAL HEALTH SERVICES B",
+   "weight": 0.01407,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UHS"
+  },
+  {
+   "symbol": "PNR",
+   "securityId": "ref_PNR",
+   "name": "PENTAIR PLC",
+   "weight": 0.013836,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PNR"
+  },
+  {
+   "symbol": "FRT",
+   "securityId": "ref_FRT",
+   "name": "FEDERAL REALTY INVS TRUST",
+   "weight": 0.013765,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FRT"
+  },
+  {
+   "symbol": "HSIC",
+   "securityId": "ref_HSIC",
+   "name": "HENRY SCHEIN INC",
+   "weight": 0.01312,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HSIC"
+  },
+  {
+   "symbol": "FOX",
+   "securityId": "ref_FOX",
+   "name": "FOX CORP   CLASS B",
+   "weight": 0.013033,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "FOX"
+  },
+  {
+   "symbol": "ARE",
+   "securityId": "ref_ARE",
+   "name": "ALEXANDRIA REAL ESTATE EQUIT",
+   "weight": 0.012372,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ARE"
+  },
+  {
+   "symbol": "MOS",
+   "securityId": "ref_MOS",
+   "name": "MOSAIC CO/THE",
+   "weight": 0.01222,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MOS"
+  },
+  {
+   "symbol": "MGM",
+   "securityId": "ref_MGM",
+   "name": "MGM RESORTS INTERNATIONAL",
+   "weight": 0.011511,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MGM"
+  },
+  {
+   "symbol": "WYNN",
+   "securityId": "ref_WYNN",
+   "name": "WYNN RESORTS LTD",
+   "weight": 0.01121,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WYNN"
+  },
+  {
+   "symbol": "NCLH",
+   "securityId": "ref_NCLH",
+   "name": "NORWEGIAN CRUISE LINE HOLDIN",
+   "weight": 0.010369,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NCLH"
+  },
+  {
+   "symbol": "BLDR",
+   "securityId": "ref_BLDR",
+   "name": "BUILDERS FIRSTSOURCE INC",
+   "weight": 0.009871,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BLDR"
+  },
+  {
+   "symbol": "ERIE",
+   "securityId": "ref_ERIE",
+   "name": "ERIE INDEMNITY COMPANY CL A",
+   "weight": 0.009822,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "ERIE"
+  },
+  {
+   "symbol": "AOS",
+   "securityId": "ref_AOS",
+   "name": "SMITH (A.O.) CORP",
+   "weight": 0.009786,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AOS"
+  },
+  {
+   "symbol": "TTD",
+   "securityId": "ref_TTD",
+   "name": "TRADE DESK INC/THE  CLASS A",
+   "weight": 0.009739,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TTD"
+  },
+  {
+   "symbol": "TAP",
+   "securityId": "ref_TAP",
+   "name": "MOLSON COORS BEVERAGE CO   B",
+   "weight": 0.009553,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TAP"
+  },
+  {
+   "symbol": "HRL",
+   "securityId": "ref_HRL",
+   "name": "HORMEL FOODS CORP",
+   "weight": 0.009315,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HRL"
+  },
+  {
+   "symbol": "DVA",
+   "securityId": "ref_DVA",
+   "name": "DAVITA INC",
+   "weight": 0.009266,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DVA"
+  },
+  {
+   "symbol": "BF-B",
+   "securityId": "ref_BF_B",
+   "name": "BROWN FORMAN CORP CLASS B",
+   "weight": 0.006733,
+   "sector": "-",
+   "matched": "SEPARATOR",
+   "sourceTicker": "BF.B"
+  },
+  {
+   "symbol": "NWS",
+   "securityId": "ref_NWS",
+   "name": "NEWS CORP   CLASS B",
+   "weight": 0.006293,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NWS"
+  },
+  {
+   "symbol": "PSKY",
+   "securityId": "ref_PSKY",
+   "name": "PARAMOUNT SKYDANCE CL B",
+   "weight": 0.005181,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PSKY"
+  }
+ ],
+ "unmatched": [
+  {
+   "ticker": "SNDK",
+   "name": "SANDISK CORP",
+   "reason": "UNKNOWN"
+  },
+  {
+   "ticker": "BNY",
+   "name": "BANK OF NEW YORK MELLON CORP",
+   "reason": "UNKNOWN"
+  },
+  {
+   "ticker": "Q",
+   "name": "QNITY ELECTRONICS INC",
+   "reason": "UNKNOWN"
+  },
+  {
+   "ticker": "VLTO",
+   "name": "VERALTO CORP",
+   "reason": "UNKNOWN"
+  },
+  {
+   "ticker": "NRG",
+   "name": "NRG ENERGY INC",
+   "reason": "UNKNOWN"
+  },
+  {
+   "ticker": "2602335D",
+   "name": "CONTRA HOLOGIC INCORPO",
+   "reason": "UNKNOWN"
+  }
+ ],
+ "changes": null,
+ "note": "S&P 500: Mitgliedschaft laut veroeffentlichtem Bestand des abbildenden Fonds SPY (State Street (SPDR)) zum Stichtag 2026-09-15. Zuordnung zum Company Master ueber den Ticker (Trennzeichen ignoriert, nur bei Eindeutigkeit). Keine Ticker-Heuristik ueber die Mitgliedschaft selbst; nicht zuordenbare Bestandszeilen stehen unter unmatched. Indexnamen sind Marken ihrer Eigentuemer; die Datei nennt einen Fondsbestand, keine offizielle Indexliste.",
+ "sourcesTried": [
+  "IVV: nur 0 Bestandszeilen [text/csv;charset=UTF-8, 2254492 Bytes; Anfang: \"<!DOCTYPE html>\\n<html xmlns=\\\"http://www.w3.org/1999/xhtml\\\" prefix=\\\"og: http://ogp.me/ns#\\\" lang=\\\"en-US\\\" xml:lang=\\\"en-US\\\">\\n<head>\\n<link rel=\\\"preload\\\" href=\\\"/blk-one02-c-assets/include/bundles/minified-11c12810e689ee9814acd\"]"
+ ],
+ "shortLabel": "S&P 500",
+ "sourceFile": null
+}
