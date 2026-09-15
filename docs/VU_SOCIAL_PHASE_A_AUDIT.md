@@ -166,3 +166,47 @@ nicht in die Liste der Befunde.
 Der Bauplan hat trotzdem getragen: weil der Meta-Adapter den Token-Tausch
 vollstaendig implementiert hat und nur den Ort offenliess, kostete die Korrektur
 keine Umarbeitung — der Worker fuehrt denselben Ablauf in seiner Laufzeit aus.
+
+---
+
+## 6. Was das ungepruefte Feld dann tatsaechlich enthielt
+
+Nachgetragen am 2026-09-15, nachdem der Cloudflare-Zugang ueber GitHub Actions
+verfuegbar war und der Preflight zum ersten Mal gegen die reale Infrastruktur
+gelaufen ist.
+
+| | |
+|---|---|
+| Worker `vision-universe-social` | existierte, mit Cloudflares "Hello World"-Vorlage |
+| `META_APP_ID`, `META_APP_SECRET` | gesetzt, wie vom Owner angegeben |
+| `VU_SOCIAL_ADMIN_KEY` | fehlte |
+| KV-Bindung | fehlte |
+
+Es lag also weder fremde Produktivlogik dort noch die fertige Anwendung, die der
+Auftrag vermuten liess: der Worker war angelegt und mit den Meta-Secrets
+bestueckt, aber leer. Beide Extremannahmen — "da ist nichts" und "da ist schon
+alles" — waren falsch. Der Preflight hat das entschieden, nicht eine Vermutung.
+
+### Zwei Befunde am Messwerkzeug selbst
+
+**Die Groesse taugt nicht als Urteil.** Der erste Lauf hat die Vorlage als fremde
+Produktivlogik gemeldet und das Deployment gesperrt — allein, weil 752 Bytes
+ueber der gesetzten 400-Byte-Schwelle lagen. Die Sperre war richtig, der Grund
+war falsch. Behoben nicht durch eine hoehere Schwelle (derselbe Fehler in die
+andere Richtung: ein kompaktes produktives Skript waere durchgegangen), sondern
+durch eine Klassifikation dessen, was der Code *tut*.
+
+**Der Fingerabdruck war keiner.** Zwei Laeufe meldeten fuer denselben
+unveraenderten Worker dieselbe Groesse, aber verschiedene sha256-Praefixe.
+Cloudflare liefert einen Modul-Worker als `multipart/form-data` aus, mit einer
+bei jedem Abruf neu gewuerfelten Trennmarke — feste Laenge, zufaelliger Inhalt.
+Gehasht und gezaehlt wurde die Huelle mit; eine Sicherung haette kein
+lauffaehiges JavaScript enthalten, sondern ein Formular.
+
+Aufgefallen ist das nur, weil zwei Laeufe nebeneinander lagen und die Zahlen
+nicht zusammenpassten. Ein einzelner Lauf haette einen plausiblen Fingerabdruck
+geliefert, und der Fehler haette erst beim ersten echten Vergleich gewirkt — dann
+haette er eine tatsaechliche Aenderung am Worker nicht von Rauschen unterschieden.
+
+Beides gehoert zu derselben Lehre wie §5: ein Messwert ist eine Behauptung ueber
+die Welt, und er verdient dieselbe Skepsis wie jede andere.

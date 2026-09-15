@@ -2,14 +2,31 @@
 
 Stand: 2026-09-15 · Zweig `claude/vision-universe-social-os-eudjmx`
 
-Diese Anleitung fuehrt von "Worker ist gebaut" zu **META_CONNECTED**.
+Der Worker laeuft. KV ist angebunden, `META_APP_ID` und `META_APP_SECRET` sind
+gesetzt geblieben, alle Admin-Endpunkte sind verschlossen. Was jetzt noch fehlt,
+sind drei Handlungen, die niemand ausser Ihnen vornehmen kann.
 
-> **In dieser Anleitung wird niemals ein Zugangsdatum verlangt und niemals eines
-> ausgegeben.** Alle Werte setzen Sie selbst, direkt bei Cloudflare und bei Meta.
-> Nichts davon gehoert in einen Chat, ein Ticket oder ein Repository.
+> **Hier wird nie ein Zugangsdatum verlangt und nie eines ausgegeben.** Die Werte
+> setzen Sie selbst, direkt bei Cloudflare und bei Meta. Nichts davon gehoert in
+> einen Chat, ein Ticket oder ein Repository.
 
 **Es wird kein Beitrag veroeffentlicht.** Der globale Autopublish-Schalter bleibt
-aus, und alle Schritte hier sind lesend.
+aus, und der Worker hat ueberhaupt keinen Endpunkt zum Veroeffentlichen.
+
+---
+
+## Die Adressen
+
+| | |
+|---|---|
+| Worker | `https://vision-universe-social.little-credit-15d3.workers.dev` |
+| Lebendtest (offen) | `https://vision-universe-social.little-credit-15d3.workers.dev/health` |
+| **Redirect-URI fuer Meta** | `https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/callback` |
+| Verbinden (Schluessel noetig) | `https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/connect` |
+
+Deployt von Lauf
+[34975576298](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/34975576298).
+KV-Namespace `582accaa66bf471a833b3813a6d2a45b`, gebunden als `VU_SOCIAL_KV`.
 
 ---
 
@@ -17,28 +34,67 @@ aus, und alle Schritte hier sind lesend.
 
 - Ein Instagram-Konto, das ein **Professional-Konto** ist (Business oder Creator).
 - Eine **Facebook-Seite**, die mit diesem Instagram-Konto verbunden ist.
-- Ihre Meta-App mit hinterlegtem `META_APP_ID` und `META_APP_SECRET`.
-- Ein Cloudflare-Konto mit dem Worker `vision-universe-social`.
 
-Wenn Instagram und Facebook-Seite nicht verbunden sind, bricht Schritt 6 mit einer
+Wenn Instagram und Facebook-Seite nicht verbunden sind, bricht Schritt 3 mit einer
 klaren Meldung ab und speichert nichts. Das ist dann eine Einrichtungsfrage in der
 Meta-Business-Suite, kein Fehler dieses Systems.
 
 ---
 
-## Schritt 1 — Admin-Schluessel erzeugen und setzen
+## Was bereits erledigt ist
 
-Der Schluessel schuetzt `connect`, `status`, `verify` und `disconnect`. Ohne ihn
-koennte ein Fremder den Flow starten, **sein** Konto autorisieren und damit Ihre
-Verbindung ueberschreiben.
+Diese Schritte standen frueher in dieser Anleitung. Sie sind ueber GitHub Actions
+gelaufen und muessen nicht wiederholt werden:
 
-Erzeugen (Beispiel, lokal auf Ihrem Rechner):
+- **KV-Namespace angelegt und gebunden.** Genau ein Datensatz liegt spaeter darin.
+- **Oeffentliche URL bestimmt und in `wrangler.toml` eingetragen.** Nicht geraten,
+  sondern aus der Antwort von `wrangler deploy` gelesen.
+- **Preflight vor dem Deployment.** Im Worker lag Cloudflares eigene
+  "Hello World"-Vorlage — 752 Bytes, keine ausgehenden Adressen, keine
+  Bindungszugriffe, nichts in Zugangsdatenform. Eine Sicherung liegt als Artefakt
+  `worker-code-before-deploy` am Lauf.
+- **Deployment.** Danach geprueft: `/health` antwortet, KV ist sichtbar, beide
+  Meta-Secrets sind noch da, `/connect`, `/status` und `/disconnect` sind zu.
+
+---
+
+## Schritt 1 — Admin-Schluessel setzen
+
+**Das ist der Grund, warum gerade nichts weitergeht.** Ohne diesen Schluessel
+antworten `connect`, `status`, `verify` und `disconnect` mit `503`. Der Worker
+laeuft, ist aber nicht bedienbar — mit Absicht: ein offener `/connect` waere eine
+Uebernahme mit einem Klick. Ein Fremder koennte **sein** Konto autorisieren und
+damit Ihre Verbindung ueberschreiben.
+
+### Warum diesen Schritt nicht die Automatik uebernimmt
+
+Der Workflow koennte einen starken Schluessel erzeugen und als Cloudflare-Secret
+setzen — technisch ist das kein Problem. Er koennte ihn Ihnen aber nicht geben.
+Cloudflare-Secrets sind nur schreibbar, nicht lesbar; jeder andere Weg zu Ihnen
+fuehrt durch die GitHub-Ausgabe, und damit waere der Schluessel dort, wo er nicht
+sein soll. Ein Schluessel, den Sie in Schritt 3 brauchen und niemand kennt, ist
+kein Schluessel, sondern ein Schloss ohne Zugang.
+
+Deshalb entsteht er bei Ihnen und bleibt bei Ihnen.
+
+### So geht es
+
+Erzeugen und setzen in einem Zug — der Wert erscheint dabei nirgends am Bildschirm:
 
 ```bash
-openssl rand -base64 48
+openssl rand -hex 32
 ```
 
-Setzen:
+64 Zeichen, nur `0-9a-f`. **Legen Sie den Wert zuerst in Ihrem Passwortmanager
+ab** — Sie brauchen ihn in Schritt 3, und lesen koennen Sie ihn danach nirgends
+mehr.
+
+`-hex` statt `-base64` hat einen Grund: base64 erzeugt `+`, `/` und `=`. Genau
+diese drei Zeichen haben in einer URL eine eigene Bedeutung, und in Schritt 3
+steht der Schluessel in einer URL. Ein Schluessel, der beim Anklicken still
+verstuemmelt wird, kostet eine halbe Stunde Fehlersuche an der falschen Stelle.
+
+Dann setzen:
 
 ```bash
 cd workers/vision-universe-social
@@ -46,95 +102,32 @@ npx wrangler secret put VU_SOCIAL_ADMIN_KEY
 # den erzeugten Wert einfuegen
 ```
 
-**Mindestens 32 Zeichen.** Der Worker lehnt kuerzere ab — er hat keinen Zaehler
-fuer Fehlversuche, und die einzige belastbare Verteidigung gegen Durchprobieren
-ist ein Schluessel, der sich nicht durchprobieren laesst.
+Alternativ ohne Kommandozeile: Cloudflare-Dashboard → Workers & Pages →
+`vision-universe-social` → Settings → Variables and Secrets → Add → Type **Secret**,
+Name `VU_SOCIAL_ADMIN_KEY`.
 
-Bewahren Sie den Wert in Ihrem Passwortmanager auf. Sie brauchen ihn in Schritt 6
-und spaeter als GitHub-Secret.
+**Mindestens 32 Zeichen.** Der Worker lehnt kuerzere ab. Er hat keinen Zaehler fuer
+Fehlversuche, und die einzige belastbare Verteidigung gegen Durchprobieren ist ein
+Schluessel, der sich nicht durchprobieren laesst.
 
----
-
-## Schritt 2 — KV-Namespace anlegen
-
-Hier liegt spaeter genau ein Datensatz: die Verbindung.
-
-```bash
-npx wrangler kv namespace create VU_SOCIAL_KV
-```
-
-Die Ausgabe enthaelt eine `id`. Tragen Sie sie in
-`workers/vision-universe-social/wrangler.toml` ein — sie ersetzt
-`REPLACE_WITH_KV_NAMESPACE_ID`.
+Danach ist `/health` immer noch offen, aber `missingConfiguration` ist leer.
 
 ---
 
-## Schritt 3 — Oeffentliche URL eintragen
+## Schritt 2 — Redirect-URI in der Meta-App eintragen
 
-In derselben Datei ersetzen Sie `REPLACE_WITH_WORKER_PUBLIC_URL` durch die
-oeffentliche URL Ihres Workers, **ohne Schraegstrich am Ende**. Zum Beispiel:
-
-```toml
-PUBLIC_BASE_URL = "https://vision-universe-social.IHR-SUBDOMAIN.workers.dev"
-```
-
-Daraus baut der Worker die Redirect-URI:
-
-```
-https://vision-universe-social.IHR-SUBDOMAIN.workers.dev/social/meta/callback
-```
-
-Notieren Sie diese Adresse — Schritt 5 braucht sie **zeichengenau**.
-
----
-
-## Schritt 4 — Preflight und Deployment
-
-**Zuerst pruefen, was im vorhandenen Worker liegt.** `wrangler deploy` ersetzt den
-dort liegenden Code vollstaendig und ohne Rueckfrage.
-
-```bash
-export CLOUDFLARE_API_TOKEN=...      # Token mit "Workers Scripts: Read"
-export CLOUDFLARE_ACCOUNT_ID=...
-node scripts/social/preflight-worker.mjs
-```
-
-Lesen Sie die Zeile **"Vorhandener Code"**:
-
-| Meldung | Bedeutung |
-|---|---|
-| `ok` … Platzhalter-Groesse | Dort liegt nichts von Wert. Weiter. |
-| `ok` … stammt erkennbar aus diesem Repository | Aktualisierung, kein Verlust. Weiter. |
-| `warn` … **FREMDE Logik** | **Halt.** Erst sichern: `npx wrangler download vision-universe-social` |
-
-Wenn alles geklaert ist:
-
-```bash
-cd workers/vision-universe-social
-npx wrangler deploy
-```
-
-Danach der Lebendtest — er verlangt keinen Schluessel:
-
-```
-https://IHRE-WORKER-URL/health
-```
-
-Erwartet: `"alive": true`. Steht dort noch etwas unter
-`missingConfiguration`, fehlt genau das.
-
----
-
-## Schritt 5 — Redirect-URI in der Meta-App eintragen
+Diese Adresse muss **zeichengenau** in Ihrer Meta-App stehen. Meta vergleicht sie
+Zeichen fuer Zeichen; ein zusaetzlicher Schraegstrich am Ende genuegt fuer eine
+Absage.
 
 Im Meta-App-Dashboard:
 
 **Facebook Login for Business → Einstellungen → Gueltige OAuth-Redirect-URIs**
 
-Dort die Adresse aus Schritt 3 eintragen:
+Dort genau diese Zeile eintragen:
 
 ```
-https://IHRE-WORKER-URL/social/meta/callback
+https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/callback
 ```
 
 **Meta vergleicht zeichengenau.** Ein fehlendes `https`, ein zusaetzlicher
@@ -146,7 +139,7 @@ Speichern nicht vergessen.
 
 ---
 
-## Schritt 6 — DAS OWNER GATE: Autorisieren
+## Schritt 3 — DAS OWNER GATE: Autorisieren
 
 > **Dies ist der Schritt, der Ihre persoenliche Meta-Autorisierung verlangt.**
 > Er kann nicht automatisiert werden — und er soll es nicht.
@@ -156,24 +149,31 @@ Speichern nicht vergessen.
 Im Browser, in dem Sie bei Facebook angemeldet sind:
 
 ```
-https://IHRE-WORKER-URL/social/meta/connect?key=<IHR-ADMIN-SCHLUESSEL>
+https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/connect?key=IHR-ADMIN-SCHLUESSEL
 ```
 
-Der Schluessel muss URL-kodiert sein. Enthaelt er `+`, `/` oder `=`, verwenden Sie
-stattdessen den Kopfzeilen-Weg.
+Der Worker leitet Sie von dort zu Meta weiter.
 
-> **Setzen Sie den Schluessel als Umgebungsvariable, statt ihn in jeden Befehl zu
-> tippen.** Ein Wert, den Sie direkt in `curl` schreiben, steht danach in Ihrer
-> Shell-Historie — also in einer Datei, an die beim Erzeugen des Schluessels
-> niemand gedacht hat.
+> **Dieser Link enthaelt Ihren Schluessel.** Er landet damit im Browserverlauf.
+> Das ist vertretbar, weil Sie ihn genau einmal brauchen — aber es ist nicht
+> nichts: loeschen Sie den Eintrag danach, oder setzen Sie den Schluessel neu
+> (Schritt 1 nochmal, die Verbindung bleibt davon unberuehrt).
+
+Wenn Sie das vermeiden wollen, geht es auch ueber die Kopfzeile. Dann holen Sie
+sich erst das Ziel und oeffnen nur dieses im Browser:
 
 ```bash
 export VU_SOCIAL_ADMIN_KEY=...      # einmal setzen, nicht in jeden Befehl tippen
 curl -sI -H "Authorization: Bearer $VU_SOCIAL_ADMIN_KEY" \
-  https://IHRE-WORKER-URL/social/meta/connect
+  https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/connect
 ```
 
-und oeffnen die Adresse aus der `location`-Kopfzeile.
+Die `location`-Kopfzeile der Antwort ist die Meta-Adresse. Sie enthaelt Ihren
+Schluessel nicht mehr.
+
+> Den Schluessel als Umgebungsvariable setzen, statt ihn in jeden Befehl zu
+> tippen: ein Wert, den Sie direkt in `curl` schreiben, steht danach in Ihrer
+> Shell-Historie — in einer Datei, an die beim Erzeugen niemand gedacht hat.
 
 ### Was Meta Ihnen zeigen sollte
 
@@ -239,11 +239,11 @@ gespeichert**, und eine bestehende Verbindung ist unveraendert.
 
 ---
 
-## Schritt 7 — Verifizieren
+## Schritt 4 — Verifizieren
 
 ```bash
 curl -s -H "Authorization: Bearer $VU_SOCIAL_ADMIN_KEY" \
-  https://IHRE-WORKER-URL/social/meta/verify
+  https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/verify
 ```
 
 Der Lauf **veroeffentlicht nichts.** Er liest: Konto, Rechte, Insights, Medien.
@@ -270,7 +270,7 @@ Feld `note` sagt bei jeder, was los war.
 
 ---
 
-## Schritt 8 — Den Zustand ins Repository holen
+## Schritt 5 — Den Zustand ins Repository holen
 
 Damit das Command Center die Verbindung anzeigt, hinterlegen Sie zwei
 **GitHub-Actions-Secrets** (Settings → Secrets and variables → Actions):
@@ -296,7 +296,7 @@ Meta-Verbindung**.
 
 ---
 
-## Schritt 9 — Zielkonto festnageln (empfohlen)
+## Schritt 6 — Zielkonto festnageln (empfohlen)
 
 Sobald die Instagram-Account-ID bekannt ist, tragen Sie sie in `wrangler.toml`
 ein:
@@ -346,7 +346,7 @@ Der Weg dorthin steht in `docs/VU_SOCIAL_OWNER_DECISIONS.md`, Entscheidung 2.
 
 ```bash
 curl -s -X POST -H "Authorization: Bearer $VU_SOCIAL_ADMIN_KEY" \
-  https://IHRE-WORKER-URL/social/meta/disconnect
+  https://vision-universe-social.little-credit-15d3.workers.dev/social/meta/disconnect
 ```
 
 Loescht den Datensatz einschliesslich Token und widerruft die Rechte bei Meta.
