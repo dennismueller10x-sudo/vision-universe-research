@@ -1,7 +1,7 @@
 {
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.9.0",
+    "normalization_logic": "1.10.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -16,10 +16,10 @@
       "cause": "CIK_UNRESOLVED",
       "count": 1348,
       "byEligibility": {
-        "ELIGIBLE": 803,
-        "EXCLUDED": 202,
-        "REVIEW": 35,
-        "SEPARATE_CLASS": 308
+        "ELIGIBLE": 688,
+        "EXCLUDED": 242,
+        "SEPARATE_CLASS": 396,
+        "REVIEW": 22
       },
       "secCanSupply": "TEILWEISE",
       "detail": "Die SEC fuehrt jeden US-Einreicher. Was hier fehlt, ist der Abruf ihrer beiden Verzeichnisse - nicht die Daten."
@@ -32,7 +32,7 @@
     },
     {
       "cause": "NOT_INGESTED",
-      "count": 1,
+      "count": 0,
       "secCanSupply": "JA",
       "detail": "Emittenten mit CIK, fuer die noch kein Abruf lief."
     },
@@ -50,5 +50,5 @@
     }
   ],
   "providerDecision": "OFFEN. Keine Empfehlung, solange die Zahlen oben null sind: eine Providerentscheidung auf ungemessenen Luecken waere eine Ausgabe auf Verdacht (\u00a720, \u00a732).",
-  "generatedAtUtc": "2026-09-14T10:58:16+00:00"
+  "generatedAtUtc": "2026-09-15T05:17:20+00:00"
 }

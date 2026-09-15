@@ -677,10 +677,10 @@
       "cik": "0002030522",
       "name": "Marwynn Holdings, Inc.",
       "sic": "5141",
-      "rawFacts": 1898,
-      "mappedFacts": 582,
-      "unmappedFacts": 1305,
-      "calendarYears": 7,
+      "rawFacts": 2148,
+      "mappedFacts": 641,
+      "unmappedFacts": 1470,
+      "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0430",
@@ -689,28 +689,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 11,
+      "quarterlyPeriods": 12,
       "firstPeriodEnd": "2023-07-31",
-      "lastPeriodEnd": "2026-04-30",
+      "lastPeriodEnd": "2026-07-31",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2025-04-30",
           "historyYears": 1.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2025-04-30",
           "historyYears": 1.0,
@@ -730,21 +730,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
@@ -758,14 +758,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 2.0
@@ -788,36 +788,38 @@
         }
       },
       "quality": {
-        "HIGH": 65,
-        "MEDIUM": 17
+        "HIGH": 73,
+        "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 82,
-        "resolvedValues": 82
+        "datableValues": 91,
+        "resolvedValues": 91
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1426,
+        "total": 1594,
         "by_severity": {
-          "INFO": 1305,
-          "WARNING": 121
+          "INFO": 1470,
+          "WARNING": 124
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 72,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 1305
+          "CONCEPT_DISAGREEMENT": 77,
+          "PERIOD_MISMATCH": 1,
+          "RESTATEMENT_CONFLICT": 46,
+          "UNKNOWN_CONCEPT": 1470
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-083383",
-        "filing_date": "2026-07-30",
-        "form": "10-K",
-        "periodic_filings": 6
+        "accession": "0001213900-26-099746",
+        "filing_date": "2026-09-14",
+        "form": "10-Q",
+        "periodic_filings": 7,
+        "acceptance_datetime": "2026-09-14T20:35:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -826,7 +828,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "0fd5ea1baaf60000a393f42be972d70c2a7e134b1fe1a2cfef1a6c5d986df4de",
+      "sourceDigest": "dc71fd97e16d0da2e82ed1a16297d8929cdb1d503c0d0f209baf4ae51d0d2a10",
       "issuerId": "iss_cik_0002030522"
     }
   ]

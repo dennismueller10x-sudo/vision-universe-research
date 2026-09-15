@@ -166,10 +166,10 @@
       "cik": "0001334325",
       "name": "Coda Octopus Group, Inc.",
       "sic": "3812",
-      "rawFacts": 9996,
-      "mappedFacts": 4002,
-      "unmappedFacts": 6296,
-      "calendarYears": 13,
+      "rawFacts": 10309,
+      "mappedFacts": 4112,
+      "unmappedFacts": 6495,
+      "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1031",
@@ -178,28 +178,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 48,
+      "quarterlyPeriods": 49,
       "firstPeriodEnd": "2008-10-31",
-      "lastPeriodEnd": "2026-04-30",
+      "lastPeriodEnd": "2026-07-31",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2016-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 9.0
         },
         "eps_diluted": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2016-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 9.0
         },
         "free_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2016-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 9.0,
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2009-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2009-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2009-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 16.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2008-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2009-10-31",
           "lastAvailablePeriod": "2025-10-31",
           "historyYears": 16.0
@@ -277,38 +277,39 @@
         }
       },
       "quality": {
-        "HIGH": 386,
-        "MEDIUM": 2
+        "HIGH": 396,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 388,
-        "resolvedValues": 388
+        "datableValues": 397,
+        "resolvedValues": 397
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 6466,
+        "total": 6614,
         "by_severity": {
-          "INFO": 6296,
-          "WARNING": 170
+          "INFO": 6495,
+          "WARNING": 119
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 59,
-          "FISCAL_PERIOD_CONFLICT": 29,
+          "CONCEPT_DISAGREEMENT": 45,
+          "FISCAL_PERIOD_CONFLICT": 15,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 80,
-          "UNKNOWN_CONCEPT": 6296
+          "RESTATEMENT_CONFLICT": 57,
+          "UNKNOWN_CONCEPT": 6495
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-028609",
-        "filing_date": "2026-06-15",
+        "accession": "0001493152-26-042475",
+        "filing_date": "2026-09-14",
         "form": "10-Q",
-        "periodic_filings": 56
+        "periodic_filings": 57,
+        "acceptance_datetime": "2026-09-14T11:00:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -317,7 +318,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "ec8e4428e9ba52b2aebfafb9422d9eee40f3cd6a4736e2668e64babf7caddb3a",
+      "sourceDigest": "5bcdf7abf3c7474ca6f625bd6c69f9f7a04c2e2ce0def9e6973f4db14ef3ad26",
       "issuerId": "iss_cik_0001334325"
     },
     {

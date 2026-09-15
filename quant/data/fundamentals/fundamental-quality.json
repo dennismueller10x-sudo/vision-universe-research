@@ -2,33 +2,33 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1876646,
+      "RESOLVED_VALUES": 1876843,
       "ISSUERS_WITH_VALUES": 5333
     },
     "byState": {
-      "VALID": 1707085,
+      "VALID": 1707282,
       "WARNING": 169561
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49642884
+      "RAW_XBRL_FACTS_WITH_FINDING": 49646829
     },
     "byState": {
       "AMBIGUOUS": 1335223,
-      "RESTATED": 313695,
-      "NON_COMPARABLE": 70430,
-      "MISSING": 47903799,
-      "WARNING": 19737
+      "RESTATED": 313711,
+      "NON_COMPARABLE": 70432,
+      "MISSING": 47907740,
+      "WARNING": 19723
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47903799,
+      "UNKNOWN_CONCEPT": 47907740,
       "CONCEPT_DISAGREEMENT": 1327731,
-      "RESTATEMENT_CONFLICT": 313695,
+      "RESTATEMENT_CONFLICT": 313711,
       "UNEXPECTED_DURATION": 54322,
-      "FISCAL_PERIOD_CONFLICT": 14906,
-      "PERIOD_MISMATCH": 14847,
+      "FISCAL_PERIOD_CONFLICT": 14892,
+      "PERIOD_MISMATCH": 14849,
       "FUTURE_DATA_LEAK": 7477,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2242,
@@ -39,15 +39,15 @@
   },
   "titles": {
     "denominator": {
-      "PRODUCT_TITLES": 7004
+      "PRODUCT_TITLES": 6875
     },
     "byState": {
-      "AVAILABLE": 5172,
-      "PARTIAL": 521,
-      "MISSING": 94,
-      "NOT_APPLICABLE": 70,
+      "AVAILABLE": 5127,
+      "PARTIAL": 486,
+      "MISSING": 93,
+      "NOT_APPLICABLE": 63,
       "REQUIRES_REVIEW": 0,
-      "UNAVAILABLE": 1147
+      "UNAVAILABLE": 1106
     },
     "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. PARTIAL = Werte, aber kuerzer. MISSING = Einreichungen vorhanden, kein aufloesbarer Wert, und die Struktur muesste welche haben. NOT_APPLICABLE = die Kennzahlen existieren fuer diese Struktur nicht (SPAC, geschlossener Fonds). REQUIRES_REVIEW = nicht belastbar einzuordnen. UNAVAILABLE = kein Factbook."
   },
@@ -105,7 +105,7 @@
   },
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.9.0",
+    "normalization_logic": "1.10.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -114,5 +114,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-14T10:58:18+00:00"
+  "generatedAtUtc": "2026-09-15T05:17:22+00:00"
 }

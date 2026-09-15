@@ -1,7 +1,7 @@
 {
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.9.0",
+    "normalization_logic": "1.10.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -12,7 +12,7 @@
   },
   "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
   "denominator": {
-    "PRODUCT_TITLES": 7004
+    "PRODUCT_TITLES": 6875
   },
   "marketDataSource": {
     "status": "NOT_CONNECTED",
@@ -31,10 +31,10 @@
     "note": "Aus den Tiingo-Gate-Laeufen abgeleitet, auf INSTRUMENTENEBENE. Die Gate-Laeufe endeten vor der Erweiterung des Wertpapierstamms; diese Zahl ist keine Marktdatendeckung und darf nicht als solche verwendet werden."
   },
   "TECHNICAL_COVERED": null,
-  "FUNDAMENTAL_COVERED": 5857,
+  "FUNDAMENTAL_COVERED": 5769,
   "TECHNICAL_AND_FUNDAMENTAL": null,
   "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
   "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
   "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. Bis dahin waere jede Zahl hier eine Verrechnung zweier verschiedener Bestaende auf zwei verschiedenen Ebenen (Instrument gegen Mitglied).",
-  "generatedAtUtc": "2026-09-14T10:58:16+00:00"
+  "generatedAtUtc": "2026-09-15T05:17:20+00:00"
 }
