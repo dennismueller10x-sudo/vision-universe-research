@@ -1,12 +1,12 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-15T07:40:00.000Z",
+  "checkedAt": "2026-09-15T11:26:43.972Z",
   "target": "repository",
   "market": {
-    "state": "CLOSED",
+    "state": "PRE_MARKET",
     "localDate": "2026-09-15",
-    "localTime": "03:40:00",
+    "localTime": "07:26:43",
     "lastCompletedSession": "2026-09-14",
     "currentSession": "2026-09-15",
     "expectedIntradaySession": "2026-09-14"
@@ -76,7 +76,7 @@
   },
   "daily": {
     "universeAsOf": "2026-09-11",
-    "generatedAt": "2026-09-15T05:04:14.167Z",
+    "generatedAt": "2026-09-15T11:22:34.204Z",
     "state": "STALE",
     "reason": "lastSessionMissing",
     "label": "Schluss Fr., 11.09. · nicht aktuell",
@@ -93,31 +93,31 @@
         "lastSessionMissing": 40
       },
       "staleSample": [
-        "AACB",
         "AAPL",
         "ABBV",
         "ABCL",
+        "ABNB",
         "ABX",
-        "ACLO",
+        "ACIC",
         "ACMR",
         "ACN",
+        "ACT",
         "ACTG",
         "ACVA",
         "ADBE",
         "ADC",
         "ADI",
         "ADMA",
+        "ADP",
+        "ADPT",
         "ADSK",
-        "ADVB",
         "AEP",
-        "AFBI",
-        "AFGB",
-        "AFGC",
-        "AFGD",
-        "AFGE",
         "AFRM",
         "AGEN",
-        "AGL"
+        "AGL",
+        "AIR",
+        "AIRT",
+        "ALAB"
       ],
       "seriesIndexCount": 6437
     }
@@ -125,7 +125,7 @@
   "overall": "STALE",
   "findings": [
     "Intraday STALE: Datenstand 2026-09-11, erwartet 2026-09-14 (lastSessionMissing)",
-    "Universumslauf fehlt: Sitzung 2026-09-14 liegt nur fuer den Discover-Umfang vor (11.7 h nach Schluss)",
+    "Universumslauf fehlt: Sitzung 2026-09-14 liegt nur fuer den Discover-Umfang vor (15.4 h nach Schluss)",
     "Tageskurse STALE: asOf 2026-09-11, erwartet 2026-09-14 (lastSessionMissing)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."

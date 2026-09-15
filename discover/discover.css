@@ -1664,7 +1664,10 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-feed-hook { margin-top:10px; font-size:15px; }
 
 /* Eingangsflaeche: groesser, cineastischer */
-.dx-hero { --discover-hero-height:min(70vh,660px); }
+/* V4: die Positionierungszeile (§4) steht ueber der Eingangsflaeche; damit
+   die erste Reihe am Schreibtisch im ersten Bild bleibt, gibt die Flaeche
+   die Hoehe der Zeile ab. */
+.dx-hero { --discover-hero-height:min(62vh,600px); }
 .dx-hero-title { font-size:clamp(40px,5.6vw,80px); letter-spacing:-.02em; line-height:.98; }
 /* Auf dem Desktop bleibt die erste Reihe unter der Eingangsflaeche sichtbar
    (angeschnitten, wie bei einer Streaming-Startseite): kompaktere Innenabstaende. */
@@ -1936,3 +1939,8 @@ body.dx-feed-aktiv{overflow:hidden}
 /* V4 §26: Hook unter dem Chart, mit Abstand. */
 .dx-poster .dx-hook{margin-top:10px}
 .dx-poster .dx-zahl{margin-top:4px}
+
+/* V4 §19: Index-Mitgliedschaft auf der Aktienseite */
+.dx-index-badges{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.dx-index-badge{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--discover-text);
+  border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 9px;background:rgba(255,255,255,.04)}

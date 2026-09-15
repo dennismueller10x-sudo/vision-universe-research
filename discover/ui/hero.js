@@ -185,7 +185,14 @@
     viewport.addEventListener("pointermove", pointerMove, { passive: false });
     viewport.addEventListener("pointerup", pointerUp);
     viewport.addEventListener("pointercancel", pointerUp);
-    viewport.addEventListener("lostpointercapture", function () { if (geste) { geste = null; host.classList.remove("dx-hero--wischt"); track.classList.add("dx-hero-track--animiert"); lage(index, 0); } });
+    /* Ein Finger wird vom Browser zuerst am beruehrten Element festgehalten;
+       setPointerCapture auf die Spur loest diese implizite Bindung, und das
+       meldet der Browser als lostpointercapture AM ELEMENT - es steigt bis
+       hierher auf. Nur der Verlust der eigenen Bindung bricht die Geste ab. */
+    viewport.addEventListener("lostpointercapture", function (e) {
+      if (e.target !== viewport || !geste) return;
+      geste = null; host.classList.remove("dx-hero--wischt"); track.classList.add("dx-hero-track--animiert"); lage(index, 0);
+    });
     viewport.addEventListener("click", function (e) {
       if (klickSperre) { e.preventDefault(); e.stopPropagation(); }
     }, true);

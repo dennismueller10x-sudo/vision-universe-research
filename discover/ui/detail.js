@@ -332,6 +332,16 @@
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]
             .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
+          /* V4 §19: Index-Mitgliedschaft mit Herkunft und Stichtag - aus den
+             veroeffentlichten Fondsbestaenden, nicht geraten. */
+          Array.isArray(detail.indexMemberships) && detail.indexMemberships.length
+            ? el("p", { class: "dx-index-badges" }, detail.indexMemberships.map(function (ix) {
+                return el("span", { class: "dx-index-badge",
+                  title: ix.indexName + " – Mitglied laut " + (ix.proxy ? "Bestand des Fonds " + ix.proxy : "Liste des Indexeigentümers") +
+                         ", Stichtag " + C().dateShort(ix.asOf) + (isNum(ix.weight) ? ", Gewicht " + ix.weight.toFixed(2).replace(".", ",") + " %" : "") },
+                  [document.createTextNode(ix.shortLabel || ix.indexId)]);
+              }))
+            : null,
           text.story ? el("p", { class: "dx-dhero-story" }, [
             el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
             document.createTextNode(text.story)

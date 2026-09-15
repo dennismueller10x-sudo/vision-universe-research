@@ -207,11 +207,13 @@ await check("Eingangsfläche: Wischen mit dem Finger wechselt die Fläche (Point
 });
 
 await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
-  const ziffern = await desktop.$$eval('[data-surface-type="ranking"] .dx-rank-num',
+  /* V4: mehrere Ranglisten (Top 10, S&P 500, NASDAQ-100, Dow Jones) - die
+     Signature-Reihe ist die mit der Kennung top-10. */
+  const ziffern = await desktop.$$eval('[data-surface="top-10"] .dx-rank-num',
     (ns) => ns.map((n) => n.textContent.trim()));
   assert(ziffern.length === 10, "TOP 10 zeigt " + ziffern.length + " Titel");
   assert(ziffern[0] === "01" && ziffern[9] === "10", "Rangziffern stimmen nicht: " + ziffern.join(","));
-  await hinScrollen(desktop, '[data-surface-type="ranking"]', 0, 150);
+  await hinScrollen(desktop, '[data-surface="top-10"]', 0, 150);
   await shot(desktop, "02-top10");
 });
 
@@ -266,7 +268,10 @@ await check("Jedes Poster zeigt Symbol, Signal und ein Datenbild", async () => {
    Namen die Seite beherrschen. Die Grenzen stehen in discover/app.js
    (DEDUP) und werden weiter unten einzeln nachgemessen. */
 await check("kein Titel beherrscht die Startseite (§16)", async () => {
-  const symbole = await desktop.$$eval(".dx-rail-section .dx-poster .dx-poster-sym",
+  /* V4: Ranglisten sind Wahrheit (Top 10, S&P 500, NASDAQ-100, Dow Jones) -
+     ein Titel, der in mehreren Indizes vorn steht, steht dort mehrfach. Die
+     Regel "hoechstens zweimal" gilt fuer die redaktionell sortierten Reihen. */
+  const symbole = await desktop.$$eval('.dx-rail-section:not([data-surface-type="ranking"]) .dx-poster .dx-poster-sym',
     (ns) => ns.map((n) => n.textContent.trim()));
   const zaehler = {};
   symbole.forEach((s) => { zaehler[s] = (zaehler[s] || 0) + 1; });
@@ -540,18 +545,22 @@ await check("die Atmosphaere ist Flaeche, kein Kasten", async () => {
 await check("das Datenbild folgt den Zahlen, nicht dem Zufall", async () => {
   /* V3: Linie oder Leiter - die Form entsteht aus den Zahlen. Zwei Titel
      sehen nur gleich aus, wenn ihre Zahlen gleich sind. */
-  const bilder = await desktop.$$eval(".dx-rail-section .dx-poster .dx-art", (ns) =>
+  /* V4: sichtbare Karten tragen den Tagesverlauf (Live-Hub); die
+     Tagesreihe (.dx-art) zeichnet, wo kein Snapshot vorliegt. Beide sind
+     Datenbilder: die Form entsteht aus den Kursen, nie aus dem Zufall. */
+  const bilder = await desktop.$$eval(".dx-rail-section .dx-poster .dx-art, .dx-rail-section .dx-poster [data-art='intraday']", (ns) =>
     ns.slice(0, 8).map((n) => ({
-      form: n.getAttribute("data-art") === "price"
+      form: n.getAttribute("data-art") === "price" || n.getAttribute("data-art") === "intraday"
         ? (n.querySelector(".dx-art-line") || { getAttribute: () => "" }).getAttribute("d")
         : [...n.querySelectorAll(".dx-ladder-bar")].map((b) => b.getAttribute("height")).join(","),
       glanz: !!n.querySelector(".dx-art-glow"),
-      label: n.getAttribute("aria-label") || ""
+      intraday: n.getAttribute("data-art") === "intraday",
+      label: n.getAttribute("aria-label") || (n.querySelector("title") ? n.querySelector("title").textContent : "")
     })));
   assert(bilder.length >= 4, "zu wenige Datenbilder");
   const formen = new Set(bilder.map((b) => b.form));
   assert(formen.size === bilder.length, "zwei Titel haben dasselbe Datenbild");
-  assert(bilder.every((b) => /Prozent/.test(b.label) && /Balken|Kursverlauf/i.test(b.label)),
+  assert(bilder.every((b) => b.intraday ? /Tagesverlauf/.test(b.label) : (/Prozent/.test(b.label) && /Balken|Kursverlauf/i.test(b.label))),
     "das Datenbild traegt keine Beschreibung aus seinen eigenen Zahlen");
   await hinScrollen(desktop, ".dx-rail-section .dx-rail", 1, 200);
   await shot(desktop, "04-poster-artwork");
@@ -597,7 +606,8 @@ await check("jede Karte beantwortet: welche Firma, warum, wie viel", async () =>
       zahl: (n.querySelector(".dx-zahl b") || {}).textContent || "",
       /* Datenbild oder der Platzhalter, der es laedt - beides ist eine
          Antwort; ein leeres Feld waere keine. */
-      bild: !!n.querySelector(".dx-art, .dx-art-skeleton")
+      /* V4: der Tagesverlauf (Live-Hub) ist ein Verlauf wie die Tagesreihe. */
+      bild: !!n.querySelector(".dx-art, .dx-art-skeleton, [data-art='intraday']")
     })));
   assert(karten.length >= 12, "zu wenige Karten");
   for (const k of karten) {
@@ -665,7 +675,7 @@ await check("die Suche zeigt Firmen, keine Kuerzelliste", async () => {
 /* ========================================== MEHRFACHNENNUNGEN (§16) */
 function zaehlerWerte(z) { return Object.keys(z || {}); }
 await check("ein Titel steht hoechstens zweimal auf der Startseite", async () => {
-  const zaehler = await desktop.$$eval(".dx-rail-section", (ns) => {
+  const zaehler = await desktop.$$eval('.dx-rail-section:not([data-surface-type="ranking"])', (ns) => {
     const out = {};
     ns.forEach((sec) => sec.querySelectorAll(".dx-poster-sym").forEach((s) => {
       out[s.textContent] = (out[s.textContent] || 0) + 1;
@@ -701,7 +711,7 @@ await check("jede Zweitnennung sagt, woher man den Titel kennt", async () => {
 });
 
 await check("TOP 10 zeigt die echte Rangliste, ungefiltert", async () => {
-  const gezeigt = await desktop.$$eval("[data-surface-type=\"ranking\"] .dx-poster-sym",
+  const gezeigt = await desktop.$$eval('[data-surface="top-10"] .dx-poster-sym',
     (ns) => ns.map((n) => n.textContent));
   const echt = await desktop.evaluate(async () => {
     const r = await fetch("/discover/data/rows/US_REAL/market-leaders.json");

@@ -303,7 +303,7 @@
       "require": [
         "leadershipScore"
       ],
-      "world": "quality",
+      "world": "compounder",
       "microRange": "6M",
       "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
     },
@@ -385,7 +385,7 @@
       ],
       "filter": "bekannt",
       "secondarySort": "leadershipScore",
-      "world": "leadership",
+      "world": "strength",
       "microRange": "3M",
       "rule": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)"
     },
@@ -721,7 +721,7 @@
     }
   },
   "home": {
-    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln. V4 (§23): Reihenfolge der Entdeckungsreise - Eingang, bekannte Namen, staerkste Aktien, S&P 500, NASDAQ-100, Dow Jones, Jahreshochs, Unternehmensgeschichte, Wachstum, Cashflow/Qualitaet, Themenwelten, Comeback, unter dem Radar, Einzeln entdecken.",
+    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln. V4 (§23): Reihenfolge der Entdeckungsreise - Eingang, bekannte Namen, staerkste Aktien, S&P 500, NASDAQ-100, Dow Jones, Jahreshochs, Unternehmensgeschichte, Wachstum, Cashflow/Qualitaet, Themenwelten, Comeback, unter dem Radar, Einzeln entdecken. Erstes Stueck bis 430 KB (V4: Karten tragen rankingReason, drei Index-Ranglisten stehen vorn).",
     "chunkSizes": [
       8,
       8
@@ -929,7 +929,8 @@
         "title": "Noch nichts gefunden?",
         "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, mit Kurs, Geschichte und Zahlen."
       }
-    ]
+    ],
+    "chunkMaxBytes": 440320
   },
   "fundamentals": {
     "note": "Fundamentale Reihen lesen nur Kennzahlen aus SEC-Jahresabschluessen (discover/engines/fundamentals.js, quant/data/sec/consumer). Eine Reihe erscheint erst ab minMembers Titeln - keine Sammlung ohne Datenbasis.",

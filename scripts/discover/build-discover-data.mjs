@@ -1573,7 +1573,11 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
       type: step.type, variant: step.variant || null, id: step.id || row.rowId, rowId: row.rowId,
       title: step.title || row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
       theme: row.theme || null, editorial: row.editorial === true, rule: row.rule || null,
-      cards: ordered, show: step.show || 10, pure, total: row.coverage.matched,
+      index: row.index || null,
+      /* Eine Rangliste zeigt ihre ersten Plaetze; die ganze Reihe steht
+         hinter "Alle anzeigen". Mehr Karten im Stueck wuerden nur das
+         Nachladen verzoegern. */
+      cards: pure ? ordered.slice(0, step.show || 10) : ordered, show: step.show || 10, pure, total: row.coverage.matched,
       href: "#/c/" + U + "/" + row.rowId
     });
   }
