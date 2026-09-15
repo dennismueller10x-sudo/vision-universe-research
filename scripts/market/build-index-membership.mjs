@@ -138,16 +138,36 @@ export function xlsxRows(buf) {
 }
 
 /* ----------------------------------------------------------- Holen */
-async function holen(url) {
-  const r = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 (compatible; VisionUniverseResearch/1.0; +https://research.visionuniverse.de)",
-                                          "accept": "text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" } });
-  if (!r.ok) throw new Error("HTTP " + r.status + " " + url);
-  return Buffer.from(await r.arrayBuffer());
+async function holen(url, format) {
+  const headers = {
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36",
+    "accept": format === "NASDAQ_API_JSON" ? "application/json, text/plain, */*"
+            : format === "SSGA_XLSX" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream, */*"
+            : "text/csv, text/plain, application/octet-stream, */*",
+    "accept-language": "en-US,en;q=0.9"
+  };
+  const r = await fetch(url, { headers, redirect: "follow" });
+  const buf = Buffer.from(await r.arrayBuffer());
+  const ct = r.headers.get("content-type") || "?";
+  if (!r.ok) throw new Error("HTTP " + r.status + " (" + ct + ", " + buf.length + " Bytes) " + url + " :: " + buf.toString("utf8", 0, 200).replace(/\s+/g, " "));
+  return { buf, contentType: ct };
+}
+
+/* Diagnose fuer den Fall, dass ein Emittent das Format aendert: Inhaltstyp,
+   Groesse, erste Zeichen - damit der naechste Lauf ohne Raten repariert
+   werden kann. */
+function probe(buf, ct) {
+  const utf16 = buf[0] === 0xff && buf[1] === 0xfe;
+  const text = utf16 ? buf.toString("utf16le", 2, 400) : buf.toString("utf8", 0, 400);
+  return `${ct}, ${buf.length} Bytes${utf16 ? ", UTF-16LE" : ""}; Anfang: ${JSON.stringify(text.slice(0, 220))}`;
 }
 
 function rowsOf(format, buf) {
   if (format === "SSGA_XLSX") return xlsxRows(buf);
-  return IM.parseCsv(buf.toString("utf8"));
+  if (format === "NASDAQ_API_JSON") return IM.rowsFromNasdaqJson(buf.toString("utf8"));
+  /* iShares liefert die CSV gelegentlich als UTF-16LE mit BOM. */
+  const text = (buf[0] === 0xff && buf[1] === 0xfe) ? buf.toString("utf16le", 2) : buf.toString("utf8");
+  return IM.parseCsv(text);
 }
 
 /* ------------------------------------------------------------ Lauf */
@@ -159,14 +179,34 @@ for (const idx of CONFIG.indexes) {
   const out = join(OUT_DIR, idx.indexId + ".json");
   const previous = existsSync(out) ? JSON.parse(readFileSync(out, "utf8")) : null;
   try {
-    let buf, quelle;
-    if (FILES[idx.indexId]) { buf = readFileSync(FILES[idx.indexId]); quelle = FILES[idx.indexId]; }
-    else { buf = await holen(idx.proxy.url); quelle = idx.proxy.url; }
-    const rows = rowsOf(idx.proxy.format, buf);
-    const holdings = IM.parseHoldings(idx.proxy.format, rows);
-    if (holdings.error) throw new Error(holdings.error);
-    const doc = IM.build({ indexId: idx.indexId, indexName: idx.indexName, proxy: idx.proxy, holdings,
+    /* Quellen in Reihenfolge: die erste, die antwortet und parsebar ist. */
+    const quellen = idx.sources || (idx.proxy ? [idx.proxy] : []);
+    let holdings = null, proxy = null, fehlerliste = [];
+    if (FILES[idx.indexId]) {
+      proxy = Object.assign({}, quellen[0], { url: "lokal: " + FILES[idx.indexId] });
+      const buf = readFileSync(FILES[idx.indexId]);
+      holdings = IM.parseHoldings(quellen[0].format, rowsOf(quellen[0].format, buf));
+      if (holdings.error) throw new Error(holdings.error);
+    } else {
+      for (const q of quellen) {
+        try {
+          const { buf, contentType } = await holen(q.url, q.format);
+          const rows = rowsOf(q.format, buf);
+          const h = IM.parseHoldings(q.format, rows);
+          if (h.error) throw new Error(h.error + " [" + probe(buf, contentType) + "]");
+          if (h.members.length < idx.expectedMembers.min) throw new Error("nur " + h.members.length + " Bestandszeilen [" + probe(buf, contentType) + "]");
+          holdings = h; proxy = q;
+          break;
+        } catch (err) {
+          fehlerliste.push((q.etf || q.issuer) + ": " + String(err.message).slice(0, 400));
+          console.warn(`  ${idx.indexId.padEnd(6)} Quelle ${q.etf || q.issuer} (${q.format}) scheitert: ${String(err.message).slice(0, 300)}`);
+        }
+      }
+      if (!holdings) throw new Error("keine Quelle lieferte einen Bestand - " + fehlerliste.join(" | "));
+    }
+    const doc = IM.build({ indexId: idx.indexId, indexName: idx.indexName, proxy, holdings,
                            securities: universe.securities, fetchedAt: NOW.toISOString(), previous });
+    doc.sourcesTried = fehlerliste;
     doc.shortLabel = idx.shortLabel;
     doc.sourceFile = FILES[idx.indexId] ? "lokal: " + quelle : null;
     const v = IM.validate(doc, { minMembers: idx.expectedMembers.min });
@@ -177,7 +217,7 @@ for (const idx of CONFIG.indexes) {
     mkdirSync(hist, { recursive: true });
     writeFileSync(join(hist, doc.asOf + ".json"), JSON.stringify(Object.assign({}, doc, { changes: doc.changes }), null, 1) + "\n");
     verzeichnis.indexes.push({ indexId: idx.indexId, indexName: idx.indexName, shortLabel: idx.shortLabel, asOf: doc.asOf,
-                               memberCount: doc.memberCount, unmatchedCount: doc.unmatchedCount, proxy: idx.proxy.etf,
+                               memberCount: doc.memberCount, unmatchedCount: doc.unmatchedCount, proxy: proxy.etf || proxy.issuer,
                                path: "/" + CONFIG.outputDir + "/" + idx.indexId + ".json" });
     console.log(`  ${idx.indexId.padEnd(6)} ${idx.indexName}: ${doc.memberCount} Mitglieder (Bestand ${doc.holdingsCount}, ` +
                 `nicht zugeordnet ${doc.unmatchedCount}${doc.unmatched.length ? ": " + doc.unmatched.slice(0, 8).map((u) => u.ticker).join(", ") : ""}) · Stichtag ${doc.asOf}` +
@@ -187,7 +227,7 @@ for (const idx of CONFIG.indexes) {
     fehler++;
     console.error(`  ${idx.indexId.padEnd(6)} FEHLER: ${err.message}` + (previous ? ` - letzter Stand ${previous.asOf} bleibt.` : ""));
     if (previous) verzeichnis.indexes.push({ indexId: idx.indexId, indexName: idx.indexName, shortLabel: idx.shortLabel, asOf: previous.asOf,
-                                             memberCount: previous.memberCount, unmatchedCount: previous.unmatchedCount, proxy: idx.proxy.etf,
+                                             memberCount: previous.memberCount, unmatchedCount: previous.unmatchedCount, proxy: previous.proxy ? (previous.proxy.etf || previous.proxy.issuer) : null,
                                              path: "/" + CONFIG.outputDir + "/" + idx.indexId + ".json", stale: true, error: String(err.message).slice(0, 200) });
   }
 }

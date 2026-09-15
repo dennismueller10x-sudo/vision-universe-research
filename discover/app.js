@@ -248,6 +248,8 @@
 
     var heroHost = el("div", {});
     var body = el("div", { class: "dx-page" });
+    var pos = positioning();
+    if (pos) app.appendChild(pos);
     app.appendChild(heroHost);
     app.appendChild(body);
     heroHost.appendChild(el("div", { class: "dx-hero" }, [el("div", { class: "dx-hero-bg" })]));
@@ -693,7 +695,29 @@
         el("b", { text: "Universum: " }),
         document.createTextNode(universe.rankingScope + " " + universe.note)
       ]),
-      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)])
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)]),
+      /* V4 §11: die Herkunft der Daten hat eine eigene Seite - Marktdaten,
+         Tagesverlauf, Geschaeftszahlen, Index-Mitgliedschaft, Aktualisierung,
+         Verzoegerung, Methoden, Lizenzen. Auf den Karten steht kein
+         Anbietername mehr; hier steht, woher alles kommt. */
+      el("div", { class: "dx-foot-links", style: "margin-top:10px" }, [
+        el("a", { href: "#/daten", text: "Daten & Quellen" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/", text: "Discover" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/einzeln/" + state.universeId, text: "Einzeln entdecken" })
+      ])
+    ]);
+  }
+
+  /* V4 §3-4: in fuenf Sekunden verstehen, was Discover ist - ein Satz,
+     eine zweite Zeile, keine Einfuehrungsseite. */
+  function positioning() {
+    var pos = state.meta.positioning || {};
+    if (!pos.line) return null;
+    return el("div", { class: "dx-positioning" }, [
+      el("p", { class: "dx-positioning-line", text: pos.line }),
+      pos.second ? el("p", { class: "dx-positioning-second", text: pos.second }) : null
     ]);
   }
 
@@ -710,7 +734,16 @@
          bliebe die Uebersicht in einem Zustand haengen, den niemand
          angefordert hat. */
       if (teile[0] !== "einzeln") document.body.classList.remove("dx-feed-aktiv");
-      if (teile[0] === "einzeln") {
+      if (teile[0] === "daten") {
+        S.clear(root);
+        var seite = el("div", { class: "dx-app" });
+        root.appendChild(seite);
+        seite.appendChild(appBar());
+        seite.appendChild(D.Daten.render({ meta: state.meta, universe: universeMeta(), calendar: state.calendar }));
+        seite.appendChild(footer());
+        document.title = "Daten & Quellen — Discover";
+        window.scrollTo(0, 0);
+      } else if (teile[0] === "einzeln") {
         renderFeed(root, teile[1] || state.universeId);
       } else if (teile[0] === "s" && teile.length >= 3) {
         renderDetail(root, teile[1], decodeURIComponent(teile[2]).toUpperCase());

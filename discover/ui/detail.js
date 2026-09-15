@@ -80,6 +80,9 @@
       overlays: OVERLAYS.reduce(function (acc, o) { acc[o.id] = o.on === true; return acc; }, {}),
       panes: PANES.reduce(function (acc, p) { acc[p.id] = p.on === true; return acc; }, {}),
       bars: null, weeklyBars: null, bundle: null, mehrOffen: false,
+      /* V4 §12-15: Verbraucher-Chart zuerst (Linie, Zeitraum, Kurs); der
+         Analyse-Chart (Kerzen, Volumen, Overlays) ist ein Werkzeug. */
+      dailyPoints: null, weeklyPoints: null, seriesAsOf: null, pro: false,
       /* Der Tagesverlauf aus dem Live-Hub (Snapshot + Beschriftung). */
       intraday: null, redraw: null
     };
@@ -89,12 +92,39 @@
      sobald die naechste Seite gezeichnet wird. */
   var detailAbo = null;
 
+  /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
+     der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
+     gesperrt - nichts wird aus einem Jahr auf fuenf gestreckt. */
+  function langeReihe(series) {
+    if (!series.long || !series.long.path) return Promise.resolve(null);
+    var Loader = D.SeriesLoader;
+    var holen = Loader ? Loader.get(series.long.path) : S.loadJSON(series.long.path);
+    return holen.catch(function () { return null; });
+  }
+  function wochenPunkte(lang, daily) {
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling;
+    if (!SS) return null;
+    if (lang && Array.isArray(lang.points) && lang.points.length) return SS.mergeWeeklyWithDaily(lang.points, daily || []);
+    return null;
+  }
+  function punkteAlsBars(punkte) {
+    var close = punkte.map(function (p) { return p[1]; });
+    return { timestamps: punkte.map(function (p) { return p[0]; }), open: close.slice(), high: close.slice(),
+             low: close.slice(), close: close, volume: close.map(function () { return null; }) };
+  }
+
   function loadSeries(detail) {
     var series = detail.series || {};
     if (series.source === "technical-instrument" && series.path) {
-      return S.loadJSON(series.path).then(function (payload) {
+      return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
+        var payload = teile[0], lang = teile[1];
+        var b = payload.bars || {};
+        var daily = (b.timestamps || []).map(function (t, i) { return [String(t).slice(0, 10), b.close[i]]; });
+        var wochen = wochenPunkte(lang, daily);
         return { bars: payload.bars, bundle: payload.bundle || null,
-                 priceSeriesType: payload.priceSeriesType || null };
+                 dailyPoints: daily, weeklyPoints: wochen, weeklyBars: wochen ? punkteAlsBars(wochen) : null,
+                 priceSeriesType: payload.priceSeriesType || null,
+                 asOf: daily.length ? daily[daily.length - 1][0] : null };
       });
     }
     /* Kompakte Reihe (ein Jahr Tagesschluss): dieselbe Datei wie der
@@ -104,13 +134,16 @@
     if (series.source === "discover-series" && series.path) {
       var Loader = D.SeriesLoader;
       var holen = Loader ? Loader.get(series.path) : S.loadJSON(series.path);
-      return holen.then(function (reihe) {
+      return Promise.all([holen, langeReihe(series)]).then(function (teile) {
+        var reihe = teile[0], lang = teile[1];
         var dates = reihe.points.map(function (p) { return p[0]; });
         var close = reihe.points.map(function (p) { return p[1]; });
+        var wochen = wochenPunkte(lang, reihe.points);
         return { bars: { timestamps: dates, open: close.slice(), high: close.slice(), low: close.slice(),
                          close: close, volume: close.map(function () { return null; }) },
-                 weeklyBars: null, bundle: null, priceSeriesType: reihe.priceSeriesType || null,
-                 closeOnly: true };
+                 dailyPoints: reihe.points, weeklyPoints: wochen,
+                 weeklyBars: wochen ? punkteAlsBars(wochen) : null, bundle: null,
+                 priceSeriesType: reihe.priceSeriesType || null, closeOnly: true, asOf: reihe.asOf || reihe.to || null };
       });
     }
     if (series.source === "inline" && series.inline) {
@@ -224,6 +257,9 @@
         state.bars = loaded.bars;
         state.weeklyBars = loaded.weeklyBars || null;
         state.bundle = loaded.bundle;
+        state.dailyPoints = loaded.dailyPoints || null;
+        state.weeklyPoints = loaded.weeklyPoints || null;
+        state.seriesAsOf = loaded.asOf || null;
       }
       if (state.intraday) state.range = "1D";
       else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
@@ -666,33 +702,34 @@
       return { bars: state.bars, selection: mitTag, grain: "daily" };
     }
 
-    var leiste = Ranges.rangeBar(weekly || daily, { gates: gates });
+    /* V4 §13: die Zeitraeume, in denen ein Mensch denkt. 1T aus dem
+       Tagesverlauf (Gate vor Daten, wie ueberall), 1W bis 1J aus der
+       Tagesreihe, 5J und Max aus der Wochenreihe - jeder Zeitraum nur, wenn
+       die Reihe ihn wirklich traegt. Ein gesperrter Knopf sagt, warum. */
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling;
+    var engineLeiste = Ranges.rangeBar(weekly || daily, { gates: gates });
+    var eintag = engineLeiste.filter(function (r) { return r.id === "1D"; })[0] || { id: "1D", label: "1T", available: false, message: "Kein Tagesverlauf" };
+    var leiste = [eintag].concat(verbraucherZeitraeume(state, SS));
     leiste.forEach(function (r) {
-      /* Die Leiste zeigt die Zeitraeume, in denen ein Mensch denkt:
-         heute, eine Woche, ein Monat, ein halbes Jahr, ein Jahr, fuenf
-         Jahre, alles. Drei Jahre und zehn Jahre liegen dazwischen, ohne
-         eine eigene Frage zu beantworten - sie sind auf der Analyseebene
-         ueber dieselbe Engine erreichbar. */
-      /* 5T entfaellt: der Hub haelt eine Sitzung je Titel, und "fuenf
-         Tage" aus einem Tag waeren eine Behauptung. */
-      if (["5D", "3M", "YTD", "3Y", "10Y"].indexOf(r.id) !== -1) return;
-      /* Die Engine nennt den Zeitraum "5T", weil sie in Handelstagen
-         denkt. Ein Mensch sagt "1 Woche". Umbenannt wird nur die
-         Beschriftung - die Auswahl bleibt dieselbe Engine-Entscheidung. */
-      var beschriftung = r.id === "5D" ? "1W" : r.label;
-      var knopf = el("button", { type: "button", text: beschriftung,
+      var knopf = el("button", { type: "button", text: r.label,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
         title: r.available ? "" : (r.message || "Nicht verfügbar") });
       knopf.addEventListener("click", function () {
         if (!r.available) return;
         state.range = r.id;
         Array.prototype.forEach.call(tf.children, function (b) {
-          b.setAttribute("aria-pressed", String(b.textContent === beschriftung));
+          b.setAttribute("aria-pressed", String(b.textContent === r.label));
         });
         zeichnen();
+        if (D.Analytics && D.Analytics.track) D.Analytics.track("detail:range", { symbol: state.detail.symbol, range: r.id });
       });
       tf.appendChild(knopf);
     });
+    /* Wenn der Standard-Zeitraum nicht verfuegbar ist, der erste verfuegbare. */
+    if (!leiste.some(function (r) { return r.id === state.range && r.available; })) {
+      var erster = leiste.filter(function (r) { return r.available; })[0];
+      if (erster) { state.range = erster.id; Array.prototype.forEach.call(tf.children, function (b) { b.setAttribute("aria-pressed", String(b.textContent === erster.label)); }); }
+    }
 
     wrap.appendChild(el("div", { class: "dx-chart-head" }, [tf]));
     wrap.appendChild(chartBox);
@@ -721,6 +758,7 @@
     function zeichnen() {
       state.redraw = zeichnen;
       if (state.range === "1D") { zeichneIntraday(state, chartBox, paneHost, controls); return; }
+      if (!state.pro || state.range === "1W") { zeichneVerbraucher(state, chartBox, paneHost, controls, zeichnen); return; }
       var gewaehlt = quelleFuer(state.range);
       var selection = gewaehlt.selection;
       var aktiveBars = gewaehlt.bars;
@@ -801,6 +839,97 @@
      Keine Overlays: gleitende Durchschnitte ueber 5-Minuten-Kurse waeren
      andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
      bleibt deshalb zu. */
+  var VERBRAUCHER_ZEITRAEUME = [
+    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
+    { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
+    { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
+    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
+    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
+    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+  ];
+  function tageZwischen(a, b) { return (Date.parse(b) - Date.parse(a)) / 86400000; }
+  function verbraucherZeitraeume(state, SS) {
+    var daily = state.dailyPoints || [], weekly = state.weeklyPoints || null;
+    return VERBRAUCHER_ZEITRAEUME.map(function (z) {
+      var out = { id: z.id, label: z.label, available: false, message: null };
+      if (!SS) { out.message = "Zeitraum-Engine nicht geladen"; return out; }
+      var punkte = z.quelle === "weekly" ? (weekly || null) : daily;
+      if (z.id === "MAX") {
+        punkte = weekly || daily;
+        out.available = punkte.length >= 5;
+        if (!out.available) out.message = "Keine Kursreihe";
+        return out;
+      }
+      if (!punkte || punkte.length < 2) { out.message = z.quelle === "weekly" ? "Für diesen Titel liegt noch keine lange Kursreihe vor." : "Keine Kursreihe"; return out; }
+      var deckung = tageZwischen(punkte[0][0], punkte[punkte.length - 1][0]);
+      /* Ein Zeitraum ist verfuegbar, wenn die Reihe mindestens 60 % davon
+         traegt; bei weniger sagt der Knopf, wie weit sie reicht. */
+      if (deckung >= z.tage * 0.6) out.available = true;
+      else out.message = "Die Kursreihe reicht nur " + Math.round(deckung) + " Tage zurück (ab " + C().dateShort(punkte[0][0]) + ").";
+      return out;
+    });
+  }
+
+  /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
+     Zeitraum, das Datum. Kein Rahmen, kein Werkzeugkasten, keine Fachbegriffe.
+     Farbe folgt der Welt, aus der man kommt; Gruen und Rot bleiben den Zahlen. */
+  function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
+    S.clear(chartBox); S.clear(paneHost); S.clear(controls);
+    var z = VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === state.range; })[0] || VERBRAUCHER_ZEITRAEUME[3];
+    var punkte = z.quelle === "weekly" ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
+    if (z.id === "MAX") punkte = state.weeklyPoints || state.dailyPoints || [];
+    if (!SS || !MC || !MC.renderRange || punkte.length < 2) {
+      chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
+      return;
+    }
+    var sel = SS.sliceRange(punkte, z.id, punkte[punkte.length - 1][0]);
+    if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
+    var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
+    var veraenderung = erster > 0 ? (letzter / erster - 1) * 100 : null;
+    var mobil = global.innerWidth < 860;
+    /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
+       Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
+    var kopf = el("div", { class: "dx-chart-hero" }, [
+      el("div", { class: "dx-chart-hero-preis" }, [
+        el("b", { class: "num", text: C().money(letzter) }),
+        el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? C().pctPoints(veraenderung) : "" }),
+        el("span", { class: "dx-chart-hero-wort", text: z.wort })
+      ]),
+      el("div", { class: "dx-chart-hero-meta" }, [
+        document.createTextNode(C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
+          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt"),
+        frischeTages(state)
+      ])
+    ]);
+    chartBox.appendChild(kopf);
+    var svgNode = MC.renderRange(sel.points, { width: mobil ? 640 : 1120, height: mobil ? 240 : 380, symbol: state.detail.symbol,
+                                                 range: z.id, label: z.wort, grain: z.quelle });
+    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle });
+    rahmen.appendChild(svgNode);
+    chartBox.appendChild(rahmen);
+    if (!sel.complete) {
+      chartBox.appendChild(el("p", { class: "dx-intraday-note", text: "Die Kursreihe beginnt am " + C().dateShort(sel.from) + " — der Zeitraum ist deshalb kürzer als gewählt." }));
+    }
+    controls.appendChild(controlBar(state, redraw));
+  }
+
+  /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
+     der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
+  function frischeTages(state) {
+    var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
+    var asOf = state.seriesAsOf;
+    if (!asOf || !FR || !Hub || !Hub.resolution) return null;
+    var r = Hub.resolution();
+    if (!r) return null;
+    var meta = (global.VUDiscoverMeta && global.VUDiscoverMeta.realtime && global.VUDiscoverMeta.realtime.intraday) || {};
+    var f = FR.assess({ resolution: r, series: { to: asOf, asOf: asOf }, kind: "daily", now: new Date(),
+                        options: meta.freshness ? { graceHours: meta.freshness.graceHours, graceMinutes: meta.freshness.graceMinutes } : null });
+    return el("span", { class: "dx-live-label dx-live-label--" + f.label.tone, "data-freshness": f.freshnessState,
+                        title: f.freshnessState === "STALE" ? "Die Tagesreihe ist älter als der letzte Handelstag (" + f.expectedSessionDate + ")." : "" },
+      [el("i", { "aria-hidden": "true" }), document.createTextNode(" · " + f.label.label)]);
+  }
+
   function zeichneIntraday(state, chartBox, paneHost, controls) {
     var MC = D.MicroChart;
     var p = state.intraday;
@@ -824,14 +953,13 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     var snap = p.snapshot;
-    var text = (p.label && p.label.label ? p.label.label : "") +
-      " · 5-Minuten-Kurse, " + snap.provider + "/" + (snap.venue || "IEX") + " · Uhrzeiten New York" +
+    var text = " · 5-Minuten-Kurse · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (p.freshness && p.freshness.freshnessState === "STALE"
         ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
         : snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
     chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [C().liveLabel(p.label, snap),
-      el("span", { text: text.replace(/^[^·]*· /, " · ") })]));
+      el("span", { text: text })]));
   }
 
   function intradayAlsZeilen(p) {
@@ -846,6 +974,19 @@
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
   function controlBar(state, redraw) {
     var host = el("div", {});
+    /* V4 §15: der Analyse-Chart ist ein Werkzeug, kein Standard. */
+    var pro = el("label", { class: "dx-pro-toggle" }, [
+      el("input", { type: "checkbox", checked: state.pro ? "checked" : null }),
+      el("span", { text: "Analyse-Chart: Kerzen, Volumen, Overlays und Indikatoren" })
+    ]);
+    pro.querySelector("input").addEventListener("change", function (e) {
+      state.pro = !!e.target.checked;
+      if (state.pro && state.range === "1W") state.range = "1M";
+      redraw();
+      if (D.Analytics && D.Analytics.track) D.Analytics.track("detail:pro", { symbol: state.detail.symbol, on: state.pro });
+    });
+    host.appendChild(pro);
+    if (!state.pro) return host;
     var schnell = el("div", { class: "dx-controls" }, [
       el("span", { class: "dx-ctrl-label", text: "Overlay" })
     ]);
@@ -1243,7 +1384,7 @@
       el("div", {}, [
         el("b", { text: "Datenherkunft: " }),
         document.createTextNode([
-          detail.dataMode === "real" ? "reale Marktdaten (" + (detail.provider || "Anbieter") + ")"
+          detail.dataMode === "real" ? "reale Marktdaten (Herkunft und Lizenz: Daten & Quellen)"
                                      : "synthetisches Modelluniversum",
           "Stand " + (detail.asOf || "unbekannt"),
           "Universum " + detail.universeLabel,

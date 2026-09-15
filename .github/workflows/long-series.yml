@@ -7,14 +7,18 @@ name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
 # (quant/data/market/discover-series-long/). Die Tagesreihe des juengsten
 # Jahres haengt der Client hinten an.
 #
-# Zeitplan nur auf dem Default-Branch (woechentlich, Samstag nach dem
-# Freitagsschluss); auf Entwicklungsbranches dient ein Push mit der Marke
-# `[long-series]`. Speicherzugang aus den Secrets; ohne ihn kein Lauf.
+# Zeitplan nur auf dem Default-Branch: monatlich, erster Samstag. Oefter
+# ist nicht noetig - der Client haengt die taegliche Jahresreihe hinten an,
+# die Wochenreihe muss nur bis an deren Anfang reichen. (6 308 Reihen sind
+# rund 113 MB; jeder Lauf schreibt sie neu, die Git-Historie waechst
+# entsprechend - deshalb monatlich, nicht woechentlich.) Auf
+# Entwicklungsbranches dient ein Push mit der Marke `[long-series]`.
+# Speicherzugang aus den Secrets; ohne ihn kein Lauf.
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '40 7 * * 6'
+    - cron: '40 7 1-7 * 6'
   push:
     branches:
       - 'claude/**'

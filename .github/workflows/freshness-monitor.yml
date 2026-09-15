@@ -55,6 +55,7 @@ jobs:
         id: live
         continue-on-error: true
         run: |
+          set -o pipefail
           SITE='${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}'
           node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
 

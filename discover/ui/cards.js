@@ -48,6 +48,13 @@
     if (!isNum(v)) return "–";
     return prozentText(v, digits === undefined ? 2 : digits);
   }
+  /** "11.09.2026" aus einem ISO-Datum - fuer Stand-Angaben ohne Anbietername. */
+  function dateShort(iso) {
+    if (!iso || String(iso).length < 10) return String(iso || "");
+    var t = String(iso);
+    return t.slice(8, 10) + "." + t.slice(5, 7) + "." + t.slice(0, 4);
+  }
+
   function money(v) {
     if (!isNum(v)) return "–";
     return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
@@ -697,6 +704,7 @@
   }
 
   var api = {
+    dateShort: dateShort,
     pct: pct, pctPoints: pctPoints, money: money, score: score, times: times,
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,

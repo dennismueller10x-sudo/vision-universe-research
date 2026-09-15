@@ -34,7 +34,12 @@ await d.goto(BASE + "/discover/", { waitUntil: "networkidle" }); await warten(d,
 const s1 = await d.evaluate(() => [...document.querySelectorAll("[data-surface-type]")].map((n) => n.getAttribute("data-surface-type")));
 ok("Home: Stueck 1 gerendert (>=5 Surfaces)", s1.length >= 5, s1.join(","));
 ok("Home: Rangliste vorhanden", s1.includes("ranking"));
-ok("Home: Themenwelt vorhanden", s1.includes("theme"));
+/* V4 §23: die Themenwelten stehen nach Wachstum und Cashflow - im
+   nachgeladenen Teil der Startseite, nicht im ersten Stueck. */
+await d.mouse.wheel(0, 6000); await warten(d, 1200); await d.mouse.wheel(0, 6000); await warten(d, 1200);
+const sTheme = await d.evaluate(() => [...document.querySelectorAll("[data-surface-type]")].map((n) => n.getAttribute("data-surface-type")));
+ok("Home: Themenwelt vorhanden (nach dem Nachladen)", sTheme.includes("theme"), sTheme.join(","));
+await d.evaluate(() => window.scrollTo(0, 0)); await warten(d, 300);
 ok("Home: Hero rendert Name", ((await d.locator(".dx-hero-title").first().textContent()) || "").length > 2);
 /* Keine Fake-Charts: Linien nur, wo priceSeries CALCULATED */
 const fake = await d.evaluate(() => {

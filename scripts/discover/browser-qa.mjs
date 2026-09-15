@@ -159,11 +159,51 @@ await check("Eingangsfläche zeigt ein Datenbild aus echten Werten", async () =>
 await check("Featured-Wechsel über die Striche", async () => {
   const striche = await desktop.$$(".dx-hero-nav button");
   assert(striche.length >= 2, "nur ein Featured-Titel");
-  const vorher = await desktop.textContent(".dx-hero-title");
+  /* V4 §16: alle Flaechen liegen auf einer Spur; sichtbar ist die mit
+     aria-hidden="false". */
+  const aktiv = '.dx-hero-slide[aria-hidden="false"] .dx-hero-title';
+  const vorher = await desktop.textContent(aktiv);
   await striche[1].click();
   await desktop.waitForTimeout(600);
-  const nachher = await desktop.textContent(".dx-hero-title");
+  const nachher = await desktop.textContent(aktiv);
   assert(vorher !== nachher, "der Wechsel ändert die Eingangsfläche nicht");
+  const sichtbar = await desktop.$$eval('.dx-hero-slide[aria-hidden="false"]', (ns) => ns.length);
+  assert(sichtbar === 1, sichtbar + " Flaechen gleichzeitig sichtbar");
+});
+
+await check("Eingangsfläche: Wischen mit dem Finger wechselt die Fläche (Pointer Events)", async () => {
+  /* Die Geste selbst, nicht der Knopf: pointerdown, Bewegung nach links,
+     pointerup - wie ein Daumen auf dem Telefon. Vertikales Ziehen darf
+     nichts wechseln. */
+  const box = await (await desktop.$(".dx-hero-viewport")).boundingBox();
+  const aktiv = '.dx-hero-slide[aria-hidden="false"]';
+  const vorher = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
+  const y = box.y + box.height / 2, x0 = box.x + box.width * 0.8;
+  await desktop.mouse.move(x0, y); await desktop.mouse.down();
+  for (let i = 1; i <= 8; i++) await desktop.mouse.move(x0 - i * (box.width * 0.06), y + i);
+  await desktop.mouse.up();
+  await desktop.waitForTimeout(600);
+  const nachher = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
+  assert(Number(nachher) === Number(vorher) + 1, "Wischen nach links wechselt nicht zur naechsten Flaeche (" + vorher + " -> " + nachher + ")");
+  /* Zurueck nach rechts. */
+  await desktop.mouse.move(box.x + box.width * 0.2, y); await desktop.mouse.down();
+  for (let i = 1; i <= 8; i++) await desktop.mouse.move(box.x + box.width * 0.2 + i * (box.width * 0.06), y);
+  await desktop.mouse.up();
+  await desktop.waitForTimeout(600);
+  const zurueck = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
+  assert(Number(zurueck) === Number(vorher), "Wischen nach rechts geht nicht zurueck");
+  /* Vertikal: kein Wechsel, kein Klick. */
+  await desktop.mouse.move(x0, y - 60); await desktop.mouse.down();
+  for (let i = 1; i <= 6; i++) await desktop.mouse.move(x0 - i * 2, y - 60 + i * 25);
+  await desktop.mouse.up();
+  await desktop.waitForTimeout(400);
+  const nachVertikal = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
+  assert(Number(nachVertikal) === Number(vorher), "vertikales Ziehen hat die Flaeche gewechselt");
+  assert((await desktop.evaluate(() => location.hash)) === "" || /^#\/?$/.test(await desktop.evaluate(() => location.hash)), "eine Geste hat die Aktienseite geoeffnet");
+  /* Tastatur. */
+  await desktop.focus(".dx-hero"); await desktop.keyboard.press("ArrowRight"); await desktop.waitForTimeout(500);
+  assert(Number(await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"))) === Number(vorher) + 1, "Pfeil rechts wechselt nicht");
+  await desktop.keyboard.press("ArrowLeft"); await desktop.waitForTimeout(500);
 });
 
 await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
@@ -374,7 +414,7 @@ await check("Detail: gesperrte Zeiträume sind abgeblendet und begründet", asyn
     const grund = ((await eintag.getAttribute("title")) || "") + (await desktop.textContent(".dx-chapter"));
     assert(/Intraday|Tagesverlauf/.test(grund), "der gesperrte Zeitraum nennt keinen Grund");
   } else {
-    assert(await desktop.$(".dx-intraday-chart, .q-tchart"), "1T verfuegbar, aber kein Chart");
+    assert(await desktop.$(".dx-intraday-chart, .q-tchart, .dx-range-chart"), "1T verfuegbar, aber kein Chart");
   }
 });
 
@@ -398,8 +438,15 @@ await check("Detail: Chart-Werkzeuge sind verstaut und vollstaendig", async () =
     (ns) => ns.filter((n) => n.checkVisibility({ checkVisibilityCSS: true,
                                                  contentVisibilityAuto: true })).length);
   assert(offenVorher === 0, offenVorher + " Chart-Werkzeuge liegen ungefragt offen");
+  /* V4 §15: der Verbraucher-Chart ist Standard; Kerzen, Volumen, Overlays
+     und Indikatoren sind ein Werkzeug hinter einem Schalter. */
+  assert(await desktop.$(".dx-range-chart"), "der Verbraucher-Chart ist nicht der Standard");
   await desktop.click(".dx-werkzeuge summary");
   await desktop.waitForTimeout(400);
+  assert(await desktop.$(".dx-pro-toggle input"), "kein Schalter fuer den Analyse-Chart");
+  await desktop.click(".dx-pro-toggle input");
+  await desktop.waitForTimeout(800);
+  assert(await desktop.$(".q-tchart"), "der Analyse-Chart erscheint nicht");
   await desktop.click('.dx-ctrl:text-is("EMA 20")');
   await desktop.waitForTimeout(700);
   assert(/EMA 20/.test(await desktop.textContent(".dx-legend")), "die Legende kennt die Serie nicht");

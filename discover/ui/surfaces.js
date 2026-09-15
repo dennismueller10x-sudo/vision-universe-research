@@ -157,8 +157,7 @@
       el("div", { class: "dx-featured-media" }, [
         kunst,
         el("p", { class: "dx-featured-caption", text: echt
-          ? "Echter Kursverlauf, Tagesschlusskurse — Quelle " + ps.source +
-            ", Stand " + (ps.asOf || "")
+          ? "Echter Kursverlauf, Tagesschlusskurse, split-bereinigt — Stand " + C().dateShort(ps.asOf)
           : "Rendite über 1, 3, 6 und 12 Monate als Balken — kein Kursverlauf. Für diesen Titel " +
             "liegt noch keine Kursreihe vor." })
       ])

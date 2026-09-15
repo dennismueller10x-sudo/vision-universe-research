@@ -2138,9 +2138,10 @@ function realtimeMeta() {
     mode: verfuegbar ? "snapshot" : "eod",
     reason: verfuegbar ? null : (intraday.reason || "gateDisabled"),
     message: verfuegbar
-      ? "Intraday-Snapshots (" + (cfg.interval || "5min") + ", Tiingo/IEX) werden waehrend der Sitzung alle " +
+      ? "Der Tagesverlauf (" + (cfg.interval || "5min") + "-Kurse) wird waehrend der Sitzung alle " +
         (cfg.refreshMinutes || 10) + " Minuten erneuert. Die Seite nennt den Stand mit Uhrzeit; " +
-        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar."
+        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar, ein aelterer Stand heisst 'nicht aktuell'. " +
+        "Herkunft und Lizenz der Daten: Daten & Quellen."
       : (intraday.message || "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt.") +
         " Discover zeigt den letzten ausgelieferten Stand und kennzeichnet ihn als solchen.",
     basis: intraday.basis || null, checkedAt: intraday.checkedAt || null,

@@ -113,8 +113,20 @@
     INVESCO_CSV: { required: ["holding ticker", "weight"], ticker: "holding ticker", name: "name", weight: "weight",
                    sector: "sector", date: "date" },
     SSGA_XLSX:   { required: ["ticker", "weight"], ticker: "ticker", name: "name", weight: "weight",
-                   sector: "sector" }
+                   sector: "sector" },
+    /* Nasdaq Quote-API (api.nasdaq.com/api/quote/list-type/nasdaq100): JSON
+       {data:{data:{rows:[{symbol, companyName, ...}]}}} -> Zeilen mit Kopf. */
+    NASDAQ_API_JSON: { required: ["symbol", "companyname"], ticker: "symbol", name: "companyname", weight: null }
   };
+
+  /** Nasdaq-API-JSON -> Zeilen (Kopfzeile + Zeilen), damit derselbe Parser gilt. */
+  function rowsFromNasdaqJson(text) {
+    var doc = typeof text === "string" ? JSON.parse(text) : text;
+    var rows = (doc && doc.data && doc.data.data && doc.data.data.rows) || (doc && doc.data && doc.data.rows) || [];
+    var out = [["symbol", "companyName", "marketCap", "lastSalePrice"]];
+    rows.forEach(function (r) { out.push([r.symbol || "", r.companyName || "", r.marketCap || "", r.lastSalePrice || ""]); });
+    return out;
+  }
 
   function parseDate(v) {
     var t = norm(v);
@@ -201,16 +213,16 @@
     var out = {
       schemaVersion: SCHEMA, engineVersion: ENGINE_VERSION,
       indexId: input.indexId, indexName: input.indexName,
-      source: "ETF_HOLDINGS",
-      proxy: { etf: input.proxy.etf, issuer: input.proxy.issuer, url: input.proxy.url, format: input.proxy.format },
+      source: input.proxy.format === "NASDAQ_API_JSON" ? "INDEX_OWNER_API" : "ETF_HOLDINGS",
+      proxy: { etf: input.proxy.etf || null, issuer: input.proxy.issuer, url: input.proxy.url, format: input.proxy.format },
       asOf: asOf, asOfSource: input.holdings.asOf ? "HOLDINGS_FILE" : "FETCH_DATE",
       fetchedAt: input.fetchedAt || null,
       holdingsCount: (input.holdings.members || []).length,
       memberCount: members.length, unmatchedCount: unmatched.length,
       members: members, unmatched: unmatched,
       changes: input.previous ? diff(input.previous, members) : null,
-      note: input.indexName + ": Mitgliedschaft laut veroeffentlichtem Bestand des abbildenden Fonds " + input.proxy.etf +
-            " (" + input.proxy.issuer + ") zum Stichtag " + asOf + ". Zuordnung zum Company Master ueber den Ticker " +
+      note: input.indexName + ": Mitgliedschaft laut " + (input.proxy.etf ? "veroeffentlichtem Bestand des abbildenden Fonds " + input.proxy.etf + " (" + input.proxy.issuer + ")"
+                                                                 : "Liste des Indexeigentuemers (" + input.proxy.issuer + ")") + " zum Stichtag " + asOf + ". Zuordnung zum Company Master ueber den Ticker " +
             "(Trennzeichen ignoriert, nur bei Eindeutigkeit). Keine Ticker-Heuristik ueber die Mitgliedschaft selbst; " +
             "nicht zuordenbare Bestandszeilen stehen unter unmatched. Indexnamen sind Marken ihrer Eigentuemer; " +
             "die Datei nennt einen Fondsbestand, keine offizielle Indexliste."
@@ -254,7 +266,7 @@
   var api = { ENGINE_VERSION: ENGINE_VERSION, SCHEMA: SCHEMA, FORMATS: FORMATS,
               parseCsv: parseCsv, parseHoldings: parseHoldings, membersFromRows: membersFromRows,
               buildMatcher: buildMatcher, tickerKey: tickerKey, build: build, diff: diff, validate: validate,
-              parseDate: parseDate };
+              parseDate: parseDate, rowsFromNasdaqJson: rowsFromNasdaqJson };
   if (isNode) module.exports = api;
   else {
     global.VUQuant = global.VUQuant || {};
