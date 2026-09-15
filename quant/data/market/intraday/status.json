@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T20:29:55.715Z",
+  "generatedAt": "2026-09-15T20:43:29.458Z",
   "provider": "tiingo",
   "interval": "5min",
   "extendedHours": true,
@@ -13,7 +13,7 @@
     "earlyClose": false
   },
   "marketStateAtRun": "AFTER_HOURS",
-  "localTimeAtRun": "2026-09-15 16:24:54",
+  "localTimeAtRun": "2026-09-15 16:38:27",
   "gates": {
     "ENABLE_LIVE_MARKET_DATA": true,
     "ENABLE_PUBLIC_LIVE_MARKET_DATA": true
@@ -26,9 +26,9 @@
   "summary": {
     "requested": 517,
     "fetched": 517,
-    "written": 18,
+    "written": 10,
     "grown": 0,
-    "unchanged": 433,
+    "unchanged": 441,
     "skippedImmutable": 0,
     "notPublishable": 66,
     "failed": 0,
@@ -37,7 +37,7 @@
       "noRegularBars": 66
     },
     "stopped": null,
-    "runtimeMs": 301185,
+    "runtimeMs": 301253,
     "providerRequests": 517,
     "retries": 0
   },
@@ -56,9 +56,8 @@
     },
     "AAPL": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:20"
+      "reason": "unchanged",
+      "points": 78
     },
     "ABCL": {
       "ok": true,
@@ -75,26 +74,15 @@
       "reason": "unchanged",
       "points": 2
     },
-    "ACN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "ACMR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ACTG": {
+    "ACN": {
       "ok": true,
       "reason": "unchanged",
-      "points": 77
-    },
-    "ADBE": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:10"
+      "points": 78
     },
     "ACVA": {
       "ok": true,
@@ -106,12 +94,12 @@
       "reason": "unchanged",
       "points": 77
     },
-    "ADI": {
+    "ACTG": {
       "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 77
     },
-    "ADMA": {
+    "ADBE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -121,7 +109,28 @@
       "reason": "unchanged",
       "points": 77
     },
+    "ADMA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "ADSK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AFBI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "AEP": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -136,17 +145,6 @@
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
-    },
-    "AFBI": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
-    "AEP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "AFGC": {
       "ok": true,
@@ -168,15 +166,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "AGEN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "AGL": {
       "ok": true,
       "reason": "unchanged",
       "points": 77
+    },
+    "AGEN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "AIR": {
       "ok": true,
@@ -200,12 +198,12 @@
       "bars": 0,
       "discarded": 0
     },
-    "ALHC": {
+    "ALAB": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ALAB": {
+    "ALHC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -221,15 +219,16 @@
       "bars": 0,
       "discarded": 0
     },
-    "AMD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "AMAT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "AMD": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
     },
     "AME": {
       "ok": true,
@@ -241,26 +240,25 @@
       "reason": "unchanged",
       "points": 78
     },
+    "AMJB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 65
+    },
     "AMLX": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
-    },
-    "AMZN": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:15"
     },
     "AMT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "AMJB": {
+    "AMZN": {
       "ok": true,
       "reason": "unchanged",
-      "points": 65
+      "points": 78
     },
     "ANAB": {
       "ok": true,
@@ -272,16 +270,21 @@
       "reason": "unchanged",
       "points": 78
     },
-    "ANIP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "ANSC": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
+    },
+    "ANIP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ANL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "APGE": {
       "ok": true,
@@ -289,17 +292,12 @@
       "bars": 0,
       "discarded": 0
     },
-    "APLD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "APPN": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ANL": {
+    "APLD": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -319,12 +317,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "ASTE": {
+    "ARES": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ARES": {
+    "ASTE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -344,15 +342,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "ATLCL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 45
-    },
     "ATLCZ": {
       "ok": true,
       "reason": "unchanged",
       "points": 50
+    },
+    "ATLCL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 45
     },
     "ATRA": {
       "ok": true,
@@ -366,8 +364,9 @@
     },
     "AVGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
     },
     "AXSM": {
       "ok": true,
@@ -394,18 +393,13 @@
       "reason": "unchanged",
       "points": 78
     },
-    "BFH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "BIO-B": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
     },
-    "BKNG": {
+    "BFH": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -415,7 +409,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "BLND": {
+    "BKNG": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -425,7 +419,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "BLND": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "BMY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BOH": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -434,11 +438,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 44
-    },
-    "BOH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "BOW": {
       "ok": true,
@@ -455,32 +454,31 @@
       "reason": "unchanged",
       "points": 78
     },
-    "BTMD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 74
-    },
     "BUUU": {
       "ok": true,
       "reason": "unchanged",
       "points": 76
+    },
+    "BTMD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 74
     },
     "BVS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "BWMN": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:00"
-    },
     "BWNB": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
+    },
+    "BWMN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "BXP": {
       "ok": true,
@@ -563,12 +561,6 @@
       "reason": "unchanged",
       "points": 78
     },
-    "CITE": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
     "CIB": {
       "ok": true,
       "reason": "unchanged",
@@ -579,12 +571,13 @@
       "reason": "unchanged",
       "points": 65
     },
-    "CL": {
+    "CITE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "CLMB": {
+    "CL": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -599,6 +592,11 @@
       "reason": "unchanged",
       "points": 78
     },
+    "CLMB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "CMI": {
       "ok": true,
       "reason": "unchanged",
@@ -609,18 +607,17 @@
       "reason": "unchanged",
       "points": 78
     },
-    "COHR": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:15"
-    },
     "COF": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
     "CMPR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "COHR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -635,12 +632,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "COIN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRDO": {
+    "CPRY": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -656,7 +648,13 @@
       "bars": 1,
       "discarded": 0
     },
-    "CPRY": {
+    "COIN": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
+    "CRDO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -677,12 +675,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "CVNA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "CSTL": {
       "ok": true,
       "reason": "unchanged",
       "points": 77
     },
-    "CVNA": {
+    "CVS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -692,7 +695,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "CVS": {
+    "CYPH": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -709,11 +712,6 @@
       "discarded": 0
     },
     "D": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CYPH": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -744,12 +742,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "DINO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "DHT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "DINO": {
+    "DIS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -765,22 +768,17 @@
       "bars": 0,
       "discarded": 0
     },
-    "DIS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "DOV": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "DUK": {
+    "DRTS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "DRTS": {
+    "DUK": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -795,18 +793,23 @@
       "reason": "unchanged",
       "points": 78
     },
+    "ECBK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 37
+    },
     "EGHA": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
     },
-    "ECBK": {
+    "ECO": {
       "ok": true,
       "reason": "unchanged",
-      "points": 37
+      "points": 78
     },
-    "ECO": {
+    "EDRY": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -822,15 +825,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "EDRY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "ENTX": {
       "ok": true,
       "reason": "unchanged",
       "points": 71
+    },
+    "ENS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "EOG": {
       "ok": true,
@@ -842,22 +845,17 @@
       "reason": "unchanged",
       "points": 78
     },
-    "ENS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "EQIX": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "EQT": {
+    "EQPT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "EQPT": {
+    "EQT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -882,17 +880,22 @@
       "reason": "unchanged",
       "points": 78
     },
-    "EVLV": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "EXC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
+    "EVLV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "EXR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "F": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -903,26 +906,21 @@
       "bars": 0,
       "discarded": 0
     },
-    "F": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "FDX": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "FEIM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
     },
     "FFNW": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
-    },
-    "FEIM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
     },
     "FIGS": {
       "ok": true,
@@ -934,12 +932,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "FIVN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "FND": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "FIVN": {
+    "FRO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -948,11 +951,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 62
-    },
-    "FRO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "FTAI": {
       "ok": true,
@@ -980,12 +978,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "GE": {
+    "GBCI": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "GGG": {
+    "GE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -995,21 +993,21 @@
       "reason": "unchanged",
       "points": 78
     },
-    "GBCI": {
+    "GGG": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "GIBO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 2
     },
     "GIFI": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
-    },
-    "GIBO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 2
     },
     "GILD": {
       "ok": true,
@@ -1042,12 +1040,17 @@
       "bars": 0,
       "discarded": 0
     },
+    "GOTU": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "GPC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "GOTU": {
+    "GRBK": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1057,17 +1060,12 @@
       "reason": "unchanged",
       "points": 66
     },
-    "GRBK": {
+    "GS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
     "GRND": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1083,12 +1081,12 @@
       "bars": 0,
       "discarded": 0
     },
-    "HASI": {
+    "GT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "GT": {
+    "HASI": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1097,6 +1095,11 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "HBANZ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 2
     },
     "HBANL": {
       "ok": true,
@@ -1109,27 +1112,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "HBANZ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 2
-    },
     "HCM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HIMS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HIG": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1139,12 +1122,28 @@
       "reason": "unchanged",
       "points": 78
     },
+    "HIG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HIMS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HD": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
     "HIPO": {
       "ok": true,
       "reason": "unchanged",
       "points": 72
     },
-    "HON": {
+    "HMC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1154,21 +1153,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "HMC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HPE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "HOOD": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:20"
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HON": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "HOWL": {
       "ok": true,
@@ -1180,10 +1173,21 @@
       "reason": "unchanged",
       "points": 78
     },
+    "HPE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "HRI": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "HTLM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "HRTX": {
       "ok": true,
@@ -1195,12 +1199,6 @@
       "reason": "unchanged",
       "points": 78
     },
-    "HTLM": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
     "HURC": {
       "ok": true,
       "reason": "unchanged",
@@ -1211,13 +1209,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "IBM": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:20"
-    },
     "IEX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IBM": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1239,9 +1236,8 @@
     },
     "INOD": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 77,
-      "asOfLocal": "16:20"
+      "reason": "unchanged",
+      "points": 77
     },
     "INSP": {
       "ok": true,
@@ -1253,26 +1249,21 @@
       "reason": "unchanged",
       "points": 78
     },
-    "INTC": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:20"
-    },
     "INVA": {
       "ok": true,
       "reason": "unchanged",
       "points": 77
     },
+    "INTC": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:25"
+    },
     "IONQ": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
-    },
-    "IPSC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
     },
     "IOVA": {
       "ok": true,
@@ -1283,6 +1274,11 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "IPSC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
     },
     "ITW": {
       "ok": true,
@@ -1300,15 +1296,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "JILL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "JFIN": {
       "ok": true,
       "reason": "unchanged",
       "points": 70
+    },
+    "JILL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "JNJ": {
       "ok": true,
@@ -1320,16 +1316,16 @@
       "reason": "unchanged",
       "points": 78
     },
-    "JRSH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 63
-    },
     "KCHV": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
+    },
+    "JRSH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 63
     },
     "KFII": {
       "ok": true,
@@ -1342,15 +1338,15 @@
       "reason": "unchanged",
       "points": 78
     },
-    "KKRS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 40
-    },
     "KKR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "KKRS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 40
     },
     "KKRT": {
       "ok": true,
@@ -1367,12 +1363,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "KNSL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "KO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "KNSL": {
+    "KRG": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1382,21 +1383,16 @@
       "reason": "unchanged",
       "points": 78
     },
+    "KRP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "LCCC": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
-    },
-    "KRG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KRP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "LCII": {
       "ok": true,
@@ -1428,12 +1424,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "LLY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "LMT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "LLY": {
+    "LOW": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1442,11 +1443,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 18
-    },
-    "LOW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "LPBB": {
       "ok": true,
@@ -1483,12 +1479,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "META": {
+    "MELI": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "MELI": {
+    "META": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1497,11 +1493,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
-    },
-    "MGR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 57
     },
     "MGRD": {
       "ok": true,
@@ -1514,20 +1505,35 @@
       "reason": "unchanged",
       "points": 19
     },
+    "MGR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 57
+    },
     "MGRE": {
       "ok": true,
       "reason": "unchanged",
       "points": 66
+    },
+    "MGRT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 2
     },
     "MIRM": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "MGRT": {
+    "MMM": {
       "ok": true,
       "reason": "unchanged",
-      "points": 2
+      "points": 78
+    },
+    "MO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "MITN": {
       "ok": true,
@@ -1535,21 +1541,11 @@
       "bars": 0,
       "discarded": 0
     },
-    "MMM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "MPC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MO": {
       "ok": true,
       "reason": "refreshed",
       "points": 78,
-      "asOfLocal": "16:20"
+      "asOfLocal": "16:30"
     },
     "MPWR": {
       "ok": true,
@@ -1584,10 +1580,27 @@
     },
     "MSFT": {
       "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
+    "MTLS": {
+      "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "MTLS": {
+    "MU": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:40"
+    },
+    "MTW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NAT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1597,28 +1610,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "MU": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:15"
-    },
-    "NAT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MTW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NEE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "NBTB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NBIS": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1628,18 +1625,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "NEM": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
-    },
-    "NEO": {
+    "NEE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "NBIS": {
+    "NEO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1654,42 +1645,46 @@
       "reason": "unchanged",
       "points": 78
     },
-    "NMP": {
+    "NEM": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "unchanged",
+      "points": 78
     },
     "NFLX": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
+      "reason": "unchanged",
+      "points": 78
     },
     "NKE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "NRP": {
+    "NMP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "NOW": {
       "ok": true,
       "reason": "unchanged",
-      "points": 63
+      "points": 78
     },
     "NRGU": {
       "ok": true,
       "reason": "unchanged",
       "points": 76
     },
+    "NRP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 63
+    },
     "NSTS": {
       "ok": true,
       "reason": "unchanged",
       "points": 17
-    },
-    "NOW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "NTNX": {
       "ok": true,
@@ -1706,12 +1701,13 @@
       "reason": "unchanged",
       "points": 78
     },
-    "NVCT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "NVDA": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:30"
+    },
+    "NVCT": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1720,11 +1716,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
-    },
-    "NXTC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 72
     },
     "NXST": {
       "ok": true,
@@ -1735,6 +1726,11 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "NXTC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 72
     },
     "OABI": {
       "ok": true,
@@ -1747,27 +1743,27 @@
       "bars": 1,
       "discarded": 0
     },
-    "OESX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
     "OKTA": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "OESX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
     },
     "OMER": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ONC": {
+    "ONB": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "ONB": {
+    "ONC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1779,14 +1775,19 @@
     },
     "ORCL": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
+      "reason": "unchanged",
+      "points": 78
     },
     "ORGO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "OXSQZ": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "OXLCZ": {
       "ok": true,
@@ -1794,11 +1795,10 @@
       "bars": 1,
       "discarded": 0
     },
-    "OXSQZ": {
+    "OXY": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "unchanged",
+      "points": 78
     },
     "OYSE": {
       "ok": true,
@@ -1818,17 +1818,12 @@
       "bars": 0,
       "discarded": 0
     },
-    "OXY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PAYC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "PARR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PCAR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1838,7 +1833,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "PAYC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "PDD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PFE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1853,17 +1858,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "PCAR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "PG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PFE": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1884,12 +1879,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "PLD": {
+    "PLBY": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "PLBY": {
+    "PLD": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1898,12 +1893,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 75
-    },
-    "PMTR": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
     },
     "PM": {
       "ok": true,
@@ -1915,12 +1904,18 @@
       "reason": "unchanged",
       "points": 78
     },
+    "PMTR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
     "PMI": {
       "ok": true,
       "reason": "unchanged",
       "points": 76
     },
-    "PSNL": {
+    "PSA": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1930,17 +1925,12 @@
       "reason": "unchanged",
       "points": 78
     },
+    "PSNL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "PSX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PSA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "QNST": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -1950,16 +1940,15 @@
       "reason": "unchanged",
       "points": 75
     },
-    "QCOM": {
+    "PURR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "PURR": {
+    "QCOM": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:10"
+      "reason": "unchanged",
+      "points": 78
     },
     "QSEA": {
       "ok": true,
@@ -1967,17 +1956,22 @@
       "bars": 0,
       "discarded": 0
     },
+    "QNST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "QRVO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "QUAD": {
+    "QTWO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "QTWO": {
+    "QUAD": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2003,16 +1997,16 @@
       "reason": "unchanged",
       "points": 78
     },
+    "RDDT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "RDAG": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
-    },
-    "RDDT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
     },
     "RDW": {
       "ok": true,
@@ -2024,21 +2018,20 @@
       "reason": "unchanged",
       "points": 26
     },
-    "RELY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "RILY": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "RILYK": {
+    "RELY": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RILYG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 2
     },
     "RILYL": {
       "ok": true,
@@ -2046,10 +2039,11 @@
       "bars": 0,
       "discarded": 0
     },
-    "RILYG": {
+    "RILYK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 2
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "RILYT": {
       "ok": true,
@@ -2071,11 +2065,6 @@
       "reason": "unchanged",
       "points": 75
     },
-    "RNG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "RNXT": {
       "ok": true,
       "reason": "unchanged",
@@ -2087,6 +2076,11 @@
       "points": 78
     },
     "ROK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RNG": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2118,11 +2112,6 @@
       "bars": 0,
       "discarded": 0
     },
-    "SAN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "SABR": {
       "ok": true,
       "reason": "unchanged",
@@ -2133,10 +2122,21 @@
       "reason": "unchanged",
       "points": 78
     },
+    "SAN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "SBT": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
+      "discarded": 0
+    },
+    "SAY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
       "discarded": 0
     },
     "SBAC": {
@@ -2149,18 +2149,6 @@
       "reason": "unchanged",
       "points": 78
     },
-    "SCCG": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
-    "SAY": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 1,
-      "discarded": 0
-    },
     "SEZL": {
       "ok": true,
       "reason": "unchanged",
@@ -2170,6 +2158,12 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "SCCG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "SHEL": {
       "ok": true,
@@ -2186,12 +2180,17 @@
       "reason": "unchanged",
       "points": 78
     },
+    "SNEX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "SMP": {
       "ok": true,
       "reason": "unchanged",
       "points": 77
     },
-    "SNEX": {
+    "SO": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2202,17 +2201,7 @@
       "bars": 0,
       "discarded": 0
     },
-    "SO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "SOHU": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SOPH": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2228,6 +2217,11 @@
       "bars": 1,
       "discarded": 0
     },
+    "SOPH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "SOUN": {
       "ok": true,
       "reason": "unchanged",
@@ -2237,11 +2231,6 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
-    },
-    "SRXH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 68
     },
     "SPRU": {
       "ok": true,
@@ -2253,18 +2242,17 @@
       "reason": "unchanged",
       "points": 78
     },
-    "STBX": {
+    "SRXH": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "unchanged",
+      "points": 68
     },
     "SSRM": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "STG": {
+    "STBX": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
@@ -2274,6 +2262,12 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "STG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "SWKHL": {
       "ok": true,
@@ -2287,11 +2281,6 @@
       "points": 78
     },
     "SWKS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TAL": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2311,6 +2300,16 @@
       "reason": "unchanged",
       "points": 78
     },
+    "TAL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TBPH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "TATT": {
       "ok": true,
       "reason": "unchanged",
@@ -2321,7 +2320,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "TBPH": {
+    "TCOM": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2332,17 +2331,7 @@
       "bars": 0,
       "discarded": 0
     },
-    "TCOM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "TDOC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TIGR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2357,17 +2346,22 @@
       "reason": "unchanged",
       "points": 78
     },
+    "TIGR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "TJX": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "TLRY": {
+    "TKR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "TKR": {
+    "TLRY": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2387,17 +2381,12 @@
       "reason": "unchanged",
       "points": 50
     },
-    "TNK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "TMUSZ": {
       "ok": true,
       "reason": "unchanged",
       "points": 68
     },
-    "TPG": {
+    "TNK": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2406,6 +2395,11 @@
       "ok": true,
       "reason": "unchanged",
       "points": 62
+    },
+    "TPG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "TPGXL": {
       "ok": true,
@@ -2433,22 +2427,21 @@
       "bars": 1,
       "discarded": 0
     },
-    "TRS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "TRUE": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
     },
+    "TRS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "TSLA": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
+      "reason": "unchanged",
+      "points": 78
     },
     "TSSI": {
       "ok": true,
@@ -2485,12 +2478,12 @@
       "reason": "unchanged",
       "points": 78
     },
-    "TXN": {
+    "UBSI": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "UBSI": {
+    "TXN": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2512,9 +2505,8 @@
     },
     "UNH": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:15"
+      "reason": "unchanged",
+      "points": 78
     },
     "UNP": {
       "ok": true,
@@ -2533,16 +2525,20 @@
     },
     "UTZ": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:00"
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VFF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
     },
     "VEEV": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "VFF": {
+    "VICR": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2552,23 +2548,23 @@
       "reason": "unchanged",
       "points": 77
     },
-    "VICR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VLO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "VNME": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
       "discarded": 0
     },
+    "VLO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
     "VISN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VOD": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2578,17 +2574,7 @@
       "reason": "unchanged",
       "points": 78
     },
-    "WDC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "VZ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VOD": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2604,12 +2590,18 @@
       "bars": 0,
       "discarded": 0
     },
-    "WFC": {
+    "WDC": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:40"
+    },
+    "WELL": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
     },
-    "WELL": {
+    "WFC": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2649,6 +2641,12 @@
       "reason": "unchanged",
       "points": 78
     },
+    "WTG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
     "WTIB": {
       "ok": true,
       "reason": "noRegularBars",
@@ -2665,17 +2663,6 @@
       "reason": "unchanged",
       "points": 78
     },
-    "XEL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WTG": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
     "XHLD": {
       "ok": true,
       "reason": "unchanged",
@@ -2686,13 +2673,7 @@
       "reason": "unchanged",
       "points": 77
     },
-    "XRPN": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 1,
-      "discarded": 0
-    },
-    "XOM": {
+    "XEL": {
       "ok": true,
       "reason": "unchanged",
       "points": 78
@@ -2701,6 +2682,17 @@
       "ok": true,
       "reason": "unchanged",
       "points": 78
+    },
+    "XOM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XRPN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ZCSH": {
       "ok": true,
