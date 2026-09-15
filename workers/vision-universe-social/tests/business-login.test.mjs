@@ -199,3 +199,37 @@ test("B14 · Ein verbundenes Konto kommt unveraendert durch", async () => {
   assert.equal(result.data.accounts[0].instagramAccountId, "ig1");
   assert.equal(result.data.accounts[0].pageAccessToken, "page-token");
 });
+
+/* =========================================================================
+   DIE HINTERLEGTE KONFIGURATION
+
+   Die Tests oben pruefen die Logik. Dieser prueft, dass sie im Betrieb
+   ueberhaupt greift: eine leere oder vertippte Variable in wrangler.toml
+   faellt sonst erst im Meta-Dialog auf, und dort sieht sie aus wie ein
+   Problem mit der Redirect-URI — der Irrweg, der dieses ganze Kapitel
+   ausgeloest hat.
+
+   Geprueft wird die FORM, nicht der Wert. Ein falscher, aber wohlgeformter
+   Wert faellt bei Meta sofort und eindeutig auf ("Invalid configuration
+   id"); ein leerer Wert dagegen kippt still zurueck auf den klassischen
+   Dialog, und genau das darf nicht unbemerkt passieren.
+   ========================================================================= */
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const WRANGLER = join(dirname(fileURLToPath(import.meta.url)), "..", "wrangler.toml");
+
+test("B15 · In wrangler.toml steht eine brauchbare Konfigurations-ID", () => {
+  const toml = readFileSync(WRANGLER, "utf8");
+  const match = /^\s*META_LOGIN_CONFIG_ID\s*=\s*"([^"]*)"/m.exec(toml);
+  assert.ok(match, "META_LOGIN_CONFIG_ID fehlt in wrangler.toml");
+
+  const value = match[1];
+  assert.notEqual(value.trim(), "",
+    "Leer bedeutet klassischer Dialog — gegen eine Business-Konfiguration ist das der falsche.");
+  assert.match(value, /^[0-9]{10,25}$/,
+    "Eine Meta-Konfigurations-ID ist eine reine Ziffernfolge. Steht hier etwas anderes, " +
+    "wurde beim Kopieren mehr mitgenommen als die ID.");
+  assert.equal(loginMode(value), "business");
+});

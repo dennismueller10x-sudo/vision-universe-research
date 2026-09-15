@@ -93,7 +93,10 @@ META_API_VERSION = "v21.0"
 # ihr nichts anzufangen. Deshalb Variable und nicht Secret.
 #
 # Ablesbar, welcher Dialog gerade gilt: GET /health -> "loginMode".
-META_LOGIN_CONFIG_ID = ""
+# Konfiguration "Vision Universe Social", vom Owner am 2026-09-15 geliefert.
+# Rechte laut Konfiguration: instagram_basic, instagram_content_publish,
+# instagram_manage_insights, pages_show_list.
+META_LOGIN_CONFIG_ID = "1555849235747979"
 
 # Optional: wenn gesetzt, akzeptiert der Callback NUR dieses
 # Instagram-Professional-Konto. Das ist die Sperre dagegen, dass eine
