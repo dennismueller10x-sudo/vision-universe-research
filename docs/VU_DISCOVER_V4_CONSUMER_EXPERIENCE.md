@@ -313,6 +313,8 @@ aktuell" am Tagesverlauf, hellen Kasten statt Punkt, +545 625,00 %, die
 erste Reihe am Schreibtisch unter der Falz, flache Max-Kurve; Iteration 2
 behob alles (Beschriftung, Punkte, Prozentformat, Hero-Höhe, log-Achse).
 
+Die Screenshots wurden bei der Release-Abnahme (Abschnitt U.4) mit dem Datenstand nach allen Läufen neu erzeugt; 20–23 kamen hinzu.
+
 ## O · Abnahmefragen (§39)
 
 1. Versteht ein neuer Nutzer in ≤ 5 s, was Discover ist? — Positionierungszeile + Eingangsfläche mit Kicker, Name, einer Zahl, einem Satz. Ja.
@@ -337,10 +339,12 @@ behob alles (Beschriftung, Punkte, Prozentformat, Hero-Höhe, log-Achse).
 | Lange Kursreihen | 34958477248 | 6 308 Wochenreihen, commit 3fd86ef38 |
 | Index-Mitgliedschaft | 34958477441 / 34960525129 / **34961350495** | 1: IVV-CSV war HTML, QQQ 406; 2: SPY + DIA ok, Nasdaq-Quelle an Validierung gescheitert; 3: **alle drei**, commit 81e12067d |
 | Freshness-Monitor | 34958477280 | STALE korrekt gemessen, Lauf wegen fehlendem `pipefail` grün → behoben |
+| Intraday-Snapshots (Abnahme) | 34973148157 (universe) / discover 14:19 / discover 18:30 | Montag 2026-09-14 nachgezogen (5 207 Snapshots), Dienstag laufend LIVE — Abschnitt U |
+| Marktdaten-Refresh (Abnahme) | 34986494100 (abgebrochen) / 34987245529 (Commit-Schritt rot) / **35000271379** | Tageskurse bis 2026-09-14, Discover neu gebaut, commit `102e8fd7a` — Abschnitt U |
 
 ## Q · Offene Punkte und Owner-Entscheidungen
 
-1. **Verifikation des Nachzugs auf `main`** (13:00 UTC Intraday, 22:30 UTC Refresh) — der Monitor meldet ab 15:15 UTC.
+1. **Abendlauf auf `main` heute (22:30 UTC)** scheitert ohne den Merge im Commit-Schritt und löschte das Coverage-Artefakt (U.6, Punkte 2 und 3); nach dem Merge meldet der Freshness-Monitor ab 06:30 UTC gegen die Live-Seite.
 2. **SEC-Umsatzkonzept** (Registry-Priorität für ASC 606) — Änderung der kanonischen Normalisierung nur mit Abnahme.
 3. **Sechs nicht zuordenbare S&P-Ticker** (SNDK, BNY, Q, VLTO, NRG) — Company-Master-Nachzug (Ticker-Wechsel), nicht Discover.
 4. **Größe der Wochenreihen** (113 MB je Lauf, monatlich) — Alternative: Ablage außerhalb von Git, falls die Historie zu schnell wächst.
@@ -376,5 +380,197 @@ Engines: `quant/engines/realtime/freshness.js` (neu), `series-sampling.js`
 Plausibilität) · `1042c5f19` (2/n Spur, Verbraucher-Chart, Daten & Quellen,
 Positionierung, Farbwelten) · `f963fa7bd` (3/n Kartenhierarchie,
 Unterzeilen, Qualifikation der Kurs-Reihen, log-Achse) · Bot-Commits
-`3fd86ef38` (Wochenreihen), `81e12067d` (Index-Mitgliedschaft) · 4/n
-(dieser Bericht, Screenshots, Index-Badges, Feinschliff).
+`3fd86ef38` (Wochenreihen), `81e12067d` (Index-Mitgliedschaft) · `bb1894c49`
+(4/n Bericht, Screenshots, Index-Badges, Feinschliff) · Abnahme: `cbe68ba65`
+(erstes Stück 320 KB), `67095b4fc` (Autostash im Refresh), Bot-Commits
+`f8ce3fb06` / `ed54c30d3` / `d64d9a78e` (Intraday), `102e8fd7a` (Refresh),
+Abnahmebericht (Abschnitt U, `scale/` bleibt stehen, Screenshots neu).
+
+## U · Release-Abnahme (15.09.2026, auf dem Branch, gegen echte Tiingo-Daten)
+
+Die Abnahme wurde ohne Cron auf `main` gefahren: alle Datenläufe wurden per
+`workflow_dispatch` auf `claude/vision-universe-discover-h93fmv` gestartet und
+haben auf den Branch committet. Nichts davon ist veröffentlicht.
+
+### U.1 · Läufe
+
+| Zeit (UTC) | Workflow / Umfang | Marktlage beim Start | Sitzung | Ergebnis | Commit |
+|---|---|---|---|---|---|
+| 13:09–14:18 | Intraday-Snapshots, `scope=universe` (Lauf 34973148157) | PRE_MARKET (09:09 New York) | 2026-09-14 (letzte abgeschlossene) | 6 876 Anfragen, 5 207 Snapshots geschrieben, 1 669 ohne reguläre Bars, 0 Fehler, 0 Wiederholungen, 68 min | `f8ce3fb06` |
+| 14:19–14:30 | Intraday-Snapshots, `scope=discover` | OPEN (10:25 New York) | 2026-09-15 (laufend) | 522 Anfragen, 506 Snapshots, 16 ohne reguläre Bars, 0 Fehler, 5 min | `ed54c30d3` |
+| 15:09–15:13 | Marktdaten-Refresh (Lauf 34986494100) | – | – | von mir abgebrochen, nachdem der Regressionstest zum ersten Startseiten-Stück lokal rot war (U.6, Punkt 1) | – |
+| 15:15–16:25 | Marktdaten-Refresh (Lauf 34987245529) auf `cbe68ba65` | OPEN | Tageskurse bis 2026-09-14 | Tageskurse, Faktoren, Technik, Verifier, Discover-Build, Hygiene, Regressionssuite grün; Schritt „Commit und Push" rot (U.6, Punkt 2) | – |
+| 17:16–18:29 | Marktdaten-Refresh (Lauf 35000271379) auf `67095b4fc` | OPEN | Tageskurse bis 2026-09-14 | 6 876 Titel, 6 511 ok, 0 Fehler, 365 abgelehnt (Qualität), 6 511 Anfragen; alle Schritte grün | `102e8fd7a` |
+| 18:30–18:38 | Intraday-Snapshots, `scope=discover` | OPEN (14:32 New York) | 2026-09-15 (laufend) | 525 Anfragen, 519 Snapshots, 5 min | `d64d9a78e` |
+
+### U.2 · Pfad Provider → Ingest → Storage → Discover-Export → UI (AAPL, echte Werte)
+
+**Vorher (Freitag-Stand, wie am 15.09. um 07:37 UTC gemessen; Lauf 34958477280 und lokal um 13:09 UTC):**
+
+| Stufe | sessionDate | lastBarTimestamp | asOf | freshnessState |
+|---|---|---|---|---|
+| Storage `intraday/index.json` (1.1.0) | dataSession 2026-09-11 · lastCompletedSession 2026-09-14 | – | 2026-09-11T20:55Z | STALE 446 / 446 (lastSessionMissing) |
+| Snapshot `2026-09-11/ref_AAPL.json` | 2026-09-11 | 15:55 New York (78 Punkte) | 2026-09-11T20:40Z | STALE |
+| Discover-Export `stocks/US_REAL/AAPL.json` | asOf 2026-09-11 (Tagesreihe bis 2026-09-11) | 2026-09-11 | updatedAt 2026-09-13T21:04Z | STALE (Tageskurse, lastSessionMissing) |
+| UI Statuszeile / Karten / Aktienseite | – | – | – | „Vorbörse · 11.09. · nicht aktuell" · „Stand Fr., 11.09. · nicht aktuell" · `data-freshness="STALE"`; die Zeichenkette „Letzter Handelstag" kommt auf keiner Seite vor |
+
+**Nachher, Stufe 1 (Universum, Montag nachgezogen; gemessen 14:18 UTC, Markt OPEN):**
+
+| Stufe | sessionDate | lastBarTimestamp | asOf | freshnessState |
+|---|---|---|---|---|
+| Provider (status.json) | 2026-09-14, kind `last`, isComplete true | – | Lauf 13:09:32Z, PRE_MARKET | – |
+| Ingest → Snapshot `2026-09-14/ref_AAPL.json` | 2026-09-14 | 15:55 New York (78 Punkte 09:30–15:55, 0 verworfen) | 2026-09-14T20:35Z (16:35, letzter erweiterter Punkt) | LAST_SESSION beim Schreiben (13:09Z, PRE_MARKET) |
+| Storage `intraday/index.json` | dataSession 2026-09-14 (universe true, regularComplete true, 5 207 Snapshots) · lastCompletedSession 2026-09-14 · universeSessions [2026-09-11, 2026-09-14] | – | 2026-09-14T20:55Z | Zusammenfassung zum Laufstart: LAST_SESSION 515, STALE 1 (CWBC ohne Montag-Bars) |
+| `check-freshness` um 14:18Z (OPEN, > 30 min Karenz) | 2026-09-14 | – | – | STALE (currentSessionMissing) · „Stand Mo., 14.09. · nicht aktuell" |
+| UI um 14:18Z | – | – | – | Statuszeile „Geöffnet · 14.09. · nicht aktuell" (STALE); Karten und Aktienseite „Stand Mo., 14.09. · nicht aktuell"; Hinweis „dieser Stand ist nicht der letzte Handelstag (2026-09-15 erwartet)" |
+
+Das ist die Kernaussage von §8–10: ein Stand, der nicht die erwartete Sitzung
+ist, heißt „nicht aktuell" — vor Sitzungsbeginn (Freitag-Stand am Dienstag)
+genauso wie während der laufenden Sitzung (Montag-Stand um 10:18 New York).
+„Letzter Handelstag · …" entsteht nur noch, wenn `sessionDate` gleich der
+letzten abgeschlossenen Sitzung ist und keine Sitzung läuft bzw. die Karenz
+nach der Eröffnung noch nicht abgelaufen ist.
+
+**Nachher, Stufe 2 (Discover-Umfang während der Sitzung; gemessen 14:31 UTC):**
+
+| Stufe | sessionDate | lastBarTimestamp | asOf | freshnessState |
+|---|---|---|---|---|
+| Provider (status.json) | 2026-09-15, kind `current`, isRunning true | – | Lauf 14:25:11Z, OPEN (10:25 New York) | – |
+| Snapshot `2026-09-15/ref_AAPL.json` | 2026-09-15 | 10:25 New York (12 Punkte ab 09:30, previousClose 332,27) | 2026-09-15T14:25Z | LIVE |
+| Storage `intraday/index.json` | dataSession 2026-09-15 (universe false, regularComplete false, 506 Snapshots) · lastCompletedSession 2026-09-14 · universeSessions [2026-09-14] (Freitag-Verzeichnis durch die Aufbewahrung entfernt) | – | 2026-09-15T14:30Z | LIVE 506, STALE 10 (Titel ohne Dienstag-Bars um 10:25) |
+| `check-freshness` um 14:31Z | 2026-09-15 | – | – | Intraday LIVE (runningSession) · „Heute · Stand 10:30"; 516 Einträge: LIVE 505, STALE 11 |
+| UI um 14:31Z | – | – | – | Statuszeile „Geöffnet · Stand 10:30" (LIVE); Karten/Aktienseite AAPL, NVDA, VLO „Heute · Stand 10:25" (LIVE); 1T-Chart mit Startlinie Vortagesschluss 332,27 und Verlauf bis 10:25 |
+
+**Nachher, Stufe 3 (Tageskurse nach dem Refresh; gemessen 18:29 UTC, Markt OPEN):**
+
+| Stufe | sessionDate | lastBarTimestamp | asOf | freshnessState |
+|---|---|---|---|---|
+| Provider (`tiingo-status.json`) | Tagesreihen bis 2026-09-14 | – | Lauf 17:17–18:21Z | – |
+| Storage `quant/data/technical/instruments/AAPL.json` | letzter Balken 2026-09-14 | 2026-09-14 (1 320 Balken seit 2021-06-11) | – | – |
+| Discover-Export `stocks/US_REAL/AAPL.json` | asOf 2026-09-14 | 2026-09-14 | updatedAt 2026-09-15T18:23Z, Kurs 333,08 $ (+0,24 % am Montag) | LAST_SESSION |
+| Discover-Meta `meta.json` | US_REAL asOf 2026-09-14 (5 947 Titel) | – | generatedAt 2026-09-15T18:25Z | – |
+| `check-freshness` um 18:29Z | Tageskurse asOf 2026-09-14 = erwartete letzte Sitzung | – | – | LAST_SESSION (lastCompletedSession) · „Schluss Montag"; Stichprobe 40 Reihen: 40 × LAST_SESSION |
+| UI (Aktienseite, Zeiträume 1W–Max) | – | – | – | „Schluss Montag" unter jedem Zeitraum; 1J: „12.09.2025 – 14.09.2026 · Tagesschlusskurse · split-bereinigt" |
+
+Zwischen Stufe 2 und Stufe 3 (14:35 bis 18:29 UTC ohne Intraday-Lauf, weil
+der Cron nur auf `main` läuft) meldete `check-freshness` den Tagesverlauf
+korrekt als STALE mit dem neuen Grund `runningSessionStaleAsOf` („Heute ·
+Stand 10:30 · nicht aktuell"): ein vier Stunden alter Stand einer laufenden
+Sitzung ist nicht aktuell, auch wenn er von heute ist. Nach dem Lauf um
+18:30 UTC steht der Discover-Umfang wieder auf LIVE („Heute · Stand 14:35",
+512 LIVE, 9 STALE = Titel ohne Dienstag-Bars).
+
+**Ergebnis für §8–10:** Der Pfad erkennt und liefert die jüngste tatsächlich
+verfügbare reguläre Sitzung auf beiden Ebenen — Tageskurse: Montag
+2026-09-14 (LAST_SESSION); Tagesverlauf: Dienstag 2026-09-15 laufend
+(LIVE) bzw. Montag als letzte abgeschlossene Sitzung im Universum. Der
+Freitag-Stand vom Morgen wurde in keiner Stufe als „Letzter Handelstag"
+beschriftet; das Wort erscheint auf keiner gerenderten Seite (Prüfung per
+Volltext im DOM, Startseite und drei Aktienseiten, vorher und nachher).
+
+### U.3 · Charts (AAPL, NVDA, Hero-Titel)
+
+Gerendert auf dem iPhone-Viewport (390 × 844, 2×) gegen die echten Reihen nach dem Refresh; Werte aus dem DOM:
+
+| Titel | 1T | 1M | 6M | 1J |
+|---|---|---|---|---|
+| AAPL | „Heute · Stand 14:30", 5-Minuten-Kurse ab 09:30, Startlinie 333,08 (Montagsschluss), 61 Punkte um 14:30 | 333,08 $ · +9,11 % · 13.08.–14.09.2026 · 22 Tagesschlusskurse | +33,2 % · 13.03.–14.09.2026 · 127 Schlusskurse | +42,3 % · 12.09.2025–14.09.2026 · 252 Schlusskurse · Achse 234,07–340,08 |
+| NVDA | „Heute · Stand 14:35", Startlinie 210,96 | 210,96 $ · −6,36 % · 13.08.–14.09.2026 | +17,0 % · 13.03.–14.09.2026 | +18,6 % · 12.09.2025–14.09.2026 |
+| VLO (Hero-Titel) | „Heute · Stand 14:35", Startlinie 382,95 | 382,95 $ · +11,7 % · 13.08.–14.09.2026 | +66,1 % · 13.03.–14.09.2026 | +144 % · 12.09.2025–14.09.2026 |
+
+Zusätzlich geprüft: 1W (6 Schlusskurse, 04.09.–14.09.), 5J (Wochenschlusskurse ab 10.09.2021; NVDA +839 % auf logarithmischer Achse, benannt), Max (Wochenschlusskurse ab 05.01.1990 bzw. 22.01.1999, logarithmisch, benannt). Keine Konsolenfehler; jeder Zeitraum trägt „Schluss Montag" als Frische-Zeile der Tagesreihe, der 1T-Tab die Frische des Tagesverlaufs.
+
+### U.4 · Screenshots
+
+`docs/screenshots/discover-v4/` wurde mit dem Datenstand nach allen Läufen neu erzeugt (18:40 UTC; Markt OPEN, Tagesverlauf LIVE „Stand 14:35", Tageskurse „Schluss Montag"):
+
+| Nr. | Datei | Inhalt |
+|---|---|---|
+| 01 | 01-iphone-hero | Startseite: Statuszeile „Geöffnet · Stand 14:35", Positionierung, Eingang Valero Energy (+148 % in 12 Monaten, Tagesverlauf bis 14:35, Punkte 1/5) |
+| 02 | 02-iphone-hero-swipe-2 | nach echter Touch-Wischgeste (CDP): Slide 2 Matson, Punkt 2 aktiv |
+| 03–04 | bekannte Namen, die zehn stärksten Aktien | Reihen mit Unterzeile |
+| 05–07 | 05-iphone-sp500, 06-iphone-nasdaq100, 07-iphone-dow | Index-Ranglisten mit Rangziffern, Unterzeile (Bestand SPY / Nasdaq-Liste / DIA, Stichtag 15.09.2026), Live-Verlauf je Karte |
+| 08 | Unternehmensgeschichte | Story-Fläche |
+| 09–13 | Aktienseite AAPL: Kopf, 1T, 1M, 6M, 1J | Verbraucher-Chart mit Preis, Prozent, Zeitraum, Frische |
+| 14–16 | AAPL in 30 Sekunden, Damals/Heute, Weiter entdecken | – |
+| 17–19 | Desktop: Startseite, Aktienseite, Daten & Quellen | – |
+| 20–21 | 20-iphone-nvda-1T, 21-iphone-nvda-1J | NVDA 1T live und 1J |
+| 22–23 | 22-iphone-hero-vlo-1T, 23-iphone-hero-vlo-1J | Hero-Titel Valero: 1T live und 1J |
+
+### U.5 · Visueller Abgleich gegen die Referenzen
+
+Gegen die in V4 §28–30 beschriebenen Referenzen (Trade Republic: Preis groß, Prozent farbig, Zeitraum-Tabs als einzige Bedienung, Chart ohne Rahmen, nüchterne Typografie; Netflix: eine große Eingangsfläche, Reihen mit klarer Hierarchie, Rangziffern, wenig Text, Wischen):
+
+- **Aktienseite** (10, 13, 20–23): Preis 333,08 $ und Prozent stehen wie in der Referenz über dem Chart, die Tabs 1T–Max sind die einzige Bedienung, die Werkzeuge liegen eingeklappt darunter („Chart-Werkzeuge +"). Der 1T-Chart trägt die Startlinie des Vortagesschlusses und Uhrzeiten 09:30–16:00, der 1J-Chart Hoch/Tief an der rechten Achse und Monatsmarken. Farbe nur semantisch (rot unter, blau/grün über der Startlinie). Passt.
+- **Startseite** (01, 02, 17): Eingangsfläche mit Titel, einer Zahl, einer Klartextzeile, zwei Handlungen und dem Tagesverlauf; die Punkte zeigen 1/5 und wechseln mit dem Wischen. Auf dem Desktop steht der Zwölfmonatsverlauf als Bild rechts. Passt zur Netflix-Referenz; die Fläche bleibt Daten, keine Fotos.
+- **Ranglisten** (05–07): Rangziffern hinter den Karten, je Karte Name, Kurs, Tagesänderung, Zwölfmonatszahl, Klartext, Live-Verlauf, fundamentaler Hook, Signal. Unterzeile nennt Bestand und Stichtag. Passt.
+- **Kein Blocker gefunden.** Zwei Kleinigkeiten, beide ohne Änderung belassen (U.7): die Reihen-Unterzeile wird auf dem Telefon nach einer Zeile abgeschnitten (bewusst, §25); Zwölfmonatszahl im Text (Faktor, 12M-Fenster in Handelstagen) und im 1J-Chart (Kalenderjahr ab 12.09.2025) unterscheiden sich um wenige Prozentpunkte (AAPL 45 % / +42,3 %, VLO +148 % / +144 %).
+
+### U.6 · Behobene Release-Blocker (nur diese drei Änderungen, keine Architektur)
+
+1. **Erstes Startseiten-Stück zu groß für den bestehenden Test.** V4 (4/n)
+   hatte `chunkMaxBytes` auf 430 KB gesetzt; `discover/tests/v3.test.mjs`
+   („Nachladen: das erste Stück ist klein") verlangt < 320 KB. Die
+   Regressionssuite läuft im Marktdaten-Refresh vor dem Commit — der Lauf
+   wäre rot geblieben und hätte nie committet. Der Test bleibt unverändert;
+   der Deckel steht wieder auf 320 KB. Das erste Stück trägt jetzt Eingang,
+   bekannte Namen, stärkste Aktien und die drei Index-Ranglisten (309 KB,
+   6 Flächen); Jahreshochs und Unternehmensgeschichte rutschen ins zweite
+   Stück (290 KB, 8 Flächen). Commit `cbe68ba65`. Tests danach: quant 926/926,
+   discover 193/193, Verifier 63 383 Prüfungen ohne Abweichung, Browser-QA
+   63/63 · 38/38 · 33/33.
+2. **Refresh-Commit scheiterte an Test-Rückständen.** Lauf 34987245529 war bis
+   zur Regressionssuite grün (Tageskurse, Faktoren, Technik, Verifier,
+   Discover-Build, Hygiene, Tests) und fiel im Schritt „Commit und Push":
+   `quant/tests/issuer-master.test.mjs` baut den Emittentenstand in die echte
+   Ablage (`issuer-manifest.json`, `cik-resolution.json`; nur `generatedAt`
+   ändert sich) und `git pull --rebase` verweigert wegen ungestagter
+   Änderungen. **Dieser Test steht seit dem V3-Merge (0d04a2ad6, 15.09.) auch
+   auf `main`; der Abendlauf um 22:30 UTC auf `main` liefe ohne den Fix in
+   denselben Fehler** — die Tageskurse auf der Live-Seite blieben dann auf
+   dem Stand vom 11.09. Fix: `git pull --rebase --autostash` im Refresh-
+   Workflow (Commit `67095b4fc`). Die anderen Workflows mit Commit
+   (Intraday, Index-Mitgliedschaft, Wochenreihen) führen diese Suite nicht
+   aus und sind nicht betroffen.
+3. **Refresh löschte ein kanonisches Artefakt.** Der Refresh-Commit
+   `102e8fd7a` entfernte `quant/data/technical/scale/technical-coverage-
+   ELIGIBLE_US_EQUITY.json`: `scripts/technical/build-technical-data.mjs`
+   räumt vor dem Bau das ganze Verzeichnis `quant/data/technical/` weg, auch
+   `scale/`, das dem Scale-Gate gehört. Die Python-Suite
+   (`test_canonical_market.py`, 3 Tests) verlangt diese Datei — sie lief nach
+   dem Refresh rot (468/471). Die Datei liegt auf `main` erst seit dem
+   V3-Merge (0d04a2ad6, 15.09. 05:04 UTC); **der Abendlauf auf `main` löschte
+   sie ebenso, und die SEC-Daily-Prüfung (Python-Suite) wäre am Morgen rot.**
+   Fix: der Bau räumt nur noch seine eigenen Erzeugnisse weg und lässt
+   `scale/` stehen (vier Zeilen); die Datei ist aus `67095b4fc` wiederhergestellt.
+   Lokal nachgebaut: `scale/` bleibt liegen, Python 471/471.
+
+### U.7 · Beobachtungen, keine Blocker
+
+- Die Frische-Zusammenfassung in `intraday/index.json` (`freshness.checkedAt`)
+  wird mit dem Zeitpunkt des Laufstarts gerechnet. Beim 68-Minuten-Nachzug des
+  Universums stand darin „LAST_SESSION 515" (Laufstart 13:09Z, PRE_MARKET),
+  während der Health-Check am Laufende (14:17Z, OPEN) bereits STALE meldete.
+  Beides ist ehrlich gestempelt; der Client rechnet die Frische ohnehin zur
+  Anzeigezeit aus `dataSession`/Einträgen und dem Sitzungsauflöser, nicht aus
+  dieser Zusammenfassung. Die regulären Läufe dauern 5–8 Minuten.
+- Titel ohne Bars in der laufenden Sitzung (10–16 dünne Werte um 10:25 New
+  York) bleiben je Reihe auf dem Montag-Stand und heißen dort „nicht aktuell"
+  — Frische ist ein Vertrag je Reihe, nicht je Seite.
+- Statuszeile „Stand 10:30" gegenüber Karten „Stand 10:25": die Statuszeile
+  nennt den jüngsten Stand des Verzeichnisses (letzter Titel des Laufs), die
+  Karte den Stand ihrer Reihe.
+
+### U.8 · GO / NO-GO
+
+**GO** für den Merge nach `main` — unter Owner-Abnahme, nicht selbst gemergt, nicht deployt.
+
+Begründung:
+
+1. Der Produktionsfehler aus §8 ist auf dem Branch mit echten Daten geschlossen: Der Universumslauf holt die letzte abgeschlossene Sitzung (Montag) nach, der Discover-Lauf liefert die laufende Sitzung (Dienstag, LIVE), der Refresh bringt die Tageskurse auf den Montag. Ein alter Stand heißt in jeder Stufe „nicht aktuell" — vor der Eröffnung, während der Sitzung, und auch für einen heutigen, aber vier Stunden alten Stand. „Letzter Handelstag" erscheint nur, wenn es stimmt.
+2. Die Ursache (Cron nur auf `main`) ist mit dem Merge behoben: die Workflows gehen mit auf `main`; der Freshness-Monitor meldet ab dann dreimal täglich gegen die Live-Seite und wird rot, wenn ein Lauf ausfällt.
+3. Drei echte Release-Blocker wurden in der Abnahme gefunden und behoben (U.6): Deckel 320 KB, Autostash im Refresh, `scale/` bleibt beim Technik-Bau stehen. Kleine, benannte Änderungen, keine Architektur. Zwei davon betreffen `main` heute schon: **ohne den Merge (oder einen Hotfix der beiden Stellen) scheitert der Abendlauf um 22:30 UTC auf `main` im Commit-Schritt (die Live-Seite bliebe bei den Tageskursen vom 11.09.), und selbst mit gelungenem Commit fehlte danach das kanonische Coverage-Artefakt.** Das ist ein Grund, die Abnahme nicht aufzuschieben.
+4. Tests unverändert streng: quant 926/926, discover 193/193, Python 471/471 (nach Punkt 3 in U.6), Verifier 63 383 Prüfungen ohne Abweichung, Browser-QA 63/63 · 38/38 · 33/33, Guards (Geheimnisse, öffentliche Daten) grün; Performance Desktop 1 568 KB / 356 ms DOM-ready, iPhone 1 496 KB / 332 ms.
+5. Offen bleibt nur, was nicht in Discover liegt (Abschnitt Q): SEC-Umsatzkonzept, sechs S&P-Ticker im Company Master, Größe der Wochenreihen, Lizenztext, Preferred-Gattungen L/Z. Nichts davon verhindert den Merge.
+
+Nach dem Merge (Owner): Freshness-Monitor-Lauf 06:30 UTC am Mittwoch abwarten (erwartet grün: Universum Dienstag nach dem 21:35-Lauf, Tageskurse Dienstag nach 22:30). Falls er rot ist, steht in `quant/data/market/freshness/health.json` und im Lauf-Summary, welche Stufe fehlt.
