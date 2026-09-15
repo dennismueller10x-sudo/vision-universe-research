@@ -358,6 +358,14 @@ Der Eigentümer hat am 15.09.2026 entschieden: Modelluniversum raus, alles live.
   `https://research.visionuniverse.de/discover/`. Die geplanten Läufe (Tageskurse
   22:30 UTC, Intraday-Snapshots alle 10 Minuten während der Sitzung, Namensschicht,
   Consumer-Fundamentals montags 07:30 UTC) laufen ab jetzt auf `main`.
+* **Neuabnahme der Deckungskennzahlen:** der abgenommene R2-Stand (7 004 / 6 997 /
+  5 963) galt für das alte Produktuniversum; `main`s Abgleichtests hielten ihn fest.
+  Neuer Workflow `coverage-metrics.yml` (R2-Index, ein GET, keine Kurse; History-
+  Store-Engine aus dem R2-Workstream übernommen) rechnet die drei Kennzahlen gegen
+  das aktuelle Produktuniversum: Lauf 34933743907 → **6 875 / 6 871 / 5 884**
+  (Speicher 7 802 / 7 803), Abgleich `reconciled: true`, Company Master und
+  Indizes neu (`main` @ 21e8ef27). Die Regressionssuite (471 Python-Tests) lief in
+  diesem Lauf grün; `docs/VU_RECONCILIATION_ACCEPTANCE_REPORT.md` §11.
 * **Was noch zusammenzuführen ist (Eigentümer-Entscheidung 6):** die Consumer-Bundles
   entstehen heute aus dem SEC-Bulk-Archiv (eine Anfrage, wöchentlich); `main` hält
   dieselben Emittenten als kanonische Factbooks in R2 (täglich). Nächster Schritt:
