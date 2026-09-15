@@ -74,7 +74,7 @@ invocation_logs = false
 # Genau dieser Wert muss in der Meta-App unter
 #   Facebook Login for Business -> Einstellungen -> Gueltige OAuth-Redirect-URIs
 # eingetragen sein. Meta vergleicht zeichengenau.
-PUBLIC_BASE_URL = "REPLACE_WITH_WORKER_PUBLIC_URL"
+PUBLIC_BASE_URL = "https://vision-universe-social.little-credit-15d3.workers.dev"
 
 # Version der Graph API. Wird angehoben, wenn eine Version auslaeuft —
 # als eigener Commit, damit die Aenderung eine Begruendung hat.
@@ -99,7 +99,7 @@ META_API_VERSION = "v21.0"
 # und die zurueckgegebene id hier eintragen.
 [[kv_namespaces]]
 binding = "VU_SOCIAL_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "582accaa66bf471a833b3813a6d2a45b"
 
 # -------------------------------------------------------------------------
 # SECRETS — NUR DIE NAMEN, NIEMALS WERTE
