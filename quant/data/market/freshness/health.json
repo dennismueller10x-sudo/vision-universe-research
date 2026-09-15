@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "freshness-health-1.0.0",
+  "contractVersion": "freshness-contract-1.0.0",
+  "checkedAt": "2026-09-15T07:40:00.000Z",
+  "target": "repository",
+  "market": {
+    "state": "CLOSED",
+    "localDate": "2026-09-15",
+    "localTime": "03:40:00",
+    "lastCompletedSession": "2026-09-14",
+    "currentSession": "2026-09-15",
+    "expectedIntradaySession": "2026-09-14"
+  },
+  "intraday": {
+    "indexGeneratedAt": "2026-09-15T07:45:53.603Z",
+    "indexSchema": "intraday-index-1.1.0",
+    "displaySession": {
+      "sessionDate": "2026-09-14",
+      "kind": "last",
+      "isRunning": false,
+      "isComplete": true
+    },
+    "dataSession": {
+      "sessionDate": "2026-09-11",
+      "asOf": "2026-09-11T20:55:00.000Z",
+      "asOfLocal": "16:55",
+      "regularComplete": true,
+      "snapshots": 5178,
+      "universe": true
+    },
+    "dataState": "STALE",
+    "dataReason": "lastSessionMissing",
+    "dataLabel": "Stand Fr., 11.09. · nicht aktuell",
+    "entries": 446,
+    "byState": {
+      "LIVE": 0,
+      "LAST_SESSION": 0,
+      "STALE": 446,
+      "UNAVAILABLE": 0
+    },
+    "byReason": {
+      "lastSessionMissing": 446
+    },
+    "staleSample": [
+      "AAPL",
+      "ABBV",
+      "ABCL",
+      "ABX",
+      "ACMR",
+      "ACN",
+      "ACTG",
+      "ACVA",
+      "ADBE",
+      "ADC",
+      "ADI",
+      "ADMA",
+      "ADSK",
+      "ADVB",
+      "AEP",
+      "AFGD",
+      "AFRM",
+      "AGEN",
+      "AGL",
+      "AIR",
+      "AIRT",
+      "ALAB",
+      "ALHC",
+      "ALNY",
+      "AMAT"
+    ],
+    "universeSessions": [
+      "2026-09-11"
+    ],
+    "universeCoversLastSession": false,
+    "state": "STALE"
+  },
+  "daily": {
+    "universeAsOf": "2026-09-11",
+    "generatedAt": "2026-09-15T05:04:14.167Z",
+    "state": "STALE",
+    "reason": "lastSessionMissing",
+    "label": "Schluss Fr., 11.09. · nicht aktuell",
+    "expectedSession": "2026-09-14",
+    "sample": {
+      "sample": 40,
+      "byState": {
+        "LIVE": 0,
+        "LAST_SESSION": 0,
+        "STALE": 40,
+        "UNAVAILABLE": 0
+      },
+      "byReason": {
+        "lastSessionMissing": 40
+      },
+      "staleSample": [
+        "AACB",
+        "AAPL",
+        "ABBV",
+        "ABCL",
+        "ABX",
+        "ACLO",
+        "ACMR",
+        "ACN",
+        "ACTG",
+        "ACVA",
+        "ADBE",
+        "ADC",
+        "ADI",
+        "ADMA",
+        "ADSK",
+        "ADVB",
+        "AEP",
+        "AFBI",
+        "AFGB",
+        "AFGC",
+        "AFGD",
+        "AFGE",
+        "AFRM",
+        "AGEN",
+        "AGL"
+      ],
+      "seriesIndexCount": 6437
+    }
+  },
+  "overall": "STALE",
+  "findings": [
+    "Intraday STALE: Datenstand 2026-09-11, erwartet 2026-09-14 (lastSessionMissing)",
+    "Universumslauf fehlt: Sitzung 2026-09-14 liegt nur fuer den Discover-Umfang vor (11.7 h nach Schluss)",
+    "Tageskurse STALE: asOf 2026-09-11, erwartet 2026-09-14 (lastSessionMissing)"
+  ],
+  "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
+}

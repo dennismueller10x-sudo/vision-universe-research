@@ -85,12 +85,27 @@
     if (T) {
       lage.trading = T.resolve(new Date(), { calendar: state.calendar });
       var Hub = D.LiveHub, idx = Hub && Hub.enabled() ? Hub.index() : null;
+      /* Der Datenstand des Verzeichnisses (dataSession: juengste Sitzung mit
+         Snapshots, spaetester Stand) - nicht der Zeitpunkt des Laufs. Der
+         Freshness-Vertrag sagt, ob das der Stand ist, der jetzt gelten
+         muesste; "Stand Freitag" bei gehandeltem Montag heisst dann
+         "Stand Fr., 11.09. · nicht aktuell". */
       var stand = null;
-      if (idx && idx.generatedAt && global.VURealtime.MarketHours) {
-        var lp = global.VURealtime.MarketHours.localParts(idx.generatedAt, lage.trading.timezone);
-        if (lp && lp.date === lage.trading.localDate) stand = { asOfLocal: lp.clock.slice(0, 5), sessionDate: idx.displaySession && idx.displaySession.sessionDate };
+      if (idx && idx.dataSession && idx.dataSession.sessionDate) {
+        stand = { sessionDate: idx.dataSession.sessionDate, asOf: idx.dataSession.asOf, asOfLocal: idx.dataSession.asOfLocal,
+                  regularComplete: idx.dataSession.regularComplete !== false };
+      } else if (idx && idx.entries) {
+        var syms = Object.keys(idx.entries);
+        for (var i = 0; i < syms.length; i++) {
+          var e = idx.entries[syms[i]];
+          if (!stand || e.sessionDate > stand.sessionDate || (e.sessionDate === stand.sessionDate && e.asOf > stand.asOf)) {
+            stand = { sessionDate: e.sessionDate, asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: !!e.regularComplete };
+          }
+        }
       }
-      lage.beschreibung = T.describe(lage.trading, stand);
+      var fr = Hub && Hub.enabled() && Hub.freshness ? Hub.freshness(stand) : null;
+      lage.freshness = fr;
+      lage.beschreibung = fr ? fr.label : T.describe(lage.trading, stand);
       lage.liveSnapshots = !!(idx && idx.entryCount);
     }
     return lage;
@@ -121,12 +136,17 @@
     } else {
       zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
     }
-    var status = el("div", { class: "dx-status " + klasse,
+    if (lage.freshness && lage.freshness.freshnessState === "STALE") klasse += " dx-status--stale";
+    var status = el("div", { class: "dx-status " + klasse, "data-freshness": lage.freshness ? lage.freshness.freshnessState : "",
       title: (lage.beschreibung ? lage.beschreibung.timezoneNote + ". " : "") +
+             (lage.freshness && lage.freshness.freshnessState === "STALE"
+               ? "Der ausgelieferte Stand ist aelter als der letzte Handelstag (" + lage.freshness.expectedSessionDate + "). "
+               : "") +
              (lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS).") }, [
       el("span", { class: "dx-dot" }),
       el("b", { text: "US Market" }),
-      document.createTextNode(lage.mode === "live" ? "Live" : (lage.beschreibung ? lage.beschreibung.state : sessionWort(lage))),
+      document.createTextNode(lage.mode === "live" ? "Live"
+        : (lage.beschreibung ? (lage.beschreibung.marketStateWord || lage.beschreibung.state) : sessionWort(lage))),
       document.createTextNode(zusatz ? " · " + zusatz : "")
     ]);
 

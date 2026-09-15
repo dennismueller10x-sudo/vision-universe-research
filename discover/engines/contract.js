@@ -32,7 +32,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var CONTRACT_VERSION = "discover-contract-1.2.0";
+  var CONTRACT_VERSION = "discover-contract-1.3.0";
 
   var FIELD_STATUS = [
     "CALCULATED", "WITHHELD_REDISTRIBUTION", "SOURCE_MISSING",
@@ -293,6 +293,13 @@
          was der Leser gesehen hat. */
       sectorRank: stock.sectorRank || null,
       plain: stock.plain || null,
+      /* V4 §17-20: warum steht der Titel hier - maschinenlesbar. Der Build
+         fuellt rankingReason je Reihe (Rang, Sortierwert, Regel, Score-
+         Beitraege, Bekanntheitszuschlag); indexMemberships nennt die
+         Indizes laut Fondsbestand (quant/data/market/index-membership). */
+      rankingReason: stock.rankingReason || null,
+      indexMemberships: stock.indexMemberships || [],
+      qualification: stock.qualification || null,
       dataQuality: stock.dataQuality,
       asOf: stock.asOf
     };

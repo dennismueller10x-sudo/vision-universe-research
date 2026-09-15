@@ -237,6 +237,7 @@
       if (!svgNode) return;
       S.clear(streifen);
       streifen.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
+      streifen.setAttribute("data-freshness", (p.freshness && p.freshness.freshnessState) || "");
       streifen.appendChild(svgNode);
       streifen.appendChild(el("p", { class: "dx-hero-live-label" }, [
         C().liveLabel(p.label, p.snapshot),

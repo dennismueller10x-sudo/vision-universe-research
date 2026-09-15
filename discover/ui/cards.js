@@ -318,6 +318,7 @@
       host.removeAttribute("data-loading");
       host.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
       host.setAttribute("data-session", p.snapshot.sessionDate);
+      host.setAttribute("data-freshness", (p.freshness && p.freshness.freshnessState) || "");
       host.appendChild(svgNode);
       host.appendChild(liveLabel(p.label, p.snapshot));
     }
@@ -329,8 +330,10 @@
   /** "Heute · Stand 15:42" - die Beschriftung des Tagesverlaufs. */
   function liveLabel(label, snap) {
     var text = (label && label.label) || "";
-    return el("span", { class: "dx-live-label", title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
-                        "5-Minuten-Kurse, " + snap.provider + (snap.venue ? "/" + snap.venue : "") },
+    var tone = (label && label.tone) || (snap && snap.regularComplete ? "complete" : "live");
+    return el("span", { class: "dx-live-label dx-live-label--" + tone, "data-freshness": (label && label.state) || "",
+                        title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
+                               "5-Minuten-Kurse" + (tone === "stale" ? " · dieser Stand ist nicht der letzte Handelstag" : "") },
       [el("i", { "aria-hidden": "true" }), document.createTextNode(text)]);
   }
 

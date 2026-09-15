@@ -112,6 +112,9 @@ jobs:
       - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      - name: Freshness-Check (Health-Bericht, kein Abbruch)
+        run: node scripts/market/check-freshness.mjs
+
       - name: Regressionssuite
         run: |
           node --test "quant/tests/*.test.mjs"
@@ -143,7 +146,7 @@ jobs:
           git add quant/data/market/golden-preview quant/data/market/discover-series \
                   quant/data/market/factors quant/data/market/tiingo-status.json \
                   quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
-                  quant/data/market/capabilities
+                  quant/data/market/capabilities quant/data/market/freshness
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else

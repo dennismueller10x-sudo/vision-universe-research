@@ -30,7 +30,7 @@ function fenster(antworten, now) {
   };
   /* UMD-Module im Browserpfad laden: `module` ist hier nicht definiert. */
   for (const f of ["quant/engines/realtime/market-hours.js", "quant/engines/realtime/trading-session.js",
-                   "quant/engines/realtime/intraday-snapshot.js"]) {
+                   "quant/engines/realtime/intraday-snapshot.js", "quant/engines/realtime/freshness.js"]) {
     new Function("window", "module", src(f).replace("typeof window !== \"undefined\" ? window : globalThis", "window"))(w, undefined);
   }
   new Function("window", src("discover/ui/live-hub.js"))(w);
@@ -149,7 +149,8 @@ test("LH5 · Sitzungswechsel: die Beschriftung springt um 09:30 ohne neuen Snaps
   assert.ok(roll && roll.ms <= 32000, "Zeitgeber auf die Sitzungsgrenze");
   jetzt = "2026-09-14T13:31:00Z";
   roll.fn(); await tickMicro();
-  assert.equal(labels[1], "Letzter Handelstag · Freitag", "der Snapshot ist noch Freitag - und heisst so");
+  assert.equal(labels[1], "Letzter Handelstag · Freitag · heutige Kurse folgen", "der Snapshot ist noch Freitag - und heisst so");
+  assert.equal(labels.length, 2);
   assert.equal(Hub.stats().rollovers, 1);
 });
 

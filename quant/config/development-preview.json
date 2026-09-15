@@ -45,7 +45,12 @@
       "universe": "Das ganze Produktuniversum - einmal nach Handelsschluss (letzte abgeschlossene Sitzung), damit jede Aktienseite ein 1T hat."
     },
     "retentionSessions": 2,
-    "maxRequestsPerRun": 7500
+    "maxRequestsPerRun": 7500,
+    "freshness": {
+      "note": "Freshness-Vertrag (quant/engines/realtime/freshness.js): graceMinutes = wie lange nach 09:30 der Vortag bzw. nach 16:00 ein unvollstaendiger Stand noch LAST_SESSION ist (drei Workflow-Laeufe); graceHours = wie lange nach Schluss der Tagesschluss der kompakten Reihen fehlen darf (Abendlauf 22:30 UTC + Build + Auslieferung). Danach: STALE, und die Seite sagt 'nicht aktuell'.",
+      "graceMinutes": 30,
+      "graceHours": 6
+    }
   },
   "grants": [
     {

@@ -1817,3 +1817,17 @@ body.dx-feed-aktiv{overflow:hidden}
 }
 .dx-hero-hook .dx-hook-mark, .dx-dhero-hook .dx-hook-mark, .dx-poster .dx-hook .dx-hook-mark, .dx-feed-hook .dx-hook-mark { grid-column:1; margin-top:7px; }
 .dx-hero-hook .dx-hero-hook-src, .dx-dhero-hook .dx-hero-hook-src, .dx-hook .dx-hook-src { grid-column:2; flex-basis:auto; padding-left:0; }
+
+/* ===================================================================
+   V4 · Freshness-Vertrag: ein Stand, der nicht der letzte Handelstag
+   ist, sieht nie aus wie einer. Gedaempfte Linie, Warnton am Etikett,
+   Statuszeile ohne gruenen Punkt.
+   =================================================================== */
+.dx-live-label--stale{color:var(--discover-warm,#f2b544)}
+.dx-live-label--stale i{background:var(--discover-warm,#f2b544);opacity:1}
+.dx-live-label--pending i{opacity:.7}
+[data-freshness="STALE"] svg{opacity:.55;filter:saturate(.35)}
+[data-freshness="STALE"] .dx-live-label svg{opacity:1;filter:none}
+.dx-status--stale .dx-dot{background:var(--discover-warm,#f2b544);animation:none;box-shadow:none}
+.dx-status--stale{color:var(--discover-warm,#f2b544)}
+.dx-intraday-note [data-freshness="STALE"]{color:var(--discover-warm,#f2b544)}

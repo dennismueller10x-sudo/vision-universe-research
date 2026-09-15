@@ -76,8 +76,12 @@ jobs:
             SCOPE=$(printf '%s' "${{ github.event.head_commit.message }}" | grep -o '\[intraday-snapshot:[a-z,A-Z]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
           fi
           if [ -z "$SCOPE" ]; then
-            # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss; alle anderen: Discover-Flaechen.
-            if [ "${{ github.event.schedule }}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=discover; fi
+            # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss. Alle anderen
+            # Zeitplan-Laeufe entscheiden selbst (auto): bei offener Boerse die
+            # Discover-Flaechen; ausserhalb der Sitzung das Universum, wenn die letzte
+            # abgeschlossene Sitzung noch nicht fuer das Universum vorliegt (Nachzug
+            # nach einem ausgefallenen oder verpassten Lauf - Vorfall 15.09.2026).
+            if [ "${{ github.event.schedule }}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=auto; fi
           fi
           echo "scope=$SCOPE" >> "$GITHUB_OUTPUT"
           echo "Umfang: $SCOPE"
@@ -98,11 +102,14 @@ jobs:
       - name: Capability Matrix nachziehen (Intraday-Spalten)
         run: node scripts/market/build-capability-matrix.mjs
 
+      - name: Freshness-Check (Health-Bericht, kein Abbruch)
+        run: node scripts/market/check-freshness.mjs
+
       - name: Commit und Push
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A quant/data/market/intraday quant/data/market/capabilities
+          git add -A quant/data/market/intraday quant/data/market/capabilities quant/data/market/freshness
           if git diff --cached --quiet; then
             echo "Keine neuen Snapshots."
           else
@@ -129,6 +136,16 @@ jobs:
                 console.log("| ohne regulaere Bars / fehlgeschlagen | " + z.notPublishable + " / " + z.failed + " |");
                 console.log("| Anfragen | " + z.requests + (z.stopped ? " (Abbruch: " + z.stopped + ")" : "") + " |");
                 console.log("| Gruende | " + JSON.stringify(z.reasons) + " |");
+              '
+            fi
+            if [ -f quant/data/market/freshness/health.json ]; then
+              node -e '
+                const h = require("./quant/data/market/freshness/health.json");
+                console.log(""); console.log("### Freshness · " + h.overall);
+                console.log("| Bereich | Zustand | Stand | erwartet |"); console.log("|---|---|---|---|");
+                if (h.intraday) console.log("| Intraday | " + h.intraday.state + " | " + (h.intraday.dataSession ? h.intraday.dataSession.sessionDate : "-") + " | " + h.market.expectedIntradaySession + " |");
+                if (h.daily) console.log("| Tageskurse | " + h.daily.state + " | " + h.daily.universeAsOf + " | " + h.daily.expectedSession + " |");
+                (h.findings || []).forEach((f) => console.log("- " + f));
               '
             fi
           } >> "$GITHUB_STEP_SUMMARY"

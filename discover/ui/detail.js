@@ -819,14 +819,17 @@
       return;
     }
     svgNode.classList.add("dx-intraday-chart");
-    var rahmen = el("div", { class: "dx-intraday", "data-live": p.snapshot.regularComplete ? "complete" : "running" });
+    var rahmen = el("div", { class: "dx-intraday", "data-live": p.snapshot.regularComplete ? "complete" : "running",
+                             "data-freshness": (p.freshness && p.freshness.freshnessState) || "" });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     var snap = p.snapshot;
     var text = (p.label && p.label.label ? p.label.label : "") +
       " · 5-Minuten-Kurse, " + snap.provider + "/" + (snap.venue || "IEX") + " · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
-      (snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
+      (p.freshness && p.freshness.freshnessState === "STALE"
+        ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
+        : snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
     chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [C().liveLabel(p.label, snap),
       el("span", { text: text.replace(/^[^·]*· /, " · ") })]));
   }
