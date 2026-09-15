@@ -334,6 +334,30 @@ Was noch nicht Netflix ist: keine bewegten Vorschauen (bewusst: keine künstlich
 
 Zweig `claude/vision-universe-discover-v3`, Kette dieses Auftrags: 5aa3747f (Phase A) → f5562d3e (Consumer-Export + Workflow) → 77a2cb4b (Engine + Build) → 462882ed (Phase C Teil 1) → ff6d448a (Empfehlungs-Vertrag, Suche, Doku) → 8d9f0e64 (Klartext 1.1.0, Desktop-Hero) → cb37f71b (Test-Präzisierung) → 5169f706 / 43935f07 (CI: Consumer-Bundles) → a94b5942 (Normalisierung 1.6.0, TTM-Fenster, Story-Fläche) → **dieser Commit** (Split-Erkennung, Umsatzbasis der Reihen, Vorzüge P/O/N/M, Neubeurteilung des Masters, Hook auf der Aktienseite, mobile Verdichtung, Bericht). Working Tree clean, nicht gemergt, nicht veröffentlicht.
 
+## 24b. Zusammenführung mit `main` und Live-Schaltung (15.09.2026)
+
+Der Eigentümer hat am 15.09.2026 entschieden: Modelluniversum raus, alles live.
+
+* **Modelluniversum entfernt:** Discover liefert nur noch `US_REAL` (Build, Methodik,
+  Meta, Suche, Startseite); der Universumsschalter erscheint nur bei mehr als einem
+  Universum, `#/u/VU_MODEL` fällt auf das reale Universum zurück. Der synthetische
+  Generator bleibt im Quant-Modul für Tests.
+* **`main` als Basis:** `main` trägt seit dem Abzweig die kanonische SEC-Schicht
+  (Normalisierung bis 1.9.0, IFRS/Fremdwährungen, 5 448 Emittenten in R2, täglicher
+  Lifecycle, Company Master unter `quant/data/universe/`). Dieser Zweig wurde auf
+  diesen Stand gemergt: Pipeline-Code von `main`, darauf mein Consumer-Export als
+  zweite Ausgabe derselben Module (`consumer.py`, `cli.py consumer`), meine
+  Kalenderkorrektur als Normalisierung **1.10.0** (Jahresgrenzen nur aus
+  Jahresberichten inkl. /A; Zwölfmonatsperiode abseits des Jahresendes ist kein FY),
+  Discover/Klassifizierer/Eligibility aus dem Zweig; `instrumentId` des Company
+  Masters auf jeder Aktienseite; Company-Master-Artefakte aus der neuen Eligibility
+  neu gebaut (`build-company-master.mjs`, Totals = Eligibility-Counts).
+* **Was noch zusammenzuführen ist (Eigentümer-Entscheidung 6):** die Consumer-Bundles
+  entstehen heute aus dem SEC-Bulk-Archiv (eine Anfrage, wöchentlich); `main` hält
+  dieselben Emittenten als kanonische Factbooks in R2 (täglich). Nächster Schritt:
+  den Consumer-Export aus den R2-Factbooks speisen, dann gibt es genau eine
+  Ingestion. Bis dahin rechnen beide Wege mit demselben Normalisierungscode.
+
 ## 25. Regression — was unverändert blieb
 
 Company Master, Provider-Mapping, Kurse, Intraday, Session Resolver, Live-Hub,
@@ -352,4 +376,7 @@ belegen es.
 3. **Datenwachstum**: Consumer-Bundles ~94 MB im Repository,
    wöchentlicher Lauf; Alternative wäre ein Objektspeicher außerhalb von Pages.
 4. **ROIC** bleibt aus, bis eine Steuerannahme entschieden ist.
-5. **Merge/Veröffentlichung**: nicht getan, wie beauftragt.
+5. **Merge/Veröffentlichung**: am 15.09.2026 auf Anweisung des Eigentümers nach `main`
+   gemergt und über GitHub Pages veröffentlicht (§24b).
+6. **Eine Ingestion für die Fundamentals**: Consumer-Export aus den R2-Factbooks
+   statt aus dem Bulk-Archiv (§24b).

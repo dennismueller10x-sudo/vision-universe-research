@@ -1,0 +1,409 @@
+{
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.9.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "note": "Abgleich der Fundamentalschicht mit dem Marktdaten-/Technical-Universum. Marktdaten werden READ-ONLY konsumiert (\u00a71).",
+  "marketCapabilityPresent": true,
+  "overlap": {
+    "note": "Gezaehlt auf Papierebene gegen PRODUCT_TITLES. Der Join laeuft ueber securityId == masterMemberId -> issuerId -> CIK, nie ueber das Kuerzel allein (\u00a73).",
+    "denominator": {
+      "PRODUCT_TITLES": 7004
+    },
+    "PRODUCT_TITLES": 7004,
+    "R2_HISTORY_AVAILABLE": 6997,
+    "R2_HISTORY_UNAVAILABLE": 7,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+    "TECHNICAL_INSUFFICIENT_HISTORY": 1041,
+    "R2_AND_FUNDAMENTAL": 5854,
+    "R2_WITHOUT_FUNDAMENTAL": 1143,
+    "TECHNICAL_WITHOUT_FUNDAMENTAL": 712,
+    "PIT_AND_R2": 5690,
+    "PIT_R2_AND_TECHNICAL": 5152,
+    "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4480,
+    "MARKET_HISTORY_AVAILABLE": 6997,
+    "TECHNICAL_COVERED": 5963,
+    "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5857,
+    "PIT_READY": 5693,
+    "TECHNICAL_AND_FUNDAMENTAL": 5251,
+    "TECHNICAL_WITHOUT_FUNDAMENTALS": 712,
+    "FUNDAMENTALS_WITHOUT_TECHNICAL": 606,
+    "HISTORICAL_PRICE_AND_FUNDAMENTAL": 5854,
+    "PIT_AND_TECHNICAL": 5152,
+    "PIT_AND_HISTORICAL_PRICE": 5690,
+    "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 5152,
+    "percentOfProductUniverse": {
+      "MARKET_HISTORY_AVAILABLE": 99.9001,
+      "TECHNICAL_COVERED": 85.1371,
+      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 83.6236,
+      "PIT_READY": 81.2821,
+      "TECHNICAL_AND_FUNDAMENTAL": 74.9714
+    },
+    "acceptedMarketDataState": {
+      "status": "CANONICAL_PER_INSTRUMENT",
+      "owner": "R2-/Marktdaten-Workstream",
+      "sourceRunId": "34611793308",
+      "provenance": "quant/data/market/history/CANONICAL_SOURCE.json",
+      "accepted": {
+        "PRODUCT_TITLES": 7004,
+        "R2_SERIES_AVAILABLE": 7802,
+        "HISTORICAL_CHART_AVAILABLE": 6997,
+        "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.9,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+        "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.14
+      },
+      "computed": {
+        "HISTORICAL_CHART_AVAILABLE": 6997,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+        "PRODUCT_TITLES": 7004
+      },
+      "delta": {
+        "HISTORICAL_CHART_AVAILABLE": 0,
+        "TECHNICAL_HISTORY_ELIGIBLE": 0
+      },
+      "reconciled": true,
+      "explanation": null,
+      "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
+      "evidenceSources": [
+        {
+          "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 3446,
+          "symbolsImpliedPass": 2238,
+          "symbolsNotInThisRun": 2119,
+          "runSize": 5684
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_100.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 100,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 100
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_2000.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 1138,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 2000
+        },
+        {
+          "file": "quant/data/market/scale/gate-GATE_500.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 500,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 500
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 1046,
+          "symbolsImpliedReady": 5659,
+          "evaluated": 5963,
+          "requested": 7004
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-FULL_UNIVERSE.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 28,
+          "symbolsImpliedReady": 0,
+          "evaluated": 5661,
+          "requested": 5684
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_100.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 100,
+          "symbolsImpliedReady": 0,
+          "evaluated": 100,
+          "requested": 100
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_2000.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 1,
+          "symbolsImpliedReady": 0,
+          "evaluated": 1999,
+          "requested": 2000
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-GATE_500.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 500,
+          "symbolsImpliedReady": 0,
+          "evaluated": 500,
+          "requested": 500
+        }
+      ]
+    }
+  },
+  "coreMetrics": {
+    "denominator": {
+      "TECHNICAL_UNIVERSE": 5963
+    },
+    "metrics": {
+      "TECHNICAL_WITH_REVENUE": {
+        "COUNT": 4485,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 75.2138
+      },
+      "TECHNICAL_WITH_NET_INCOME": {
+        "COUNT": 5134,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 86.0976
+      },
+      "TECHNICAL_WITH_EPS": {
+        "COUNT": 4876,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 81.7709
+      },
+      "TECHNICAL_WITH_OPERATING_CASH_FLOW": {
+        "COUNT": 5120,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 85.8628
+      },
+      "TECHNICAL_WITH_FCF": {
+        "COUNT": 4593,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.025
+      },
+      "TECHNICAL_WITH_ASSETS": {
+        "COUNT": 5145,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 86.2821
+      },
+      "TECHNICAL_WITH_DEBT": {
+        "COUNT": 2897,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 48.5829
+      },
+      "TECHNICAL_WITH_EQUITY": {
+        "COUNT": 5113,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 85.7454
+      }
+    }
+  },
+  "history": {
+    "denominator": {
+      "TECHNICAL_UNIVERSE": 5963
+    },
+    "annual": {
+      "TECHNICAL_WITH_ANNUAL_1Y": {
+        "COUNT": 5130,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 86.0305
+      },
+      "TECHNICAL_WITH_ANNUAL_3Y": {
+        "COUNT": 5006,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 83.951
+      },
+      "TECHNICAL_WITH_ANNUAL_5Y": {
+        "COUNT": 4593,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.025
+      },
+      "TECHNICAL_WITH_ANNUAL_10Y": {
+        "COUNT": 3240,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 54.3351
+      },
+      "TECHNICAL_WITH_ANNUAL_15Y": {
+        "COUNT": 2350,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 39.4097
+      }
+    },
+    "quarterly": {
+      "TECHNICAL_WITH_QUARTERLY_1Y": {
+        "COUNT": 5132,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 86.0641
+      },
+      "TECHNICAL_WITH_QUARTERLY_3Y": {
+        "COUNT": 4324,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 72.5138
+      },
+      "TECHNICAL_WITH_QUARTERLY_5Y": {
+        "COUNT": 3814,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 63.9611
+      },
+      "TECHNICAL_WITH_QUARTERLY_10Y": {
+        "COUNT": 2812,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 47.1575
+      }
+    }
+  },
+  "industryLayer": {
+    "note": "Branchenkennzahlen stehen neben dem Kernvertrag (industrySpecificMetrics), nie darin. Gezaehlt je Emittent des Produktuniversums.",
+    "industries": {
+      "INSURER": {
+        "ISSUERS": 131,
+        "ISSUERS_WITH_ANY_INDUSTRY_METRIC": 113,
+        "ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC": 18,
+        "metrics": {
+          "available_for_sale_debt_securities": {
+            "ISSUERS": 96,
+            "ISSUERS_5Y": 77,
+            "PERCENT_OF_INDUSTRY": 73.2824
+          },
+          "benefits_and_claims_incurred": {
+            "ISSUERS": 91,
+            "ISSUERS_5Y": 72,
+            "PERCENT_OF_INDUSTRY": 69.4656
+          },
+          "benefits_losses_and_expenses": {
+            "ISSUERS": 81,
+            "ISSUERS_5Y": 72,
+            "PERCENT_OF_INDUSTRY": 61.8321
+          },
+          "claims_liability": {
+            "ISSUERS": 96,
+            "ISSUERS_5Y": 81,
+            "PERCENT_OF_INDUSTRY": 73.2824
+          },
+          "deferred_policy_acquisition_costs": {
+            "ISSUERS": 92,
+            "ISSUERS_5Y": 77,
+            "PERCENT_OF_INDUSTRY": 70.229
+          },
+          "net_investment_income": {
+            "ISSUERS": 90,
+            "ISSUERS_5Y": 80,
+            "PERCENT_OF_INDUSTRY": 68.7023
+          },
+          "premiums_earned": {
+            "ISSUERS": 100,
+            "ISSUERS_5Y": 86,
+            "PERCENT_OF_INDUSTRY": 76.3359
+          },
+          "total_investments": {
+            "ISSUERS": 94,
+            "ISSUERS_5Y": 75,
+            "PERCENT_OF_INDUSTRY": 71.7557
+          },
+          "unearned_premiums": {
+            "ISSUERS": 84,
+            "ISSUERS_5Y": 71,
+            "PERCENT_OF_INDUSTRY": 64.1221
+          }
+        },
+        "PERCENT_WITH_ANY_INDUSTRY_METRIC": 86.2595
+      },
+      "REIT": {
+        "ISSUERS": 175,
+        "ISSUERS_WITH_ANY_INDUSTRY_METRIC": 174,
+        "ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC": 1,
+        "metrics": {
+          "dividends_declared_per_share": {
+            "ISSUERS": 148,
+            "ISSUERS_5Y": 125,
+            "PERCENT_OF_INDUSTRY": 84.5714
+          },
+          "impairment_of_real_estate": {
+            "ISSUERS": 112,
+            "ISSUERS_5Y": 68,
+            "PERCENT_OF_INDUSTRY": 64.0
+          },
+          "real_estate_accumulated_depreciation": {
+            "ISSUERS": 145,
+            "ISSUERS_5Y": 131,
+            "PERCENT_OF_INDUSTRY": 82.8571
+          },
+          "real_estate_gross": {
+            "ISSUERS": 143,
+            "ISSUERS_5Y": 132,
+            "PERCENT_OF_INDUSTRY": 81.7143
+          },
+          "real_estate_net": {
+            "ISSUERS": 131,
+            "ISSUERS_5Y": 115,
+            "PERCENT_OF_INDUSTRY": 74.8571
+          },
+          "secured_debt": {
+            "ISSUERS": 111,
+            "ISSUERS_5Y": 87,
+            "PERCENT_OF_INDUSTRY": 63.4286
+          }
+        },
+        "PERCENT_WITH_ANY_INDUSTRY_METRIC": 99.4286
+      },
+      "BANK": {
+        "ISSUERS": 363,
+        "ISSUERS_WITH_ANY_INDUSTRY_METRIC": 330,
+        "ISSUERS_WITHOUT_ANY_INDUSTRY_METRIC": 33,
+        "metrics": {
+          "allowance_for_loan_losses": {
+            "ISSUERS": 288,
+            "ISSUERS_5Y": 249,
+            "PERCENT_OF_INDUSTRY": 79.3388
+          },
+          "available_for_sale_debt_securities": {
+            "ISSUERS": 294,
+            "ISSUERS_5Y": 204,
+            "PERCENT_OF_INDUSTRY": 80.9917
+          },
+          "cash_and_due_from_banks": {
+            "ISSUERS": 274,
+            "ISSUERS_5Y": 239,
+            "PERCENT_OF_INDUSTRY": 75.4821
+          },
+          "deposits": {
+            "ISSUERS": 305,
+            "ISSUERS_5Y": 267,
+            "PERCENT_OF_INDUSTRY": 84.022
+          },
+          "interest_and_dividend_income": {
+            "ISSUERS": 296,
+            "ISSUERS_5Y": 269,
+            "PERCENT_OF_INDUSTRY": 81.5427
+          },
+          "interest_and_fee_income_loans": {
+            "ISSUERS": 279,
+            "ISSUERS_5Y": 247,
+            "PERCENT_OF_INDUSTRY": 76.8595
+          },
+          "interest_expense_deposits": {
+            "ISSUERS": 260,
+            "ISSUERS_5Y": 231,
+            "PERCENT_OF_INDUSTRY": 71.6253
+          },
+          "loans_and_leases_net": {
+            "ISSUERS": 285,
+            "ISSUERS_5Y": 227,
+            "PERCENT_OF_INDUSTRY": 78.5124
+          },
+          "net_interest_income": {
+            "ISSUERS": 316,
+            "ISSUERS_5Y": 284,
+            "PERCENT_OF_INDUSTRY": 87.0523
+          },
+          "net_interest_income_after_provision": {
+            "ISSUERS": 303,
+            "ISSUERS_5Y": 272,
+            "PERCENT_OF_INDUSTRY": 83.4711
+          },
+          "noninterest_expense": {
+            "ISSUERS": 302,
+            "ISSUERS_5Y": 274,
+            "PERCENT_OF_INDUSTRY": 83.1956
+          },
+          "noninterest_income": {
+            "ISSUERS": 303,
+            "ISSUERS_5Y": 274,
+            "PERCENT_OF_INDUSTRY": 83.4711
+          },
+          "provision_for_credit_losses": {
+            "ISSUERS": 269,
+            "ISSUERS_5Y": 226,
+            "PERCENT_OF_INDUSTRY": 74.1047
+          },
+          "time_deposits": {
+            "ISSUERS": 290,
+            "ISSUERS_5Y": 245,
+            "PERCENT_OF_INDUSTRY": 79.8898
+          }
+        },
+        "PERCENT_WITH_ANY_INDUSTRY_METRIC": 90.9091
+      }
+    }
+  },
+  "generatedAtUtc": "2026-09-14T10:58:18+00:00"
+}

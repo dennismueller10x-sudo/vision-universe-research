@@ -111,6 +111,7 @@
       contractVersion: CONTRACT_VERSION,
       symbol: String(raw.symbol || raw.ticker || "").toUpperCase(),
       securityId: raw.securityId || null,
+      instrumentId: raw.instrumentId || null,
       companyName: raw.companyName || null,
       companyNameStatus: raw.companyName ? "CALCULATED" : (raw.companyNameStatus || "SOURCE_MISSING"),
       legalName: raw.legalName || null,

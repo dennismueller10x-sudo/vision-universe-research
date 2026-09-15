@@ -17,9 +17,9 @@ test("die Payloads sind gebaut", () => {
   assert.ok(vorhanden, "discover/data/meta.json fehlt - Build nicht ausgefuehrt");
 });
 
-test("Meta beschreibt beide Universen getrennt", { skip: !vorhanden }, () => {
+test("Meta beschreibt genau das reale Universum - das Modelluniversum wird nicht mehr ausgeliefert", { skip: !vorhanden }, () => {
   const ids = meta.universes.map((u) => u.universeId);
-  assert.deepEqual(ids.sort(), ["US_REAL", "VU_MODEL"]);
+  assert.deepEqual(ids.sort(), ["US_REAL"]);
   for (const u of meta.universes) {
     assert.ok(u.securities > 0);
     assert.ok(u.rankingScope.length > 0, "jedes Universum benennt seinen Ranglisten-Geltungsbereich");
@@ -68,9 +68,10 @@ test("der Suchindex laedt in einem Stueck", { skip: !vorhanden }, () => {
     const index = readJSON(file);
     assert.equal(index.entries.length, universe.securities);
     /* Die Groesse skaliert mit dem Universum, nicht mit einer festen Zahl:
-       hoechstens ~130 Byte je Titel (5.700 Titel = ~730 KB roh, ~150 KB
-       komprimiert) - geladen erst, wenn jemand die Suche oeffnet. */
-    assert.ok(kb(file) * 1024 / Math.max(1, index.entries.length) < 135,
+       hoechstens ~160 Byte je Titel (5.950 Titel = ~850 KB roh, ~170 KB
+       komprimiert) - geladen erst, wenn jemand die Suche oeffnet. Seit dem
+       Company Master traegt jeder Eintrag seine instrumentId (~22 Byte). */
+    assert.ok(kb(file) * 1024 / Math.max(1, index.entries.length) < 165,
       universe.universeId + "-Suchindex ist je Titel zu gross (" + Math.round(kb(file) * 1024 / index.entries.length) + " B)");
   }
 });

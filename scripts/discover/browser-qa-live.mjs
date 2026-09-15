@@ -90,7 +90,18 @@ const nachlade = await d.evaluate(() => [...document.querySelectorAll("[data-liv
 ok("Nachgeladene Karten zeigen ebenfalls Tagesverlauf", nachlade > intra, nachlade + " > " + intra);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-02-home-scrolled-desktop.png" });
 /* Polling-Zustand passt zur Marktlage */
-ok("Polling nur bei offener Boerse", (l0 && l0.state === "OPEN") ? s2.polling === true : s2.polling === false, "state " + (l0 && l0.state) + ", polling " + s2.polling);
+/* Die Regel des Hubs (live-hub.js shouldPoll): bei offener Boerse wird
+   gepollt - und ausserdem, solange das ausgelieferte Verzeichnis einer
+   aelteren Sitzung als der anzuzeigenden gehoert (der Snapshot-Lauf hat
+   die letzte Sitzung noch nicht veroeffentlicht). Sonst nie. */
+const idxLage = await d.evaluate(() => { const i = window.VUDiscover.LiveHub.index(); const r = window.VUDiscover.LiveHub.resolution();
+  return { idxDate: i && i.displaySession ? i.displaySession.sessionDate : null, idxComplete: !!(i && i.displaySession && i.displaySession.isComplete),
+           dsComplete: !!(r && r.displaySession && r.displaySession.isComplete) }; });
+const idxDate = idxLage.idxDate;
+const nachzug = !!(l0 && idxDate && (idxDate < l0.display || (idxDate === l0.display && !idxLage.idxComplete && idxLage.dsComplete)));
+ok("Polling nur bei offener Boerse oder bis das Verzeichnis die letzte Sitzung traegt",
+   (l0 && l0.state === "OPEN") || nachzug ? s2.polling === true : s2.polling === false,
+   "state " + (l0 && l0.state) + ", index " + idxDate + ", display " + (l0 && l0.display) + ", polling " + s2.polling);
 
 /* Aktienseite: Standard 1T */
 const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index().entries; return Object.keys(e)[0]; });

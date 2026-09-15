@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "note": "Der GEMESSENE Stand VOR der IFRS- und Waehrungsarbeit. Festgehalten, damit der Vorher-/Nachher-Vergleich aus zwei Messungen besteht und nicht aus einer Messung und einer Erinnerung.",
+  "takenAt": "2026-09-13T07:07:09+00:00",
+  "registryMappingVersion": "1.1.0",
+  "normalizationLogicVersion": "1.6.0",
+  "fundamentals": {
+    "COMPANY_FACTS_AVAILABLE": 5406,
+    "ISSUERS_INGESTED_TOTAL": 5437,
+    "metrics": {
+      "revenue": 3987,
+      "net_income": 4537,
+      "eps_diluted": 4276,
+      "operating_cash_flow": 4525,
+      "capital_expenditures": 4075,
+      "free_cash_flow": 4073,
+      "total_assets": 4591,
+      "total_debt": 2480,
+      "stockholders_equity": 4555
+    }
+  },
+  "overlap": {
+    "PRODUCT_TITLES": 7004,
+    "R2_HISTORY_AVAILABLE": 6997,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+    "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5813,
+    "PIT_READY": 4928,
+    "R2_AND_FUNDAMENTAL": 5810,
+    "TECHNICAL_AND_FUNDAMENTAL": 5215,
+    "PIT_R2_AND_TECHNICAL": 4633,
+    "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4056
+  },
+  "coreMetricsOfTechnical": {
+    "TECHNICAL_WITH_REVENUE": 4057,
+    "TECHNICAL_WITH_NET_INCOME": 4618,
+    "TECHNICAL_WITH_EPS": 4381,
+    "TECHNICAL_WITH_OPERATING_CASH_FLOW": 4609,
+    "TECHNICAL_WITH_FCF": 4139,
+    "TECHNICAL_WITH_ASSETS": 4619,
+    "TECHNICAL_WITH_DEBT": 2545,
+    "TECHNICAL_WITH_EQUITY": 4581
+  },
+  "history": {
+    "TECHNICAL_WITH_ANNUAL_1Y": 4588,
+    "TECHNICAL_WITH_ANNUAL_3Y": 4361,
+    "TECHNICAL_WITH_ANNUAL_5Y": 3955,
+    "TECHNICAL_WITH_ANNUAL_10Y": 2846,
+    "TECHNICAL_WITH_ANNUAL_15Y": 2192,
+    "TECHNICAL_WITH_QUARTERLY_1Y": 4557,
+    "TECHNICAL_WITH_QUARTERLY_3Y": 4110,
+    "TECHNICAL_WITH_QUARTERLY_5Y": 3757,
+    "TECHNICAL_WITH_QUARTERLY_10Y": 2756
+  },
+  "backtest": {
+    "BACKTEST_PRICE_READY": 6997,
+    "BACKTEST_PRICE_TECHNICAL_READY": 5963,
+    "BACKTEST_PRICE_FUNDAMENTAL_READY": 4633,
+    "BACKTEST_PIT_FUNDAMENTAL_READY": 4633,
+    "BACKTEST_5Y_READY": 3955,
+    "BACKTEST_10Y_READY": 2846,
+    "BACKTEST_15Y_READY": 2192
+  },
+  "gaps": {
+    "SEC_RECOVERABLE": 926,
+    "EXTERNAL_PROVIDER_CANDIDATE": 132,
+    "RESOLVES_WITH_TIME": 798,
+    "BY_DESIGN": 312,
+    "REQUIRES_REVIEW": 389
+  },
+  "titleStates": {
+    "AVAILABLE": 4447,
+    "PARTIAL": 481,
+    "MISSING": 885,
+    "UNAVAILABLE": 1191
+  }
+}

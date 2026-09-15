@@ -354,7 +354,22 @@ function pickFactorsFile() {
   return { gate: "FULL_UNIVERSE", file };
 }
 
+/* Der kanonische Company Master (quant/data/universe/instruments/**, main):
+   dieselbe instrumentId in Discover, Suche und Aktienseite. Fehlt er,
+   laeuft der Build weiter und die Payloads tragen keine instrumentId. */
+function loadMasterIndex() {
+  const dir = join(root, "quant", "data", "universe", "instruments");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+    let payload; try { payload = readJSON(join(dir, f)); } catch { continue; }
+    for (const inst of payload.instruments || []) if (inst.symbol && !map.has(inst.symbol)) map.set(inst.symbol, inst);
+  }
+  return map;
+}
+
 function buildRealUniverse(nameMap, goldenBars, compactSeries) {
+  const masterByTicker = loadMasterIndex();
   const universeSource = resolveProductUniverse(root);
   const faktorQuelle = pickFactorsFile();
   const factors = readJSON(faktorQuelle.file);
@@ -419,6 +434,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
+      instrumentId: (masterByTicker.get(sec.ticker) || {}).instrumentId || null,
       securityId: sec.securityId,
       /* Name: displayName der kanonischen Namensschicht, sonst ihr
          companyName, sonst die Repository-Namensquellen, sonst nichts -
@@ -1654,6 +1670,10 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     discoverNext: buildNextDiscovery(universe, stock, 8),
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
+    /* Identitaet: securityId (Wertpapierstamm) und instrumentId (Company
+       Master auf main) - dieselbe Kennung in Discover, Suche und Aktienseite. */
+    securityId: stock.securityId || null,
+    instrumentId: stock.instrumentId || null,
     fundamentals: fundamentalsDetail(universe, stock),
     /* Der belegte Satz aus den Abschluessen - auf der Karte, im Hero der
        Startseite und im Kopf der Aktienseite derselbe. */
@@ -1712,12 +1732,13 @@ console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
             `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
             `(${goldenBars.size} volle Historie, ${compact.size} kompakt)`);
 
-console.log("2/5  Modelluniversum (synthetisch) …");
-const model = applyPercentilesAndSignals(buildModelUniverse());
-console.log(`     ${model.stocks.length} Titel, Stand ${model.asOf}`);
+/* Das synthetische Modelluniversum (VU_MODEL) wird seit dem 15.09.2026 nicht
+   mehr ausgeliefert: Discover zeigt ausschliesslich reale Titel. Der
+   Generator bleibt fuer Tests des Quant-Moduls bestehen, buildModelUniverse()
+   wird hier nicht mehr aufgerufen. */
 
 const instruments = technicalInstrumentIndex();
-const universes = [real, model];
+const universes = [real];
 const rowIndex = [];
 const homeIndex = [];
 const homeSymbols = new Map();
@@ -1841,10 +1862,21 @@ for (const universe of universes) {
   }
 
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
+  /* Welche Kuerzel eine Aktienseite tragen - der Vertrag mit dem Company
+     Master (scripts/universe/build-sec-universe.mjs liest ihn, main). */
+  write(`stock-index/${universe.universeId}.json`, {
+    universeId: universe.universeId,
+    count: universe.stocks.length,
+    note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
+          "Company Master bekommen ihre Seite aus dem Master (quant/data/universe/).",
+    symbols: universe.stocks.map((s) => s.symbol).sort()
+  });
+
   write(`search/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     asOf: universe.asOf, count: universe.stocks.length,
     entries: universe.stocks.map((s) => ({
+      i: s.instrumentId || null,
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
       a: s.was || null,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,

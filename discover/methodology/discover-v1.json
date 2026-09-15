@@ -10,14 +10,6 @@
       "provider": "tiingo",
       "note": "Reale US-Titel. Absolute Kursniveaus bleiben nach der Redistributionsregel des Bestandssystems zurück (fieldStatus WITHHELD_REDISTRIBUTION); ausgeliefert werden Zustände, Abstände und Renditen.",
       "rankingScope": "Alle Ranglisten, Perzentile und Leadership-Scores werden AUSSCHLIESSLICH innerhalb dieses Universums gerechnet."
-    },
-    "VU_MODEL": {
-      "label": "VU Modelluniversum",
-      "kind": "mock",
-      "source": "quant/data/securities.json + quant/engines/mock-generator.js",
-      "provider": "VisionUniverseMock",
-      "note": "Synthetisches Universum. Kein realer Titel, keine reale Aussage - aber vollständige Kursreihen, damit die Darstellung (Preis, Sparkline, Chart) ohne erfundene Werte gezeigt werden kann.",
-      "rankingScope": "Getrennt gerechnet. Ein Rang aus diesem Universum wird nie mit einem realen Titel verglichen."
     }
   },
   "leadershipScore": {

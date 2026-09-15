@@ -19,6 +19,7 @@ import argparse
 import json
 import logging
 import sys
+from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -83,9 +84,20 @@ def _load_universe(path):
     return payload["companies"]
 
 
-def _resolve_universe(provider, companies, verify=True):
-    """Ticker -> CIK against the SEC's own map. The config file is only a hint."""
+def _resolve_universe(provider, companies, verify=True, skip_unresolved=False):
+    """Ticker -> CIK against the SEC's own map. The config file is only a hint.
+
+    `skip_unresolved` exists for a universe that is GENERATED rather than
+    hand-written. With five curated issuers, a ticker the SEC does not know is
+    a config error and has to stop the run. With five thousand issuers taken
+    from a market-data provider, it is the expected case — ETFs, foreign
+    issuers without a 20-F, freshly delisted shells — and aborting on the first
+    one would mean the pipeline can never run at scale. The skipped entries are
+    returned, not swallowed: a caller that does not report them is the bug this
+    flag would otherwise introduce.
+    """
     resolved = []
+    skipped = []
     for entry in companies:
         ticker = entry.get("ticker")
         hint = entry.get("cik")
@@ -96,6 +108,9 @@ def _resolve_universe(provider, companies, verify=True):
             cik = normalize_cik(hint)
             print(f"  {ticker}: not in the SEC ticker map, using configured CIK {cik}")
         if cik is None:
+            if skip_unresolved:
+                skipped.append({"ticker": ticker, "reason": "notInSecTickerMap"})
+                continue
             raise SystemExit(f"cannot resolve a CIK for {entry!r}")
         if verify and hint and normalize_cik(hint) != cik:
             # A divergence may be legitimate — a reorganisation can move the
@@ -117,6 +132,15 @@ def _resolve_universe(provider, companies, verify=True):
                 resolved.append({**entry, "cik": normalize_cik(hint),
                                  "sec_ticker_map_cik": cik})
                 continue
+            if skip_unresolved:
+                # A generated universe carries the SEC's own CIK as its hint, so
+                # a mismatch here means the ticker moved between the map build
+                # and this run. The SEC's answer wins, and the move is recorded.
+                skipped.append({"ticker": ticker, "reason": "cikMovedSinceMapBuild",
+                                "hint": normalize_cik(hint), "sec": cik,
+                                "action": "usedSecCik"})
+                resolved.append({**entry, "cik": cik, "config_cik": normalize_cik(hint)})
+                continue
             raise SystemExit(
                 f"CIK mismatch for {ticker}: config says {normalize_cik(hint)}, "
                 f"SEC says {cik}. Run `cli.py resolve` to see what each CIK "
@@ -125,15 +149,84 @@ def _resolve_universe(provider, companies, verify=True):
                 f"what was measured; otherwise fix quant/config/sec-universe.json."
             )
         resolved.append({**entry, "cik": cik})
+    if skip_unresolved:
+        return resolved, skipped
     return resolved
 
 
-def _documents(store, ciks=None):
-    documents = []
+def _ciks_from_universe(path):
+    """Die CIKs einer Universumsdatei - oder None fuer "alle".
+
+    Ein aufgerufener, aber nie definierter Helfer. `export` und
+    `canonical` riefen ihn seit der Einfuehrung von --universe auf; im
+    Workflow standen beide hinter `|| true`, also meldete der Schritt
+    Erfolg und schrieb nichts. Der dritte Produktivlauf ist an einer
+    ANDEREN Stelle gestorben, bevor der NameError je sichtbar wurde.
+
+    Ohne Pfad gibt es keine Einschraenkung; eine Datei ohne aufloesbare
+    CIK ergibt eine leere Menge, und das ist etwas anderes als "alle" -
+    deshalb wird hier nie None zurueckgegeben, wenn ein Pfad kam.
+    """
+    if not path:
+        return None
+    ciks = []
+    for entry in _load_universe(path):
+        cik = entry.get("cik")
+        if cik:
+            ciks.append(normalize_cik(cik))
+    return ciks
+
+
+def _iter_documents(store, ciks=None):
+    """Gespeicherte Factbooks, EINES nach dem anderen.
+
+    `_documents` baut eine Liste. Bei fuenf Emittenten ist das
+    gleichgueltig; bei 5.437 ist es toedlich - der zweite Produktivlauf
+    hat den Runner damit umgebracht ("The runner has received a shutdown
+    signal" nach zwei Minuten), nachdem der Ingest 76 Minuten lang
+    erfolgreich war. Ein einzelnes Factbook erreicht 17 MB; alle
+    zusammen sprengen jeden Arbeitsspeicher.
+
+    Wer nur eine Bilanz je Emittent braucht, braucht nie zwei Factbooks
+    gleichzeitig.
+    """
     for cik in (ciks or store.list_companies()):
         document = store.read_company(cik)
         if document is not None:
-            documents.append(document)
+            yield document
+
+
+# Ab hier ist eine Liste von Factbooks keine Liste mehr, sondern ein
+# Speicherproblem. Der Wert ist bewusst grosszuegig: der Validierungssatz
+# hat fuenf Eintraege, ein versehentlich ungefilterter Aufruf ueber 5.406.
+MAX_DOCUMENTS_IN_MEMORY = 250
+
+
+def _documents(store, ciks=None):
+    """Alle Factbooks als Liste.
+
+    Nur fuer Auswertungen ueber eine HANDVOLL Emittenten (export,
+    canonical, coverage, gates mit --universe). Fuer das ganze Universum
+    `_iter_documents` benutzen.
+
+    Der dritte Produktivlauf ist daran gestorben, dass cmd_coverage sein
+    eigenes --universe nicht las und den ganzen Bestand materialisierte.
+    Ein OOM-Kill ist nicht abfangbar - der Runner bekommt ein
+    Shutdown-Signal, `|| true` greift nicht, und im Log steht nichts
+    ueber die Ursache. Deshalb bricht diese Stelle vorher ab und sagt,
+    WELCHER Aufruf den Filter vergessen hat.
+    """
+    documents = []
+    for document in _iter_documents(store, ciks=ciks):
+        documents.append(document)
+        if len(documents) > MAX_DOCUMENTS_IN_MEMORY:
+            raise SystemExit(
+                f"Mehr als {MAX_DOCUMENTS_IN_MEMORY} Factbooks auf einmal "
+                f"angefordert (Filter: {'kein' if ciks is None else len(ciks)}). "
+                "Diese Auswertung ist fuer eine Handvoll Emittenten gebaut - "
+                "--universe setzen, oder fuer das ganze Universum "
+                "coverage-universe benutzen, das streamt."
+            )
     return documents
 
 
@@ -179,6 +272,34 @@ def _canonical_ticker(document, declared):
     )
 
 
+def ingest_verdict(attempted, completed, failed, max_failure_rate=0.05):
+    """Ist ein Lauf mit einzelnen Fehlschlaegen gescheitert?
+
+    EIN FEHLSCHLAG IST KEIN GESCHEITERTER LAUF.
+
+    Die erste Fassung gab 1 zurueck, sobald EIN Emittent fehlschlug. Bei
+    fuenf kuratierten Titeln ist das richtig. Beim ersten Produktivlauf
+    ueber 5.480 Emittenten kostete es alles: 5.436 erfolgreiche Ingests,
+    die Coverage-Messung, der Commit und der Zwischenspeicher wurden
+    verworfen, weil 43 Titel (0,78 %) nicht durchliefen. Die
+    Fehlerschlange ist genau fuer diesen Fall da.
+
+    Gescheitert ist ein Lauf, wenn die Fehlerquote die Schwelle reisst
+    oder gar nichts durchkam. Beides heisst "die Pipeline ist kaputt".
+    Einzelne Emittenten heissen das nicht.
+    """
+    rate = (failed / attempted) if attempted else 0.0
+    if attempted and completed == 0:
+        code, reason = 1, "Kein einziger Emittent ingestiert."
+    elif rate > max_failure_rate:
+        code, reason = 1, (f"Fehlerquote {rate * 100:.2f} % ueber der Schwelle "
+                           f"{max_failure_rate * 100:.2f} %.")
+    else:
+        code, reason = 0, None
+    return {"attempted": attempted, "completed": completed, "failed": failed,
+            "failure_rate": rate, "exit_code": code, "reason": reason}
+
+
 # ---------------------------------------------------------------- commands
 
 def cmd_ingest(args):
@@ -186,36 +307,181 @@ def cmd_ingest(args):
     registry = MetricRegistry.load()
     pipeline = IngestionPipeline(provider=provider, registry=registry,
                                  run_id=args.run_id)
-    companies = _resolve_universe(provider, _load_universe(args.universe))
+    universe = _load_universe(args.universe)
+    skipped = []
+    if args.skip_unresolved:
+        companies, skipped = _resolve_universe(provider, universe, skip_unresolved=True)
+    else:
+        companies = _resolve_universe(provider, universe)
+
+    if skipped:
+        print(f"  {len(skipped)} of {len(universe)} entries could not be resolved "
+              f"against the SEC ticker map and are not ingested:")
+        for row in skipped[:20]:
+            print(f"    {row['ticker']}: {row['reason']}")
+        if len(skipped) > 20:
+            print(f"    … and {len(skipped) - 20} more")
+
     outcome = pipeline.ingest_universe(companies, resume=not args.no_resume,
-                                       force=args.force, limit=args.limit)
-    for result in outcome["results"]:
+                                       force=args.force, limit=args.limit,
+                                       bulk=args.bulk, bulk_archive=args.bulk_file)
+    for result in outcome["results"][:50]:
         print(f"  {result['cik']}: {result['status']}"
               + (f" ({result['error']})" if result.get("error") else ""))
-    print(json.dumps(outcome["manifest"]["run"], indent=2))
-    return 1 if outcome["state"]["failed"] else 0
+    if len(outcome["results"]) > 50:
+        print(f"  … and {len(outcome['results']) - 50} more")
+    run = dict(outcome["manifest"]["run"])
+    run["universe_entries"] = len(universe)
+    run["resolved"] = len(companies)
+    run["unresolved"] = len(skipped)
+    print(json.dumps(run, indent=2))
+
+    # DIE BILANZ DES LAUFS GEHOERT INS REPOSITORY, NICHT NUR INS LOG.
+    #
+    # Anfragezahlen und Fehlschlaege standen bisher ausschliesslich im
+    # Actions-Log. Ein Log laeuft ab; die Frage "wie viele Anfragen hat
+    # das die SEC gekostet, und welche Titel sind nicht durchgekommen"
+    # ist genau die, die man spaeter stellt.
+    http = getattr(getattr(provider, "client", None), "stats", None) or {}
+    _write(DATA_DIR.parent / "fundamentals" / "ingest-run.json", {
+        "schema_version": 1,
+        "generated_at_utc": _utcnow(),
+        "versions": version_stamp(registry.version),
+        "note": "Bilanz EINES Ingest-Laufs. Ein wiederaufgenommener Lauf zaehlt "
+                "nur, was er selbst geholt hat - uebersprungene Emittenten aus "
+                "dem Zwischenspeicher erzeugen keine Anfrage.",
+        "run": run,
+        "requests": {
+            "SEC_BULK_REQUESTS": (run.get("bulk") or {}).get("requests",
+                                  1 if run.get("bulk") else 0),
+            "SEC_INDIVIDUAL_REQUESTS": http.get("requests", 0),
+            "CACHE_HITS": http.get("cache_hits", 0),
+            "RETRIES": http.get("retries", 0),
+        },
+        "failures": {
+            "FAILED_SECURITIES": run.get("failed", 0),
+            "UNRESOLVED_NOT_INGESTED": len(skipped),
+            "ciks": [r["cik"] for r in outcome["results"]
+                     if r.get("status") not in ("ok", "skipped", "unchanged")][:200],
+            # WARUM, nicht nur wie viele: ohne die Fehlerklasse stand die
+            # Schlange drei Laeufe lang da, und niemand konnte sagen, ob
+            # die SEC 404 sagt oder der Abruf stirbt.
+            "byError": dict(Counter(_fehlerklasse(r["error"]) for r in outcome["results"]
+                                    if r.get("error")).most_common()),
+            "retryQueue": list((outcome.get("state") or {}).get("retry_queue", []))[:200],
+        },
+    })
+
+    # EIN FEHLSCHLAG IST KEIN GESCHEITERTER LAUF.
+    #
+    # Die erste Fassung endete mit 1, sobald EIN Emittent fehlschlug.
+    # Bei fuenf kuratierten Titeln ist das richtig. Beim ersten
+    # Produktivlauf ueber 5.480 Emittenten kostete es alles: 5.436
+    # erfolgreiche Ingests, die Coverage-Messung, der Commit und der
+    # Zwischenspeicher wurden verworfen, weil 43 Titel (0,78 %) nicht
+    # durchliefen. Die Fehlerschlange ist genau fuer diesen Fall da.
+    #
+    # Der Lauf scheitert jetzt, wenn die Fehlerquote die Schwelle
+    # reisst - oder wenn gar nichts durchkam. Beides heisst "die
+    # Pipeline ist kaputt". Einzelne Emittenten heissen das nicht.
+    urteil = ingest_verdict(attempted=len(companies),
+                            completed=len(outcome["state"]["completed"]),
+                            failed=len(outcome["state"]["failed"]),
+                            max_failure_rate=args.max_failure_rate)
+    print(f"\n  {urteil['completed']} ingestiert, {urteil['failed']} fehlgeschlagen "
+          f"({urteil['failure_rate'] * 100:.2f} %, Schwelle "
+          f"{args.max_failure_rate * 100:.2f} %)")
+    if urteil["failed"]:
+        print(f"  Die {urteil['failed']} stehen in der Fehlerschlange; "
+              f"`cli.py retry` nimmt sie erneut.")
+    if urteil["exit_code"]:
+        print(f"  {urteil['reason']}")
+    return urteil["exit_code"]
 
 
 def cmd_update(args):
+    """Inkrementell: nur Emittenten mit neuen Einreichungen (§17).
+
+    Kein Voll-Backfill. `refresh_since` fragt je Emittent die
+    Einreichungsuebersicht ab - eine Anfrage, kein Datensatz - und holt
+    die Fakten nur fuer die, bei denen seit `--since` etwas eingereicht
+    wurde. Mit `--bulk` kommen auch diese Fakten aus dem Sammelarchiv.
+    """
     pipeline = IngestionPipeline(run_id=args.run_id)
-    outcome = pipeline.refresh_since(args.since)
+    entries = None
+    if args.universe:
+        provider = SECProvider()
+        companies, skipped = _resolve_universe(
+            provider, _load_universe(args.universe), skip_unresolved=True)
+        entries = companies
+        if skipped:
+            print(f"  {len(skipped)} Eintraege ohne CIK uebersprungen")
+    outcome = pipeline.refresh_since(args.since, entries=entries)
     for result in outcome["results"]:
         print(f"  {result['cik']}: {result['status']}")
     return 1 if outcome["state"]["failed"] else 0
 
 
 def cmd_retry(args):
+    """Die Fehlerschlange einzeln ueber die SEC-API nachholen (§8: erst Sammelweg, dann Rest)."""
     pipeline = IngestionPipeline(run_id=args.run_id)
-    outcome = pipeline.retry_failed()
+    vorher = len(pipeline.checkpoint.load().get("retry_queue", []))
+    outcome = pipeline.retry_failed(reset_attempts=getattr(args, "reset_attempts", False))
+    fehler = Counter()
     for result in outcome["results"]:
-        print(f"  {result['cik']}: {result['status']}")
-    return 1 if outcome["state"]["failed"] else 0
+        print(f"  {result['cik']}: {result['status']}"
+              + (f"  {str(result.get('error'))[:120]}" if result.get("error") else ""))
+        if result.get("error"):
+            fehler[_fehlerklasse(result["error"])] += 1
+    nachher = len(outcome["state"].get("retry_queue", []))
+    print(f"\n  Fehlerschlange: {vorher} vorher, {nachher} nachher, "
+          f"{len(outcome['results'])} erneut versucht")
+    _write(Path(args.out), {
+        "schema_version": 1,
+        "generated_at_utc": _utcnow(),
+        "note": "Einzelabruf der Fehlerschlange ueber die SEC-API nach dem Sammelweg. "
+                "Ein companyfacts-404 ist keine Stoerung, sondern die Antwort der SEC "
+                "(keine XBRL-Fakten) und ergibt ein leeres Factbook mit Status.",
+        "QUEUE_BEFORE": vorher, "QUEUE_AFTER": nachher,
+        "RETRIED": len(outcome["results"]),
+        "resetAttempts": bool(getattr(args, "reset_attempts", False)),
+        "byStatus": dict(Counter(r.get("status") for r in outcome["results"])),
+        "byError": dict(fehler.most_common()),
+        "results": [{"cik": r["cik"], "status": r.get("status"),
+                     "error": (str(r.get("error"))[:300] if r.get("error") else None)}
+                    for r in outcome["results"]],
+    })
+    # Kein Abbruch: was nach dem Einzelabruf noch fehlt, steht mit Grund im
+    # Bericht und in der Feinklassifikation. Der Lauf misst weiter.
+    return 0
+
+
+def _fehlerklasse(text):
+    text = str(text)
+    if "HTTP 404" in text:
+        return "SEC_404_" + ("SUBMISSIONS" if "submissions" in text else
+                             "COMPANYFACTS" if "companyfacts" in text else "OTHER")
+    if "HTTP 403" in text:
+        return "SEC_403"
+    if "HTTP 5" in text:
+        return "SEC_5XX"
+    if "HTTP 429" in text:
+        return "SEC_429"
+    return text.split(":")[0][:60] or "UNKNOWN"
 
 
 def cmd_export(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    ciks = _ciks_from_universe(getattr(args, "universe", None))
+    if getattr(args, "ciks", None):
+        # Der taegliche Lauf frischt nur die Buendel der Emittenten auf, die
+        # ein neues Filing hatten - und nur, wenn sie bereits ein Buendel im
+        # Repository haben. Ohne diese Grenze schriebe der Lauf 5.400 mal
+        # 400 KB.
+        gewollt = {normalize_cik(c) for c in args.ciks.split(",") if c.strip()}
+        ciks = sorted(gewollt if ciks is None else (set(ciks) & gewollt))
+    documents = _documents(store, ciks=ciks)
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -251,7 +517,12 @@ def cmd_export(args):
 def cmd_coverage(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    # --universe war deklariert und wurde nie gelesen. Der Workflow gab
+    # den Validierungssatz mit, die Matrix las trotzdem den ganzen
+    # Bestand - 5.406 Factbooks in einer Liste, und der Runner bekam ein
+    # Shutdown-Signal. Ein Argument, das nichts tut, ist schlimmer als
+    # keines: es sieht nach einer Grenze aus.
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
@@ -268,7 +539,7 @@ def cmd_gates(args):
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
     provider = SECProvider()
-    documents = _documents(store)
+    documents = _documents(store, ciks=_ciks_from_universe(getattr(args, "universe", None)))
     declared = _declared_tickers()
 
     per_company = []
@@ -343,6 +614,560 @@ def _submissions_summary(provider, cik):
     }
 
 
+def _sic_spannen(text):
+    """'6020-6036,6021' -> [(6020, 6036), (6021, 6021)]; leer -> []."""
+    spannen = []
+    for teil in (text or "").split(","):
+        teil = teil.strip()
+        if not teil:
+            continue
+        low, _, high = teil.partition("-")
+        spannen.append((int(low), int(high or low)))
+    return spannen
+
+
+def _sic_passt(sic, spannen):
+    try:
+        code = int(sic)
+    except (TypeError, ValueError):
+        return False
+    return any(low <= code <= high for low, high in spannen)
+
+
+def cmd_concepts(args):
+    """Welche XBRL-Konzepte meldet der Bestand, die die Registry nicht kennt?
+
+    Die Grundlage jeder Mapping-Arbeit, und zwar GEMESSEN. Ein Mapping
+    aus dem Gedaechtnis trifft die Konzepte, an die man sich erinnert -
+    nicht die, die tatsaechlich vorkommen. Diese Auswertung zaehlt, wie
+    oft ein unbekanntes Konzept auftritt und BEI WIE VIELEN EMITTENTEN;
+    die zweite Zahl entscheidet, denn ein Konzept, das ein einziger
+    Emittent zehntausendmal meldet, bringt gemappt genau einen Titel.
+
+    Mit --only-unresolved zaehlt sie nur Emittenten, aus denen heute
+    KEIN einziger Wert entsteht. Das ist die Liste, die Deckung schafft.
+    """
+    store = JsonFactStore(compress=True)
+    ciks = store.list_companies()
+    if not ciks:
+        print("Kein Faktenspeicher. Erst `ingest`.")
+        return 2
+    if args.ciks_file:
+        # Genau die Emittenten, die ein Bericht benannt hat - z. B. die
+        # 77, die nach der Feinklassifikation noch SEC-loesbar sind.
+        # Ohne diese Eingrenzung dominiert das SPAC-Vokabular jede Liste.
+        payload = json.loads(Path(args.ciks_file).read_text(encoding="utf-8"))
+        gewollt = set(payload.get(args.ciks_key) if args.ciks_key else payload)
+        ciks = [c for c in ciks if c in gewollt]
+        print(f"  Eingegrenzt auf {len(ciks)} Emittenten aus {args.ciks_file}")
+    # --sic 6020-6036,6021: nur Emittenten dieser SIC-Spannen. Das ist
+    # die Messung, aus der eine Branchenschicht entsteht - das
+    # Vokabular der Banken, nicht das Vokabular derer, denen zufaellig
+    # der Umsatz-Tag fehlt.
+    sic_spannen = _sic_spannen(getattr(args, "sic", None))
+
+    von_konzept = Counter()          # Fakten je Konzept
+    emittenten_je_konzept = Counter()  # Emittenten je Konzept
+    taxonomien = Counter()
+    geprueft = betroffen = 0
+
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        geprueft += 1
+        if sic_spannen and not _sic_passt((document.get("profile") or {}).get("sic"),
+                                          sic_spannen):
+            document = None
+            continue
+        # Ein Emittent ohne aufloesbare Werte ist der teure Fall.
+        timelines = (document.get("factbook") or {}).get("timelines") or []
+        leer = not timelines
+        if args.only_unresolved and not leer:
+            document = None
+            continue
+        # --without-metric revenue: Emittenten, die etwas liefern, aber
+        # genau diese Kennzahl nicht. Das ist die Bank, der Versicherer,
+        # der REIT - und ihr Vokabular ist das, was ein Branchenmapping
+        # braucht. Ein Mapping aus dem Gedaechtnis trifft die Konzepte,
+        # an die man sich erinnert; dieses hier trifft die, die vorkommen.
+        if args.without_metric:
+            hat_werte = bool(timelines)
+            hat_metrik = any(
+                (t.get("metric") if isinstance(t, dict) else None) == args.without_metric
+                for t in timelines)
+            if not hat_werte or hat_metrik:
+                document = None
+                continue
+        betroffen += 1
+        eigene = set()
+        for finding in (document.get("quality") or {}).get("findings") or []:
+            if finding.get("code") != "UNKNOWN_CONCEPT":
+                continue
+            name = finding.get("concept") or ""
+            if not name:
+                continue
+            von_konzept[name] += 1
+            eigene.add(name)
+            taxonomien[name.split(":")[0]] += 1
+        for name in eigene:
+            emittenten_je_konzept[name] += 1
+        document = None   # nicht zwei Factbooks gleichzeitig halten
+
+    print(f"  Emittenten im Speicher: {geprueft}")
+    print(f"  davon ausgewertet:      {betroffen}")
+    print(f"  Taxonomien der unbekannten Konzepte: {dict(taxonomien.most_common())}")
+    print(f"\n  Top {args.top} unbekannte Konzepte, nach EMITTENTEN sortiert:")
+    print(f"  {'Konzept':<70} {'Emittenten':>10} {'Fakten':>10}")
+    for name, n_emittenten in emittenten_je_konzept.most_common(args.top):
+        print(f"  {name:<70} {n_emittenten:>10} {von_konzept[name]:>10}")
+
+    if args.out:
+        _write(Path(args.out), {
+            "schema_version": 1,
+            "generated_at_utc": _utcnow(),
+            "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert "
+                    "nach betroffenen EMITTENTEN - ein Konzept, das ein einziger "
+                    "Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
+            "scope": ("issuers_without_any_resolved_value" if args.only_unresolved
+                      else f"issuers_with_values_but_without_{args.without_metric}"
+                      if args.without_metric else "all_issuers"),
+            "sic": getattr(args, "sic", None),
+            "issuers_scanned": geprueft,
+            "issuers_in_scope": betroffen,
+            "by_taxonomy": dict(taxonomien.most_common()),
+            "concepts": [
+                {"concept": name, "issuers": n, "facts": von_konzept[name]}
+                for name, n in emittenten_je_konzept.most_common(args.top)
+            ],
+        })
+    return 0
+
+
+def cmd_final_report(args):
+    """§25/§26: der Abschlussbericht, gerendert aus den Messartefakten."""
+    from quant.sec.final_report import build_final_report
+    text = build_final_report()
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    print(f"  Abschlussbericht: {out} ({len(text.splitlines())} Zeilen)")
+    return 0
+
+
+def cmd_daily(args):
+    """Der taegliche Incremental-Lifecycle: nur neue oder geaenderte Filings (§1-§16).
+
+    Kein Full Backfill. Der SEC-Tagesindex sagt, wer seit dem letzten
+    Lauf eingereicht hat; genau diese Emittenten werden frisch geholt,
+    normalisiert und im Speicher aktualisiert. Persistenz, Reload und
+    Downstream folgen als eigene Schritte (`daily-downstream`).
+    """
+    from quant.sec import daily
+
+    pipeline = IngestionPipeline(run_id="daily")
+    provider = pipeline.provider
+    companies, skipped = _resolve_universe(
+        provider, _load_universe(args.universe), verify=False, skip_unresolved=True)
+    universe_ciks = {normalize_cik(c["cik"]) for c in companies if c.get("cik")}
+    state = daily.load_state()
+    since = date.fromisoformat(args.since) if args.since else None
+    ciks = [normalize_cik(c) for c in args.ciks.split(",") if c.strip()] if args.ciks else None
+    from quant.sec import universe_coverage
+    report = daily.run_daily(pipeline, provider.client, universe_ciks, state, since=since,
+                             ciks_override=ciks, dry_run=args.dry_run, log=print,
+                             shard_records=universe_coverage.load_issuer_shards(ROOT))
+    report["UNIVERSE_SKIPPED_WITHOUT_CIK"] = len(skipped)
+    daily.DAILY_DIR.mkdir(parents=True, exist_ok=True)
+    _write(daily.DAILY_DIR / "latest-run.json", report)
+    _write(daily.DAILY_DIR / "updated-issuers.json", daily.updated_issuers_manifest(report))
+    print(f"\n  {report['STATUS']}: {report['ISSUERS_UPDATED']} aktualisiert, "
+          f"{report['FAILED_ISSUERS']} gescheitert, {report['RETRY_QUEUE']} in der Schlange, "
+          f"{report['SEC_CHANGES_FOUND']} Filings im Index, "
+          f"{report['TOTAL_RUNTIME_SECONDS']} s")
+    for u in report["updated"]:
+        print(f"    {u['cik']} {u['reason']:<11} {u['latestForm'] or '-':<7} {u['latestFiledAt'] or '-'} "
+              f"{len(u['metricsChanged'])} Kennzahlen geaendert")
+    for f in report["failed"]:
+        print(f"    {f['cik']} FEHLER {f['error'][:100]}")
+    return 1 if report["STATUS"] == daily.STATUS_FAILURE else 0
+
+
+def _unterbefehl(*argv):
+    """Namespace eines Unterbefehls so, wie ihn die Kommandozeile baute.
+
+    Der Downstream ruft reconcile und canonical als Funktionen; ein von
+    Hand gebauter Namespace vergisst Defaults, sobald ein Parser ein
+    Argument dazubekommt (Lauf 34810787817: kein `today`). Der Parser
+    selbst vergisst nichts.
+    """
+    return build_parser().parse_args(list(argv))
+
+
+def cmd_daily_downstream(args):
+    """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
+
+    Scherben je Emittent, Aggregate aus den Scherben, Abgleich, kanonische
+    Buendel (nur vorhandene), UPDATED_ISSUERS-Manifest und der Health
+    Report mit den Persistenz- und Reload-Zahlen dieses Laufs.
+    """
+    from quant.sec import daily, universe_coverage
+
+    registry = MetricRegistry.load()
+    store = JsonFactStore(compress=True)
+    latest = json.loads((daily.DAILY_DIR / "latest-run.json").read_text(encoding="utf-8"))
+    updated = latest.get("updated") or []
+    ciks = [u["cik"] for u in updated]
+    started = datetime.now(timezone.utc)
+
+    # 1. Scherben: nur die aktualisierten Emittenten neu rechnen.
+    per_issuer = universe_coverage.load_issuer_shards(ROOT)
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        per_issuer["iss_cik_" + cik] = universe_coverage.issuer_fundamentals(document, registry)
+    if per_issuer and not latest.get("DRY_RUN"):
+        universe = universe_coverage.load_universe(ROOT)
+        reports = universe_coverage.reports_from_records(ROOT, per_issuer, registry=registry,
+                                                          universe=universe)
+        _write_universe_reports(reports, registry)
+        # 2. Abgleich mit dem Marktdaten-Universum (liest die Scherben).
+        cmd_reconcile(_unterbefehl("reconcile"))
+        # 3. Kanonische Buendel: nur Emittenten mit neuem Filing UND vorhandenem Buendel.
+        if ciks:
+            cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks), "--only-existing"))
+
+    # 4. Persistenz- und Reload-Zahlen dieses Laufs in den Bericht.
+    persistence = {}
+    pfad = ROOT / "quant" / "data" / "fundamentals" / "persistence.json"
+    if pfad.exists():
+        persistence = json.loads(pfad.read_text(encoding="utf-8"))
+    reload_report = {}
+    pfad = ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json"
+    if pfad.exists():
+        reload_report = json.loads(pfad.read_text(encoding="utf-8"))
+    # Persistenz- und Reload-Nachweise zaehlen nur, wenn sie in DIESEM Lauf
+    # entstanden: ein Bericht aus dem Repository (letzter Voll-Lauf) darf
+    # sich nicht als heutiger ausgeben.
+    lauf_zeit = (latest.get("LAST_SUCCESSFUL_RUN") or latest.get("RUN_DATE") or "")[:19]
+    push_zeit = (persistence.get("generatedAt") or "")[:19]
+    push = persistence.get("push") if push_zeit >= lauf_zeit else None
+    push = push or {}
+    latest["R2_OBJECTS_WRITTEN"] = push.get("changed")
+    latest["R2_OBJECTS_UNCHANGED"] = push.get("unchanged")
+    if push:
+        latest["R2_PERSISTENCE"] = "PASS" if push.get("changed", 0) >= len(ciks) else "FAIL"
+    else:
+        latest["R2_PERSISTENCE"] = "NOT_NEEDED" if not ciks else "MISSING"
+    reload_zeit = (reload_report.get("generated_at_utc") or "")[:19]
+    if not ciks:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = "NOT_NEEDED"
+        latest["RELOAD_SAMPLE"] = {"requested": 0, "passed": 0,
+                                   "lastVerified": reload_zeit or None,
+                                   "lastResult": reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")}
+    elif reload_zeit >= lauf_zeit:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = reload_report.get("RELOAD_WITHOUT_SEC_REFETCH")
+        latest["RELOAD_SAMPLE"] = {"requested": reload_report.get("requested"),
+                                   "passed": reload_report.get("passed")}
+    else:
+        latest["RELOAD_WITHOUT_SEC_REFETCH"] = "MISSING"
+        latest["RELOAD_SAMPLE"] = {"requested": len(ciks), "passed": 0,
+                                   "lastVerified": reload_zeit or None}
+    latest["DOWNSTREAM_INVALIDATIONS"] = len(ciks)
+    latest["DOWNSTREAM_TARGETS"] = list(daily.DOWNSTREAM_TARGETS)
+    latest["DOWNSTREAM_RUNTIME_SECONDS"] = round(
+        (datetime.now(timezone.utc) - started).total_seconds(), 1)
+    latest["TOTAL_RUNTIME"] = round(latest.get("TOTAL_RUNTIME_SECONDS", 0)
+                                    + latest["DOWNSTREAM_RUNTIME_SECONDS"], 1)
+    _write(daily.DAILY_DIR / f"health-{latest['RUN_DATE']}.json", latest)
+    _write(daily.DAILY_DIR / "latest-run.json", latest)
+    _write(daily.DAILY_DIR / "updated-issuers.json", daily.updated_issuers_manifest(latest, {
+        "R2_OBJECTS_WRITTEN": latest["R2_OBJECTS_WRITTEN"],
+        "RELOAD_WITHOUT_SEC_REFETCH": latest["RELOAD_WITHOUT_SEC_REFETCH"]}))
+    print(f"  Downstream: {len(ciks)} Emittenten in Scherben und Buendeln aufgefrischt, "
+          f"R2 geschrieben: {latest['R2_OBJECTS_WRITTEN']}, Reload: {latest['RELOAD_WITHOUT_SEC_REFETCH']}")
+    return 0
+
+
+def cmd_verify_reload(args):
+    """§21 J: Reload reproduziert dieselben kanonischen Werte - ohne SEC.
+
+    persist-fundamentals.mjs hat Objekte aus der dauerhaften Ablage nach
+    .sec-reload/facts zurueckgeladen. Dieser Befehl liest sie als
+    eigenen Faktenspeicher, leitet daraus die kanonischen Buendel ab und
+    vergleicht sie mit denen aus dem lokalen Speicher.
+
+    "Ohne SEC" ist keine Zusage, sondern eine Sperre: fuer die Dauer
+    dieses Befehls wirft jeder Netzwerkzugriff. Ein Vergleich, der
+    heimlich nachlaedt, waere kein Nachweis der Persistenz.
+    """
+    import urllib.request
+    from quant.sec.canonical import build_company_bundle
+
+    def gesperrt(*_a, **_k):
+        raise RuntimeError("RELOAD_MUST_NOT_FETCH: Netzwerkzugriff waehrend verify-reload")
+    urllib.request.urlopen = gesperrt
+
+    registry = MetricRegistry.load()
+    reload_dir = Path(args.reload_dir)
+    lokal = (JsonFactStore(directory=Path(args.local_dir), compress=True)
+             if getattr(args, "local_dir", None) else JsonFactStore(compress=True))
+    zurueck = JsonFactStore(directory=reload_dir, compress=True)
+    ciks = [c.strip() for c in (args.ciks or "").split(",") if c.strip()] or zurueck.list_companies()
+    if not ciks:
+        print(f"Nichts zurueckgeladen unter {reload_dir}.")
+        return 2
+
+    def kanonisch(document, ticker):
+        bundle = build_company_bundle(document, registry, ticker)
+        # Zeitstempel des Bauens sind kein Inhalt.
+        facts = [{k: v for k, v in f.items() if k != "ingestedAt"} for f in bundle.get("facts") or []]
+        return sorted(facts, key=lambda f: (f["metricId"], f["fiscalYear"], f["fiscalPeriod"],
+                                            f.get("periodEnd") or "", f.get("revisionId") or 0))
+
+    ergebnisse = []
+    for cik in ciks:
+        a = lokal.read_company(cik)
+        b = zurueck.read_company(cik)
+        zeile = {"cik": cik, "localPresent": a is not None, "reloadPresent": b is not None}
+        if a is None or b is None:
+            zeile["pass"] = False
+            zeile["reason"] = "fehlt " + ("lokal" if a is None else "im Reload")
+            ergebnisse.append(zeile); continue
+        zeile["documentsIdentical"] = (a == b)
+        ticker = ((a.get("profile") or {}).get("tickers") or [None])[0] or f"CIK{cik}"
+        ka, kb = kanonisch(a, ticker), kanonisch(b, ticker)
+        zeile["canonicalFacts"] = len(ka)
+        zeile["canonicalFactsIdentical"] = (ka == kb)
+        zeile["currencies"] = sorted({f.get("currency") for f in ka if f.get("currency")})
+        # Die Buendel fuehren bewusst nur Quartale (eine Jahreszeile
+        # kollidiert im Produktschema mit Q4). Die Jahrestiefe ist die
+        # Zahl der Geschaeftsjahre, nicht die der FY-Zeilen.
+        zeile["annualPeriods"] = len({f["fiscalYear"] for f in ka})
+        zeile["quarterlyPeriods"] = len({(f["fiscalYear"], f["fiscalPeriod"]) for f in ka
+                                         if f["fiscalPeriod"] != "FY"})
+        zeile["restated"] = sum(1 for f in ka if f.get("restatementStatus") != "original")
+        zeile["everyFactHasFilingAndAccession"] = all(
+            f.get("filedAt") and f.get("sourceFilingId") for f in ka)
+        zeile["normalizationLogic"] = (b.get("versions") or {}).get("normalization_logic")
+        zeile["pass"] = (zeile["documentsIdentical"] and zeile["canonicalFactsIdentical"]
+                         and zeile["everyFactHasFilingAndAccession"] and len(ka) > 0)
+        ergebnisse.append(zeile)
+        print(f"  {cik}  {'PASS' if zeile['pass'] else 'FAIL'}  {len(ka)} kanonische Werte, "
+              f"{zeile['annualPeriods']} Jahre, {zeile['quarterlyPeriods']} Quartale, "
+              f"{'+'.join(zeile['currencies']) or '-'}, {zeile['restated']} restated, "
+              f"v{zeile['normalizationLogic']}")
+
+    bestanden = sum(1 for z in ergebnisse if z.get("pass"))
+    verdict = "PASS" if bestanden == len(ergebnisse) and ergebnisse else "FAIL"
+    _write(Path(args.out) if getattr(args, "out", None)
+           else ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json", {
+        "schema_version": 1, "generated_at_utc": _utcnow(),
+        "versions": version_stamp(registry.version),
+        "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch "
+                "abgeleitet und mit dem lokalen Stand verglichen. Netzwerkzugriff war "
+                "waehrend des Vergleichs gesperrt.",
+        "RELOAD_WITHOUT_SEC_REFETCH": verdict,
+        "requested": len(ergebnisse), "passed": bestanden,
+        "networkBlocked": True,
+        "results": ergebnisse,
+    })
+    print(f"\n  RELOAD_WITHOUT_SEC_REFETCH = {verdict}  ({bestanden}/{len(ergebnisse)})")
+    return 0 if verdict == "PASS" else 1
+
+
+def _je_code(findings, limit):
+    """Hoechstens `limit` Befunde je Code, in Reihenfolge des Auftretens."""
+    gesehen = Counter()
+    out = []
+    for finding in findings:
+        code = finding.get("code")
+        if gesehen[code] >= limit:
+            continue
+        gesehen[code] += 1
+        out.append(finding)
+    return out
+
+
+def cmd_findings(args):
+    """Die Befundtexte eines Codes fuer benannte Emittenten - WARUM, nicht nur wie oft.
+
+    UNPLACEABLE_PERIOD=6 sagt, dass sechs Perioden nicht zugeordnet
+    wurden. Der Befundtext sagt, WELCHE und WESHALB - und erst der
+    entscheidet, ob der Kalender, das Formular oder die Einreichung das
+    Problem ist. Streamt einzeln; haelt nie zwei Factbooks.
+    """
+    store = JsonFactStore(compress=True)
+    gewollt = None
+    if args.ciks_file:
+        payload = json.loads(Path(args.ciks_file).read_text(encoding="utf-8"))
+        gewollt = set(payload.get(args.ciks_key) if args.ciks_key else payload)
+    ciks = [c for c in store.list_companies() if gewollt is None or c in gewollt]
+    if args.ciks:
+        ciks = [c.strip() for c in args.ciks.split(",") if c.strip()]
+    out = []
+    for cik in ciks:
+        document = store.read_company(cik)
+        if document is None:
+            continue
+        name = ((document.get("profile") or {}).get("name") or "")[:40]
+        calendar = document.get("calendar") or {}
+        stats = document.get("stats") or {}
+        treffer = [f for f in (document.get("quality") or {}).get("findings") or []
+                   if not args.code or f.get("code") == args.code]
+        forms = Counter((f.get("form") or "?") for f in document.get("filing_index") or [])
+        row = {"cik": cik, "name": name, "latestForm": (document.get("latest_filing") or {}).get("form"),
+               "filingForms": dict(forms), "rawFacts": stats.get("raw_facts"),
+               "mapped": stats.get("mapped"), "unmapped": stats.get("unmapped"),
+               "timelines": len((document.get("factbook") or {}).get("timelines") or []),
+               "fiscalYearEnd": (document.get("profile") or {}).get("fiscal_year_end"),
+               "calendarYears": len(calendar.get("fiscal_years") or []),
+               "findingCodes": dict(Counter(f.get("code") for f in treffer)),
+               # --limit je CODE, nicht je Emittent: die ersten acht Befunde
+               # eines jungen Emittenten sind alle UNKNOWN_CONCEPT, und die
+               # UNPLACEABLE_PERIOD dahinter - die eigentliche Ursache -
+               # kam nie in die Stichprobe.
+               "findings": [{k: f.get(k) for k in ("code", "message", "concept", "end", "form",
+                                                    "fiscal_year", "fiscal_period")}
+                            for f in _je_code(treffer, args.limit)]}
+        out.append(row)
+        print(f"  {cik} {name:<40} {row['latestForm'] or '-':<6} roh={row['rawFacts']} "
+              f"gemappt={row['mapped']} zeitreihen={row['timelines']} kal={row['calendarYears']}J "
+              f"FYE={row['fiscalYearEnd']} formulare={dict(forms)}")
+        for f in row["findings"][:args.limit]:
+            print(f"      {f['code']}: {f['message']}  [{f.get('concept') or ''} {f.get('end') or ''} {f.get('form') or ''}]")
+        document = None
+    if args.out:
+        _write(Path(args.out), {"schema_version": 1, "generated_at_utc": _utcnow(),
+                                "code": args.code, "issuers": out})
+    return 0
+
+
+def cmd_reconcile(args):
+    """Abgleich Fundamentals x Marktdaten (§3-§10 des Reconciliation-Auftrags).
+
+    Marktdaten werden READ-ONLY konsumiert: dieser Befehl laedt keine
+    Kurse, veraendert R2 nicht und rechnet keine Eligibility neu. Was er
+    braucht, steht in quant/data/universe/market-capability.json, und die
+    erzeugt der Node-Indexlauf aus den Gate-Berichten.
+    """
+    from quant.sec import reconciliation
+
+    registry = MetricRegistry.load()
+    members = reconciliation.load_product_members(ROOT)
+    if not members:
+        raise SystemExit(
+            "Kein Produktuniversum unter quant/data/universe/instruments. "
+            "Erst node scripts/universe/build-company-master.mjs.")
+    if reconciliation.load_market_capability(ROOT) is None:
+        raise SystemExit(
+            "quant/data/universe/market-capability.json fehlt - ohne die "
+            "Marktdaten je Mitglied waere jede Schnittmenge geraten. "
+            "Erst node scripts/universe/build-universe-indexes.mjs.")
+
+    payloads, records = reconciliation.build_reconciliation(
+        ROOT, registry=registry, today=args.today or date.today().isoformat(),
+        min_years=args.min_years)
+
+    out = ROOT / "quant" / "data" / "fundamentals"
+    now = _utcnow()
+    for name, payload in payloads.items():
+        payload["generatedAtUtc"] = now
+        _write(out / name, payload)
+
+    o = payloads["reconciliation.json"]["overlap"]
+    b = payloads["backtest-readiness.json"]
+    g = payloads["gap-classification.json"]
+    print(f"  Produkttitel:                {o['PRODUCT_TITLES']}")
+    print(f"  Kurshistorie (verbindbar):   {o['MARKET_HISTORY_AVAILABLE']}")
+    print(f"  Technisch gedeckt:           {o['TECHNICAL_COVERED']}")
+    print(f"  Fundamentaldaten:            {o['FUNDAMENTAL_COMPANY_FACTS_AVAILABLE']}")
+    print(f"  Technical UND Fundamental:   {o['TECHNICAL_AND_FUNDAMENTAL']}")
+    print(f"  PIT + Technical + Kurse:     {o['PIT_TECHNICAL_AND_HISTORICAL_PRICE']}")
+    print(f"  Backtestfaehig (PIT):        {b['BACKTEST_PIT_FUNDAMENTAL_READY']}")
+    print(f"  davon 10 Jahre:              {b['BACKTEST_10Y_READY']}")
+    for zustand, anzahl in g["byRecoverability"].items():
+        print(f"  Luecken {zustand:<28} {anzahl}")
+    return 0
+
+
+def cmd_coverage_universe(args):
+    """Gemessene Fundamental-Coverage gegen das Produktuniversum (§11-§14, §20).
+
+    Der Nenner ist das Produktuniversum des Company Master, NICHT der
+    eigene Bestand. Ein Bericht, der nur die ingestierten Emittenten
+    zaehlt, meldet immer 100 Prozent.
+    """
+    from quant.sec import universe_coverage
+
+    registry = MetricRegistry.load()
+    store = JsonFactStore(compress=True)
+    universe = universe_coverage.load_universe(ROOT)
+    if not universe["present"]:
+        raise SystemExit(
+            "Kein Company Master unter quant/data/universe/instruments. "
+            "Erst node scripts/universe/build-company-master.mjs.")
+
+    reports = universe_coverage.build_reports(
+        ROOT, _iter_documents(store), registry=registry, universe=universe,
+        progress_every=250)
+    _write_universe_reports(reports, registry)
+    return 0
+
+
+def _write_universe_reports(reports, registry):
+    """Berichte und Emittenten-Scherben schreiben - vom vollen wie vom taeglichen Lauf."""
+    from quant.sec import universe_coverage
+
+    out = ROOT / "quant" / "data" / "fundamentals"
+    now = _utcnow()
+    for name, key in (("coverage-report", "coverage"), ("history-coverage", "history"),
+                      ("overlap", "overlap"), ("quality", "quality"), ("gaps", "gaps")):
+        payload = reports[key]
+        payload["generatedAtUtc"] = now
+        _write(out / f"{name}.json", payload)
+
+    # Die Emittentenbilanz in Scherben - eine Zeile je Emittent, nicht die
+    # volle Historie. Die gehoert in die Arbeitsablage: 400 KB je Emittent
+    # mal 7.000 waeren 2,8 GB, und ein Git-Repository ist kein Datenspeicher.
+    shards = universe_coverage.write_issuer_shards(ROOT, reports["perIssuer"])
+
+    _write(out / "manifest.json", {
+        "generated_at_utc": now,
+        "versions": version_stamp(registry.version),
+        "note": "Kompakte Bilanz je Emittent. Die vollstaendige Historie mit Herkunft "
+                "je Wert liegt in der Arbeitsablage (quant/data/sec/facts, gitignored) "
+                "und gehoert langfristig in die Objektablage - siehe "
+                "docs/VU_FUNDAMENTAL_DATA_EXPANSION.md.",
+        "storage": {
+            "committed": "quant/data/fundamentals/**",
+            "workingStore": "quant/data/sec/facts/**",
+            "perIssuerBytesCommitted": "~1 KB",
+            "perIssuerBytesFull": "~400 KB (gemessen an AAPL)",
+        },
+        "totals": {
+            "productTitles": reports["members"],
+            "issuersWithFundamentals": len(reports["perIssuer"]),
+            "shards": shards,
+        },
+    })
+
+    c = reports["coverage"]
+    print(f"  Produkttitel:            {c['universe']['PRODUCT_TITLES']}")
+    print(f"  Emittenten im Produkt:   {c['universe']['PRODUCT_ISSUERS']}")
+    print(f"  CIK aufgeloest:          {c['identity']['CIK_RESOLVED']}")
+    print(f"  CIK unaufgeloest:        {c['identity']['CIK_UNRESOLVED']}")
+    print(f"  CIK ambig:               {c['identity']['CIK_AMBIGUOUS']}")
+    print(f"  Company Facts vorhanden: {c['fundamentals']['COMPANY_FACTS_AVAILABLE']}")
+    print(f"  Company Facts fehlend:   {c['fundamentals']['COMPANY_FACTS_UNAVAILABLE']}")
+    for metric, row in c["metrics"].items():
+        print(f"    {metric:<24} {row['COUNT']:>6}  "
+              f"{row['PERCENT_OF_PRODUCT_UNIVERSE']}%")
+    print(f"\n  {out.relative_to(ROOT)}")
+    return 0
+
+
 def cmd_resolve(args):
     """Diagnostic: what does each configured ticker actually resolve to?
 
@@ -405,14 +1230,25 @@ def cmd_canonical(args):
     """
     registry = MetricRegistry.load()
     store = JsonFactStore(compress=True)
-    documents = _documents(store)
+    ciks = _ciks_from_universe(getattr(args, "universe", None))
+    if getattr(args, "ciks", None):
+        # Der taegliche Lauf frischt nur die Buendel der Emittenten auf, die
+        # ein neues Filing hatten - und nur, wenn sie bereits ein Buendel im
+        # Repository haben. Ohne diese Grenze schriebe der Lauf 5.400 mal
+        # 400 KB.
+        gewollt = {normalize_cik(c) for c in args.ciks.split(",") if c.strip()}
+        ciks = sorted(gewollt if ciks is None else (set(ciks) & gewollt))
+    documents = _documents(store, ciks=ciks)
     if not documents:
         print("no ingested companies found; run `ingest` first")
         return 2
     declared = _declared_tickers()
     index, written = [], set()
+    nur_vorhandene = bool(getattr(args, "only_existing", False))
     for document in documents:
         ticker = _canonical_ticker(document, declared)
+        if nur_vorhandene and not (CANONICAL_DIR / f"{ticker}.json").exists():
+            continue
         bundle = build_company_bundle(document, registry, ticker,
                                       annual_years=args.annual_years,
                                       quarterly_years=args.quarterly_years)
@@ -430,6 +1266,11 @@ def cmd_canonical(args):
             "annualYearsExamined": bundle["coverage"]["annualYearsExamined"],
             "quarterlyYears": bundle["coverage"]["quarterlyYears"],
         })
+    if nur_vorhandene:
+        # Selektiv aufgefrischt: Index und Bestand bleiben, nur die
+        # geschriebenen Buendel sind neu.
+        print(f"  {len(written)} kanonische Buendel aufgefrischt (nur vorhandene)")
+        return 0
     _prune(CANONICAL_DIR, written)
     _write(DATA_DIR / "canonical_index.json", {
         "schema_version": 1,
@@ -446,7 +1287,7 @@ def cmd_inspect(args):
     store = JsonFactStore(compress=True)
     provider_cik = args.cik
     if provider_cik is None and args.ticker:
-        for document in _documents(store):
+        for document in _iter_documents(store):
             if args.ticker.upper() in [t.upper() for t in
                                        (document.get("profile") or {}).get("tickers", [])]:
                 provider_cik = document["cik"]
@@ -595,15 +1436,42 @@ def build_parser():
     ingest.add_argument("--force", action="store_true")
     ingest.add_argument("--limit", type=int)
     ingest.add_argument("--no-resume", action="store_true")
+    ingest.add_argument("--skip-unresolved", action="store_true",
+                        help="do not abort on tickers the SEC ticker map does not know "
+                             "(the expected case for a generated universe; the skipped "
+                             "entries are reported)")
+    ingest.add_argument("--bulk", action="store_true",
+                        help="take XBRL facts from the SEC bulk companyfacts archive "
+                             "(one request) instead of one request per issuer")
+    ingest.add_argument("--max-failure-rate", type=float, default=0.05,
+                        help="Anteil fehlgeschlagener Emittenten, bis zu dem der Lauf als "
+                             "erfolgreich gilt (Standard 0.05). Darueber Rueckgabewert 1. "
+                             "Einzelne Fehlschlaege stehen in der Fehlerschlange und "
+                             "duerfen nicht den ganzen Lauf verwerfen.")
+    ingest.add_argument("--bulk-file",
+                        help="read the bulk archive from this local path instead of "
+                             "fetching it")
     ingest.set_defaults(func=cmd_ingest)
 
     update = subparsers.add_parser("update", help="re-ingest companies with new filings")
     update.add_argument("--since", required=True)
     update.add_argument("--run-id", default="default")
+    update.add_argument("--universe",
+                        help="Emittentenliste statt des gespeicherten Bestands pruefen - "
+                             "so werden auch neu aufgenommene Titel erfasst")
     update.set_defaults(func=cmd_update)
+
+    coverage_universe = subparsers.add_parser(
+        "coverage-universe",
+        help="gemessene Fundamental-Coverage gegen das Produktuniversum (§11-§14)")
+    coverage_universe.set_defaults(func=cmd_coverage_universe)
 
     retry = subparsers.add_parser("retry", help="retry the failure queue")
     retry.add_argument("--run-id", default="default")
+    retry.add_argument("--reset-attempts", action="store_true",
+                       help="Versuchszaehler zuruecksetzen - sonst bleiben Emittenten nach "
+                            "drei Fehlversuchen fuer immer in der Schlange")
+    retry.add_argument("--out", default=str(ROOT / "quant" / "data" / "fundamentals" / "retry-run.json"))
     retry.set_defaults(func=cmd_retry)
 
     export = subparsers.add_parser("export", help="write the data inspector views")
@@ -611,13 +1479,71 @@ def build_parser():
     export.add_argument("--annual-years", type=int, default=12)
     export.add_argument("--quarterly-years", type=int, default=5)
     export.add_argument("--policy", choices=POLICIES, default=POLICY_LATEST_KNOWN)
+    export.add_argument("--universe",
+                        help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     export.set_defaults(func=cmd_export)
 
+    con = subparsers.add_parser(
+        "concepts", help="unbekannte XBRL-Konzepte im Bestand zaehlen")
+    con.add_argument("--top", type=int, default=60)
+    con.add_argument("--only-unresolved", action="store_true",
+                     help="nur Emittenten ohne einen einzigen aufloesbaren Wert")
+    con.add_argument("--without-metric",
+                     help="nur Emittenten MIT Werten, aber OHNE diese Kennzahl "
+                          "(z. B. revenue: Banken, Versicherer, REITs)")
+    con.add_argument("--out", help="Ergebnis zusaetzlich als JSON schreiben")
+    con.add_argument("--ciks-file", help="JSON mit einer CIK-Liste - nur diese Emittenten")
+    con.add_argument("--ciks-key", help="Schluessel in --ciks-file, unter dem die Liste steht")
+    con.add_argument("--sic", help="SIC-Spannen, z. B. 6020-6036,6021 - nur diese Emittenten")
+    con.set_defaults(func=cmd_concepts)
+
+    dl = subparsers.add_parser("daily", help="taeglicher Incremental-Lifecycle: nur neue/geaenderte Filings")
+    dl.add_argument("--universe", default=str(ROOT / "quant" / "data" / "universe" / "sec-universe.json"))
+    dl.add_argument("--since", help="ersten Indextag erzwingen (YYYY-MM-DD); Standard: letzter Check")
+    dl.add_argument("--ciks", help="nur diese CIKs verarbeiten (Recovery / Test), kommagetrennt")
+    dl.add_argument("--dry-run", action="store_true", help="nur erkennen, nichts holen")
+    dl.set_defaults(func=cmd_daily)
+
+    dd = subparsers.add_parser("daily-downstream",
+                               help="nach Persistenz und Reload: Scherben, Aggregate, Abgleich, Manifest, Health Report")
+    dd.set_defaults(func=cmd_daily_downstream)
+
+    fr = subparsers.add_parser("final-report", help="Abschlussbericht §25/§26 aus den Artefakten rendern")
+    fr.add_argument("--out", default=str(ROOT / "docs" / "VU_SEC_FINAL_RECOVERY_REPORT.md"))
+    fr.set_defaults(func=cmd_final_report)
+
+    vr = subparsers.add_parser(
+        "verify-reload", help="zurueckgeladene Factbooks kanonisch ableiten und vergleichen")
+    vr.add_argument("--reload-dir", default=str(ROOT / ".sec-reload" / "facts"))
+    vr.add_argument("--ciks", help="Komma-Liste; Standard: alles im Reload-Verzeichnis")
+    vr.add_argument("--local-dir", help="lokaler Faktenspeicher (Standard: quant/data/sec/facts)")
+    vr.add_argument("--out", help="Berichtspfad (Standard: quant/data/fundamentals/reload-verification.json)")
+    vr.set_defaults(func=cmd_verify_reload)
+
+    fi = subparsers.add_parser("findings", help="Befundtexte je Emittent - warum, nicht nur wie oft")
+    fi.add_argument("--code", help="nur dieser Befundcode, z. B. UNPLACEABLE_PERIOD")
+    fi.add_argument("--ciks", help="Komma-Liste")
+    fi.add_argument("--ciks-file"); fi.add_argument("--ciks-key")
+    fi.add_argument("--limit", type=int, default=6)
+    fi.add_argument("--out")
+    fi.set_defaults(func=cmd_findings)
+
+    rec = subparsers.add_parser(
+        "reconcile", help="Fundamentals gegen das Marktdaten-/Technical-Universum abgleichen")
+    rec.add_argument("--today", help="Stichtag fuer die Alterspruefung junger Notierungen")
+    rec.add_argument("--min-years", type=int, default=3,
+                     help="Jahreshistorie, ab der ein Titel als gedeckt gilt (Standard 3)")
+    rec.set_defaults(func=cmd_reconcile)
+
     cov = subparsers.add_parser("coverage", help="build the coverage matrix")
+    cov.add_argument("--universe",
+                     help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     cov.set_defaults(func=cmd_coverage)
 
     gate = subparsers.add_parser("gates", help="run the qualification gates")
     gate.add_argument("--as-of")
+    gate.add_argument("--universe",
+                      help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     gate.set_defaults(func=cmd_gates)
 
     resolve = subparsers.add_parser(
@@ -629,9 +1555,14 @@ def build_parser():
 
     canonical = subparsers.add_parser(
         "canonical", help="write the canonical FundamentalFact/Filing payload")
+    canonical.add_argument("--ciks", help="nur diese CIKs (kommagetrennt), z. B. aus dem Daily-Manifest")
+    canonical.add_argument("--only-existing", action="store_true",
+                           help="nur Buendel neu schreiben, die schon unter quant/data/sec/canonical liegen")
     canonical.add_argument("--annual-years", type=int, default=12)
     canonical.add_argument("--quarterly-years", type=int, default=None,
                            help="limit the quarterly window; default is the full history")
+    canonical.add_argument("--universe",
+                           help="nur die Emittenten dieser Universumsdatei; ohne Angabe alle")
     canonical.set_defaults(func=cmd_canonical)
 
     inspect = subparsers.add_parser("inspect", help="print one metric's series")

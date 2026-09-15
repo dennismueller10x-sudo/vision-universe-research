@@ -1,0 +1,86 @@
+{
+  "generatedAtUtc": "2026-09-14T10:58:16+00:00",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.9.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
+  "universe": {
+    "PRODUCT_TITLES": 7004,
+    "PRODUCT_ISSUERS": 5449,
+    "PRODUCT_TITLES_WITHOUT_ISSUER": 1146,
+    "MASTER_ISSUERS": 5481
+  },
+  "identity": {
+    "CIK_RESOLVED": 6461,
+    "CIK_UNRESOLVED": 1348,
+    "CIK_AMBIGUOUS": 0
+  },
+  "fundamentals": {
+    "COMPANY_FACTS_AVAILABLE": 5448,
+    "COMPANY_FACTS_UNAVAILABLE": 1,
+    "ISSUERS_INGESTED_TOTAL": 5479,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 31,
+    "BY_SOURCE": {
+      "INGESTED": 5479
+    }
+  },
+  "metrics": {
+    "revenue": {
+      "COUNT": 4399,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 62.807
+    },
+    "net_income": {
+      "COUNT": 5036,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.9018
+    },
+    "eps_diluted": {
+      "COUNT": 4756,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 67.9041
+    },
+    "operating_cash_flow": {
+      "COUNT": 5018,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.6448
+    },
+    "capital_expenditures": {
+      "COUNT": 4521,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 64.5488
+    },
+    "free_cash_flow": {
+      "COUNT": 4511,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 64.4061
+    },
+    "total_assets": {
+      "COUNT": 5262,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 75.1285
+    },
+    "total_debt": {
+      "COUNT": 2842,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 40.5768
+    },
+    "stockholders_equity": {
+      "COUNT": 5225,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 74.6002
+    }
+  },
+  "pointInTime": {
+    "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
+    "denominator": "PRODUCT_TITLES",
+    "PIT_READY_SECURITIES": 5693,
+    "PIT_PARTIAL_SECURITIES": 0,
+    "PIT_UNAVAILABLE_SECURITIES": 1311,
+    "BY_ISSUER": {
+      "PIT_READY": 5333,
+      "PIT_UNAVAILABLE": 146
+    },
+    "SURVIVORSHIP_FREE_UNIVERSE": false,
+    "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."
+  }
+}

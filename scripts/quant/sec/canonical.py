@@ -43,6 +43,7 @@ DATA_SOURCE = {
 METRIC_MAP = {
     "revenue":                 ("revenue", "usd_m", 1e-6),
     "gross_profit":            ("grossProfit", "usd_m", 1e-6),
+    "ebitda":                  ("ebitda", "usd_m", 1e-6),
     "operating_income":        ("operatingIncome", "usd_m", 1e-6),
     "net_income":              ("netIncome", "usd_m", 1e-6),
     "free_cash_flow":          ("freeCashFlow", "usd_m", 1e-6),
@@ -59,8 +60,6 @@ METRIC_MAP = {
 # Canonical metrics this pipeline cannot produce from SEC filings, and why.
 # Recorded so that a gap is visible instead of looking like missing coverage.
 UNSUPPORTED_METRICS = {
-    "ebitda": "requires depreciation and amortisation, which the metric registry "
-              "does not yet map from a reliably-tagged XBRL concept",
     "dividendPerShare": "SEC cash-flow statements report total dividends paid, not "
                         "a per-share amount",
 }
@@ -70,6 +69,7 @@ UNSUPPORTED_METRICS = {
 DEPENDENCIES = {
     "revenue": ("revenue",),
     "gross_profit": ("gross_profit", "revenue", "cost_of_revenue"),
+    "ebitda": ("operating_income", "depreciation_and_amortization"),
     "operating_income": ("operating_income",),
     "net_income": ("net_income",),
     "free_cash_flow": ("operating_cash_flow", "capital_expenditures"),
@@ -84,8 +84,8 @@ DEPENDENCIES = {
     "accruals": ("net_income", "operating_cash_flow", "total_assets"),
 }
 
-RECONSTRUCTED = ("gross_profit", "free_cash_flow", "net_debt", "invested_capital",
-                 "accruals")
+RECONSTRUCTED = ("gross_profit", "ebitda", "free_cash_flow", "net_debt",
+                 "invested_capital", "accruals")
 
 FISCAL_PERIODS = ("Q1", "Q2", "Q3", "Q4", "FY")
 
@@ -151,21 +151,43 @@ def _source_periods(fiscal_period):
     return (fiscal_period, "YTD2", "YTD3", "FY")
 
 
+def _camel(name):
+    head, *rest = name.split("_")
+    return head + "".join(part.capitalize() for part in rest)
+
+
+def industry_metric_map(registry, industry):
+    """metricId map for one industry's layer, shaped like METRIC_MAP.
+
+    Every industry metric is a monetary amount published in millions of its
+    reported currency; the unit label follows the same `<ccy>_m` rule as the
+    core map, so a CAD bank publishes `cad_m`.
+    """
+    if industry is None:
+        return {}
+    return {
+        name: (_camel(name), "usd_m", 1e-6)
+        for name in registry.industry_metric_names(industry.industry_id)
+    }
+
+
 def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at,
-                     conflicts=None):
+                     conflicts=None, metric_map=None):
     """Canonical FundamentalFacts for one company and one fiscal period.
 
     One record per canonical metric per revision. A later filing that repeats an
     unchanged number produces no new revision; a changed number does, flagged
-    `restated`.
+    `restated`. `metric_map` defaults to the core contract; the industry layer
+    passes its own map and lands in its own block of the bundle.
     """
     from .derived import reconstruct
 
     factbook = resolver.factbook
     conflicts = conflicts if conflicts is not None else []
     out = []
+    metric_map = METRIC_MAP if metric_map is None else metric_map
 
-    for sec_metric, (metric_id, unit, scale) in METRIC_MAP.items():
+    for sec_metric, (metric_id, unit, scale) in metric_map.items():
         instants = revision_instants(factbook, sec_metric, fiscal_year, fiscal_period)
         if not instants:
             continue
@@ -202,8 +224,18 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
                 "fiscalYear": int(fiscal_year),
                 "periodEnd": period_end,
                 "value": value,
-                "unit": unit,
-                "currency": "USD" if unit == "usd_m" else None,
+                "unit": _unit_for(unit, fact),
+                # DIE WAEHRUNG IST DIE GEMELDETE, NICHT USD.
+                #
+                # Diese Zeile stand hart auf "USD". Fuer einen
+                # 10-K-Einreicher stimmt das; Unilever meldet in EUR,
+                # Canadian National in CAD. Einen EUR-Wert als USD
+                # auszuliefern waere kein Rundungsfehler, sondern eine
+                # falsche Zahl - und umzurechnen waere geraten: ein
+                # Kurs von heute auf eine Periode von 2012 zerstoert
+                # genau die Point-in-Time-Eigenschaft, die diese
+                # Schicht traegt.
+                "currency": _currency_for(unit, fact),
                 # SEC publishes no separate company-announcement timestamp; the
                 # filing date is the earliest public moment we can evidence.
                 "reportedAt": _date(fact.provenance.filed),
@@ -239,6 +271,42 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
                            and r["fiscalYear"] == int(fiscal_year))]
 
     return out
+
+
+def _reported_currency(fact):
+    """Die Waehrung, in der der Emittent diesen Wert gemeldet hat."""
+    unit = getattr(fact, "unit", None)
+    if not unit:
+        return None
+    if len(unit) == 3 and unit.isalpha() and unit.isupper():
+        return unit
+    if unit.endswith("/shares"):
+        code = unit.split("/", 1)[0]
+        if len(code) == 3 and code.isalpha() and code.isupper():
+            return code
+    return None
+
+
+def _currency_for(canonical_unit, fact):
+    """Waehrung eines kanonischen Werts, oder None fuer Stueckzahlen."""
+    if canonical_unit not in ("usd_m", "usd"):
+        return None
+    return _reported_currency(fact) or "USD"
+
+
+def _unit_for(canonical_unit, fact):
+    """Die kanonische Einheit, mit der tatsaechlichen Waehrung im Namen.
+
+    `usd_m` heisst "Millionen USD". Fuer einen EUR-Melder waere das
+    falsch beschriftet; er bekommt `eur_m`. Der Skalenfaktor bleibt
+    derselbe - millionen sind millionen -, nur die Waehrung wechselt.
+    """
+    if canonical_unit not in ("usd_m", "usd"):
+        return canonical_unit
+    waehrung = _reported_currency(fact)
+    if not waehrung or waehrung == "USD":
+        return canonical_unit
+    return canonical_unit.replace("usd", waehrung.lower(), 1)
 
 
 def _resolve(resolver, sec_metric, fiscal_year, fiscal_period, as_of):
@@ -288,6 +356,28 @@ def filings_for_company(document, calendar, security):
     return out
 
 
+def reporting_currency(document):
+    """Die Waehrung, in der dieser Emittent berichtet - gezaehlt, nicht geraten.
+
+    Gewaehlt wird die haeufigste Waehrung seiner Beobachtungen. Ein
+    Emittent, der in EUR bilanziert und einzelne Angaben in USD macht,
+    bleibt damit ein EUR-Melder. Ohne jede monetaere Beobachtung bleibt
+    es bei USD - das ist der Normalfall des US-Einreichers.
+    """
+    from collections import Counter
+    zaehler = Counter()
+    for timeline in (document.get("factbook") or {}).get("timelines") or []:
+        for observation in (timeline.get("observations") or []):
+            unit = observation.get("unit") or ""
+            if len(unit) == 3 and unit.isalpha() and unit.isupper():
+                zaehler[unit] += 1
+            elif unit.endswith("/shares"):
+                code = unit.split("/", 1)[0]
+                if len(code) == 3 and code.isalpha() and code.isupper():
+                    zaehler[code] += 1
+    return zaehler.most_common(1)[0][0] if zaehler else "USD"
+
+
 def security_for_company(document, ticker):
     """Canonical Security record.
 
@@ -305,7 +395,11 @@ def security_for_company(document, ticker):
         "name": profile.get("name") or "",
         "assetType": "equity",
         "exchangeId": (profile.get("exchanges") or ["UNKNOWN"])[0] or "UNKNOWN",
-        "currency": "USD",
+        "currency": reporting_currency(document),
+        # SEC/EDGAR fuehrt kein Sitzland je Emittent, das hier belastbar
+        # waere. `US` heisst: bei der US-Aufsicht einreichend - nicht,
+        # dass die Gesellschaft in den USA sitzt. Unilever tut beides
+        # nicht und reicht trotzdem ein.
         "country": "US",
         "sector": profile.get("sic_description") or "Unknown",
         "industry": profile.get("sic_description") or "Unknown",
@@ -360,6 +454,24 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
             facts.extend(facts_for_period(resolver, security, fiscal_year,
                                           f"Q{index}", ingested_at, conflicts))
 
+    # DIE BRANCHENSCHICHT STEHT NEBEN DEM KERNVERTRAG, NICHT DARIN.
+    #
+    # Eine Bank hat keinen Umsatz im Sinne von `revenue`; sie hat
+    # Zinsertraege. Diese in `facts` unter revenue auszuliefern waere
+    # eine erfundene Zahl mit richtigem Etikett. Die Branchenkennzahlen
+    # bekommen ihren eigenen Block mit eigenen metricIds, nur fuer
+    # Emittenten, deren SIC die Branche ausweist. Wer sie nicht liest,
+    # sieht den Kernvertrag unveraendert.
+    industry, _names = registry.industry_metrics_for(getattr(factbook.profile, "sic", None))
+    industry_facts, industry_conflicts = [], []
+    if industry is not None:
+        layer_map = industry_metric_map(registry, industry)
+        for fiscal_year in quarterly_scope:
+            for index in range(1, 5):
+                industry_facts.extend(facts_for_period(
+                    resolver, security, fiscal_year, f"Q{index}", ingested_at,
+                    industry_conflicts, metric_map=layer_map))
+
     bundle = {
         "schema": "vu-canonical-v1",
         "generatedAtUtc": ingested_at,
@@ -370,6 +482,15 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
         "facts": facts,
         "unsupportedMetrics": UNSUPPORTED_METRICS,
         "periodEndConflicts": conflicts,
+        "industrySpecificMetrics": ({
+            "industry": industry.industry_id,
+            "label": industry.label,
+            "metricIds": sorted({fact["metricId"] for fact in industry_facts}),
+            "facts": industry_facts,
+            "periodEndConflicts": industry_conflicts,
+            "note": ("industry vocabulary published beside the core contract; "
+                     "these metricIds never appear in `facts`."),
+        } if industry is not None else None),
         "coverage": {
             "annualYearsExamined": annual_scope,
             "note": ("facts are quarterly only (Q1..Q4): quant/engines/schema.js keys a "
@@ -379,6 +500,7 @@ def build_company_bundle(document, registry, ticker, annual_years=12,
             "factCount": len(facts),
             "metricIds": sorted({fact["metricId"] for fact in facts}),
             "suppressedCells": len(conflicts),
+            "industryFactCount": len(industry_facts),
         },
     }
     LOGGER.info("canonical bundle cik=%s facts=%d", document["cik"], len(facts))

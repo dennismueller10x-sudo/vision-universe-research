@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 
 from . import quality as quality_module
 from .fiscal import FiscalCalendar
+from .http_client import SECHTTPError
 from .normalize import build_availability_map, normalize_company
 from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import MetricRegistry
@@ -51,14 +52,21 @@ class IngestionPipeline:
             return None
         newest = max(periodic, key=lambda row: (row["filing_date"] or "", row["accession"] or ""))
         return {"accession": newest["accession"], "filing_date": newest["filing_date"],
-                "form": newest["form"], "periodic_filings": len(periodic)}
+                "form": newest["form"], "periodic_filings": len(periodic),
+                "acceptance_datetime": newest.get("acceptance_datetime")}
 
-    def ingest_company(self, cik, force=False):
-        """Fetch, archive, normalize, quality-check and store one company."""
+    def ingest_company(self, cik, force=False, company_facts=None, fresh=False):
+        """Fetch, archive, normalize, quality-check and store one company.
+
+        `company_facts` accepts a payload that was already retrieved — that is
+        what the bulk path hands in. It changes nothing about normalization,
+        archiving or provenance: the payload is stored and hashed exactly as a
+        per-company fetch would be, and it carries its own `_source`.
+        """
         cik = normalize_cik(cik)
         started = time.monotonic()
 
-        submissions = self.provider.get_submissions(cik)
+        submissions = self.provider.get_submissions(cik, fresh=fresh)
         submissions_hash = self.raw_store.put(cik, "submissions", submissions)
         # Stamp the retrieval time from the archive before anything reads it, so
         # the profile is derived from a stable timestamp too (see below).
@@ -77,7 +85,27 @@ class IngestionPipeline:
             return {"cik": cik, "status": STATUS_UNCHANGED, "signature": signature,
                     "seconds": round(time.monotonic() - started, 2)}
 
-        company_facts = self.provider.get_company_facts(cik)
+        companyfacts_status = "AVAILABLE"
+        if company_facts is None:
+            try:
+                company_facts = self.provider.get_company_facts(cik, fresh=fresh)
+            except SECHTTPError as exc:
+                if exc.status != 404:
+                    raise
+                # EIN 404 AUF COMPANYFACTS IST EINE ANTWORT, KEIN FEHLER.
+                #
+                # Die SEC fuehrt fuer diesen Emittenten keine XBRL-Fakten -
+                # 40-F-Einreicher sind befreit, ein frisch notierter hat noch
+                # nichts eingereicht. 40 Emittenten standen deshalb in drei
+                # Laeufen als "Abruf gescheitert" in der Fehlerschlange und
+                # wurden nach drei Versuchen still uebersprungen. Ein leeres
+                # Factbook mit companyfacts_status sagt, was die SEC gesagt
+                # hat; der Feinklassifikator macht daraus NO_XBRL_FACTS oder
+                # VERY_YOUNG_LISTING statt REQUIRES_REVIEW.
+                LOGGER.info("cik=%s companyfacts 404 at the SEC: no XBRL facts", cik)
+                companyfacts_status = "NOT_AVAILABLE_404"
+                company_facts = {"cik": int(cik), "entityName": profile.name,
+                                 "facts": {}, "_source": "sec-companyfacts-404"}
         facts_hash = self.raw_store.put(cik, "companyfacts", company_facts)
 
         # Provenance records when this payload was FIRST retrieved, not when
@@ -104,6 +132,7 @@ class IngestionPipeline:
             "generated_at_utc": _utcnow(),
             "versions": version_stamp(self.registry.version),
             "raw_companyfacts_sha256": facts_hash,
+            "companyfacts_status": companyfacts_status,
             "latest_filing": signature,
             "filing_years": _filing_years(filing_metadata),
             "filing_index": _filing_index(filing_metadata),
@@ -135,13 +164,30 @@ class IngestionPipeline:
             return False
         if not self._versions_current(stored):
             return False
-        return stored.get("latest_filing") == signature
+        # Verglichen werden Akzessionsnummer und Einreichungsdatum - nicht
+        # das ganze Woerterbuch. Die Signatur traegt seit dem taeglichen
+        # Lauf auch acceptance_datetime; ein Vergleich des ganzen Objekts
+        # haette jeden vorher gespeicherten Emittenten als geaendert gelesen
+        # und 5.400 companyfacts erneut geholt.
+        alt = stored.get("latest_filing") or {}
+        return ((alt.get("accession"), alt.get("filing_date"))
+                == (signature.get("accession"), signature.get("filing_date")))
 
     # ----------------------------------------------------------------- universe
 
     def ingest_universe(self, entries, resume=True, force=False, limit=None,
-                        max_attempts=3):
-        """Ingest many companies with checkpointing, a failure log and a retry queue."""
+                        max_attempts=3, bulk=False, bulk_archive=None):
+        """Ingest many companies with checkpointing, a failure log and a retry queue.
+
+        `bulk=True` takes the XBRL facts from the SEC's bulk archive instead of
+        asking for each issuer separately. For five companies that is a
+        detour; for five thousand it is the difference between ~10.000
+        requests and ~5.000 plus one, and SEC fair access is the reason this
+        option exists at all (§25). What it does NOT remove is the submissions
+        request per company: the filing index decides which facts are
+        comparable and when each became public, and there is no bulk form of
+        it. Anyone scaling this further has to start there.
+        """
         state = self.checkpoint.load() if resume else {
             "run_id": self.checkpoint.run_id, "started_at": _utcnow(),
             "completed": {}, "failed": {}, "retry_queue": [], "last_cik": None,
@@ -149,6 +195,41 @@ class IngestionPipeline:
         results = []
         processed = 0
 
+        archive = None
+        bulk_source = None
+        if bulk:
+            wanted = [normalize_cik(e["cik"] if isinstance(e, dict) else e) for e in entries]
+            # WAHLFREIER ZUGRIFF, KEIN WOERTERBUCH.
+            #
+            # Die erste Fassung las alle gewuenschten Emittenten in ein
+            # dict. Bei fuenf Emittenten faellt das nicht auf; bei 7.000
+            # sind es rund 14 GB und der Lauf stirbt mitten im Bestand.
+            # Das Archiv wird deshalb auf Platte gestroemt und je Emittent
+            # eine Nutzlast gelesen.
+            archive = self.provider.open_bulk_company_facts(archive_path=bulk_archive)
+            vorhanden = len(archive.ciks & set(wanted))
+            bulk_source = {"requested": len(wanted), "found_in_archive": vorhanden,
+                           "issuers_in_archive": len(archive),
+                           "archive": bulk_archive or "sec.gov bulk companyfacts.zip",
+                           "archive_path": str(archive.archive_path),
+                           "downloaded_bytes": archive.downloaded_bytes,
+                           "from_cache": archive.from_cache,
+                           "access": "random_access_no_preload"}
+            LOGGER.info("bulk companyfacts: %d of %d requested issuers in the archive "
+                        "(archive holds %d)", vorhanden, len(wanted), len(archive))
+
+        try:
+            outcome = self._ingest_entries(entries, state, results, archive, bulk, bulk_source,
+                                           resume=resume, force=force, limit=limit,
+                                           max_attempts=max_attempts)
+        finally:
+            if archive is not None:
+                archive.close()
+        return outcome
+
+    def _ingest_entries(self, entries, state, results, archive, bulk, bulk_source,
+                        resume=True, force=False, limit=None, max_attempts=3):
+        processed = 0
         for entry in entries:
             cik = normalize_cik(entry["cik"] if isinstance(entry, dict) else entry)
             if limit is not None and processed >= limit:
@@ -182,7 +263,9 @@ class IngestionPipeline:
                 continue
             processed += 1
             try:
-                outcome = self.ingest_company(cik, force=force)
+                outcome = self.ingest_company(
+                    cik, force=force,
+                    company_facts=archive.get(cik) if archive is not None else None)
                 state = self.checkpoint.mark_completed(state, cik, {
                     "status": outcome["status"],
                     "latest_filing": (outcome.get("signature") or {}).get("accession"),
@@ -207,16 +290,30 @@ class IngestionPipeline:
                 "completed": len(state["completed"]),
                 "failed": len(state["failed"]),
                 "retry_queue": list(state["retry_queue"]),
+                "facts_source": "bulk_companyfacts_zip" if bulk else "per_company_api",
+                "bulk": bulk_source,
             },
         }
         self.fact_store.write_manifest(manifest)
         return {"results": results, "state": state, "manifest": manifest}
 
-    def retry_failed(self, max_attempts=3):
+    def retry_failed(self, max_attempts=3, reset_attempts=False):
+        """Die Fehlerschlange erneut abrufen - einzeln, ueber die SEC-API.
+
+        `reset_attempts` setzt den Versuchszaehler zurueck. Ohne das bleibt
+        ein Emittent nach drei Fehlversuchen fuer immer in der Schlange:
+        `_ingest_entries` ueberspringt ihn, und die Schlange sieht aus wie
+        Arbeit, die niemand macht.
+        """
         state = self.checkpoint.load()
         queue = list(state.get("retry_queue", []))
         if not queue:
             return {"results": [], "state": state, "manifest": self.fact_store.read_manifest()}
+        if reset_attempts:
+            for cik in queue:
+                if cik in state.get("failed", {}):
+                    state["failed"][cik]["attempts"] = 0
+            self.checkpoint.save(state)
         return self.ingest_universe([{"cik": cik} for cik in queue], resume=True,
                                     max_attempts=max_attempts)
 

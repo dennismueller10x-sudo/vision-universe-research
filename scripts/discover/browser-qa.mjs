@@ -458,16 +458,6 @@ await check("Elliott wird nie als Ergebnis gezeigt, wenn keines vorliegt", async
   }
 });
 
-await check("Modelluniversum zeigt Kurs, Verlauf und Chart", async () => {
-  await desktop.goto(BASE + "/discover/#/u/VU_MODEL", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-poster", { timeout: 10000 });
-  await desktop.waitForTimeout(1200);
-  const preise = await desktop.$$eval(".dx-poster-preis", (ns) => ns.map((n) => n.textContent));
-  assert(preise.some((p) => /\$/.test(p)), "kein Kurs im Modelluniversum");
-  const hinweis = await desktop.textContent(".dx-inline-note");
-  assert(/Modelluniversum/.test(hinweis), "das Modelluniversum ist nicht gekennzeichnet");
-  await shot(desktop, "12-modelluniversum");
-});
 
 /* =============================================== VISUELLE SPRACHE (§3-§8) */
 await check("jede Reihe traegt ihre eigene Farbwelt", async () => {

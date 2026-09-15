@@ -1,0 +1,43 @@
+{
+  "note": "Keine neue Backtesting-Engine, nur die Messung der Datenbasis. Jede Stufe ist eine ECHTE Teilmenge der vorigen.",
+  "definitions": {
+    "BACKTEST_PRICE_READY": "Kurshistorie belegt",
+    "BACKTEST_PRICE_TECHNICAL_READY": "zusaetzlich technisch auswertbar",
+    "BACKTEST_PRICE_FUNDAMENTAL_READY": "zusaetzlich mindestens ein aufloesbarer Fundamentalwert",
+    "BACKTEST_PIT_FUNDAMENTAL_READY": "zusaetzlich jeder Wert datierbar - kein Look-Ahead, keine rueckwirkend eingespielten Restatements"
+  },
+  "denominator": {
+    "PRODUCT_TITLES": 7004
+  },
+  "BACKTEST_PRICE_READY": 6997,
+  "BACKTEST_PRICE_TECHNICAL_READY": 5963,
+  "BACKTEST_PRICE_FUNDAMENTAL_READY": 5152,
+  "BACKTEST_PIT_FUNDAMENTAL_READY": 5152,
+  "BACKTEST_5Y_READY": 4593,
+  "BACKTEST_10Y_READY": 3240,
+  "BACKTEST_15Y_READY": 2350,
+  "percentOfProductUniverse": {
+    "BACKTEST_PRICE_READY": 99.9001,
+    "BACKTEST_PIT_FUNDAMENTAL_READY": 73.558,
+    "BACKTEST_10Y_READY": 46.2593
+  },
+  "lookAheadControl": {
+    "rule": "PIT_READY verlangt Veroeffentlichungsdatum UND Akzessionsnummer fuer JEDEN aufgeloesten Wert.",
+    "measured": "PIT_PARTIAL ist 0: XBRL-Fakten der SEC tragen accn und filed immer. BACKTEST_PIT_FUNDAMENTAL_READY faellt deshalb mit BACKTEST_PRICE_FUNDAMENTAL_READY zusammen - eine Eigenschaft der Quelle, kein Rechenfehler.",
+    "doesNotClaim": "Dass ein Backtest look-ahead-frei IST. Nur, dass die Daten tragen, was noetig waere, ihn so zu rechnen. Ob eine Abfrage das nutzt, entscheidet ihre Restatement-Politik.",
+    "survivorshipFreeUniverse": false,
+    "survivorshipNote": "SEC/EDGAR fuehrt keinen Delisting-Ereignisfeed. Ein Backtest auf diesem Universum traegt Survivorship Bias, und das ist eine Eigenschaft der Quelle, keine Einstellung."
+  },
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.9.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "generatedAtUtc": "2026-09-14T10:58:18+00:00"
+}

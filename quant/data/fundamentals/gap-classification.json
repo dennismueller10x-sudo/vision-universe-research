@@ -1,0 +1,412 @@
+{
+  "note": "Ein Grund je Titel, spezifischster zuerst. Keine Sammelkategorie 'missing': sie beantwortet nicht, ob die Luecke unsere ist oder die der Quelle - und genau das entscheidet ueber einen zweiten Anbieter.",
+  "criteria": {
+    "sufficient": "Factbook vorhanden, mindestens ein aufloesbarer Wert und mindestens 3 Jahre Jahreshistorie",
+    "minAnnualYears": 3,
+    "youngListingYears": 2
+  },
+  "denominator": {
+    "PRODUCT_TITLES": 7004
+  },
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 5172,
+  "TITLES_WITH_GAP": 1832,
+  "byCause": [
+    {
+      "cause": "VERY_YOUNG_LISTING",
+      "count": 910,
+      "percent": 12.9926,
+      "recoverability": "RESOLVES_WITH_TIME",
+      "examples": [
+        {
+          "symbol": "AAAC",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AAAD",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AACB",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AACO",
+          "cik": "0002099906",
+          "form": "10-Q",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AACP",
+          "cik": "0002102123",
+          "form": "10-Q",
+          "securityType": "COMMON_STOCK"
+        }
+      ]
+    },
+    {
+      "cause": "NO_CIK",
+      "count": 389,
+      "percent": 5.554,
+      "recoverability": "REQUIRES_REVIEW",
+      "examples": [
+        {
+          "symbol": "AAAP",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AACT",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ABI",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ABLLW",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ACHL",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        }
+      ]
+    },
+    {
+      "cause": "SPECIAL_SECURITY_STRUCTURE",
+      "count": 312,
+      "percent": 4.4546,
+      "recoverability": "BY_DESIGN",
+      "examples": [
+        {
+          "symbol": "ABR-P-D",
+          "cik": null,
+          "form": null,
+          "securityType": "PREFERRED"
+        },
+        {
+          "symbol": "ABR-P-E",
+          "cik": null,
+          "form": null,
+          "securityType": "PREFERRED"
+        },
+        {
+          "symbol": "ABR-P-F",
+          "cik": null,
+          "form": null,
+          "securityType": "PREFERRED"
+        },
+        {
+          "symbol": "ACP-P-A",
+          "cik": null,
+          "form": null,
+          "securityType": "PREFERRED"
+        },
+        {
+          "symbol": "ACR-P-C",
+          "cik": null,
+          "form": null,
+          "securityType": "PREFERRED"
+        }
+      ]
+    },
+    {
+      "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
+      "count": 132,
+      "percent": 1.8846,
+      "recoverability": "SEC_RECOVERABLE",
+      "examples": [
+        {
+          "symbol": "AIO",
+          "cik": "0001778114",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ASGI",
+          "cik": "0001793855",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "BANX",
+          "cik": "0001578987",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "BCAT",
+          "cik": "0001809541",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "BLSM",
+          "cik": "0001839970",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        }
+      ]
+    },
+    {
+      "cause": "INSUFFICIENT_HISTORY",
+      "count": 60,
+      "percent": 0.8567,
+      "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
+      "examples": [
+        {
+          "symbol": "AACI",
+          "cik": "0002092897",
+          "form": "10-Q",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ADAC",
+          "cik": "0002083002",
+          "form": "10-Q",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ADUR",
+          "cik": "0001863934",
+          "form": "40-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AEC",
+          "cik": "0001519469",
+          "form": "40-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AFJK",
+          "cik": "0001979005",
+          "form": "10-Q",
+          "securityType": "COMMON_STOCK"
+        }
+      ]
+    },
+    {
+      "cause": "FOREIGN_ISSUER",
+      "count": 29,
+      "percent": 0.414,
+      "recoverability": "SEC_RECOVERABLE",
+      "examples": [
+        {
+          "symbol": "AGBK",
+          "cik": "0002081206",
+          "form": "20-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AGMB",
+          "cik": "0002020932",
+          "form": "20-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AIIR",
+          "cik": "0002097725",
+          "form": "20-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "ALPS",
+          "cik": "0002025774",
+          "form": "20-F",
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "AUGO",
+          "cik": "0001468642",
+          "form": "20-F/A",
+          "securityType": "COMMON_STOCK"
+        }
+      ]
+    }
+  ],
+  "byRecoverability": {
+    "SEC_RECOVERABLE": 1,
+    "EXTERNAL_PROVIDER_CANDIDATE": 102,
+    "RESOLVES_WITH_TIME": 958,
+    "BY_DESIGN": 382,
+    "REQUIRES_REVIEW": 389
+  },
+  "mainGroups": {
+    "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
+    "SEC_RECOVERABLE": 1,
+    "EXTERNAL_PROVIDER_CANDIDATE": 102
+  },
+  "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
+  "secTickerDirectory": {
+    "present": true,
+    "tickers": 10426,
+    "role": "Beleg fuer IDENTITY_MAPPING_GAP: kennt das SEC-Verzeichnis das Kuerzel, ist die fehlende CIK unsere Luecke und keine der Quelle."
+  },
+  "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
+  "byRecoverabilityCoarse": {
+    "SEC_RECOVERABLE": 161,
+    "EXTERNAL_PROVIDER_CANDIDATE": 60,
+    "RESOLVES_WITH_TIME": 910,
+    "BY_DESIGN": 312,
+    "REQUIRES_REVIEW": 389
+  },
+  "regroupedByFineClassification": 160,
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.9.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "priorities": {
+    "note": "Die Gruppen ueberschneiden sich bewusst; jede beantwortet eine eigene Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
+    "denominator": {
+      "PRODUCT_TITLES": 7004
+    },
+    "groups": [
+      {
+        "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
+        "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
+        "COUNT": 712,
+        "PERCENT": 10.1656,
+        "TOP_CAUSES": [
+          {
+            "cause": "NO_CIK",
+            "count": 376
+          },
+          {
+            "cause": "SPECIAL_SECURITY_STRUCTURE",
+            "count": 308
+          },
+          {
+            "cause": "VERY_YOUNG_LISTING",
+            "count": 28
+          }
+        ],
+        "SEC_RECOVERABLE_COUNT": 0,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 0
+      },
+      {
+        "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
+        "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
+        "COUNT": 1201,
+        "PERCENT": 17.1473,
+        "TOP_CAUSES": [
+          {
+            "cause": "VERY_YOUNG_LISTING",
+            "count": 396
+          },
+          {
+            "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
+            "count": 132
+          },
+          {
+            "cause": "INSUFFICIENT_HISTORY",
+            "count": 41
+          },
+          {
+            "cause": "FOREIGN_ISSUER",
+            "count": 29
+          },
+          {
+            "cause": "SPECIAL_SECURITY_STRUCTURE",
+            "count": 3
+          }
+        ],
+        "SEC_RECOVERABLE_COUNT": 1,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 83
+      },
+      {
+        "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
+        "description": "Fundamentaldaten vorhanden, Historie zu kurz",
+        "COUNT": 521,
+        "PERCENT": 7.4386,
+        "TOP_CAUSES": [
+          {
+            "cause": "VERY_YOUNG_LISTING",
+            "count": 461
+          },
+          {
+            "cause": "INSUFFICIENT_HISTORY",
+            "count": 60
+          }
+        ],
+        "SEC_RECOVERABLE_COUNT": 0,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 60
+      },
+      {
+        "priority": "PRIORITY_4_PIT_INSUFFICIENT",
+        "description": "Nicht zeitpunktgenau abfragbar",
+        "COUNT": 164,
+        "PERCENT": 2.3415,
+        "TOP_CAUSES": [
+          {
+            "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
+            "count": 132
+          },
+          {
+            "cause": "FOREIGN_ISSUER",
+            "count": 29
+          },
+          {
+            "cause": "SPECIAL_SECURITY_STRUCTURE",
+            "count": 3
+          }
+        ],
+        "SEC_RECOVERABLE_COUNT": 1,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 42
+      },
+      {
+        "priority": "PRIORITY_5_EDGE_CASES",
+        "description": "Spezial- und Randfaelle",
+        "COUNT": 531,
+        "PERCENT": 7.5814,
+        "TOP_CAUSES": [
+          {
+            "cause": "SPECIAL_SECURITY_STRUCTURE",
+            "count": 312
+          },
+          {
+            "cause": "VERY_YOUNG_LISTING",
+            "count": 45
+          },
+          {
+            "cause": "NO_CIK",
+            "count": 24
+          },
+          {
+            "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
+            "count": 8
+          },
+          {
+            "cause": "INSUFFICIENT_HISTORY",
+            "count": 6
+          }
+        ],
+        "SEC_RECOVERABLE_COUNT": 0,
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 7
+      }
+    ]
+  },
+  "generatedAtUtc": "2026-09-14T10:58:18+00:00"
+}

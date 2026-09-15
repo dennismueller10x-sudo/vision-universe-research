@@ -36,6 +36,11 @@ NOT_APPLICABLE_FOR_SECTOR = "NOT_APPLICABLE_FOR_SECTOR"
 MISSING_INPUT = "MISSING_INPUT"
 NOT_YET_AVAILABLE = "NOT_YET_AVAILABLE"
 DIVISION_BY_ZERO = "DIVISION_BY_ZERO"
+# Eine abgeleitete Groesse aus Operanden in verschiedenen Waehrungen.
+# Umrechnen braeuchte einen Kurs zum Stichtag; ihn zu schaetzen waere
+# geraten und zerstoerte die Point-in-Time-Eigenschaft. Lieber keine
+# Zahl als eine falsche.
+MIXED_CURRENCY = "MIXED_CURRENCY"
 
 # --- quality / confidence states --------------------------------------------
 QUALITY_HIGH = "HIGH"

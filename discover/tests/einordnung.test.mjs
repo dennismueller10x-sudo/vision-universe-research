@@ -221,11 +221,3 @@ test("die ausgelieferten Detailseiten erfinden keine Geschäftszahlen", () => {
   assert.ok(ohneZahlen > 400, "zu wenige Titel geprueft");
 });
 
-test("das Modelluniversum kennzeichnet seine Zahlen als erzeugt", () => {
-  const basis = join(root, "discover", "data", "stocks", "VU_MODEL");
-  if (!existsSync(basis)) return;
-  const datei = readdirSync(basis)[0];
-  const d = JSON.parse(readFileSync(join(basis, datei), "utf8"));
-  assert.equal(d.geschaeftszahlen.quelle, "VU_MODEL");
-  assert.equal(d.dataMode, "mock");
-});

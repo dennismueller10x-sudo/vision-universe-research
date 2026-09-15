@@ -165,13 +165,16 @@ ok("Gedaechtnis: gesehene Karte markiert", (await m.locator(".dx-poster--gesehen
 ok("Mobil: keine eigenen 4xx", m.__bad.length === 0, m.__bad.join(" | "));
 ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" | "));
 /* Lazy Loading der Kursreihen: sichtbare Karten laden, ein Titel einmal,
-   Platzhalter ist kein Chart, nichts springt. Gemessen im Modelluniversum,
-   wo jede Karte eine Reihe traegt. */
+   Platzhalter ist kein Chart, nichts springt. Gemessen im realen
+   Universum (das Modelluniversum wird seit dem 15.09.2026 nicht mehr
+   ausgeliefert). */
 {
   const lz = await seite(desk, "lazy");
   const serien = [];
-  lz.on("request", (r) => { if (r.url().includes("/discover/data/series/")) serien.push(r.url()); });
-  await lz.goto(BASE + "/discover/#/u/VU_MODEL", { waitUntil: "domcontentloaded" });
+  /* Reihen kommen aus dem Series-Store (discover/data/series) oder als
+     kompakte Jahresreihe (quant/data/market/discover-series). */
+  lz.on("request", (r) => { if (/\/discover\/data\/series\/|\/discover-series\//.test(r.url())) serien.push(r.url()); });
+  await lz.goto(BASE + "/discover/#/u/US_REAL", { waitUntil: "domcontentloaded" });
   await warten(lz, 150);
   const skelett = await lz.evaluate(() => {
     const s = document.querySelectorAll(".dx-art-skeleton");
@@ -186,7 +189,13 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
   const stand = await lz.evaluate(() => window.VUDiscover.SeriesLoader.stats());
   const eindeutig = new Set(serien).size;
   ok("Lazy: ein Titel, ein Abruf (Dedup)", serien.length === eindeutig && stand.requests === eindeutig, JSON.stringify({ abrufe: serien.length, titel: eindeutig, stats: stand }));
-  const sichtbar = await lz.evaluate(() => document.querySelectorAll(".dx-poster-media [data-art=\"price\"]").length);
+  /* Geladen heisst: Tagesreihe ODER Tagesverlauf gezeichnet (im realen
+     Universum traegt die sichtbare Karte den Intraday-Verlauf). */
+  /* Die Kartenmedien der ersten Reihe liegen bei 1280x800 knapp unter der
+     Falz (Eingangsflaeche + Reihenkopf + Kartentext): ein Bildschirm-Drittel
+     scrollen, dann muessen die sichtbaren geladen sein - und nur die. */
+  await lz.evaluate(() => window.scrollBy(0, 320)); await lz.waitForLoadState("networkidle"); await warten(lz, 700);
+  const sichtbar = await lz.evaluate(() => document.querySelectorAll(".dx-poster-media [data-art=\"price\"], .dx-poster-media [data-art=\"intraday\"]").length);
   const gesamt = await lz.evaluate(() => document.querySelectorAll(".dx-poster-media").length);
   ok("Lazy: nur sichtbare Karten haben geladen (nicht alle)", sichtbar > 0 && sichtbar < gesamt, sichtbar + " von " + gesamt + " Karten");
   /* Nach Scrollen laden weitere - ohne Doppelabrufe */

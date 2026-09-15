@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "masterId": "VU_COMPANY_MASTER",
+  "engine": "company-master-1.0.0",
+  "purpose": "Politik des kanonischen Company Master. Hier steht, WAS aufgenommen und WAS ausgeliefert wird - und warum. Im Code steht keine dieser Zahlen.",
+
+  "size": {
+    "maxInstruments": null,
+    "note": "Bewusst null, und das ist die wichtigste Zeile dieser Datei. Es gibt keine Zielgroesse: nicht 500, nicht 7.000, nicht 50.000. Wie gross das Universum ist, entscheidet das Anbieterverzeichnis. Eine Zahl an dieser Stelle waere genau die Begrenzung, die der Master aufloest."
+  },
+
+  "ingest": {
+    "note": "Was ueberhaupt in den Master kommt. Absichtlich weit: der Master ist ein Verzeichnis, kein Screener. Was nicht handelbar ist, wird klassifiziert und markiert - nicht weggelassen (§9, §10, §11).",
+    "securityTypes": ["COMMON_STOCK", "ADR", "PREFERRED", "ETF", "ETN", "FUND", "WARRANT", "OTHER", "UNKNOWN"],
+    "includeInactive": true,
+    "includeOtc": true,
+    "currencies": null,
+    "minHistoryYears": null
+  },
+
+  "publish": {
+    "note": "Was davon im oeffentlichen Repository landet. Diese Grenze ist eine LIZENZGRENZE und keine Groessengrenze. quant/data/market/universe/summary.json fuehrt die vollstaendige Anbieter-Tickerliste als redistribution.fullList = LEGAL_REVIEW_REQUIRED; bis diese Frage beantwortet ist, wird nicht mehr veroeffentlicht, als bereits veroeffentlicht ist.",
+    "scopeId": "US_LISTED_PRIMARY",
+    "provenance": "EXISTING_COMMITTED_PRECEDENT",
+    "provenanceNote": "Der Umfang unten ist derselbe, der mit quant/data/market/scale/universe-FULL_UNIVERSE.json bereits im Repository liegt (5.684 Titel, PR #60): US-Primaerboersen, USD, keine ausserboerslichen Titel. Er erweitert die Auslieferung nicht um eine neue Lizenzentscheidung - er hebt nur die technische Begrenzung auf.",
+    "rules": {
+      "excludeOtc": true,
+      "primaryExchangesOnly": true,
+      "currencies": ["USD"],
+      "securityTypes": ["COMMON_STOCK", "ADR", "PREFERRED", "ETF", "ETN", "WARRANT", "OTHER", "UNKNOWN"],
+      "includeInactive": true,
+      "minHistoryYears": null
+    },
+    "excludedTypesNote": "FUND (Investmentfonds, 49.878 Zeilen beim Anbieter) bleibt aussen vor: nicht boersengehandelt, kein Kursverlauf im Sinne dieser Anwendung, und keine der Oberflaechen fragt danach. ETF und ETN bleiben drin - sie werden getrennt gefuehrt, nicht geloescht (§10).",
+    "fullMasterLocation": "workingStore",
+    "fullMasterNote": "Der vollstaendige Master ueber ALLE Anbieterzeilen wird bei jedem Lauf gebaut und liegt in der Arbeitsablage (.market-cache/universe/). Ausgeliefert wird der Auszug nach den Regeln oben plus die Bilanz ueber das Ganze."
+  },
+
+  "storage": {
+    "root": "quant/data/universe",
+    "shardBy": "symbolPrefix2",
+    "shardNote": "Der Master liegt in Scherben nach den ersten zwei Zeichen des Kuerzels. Zwei Gruende: der Browser laedt genau die Scherbe, die er braucht (§16, §19), und git schreibt bei einem Sync nur die Scherben neu, in denen sich etwas geaendert hat. Eine einzelne 6-MB-Datei je Lauf waere beides nicht.",
+    "workingDir": ".market-cache/universe"
+  },
+
+  "identity": {
+    "primaryKey": "instrumentId",
+    "note": "Der Ticker ist NICHT der Primaerschluessel (§8). Er bleibt Adresse in URLs und Suche; die Identitaet haengt an der instrumentId, die einmal vergeben und danach fortgeschrieben wird.",
+    "legacyAliases": true,
+    "legacyAliasNote": "Die bestehenden securityIds (ref_AAPL) bleiben als Alias erhalten, damit Faktoren, Gate-Universen und Discover-Payloads weiter aufloesen (§41)."
+  },
+
+  "search": {
+    "shardBy": ["symbolPrefix2", "namePrefix2"],
+    "minQueryLengthForMasterLookup": 2,
+    "note": "Zwei Scherbenwege, weil es zwei Suchen gibt: wer 'NVDA' tippt, sucht ein Kuerzel; wer 'Palantir' tippt, sucht einen Namen. Ein einziger Index, der beides kann, waere bei 25.000 Titeln rund ein Megabyte - und das laedt niemand, nur weil ein Suchfeld geoeffnet wurde."
+  }
+}

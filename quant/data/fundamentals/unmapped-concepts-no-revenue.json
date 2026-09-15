@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-13T19:31:17+00:00",
+  "note": "Unbekannte XBRL-Konzepte, gemessen am Faktenspeicher. Sortiert nach betroffenen EMITTENTEN - ein Konzept, das ein einziger Emittent zehntausendmal meldet, bringt gemappt einen Titel.",
+  "scope": "issuers_with_values_but_without_revenue",
+  "sic": null,
+  "issuers_scanned": 5479,
+  "issuers_in_scope": 815,
+  "by_taxonomy": {
+    "us-gaap": 3994222,
+    "ifrs-full": 185430,
+    "dei": 4031,
+    "srt": 2250,
+    "invest": 1278,
+    "cef": 516,
+    "ecd": 4
+  },
+  "concepts": [
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodValueNewIssues",
+      "issuers": 598,
+      "facts": 9007
+    },
+    {
+      "concept": "dei:EntityPublicFloat",
+      "issuers": 580,
+      "facts": 3779
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesAuthorized",
+      "issuers": 566,
+      "facts": 17196
+    },
+    {
+      "concept": "us-gaap:AdditionalPaidInCapital",
+      "issuers": 557,
+      "facts": 15428
+    },
+    {
+      "concept": "us-gaap:NumberOfReportableSegments",
+      "issuers": 540,
+      "facts": 3757
+    },
+    {
+      "concept": "us-gaap:PreferredStockParOrStatedValuePerShare",
+      "issuers": 538,
+      "facts": 14055
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOfCommonStock",
+      "issuers": 451,
+      "facts": 10384
+    },
+    {
+      "concept": "us-gaap:CommonStockSharesAuthorized",
+      "issuers": 434,
+      "facts": 24492
+    },
+    {
+      "concept": "us-gaap:CommonStockParOrStatedValuePerShare",
+      "issuers": 430,
+      "facts": 21974
+    },
+    {
+      "concept": "us-gaap:CommonStockValue",
+      "issuers": 430,
+      "facts": 22521
+    },
+    {
+      "concept": "us-gaap:NumberOfOperatingSegments",
+      "issuers": 400,
+      "facts": 3231
+    },
+    {
+      "concept": "us-gaap:PaymentsOfStockIssuanceCosts",
+      "issuers": 397,
+      "facts": 3445
+    },
+    {
+      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect",
+      "issuers": 390,
+      "facts": 5931
+    },
+    {
+      "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect",
+      "issuers": 388,
+      "facts": 13663
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesIssued",
+      "issuers": 378,
+      "facts": 12135
+    },
+    {
+      "concept": "us-gaap:PreferredStockSharesOutstanding",
+      "issuers": 372,
+      "facts": 11140
+    },
+    {
+      "concept": "us-gaap:InvestmentIncomeInterest",
+      "issuers": 360,
+      "facts": 6657
+    },
+    {
+      "concept": "us-gaap:PrepaidExpenseCurrent",
+      "issuers": 349,
+      "facts": 3536
+    },
+    {
+      "concept": "us-gaap:EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate",
+      "issuers": 348,
+      "facts": 7691
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOfPrivatePlacement",
+      "issuers": 347,
+      "facts": 1367
+    },
+    {
+      "concept": "us-gaap:AccruedLiabilitiesCurrent",
+      "issuers": 338,
+      "facts": 4555
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceInitialPublicOffering",
+      "issuers": 335,
+      "facts": 1756
+    },
+    {
+      "concept": "us-gaap:PropertyPlantAndEquipmentNet",
+      "issuers": 314,
+      "facts": 19146
+    },
+    {
+      "concept": "us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+      "issuers": 312,
+      "facts": 7835
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInAccruedLiabilities",
+      "issuers": 312,
+      "facts": 4420
+    },
+    {
+      "concept": "us-gaap:NonoperatingIncomeExpense",
+      "issuers": 310,
+      "facts": 8230
+    },
+    {
+      "concept": "us-gaap:InterestPaidNet",
+      "issuers": 309,
+      "facts": 14650
+    },
+    {
+      "concept": "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate",
+      "issuers": 307,
+      "facts": 5795
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsGross",
+      "issuers": 305,
+      "facts": 5346
+    },
+    {
+      "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
+      "issuers": 292,
+      "facts": 8805
+    },
+    {
+      "concept": "us-gaap:ComprehensiveIncomeNetOfTax",
+      "issuers": 292,
+      "facts": 29245
+    },
+    {
+      "concept": "us-gaap:OperatingLeaseLiability",
+      "issuers": 291,
+      "facts": 6985
+    },
+    {
+      "concept": "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
+      "issuers": 287,
+      "facts": 13670
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDue",
+      "issuers": 286,
+      "facts": 3997
+    },
+    {
+      "concept": "us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax",
+      "issuers": 285,
+      "facts": 21271
+    },
+    {
+      "concept": "us-gaap:EffectiveIncomeTaxRateReconciliationStateAndLocalIncomeTaxes",
+      "issuers": 284,
+      "facts": 4103
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityCarryingAmountAttributableToParent",
+      "issuers": 283,
+      "facts": 2019
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInPrepaidExpense",
+      "issuers": 279,
+      "facts": 3071
+    },
+    {
+      "concept": "us-gaap:UnrecognizedTaxBenefits",
+      "issuers": 276,
+      "facts": 4673
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsValuationAllowance",
+      "issuers": 276,
+      "facts": 4057
+    },
+    {
+      "concept": "us-gaap:AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+      "issuers": 274,
+      "facts": 6776
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
+      "issuers": 274,
+      "facts": 17927
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalStockIssuedIssuanceCosts",
+      "issuers": 274,
+      "facts": 1609
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
+      "issuers": 271,
+      "facts": 3707
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths",
+      "issuers": 269,
+      "facts": 3187
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
+      "issuers": 269,
+      "facts": 3378
+    },
+    {
+      "concept": "us-gaap:PropertyPlantAndEquipmentGross",
+      "issuers": 266,
+      "facts": 6039
+    },
+    {
+      "concept": "us-gaap:DeferredOfferingCosts",
+      "issuers": 266,
+      "facts": 1219
+    },
+    {
+      "concept": "us-gaap:AssetsHeldInTrustNoncurrent",
+      "issuers": 255,
+      "facts": 1630
+    },
+    {
+      "concept": "us-gaap:IncomeTaxReconciliationStateAndLocalIncomeTaxes",
+      "issuers": 254,
+      "facts": 4450
+    },
+    {
+      "concept": "us-gaap:PreferredStockValue",
+      "issuers": 253,
+      "facts": 8654
+    },
+    {
+      "concept": "us-gaap:CashFDICInsuredAmount",
+      "issuers": 253,
+      "facts": 1306
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
+      "issuers": 252,
+      "facts": 3191
+    },
+    {
+      "concept": "us-gaap:OperatingLeaseWeightedAverageDiscountRatePercent",
+      "issuers": 250,
+      "facts": 5771
+    },
+    {
+      "concept": "us-gaap:RepaymentsOfRelatedPartyDebt",
+      "issuers": 249,
+      "facts": 1080
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsOther",
+      "issuers": 248,
+      "facts": 4546
+    },
+    {
+      "concept": "us-gaap:OperatingExpenses",
+      "issuers": 247,
+      "facts": 11954
+    },
+    {
+      "concept": "us-gaap:IncomeTaxesPaidNet",
+      "issuers": 246,
+      "facts": 8410
+    },
+    {
+      "concept": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+      "issuers": 241,
+      "facts": 12312
+    },
+    {
+      "concept": "us-gaap:DeferredIncomeTaxLiabilities",
+      "issuers": 240,
+      "facts": 4379
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsOperatingLossCarryforwards",
+      "issuers": 240,
+      "facts": 2940
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsLiabilitiesNet",
+      "issuers": 238,
+      "facts": 4980
+    },
+    {
+      "concept": "us-gaap:ProfessionalFees",
+      "issuers": 238,
+      "facts": 20440
+    },
+    {
+      "concept": "us-gaap:LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
+      "issuers": 237,
+      "facts": 2890
+    },
+    {
+      "concept": "us-gaap:DeferredTaxAssetsNet",
+      "issuers": 232,
+      "facts": 3822
+    },
+    {
+      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingNumber",
+      "issuers": 231,
+      "facts": 8689
+    },
+    {
+      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriodGross",
+      "issuers": 231,
+      "facts": 4559
+    },
+    {
+      "concept": "us-gaap:TemporaryEquityAccretionToRedemptionValue",
+      "issuers": 230,
+      "facts": 1375
+    },
+    {
+      "concept": "us-gaap:SharePrice",
+      "issuers": 228,
+      "facts": 2182
+    },
+    {
+      "concept": "us-gaap:EffectiveIncomeTaxRateReconciliationOtherAdjustments",
+      "issuers": 227,
+      "facts": 2687
+    },
+    {
+      "concept": "us-gaap:IncomeTaxReconciliationOtherAdjustments",
+      "issuers": 227,
+      "facts": 4149
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodSharesStockOptionsExercised",
+      "issuers": 225,
+      "facts": 4839
+    },
+    {
+      "concept": "us-gaap:StockIssuedDuringPeriodValueStockOptionsExercised",
+      "issuers": 223,
+      "facts": 9664
+    },
+    {
+      "concept": "us-gaap:ProceedsFromStockOptionsExercised",
+      "issuers": 221,
+      "facts": 8774
+    },
+    {
+      "concept": "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingWeightedAverageExercisePrice",
+      "issuers": 220,
+      "facts": 8037
+    },
+    {
+      "concept": "us-gaap:IncreaseDecreaseInAccountsPayableAndAccruedLiabilities",
+      "issuers": 220,
+      "facts": 4803
+    },
+    {
+      "concept": "us-gaap:AdjustmentsToAdditionalPaidInCapitalWarrantIssued",
+      "issuers": 219,
+      "facts": 897
+    },
+    {
+      "concept": "us-gaap:OperatingLeaseCost",
+      "issuers": 215,
+      "facts": 7667
+    },
+    {
+      "concept": "us-gaap:RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability",
+      "issuers": 215,
+      "facts": 4817
+    },
+    {
+      "concept": "us-gaap:OtherAssets",
+      "issuers": 214,
+      "facts": 15303
+    }
+  ]
+}

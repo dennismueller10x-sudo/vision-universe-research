@@ -221,16 +221,18 @@ test("SM22 ein neuer Fonds wird EXCLUDED_CANDIDATE und nicht ADDED", () => {
 /* ================================================== KLASSIFIKATION (§3) */
 
 test("SM30 Vorzuege in dreiteiliger Schreibweise werden erkannt (der Fund im Bestand)", () => {
-  /* Der Basis-Klassierer sieht hier eine Aktienklasse. Genau deshalb
-     stehen 308 solcher Ticker im gelieferten Bestand als Stammaktie. */
-  assert.equal(Base.classify({ ticker: "BAC-P-E", assetType: "Stock",
-                               exchange: "NYSE" }).instrumentType, "COMMON_STOCK");
+  /* Der Basis-Klassierer sah hier frueher eine Aktienklasse - genau
+     deshalb standen 308 solcher Ticker im gelieferten Bestand als
+     Stammaktie. Seit dem Company Master auf main kennt er den Suffix
+     selbst; der Wertpapierstamm muss so oder so PREFERRED liefern. */
+  const basis = Base.classify({ ticker: "BAC-P-E", assetType: "Stock", exchange: "NYSE" }).instrumentType;
+  assert.ok(basis === "COMMON_STOCK" || basis === "PREFERRED", basis);
 
   for (const t of ["BAC-P-E", "WFC-P-Y", "PCG-P-A", "GS-P-C", "CTA-P-B"]) {
     const c = Master.classifySecurity(providerRow({ ticker: t, exchange: "NYSE" }), { today: TODAY });
     assert.equal(c.instrumentType, "PREFERRED", t);
     assert.equal(c.eligibleUsEquity, false, t);
-    assert.ok(c.flags.includes("BASE_CLASSIFIER_MISSED_SUFFIX"), t);
+    if (basis === "COMMON_STOCK") assert.ok(c.flags.includes("BASE_CLASSIFIER_MISSED_SUFFIX"), t);
   }
 });
 
