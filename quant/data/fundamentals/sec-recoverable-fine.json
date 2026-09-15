@@ -1,26 +1,21 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 161
+    "SEC_RECOVERABLE": 153
   },
-  "accountedFor": 161,
+  "accountedFor": 153,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
-      "count": 14,
-      "percent": 8.6957,
+      "count": 7,
+      "percent": 4.5752,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
           "symbol": "BREZ",
           "cik": "0002095443",
           "evidence": "SIC 6770 / Name 'Breeze Acquisition Corp. II'"
-        },
-        {
-          "symbol": "IPHXU",
-          "cik": "0002146310",
-          "evidence": "SIC 6770 / Name 'Inflection Point Acquisition Corp. VIII'"
         },
         {
           "symbol": "JTTT",
@@ -31,13 +26,18 @@
           "symbol": "NSAI",
           "cik": "0002133719",
           "evidence": "SIC 6770 / Name 'NorthStrive Acquisition Corp I.'"
+        },
+        {
+          "symbol": "OCAC",
+          "cik": "0001926314",
+          "evidence": "SIC 6770 / Name 'Ocean Capital Acquisition Corp'"
         }
       ]
     },
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
       "count": 56,
-      "percent": 34.7826,
+      "percent": 36.6013,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -65,7 +65,7 @@
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.6211,
+      "percent": 0.6536,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -78,7 +78,7 @@
     {
       "cause": "NO_XBRL_FACTS",
       "count": 39,
-      "percent": 24.2236,
+      "percent": 25.4902,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -106,7 +106,7 @@
     {
       "cause": "NO_XBRL_FINANCIALS",
       "count": 3,
-      "percent": 1.8634,
+      "percent": 1.9608,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -128,8 +128,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 48,
-      "percent": 29.8137,
+      "count": 47,
+      "percent": 30.719,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -156,8 +156,8 @@
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 48,
-    "NOT_APPLICABLE": 70,
+    "RESOLVES_WITH_TIME": 47,
+    "NOT_APPLICABLE": 63,
     "EXTERNAL_PROVIDER_CANDIDATE": 42,
     "INDUSTRY_LAYER": 1
   },
@@ -167,17 +167,10 @@
       "0001926314",
       "0002079109",
       "0002095443",
-      "0002114229",
       "0002122392",
-      "0002128462",
-      "0002133239",
       "0002133719",
       "0002134856",
-      "0002137679",
-      "0002140030",
-      "0002145659",
-      "0002146310",
-      "0002147219"
+      "0002145659"
     ],
     "SPECIAL_PURPOSE_ENTITY": [
       "0000102426",
@@ -303,7 +296,6 @@
       "0001930147",
       "0002000756",
       "0002000756",
-      "0002000756",
       "0002002660",
       "0002004711",
       "0002020932",
@@ -340,7 +332,7 @@
   "ciksStillRecoverable": [],
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.9.0",
+    "normalization_logic": "1.10.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
@@ -349,5 +341,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-14T10:58:18+00:00"
+  "generatedAtUtc": "2026-09-15T05:17:22+00:00"
 }

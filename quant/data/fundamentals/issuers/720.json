@@ -165,9 +165,9 @@
       "cik": "0000717720",
       "name": "VALUE LINE INC",
       "sic": "6282",
-      "rawFacts": 18134,
-      "mappedFacts": 4706,
-      "unmappedFacts": 14011,
+      "rawFacts": 18411,
+      "mappedFacts": 4771,
+      "unmappedFacts": 14228,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -177,9 +177,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 65,
       "firstPeriodEnd": "2009-04-30",
-      "lastPeriodEnd": "2026-04-30",
+      "lastPeriodEnd": "2026-07-31",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -218,21 +218,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 16.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-04-30",
           "lastAvailablePeriod": "2026-04-30",
           "historyYears": 15.0
@@ -276,40 +276,41 @@
         }
       },
       "quality": {
-        "HIGH": 474,
+        "HIGH": 479,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 477,
-        "resolvedValues": 477
+        "datableValues": 482,
+        "resolvedValues": 482
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14385,
+        "total": 14610,
         "by_severity": {
-          "INFO": 14011,
+          "INFO": 14228,
           "ERROR": 8,
-          "WARNING": 366
+          "WARNING": 374
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 286,
+          "CONCEPT_DISAGREEMENT": 294,
           "FUTURE_DATA_LEAK": 8,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14011
+          "UNKNOWN_CONCEPT": 14228
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-024817",
-        "filing_date": "2026-07-29",
-        "form": "10-K",
-        "periodic_filings": 147
+        "accession": "0001437749-26-030292",
+        "filing_date": "2026-09-14",
+        "form": "10-Q",
+        "periodic_filings": 148,
+        "acceptance_datetime": "2026-09-14T18:41:25.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -318,7 +319,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "408b7bacd00e130b1d374b5b43390ee2e900b168a302532301013f1d279cc37d",
+      "sourceDigest": "640472ae176bfe114da9a98928bbc74e04e870f4c99c5648252dad1db7490e04",
       "issuerId": "iss_cik_0000717720"
     },
     {
