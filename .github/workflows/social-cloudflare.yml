@@ -109,7 +109,8 @@ jobs:
       - name: Preflight gegen die reale Infrastruktur
         id: preflight
         run: |
-          node scripts/social/preflight-worker.mjs --out /tmp/cf-preflight | tee /tmp/preflight.log
+          node scripts/social/preflight-worker.mjs \
+            --out /tmp/cf-preflight --backup /tmp/cf-backup | tee /tmp/preflight.log
           verdict=$(node -e '
             const r = require("/tmp/cf-preflight/worker-preflight.json");
             console.log(r.verdict);
@@ -129,19 +130,43 @@ jobs:
 
       - name: Gefahr einer Ueberschreibung fremder Logik
         id: overwrite
+        # Beurteilt wird, was der vorhandene Code TUT — nicht, wie gross er
+        # ist. Eine Groesse sagt darueber nichts: Cloudflares eigene
+        # "Hello World"-Vorlage ist groesser als manches produktive Skript.
         run: |
           node -e '
             const report = require("/tmp/cf-preflight/worker-preflight.json");
             const existing = report.existing || {};
-            const foreign = existing.exists === true &&
-                            existing.looksLikeThisRepository === false &&
-                            Number(existing.scriptBytes || 0) >= 400;
-            console.log("Worker existiert:      " + (existing.exists === true));
-            console.log("Stammt aus dem Repo:   " + String(existing.looksLikeThisRepository));
+            const exists = existing.exists === true;
+            /* Ein Worker, der nicht existiert, kann nichts ueberschreiben.
+               Sonst entscheidet ausschliesslich die Klassifikation — und
+               ein fehlendes Urteil gilt als NICHT sicher. */
+            const foreign = exists && existing.safeToReplace !== true;
+            console.log("Worker existiert:      " + exists);
+            console.log("Einordnung:            " + (existing.classification ?? "unbekannt"));
+            console.log("Ersetzen unbedenklich: " + String(existing.safeToReplace));
             console.log("Groesse (Bytes):       " + (existing.scriptBytes ?? "unbekannt"));
-            console.log("Fremde Logik erkannt:  " + foreign);
-            require("fs").appendFileSync(process.env.GITHUB_OUTPUT, "foreign=" + foreign + "\n");
+            console.log("sha256:                " + (existing.scriptSha256Prefix ?? "unbekannt"));
+            console.log("Gesichert:             " + String(existing.backupWritten ?? false));
+            if (existing.signals) {
+              console.log("Signale:               " + JSON.stringify(existing.signals));
+            }
+            console.log("HALT noetig:           " + foreign);
+            require("fs").appendFileSync(process.env.GITHUB_OUTPUT,
+              "foreign=" + foreign + "\nclassification=" + (existing.classification ?? "unbekannt") + "\n");
           '
+
+      - name: Sicherung des vorhandenen Codes ablegen
+        # Sie entsteht VOR jedem Deployment und macht es umkehrbar.
+        # Der Preflight legt sie nur an, wenn im vorhandenen Code nichts
+        # in Zugangsdatenform steht — sonst waere die Sicherung eine
+        # Kopie des Geheimnisses an einen Ort mit anderem Leserkreis.
+        if: hashFiles('/tmp/cf-backup/*') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-code-before-deploy
+          path: /tmp/cf-backup/
+          retention-days: 90
 
       - name: HALT — im Worker liegt fremde produktive Logik
         if: steps.overwrite.outputs.foreign == 'true'
@@ -149,10 +174,15 @@ jobs:
           {
             echo "## Deployment gesperrt"
             echo ""
-            echo "Im Worker \`vision-universe-social\` liegt Code, der nicht aus diesem"
-            echo "Repository stammt. Ein Deployment wuerde ihn vollstaendig ersetzen."
+            echo "Im Worker \`vision-universe-social\` liegt Code, den der Preflight als"
+            echo "\`${{ steps.overwrite.outputs.classification }}\` einordnet. Ein Deployment"
+            echo "wuerde ihn vollstaendig ersetzen."
             echo ""
-            echo "**Zuerst sichern:**"
+            echo "Die Signale stehen im Schritt darueber und im Artefakt \`worker-preflight\`."
+            echo "Der Quelltext wird bewusst nirgends ausgegeben."
+            echo ""
+            echo "**Eine Sicherung liegt als Artefakt \`worker-code-before-deploy\` bei**,"
+            echo "sofern der Code nichts in Zugangsdatenform enthielt. Alternativ:"
             echo '```bash'
             echo "npx wrangler download vision-universe-social"
             echo '```'

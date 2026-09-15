@@ -36,8 +36,8 @@
    laesst er sich vor einen Deploy-Schritt haengen.
    ========================================================================= */
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname, isAbsolute } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, dirname, extname, relative, sep, isAbsolute, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -58,6 +58,7 @@ function arg(name, fallback) {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
 const OUT_DIR = arg("--out", null);
+const BACKUP_DIR = arg("--backup", null);
 
 const token = process.env.CLOUDFLARE_API_TOKEN || null;
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || null;
@@ -118,6 +119,130 @@ function checkLocalConfig() {
   } else {
     record("Zielname stimmt", "PASS", WORKER_NAME);
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Was liegt dort? — Klassifikation ohne Preisgabe                     */
+/* ------------------------------------------------------------------ */
+
+/* Formen, die ein Zugangsdatum haben kann. Findet sich eine im
+   vorhandenen Worker, wird er WEDER gesichert NOCH ersetzt: eine
+   Sicherung als CI-Artefakt waere dann eine Kopie des Geheimnisses an
+   einen Ort mit anderem Leserkreis. */
+const TOKEN_SHAPES = [
+  /\bEA[A-Za-z0-9]{30,}/,
+  /\bIG[A-Za-z0-9]{30,}/,
+  /\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}/,
+  /\b(sk|pk)_(live|test)_[A-Za-z0-9]{16,}/,
+  /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
+  /\b(secret|token|password|api[_-]?key)\s*[:=]\s*["'][A-Za-z0-9._\-]{16,}["']/i
+];
+
+/**
+ * Beurteilt den vorhandenen Worker-Code, OHNE ihn auszugeben.
+ *
+ * Die Byte-Groesse allein taugt dafuer nicht: Cloudflares eigene
+ * "Hello World"-Vorlage liegt im selben Bereich wie ein kleines
+ * produktives Skript. Der erste Entwurf dieses Preflights hat genau
+ * deshalb eine Standardvorlage als "fremde produktive Logik" gemeldet —
+ * richtig gesperrt, aber aus dem falschen Grund.
+ *
+ * Beurteilt wird deshalb, WAS der Code tut: spricht er nach draussen,
+ * liest er Bindungen, kennt er unsere Routen. Alles davon laesst sich
+ * als Ja/Nein berichten, ohne eine Zeile Quelltext zu zeigen.
+ *
+ * Im Zweifel: custom-logic. Ein falscher Alarm kostet eine Minute,
+ * ein uebersehener Fund kostet fremde Produktivlogik.
+ */
+/**
+ * Entfernt die Handler-Deklaration, damit sie nicht als ausgehender
+ * Aufruf gezaehlt wird.
+ */
+function stripHandlerSignature(code) {
+  return String(code)
+    .replace(/\basync\s+fetch\s*\(/g, " __handler(")
+    .replace(/(^|[,{;]\s*)fetch\s*\(\s*(request|req|event)\b/g, "$1__handler(");
+}
+
+export function classifyScript(source) {
+  const text = String(source || "");
+
+  /* Kommentare entfernen, bevor nach Adressen gesucht wird.
+     Cloudflares Standardvorlage nennt developers.cloudflare.com und
+     localhost:8787 in ihrem Kopfkommentar. Wer das als ausgehende
+     Aufrufe zaehlt, haelt jede Vorlage fuer Produktivlogik — das war
+     der Fehlschluss im ersten realen Lauf.
+     Eine Adresse in einem Kommentar ist eine Erwaehnung. Ein Aufruf ist
+     etwas anderes, und nur der zaehlt. */
+  const code = text
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/^\s*\/\/.*$/gm, " ");
+
+  const signals = {
+    bytes: Buffer.byteLength(text, "utf8"),
+    lines: text.split("\n").length,
+    hasExportDefault: /export\s+default/.test(code),
+    helloWorld: /Hello,?\s+World/i.test(text),
+    /* Adressen im ausfuehrbaren Teil — ohne Kommentare, ohne localhost. */
+    externalHosts: (code.match(/https?:\/\/[a-z0-9.-]+/gi) || [])
+      .filter((u) => !/^https?:\/\/(localhost|127\.0\.0\.1|example\.)/i.test(u)).length,
+    /* Und der direktere Beleg: wird ueberhaupt etwas nach draussen
+       geschickt? Das faengt auch eine zusammengesetzte Adresse, die
+       als Zeichenkette nicht auffaellt.
+
+       Die Handler-SIGNATUR eines Workers heisst selbst `fetch(request,
+       env, ctx)`. Sie ist eine Deklaration und kein Aufruf — wer das
+       nicht trennt, haelt jeden Worker fuer einen, der nach draussen
+       telefoniert, den leeren eingeschlossen. */
+    outboundCalls: (stripHandlerSignature(code)
+      .match(/\bfetch\s*\(|new\s+Request\s*\(/g) || []).length,
+    usesEnvBindings: /\benv\s*\.\s*[A-Z_]{3,}/.test(code),
+    referencesKV: /\.(get|put|delete)\s*\(/.test(code) && /\benv\s*\./.test(code),
+    hasOurRoutes: text.includes("/social/meta/callback"),
+    mentionsThisWorker: text.includes("vision-universe-social"),
+    containsTokenShape: TOKEN_SHAPES.some((re) => re.test(text))
+  };
+
+  let id;
+  let safeToReplace;
+  let note;
+
+  if (signals.containsTokenShape) {
+    id = "contains-credentials";
+    safeToReplace = false;
+    note = "Im vorhandenen Code steht etwas in Zugangsdatenform. Er wird weder gesichert " +
+           "noch ersetzt — eine Sicherung als CI-Artefakt waere eine Kopie des Geheimnisses " +
+           "an einen Ort mit anderem Leserkreis.";
+  } else if (signals.hasOurRoutes && signals.mentionsThisWorker) {
+    id = "this-repository";
+    safeToReplace = true;
+    note = "Der Code stammt erkennbar aus diesem Repository. Ein Deployment ist eine " +
+           "Aktualisierung, kein Verlust.";
+  } else if (signals.helloWorld && signals.externalHosts === 0 &&
+             signals.outboundCalls === 0 && !signals.usesEnvBindings &&
+             signals.bytes < 2000) {
+    id = "cloudflare-default-template";
+    safeToReplace = true;
+    note = "Cloudflares Standardvorlage (\"Hello World\"): keine ausgehenden Aufrufe, " +
+           "keine Bindungen, kein Zustand. Dort geht nichts verloren.";
+  } else if (signals.bytes < 400 && signals.externalHosts === 0 &&
+             signals.outboundCalls === 0 && !signals.usesEnvBindings) {
+    id = "minimal-stub";
+    safeToReplace = true;
+    note = "Ein Platzhalter ohne ausgehende Aufrufe und ohne Bindungen.";
+  } else {
+    id = "custom-logic";
+    safeToReplace = false;
+    note = "Der Code tut etwas, das sich nicht als Vorlage oder Platzhalter erklaeren laesst: " +
+           [signals.externalHosts ? signals.externalHosts + " ausgehende Adresse(n)" : null,
+            signals.outboundCalls ? signals.outboundCalls + " ausgehende(r) Aufruf(e)" : null,
+            signals.usesEnvBindings ? "liest Bindungen" : null,
+            signals.referencesKV ? "greift auf einen Speicher zu" : null,
+            !signals.helloWorld ? "keine Vorlagen-Signatur" : null]
+             .filter(Boolean).join(", ") + ".";
+  }
+
+  return { id, safeToReplace, signals, note };
 }
 
 /* ------------------------------------------------------------------ */
@@ -192,31 +317,38 @@ async function checkRemote() {
   /* DIE ENTSCHEIDENDE PRUEFUNG: was liegt dort an Code? */
   const current = await api(scriptPath, { headers: { authorization: `Bearer ${token}` } });
   if (current.ok && current.text) {
-    const bytes = Buffer.byteLength(current.text, "utf8");
     const hash = createHash("sha256").update(current.text).digest("hex").slice(0, 16);
-    report.existing.scriptBytes = bytes;
+    const verdict = classifyScript(current.text);
+
+    report.existing.scriptBytes = verdict.signals.bytes;
     report.existing.scriptSha256Prefix = hash;
+    report.existing.looksLikeThisRepository = verdict.id === "this-repository";
+    report.existing.classification = verdict.id;
+    report.existing.safeToReplace = verdict.safeToReplace;
+    /* Die Signale werden berichtet, der Quelltext nie. */
+    report.existing.signals = verdict.signals;
 
-    /* Erkennt der vorhandene Code sich selbst als unser Worker? */
-    const looksLikeOurs = current.text.includes("vision-universe-social") &&
-                          current.text.includes("/social/meta/callback");
-    report.existing.looksLikeThisRepository = looksLikeOurs;
+    record("Vorhandener Code", verdict.safeToReplace ? "PASS" : "WARN",
+      `${verdict.signals.bytes} Bytes (sha256 ${hash}), eingeordnet als ` +
+      `"${verdict.id}". ${verdict.note}`);
 
-    if (bytes < 400) {
-      record("Vorhandener Code", "PASS",
-        `${bytes} Bytes (sha256 ${hash}) — das ist eine Platzhalter-Groesse. ` +
-        "Ein Deployment ueberschreibt nichts von Wert.");
-    } else if (looksLikeOurs) {
-      record("Vorhandener Code", "PASS",
-        `${bytes} Bytes (sha256 ${hash}) — stammt erkennbar aus diesem Repository. ` +
-        "Ein Deployment ist eine Aktualisierung, kein Verlust.");
-    } else {
-      record("Vorhandener Code", "WARN",
-        `${bytes} Bytes (sha256 ${hash}) — FREMDE Logik. Ein Deployment wuerde sie ` +
-        "vollstaendig ersetzen. Vor dem Deploy sichern: " +
-        `npx wrangler download ${WORKER_NAME}  (oder den Code aus dem Cloudflare-Dashboard kopieren).`);
+    /* Sicherung — nur wenn dabei kein Geheimnis kopiert wird. */
+    if (BACKUP_DIR && !verdict.signals.containsTokenShape) {
+      mkdirSync(resolveOut(BACKUP_DIR), { recursive: true });
+      const file = join(resolveOut(BACKUP_DIR), `${WORKER_NAME}.before-deploy.js`);
+      writeFileSync(file, current.text);
+      report.existing.backupWritten = true;
+      record("Sicherung des vorhandenen Codes", "PASS",
+        `geschrieben (${verdict.signals.bytes} Bytes). Ein Deployment ist damit umkehrbar.`);
+    } else if (BACKUP_DIR) {
+      report.existing.backupWritten = false;
+      record("Sicherung des vorhandenen Codes", "FAIL",
+        "NICHT gesichert: der Code enthaelt etwas in Zugangsdatenform. Eine Sicherung " +
+        "waere eine Kopie des Geheimnisses an einen Ort mit anderem Leserkreis.");
     }
   } else {
+    report.existing.classification = "unreadable";
+    report.existing.safeToReplace = false;
     record("Vorhandener Code", "WARN",
       `Der Quelltext liess sich nicht lesen (HTTP ${current.status}). ` +
       "Vor dem Deploy im Cloudflare-Dashboard nachsehen, was dort liegt.");
@@ -268,7 +400,14 @@ async function main() {
   if (STRICT && report.verdict !== "READY") process.exitCode = 1;
 }
 
-main().catch((err) => {
-  console.error("Preflight abgebrochen:", String(err && err.message).slice(0, 300));
-  process.exitCode = 1;
-});
+/* Nur ausfuehren, wenn direkt aufgerufen — sonst laesst sich
+   classifyScript() nicht pruefen, ohne einen Cloudflare-Lauf auszuloesen. */
+const invokedDirectly = process.argv[1] &&
+  import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+
+if (invokedDirectly) {
+  main().catch((err) => {
+    console.error("Preflight abgebrochen:", String(err && err.message).slice(0, 300));
+    process.exitCode = 1;
+  });
+}
