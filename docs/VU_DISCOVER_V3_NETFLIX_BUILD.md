@@ -352,6 +352,12 @@ Der Eigentümer hat am 15.09.2026 entschieden: Modelluniversum raus, alles live.
   Discover/Klassifizierer/Eligibility aus dem Zweig; `instrumentId` des Company
   Masters auf jeder Aktienseite; Company-Master-Artefakte aus der neuen Eligibility
   neu gebaut (`build-company-master.mjs`, Totals = Eligibility-Counts).
+* **Live:** `main` @ 0d04a2ad6 (Fast-Forward des Zweigs), GitHub-Pages-Deployment
+  6452127327 am 15.09.2026 05:07 UTC mit Status `success`, Discover CI auf `main`
+  grün (Tests, Verifier, reproduzierbarer Build). Adresse:
+  `https://research.visionuniverse.de/discover/`. Die geplanten Läufe (Tageskurse
+  22:30 UTC, Intraday-Snapshots alle 10 Minuten während der Sitzung, Namensschicht,
+  Consumer-Fundamentals montags 07:30 UTC) laufen ab jetzt auf `main`.
 * **Was noch zusammenzuführen ist (Eigentümer-Entscheidung 6):** die Consumer-Bundles
   entstehen heute aus dem SEC-Bulk-Archiv (eine Anfrage, wöchentlich); `main` hält
   dieselben Emittenten als kanonische Factbooks in R2 (täglich). Nächster Schritt:
