@@ -33,6 +33,24 @@ name: Social Cloudflare
 # genannt — Cloudflare gibt ihre Werte ohnehin nicht zurueck.
 
 on:
+  # Vor dem Merge auf main kennt die GitHub-API einen Workflow fuer einen
+  # Dispatch nicht (404) — dasselbe Verhalten, das bereits in
+  # sec-fundamentals-daily.yml dokumentiert ist. Ein Push, der diesen
+  # Workflow selbst aendert, loest deshalb einen echten Lauf aus.
+  #
+  # Ein solcher Lauf fuehrt NUR den Preflight aus: alle Deploy-Schritte
+  # haengen an `inputs.action == 'deploy'`, und `inputs` ist bei einem
+  # Push leer. Der Preflight liest ausschliesslich — er kann nichts
+  # ueberschreiben.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/social-cloudflare.yml'
+      - 'scripts/social/preflight-worker.mjs'
+      - 'scripts/social/provision-cloudflare.mjs'
+      - 'scripts/social/verify-worker.mjs'
+
   workflow_dispatch:
     inputs:
       action:
@@ -265,7 +283,7 @@ jobs:
           {
             echo ""
             echo "---"
-            echo "Aktion: \`${{ inputs.action }}\` · Preflight: \`${{ steps.preflight.outputs.verdict }}\`"
+            echo "Aktion: \`${{ inputs.action || 'preflight (Push-Lauf)' }}\` · Preflight: \`${{ steps.preflight.outputs.verdict }}\`"
             echo ""
             echo "Es wurde **kein Beitrag veroeffentlicht** und **kein Meta-Login ausgefuehrt**."
             echo "Der Worker hat keinen Publishing-Endpunkt."
