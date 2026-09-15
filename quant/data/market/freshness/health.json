@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-15T18:25:55.188Z",
+  "checkedAt": "2026-09-15T18:37:34.876Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-15",
-    "localTime": "14:25:55",
+    "localTime": "14:37:34",
     "lastCompletedSession": "2026-09-14",
     "currentSession": "2026-09-15",
     "expectedIntradaySession": "2026-09-15"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-15T14:30:12.799Z",
+    "indexGeneratedAt": "2026-09-15T18:37:30.817Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-15",
@@ -22,58 +22,45 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-15",
-      "asOf": "2026-09-15T14:30:00.000Z",
-      "asOfLocal": "10:30",
+      "asOf": "2026-09-15T18:35:00.000Z",
+      "asOfLocal": "14:35",
       "regularComplete": false,
-      "snapshots": 506,
+      "snapshots": 558,
       "universe": false
     },
-    "dataState": "STALE",
-    "dataReason": "runningSessionStaleAsOf",
-    "dataLabel": "Heute · Stand 10:30 · nicht aktuell",
-    "entries": 516,
+    "dataState": "LIVE",
+    "dataReason": "runningSession",
+    "dataLabel": "Heute · Stand 14:35",
+    "entries": 521,
     "byState": {
-      "LIVE": 0,
+      "LIVE": 510,
       "LAST_SESSION": 0,
-      "STALE": 516,
+      "STALE": 11,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSessionStaleAsOf": 506,
-      "currentSessionMissing": 10
+      "runningSession": 510,
+      "runningSessionStaleAsOf": 10,
+      "currentSessionMissing": 1
     },
     "staleSample": [
-      "AAPL",
-      "ABBV",
-      "ABCL",
-      "ABNB",
-      "ABX",
-      "ACIC",
-      "ACMR",
-      "ACN",
-      "ACT",
-      "ACTG",
-      "ACVA",
-      "ADBE",
-      "ADC",
-      "ADI",
-      "ADMA",
-      "ADP",
-      "ADPT",
-      "ADSK",
-      "AEP",
-      "AFRM",
-      "AGEN",
-      "AGL",
-      "AIR",
       "AIRT",
-      "ALAB"
+      "ATHS",
+      "HCM",
+      "HURC",
+      "JFIN",
+      "NRP",
+      "RDIB",
+      "TVA",
+      "UFG",
+      "VIOT",
+      "RFAI"
     ],
     "universeSessions": [
       "2026-09-14"
     ],
     "universeCoversLastSession": true,
-    "state": "STALE"
+    "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-09-14",
@@ -97,9 +84,7 @@
       "seriesIndexCount": 6438
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Intraday STALE: Datenstand 2026-09-15, erwartet 2026-09-15 (runningSessionStaleAsOf)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
