@@ -1,12 +1,12 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-15T14:30:16.898Z",
+  "checkedAt": "2026-09-15T18:25:55.188Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-15",
-    "localTime": "10:30:16",
+    "localTime": "14:25:55",
     "lastCompletedSession": "2026-09-14",
     "currentSession": "2026-09-15",
     "expectedIntradaySession": "2026-09-15"
@@ -28,91 +28,78 @@
       "snapshots": 506,
       "universe": false
     },
-    "dataState": "LIVE",
-    "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 10:30",
+    "dataState": "STALE",
+    "dataReason": "runningSessionStaleAsOf",
+    "dataLabel": "Heute · Stand 10:30 · nicht aktuell",
     "entries": 516,
     "byState": {
-      "LIVE": 505,
+      "LIVE": 0,
       "LAST_SESSION": 0,
-      "STALE": 11,
+      "STALE": 516,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 505,
-      "currentSessionMissing": 10,
-      "runningSessionStaleAsOf": 1
+      "runningSessionStaleAsOf": 506,
+      "currentSessionMissing": 10
     },
     "staleSample": [
-      "AOUT",
-      "FOA",
-      "HURC",
-      "JFIN",
-      "JRSH",
-      "LOT",
-      "MRDN",
-      "NRP",
-      "TVA",
-      "UFG",
-      "CWBC"
+      "AAPL",
+      "ABBV",
+      "ABCL",
+      "ABNB",
+      "ABX",
+      "ACIC",
+      "ACMR",
+      "ACN",
+      "ACT",
+      "ACTG",
+      "ACVA",
+      "ADBE",
+      "ADC",
+      "ADI",
+      "ADMA",
+      "ADP",
+      "ADPT",
+      "ADSK",
+      "AEP",
+      "AFRM",
+      "AGEN",
+      "AGL",
+      "AIR",
+      "AIRT",
+      "ALAB"
     ],
     "universeSessions": [
       "2026-09-14"
     ],
     "universeCoversLastSession": true,
-    "state": "OK"
+    "state": "STALE"
   },
   "daily": {
-    "universeAsOf": "2026-09-11",
-    "generatedAt": "2026-09-15T11:22:34.204Z",
-    "state": "STALE",
-    "reason": "lastSessionMissing",
-    "label": "Schluss Fr., 11.09. · nicht aktuell",
+    "universeAsOf": "2026-09-14",
+    "generatedAt": "2026-09-15T18:25:48.079Z",
+    "state": "LAST_SESSION",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Montag",
     "expectedSession": "2026-09-14",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 0,
-        "STALE": 40,
+        "LAST_SESSION": 40,
+        "STALE": 0,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastSessionMissing": 40
+        "lastCompletedSession": 40
       },
-      "staleSample": [
-        "AAPL",
-        "ABBV",
-        "ABCL",
-        "ABNB",
-        "ABX",
-        "ACIC",
-        "ACMR",
-        "ACN",
-        "ACT",
-        "ACTG",
-        "ACVA",
-        "ADBE",
-        "ADC",
-        "ADI",
-        "ADMA",
-        "ADP",
-        "ADPT",
-        "ADSK",
-        "AEP",
-        "AFRM",
-        "AGEN",
-        "AGL",
-        "AIR",
-        "AIRT",
-        "ALAB"
-      ],
-      "seriesIndexCount": 6437
+      "staleSample": [],
+      "seriesIndexCount": 6438
     }
   },
   "overall": "STALE",
   "findings": [
-    "Tageskurse STALE: asOf 2026-09-11, erwartet 2026-09-14 (lastSessionMissing)"
+    "Intraday STALE: Datenstand 2026-09-15, erwartet 2026-09-15 (runningSessionStaleAsOf)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
