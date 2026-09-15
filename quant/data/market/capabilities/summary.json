@@ -1,18 +1,18 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-15T04:55:35.412Z",
+  "generatedAt": "2026-09-15T14:17:44.436Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
-    "generatedAt": "2026-09-14T16:39:33.755Z",
+    "generatedAt": "2026-09-15T05:31:39.019Z",
     "total": 7803,
     "productUniverse": 6875
   },
   "sources": {
     "ingestStatus": "2026-09-13T21:04:18.454Z",
     "factors": "2026-09-13T21:04:31.031Z",
-    "intradaySession": "2026-09-11",
-    "discover": "2026-09-15T04:51:47.921Z"
+    "intradaySession": "2026-09-14",
+    "discover": "2026-09-15T11:22:34.204Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5613,
     "historicalQualityAccepted": 6510,
-    "intradayAvailable": 5177,
-    "liveCapable": 446,
+    "intradayAvailable": 5206,
+    "liveCapable": 515,
     "factorEligible": 6397,
     "fundamentals": 5376,
     "fundamentals10y": 2154,
@@ -36,8 +36,8 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 4731,
-    "NO_IEX_BARS": 1698,
+    "NOT_IN_LIVE_SCOPE": 4691,
+    "NO_IEX_BARS": 1669,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 928,
     "INSUFFICIENT_HISTORY": 822,
@@ -158,7 +158,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -168,9 +168,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Meta",
@@ -360,7 +358,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -370,9 +368,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Micron",
