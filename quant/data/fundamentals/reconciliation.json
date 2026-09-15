@@ -54,9 +54,9 @@
       "accepted": {
         "PRODUCT_TITLES": 6875,
         "R2_SERIES_AVAILABLE": 7802,
-        "HISTORICAL_CHART_AVAILABLE": 6997,
+        "HISTORICAL_CHART_AVAILABLE": 6871,
         "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.94,
-        "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5884,
         "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.59
       },
       "computed": {
@@ -65,11 +65,11 @@
         "PRODUCT_TITLES": 6875
       },
       "delta": {
-        "HISTORICAL_CHART_AVAILABLE": -126,
-        "TECHNICAL_HISTORY_ELIGIBLE": -79
+        "HISTORICAL_CHART_AVAILABLE": 0,
+        "TECHNICAL_HISTORY_ELIGIBLE": 0
       },
-      "reconciled": false,
-      "explanation": "Die eigene Rechnung weicht vom abgenommenen Stand ab. Moegliche Ursachen, in dieser Reihenfolge zu pruefen: (1) das Produktuniversum hier ist nicht dasselbe wie das, gegen das die Kennzahlen gerechnet wurden, (2) eine Ausnahmeliste wurde unvollstaendig gelesen, (3) der Identitaetsjoin trifft nicht jeden Titel. KEIN neuer Nenner ohne geklaerte Ursache (\u00a74).",
+      "reconciled": true,
+      "explanation": null,
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
         {
@@ -373,5 +373,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-09-15T05:32:49+00:00"
+  "generatedAtUtc": "2026-09-15T05:41:55+00:00"
 }

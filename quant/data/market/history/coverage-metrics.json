@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-09-11T14:43:34.862Z",
+ "generatedAt": "2026-09-15T05:41:48.596Z",
  "engine": "coverage-metrics-1.0.0",
  "gate": "FULL_UNIVERSE",
  "provider": "tiingo",
  "market": "US",
- "today": "2026-09-11",
+ "today": "2026-09-15",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "storageSource": {
@@ -15,16 +15,16 @@
  },
  "eligibilitySource": {
   "file": "quant/data/market/security-master/eligibility.json",
-  "generatedAt": "2026-09-11T14:43:26.256Z",
-  "version": "us-security-master-1.1.0"
+  "generatedAt": "2026-09-15T05:31:39.019Z",
+  "version": "us-security-master-1.2.0"
  },
  "eligibilityCounts": {
   "universeMembers": 7803,
-  "ELIGIBLE": 6477,
-  "SEPARATE_CLASS": 308,
-  "EXCLUDED": 799,
-  "REVIEW": 219,
-  "productUniverse": 7004
+  "ELIGIBLE": 5940,
+  "SEPARATE_CLASS": 782,
+  "EXCLUDED": 928,
+  "REVIEW": 153,
+  "productUniverse": 6875
  },
  "version": "coverage-metrics-1.0.0",
  "thresholds": {
@@ -40,44 +40,47 @@
   "denominator": 7803,
   "stored": 7802,
   "missing": 1,
-  "missingProviderUnavailable": 1,
-  "missingUnexplained": 0,
-  "missingSymbols": [],
+  "missingProviderUnavailable": 0,
+  "missingUnexplained": 1,
+  "missingSymbols": [
+   "GLMD"
+  ],
   "STORAGE_COVERAGE_PERCENT": 99.99
  },
  "CHART_AVAILABILITY": {
-  "denominator": 7004,
-  "renderable": 6997,
-  "notRenderable": 7,
+  "denominator": 6875,
+  "renderable": 6871,
+  "notRenderable": 4,
   "notRenderableSymbols": [
    "GLMD",
    "BNRG",
    "BRTM",
-   "JAB",
-   "JABRR",
-   "JABRU",
-   "JABRW"
+   "JAB"
   ],
-  "CHART_AVAILABILITY_PERCENT": 99.9
+  "CHART_AVAILABILITY_PERCENT": 99.94
  },
  "TECHNICAL_HISTORY_ELIGIBILITY": {
-  "denominator": 7004,
-  "eligible": 5963,
-  "tooShort": 1041,
-  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 85.14
+  "denominator": 6875,
+  "eligible": 5884,
+  "tooShort": 991,
+  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 85.59
  },
  "LONG_HISTORY": {
   "universeSize": 7803,
-  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 6134,
-  "PASS": 6103,
-  "FAIL": 31,
-  "LONG_HISTORY_COVERAGE_PERCENT": 99.49,
+  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 6053,
+  "PASS": 6019,
+  "FAIL": 34,
+  "LONG_HISTORY_COVERAGE_PERCENT": 99.44,
   "notEligibleByReason": {
-   "NOT_IN_PRODUCT_UNIVERSE": 799,
-   "LISTING_TOO_YOUNG": 869,
-   "PROVIDER_HAS_NO_SERIES": 1
+   "NOT_IN_PRODUCT_UNIVERSE": 928,
+   "LISTING_TOO_YOUNG": 822
   },
   "failSymbols": [
+   {
+    "ticker": "GLMD",
+    "bars": 0,
+    "startDate": "2014-03-13"
+   },
    {
     "ticker": "LILAV",
     "bars": 79,
@@ -154,11 +157,6 @@
     "startDate": "2023-06-29"
    },
    {
-    "ticker": "ABLLW",
-    "bars": 165,
-    "startDate": "2023-07-05"
-   },
-   {
     "ticker": "AAPGV",
     "bars": 147,
     "startDate": "2025-01-24"
@@ -169,14 +167,14 @@
     "startDate": "2025-03-25"
    },
    {
-    "ticker": "BRRWU",
-    "bars": 235,
-    "startDate": "2025-07-31"
+    "ticker": "CHOW",
+    "bars": 248,
+    "startDate": "2025-09-16"
    },
    {
-    "ticker": "BULLZ",
-    "bars": 199,
-    "startDate": "2025-04-11"
+    "ticker": "DIVE",
+    "bars": 248,
+    "startDate": "2025-09-16"
    },
    {
     "ticker": "ESEAV",
@@ -224,9 +222,24 @@
     "startDate": "2024-11-22"
    },
    {
+    "ticker": "MYCO",
+    "bars": 247,
+    "startDate": "2025-09-17"
+   },
+   {
     "ticker": "RHLDV",
     "bars": 152,
     "startDate": "2025-02-20"
+   },
+   {
+    "ticker": "STUB",
+    "bars": 247,
+    "startDate": "2025-09-17"
+   },
+   {
+    "ticker": "WBI",
+    "bars": 247,
+    "startDate": "2025-09-17"
    },
    {
     "ticker": "WDCVV",
@@ -237,7 +250,7 @@
   "threshold": 0.9,
   "thresholdSource": "tiingo-scale.json:pass.minHistoryCoverageRate",
   "ok": true,
-  "failSymbolsTotal": 31
+  "failSymbolsTotal": 34
  },
  "legacy": {
   "metric": "historyCoverageRate ueber das gesamte Universum",
