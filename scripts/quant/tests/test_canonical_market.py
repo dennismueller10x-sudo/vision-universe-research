@@ -33,11 +33,21 @@ MARKTFAEHIGKEIT = ROOT / "quant" / "data" / "universe" / "market-capability.json
 
 # Der abgenommene Stand. Diese Zahlen sind NICHT verhandelbar und
 # duerfen nicht durch eine lokale Ableitung ersetzt werden.
+#
+# Neu abgenommen am 15.09.2026 mit der Produkt-Datenhygiene des Eigentuemers
+# (docs/VU_DISCOVER_V3_NETFLIX_BUILD.md §1): 44 Testsymbole und die
+# belegten Nicht-Aktien (Warrants, Units, Rights) sind EXCLUDED, 123
+# Vorzuege mit NASDAQ-Suffix P/O/N/M sind SEPARATE_CLASS. Produkttitel
+# 7 004 -> 6 875; die Deckungen wurden mit denselben kanonischen
+# Artefakten (coverage-metrics.json, technical-coverage) ueber das neue
+# Produktuniversum neu gemessen (build-company-master + build-universe-
+# indexes, market-capability.json). Der vorherige Stand (7 004 / 6 997 /
+# 5 963) steht im Abnahmebericht.
 AKZEPTIERT = {
-    "PRODUCT_TITLES": 7004,
+    "PRODUCT_TITLES": 6875,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6997,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+    "HISTORICAL_CHART_AVAILABLE": 6871,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5884,
 }
 
 
@@ -56,6 +66,13 @@ class QuelleVorhandenTests(unittest.TestCase):
         self.assertEqual(h["sourceCommit"], "0b7d09a56e362e955880660e721a4bfc1de64a53")
         self.assertEqual(h["readOnly"]["priceRequests"], 0)
         self.assertEqual(h["readOnly"]["r2Writes"], 0)
+        # Seit der Neuabnahme (15.09.2026) rechnet coverage-metrics.yml die
+        # Kennzahlen gegen das aktuelle Produktuniversum neu; auch dieser
+        # Lauf muss seine Herkunft nennen.
+        if "regenerated" in h:
+            r = h["regenerated"]
+            self.assertEqual(r["workflow"], "coverage-metrics.yml")
+            self.assertTrue(r.get("runId") and r.get("commit"), "Neurechnung ohne Lauf-ID oder Commit")
 
     def test_die_quelle_traegt_den_abgenommenen_stand(self):
         m = lade(METRIKEN)

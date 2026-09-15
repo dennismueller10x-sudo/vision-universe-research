@@ -215,8 +215,8 @@ class BerichtTests(unittest.TestCase):
         """
         o = rec.overlap_report(self.records, None)
         a = o["acceptedMarketDataState"]
-        self.assertEqual(a["accepted"]["HISTORICAL_CHART_AVAILABLE"], 6997)
-        self.assertEqual(a["accepted"]["TECHNICAL_HISTORY_ELIGIBLE"], 5963)
+        self.assertEqual(a["accepted"]["HISTORICAL_CHART_AVAILABLE"], 6871)
+        self.assertEqual(a["accepted"]["TECHNICAL_HISTORY_ELIGIBLE"], 5884)
         self.assertFalse(a["reconciled"])
         self.assertNotEqual(a["delta"]["HISTORICAL_CHART_AVAILABLE"], 0)
         self.assertIn("neuer Nenner", a["explanation"])

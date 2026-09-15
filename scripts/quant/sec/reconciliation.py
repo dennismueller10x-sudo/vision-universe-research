@@ -490,13 +490,17 @@ def overlap_report(records, market):
 # nachgerechnet und nicht veraendert (§1) - er steht hier, damit die
 # Differenz zur eigenen Ableitung sichtbar ist statt stillschweigend
 # verschwindet.
+# Neuabnahme 15.09.2026 nach der Produkt-Datenhygiene des Eigentuemers
+# (Testsymbole und belegte Nicht-Aktien EXCLUDED, Vorzuege P/O/N/M
+# SEPARATE_CLASS; Produkttitel 7 004 -> 6 875) - gemessen mit denselben
+# kanonischen Artefakten, siehe docs/VU_RECONCILIATION_ACCEPTANCE_REPORT.md §11.
 ACCEPTED_R2 = {
-    "PRODUCT_TITLES": 7004,
+    "PRODUCT_TITLES": 6875,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6997,
-    "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.90,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5963,
-    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.14,
+    "HISTORICAL_CHART_AVAILABLE": 6871,
+    "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.94,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5884,
+    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.59,
 }
 
 

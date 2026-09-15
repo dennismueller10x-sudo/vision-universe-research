@@ -257,3 +257,29 @@ die 926 `SEC_RECOVERABLE`-Titel abgearbeitet sind.
 
 *Gemessen am 2026-09-13 aus
 `quant/data/fundamentals/`. Fundamentalstand: Lauf 34716547144.*
+
+## 11 — NEUABNAHME 15.09.2026 (Produkt-Datenhygiene)
+
+Der Eigentümer hat am 14./15.09.2026 die Produkt-Datenhygiene abgenommen
+(`docs/VU_DISCOVER_V3_NETFLIX_BUILD.md` §1): 44 Testsymbole und belegte
+Nicht-Aktien (Warrants, Units, Rights) sind EXCLUDED, 123 Vorzüge mit
+NASDAQ-Suffix P/O/N/M SEPARATE_CLASS; Klassifizierer `us-security-master-1.2.0`,
+Eligibility neu gerechnet (Anbieterzeilen der Arbeitsablage neu beurteilt).
+
+| Kennzahl | abgenommen (§1–§4) | neu gemessen 15.09.2026 |
+|---|---|---|
+| PRODUCT_TITLES | 7 004 | **6 875** |
+| R2_SERIES_AVAILABLE (gegen den Wertpapierstamm, 7 803) | 7 802 | 7 802 |
+| HISTORICAL_CHART_AVAILABLE | 6 997 | **6 871** |
+| TECHNICAL_HISTORY_ELIGIBLE | 5 963 | **5 884** |
+
+Messung: dieselben kanonischen Artefakte (`coverage-metrics.json`,
+`technical-coverage-ELIGIBLE_US_EQUITY.json`, `CANONICAL_SOURCE.json`
+unverändert, 0 Kursabfragen, 0 R2-Schreibvorgänge) über das neue
+Produktuniversum (`universe-ELIGIBLE_US_EQUITY.json`, 6 875), Company Master
+und Indizes neu gebaut (`build-company-master.mjs`, `build-universe-indexes.mjs`
+→ `market-capability.json`, Quelle CANONICAL), Abgleich `cli.py reconcile`.
+Die Differenz (129 Produkttitel, 126 Kurshistorien, 79 Technik-Titel) ist
+genau die ausgeschlossene bzw. umgestufte Menge — kein Datenverlust, eine
+Produktentscheidung. `test_canonical_market.py` trägt die neuen Zahlen.
+
