@@ -313,22 +313,53 @@ dann nicht mehr ueberschreiben.
 
 ## Damit ist META_CONNECTED erreicht
 
+Stand 2026-09-15, nach Deployment-Lauf
+[34975576298](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/34975576298).
+
+### Was bereits nachgewiesen ist
+
 | Kriterium | Nachweis |
 |---|---|
-| OAuth produktiv funktionsfaehig | Schritt 6 endet auf "Die Verbindung steht." |
-| Instagram-Konto verbunden | Kontoname und ID auf der Erfolgsseite |
-| Token sicher gespeichert | Cloudflare KV; kein Endpunkt gibt es heraus |
-| Instagram Account automatisch aufgeloest | ueber die Facebook-Seite, ohne Handeingabe |
-| Reale Permissions verifiziert | Schritt 7, Zeile "Tatsaechliche Rechte" |
-| Insights lesbar | Schritt 7, "Insights Capability" |
-| Publishing Capability nachgewiesen | Schritt 7, ueber das erteilte Recht |
-| **Kein echter Post veroeffentlicht** | `"published": false` |
-| Tests gruen | `node --test "social/tests/*.test.mjs"` und `workers/**/tests/*` |
+| Worker laeuft | `/health` antwortet 200, `"alive": true` |
+| KV gebunden | `VU_SOCIAL_KV` fehlt nicht in `missingConfiguration` |
+| `META_APP_ID` erhalten | vor und nach dem Deployment verglichen |
+| `META_APP_SECRET` erhalten | dito — "Alle zuvor vorhandenen Secrets sind weiterhin gesetzt" |
+| Keine fremde Logik ueberschrieben | Preflight: `cloudflare-default-template`, Sicherung als Artefakt |
+| OAuth-Start erreichbar und verschlossen | `/social/meta/connect` ohne Schluessel: kein 302 |
+| Callback-Route erreichbar | `/social/meta/callback` ohne Parameter: kein 302, kein Meta-Kontakt |
+| Statusendpunkt verschlossen | `/social/meta/status` gibt ohne Schluessel keine Kontodaten |
+| Trennen nicht per GET | `/social/meta/disconnect` |
+| Kein Publishing-Endpunkt | es gibt keinen Weg, ueber diesen Worker zu veroeffentlichen |
+| Antworten nicht zwischengespeichert | `cache-control: no-store` |
+| **Kein Meta-Login ausgefuehrt** | `"metaLoginAttempted": false` im Verifikationsbericht |
+| **Kein Beitrag veroeffentlicht** | `"published": false` |
+| Tests gruen | 190 Social-Tests, 44 Worker-Tests, 898 Quant-Tests |
 | Keine Secrets offengelegt | `node scripts/social/assert-no-secrets.mjs` |
-| Bestehende VU-Systeme unveraendert | `node --test "quant/tests/*.test.mjs"` |
+| Bestehende VU-Systeme unveraendert | `node --test "quant/tests/*.test.mjs"` — 898/898 |
 
-**Ein erfolgreiches Deployment allein ist nicht das Ziel.** Das Ziel ist die Liste
-oben, vollstaendig.
+Solange der Admin-Schluessel fehlt, antworten die Admin-Endpunkte `503` statt
+`401`. Beides beweist dasselbe: die Route ist da und sie gibt ohne Schluessel
+nichts heraus.
+
+### Was noch aussteht — und woran es haengt
+
+| Kriterium | Nachweis | Haengt an |
+|---|---|---|
+| OAuth produktiv funktionsfaehig | Schritt 3 endet auf "Die Verbindung steht." | Schritt 1, 2, 3 |
+| Instagram-Konto verbunden | Kontoname und ID auf der Erfolgsseite | Schritt 3 |
+| Token sicher gespeichert | Cloudflare KV; kein Endpunkt gibt ihn heraus | Schritt 3 |
+| Instagram-Konto automatisch aufgeloest | ueber die Facebook-Seite, ohne Handeingabe | Schritt 3 |
+| Reale Permissions verifiziert | Schritt 4, Zeile "Tatsaechliche Rechte" | Schritt 3 |
+| Insights lesbar | Schritt 4, "Insights Capability" | Schritt 3 |
+| Publishing Capability nachgewiesen | Schritt 4, ueber das erteilte Recht | Schritt 3 |
+
+Alle sieben haengen an derselben Handlung: Ihrer Autorisierung bei Meta. Bis
+dahin steht in der Faehigkeitsmatrix ueberall `null` — **ungeprueft**, nicht
+"nicht vorhanden". Diese Unterscheidung ist der Grund, warum das System nicht
+anfaengt, sich Faehigkeiten auszurechnen, die es nicht nachgewiesen hat.
+
+**Ein erfolgreiches Deployment allein ist nicht das Ziel.** Das Ziel sind beide
+Tabellen, vollstaendig.
 
 ---
 
