@@ -23,11 +23,13 @@ on:
     paths:
       - 'social/**'
       - 'scripts/social/**'
+      - 'workers/**'
       - '.github/workflows/social-ci.yml'
   pull_request:
     paths:
       - 'social/**'
       - 'scripts/social/**'
+      - 'workers/**'
       - '.github/workflows/social-ci.yml'
   workflow_dispatch:
 
@@ -42,6 +44,17 @@ jobs:
 
       - name: Engine-, Provider- und Kreislauftests
         run: node --test "social/tests/*.test.mjs"
+
+      - name: Worker-Tests (OAuth, CSRF, Token, Schwaerzung)
+        # Der Worker laeuft in der CI OHNE Cloudflare und OHNE Meta: er
+        # benutzt ausschliesslich Web-Standards, die Node 22 mitbringt.
+        # KV und Graph-API werden eingesetzt (tests/harness.mjs).
+        run: node --test "workers/vision-universe-social/tests/*.test.mjs"
+
+      - name: Worker-Preflight (lokale Pruefungen)
+        # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
+        # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.
+        run: node scripts/social/preflight-worker.mjs
 
       - name: Konfigurations- und Methodikdateien sind gueltiges JSON
         run: |
@@ -82,6 +95,23 @@ jobs:
               throw new Error("PROVIDER_META ist eingeschaltet, obwohl der Provider nie gegen die echte API lief.");
             }
             console.log("Kill Switch: global AUS, Meta AUS.");
+          '
+
+      - name: Der Verbindungsabruf laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie ueberall: ein fehlender Zugang ist eine
+        # Konfigurationsfrage, kein Baufehler. Das erzeugte Artefakt sagt
+        # ausdruecklich, dass es ueber die Verbindung nichts aussagen kann.
+        run: |
+          node scripts/social/fetch-meta-status.mjs
+          node -e '
+            const { execSync } = require("child_process");
+            execSync("node scripts/social/fetch-meta-status.mjs --out /tmp/social-meta");
+            const report = require("/tmp/social-meta/meta-connection.json");
+            if (report.state !== "not_configured") {
+              throw new Error("Ohne Zugang muss der Zustand not_configured sein, war: " + report.state);
+            }
+            if (report.connected !== false) throw new Error("connected darf ohne Zugang nicht true sein.");
+            console.log("Verbindungsbericht korrekt: " + report.state);
           '
 
       - name: Die Signalsammlung laeuft ohne Zugang fehlerfrei durch

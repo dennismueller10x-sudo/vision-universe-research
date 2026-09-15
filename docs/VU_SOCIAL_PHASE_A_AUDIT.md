@@ -31,7 +31,18 @@ genau das verbietet §0.
 
 ## 2. Drei Korrekturen am Auftrag
 
-### 2.1 Es gibt keine Cloudflare-Anwendungsinfrastruktur
+### 2.1 Es gibt keine Cloudflare-Anwendungsinfrastruktur IM REPOSITORY
+
+> **NACHTRAG 2026-09-15, nach Owner-Information.** Die Aussage dieses Abschnitts
+> war und ist fuer das REPOSITORY richtig. Sie war unvollstaendig fuer die
+> INFRASTRUKTUR: ausserhalb des Repositories existiert bereits ein
+> vorbereiteter Cloudflare Worker `vision-universe-social` mit hinterlegten
+> Secrets `META_APP_ID` und `META_APP_SECRET`.
+>
+> Ein Repository-Audit kann externe Infrastruktur nicht sehen — es liest, was
+> committet ist. Die Lehre daraus steht in Abschnitt 5.
+>
+> Was daraus folgt und was ausdruecklich NICHT: Abschnitt 2.2 (korrigiert).
 
 Der Auftrag (§35) setzt Workers, Queues, Cron Triggers, KV, D1, R2 und Durable
 Objects als Bestand voraus. Im Repository existiert davon **genau eines**: R2 —
@@ -49,7 +60,21 @@ Auslieferung. Ein Worker wird erst eingefuehrt, wenn eine Funktion ihn zwingend
 verlangt (siehe 2.2). Das ist §35 Satz 2 und 3 gehorcht: *"Keine Technologie einsetzen,
 nur weil sie existiert"* — und erst recht keine, die noch gar nicht existiert.
 
-### 2.2 OAuth-Callback braucht eine Server-Laufzeit, die es nicht gibt — OWNER-ENTSCHEIDUNG
+### 2.2 OAuth-Callback braucht eine Server-Laufzeit — ENTSCHIEDEN
+
+> **ENTSCHIEDEN 2026-09-15.** Der Owner hat den vorhandenen Worker
+> `vision-universe-social` als Runtime bestimmt. Die urspruenglich empfohlene
+> Option A (manuelle Token-Beschaffung) ist damit **nicht** die Zielarchitektur.
+>
+> Umgesetzt in `workers/vision-universe-social/`. Die Capability
+> `serverSideTokenExchange` steht jetzt auf `SUPPORTED` und nennt in ihrer Notiz
+> den Ort, an dem sie erfuellt wird.
+>
+> Der Text unten beschreibt die Lage VOR dieser Entscheidung und bleibt stehen,
+> weil er begruendet, warum der Worker noetig ist.
+
+#### Die Lage vor der Entscheidung
+
 
 §9 verlangt Facebook Login for Business mit Callback-Handling, `state`-Pruefung und
 Token-Tausch. Ein OAuth-Redirect-Callback ist per Definition ein **HTTP-Endpunkt, der
@@ -66,7 +91,14 @@ serverseitig im Workflow.
 
 Der Zustand wird nicht kaschiert. Er heisst `MANUAL_REQUIRED`, nicht `SUPPORTED`.
 
-### 2.3 Es existiert keine vorbereitete Meta-Konfiguration
+### 2.3 Es existiert keine vorbereitete Meta-Konfiguration IM REPOSITORY
+
+> **NACHTRAG 2026-09-15.** Auch hier gilt die Unterscheidung aus 2.1:
+> `META_APP_ID` und `META_APP_SECRET` sind im **Worker** hinterlegt. Im
+> Repository existieren sie weiterhin nicht und sollen es nicht — die
+> Secret-Namen sind dokumentiert, die Werte liegen ausschliesslich in der
+> Cloudflare-Secret-Verwaltung.
+
 
 §9 spricht von *"bereits vorhandene Meta-Konfiguration und Cloudflare-Secrets"*.
 Eine vollstaendige Suche ueber Code, Workflows, Doku und Konfiguration findet:
@@ -107,3 +139,30 @@ gueltiger, sichtbarer Zustand ist und kein Fehler.
   bis der Owner sie in einem eigenen Commit setzt (§16, §33).
 - Keine erfundenen Trenddaten. Ohne angebundene Quelle meldet die Trend-Engine
   `UNAVAILABLE` und liefert keine Zahl (§45).
+
+---
+
+## 5. Was dieses Audit nicht sehen konnte — und was daraus folgt
+
+Dieses Audit hat das Repository gelesen. Es hat daraus geschlossen, dass es keine
+Cloudflare-Anwendungsinfrastruktur gibt.
+
+**Der Schluss war falsch, obwohl die Beobachtung richtig war.** Ein
+Repository-Audit sieht, was committet ist. Es sieht keine Cloudflare-Konten,
+keine hinterlegten Secrets, keine laufenden Dienste.
+
+Die Formulierung haette das trennen muessen:
+
+- *"Im Repository existiert keine Cloudflare-Integration"* — belegt
+- *"Es gibt keine Cloudflare-Anwendungsinfrastruktur"* — nicht belegbar aus dem
+  Repository
+
+Dieselbe Unterscheidung, die dieses Projekt an jeder anderen Stelle trifft
+(`null` heisst ungeprueft, nicht "nicht vorhanden" — MASTER §31.6), war hier
+nicht getroffen. Fuer kuenftige Audits: **externe Infrastruktur ist ein
+ungeprueftes Feld, kein leeres.** Sie gehoert in die Liste der Owner-Fragen und
+nicht in die Liste der Befunde.
+
+Der Bauplan hat trotzdem getragen: weil der Meta-Adapter den Token-Tausch
+vollstaendig implementiert hat und nur den Ort offenliess, kostete die Korrektur
+keine Umarbeitung — der Worker fuehrt denselben Ablauf in seiner Laufzeit aus.

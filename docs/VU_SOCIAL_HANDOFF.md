@@ -3,6 +3,10 @@
 Stand: 2026-09-15 · Zweig `claude/vision-universe-social-os-eudjmx`
 Pflichtdokument nach §56.
 
+> **AKTUALISIERT nach Owner-Information zum Cloudflare Worker.**
+> Der OAuth-Flow laeuft jetzt produktionsreif im Worker `vision-universe-social`.
+> Die Anleitung zum Verbinden: **`docs/VU_SOCIAL_META_CONNECT.md`**.
+
 ---
 
 ## 1. Architektur
@@ -20,12 +24,16 @@ Vision-Universe-Architektur — nicht als zweites System (§0, §48).
 **Drei Annahmen des Auftrags trafen im Repository nicht zu** und wurden korrigiert
 statt uebernommen (Details im Audit, Abschnitt 2):
 
-1. Es gibt keine Cloudflare-Anwendungsinfrastruktur — nur R2 als S3-kompatible
-   Ablage hinter einem eigenen Treiber. Kein Worker, kein D1, kein KV, kein
-   `wrangler.toml`.
-2. Ein OAuth-Callback braucht eine Server-Laufzeit, die es nicht gibt →
-   Owner-Entscheidung 1.
-3. Es existierte keine vorbereitete Meta-Konfiguration und keine Meta-Secrets.
+1. Im **Repository** gibt es keine Cloudflare-Anwendungsinfrastruktur — nur R2 als
+   S3-kompatible Ablage hinter einem eigenen Treiber.
+   **Korrektur nach Owner-Information:** Ausserhalb des Repositories existiert der
+   Worker `vision-universe-social` mit hinterlegten Secrets. Ein Repository-Audit
+   kann externe Infrastruktur nicht sehen; die Lehre daraus steht im Audit,
+   Abschnitt 5.
+2. Ein OAuth-Callback braucht eine Server-Laufzeit → **entschieden**: der Worker.
+   Umgesetzt in `workers/vision-universe-social/`.
+3. Im Repository existierte keine Meta-Konfiguration — und soll es nicht. Die
+   Werte liegen in der Cloudflare-Secret-Verwaltung.
 
 ## 2. Implementierte Komponenten
 
@@ -41,7 +49,8 @@ statt uebernommen (Details im Audit, Abschnitt 2):
 | Analytics & Lernen | `analytics.js`, `performance.js`, `learning.js`, `experiments.js` | IMPLEMENTED, ohne Produktionsdaten |
 | Erklaerung & Zustand | `explain.js`, `health.js` | IMPLEMENTED |
 | Command Center | `social/index.html`, `social/app.js`, `social/ui/social.css` | IMPLEMENTED — BETA (mobile-first) |
-| Pipelines | `scripts/social/*.mjs` (4 Skripte) | IMPLEMENTED |
+| Pipelines | `scripts/social/*.mjs` (6 Skripte) | IMPLEMENTED |
+| **Cloudflare Worker** | `workers/vision-universe-social/` | **IMPLEMENTED**, nicht deployt |
 | CI | `.github/workflows/social-ci.yml` | IMPLEMENTED |
 
 ## 3. Provider
@@ -54,37 +63,57 @@ statt uebernommen (Details im Audit, Abschnitt 2):
 
 ## 4. Meta-Authentifizierungsstatus
 
+**Der vollstaendige OAuth-Flow ist implementiert und getestet — im Worker
+`vision-universe-social`.**
+
 | Schritt | Zustand |
 |---|---|
-| Autorisierungslink mit `state` und Rechteumfang | `SUPPORTED`, getestet |
-| CSRF-Pruefung (`timingSafeEqual`) | `SUPPORTED`, getestet |
-| Code → Token → langlebiges Token | implementiert und getestet, **`MANUAL_REQUIRED`** mangels Server-Laufzeit |
-| Token-Verlaengerung inkl. Rotationsmeldung | `SUPPORTED`, getestet |
-| Widerruf | `PARTIALLY_SUPPORTED` |
-| Rechte-Introspektion | `SUPPORTED`, getestet |
-| Instagram-Professional-Kontoaufloesung ueber Facebook-Seite | `SUPPORTED`, getestet |
-| Webhook-Signaturpruefung | `SUPPORTED`, getestet |
+| Autorisierungslink mit `state` und Rechteumfang | `SUPPORTED`, getestet (W5) |
+| CSRF: HMAC-signierter `state` + `__Host-`-Cookie | `SUPPORTED`, getestet (W6, W11–W15) |
+| Bei CSRF-Verdacht geht **kein** Graph-Aufruf hinaus | getestet (W11, W12) |
+| Code → kurzlebiges → langlebiges Token, serverseitig | `SUPPORTED`, getestet (W16) |
+| Ableitung und Speicherung des **Page**-Tokens | `SUPPORTED`, getestet (W16) |
+| Instagram-Professional-Kontoaufloesung ueber die Seite | `SUPPORTED`, getestet (W16, W19) |
+| Tatsaechlich erteilte Rechte lesen | `SUPPORTED`, getestet (W21–W23) |
+| Capabilities aus erteilten Rechten ableiten | `SUPPORTED`, getestet (W21–W25) |
+| Lebendtest vor dem Speichern | `SUPPORTED`, getestet (W20) |
+| Connection Health speichern | `SUPPORTED`, getestet (W26) |
+| Widerruf und Trennen | `SUPPORTED`, getestet (W28) |
+| Webhook-Signaturpruefung | `SUPPORTED`, getestet (Adapter M17) |
 | Webhook-Abonnement | `MANUAL_REQUIRED` (App-Dashboard) |
 
-**`verifiedAt: null`** — keine dieser Angaben wurde gegen die echte API geprueft.
-Sie stammen aus der Dokumentation der Graph API: eine begruendete Erwartung, kein
-Nachweis. `scripts/social/verify-meta-capabilities.mjs` traegt das Datum ein,
-sobald es einmal mit Zugang gelaufen ist.
+**Nicht erfolgt:** Deployment und die persoenliche Meta-Autorisierung. Beides sind
+Owner-Handlungen; die Anleitung steht in `docs/VU_SOCIAL_META_CONNECT.md`.
+
+**`verifiedAt: null`** — die Capability-Deklaration im Repository stammt weiterhin
+aus der Dokumentation der Graph API. Der Worker leitet daneben die Faehigkeiten
+aus den **tatsaechlich erteilten Rechten** ab; das ist der Nachweis, der zaehlt.
 
 ## 5. Secrets Contract — NUR NAMEN
 
 **In diesem Repository existiert kein einziger Secret-Wert. Diese Namen sind als
 GitHub-Actions-Secrets zu hinterlegen.**
 
-Neu fuer Social:
+**Im Cloudflare Worker** (`wrangler secret put`):
 
 ```
-META_APP_ID                 oeffentlich, aber der Vollstaendigkeit halber als Secret
-META_APP_SECRET             niemals ausgeben, niemals loggen
-META_LONG_LIVED_TOKEN       Schreibzugriff auf das Profil — der kritischste Wert
-META_IG_ACCOUNT_ID          Instagram-Professional-Konto-ID
-META_WEBHOOK_SECRET         erst fuer Webhooks noetig
+META_APP_ID            bereits gesetzt (Owner)
+META_APP_SECRET        bereits gesetzt (Owner)
+VU_SOCIAL_ADMIN_KEY    NOCH ZU SETZEN, mindestens 32 Zeichen
+META_WEBHOOK_SECRET    erst fuer Webhooks noetig
 ```
+
+**Als GitHub-Actions-Secrets** (damit das Command Center den Zustand zeigt):
+
+```
+VU_SOCIAL_WORKER_URL   die oeffentliche Worker-URL
+VU_SOCIAL_ADMIN_KEY    derselbe Wert wie im Worker
+```
+
+**`META_LONG_LIVED_TOKEN` wird NICHT mehr gebraucht.** Das Token liegt im Worker
+und verlaesst ihn nie — es gehoert nicht in GitHub-Secrets. Der Name bleibt im
+Adapter als Vertrag fuer den direkten Pfad bestehen, wird im Betrieb aber nicht
+gesetzt.
 
 Bestehende, unveraendert weiterverwendete Namen:
 
@@ -163,11 +192,16 @@ ist §45 in Funktion und kein Defekt.
 | `health-autonomy.test.mjs` | 16 | Health Matrix, Autonomiestufen, echte Konfiguration, Erklaerbarkeit |
 | `secrets.test.mjs` | 10 | Schluesselhygiene, Adapter-Isolation, Protokollschwaerzung |
 | `loop.test.mjs` | 3 | der geschlossene Kreislauf, Gegenprobe Kill Switch |
-| **Gesamt** | **163** | alle Pflichtthemen aus §43 |
+| **Social gesamt** | **163** | alle Pflichtthemen aus §43 |
+| `workers/…/oauth.test.mjs` | 31 | OAuth, CSRF, Token-Speicherung, Capabilities, Disconnect |
+| `workers/…/security.test.mjs` | 13 | Schwaerzung, Fehlerabbildung, XSS, Kopfzeilen, Dichtheit |
+| **Worker gesamt** | **44** | ohne Cloudflare, ohne Meta |
+| **Zusammen** | **207** | |
 
 ```
-node --test "social/tests/*.test.mjs"      163/163 gruen
-node --test "quant/tests/*.test.mjs"       unveraendert gruen (§48)
+node --test "social/tests/*.test.mjs"                     163/163 gruen
+node --test "workers/vision-universe-social/tests/*.test.mjs"  44/44 gruen
+node --test "quant/tests/*.test.mjs"                      898/898 unveraendert (§48)
 ```
 
 Die CI braucht **keine produktiven Zugangsdaten** (§43). Ein Lauf gegen Meta ist
@@ -186,21 +220,30 @@ Token-Rotation, Webhook-Einrichtung, Zugriff auf GitHub-Secrets.
 
 ## 12. Cloudflare Deployment
 
-**Keines — und das ist die richtige Antwort.**
+**Ein Worker, minimal abgegrenzt — und noch nicht deployt.**
 
-Es existiert keine Cloudflare-Anwendungsinfrastruktur im Projekt (siehe Audit).
-Das Social-System laeuft auf demselben Substrat wie alles andere: GitHub Actions
-als Scheduler und Compute, GitHub Pages als Auslieferung, R2 als S3-kompatible
-Ablage, wenn Persistenz ueber den Repository-Umfang hinaus noetig wird.
+`workers/vision-universe-social/` ist reproduzierbar deploybar: `wrangler.toml`
+ohne einen einzigen Secret-Wert, sechs Quelldateien, 44 Tests.
 
-Ein Cloudflare Worker wird erst eingefuehrt, wenn eine Funktion ihn zwingend
-verlangt — heute waere das nur der OAuth-Callback, und dafuer gibt es eine
-kostenlose Alternative (Owner-Entscheidung 1).
+**Vor dem ersten Deployment ist `node scripts/social/preflight-worker.mjs`
+Pflicht.** Der Worker existiert ausserhalb des Repositories; `wrangler deploy`
+ersetzt den dort liegenden Code vollstaendig und ohne Rueckfrage. Das Skript liest
+Groesse, Fingerabdruck, Bindungen und Secret-Namen und meldet ausdruecklich, wenn
+dort fremde Logik liegt — samt Sicherungsbefehl.
+
+In dieser Session war das nicht pruefbar: es gibt keine Cloudflare-Zugangsdaten,
+und die Cloudflare-API ist aus der Sandbox nicht erreichbar. **Der Preflight muss
+deshalb einmal mit Zugang gelaufen sein, bevor deployt wird.**
+
+Alles Uebrige bleibt, wo es war: GitHub Actions als Scheduler und Compute, GitHub
+Pages als Auslieferung, R2 als S3-kompatible Ablage. Es wurde nichts migriert.
 
 ## 13. Offene externe Voraussetzungen
 
-1. **Meta-App und Zugangsdaten** (Owner-Entscheidung 1) — blockiert den gesamten
-   produktiven Pfad.
+1. **Worker deployen und autorisieren** — blockiert den gesamten produktiven Pfad.
+   Anleitung: `docs/VU_SOCIAL_META_CONNECT.md`. Offen sind: KV-Namespace,
+   `VU_SOCIAL_ADMIN_KEY`, `PUBLIC_BASE_URL`, Redirect-URI in der Meta-App,
+   Preflight mit Zugang, Deployment, persoenliche Autorisierung.
 2. **Externe Trendquelle** (Owner-Entscheidung 3) — blockiert §5 in voller Tiefe.
    Das System funktioniert ohne sie, mit ausdruecklich benannter Luecke.
 3. **News-Provider** — Lizenzfrage; `NewsDataProvider` ist definiert.
@@ -227,10 +270,11 @@ durch und haelt jedes Paket in `READY`, mit Begruendung.
 
 ## 15. Naechste dependency-correcte Schritte
 
-1. **Meta-Zugangsdaten hinterlegen** (Owner-Entscheidung 1, Option A).
-   → alles Weitere haengt daran.
-2. `node scripts/social/verify-meta-capabilities.mjs` ausfuehren; bei `VERIFIED`
-   das Datum in `metaCapabilities({ verifiedAt: ... })` eintragen.
+1. **`docs/VU_SOCIAL_META_CONNECT.md` abarbeiten** (Schritte 1–9).
+   → alles Weitere haengt daran. Endet bei META_CONNECTED.
+2. Bei `verdict: VERIFIED` das Datum in `metaCapabilities({ verifiedAt: ... })`
+   eintragen — von Hand, in einem eigenen Commit. Eine Verifikation, die sich
+   selbst bestaetigt, ist keine.
 3. **`PROVIDER_META` einschalten**, `GLOBAL_AUTOPUBLISH` zunaechst **aus lassen**.
    Der Zyklus plant dann echte Beitraege in `READY`, ohne zu senden.
 4. **Ersten Beitrag von Hand freigeben** und veroeffentlichen. Analytics-Ingestion
@@ -349,3 +393,62 @@ verworfen, damit sie nicht versehentlich in einen Social-Commit geraet.
 **Empfohlene Behebung (Quant-Bereich, eigener Commit):** Den betreffenden
 Verifikationslauf auf ein temporaeres Verzeichnis richten — dasselbe Muster, das
 `scripts/dashboard/verify_adjustment_gate.py` bereits verwendet.
+
+---
+
+## Nachtrag 2026-09-15 — Worker-Integration, Stand META_CONNECTED
+
+### Was seit dem ersten Handoff dazugekommen ist
+
+| Gegenstand | Zustand |
+|---|---|
+| Cloudflare Worker mit vollstaendigem OAuth-Flow | implementiert, 44 Tests gruen |
+| Token-Speicherung in KV, Token verlaesst den Worker nie | implementiert, getestet |
+| Capabilities aus **tatsaechlich erteilten** Rechten | implementiert, getestet |
+| Preflight gegen Ueberschreiben des vorhandenen Workers | implementiert |
+| Verbindungszustand als Repository-Artefakt | implementiert |
+| Command Center zeigt die Meta-Verbindung | implementiert |
+| Owner-Anleitung | `docs/VU_SOCIAL_META_CONNECT.md` |
+| **Deployment** | **offen — Owner** |
+| **Persoenliche Meta-Autorisierung** | **offen — Owner Gate** |
+
+### Der Zielzustand META_CONNECTED
+
+| Kriterium | Stand |
+|---|---|
+| OAuth produktiv funktionsfaehig | Code fertig und getestet · **nicht deployt** |
+| Instagram-Konto verbunden | offen — Owner Gate |
+| Token sicher gespeichert | Mechanismus fertig (KV, kein Ausgabe-Endpunkt) |
+| Instagram Account automatisch aufgeloest | implementiert, getestet (W16, W19) |
+| Reale Permissions verifiziert | `/verify` fertig · braucht eine Verbindung |
+| Insights lesbar | `/verify` fertig · braucht eine Verbindung |
+| Publishing Capability nachgewiesen | ueber das erteilte Recht, nicht ueber einen Testbeitrag |
+| **Kein echter Post veroeffentlicht** | **erfuellt** — es gibt keinen Publishing-Endpunkt |
+| Tests gruen | 207 (163 Social + 44 Worker), Quant unveraendert 898 |
+| Keine Secrets offengelegt | erfuellt — `assert-no-secrets.mjs` und `preflight-worker.mjs` |
+| Bestehende VU-Systeme unveraendert | erfuellt |
+
+**META_CONNECTED ist damit nicht erreicht, sondern erreichbar.** Was fehlt, ist
+ausschliesslich das, was nur der Owner tun kann.
+
+### Warum diese Session nicht weiter gekommen ist
+
+Nicht aus Vorsicht, sondern aus Mangel an Zugang:
+
+- **Keine Cloudflare-Zugangsdaten.** Kein Deployment, kein Preflight gegen den
+  echten Worker, kein Blick darauf, was dort liegt.
+- **Die Cloudflare-API ist aus dieser Umgebung nicht erreichbar** (der Proxy
+  beantwortet sie nicht).
+- **Die Meta-Autorisierung ist persoenlich.** Sie verlangt eine Anmeldung im
+  Browser des Owners und eine Zustimmung im Meta-Dialog. Das ist das Owner Gate
+  aus §6 der Auftragsergaenzung.
+
+Alles, was ohne diese drei Dinge machbar war, ist gebaut, getestet und
+dokumentiert.
+
+### Der Befund am Rande gilt unveraendert
+
+Die Mutation der beiden `quant/data/universe`-Artefakte durch den Quant-Testlauf
+wurde **nicht** in diesem Commit repariert — sie gehoert in einen eigenen
+Quant-Fix. Generierte Aenderungen an diesen Dateien sind nicht committet; die
+Social-CI meldet den Befund als Warnung.

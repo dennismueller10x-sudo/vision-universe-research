@@ -32,7 +32,8 @@
     cycle: "cycle-report.json",
     health: "health.json",
     publications: "publications.json",
-    signals: "signals.json"
+    signals: "signals.json",
+    metaConnection: "meta-connection.json"
   };
 
   var TABS = [
@@ -332,6 +333,91 @@
     });
   }
 
+  /* ---------------------------------------------- META-VERBINDUNG */
+
+  /**
+   * Der Zustand der Meta-Verbindung, gelesen aus dem Artefakt, das
+   * scripts/social/fetch-meta-status.mjs aus dem Worker geholt hat.
+   *
+   * Die Oberflaeche ruft den Worker NICHT selbst auf: sein Statusendpunkt
+   * verlangt einen Admin-Schluessel, und ein Schluessel im Browser waere
+   * ein oeffentlicher Schluessel.
+   */
+  function metaConnectionCard() {
+    var meta = state.data.metaConnection;
+    if (!meta) {
+      return emptyState(
+        "Kein Verbindungsbericht",
+        "Es liegt kein Bericht ueber die Meta-Verbindung vor.",
+        "node scripts/social/fetch-meta-status.mjs --out social/data");
+    }
+
+    var card = el("div", "s-card");
+    var head = el("div", "s-card__head");
+    var title = el("div");
+    title.appendChild(el("p", "s-card__topic",
+      meta.connected
+        ? "Instagram @" + (meta.connection && (meta.connection.instagramUsername ||
+            meta.connection.instagramAccountId) || "verbunden")
+        : "Nicht verbunden"));
+    title.appendChild(el("p", "s-card__meta", "Stand " + formatTime(meta.generatedAt) +
+      " · Quelle " + (meta.source || "unbekannt")));
+    head.appendChild(title);
+    head.appendChild(badge(
+      meta.connected ? (meta.state === "connected" ? "PASS" : "WARNING") : "UNAVAILABLE",
+      meta.connected ? String(meta.state || "connected") : String(meta.state || "not_connected")));
+    card.appendChild(head);
+
+    if (meta.explanation) card.appendChild(el("p", "s-card__caption", meta.explanation));
+
+    if ((meta.missingConfiguration || []).length) {
+      card.appendChild(el("div", "s-note",
+        "Es fehlt: " + meta.missingConfiguration.join(", ") +
+        ". Das sind Namen von Secrets, keine Werte — sie werden vom Owner gesetzt."));
+    }
+
+    var connection = meta.connection || {};
+    if (meta.connected) {
+      var rows = [
+        ["Instagram-Account-ID", connection.instagramAccountId],
+        ["Facebook-Seite", connection.pageName || connection.pageId],
+        ["Token", "im Worker · Fingerabdruck " + (connection.tokenFingerprint || "unbekannt")],
+        ["Verbunden seit", formatTime(connection.connectedAt)]
+      ];
+      rows.forEach(function (row) {
+        if (!row[1]) return;
+        card.appendChild(el("p", "s-card__meta", row[0] + ": " + row[1]));
+      });
+
+      var permissions = connection.permissions || {};
+      if ((permissions.granted || []).length) {
+        card.appendChild(el("p", "s-card__meta", "Erteilte Rechte: " + permissions.granted.join(", ")));
+      }
+      /* Nicht erteilte Rechte sind der haeufigste Grund, warum spaeter
+         etwas nicht geht. Sie stehen deshalb hier und nicht im Log. */
+      if ((permissions.missing || []).length) {
+        card.appendChild(el("div", "s-note",
+          "Nicht erteilt: " + permissions.missing.join(", ") +
+          ". Die davon abhaengigen Faehigkeiten sind geprueft nicht verfuegbar."));
+      }
+    }
+
+    if (meta.verification) {
+      var why = el("details", "s-why");
+      why.appendChild(el("summary", null,
+        "Verifikation: " + (meta.verification.verdict || "unbekannt")));
+      (meta.verification.checks || []).forEach(function (check) {
+        var item = el("dl", "s-why-item" + (check.result === "FAIL" ? " s-why-item--against" : ""));
+        item.appendChild(el("dt", null, check.result + " · " + check.name));
+        item.appendChild(el("dd", null, check.note || ""));
+        why.appendChild(item);
+      });
+      card.appendChild(why);
+    }
+
+    return card;
+  }
+
   /* -------------------------------------------------------- HEALTH */
 
   function renderHealth(main) {
@@ -363,6 +449,12 @@
       matrix.appendChild(item);
     });
     main.appendChild(matrix);
+
+    /* Die Meta-Verbindung. Sie steht VOR den Signalquellen: ohne sie
+       laeuft der produktive Pfad nicht, und der Owner will sie zuerst
+       sehen. */
+    main.appendChild(el("p", "s-section-title", "Meta-Verbindung"));
+    main.appendChild(metaConnectionCard());
 
     /* Nicht angebundene Signalquellen ausdruecklich nennen (§45). */
     var signals = state.data.signals;

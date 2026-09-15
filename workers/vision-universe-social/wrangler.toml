@@ -1,0 +1,109 @@
+# =========================================================================
+# vision-universe-social — Cloudflare-Worker-Konfiguration
+#
+# DIESER WORKER EXISTIERT BEREITS AUSSERHALB DES REPOSITORIES.
+#
+# Diese Datei macht ihn reproduzierbar deploybar — sie erzeugt ihn nicht
+# neu. Vor dem ersten Deployment aus diesem Repository MUSS geprueft
+# werden, ob dabei vorhandene produktive Logik ueberschrieben wuerde:
+#
+#     node scripts/social/preflight-worker.mjs
+#
+# Das Skript liest den aktuell deployten Worker ueber die Cloudflare-API
+# und meldet Groesse, Fingerabdruck und Bindungen. Erst wenn klar ist,
+# was dort liegt, wird deployt.
+#
+# -------------------------------------------------------------------------
+# WAS HIER NIEMALS STEHT
+# -------------------------------------------------------------------------
+#
+# Secret-WERTE. Weder META_APP_ID noch META_APP_SECRET noch der
+# Admin-Schluessel. Sie werden ausschliesslich gesetzt mit:
+#
+#     npx wrangler secret put META_APP_ID
+#     npx wrangler secret put META_APP_SECRET
+#     npx wrangler secret put VU_SOCIAL_ADMIN_KEY
+#
+# META_APP_ID und META_APP_SECRET sind laut Owner bereits gesetzt.
+#
+# -------------------------------------------------------------------------
+# PLATZHALTER SIND ABSICHT
+# -------------------------------------------------------------------------
+#
+# `id` der KV-Bindung und `PUBLIC_BASE_URL` sind kontospezifisch und im
+# Repository nicht bekannt. Sie stehen als erkennbare Platzhalter da,
+# damit ein Deployment mit falscher Konfiguration ABBRICHT statt
+# irgendwohin zu zeigen. Ein stiller Standardwert waere hier gefaehrlich:
+# eine falsche PUBLIC_BASE_URL erzeugt eine redirect_uri, die Meta
+# ablehnt — im besten Fall. Im schlechteren zeigt sie auf einen fremden
+# Host.
+# =========================================================================
+
+name = "vision-universe-social"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# Kein Node-Kompatibilitaetsmodus: der Worker benutzt ausschliesslich
+# Web-Standards (fetch, crypto.subtle, URL, TextEncoder). Das haelt ihn
+# klein und schnell und entspricht derselben Haltung wie im uebrigen
+# Repository — keine Abhaengigkeit, die nicht gebraucht wird.
+compatibility_flags = []
+
+# Beobachtbarkeit an, aber ohne Aufzeichnung von Anfragekoerpern.
+# Der Worker schwaerzt jede Ausgabe (src/redact.js); trotzdem gilt:
+# was nicht protokolliert wird, kann nicht durchsickern.
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = false
+
+# -------------------------------------------------------------------------
+# VARIABLEN (keine Geheimnisse)
+# -------------------------------------------------------------------------
+[vars]
+# Die oeffentliche Basis-URL DIESES Workers. Aus ihr wird die redirect_uri
+# gebaut: <PUBLIC_BASE_URL>/social/meta/callback
+#
+# Genau dieser Wert muss in der Meta-App unter
+#   Facebook Login for Business -> Einstellungen -> Gueltige OAuth-Redirect-URIs
+# eingetragen sein. Meta vergleicht zeichengenau.
+PUBLIC_BASE_URL = "REPLACE_WITH_WORKER_PUBLIC_URL"
+
+# Version der Graph API. Wird angehoben, wenn eine Version auslaeuft —
+# als eigener Commit, damit die Aenderung eine Begruendung hat.
+META_API_VERSION = "v21.0"
+
+# Optional: wenn gesetzt, akzeptiert der Callback NUR dieses
+# Instagram-Professional-Konto. Das ist die Sperre dagegen, dass eine
+# versehentliche Autorisierung mit einem falschen Konto die Verbindung
+# ueberschreibt. Leer lassen, bis die Konto-ID bekannt ist — danach
+# eintragen und erneut deployen.
+# META_IG_ACCOUNT_ID = ""
+
+# -------------------------------------------------------------------------
+# SPEICHER
+# -------------------------------------------------------------------------
+# Genau EIN Datensatz: die aktuelle Meta-Verbindung (siehe src/store.js).
+# Kein D1 — eine relationale Datenbank fuer eine Zeile waere die
+# Parallelarchitektur, die ausdruecklich nicht entstehen soll.
+#
+# Anlegen mit:
+#     npx wrangler kv namespace create VU_SOCIAL_KV
+# und die zurueckgegebene id hier eintragen.
+[[kv_namespaces]]
+binding = "VU_SOCIAL_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# -------------------------------------------------------------------------
+# SECRETS — NUR DIE NAMEN, NIEMALS WERTE
+# -------------------------------------------------------------------------
+#   META_APP_ID            (laut Owner bereits gesetzt)
+#   META_APP_SECRET        (laut Owner bereits gesetzt)
+#   VU_SOCIAL_ADMIN_KEY    schuetzt connect/status/verify/disconnect;
+#                          mindestens 32 Zeichen, sonst lehnt der Worker ab
+#   META_WEBHOOK_SECRET    erst noetig, wenn Webhooks eingerichtet werden
+#
+# Pruefen, welche gesetzt sind (zeigt Namen, keine Werte):
+#     npx wrangler secret list

@@ -11,7 +11,27 @@ kann: Lage, Optionen, Kosten, Empfehlung, Konsequenz.
 
 ---
 
-## ENTSCHEIDUNG 1 — Wo laeuft der OAuth-Callback? (blockierend fuer §9)
+## ENTSCHEIDUNG 1 — Wo laeuft der OAuth-Callback? **GETROFFEN**
+
+> **Entschieden am 2026-09-15: Option B — Cloudflare Worker.**
+>
+> Grundlage war eine Information, die dieses Dokument nicht hatte: der Worker
+> `vision-universe-social` existiert bereits, mit hinterlegten Secrets
+> `META_APP_ID` und `META_APP_SECRET`. Damit entfaellt der Aufwandsvorteil von
+> Option A, und der Sicherheitsvorteil von B wird ausschlaggebend:
+>
+> **Bei Option A haette das langlebige Token als GitHub-Secret vorgelegen** —
+> an einem zweiten Ort, mit einem zweiten Kreis von Leseberechtigten, und in
+> einer Umgebung, in der es bei jedem Lauf in Prozessumgebungen landet.
+> **Beim Worker liegt es in Cloudflare KV und verlaesst ihn nie.** Es gibt
+> keinen Endpunkt, der es zurueckgibt; die Verifikation laeuft im Worker.
+>
+> Umgesetzt in `workers/vision-universe-social/` (44 Tests).
+> Die Owner-Schritte stehen unten unter "Was der Owner tun muss".
+>
+> Die urspruengliche Abwaegung bleibt als Begruendung stehen.
+
+### Die urspruengliche Abwaegung
 
 ### Lage
 
@@ -34,7 +54,7 @@ ist ausschliesslich ein Ort, an dem sie laufen kann.
 | **B** | **Cloudflare Worker** als Callback-Endpunkt | 0 € im Free Tier (100k Anfragen/Tag) | ~1 Tag inkl. `wrangler`, Deployment, Secret-Verwaltung | Fuehrt Cloudflare Workers als **neue Laufzeit** ins Projekt ein. Bislang gibt es keine — R2 wird ueber einen eigenen S3-Treiber angesprochen, ohne Worker |
 | **C** | **GitHub Action mit `workflow_dispatch`**: der Owner fuegt den `code` aus der Browser-Adresszeile von Hand ein, die Action tauscht ihn | 0 € | ~2 Stunden | Keine neue Laufzeit. Umstaendlicher als A, aber der Tausch laeuft serverseitig und protokolliert |
 
-### Empfehlung: A jetzt, B erst bei Bedarf
+### Damalige Empfehlung (ueberholt): A jetzt, B erst bei Bedarf
 
 Option A loest das Problem heute vollstaendig und kostet nichts. Der einzige
 Nachteil — alle 60 Tage 20 Minuten — faellt erst ins Gewicht, wenn mehrere Konten
@@ -49,28 +69,22 @@ existiert.
 `serverSideTokenExchange: MANUAL_REQUIRED`. Das ist kein Mangel des Codes,
 sondern eine wahrheitsgemaesse Angabe ueber den Betrieb.
 
-### Was der Owner tun muss (Option A)
+### Was der Owner tun muss (Option B — die getroffene Entscheidung)
 
-1. Meta-App anlegen bzw. oeffnen, Instagram-Professional-Konto mit einer
-   Facebook-Seite verbinden.
-2. Im Graph API Explorer ein Token mit den Rechten `instagram_basic`,
-   `instagram_content_publish`, `instagram_manage_insights`,
-   `instagram_manage_comments`, `pages_show_list`, `pages_read_engagement` holen.
-3. Es in ein langlebiges Token tauschen.
-4. Als GitHub-Secrets hinterlegen — **nur diese Namen, niemals Werte in ein
-   Repository, einen Chat oder ein Ticket**:
+Die vollstaendige, geordnete Anleitung steht in
+**`docs/VU_SOCIAL_META_CONNECT.md`**. Kurzfassung:
 
-   ```
-   META_APP_ID
-   META_APP_SECRET
-   META_LONG_LIVED_TOKEN
-   META_IG_ACCOUNT_ID
-   META_WEBHOOK_SECRET      (erst fuer Webhooks noetig)
-   ```
+1. KV-Namespace anlegen, `VU_SOCIAL_ADMIN_KEY` als Worker-Secret setzen
+   (mindestens 32 Zeichen — der Worker lehnt kuerzere ab).
+2. `wrangler.toml` mit KV-ID und `PUBLIC_BASE_URL` vervollstaendigen.
+3. `node scripts/social/preflight-worker.mjs` — pruefen, ob ein Deployment
+   vorhandene Logik ueberschreiben wuerde.
+4. Deployen.
+5. Redirect-URI in der Meta-App eintragen.
+6. `/social/meta/connect?key=…` im Browser oeffnen und autorisieren.
+7. `/social/meta/verify` ausfuehren.
 
-5. `node scripts/social/verify-meta-capabilities.mjs` ausfuehren. Der Lauf
-   veroeffentlicht nichts; er liest Konto, Rechte und Kennzahlen und sagt, was
-   belegt ist und was nicht.
+**Es werden keine Zugangsdaten im Chat verlangt und keine ausgegeben.**
 
 ---
 
@@ -130,6 +144,11 @@ internen VU-Signalen.
 Publikumssignale (Kommentare der eigenen Beitraege) sind die naechstliegende und
 sauberste Erweiterung — sie kommen mit dem Meta-Adapter ohne Zusatzkosten und
 ohne Lizenzfrage.
+
+> **Stand 2026-09-15:** Mit der Worker-Verbindung ist das Recht
+> `instagram_manage_comments` bereits im angefragten Umfang enthalten. Sobald
+> der erste Beitrag veroeffentlicht ist, sind Publikumssignale ohne weitere
+> Owner-Entscheidung erreichbar.
 
 Eine gekaufte Trendquelle lohnt sich erst, wenn genug eigene Beitraege existieren,
 um ihren Nutzen zu messen.

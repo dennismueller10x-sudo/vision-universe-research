@@ -190,14 +190,20 @@ test("M11 · Ohne Secrets meldet der Provider not_configured und nennt die fehle
   assert.equal(publish.reason, "notConfigured");
 });
 
-test("M12 · Der Token-Tausch ist MANUAL_REQUIRED und behauptet nichts anderes", () => {
+test("M12 · Der Token-Tausch ist SUPPORTED — und die Notiz sagt, WO er laeuft", () => {
   const caps = Meta.metaCapabilities();
-  assert.equal(Capabilities.lookup(caps, "auth", "serverSideTokenExchange"), "MANUAL_REQUIRED");
+  /* Seit dem Worker gibt es eine Runtime fuer den Callback. Die
+     Faehigkeit beschreibt das System, nicht diese Datei. */
+  assert.equal(Capabilities.lookup(caps, "auth", "serverSideTokenExchange"), "SUPPORTED");
   assert.equal(Capabilities.lookup(caps, "auth", "oauth"), "SUPPORTED");
   /* Die Deklaration ist unbestaetigt, und das steht drin. */
   assert.equal(caps.verifiedAt, null,
     "Solange kein Lauf gegen die echte API stattgefunden hat, bleibt verifiedAt null");
-  assert.match(caps.notes.serverSideTokenExchange, /ohne Server-Laufzeit/);
+  /* Eine Faehigkeit, die woanders erfuellt wird, muss sagen wo — sonst
+     sucht jemand den Callback in dieser Datei. */
+  assert.match(caps.notes.serverSideTokenExchange, /vision-universe-social/);
+  assert.match(caps.notes.serverSideTokenExchange, /\/social\/meta\/callback/);
+  assert.match(caps.notes.tokenLocation, /verlaesst den Worker nie|Cloudflare KV/);
 });
 
 test("M13 · Die Graph API kennt keinen Idempotenz-Token — und der Adapter sagt es", () => {

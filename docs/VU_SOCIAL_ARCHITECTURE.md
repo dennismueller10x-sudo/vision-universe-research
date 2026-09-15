@@ -25,13 +25,59 @@ gefaehrlicher als eine Luecke.
 ## Einordnung im Repository
 
 Vision Universe ist eine statische Website (GitHub Pages, `research.visionuniverse.de`)
-ohne Build-Pipeline und ohne Server-Runtime. Der Social-Bereich folgt exakt dem
+ohne Build-Pipeline und ohne Server-Runtime — **mit genau einer Ausnahme**, siehe
+naechster Abschnitt. Der Social-Bereich folgt exakt dem
 Muster von `quant/`: UI, reine Logik, Daten und Konfiguration getrennt, Engines
 laufen in Browser **und** Node, Tests mit `node --test`.
 
 Social ist eine **neue Faehigkeit innerhalb** des bestehenden Systems (§48) und
 keine zweite Architektur. Was wiederverwendet wird, steht in
 `docs/VU_SOCIAL_PHASE_A_AUDIT.md`, Abschnitt 3.
+
+## Die eine Ausnahme: der Cloudflare Worker
+
+Ein OAuth-Callback ist ein HTTP-Endpunkt. GitHub Pages hat keinen, und ein
+GitHub-Actions-Lauf ebenso wenig. Dafuer — **und nur dafuer** — gibt es den Worker
+`vision-universe-social` (`workers/vision-universe-social/`).
+
+| | Wo es laeuft |
+|---|---|
+| OAuth, Token-Tausch, Token-Haltung, Verifikation | **Cloudflare Worker** |
+| Signale, Trend, Opportunity, Content, Publishing-Orchestrierung, Learning | GitHub Actions |
+| Command Center, Artefakte | GitHub Pages |
+| Dauerhafte Marktdaten-Ablage | R2 via eigenem S3-Treiber (unveraendert) |
+
+**Der Worker ist kein VU-Backend.** Er kennt die Engines nicht, er weiss nichts ueber
+Trends, Gelegenheiten oder Content. Nichts aus dem Repository wandert dorthin.
+
+### Warum das Token dort liegt und nicht als GitHub-Secret
+
+Das langlebige Page-Token gibt **Schreibzugriff auf ein oeffentliches Profil**. Es liegt
+in Cloudflare KV, und es gibt **keinen Endpunkt, der es zurueckgibt** — auch keinen
+geschuetzten. `/status` liefert stattdessen einen SHA-256-Fingerabdruck.
+
+Deshalb laeuft auch die Verifikation *im Worker*: ein Endpunkt, der das Token herausgibt,
+damit jemand anders prueft, waere ein Exfiltrationsendpunkt mit guter Absicht.
+
+Als GitHub-Secret laege dasselbe Token an einem zweiten Ort, mit einem zweiten Kreis von
+Leseberechtigten, und in jedem Lauf in einer Prozessumgebung.
+
+### Warum der Zustand trotzdem im Repository sichtbar ist
+
+`/social/meta/status` verlangt einen Admin-Schluessel. Das Command Center ruft ihn deshalb
+**nicht** aus dem Browser auf — ein Schluessel im Browser waere ein oeffentlicher
+Schluessel. Stattdessen derselbe Weg wie ueberall: ein Actions-Lauf
+(`scripts/social/fetch-meta-status.mjs`) holt den Zustand und schreibt
+`social/data/meta-connection.json`; die Oberflaeche liest das Artefakt.
+
+### Speicher
+
+Cloudflare KV, **genau ein Datensatz**. Kein D1 — eine relationale Datenbank fuer eine
+Zeile waere die Parallelarchitektur, die ausdruecklich nicht entstehen soll. Der
+OAuth-`state` braucht gar keinen Speicher: er traegt seinen eigenen HMAC und ist damit
+selbst-verifizierbar.
+
+Kosten: einstellige Schreibvorgaenge pro Tag gegen eine Freigrenze von 1.000.
 
 ## Schichten
 
@@ -188,6 +234,12 @@ gefaelschte, statistisch "belastbare" Beobachtung.
 | Prompt Injection | `untrusted.js`: Erkennung, Rahmung, Laengenbegrenzung, unsichtbare Zeichen | V19–V22 |
 | Protokolle | `audit-log.js` schwaerzt auch `code` und `state` | SS7 |
 | Repository | `assert-no-secrets.mjs` in der CI | SS1–SS4 |
+| Worker: `state` ohne Speicher | HMAC aus `META_APP_SECRET` + `__Host-`-Cookie (Double Submit) | W5–W15 |
+| Worker: CSRF | Bei Verdacht geht **kein** Graph-Aufruf hinaus | W11, W12 |
+| Worker: Admin-Endpunkte | Schluessel ≥ 32 Zeichen, konstante Zeit, keine Auskunft im Fehlerfall | W2–W4 |
+| Worker: Token-Dichtheit | Kein Endpunkt gibt es heraus; Fingerabdruck statt Wert | W17, W18, S4 |
+| Worker: XSS | Kontonamen werden escaped, CSP `default-src 'none'` | S10, S11 |
+| Worker: `disconnect` | Nur POST — ein GET waere ueber einen Link ausloesbar | W28 |
 
 **Vor Freischaltung von Autopublish ist ein Security Review Pflicht.** Er muss
 zusaetzlich pruefen: den tatsaechlichen Rechteumfang des Tokens, das Verhalten bei
@@ -221,6 +273,8 @@ Haltung wie `zero-cost-guard.js`: **gerechnet wird vorher**.
 | Carousel bei Meta | `notImplemented` | braucht je Element einen eigenen Container |
 | Facebook, LinkedIn, TikTok, X, YouTube | kein Adapter | Architektur traegt sie, Implementierung steht aus |
 | LLM in der Content-Pipeline | Interface vorhanden | bewusste spaetere Entscheidung |
+| Publishing ueber den Worker | kein Endpunkt | Das Token liegt dort; wenn Autopublish freigegeben wird, kommt der Egress dorthin — als eigener, getesteter Schritt |
+| Webhook-Empfang | Signaturpruefung gebaut und getestet | Abonnement wird im App-Dashboard eingerichtet und ist nicht erfolgt |
 | Kommentar-Antworten | `ACTION_COMMENT: false` | automatische Antwort auf UNTRUSTED INPUT ist nicht freigegeben |
 
 ## Verzeichnisse
@@ -236,6 +290,11 @@ social/
   ui/             social.css
   index.html      Command Center
   app.js
-scripts/social/   Sammlung, Zyklus, Verifikation, CI-Waechter
+scripts/social/   Sammlung, Zyklus, Verifikation, Preflight, CI-Waechter
+workers/
+  vision-universe-social/
+    src/          6 Module, nur Web-Standards (fetch, crypto.subtle, URL)
+    tests/        node:test — 44 Tests, ohne Cloudflare und ohne Meta
+    wrangler.toml Konfiguration ohne einen einzigen Secret-Wert
 docs/             diese Dokumentation
 ```

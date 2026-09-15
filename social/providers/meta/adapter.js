@@ -7,29 +7,35 @@
    aus demselben Grund: alles, was der Browser laedt, ist oeffentlich.
 
    -------------------------------------------------------------------------
-   WAS AUF GITHUB PAGES NICHT GEHT, UND WAS DARAUS FOLGT
+   WO DER OAUTH-FLOW TATSAECHLICH LAEUFT
    -------------------------------------------------------------------------
 
-   Ein OAuth-Callback ist ein HTTP-Endpunkt. GitHub Pages hat keinen. Der
-   Code-gegen-Token-Tausch braucht ausserdem META_APP_SECRET, das niemals
-   in den Browser gelangen darf.
+   Ein OAuth-Callback ist ein HTTP-Endpunkt. GitHub Pages hat keinen, und
+   ein GitHub-Actions-Lauf ebenso wenig. Der Tausch braucht ausserdem
+   META_APP_SECRET, das niemals in den Browser gelangen darf.
 
-   Dieser Adapter loest das NICHT, indem er so tut, als ginge es. Er
-   trennt den Ablauf in zwei Teile:
+   Geloest ist das im Cloudflare-Worker `vision-universe-social`
+   (workers/vision-universe-social/). Dort laufen Autorisierung, Callback,
+   Token-Tausch, Kontoaufloesung und Rechtepruefung — und dort liegt das
+   langlebige Page-Token. Es verlaesst den Worker nie: weder in eine
+   Antwort, noch in ein GitHub-Secret, noch in dieses Repository.
 
-     1. TOKEN-BESCHAFFUNG   ist heute MANUAL_REQUIRED. Der Owner fuehrt den
-                            Login einmal durch (Graph API Explorer oder ein
-                            spaeterer Endpunkt) und legt das langlebige
-                            Token als GitHub-Secret ab.
+   -------------------------------------------------------------------------
+   WOZU DANN DIESER ADAPTER
+   -------------------------------------------------------------------------
 
-     2. ALLES DANACH        Verlaengerung, Ablaufpruefung, Kontoaufloesung,
-                            Veroeffentlichung, Kennzahlen, Kommentare laeuft
-                            unveraendert serverseitig im Workflow.
+   Er ist die kanonische Meta-Implementierung hinter den vier
+   Provider-Interfaces und bleibt der Ort, an dem Meta-Kenntnis im
+   Repository wohnt: Fehlerabbildung, Medienpruefung, Kennzahlenabruf,
+   Kommentare, Webhook-Signatur.
 
-   `exchangeCode()` ist vollstaendig implementiert und getestet. Sie
-   wartet auf einen Ort, an dem sie laufen kann — die Optionen stehen in
-   docs/VU_SOCIAL_OWNER_DECISIONS.md. Bis dahin meldet die Capability
-   `serverSideTokenExchange: MANUAL_REQUIRED`, nicht SUPPORTED.
+   Sein `exchangeCode()` ist vollstaendig implementiert und getestet — der
+   Worker fuehrt denselben Ablauf in einer Runtime aus, die einen Callback
+   entgegennehmen kann. Zwei Implementierungen desselben Ablaufs sind hier
+   kein Widerspruch, sondern die Folge daraus, dass Worker (ES Modules,
+   WebCrypto) und Repository (CommonJS, node:crypto) verschiedene
+   Laufzeiten sind. Die Tests halten beide auf derselben Zusicherung fest:
+   ohne `state` kein Tausch, und nie ein Token in einer Antwort.
 
    -------------------------------------------------------------------------
    TOKENS
@@ -86,9 +92,16 @@ function metaCapabilities(spec) {
     verifiedAt: spec.verifiedAt || null,
     auth: {
       oauth: "SUPPORTED",
-      /* Der Tausch selbst ist implementiert; es fehlt der Ort, an dem der
-         Callback ankommen kann. Genau das heisst MANUAL_REQUIRED. */
-      serverSideTokenExchange: "MANUAL_REQUIRED",
+      /* Seit dem Cloudflare-Worker `vision-universe-social` gibt es einen
+         Ort, an dem der Callback ankommen und der Tausch laufen kann —
+         siehe workers/vision-universe-social/. Die Faehigkeit ist damit
+         erfuellt.
+
+         Sie beschreibt ausdruecklich das SYSTEM, nicht diese Datei: der
+         Adapter selbst kann keinen Callback entgegennehmen, weil er in
+         einem GitHub-Actions-Lauf laeuft und keinen Port hat. Der Worker
+         implementiert denselben Ablauf in einer Runtime, die es kann. */
+      serverSideTokenExchange: "SUPPORTED",
       longLivedToken: "SUPPORTED",
       tokenRefresh: "SUPPORTED",
       /* Der Widerruf einer einzelnen Berechtigung geht ueber
@@ -155,7 +168,12 @@ function metaCapabilities(spec) {
     },
     notes: {
       serverSideTokenExchange:
-        "Implementiert, aber ohne Server-Laufzeit nicht ausfuehrbar. Siehe docs/VU_SOCIAL_OWNER_DECISIONS.md."
+        "Ausgefuehrt vom Cloudflare-Worker `vision-universe-social` " +
+        "(workers/vision-universe-social/src/index.js, Route /social/meta/callback). " +
+        "Das langlebige Page-Token liegt dort und verlaesst den Worker nie — " +
+        "dieser Adapter bekommt es nicht und braucht es fuer den Tausch auch nicht.",
+      tokenLocation:
+        "Cloudflare KV des Workers, ein Datensatz. Nicht im Repository, nicht in GitHub-Secrets."
     }
   });
 }
