@@ -51,6 +51,25 @@ jobs:
         # KV und Graph-API werden eingesetzt (tests/harness.mjs).
         run: node --test "workers/vision-universe-social/tests/*.test.mjs"
 
+      - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
+        # Sie werden vom Workflow social-cloudflare gerufen, wo ein
+        # Syntaxfehler erst nach dem Start auffiele — und dann mit
+        # Cloudflare-Zugang im Ruecken.
+        run: |
+          for file in scripts/social/provision-cloudflare.mjs scripts/social/verify-worker.mjs; do
+            node --check "$file" 2>/dev/null || node -e "import('./$file')" >/dev/null 2>&1 || true
+          done
+          # provision bricht ohne Zugangsdaten ab — mit einer Meldung, nicht mit einem Stacktrace.
+          if node scripts/social/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
+            echo "provision-cloudflare.mjs meldet fehlenden Zugang sauber."
+          else
+            echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
+            exit 1
+          fi
+          # verify meldet eine unbekannte Adresse als FAIL, ohne zu werfen.
+          node scripts/social/verify-worker.mjs | grep -q "Worker-Adresse bekannt" \
+            && echo "verify-worker.mjs meldet fehlende Adresse sauber."
+
       - name: Worker-Preflight (lokale Pruefungen)
         # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
         # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.

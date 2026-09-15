@@ -1,0 +1,272 @@
+name: Social Cloudflare
+
+# Der kontrollierte Deploymentpfad fuer den Worker `vision-universe-social`.
+#
+# -------------------------------------------------------------------------
+# WARUM NICHT AUTOMATISCH BEI JEDEM PUSH
+# -------------------------------------------------------------------------
+#
+# `wrangler deploy` ersetzt den vorhandenen Worker vollstaendig. Ein
+# Deployment ist deshalb eine Handlung mit Aussenwirkung und kein
+# Nebeneffekt eines Commits. Dieser Workflow laeuft ausschliesslich auf
+# ausdrueckliche Anforderung (`workflow_dispatch`).
+#
+# -------------------------------------------------------------------------
+# DIE REIHENFOLGE IST DIE SICHERUNG
+# -------------------------------------------------------------------------
+#
+#   preflight   liest, was dort liegt          — immer, auch vor einem Deploy
+#   provision   legt KV an, traegt URL ein     — nur bei action=deploy
+#   deploy      ersetzt den Worker             — nur wenn preflight es zulaesst
+#   verify      prueft, was danach da ist      — inklusive Secret-Vergleich
+#
+# Der Preflight laeuft IMMER zuerst und im selben Lauf. Ein Preflight von
+# gestern sagt nichts darueber, was heute im Worker liegt.
+#
+# -------------------------------------------------------------------------
+# SECRETS
+# -------------------------------------------------------------------------
+#
+# CLOUDFLARE_API_TOKEN kommt aus dem secrets-Kontext und wird nie
+# ausgegeben. CLOUDFLARE_ACCOUNT_ID ist eine Variable und wird ebenfalls
+# nicht gedruckt. Die Meta-Secrets im Worker werden nur bei ihren NAMEN
+# genannt — Cloudflare gibt ihre Werte ohnehin nicht zurueck.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Was soll passieren?'
+        type: choice
+        required: true
+        default: preflight
+        options:
+          - preflight
+          - deploy
+          - verify
+      confirm_deploy:
+        description: 'Nur fuer action=deploy: "DEPLOY" eintippen. Schuetzt gegen einen Fehlklick.'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+# Zwei gleichzeitige Deployments auf denselben Worker waeren ein Rennen
+# um denselben Zustand.
+concurrency:
+  group: social-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  cloudflare:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Zugang ist konfiguriert
+        # Nur pruefen, DASS etwas gesetzt ist — niemals, WAS.
+        run: |
+          missing=""
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN(secret)"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID(variable)"
+          if [ -n "$missing" ]; then
+            echo "::error::Es fehlt:$missing"
+            exit 1
+          fi
+          echo "Zugangsdaten sind gesetzt (Namen geprueft, keine Werte gelesen)."
+
+      # ----------------------------------------------------------------
+      # PREFLIGHT — laeuft IMMER, auch vor einem Deployment
+      # ----------------------------------------------------------------
+
+      - name: Preflight gegen die reale Infrastruktur
+        id: preflight
+        run: |
+          node scripts/social/preflight-worker.mjs --out /tmp/cf-preflight | tee /tmp/preflight.log
+          verdict=$(node -e '
+            const r = require("/tmp/cf-preflight/worker-preflight.json");
+            console.log(r.verdict);
+          ')
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+          echo "## Preflight: $verdict" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/preflight.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preflight-Bericht sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-preflight
+          path: /tmp/cf-preflight/worker-preflight.json
+          retention-days: 30
+
+      - name: Gefahr einer Ueberschreibung fremder Logik
+        id: overwrite
+        run: |
+          node -e '
+            const report = require("/tmp/cf-preflight/worker-preflight.json");
+            const existing = report.existing || {};
+            const foreign = existing.exists === true &&
+                            existing.looksLikeThisRepository === false &&
+                            Number(existing.scriptBytes || 0) >= 400;
+            console.log("Worker existiert:      " + (existing.exists === true));
+            console.log("Stammt aus dem Repo:   " + String(existing.looksLikeThisRepository));
+            console.log("Groesse (Bytes):       " + (existing.scriptBytes ?? "unbekannt"));
+            console.log("Fremde Logik erkannt:  " + foreign);
+            require("fs").appendFileSync(process.env.GITHUB_OUTPUT, "foreign=" + foreign + "\n");
+          '
+
+      - name: HALT — im Worker liegt fremde produktive Logik
+        if: steps.overwrite.outputs.foreign == 'true'
+        run: |
+          {
+            echo "## Deployment gesperrt"
+            echo ""
+            echo "Im Worker \`vision-universe-social\` liegt Code, der nicht aus diesem"
+            echo "Repository stammt. Ein Deployment wuerde ihn vollstaendig ersetzen."
+            echo ""
+            echo "**Zuerst sichern:**"
+            echo '```bash'
+            echo "npx wrangler download vision-universe-social"
+            echo '```'
+            echo ""
+            echo "Danach entscheiden, ob der Inhalt uebernommen, migriert oder verworfen wird."
+            echo "Das ist eine Owner-Entscheidung und kein Schritt, den ein Workflow trifft."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Fremde produktive Logik im Worker — Deployment gesperrt."
+          exit 1
+
+      # ----------------------------------------------------------------
+      # PROVISION + DEPLOY — nur auf ausdrueckliche Anforderung
+      # ----------------------------------------------------------------
+
+      - name: Deploy-Bestaetigung pruefen
+        if: inputs.action == 'deploy'
+        run: |
+          if [ "${{ inputs.confirm_deploy }}" != "DEPLOY" ]; then
+            echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
+            exit 1
+          fi
+
+      - name: Secrets VOR dem Deployment festhalten
+        if: inputs.action == 'deploy'
+        # §4: die vom Owner vorbereiteten Meta-Secrets duerfen nicht
+        # verschwinden. Wir halten den Vorher-Stand fest, um ihn danach
+        # zu vergleichen — "wrangler erhaelt Secrets normalerweise" ist
+        # keine Zusicherung, auf die man ein App-Secret setzt.
+        run: |
+          node scripts/social/provision-cloudflare.mjs \
+            --check-secrets vorher --out-json /tmp/secrets-before.json
+
+      - name: Minimale Infrastruktur sicherstellen (KV, oeffentliche URL)
+        if: inputs.action == 'deploy'
+        id: provision
+        run: node scripts/social/provision-cloudflare.mjs --ensure-kv --resolve-url
+
+      - name: Worker deployen
+        if: inputs.action == 'deploy'
+        id: deploy
+        working-directory: workers/vision-universe-social
+        run: |
+          npx --yes wrangler@4 deploy 2>&1 | tee /tmp/deploy.log
+          # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
+          # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
+          echo "deployed_url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployte Adresse: ${url:-nicht aus der Ausgabe lesbar}"
+
+      - name: Oeffentliche URL nachtragen, falls sie vorher unbekannt war
+        if: inputs.action == 'deploy' && steps.deploy.outputs.deployed_url != ''
+        id: fixurl
+        working-directory: ${{ github.workspace }}
+        run: |
+          before=$(node -e '
+            const fs = require("fs");
+            const s = fs.readFileSync("workers/vision-universe-social/wrangler.toml", "utf8");
+            const m = s.match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
+            console.log(m ? m[1] : "");
+          ')
+          node scripts/social/provision-cloudflare.mjs --url "${{ steps.deploy.outputs.deployed_url }}"
+          after=$(node -e '
+            const fs = require("fs");
+            const s = fs.readFileSync("workers/vision-universe-social/wrangler.toml", "utf8");
+            const m = s.match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
+            console.log(m ? m[1] : "");
+          ')
+          if [ "$before" != "$after" ]; then
+            echo "Die URL war vorher nicht bekannt — erneut deployen, damit der Worker sie kennt."
+            echo "redeploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "redeploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Erneut deployen, damit die Redirect-URI stimmt
+        if: inputs.action == 'deploy' && steps.fixurl.outputs.redeploy == 'true'
+        working-directory: workers/vision-universe-social
+        run: npx --yes wrangler@4 deploy
+
+      - name: Secrets NACH dem Deployment vergleichen
+        if: inputs.action == 'deploy'
+        run: node scripts/social/provision-cloudflare.mjs --compare-secrets /tmp/secrets-before.json
+
+      - name: Konfiguration committen
+        if: inputs.action == 'deploy'
+        # KV-ID und oeffentliche URL sind Kennungen, keine Geheimnisse.
+        # Sie gehoeren in die Konfiguration, damit ein spaeteres Deployment
+        # reproduzierbar dasselbe trifft.
+        run: |
+          if git diff --quiet -- workers/vision-universe-social/wrangler.toml; then
+            echo "Keine Aenderung an wrangler.toml."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add workers/vision-universe-social/wrangler.toml
+          git commit \
+            -m "Cloudflare: KV-Namespace und oeffentliche Worker-URL eingetragen" \
+            -m "Erzeugt vom Workflow social-cloudflare (action=deploy). Beides sind Kennungen und keine Geheimnisse: die Namespace-ID ist ohne API-Token wertlos, die URL ist ein oeffentlicher Hostname. In der Konfiguration stehen sie, damit ein spaeteres Deployment reproduzierbar dasselbe trifft."
+          git push
+
+      # ----------------------------------------------------------------
+      # VERIFY — was ist jetzt tatsaechlich da
+      # ----------------------------------------------------------------
+
+      - name: Zustand pruefen
+        if: inputs.action == 'deploy' || inputs.action == 'verify'
+        run: |
+          node scripts/social/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
+          {
+            echo "## Worker-Zustand"
+            echo '```'
+            cat /tmp/verify.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verifikationsbericht sichern
+        if: inputs.action == 'deploy' || inputs.action == 'verify'
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-verify
+          path: /tmp/cf-verify/worker-verify.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo ""
+            echo "---"
+            echo "Aktion: \`${{ inputs.action }}\` · Preflight: \`${{ steps.preflight.outputs.verdict }}\`"
+            echo ""
+            echo "Es wurde **kein Beitrag veroeffentlicht** und **kein Meta-Login ausgefuehrt**."
+            echo "Der Worker hat keinen Publishing-Endpunkt."
+          } >> "$GITHUB_STEP_SUMMARY"

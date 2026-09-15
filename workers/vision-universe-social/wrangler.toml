@@ -49,6 +49,11 @@ compatibility_date = "2025-09-01"
 # Repository — keine Abhaengigkeit, die nicht gebraucht wird.
 compatibility_flags = []
 
+# Eine workers.dev-Adresse ist erforderlich: aus ihr entsteht die
+# redirect_uri, die Meta zeichengenau vergleicht. Ohne sie haette der
+# Worker keinen oeffentlichen Einstiegspunkt fuer den Callback.
+workers_dev = true
+
 # Beobachtbarkeit an, aber ohne Aufzeichnung von Anfragekoerpern.
 # Der Worker schwaerzt jede Ausgabe (src/redact.js); trotzdem gilt:
 # was nicht protokolliert wird, kann nicht durchsickern.
