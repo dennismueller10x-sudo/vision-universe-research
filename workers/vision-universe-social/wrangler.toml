@@ -80,6 +80,21 @@ PUBLIC_BASE_URL = "https://vision-universe-social.little-credit-15d3.workers.dev
 # als eigener Commit, damit die Aenderung eine Begruendung hat.
 META_API_VERSION = "v21.0"
 
+# Die ID der Facebook-Login-for-Business-Konfiguration.
+#
+# Sie entscheidet, WELCHER Meta-Dialog gilt:
+#
+#   gesetzt  -> Business-Anmeldung. Die Rechte stehen in der
+#               Konfiguration bei Meta; `scope` wird NICHT mitgeschickt.
+#   leer     -> klassische Anmeldung mit `scope` (REQUIRED_SCOPES).
+#
+# Kein Geheimnis: die ID steht im Dialog-Link, den der Nutzer ohnehin
+# sieht. Sie ist eine Kennung, keine Vollmacht — ohne App-Secret ist mit
+# ihr nichts anzufangen. Deshalb Variable und nicht Secret.
+#
+# Ablesbar, welcher Dialog gerade gilt: GET /health -> "loginMode".
+META_LOGIN_CONFIG_ID = ""
+
 # Optional: wenn gesetzt, akzeptiert der Callback NUR dieses
 # Instagram-Professional-Konto. Das ist die Sperre dagegen, dass eine
 # versehentliche Autorisierung mit einem falschen Konto die Verbindung

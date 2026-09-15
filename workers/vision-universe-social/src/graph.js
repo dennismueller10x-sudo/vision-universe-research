@@ -125,15 +125,55 @@ export async function graph(ctx, path, params = {}, token = null, init = {}) {
 
 /* ------------------------------------------------------------------ OAuth */
 
-/** Der Autorisierungsdialog. Ohne `state` gibt es keinen Link. */
-export function authorizationUrl(ctx, { appId, redirectUri, state, scopes }) {
+/**
+ * Der Autorisierungsdialog. Ohne `state` gibt es keinen Link.
+ *
+ * -----------------------------------------------------------------------
+ * ZWEI DIALOGE, NICHT EINER
+ * -----------------------------------------------------------------------
+ *
+ * Meta hat zwei verschiedene Anmeldungen, die dieselbe Adresse benutzen:
+ *
+ *   Facebook Login (klassisch)     — die Rechte stehen in `scope`
+ *   Facebook Login for Business    — die Rechte stehen in einer
+ *                                    Konfiguration, und die Adresse
+ *                                    nennt nur deren `config_id`
+ *
+ * Bei der Business-Anmeldung darf `scope` NICHT mitgeschickt werden:
+ * `config_id` ersetzt es. Wer beides schickt, beschreibt zwei
+ * verschiedene Rechtemengen und bekommt keine davon.
+ *
+ * `override_default_response_type=true` gehoert dazu: die Konfiguration
+ * bringt eine eigene Vorgabe fuer den Antworttyp mit. Ohne dieses Flag
+ * gewinnt sie, und wenn sie auf `token` steht, kommt das Token im
+ * URL-Fragment zurueck — dort, wo ein Server es nie zu sehen bekommt.
+ * Der Callback saehe dann eine Anfrage ohne `code` und koennte nur
+ * melden, dass Parameter fehlen. Mit dem Flag gilt, was hier steht.
+ *
+ * Welcher der beiden Wege gilt, entscheidet allein, ob eine
+ * Konfigurations-ID hinterlegt ist. Sie ist kein Geheimnis.
+ */
+export function authorizationUrl(ctx, { appId, redirectUri, state, scopes, configId }) {
   const url = new URL(`https://www.facebook.com/${ctx.apiVersion || DEFAULT_API_VERSION}/dialog/oauth`);
   url.searchParams.set("client_id", appId);
   url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("state", state);
-  url.searchParams.set("scope", (scopes && scopes.length ? scopes : REQUIRED_SCOPES).join(","));
   url.searchParams.set("response_type", "code");
+
+  const id = configId === undefined || configId === null ? "" : String(configId).trim();
+  if (id) {
+    url.searchParams.set("config_id", id);
+    url.searchParams.set("override_default_response_type", "true");
+  } else {
+    url.searchParams.set("scope", (scopes && scopes.length ? scopes : REQUIRED_SCOPES).join(","));
+  }
   return url.toString();
+}
+
+/** Welcher Dialog gilt — ablesbar, ohne den Dialog zu oeffnen. */
+export function loginMode(configId) {
+  const id = configId === undefined || configId === null ? "" : String(configId).trim();
+  return id ? "business" : "classic";
 }
 
 /** Autorisierungscode gegen ein kurzlebiges User-Token. */
@@ -168,7 +208,22 @@ export async function exchangeForLongLived(ctx, { appId, appSecret, token }) {
  * Instagram-Professional-Konto auf — und gibt je Seite das PAGE-TOKEN
  * zurueck, mit dem spaeter gearbeitet wird.
  */
-export async function resolveAccounts(ctx, userToken) {
+/**
+ * Findet die Instagram-Konten hinter den Seiten dieses Zugangs.
+ *
+ * `grantedScopes` ist nicht optional aus Bequemlichkeit, sondern weil
+ * ohne sie zwei voellig verschiedene Lagen gleich aussehen:
+ *
+ *   /me/accounts ohne `pages_show_list` liefert 200 und eine LEERE
+ *   Liste — keinen Fehler. Genau dasselbe liefert ein Zugang, dessen
+ *   Seiten kein Instagram-Konto haben.
+ *
+ * Ohne diese Unterscheidung schickt die Meldung den Owner in die
+ * Business-Suite, um eine Verbindung zu reparieren, die in Ordnung ist,
+ * waehrend die eigentliche Ursache eine Zeile in der
+ * Login-Konfiguration ist.
+ */
+export async function resolveAccounts(ctx, userToken, grantedScopes) {
   const result = await graph(ctx, "me/accounts", {
     fields: "id,name,access_token,instagram_business_account{id,username,name}"
   }, userToken);
@@ -185,6 +240,19 @@ export async function resolveAccounts(ctx, userToken) {
       instagramUsername: page.instagram_business_account.username || null,
       instagramName: page.instagram_business_account.name || null
     }));
+
+  /* Erst die Erlaubnis, dann die Einrichtung. Die Reihenfolge ist der
+     ganze Punkt: fehlt das Recht, ist ueber die Einrichtung nichts
+     ausgesagt — wir haben sie gar nicht sehen koennen. */
+  const granted = Array.isArray(grantedScopes) ? grantedScopes : null;
+  if (rows.length === 0 && granted && !granted.includes("pages_show_list")) {
+    return fail("missingPagePermission",
+      "Dieser Zugang darf keine Seitenliste lesen: das Recht `pages_show_list` wurde nicht " +
+      "erteilt. Ohne es liefert die Plattform eine leere Liste — nicht, weil keine Seite da " +
+      "waere, sondern weil keine gezeigt werden darf. Ueber die Instagram-Verbindung ist damit " +
+      "nichts gesagt; sie wurde nicht geprueft. Bei einer Business-Anmeldung stehen die Rechte " +
+      "in der Login-Konfiguration bei Meta, nicht in dieser Anfrage.");
+  }
 
   if (connected.length === 0) {
     return fail("noInstagramAccount",

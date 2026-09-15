@@ -49,7 +49,7 @@
 
 import { createState, verifyState, clearStateCookie, timingSafeEqual } from "./state.js";
 import {
-  authorizationUrl, exchangeCode, exchangeForLongLived, resolveAccounts,
+  authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
@@ -152,6 +152,25 @@ function requireAdmin(request, url, env) {
 /* Routen                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Welche Rechte diese Anmeldung angefragt hat.
+ *
+ * Bei der klassischen Anmeldung stehen sie in `scope` — wir wissen es,
+ * weil wir sie selbst hingeschrieben haben. Bei der Business-Anmeldung
+ * stehen sie in einer Konfiguration bei Meta, die dieser Worker nicht
+ * lesen kann: dann ist die Antwort NICHT "keine", sondern `null`.
+ *
+ * Der Unterschied ist kein Feinschliff. `deriveCapabilities` macht aus
+ * "angefragt und nicht erteilt" ein geprueftes UNAVAILABLE und aus "nicht
+ * angefragt" ein ungeprueftes null. Wuerden wir bei der
+ * Business-Anmeldung REQUIRED_SCOPES als angefragt ausgeben, meldete der
+ * Bericht Rechte als geprueft-nicht-verfuegbar, die niemand je verlangt
+ * hat — und der Owner suchte einen Fehler, den es nicht gibt.
+ */
+function requestedScopes(env) {
+  return loginMode(env.META_LOGIN_CONFIG_ID) === "business" ? null : REQUIRED_SCOPES;
+}
+
 async function handleConnect(request, url, env) {
   const { missing, weak } = configProblems(env);
   if (missing.length || weak.length) {
@@ -165,11 +184,15 @@ Variable gesetzt — niemals im Repository.</p></div>`, 503);
   }
 
   const { state, cookie } = await createState(env.META_APP_SECRET);
+  /* Ist eine Konfigurations-ID hinterlegt, gilt der Business-Dialog und
+     `scopes` bleibt ungenutzt — die Rechte stehen dann in der
+     Konfiguration bei Meta, nicht hier. */
   const target = authorizationUrl(graphContext(env), {
     appId: env.META_APP_ID,
     redirectUri: redirectUri(env),
     state,
-    scopes: REQUIRED_SCOPES
+    scopes: REQUIRED_SCOPES,
+    configId: env.META_LOGIN_CONFIG_ID
   });
 
   /* 302 statt einer Zwischenseite: je weniger Schritte, desto weniger
@@ -264,13 +287,13 @@ async function handleCallback(request, url, env) {
       502, { "set-cookie": clearCookie });
   }
 
-  const capabilities = deriveCapabilities(permissions.data.granted, REQUIRED_SCOPES);
+  const capabilities = deriveCapabilities(permissions.data.granted, requestedScopes(env));
   if (!capabilities.operational) {
     return errorPage("missingEssentialPermissions",
       capabilities.explanation + " Es wurde nichts gespeichert.", 400, { "set-cookie": clearCookie });
   }
 
-  const accounts = await resolveAccounts(ctx, userToken);
+  const accounts = await resolveAccounts(ctx, userToken, permissions.data.granted);
   if (!accounts.ok) {
     return errorPage(accounts.reason, accounts.message || "Kontoaufloesung fehlgeschlagen.",
       accounts.reason === "noInstagramAccount" ? 400 : 502, { "set-cookie": clearCookie });
@@ -407,7 +430,7 @@ async function handleVerify(request, url, env) {
   add("Tatsaechliche Rechte", missingScopes.length ? "WARN" : "PASS",
     granted.join(", ") + (missingScopes.length ? " — nicht erteilt: " + missingScopes.join(", ") : ""));
 
-  const caps = record.capabilities || deriveCapabilities(granted, REQUIRED_SCOPES);
+  const caps = record.capabilities || deriveCapabilities(granted, requestedScopes(env));
   add("Publishing Capability", caps.sets.publish.publishImage === "SUPPORTED" ? "PASS" : "FAIL",
     caps.sets.publish.publishImage === "SUPPORTED"
       ? "instagram_content_publish erteilt — nachgewiesen ueber das Recht, nicht ueber einen Testbeitrag"
@@ -505,7 +528,14 @@ function handleHealth(env) {
     alive: true,
     configured: missing.length === 0 && weak.length === 0,
     missingConfiguration: missing,
-    weakConfiguration: weak
+    weakConfiguration: weak,
+    /* Welcher Meta-Dialog gilt. Ohne Schluessel ablesbar, weil genau das
+       die Frage ist, die man von aussen beantworten koennen muss, wenn
+       der Dialog die Redirect-URI ablehnt: schickt dieser Worker
+       ueberhaupt die Business-Anmeldung? Die Konfigurations-ID selbst
+       steht hier nicht — sie ist zwar kein Geheimnis, aber sie gehoert
+       auch nicht in eine offene Antwort. */
+    loginMode: loginMode(env.META_LOGIN_CONFIG_ID)
   });
 }
 
