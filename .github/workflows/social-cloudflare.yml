@@ -38,10 +38,13 @@ on:
   # sec-fundamentals-daily.yml dokumentiert ist. Ein Push, der diesen
   # Workflow selbst aendert, loest deshalb einen echten Lauf aus.
   #
-  # Ein solcher Lauf fuehrt NUR den Preflight aus: alle Deploy-Schritte
-  # haengen an `inputs.action == 'deploy'`, und `inputs` ist bei einem
-  # Push leer. Der Preflight liest ausschliesslich — er kann nichts
-  # ueberschreiben.
+  # Ein solcher Lauf fuehrt NUR den Preflight aus, solange nicht die
+  # Datei workers/vision-universe-social/DEPLOY_REQUEST im Repository
+  # liegt. Sie ist die Anforderung, die ein Push nicht mitbringen kann:
+  # im Diff sichtbar, mit Autor und Datum, durch Loeschen zurueckziehbar.
+  #
+  # Der Preflight liest ausschliesslich — er kann nichts ueberschreiben,
+  # und er laeuft in jedem Fall VOR jedem Deploy-Schritt.
   push:
     branches:
       - 'claude/**'
@@ -50,6 +53,10 @@ on:
       - 'scripts/social/preflight-worker.mjs'
       - 'scripts/social/provision-cloudflare.mjs'
       - 'scripts/social/verify-worker.mjs'
+      # Aendert sich der Worker selbst, soll das Deployte ihm folgen —
+      # sonst laeuft draussen etwas anderes als hier steht. Hier liegt
+      # auch DEPLOY_REQUEST.
+      - 'workers/vision-universe-social/**'
 
   workflow_dispatch:
     inputs:
@@ -102,6 +109,53 @@ jobs:
           fi
           echo "Zugangsdaten sind gesetzt (Namen geprueft, keine Werte gelesen)."
 
+      - name: Betriebsart bestimmen
+        id: mode
+        # Ein Dispatch kann diesen Workflow nicht ausloesen, solange er
+        # nicht auf dem Default-Branch liegt (404) — deshalb laeuft er per
+        # Push. Ein Push traegt aber keine Eingabefelder, und ein
+        # Deployment, das einfach bei jedem Push mitlaeuft, waere genau die
+        # Art Automatik, die man spaeter nicht mehr erklaeren kann.
+        #
+        # Die Anforderung steht deshalb als Datei im Repository:
+        # workers/vision-universe-social/DEPLOY_REQUEST. Sie ist im Diff
+        # sichtbar, sie hat einen Autor und ein Datum, und sie laesst sich
+        # durch Loeschen zurueckziehen. Das ist mehr Nachweis als ein
+        # Auswahlfeld, nicht weniger.
+        run: |
+          request_file="workers/vision-universe-social/DEPLOY_REQUEST"
+          deploy=false
+          verify=false
+          reason=""
+
+          if [ -n "${{ inputs.action }}" ]; then
+            # Dispatch: die Eingabe entscheidet.
+            case "${{ inputs.action }}" in
+              deploy)
+                if [ "${{ inputs.confirm_deploy }}" != "DEPLOY" ]; then
+                  echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
+                  exit 1
+                fi
+                deploy=true; verify=true; reason="Dispatch mit Bestaetigung" ;;
+              verify)  verify=true;  reason="Dispatch: nur pruefen" ;;
+              *)       reason="Dispatch: nur Preflight" ;;
+            esac
+          elif [ -f "$request_file" ]; then
+            marker=$(grep -v '^[[:space:]]*#' "$request_file" | grep -v '^[[:space:]]*$' | head -1 | tr -d '[:space:]')
+            if [ "$marker" = "DEPLOY" ]; then
+              deploy=true; verify=true; reason="DEPLOY_REQUEST liegt im Repository"
+            else
+              reason="DEPLOY_REQUEST vorhanden, aber ohne die Zeile DEPLOY"
+            fi
+          else
+            reason="Push ohne DEPLOY_REQUEST — nur Preflight"
+          fi
+
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          echo "verify=$verify" >> "$GITHUB_OUTPUT"
+          echo "Betriebsart: deploy=$deploy verify=$verify ($reason)"
+          echo "Betriebsart: deploy=\`$deploy\` verify=\`$verify\` — $reason" >> "$GITHUB_STEP_SUMMARY"
+
       # ----------------------------------------------------------------
       # PREFLIGHT — laeuft IMMER, auch vor einem Deployment
       # ----------------------------------------------------------------
@@ -110,7 +164,7 @@ jobs:
         id: preflight
         run: |
           node scripts/social/preflight-worker.mjs \
-            --out /tmp/cf-preflight --backup /tmp/cf-backup | tee /tmp/preflight.log
+            --out /tmp/cf-preflight --backup tmp/cf-backup | tee /tmp/preflight.log
           verdict=$(node -e '
             const r = require("/tmp/cf-preflight/worker-preflight.json");
             console.log(r.verdict);
@@ -161,11 +215,16 @@ jobs:
         # Der Preflight legt sie nur an, wenn im vorhandenen Code nichts
         # in Zugangsdatenform steht — sonst waere die Sicherung eine
         # Kopie des Geheimnisses an einen Ort mit anderem Leserkreis.
-        if: hashFiles('/tmp/cf-backup/*') != ''
+        # hashFiles sieht nur den Arbeitsbereich — ein absoluter Pfad
+        # unter /tmp liefert immer den leeren Hash, und der Schritt wird
+        # stillschweigend uebersprungen. Genau das ist im ersten Lauf
+        # passiert: die Sicherung war geschrieben, das Artefakt fehlte.
+        # tmp/ steht bereits in .gitignore.
+        if: hashFiles('tmp/cf-backup/*') != ''
         uses: actions/upload-artifact@v4
         with:
           name: worker-code-before-deploy
-          path: /tmp/cf-backup/
+          path: tmp/cf-backup/
           retention-days: 90
 
       - name: HALT — im Worker liegt fremde produktive Logik
@@ -197,16 +256,8 @@ jobs:
       # PROVISION + DEPLOY — nur auf ausdrueckliche Anforderung
       # ----------------------------------------------------------------
 
-      - name: Deploy-Bestaetigung pruefen
-        if: inputs.action == 'deploy'
-        run: |
-          if [ "${{ inputs.confirm_deploy }}" != "DEPLOY" ]; then
-            echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
-            exit 1
-          fi
-
       - name: Secrets VOR dem Deployment festhalten
-        if: inputs.action == 'deploy'
+        if: steps.mode.outputs.deploy == 'true'
         # §4: die vom Owner vorbereiteten Meta-Secrets duerfen nicht
         # verschwinden. Wir halten den Vorher-Stand fest, um ihn danach
         # zu vergleichen — "wrangler erhaelt Secrets normalerweise" ist
@@ -216,12 +267,12 @@ jobs:
             --check-secrets vorher --out-json /tmp/secrets-before.json
 
       - name: Minimale Infrastruktur sicherstellen (KV, oeffentliche URL)
-        if: inputs.action == 'deploy'
+        if: steps.mode.outputs.deploy == 'true'
         id: provision
         run: node scripts/social/provision-cloudflare.mjs --ensure-kv --resolve-url
 
       - name: Worker deployen
-        if: inputs.action == 'deploy'
+        if: steps.mode.outputs.deploy == 'true'
         id: deploy
         working-directory: workers/vision-universe-social
         run: |
@@ -233,7 +284,7 @@ jobs:
           echo "Deployte Adresse: ${url:-nicht aus der Ausgabe lesbar}"
 
       - name: Oeffentliche URL nachtragen, falls sie vorher unbekannt war
-        if: inputs.action == 'deploy' && steps.deploy.outputs.deployed_url != ''
+        if: steps.mode.outputs.deploy == 'true' && steps.deploy.outputs.deployed_url != ''
         id: fixurl
         working-directory: ${{ github.workspace }}
         run: |
@@ -258,16 +309,16 @@ jobs:
           fi
 
       - name: Erneut deployen, damit die Redirect-URI stimmt
-        if: inputs.action == 'deploy' && steps.fixurl.outputs.redeploy == 'true'
+        if: steps.mode.outputs.deploy == 'true' && steps.fixurl.outputs.redeploy == 'true'
         working-directory: workers/vision-universe-social
         run: npx --yes wrangler@4 deploy
 
       - name: Secrets NACH dem Deployment vergleichen
-        if: inputs.action == 'deploy'
+        if: steps.mode.outputs.deploy == 'true'
         run: node scripts/social/provision-cloudflare.mjs --compare-secrets /tmp/secrets-before.json
 
       - name: Konfiguration committen
-        if: inputs.action == 'deploy'
+        if: steps.mode.outputs.deploy == 'true'
         # KV-ID und oeffentliche URL sind Kennungen, keine Geheimnisse.
         # Sie gehoeren in die Konfiguration, damit ein spaeteres Deployment
         # reproduzierbar dasselbe trifft.
@@ -289,7 +340,7 @@ jobs:
       # ----------------------------------------------------------------
 
       - name: Zustand pruefen
-        if: inputs.action == 'deploy' || inputs.action == 'verify'
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         run: |
           node scripts/social/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
           {
@@ -300,7 +351,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verifikationsbericht sichern
-        if: inputs.action == 'deploy' || inputs.action == 'verify'
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: worker-verify

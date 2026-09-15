@@ -122,6 +122,63 @@ function checkLocalConfig() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Die Huelle abziehen, bevor irgendetwas beurteilt wird              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Cloudflare liefert einen Modul-Worker nicht als nackten Quelltext aus,
+ * sondern als multipart/form-data — mit einer bei JEDEM Abruf neu
+ * gewuerfelten Trennmarke.
+ *
+ * Das ist zuerst an einer Ungereimtheit aufgefallen: zwei Abrufe
+ * desselben unveraenderten Workers meldeten dieselbe Groesse (752 Bytes),
+ * aber verschiedene sha256-Praefixe. Ein Fingerabdruck, der sich bei
+ * gleichem Inhalt aendert, ist keiner — er haette spaeter eine echte
+ * Aenderung nicht von Rauschen unterscheiden koennen.
+ *
+ * Die Huelle faelscht ausserdem alles Weitere: die Byte-Groesse zaehlt
+ * Trennmarken und Kopfzeilen mit, und eine Sicherung wuerde kein
+ * lauffaehiges JavaScript enthalten, sondern ein Formular.
+ *
+ * Diese Funktion zieht die Huelle ab. Fuer alles, was keine Huelle hat,
+ * gibt sie den Text unveraendert zurueck.
+ */
+export function extractWorkerSource(raw, contentType) {
+  const text = String(raw || "");
+
+  /* Die Trennmarke steht im Content-Type — und, falls der fehlt, in der
+     ersten Zeile. Auf den Kopfzeilen allein soll das nicht beruhen. */
+  let boundary = null;
+  const declared = /boundary=(?:"([^"]+)"|([^;\s]+))/i.exec(String(contentType || ""));
+  if (declared) boundary = declared[1] || declared[2];
+  if (!boundary) {
+    const first = /^--([-A-Za-z0-9'()+_,./:=?]{8,})\r?\n/.exec(text);
+    if (first && /content-disposition:\s*form-data/i.test(text)) boundary = first[1];
+  }
+  if (!boundary) return { source: text, multipart: false, parts: 0 };
+
+  const sections = text.split("--" + boundary);
+  const bodies = [];
+  for (const section of sections) {
+    /* Der Rumpf beginnt nach der Leerzeile, die auf die Kopfzeilen folgt. */
+    const split = /\r?\n\r?\n/.exec(section);
+    if (!split) continue;
+    const headers = section.slice(0, split.index);
+    if (!/content-disposition:\s*form-data/i.test(headers)) continue;
+    /* Nur Code. Metadaten-Teile (z. B. das Manifest) gehoeren nicht in
+       die Beurteilung und nicht in die Sicherung. */
+    if (/content-type:\s*application\/json/i.test(headers)) continue;
+    const body = section.slice(split.index + split[0].length).replace(/\r?\n$/, "");
+    if (body.trim()) bodies.push(body);
+  }
+
+  /* Liess sich nichts herausloesen, gilt der Rohtext — lieber zu viel
+     beurteilen als zu wenig. */
+  if (!bodies.length) return { source: text, multipart: true, parts: 0 };
+  return { source: bodies.join("\n"), multipart: true, parts: bodies.length };
+}
+
+/* ------------------------------------------------------------------ */
 /* Was liegt dort? — Klassifikation ohne Preisgabe                     */
 /* ------------------------------------------------------------------ */
 
@@ -256,7 +313,13 @@ async function api(path, init = {}) {
   const text = await response.text();
   let body = null;
   try { body = text ? JSON.parse(text) : null; } catch (err) { body = null; }
-  return { status: response.status, ok: response.ok, body, text };
+  return {
+    status: response.status,
+    ok: response.ok,
+    body,
+    text,
+    contentType: response.headers.get("content-type") || ""
+  };
 }
 
 async function checkRemote() {
@@ -317,9 +380,14 @@ async function checkRemote() {
   /* DIE ENTSCHEIDENDE PRUEFUNG: was liegt dort an Code? */
   const current = await api(scriptPath, { headers: { authorization: `Bearer ${token}` } });
   if (current.ok && current.text) {
-    const hash = createHash("sha256").update(current.text).digest("hex").slice(0, 16);
-    const verdict = classifyScript(current.text);
+    /* Erst die Transporthuelle abziehen, dann beurteilen. Sonst wird die
+       zufaellige Trennmarke mitgehasht und mitgezaehlt. */
+    const extracted = extractWorkerSource(current.text, current.contentType);
+    const hash = createHash("sha256").update(extracted.source).digest("hex").slice(0, 16);
+    const verdict = classifyScript(extracted.source);
 
+    report.existing.transport = extracted.multipart ? "multipart" : "plain";
+    report.existing.moduleParts = extracted.parts;
     report.existing.scriptBytes = verdict.signals.bytes;
     report.existing.scriptSha256Prefix = hash;
     report.existing.looksLikeThisRepository = verdict.id === "this-repository";
@@ -336,7 +404,7 @@ async function checkRemote() {
     if (BACKUP_DIR && !verdict.signals.containsTokenShape) {
       mkdirSync(resolveOut(BACKUP_DIR), { recursive: true });
       const file = join(resolveOut(BACKUP_DIR), `${WORKER_NAME}.before-deploy.js`);
-      writeFileSync(file, current.text);
+      writeFileSync(file, extracted.source);
       report.existing.backupWritten = true;
       record("Sicherung des vorhandenen Codes", "PASS",
         `geschrieben (${verdict.signals.bytes} Bytes). Ein Deployment ist damit umkehrbar.`);

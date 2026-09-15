@@ -1,0 +1,52 @@
+DEPLOY
+
+# =========================================================================
+# DIESE DATEI IST DIE DEPLOYMENT-ANFORDERUNG
+# =========================================================================
+#
+# Solange sie hier liegt und ihre erste Zeile DEPLOY lautet, deployt jeder
+# Push auf diesen Branch den Worker `vision-universe-social` — nachdem der
+# Preflight im selben Lauf geprueft hat, was dort liegt.
+#
+# Entfernen beendet das:
+#
+#     git rm workers/vision-universe-social/DEPLOY_REQUEST
+#
+# -------------------------------------------------------------------------
+# WARUM EINE DATEI UND KEIN KNOPF
+# -------------------------------------------------------------------------
+#
+# Die GitHub-API kennt einen Workflow fuer einen Dispatch erst, wenn er auf
+# dem Default-Branch liegt — davor antwortet sie mit 404. Dieser Workflow
+# liegt noch nicht dort, also gibt es keinen Knopf "Run workflow" und keine
+# Eingabefelder. Er laeuft ueber einen Push.
+#
+# Ein Push traegt aber keine Bestaetigung mit sich. Ein Deployment, das
+# einfach bei jedem Push mitlaeuft, waere die Art Automatik, die spaeter
+# niemand mehr erklaeren kann.
+#
+# Diese Datei ist die Bestaetigung. Sie ist im Diff sichtbar, sie hat einen
+# Autor und ein Datum, und sie laesst sich durch Loeschen zurueckziehen.
+# Das ist mehr Nachweis als ein Auswahlfeld, nicht weniger.
+#
+# -------------------------------------------------------------------------
+# WAS SIE NICHT ERLAUBT
+# -------------------------------------------------------------------------
+#
+# Sie hebt keine Pruefung auf. Findet der Preflight im Worker Code, den er
+# nicht als ersetzbar einordnet, bricht der Lauf ab, bevor irgendetwas
+# deployt wird — mit dieser Datei genauso wie ohne sie.
+#
+# Sie veroeffentlicht nichts. Der Worker hat keinen Publishing-Endpunkt.
+# Sie loest keinen Meta-Login aus.
+#
+# -------------------------------------------------------------------------
+# STAND BEIM ANLEGEN
+# -------------------------------------------------------------------------
+#
+# Preflight-Lauf 34974515104 hat den vorhandenen Worker eingeordnet als
+# `cloudflare-default-template`: 752 Bytes, "Hello World", keine
+# ausgehenden Adressen, keine Bindungszugriffe, nichts in
+# Zugangsdatenform. Er stammt aus dem Anlegen des Workers, nicht aus einem
+# Betrieb. Eine Sicherung wird vor jedem Deployment als Artefakt
+# `worker-code-before-deploy` abgelegt.
