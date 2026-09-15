@@ -721,7 +721,7 @@
     }
   },
   "home": {
-    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln. V4 (§23): Reihenfolge der Entdeckungsreise - Eingang, bekannte Namen, staerkste Aktien, S&P 500, NASDAQ-100, Dow Jones, Jahreshochs, Unternehmensgeschichte, Wachstum, Cashflow/Qualitaet, Themenwelten, Comeback, unter dem Radar, Einzeln entdecken. Erstes Stueck bis 430 KB (V4: Karten tragen rankingReason, drei Index-Ranglisten stehen vorn).",
+    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln. V4 (§23): Reihenfolge der Entdeckungsreise - Eingang, bekannte Namen, staerkste Aktien, S&P 500, NASDAQ-100, Dow Jones, Jahreshochs, Unternehmensgeschichte, Wachstum, Cashflow/Qualitaet, Themenwelten, Comeback, unter dem Radar, Einzeln entdecken. Erstes Stueck bis 320 KB (Vertrag aus discover/tests/v3.test.mjs; V4: Karten tragen rankingReason, drei Index-Ranglisten stehen vorn - das erste Stueck endet deshalb nach der Dow-Jones-Rangliste).",
     "chunkSizes": [
       8,
       8
@@ -930,7 +930,7 @@
         "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, mit Kurs, Geschichte und Zahlen."
       }
     ],
-    "chunkMaxBytes": 440320
+    "chunkMaxBytes": 327680
   },
   "fundamentals": {
     "note": "Fundamentale Reihen lesen nur Kennzahlen aus SEC-Jahresabschluessen (discover/engines/fundamentals.js, quant/data/sec/consumer). Eine Reihe erscheint erst ab minMembers Titeln - keine Sammlung ohne Datenbasis.",
