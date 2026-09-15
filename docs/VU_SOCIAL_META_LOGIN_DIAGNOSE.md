@@ -159,3 +159,36 @@ weil sie von der Stelle kommt, die tatsächlich entscheidet.
 - Keine Secrets gelesen, ausgegeben oder verändert.
 - Die klassische Anmeldung bleibt vollständig funktionsfähig: ist keine
   Konfigurations-ID gesetzt, verhält sich der Worker exakt wie vorher.
+
+---
+
+## 6. Nachtrag: der Business-Dialog ist aktiv
+
+2026-09-15, nach Lauf
+[35001007103](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/35001007103).
+
+Der Owner hat `pages_show_list` der Konfiguration hinzugefügt und die
+Konfigurations-ID geliefert. Sie ist als Variable hinterlegt und deployt.
+Der Verifikationslauf meldet:
+
+```
+[  ok  ] Meta-Dialog  — Business-Anmeldung (config_id)
+[  ok  ] Konfiguration vollstaendig
+[  ok  ] OAuth-Start ist erreichbar und verschlossen — 401 ohne Admin-Schluessel
+Ergebnis: READY
+```
+
+**401 statt 503** — der Admin-Schlüssel ist ebenfalls gesetzt. Damit steht die
+gesamte Infrastruktur, und der Verifikationslauf hat zum ersten Mal **keine
+einzige Anmerkung**.
+
+Der Flow wurde zusätzlich gegen einen Graph-Doppelgänger mit genau den vier
+Rechten der Konfiguration durchgespielt (O1–O8): der Connect-Link trägt
+`config_id` und kein `scope`, die Verbindung entsteht, das Page-Token wird
+gespeichert, das User-Token nicht, und `instagram_manage_comments` landet auf
+`null` statt auf „nicht verfügbar".
+
+Damit ist alles geprüft, was ohne Meta prüfbar ist. Die Frage aus §3 — warum
+das Redirect-URI-Feld sich so verhielt — ist weiterhin **offen und
+unbeantwortet**. Sie wird jetzt aber nicht mehr im Dashboard beantwortet,
+sondern vom Dialog selbst, nach der Tabelle in §4.

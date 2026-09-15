@@ -367,28 +367,42 @@ Stand 2026-09-15, nach Deployment-Lauf
 
 ### Was bereits nachgewiesen ist
 
+Stand nach Lauf
+[35001007103](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/35001007103)
+— Ergebnis **READY**, ohne Anmerkung.
+
 | Kriterium | Nachweis |
 |---|---|
 | Worker laeuft | `/health` antwortet 200, `"alive": true` |
+| Konfiguration vollstaendig | nichts unter `missingConfiguration` oder `weakConfiguration` |
+| **Business-Dialog aktiv** | `"loginMode": "business"` — `config_id` statt `scope` |
+| Admin-Schluessel gesetzt | Admin-Endpunkte antworten **401** statt 503 |
 | KV gebunden | `VU_SOCIAL_KV` fehlt nicht in `missingConfiguration` |
-| `META_APP_ID` erhalten | vor und nach dem Deployment verglichen |
-| `META_APP_SECRET` erhalten | dito — "Alle zuvor vorhandenen Secrets sind weiterhin gesetzt" |
-| Keine fremde Logik ueberschrieben | Preflight: `cloudflare-default-template`, Sicherung als Artefakt |
-| OAuth-Start erreichbar und verschlossen | `/social/meta/connect` ohne Schluessel: kein 302 |
-| Callback-Route erreichbar | `/social/meta/callback` ohne Parameter: kein 302, kein Meta-Kontakt |
-| Statusendpunkt verschlossen | `/social/meta/status` gibt ohne Schluessel keine Kontodaten |
-| Trennen nicht per GET | `/social/meta/disconnect` |
-| Kein Publishing-Endpunkt | es gibt keinen Weg, ueber diesen Worker zu veroeffentlichen |
+| `META_APP_ID` erhalten | vor und nach jedem Deployment verglichen |
+| `META_APP_SECRET` erhalten | dito |
+| Keine fremde Logik ueberschrieben | Preflight vor jedem Deployment, Sicherung als Artefakt |
+| OAuth-Start erreichbar und verschlossen | `/social/meta/connect` ohne Schluessel: 401, kein 302 |
+| Callback-Route erreichbar | `/social/meta/callback` ohne Parameter: 400, kein Meta-Kontakt |
+| Statusendpunkt verschlossen | 401 ohne Schluessel |
+| Trennen nicht per GET | 401 |
+| Kein Publishing-Endpunkt | 401 — es gibt keinen Weg, hierueber zu veroeffentlichen |
 | Antworten nicht zwischengespeichert | `cache-control: no-store` |
-| **Kein Meta-Login ausgefuehrt** | `"metaLoginAttempted": false` im Verifikationsbericht |
+| **Kein Meta-Login ausgefuehrt** | `"metaLoginAttempted": false` |
 | **Kein Beitrag veroeffentlicht** | `"published": false` |
-| Tests gruen | 190 Social-Tests, 44 Worker-Tests, 898 Quant-Tests |
+| Flow mit IHRER Rechtemenge geprueft | O1–O8: vier Rechte, Business-Dialog, Verbindung entsteht |
+| Tests gruen | 190 Social, 67 Worker, 898 Quant |
 | Keine Secrets offengelegt | `node scripts/social/assert-no-secrets.mjs` |
 | Bestehende VU-Systeme unveraendert | `node --test "quant/tests/*.test.mjs"` — 898/898 |
 
-Solange der Admin-Schluessel fehlt, antworten die Admin-Endpunkte `503` statt
-`401`. Beides beweist dasselbe: die Route ist da und sie gibt ohne Schluessel
-nichts heraus.
+Die Zeile **Flow mit IHRER Rechtemenge geprueft** ist neu und die wichtigste:
+der Ablauf wurde gegen einen Graph-Doppelgaenger mit genau den vier Rechten
+Ihrer Konfiguration durchgespielt — Verbindung entsteht, Page-Token wird
+gespeichert, User-Token nicht, Veroeffentlichen und Insights gelten als
+nachgewiesen, `instagram_manage_comments` steht auf `null` statt auf
+"nicht verfuegbar".
+
+Das beweist, dass **unser** Ablauf stimmt. Ob Meta mitspielt, beweist nur der
+Lauf gegen Meta — und der ist Ihre Autorisierung.
 
 ### Was noch aussteht — und woran es haengt
 
