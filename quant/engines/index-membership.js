@@ -248,7 +248,7 @@
     if (!doc || doc.schemaVersion !== SCHEMA) f.push("schemaVersion");
     if (!doc || !doc.indexId) f.push("indexId");
     if (!doc || !/^\d{4}-\d{2}-\d{2}$/.test(String(doc.asOf))) f.push("asOf");
-    if (!doc || !doc.proxy || !doc.proxy.etf || !doc.proxy.url) f.push("proxy");
+    if (!doc || !doc.proxy || !(doc.proxy.etf || doc.proxy.issuer) || !doc.proxy.url) f.push("proxy");
     if (!doc || !Array.isArray(doc.members)) f.push("members");
     else {
       var min = opts.minMembers || 0;

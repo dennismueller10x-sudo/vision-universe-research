@@ -240,7 +240,9 @@
       "secondarySort": "leadershipScore",
       "signalFirst": "new52WeekHigh",
       "world": "highs",
-      "microRange": "1J"
+      "microRange": "1J",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "market-leaders",
@@ -316,7 +318,9 @@
         "momentumScore"
       ],
       "world": "momentum",
-      "microRange": "6M"
+      "microRange": "6M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "breakout-watch",
@@ -331,7 +335,9 @@
       "filter": "breakout",
       "signalFirst": "breakout",
       "world": "breakout",
-      "microRange": "3M"
+      "microRange": "3M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "relative-strength",
@@ -345,7 +351,9 @@
       ],
       "secondarySort": "momentumScore",
       "world": "strength",
-      "microRange": "6M"
+      "microRange": "6M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "trend-quality",
@@ -361,7 +369,9 @@
       "filter": "trendIntact",
       "world": "quality",
       "microRange": "6M",
-      "secondarySort": "leadershipScore"
+      "secondarySort": "leadershipScore",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "bekannte-namen",
@@ -395,7 +405,8 @@
       "secondarySort": "leadershipScore",
       "world": "comeback",
       "microRange": "6M",
-      "rule": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch"
+      "rule": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "qualify": true
     },
     {
       "id": "ueberraschungen",
@@ -410,7 +421,8 @@
       "filter": "ueberraschung",
       "world": "strength",
       "microRange": "6M",
-      "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85"
+      "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85 Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "qualify": true
     },
     {
       "id": "umsatz-waechst-stark",

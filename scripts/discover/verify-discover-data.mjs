@@ -155,7 +155,7 @@ for (const universe of meta.universes) {
             `${file}: ${c.symbol} Sortierwert ${rr.sortValue} bricht die Reihenfolge (${config.direction})`);
         }
         if (rr && isNum(rr.sortValue)) letzter = rr.sortValue;
-        if (config.filter === "strongest" || config.filter === "indexMember") {
+        if (config.filter === "strongest" || config.filter === "indexMember" || config.qualify === true) {
           check(c.qualification && c.qualification.strongest === true, `${file}: ${c.symbol} steht ohne Qualifikation in einer "staerkste"-Reihe`);
         }
         if (config.indexId) {

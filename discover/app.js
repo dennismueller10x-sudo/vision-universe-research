@@ -133,6 +133,9 @@
          "Schluss 16:00", "Stand Freitag". Das Wort davor sagt schon, ob
          die Boerse offen ist. */
       zusatz = lage.beschreibung.label.replace(/^Heute · /, "").replace(/^Letzter Handelstag · /, "Stand ");
+      /* Ein veralteter Stand kurz genug fuer die Leiste des Telefons:
+         "11.09. · nicht aktuell". */
+      if (lage.freshness && lage.freshness.freshnessState === "STALE") zusatz = zusatz.replace(/^Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., /, "");
     } else {
       zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
     }

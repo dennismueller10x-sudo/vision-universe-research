@@ -180,18 +180,26 @@
     var closes = p.map(function (x) { return x[1]; });
     var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
     if (lo === hi) { lo -= 1; hi += 1; }
-    var spanne = hi - lo;
-    var yLo = lo - spanne * 0.06, yHi = hi + spanne * 0.06;
+    /* Lange Zeitraeume mit einem Vielfachen von mehr als 15 zwischen Tief
+       und Hoch: logarithmische Kursachse, sonst ist die erste Haelfte der
+       Reihe eine flache Linie am Boden. Eine Skala, kein Eingriff in die
+       Kurse - und die Beschriftung sagt es (opt.log wird zurueckgemeldet). */
+    var log = opt.log === true || (opt.log !== false && lo > 0 && hi / lo > 15);
+    var tr = log ? function (v) { return Math.log(v); } : function (v) { return v; };
+    var spanne = tr(hi) - tr(lo);
+    var yLo = tr(lo) - spanne * 0.06, yHi = tr(hi) + spanne * 0.06;
     var t0 = Date.parse(p[0][0]), t1 = Date.parse(p[p.length - 1][0]);
     var tspan = Math.max(1, t1 - t0);
     var x = function (iso) { return padL + ((Date.parse(iso) - t0) / tspan) * (w - padL - padR); };
-    var y = function (v) { return h - padBottom - ((v - yLo) / (yHi - yLo)) * (h - padTop - padBottom); };
+    var y = function (v) { return h - padBottom - ((tr(v) - yLo) / (yHi - yLo)) * (h - padTop - padBottom); };
     var up = closes[closes.length - 1] >= closes[0];
     var text = (opt.symbol ? opt.symbol + ": " : "") + "Kursverlauf " + (opt.label || opt.range || "") + ", " +
                (opt.grain === "weekly" ? "Wochenschlusskurse" : "Tagesschlusskurse") + ", von " + datum(p[0][0]) + " bis " + datum(p[p.length - 1][0]) +
                ", " + closes[0].toFixed(2) + " auf " + closes[closes.length - 1].toFixed(2);
+    if (log) text += ", logarithmische Kursachse";
     var node = svg("svg", { class: "dx-range-chart", viewBox: "0 0 " + w + " " + h, preserveAspectRatio: "none",
-                            role: "img", "aria-label": text, "data-direction": up ? "up" : "down", "data-range": opt.range || "" });
+                            role: "img", "aria-label": text, "data-direction": up ? "up" : "down", "data-range": opt.range || "",
+                            "data-scale": log ? "log" : "linear" });
     var titel = svg("title", {}); titel.textContent = text; node.appendChild(titel);
     var lauf = (renderRange.zaehler = (renderRange.zaehler || 0) + 1);
     var defs = svg("defs", {});

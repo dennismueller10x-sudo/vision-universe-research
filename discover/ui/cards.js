@@ -431,30 +431,32 @@
          Zahl "Was ist passiert?" beantwortet. Wo keiner vorliegt, steht
          auch keiner: erfunden wird nichts. */
       card.was && !kompakt ? el("p", { class: "dx-was-line", text: card.was }) : null,
+      /* V4 §6/§26 - die Hierarchie der Karte: UNTERNEHMEN, KENNZAHL,
+         KLARTEXT, CHART, dann die fundamentale Geschichte. */
+      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
+      text.zahl ? el("div", { class: "dx-zahl" }, [
+        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+        el("span", { text: text.zahl.label })
+      ]) : null,
       /* Die eine Aussage. Der Punkt davor trägt die Farbwelt - die Farbe
          wiederholt, was im Text steht, sie ersetzt ihn nie. */
       text.story ? el("p", { class: "dx-story" }, [
         el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
         document.createTextNode(text.story)
       ]) : null,
-      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
-      text.zahl ? el("div", { class: "dx-zahl" }, [
-        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
-        el("span", { text: text.zahl.label })
-      ]) : null,
+      posterMedia(card, {
+        height: kompakt ? 66 : (breit ? 132 : 92),
+        width: breit ? 392 : (kompakt ? 224 : 300),
+        ticker: breit === true || options.variant === "rank",
+        scale: kompakt ? "mini" : "poster"
+      }),
       /* Was das Unternehmen gemacht hat - ein belegter Satz aus den
          Jahresabschluessen (Fundamentals-Engine). Nur wo einer vorliegt. */
       card.hook && card.hook.text && !kompakt ? el("p", { class: "dx-hook",
         title: "Aus den SEC-Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") }, [
         el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
         document.createTextNode(card.hook.text)
-      ]) : null,
-      posterMedia(card, {
-        height: kompakt ? 66 : (breit ? 132 : 92),
-        width: breit ? 392 : (kompakt ? 224 : 300),
-        ticker: breit === true || options.variant === "rank",
-        scale: kompakt ? "mini" : "poster"
-      })
+      ]) : null
     ]);
 
     /* Die kurze Zusatzinfo. Sie wiederholt die Überschrift nicht - dafür

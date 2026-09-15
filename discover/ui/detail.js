@@ -893,18 +893,21 @@
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: C().money(letzter) }),
-        el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? C().pctPoints(veraenderung) : "" }),
+        el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
-        document.createTextNode(C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt"),
+        el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
+          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt" }),
         frischeTages(state)
       ])
     ]);
     chartBox.appendChild(kopf);
     var svgNode = MC.renderRange(sel.points, { width: mobil ? 640 : 1120, height: mobil ? 240 : 380, symbol: state.detail.symbol,
                                                  range: z.id, label: z.wort, grain: z.quelle });
+    if (svgNode && svgNode.getAttribute("data-scale") === "log") {
+      kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
+    }
     var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
@@ -927,7 +930,15 @@
                         options: meta.freshness ? { graceHours: meta.freshness.graceHours, graceMinutes: meta.freshness.graceMinutes } : null });
     return el("span", { class: "dx-live-label dx-live-label--" + f.label.tone, "data-freshness": f.freshnessState,
                         title: f.freshnessState === "STALE" ? "Die Tagesreihe ist älter als der letzte Handelstag (" + f.expectedSessionDate + ")." : "" },
-      [el("i", { "aria-hidden": "true" }), document.createTextNode(" · " + f.label.label)]);
+      [el("i", { "aria-hidden": "true" }), document.createTextNode(f.label.label)]);
+  }
+
+  /* "+27,8 %" bis 100, darueber ohne Nachkommastellen und mit
+     Tausenderpunkt: "+545.625 %" statt "+545625,00 %". */
+  function prozentGross(v) {
+    var abs = Math.abs(v);
+    var text = abs >= 100 ? Math.round(abs).toLocaleString("de-DE") : abs.toFixed(abs >= 10 ? 1 : 2).replace(".", ",");
+    return (v > 0 ? "+" : v < 0 ? "−" : "") + text + " %";
   }
 
   function zeichneIntraday(state, chartBox, paneHost, controls) {

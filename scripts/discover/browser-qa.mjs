@@ -1038,7 +1038,7 @@ await check("mobil: der Datenhinweis ist verstaut, nicht abgeschnitten", async (
   await mobil.click(".dx-inline-note summary");
 });
 
-await check("mobil: die Karte liest sich Name, Aussage, Zahl, Bild", async () => {
+await check("mobil: die Karte liest sich Name, Zahl, Aussage, Bild (V4 §26)", async () => {
   const reihenfolge = await mobil.$eval(".dx-rail-section .dx-poster", (p) => {
     const y = (sel) => {
       const n = p.querySelector(sel);
@@ -1050,9 +1050,10 @@ await check("mobil: die Karte liest sich Name, Aussage, Zahl, Bild", async () =>
   assert(reihenfolge.name !== null && reihenfolge.story !== null &&
          reihenfolge.zahl !== null && reihenfolge.bild !== null,
     "auf der Karte fehlt ein Bestandteil: " + JSON.stringify(reihenfolge));
-  assert(reihenfolge.name < reihenfolge.story, "der Name steht nicht zuerst");
-  assert(reihenfolge.story < reihenfolge.zahl, "die Aussage steht unter der Zahl");
-  assert(reihenfolge.zahl < reihenfolge.bild, "die Zahl steht unter dem Bild");
+  /* V4 §6/§26: UNTERNEHMEN, KENNZAHL, KLARTEXT, CHART. */
+  assert(reihenfolge.name < reihenfolge.zahl, "der Name steht nicht zuerst");
+  assert(reihenfolge.zahl < reihenfolge.story, "die Zahl steht unter der Aussage");
+  assert(reihenfolge.story < reihenfolge.bild, "die Aussage steht unter dem Bild");
   await hinScrollen(mobil, ".dx-rail-section", 2, 160);
   await shot(mobil, "15-mobil-poster");
 });

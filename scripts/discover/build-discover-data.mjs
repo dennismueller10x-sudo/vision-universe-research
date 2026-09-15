@@ -1105,6 +1105,10 @@ function rankingReason(s, config, rank, of, scoreKey) {
 function buildRow(universe, config) {
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
+    /* V4 §21: Qualifikation zuerst - Kurs-Reihen zeigen nur liquide,
+       gehandelte Titel mit Historie; ein eingefrorener Kurs an einem
+       "Jahreshoch" ist keine Entdeckung. */
+    if (config.qualify === true && !(s.qualification && s.qualification.strongest)) return false;
     if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
@@ -1181,7 +1185,7 @@ function buildRow(universe, config) {
     /* V4 §19: Herkunft der Index-Mitgliedschaft an der Reihe. */
     index: index ? { indexId: index.indexId, indexName: index.indexName, shortLabel: index.shortLabel, asOf: index.asOf,
                      source: index.source, proxy: index.proxy, memberCount: index.memberCount, inUniverse: index.inUniverse } : null,
-    qualification: (config.filter === "strongest" || config.filter === "indexMember") ? (universe.qualificationSummary || null) : null,
+    qualification: (config.filter === "strongest" || config.filter === "indexMember" || config.qualify === true) ? (universe.qualificationSummary || null) : null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     methodologyVersion: METHODOLOGY.methodologyVersion,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
