@@ -560,6 +560,26 @@ jobs:
           # weiter oben im selben Workflow. Sie hier nicht angewandt zu
           # haben, war der Fehler; deshalb steht sie jetzt an beiden
           # Stellen.
+          # ZWEI Abfragen, weil es zwei Fragen sind.
+          #
+          # Ohne ?media= listet der Endpunkt die Medien des Kontos —
+          # alles, was dort sichtbar veroeffentlicht ist. Mit ?media=
+          # wird der eine bekannte Testbeitrag ausdruecklich gefragt; er
+          # ist archiviert und taucht in der Liste nicht mehr auf.
+          #
+          # Nur die zweite zu stellen hiesse anzunehmen, das Konto habe
+          # keine anderen Beitraege. Das ist eine Annahme, und sie ist
+          # pruefbar — also wird sie geprueft.
+          code=000
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/insights-liste.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?limit=25" || echo 000)
+            if [ "$code" = "200" ]; then break; fi
+            echo "Versuch $versuch (Liste): HTTP $code — noch keine Antwort."
+            sleep 3
+          done
+
           code=000
           for versuch in 1 2 3 4 5 6 7 8 9 10; do
             code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
@@ -601,8 +621,34 @@ jobs:
             exit 1
           fi
 
+          # Beide Antworten zu einer zusammenfuehren. Dieselbe Kennung
+          # darf nicht zweimal auftauchen — sonst zaehlte ein Beitrag in
+          # der Vergleichsbasis doppelt, und die Basis waere still falsch.
+          node -e '
+            const fs = require("fs");
+            const lies = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); }
+                                  catch (e) { return null; } };
+            const liste = lies("tmp/social/insights-liste.json");
+            const einzeln = lies("tmp/social/insights.json");
+            const basis = liste || einzeln || { posts: [] };
+            const gesehen = new Set();
+            const posts = [];
+            for (const q of [liste, einzeln]) {
+              for (const p of (q && q.posts) || []) {
+                if (gesehen.has(String(p.mediaId))) continue;
+                gesehen.add(String(p.mediaId));
+                posts.push(p);
+              }
+            }
+            fs.writeFileSync("tmp/social/insights-alle.json", JSON.stringify(
+              Object.assign({}, basis, { posts, requested: posts.length }), null, 2));
+            console.log("Zusammengefuehrt: " + posts.length + " Beitrag/Beitraege" +
+              " (Liste: " + (((liste || {}).posts || []).length) +
+              ", ausdruecklich: " + (((einzeln || {}).posts || []).length) + ")");
+          '
+
           node scripts/social/ingest-performance.mjs \
-            --in tmp/social/insights.json --out social/data | tee tmp/social/ingest.txt
+            --in tmp/social/insights-alle.json --out social/data | tee tmp/social/ingest.txt
 
           {
             echo "## Gemessene Leistung"
