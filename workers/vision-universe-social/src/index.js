@@ -817,7 +817,14 @@ async function handleStatus(request, url, env) {
     /* NUR Namen. Niemals Werte (§36). */
     missingConfiguration: missing,
     weakConfiguration: weak,
-    connection: publicRecord
+    connection: publicRecord,
+    /* Das Smoke-Protokoll. Es steht hier, weil es sonst nirgends
+       ablesbar waere: es liegt in KV, und KV liest nur der Worker.
+       Ohne diese Zeile liesse sich nach einem Testbeitrag nicht
+       nachpruefen, was gespeichert wurde — man haette die Antwort des
+       Aufrufs und sonst nichts.
+       Enthaelt Kennungen, Zeitstempel und Fehlergruende. Kein Token. */
+    smokePublish: env.VU_SOCIAL_KV ? await readSmokeLog(env) : null
   });
 }
 
