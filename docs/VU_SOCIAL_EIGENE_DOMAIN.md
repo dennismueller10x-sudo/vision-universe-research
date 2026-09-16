@@ -88,19 +88,28 @@ Produktivbetrieb ohnehin die falsche ist.
 
 Ziel: `social.visionuniverse.de`
 
-### Voraussetzung, die zuerst geklärt wird
+### Voraussetzung — abgefragt, nicht vermutet
 
-Eine Worker Custom Domain verlangt, dass die Zone `visionuniverse.de` auf
-**diesem** Cloudflare-Konto liegt und aktiv ist. Liegt sie nicht dort, schlägt
+Eine Worker Custom Domain verlangt, dass die Zone auf **diesem**
+Cloudflare-Konto liegt und aktiv ist. Liegt sie nicht dort, schlägt
 `wrangler deploy` fehl und reißt die gesamte Deployment-Strecke mit.
 
-Deshalb fragt der Workflow das jetzt vorher ab
-(`provision-cloudflare.mjs --list-zones`), statt es beim Deployen
-herauszufinden. Nur lesend — Zonennamen stehen im öffentlichen DNS.
+Deshalb fragt der Workflow das ab, statt es beim Deployen herauszufinden.
+Ergebnis aus Lauf
+[35051837588](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/35051837588):
 
-Bekannt ist bisher nur: `research.visionuniverse.de` zeigt per CNAME auf
-`dennismueller10x-sudo.github.io`, also auf GitHub Pages. Über die Nameserver
-der Zone sagt das nichts.
+```
+Zonenliste lesbar: true
+visionuniverse.de auf dem Konto: false
+Zonen auf dem Konto: (keine)
+```
+
+Die erste Zeile ist wichtig: die Liste war **lesbar**. Das Ergebnis ist also
+eine Antwort und kein fehlendes Recht. Auf dem Konto liegt **keine einzige
+Zone** — es gibt auch keine andere Domain, die man stattdessen nehmen könnte.
+
+Damit ist die Sache entschieden: `visionuniverse.de` muss auf das
+Cloudflare-Konto, und das geht nur über die Nameserver.
 
 ### Was sich im Repository ändert
 
@@ -161,7 +170,43 @@ einer, der genau das Muster des Workflows gegen beide Adressen prüft.
 
 ---
 
-## 5. Was unverändert bleibt
+## 5. Die Owner-Aktion — und was dabei zu beachten ist
+
+`visionuniverse.de` bei Cloudflare hinzufügen (Add a site). Cloudflare liest die
+vorhandenen DNS-Einträge ein und nennt die zwei Nameserver, die beim Registrar
+einzutragen sind.
+
+**Das ist kein Formularfeld, sondern eine DNS-Umstellung für die ganze Domain.**
+Ab dem Wechsel beantwortet Cloudflare jede Anfrage zu `visionuniverse.de` —
+auch die, die mit diesem Projekt nichts zu tun haben. Zwei Dinge deshalb
+**vor** dem Nameserver-Wechsel prüfen, in der von Cloudflare importierten
+Liste:
+
+| Eintrag | Warum |
+|---|---|
+| **MX** (und SPF/DKIM als TXT) | Fehlt ein MX-Eintrag nach dem Wechsel, kommt keine E-Mail mehr an dieser Domain an. Das ist der Schaden, der bei solchen Umstellungen am häufigsten passiert und am spätesten auffällt. |
+| **`research`** → `dennismueller10x-sudo.github.io` | Das ist die bestehende Vision-Universe-Seite auf GitHub Pages. Der Eintrag muss da sein, sonst ist die Seite nach dem Wechsel weg. Für GitHub Pages zunächst **DNS only** (graue Wolke) wählen — Proxy erst einschalten, wenn die Seite nachweislich läuft. |
+
+Der Import ist gut, aber nicht garantiert vollständig. Die Liste einmal gegen
+die aktuelle DNS-Konfiguration beim jetzigen Anbieter zu halten, kostet fünf
+Minuten und verhindert genau den Fall, den man hinterher nicht mehr schnell
+repariert bekommt.
+
+Sobald die Zone aktiv ist, meldet der nächste Lauf sie von selbst
+(`Zone aktiv: true`) — dann sind es die zwei Zeilen aus §3, und die
+Meta-Felder wechseln auf `social.visionuniverse.de`.
+
+### Falls die Domain nicht zu Cloudflare soll
+
+Dann braucht der Callback eine andere Server-Laufzeit unter einer eigenen
+Domain. GitHub Pages scheidet aus — es ist statisch und kann keinen
+OAuth-Callback beantworten; das war bereits der Befund aus Phase A. Das wäre
+eine echte Architekturentscheidung und keine Konfigurationsänderung, deshalb
+steht sie hier nur als Möglichkeit und nicht als Empfehlung.
+
+---
+
+## 6. Was unverändert bleibt
 
 - `state`-Signatur, Nonce-Cookie, Admin-Schutz, `appsecret_proof`, Redaktion.
 - Kein Beitrag veröffentlicht. Der Worker hat keinen Publishing-Endpunkt.
