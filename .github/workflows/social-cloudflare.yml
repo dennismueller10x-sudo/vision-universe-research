@@ -621,6 +621,43 @@ jobs:
             exit 1
           fi
 
+          # Was das Subrequest-Budget des Workers vertagt hat, nachholen.
+          #
+          # Der Worker darf pro Anfrage nur begrenzt viele ausgehende
+          # Aufrufe machen. Er sagt jetzt, welche Beitraege deshalb offen
+          # blieben — und offen ist nicht gescheitert. Hier wird nachgefasst,
+          # bis nichts mehr offen ist oder der Vorrat an Runden aufgebraucht
+          # ist; auch dann steht der Rest als offen da und nicht als Fehler.
+          runde=0
+          while [ $runde -lt 4 ]; do
+            offen=$(node -e '
+              const fs = require("fs");
+              try {
+                const q = JSON.parse(fs.readFileSync("tmp/social/insights-liste.json", "utf8"));
+                console.log((q.deferred || []).join(","));
+              } catch (e) { console.log(""); }
+            ')
+            if [ -z "$offen" ]; then break; fi
+            runde=$((runde + 1))
+            echo "Runde $runde: $(echo "$offen" | tr ',' '\n' | wc -l) Beitrag/Beitraege offen — hole nach."
+            code=$(curl -sS -o "tmp/social/insights-nach-$runde.json" -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?media=$offen" || echo 000)
+            if [ "$code" != "200" ]; then
+              echo "Nachfassen antwortet mit HTTP $code — der Rest bleibt offen."
+              break
+            fi
+            cp "tmp/social/insights-nach-$runde.json" tmp/social/insights-liste-rest.json
+            node -e '
+              const fs = require("fs");
+              const a = JSON.parse(fs.readFileSync("tmp/social/insights-liste.json", "utf8"));
+              const b = JSON.parse(fs.readFileSync("tmp/social/insights-liste-rest.json", "utf8"));
+              a.posts = (a.posts || []).concat(b.posts || []);
+              a.deferred = b.deferred || [];
+              fs.writeFileSync("tmp/social/insights-liste.json", JSON.stringify(a));
+            '
+          done
+
           # Beide Antworten zu einer zusammenfuehren. Dieselbe Kennung
           # darf nicht zweimal auftauchen — sonst zaehlte ein Beitrag in
           # der Vergleichsbasis doppelt, und die Basis waere still falsch.

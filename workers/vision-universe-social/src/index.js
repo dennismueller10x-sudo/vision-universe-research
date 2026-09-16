@@ -558,8 +558,33 @@ async function handleInsights(request, url, env) {
     quelle = "Medienliste des Kontos";
   }
 
+  /* -----------------------------------------------------------------
+     DAS SUBREQUEST-BUDGET
+     -----------------------------------------------------------------
+
+     Ein Cloudflare Worker darf pro Anfrage nur eine begrenzte Zahl
+     ausgehender Aufrufe machen (50 im Standardplan). Jeder Beitrag
+     kostet ZWEI — Stammdaten und Kennzahlen —, die Medienliste kostet
+     einen weiteren.
+
+     Beim ersten echten Lauf wurden 26 Beitraege angefragt: 53 Aufrufe.
+     Die ersten liefen, die letzten neun kamen als `networkError`
+     zurueck. Das sah aus wie ein Netzproblem bei Meta und war eine
+     Obergrenze bei uns.
+
+     Deshalb wird hier GERECHNET statt gehofft, und was nicht mehr
+     hineinpasst, wird ausdruecklich als offen gemeldet — nicht als
+     gescheitert. Der Aufrufer holt den Rest mit `?media=` nach. */
+  const BUDGET = Math.max(1, Number(env.VU_SOCIAL_SUBREQUEST_BUDGET) || 40);
+  const proBeitrag = 2;
+  const schonVerbraucht = quelle === "Medienliste des Kontos" ? 1 : 0;
+  const passt = Math.max(1, Math.floor((BUDGET - schonVerbraucht) / proBeitrag));
+
+  const zuHolen = ids.slice(0, passt);
+  const vertagt = ids.slice(passt);
+
   const beitraege = [];
-  for (const id of ids) {
+  for (const id of zuHolen) {
     /* Stammdaten und Kennzahlen getrennt: schlaegt das eine fehl, ist
        das andere deswegen nicht wertlos. Ein Beitrag, von dem wir den
        Zeitstempel haben und die Reichweite nicht, ist etwas anderes als
@@ -593,7 +618,17 @@ async function handleInsights(request, url, env) {
     accountId: record.instagramAccountId,
     source: quelle,
     requested: ids.length,
+    fetched: zuHolen.length,
     measured: beitraege.filter((b) => b.metrics).length,
+    /* Was nicht abgefragt wurde, ist OFFEN und nicht gescheitert. Der
+       Unterschied entscheidet, ob jemand nach einem Fehler sucht oder
+       einfach nachfasst. */
+    deferred: vertagt,
+    deferredReason: vertagt.length
+      ? "Das Subrequest-Budget des Workers (" + BUDGET + ") reicht fuer " + passt +
+        " Beitraege je Anfrage. Die uebrigen sind nicht gemessen worden und nicht " +
+        "fehlgeschlagen — mit ?media=<id>,<id> nachholen."
+      : null,
     posts: beitraege,
     note: "Nur gelesen. Es wurde nichts veroeffentlicht und nichts veraendert."
   });

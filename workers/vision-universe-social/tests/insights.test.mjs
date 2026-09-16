@@ -206,3 +206,45 @@ test("I12 · Der Lesepfad beruehrt kein Publishing und gibt kein Token heraus", 
   assert.ok(!roh.includes(PAGE_TOKEN));
   assert.ok(!roh.includes(TEST_APP_SECRET));
 });
+
+test("I13 · Das Subrequest-Budget begrenzt, was pro Anfrage geholt wird", async () => {
+  /* Der reale Fall: 26 Beitraege = 53 ausgehende Aufrufe, erlaubt sind
+     50. Die letzten neun kamen als networkError zurueck und sahen aus
+     wie ein Problem bei Meta. Es war eine Obergrenze bei uns. */
+  const g = leseGraph();
+  const env = createEnv({ __graph: g, __fetchImpl: g.fetchImpl,
+    VU_SOCIAL_SUBREQUEST_BUDGET: "6" });
+  await verbunden(env);
+
+  const viele = ["1", "2", "3", "4", "5"].join(",");
+  const body = await (await worker.fetch(ruf(`?media=${viele}`), env)).json();
+
+  assert.equal(body.requested, 5);
+  assert.equal(body.fetched, 3, "Budget 6 / 2 Aufrufe je Beitrag = 3");
+  assert.equal(body.deferred.length, 2);
+});
+
+test("I14 · Nicht abgefragt ist OFFEN, nicht gescheitert", async () => {
+  /* Der Unterschied entscheidet, ob jemand nach einem Fehler sucht oder
+     einfach nachfasst. */
+  const g = leseGraph();
+  const env = createEnv({ __graph: g, __fetchImpl: g.fetchImpl,
+    VU_SOCIAL_SUBREQUEST_BUDGET: "4" });
+  await verbunden(env);
+
+  /* Budget 4, zwei Aufrufe je Beitrag -> zwei Beitraege passen. */
+  const body = await (await worker.fetch(ruf("?media=1,2,3"), env)).json();
+  assert.deepEqual(body.deferred, ["3"]);
+  assert.match(body.deferredReason, /nicht gemessen worden und nicht/);
+  assert.match(body.deferredReason, /nachholen/);
+  /* Sie tauchen NICHT als fehlgeschlagene Beitraege auf. */
+  assert.equal(body.posts.length, 2);
+});
+
+test("I15 · Ohne Budgetgrenze bleibt alles beim Alten", async () => {
+  const { env } = await leseEnv();
+  const body = await (await worker.fetch(ruf(`?media=${MEDIA}`), env)).json();
+  assert.equal(body.fetched, 1);
+  assert.deepEqual(body.deferred, []);
+  assert.equal(body.deferredReason, null);
+});
