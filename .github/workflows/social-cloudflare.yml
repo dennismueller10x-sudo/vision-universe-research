@@ -611,13 +611,22 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if git diff --quiet -- social/data/performance.json; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # ERST hinzufuegen, DANN vergleichen.
+          #
+          # Vorher stand hier `git diff --quiet -- <datei>` vor dem `add`.
+          # git diff vergleicht aber nur VERFOLGTE Dateien: fuer eine, die
+          # es im Repository noch nie gab, meldet es "keine Aenderung" -
+          # und der Schritt warf die gerade geholten Zahlen weg und ging
+          # zufrieden nach Hause. Vier Laeufe lang sah das aus, als
+          # antworte der Endpunkt nicht.
+          git add social/data/performance.json
+          if git diff --cached --quiet -- social/data/performance.json; then
             echo "Keine Aenderung an den Leistungsdaten."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add social/data/performance.json
           git commit -m "Gemessene Social-Leistung eingepflegt" \
             -m "Erzeugt vom Workflow social-cloudflare. Nur gelesene Plattformzahlen, keine Schaetzung. Sie sind die Evidenzgrundlage des Lernens - ohne sie laeuft der Kreislauf vorwaerts und kommt nicht zurueck."
           git push
