@@ -52,7 +52,7 @@ import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
   debugToken, probePageLinkage, resolveAccountsFromAssets,
   createMediaContainer, mediaContainerStatus, publishMediaContainer, verifyMedia,
-  mediaInsights,
+  mediaInsights, MEDIA_INSIGHT_CALLS,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
@@ -576,7 +576,11 @@ async function handleInsights(request, url, env) {
      hineinpasst, wird ausdruecklich als offen gemeldet — nicht als
      gescheitert. Der Aufrufer holt den Rest mit `?media=` nach. */
   const BUDGET = Math.max(1, Number(env.VU_SOCIAL_SUBREQUEST_BUDGET) || 40);
-  const proBeitrag = 2;
+  /* Stammdaten (1) plus je eine Abfrage je Metrikgruppe. Abgeleitet und
+     nicht eingetragen: als die dritte Gruppe dazukam, stand hier eine 2,
+     und dreizehn Beitraege kamen als "Too many subrequests" zurueck —
+     ein Fehler, der wie ein Netzproblem bei Meta aussah. */
+  const proBeitrag = 1 + MEDIA_INSIGHT_CALLS;
   const schonVerbraucht = quelle === "Medienliste des Kontos" ? 1 : 0;
   const passt = Math.max(1, Math.floor((BUDGET - schonVerbraucht) / proBeitrag));
 

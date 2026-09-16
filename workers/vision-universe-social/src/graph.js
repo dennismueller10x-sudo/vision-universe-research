@@ -478,6 +478,13 @@ const MEDIA_METRICS_ZUSATZ = ["views", "total_interactions", "profile_visits", "
    nicht, die Schwelle zu senken. */
 const MEDIA_METRICS_REEL = ["ig_reels_avg_watch_time", "ig_reels_video_view_total_time"];
 
+/* Wie viele ausgehende Aufrufe `mediaInsights` kostet — eine Gruppe, ein
+   Aufruf. Die Zahl steht hier und wird nicht anderswo gepflegt: als die
+   dritte Gruppe dazukam, rechnete das Subrequest-Budget im Aufrufer
+   weiter mit zwei, und dreizehn Beitraege kamen als "Too many
+   subrequests" zurueck. Eine abgeleitete Zahl kann nicht veralten. */
+export const MEDIA_INSIGHT_CALLS = 3;
+
 export async function mediaInsights(ctx, { mediaId, accessToken }) {
   const werte = {};
   const nichtBeantwortet = [];

@@ -53,11 +53,14 @@ function leseGraph(options = {}) {
       return json({ data: [{ id: MEDIA, permalink: "https://www.instagram.com/p/X/",
         timestamp: "2026-09-16T17:10:14+0000", media_type: "IMAGE" }] });
     }
-    if (pfad === MEDIA) {
-      return json({ id: MEDIA, permalink: "https://www.instagram.com/p/X/",
+    /* Jede Kennung, nicht nur die eine: sonst scheitert bei fremden IDs
+       schon die Basisgruppe, die uebrigen werden uebersprungen, und ein
+       Test ueber die ZAHL der Aufrufe misst etwas anderes als gedacht. */
+    if (/^\d+$/.test(pfad)) {
+      return json({ id: pfad, permalink: "https://www.instagram.com/p/X/",
         timestamp: "2026-09-16T17:10:14+0000", media_type: "IMAGE", caption: "Test" });
     }
-    if (pfad === `${MEDIA}/insights`) {
+    if (/^\d+\/insights$/.test(pfad)) {
       const metrik = url.searchParams.get("metric") || "";
       const istZusatz = metrik.includes("views");
       if (istZusatz && options.zusatzFehlt) {
@@ -220,8 +223,9 @@ test("I13 · Das Subrequest-Budget begrenzt, was pro Anfrage geholt wird", async
   const body = await (await worker.fetch(ruf(`?media=${viele}`), env)).json();
 
   assert.equal(body.requested, 5);
-  assert.equal(body.fetched, 3, "Budget 6 / 2 Aufrufe je Beitrag = 3");
-  assert.equal(body.deferred.length, 2);
+  /* Vier Aufrufe je Beitrag: Stammdaten plus drei Metrikgruppen. */
+  assert.equal(body.fetched, 1, "Budget 6 / 4 Aufrufe je Beitrag = 1");
+  assert.equal(body.deferred.length, 4);
 });
 
 test("I14 · Nicht abgefragt ist OFFEN, nicht gescheitert", async () => {
@@ -232,13 +236,13 @@ test("I14 · Nicht abgefragt ist OFFEN, nicht gescheitert", async () => {
     VU_SOCIAL_SUBREQUEST_BUDGET: "4" });
   await verbunden(env);
 
-  /* Budget 4, zwei Aufrufe je Beitrag -> zwei Beitraege passen. */
+  /* Budget 4, vier Aufrufe je Beitrag -> einer passt. */
   const body = await (await worker.fetch(ruf("?media=1,2,3"), env)).json();
-  assert.deepEqual(body.deferred, ["3"]);
+  assert.deepEqual(body.deferred, ["2", "3"]);
   assert.match(body.deferredReason, /nicht gemessen worden und nicht/);
   assert.match(body.deferredReason, /nachholen/);
   /* Sie tauchen NICHT als fehlgeschlagene Beitraege auf. */
-  assert.equal(body.posts.length, 2);
+  assert.equal(body.posts.length, 1);
 });
 
 test("I15 · Ohne Budgetgrenze bleibt alles beim Alten", async () => {
@@ -247,4 +251,24 @@ test("I15 · Ohne Budgetgrenze bleibt alles beim Alten", async () => {
   assert.equal(body.fetched, 1);
   assert.deepEqual(body.deferred, []);
   assert.equal(body.deferredReason, null);
+});
+
+test("I16 · Das Budget folgt der Zahl der Metrikgruppen", async () => {
+  /* Der eigentliche Fehler war nicht die falsche Zahl, sondern dass sie
+     an zwei Stellen gepflegt werden musste. Als die Reel-Gruppe dazukam,
+     blieb das Budget bei zwei Aufrufen je Beitrag — und dreizehn
+     Beitraege kamen als "Too many subrequests by single Worker
+     invocation" zurueck, was wie ein Netzproblem bei Meta aussieht. */
+  const { MEDIA_INSIGHT_CALLS } = await import("../src/graph.js");
+  const g = leseGraph();
+  const env = createEnv({ __graph: g, __fetchImpl: g.fetchImpl,
+    VU_SOCIAL_SUBREQUEST_BUDGET: String((1 + MEDIA_INSIGHT_CALLS) * 3) });
+  await verbunden(env);
+
+  const body = await (await worker.fetch(ruf("?media=1,2,3,4,5"), env)).json();
+  assert.equal(body.fetched, 3, "genau drei Beitraege passen ins Budget");
+
+  /* Und die Aufrufe, die wirklich geschahen, bestaetigen die Rechnung. */
+  const proBeitrag = g.aufrufe.filter((a) => a.pfad === "1" || a.pfad === "1/insights").length;
+  assert.equal(proBeitrag, 1 + MEDIA_INSIGHT_CALLS);
 });
