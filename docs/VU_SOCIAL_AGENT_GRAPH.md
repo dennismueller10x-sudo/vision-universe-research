@@ -306,3 +306,103 @@ Beide Zustände laufen jetzt zweimal, mit Rückschreiben in den
 Datenordner wie in der Produktion (`--out` = `--data`), und verglichen
 werden die jeweils zweiten Läufe. **Beide** zweimal — sonst wäre die
 Zahl der Läufe ein zweiter Unterschied zwischen den Zuständen.
+
+---
+
+## 12. Die zwei Stufen, die aus „würde" ein „könnte" machen
+
+Der Graph endete bei der Schatten-Entscheidung: *„ich würde X mit Y als Z
+um T senden."* Diese Aussage behauptet, dass X **sendbar wäre**. Ob das
+stimmt, entscheidet sich nicht an der Entscheidung, sondern am Material.
+
+| # | Stufe | Skript | Was sie beiträgt |
+|---|---|---|---|
+| **11b** | **FRACHT** | `render-asset.mjs` | Bildplan je Entscheidung; mit `--render` das Bild selbst |
+| **12** | **VERSAND** | `dispatch-publications.mjs` | Absicht, Idempotenzschlüssel, die eine HTTP-Anfrage |
+
+Ohne 11b fällt erst im Moment der Veröffentlichung auf, dass die Fracht
+fehlt — und dann ist der Anspruch schon angemeldet, und niemand weiß
+ohne nachzusehen, ob ein Beitrag entstand.
+
+Ohne 12 bleibt „der Loop könnte senden" eine Behauptung. Mit 12 ist es
+`dispatch-plan.json`, und dort steht die Anfrage im Wortlaut.
+
+### Gesperrt heißt nicht unsichtbar
+
+Der Versand baut die Anfragen auch dann, wenn **alle** Sperren zu sind —
+mit Grund, und **ohne** eine Absicht anzumelden (eine Absicht ist eine
+Zustandsänderung; eine gesperrte Entscheidung darf keine erzeugen).
+
+„Gesperrt" sagt, dass nichts hinausgeht. Es sagt nicht, **was**
+hinausginge. Genau das ist aber die Frage, die vor einer Freigabe zu
+beantworten ist und nicht danach.
+
+### Die Kennung ist überall dieselbe
+
+```
+packageId  →  assets/social/<packageId>.jpg      die Datei
+           →  .../assets/social/<packageId>.jpg  die Adresse
+           →  contentId im Publish-Aufruf        der Anspruch
+```
+
+Ein eigener Schlüssel an einer dieser Stellen wäre ein weiterer Name für
+denselben Beitrag — und eine weitere Gelegenheit, dass zwei davon
+auseinanderlaufen.
+
+---
+
+## 13. Was der erste Lauf gegen echte Pakete zeigte
+
+Die Tests waren grün. Die erste gezeichnete Karte las sich so:
+
+```
+76
+76
+Warum bewegt sich XOM gerade?
+```
+
+76 wovon?
+
+Die Content-Engine legt einen Wert als **zwei** Belege ab: einen mit der
+Zahl (`text: "76"`, `numeric: 76`) und einen mit der Bezeichnung
+(`text: "Technical Opportunity Score"`, `numeric: null`) — beide mit
+derselben Quelle, weil auch eine Bezeichnung wie „52-Wochen-Hoch"
+belegpflichtig ist. Der Renderer las nur den ersten und setzte dessen
+Text als Beschriftung unter die Zahl.
+
+**Mein Fixture hatte die Form, die ich mir vorgestellt hatte, nicht die,
+die die Engine liefert.** Ein grüner Test über eine erfundene Datenform
+prüft die Erfindung.
+
+Eine Zahl, die nicht sagt, wovon sie die Zahl ist, wird seitdem nicht
+gezeichnet (`RA19`) — und eine Bezeichnung aus einer anderen Quelle
+zählt nicht (`RA20`).
+
+---
+
+## 14. „16 gemessen, 0 zugeordnet"
+
+Der Zyklus gegen den echten Datenstand meldete:
+
+```
+Gemessene Beitraege: 16 von 26
+Zugeordnet:          0 Gedaechtniseintrag/-eintraege, 0 bewertet
+Keine Beobachtung moeglich — es gibt noch keine gemessenen Beitraege.
+```
+
+Der letzte Satz war falsch. Es gab sechzehn.
+
+Zwei Fehler in einer Zeile:
+
+1. **Die Sache:** die Bestandsbeiträge standen nie im *produktiven*
+   Gedächtnis. Der Nachweis baute sie sich in einen Arbeitsordner, der
+   Betrieb bekam sie nie. `backfill-account-memory.mjs` trägt sie ein —
+   und `prove-loop-closure.mjs` holt sie sich ab jetzt von dort, damit es
+   für dieselbe Frage nicht zwei Regeln gibt.
+2. **Die Meldung:** drei Lagen sahen gleich aus (nichts gemessen /
+   gemessen aber nicht zugeordnet / zugeordnet aber keine Dimension mit
+   genug gleichartigen Fällen) und verlangen völlig verschiedene
+   Antworten.
+
+Nach dem Backfill: **16 gemessen, 16 zugeordnet, 16 bewertbar, 2
+Beobachtungen.**
