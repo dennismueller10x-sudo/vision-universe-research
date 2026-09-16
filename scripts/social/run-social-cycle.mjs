@@ -825,7 +825,21 @@ async function main() {
            (o.sufficient ? "  BELASTBAR" : "  nicht belastbar") + " — " + o.note);
   }
   if (!beobachtungen.length) {
-    log("Keine Beobachtung moeglich — es gibt noch keine gemessenen Beitraege.");
+    /* DREI verschiedene Lagen sehen an dieser Stelle gleich aus und
+       verlangen voellig verschiedene Antworten. Sie zusammenzufassen
+       waere eine Aussage, die mehr behauptet als bekannt ist — und bei
+       16 gemessenen Beitraegen waere "es gibt noch keine gemessenen
+       Beitraege" schlicht falsch. */
+    if (!snapshots.length) {
+      log("Keine Beobachtung moeglich — es wurde noch nichts gemessen.");
+    } else if (!lernzeilen.length) {
+      log("Keine Beobachtung moeglich: " + snapshots.length + " Beitrag/Beitraege sind " +
+          "GEMESSEN, aber keinem Gedaechtniseintrag zugeordnet. Es fehlen die Eintraege, " +
+          "nicht die Zahlen — scripts/social/backfill-account-memory.mjs legt sie an.");
+    } else {
+      log("Keine Beobachtung moeglich: " + lernzeilen.length + " bewertbare Beitraege, " +
+          "aber keine Dimension mit genug gleichartigen Faellen.");
+    }
   }
 
   /* ================================================================

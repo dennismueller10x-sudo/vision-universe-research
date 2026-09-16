@@ -59,6 +59,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const require = createRequire(import.meta.url);
 const EvidenceRegime = require(join(ROOT, "social/engines/evidence-regime.js"));
+import { eintraegeAusLeistung } from "./backfill-account-memory.mjs";
 const argv = process.argv.slice(2);
 const arg = (n, d) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 
@@ -235,56 +236,17 @@ if (EVIDENCE === "simulated") {
   /* Die gemessenen Beitraege muessen im Gedaechtnis stehen, sonst gibt es
      nichts, woran die Zahlen haften koennten.
 
-     -------------------------------------------------------------------
-     WAS HIER EINGETRAGEN WIRD UND WAS AUSDRUECKLICH NICHT
-     -------------------------------------------------------------------
-
-     Diese Beitraege stammen NICHT aus der Pipeline. Sie wurden vom Owner
-     veroeffentlicht, bevor es das System gab. Damit ist bekannt, WAS sie
-     sind, aber nicht, warum sie so entschieden wurden.
-
-     Eingetragen wird deshalb nur, was gemessen ist:
-
-       mediaFormat  aus media_type bzw. dem Permalink — REEL oder Feed.
-                    Das sagt Meta, nicht wir.
-       performance  aus den Insights.
-
-     NICHT eingetragen wird `visualType`. Das ist unser Vokabular fuer
-     die gestalterische Entscheidung (CHART, DATA_CARD, MOTION_GRAPHIC),
-     und es ist NICHT dasselbe wie der Plattform-Container. Aus "Instagram
-     meldet ein Video" folgt weder MOTION_GRAPHIC noch VIDEO — beides
-     waere eine Entscheidung, die bei diesen Beitraegen niemand getroffen
-     hat. Frueher stand die Kohorte hier; das erzeugte zwei Beobachtungen
-     ueber eine Dimension, die etwas anderes bedeutet als ihr Name.
-
-     NICHT eingetragen wird `archetype`. Das System hat ihn nie
-     entschieden; ihn nachtraeglich zu vergeben, damit das Feld gefuellt
-     aussieht, waere erfundene Vorgeschichte — und sie wuerde als
-     Formatwissen in genau die Entscheidung einfliessen, die dieser
-     Nachweis prueft. Ein Beweis, der seine eigene Voraussetzung
-     erfindet, beweist nichts. */
-  /* Die Kohorte bestimmt die Engine, nicht dieses Skript. Zwei Regeln
-     fuer dieselbe Frage waeren die Einladung, dass sie auseinanderlaufen
-     und der Nachweis etwas anderes misst als der Zyklus. */
-
+     Gebaut werden sie von `backfill-account-memory.mjs` — derselben
+     Regel, die auch den Betrieb fuellt. Sie hier ein zweites Mal
+     hinzuschreiben waere die Einladung, dass Nachweis und Betrieb
+     auseinanderlaufen; dann misst der Nachweis etwas, das es so nicht
+     gibt. Was dort eingetragen wird und was ausdruecklich nicht, steht
+     im Kopf jenes Skripts. */
   writeFileSync(join(dirB, "content-memory.json"), JSON.stringify({
     generatedAt: NOW,
-    entries: (p.snapshots || [])
-      .filter((z) => z.snapshot && z.snapshot.state !== "UNAVAILABLE")
-      .map((z, i) => ({
-        publicationId: "real_" + z.mediaId, packageId: "real_pkg_" + i,
-        publishedAt: z.publishedAt, platform: "instagram",
-        topic: "Bestandsbeitrag", entities: [],
-        archetype: null,
-        visualType: null,
-        mediaFormat: EvidenceRegime.cohortFor(z),
-        hook: "", caption: "", cta: null,
-        externalPostId: z.mediaId, permalink: z.permalink,
-        performance: null,
-        lineage: { origin: "ORGANIC_PRE_EXISTING", signalIds: [], opportunityId: null,
-                   hypothesis: null, strategyVersion: null, decidedMode: null }
-      }))
+    entries: eintraegeAusLeistung(p, {})
   }, null, 2) + "\n");
+
   evidenzHerkunft = "GEMESSEN — " + (p.measured || 0) + " Beitrag/Beitraege von Instagram";
 }
 
