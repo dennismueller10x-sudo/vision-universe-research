@@ -442,6 +442,81 @@ export async function recentMedia(ctx, { instagramAccountId, pageAccessToken, li
   }, pageAccessToken);
 }
 
+/**
+ * Die Kennzahlen EINES Beitrags.
+ *
+ * -------------------------------------------------------------------------
+ * WARUM DIE METRIKEN EINZELN ABGEFRAGT WERDEN
+ * -------------------------------------------------------------------------
+ *
+ * Die Graph API lehnt eine Insights-Abfrage KOMPLETT ab, wenn auch nur
+ * eine der angefragten Metriken fuer diesen Medientyp nicht existiert.
+ * Ein Bild kennt keine `video_views`, ein Reel keine `impressions` im
+ * selben Sinn. Eine gemeinsame Abfrage haette also zwei Ausgaenge: alles
+ * oder nichts — und "nichts" saehe aus wie "der Beitrag hat keine
+ * Reichweite".
+ *
+ * Gefragt wird deshalb in zwei Gruppen: die Metriken, die jeder
+ * Bildbeitrag hat, und die, die nur manche haben. Faellt die zweite
+ * Gruppe aus, bleiben die Werte der ersten stehen. Was nicht beantwortet
+ * wurde, steht als `null` und nicht als 0 — ungemessen ist nicht null
+ * (MASTER §31.6).
+ *
+ * Lesend. Erzeugt nichts, veraendert nichts.
+ */
+const MEDIA_METRICS_BASIS = ["reach", "likes", "comments", "saved", "shares"];
+const MEDIA_METRICS_ZUSATZ = ["views", "total_interactions", "profile_visits", "follows"];
+
+export async function mediaInsights(ctx, { mediaId, accessToken }) {
+  const werte = {};
+  const nichtBeantwortet = [];
+  const gruppen = [];
+
+  async function gruppe(metriken, pflicht) {
+    const res = await graph(ctx, `${mediaId}/insights`,
+      { metric: metriken.join(",") }, accessToken);
+
+    gruppen.push({
+      metriken, ok: res.ok,
+      reason: res.ok ? null : res.reason,
+      metaCode: res.ok ? null : (res.metaCode === undefined ? null : res.metaCode)
+    });
+
+    if (!res.ok) {
+      /* Die Pflichtgruppe darf scheitern, ohne den ganzen Abruf zu
+         verlieren — aber es muss sichtbar bleiben, DASS sie es tat. */
+      for (const m of metriken) nichtBeantwortet.push(m);
+      return pflicht ? res : null;
+    }
+
+    for (const eintrag of (res.data && res.data.data) || []) {
+      const name = String(eintrag.name || "");
+      const punkte = eintrag.values || [];
+      const wert = punkte.length ? punkte[punkte.length - 1].value : null;
+      werte[name] = (wert === undefined || wert === null) ? null : Number(wert);
+    }
+    for (const m of metriken) {
+      if (!Object.prototype.hasOwnProperty.call(werte, m)) nichtBeantwortet.push(m);
+    }
+    return null;
+  }
+
+  const basisFehler = await gruppe(MEDIA_METRICS_BASIS, true);
+  if (basisFehler) return basisFehler;
+  await gruppe(MEDIA_METRICS_ZUSATZ, false);
+
+  return ok({
+    mediaId: String(mediaId),
+    metrics: werte,
+    /* Ausdruecklich benannt statt stillschweigend weggelassen: wer die
+       Zahlen spaeter auswertet, muss "nicht gemessen" von "null gemessen"
+       unterscheiden koennen. */
+    unanswered: nichtBeantwortet,
+    groups: gruppen,
+    fetchedAt: new Date().toISOString()
+  });
+}
+
 /** Widerruf der erteilten Rechte. */
 export async function revokePermissions(ctx, userToken) {
   return graph(ctx, "me/permissions", {}, userToken, { method: "DELETE" });

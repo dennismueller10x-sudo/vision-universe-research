@@ -52,6 +52,7 @@ import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
   debugToken, probePageLinkage, resolveAccountsFromAssets,
   createMediaContainer, mediaContainerStatus, publishMediaContainer, verifyMedia,
+  mediaInsights,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
@@ -501,6 +502,101 @@ async function handleSmokePublish(request, url, env) {
     note: "Ein einzelner Testbeitrag. Es laeuft keine Automatik — der naechste Beitrag " +
       "entsteht nur durch einen weiteren ausdruecklichen Aufruf."
   }, geprueft.ok ? 200 : 207);
+}
+
+/**
+ * Die gemessene Leistung der eigenen Beitraege.
+ *
+ * -------------------------------------------------------------------------
+ * WARUM DAS DIE WURZEL DES RUECKWEGS IST
+ * -------------------------------------------------------------------------
+ *
+ * Der Kreislauf kann vorwaerts laufen, ohne je etwas gemessen zu haben:
+ * Signale, Gelegenheiten, Strategie, Content, Pruefung. Zurueck kommt er
+ * nur ueber Zahlen, die tatsaechlich erhoben wurden. Ohne diesen Endpunkt
+ * bleibt "Leistung vergleichbarer Beitraege" fuer immer ungemessen, und
+ * jede Strategie waere eine Meinung.
+ *
+ * Er VEROEFFENTLICHT NICHTS. Er liest, was ohnehin schon oeffentlich
+ * geworden ist, und nur fuer das verbundene Konto.
+ *
+ * Ohne `?media=` werden die zuletzt veroeffentlichten Beitraege des
+ * Kontos gelesen; mit `?media=<id>[,<id>]` genau diese. Der zweite Weg
+ * traegt den Fall, den es hier wirklich gibt: ein archivierter Beitrag
+ * taucht in der Medienliste nicht mehr auf, ueber seine Kennung ist er
+ * weiterhin abfragbar.
+ */
+async function handleInsights(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected",
+      message: "Es besteht keine Verbindung. Es kann nichts gemessen werden." }, 409);
+  }
+
+  const ctx = graphContext(env);
+  const token = record.pageAccessToken;
+
+  const gewuenscht = String(url.searchParams.get("media") || "")
+    .split(",").map((s) => s.trim()).filter(Boolean);
+
+  let ids = gewuenscht;
+  let quelle = "angefragt";
+  if (!ids.length) {
+    const liste = await recentMedia(ctx, {
+      instagramAccountId: record.instagramAccountId,
+      pageAccessToken: token,
+      limit: Number(url.searchParams.get("limit")) || 25
+    });
+    if (!liste.ok) {
+      return json({ error: liste.reason, message: liste.message,
+        meta: metaFehlerdaten(liste, env) }, 502);
+    }
+    ids = ((liste.data && liste.data.data) || []).map((m) => String(m.id));
+    quelle = "Medienliste des Kontos";
+  }
+
+  const beitraege = [];
+  for (const id of ids) {
+    /* Stammdaten und Kennzahlen getrennt: schlaegt das eine fehl, ist
+       das andere deswegen nicht wertlos. Ein Beitrag, von dem wir den
+       Zeitstempel haben und die Reichweite nicht, ist etwas anderes als
+       ein Beitrag, ueber den wir nichts wissen. */
+    const stamm = await verifyMedia(ctx, { mediaId: id, accessToken: token });
+    const zahlen = await mediaInsights(ctx, { mediaId: id, accessToken: token });
+
+    beitraege.push({
+      mediaId: String(id),
+      media: stamm.ok ? stamm.data : null,
+      mediaError: stamm.ok ? null : metaFehlerdaten(stamm, env),
+      metrics: zahlen.ok ? zahlen.data.metrics : null,
+      unanswered: zahlen.ok ? zahlen.data.unanswered : null,
+      metricsError: zahlen.ok ? null : metaFehlerdaten(zahlen, env),
+      /* Woher die Zahl stammt, reist mit ihr. Eine Kennzahl ohne
+         Herkunft ist spaeter nicht von einer geschaetzten zu
+         unterscheiden (§11). */
+      provenance: {
+        source: "instagram.graph",
+        apiVersion: ctx.apiVersion || DEFAULT_API_VERSION,
+        accountId: record.instagramAccountId,
+        account: record.instagramUsername || null,
+        fetchedAt: new Date().toISOString(),
+        measured: zahlen.ok
+      }
+    });
+  }
+
+  return json({
+    account: record.instagramUsername || null,
+    accountId: record.instagramAccountId,
+    source: quelle,
+    requested: ids.length,
+    measured: beitraege.filter((b) => b.metrics).length,
+    posts: beitraege,
+    note: "Nur gelesen. Es wurde nichts veroeffentlicht und nichts veraendert."
+  });
 }
 
 /**
@@ -1047,6 +1143,12 @@ export default {
           }, 405);
         }
         return await handleSmokePublish(request, url, env);
+      }
+      if (path === "/social/meta/insights") {
+        /* Lesend. GET genuegt, weil nichts entsteht — im Gegensatz zu
+           allem, was einen Beitrag erzeugt. */
+        if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
+        return await handleInsights(request, url, env);
       }
       if (path === "/" || path === "/social" || path === "/social/meta") {
         const publicRecord = env.VU_SOCIAL_KV ? await readPublic(env) : { connected: false };

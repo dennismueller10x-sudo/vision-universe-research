@@ -43,6 +43,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const Schema       = require(join(ROOT, "social/engines/schema.js"));
+const StrategyMemory = require(join(ROOT, "social/engines/strategy-memory.js"));
 const Signals      = require(join(ROOT, "social/engines/signals.js"));
 const TrendScore   = require(join(ROOT, "social/engines/trend-score.js"));
 const Opportunity  = require(join(ROOT, "social/engines/opportunity.js"));
@@ -74,6 +75,12 @@ const flag = (name) => argv.includes(name);
 const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
 const NOW = arg("--now", new Date().toISOString());
+
+/* Woher gelesen wird. Getrennt von --out, weil der Nachweis der
+   Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
+   braucht, ohne die Produktionsdaten anzufassen. */
+const DATA_DIR = arg("--data", "social/data");
+const D = (name) => join(ROOT, DATA_DIR, name);
 const VERBOSE = flag("--verbose");
 
 const log = (...parts) => console.log(...parts);
@@ -125,7 +132,7 @@ function buildRegistry() {
  * einzeln pruefen.
  */
 function loadSignals() {
-  const file = join(ROOT, "social/data/signals.json");
+  const file = D("signals.json");
   if (!existsSync(file)) {
     return { signals: [], internal: {}, reason:
       "Keine Signaldatei vorhanden (social/data/signals.json). " +
@@ -201,6 +208,43 @@ function measureBrandFit(topic, entities) {
                                                 b.id !== "hook-without-body");
   if (blocking.length > 0) return 0;
   return Math.min(0.9, check.score / 100);
+}
+
+/**
+ * Was aus gemessener Leistung ueber Formate bekannt ist.
+ *
+ * -------------------------------------------------------------------------
+ * WARUM NUR GEMESSENE EINTRAEGE ZAEHLEN
+ * -------------------------------------------------------------------------
+ *
+ * Ein Beitrag ohne Leistungsdaten ist fuer diese Frage kein Datenpunkt,
+ * sondern eine Leerstelle. Wer ihn mitzaehlt, verwaessert den Mittelwert
+ * mit einer Null, die nie gemessen wurde — und erzeugt damit genau die
+ * Sorte Zahl, die spaeter als Beleg zitiert wird.
+ *
+ * Die Stichprobengroesse reist deshalb mit: die Strategie-Engine
+ * entscheidet selbst, ab wann sie eine Zahl fuer belastbar haelt
+ * (`minimumSampleForExploit`). Diese Funktion urteilt nicht, sie zaehlt.
+ */
+function buildArchetypeKnowledge(memory) {
+  const nach = Object.create(null);
+
+  for (const e of memory.all()) {
+    if (!e.archetype) continue;
+    const p = e.performance;
+    /* `null` heisst ungemessen. Nur eine Zahl ist eine Zahl. */
+    if (p === null || p === undefined || !Number.isFinite(Number(p))) continue;
+    (nach[e.archetype] = nach[e.archetype] || []).push(Number(p));
+  }
+
+  const wissen = Object.create(null);
+  for (const [archetype, werte] of Object.entries(nach)) {
+    wissen[archetype] = {
+      mean: werte.reduce((a, b) => a + b, 0) / werte.length,
+      sampleSize: werte.length
+    };
+  }
+  return wissen;
 }
 
 function buildOpportunities(signals, internal, memory, registry, providerId) {
@@ -324,10 +368,33 @@ async function main() {
   }
 
   /* -------------------------------------------- 2. Gedaechtnis laden */
-  const memoryFile = join(ROOT, "social/data/content-memory.json");
+  const memoryFile = D("content-memory.json");
   const memory = Memory.createMemory(
     existsSync(memoryFile) ? JSON.parse(readFileSync(memoryFile, "utf8")).entries || [] : []);
   log("Gedaechtnis: " + memory.size() + " frueherer Beitrag/Beitraege");
+
+  /* ------------------------------ 2b. Strategie-Gedaechtnis laden
+
+     Bis hierher begann jeder Lauf bei den Startwerten. Was der
+     vorherige Lauf gelernt hatte, war weg. Ab jetzt kommt es von der
+     Platte — das ist die Stelle, an der aus der Schleife ein Kreis
+     wird. */
+  const strategyFile = D("strategy-memory.json");
+  const strategyMemory = StrategyMemory.createStrategyMemory(
+    existsSync(strategyFile) ? JSON.parse(readFileSync(strategyFile, "utf8")) : null,
+    { now: NOW });
+  const activeStrategy = strategyMemory.current();
+  log("Strategie:   " + activeStrategy.versionId + " (Kette: " + strategyMemory.size() +
+      ", Beobachtungen: " + strategyMemory.observations().length + ")");
+
+  /* Was aus gemessener Leistung ueber Formate bekannt ist. Bis eben
+     stand hier eine leere Menge — und damit konnte keine Messung je
+     eine Entscheidung erreichen. */
+  const archetypeKnowledge = buildArchetypeKnowledge(memory);
+  const gemessen = Object.keys(archetypeKnowledge).length;
+  log("Formatwissen: " + (gemessen
+    ? gemessen + " Format(e) mit gemessener Leistung"
+    : "keines — noch kein Beitrag mit Leistungsdaten"));
 
   /* ------------------------------------------------ 3. Gelegenheiten */
   const candidates = buildOpportunities(signalData.signals, signalData.internal, memory,
@@ -363,10 +430,18 @@ async function main() {
       hasNumbers: c.internal.hasNumbers === true,
       platform: "instagram"
     }, {
-      archetypeKnowledge: {},
+      /* DER RUECKKANAL. Hier stand eine leere Menge — deshalb konnte
+         keine Messung je eine Entscheidung erreichen, egal wie viel
+         gemessen wurde. */
+      archetypeKnowledge,
       recentArchetypeUsage: memory.distribution("archetype", 30, NOW),
       timingKnowledge: null
-    }, { currentHour: new Date(NOW).getUTCHours() });
+    }, {
+      currentHour: new Date(NOW).getUTCHours(),
+      /* Und hier die gelernten Parameter. Ohne sie waere die
+         Versionskette ein Archiv ohne Wirkung. */
+      parameters: activeStrategy.parameters || {}
+    });
 
     if (!strategyDecision.decidable) {
       rejections.push({ topic: opportunity.topic, stage: "STRATEGY", reason: strategyDecision.explanation });
@@ -436,7 +511,7 @@ async function main() {
   log("Autonomie:     " + autonomy.explanation);
 
   /* ------------------------------------------ 6. Veroeffentlichung */
-  const publicationsFile = join(ROOT, "social/data/publications.json");
+  const publicationsFile = D("publications.json");
   const orchestrator = Publishing.createOrchestrator({
     registry, killSwitch, auditLog, now,
     publications: existsSync(publicationsFile)
@@ -510,6 +585,163 @@ async function main() {
     for (const section of explanation.sections) log("  " + section.title + ": " + section.text);
   }
 
+  /* ================================================================
+     8. MESSEN  —  der Rueckweg beginnt
+
+     Bis hierher lief der Kreislauf vorwaerts und haette das auch
+     getan, wenn nie etwas gemessen worden waere. Ab hier kommen
+     Zahlen ins Spiel, die tatsaechlich erhoben wurden.
+     ================================================================ */
+  const perfFile = D("performance.json");
+  const perfData = existsSync(perfFile)
+    ? JSON.parse(readFileSync(perfFile, "utf8")) : null;
+
+  const snapshots = perfData
+    ? (perfData.snapshots || []).map((z) => z.snapshot).filter((x) => x && x.state !== "UNAVAILABLE")
+    : [];
+  const baseline = Performance.buildBaseline(snapshots);
+
+  log("\n--- MESSEN ---");
+  if (!perfData) {
+    log("Keine Leistungsdaten (social/data/performance.json fehlt).");
+    log("Der Kreislauf laeuft vorwaerts, aber er kommt nicht zurueck.");
+  } else {
+    log("Gemessene Beitraege: " + snapshots.length + " von " + (perfData.requested || 0));
+    log("Vergleichsbasis:     " + baseline.reason);
+  }
+
+  /* Gemessene Leistung an die Gedaechtniseintraege heften. Zuordnung
+     ueber die Plattformkennung — sie ist die einzige Klammer zwischen
+     einem Beitrag und seinen Zahlen. */
+  let zugeordnet = 0;
+  for (const z of (perfData ? perfData.snapshots : [])) {
+    const treffer = memory.all().filter((e) => e.externalPostId === z.mediaId);
+    const bewertung = Performance.score(z.snapshot, baseline, {});
+    for (const e of treffer) {
+      e.performance = bewertung.available ? bewertung.score : null;
+      e.performanceProvenance = {
+        source: "instagram.graph", snapshotId: z.snapshot.snapshotId,
+        state: z.snapshot.state, scored: bewertung.available,
+        reason: bewertung.available ? null : bewertung.explanation
+      };
+      zugeordnet += 1;
+    }
+  }
+  if (perfData) {
+    log("Zugeordnet:          " + zugeordnet + " Gedaechtniseintrag/-eintraege");
+    if (!baseline.sufficient) {
+      log("Kein Performance Score: " + baseline.reason +
+          " Eine Zahl ohne Basis waere eine Behauptung.");
+    }
+  }
+
+  /* ================================================================
+     9. LERNEN  —  aus Zahlen werden Beobachtungen
+
+     Eine Beobachtung ist noch keine Erkenntnis. Sie traegt ihre
+     Stichprobengroesse und ihr Konfidenzintervall mit sich, und die
+     Learning Engine entscheidet, ob daraus etwas folgen darf.
+     ================================================================ */
+  log("\n--- LERNEN ---");
+  const lernzeilen = memory.all()
+    .filter((e) => e.performance !== null && e.performance !== undefined)
+    .map((e) => ({ archetype: e.archetype, visualType: e.visualType,
+                   performanceScore: e.performance }));
+
+  const beobachtungen = [];
+  for (const dimension of ["archetype", "visualType"]) {
+    const zeilen = lernzeilen.map((r) => ({ value: r[dimension], performanceScore: r.performanceScore }));
+    /* observe() liefert die Beobachtungen direkt als Liste und in
+       kanonischer Form — samt observationId. Sie hier neu zu bauen
+       haette die Kennung ueberschrieben, und damit haette dieselbe
+       Beobachtung bei jedem Lauf als neu gegolten. */
+    for (const o of Learning.observe(dimension, zeilen, {}) || []) {
+      beobachtungen.push(Schema.learningObservation(o));
+    }
+  }
+
+  const neueBeobachtungen = strategyMemory.recordObservations(beobachtungen);
+  log("Datenpunkte:    " + lernzeilen.length);
+  log("Beobachtungen:  " + beobachtungen.length + " (davon neu: " + neueBeobachtungen + ")");
+  for (const o of beobachtungen) {
+    detail(o.dimension + "=" + o.value + ": n=" + o.sampleSize +
+           (o.sufficient ? "  BELASTBAR" : "  nicht belastbar") + " — " + o.note);
+  }
+  if (!beobachtungen.length) {
+    log("Keine Beobachtung moeglich — es gibt noch keine gemessenen Beitraege.");
+  }
+
+  /* ================================================================
+     10. ANPASSEN  —  und zwar nur, wenn die Evidenz es traegt
+
+     Der haeufigste Ausgang ist "keine Aenderung". Das ist kein
+     Fehler, sondern das Verhalten, das kleine Stichproben verdienen.
+     ================================================================ */
+  log("\n--- ANPASSEN ---");
+  const vorschlag = Learning.proposeStrategyUpdate(
+    activeStrategy, strategyMemory.observations(), {});
+  const uebernahme = strategyMemory.apply(vorschlag, { now: NOW });
+
+  log("Strategie vorher:  " + activeStrategy.versionId);
+  log("Strategie nachher: " + strategyMemory.current().versionId +
+      (uebernahme.committed ? "  (NEUE VERSION)" : "  (unveraendert)"));
+  log(uebernahme.reason || vorschlag.explanation || "");
+  for (const b of vorschlag.blocked || []) detail("blockiert:", b.reason);
+
+  /* ================================================================
+     11. DIE SCHATTEN-ENTSCHEIDUNG
+
+     Der Loop soll beweisen, dass er entscheiden KANN, ohne zu
+     veroeffentlichen. Jedes Paket bekommt deshalb einen Eintrag:
+     "Ich wuerde Thema X mit Hook Y als Format Z um T veroeffentlichen."
+
+     Er geht ins Gedaechtnis mit `performance: null` — ungemessen, weil
+     ungesendet. Das ist wichtiger, als es klingt: eine Schatten-
+     Entscheidung, die als Null in die Formatstatistik einginge, wuerde
+     das System glauben lassen, das Format habe versagt.
+     ================================================================ */
+  const shadowDecisions = packages.map((entry) => {
+    const pkg = entry.result.package;
+    const d = entry.strategyDecision;
+    return {
+      decidedAt: NOW,
+      packageId: pkg.packageId,
+      topic: pkg.topic,
+      archetype: pkg.archetype,
+      visualType: pkg.visualType,
+      hook: pkg.hook,
+      plannedHourUtc: d.timingHour,
+      mode: d.mode,
+      modeReason: d.modeReason,
+      strategyVersion: activeStrategy.versionId,
+      wouldPublish: true,
+      published: false,
+      withheldBecause: "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. " +
+        "Der Loop entscheidet, er sendet nicht."
+    };
+  });
+
+  for (const d of shadowDecisions) {
+    const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
+    memory.add({
+      publicationId: null, packageId: pkg.packageId, publishedAt: null,
+      platform: "instagram", topic: pkg.topic, entities: pkg.entities || [],
+      archetype: pkg.archetype, visualType: pkg.visualType,
+      hook: pkg.hook, caption: pkg.caption, cta: pkg.cta || null,
+      /* Ungemessen, weil ungesendet. Nicht 0. */
+      performance: null,
+      lineage: {
+        origin: "SHADOW_CYCLE",
+        signalIds: pkg.signalIds || [],
+        opportunityId: pkg.opportunityId || null,
+        strategyVersion: activeStrategy.versionId,
+        decidedMode: d.mode
+      }
+    });
+  }
+  log("\nSchatten-Entscheidungen: " + shadowDecisions.length +
+      " (entschieden, nicht gesendet)");
+
   /* ---------------------------------------------------- 8. Artefakte */
   const report = {
     generatedAt: NOW,
@@ -531,7 +763,27 @@ async function main() {
       publicationId: p.publication.publicationId, state: p.publication.state,
       externalPostId: p.publication.externalPostId
     })),
-    auditEntries: auditLog.size()
+    auditEntries: auditLog.size(),
+
+    /* Der Rueckweg im Bericht. Ohne diese Felder liesse sich von aussen
+       nicht unterscheiden, ob der Loop geschlossen ist oder nur schnell
+       vorwaerts laeuft. */
+    learning: {
+      measuredPosts: snapshots.length,
+      baselineSufficient: baseline.sufficient,
+      baselineReason: baseline.reason,
+      dataPoints: lernzeilen.length,
+      observations: beobachtungen.map((o) => ({
+        dimension: o.dimension, value: o.value, sampleSize: o.sampleSize,
+        sufficient: o.sufficient, note: o.note
+      })),
+      strategyBefore: activeStrategy.versionId,
+      strategyAfter: strategyMemory.current().versionId,
+      strategyChanged: uebernahme.committed === true,
+      strategyReason: uebernahme.reason || vorschlag.explanation || null,
+      archetypeKnowledge
+    },
+    shadowDecisions
   };
 
   if (OUT_DIR) {
@@ -543,6 +795,17 @@ async function main() {
     writeFileSync(join(dir, "audit-log.json"),
       JSON.stringify({ generatedAt: NOW, entries: auditLog.entries() }, null, 2) + "\n");
     writeFileSync(join(dir, "health.json"), JSON.stringify(matrix, null, 2) + "\n");
+
+    /* Das Gedaechtnis und die Strategiekette. Ohne diese zwei Zeilen
+       beginnt der naechste Lauf wieder von vorn — und der Kreislauf
+       waere eine Schleife, die sich nur schnell dreht. */
+    writeFileSync(join(dir, "content-memory.json"),
+      JSON.stringify({ generatedAt: NOW, entries: memory.all() }, null, 2) + "\n");
+    writeFileSync(join(dir, "strategy-memory.json"),
+      JSON.stringify(strategyMemory.snapshot({ now: NOW }), null, 2) + "\n");
+    writeFileSync(join(dir, "shadow-decisions.json"),
+      JSON.stringify({ generatedAt: NOW, strategyVersion: activeStrategy.versionId,
+        decisions: shadowDecisions }, null, 2) + "\n");
     log("\nGeschrieben nach " + OUT_DIR + "/");
   } else {
     log("\n(Kein --out: es wurde nichts geschrieben.)");

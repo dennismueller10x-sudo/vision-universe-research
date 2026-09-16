@@ -99,7 +99,44 @@
       /* performance bleibt null, bis Analytics geliefert haben. Eine 0
          waere die Aussage "es lief schlecht" (§37). */
       performance: spec.performance === undefined ? null : spec.performance,
-      audienceReaction: spec.audienceReaction === undefined ? null : spec.audienceReaction
+      audienceReaction: spec.audienceReaction === undefined ? null : spec.audienceReaction,
+
+      /* ---------------------------------------------------------------
+         DIE HERKUNFT DES BEITRAGS
+         ---------------------------------------------------------------
+
+         Ein Gedaechtnis, das nur weiss WAS veroeffentlicht wurde, kann
+         spaeter nicht sagen WARUM. Genau das ist aber die Frage, die
+         eine lernende Strategie beantworten koennen muss: welches Signal
+         den Anlass gab, welche Gelegenheit daraus wurde, unter welcher
+         Strategie-Version entschieden wurde und welche Hypothese geprueft
+         werden sollte.
+
+         Alle Felder duerfen `null` sein, und das ist keine Nachlaessigkeit:
+         der bisher einzige reale Beitrag dieses Projekts war ein
+         Verbindungstest. Er hatte kein Signal und keine Hypothese. Diese
+         Vorgeschichte zu erfinden, damit das Feld gefuellt aussieht, waere
+         genau die Art Zahl, die spaeter als Beleg zitiert wird. */
+      lineage: {
+        origin: (spec.lineage && spec.lineage.origin) || spec.origin || null,
+        signalIds: Array.isArray(spec.lineage && spec.lineage.signalIds)
+          ? spec.lineage.signalIds.slice() : [],
+        opportunityId: (spec.lineage && spec.lineage.opportunityId) || null,
+        experimentId: (spec.lineage && spec.lineage.experimentId) || null,
+        hypothesis: (spec.lineage && spec.lineage.hypothesis) || null,
+        strategyVersion: (spec.lineage && spec.lineage.strategyVersion) || null,
+        decidedMode: (spec.lineage && spec.lineage.decidedMode) || null
+      },
+
+      /* Die Kennung auf der Plattform. Ohne sie laesst sich gemessene
+         Leistung keinem Beitrag zuordnen — das Gedaechtnis waere voll und
+         trotzdem stumm. */
+      externalPostId: spec.externalPostId || null,
+      permalink: spec.permalink || null,
+
+      /* Woher die Leistungszahlen stammen. Eine gemessene Zahl und eine
+         simulierte duerfen nie gleich aussehen (§11). */
+      performanceProvenance: spec.performanceProvenance || null
     };
   }
 

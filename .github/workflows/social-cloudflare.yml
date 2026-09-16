@@ -89,6 +89,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # Der eine reale Beitrag dieses Projekts. Er ist archiviert und
+      # damit nur noch ueber seine Kennung erreichbar.
+      SMOKE_MEDIA: "17992767560843861"
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
 
     steps:
@@ -513,6 +516,60 @@ jobs:
             cat tmp/social/inhalt.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Gemessene Leistung holen und einpflegen
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Lesend. Der Rueckweg des Kreislaufs braucht Zahlen, die
+        # tatsaechlich erhoben wurden — alles andere waere eine Meinung
+        # mit Nachkommastellen.
+        #
+        # Der eine reale Beitrag ist ARCHIVIERT. Er taucht in der
+        # Medienliste des Kontos nicht mehr auf, ueber seine Kennung ist
+        # er weiterhin abfragbar. Deshalb wird er ausdruecklich genannt
+        # und nicht gesucht.
+        #
+        # continue-on-error: ein Bericht, keine Pruefung. Fehlende
+        # Insights duerfen den Lauf nicht umwerfen — sie sind selbst ein
+        # Befund, und der Zyklus kommt mit fehlenden Daten zurecht.
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "Kein Admin-Schluessel — keine Messung. (Keine Aussage ueber die Zahlen.)"
+            exit 0
+          fi
+
+          mkdir -p tmp/social
+          code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
+
+          if [ "$code" != "200" ]; then
+            echo "Insights-Endpunkt antwortet mit HTTP $code — nichts eingepflegt."
+            exit 0
+          fi
+
+          node scripts/social/ingest-performance.mjs \
+            --in tmp/social/insights.json --out social/data | tee tmp/social/ingest.txt
+
+          {
+            echo "## Gemessene Leistung"
+            echo '```'
+            cat tmp/social/ingest.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if git diff --quiet -- social/data/performance.json; then
+            echo "Keine Aenderung an den Leistungsdaten."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social/data/performance.json
+          git commit -m "Gemessene Social-Leistung eingepflegt" \
+            -m "Erzeugt vom Workflow social-cloudflare. Nur gelesene Plattformzahlen, keine Schaetzung. Sie sind die Evidenzgrundlage des Lernens - ohne sie laeuft der Kreislauf vorwaerts und kommt nicht zurueck."
+          git push
 
       - name: Verifikationsbericht sichern
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
