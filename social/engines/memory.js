@@ -136,7 +136,20 @@
 
       /* Woher die Leistungszahlen stammen. Eine gemessene Zahl und eine
          simulierte duerfen nie gleich aussehen (§11). */
-      performanceProvenance: spec.performanceProvenance || null
+      performanceProvenance: spec.performanceProvenance || null,
+
+      /* Unter welchem Massstab die Zahl entstand.
+     
+         Diese zwei Felder MUESSEN hier stehen. `entry()` ist eine
+         Positivliste, und beim Laden von der Platte laeuft jeder
+         Eintrag durch sie hindurch. Fehlten sie, waere das Etikett nach
+         einem Neustart weg — und die Learning Engine wuerde
+         BOOTSTRAP-Werte mit MATURE-Werten in einen Mittelwert werfen,
+         also genau das tun, wogegen das Etikett existiert. Ein Test hat
+         das gefunden; ohne ihn waere es erst in einer Strategie
+         aufgefallen, die einer Umstellung des Massstabs hinterherlaeuft. */
+      performanceRegime: spec.performanceRegime || null,
+      performanceCohort: spec.performanceCohort || null
     };
   }
 

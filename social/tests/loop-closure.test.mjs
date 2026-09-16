@@ -169,3 +169,56 @@ test("LC8 · Die Strategiekette ueberlebt den Lauf", () => {
     assert.ok(kette.observations.length > 0, "die Belege bleiben bei der Version");
   } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
 });
+
+test("LC9 · Ueber Regimegrenzen hinweg wird NICHT verglichen", () => {
+  /* Ein Score aus BOOTSTRAP und einer aus MATURE messen verschiedene
+     Dinge — sie entstehen aus verschiedenen Dimensionen. In einem
+     gemeinsamen Mittelwert saehe der Regimewechsel wie eine
+     Verbesserung aus, und die Strategie wuerde einer Umstellung des
+     Massstabs hinterherlaufen. */
+  const p = platz("regime");
+  try {
+    const alt = eintraege([["DATA_STORY", [20, 22, 18, 24, 19, 21, 23, 17]]])
+      .map((e) => Object.assign(e, { performanceRegime: "MATURE" }));
+    const neu = eintraege([["DATA_STORY", [80, 82, 78, 84, 79, 81, 83, 77]]])
+      .map((e, i) => Object.assign(e, {
+        publicationId: "neu_" + i, packageId: "neuk_" + i,
+        performanceRegime: "BOOTSTRAP"
+      }));
+    writeFileSync(join(ROOT, p, "content-memory.json"),
+      JSON.stringify({ generatedAt: NOW, entries: alt.concat(neu) }));
+
+    const r = zyklus(p, join(p, "out"));
+    /* Ohne Leistungsdatei gibt es kein aktives Regime aus der Messung;
+       der Zyklus faellt auf BOOTSTRAP zurueck und laesst die
+       MATURE-Eintraege draussen. */
+    assert.equal(r.learning.evidenceRegime, "BOOTSTRAP");
+    assert.equal(r.learning.crossRegimeExcluded, 8,
+      "die acht MATURE-Eintraege bleiben draussen");
+    assert.equal(r.learning.dataPoints, 8, "nur die aus dem aktiven Regime zaehlen");
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC10 · Das Evidenzregime steht in der Strategie-Kette", () => {
+  /* Eine Strategie, deren Massstab unbekannt ist, ist nicht
+     nachvollziehbar — nur alt. */
+  const p = platz("regimekette");
+  try {
+    writeFileSync(join(ROOT, p, "content-memory.json"), JSON.stringify({
+      generatedAt: NOW, entries: eintraege([["DATA_STORY", [80, 82, 78, 84, 79, 81, 83, 77]]])
+    }));
+    const aus = join(p, "out");
+    zyklus(p, aus);
+
+    const kette = JSON.parse(readFileSync(join(ROOT, aus, "strategy-memory.json"), "utf8"));
+    assert.ok(kette.evidenceRegimes.length >= 1, "die Regime-Kette existiert");
+    const r = kette.evidenceRegimes[0];
+    assert.ok(r.evidenceRegime);
+    assert.ok(r.transitionReason, "jeder Eintrag nennt seinen Uebergangsgrund");
+    assert.ok(r.assessedAt);
+    /* Getrennt von der Versionskette: ein Regimewechsel aendert den
+       Massstab, nicht die Absicht. */
+    assert.ok(Array.isArray(kette.versions));
+    assert.notEqual(kette.evidenceRegimes, kette.versions);
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
