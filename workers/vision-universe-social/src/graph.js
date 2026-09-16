@@ -466,6 +466,17 @@ export async function recentMedia(ctx, { instagramAccountId, pageAccessToken, li
  */
 const MEDIA_METRICS_BASIS = ["reach", "likes", "comments", "saved", "shares"];
 const MEDIA_METRICS_ZUSATZ = ["views", "total_interactions", "profile_visits", "follows"];
+/* Verweildauer gibt es nur bei Reels, und nur unter eigenen Namen. Sie
+   steht in einer DRITTEN Gruppe, weil eine Abfrage komplett scheitert,
+   sobald eine Metrik fuer den Medientyp nicht existiert: in derselben
+   Gruppe wie `views` wuerde sie jeden Bildbeitrag mit hinunterreissen.
+
+   Warum sie ueberhaupt geholt wird: der Performance Score verlangt, dass
+   mindestens die Haelfte der Gewichtung belegt ist. Mit Reichweite und
+   Interaktionsrate allein sind es 24 % — das Modell verweigert dann die
+   Zahl, und zwar zu Recht. Die Antwort darauf ist, mehr zu messen, und
+   nicht, die Schwelle zu senken. */
+const MEDIA_METRICS_REEL = ["ig_reels_avg_watch_time", "ig_reels_video_view_total_time"];
 
 export async function mediaInsights(ctx, { mediaId, accessToken }) {
   const werte = {};
@@ -504,6 +515,7 @@ export async function mediaInsights(ctx, { mediaId, accessToken }) {
   const basisFehler = await gruppe(MEDIA_METRICS_BASIS, true);
   if (basisFehler) return basisFehler;
   await gruppe(MEDIA_METRICS_ZUSATZ, false);
+  await gruppe(MEDIA_METRICS_REEL, false);
 
   return ok({
     mediaId: String(mediaId),

@@ -663,10 +663,18 @@ async function main() {
 
   const neueBeobachtungen = strategyMemory.recordObservations(beobachtungen);
   log("Gemessen:       " + snapshots.length + " Beitrag/Beitraege");
-  log("Bewertbar:      " + lernzeilen.length +
-      (snapshots.length && !lernzeilen.length
-        ? "  (gemessen, aber ohne Vergleichsbasis nicht bewertbar — das ist etwas " +
-          "anderes als ungemessen)" : ""));
+  log("Bewertbar:      " + lernzeilen.length);
+  if (snapshots.length && !lernzeilen.length) {
+    /* Den GRUND nennen und nicht den naechstliegenden raten. Eine
+       fehlende Vergleichsbasis und zu duenn belegte Kennzahlen sehen im
+       Ergebnis gleich aus und verlangen voellig verschiedene
+       Antworten. */
+    const einBeispiel = (perfData.snapshots || []).map((z) => z.snapshot)
+      .filter((x) => x && x.state !== "UNAVAILABLE")[0];
+    const warum = einBeispiel ? Performance.score(einBeispiel, baseline, {}) : null;
+    log("                gemessen, aber nicht bewertbar — das ist etwas anderes als ungemessen.");
+    log("                Grund: " + ((warum && warum.explanation) || baseline.reason));
+  }
   log("Beobachtungen:  " + beobachtungen.length + " (davon neu: " + neueBeobachtungen + ")");
   for (const o of beobachtungen) {
     detail(o.dimension + "=" + o.value + ": n=" + o.sampleSize +

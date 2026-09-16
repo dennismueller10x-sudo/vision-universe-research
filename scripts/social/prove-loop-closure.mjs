@@ -150,6 +150,7 @@ function entscheidungsbild(bericht) {
     /* Das eigentliche Beweisstueck: welches Format wurde gewaehlt, und
        mit welcher Begruendung. */
     formate: (bericht.shadowDecisions || []).map((d) => d.archetype),
+    visuals: (bericht.shadowDecisions || []).map((d) => d.visualType),
     begruendung: (bericht.packages || []).length ? bericht.packages[0].archetype : null
   };
 }
@@ -189,21 +190,50 @@ if (EVIDENCE === "simulated") {
   }
   copyFileSync(perf, join(dirB, "performance.json"));
   const p = JSON.parse(readFileSync(perf, "utf8"));
+
   /* Die gemessenen Beitraege muessen im Gedaechtnis stehen, sonst gibt es
-     nichts, woran die Zahlen haften koennten. */
+     nichts, woran die Zahlen haften koennten.
+
+     -------------------------------------------------------------------
+     WAS HIER EINGETRAGEN WIRD UND WAS AUSDRUECKLICH NICHT
+     -------------------------------------------------------------------
+
+     Diese Beitraege stammen NICHT aus der Pipeline. Sie wurden vom Owner
+     veroeffentlicht, bevor es das System gab. Damit ist bekannt, WAS sie
+     sind, aber nicht, warum sie so entschieden wurden.
+
+     Eingetragen wird deshalb nur, was gemessen ist:
+
+       visualType   aus media_type bzw. dem Permalink — REEL oder Feed.
+                    Das sagt Meta, nicht wir.
+       performance  aus den Insights.
+
+     NICHT eingetragen wird `archetype`. Das System hat ihn nie
+     entschieden; ihn nachtraeglich zu vergeben, damit das Feld gefuellt
+     aussieht, waere erfundene Vorgeschichte — und sie wuerde als
+     Formatwissen in genau die Entscheidung einfliessen, die dieser
+     Nachweis prueft. Ein Beweis, der seine eigene Voraussetzung
+     erfindet, beweist nichts. */
+  const istReel = (z) => /\/reel\//.test(String(z.permalink || "")) ||
+                          String(z.mediaType || "").toUpperCase() === "REELS" ||
+                          String(z.mediaType || "").toUpperCase() === "VIDEO";
+
   writeFileSync(join(dirB, "content-memory.json"), JSON.stringify({
     generatedAt: NOW,
-    entries: (p.snapshots || []).map((z, i) => ({
-      publicationId: "real_" + z.mediaId, packageId: "real_pkg_" + i,
-      publishedAt: z.publishedAt, platform: "instagram",
-      topic: "Verbindungstest", entities: [],
-      archetype: "DATA_CARD", visualType: "STATIC_IMAGE",
-      hook: "Technischer Test", caption: "", cta: null,
-      externalPostId: z.mediaId, permalink: z.permalink,
-      performance: null,
-      lineage: { origin: "SMOKE_TEST", signalIds: [], opportunityId: null,
-                 hypothesis: null, strategyVersion: null, decidedMode: null }
-    }))
+    entries: (p.snapshots || [])
+      .filter((z) => z.snapshot && z.snapshot.state !== "UNAVAILABLE")
+      .map((z, i) => ({
+        publicationId: "real_" + z.mediaId, packageId: "real_pkg_" + i,
+        publishedAt: z.publishedAt, platform: "instagram",
+        topic: "Bestandsbeitrag", entities: [],
+        archetype: null,
+        visualType: istReel(z) ? "REEL" : "STATIC_IMAGE",
+        hook: "", caption: "", cta: null,
+        externalPostId: z.mediaId, permalink: z.permalink,
+        performance: null,
+        lineage: { origin: "ORGANIC_PRE_EXISTING", signalIds: [], opportunityId: null,
+                   hypothesis: null, strategyVersion: null, decidedMode: null }
+      }))
   }, null, 2) + "\n");
   evidenzHerkunft = "GEMESSEN — " + (p.measured || 0) + " Beitrag/Beitraege von Instagram";
 }
@@ -229,6 +259,7 @@ zeile("davon belastbar", A.belastbar, B.belastbar);
 zeile("Strategie-Version", A.strategyVersion, B.strategyVersion);
 zeile("Strategie geaendert", A.strategyChanged, B.strategyChanged);
 zeile("gewaehlte Formate", A.formate.join(","), B.formate.join(","));
+zeile("gewaehlte Visuals", A.visuals.join(","), B.visuals.join(","));
 
 const unterschiede = Object.keys(A).filter((k) =>
   JSON.stringify(A[k]) !== JSON.stringify(B[k]));
@@ -257,6 +288,7 @@ const unterschiede = Object.keys(A).filter((k) =>
    dieses ganzen Projekts. */
 const entscheidungGeaendert =
   JSON.stringify(A.formate) !== JSON.stringify(B.formate) ||
+  JSON.stringify(A.visuals) !== JSON.stringify(B.visuals) ||
   A.strategyVersion !== B.strategyVersion;
 const zustandGeaendert = unterschiede.length > 0;
 
