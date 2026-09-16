@@ -42,17 +42,23 @@ jobs:
       - name: Browser-QA V4 (Startseite, Eingang mit Wischgeste, Ranglisten, Aktienseite)
         id: qa4
         continue-on-error: true
-        run: node scripts/discover/browser-qa.mjs --url '${{ inputs.site }}' --shots smoke-shots/v4 | tee smoke-qa4.txt
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa.mjs --url '${{ inputs.site }}' --shots smoke-shots/v4 | tee smoke-qa4.txt
 
       - name: Browser-QA V3 (Netflix-Rhythmus, Themen, Einzeln entdecken)
         id: qa3
         continue-on-error: true
-        run: node scripts/discover/browser-qa-v3.mjs '${{ inputs.site }}' smoke-shots/v3 | tee smoke-qa3.txt
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-v3.mjs '${{ inputs.site }}' smoke-shots/v3 | tee smoke-qa3.txt
 
       - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
         id: qalive
         continue-on-error: true
-        run: node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
 
       - name: Screenshots und Protokolle
         if: always()
