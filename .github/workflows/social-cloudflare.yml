@@ -585,12 +585,16 @@ jobs:
             code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
               -H "Authorization: Bearer $KEY" \
               "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
-            # NICHT `[ ... ] && break`. Der Workflow laeuft mit `bash -e`:
-            # ergibt der Test 1, beendet die Shell sofort - nach dem
-            # ersten curl, in einer Sekunde. Zusammen mit
-            # continue-on-error sah der tote Schritt dann wie ein
-            # erfolgreicher aus. Zwei Maskierungen uebereinander, und der
-            # Befund war weg.
+            # KORREKTUR: hier stand einmal die Behauptung, `[ ... ] && break`
+            # toete den Schritt unter `bash -e`. Das ist FALSCH und wurde
+            # durch einen Test widerlegt (social/tests/shell-semantics.test.mjs,
+            # SE1/SE2): `set -e` greift nicht beim linken Operanden von &&.
+            #
+            # Die Ursache war eine einzige und stand weiter unten:
+            # `git diff --quiet` sieht keine unverfolgten Dateien.
+            #
+            # Die if-Form bleibt, weil sie klarer liest - nicht, weil die
+            # andere falsch waere.
             if [ "$code" = "200" ]; then break; fi
             echo "Versuch $versuch: HTTP $code — noch keine Antwort."
             sleep 3
