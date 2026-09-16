@@ -318,12 +318,50 @@ jobs:
         id: deploy
         working-directory: workers/vision-universe-social
         run: |
-          npx --yes wrangler@4 deploy 2>&1 | tee /tmp/deploy.log
+          # Die Build-Kennung reist als Variable mit. Sie ist keine
+          # Konfiguration, sondern eine Identitaet: damit ein spaeterer
+          # Schritt feststellen kann, OB er mit der Fassung spricht, die
+          # dieser Lauf gerade deployt hat.
+          npx --yes wrangler@4 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
           # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
           # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
           echo "deployed_url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployte Adresse: ${url:-nicht aus der Ausgabe lesbar}"
+
+      - name: Warten, bis die neue Fassung ueberall antwortet
+        if: steps.mode.outputs.deploy == 'true'
+        # DIE STELLE, DIE EINE GANZE FEHLERKLASSE BEENDET.
+        #
+        # Ein Deployment gilt nicht in derselben Sekunde ueberall. Drei
+        # Mal hat in diesem Projekt ein Schritt unmittelbar danach die
+        # ALTE Fassung erwischt und ihr Ergebnis fuer das neue gehalten:
+        # einmal fehlte ein Feld, einmal ein Endpunkt, einmal rechnete
+        # ein Budget mit einer veralteten Zahl. Jedes Mal antwortete die
+        # alte Fassung mit HTTP 200 - auf einen Statuscode zu warten
+        # half also nicht, und auf eine Zeitspanne zu warten waere
+        # geraten.
+        #
+        # Gewartet wird auf die IDENTITAET: /health nennt den Commit, aus
+        # dem die antwortende Fassung gebaut wurde. Steht dort unser
+        # eigener, sprechen alle folgenden Schritte mit dem, was sie
+        # meinen.
+        run: |
+          for versuch in $(seq 1 20); do
+            build=$(curl -sS "https://social.visionuniverse.de/health" \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+                  try { console.log(JSON.parse(s).build || ""); } catch (e) { console.log(""); }
+                })' || echo "")
+            if [ "$build" = "$GITHUB_SHA" ]; then
+              echo "Die neue Fassung antwortet (Versuch $versuch)."
+              exit 0
+            fi
+            echo "Versuch $versuch: es antwortet noch ${build:-eine Fassung ohne Kennung}."
+            sleep 3
+          done
+          echo "::warning::Die neue Fassung meldet sich nach 20 Versuchen nicht."
+          echo "Folgende Schritte koennten mit der alten sprechen — ihre Ergebnisse"
+          echo "sind dann Aussagen ueber die alte Fassung."
 
       - name: Oeffentliche URL nachtragen, falls sie vorher unbekannt war
         if: steps.mode.outputs.deploy == 'true' && steps.deploy.outputs.deployed_url != ''

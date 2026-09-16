@@ -1122,7 +1122,22 @@ function handleHealth(env) {
        ueberhaupt die Business-Anmeldung? Die Konfigurations-ID selbst
        steht hier nicht — sie ist zwar kein Geheimnis, aber sie gehoert
        auch nicht in eine offene Antwort. */
-    loginMode: loginMode(env.META_LOGIN_CONFIG_ID)
+    loginMode: loginMode(env.META_LOGIN_CONFIG_ID),
+
+    /* WELCHE FASSUNG HIER ANTWORTET.
+       ----------------------------------------------------------------
+       Ein Deployment gilt nicht in derselben Sekunde ueberall. Drei Mal
+       in diesem Projekt hat ein Schritt unmittelbar nach dem Deploy die
+       ALTE Fassung erwischt und ihr Ergebnis fuer das neue gehalten —
+       einmal fehlte ein Feld, einmal ein Endpunkt, einmal rechnete ein
+       Budget mit einer veralteten Zahl. Jedes Mal antwortete die alte
+       Fassung brav mit HTTP 200, und auf einen Statuscode zu warten half
+       deshalb nicht.
+     
+       Diese Zeile beendet die Fehlerklasse: der Aufrufer wartet, bis
+       hier der Commit steht, den er gerade deployt hat. Kein Statuscode,
+       keine Zeitspanne — die Identitaet der Fassung. */
+    build: env.VU_SOCIAL_BUILD || null
   });
 }
 

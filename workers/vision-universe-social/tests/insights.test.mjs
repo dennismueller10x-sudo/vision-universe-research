@@ -272,3 +272,33 @@ test("I16 · Das Budget folgt der Zahl der Metrikgruppen", async () => {
   const proBeitrag = g.aufrufe.filter((a) => a.pfad === "1" || a.pfad === "1/insights").length;
   assert.equal(proBeitrag, 1 + MEDIA_INSIGHT_CALLS);
 });
+
+test("I17 · /health nennt die Fassung, die antwortet", async () => {
+  /* Drei Mal hat in diesem Projekt ein Schritt unmittelbar nach dem
+     Deploy die ALTE Fassung erwischt und ihr Ergebnis fuer das neue
+     gehalten. Jedes Mal antwortete sie mit HTTP 200; auf einen
+     Statuscode zu warten half nicht. Diese Kennung macht die Identitaet
+     der Fassung pruefbar. */
+  const env = createEnv({ VU_SOCIAL_BUILD: "abc123def" });
+  const body = await (await worker.fetch(request("/health"), env)).json();
+  assert.equal(body.build, "abc123def");
+});
+
+test("I18 · Ohne Kennung steht dort null, nicht ein erfundener Wert", async () => {
+  const env = createEnv({});
+  const body = await (await worker.fetch(request("/health"), env)).json();
+  assert.equal(body.build, null);
+});
+
+test("I19 · Die Kennung ist oeffentlich lesbar und verraet nichts", async () => {
+  /* Sie muss ohne Admin-Schluessel lesbar sein — sonst koennte der
+     Wartende sie nicht pruefen. Ein Commit-Hash ist kein Geheimnis;
+     Secrets stehen trotzdem nicht in derselben Antwort. */
+  const env = createEnv({ VU_SOCIAL_BUILD: "abc123def" });
+  const antwort = await worker.fetch(request("/health"), env);
+  assert.equal(antwort.status, 200);
+  const roh = await antwort.text();
+  assert.ok(roh.includes("abc123def"));
+  assert.ok(!roh.includes(TEST_APP_SECRET));
+  assert.ok(!roh.includes(TEST_ADMIN_KEY));
+});
