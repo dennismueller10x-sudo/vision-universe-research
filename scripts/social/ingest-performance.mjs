@@ -94,6 +94,20 @@ export function snapshotAusBeitrag(post, options = {}) {
   }
   metrics.engagementRate = gemessen ? interaktionsrate(roh) : null;
 
+  /* Verweildauer. Instagram meldet sie nur fuer Reels und in
+     MILLISEKUNDEN; das kanonische Feld ist in Sekunden. Eine Zahl, die
+     um den Faktor 1000 danebenliegt, faellt in einem Median nicht auf —
+     sie verschiebt ihn nur. */
+  const avgMs = roh.ig_reels_avg_watch_time;
+  metrics.watchTimeSeconds = (typeof avgMs === "number")
+    ? Math.round((avgMs / 1000) * 100) / 100 : null;
+
+  /* completionRate bleibt null. Sie waere Verweildauer geteilt durch
+     Videolaenge, und die Laenge liefert diese Abfrage nicht. Sie zu
+     schaetzen hiesse, eine Quote zu erfinden, die anschliessend als
+     Retention in die Strategie einginge. */
+  metrics.completionRate = null;
+
   const veroeffentlicht = post.media && post.media.timestamp ? post.media.timestamp : null;
   const alterStunden = veroeffentlicht
     ? Math.round(((Date.parse(now) - Date.parse(veroeffentlicht)) / 3600000) * 10) / 10

@@ -156,3 +156,29 @@ test("PI12 · Ein unmessbarer Beitrag gelangt nicht in die Vergleichsbasis", () 
   assert.equal(Performance.buildBaseline(alle).sampleSize, 2,
     "ungefiltert zaehlte der unmessbare Beitrag mit — genau deshalb wird gefiltert");
 });
+
+test("PI13 · Die Reel-Verweildauer kommt in Sekunden an, nicht in Millisekunden", () => {
+  /* Instagram meldet ig_reels_avg_watch_time in Millisekunden; das
+     kanonische Feld ist in Sekunden. Eine Zahl, die um den Faktor 1000
+     danebenliegt, faellt in einem Median nicht auf — sie verschiebt ihn
+     nur, und niemand merkt es. */
+  const z = snapshotAusBeitrag(beitrag({
+    metrics: { reach: 24, likes: 4, comments: 0, saved: 0, shares: 0,
+      ig_reels_avg_watch_time: 3510, ig_reels_video_view_total_time: 91261 }
+  }), { now: JETZT });
+
+  assert.equal(z.snapshot.metrics.watchTimeSeconds, 3.51);
+  assert.equal(z.snapshot.providerMetrics.ig_reels_avg_watch_time, 3510,
+    "der Rohwert bleibt als Beleg erhalten");
+});
+
+test("PI14 · Die Abschlussrate wird NICHT geschaetzt", () => {
+  /* Sie waere Verweildauer geteilt durch Videolaenge, und die Laenge
+     liefert diese Abfrage nicht. Eine geschaetzte Quote ginge als
+     Retention in die Strategie ein und waere dort nicht mehr von einer
+     gemessenen zu unterscheiden. */
+  const z = snapshotAusBeitrag(beitrag({
+    metrics: { reach: 24, likes: 4, ig_reels_avg_watch_time: 3510 }
+  }), { now: JETZT });
+  assert.equal(z.snapshot.metrics.completionRate, null);
+});

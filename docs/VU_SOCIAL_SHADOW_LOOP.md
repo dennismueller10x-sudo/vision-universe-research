@@ -65,7 +65,65 @@ URTEIL: NOT_CLOSED
 Der Loop schließt sich mit realen Zahlen erst, wenn es einen sichtbaren
 Beitrag gibt. Das ist eine Owner-Entscheidung, kein Baufehler.
 
-### Durchgang A' — wie es mit einem sichtbaren Beitrag aussähe (n=1)
+### Durchgang A' — die Bestandsbeiträge des Kontos
+
+Die Annahme „der archivierte Testbeitrag ist alles, was es gibt" war
+falsch und ließ sich prüfen. Das Konto hat **26 Beiträge**; abgefragt
+werden konnten sie erst, nachdem zwei eigene Fehler behoben waren (siehe
+§7). Gemessen:
+
+```
+REEL   n=9   Reichweite Median 24   Interaktionsrate Median 0,167
+FEED   n=7   Reichweite Median  8   Interaktionsrate Median 0,375
+```
+
+Ein echtes Signal: Reels erreichen dreimal so viele Menschen, Feed-Posts
+haben die doppelte Interaktionsrate je Erreichtem. Die Dimension kommt
+von Meta (`media_type`), nicht von uns.
+
+Eingetragen wird nur, was gemessen ist: `visualType` und `performance`.
+**Nicht** `archetype` — das System hat ihn für diese Beiträge nie
+entschieden, und ihn nachzutragen wäre erfundene Vorgeschichte, die
+anschließend als Formatwissen in genau die Entscheidung einflösse, die
+der Nachweis prüft.
+
+Das Urteil bleibt `CLOSED_STATE`, und der Grund ist jetzt exakt bekannt.
+
+---
+
+## 2b. Warum aus 16 gemessenen Beiträgen kein Score wird
+
+```
+Vergleichsbasis   16 Beiträge — reicht (ab 5)
+Coverage           0,24 — verlangt sind 0,50
+```
+
+Das Zielmodell hat acht Dimensionen. Belegt sind zwei:
+
+| Dimension | Zustand |
+|---|---|
+| Reichweite | belegt |
+| Interaktionsrate | belegt |
+| Verweildauer | nur bei Reels (`ig_reels_avg_watch_time`, jetzt kanonisch in Sekunden) |
+| Weiterleitungen | Median 0 — gegen 0 ist kein Verhältnis bildbar |
+| Speicherungen | Median 0 — dito |
+| Follower-Gewinn | Median 0 — dito |
+| Qualität | interne Bewertung, für Bestandsbeiträge nicht vorhanden |
+| Markenpassung | dito |
+
+Die drei Nullmediane sind keine Messfehler: diese Beiträge werden
+schlicht nicht geteilt, gespeichert oder gefolgt. Und Qualität und
+Markenpassung kennt das System nur für Beiträge, die **es selbst**
+erzeugt hat — für importierte Bestandsbeiträge gibt es sie nicht.
+
+**Die Schwelle zu senken, bis die vorhandenen Daten genügen, hätte das
+mehrdimensionale Modell abgeschafft und den Namen behalten.** Genau davor
+soll es schützen: dass nicht eine einzelne Kennzahl die Strategie
+bestimmt. Deshalb steht hier ein Befund und keine angepasste Konstante.
+
+---
+
+## 2c. Durchgang B — der Mechanismus (simulierte Evidenz)
 
 ```
 Evidenzzustand         NICHTS_GEMESSEN → GEMESSEN_NICHT_BEWERTBAR
@@ -86,7 +144,7 @@ getrennt. Zusammengefasst wäre „nichts gemessen" nicht mehr von
 „gemessen, aber noch nicht bewertbar" zu unterscheiden — und jemand
 würde später einen Fehler suchen, wo nur eine Stichprobe zu klein ist.
 
-### Durchgang B — simulierte Evidenz (n=16)
+
 
 ```
 Datenpunkte            0 → 16

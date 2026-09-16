@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-09-18T12:00:00Z",
+  "evidence": "real",
+  "evidenceOrigin": "GEMESSEN — 12 Beitrag/Beitraege von Instagram",
+  "simulated": false,
+  "runA": {
+    "strategyVersion": "strategy_initial",
+    "strategyChanged": false,
+    "evidenceState": "NICHTS_GEMESSEN",
+    "measuredPosts": 0,
+    "dataPoints": 0,
+    "baselineSufficient": false,
+    "observations": 0,
+    "belastbar": 0,
+    "formatwissen": 0,
+    "formate": [
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE"
+    ],
+    "visuals": [
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD"
+    ],
+    "begruendung": "EXPLAIN_THE_MOVE"
+  },
+  "runB": {
+    "strategyVersion": "strategy_initial",
+    "strategyChanged": false,
+    "evidenceState": "GEMESSEN_NICHT_BEWERTBAR",
+    "measuredPosts": 12,
+    "dataPoints": 0,
+    "baselineSufficient": true,
+    "observations": 0,
+    "belastbar": 0,
+    "formatwissen": 0,
+    "formate": [
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE"
+    ],
+    "visuals": [
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD"
+    ],
+    "begruendung": "EXPLAIN_THE_MOVE"
+  },
+  "differences": [
+    "evidenceState",
+    "measuredPosts",
+    "baselineSufficient"
+  ],
+  "verdict": "CLOSED_STATE",
+  "decisionChanged": false,
+  "closed": true,
+  "note": "Die Zahlen in Lauf B waren gemessen. Bei n=1 ist die richtige Folgerung 'weiter erkunden' — die Schliessung zeigt sich am Evidenzzustand, nicht an einer Formatempfehlung."
+}
