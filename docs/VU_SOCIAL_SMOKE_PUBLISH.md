@@ -160,3 +160,21 @@ Ein zweiter Aufruf wird abgelehnt (`alreadyPublished`, HTTP 409) und nennt den
 ersten Beitrag. Wer wirklich einen zweiten will, hängt
 `&again=JA-ICH-WEISS-DASS-EIN-ZWEITER-BEITRAG-ENTSTEHT` an — der Parameter
 benennt beim Tippen, was er tut.
+
+---
+
+## 7. Abgeschlossen
+
+Der Testbeitrag ist am 2026-09-16 um 17:10:14 UTC auf
+`@visionuniverse.aktienreports` erschienen — Medien-ID `17992767560843861`,
+Permalink `https://www.instagram.com/p/DdWyjKNml42/` — und vom Owner nach der
+Prüfung archiviert.
+
+Der vollständige Nachweis samt beider Belegquellen und, wichtiger, der Liste
+dessen, was damit **nicht** bewiesen ist, steht in
+[`VU_SOCIAL_E2E_NACHWEIS.md`](./VU_SOCIAL_E2E_NACHWEIS.md).
+
+Dieser Endpunkt hat seine Aufgabe damit erfüllt. Er bleibt bestehen, aber er
+ist keine Grundlage für Automatik: er veröffentlicht, was in zwei
+Umgebungsvariablen steht, und seine Einmaligkeit ist ein globaler Schalter
+und keine Eigenschaft des Inhalts.
