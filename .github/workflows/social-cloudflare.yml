@@ -541,12 +541,32 @@ jobs:
           fi
 
           mkdir -p tmp/social
-          code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
-            -H "Authorization: Bearer $KEY" \
-            "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
+
+          # Warten, bis die Fassung mit diesem Endpunkt antwortet.
+          #
+          # Ein Deployment gilt nicht in derselben Sekunde ueberall. Beim
+          # ersten Versuch lief dieser Schritt eine Sekunde nach dem
+          # Deploy, und die antwortende Fassung kannte /insights noch gar
+          # nicht -- ein 404, der aussah wie "keine Zahlen".
+          #
+          # Dieselbe Lehre stand zu diesem Zeitpunkt schon zwei Schritte
+          # weiter oben im selben Workflow. Sie hier nicht angewandt zu
+          # haben, war der Fehler; deshalb steht sie jetzt an beiden
+          # Stellen.
+          code=000
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
+            [ "$code" = "200" ] && break
+            echo "Versuch $versuch: HTTP $code — das Deployment gilt noch nicht ueberall."
+            sleep 3
+          done
 
           if [ "$code" != "200" ]; then
             echo "Insights-Endpunkt antwortet mit HTTP $code — nichts eingepflegt."
+            echo "Das ist eine Aussage ueber den Endpunkt, NICHT ueber die Leistung des Beitrags."
+            head -c 400 tmp/social/insights.json || true
             exit 0
           fi
 

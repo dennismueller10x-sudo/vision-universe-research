@@ -55,6 +55,7 @@ const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
 const Analytics    = require(join(ROOT, "social/engines/analytics.js"));
 const Performance  = require(join(ROOT, "social/engines/performance.js"));
 const Learning     = require(join(ROOT, "social/engines/learning.js"));
+const Experiments  = require(join(ROOT, "social/engines/experiments.js"));
 const Explain      = require(join(ROOT, "social/engines/explain.js"));
 const Health       = require(join(ROOT, "social/engines/health.js"));
 const Autonomy     = require(join(ROOT, "social/engines/autonomy.js"));
@@ -672,6 +673,108 @@ async function main() {
   }
 
   /* ================================================================
+     9b. EXPERIMENTIEREN  —  Erkundung mit einer Frage
+
+     Erkundung ohne Hypothese ist Variation: man aendert etwas, sieht
+     eine Zahl und weiss hinterher nicht, woran es lag. Ein Experiment
+     legt die Frage VOR dem Ergebnis fest — eine Variable, eine
+     Kontrolle, eine Stichprobe, die nicht nachtraeglich waechst, bis
+     das Ergebnis gefaellt.
+
+     Angelegt wird nur, wenn die Datenlage duenn ist. Wo bereits
+     belastbares Wissen liegt, waere ein Experiment die teure Art,
+     Bekanntes zu bestaetigen.
+     ================================================================ */
+  const expFile = D("experiments.json");
+  const experiments = existsSync(expFile)
+    ? (JSON.parse(readFileSync(expFile, "utf8")).experiments || []) : [];
+
+  log("\n--- EXPERIMENTIEREN ---");
+
+  /* Gemessene Ergebnisse in die Arme laufender Experimente eintragen.
+     Zuerst — sonst entscheidet unten ein Experiment ueber Daten, die
+     der Lauf gerade selbst mitgebracht hat. */
+  let eingetragen = 0;
+  for (const exp of experiments) {
+    if (exp.state === "DECIDED" || exp.state === "ABANDONED") continue;
+    for (const e of memory.all()) {
+      if (e.performance === null || e.performance === undefined) continue;
+      const wert = e[exp.variable];
+      if (wert === undefined || wert === null) continue;
+      const arm = String(wert) === exp.control ? "control"
+                : String(wert) === exp.variant ? "variant" : null;
+      if (!arm) continue;
+      /* Derselbe Beitrag darf nicht zweimal zaehlen. */
+      const kennung = e.publicationId || e.packageId;
+      exp._gezaehlt = exp._gezaehlt || [];
+      if (exp._gezaehlt.includes(kennung)) continue;
+      exp._gezaehlt.push(kennung);
+      Experiments.record(exp, arm, e.performance);
+      eingetragen += 1;
+    }
+  }
+
+  /* Auswerten, was reif ist. */
+  const entschieden = [];
+  for (const exp of experiments) {
+    if (exp.state === "DECIDED" || exp.state === "ABANDONED") continue;
+    const res = Experiments.evaluate(exp, {});
+    if (res.decided) {
+      exp.state = "DECIDED";
+      exp.decision = res;
+      entschieden.push({ experimentId: exp.experimentId, hypothesis: exp.hypothesis,
+                         explanation: res.explanation });
+    }
+  }
+
+  /* Neue Experimente nur bei duenner Datenlage. */
+  const offeneVariablen = experiments
+    .filter((e) => e.state !== "DECIDED" && e.state !== "ABANDONED")
+    .map((e) => e.variable);
+
+  for (const entry of packages) {
+    const d = entry.strategyDecision;
+    if (d.mode !== "EXPLORE") continue;
+    if (offeneVariablen.includes("archetype")) break;
+
+    const gewaehlt = entry.result.package.archetype;
+    const kandidaten = (d.archetypeCandidates || [])
+      .filter((c) => c.archetype !== gewaehlt);
+    if (!kandidaten.length) break;
+    const kontrolle = kandidaten.sort((a, b) => b.sampleSize - a.sampleSize)[0].archetype;
+
+    const res = Experiments.declare({
+      hypothesis: "Der Archetyp " + gewaehlt + " erreicht eine hoehere Leistung als " +
+        kontrolle + " bei vergleichbaren Anlaessen.",
+      variable: "archetype",
+      control: kontrolle,
+      variant: gewaehlt,
+      plannedSamplePerArm: 8
+    }, { now: NOW });
+
+    if (res.ok) {
+      experiments.push(res.experiment);
+      offeneVariablen.push("archetype");
+      log("Neu angelegt: " + res.explanation);
+    } else {
+      detail("nicht angenommen:", res.explanation);
+    }
+    break;
+  }
+
+  const laufend = experiments.filter((e) => e.state !== "DECIDED" && e.state !== "ABANDONED");
+  log("Laufend: " + laufend.length + " | Ergebnisse eingetragen: " + eingetragen +
+      " | entschieden: " + entschieden.length);
+  for (const e of laufend) {
+    detail(e.variable + ": " + e.variant + " gegen " + e.control +
+      "  (" + e.observations.control.length + "/" + e.plannedSamplePerArm + " Kontrolle, " +
+      e.observations.variant.length + "/" + e.plannedSamplePerArm + " Variante)");
+  }
+  for (const e of entschieden) detail("entschieden:", e.explanation);
+  /* Der interne Zaehler gehoert nicht ins Artefakt. */
+  for (const e of experiments) delete e._gezaehlt;
+
+  /* ================================================================
      10. ANPASSEN  —  und zwar nur, wenn die Evidenz es traegt
 
      Der haeufigste Ausgang ist "keine Aenderung". Das ist kein
@@ -783,6 +886,15 @@ async function main() {
       strategyReason: uebernahme.reason || vorschlag.explanation || null,
       archetypeKnowledge
     },
+    experiments: {
+      running: laufend.length,
+      recorded: eingetragen,
+      decided: entschieden,
+      open: laufend.map((e) => ({ experimentId: e.experimentId, variable: e.variable,
+        hypothesis: e.hypothesis, control: e.control, variant: e.variant,
+        counts: { control: e.observations.control.length, variant: e.observations.variant.length },
+        needed: e.plannedSamplePerArm }))
+    },
     shadowDecisions
   };
 
@@ -803,6 +915,8 @@ async function main() {
       JSON.stringify({ generatedAt: NOW, entries: memory.all() }, null, 2) + "\n");
     writeFileSync(join(dir, "strategy-memory.json"),
       JSON.stringify(strategyMemory.snapshot({ now: NOW }), null, 2) + "\n");
+    writeFileSync(join(dir, "experiments.json"),
+      JSON.stringify({ generatedAt: NOW, experiments }, null, 2) + "\n");
     writeFileSync(join(dir, "shadow-decisions.json"),
       JSON.stringify({ generatedAt: NOW, strategyVersion: activeStrategy.versionId,
         decisions: shadowDecisions }, null, 2) + "\n");
