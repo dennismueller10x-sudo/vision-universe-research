@@ -143,3 +143,75 @@ Genau eine der folgenden Antworten — und jede sagt, wo es weitergeht:
 
 Es ist **kein** Widerruf und keine Neuverknüpfung nötig. Die bestehende
 Meta-Autorisierung bleibt, wie sie ist.
+
+---
+
+## 6. Nachtrag: der Befund lag vor, die Ursache stand fest
+
+2026-09-16, zweiter realer OAuth-Lauf. Meta hat die bestehende Autorisierung
+wiederverwendet und direkt zum Callback zurückgeleitet.
+
+```
+reason: noPagesVisible
+pages:  []
+granular_scopes:
+  pages_show_list            -> target_id der Vision-Universe-Seite
+  instagram_basic            -> Instagram-target_id
+  instagram_manage_insights  -> dieselbe Instagram-target_id
+  instagram_content_publish  -> dieselbe Instagram-target_id
+linkageProbe: null
+```
+
+Das ist die dritte Zeile aus der Tabelle in §5: **freigegeben, aber über
+`/me/accounts` nicht sichtbar.** `linkageProbe` blieb `null`, weil es keine Seite
+gab, die man hätte befragen können — die Probe hängt an `pages[0]`.
+
+### Warum `/me/accounts` leer ist
+
+Es zählt die Seiten auf, die der angemeldete Mensch **als Person** verwaltet.
+Beim Business Login mit gezielter Asset-Auswahl entsteht der Zugriff aber nicht
+über diese persönliche Liste, sondern als **Freigabe am Token**. Beides sind
+gültige Wege zu einer Seite — nur führt der zweite nicht durch `/me/accounts`.
+
+Der Resolver kannte nur den ersten. Das war die Ursache, und sie war es von
+Anfang an: auch der erste Lauf hätte so geendet.
+
+### Der neue Pfad
+
+1. `/me/accounts` wie bisher — es liefert das Seiten-Token gleich mit und deckt
+   den klassischen Weg ab. Es ist nur nicht mehr die **einzige** Quelle.
+2. Bleibt es leer, werden die Assets aus `granular_scopes` gelesen.
+
+**Eine `target_id` wird dabei nicht einfach übernommen.** Sie ist eine Zahl aus
+einer Antwort: sie sagt, dass *irgendetwas* freigegeben wurde — nicht, dass es
+das richtige Konto ist, nicht einmal, dass es ein Instagram-Konto ist.
+
+| Hürde | Was sie ausschließt |
+|---|---|
+| Alle drei Instagram-Rechte müssen **dieselbe Menge** nennen | eine ID aus einem einzelnen Recht wäre nur eine Behauptung |
+| Die ID wird bei der API gegengeprüft: sie muss sich selbst zurückmelden **und** einen Handle haben | eine verwechselte oder erfundene ID |
+| Der Handle geht gegen die Allowlist | ein fremdes Konto, versehentlich freigegeben |
+
+Der Reihenfolgevergleich ist mengenbasiert — die drei Rechte dürfen ihre IDs in
+beliebiger Reihenfolge nennen, ohne falschen Alarm auszulösen (N9).
+
+Die **Seite ist ein eigenes Asset** und wird getrennt aufgelöst. Sie liefert das
+Seiten-Token, nicht die Instagram-ID. Schlägt ihre Auflösung fehl, ist die
+Instagram-Verbindung trotzdem belegt — eine fehlende Seite darf ein belegtes
+Konto nicht entwerten.
+
+### Eine zweite Korrektur, die daraus folgte
+
+Ein fehlendes Seiten-Token war bisher ein harter Abbruch. Das war zu streng: das
+langlebige **Nutzer-Token** trägt bei einer Business-Anmeldung
+`instagram_content_publish` für genau dieses Konto. Es funktioniert — es läuft
+nur nach rund 60 Tagen ab.
+
+Jetzt: Seiten-Token bevorzugen, sonst Nutzer-Token **mit vermerktem
+Ablaufdatum**. Der Lebendtest prüft genau das Token, das danach gespeichert wird
+— sonst prüfte er etwas anderes als das, was später benutzt wird.
+
+### Reichen die vier Permissions?
+
+**Ja.** Die granularen Scopes stammen aus genau diesen vier Rechten — sie sind
+der Beleg, nicht das Fehlende. Es wurde keine Permission hinzugefügt.
