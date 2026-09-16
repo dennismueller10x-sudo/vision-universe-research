@@ -319,5 +319,5 @@ Sitzung: erste Mittwoch-/Donnerstag-Kurse ≤ 8 Minuten nach Eröffnung,
 Branch `claude/vision-universe-discover-h93fmv` auf `main` 7cc267ba9; zwei
 Commits: (1) Neubau der Discover-Daten (Feed-Reihenfolge, Caveat-Wortlaut in
 1 312 Aktienseiten), (2) V4.1 Code, Tests, Workflows, Screenshots, Bericht.
-Die Hashes stehen im Ledger (`VU_BUILD_STATUS.md`, Stufe 15) und in der
-Abschlussmeldung.
+Commits: `3f502ab0c` (Daten), `9ea81f9f8` (Code, Tests, Workflows, Screenshots,
+Bericht); Ledger `VU_BUILD_STATUS.md`, Stufe 15.
