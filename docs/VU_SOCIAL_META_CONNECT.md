@@ -164,10 +164,22 @@ Diese Adresse muss **zeichengenau** in Ihrer Meta-App stehen. Meta vergleicht si
 Zeichen fuer Zeichen; ein zusaetzlicher Schraegstrich am Ende genuegt fuer eine
 Absage.
 
-> **Bevor Sie hier weiter suchen:** bis jetzt hat der Worker den *klassischen*
-> Dialog aufgerufen. Jede bisherige Ablehnung beantwortet damit die falsche
-> Frage. Setzen Sie erst Schritt 2, dann pruefen Sie erneut — moeglicherweise
-> war die URI die ganze Zeit in Ordnung.
+> **UEBERHOLT — nicht mehr die workers.dev-Adresse eintragen.**
+>
+> Der reale Test hat Meta die richtige Frage gestellt. Die Antwort war die
+> App-Domains-Pruefung: Meta nimmt
+> `vision-universe-social.little-credit-15d3.workers.dev` nicht als Domain
+> dieser App an, auch nicht nach Eintragen im Feld.
+>
+> Der Grund steht in
+> [`VU_SOCIAL_EIGENE_DOMAIN.md`](VU_SOCIAL_EIGENE_DOMAIN.md): `workers.dev`
+> steht auf der Public Suffix List und gehoert Cloudflare. Das App-Domains-Feld
+> ist eine Eigentumsbehauptung, und unter einem fremden Suffix laesst sie sich
+> nicht aufstellen.
+>
+> Der Worker zieht deshalb auf **`social.visionuniverse.de`** um. Tragen Sie die
+> Meta-Felder erst ein, wenn die Domain steht — sonst tragen Sie eine Adresse
+> ein, die gleich wieder wechselt. Die Werte stehen in §3 des Dokuments.
 
 Im Meta-App-Dashboard:
 

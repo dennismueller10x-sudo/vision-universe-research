@@ -371,10 +371,16 @@ async function listZones(wanted) {
   }
 
   if (process.env.GITHUB_OUTPUT) {
+    /* Auch die Namen: liegt die gewuenschte Zone nicht hier, ist die
+       naechste Frage, ob eine ANDERE brauchbare Zone schon da ist. Eine
+       vorhandene Zone erspart eine Nameserver-Umstellung — und die ist
+       nichts, wozu man jemanden schickt, solange es eine Alternative
+       gibt. Zonennamen stehen im oeffentlichen DNS. */
     writeFileSync(process.env.GITHUB_OUTPUT,
       "zone_readable=true\n" +
       `zone_present=${hit ? "true" : "false"}\n` +
-      `zone_active=${hit && hit.status === "active" ? "true" : "false"}\n`,
+      `zone_active=${hit && hit.status === "active" ? "true" : "false"}\n` +
+      `zone_names=${zones.map((z) => z.name + ":" + z.status).join(" ") || "(keine)"}\n`,
       { flag: "a" });
   }
   return { zones, zone: hit || null };

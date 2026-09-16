@@ -391,3 +391,4 @@ jobs:
           echo "Zonenliste lesbar: ${{ steps.zones.outputs.zone_readable || 'unbekannt' }}"
           echo "visionuniverse.de auf dem Konto: ${{ steps.zones.outputs.zone_present || 'unbekannt' }}"
           echo "Zone aktiv: ${{ steps.zones.outputs.zone_active || 'unbekannt' }}"
+          echo "Zonen auf dem Konto: ${{ steps.zones.outputs.zone_names || 'unbekannt' }}"
