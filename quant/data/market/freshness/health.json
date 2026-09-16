@@ -1,63 +1,50 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-15T18:37:34.876Z",
+  "checkedAt": "2026-09-16T08:17:43.087Z",
   "target": "repository",
   "market": {
-    "state": "OPEN",
-    "localDate": "2026-09-15",
-    "localTime": "14:37:34",
-    "lastCompletedSession": "2026-09-14",
-    "currentSession": "2026-09-15",
+    "state": "PRE_MARKET",
+    "localDate": "2026-09-16",
+    "localTime": "04:17:43",
+    "lastCompletedSession": "2026-09-15",
+    "currentSession": "2026-09-16",
     "expectedIntradaySession": "2026-09-15"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-15T18:37:30.817Z",
+    "indexGeneratedAt": "2026-09-16T08:17:39.123Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-15",
-      "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "kind": "last",
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
       "sessionDate": "2026-09-15",
-      "asOf": "2026-09-15T18:35:00.000Z",
-      "asOfLocal": "14:35",
-      "regularComplete": false,
-      "snapshots": 558,
-      "universe": false
+      "asOf": "2026-09-15T20:55:00.000Z",
+      "asOfLocal": "16:55",
+      "regularComplete": true,
+      "snapshots": 5308,
+      "universe": true
     },
-    "dataState": "LIVE",
-    "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 14:35",
+    "dataState": "LAST_SESSION",
+    "dataReason": "lastCompletedSession",
+    "dataLabel": "Letzter Handelstag · Dienstag",
     "entries": 521,
     "byState": {
-      "LIVE": 510,
-      "LAST_SESSION": 0,
-      "STALE": 11,
+      "LIVE": 0,
+      "LAST_SESSION": 521,
+      "STALE": 0,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 510,
-      "runningSessionStaleAsOf": 10,
-      "currentSessionMissing": 1
+      "lastCompletedSession": 521
     },
-    "staleSample": [
-      "AIRT",
-      "ATHS",
-      "HCM",
-      "HURC",
-      "JFIN",
-      "NRP",
-      "RDIB",
-      "TVA",
-      "UFG",
-      "VIOT",
-      "RFAI"
-    ],
+    "staleSample": [],
     "universeSessions": [
-      "2026-09-14"
+      "2026-09-14",
+      "2026-09-15"
     ],
     "universeCoversLastSession": true,
     "state": "OK"
@@ -65,26 +52,54 @@
   "daily": {
     "universeAsOf": "2026-09-14",
     "generatedAt": "2026-09-15T18:25:48.079Z",
-    "state": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Montag",
-    "expectedSession": "2026-09-14",
+    "state": "STALE",
+    "reason": "lastSessionMissing",
+    "label": "Schluss Mo., 14.09. · nicht aktuell",
+    "expectedSession": "2026-09-15",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 40,
-        "STALE": 0,
+        "LAST_SESSION": 0,
+        "STALE": 40,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "lastSessionMissing": 40
       },
-      "staleSample": [],
+      "staleSample": [
+        "AAPL",
+        "ABBV",
+        "ABCL",
+        "ABNB",
+        "ABX",
+        "ACIC",
+        "ACMR",
+        "ACN",
+        "ACT",
+        "ACTG",
+        "ADBE",
+        "ADC",
+        "ADI",
+        "ADMA",
+        "ADP",
+        "ADPT",
+        "ADSK",
+        "AEP",
+        "AFG",
+        "AFRM",
+        "AGEN",
+        "AGL",
+        "AIR",
+        "AIRT",
+        "ALAB"
+      ],
       "seriesIndexCount": 6438
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Tageskurse STALE: asOf 2026-09-14, erwartet 2026-09-15 (lastSessionMissing)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
