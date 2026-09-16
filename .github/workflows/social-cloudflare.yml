@@ -400,6 +400,17 @@ jobs:
         # nicht, was der Worker jetzt traegt. Diese zwei Werte kommen aus
         # seiner Umgebung — es sind dieselben, die der Container bekaeme.
         #
+        # WARTEN, WEIL EIN DEPLOYMENT NICHT SOFORT UEBERALL GILT
+        #
+        # Beim ersten Versuch antwortete eine Fassung von einer Sekunde
+        # zuvor, die das Feld smokePost noch nicht kannte — und ein
+        # fehlendes Feld sah im Bericht aus wie ein leerer Wert. Das sind
+        # zwei verschiedene Lagen: "der Worker traegt nichts" und "diese
+        # Fassung kennt die Frage nicht". Gewartet wird deshalb auf das
+        # FELD, nicht auf eine Zeitspanne, und fehlt es am Ende, sagt der
+        # Bericht das, statt eine Aussage ueber die Konfiguration zu
+        # erfinden.
+        #
         # Der Schluessel kommt ueber env: herein und wird im Skripttext nur
         # beim Namen genannt: Actions schreibt jedes run:-Skript ins
         # Protokoll, BEVOR es laeuft.
@@ -414,27 +425,48 @@ jobs:
           fi
 
           mkdir -p tmp/social
-          code=$(curl -sS -o tmp/social/status.json -w '%{http_code}' \
-            -H "Authorization: Bearer $KEY" \
-            "https://social.visionuniverse.de/social/meta/status" || echo 000)
+          feld=nein
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/status.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/status" || echo 000)
 
-          if [ "$code" != "200" ]; then
-            echo "Der Statusendpunkt antwortet mit HTTP $code — ungelesen."
+            if [ "$code" = "200" ] && node -e '
+              const s = require(process.cwd() + "/tmp/social/status.json");
+              process.exit(Object.prototype.hasOwnProperty.call(s, "smokePost") ? 0 : 1);
+            '; then
+              feld=ja
+              echo "Fassung mit smokePost antwortet (Versuch $versuch)."
+              break
+            fi
+            echo "Versuch $versuch: HTTP $code, Feld noch nicht da — das Deployment gilt noch nicht ueberall."
+            sleep 3
+          done
+
+          if [ "$feld" != "ja" ]; then
+            echo ""
+            echo "Der Inhalt konnte NICHT gelesen werden: die antwortende Fassung"
+            echo "kennt das Feld smokePost nicht. Das ist eine Aussage ueber die"
+            echo "Fassung, NICHT ueber die Konfiguration — was deployt wurde, steht"
+            echo "im Protokoll des Deploy-Schritts unter den Bindings."
             exit 0
           fi
 
           node -e '
             const s = require(process.cwd() + "/tmp/social/status.json");
             const p = s.smokePost || {};
-            const zeile = (k, v) => console.log(k.padEnd(10) + (v === null || v === undefined ? "(nicht gesetzt)" : v));
-            console.log("=== INHALT DES TESTBEITRAGS, wie deployt ===");
+            const zeile = (k, v) => console.log(k.padEnd(10) +
+              (v === null || v === undefined ? "(im Worker nicht gesetzt)" : v));
+            console.log("=== INHALT DES TESTBEITRAGS, aus dem laufenden Worker ===");
             zeile("Bild:", p.imageUrl);
             zeile("Text:", p.caption);
             console.log("");
-            console.log("Zeichen:  " + (p.caption ? p.caption.length : 0));
-            console.log("Hashtags: " + (p.caption ? (p.caption.match(/#/g) || []).length : 0));
-            console.log("@:        " + (p.caption ? (p.caption.match(/@/g) || []).length : 0));
-            console.log("Links:    " + (p.caption ? (p.caption.match(/https?:\/\//g) || []).length : 0));
+            const c = p.caption || "";
+            console.log("Zeichen:  " + c.length);
+            console.log("Hashtags: " + (c.match(/#/g) || []).length);
+            console.log("@:        " + (c.match(/@/g) || []).length);
+            console.log("Links:    " + (c.match(/https?:\/\//g) || []).length);
+            console.log("Umlaute:  " + ([...c].filter((z) => z.charCodeAt(0) > 127).join("") || "keine"));
             console.log("");
             console.log("Bereits veroeffentlicht: " + (s.smokePublish && s.smokePublish.published ? "JA" : "nein"));
           ' | tee tmp/social/inhalt.txt
