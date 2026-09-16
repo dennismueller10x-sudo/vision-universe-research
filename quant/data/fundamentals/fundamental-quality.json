@@ -2,31 +2,31 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1876843,
+      "RESOLVED_VALUES": 1876891,
       "ISSUERS_WITH_VALUES": 5333
     },
     "byState": {
-      "VALID": 1707282,
-      "WARNING": 169561
+      "VALID": 1707323,
+      "WARNING": 169568
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49646829
+      "RAW_XBRL_FACTS_WITH_FINDING": 49647742
     },
     "byState": {
-      "AMBIGUOUS": 1335223,
-      "RESTATED": 313711,
-      "NON_COMPARABLE": 70432,
-      "MISSING": 47907740,
+      "AMBIGUOUS": 1335250,
+      "RESTATED": 313712,
+      "NON_COMPARABLE": 70456,
+      "MISSING": 47908601,
       "WARNING": 19723
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47907740,
-      "CONCEPT_DISAGREEMENT": 1327731,
-      "RESTATEMENT_CONFLICT": 313711,
-      "UNEXPECTED_DURATION": 54322,
+      "UNKNOWN_CONCEPT": 47908601,
+      "CONCEPT_DISAGREEMENT": 1327758,
+      "RESTATEMENT_CONFLICT": 313712,
+      "UNEXPECTED_DURATION": 54346,
       "FISCAL_PERIOD_CONFLICT": 14892,
       "PERIOD_MISMATCH": 14849,
       "FUTURE_DATA_LEAK": 7477,
@@ -42,8 +42,8 @@
       "PRODUCT_TITLES": 6875
     },
     "byState": {
-      "AVAILABLE": 5127,
-      "PARTIAL": 486,
+      "AVAILABLE": 5128,
+      "PARTIAL": 485,
       "MISSING": 93,
       "NOT_APPLICABLE": 63,
       "REQUIRES_REVIEW": 0,
@@ -59,18 +59,18 @@
     },
     {
       "metric": "revenue",
-      "MISSING_COUNT": 927,
-      "MISSING_RATE": 17.3823
+      "MISSING_COUNT": 926,
+      "MISSING_RATE": 17.3636
     },
     {
       "metric": "free_cash_flow",
-      "MISSING_COUNT": 814,
-      "MISSING_RATE": 15.2635
+      "MISSING_COUNT": 813,
+      "MISSING_RATE": 15.2447
     },
     {
       "metric": "capital_expenditures",
-      "MISSING_COUNT": 804,
-      "MISSING_RATE": 15.0759
+      "MISSING_COUNT": 803,
+      "MISSING_RATE": 15.0572
     },
     {
       "metric": "eps_diluted",
@@ -79,18 +79,18 @@
     },
     {
       "metric": "operating_cash_flow",
-      "MISSING_COUNT": 295,
-      "MISSING_RATE": 5.5316
+      "MISSING_COUNT": 294,
+      "MISSING_RATE": 5.5128
     },
     {
       "metric": "net_income",
-      "MISSING_COUNT": 277,
-      "MISSING_RATE": 5.1941
+      "MISSING_COUNT": 276,
+      "MISSING_RATE": 5.1753
     },
     {
       "metric": "stockholders_equity",
-      "MISSING_COUNT": 79,
-      "MISSING_RATE": 1.4813
+      "MISSING_COUNT": 78,
+      "MISSING_RATE": 1.4626
     },
     {
       "metric": "total_assets",
@@ -114,5 +114,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-15T06:44:06+00:00"
+  "generatedAtUtc": "2026-09-16T06:42:30+00:00"
 }

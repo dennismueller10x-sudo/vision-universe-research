@@ -639,9 +639,9 @@
       "cik": "0001495320",
       "name": "Vera Bradley, Inc.",
       "sic": "3100",
-      "rawFacts": 17672,
-      "mappedFacts": 6608,
-      "unmappedFacts": 11260,
+      "rawFacts": 17961,
+      "mappedFacts": 6712,
+      "unmappedFacts": 11436,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -651,28 +651,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-01-31",
-      "lastPeriodEnd": "2026-05-02",
+      "lastPeriodEnd": "2026-08-01",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0,
@@ -692,21 +692,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
@@ -720,14 +720,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-01-29",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 15.0
@@ -750,38 +750,39 @@
         }
       },
       "quality": {
-        "HIGH": 560,
-        "MEDIUM": 41
+        "HIGH": 568,
+        "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 601,
-        "resolvedValues": 601
+        "datableValues": 608,
+        "resolvedValues": 608
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11753,
+        "total": 11936,
         "by_severity": {
-          "INFO": 11260,
-          "WARNING": 493
+          "INFO": 11436,
+          "WARNING": 500
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 416,
+          "CONCEPT_DISAGREEMENT": 423,
           "FISCAL_PERIOD_CONFLICT": 21,
           "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 11260
+          "UNKNOWN_CONCEPT": 11436
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-042444",
-        "filing_date": "2026-06-11",
+        "accession": "0001628280-26-062019",
+        "filing_date": "2026-09-15",
         "form": "10-Q",
-        "periodic_filings": 66
+        "periodic_filings": 67,
+        "acceptance_datetime": "2026-09-15T18:59:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -790,7 +791,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "ceb7f05a7d7bd1b3b2fe18f01e9a9834917c1a278b0400284b8cac7f56bf538f",
+      "sourceDigest": "85ca56c1919850db89af4e7bcf2af4c5dbb156f4d28b2a07d5569bb5befd9f7e",
       "issuerId": "iss_cik_0001495320"
     },
     {
