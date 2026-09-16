@@ -1,60 +1,53 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T19:59:49.754Z",
+  "checkedAt": "2026-09-16T21:17:31.892Z",
   "target": "repository",
   "market": {
-    "state": "OPEN",
+    "state": "AFTER_HOURS",
     "localDate": "2026-09-16",
-    "localTime": "15:59:49",
-    "lastCompletedSession": "2026-09-15",
+    "localTime": "17:17:31",
+    "lastCompletedSession": "2026-09-16",
     "currentSession": "2026-09-16",
     "expectedIntradaySession": "2026-09-16"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-16T19:59:45.521Z",
+    "indexGeneratedAt": "2026-09-16T21:17:28.341Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-16",
       "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
       "sessionDate": "2026-09-16",
-      "asOf": "2026-09-16T19:55:00.000Z",
-      "asOfLocal": "15:55",
-      "regularComplete": false,
-      "snapshots": 519,
-      "universe": false
+      "asOf": "2026-09-16T20:55:00.000Z",
+      "asOfLocal": "16:55",
+      "regularComplete": true,
+      "snapshots": 5259,
+      "universe": true
     },
-    "dataState": "LIVE",
-    "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 15:55",
+    "dataState": "LAST_SESSION",
+    "dataReason": "lastCompletedSession",
+    "dataLabel": "Heute · Schluss 16:00",
     "entries": 520,
     "byState": {
-      "LIVE": 512,
-      "LAST_SESSION": 0,
-      "STALE": 8,
+      "LIVE": 0,
+      "LAST_SESSION": 519,
+      "STALE": 1,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 512,
-      "runningSessionStaleAsOf": 7,
-      "currentSessionMissing": 1
+      "lastCompletedSession": 519,
+      "lastSessionMissing": 1
     },
     "staleSample": [
-      "AIRT",
-      "ATHS",
-      "JFIN",
-      "PMI",
-      "RDIB",
-      "RFAI",
-      "TVA",
-      "UFG"
+      "TVA"
     ],
     "universeSessions": [
-      "2026-09-15"
+      "2026-09-15",
+      "2026-09-16"
     ],
     "universeCoversLastSession": true,
     "state": "OK"
@@ -63,9 +56,9 @@
     "universeAsOf": "2026-09-15",
     "generatedAt": "2026-09-16T10:22:21.235Z",
     "state": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Dienstag",
-    "expectedSession": "2026-09-15",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Di., 15.09. · Mittwoch folgt",
+    "expectedSession": "2026-09-16",
     "sample": {
       "sample": 40,
       "byState": {
@@ -75,7 +68,7 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "closePendingWithinGrace": 40
       },
       "staleSample": [],
       "seriesIndexCount": 6439
