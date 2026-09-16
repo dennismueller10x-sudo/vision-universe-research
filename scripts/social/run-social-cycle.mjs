@@ -94,6 +94,15 @@ const SITE_BASE = "https://" + readFileSync(join(ROOT, "CNAME"), "utf8").trim();
    getrennte Angaben waeren die Gelegenheit, eine Datei unter einer
    Adresse anzukuendigen, an der sie nicht liegt. */
 const ASSET_DIR = arg("--asset-dir", "assets/social").replace(/^\/+|\/+$/g, "");
+if (!ASSET_DIR.startsWith("assets/")) {
+  /* Nur was unter assets/ liegt, wird von GitHub Pages ausgeliefert.
+     Ein Bild anderswo bekaeme eine Adresse, unter der nichts liegt —
+     und Meta lehnte den Container ab, nachdem der Anspruch angemeldet
+     ist. Fuer Testlaeufe ist das in Ordnung; stillschweigend waere es
+     das nicht. */
+  console.log("[hinweis] --asset-dir " + ASSET_DIR + " liegt nicht unter assets/. " +
+    "Die erzeugten Bildadressen sind oeffentlich NICHT erreichbar.");
+}
 
 const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
@@ -960,6 +969,11 @@ async function main() {
       archetype: pkg.archetype,
       visualType: pkg.visualType,
       hook: pkg.hook,
+      /* Der Text, der hinausginge. Er gehoert in die Entscheidung und
+         nicht nur ins Paket: wer spaeter fragt "was waere gesendet
+         worden", fragt die Entscheidung. */
+      caption: pkg.caption || null,
+      hashtags: Array.isArray(pkg.hashtags) ? pkg.hashtags.slice() : [],
       plannedHourUtc: d.timingHour,
       timingSource: d.timingSource || null,
       timingReason: d.timingReason || null,
