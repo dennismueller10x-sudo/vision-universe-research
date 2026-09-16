@@ -52,10 +52,13 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, copyFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, dirname } from "node:path";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const require = createRequire(import.meta.url);
+const EvidenceRegime = require(join(ROOT, "social/engines/evidence-regime.js"));
 const argv = process.argv.slice(2);
 const arg = (n, d) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 
@@ -214,9 +217,9 @@ if (EVIDENCE === "simulated") {
      Formatwissen in genau die Entscheidung einfliessen, die dieser
      Nachweis prueft. Ein Beweis, der seine eigene Voraussetzung
      erfindet, beweist nichts. */
-  const istReel = (z) => /\/reel\//.test(String(z.permalink || "")) ||
-                          String(z.mediaType || "").toUpperCase() === "REELS" ||
-                          String(z.mediaType || "").toUpperCase() === "VIDEO";
+  /* Die Kohorte bestimmt die Engine, nicht dieses Skript. Zwei Regeln
+     fuer dieselbe Frage waeren die Einladung, dass sie auseinanderlaufen
+     und der Nachweis etwas anderes misst als der Zyklus. */
 
   writeFileSync(join(dirB, "content-memory.json"), JSON.stringify({
     generatedAt: NOW,
@@ -227,7 +230,7 @@ if (EVIDENCE === "simulated") {
         publishedAt: z.publishedAt, platform: "instagram",
         topic: "Bestandsbeitrag", entities: [],
         archetype: null,
-        visualType: istReel(z) ? "REEL" : "STATIC_IMAGE",
+        visualType: EvidenceRegime.cohortFor(z),
         hook: "", caption: "", cta: null,
         externalPostId: z.mediaId, permalink: z.permalink,
         performance: null,

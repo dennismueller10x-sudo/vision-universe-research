@@ -56,6 +56,7 @@ const Analytics    = require(join(ROOT, "social/engines/analytics.js"));
 const Performance  = require(join(ROOT, "social/engines/performance.js"));
 const Learning     = require(join(ROOT, "social/engines/learning.js"));
 const Experiments  = require(join(ROOT, "social/engines/experiments.js"));
+const EvidenceRegime = require(join(ROOT, "social/engines/evidence-regime.js"));
 const Explain      = require(join(ROOT, "social/engines/explain.js"));
 const Health       = require(join(ROOT, "social/engines/health.js"));
 const Autonomy     = require(join(ROOT, "social/engines/autonomy.js"));
@@ -597,10 +598,14 @@ async function main() {
   const perfData = existsSync(perfFile)
     ? JSON.parse(readFileSync(perfFile, "utf8")) : null;
 
-  const snapshots = perfData
-    ? (perfData.snapshots || []).map((z) => z.snapshot).filter((x) => x && x.state !== "UNAVAILABLE")
-    : [];
-  const baseline = Performance.buildBaseline(snapshots);
+  const alleZeilen = perfData ? (perfData.snapshots || []) : [];
+  const snapshots = alleZeilen.map((z) => z.snapshot)
+    .filter((x) => x && x.state !== "UNAVAILABLE");
+
+  /* Welche Zieldimensionen die Datenlage HEUTE traegt — je Medientyp.
+     Ein Reel gegen Reels, ein Bild gegen Bilder: ein gemeinsamer Median
+     waere eine Zahl, die keinen von beiden beschreibt. */
+  const befund = EvidenceRegime.assess(alleZeilen, { now: NOW });
 
   log("\n--- MESSEN ---");
   if (!perfData) {
@@ -608,32 +613,54 @@ async function main() {
     log("Der Kreislauf laeuft vorwaerts, aber er kommt nicht zurueck.");
   } else {
     log("Gemessene Beitraege: " + snapshots.length + " von " + (perfData.requested || 0));
-    log("Vergleichsbasis:     " + baseline.reason);
+    log("Evidenzregime:       " + befund.regime + "  (Stichprobe " + befund.sampleSize +
+        (befund.unusable ? ", " + befund.unusable + " nicht messbar" : "") + ")");
+    for (const [kohorte, k] of Object.entries(befund.cohorts)) {
+      log("  " + kohorte.padEnd(9) + k.regime.padEnd(10) + "n=" + String(k.sampleSize).padEnd(4) +
+          "aktiv: " + (k.activeDimensions.join(", ") || "(keine)"));
+      for (const e of k.excludedDimensions) detail("  aus:", e.dimension, "[" + e.state + "]", e.reason);
+    }
   }
 
   /* Gemessene Leistung an die Gedaechtniseintraege heften. Zuordnung
      ueber die Plattformkennung — sie ist die einzige Klammer zwischen
-     einem Beitrag und seinen Zahlen. */
+     einem Beitrag und seinen Zahlen.
+
+     Bewertet wird mit der Methodik SEINER Kohorte. Und jede Bewertung
+     traegt ihr Regime mit sich: ein Wert aus BOOTSTRAP ist nicht mit
+     einem aus MATURE vergleichbar, das sind verschiedene Groessen mit
+     demselben Namen. */
   let zugeordnet = 0;
-  for (const z of (perfData ? perfData.snapshots : [])) {
+  let bewertet = 0;
+  for (const z of alleZeilen) {
     const treffer = memory.all().filter((e) => e.externalPostId === z.mediaId);
-    const bewertung = Performance.score(z.snapshot, baseline, {});
+    if (!treffer.length) continue;
+
+    const kohorte = EvidenceRegime.cohortFor(z);
+    const k = befund.cohorts[kohorte];
+    const bewertung = k
+      ? Performance.score(z.snapshot, k.baseline, z.context || {}, { methodology: k.methodology })
+      : { available: false, explanation: "Keine Kohorte fuer diesen Medientyp." };
+
     for (const e of treffer) {
       e.performance = bewertung.available ? bewertung.score : null;
+      e.performanceRegime = k ? k.regime : null;
+      e.performanceCohort = kohorte;
       e.performanceProvenance = {
         source: "instagram.graph", snapshotId: z.snapshot.snapshotId,
         state: z.snapshot.state, scored: bewertung.available,
+        regime: k ? k.regime : null,
+        methodologyVersion: k ? k.methodology.version : null,
+        activeDimensions: k ? k.activeDimensions.slice() : [],
         reason: bewertung.available ? null : bewertung.explanation
       };
       zugeordnet += 1;
+      if (bewertung.available) bewertet += 1;
     }
   }
   if (perfData) {
-    log("Zugeordnet:          " + zugeordnet + " Gedaechtniseintrag/-eintraege");
-    if (!baseline.sufficient) {
-      log("Kein Performance Score: " + baseline.reason +
-          " Eine Zahl ohne Basis waere eine Behauptung.");
-    }
+    log("Zugeordnet:          " + zugeordnet + " Gedaechtniseintrag/-eintraege, " +
+        bewertet + " bewertet");
   }
 
   /* ================================================================
@@ -644,8 +671,18 @@ async function main() {
      Learning Engine entscheidet, ob daraus etwas folgen darf.
      ================================================================ */
   log("\n--- LERNEN ---");
-  const lernzeilen = memory.all()
-    .filter((e) => e.performance !== null && e.performance !== undefined)
+  /* NUR innerhalb eines Regimes vergleichen. Ein Score aus BOOTSTRAP und
+     einer aus MATURE messen verschiedene Dinge; sie in einen Mittelwert
+     zu werfen, erzeugt eine Zahl, die nichts beschreibt — und die wie
+     eine Verbesserung aussaehe, sobald das Regime wechselt. */
+  const aktivesRegime = befund.regime;
+  const alleBewerteten = memory.all()
+    .filter((e) => e.performance !== null && e.performance !== undefined);
+  const andereRegime = alleBewerteten.filter((e) =>
+    e.performanceRegime && e.performanceRegime !== aktivesRegime).length;
+
+  const lernzeilen = alleBewerteten
+    .filter((e) => !e.performanceRegime || e.performanceRegime === aktivesRegime)
     .map((e) => ({ archetype: e.archetype, visualType: e.visualType,
                    performanceScore: e.performance }));
 
@@ -661,19 +698,37 @@ async function main() {
     }
   }
 
+  /* Den Massstab festhalten, bevor die Beobachtungen entstehen. Eine
+     Beobachtung ohne bekanntes Regime laesst sich spaeter nicht
+     einordnen. */
+  const regimeEintrag = strategyMemory.recordEvidence(befund.record);
+  if (regimeEintrag.changed) log("Evidenzregime festgehalten: " + regimeEintrag.reason);
+
   const neueBeobachtungen = strategyMemory.recordObservations(beobachtungen);
   log("Gemessen:       " + snapshots.length + " Beitrag/Beitraege");
-  log("Bewertbar:      " + lernzeilen.length);
+  log("Bewertbar:      " + lernzeilen.length + " (Regime " + aktivesRegime + ")");
+  if (andereRegime) {
+    log("                " + andereRegime + " aus einem anderen Regime bleiben draussen — " +
+        "verschiedene Groessen mit demselben Namen.");
+  }
   if (snapshots.length && !lernzeilen.length) {
     /* Den GRUND nennen und nicht den naechstliegenden raten. Eine
        fehlende Vergleichsbasis und zu duenn belegte Kennzahlen sehen im
        Ergebnis gleich aus und verlangen voellig verschiedene
        Antworten. */
-    const einBeispiel = (perfData.snapshots || []).map((z) => z.snapshot)
-      .filter((x) => x && x.state !== "UNAVAILABLE")[0];
-    const warum = einBeispiel ? Performance.score(einBeispiel, baseline, {}) : null;
     log("                gemessen, aber nicht bewertbar — das ist etwas anderes als ungemessen.");
-    log("                Grund: " + ((warum && warum.explanation) || baseline.reason));
+    /* Den Grund je Kohorte nennen, nicht einen fuer alle: eine Kohorte
+       kann an der Vergleichsbasis scheitern und die andere an der
+       Abdeckung, und die beiden verlangen verschiedene Antworten. */
+    for (const [kohorte, k] of Object.entries(befund.cohorts)) {
+      const beispiel = (alleZeilen.filter((z) => EvidenceRegime.cohortFor(z) === kohorte &&
+        z.snapshot && z.snapshot.state !== "UNAVAILABLE")[0] || {}).snapshot;
+      const warum = beispiel
+        ? Performance.score(beispiel, k.baseline, {}, { methodology: k.methodology })
+        : null;
+      log("                " + kohorte + ": " +
+          ((warum && warum.explanation) || k.baseline.reason));
+    }
   }
   log("Beobachtungen:  " + beobachtungen.length + " (davon neu: " + neueBeobachtungen + ")");
   for (const o of beobachtungen) {
@@ -890,8 +945,17 @@ async function main() {
          laesst spaeter jemanden nach einem Fehler suchen, wo eine
          Stichprobe einfach zu klein ist. */
       measuredPosts: snapshots.length,
-      baselineSufficient: baseline.sufficient,
-      baselineReason: baseline.reason,
+      /* Die Vergleichsbasis gibt es jetzt je Kohorte. "Reicht sie" ist
+         damit keine einzelne Wahrheit mehr — und so steht es auch da. */
+      baselineSufficient: Object.values(befund.cohorts).length > 0 &&
+        Object.values(befund.cohorts).every((k) => k.baseline.sufficient),
+      baselineReason: Object.entries(befund.cohorts)
+        .map(([c, k]) => c + ": " + k.baseline.reason).join(" | ") || "Keine Kohorte.",
+      evidenceRegime: befund.regime,
+      evidenceRecord: befund.record,
+      regimeChanged: regimeEintrag.changed === true,
+      regimeReason: regimeEintrag.reason,
+      crossRegimeExcluded: andereRegime,
       scoreablePosts: lernzeilen.length,
       dataPoints: lernzeilen.length,
       evidenceState: snapshots.length === 0

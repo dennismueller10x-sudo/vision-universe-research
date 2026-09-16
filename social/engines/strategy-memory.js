@@ -79,6 +79,59 @@
     var observations = (persisted && Array.isArray(persisted.observations))
       ? persisted.observations.slice() : [];
 
+    /* Die Kette der Evidenzregime. Getrennt von den Strategieversionen,
+       weil ein Regimewechsel keine Strategieaenderung ist: er aendert den
+       MASSSTAB, nicht die Absicht. Beides in einen Topf zu werfen
+       hiesse, dass "die Strategie hat sich geaendert" zwei verschiedene
+       Dinge bedeuten kann. */
+    var regimes = (persisted && Array.isArray(persisted.evidenceRegimes))
+      ? persisted.evidenceRegimes.slice() : [];
+
+    function currentRegime() {
+      return regimes.length ? regimes[regimes.length - 1] : null;
+    }
+
+    /**
+     * Haelt einen Evidenzbefund fest — aber nur, wenn er etwas Neues sagt.
+     *
+     * Der Befund entsteht bei jedem Lauf neu. Ihn jedes Mal anzuhaengen
+     * machte die Frage "wann hat sich der Massstab zuletzt bewegt"
+     * unbeantwortbar. Angehaengt wird deshalb bei einem Regimewechsel
+     * oder wenn sich die aktiven Dimensionen einer Kohorte aendern —
+     * genau die zwei Faelle, in denen spaeter jemand fragt, warum eine
+     * Zahl anders aussieht als vorher.
+     */
+    function recordEvidence(record) {
+      if (!record) return { changed: false, regime: currentRegime(), reason: "Kein Befund." };
+      var vorher = currentRegime();
+
+      var signatur = function (r) {
+        return r ? r.evidenceRegime + "|" + (r.cohorts || []).map(function (c) {
+          return c.cohort + ":" + c.regime + ":" + (c.activeDimensions || []).join("+");
+        }).sort().join(";") : "";
+      };
+
+      if (vorher && signatur(vorher) === signatur(record)) {
+        return { changed: false, regime: vorher,
+          reason: "Unveraendert: " + record.evidenceRegime + "." };
+      }
+
+      var eintrag = Object.assign({}, record, {
+        previousRegime: vorher ? vorher.evidenceRegime : null,
+        transitionReason: vorher
+          ? ("Uebergang " + vorher.evidenceRegime + " -> " + record.evidenceRegime +
+             ", ausgeloest durch gemessene Evidenz: " + record.sampleSize +
+             " Beitraege. Kein Datum, keine Handeingabe.")
+          : ("Erster Befund: " + record.evidenceRegime + " bei " + record.sampleSize +
+             " Beitraegen.")
+      });
+      regimes.push(eintrag);
+      return { changed: true, regime: eintrag, previous: vorher,
+        reason: eintrag.transitionReason };
+    }
+
+    function regimeHistory() { return regimes.slice(); }
+
     function current() { return versions[versions.length - 1]; }
 
     function history() { return versions.slice(); }
@@ -179,7 +232,13 @@
         generatedAt: meta.now || now,
         currentVersionId: current().versionId,
         versions: versions.slice(),
-        observations: observations.slice()
+        observations: observations.slice(),
+        /* Historische Regime bleiben stehen. Sie umzuschreiben, wenn ein
+           neues gilt, wuerde die Frage "woran wurde DAMALS gemessen"
+           unbeantwortbar machen — und genau die entscheidet, ob eine alte
+           Strategieversion heute noch etwas bedeutet. */
+        evidenceRegimes: regimes.slice(),
+        currentRegime: currentRegime() ? currentRegime().evidenceRegime : null
       };
     }
 
@@ -189,6 +248,9 @@
       observations: allObservations,
       recordObservations: recordObservations,
       apply: apply,
+      recordEvidence: recordEvidence,
+      currentRegime: currentRegime,
+      regimeHistory: regimeHistory,
       rollbackTo: rollbackTo,
       snapshot: snapshot,
       size: function () { return versions.length; }
