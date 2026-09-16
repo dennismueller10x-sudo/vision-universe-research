@@ -13,7 +13,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, mkdtempSync, rmSync, mkdirSync, writeFileSync, copyFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, rmSync, mkdirSync, writeFileSync, copyFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -319,5 +319,39 @@ test("LC14 · Das Plattformformat steht nicht im visualType", () => {
       "ueber das Plattformformat wird beobachtet");
     assert.ok(!dimensionen.includes("visualType"),
       "und nicht ueber den visualType, den niemand entschieden hat");
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC15 · Die Schatten-Entscheidung sagt, ob der Beitrag sendbar waere", () => {
+  /* Eine Entscheidung, die sagt "ich wuerde X um T senden", behauptet
+     damit, dass X sendbar WAERE. Ohne Bild gibt es keine erreichbare
+     JPEG-Adresse und damit keine Veroeffentlichung — das faellt sonst
+     erst auf, wenn der Anspruch schon angemeldet ist. */
+  const p = platz("fracht");
+  try {
+    const r = zyklus(p, join(p, "out"));
+    assert.ok(r.shadowDecisions.length > 0, "es gibt Entscheidungen");
+    for (const d of r.shadowDecisions) {
+      assert.ok(d.asset, "jede Entscheidung sagt etwas ueber ihre Fracht");
+      assert.equal(typeof d.asset.plannable, "boolean");
+      assert.equal(d.asset.rendered, false, "ohne --render wird nichts gezeichnet");
+      if (d.asset.plannable) {
+        assert.match(d.asset.imageUrl, /^https:\/\/[^/]+\/assets\/social\/pkg_[a-z0-9]+\.jpg$/,
+          "die Adresse traegt die Paketkennung — wie Datei und Anspruch auch");
+      } else {
+        assert.ok(d.asset.reason, "und wenn nicht, steht der Grund da");
+      }
+    }
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC16 · Ein Trockenlauf schreibt keine Bilddateien", () => {
+  /* Ein Trockenlauf, der Binaerdateien ins Repository schreibt, ist kein
+     Trockenlauf. */
+  const p = platz("kein-bild");
+  const bilder = join(ROOT, p, "bilder");
+  try {
+    zyklus(p, join(p, "out"));
+    assert.ok(!existsSync(bilder), "ohne --render entsteht kein Bildordner");
   } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
 });

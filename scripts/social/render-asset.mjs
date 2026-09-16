@@ -98,22 +98,52 @@ function escape(text) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+function quelleVon(c) {
+  return (c && c.source && (c.source.source || c.source.name)) || null;
+}
+
 /**
- * Die erste belegte Zahl aus den Claims.
+ * Die erste belegte Zahl aus den Claims — samt ihrer Bezeichnung.
  *
- * Nicht die groesste und nicht die schoenste — die erste. Eine Auswahl
- * nach Wirkung waere eine redaktionelle Entscheidung, die hier niemand
- * getroffen hat, und sie stuende in keinem Protokoll.
+ * Genommen wird die ERSTE, nicht die groesste. Eine Auswahl nach Wirkung
+ * waere eine redaktionelle Entscheidung, die hier niemand getroffen hat,
+ * und sie stuende in keinem Protokoll.
+ *
+ * -------------------------------------------------------------------------
+ * WARUM DIE BEZEICHNUNG AUS EINEM ANDEREN CLAIM KOMMT
+ * -------------------------------------------------------------------------
+ *
+ * Die Content-Engine legt einen Wert als ZWEI Belege ab: einen mit der
+ * Zahl (`text: "76 %"`, `numeric: 76`) und einen mit der Bezeichnung
+ * (`text: "Relative Staerke"`, `numeric: null`) — beide mit derselben
+ * Quelle, weil auch eine Bezeichnung wie "52-Wochen-Hoch" belegpflichtig
+ * ist.
+ *
+ * Wer nur den ersten liest, zeichnet eine Karte, auf der die Zahl
+ * zweimal steht und nichts sagt: "76" ueber "76". Das ist schlimmer als
+ * keine Karte, denn es sieht aus wie Daten.
  */
 export function ersteBelegteZahl(pkg) {
-  for (const c of (pkg && pkg.claims) || []) {
-    if (c && c.numeric !== null && c.numeric !== undefined && c.numeric !== "") {
-      return {
-        wert: String(c.numeric),
-        text: c.text || null,
-        quelle: (c.source && (c.source.source || c.source.name)) || null
-      };
-    }
+  const claims = (pkg && pkg.claims) || [];
+
+  for (const c of claims) {
+    if (!c || c.numeric === null || c.numeric === undefined || c.numeric === "") continue;
+
+    /* Der Anzeigewert ist `text`, nicht `numeric`: dort steht die
+       Einheit. Eine Zahl ohne Einheit ist eine andere Aussage. */
+    const wert = (c.text !== null && c.text !== undefined && String(c.text).trim())
+      ? String(c.text).trim() : String(c.numeric);
+
+    const quelle = quelleVon(c);
+    const begleiter = claims.find((x) =>
+      x && x !== c &&
+      (x.numeric === null || x.numeric === undefined) &&
+      String(x.text || "").trim() &&
+      quelleVon(x) === quelle);
+
+    const bezeichnung = begleiter ? String(begleiter.text).trim() : null;
+
+    return { wert, bezeichnung, quelle };
   }
   return null;
 }
@@ -167,8 +197,16 @@ export function plan(pkg, options = {}) {
         message: "Die Zahl " + zahl.wert + " hat keine Quelle. Eine Zahl in Markenoptik " +
           "ohne Herkunft ist genau das, was das Provenance-Modell verhindern soll." };
     }
+    if (!zahl.bezeichnung || zahl.bezeichnung === zahl.wert) {
+      /* "76" ueber "76". Eine Zahl ohne Namen ist keine Datenkarte,
+         sondern eine Behauptung in Markenoptik — und sie sieht genau so
+         aus wie eine belegte Aussage. */
+      return { ok: false, reason: "noNumberContext", visualType: typ,
+        message: "Zur Zahl " + zahl.wert + " gibt es keine Bezeichnung. " +
+          "Eine Zahl, die nicht sagt, WOVON sie die Zahl ist, wird nicht gezeichnet." };
+    }
     ebenen.zahl = zahl.wert;
-    ebenen.zahlText = zahl.text;
+    ebenen.zahlText = zahl.bezeichnung;
     ebenen.quelle = zahl.quelle;
   }
 

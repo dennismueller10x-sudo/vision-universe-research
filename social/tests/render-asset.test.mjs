@@ -38,11 +38,15 @@ function paket(overrides = {}) {
     topic: "Small Caps",
     hook: "Der Abstand ist so gross wie seit 1999 nicht.",
     visualType: "DATA_CARD",
-    claims: [{
-      text: "Bewertungsabstand Russell 2000 zu S&P 500",
-      numeric: "-38 %",
-      source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" }
-    }]
+    /* Die Form, die die Content-Engine wirklich liefert: der Wert und
+       die Bezeichnung als ZWEI Belege mit derselben Quelle. Auch eine
+       Bezeichnung wie "52-Wochen-Hoch" ist belegpflichtig. */
+    claims: [
+      { text: "-38 %", numeric: -38,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } },
+      { text: "Bewertungsabstand Russell 2000 zu S&P 500", numeric: null,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } }
+    ]
   }, overrides);
 }
 
@@ -59,6 +63,7 @@ test("RA1 · Die Zahl stammt aus den Claims, nicht aus dem Bildbrief", () => {
   }));
   assert.equal(p.ok, true);
   assert.equal(p.ebenen.zahl, "-38 %");
+  assert.equal(p.ebenen.zahlText, "Bewertungsabstand Russell 2000 zu S&P 500");
   assert.equal(p.ebenen.quelle, "Bloomberg");
 });
 
@@ -83,20 +88,26 @@ test("RA4 · Genommen wird die erste belegte Zahl, nicht die groesste", () => {
   /* Eine Auswahl nach Wirkung waere eine redaktionelle Entscheidung, die
      niemand getroffen hat und die in keinem Protokoll stuende. */
   const z = ersteBelegteZahl(paket({ claims: [
-    { text: "klein", numeric: "2 %", source: { source: "SEC" } },
-    { text: "gross", numeric: "-38 %", source: { source: "Bloomberg" } }
+    { text: "2 %", numeric: 2, source: { source: "SEC" } },
+    { text: "Kleiner Wert", numeric: null, source: { source: "SEC" } },
+    { text: "-38 %", numeric: -38, source: { source: "Bloomberg" } },
+    { text: "Grosser Wert", numeric: null, source: { source: "Bloomberg" } }
   ] }));
   assert.equal(z.wert, "2 %");
   assert.equal(z.quelle, "SEC");
+  assert.equal(z.bezeichnung, "Kleiner Wert",
+    "die Bezeichnung stammt vom Beleg mit DERSELBEN Quelle");
 });
 
 test("RA5 · Eine 0 ist eine Zahl", () => {
   /* `!c.numeric` haette hier still das Falsche getan. */
   const z = ersteBelegteZahl(paket({ claims: [
-    { text: "Nulllinie", numeric: 0, source: { source: "SEC" } }
+    { text: "0 %", numeric: 0, source: { source: "SEC" } },
+    { text: "Nulllinie", numeric: null, source: { source: "SEC" } }
   ] }));
   assert.ok(z, "0 zaehlt als belegte Zahl");
-  assert.equal(z.wert, "0");
+  assert.equal(z.wert, "0 %");
+  assert.equal(z.bezeichnung, "Nulllinie");
 });
 
 /* ------------------------------------------------------------------ */
@@ -240,4 +251,39 @@ test("RA18 · Die Liste der zeichenbaren Formen ist die einzige Quelle", () => {
   for (const typ of GEZEICHNET) {
     assert.ok(!NICHT_GEZEICHNET[typ], typ + " steht in beiden Listen");
   }
+});
+
+
+test("RA19 · Eine Zahl ohne Bezeichnung wird nicht gezeichnet", () => {
+  /* Der Fall, der im ersten echten Zykluslauf herauskam: die Karte zeigte
+     "76" und darunter noch einmal "76". Das ist schlimmer als keine
+     Karte, denn es sieht aus wie Daten und sagt nichts — 76 wovon? */
+  const p = plan(paket({ claims: [
+    { text: "76", numeric: 76, source: { source: "vu.technical" } }
+  ] }));
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "noNumberContext");
+  assert.match(p.message, /WOVON/);
+});
+
+test("RA20 · Die Bezeichnung muss zur selben Quelle gehoeren", () => {
+  /* Eine Bezeichnung von anderswoher unter eine Zahl zu setzen, waere
+     eine Zuordnung, die niemand geprueft hat — und sie stuende im Bild
+     wie eine belegte. */
+  const p = plan(paket({ claims: [
+    { text: "76 %", numeric: 76, source: { source: "vu.technical" } },
+    { text: "Marktkapitalisierung", numeric: null, source: { source: "SEC" } }
+  ] }));
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "noNumberContext");
+});
+
+test("RA21 · Der Anzeigewert traegt die Einheit", () => {
+  /* `numeric` ist 76, `text` ist "76 %". Eine Zahl ohne Einheit ist eine
+     andere Aussage. */
+  const p = plan(paket({ claims: [
+    { text: "76 %", numeric: 76, source: { source: "SEC" } },
+    { text: "Relative Staerke", numeric: null, source: { source: "SEC" } }
+  ] }));
+  assert.equal(p.ebenen.zahl, "76 %");
 });

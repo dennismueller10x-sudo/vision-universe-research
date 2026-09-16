@@ -66,6 +66,12 @@ const ProviderCore = require(join(ROOT, "social/engines/provider.js"));
 const Capabilities = require(join(ROOT, "social/engines/capabilities.js"));
 const Brand        = require(join(ROOT, "social/engines/brand.js"));
 
+/* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
+   Chromium und gehoert deshalb nicht in die Browser-Ladbarkeit der
+   Engines. */
+import * as AssetRenderer from "./render-asset.mjs";
+
+
 /* ---------------------------------------------------------------- CLI */
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -73,6 +79,21 @@ function arg(name, fallback) {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
 const flag = (name) => argv.includes(name);
+
+/* Zeichnen ist ausdruecklich anzufordern. Ein Trockenlauf, der
+   Binaerdateien ins Repository schreibt, ist kein Trockenlauf. */
+const RENDER = flag("--render");
+
+/* Die Domain steht in CNAME und sonst nirgends. Sie hier ein zweites
+   Mal hinzuschreiben hiesse, zwei Wahrheiten ueber eine Adresse zu
+   haben — und die falsche faellt erst auf, wenn Meta das Bild nicht
+   abholen kann. */
+const SITE_BASE = "https://" + readFileSync(join(ROOT, "CNAME"), "utf8").trim();
+/* Wo die Bilder liegen — und zugleich der Pfad, unter dem sie
+   oeffentlich sind. Eine Verschiebung aendert beides zusammen; zwei
+   getrennte Angaben waeren die Gelegenheit, eine Datei unter einer
+   Adresse anzukuendigen, an der sie nicht liegt. */
+const ASSET_DIR = arg("--asset-dir", "assets/social").replace(/^\/+|\/+$/g, "");
 
 const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
@@ -972,6 +993,74 @@ async function main() {
   }
   log("\nSchatten-Entscheidungen: " + shadowDecisions.length +
       " (entschieden, nicht gesendet)");
+
+  /* ================================================================
+     11b. DIE FRACHT  —  waere dieser Beitrag ueberhaupt sendbar?
+
+     Eine Schatten-Entscheidung, die sagt "ich wuerde X um T senden",
+     behauptet damit, dass X sendbar WAERE. Ob das stimmt, entscheidet
+     sich nicht an der Entscheidung, sondern am Material: der
+     Veroeffentlichungspfad verlangt eine erreichbare JPEG-Adresse, und
+     ohne Bild gibt es keine.
+
+     Geplant wird deshalb hier, gezeichnet nur auf ausdrueckliche
+     Anforderung (--render). Ein Trockenlauf, der Binaerdateien ins
+     Repository schreibt, ist kein Trockenlauf.
+
+     Der Unterschied zwischen "der Loop entscheidet" und "der Loop
+     koennte senden" ist genau diese Stufe. Ohne sie faellt erst im
+     Moment der Veroeffentlichung auf, dass die Fracht fehlt — und dann
+     ist der Anspruch schon angemeldet.
+     ================================================================ */
+  log("\n--- FRACHT ---");
+  let sendbar = 0;
+  for (const d of shadowDecisions) {
+    const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
+    const bildplan = AssetRenderer.plan(pkg, {});
+
+    d.asset = {
+      plannable: bildplan.ok,
+      visualType: bildplan.visualType || pkg.visualType || null,
+      reason: bildplan.ok ? null : bildplan.reason,
+      message: bildplan.ok ? null : bildplan.message,
+      /* Die Adresse, unter der das Bild oeffentlich WAERE. Sie entsteht
+         aus der Paketkennung, damit Anspruch, Datei und Adresse
+         dieselbe Kennung tragen — drei Namen fuer denselben Beitrag
+         waeren drei Gelegenheiten, sie auseinanderlaufen zu lassen. */
+      imageUrl: bildplan.ok ? (SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + ".jpg") : null,
+      rendered: false
+    };
+
+    if (!bildplan.ok) {
+      log("  " + pkg.packageId + ": KEIN BILD — " + bildplan.reason);
+      detail("   ", bildplan.message);
+      continue;
+    }
+    sendbar += 1;
+
+    if (RENDER) {
+      try {
+        const ziel = join(ROOT, ASSET_DIR, pkg.packageId + ".jpg");
+        const befund = AssetRenderer.render(bildplan, ziel,
+          { schrift: AssetRenderer.ladeSchrift(ROOT) });
+        d.asset.rendered = true;
+        d.asset.bytes = befund.bytes;
+        log("  " + pkg.packageId + ": gezeichnet, " + befund.breite + "x" + befund.hoehe);
+      } catch (err) {
+        /* Ein gescheitertes Zeichnen macht den Plan nicht falsch — es
+           macht den Beitrag heute nicht sendbar. Der Unterschied steht
+           im Bericht. */
+        d.asset.rendered = false;
+        d.asset.renderError = String(err && err.message || err);
+        sendbar -= 1;
+        log("  " + pkg.packageId + ": ZEICHNEN GESCHEITERT — " + d.asset.renderError);
+      }
+    } else {
+      log("  " + pkg.packageId + ": sendbar (" + d.asset.visualType + "), nicht gezeichnet");
+    }
+  }
+  log("Sendbar: " + sendbar + " von " + shadowDecisions.length +
+      (RENDER ? " (gezeichnet)" : " (nur geplant — --render zeichnet)"));
 
   /* ---------------------------------------------------- 8. Artefakte */
   const report = {
