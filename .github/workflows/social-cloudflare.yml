@@ -389,6 +389,63 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Lesend. Beruehrt den Publishing-Endpunkt nicht.
+        #
+        # Dass ein Deployment auf einem bestimmten Commit lief, belegt noch
+        # nicht, was der Worker jetzt traegt. Diese zwei Werte kommen aus
+        # seiner Umgebung — es sind dieselben, die der Container bekaeme.
+        #
+        # Der Schluessel kommt ueber env: herein und wird im Skripttext nur
+        # beim Namen genannt: Actions schreibt jedes run:-Skript ins
+        # Protokoll, BEVOR es laeuft.
+        #
+        # continue-on-error, weil dies ein Bericht ist und keine Pruefung:
+        # fehlt der Schluessel, soll der Lauf das sagen und nicht umfallen.
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "Kein Admin-Schluessel im Lauf — der Inhalt bleibt ungelesen."
+            echo "(Das ist keine Aussage darueber, was deployt ist.)"
+            exit 0
+          fi
+
+          mkdir -p tmp/social
+          code=$(curl -sS -o tmp/social/status.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "https://social.visionuniverse.de/social/meta/status" || echo 000)
+
+          if [ "$code" != "200" ]; then
+            echo "Der Statusendpunkt antwortet mit HTTP $code — ungelesen."
+            exit 0
+          fi
+
+          node -e '
+            const s = require(process.cwd() + "/tmp/social/status.json");
+            const p = s.smokePost || {};
+            const zeile = (k, v) => console.log(k.padEnd(10) + (v === null || v === undefined ? "(nicht gesetzt)" : v));
+            console.log("=== INHALT DES TESTBEITRAGS, wie deployt ===");
+            zeile("Bild:", p.imageUrl);
+            zeile("Text:", p.caption);
+            console.log("");
+            console.log("Zeichen:  " + (p.caption ? p.caption.length : 0));
+            console.log("Hashtags: " + (p.caption ? (p.caption.match(/#/g) || []).length : 0));
+            console.log("@:        " + (p.caption ? (p.caption.match(/@/g) || []).length : 0));
+            console.log("Links:    " + (p.caption ? (p.caption.match(/https?:\/\//g) || []).length : 0));
+            console.log("");
+            console.log("Bereits veroeffentlicht: " + (s.smokePublish && s.smokePublish.published ? "JA" : "nein"));
+          ' | tee tmp/social/inhalt.txt
+
+          {
+            echo "## Inhalt des Testbeitrags (aus dem laufenden Worker)"
+            echo '```'
+            cat tmp/social/inhalt.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Verifikationsbericht sichern
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         uses: actions/upload-artifact@v4

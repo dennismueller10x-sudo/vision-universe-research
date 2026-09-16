@@ -376,3 +376,34 @@ test("S17 · Der Container traegt keine weiteren oeffentlichen Angaben", async (
      zum Beitrag. Alles Uebrige waere Inhalt. */
   assert.deepEqual(keys, ["access_token", "appsecret_proof", "caption", "image_url"]);
 });
+
+test("S18 · /status gibt den Inhalt des Testbeitrags zurueck — und kein Token", async () => {
+  /* Dass ein Deployment auf einem bestimmten Commit lief, belegt noch
+     nicht, was der Worker jetzt traegt. Der Owner hat Bild und Wortlaut
+     freigegeben; beides muss sich am laufenden Worker nachlesen lassen
+     und nicht nur in der Datei, aus der deployt wurde. */
+  const { env } = await smokeEnv();
+  const antwort = await worker.fetch(
+    request("/social/meta/status", { headers: { authorization: `Bearer ${TEST_ADMIN_KEY}` } }),
+    env
+  );
+  assert.equal(antwort.status, 200);
+
+  const roh = await antwort.text();
+  const body = JSON.parse(roh);
+  assert.equal(body.smokePost.caption, CAPTION);
+  assert.equal(body.smokePost.imageUrl, BILD);
+
+  /* Derselbe Endpunkt traegt die Verbindung. Ein Token gehoert in keine
+     Antwort, auch nicht in eine hinter dem Admin-Schluessel. */
+  assert.ok(!roh.includes(PAGE_TOKEN));
+  assert.ok(!roh.includes(TEST_APP_SECRET));
+});
+
+test("S19 · Der Inhalt des Testbeitrags steht nicht hinter offener Tuer", async () => {
+  /* /status ist verschlossen — der Test haelt fest, dass die neuen Felder
+     daran nichts geaendert haben. */
+  const { env } = await smokeEnv();
+  const antwort = await worker.fetch(request("/social/meta/status"), env);
+  assert.equal(antwort.status, 401);
+});

@@ -824,7 +824,22 @@ async function handleStatus(request, url, env) {
        nachpruefen, was gespeichert wurde — man haette die Antwort des
        Aufrufs und sonst nichts.
        Enthaelt Kennungen, Zeitstempel und Fehlergruende. Kein Token. */
-    smokePublish: env.VU_SOCIAL_KV ? await readSmokeLog(env) : null
+    smokePublish: env.VU_SOCIAL_KV ? await readSmokeLog(env) : null,
+    /* Was der Testbeitrag OEFFENTLICH zeigen wuerde — aus der Umgebung
+       des laufenden Workers, nicht aus der Datei im Repository.
+
+       Der Unterschied ist der ganze Zweck: dass ein Deployment auf einem
+       bestimmten Commit lief, belegt noch nicht, was der Worker jetzt
+       traegt. Hier steht, was er tatsaechlich schicken wuerde — dieselben
+       zwei Werte, die auch der Container bekommt, aus derselben Quelle.
+
+       Beide sind fuer die Veroeffentlichung bestimmt und damit ohnehin
+       oeffentlich; hinter dem Admin-Schluessel stehen sie trotzdem, weil
+       /status schon dort steht. */
+    smokePost: {
+      imageUrl: String(env.VU_SOCIAL_SMOKE_IMAGE_URL || "") || null,
+      caption: String(env.VU_SOCIAL_SMOKE_CAPTION || "") || null
+    }
   });
 }
 
