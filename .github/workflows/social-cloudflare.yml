@@ -382,3 +382,12 @@ jobs:
             echo "Es wurde **kein Beitrag veroeffentlicht** und **kein Meta-Login ausgefuehrt**."
             echo "Der Worker hat keinen Publishing-Endpunkt."
           } >> "$GITHUB_STEP_SUMMARY"
+
+          # Der Zonen-Befund noch einmal am Ende — im Protokoll steht er
+          # weit oben, und genau er entscheidet, ob eine eigene Domain
+          # ohne weitere Owner-Handlung moeglich ist.
+          echo ""
+          echo "=== ZONE fuer eine eigene Domain ==="
+          echo "Zonenliste lesbar: ${{ steps.zones.outputs.zone_readable || 'unbekannt' }}"
+          echo "visionuniverse.de auf dem Konto: ${{ steps.zones.outputs.zone_present || 'unbekannt' }}"
+          echo "Zone aktiv: ${{ steps.zones.outputs.zone_active || 'unbekannt' }}"
