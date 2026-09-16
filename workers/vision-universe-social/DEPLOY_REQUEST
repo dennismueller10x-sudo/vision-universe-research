@@ -37,7 +37,14 @@ DEPLOY
 # nicht als ersetzbar einordnet, bricht der Lauf ab, bevor irgendetwas
 # deployt wird — mit dieser Datei genauso wie ohne sie.
 #
-# Sie veroeffentlicht nichts. Der Worker hat keinen Publishing-Endpunkt.
+# Sie veroeffentlicht nichts. Der Worker HAT seit dem Smoke-Test einen
+# Publishing-Endpunkt — aber ein Deployment ruft ihn nicht auf. Er
+# verlangt POST, den Admin-Schluessel und eine getippte Bestaetigung, und
+# er laeuft genau einmal. (Diese Zeile stand hier frueher als "der Worker
+# hat keinen Publishing-Endpunkt". Das stimmte, als sie geschrieben
+# wurde, und danach nicht mehr — eine ueberholte Zusicherung ist
+# schlimmer als keine, weil sie falsch beruhigt.)
+#
 # Sie loest keinen Meta-Login aus.
 #
 # -------------------------------------------------------------------------

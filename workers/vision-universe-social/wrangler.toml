@@ -151,20 +151,34 @@ META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
 # Idempotenz-Token, ein zweiter Aufruf erzeugt einen zweiten Beitrag.
 #
 # Das Bild muss fuer Meta oeffentlich abrufbar und JPEG sein. Diese
-# Adresse liegt auf der bestehenden Vision-Universe-Seite (GitHub Pages):
-# 1280x720, Seitenverhaeltnis 1.778 — innerhalb dessen, was Instagram
-# fuer einen Bildbeitrag annimmt (zwischen 4:5 und 1.91:1, Breite
-# 320-1440 px).
+# Adresse liegt auf der bestehenden Vision-Universe-Seite (GitHub Pages,
+# Default-Branch): 1080x1080, also quadratisch — das Format, das
+# Instagram im Raster und im Feed unbeschnitten zeigt.
+#
+# Es ist ein eigenes Asset, erzeugt von
+# scripts/social/make-test-asset.mjs: dunkler Grund in der Palette der
+# Seite, darauf VISION UNIVERSE® und "Social Publishing Test". Vorher
+# stand hier ein Vorschaubild der Nachrichtenseite. Das war abstrakt,
+# seine Herkunft ist im Repository nicht dokumentiert, und es sagte
+# einem Betrachter nicht, was er sieht — drei Dinge, die bei einem
+# Beitrag aus einem Unternehmenskonto zaehlen.
 #
 # Der Worker prueft die Adresse selbst, BEVOR er Meta bittet sie
 # abzuholen: sonst kaeme ein unerreichbares Bild als Meta-Fehlercode
 # zurueck, der nach einem Problem mit dem Konto aussieht.
-VU_SOCIAL_SMOKE_IMAGE_URL = "https://research.visionuniverse.de/dashboard/assets/news-small-caps.jpg"
+VU_SOCIAL_SMOKE_IMAGE_URL = "https://research.visionuniverse.de/assets/social/vu-social-publishing-test.jpg"
 
 # Die Bildunterschrift sagt, was der Beitrag ist. Wer ihn sieht, soll
 # nicht raten muessen — und wer ihn spaeter loescht, soll ihn
 # wiedererkennen.
-VU_SOCIAL_SMOKE_CAPTION = "Technischer Verbindungstest der Vision Universe Social-Infrastruktur. Dieser Beitrag wird nach der Pruefung wieder entfernt."
+#
+# Wortlaut vom Owner freigegeben. Keine Hashtags, keine Erwaehnungen,
+# keine Verweise. Umlaute stehen hier ausgeschrieben und nicht als ue/ss:
+# diese Zeile wird oeffentlich GELESEN, nicht nur konfiguriert. Sie reist
+# URL-kodiert als UTF-8 zur Graph API (graph.js setzt sie ueber
+# URLSearchParams) — IN-Tests halten den Wortlaut fest, damit eine
+# Umschrift nicht unbemerkt zurueckkommt.
+VU_SOCIAL_SMOKE_CAPTION = "Technischer Test unserer Social-Infrastruktur. Dieser Beitrag dient ausschließlich der Überprüfung des Publishing-Workflows."
 
 # -------------------------------------------------------------------------
 # SPEICHER

@@ -45,7 +45,13 @@ const CONFIRM = "PUBLISH-ONE-TEST-POST";
 const AGAIN = "JA-ICH-WEISS-DASS-EIN-ZWEITER-BEITRAG-ENTSTEHT";
 const ZIEL = "visionuniverse.aktienreports";
 const IG_ID = "17841400000000001";
-const BILD = "https://research.visionuniverse.de/dashboard/assets/news-small-caps.jpg";
+const BILD = "https://research.visionuniverse.de/assets/social/vu-social-publishing-test.jpg";
+
+/* Der Wortlaut, den der Owner freigegeben hat — mit Umlauten und scharfem
+   s. Der Doppelgaenger bekommt ihn im Original, damit der Weg durch die
+   URL-Kodierung hier mitgeprueft wird und nicht erst im Beitrag. */
+const CAPTION = "Technischer Test unserer Social-Infrastruktur. Dieser Beitrag dient " +
+  "ausschlie\u00DFlich der \u00DCberpr\u00FCfung des Publishing-Workflows.";
 
 /* Eine bestehende Verbindung, wie sie nach dem Callback im Speicher liegt. */
 function verbunden(env, overrides = {}) {
@@ -75,7 +81,10 @@ function publishGraph(options = {}) {
     const url = new URL(rawUrl);
     const pfad = url.pathname.split("/").slice(2).join("/");
     const methode = (init && init.method) || "GET";
-    aufrufe.push({ pfad, methode });
+    /* Die ganze Adresse, nicht nur der Pfad: die Bildunterschrift reist
+       als Parameter mit, und ob sie unveraendert ankommt, ist genau das,
+       was ein Test hier feststellen kann. */
+    aufrufe.push({ pfad, methode, url: rawUrl });
 
     const json = (body, status = 200) => ({
       ok: status >= 200 && status < 300, status,
@@ -122,7 +131,7 @@ async function smokeEnv(options = {}) {
   const env = createEnv({
     META_IG_ALLOWED_USERNAMES: ZIEL,
     VU_SOCIAL_SMOKE_IMAGE_URL: BILD,
-    VU_SOCIAL_SMOKE_CAPTION: "Technischer Verbindungstest.",
+    VU_SOCIAL_SMOKE_CAPTION: CAPTION,
     __graph: g, __fetchImpl: g.fetchImpl
   });
   await verbunden(env, options.record || {});
@@ -333,4 +342,37 @@ test("S15 · Fehlerdaten im Protokoll tragen kein Token", async () => {
   const roh = await env.VU_SOCIAL_KV.get(SMOKE_KEY);
   assert.ok(!roh.includes(PAGE_TOKEN));
   assert.ok(!roh.includes(TEST_APP_SECRET));
+});
+
+test("S16 · Die Bildunterschrift erreicht Meta unveraendert", async () => {
+  /* Zwischen wrangler.toml und dem Beitrag liegen zwei Umformungen: die
+     Worker-Umgebung und die URL-Kodierung in graph(). Der Owner hat den
+     Wortlaut zeichengenau freigegeben — ein "ausschliesslich" anstelle
+     von "ausschließlich" waere auf einem Unternehmensprofil ein
+     sichtbarer Fehler, und einer, den vor der Veroeffentlichung
+     niemand zu sehen bekommt. */
+  const { env, g } = await smokeEnv();
+  await worker.fetch(ruf(), env);
+
+  const container = g.aufrufe.find((a) => a.pfad === `${IG_ID}/media` && a.methode === "POST");
+  assert.ok(container, "Es wurde kein Container erstellt");
+
+  const params = new URL(container.url).searchParams;
+  assert.equal(params.get("caption"), CAPTION);
+  assert.equal(params.get("image_url"), BILD);
+});
+
+test("S17 · Der Container traegt keine weiteren oeffentlichen Angaben", async () => {
+  /* Freigegeben waren Bild und Text. Ein Standort, eine Markierung oder
+     ein Produkt-Tag waere eine oeffentliche Angabe, die niemand bestellt
+     hat — und Meta nimmt sie klaglos an. */
+  const { env, g } = await smokeEnv();
+  await worker.fetch(ruf(), env);
+
+  const container = g.aufrufe.find((a) => a.pfad === `${IG_ID}/media` && a.methode === "POST");
+  const keys = [...new URL(container.url).searchParams.keys()].sort();
+
+  /* access_token und appsecret_proof gehoeren zur Authentisierung, nicht
+     zum Beitrag. Alles Uebrige waere Inhalt. */
+  assert.deepEqual(keys, ["access_token", "appsecret_proof", "caption", "image_url"]);
 });

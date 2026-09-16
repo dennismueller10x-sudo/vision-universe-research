@@ -83,15 +83,33 @@ API; der Permalink lässt sich öffnen.
 
 ### Was der Beitrag enthält
 
-Ein vorhandenes Bild aus dem Repository (1280×720, Seitenverhältnis 1.778 —
-innerhalb dessen, was Instagram annimmt) und eine Bildunterschrift, die sagt, was
-er ist:
+**Das Bild:** `assets/social/vu-social-publishing-test.jpg`, 1080×1080, JPEG.
+Dunkler Grund in der Palette der Seite (`#050505`, roter Akzent `#e5231f`),
+darauf `VISION UNIVERSE®` und `Social Publishing Test`. Erzeugt von
+`scripts/social/make-test-asset.mjs` — Farben, Maße und Text stehen dort im
+Klartext, das Bild lässt sich jederzeit identisch neu erzeugen.
 
-> Technischer Verbindungstest der Vision Universe Social-Infrastruktur. Dieser
-> Beitrag wird nach der Prüfung wieder entfernt.
+Vorher stand hier ein Fallback-Vorschaubild der Nachrichtenseite. Es war
+abstrakt, seine Herkunft ist im Repository nicht dokumentiert, und es sagte
+einem Betrachter nicht, was er sieht. Für ein Thumbnail auf der eigenen Seite
+genügt das; für einen Beitrag aus einem Unternehmenskonto nicht.
 
-Wer ihn sieht, soll nicht raten müssen. Nach der Prüfung können Sie ihn in der
-Instagram-App löschen — das Protokoll im Worker bleibt davon unberührt.
+**Die Bildunterschrift**, vom Owner zeichengenau freigegeben:
+
+> Technischer Test unserer Social-Infrastruktur. Dieser Beitrag dient
+> ausschließlich der Überprüfung des Publishing-Workflows.
+
+Keine Hashtags, keine Erwähnungen, keine Verweise, kein Standort, keine
+Markierungen. Der Container trägt genau zwei Felder — `image_url` und
+`caption`; S17 prüft, dass kein drittes dazukommt.
+
+Die Umlaute stehen hier ausgeschrieben, anders als in der übrigen
+Konfiguration. Das ist Absicht: diese eine Zeile wird öffentlich *gelesen*.
+IN5 und S16 halten sie fest — von `wrangler.toml` bis in den Parameter, den
+die Graph API zu sehen bekommt.
+
+Nach der Prüfung können Sie den Beitrag in der Instagram-App löschen — das
+Protokoll im Worker bleibt davon unberührt.
 
 ---
 
