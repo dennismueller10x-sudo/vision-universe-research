@@ -3,24 +3,8 @@
   "account": "visionuniverse.aktienreports",
   "accountId": "17841480148117405",
   "requested": 26,
-  "measured": 12,
+  "measured": 16,
   "unmeasured": [
-    {
-      "mediaId": "18092516174400622",
-      "reason": "networkError"
-    },
-    {
-      "mediaId": "18013171520931325",
-      "reason": "networkError"
-    },
-    {
-      "mediaId": "18102942350211461",
-      "reason": "networkError"
-    },
-    {
-      "mediaId": "18618536515033664",
-      "reason": "networkError"
-    },
     {
       "mediaId": "17905472247498520",
       "reason": "networkError"
@@ -704,25 +688,35 @@
         "snapshotId": "snap_18092516174400622",
         "publicationId": "ext_18092516174400622",
         "providerId": "meta",
-        "capturedAt": "2026-09-16T18:05:08.068Z",
-        "ageHours": 633.5,
+        "capturedAt": "2026-09-16T17:59:44.809Z",
+        "ageHours": 633.4,
         "metrics": {
           "impressions": null,
-          "reach": null,
-          "views": null,
+          "reach": 7,
+          "views": 25,
           "watchTimeSeconds": null,
           "completionRate": null,
-          "likes": null,
-          "comments": null,
-          "shares": null,
-          "saves": null,
+          "likes": 3,
+          "comments": 0,
+          "shares": 0,
+          "saves": 0,
           "clicks": null,
-          "followersGained": null,
-          "engagementRate": null,
-          "profileVisits": null
+          "followersGained": 0,
+          "engagementRate": 0.4286,
+          "profileVisits": 0
         },
-        "providerMetrics": {},
-        "state": "UNAVAILABLE"
+        "providerMetrics": {
+          "reach": 7,
+          "likes": 3,
+          "comments": 0,
+          "saved": 0,
+          "shares": 0,
+          "views": 25,
+          "total_interactions": 3,
+          "profile_visits": 0,
+          "follows": 0
+        },
+        "state": "VERIFIED"
       },
       "mediaId": "18092516174400622",
       "permalink": "https://www.instagram.com/p/DcS61wdCvwg/",
@@ -734,166 +728,174 @@
         "apiVersion": "v21.0",
         "accountId": "17841480148117405",
         "account": "visionuniverse.aktienreports",
-        "fetchedAt": "2026-09-16T18:05:08.068Z",
-        "measured": false
+        "fetchedAt": "2026-09-16T17:59:44.809Z",
+        "measured": true
       },
-      "error": {
-        "reason": "networkError",
-        "message": "Netzwerkfehler beim Graph-Aufruf: Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits",
-        "metaCode": null,
-        "metaSubcode": null,
-        "metaType": null,
-        "fbtraceId": null,
-        "httpStatus": null,
-        "retryable": true
-      }
+      "error": null,
+      "carriedOver": true,
+      "lastAttemptAt": "2026-09-16T18:05:08.651Z",
+      "lastAttemptReason": "networkError"
     },
     {
       "snapshot": {
         "snapshotId": "snap_18013171520931325",
         "publicationId": "ext_18013171520931325",
         "providerId": "meta",
-        "capturedAt": "2026-09-16T18:05:08.068Z",
-        "ageHours": null,
+        "capturedAt": "2026-09-16T17:59:46.958Z",
+        "ageHours": 651.1,
         "metrics": {
           "impressions": null,
-          "reach": null,
+          "reach": 25,
           "views": null,
           "watchTimeSeconds": null,
           "completionRate": null,
-          "likes": null,
-          "comments": null,
-          "shares": null,
-          "saves": null,
+          "likes": 4,
+          "comments": 0,
+          "shares": 0,
+          "saves": 0,
           "clicks": null,
           "followersGained": null,
-          "engagementRate": null,
+          "engagementRate": 0.16,
           "profileVisits": null
         },
-        "providerMetrics": {},
-        "state": "UNAVAILABLE"
+        "providerMetrics": {
+          "reach": 25,
+          "likes": 4,
+          "comments": 0,
+          "saved": 0,
+          "shares": 0
+        },
+        "state": "VERIFIED"
       },
       "mediaId": "18013171520931325",
-      "permalink": null,
-      "publishedAt": null,
-      "mediaType": null,
-      "unanswered": [],
+      "permalink": "https://www.instagram.com/reel/DcRBvH0K61T/",
+      "publishedAt": "2026-08-20T14:56:32+0000",
+      "mediaType": "VIDEO",
+      "unanswered": [
+        "views",
+        "total_interactions",
+        "profile_visits",
+        "follows"
+      ],
       "provenance": {
         "source": "instagram.graph",
         "apiVersion": "v21.0",
         "accountId": "17841480148117405",
         "account": "visionuniverse.aktienreports",
-        "fetchedAt": "2026-09-16T18:05:08.068Z",
-        "measured": false
+        "fetchedAt": "2026-09-16T17:59:46.958Z",
+        "measured": true
       },
-      "error": {
-        "reason": "networkError",
-        "message": "Netzwerkfehler beim Graph-Aufruf: Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits",
-        "metaCode": null,
-        "metaSubcode": null,
-        "metaType": null,
-        "fbtraceId": null,
-        "httpStatus": null,
-        "retryable": true
-      }
+      "error": null,
+      "carriedOver": true,
+      "lastAttemptAt": "2026-09-16T18:05:08.651Z",
+      "lastAttemptReason": "networkError"
     },
     {
       "snapshot": {
         "snapshotId": "snap_18102942350211461",
         "publicationId": "ext_18102942350211461",
         "providerId": "meta",
-        "capturedAt": "2026-09-16T18:05:08.068Z",
-        "ageHours": null,
+        "capturedAt": "2026-09-16T17:59:49.468Z",
+        "ageHours": 657.1,
         "metrics": {
           "impressions": null,
-          "reach": null,
-          "views": null,
+          "reach": 8,
+          "views": 24,
           "watchTimeSeconds": null,
           "completionRate": null,
-          "likes": null,
-          "comments": null,
-          "shares": null,
-          "saves": null,
+          "likes": 3,
+          "comments": 0,
+          "shares": 0,
+          "saves": 0,
           "clicks": null,
-          "followersGained": null,
-          "engagementRate": null,
-          "profileVisits": null
+          "followersGained": 0,
+          "engagementRate": 0.375,
+          "profileVisits": 0
         },
-        "providerMetrics": {},
-        "state": "UNAVAILABLE"
+        "providerMetrics": {
+          "reach": 8,
+          "likes": 3,
+          "comments": 0,
+          "saved": 0,
+          "shares": 0,
+          "views": 24,
+          "total_interactions": 3,
+          "profile_visits": 0,
+          "follows": 0
+        },
+        "state": "VERIFIED"
       },
       "mediaId": "18102942350211461",
-      "permalink": null,
-      "publishedAt": null,
-      "mediaType": null,
+      "permalink": "https://www.instagram.com/p/DcQYTuPCnbc/",
+      "publishedAt": "2026-08-20T08:53:59+0000",
+      "mediaType": "CAROUSEL_ALBUM",
       "unanswered": [],
       "provenance": {
         "source": "instagram.graph",
         "apiVersion": "v21.0",
         "accountId": "17841480148117405",
         "account": "visionuniverse.aktienreports",
-        "fetchedAt": "2026-09-16T18:05:08.068Z",
-        "measured": false
+        "fetchedAt": "2026-09-16T17:59:49.468Z",
+        "measured": true
       },
-      "error": {
-        "reason": "networkError",
-        "message": "Netzwerkfehler beim Graph-Aufruf: Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits",
-        "metaCode": null,
-        "metaSubcode": null,
-        "metaType": null,
-        "fbtraceId": null,
-        "httpStatus": null,
-        "retryable": true
-      }
+      "error": null,
+      "carriedOver": true,
+      "lastAttemptAt": "2026-09-16T18:05:08.651Z",
+      "lastAttemptReason": "networkError"
     },
     {
       "snapshot": {
         "snapshotId": "snap_18618536515033664",
         "publicationId": "ext_18618536515033664",
         "providerId": "meta",
-        "capturedAt": "2026-09-16T18:05:08.068Z",
-        "ageHours": null,
+        "capturedAt": "2026-09-16T17:59:51.624Z",
+        "ageHours": 675.9,
         "metrics": {
           "impressions": null,
-          "reach": null,
+          "reach": 23,
           "views": null,
           "watchTimeSeconds": null,
           "completionRate": null,
-          "likes": null,
-          "comments": null,
-          "shares": null,
-          "saves": null,
+          "likes": 4,
+          "comments": 0,
+          "shares": 0,
+          "saves": 0,
           "clicks": null,
           "followersGained": null,
-          "engagementRate": null,
+          "engagementRate": 0.1739,
           "profileVisits": null
         },
-        "providerMetrics": {},
-        "state": "UNAVAILABLE"
+        "providerMetrics": {
+          "reach": 23,
+          "likes": 4,
+          "comments": 0,
+          "saved": 0,
+          "shares": 0
+        },
+        "state": "VERIFIED"
       },
       "mediaId": "18618536515033664",
-      "permalink": null,
-      "publishedAt": null,
-      "mediaType": null,
-      "unanswered": [],
+      "permalink": "https://www.instagram.com/reel/DcOXPdIKff2/",
+      "publishedAt": "2026-08-19T14:06:56+0000",
+      "mediaType": "VIDEO",
+      "unanswered": [
+        "views",
+        "total_interactions",
+        "profile_visits",
+        "follows"
+      ],
       "provenance": {
         "source": "instagram.graph",
         "apiVersion": "v21.0",
         "accountId": "17841480148117405",
         "account": "visionuniverse.aktienreports",
-        "fetchedAt": "2026-09-16T18:05:08.068Z",
-        "measured": false
+        "fetchedAt": "2026-09-16T17:59:51.624Z",
+        "measured": true
       },
-      "error": {
-        "reason": "networkError",
-        "message": "Netzwerkfehler beim Graph-Aufruf: Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits",
-        "metaCode": null,
-        "metaSubcode": null,
-        "metaType": null,
-        "fbtraceId": null,
-        "httpStatus": null,
-        "retryable": true
-      }
+      "error": null,
+      "carriedOver": true,
+      "lastAttemptAt": "2026-09-16T18:05:08.651Z",
+      "lastAttemptReason": "networkError"
     },
     {
       "snapshot": {
@@ -1385,5 +1387,11 @@
         "retryable": false
       }
     }
-  ]
+  ],
+  "run": {
+    "at": "2026-09-16T18:05:08.651Z",
+    "requested": 26,
+    "measured": 12,
+    "carriedOver": 4
+  }
 }

@@ -222,3 +222,102 @@ test("LC10 · Das Evidenzregime steht in der Strategie-Kette", () => {
     assert.notEqual(kette.evidenceRegimes, kette.versions);
   } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
 });
+
+/* =========================================================================
+   LC11–LC14 — DIE ZEIT ALS ENTSCHEIDUNGSDIMENSION
+
+   `Strategy.selectTiming` konnte gemessene Stunden schon immer
+   verarbeiten. Uebergeben wurde ihr `null`. Der Rueckweg auf dieser
+   Dimension war also nicht zu duenn belegt — er war nicht angeschlossen,
+   und keine Messung haette daran je etwas geaendert.
+
+   Die Stunde ist dabei die einzige Eigenschaft fremder Bestandsbeitraege,
+   die ohne Uebersetzung sowohl gemessen als auch entschieden wird:
+   Instagram meldet den Zeitstempel, die Strategie waehlt eine Stunde.
+   ========================================================================= */
+
+/** Eintraege zu einer festen Stunde, mit gemessener Leistung. */
+const zurStunde = (stundeUtc, werte) => werte.map((wert, i) => ({
+  publicationId: `t_${stundeUtc}_${i}`, packageId: `tk_${stundeUtc}_${i}`,
+  publishedAt: `2026-09-1${(i % 8) + 1}T${String(stundeUtc).padStart(2, "0")}:30:00Z`,
+  platform: "instagram", topic: "T", entities: [],
+  archetype: null, visualType: null, mediaFormat: "REEL",
+  hook: "H", caption: "", cta: null,
+  performance: wert,
+  performanceProvenance: { source: "SIMULATED" }
+}));
+
+test("LC11 · Gemessene Stunden erreichen die Zeitentscheidung", () => {
+  const p = platz("zeit-gemessen");
+  try {
+    writeFileSync(join(ROOT, p, "content-memory.json"), JSON.stringify({
+      generatedAt: NOW, entries: zurStunde(7, [80, 82, 78, 84, 79, 81])
+    }));
+    const r = zyklus(p, join(p, "out"));
+
+    assert.ok(r.learning.timingKnowledge, "das Zeitwissen steht im Bericht");
+    assert.equal(r.learning.timingKnowledge["7"].sampleSize, 6);
+
+    const d = (r.shadowDecisions || [])[0];
+    assert.ok(d, "es gibt eine Schatten-Entscheidung");
+    assert.equal(d.timingSource, "gemessen",
+      "die Stunde stammt aus der Messung, nicht aus dem Startwert");
+    assert.equal(d.plannedHourUtc, 7);
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC12 · Unter der Mindeststichprobe entscheidet die Messung NICHT", () => {
+  /* Der heutige Fall: 16 Beitraege ueber acht Stunden, groesste
+     Stichprobe n=4. Das Wissen ist da und steht im Bericht — es traegt
+     nur noch keine Entscheidung. Eine Schwelle, die hier nachgibt,
+     macht aus vier Beitraegen eine Uhrzeitempfehlung. */
+  const p = platz("zeit-zu-duenn");
+  try {
+    writeFileSync(join(ROOT, p, "content-memory.json"), JSON.stringify({
+      generatedAt: NOW, entries: [...zurStunde(7, [80, 82, 78, 84]), ...zurStunde(9, [40, 42])]
+    }));
+    const r = zyklus(p, join(p, "out"));
+
+    assert.equal(r.learning.timingKnowledge["7"].sampleSize, 4,
+      "gemessen ist es — das steht im Bericht");
+    const d = (r.shadowDecisions || [])[0];
+    assert.notEqual(d.timingSource, "gemessen",
+      "entschieden hat es nicht: n=4 liegt unter minimumSampleForExploit");
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC13 · Ohne Zeitstempel oder ohne Leistung entsteht kein Zeitwissen", () => {
+  /* Eine Stunde ohne gemessene Leistung ist keine Beobachtung ueber
+     Stunden, sondern nur ein Datum. */
+  const p = platz("zeit-ohne");
+  try {
+    writeFileSync(join(ROOT, p, "content-memory.json"), JSON.stringify({
+      generatedAt: NOW, entries: zurStunde(7, [80, 82, 78, 84, 79, 81])
+        .map((e) => Object.assign({}, e, { performance: null }))
+    }));
+    const r = zyklus(p, join(p, "out"));
+    assert.equal(r.learning.timingKnowledge, null,
+      "ungemessene Beitraege ergeben kein Zeitwissen");
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});
+
+test("LC14 · Das Plattformformat steht nicht im visualType", () => {
+  /* `visualType` ist unser Vokabular fuer die gestalterische
+     Entscheidung; REEL steht dort gar nicht drin. Die Kohorte dort
+     abzulegen erzeugte Beobachtungen ueber eine Dimension, die etwas
+     anderes bedeutet als ihr Name — und CAROUSEL haette sich dabei
+     stillschweigend mit unserem CAROUSEL vermischt. */
+  const p = platz("format-getrennt");
+  try {
+    writeFileSync(join(ROOT, p, "content-memory.json"), JSON.stringify({
+      generatedAt: NOW, entries: zurStunde(7, [80, 82, 78, 84, 79, 81])
+    }));
+    const r = zyklus(p, join(p, "out"));
+
+    const dimensionen = (r.learning.observations || []).map((o) => o.dimension);
+    assert.ok(dimensionen.includes("mediaFormat"),
+      "ueber das Plattformformat wird beobachtet");
+    assert.ok(!dimensionen.includes("visualType"),
+      "und nicht ueber den visualType, den niemand entschieden hat");
+  } finally { rmSync(join(ROOT, p), { recursive: true, force: true }); }
+});

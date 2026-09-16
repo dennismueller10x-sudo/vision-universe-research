@@ -249,6 +249,49 @@ function buildArchetypeKnowledge(memory) {
   return wissen;
 }
 
+/**
+ * Das gemessene Zeitfenster.
+ *
+ * -------------------------------------------------------------------------
+ * DER LETZTE DURCHTRENNTE DRAHT
+ * -------------------------------------------------------------------------
+ *
+ * `Strategy.selectTiming` kann gemessene Stunden verarbeiten, seit es die
+ * Funktion gibt. Uebergeben wurde ihr `null`. Damit war der Rueckweg auf
+ * dieser Dimension nicht etwa zu duenn belegt — er war gar nicht
+ * angeschlossen, und kein Messwert haette daran je etwas geaendert.
+ *
+ * Die Stunde ist die EINZIGE Eigenschaft fremder Bestandsbeitraege, die
+ * ohne jede Uebersetzung sowohl gemessen als auch entschieden wird:
+ * Instagram meldet den Zeitstempel, und die Strategie waehlt eine
+ * Stunde. Kein Vokabular dazwischen, also auch keine Annahme dazwischen.
+ *
+ * Diese Funktion zaehlt und mittelt. Ob eine Stunde belastbar ist,
+ * entscheidet `selectTiming` anhand von `minimumSampleForExploit` — hier
+ * wird nichts gefiltert und nichts beschoenigt.
+ */
+function buildTimingKnowledge(memory) {
+  const nach = Object.create(null);
+
+  for (const e of memory.all()) {
+    if (!e.publishedAt) continue;
+    const p = e.performance;
+    if (p === null || p === undefined || !Number.isFinite(Number(p))) continue;
+    const stunde = new Date(e.publishedAt).getUTCHours();
+    if (!Number.isFinite(stunde)) continue;
+    (nach[stunde] = nach[stunde] || []).push(Number(p));
+  }
+
+  const stuendlich = Object.create(null);
+  for (const [stunde, werte] of Object.entries(nach)) {
+    stuendlich[stunde] = {
+      mean: werte.reduce((a, b) => a + b, 0) / werte.length,
+      sampleSize: werte.length
+    };
+  }
+  return Object.keys(stuendlich).length ? { hourly: stuendlich } : null;
+}
+
 function buildOpportunities(signals, internal, memory, registry, providerId) {
   const clusters = Signals.cluster(signals);
   const out = [];
@@ -393,10 +436,20 @@ async function main() {
      stand hier eine leere Menge — und damit konnte keine Messung je
      eine Entscheidung erreichen. */
   const archetypeKnowledge = buildArchetypeKnowledge(memory);
+  const timingKnowledge = buildTimingKnowledge(memory);
   const gemessen = Object.keys(archetypeKnowledge).length;
   log("Formatwissen: " + (gemessen
     ? gemessen + " Format(e) mit gemessener Leistung"
     : "keines — noch kein Beitrag mit Leistungsdaten"));
+
+  const stunden = timingKnowledge ? Object.entries(timingKnowledge.hourly) : [];
+  if (stunden.length) {
+    const groesste = stunden.reduce((a, b) => (b[1].sampleSize > a[1].sampleSize ? b : a));
+    log("Zeitwissen:   " + stunden.length + " Stunde(n) mit gemessener Leistung, " +
+        "groesste Stichprobe n=" + groesste[1].sampleSize + " um " + groesste[0] + ":00 UTC");
+  } else {
+    log("Zeitwissen:   keines — kein Beitrag mit Zeitstempel und Leistung");
+  }
 
   /* ------------------------------------------------ 3. Gelegenheiten */
   const candidates = buildOpportunities(signalData.signals, signalData.internal, memory,
@@ -437,7 +490,7 @@ async function main() {
          gemessen wurde. */
       archetypeKnowledge,
       recentArchetypeUsage: memory.distribution("archetype", 30, NOW),
-      timingKnowledge: null
+      timingKnowledge
     }, {
       currentHour: new Date(NOW).getUTCHours(),
       /* Und hier die gelernten Parameter. Ohne sie waere die
@@ -684,10 +737,16 @@ async function main() {
   const lernzeilen = alleBewerteten
     .filter((e) => !e.performanceRegime || e.performanceRegime === aktivesRegime)
     .map((e) => ({ archetype: e.archetype, visualType: e.visualType,
-                   performanceScore: e.performance }));
+                   mediaFormat: e.mediaFormat, performanceScore: e.performance }));
 
   const beobachtungen = [];
-  for (const dimension of ["archetype", "visualType"]) {
+  /* `mediaFormat` ist dabei, obwohl die Strategie dafuer (noch) keinen
+     Parameter hat. Die Beobachtung entsteht trotzdem und wird von der
+     Sicherheitsgrenze ausdruecklich gestoppt — mit Begruendung. Das ist
+     der Unterschied zwischen "wir koennen es nicht messen" und "wir
+     messen es, koennen aber noch nichts damit entscheiden". Die zweite
+     Aussage ist eine Aufgabe; die erste waere eine Ausrede. */
+  for (const dimension of ["archetype", "visualType", "mediaFormat"]) {
     const zeilen = lernzeilen.map((r) => ({ value: r[dimension], performanceScore: r.performanceScore }));
     /* observe() liefert die Beobachtungen direkt als Liste und in
        kanonischer Form — samt observationId. Sie hier neu zu bauen
@@ -881,6 +940,8 @@ async function main() {
       visualType: pkg.visualType,
       hook: pkg.hook,
       plannedHourUtc: d.timingHour,
+      timingSource: d.timingSource || null,
+      timingReason: d.timingReason || null,
       mode: d.mode,
       modeReason: d.modeReason,
       strategyVersion: activeStrategy.versionId,
@@ -969,7 +1030,12 @@ async function main() {
       strategyAfter: strategyMemory.current().versionId,
       strategyChanged: uebernahme.committed === true,
       strategyReason: uebernahme.reason || vorschlag.explanation || null,
-      archetypeKnowledge
+      archetypeKnowledge,
+      /* Das gemessene Zeitfenster gehoert in den Bericht, auch wenn es
+         (noch) unter der Mindeststichprobe liegt. Sonst laesst sich
+         "nicht gemessen" nicht von "gemessen, aber zu duenn" trennen —
+         und das sind zwei voellig verschiedene Aufgaben. */
+      timingKnowledge: timingKnowledge ? timingKnowledge.hourly : null
     },
     experiments: {
       running: laufend.length,

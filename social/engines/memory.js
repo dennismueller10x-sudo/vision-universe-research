@@ -90,6 +90,22 @@
       entities: Array.isArray(spec.entities) ? spec.entities.slice() : [],
       archetype: spec.archetype || null,
       visualType: spec.visualType || null,
+
+      /* Das PLATTFORMFORMAT — REEL, CAROUSEL, IMAGE. Es steht bewusst
+         neben `visualType` und nicht darin.
+
+         `visualType` ist unser Vokabular fuer die gestalterische
+         Entscheidung (CHART, DATA_CARD, MOTION_GRAPHIC ...).
+         `mediaFormat` ist das, was der Plattform-Container sagt. Ein
+         Reel in `visualType` abzulegen hiesse, aus "Instagram meldet ein
+         Video" die Behauptung "wir haben MOTION_GRAPHIC gewaehlt" oder
+         "wir haben VIDEO gewaehlt" zu machen — eine Entscheidung, die
+         bei fremden Beitraegen niemand getroffen hat und die wir nicht
+         kennen.
+
+         Getrennt zu halten kostet ein Feld. Zusammenzuwerfen kostet die
+         Unterscheidbarkeit von Gemessenem und Angenommenem. */
+      mediaFormat: spec.mediaFormat || null,
       hook: spec.hook || null,
       hookTokens: hookTokens,
       captionTokens: tokenize(spec.caption),

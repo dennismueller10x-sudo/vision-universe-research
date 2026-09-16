@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-18T12:00:00Z",
+  "generatedAt": "2026-09-16T19:30:00Z",
   "evidence": "real",
-  "evidenceOrigin": "GEMESSEN — 12 Beitrag/Beitraege von Instagram",
+  "evidenceOrigin": "GEMESSEN — 16 Beitrag/Beitraege von Instagram",
   "simulated": false,
   "runA": {
     "strategyVersion": "strategy_initial",
@@ -25,16 +25,29 @@
       "DATA_CARD",
       "DATA_CARD"
     ],
+    "stunden": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "zeitquelle": [
+      "Startwert",
+      "Startwert",
+      "Startwert",
+      "Startwert"
+    ],
+    "zeitwissen": 0,
     "begruendung": "EXPLAIN_THE_MOVE"
   },
   "runB": {
     "strategyVersion": "strategy_initial",
     "strategyChanged": false,
-    "evidenceState": "GEMESSEN_NICHT_BEWERTBAR",
-    "measuredPosts": 12,
-    "dataPoints": 0,
+    "evidenceState": "BEWERTBAR",
+    "measuredPosts": 16,
+    "dataPoints": 16,
     "baselineSufficient": true,
-    "observations": 0,
+    "observations": 2,
     "belastbar": 0,
     "formatwissen": 0,
     "formate": [
@@ -49,12 +62,28 @@
       "DATA_CARD",
       "DATA_CARD"
     ],
+    "stunden": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "zeitquelle": [
+      "Startwert",
+      "Startwert",
+      "Startwert",
+      "Startwert"
+    ],
+    "zeitwissen": 8,
     "begruendung": "EXPLAIN_THE_MOVE"
   },
   "differences": [
     "evidenceState",
     "measuredPosts",
-    "baselineSufficient"
+    "dataPoints",
+    "baselineSufficient",
+    "observations",
+    "zeitwissen"
   ],
   "verdict": "CLOSED_STATE",
   "decisionChanged": false,

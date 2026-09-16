@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { ingest, snapshotAusBeitrag } from "../../scripts/social/ingest-performance.mjs";
+import { ingest, merge, snapshotAusBeitrag } from "../../scripts/social/ingest-performance.mjs";
 
 const require = createRequire(import.meta.url);
 const Performance = require("../engines/performance.js");
@@ -181,4 +181,136 @@ test("PI14 · Die Abschlussrate wird NICHT geschaetzt", () => {
     metrics: { reach: 24, likes: 4, ig_reels_avg_watch_time: 3510 }
   }), { now: JETZT });
   assert.equal(z.snapshot.metrics.completionRate, null);
+});
+
+
+/* =========================================================================
+   PI15–PI22 — DAS ZUSAMMENFUEHREN
+
+   Der Anlass ist kein gedachter: am 16.09. um 17:59 lagen 16 gemessene
+   Beitraege in social/data/performance.json, um 18:05 nur noch 12. Kein
+   Fehler, kein roter Lauf — die zweite Ingestion erreichte wegen eines
+   zu klein gerechneten Budgets weniger und schrieb die Datei neu.
+
+   Ein Lauf, der weniger sieht, ist ein schmalerer Blick auf dieselbe
+   Welt. Er ist kein Loeschauftrag.
+   ========================================================================= */
+
+const SPAETER = "2026-09-19T12:00:00Z";
+
+function lauf(beitraege, now = JETZT) {
+  return ingest({ account: "visionuniverse.aktienreports", accountId: "1784140",
+    posts: beitraege }, { now });
+}
+
+function gemessen(id, reach) {
+  return beitrag({ mediaId: id, media: { mediaId: id, permalink: "https://x.invalid/" + id,
+    timestamp: "2026-09-01T10:00:00+0000", mediaType: "IMAGE" },
+    metrics: { reach, likes: 4, comments: 0, saved: 0, shares: 0 } });
+}
+
+function ungemessen(id, reason) {
+  return beitrag({ mediaId: id, media: { mediaId: id, permalink: "https://x.invalid/" + id,
+    timestamp: "2026-09-01T10:00:00+0000", mediaType: "IMAGE" },
+    metrics: null, metricsError: { reason },
+    provenance: { source: "instagram.graph", fetchedAt: SPAETER, measured: false } });
+}
+
+test("PI15 · Ein schmalerer Lauf loescht keine Messung", () => {
+  /* Genau der Vorfall. Ohne diesen Test waere er wieder moeglich. */
+  const bestand = lauf([gemessen("a", 10), gemessen("b", 20), gemessen("c", 30), gemessen("d", 40)]);
+  assert.equal(bestand.measured, 4);
+
+  const schmal = lauf([gemessen("a", 11), gemessen("b", 21)], SPAETER);
+  assert.equal(schmal.measured, 2, "der Lauf selbst sieht wirklich nur zwei");
+
+  const zusammen = merge(bestand, schmal, { now: SPAETER });
+  assert.equal(zusammen.measured, 4, "der Bestand bleibt vier");
+  assert.equal(zusammen.run.measured, 2, "was DIESER Lauf schaffte, bleibt sichtbar");
+  assert.equal(zusammen.run.carriedOver, 2);
+});
+
+test("PI16 · Die juengere Messung gewinnt", () => {
+  const bestand = lauf([gemessen("a", 10)]);
+  const neu = lauf([gemessen("a", 99)], SPAETER);
+  const zusammen = merge(bestand, neu, { now: SPAETER });
+
+  assert.equal(zusammen.snapshots.length, 1);
+  assert.equal(zusammen.snapshots[0].snapshot.metrics.reach, 99);
+  assert.ok(!zusammen.snapshots[0].carriedOver, "eine frische Messung ist nicht uebernommen");
+});
+
+test("PI17 · Ein neues Scheitern gewinnt NICHT gegen eine vorhandene Messung", () => {
+  /* Dass die Abfrage heute misslang, macht die Zahl von gestern nicht
+     falsch. Der Beitrag als UNAVAILABLE zu fuehren waere eine Aussage
+     ueber den Beitrag statt ueber die Abfrage. */
+  const bestand = lauf([gemessen("a", 10)]);
+  const neu = lauf([ungemessen("a", "graphError")], SPAETER);
+  const zusammen = merge(bestand, neu, { now: SPAETER });
+
+  const z = zusammen.snapshots[0];
+  assert.equal(z.snapshot.metrics.reach, 10);
+  assert.notEqual(z.snapshot.state, "UNAVAILABLE");
+  assert.equal(z.carriedOver, true);
+  assert.equal(z.lastAttemptAt, SPAETER);
+  assert.equal(z.lastAttemptReason, "graphError");
+  assert.equal(zusammen.measured, 1);
+  assert.equal(zusammen.run.measured, 0, "der Lauf hat nichts gemessen, und das steht da");
+});
+
+test("PI18 · Eine uebernommene Zahl behaelt ihr Alter", () => {
+  /* capturedAt ist der Zeitpunkt der Messung, nicht des Schreibens. Eine
+     uebernommene Zahl mit neuem Datum waere eine Faelschung des Alters —
+     und Alter entscheidet hier darueber, ob VERIFIED oder STALE gilt. */
+  const bestand = lauf([gemessen("a", 10)]);
+  const vorher = bestand.snapshots[0].snapshot.capturedAt;
+  const zusammen = merge(bestand, lauf([ungemessen("a", "x")], SPAETER), { now: SPAETER });
+
+  assert.equal(zusammen.snapshots[0].snapshot.capturedAt, vorher);
+  assert.notEqual(zusammen.snapshots[0].snapshot.capturedAt, SPAETER);
+});
+
+test("PI19 · Wonach ein Lauf gar nicht fragt, verschwindet nicht", () => {
+  /* Ein kuerzeres Zeitfenster ist kein Loeschgrund. */
+  const bestand = lauf([gemessen("a", 10), gemessen("b", 20)]);
+  const zusammen = merge(bestand, lauf([gemessen("a", 11)], SPAETER), { now: SPAETER });
+
+  const ids = zusammen.snapshots.map((z) => z.mediaId).sort();
+  assert.deepEqual(ids, ["a", "b"]);
+  const b = zusammen.snapshots.find((z) => z.mediaId === "b");
+  assert.equal(b.carriedOver, true);
+  assert.equal(b.notRequestedAt, SPAETER, "warum es bleibt, steht dabei");
+});
+
+test("PI20 · Ein neuer Beitrag kommt hinzu, ohne die alten zu verdraengen", () => {
+  const bestand = lauf([gemessen("a", 10)]);
+  const zusammen = merge(bestand, lauf([gemessen("a", 11), gemessen("neu", 5)], SPAETER),
+    { now: SPAETER });
+
+  assert.equal(zusammen.measured, 2);
+  assert.equal(zusammen.requested, 2);
+  assert.equal(zusammen.run.measured, 2);
+  assert.equal(zusammen.run.carriedOver, 0);
+});
+
+test("PI21 · Ein nie gemessener Beitrag bleibt ungemessen — ohne Erfindung", () => {
+  const bestand = lauf([ungemessen("a", "archiviert")]);
+  const zusammen = merge(bestand, lauf([ungemessen("a", "archiviert")], SPAETER), { now: SPAETER });
+
+  assert.equal(zusammen.measured, 0);
+  assert.equal(zusammen.snapshots[0].snapshot.state, "UNAVAILABLE");
+  assert.equal(zusammen.unmeasured.length, 1);
+  assert.equal(zusammen.unmeasured[0].reason, "archiviert");
+});
+
+test("PI22 · Das Zusammenfuehren ist wiederholbar ohne Wirkung", () => {
+  /* Zweimal derselbe Lauf darf nicht zu doppelten Zeilen fuehren — der
+     Workflow laeuft oefter als die Zahlen sich aendern. */
+  const bestand = lauf([gemessen("a", 10), gemessen("b", 20)]);
+  const eins = merge(bestand, lauf([gemessen("a", 10), gemessen("b", 20)], SPAETER), { now: SPAETER });
+  const zwei = merge(eins, lauf([gemessen("a", 10), gemessen("b", 20)], SPAETER), { now: SPAETER });
+
+  assert.equal(zwei.snapshots.length, 2);
+  assert.deepEqual(zwei.snapshots.map((z) => z.mediaId).sort(), ["a", "b"]);
+  assert.equal(zwei.measured, 2);
 });

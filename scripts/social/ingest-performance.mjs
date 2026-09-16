@@ -164,6 +164,105 @@ export function ingest(antwort, options = {}) {
   };
 }
 
+/* =========================================================================
+   DAS ZUSAMMENFUEHREN
+
+   -------------------------------------------------------------------------
+   WARUM EIN LAUF NICHT UEBERSCHREIBEN DARF
+   -------------------------------------------------------------------------
+
+   Am 16.09. um 17:59 wurden 16 Beitraege gemessen. Um 18:05 lief die
+   Ingestion erneut, erreichte wegen des damals zu klein gerechneten
+   Subrequest-Budgets nur 12 — und schrieb die Datei neu. Vier gemessene
+   Beitraege waren weg. Nicht "veraltet": weg. Die Stichprobe des
+   Evidenzregimes schrumpfte, ohne dass irgendwo ein Fehler auftrat.
+
+   Gemessene Leistung ist Beleg, kein Zwischenstand. Ein Lauf, der
+   weniger erreicht, ist ein schmalerer Blick auf dieselbe Welt — nicht
+   eine neue Welt mit weniger Beitraegen. Deshalb wird zusammengefuehrt
+   statt ersetzt.
+
+   -------------------------------------------------------------------------
+   WAS GEWINNT, UND WAS NICHT
+   -------------------------------------------------------------------------
+
+   Eine neue MESSUNG gewinnt immer: sie ist juenger. Ein neues
+   SCHEITERN gewinnt nie gegen eine vorhandene Messung — dass die
+   Abfrage heute misslang, macht die Zahl von gestern nicht falsch.
+
+   Was bleibt, traegt sichtbar, dass es bleibt: `carriedOver`, der
+   Zeitpunkt des letzten Versuchs und dessen Grund. `capturedAt` bleibt
+   unveraendert der Zeitpunkt der urspruenglichen Messung. Eine
+   uebernommene Zahl, die wie eine frische aussieht, waere eine
+   Faelschung des Alters — und Alter ist in dieser Datei eine Aussage.
+   ========================================================================= */
+
+function istGemessen(zeile) {
+  return zeile && zeile.snapshot && zeile.snapshot.state !== "UNAVAILABLE";
+}
+
+export function merge(bestand, neu, options = {}) {
+  const jetzt = options.now || neu.generatedAt || NOW;
+  const alt = new Map();
+  for (const z of (bestand && bestand.snapshots) || []) alt.set(String(z.mediaId), z);
+
+  const gesehen = new Set();
+  const zeilen = [];
+  let aufgefrischt = 0;
+  let uebernommen = 0;
+
+  for (const z of neu.snapshots || []) {
+    const id = String(z.mediaId);
+    gesehen.add(id);
+    const vorher = alt.get(id);
+
+    if (istGemessen(z)) { aufgefrischt += 1; zeilen.push(z); continue; }
+
+    if (vorher && istGemessen(vorher)) {
+      /* Der Versuch misslang, die Messung bleibt. Warum er misslang,
+         steht dabei — sonst waere spaeter nicht unterscheidbar, ob eine
+         Zahl alt ist oder ob niemand mehr nachgesehen hat. */
+      uebernommen += 1;
+      zeilen.push(Object.assign({}, vorher, {
+        carriedOver: true,
+        lastAttemptAt: jetzt,
+        lastAttemptReason: (z.error && z.error.reason) || "keine Zahlen"
+      }));
+      continue;
+    }
+
+    zeilen.push(z);
+  }
+
+  /* Beitraege, nach denen dieser Lauf gar nicht gefragt hat. Auch sie
+     verschwinden nicht — ein kuerzeres Fenster ist kein Loeschgrund. */
+  for (const [id, z] of alt) {
+    if (gesehen.has(id)) continue;
+    uebernommen += 1;
+    zeilen.push(Object.assign({}, z, { carriedOver: true, notRequestedAt: jetzt }));
+  }
+
+  const gemessen = zeilen.filter(istGemessen);
+
+  return Object.assign({}, neu, {
+    generatedAt: jetzt,
+    requested: zeilen.length,
+    measured: gemessen.length,
+    unmeasured: zeilen.filter((z) => !istGemessen(z))
+      .map((z) => ({ mediaId: z.mediaId, reason: z.error ? z.error.reason : "keine Zahlen" })),
+    /* Was DIESER Lauf geschafft hat, getrennt vom Gesamtbestand. Ohne
+       diese Trennung liesse sich ein schrumpfender Lauf nicht mehr
+       erkennen, sobald das Zusammenfuehren ihn kaschiert. */
+    run: {
+      at: jetzt,
+      requested: (neu.snapshots || []).length,
+      measured: aufgefrischt,
+      carriedOver: uebernommen
+    },
+    snapshots: zeilen
+  });
+}
+
 /* --------------------------------------------------------------- Lauf */
 if (import.meta.url === `file://${process.argv[1]}`) {
   if (!IN) {
@@ -191,7 +290,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (OUT) {
     const dir = join(ROOT, OUT);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "performance.json"), JSON.stringify(ergebnis, null, 2) + "\n");
+    const ziel = join(dir, "performance.json");
+
+    /* Zusammenfuehren, nicht ersetzen. Ein Lauf, der weniger erreicht,
+       darf die Messungen des vorigen nicht loeschen. */
+    let bestand = null;
+    if (existsSync(ziel)) {
+      try { bestand = JSON.parse(readFileSync(ziel, "utf8")); }
+      catch (err) {
+        console.error("VORHANDENE DATEI UNLESBAR: " + err.message);
+        console.error("Abbruch — lieber nichts schreiben als Messungen ueberschreiben.");
+        process.exit(3);
+      }
+    }
+    const zusammengefuehrt = bestand ? merge(bestand, ergebnis, { now: NOW }) : ergebnis;
+
+    writeFileSync(ziel, JSON.stringify(zusammengefuehrt, null, 2) + "\n");
+    if (bestand) {
+      console.log("\nZusammengefuehrt mit dem Bestand:");
+      console.log("  dieser Lauf:  " + zusammengefuehrt.run.measured + " gemessen von " +
+        zusammengefuehrt.run.requested + " abgefragt");
+      console.log("  uebernommen:  " + zusammengefuehrt.run.carriedOver + " aus frueheren Laeufen");
+      console.log("  Bestand nun:  " + zusammengefuehrt.measured + " gemessen von " +
+        zusammengefuehrt.requested);
+    }
     console.log("\nGeschrieben: " + OUT + "/performance.json");
   } else {
     console.log("\n(Kein --out: es wurde nichts geschrieben.)");

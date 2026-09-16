@@ -276,6 +276,10 @@
       archetypeCandidates: archetype.candidates,
       timingHour: timing.hour,
       timingReason: timing.reason,
+      /* Woher die Stunde kommt — gemessen, Startwert oder Dringlichkeit.
+         Ohne diese Angabe sieht eine geratene Stunde genauso aus wie
+         eine belegte, und der Unterschied ist der ganze Punkt. */
+      timingSource: timing.source || null,
       timeSensitivity: opportunity.timeSensitivity || "TIMELY",
       parametersVersion: parameters.version,
       /* Eine Entscheidung ohne Archetyp ist keine Entscheidung. Sie wird

@@ -73,8 +73,20 @@ const NOW = arg("--now", new Date().toISOString());
 const ARBEIT_REL = join("tmp", "loop-proof-" + process.pid);
 const ARBEIT = join(ROOT, ARBEIT_REL);
 
-function zyklus(datenDir, marke) {
-  const ausgabeRel = join(ARBEIT_REL, marke);
+/**
+ * Ein Zyklus.
+ *
+ * `nachDaten` schreibt das Ergebnis in den DATENORDNER zurueck statt in
+ * einen eigenen Ausgabeordner. Genau so laeuft es in der Produktion:
+ * dort ist `--out` derselbe Ordner wie `--data` (social/data), und das
+ * Gedaechtnis des einen Laufs ist die Ausgangslage des naechsten.
+ *
+ * Ohne diesen Rueckschreibschritt bliebe die Messung in einem
+ * Ausgabeordner liegen, den nie wieder jemand liest — und der zweite
+ * Lauf entschiede erneut ohne Wissen.
+ */
+function zyklus(datenDir, marke, nachDaten) {
+  const ausgabeRel = nachDaten ? datenDir : join(ARBEIT_REL, marke);
   const ausgabe = join(ROOT, ausgabeRel);
   mkdirSync(ausgabe, { recursive: true });
   execFileSync(process.execPath, [
@@ -154,6 +166,13 @@ function entscheidungsbild(bericht) {
        mit welcher Begruendung. */
     formate: (bericht.shadowDecisions || []).map((d) => d.archetype),
     visuals: (bericht.shadowDecisions || []).map((d) => d.visualType),
+    /* Die Stunde ist eine Entscheidung wie jede andere — und die
+       einzige, die fremde Bestandsbeitraege ohne Uebersetzung belegen
+       koennen: Instagram meldet den Zeitstempel, die Strategie waehlt
+       eine Stunde. Kein Vokabular dazwischen. */
+    stunden: (bericht.shadowDecisions || []).map((d) => d.plannedHourUtc),
+    zeitquelle: (bericht.shadowDecisions || []).map((d) => d.timingSource),
+    zeitwissen: Object.keys((bericht.learning && bericht.learning.timingKnowledge) || {}).length,
     begruendung: (bericht.packages || []).length ? bericht.packages[0].archetype : null
   };
 }
@@ -169,8 +188,27 @@ copyFileSync(join(ROOT, "social/data/signals.json"), join(dirA, "signals.json"))
 console.log("VISION UNIVERSE SOCIAL — Nachweis der Kreislauf-Schliessung");
 console.log("Evidenz: " + EVIDENCE.toUpperCase());
 console.log("");
-console.log("LAUF A — ohne Leistungsdaten");
-const berichtA = zyklus(join(ARBEIT_REL, "stand-a"), "lauf-a");
+/* -------------------------------------------------------------------------
+   WARUM JEDER ZUSTAND ZWEIMAL LAEUFT
+
+   Ein Zyklus ENTSCHEIDET in Schritt 3 und MISST in Schritt 8. Eine
+   Messung, die waehrend eines Laufs eintrifft, erreicht die Entscheidung
+   dieses Laufs also nicht mehr — sie wird am Ende ins Gedaechtnis
+   geschrieben und wirkt beim naechsten Mal.
+
+   Das ist kein Mangel, sondern die Zeit: eine Entscheidung kann nur
+   benutzen, was bei ihr schon bekannt war. Ein Nachweis, der nur einmal
+   laeuft, koennte deshalb NIE eine geaenderte Entscheidung zeigen — und
+   wuerde daraus faelschlich schliessen, der Lernpfad trage nicht.
+
+   Beide Zustaende laufen deshalb zweimal, und verglichen werden die
+   jeweils ZWEITEN Laeufe. Zweimal, nicht nur B zweimal: sonst waere die
+   Zahl der Laeufe ein zweiter Unterschied zwischen den Zustaenden, und
+   der Nachweis haette zwei Ursachen fuer ein Ergebnis.
+   ------------------------------------------------------------------- */
+console.log("LAUF A — ohne Leistungsdaten (zwei Zyklen)");
+zyklus(join(ARBEIT_REL, "stand-a"), "lauf-a1", true);
+const berichtA = zyklus(join(ARBEIT_REL, "stand-a"), "lauf-a2");
 const A = entscheidungsbild(berichtA);
 
 /* Dazwischen: die Evidenz trifft ein. */
@@ -207,9 +245,17 @@ if (EVIDENCE === "simulated") {
 
      Eingetragen wird deshalb nur, was gemessen ist:
 
-       visualType   aus media_type bzw. dem Permalink — REEL oder Feed.
+       mediaFormat  aus media_type bzw. dem Permalink — REEL oder Feed.
                     Das sagt Meta, nicht wir.
        performance  aus den Insights.
+
+     NICHT eingetragen wird `visualType`. Das ist unser Vokabular fuer
+     die gestalterische Entscheidung (CHART, DATA_CARD, MOTION_GRAPHIC),
+     und es ist NICHT dasselbe wie der Plattform-Container. Aus "Instagram
+     meldet ein Video" folgt weder MOTION_GRAPHIC noch VIDEO — beides
+     waere eine Entscheidung, die bei diesen Beitraegen niemand getroffen
+     hat. Frueher stand die Kohorte hier; das erzeugte zwei Beobachtungen
+     ueber eine Dimension, die etwas anderes bedeutet als ihr Name.
 
      NICHT eingetragen wird `archetype`. Das System hat ihn nie
      entschieden; ihn nachtraeglich zu vergeben, damit das Feld gefuellt
@@ -230,7 +276,8 @@ if (EVIDENCE === "simulated") {
         publishedAt: z.publishedAt, platform: "instagram",
         topic: "Bestandsbeitrag", entities: [],
         archetype: null,
-        visualType: EvidenceRegime.cohortFor(z),
+        visualType: null,
+        mediaFormat: EvidenceRegime.cohortFor(z),
         hook: "", caption: "", cta: null,
         externalPostId: z.mediaId, permalink: z.permalink,
         performance: null,
@@ -242,8 +289,9 @@ if (EVIDENCE === "simulated") {
 }
 
 console.log("\nEVIDENZ TRIFFT EIN: " + evidenzHerkunft);
-console.log("\nLAUF B — mit Leistungsdaten");
-const berichtB = zyklus(join(ARBEIT_REL, "stand-b"), "lauf-b");
+console.log("\nLAUF B — mit Leistungsdaten (zwei Zyklen: messen, dann entscheiden)");
+zyklus(join(ARBEIT_REL, "stand-b"), "lauf-b1", true);
+const berichtB = zyklus(join(ARBEIT_REL, "stand-b"), "lauf-b2");
 const B = entscheidungsbild(berichtB);
 
 /* ---------------------------------------------------------- Der Vergleich */
@@ -292,6 +340,8 @@ const unterschiede = Object.keys(A).filter((k) =>
 const entscheidungGeaendert =
   JSON.stringify(A.formate) !== JSON.stringify(B.formate) ||
   JSON.stringify(A.visuals) !== JSON.stringify(B.visuals) ||
+  JSON.stringify(A.stunden) !== JSON.stringify(B.stunden) ||
+  JSON.stringify(A.zeitquelle) !== JSON.stringify(B.zeitquelle) ||
   A.strategyVersion !== B.strategyVersion;
 const zustandGeaendert = unterschiede.length > 0;
 
