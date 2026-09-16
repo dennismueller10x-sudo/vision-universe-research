@@ -662,7 +662,11 @@ async function main() {
   }
 
   const neueBeobachtungen = strategyMemory.recordObservations(beobachtungen);
-  log("Datenpunkte:    " + lernzeilen.length);
+  log("Gemessen:       " + snapshots.length + " Beitrag/Beitraege");
+  log("Bewertbar:      " + lernzeilen.length +
+      (snapshots.length && !lernzeilen.length
+        ? "  (gemessen, aber ohne Vergleichsbasis nicht bewertbar — das ist etwas " +
+          "anderes als ungemessen)" : ""));
   log("Beobachtungen:  " + beobachtungen.length + " (davon neu: " + neueBeobachtungen + ")");
   for (const o of beobachtungen) {
     detail(o.dimension + "=" + o.value + ": n=" + o.sampleSize +
@@ -872,10 +876,19 @@ async function main() {
        nicht unterscheiden, ob der Loop geschlossen ist oder nur schnell
        vorwaerts laeuft. */
     learning: {
+      /* Drei verschiedene Zahlen, die leicht zu einer verschmelzen —
+         und dann ist "nichts gemessen" nicht mehr von "gemessen, aber
+         noch nicht bewertbar" zu unterscheiden. Genau diese Verwechslung
+         laesst spaeter jemanden nach einem Fehler suchen, wo eine
+         Stichprobe einfach zu klein ist. */
       measuredPosts: snapshots.length,
       baselineSufficient: baseline.sufficient,
       baselineReason: baseline.reason,
+      scoreablePosts: lernzeilen.length,
       dataPoints: lernzeilen.length,
+      evidenceState: snapshots.length === 0
+        ? "NICHTS_GEMESSEN"
+        : (lernzeilen.length === 0 ? "GEMESSEN_NICHT_BEWERTBAR" : "BEWERTBAR"),
       observations: beobachtungen.map((o) => ({
         dimension: o.dimension, value: o.value, sampleSize: o.sampleSize,
         sufficient: o.sufficient, note: o.note

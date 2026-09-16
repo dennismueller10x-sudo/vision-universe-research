@@ -50,9 +50,19 @@ const eintraege = (paare) => paare.flatMap(([archetype, werte]) =>
     performanceProvenance: { source: "SIMULATED" }
   })));
 
-test("LC1 · Der Nachweis meldet die Schliessung bei belastbarer Evidenz", () => {
+test("LC1 · Belastbare Evidenz erreicht die Entscheidung selbst", () => {
   const aus = lauf(["--evidence", "simulated", "--now", NOW]);
-  assert.match(aus, /LOOP GESCHLOSSEN/);
+  assert.match(aus, /URTEIL: CLOSED_DECISION/);
+});
+
+test("LC1b · Das Urteil ist gestaffelt und ueberclaimt nicht", () => {
+  /* "Irgendetwas hat sich geaendert" waere ein zu schwaches Kriterium:
+     eine hochgezaehlte Kennzahl ist auch ein Unterschied und beweist
+     nichts. CLOSED_STATE als CLOSED_DECISION auszugeben waere die
+     bequemste Luege dieses Projekts. */
+  const aus = lauf(["--evidence", "simulated", "--now", NOW]);
+  assert.doesNotMatch(aus, /URTEIL: CLOSED_STATE/);
+  assert.match(aus, /Entscheidung selbst ist eine andere/);
 });
 
 test("LC2 · Die gewaehlte Entscheidung selbst aendert sich", () => {

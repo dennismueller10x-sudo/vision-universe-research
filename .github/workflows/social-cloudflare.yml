@@ -565,8 +565,14 @@ jobs:
             code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
               -H "Authorization: Bearer $KEY" \
               "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
-            [ "$code" = "200" ] && break
-            echo "Versuch $versuch: HTTP $code — das Deployment gilt noch nicht ueberall."
+            # NICHT `[ ... ] && break`. Der Workflow laeuft mit `bash -e`:
+            # ergibt der Test 1, beendet die Shell sofort - nach dem
+            # ersten curl, in einer Sekunde. Zusammen mit
+            # continue-on-error sah der tote Schritt dann wie ein
+            # erfolgreicher aus. Zwei Maskierungen uebereinander, und der
+            # Befund war weg.
+            if [ "$code" = "200" ]; then break; fi
+            echo "Versuch $versuch: HTTP $code — noch keine Antwort."
             sleep 3
           done
 
@@ -575,6 +581,20 @@ jobs:
             echo "Das ist eine Aussage ueber den Endpunkt, NICHT ueber die Leistung des Beitrags."
             head -c 400 tmp/social/insights.json || true
             echo ""
+            {
+              echo "## Gemessene Leistung — NICHT eingepflegt"
+              echo ""
+              echo "Der Insights-Endpunkt antwortete mit HTTP \`$code\`."
+              echo ""
+              echo "Das ist eine Aussage ueber den Endpunkt, **nicht** ueber die"
+              echo "Leistung des Beitrags. Der Kreislauf laeuft ohne diese Zahlen"
+              echo "weiter, kommt aber nur bis zum Evidenzzustand zurueck."
+              echo ""
+              echo '```'
+              head -c 400 tmp/social/insights.json || true
+              echo ""
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             # Laut scheitern. Der Schluessel ist da, der Abruf nicht -
             # das ist ein Befund und kein Rauschen. continue-on-error
             # faengt es fuer den Lauf ab; sichtbar wird es trotzdem.

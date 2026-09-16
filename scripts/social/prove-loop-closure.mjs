@@ -136,6 +136,12 @@ function entscheidungsbild(bericht) {
   return {
     strategyVersion: bericht.learning.strategyAfter,
     strategyChanged: bericht.learning.strategyChanged,
+    /* Gemessen und bewertbar getrennt. Bei n=1 ist der Unterschied der
+       ganze Befund: es WURDE gemessen, die Zahl traegt nur noch keine
+       Aussage. Wer beides als "0 Datenpunkte" zusammenfasst, kann
+       "nichts gemessen" nicht von "zu wenig gemessen" unterscheiden. */
+    evidenceState: bericht.learning.evidenceState,
+    measuredPosts: bericht.learning.measuredPosts,
     dataPoints: bericht.learning.dataPoints,
     baselineSufficient: bericht.learning.baselineSufficient,
     observations: bericht.learning.observations.length,
@@ -213,7 +219,9 @@ console.log("VERGLEICH");
 console.log("=".repeat(64));
 const zeile = (label, a, b) => console.log(
   label.padEnd(26) + String(a).padEnd(18) + String(b) + (String(a) !== String(b) ? "   <-- anders" : ""));
-zeile("Datenpunkte", A.dataPoints, B.dataPoints);
+zeile("Evidenzzustand", A.evidenceState, B.evidenceState);
+zeile("gemessene Beitraege", A.measuredPosts, B.measuredPosts);
+zeile("davon bewertbar", A.dataPoints, B.dataPoints);
 zeile("Vergleichsbasis reicht", A.baselineSufficient, B.baselineSufficient);
 zeile("Formatwissen", A.formatwissen, B.formatwissen);
 zeile("Beobachtungen", A.observations, B.observations);
@@ -225,17 +233,54 @@ zeile("gewaehlte Formate", A.formate.join(","), B.formate.join(","));
 const unterschiede = Object.keys(A).filter((k) =>
   JSON.stringify(A[k]) !== JSON.stringify(B[k]));
 
+/* -------------------------------------------------------------------------
+   DAS URTEIL — GESTAFFELT
+   -------------------------------------------------------------------------
+
+   "Irgendetwas hat sich geaendert" ist ein zu schwaches Kriterium. Eine
+   hochgezaehlte Kennzahl waere auch ein Unterschied und bewiese nichts.
+
+   Unterschieden wird deshalb, WAS sich geaendert hat:
+
+     CLOSED_DECISION  Die inhaltliche Entscheidung selbst ist eine andere.
+                      Das ist die Behauptung der Definition of Done.
+
+     CLOSED_STATE     Die Evidenz ist angekommen und hat den Wissensstand
+                      veraendert, die Entscheidung aber (richtigerweise)
+                      nicht. Bei n=1 ist genau das das korrekte Verhalten:
+                      eine Formatempfehlung aus einem einzigen Beitrag
+                      waere Rauschen mit Nachkommastellen.
+
+     NOT_CLOSED       Die Evidenz hat gar nichts erreicht.
+
+   CLOSED_STATE als CLOSED_DECISION auszugeben waere die bequemste Luege
+   dieses ganzen Projekts. */
+const entscheidungGeaendert =
+  JSON.stringify(A.formate) !== JSON.stringify(B.formate) ||
+  A.strategyVersion !== B.strategyVersion;
+const zustandGeaendert = unterschiede.length > 0;
+
+const urteil = entscheidungGeaendert ? "CLOSED_DECISION"
+             : zustandGeaendert ? "CLOSED_STATE" : "NOT_CLOSED";
+
 console.log("");
-const geschlossen = unterschiede.length > 0;
-if (geschlossen) {
-  console.log("LOOP GESCHLOSSEN: Lauf B unterscheidet sich von Lauf A in " +
-    unterschiede.length + " Merkmal(en) — " + unterschiede.join(", ") + ".");
-  console.log("Der Unterschied kam ausschliesslich aus der eingetroffenen Evidenz;");
-  console.log("Signale, Code und Konfiguration waren in beiden Laeufen identisch.");
+console.log("URTEIL: " + urteil);
+if (urteil === "CLOSED_DECISION") {
+  console.log("Die inhaltliche Entscheidung selbst ist eine andere — der Loop fuehrt");
+  console.log("nachweisbar zurueck bis in die naechste Content-Entscheidung.");
+  console.log("Unterschiedlich in " + unterschiede.length + " Merkmal(en): " + unterschiede.join(", ") + ".");
+} else if (urteil === "CLOSED_STATE") {
+  console.log("Die Evidenz ist angekommen (" + unterschiede.join(", ") + "),");
+  console.log("die Entscheidung blieb gleich. Bei dieser Stichprobengroesse ist das");
+  console.log("die RICHTIGE Folgerung und kein Mangel: aus " + B.measuredPosts +
+              " Beitrag/Beitraegen");
+  console.log("laesst sich keine Formatempfehlung ableiten. Weiter erkunden.");
 } else {
-  console.log("LOOP NICHT GESCHLOSSEN: Lauf B entschied genau wie Lauf A.");
-  console.log("Die Evidenz hat die Entscheidung nicht erreicht.");
+  console.log("Die Evidenz hat nichts erreicht — auch den Wissensstand nicht.");
 }
+console.log("Signale, Code und Konfiguration waren in beiden Laeufen identisch.");
+
+const geschlossen = urteil !== "NOT_CLOSED";
 
 const nachweis = {
   generatedAt: NOW,
@@ -244,6 +289,8 @@ const nachweis = {
   simulated: EVIDENCE === "simulated",
   runA: A, runB: B,
   differences: unterschiede,
+  verdict: urteil,
+  decisionChanged: entscheidungGeaendert,
   closed: geschlossen,
   note: EVIDENCE === "simulated"
     ? "Die Zahlen in Lauf B waren SIMULIERT und als solche markiert. Bewiesen ist " +
