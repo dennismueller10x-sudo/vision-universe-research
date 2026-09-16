@@ -49,10 +49,31 @@ compatibility_date = "2025-09-01"
 # Repository — keine Abhaengigkeit, die nicht gebraucht wird.
 compatibility_flags = []
 
-# Eine workers.dev-Adresse ist erforderlich: aus ihr entsteht die
-# redirect_uri, die Meta zeichengenau vergleicht. Ohne sie haette der
-# Worker keinen oeffentlichen Einstiegspunkt fuer den Callback.
+# Die workers.dev-Adresse ist NICHT mehr der Einstiegspunkt fuer OAuth.
+# Meta lehnt sie als App-Domain ab: workers.dev steht auf der Public
+# Suffix List und gehoert Cloudflare, nicht uns (siehe
+# docs/VU_SOCIAL_EIGENE_DOMAIN.md). Die redirect_uri entsteht
+# ausschliesslich aus PUBLIC_BASE_URL weiter unten.
+#
+# Sie bleibt vorerst aktiv, aber nur als Rueckfallweg: die eigene Domain
+# ist erst seit kurzem in Betrieb, und solange sie sich nicht bewaehrt
+# hat, ist ein zweiter erreichbarer Weg zu /health mehr wert als die
+# Aufgeraeumtheit. Abschalten ist eine Zeile — und aendert am OAuth-Flow
+# nichts, weil der diese Adresse nicht mehr benutzt.
 workers_dev = true
+
+# -------------------------------------------------------------------------
+# EIGENE DOMAIN
+# -------------------------------------------------------------------------
+# Cloudflare legt DNS-Eintrag und Zertifikat selbst an. Die Zone muss auf
+# demselben Konto liegen — sonst bricht `wrangler deploy` ab.
+#
+# Diese Zeilen stehen hier, damit die Domain reproduzierbar ist. Im
+# Dashboard angeklickt waere sie zwar auch in Betrieb, aber nirgends
+# aufgeschrieben.
+[[routes]]
+pattern = "social.visionuniverse.de"
+custom_domain = true
 
 # Beobachtbarkeit an, aber ohne Aufzeichnung von Anfragekoerpern.
 # Der Worker schwaerzt jede Ausgabe (src/redact.js); trotzdem gilt:
@@ -74,7 +95,7 @@ invocation_logs = false
 # Genau dieser Wert muss in der Meta-App unter
 #   Facebook Login for Business -> Einstellungen -> Gueltige OAuth-Redirect-URIs
 # eingetragen sein. Meta vergleicht zeichengenau.
-PUBLIC_BASE_URL = "https://vision-universe-social.little-credit-15d3.workers.dev"
+PUBLIC_BASE_URL = "https://social.visionuniverse.de"
 
 # Version der Graph API. Wird angehoben, wenn eine Version auslaeuft —
 # als eigener Commit, damit die Aenderung eine Begruendung hat.

@@ -27,7 +27,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { setTomlValue, readTomlValue } from "../../scripts/social/provision-cloudflare.mjs";
+import { setTomlValue, readTomlValue, readCustomDomain } from "../../scripts/social/provision-cloudflare.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WRANGLER = join(ROOT, "workers", "vision-universe-social", "wrangler.toml");
@@ -90,4 +90,72 @@ test("U7 · Die hinterlegte Adresse und die Redirect-URI passen zusammen", () =>
   assert.ok(configured, "PUBLIC_BASE_URL fehlt");
   assert.doesNotMatch(configured, /\/$/, "Kein Schraegstrich am Ende");
   assert.match(configured, /^https:\/\//, "Meta akzeptiert nur https");
+});
+
+/* =========================================================================
+   DIE MIGRATION AUF DIE EIGENE DOMAIN
+
+   Meta hat den workers.dev-Host abgelehnt — als App-Domain nicht
+   annehmbar, weil workers.dev auf der Public Suffix List steht und
+   Cloudflare gehoert.
+
+   Der Worker war danach ueber social.visionuniverse.de erreichbar, ABER
+   PUBLIC_BASE_URL stand weiterhin auf der workers.dev-Adresse. Die
+   redirect_uri wird aus PUBLIC_BASE_URL gebaut — der Dialog trug also
+   weiter den abgelehnten Host, waehrend im Meta-Dashboard die richtige
+   Domain eingetragen wurde. Zwei Seiten, die aneinander vorbeireden.
+
+   Diese Tests halten die Migration fest. Sie pruefen die Konfiguration
+   selbst, nicht eine Nachbildung: faellt hier einer um, ist der
+   OAuth-Flow tatsaechlich kaputt.
+   ========================================================================= */
+
+const CUSTOM_DOMAIN = "social.visionuniverse.de";
+
+test("U8 · PUBLIC_BASE_URL ist die eigene Domain, nicht workers.dev", () => {
+  const configured = readTomlValue(readFileSync(WRANGLER, "utf8"), "PUBLIC_BASE_URL");
+  assert.equal(configured, "https://" + CUSTOM_DOMAIN);
+  assert.doesNotMatch(configured, /workers\.dev/,
+    "Meta nimmt workers.dev nicht als App-Domain an — die redirect_uri waere unbrauchbar.");
+});
+
+test("U9 · Die Custom-Domain-Route steht in der Konfiguration", () => {
+  /* Im Dashboard angeklickt waere die Domain zwar auch in Betrieb, aber
+     nirgends aufgeschrieben. Ein neu aufgesetztes Konto haette sie nicht. */
+  const domain = readCustomDomain(readFileSync(WRANGLER, "utf8"));
+  assert.equal(domain, CUSTOM_DOMAIN);
+});
+
+test("U10 · Route und PUBLIC_BASE_URL nennen denselben Host", () => {
+  /* Der Fehler, der sonst niemandem auffaellt: die Route veroeffentlicht
+     Host A, die redirect_uri nennt Host B. Beides fuer sich richtig. */
+  const source = readFileSync(WRANGLER, "utf8");
+  const base = new URL(readTomlValue(source, "PUBLIC_BASE_URL"));
+  assert.equal(base.hostname, readCustomDomain(source));
+});
+
+test("U11 · Die Redirect-URI ist die, die bei Meta eingetragen wird", () => {
+  const base = readTomlValue(readFileSync(WRANGLER, "utf8"), "PUBLIC_BASE_URL");
+  assert.equal(base + "/social/meta/callback",
+    "https://social.visionuniverse.de/social/meta/callback");
+});
+
+test("U12 · readCustomDomain verwechselt Eintraege nicht", () => {
+  /* Zwei Routen, nur eine ist eine Custom Domain. */
+  const zwei = [
+    "[[routes]]",
+    'pattern = "beispiel.de/*"',
+    "zone_name = \"beispiel.de\"",
+    "",
+    "[[routes]]",
+    'pattern = "social.beispiel.de"',
+    "custom_domain = true"
+  ].join("\n");
+  assert.equal(readCustomDomain(zwei), "social.beispiel.de");
+});
+
+test("U13 · Ohne Custom-Domain-Route gibt readCustomDomain nichts zurueck", () => {
+  assert.equal(readCustomDomain('pattern = "beispiel.de/*"\nzone_name = "beispiel.de"'), null);
+  assert.equal(readCustomDomain(""), null);
+  assert.equal(readCustomDomain(undefined), null);
 });

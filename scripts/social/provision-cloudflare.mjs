@@ -188,6 +188,19 @@ async function resolveUrl() {
     return { url: current, changed: false };
   }
 
+  /* Steht eine eigene Domain in der Konfiguration, ist SIE die Adresse.
+     Die workers.dev-Adresse darunter waere zwar erreichbar, aber Meta
+     lehnt sie als App-Domain ab — ein stiller Rueckfall dorthin wuerde
+     den OAuth-Flow brechen, und zwar an einer Stelle, an der es wie ein
+     Meta-Problem aussieht. */
+  const custom = readCustomDomain(source);
+  if (custom) {
+    const url = "https://" + custom;
+    writeFileSync(CONFIG, setTomlValue(source, "PUBLIC_BASE_URL", url));
+    console.log("  aus der Custom-Domain-Route uebernommen: " + url);
+    return { url, changed: true };
+  }
+
   const subdomain = await api(`/accounts/${accountId}/workers/subdomain`);
   if (!subdomain.ok || !subdomain.body.result || !subdomain.body.result.subdomain) {
     /* Kein Abbruch: die URL laesst sich nach dem Deployment aus der
@@ -202,7 +215,32 @@ async function resolveUrl() {
   const url = `https://${WORKER_NAME}.${subdomain.body.result.subdomain}.workers.dev`;
   writeFileSync(CONFIG, setTomlValue(source, "PUBLIC_BASE_URL", url));
   console.log("  gesetzt: " + url);
+  console.log("  ACHTUNG: das ist eine workers.dev-Adresse. Meta nimmt sie nicht als");
+  console.log("  App-Domain an (Public Suffix List). Fuer den OAuth-Flow braucht es");
+  console.log("  eine eigene Domain — siehe docs/VU_SOCIAL_EIGENE_DOMAIN.md.");
   return { url, changed: true };
+}
+
+/**
+ * Liest die Custom-Domain-Route aus wrangler.toml.
+ *
+ * Bewusst zeilenbasiert wie der Rest: das Repository hat keine
+ * Abhaengigkeiten, und ein TOML-Parser wuerde die Kommentare verlieren.
+ * Gesucht wird ein `pattern`, zu dem in den naechsten Zeilen
+ * `custom_domain = true` steht.
+ */
+export function readCustomDomain(source) {
+  const lines = String(source || "").split("\n");
+  for (let i = 0; i < lines.length; i += 1) {
+    const match = /^\s*pattern\s*=\s*"([^"]+)"/.exec(lines[i]);
+    if (!match) continue;
+    /* Die Angaben eines Routen-Eintrags stehen beieinander. Drei Zeilen
+       Umkreis genuegen und verhindern, dass ein `custom_domain` aus dem
+       NAECHSTEN Eintrag faelschlich mitgelesen wird. */
+    const umkreis = lines.slice(Math.max(0, i - 3), i + 4).join("\n");
+    if (/^\s*custom_domain\s*=\s*true/m.test(umkreis)) return match[1].trim();
+  }
+  return null;
 }
 
 /**
