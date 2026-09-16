@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-16T22:33:13.132Z",
+  "generatedAt": "2026-09-16T23:48:20.984Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6875
   },
   "sources": {
-    "ingestStatus": "2026-09-16T10:19:28.876Z",
-    "factors": "2026-09-16T10:19:41.473Z",
+    "ingestStatus": "2026-09-16T23:46:21.653Z",
+    "factors": "2026-09-16T23:46:30.655Z",
     "intradaySession": "2026-09-16",
-    "discover": "2026-09-16T10:22:21.235Z"
+    "discover": "2026-09-16T23:48:18.104Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -22,7 +22,7 @@
     "tiingoUnresolved": 0,
     "marketDataFetched": 6874,
     "historicalAvailable": 5615,
-    "historicalQualityAccepted": 6507,
+    "historicalQualityAccepted": 6441,
     "intradayAvailable": 5258,
     "liveCapable": 519,
     "factorEligible": 6398,
@@ -49,12 +49,12 @@
     "INACTIVE": 120,
     "NO_FACTOR_ROW:FAIL": 104,
     "NOT_TRADING:STALE_SERIES": 85,
-    "NO_COMPACT_SERIES": 70,
+    "QUALITY_REJECTED:too_few_bars": 69,
     "NAME_MISSING": 20,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
     "NO_IEX_BARS": 5,
-    "QUALITY_REJECTED:too_few_bars": 3,
+    "NO_COMPACT_SERIES": 4,
     "NO_FACTOR_ROW": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_INGESTED_YET": 1,
