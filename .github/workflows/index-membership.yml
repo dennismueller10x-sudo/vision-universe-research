@@ -1,0 +1,86 @@
+name: Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)
+
+# V4 §19-20: echte Index-Mitgliedschaft, versioniert, ohne Ticker-Heuristik.
+# Quelle sind die veroeffentlichten Tagesbestaende der abbildenden Fonds
+# (quant/config/index-membership.json: IVV, QQQ, DIA). Das Skript ordnet die
+# Ticker dem Company Master zu und schreibt je Index eine Datei mit Quelle,
+# Stichtag, Mitgliedern, nicht Zuordenbaren und Aenderungen gegen den
+# Vorstand. Danach werden die Discover-Daten neu gebaut, damit die
+# Index-Reihen ("Staerkste Aktien im S&P 500" ...) den neuen Stand tragen.
+#
+# Zeitplan nur auf dem Default-Branch (woechentlich, Samstag); auf
+# Entwicklungsbranches dient ein Push mit der Marke `[index-membership]`.
+# Kein Schluessel noetig: die Bestandsdateien sind oeffentlich.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 7 * * 6'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: index-membership
+  cancel-in-progress: false
+
+jobs:
+  membership:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[index-membership]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bestaende holen und zuordnen
+        run: node scripts/market/build-index-membership.mjs
+
+      - name: Discover-Daten neu bauen (Index-Reihen)
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Tests
+        run: |
+          node --test "quant/tests/index-membership.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A quant/data/market/index-membership discover/data
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Index-Mitgliedschaft: $(node -e 'const i=require("./quant/data/market/index-membership/index.json");console.log(i.indexes.map(x=>x.indexId+" "+x.memberCount+" ("+x.asOf+")").join(", "))')"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Index-Mitgliedschaft'
+            echo ''
+            if [ -f quant/data/market/index-membership/index.json ]; then
+              node -e '
+                const i = require("./quant/data/market/index-membership/index.json");
+                console.log("| Index | Mitglieder | nicht zugeordnet | Stichtag | Fonds |"); console.log("|---|---|---|---|---|");
+                i.indexes.forEach((x) => console.log("| " + x.indexName + " | " + x.memberCount + " | " + x.unmatchedCount + " | " + x.asOf + (x.stale ? " (alter Stand: " + x.error + ")" : "") + " | " + x.proxy + " |"));
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

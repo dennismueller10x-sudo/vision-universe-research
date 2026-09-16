@@ -27,7 +27,7 @@
 (function (global) {
   "use strict";
 
-  var MODULE_VERSION = "discover-live-hub-1.1.0";
+  var MODULE_VERSION = "discover-live-hub-1.2.0";
   var MIN_POLL_MS = 60000;
   var MAX_TIMEOUT_MS = 2147483647;
 
@@ -45,6 +45,7 @@
 
   function TS() { return global.VURealtime && global.VURealtime.TradingSession; }
   function Snap() { return global.VURealtime && global.VURealtime.IntradaySnapshot; }
+  function FR() { return global.VURealtime && global.VURealtime.Freshness; }
 
   function laden(path, frisch) {
     var f = st.fetch || global.fetch;
@@ -155,10 +156,27 @@
     return st.inflight[path];
   }
 
+  /* Der Freshness-Vertrag (quant/engines/realtime/freshness.js) entscheidet,
+     ob ein Snapshot der Stand ist, den er behauptet: LIVE, LAST_SESSION,
+     STALE oder UNAVAILABLE - und liefert die Beschriftung. Ein Snapshot vom
+     Freitag heisst am Dienstag "Stand Fr., 11.09. · nicht aktuell", nicht
+     "Letzter Handelstag · Freitag". Ohne den Vertrag (aeltere Seite) bleibt
+     die Beschriftung des Resolvers. */
+  function freshness(snap, r) {
+    if (!FR()) return null;
+    var cfg = st.meta && st.meta.intraday ? st.meta.intraday : {};
+    var f = cfg.freshness || {};
+    return FR().assess({ resolution: r, series: snap || null, kind: "intraday", now: st.now(), calendar: st.calendar,
+                         options: { refreshMinutes: cfg.refreshMinutes || 10, graceMinutes: f.graceMinutes, graceHours: f.graceHours } });
+  }
+
   function payload(symbol, snap) {
     var r = resolution();
-    return { symbol: symbol, snapshot: snap || null, resolution: r,
-             label: snap ? TS().describe(r, snap) : TS().describe(r, null), entry: resolveEntry(symbol) };
+    var fr = freshness(snap, r);
+    var label = fr ? fr.label : (snap ? TS().describe(r, snap) : TS().describe(r, null));
+    if (fr && label && !label.timezoneNote) label.timezoneNote = "Uhrzeiten in New Yorker Zeit";
+    return { symbol: symbol, snapshot: snap || null, resolution: r, freshness: fr,
+             label: label, entry: resolveEntry(symbol) };
   }
 
   function deliver(symbol, cb) {
@@ -219,6 +237,11 @@
       if (idx.sessionDate < ds.sessionDate) return true;
       if (idx.sessionDate === ds.sessionDate && !idx.isComplete && ds.isComplete) return true;
     }
+    /* Das Verzeichnis kennt die letzte abgeschlossene Sitzung nicht (der
+       Workflow holt nach, oder er ist ausgefallen): nachfragen, damit die
+       Seite den Nachzug ohne Neuladen bekommt. */
+    var last = r.lastCompletedSession, idxLast = st.index && st.index.lastCompletedSession;
+    if (last && idxLast && idxLast.sessionDate && idxLast.sessionDate < last.sessionDate) return true;
     return false;
   }
 
@@ -289,7 +312,12 @@
     enabled: function () { return st.enabled; },
     subscribe: subscribe, prefetch: prefetch, peek: peek, entryFor: entryFor, resolveEntry: resolveEntry,
     loadIndex: loadIndex, resolution: function () { return st.enabled ? resolution() : null; },
-    describe: function (snap) { return TS() ? TS().describe(resolution(), snap || null) : null; },
+    describe: function (snap) {
+      if (!TS()) return null;
+      var r = resolution(), fr = freshness(snap || null, r);
+      return fr ? fr.label : TS().describe(r, snap || null);
+    },
+    freshness: function (snap) { return st.enabled ? freshness(snap || null, resolution()) : null; },
     index: function () { return st.index; },
     tick: tick, shouldPoll: shouldPoll,
     stats: function () {

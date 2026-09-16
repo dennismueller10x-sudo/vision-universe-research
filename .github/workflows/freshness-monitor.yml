@@ -1,0 +1,81 @@
+name: Freshness-Monitor (zeigt die Seite den letzten Handelstag?)
+
+# Vorfall 15.09.2026: research.visionuniverse.de/discover zeigte
+# "Letzter Handelstag · Freitag", obwohl der Montag laengst gehandelt war -
+# und nichts hat es gemeldet. Dieser Workflow misst gegen die veroeffentlichte
+# Seite, ob Intraday-Verzeichnis und Discover-Daten zur letzten abgeschlossenen
+# regulaeren Sitzung passen (Freshness-Vertrag, quant/engines/realtime/
+# freshness.js). Ist ein Bereich STALE, wird der Lauf rot - und GitHub
+# benachrichtigt den Eigentuemer. Kein Abruf beim Anbieter, kein Schluessel,
+# kein Commit.
+#
+# Zeitplan (UTC; die Karenzen sind so gewaehlt, dass Sommer- und Winterzeit
+# beide passen):
+#   06:30 Di-Sa   nach dem Abendlauf und der Nacht: liegt die Vortagssitzung
+#                 vor (Intraday-Universum und Tagesschluss)?
+#   15:15 Mo-Fr   45 Minuten nach 09:30 EST / 105 nach 09:30 EDT: laeuft der
+#                 Intraday-Takt der laufenden Sitzung?
+#   23:15 Mo-Fr   nach dem Abendlauf (22:30) plus Build und Auslieferung.
+# Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
+# dient ein Push mit der Marke `[freshness-check]` als Ausloeser.
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+  schedule:
+    - cron: '30 6 * * 2-6'
+    - cron: '15 15 * * 1-5'
+    - cron: '15 23 * * 1-5'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Freshness gegen die veroeffentlichte Seite
+        id: live
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          SITE='${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}'
+          node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
+
+      - name: Freshness des Repository-Stands (zur Einordnung)
+        run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Freshness-Monitor'
+            echo ''
+            echo '#### Veroeffentlichte Seite'
+            echo '```'; cat freshness-live.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'
+            echo '#### Repository'
+            echo '```'; cat freshness-repo.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ergebnis
+        if: steps.live.outcome == 'failure'
+        run: |
+          echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."
+          exit 1

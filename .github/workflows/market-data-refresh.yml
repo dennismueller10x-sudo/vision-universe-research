@@ -112,6 +112,9 @@ jobs:
       - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      - name: Freshness-Check (Health-Bericht, kein Abbruch)
+        run: node scripts/market/check-freshness.mjs
+
       - name: Regressionssuite
         run: |
           node --test "quant/tests/*.test.mjs"
@@ -137,18 +140,23 @@ jobs:
           key: discover-market-cache-${{ github.run_id }}
 
       - name: Commit und Push
+        # --autostash: die Regressionssuite (issuer-master.test.mjs) baut den
+        # Emittentenstand in die echte Ablage und laesst zwei Dateien mit neuem
+        # Zeitstempel ungestaged zurueck; ohne Autostash verweigert git das
+        # Rebase ("You have unstaged changes") und der Lauf verliert seinen
+        # Commit (Lauf 34987245529).
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
           git add quant/data/market/golden-preview quant/data/market/discover-series \
                   quant/data/market/factors quant/data/market/tiingo-status.json \
                   quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
-                  quant/data/market/capabilities
+                  quant/data/market/capabilities quant/data/market/freshness
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else
             git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 

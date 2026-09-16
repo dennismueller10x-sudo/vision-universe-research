@@ -143,6 +143,43 @@ for (const universe of meta.universes) {
     check(row.methodologyVersion === METHODOLOGY.methodologyVersion,
       `${file}: abweichende Methodikversion`);
 
+    /* V4 §17-22: Rangbegruendung, Index-Herkunft, Qualifikation, Margenband. */
+    if (row.rowId !== "sector-leaders" && config) {
+      let letzter = null;
+      cards.forEach((c, i) => {
+        const rr = c.rankingReason;
+        check(rr && rr.rowId === row.rowId && rr.rank === i + 1, `${file}: ${c.symbol} ohne passende rankingReason (Rang ${i + 1})`);
+        if (rr && rr.of !== undefined) check(rr.of >= cards.length, `${file}: rankingReason.of kleiner als die Reihe`);
+        if (rr && isNum(rr.sortValue) && letzter !== null && !config.signalFirst) {
+          check(config.direction === "asc" ? rr.sortValue >= letzter : rr.sortValue <= letzter,
+            `${file}: ${c.symbol} Sortierwert ${rr.sortValue} bricht die Reihenfolge (${config.direction})`);
+        }
+        if (rr && isNum(rr.sortValue)) letzter = rr.sortValue;
+        if (config.filter === "strongest" || config.filter === "indexMember" || config.qualify === true) {
+          check(c.qualification && c.qualification.strongest === true, `${file}: ${c.symbol} steht ohne Qualifikation in einer "staerkste"-Reihe`);
+        }
+        if (config.indexId) {
+          check(Array.isArray(c.indexMemberships) && c.indexMemberships.indexOf(config.indexId) !== -1,
+            `${file}: ${c.symbol} ist laut Karte kein Mitglied von ${config.indexId}`);
+        }
+        /* Kein Titel traegt eine Marge ausserhalb des Plausibilitaetsbands
+           auf eine Karte (V4 §22). */
+        for (const k of ["f_netMargin", "f_fcfMargin"]) {
+          if (isNum(c.metrics[k])) check(Math.abs(c.metrics[k]) <= 1.5, `${file}: ${c.symbol} ${k} = ${c.metrics[k]} ausserhalb des Plausibilitaetsbands`);
+        }
+        if (isNum(c.metrics.f_marginExpansion3y)) check(Math.abs(c.metrics.f_marginExpansion3y) <= 100, `${file}: ${c.symbol} f_marginExpansion3y = ${c.metrics.f_marginExpansion3y} pp`);
+      });
+      if (config.indexId) {
+        check(!cards.length || (row.index && row.index.indexId === config.indexId && /^\d{4}-\d{2}-\d{2}$/.test(String(row.index.asOf))),
+          `${file}: Index-Reihe ohne Herkunft (index.asOf)`);
+        const memberFile = join(root, "quant", "data", "market", "index-membership", config.indexId + ".json");
+        if (cards.length && existsSync(memberFile)) {
+          const mitglieder = new Set(readJSON(memberFile).members.map((m) => m.symbol));
+          cards.forEach((c) => check(mitglieder.has(c.symbol), `${file}: ${c.symbol} steht nicht im Bestand ${config.indexId}`));
+        }
+      }
+    }
+
     for (let cardIndex = 0; cardIndex < cards.length; cardIndex++) {
       const card = cards[cardIndex];
       /* Zwei Kartenformen sind zulaessig: die volle Karte der Reihen und

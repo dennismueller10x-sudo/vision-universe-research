@@ -155,7 +155,91 @@
   function beschreibung(ps, range, symbol) {
     return (symbol ? symbol + ": " : "") + "Kursverlauf über " + (RANGE_WORT[range] || range) +
            ", Tagesschlusskurse" + (ps.priceSeriesType === "SPLIT_ADJUSTED" ? ", split-bereinigt" : "") +
-           " — Quelle " + ps.source + ", Stand " + (ps.asOf || "unbekannt");
+           " — Stand " + (ps.asOf || "unbekannt");
+  }
+
+  /* ------------------------------------------------ Zeitraum-Chart (V4) */
+
+  /**
+   * Der grosse Verbraucher-Chart der Aktienseite: eine durchgehende Linie
+   * ueber echte Schlusskurse eines Zeitraums, Startlinie beim ersten Kurs,
+   * Kursachse rechts (Hoch, Tief, letzter Kurs), Datumsachse unten. Keine
+   * Kerzen, kein Volumen, keine Indikatoren - die stehen im Analyse-Chart.
+   * Farbe: currentColor (die Welt); Richtung als data-direction fuer
+   * Zahlen, nicht fuer die Linie.
+   *
+   * @param {Array} punkte  [[date, close], ...] aufsteigend
+   * @param {object} opt    {width, height, symbol, range, label, grain}
+   */
+  function renderRange(punkte, opt) {
+    opt = opt || {};
+    var p = (punkte || []).filter(function (x) { return x && isNum(x[1]); });
+    if (p.length < 2) return null;
+    var w = opt.width || 1120, h = opt.height || 380;
+    var padTop = 18, padBottom = 30, padL = 8, padR = 64;
+    var closes = p.map(function (x) { return x[1]; });
+    var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    /* Lange Zeitraeume mit einem Vielfachen von mehr als 15 zwischen Tief
+       und Hoch: logarithmische Kursachse, sonst ist die erste Haelfte der
+       Reihe eine flache Linie am Boden. Eine Skala, kein Eingriff in die
+       Kurse - und die Beschriftung sagt es (opt.log wird zurueckgemeldet). */
+    var log = opt.log === true || (opt.log !== false && lo > 0 && hi / lo > 15);
+    var tr = log ? function (v) { return Math.log(v); } : function (v) { return v; };
+    var spanne = tr(hi) - tr(lo);
+    var yLo = tr(lo) - spanne * 0.06, yHi = tr(hi) + spanne * 0.06;
+    var t0 = Date.parse(p[0][0]), t1 = Date.parse(p[p.length - 1][0]);
+    var tspan = Math.max(1, t1 - t0);
+    var x = function (iso) { return padL + ((Date.parse(iso) - t0) / tspan) * (w - padL - padR); };
+    var y = function (v) { return h - padBottom - ((tr(v) - yLo) / (yHi - yLo)) * (h - padTop - padBottom); };
+    var up = closes[closes.length - 1] >= closes[0];
+    var text = (opt.symbol ? opt.symbol + ": " : "") + "Kursverlauf " + (opt.label || opt.range || "") + ", " +
+               (opt.grain === "weekly" ? "Wochenschlusskurse" : "Tagesschlusskurse") + ", von " + datum(p[0][0]) + " bis " + datum(p[p.length - 1][0]) +
+               ", " + closes[0].toFixed(2) + " auf " + closes[closes.length - 1].toFixed(2);
+    if (log) text += ", logarithmische Kursachse";
+    var node = svg("svg", { class: "dx-range-chart", viewBox: "0 0 " + w + " " + h, preserveAspectRatio: "none",
+                            role: "img", "aria-label": text, "data-direction": up ? "up" : "down", "data-range": opt.range || "",
+                            "data-scale": log ? "log" : "linear" });
+    var titel = svg("title", {}); titel.textContent = text; node.appendChild(titel);
+    var lauf = (renderRange.zaehler = (renderRange.zaehler || 0) + 1);
+    var defs = svg("defs", {});
+    var grad = svg("linearGradient", { id: "dxr" + lauf, x1: 0, y1: 0, x2: 0, y2: 1 });
+    grad.appendChild(svg("stop", { offset: "0%", "stop-color": "currentColor", "stop-opacity": ".22" }));
+    grad.appendChild(svg("stop", { offset: "100%", "stop-color": "currentColor", "stop-opacity": "0" }));
+    defs.appendChild(grad); node.appendChild(defs);
+    /* Leise Hilfslinien: Hoch, Tief, Startkurs. */
+    [hi, lo].forEach(function (v) {
+      node.appendChild(svg("line", { class: "dx-range-grid", x1: padL, x2: w - padR, y1: y(v).toFixed(1), y2: y(v).toFixed(1) }));
+    });
+    node.appendChild(svg("line", { class: "dx-art-base", x1: padL, x2: w - padR, y1: y(closes[0]).toFixed(1), y2: y(closes[0]).toFixed(1) }));
+    var d = "";
+    p.forEach(function (pt) { d += (d ? "L" : "M") + x(pt[0]).toFixed(1) + " " + y(pt[1]).toFixed(1) + " "; });
+    node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxr" + lauf + ")",
+      d: d + "L" + x(p[p.length - 1][0]).toFixed(1) + " " + (h - padBottom) + " L" + x(p[0][0]).toFixed(1) + " " + (h - padBottom) + " Z" }));
+    node.appendChild(svg("path", { class: "dx-art-line dx-range-line", d: d.trim(), "vector-effect": "non-scaling-stroke" }));
+    var lx = x(p[p.length - 1][0]), ly = y(closes[closes.length - 1]);
+    node.appendChild(svg("circle", { class: "dx-art-node", cx: lx.toFixed(1), cy: ly.toFixed(1), r: 3.4 }));
+    /* Kursachse rechts: Hoch, Tief, letzter Kurs. */
+    var fmt = function (v) { return v >= 1000 ? Math.round(v).toLocaleString("de-DE") : v.toFixed(2).replace(".", ","); };
+    node.appendChild(svg("text", { class: "dx-range-axis", x: w - padR + 8, y: (y(hi) + 4).toFixed(1), text: fmt(hi) }));
+    node.appendChild(svg("text", { class: "dx-range-axis", x: w - padR + 8, y: (y(lo) + 4).toFixed(1), text: fmt(lo) }));
+    if (Math.abs(ly - y(hi)) > 14 && Math.abs(ly - y(lo)) > 14) {
+      node.appendChild(svg("text", { class: "dx-range-axis dx-range-axis--last", x: w - padR + 8, y: (ly + 4).toFixed(1), text: fmt(closes[closes.length - 1]) }));
+    }
+    /* Datumsachse: Anfang, Ende, dazwischen drei Stuetzen. */
+    var ticks = 4;
+    for (var i = 0; i <= ticks; i++) {
+      var tt = t0 + (tspan * i) / ticks;
+      var iso = new Date(tt).toISOString().slice(0, 10);
+      var anchor = i === 0 ? "start" : i === ticks ? "end" : "middle";
+      node.appendChild(svg("text", { class: "dx-range-date", x: x(iso).toFixed(1), y: h - 8, "text-anchor": anchor,
+        text: opt.range === "1W" || opt.range === "1M" ? datum(iso) : (opt.range === "6M" || opt.range === "1Y" ? monat(iso) : iso.slice(0, 4)) }));
+    }
+    return node;
+  }
+  function monat(iso) {
+    var m = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"][parseInt(iso.slice(5, 7), 10) - 1];
+    return m + " " + iso.slice(2, 4);
   }
 
   /* -------------------------------------------------- Intraday-Verlauf */
@@ -269,7 +353,7 @@
     return (symbol ? symbol + ": " : "") + "Tagesverlauf " + datum(snap.sessionDate) + ", " +
            (snap.interval === "5min" ? "5-Minuten-Kurse" : "Intraday-Kurse") + " von " + erster + " bis " + letzter +
            " New Yorker Zeit" + (isNum(snap.previousClose) ? ", Startlinie Vortagesschluss" : ", Startlinie erster Kurs") +
-           (label ? " — " + label : "") + " — Quelle " + snap.provider + (snap.venue ? "/" + snap.venue : "") +
+           (label ? " — " + label : "") + " — 5-Minuten-Kurse" +
            ", Stand " + (snap.asOfLocal || snap.asOf || "unbekannt");
   }
 
@@ -380,7 +464,7 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.MicroChart = {
+  global.VUDiscover.MicroChart = { renderRange: renderRange,
     MODULE_VERSION: MODULE_VERSION, hasSeries: hasSeries, pointsFor: pointsFor,
     render: render, renderIntraday: renderIntraday, ladder: ladder, ladderInto: ladderInto,
     prozent: prozent, RANGE_BARS: RANGE_BARS

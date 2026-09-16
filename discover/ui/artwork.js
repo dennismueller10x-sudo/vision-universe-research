@@ -256,7 +256,7 @@
     if (!reihe) teile.push("Rendite über 1, 3, 6 und 12 Monate als Balken, kein Kursverlauf");
     else teile.push("Kursverlauf über " + ({ "1M": "einen Monat", "3M": "drei Monate",
                      "6M": "sechs Monate", "1J": "zwölf Monate" }[reihe.range] || reihe.range) +
-                    ", Tagesschlusskurse, Quelle " + reihe.source);
+                    ", Tagesschlusskurse, Stand " + (reihe.asOf || "unbekannt"));
     if (isNum(m.return12M)) {
       teile.push("zwölf Monate " + (m.return12M >= 0 ? "plus " : "minus ") +
                  Math.abs(m.return12M * 100).toFixed(1) + " Prozent");

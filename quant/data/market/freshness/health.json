@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "freshness-health-1.0.0",
+  "contractVersion": "freshness-contract-1.0.0",
+  "checkedAt": "2026-09-15T18:37:34.876Z",
+  "target": "repository",
+  "market": {
+    "state": "OPEN",
+    "localDate": "2026-09-15",
+    "localTime": "14:37:34",
+    "lastCompletedSession": "2026-09-14",
+    "currentSession": "2026-09-15",
+    "expectedIntradaySession": "2026-09-15"
+  },
+  "intraday": {
+    "indexGeneratedAt": "2026-09-15T18:37:30.817Z",
+    "indexSchema": "intraday-index-1.1.0",
+    "displaySession": {
+      "sessionDate": "2026-09-15",
+      "kind": "current",
+      "isRunning": true,
+      "isComplete": false
+    },
+    "dataSession": {
+      "sessionDate": "2026-09-15",
+      "asOf": "2026-09-15T18:35:00.000Z",
+      "asOfLocal": "14:35",
+      "regularComplete": false,
+      "snapshots": 558,
+      "universe": false
+    },
+    "dataState": "LIVE",
+    "dataReason": "runningSession",
+    "dataLabel": "Heute · Stand 14:35",
+    "entries": 521,
+    "byState": {
+      "LIVE": 510,
+      "LAST_SESSION": 0,
+      "STALE": 11,
+      "UNAVAILABLE": 0
+    },
+    "byReason": {
+      "runningSession": 510,
+      "runningSessionStaleAsOf": 10,
+      "currentSessionMissing": 1
+    },
+    "staleSample": [
+      "AIRT",
+      "ATHS",
+      "HCM",
+      "HURC",
+      "JFIN",
+      "NRP",
+      "RDIB",
+      "TVA",
+      "UFG",
+      "VIOT",
+      "RFAI"
+    ],
+    "universeSessions": [
+      "2026-09-14"
+    ],
+    "universeCoversLastSession": true,
+    "state": "OK"
+  },
+  "daily": {
+    "universeAsOf": "2026-09-14",
+    "generatedAt": "2026-09-15T18:25:48.079Z",
+    "state": "LAST_SESSION",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Montag",
+    "expectedSession": "2026-09-14",
+    "sample": {
+      "sample": 40,
+      "byState": {
+        "LIVE": 0,
+        "LAST_SESSION": 40,
+        "STALE": 0,
+        "UNAVAILABLE": 0
+      },
+      "byReason": {
+        "lastCompletedSession": 40
+      },
+      "staleSample": [],
+      "seriesIndexCount": 6438
+    }
+  },
+  "overall": "OK",
+  "findings": [],
+  "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
+}

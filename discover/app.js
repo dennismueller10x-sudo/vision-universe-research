@@ -85,12 +85,27 @@
     if (T) {
       lage.trading = T.resolve(new Date(), { calendar: state.calendar });
       var Hub = D.LiveHub, idx = Hub && Hub.enabled() ? Hub.index() : null;
+      /* Der Datenstand des Verzeichnisses (dataSession: juengste Sitzung mit
+         Snapshots, spaetester Stand) - nicht der Zeitpunkt des Laufs. Der
+         Freshness-Vertrag sagt, ob das der Stand ist, der jetzt gelten
+         muesste; "Stand Freitag" bei gehandeltem Montag heisst dann
+         "Stand Fr., 11.09. · nicht aktuell". */
       var stand = null;
-      if (idx && idx.generatedAt && global.VURealtime.MarketHours) {
-        var lp = global.VURealtime.MarketHours.localParts(idx.generatedAt, lage.trading.timezone);
-        if (lp && lp.date === lage.trading.localDate) stand = { asOfLocal: lp.clock.slice(0, 5), sessionDate: idx.displaySession && idx.displaySession.sessionDate };
+      if (idx && idx.dataSession && idx.dataSession.sessionDate) {
+        stand = { sessionDate: idx.dataSession.sessionDate, asOf: idx.dataSession.asOf, asOfLocal: idx.dataSession.asOfLocal,
+                  regularComplete: idx.dataSession.regularComplete !== false };
+      } else if (idx && idx.entries) {
+        var syms = Object.keys(idx.entries);
+        for (var i = 0; i < syms.length; i++) {
+          var e = idx.entries[syms[i]];
+          if (!stand || e.sessionDate > stand.sessionDate || (e.sessionDate === stand.sessionDate && e.asOf > stand.asOf)) {
+            stand = { sessionDate: e.sessionDate, asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: !!e.regularComplete };
+          }
+        }
       }
-      lage.beschreibung = T.describe(lage.trading, stand);
+      var fr = Hub && Hub.enabled() && Hub.freshness ? Hub.freshness(stand) : null;
+      lage.freshness = fr;
+      lage.beschreibung = fr ? fr.label : T.describe(lage.trading, stand);
       lage.liveSnapshots = !!(idx && idx.entryCount);
     }
     return lage;
@@ -118,15 +133,23 @@
          "Schluss 16:00", "Stand Freitag". Das Wort davor sagt schon, ob
          die Boerse offen ist. */
       zusatz = lage.beschreibung.label.replace(/^Heute · /, "").replace(/^Letzter Handelstag · /, "Stand ");
+      /* Ein veralteter Stand kurz genug fuer die Leiste des Telefons:
+         "11.09. · nicht aktuell". */
+      if (lage.freshness && lage.freshness.freshnessState === "STALE") zusatz = zusatz.replace(/^Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., /, "");
     } else {
       zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
     }
-    var status = el("div", { class: "dx-status " + klasse,
+    if (lage.freshness && lage.freshness.freshnessState === "STALE") klasse += " dx-status--stale";
+    var status = el("div", { class: "dx-status " + klasse, "data-freshness": lage.freshness ? lage.freshness.freshnessState : "",
       title: (lage.beschreibung ? lage.beschreibung.timezoneNote + ". " : "") +
+             (lage.freshness && lage.freshness.freshnessState === "STALE"
+               ? "Der ausgelieferte Stand ist aelter als der letzte Handelstag (" + lage.freshness.expectedSessionDate + "). "
+               : "") +
              (lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS).") }, [
       el("span", { class: "dx-dot" }),
       el("b", { text: "US Market" }),
-      document.createTextNode(lage.mode === "live" ? "Live" : (lage.beschreibung ? lage.beschreibung.state : sessionWort(lage))),
+      document.createTextNode(lage.mode === "live" ? "Live"
+        : (lage.beschreibung ? (lage.beschreibung.marketStateWord || lage.beschreibung.state) : sessionWort(lage))),
       document.createTextNode(zusatz ? " · " + zusatz : "")
     ]);
 
@@ -228,6 +251,8 @@
 
     var heroHost = el("div", {});
     var body = el("div", { class: "dx-page" });
+    var pos = positioning();
+    if (pos) app.appendChild(pos);
     app.appendChild(heroHost);
     app.appendChild(body);
     heroHost.appendChild(el("div", { class: "dx-hero" }, [el("div", { class: "dx-hero-bg" })]));
@@ -673,7 +698,29 @@
         el("b", { text: "Universum: " }),
         document.createTextNode(universe.rankingScope + " " + universe.note)
       ]),
-      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)])
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)]),
+      /* V4 §11: die Herkunft der Daten hat eine eigene Seite - Marktdaten,
+         Tagesverlauf, Geschaeftszahlen, Index-Mitgliedschaft, Aktualisierung,
+         Verzoegerung, Methoden, Lizenzen. Auf den Karten steht kein
+         Anbietername mehr; hier steht, woher alles kommt. */
+      el("div", { class: "dx-foot-links", style: "margin-top:10px" }, [
+        el("a", { href: "#/daten", text: "Daten & Quellen" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/", text: "Discover" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/einzeln/" + state.universeId, text: "Einzeln entdecken" })
+      ])
+    ]);
+  }
+
+  /* V4 §3-4: in fuenf Sekunden verstehen, was Discover ist - ein Satz,
+     eine zweite Zeile, keine Einfuehrungsseite. */
+  function positioning() {
+    var pos = state.meta.positioning || {};
+    if (!pos.line) return null;
+    return el("div", { class: "dx-positioning" }, [
+      el("p", { class: "dx-positioning-line", text: pos.line }),
+      pos.second ? el("p", { class: "dx-positioning-second", text: pos.second }) : null
     ]);
   }
 
@@ -690,7 +737,16 @@
          bliebe die Uebersicht in einem Zustand haengen, den niemand
          angefordert hat. */
       if (teile[0] !== "einzeln") document.body.classList.remove("dx-feed-aktiv");
-      if (teile[0] === "einzeln") {
+      if (teile[0] === "daten") {
+        S.clear(root);
+        var seite = el("div", { class: "dx-app" });
+        root.appendChild(seite);
+        seite.appendChild(appBar());
+        seite.appendChild(D.Daten.render({ meta: state.meta, universe: universeMeta(), calendar: state.calendar }));
+        seite.appendChild(footer());
+        document.title = "Daten & Quellen — Discover";
+        window.scrollTo(0, 0);
+      } else if (teile[0] === "einzeln") {
         renderFeed(root, teile[1] || state.universeId);
       } else if (teile[0] === "s" && teile.length >= 3) {
         renderDetail(root, teile[1], decodeURIComponent(teile[2]).toUpperCase());
