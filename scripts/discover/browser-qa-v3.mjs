@@ -180,7 +180,10 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
      kompakte Jahresreihe (quant/data/market/discover-series). */
   lz.on("request", (r) => { if (/\/discover\/data\/series\/|\/discover-series\//.test(r.url())) serien.push(r.url()); });
   await lz.goto(BASE + "/discover/#/u/US_REAL", { waitUntil: "domcontentloaded" });
-  await warten(lz, 150);
+  /* Erst wenn Karten im DOM stehen, laesst sich der Platzhalter pruefen -
+     gegen die veroeffentlichte Seite brauchen Manifest und erstes Stueck
+     mehr als 150 ms; ohne Karten waere die Pruefung leer, nicht bestanden. */
+  await lz.waitForSelector(".dx-poster-media", { timeout: 8000 }).catch(() => {});
   const skelett = await lz.evaluate(() => {
     const s = document.querySelectorAll(".dx-art-skeleton");
     return { anzahl: s.length, chart: [...s].some((n) => n.querySelector("path, rect.dx-ladder-bar")),
