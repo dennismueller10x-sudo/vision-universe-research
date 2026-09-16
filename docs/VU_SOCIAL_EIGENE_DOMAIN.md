@@ -215,3 +215,47 @@ steht sie hier nur als Möglichkeit und nicht als Empfehlung.
   berührt weder `META_APP_ID` noch `META_APP_SECRET` noch den Admin-Schlüssel.
 - Der Business-Dialog bleibt, wie er ist: `config_id`, kein `scope`. An der
   Domain hängt die Erreichbarkeit, nicht der Dialog.
+
+---
+
+## 7. Nachtrag: die Domain stand, die Konfiguration nicht
+
+2026-09-16. Der Owner hat `visionuniverse.de` zu Cloudflare gebracht und die
+Custom Domain eingerichtet — `https://social.visionuniverse.de` war erreichbar,
+der Worker antwortete, ohne Admin-Key kam `unauthorized`.
+
+Meta lehnte trotzdem weiter ab, mit derselben Meldung. Der Owner hatte zu dem
+Zeitpunkt bereits `social.visionuniverse.de`, `visionuniverse.de` und die
+Website-URL bei Meta eingetragen.
+
+**Der Grund lag nicht bei Meta.** `PUBLIC_BASE_URL` stand weiterhin auf der
+workers.dev-Adresse. Die `redirect_uri` wird daraus gebaut — der Dialog trug
+also unverändert den Host, den Meta bereits abgelehnt hatte, während im
+Dashboard die richtige Domain hinterlegt wurde. Zwei Seiten, die aneinander
+vorbeireden, und beide für sich plausibel: die Domain *funktionierte* ja.
+
+Ein Scan über das gesamte Repository fand genau **eine** produktive Stelle mit
+`workers.dev` — diese eine Zeile. Alles andere sind Kommentare und
+Testfixtures.
+
+Umgestellt wurde damit:
+
+| | vorher | nachher |
+|---|---|---|
+| `PUBLIC_BASE_URL` | `https://vision-universe-social.little-credit-15d3.workers.dev` | `https://social.visionuniverse.de` |
+| Custom-Domain-Route | nur im Dashboard | in `wrangler.toml`, reproduzierbar |
+| `resolveUrl()`-Rückfall | workers.dev | die Custom-Domain-Route, sonst Warnung |
+
+Der Rückfall ist der Teil, der sonst wiedergekommen wäre: `resolveUrl()` füllt
+`PUBLIC_BASE_URL`, wenn dort ein Platzhalter steht, und hätte dafür die
+workers.dev-Adresse genommen. Beim nächsten Zurücksetzen wäre der Bruch also
+zurückgekehrt — und hätte wieder wie ein Meta-Problem ausgesehen.
+
+`workers/vision-universe-social/src/` blieb vollständig unangetastet. Damit
+auch `state`-Signatur, Nonce-Cookie, Admin-Schutz, `appsecret_proof`,
+Redaktion, KV-Bindung und `config_id`.
+
+Sechs Tests (U8–U13) prüfen die Konfiguration selbst statt einer Nachbildung:
+`PUBLIC_BASE_URL` ist die eigene Domain, die Route steht in der Datei, und
+beide nennen denselben Host. Fällt einer davon um, ist der OAuth-Flow
+tatsächlich kaputt — nicht nur ein Testmodell davon.
