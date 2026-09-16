@@ -433,3 +433,194 @@ export async function revokePermissions(ctx, userToken) {
 }
 
 export { ok as graphOk, fail as graphFail };
+
+/* ------------------------------------------------------------------ */
+/* DER BUSINESS-LOGIN-PFAD                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Die drei Rechte, die dasselbe Instagram-Konto nennen muessen.
+ *
+ * Sie stehen hier zusammen, weil ihre Uebereinstimmung die eigentliche
+ * Pruefung ist: drei unabhaengig erteilte Rechte, die auf dieselbe ID
+ * zeigen, sind ein Beleg. Eine ID aus einem einzelnen Recht waere nur
+ * eine Behauptung.
+ */
+const IG_ASSET_SCOPES = [
+  "instagram_basic",
+  "instagram_manage_insights",
+  "instagram_content_publish"
+];
+
+const PAGE_ASSET_SCOPE = "pages_show_list";
+
+/**
+ * Liest die autorisierten Assets aus den granularen Scopes.
+ *
+ * -----------------------------------------------------------------------
+ * WARUM DIESER WEG UEBERHAUPT GEBRAUCHT WIRD
+ * -----------------------------------------------------------------------
+ *
+ * `/me/accounts` zaehlt die Seiten auf, die der angemeldete Mensch als
+ * Person verwaltet. Beim Business Login mit gezielter Asset-Auswahl
+ * entsteht der Zugriff aber nicht ueber diese persoenliche Liste,
+ * sondern als Freigabe am Token — und dann bleibt `/me/accounts` leer,
+ * obwohl Seite und Konto freigegeben sind.
+ *
+ * Real beobachtet am 2026-09-16: `pages: []`, waehrend `granular_scopes`
+ * sowohl die Seite als auch das Instagram-Konto mit konkreten
+ * `target_ids` nannte.
+ *
+ * -----------------------------------------------------------------------
+ * WARUM NICHT EINFACH DIE ID UEBERNOMMEN WIRD
+ * -----------------------------------------------------------------------
+ *
+ * Eine `target_id` ist eine Zahl aus einer Antwort. Sie sagt, dass IRGEND
+ * etwas freigegeben wurde — nicht, dass es das richtige Konto ist, nicht
+ * einmal, dass es ein Instagram-Konto ist. Deshalb:
+ *
+ *   1. muessen alle drei Instagram-Rechte DIESELBE Menge nennen,
+ *   2. wird die ID danach bei der API gegengeprueft,
+ *   3. und der Handle gegen die Allowlist gehalten.
+ *
+ * Bei jeder Abweichung: nichts speichern.
+ */
+export function assetsFromGranularScopes(granular) {
+  const eintraege = Array.isArray(granular) ? granular : [];
+  const nach = (scope) => eintraege.find((e) => e.scope === scope) || null;
+
+  const fehlend = IG_ASSET_SCOPES.filter((s) => {
+    const e = nach(s);
+    return !e || !Array.isArray(e.targetIds) || e.targetIds.length === 0;
+  });
+  if (fehlend.length) {
+    return fail("assetScopesIncomplete",
+      "Die granularen Scopes nennen kein vollstaendiges Instagram-Asset. Ohne Ziel-IDs bei " +
+      fehlend.join(", ") + " laesst sich nicht belegen, WELCHES Konto autorisiert wurde. " +
+      "Es wird nichts gespeichert.",
+      { missingAssetScopes: fehlend });
+  }
+
+  /* Drei Mengen, die identisch sein muessen. Sortiert verglichen, damit
+     die Reihenfolge in der Antwort keine Rolle spielt. */
+  const mengen = IG_ASSET_SCOPES.map((s) => [...new Set(nach(s).targetIds.map(String))].sort());
+  const referenz = mengen[0].join(",");
+  const abweichend = IG_ASSET_SCOPES.filter((s, i) => mengen[i].join(",") !== referenz);
+
+  if (abweichend.length) {
+    return fail("assetScopesInconsistent",
+      "Die Instagram-Rechte nennen NICHT dasselbe Konto. " +
+      IG_ASSET_SCOPES.map((s, i) => `${s} -> [${mengen[i].join(", ")}]`).join(" · ") +
+      ". Bei einer solchen Abweichung wird nichts gespeichert: welches der genannten Konten " +
+      "gemeint ist, liesse sich nur raten.",
+      { instagramTargetsByScope: Object.fromEntries(IG_ASSET_SCOPES.map((s, i) => [s, mengen[i]])) });
+  }
+
+  const seiten = nach(PAGE_ASSET_SCOPE);
+  return ok({
+    instagramAccountIds: mengen[0],
+    pageIds: (seiten && Array.isArray(seiten.targetIds)) ? [...new Set(seiten.targetIds.map(String))] : [],
+    /* Die Seite ist ein EIGENES Asset. Sie wird getrennt behandelt und
+       ist nicht die Quelle der Instagram-ID. */
+    pageScopePresent: Boolean(seiten)
+  });
+}
+
+/**
+ * Bestaetigt bei der API, dass hinter einer ID wirklich das
+ * Instagram-Professional-Konto steht.
+ *
+ * Ohne diesen Schritt waere die Allowlist wertlos: sie prueft einen
+ * Handle, und der Handle kaeme sonst aus derselben Antwort, die man
+ * gerade pruefen will.
+ */
+export async function validateInstagramAsset(ctx, instagramAccountId, token) {
+  const result = await graph(ctx, String(instagramAccountId),
+    { fields: "id,username,name" }, token);
+  if (!result.ok) return result;
+
+  const data = result.data || {};
+  if (!data.id || String(data.id) !== String(instagramAccountId)) {
+    return fail("assetIdentityMismatch",
+      "Die API antwortet unter dieser ID mit einer anderen ID. Es wird nichts gespeichert.");
+  }
+  if (!data.username) {
+    return fail("assetNotInstagram",
+      "Unter dieser ID liefert die API keinen Instagram-Handle. Ein Konto ohne `username` ist " +
+      "kein Instagram-Professional-Konto — es wird nichts gespeichert.");
+  }
+  return ok({
+    instagramAccountId: String(data.id),
+    instagramUsername: String(data.username),
+    instagramName: data.name ? String(data.name) : null
+  });
+}
+
+/** Holt Name und Seiten-Token zu einer autorisierten Seite. */
+export async function resolvePageAsset(ctx, pageId, token) {
+  const result = await graph(ctx, String(pageId), { fields: "id,name,access_token" }, token);
+  if (!result.ok) return result;
+  const data = result.data || {};
+  return ok({
+    pageId: String(data.id || pageId),
+    pageName: data.name || null,
+    pageAccessToken: data.access_token || null
+  });
+}
+
+/**
+ * Loest die Verbindung ueber die autorisierten Assets auf.
+ *
+ * Reihenfolge und Begruendung:
+ *
+ *   1. Assets aus den granularen Scopes lesen und auf Konsistenz pruefen
+ *   2. jede Instagram-ID bei der API gegenpruefen (Handle holen)
+ *   3. die Seite getrennt aufloesen — sie liefert das Seiten-Token,
+ *      NICHT die Instagram-ID
+ *
+ * Schritt 3 ist bewusst nachrangig: schlaegt er fehl, ist die
+ * Instagram-Verbindung trotzdem belegt. Das Seiten-Token ist dann nicht
+ * verfuegbar, und der Aufrufer entscheidet, ob er mit dem
+ * Nutzer-Token weiterarbeitet. Eine fehlende Seite darf ein belegtes
+ * Konto nicht entwerten.
+ */
+export async function resolveAccountsFromAssets(ctx, userToken, granular) {
+  const assets = assetsFromGranularScopes(granular);
+  if (!assets.ok) return assets;
+
+  const konten = [];
+  for (const id of assets.data.instagramAccountIds) {
+    const geprueft = await validateInstagramAsset(ctx, id, userToken);
+    if (!geprueft.ok) {
+      /* Fail closed: eine ID, die sich nicht bestaetigen laesst, wird
+         nicht stillschweigend uebersprungen. Sie stand in einem
+         erteilten Recht — wenn die API sie nicht kennt, stimmt etwas
+         nicht, und das gehoert gemeldet statt weggelassen. */
+      return fail("assetValidationFailed",
+        `Die autorisierte Instagram-ID ${id} liess sich nicht bestaetigen: ` +
+        (geprueft.message || geprueft.reason) + " Es wird nichts gespeichert.",
+        { instagramAccountId: String(id) });
+    }
+    konten.push(geprueft.data);
+  }
+
+  /* Die Seite: ein eigenes Asset, eigene Aufloesung. */
+  let seite = { pageId: null, pageName: null, pageAccessToken: null };
+  const ersteSeite = assets.data.pageIds[0] || null;
+  if (ersteSeite) {
+    const aufgeloest = await resolvePageAsset(ctx, ersteSeite, userToken);
+    if (aufgeloest.ok) seite = aufgeloest.data;
+    else seite = { pageId: String(ersteSeite), pageName: null, pageAccessToken: null };
+  }
+
+  return ok({
+    source: "granularScopes",
+    accounts: konten.map((k) => Object.assign({
+      pageId: seite.pageId,
+      pageName: seite.pageName,
+      pageAccessToken: seite.pageAccessToken
+    }, k)),
+    pagesWithoutInstagram: 0,
+    authorizedPageIds: assets.data.pageIds
+  });
+}

@@ -65,6 +65,13 @@ export function createGraph(options = {}) {
   const failOn = options.failOn || {};
   const calls = [];
 
+  /* Fuer den Business-Login-Weg: welche Assets das Token freigibt, und
+     was die API zu jeder einzelnen Asset-ID sagt. Beides ist bewusst
+     getrennt — der reale Fall war ja gerade, dass die Freigabe existiert
+     und die Sammelabfrage sie nicht zeigt. */
+  const granularScopes = options.granularScopes || null;
+  const assets = options.assets || null;
+
   function respond(body, status = 200) {
     return Promise.resolve({
       ok: status >= 200 && status < 300,
@@ -109,7 +116,24 @@ export function createGraph(options = {}) {
 
     if (path === "me/accounts") return respond({ data: pages });
 
+    if (path === "debug_token") {
+      return respond({ data: {
+        scopes: granted,
+        granular_scopes: (granularScopes || []).map((s) => ({
+          scope: s.scope, target_ids: s.targetIds
+        }))
+      } });
+    }
+
+    /* Eine einzelne Asset-ID. Ist sie hinterlegt, antwortet der
+       Doppelgaenger mit genau dem, was dort steht — sonst mit der
+       bisherigen Standardantwort, damit alte Tests unveraendert laufen. */
     if (/^\d+$/.test(path)) {
+      if (assets && Object.prototype.hasOwnProperty.call(assets, path)) {
+        const asset = assets[path];
+        if (!asset) return respond({ error: { message: "Unsupported get request", code: 100 } }, 400);
+        return respond(Object.assign({ followers_count: 4210, media_count: 37 }, asset));
+      }
       return respond({ id: path, username: "visionuniverse", followers_count: 4210, media_count: 37 });
     }
     if (/^\d+\/insights$/.test(path)) {

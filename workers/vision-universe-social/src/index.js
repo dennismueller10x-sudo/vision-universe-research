@@ -50,7 +50,7 @@
 import { createState, verifyState, clearStateCookie, timingSafeEqual } from "./state.js";
 import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
-  debugToken, probePageLinkage,
+  debugToken, probePageLinkage, resolveAccountsFromAssets,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
@@ -277,7 +277,15 @@ function isAllowedTarget(account, erlaubt) {
  * unvollstaendiger Befund ist mehr wert als keiner.
  */
 async function linkageReport(ctx, env, userToken, accounts) {
-  const report = { pages: accounts.pages || [], grantedAssets: null, linkageProbe: null };
+  const report = {
+    pages: accounts.pages || [],
+    grantedAssets: null,
+    linkageProbe: null,
+    /* Was der Asset-Weg gesagt hat, falls er ueberhaupt lief. */
+    assetPath: accounts.assetPathReason
+      ? { reason: accounts.assetPathReason, message: accounts.assetPathMessage }
+      : null
+  };
 
   try {
     const debug = await debugToken(ctx, {
@@ -390,7 +398,36 @@ async function handleCallback(request, url, env) {
       capabilities.explanation + " Es wurde nichts gespeichert.", 400, { "set-cookie": clearCookie });
   }
 
-  const accounts = await resolveAccounts(ctx, userToken, permissions.data.granted);
+  /* ZWEI QUELLEN, IN DIESER REIHENFOLGE.
+
+     `/me/accounts` zaehlt die Seiten auf, die der angemeldete Mensch als
+     Person verwaltet. Beim Business Login mit gezielter Asset-Auswahl
+     entsteht der Zugriff aber als Freigabe am Token — dann bleibt die
+     Liste leer, obwohl Seite und Konto freigegeben sind. Real beobachtet
+     am 2026-09-16.
+
+     `/me/accounts` bleibt trotzdem die erste Quelle: es liefert das
+     Seiten-Token gleich mit und deckt den klassischen Weg ab. Es ist nur
+     nicht mehr die EINZIGE. */
+  let accounts = await resolveAccounts(ctx, userToken, permissions.data.granted);
+
+  if (!accounts.ok && ["noPagesVisible", "noInstagramAccount"].includes(accounts.reason)) {
+    const debug = await debugToken(ctx, {
+      appId: env.META_APP_ID, appSecret: env.META_APP_SECRET, inputToken: userToken
+    });
+    if (debug.ok) {
+      const ausAssets = await resolveAccountsFromAssets(ctx, userToken, debug.data.granular);
+      /* Nur ein ERFOLG ersetzt den ersten Befund. Scheitert auch dieser
+         Weg, bleibt die urspruengliche Meldung stehen — sonst wuerde ein
+         Folgefehler die eigentliche Ursache verdecken. */
+      if (ausAssets.ok) accounts = ausAssets;
+      else accounts = Object.assign({}, accounts, {
+        assetPathReason: ausAssets.reason,
+        assetPathMessage: ausAssets.message
+      });
+    }
+  }
+
   if (!accounts.ok) {
     /* Ein Abbruch verliert sonst seine eigene Ursache: der Code ist
        verbraucht, das Token nirgends gespeichert, und die naechste Frage
@@ -433,21 +470,40 @@ async function handleCallback(request, url, env) {
   const auswahl = erlaubt.configured ? zulaessig : accounts.data.accounts;
   const chosen = auswahl[0];
 
-  if (!chosen.pageAccessToken) {
-    return errorPage("noPageToken",
-      "Fuer die gewaehlte Seite wurde kein Seiten-Token geliefert. Ohne dieses Token laesst sich " +
-      "Instagram nicht bedienen.", 502, { "set-cookie": clearCookie });
+  /* WELCHES TOKEN GESPEICHERT WIRD.
+
+     Das Seiten-Token ist das bessere: es laeuft nicht ab. Ueber den
+     Asset-Weg kommt aber nicht zwingend eines mit — dort ist die Seite
+     ein eigenes Asset, und ihre Aufloesung kann fehlschlagen, ohne dass
+     die Instagram-Verbindung dadurch unbelegt waere.
+
+     Frueher war das ein harter Abbruch. Das war zu streng: das
+     langlebige NUTZER-Token traegt bei einer Business-Anmeldung
+     `instagram_content_publish` fuer genau dieses Konto. Es funktioniert
+     also — es laeuft nur nach rund 60 Tagen ab.
+
+     Also: Seiten-Token bevorzugen, sonst das Nutzer-Token nehmen UND das
+     Ablaufdatum festhalten. Was der Lebendtest gleich prueft, ist genau
+     das Token, das danach gespeichert wird — sonst pruefte er etwas
+     anderes als das, was spaeter benutzt wird. */
+  const tokenArt = chosen.pageAccessToken ? "page" : "user";
+  const wirkToken = chosen.pageAccessToken || userToken;
+
+  if (!wirkToken) {
+    return errorPage("noUsableToken",
+      "Weder ein Seiten-Token noch ein Nutzer-Token steht zur Verfuegung. Es wurde nichts " +
+      "gespeichert.", 502, { "set-cookie": clearCookie });
   }
 
-  /* Lebendtest mit dem PAGE-Token, bevor es gespeichert wird. Ein Token,
-     das nicht funktioniert, soll gar nicht erst in den Speicher. */
+  /* Lebendtest, bevor gespeichert wird. Ein Token, das nicht
+     funktioniert, soll gar nicht erst in den Speicher. */
   const probe = await probeAccount(ctx, {
-    instagramAccountId: chosen.instagramAccountId, pageAccessToken: chosen.pageAccessToken
+    instagramAccountId: chosen.instagramAccountId, pageAccessToken: wirkToken
   });
   if (!probe.ok) {
     return errorPage(probe.reason,
-      "Das Seiten-Token wurde ausgestellt, aber ein Testabruf des Instagram-Kontos schlug fehl: " +
-      (probe.message || "unbekannt") + " Es wurde nichts gespeichert.", 502,
+      `Ein Testabruf des Instagram-Kontos mit dem ${tokenArt === "page" ? "Seiten" : "Nutzer"}-Token ` +
+      "schlug fehl: " + (probe.message || "unbekannt") + " Es wurde nichts gespeichert.", 502,
       { "set-cookie": clearCookie });
   }
 
@@ -457,12 +513,18 @@ async function handleCallback(request, url, env) {
     connectedAt: now,
     pageId: chosen.pageId,
     pageName: chosen.pageName,
-    /* Das PAGE-Token — laeuft nicht ab und verlaesst den Worker nie. */
-    pageAccessToken: chosen.pageAccessToken,
-    tokenExpiresAt: null,
+    /* Das wirksame Token — verlaesst den Worker nie. Ein Seiten-Token
+       laeuft nicht ab, ein Nutzer-Token nach rund 60 Tagen; welches es
+       ist, steht daneben, damit niemand das eine fuer das andere haelt. */
+    pageAccessToken: wirkToken,
+    tokenType: tokenArt,
+    tokenExpiresAt: tokenArt === "page" ? null : (userTokenExpiresAt || null),
     userTokenExpiresAt,
     instagramAccountId: chosen.instagramAccountId,
     instagramUsername: chosen.instagramUsername,
+    /* Ueber welchen Weg das Konto gefunden wurde. Steht im Datensatz,
+       weil die beiden Wege verschiedene Gewaehr tragen. */
+    resolvedVia: accounts.data.source || "meAccounts",
     instagramName: chosen.instagramName,
     permissions: {
       granted: permissions.data.granted,
