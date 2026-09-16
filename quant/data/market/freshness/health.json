@@ -1,49 +1,49 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T13:31:27.769Z",
+  "checkedAt": "2026-09-16T13:49:25.368Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-16",
-    "localTime": "09:31:27",
+    "localTime": "09:49:25",
     "lastCompletedSession": "2026-09-15",
     "currentSession": "2026-09-16",
     "expectedIntradaySession": "2026-09-16"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-16T13:31:23.417Z",
+    "indexGeneratedAt": "2026-09-16T13:49:21.017Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-09-15",
-      "kind": "last",
-      "isRunning": false,
-      "isComplete": true
+      "sessionDate": "2026-09-16",
+      "kind": "current",
+      "isRunning": true,
+      "isComplete": false
     },
     "dataSession": {
-      "sessionDate": "2026-09-15",
-      "asOf": "2026-09-15T20:55:00.000Z",
-      "asOfLocal": "16:55",
-      "regularComplete": true,
-      "snapshots": 5308,
-      "universe": true
+      "sessionDate": "2026-09-16",
+      "asOf": "2026-09-16T13:45:00.000Z",
+      "asOfLocal": "09:45",
+      "regularComplete": false,
+      "snapshots": 485,
+      "universe": false
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "previousSessionWithinOpenGrace",
-    "dataLabel": "Letzter Handelstag · Dienstag · heutige Kurse folgen",
+    "dataState": "LIVE",
+    "dataReason": "runningSession",
+    "dataLabel": "Heute · Stand 09:45",
     "entries": 520,
     "byState": {
-      "LIVE": 0,
-      "LAST_SESSION": 520,
+      "LIVE": 485,
+      "LAST_SESSION": 35,
       "STALE": 0,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "previousSessionWithinOpenGrace": 520
+      "runningSession": 485,
+      "previousSessionWithinOpenGrace": 35
     },
     "staleSample": [],
     "universeSessions": [
-      "2026-09-14",
       "2026-09-15"
     ],
     "universeCoversLastSession": true,
