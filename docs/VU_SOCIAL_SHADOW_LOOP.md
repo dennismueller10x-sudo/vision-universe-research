@@ -214,3 +214,62 @@ social/data/shadow-decisions.json „würde X um T"
 
 Ohne diese Dateien begänne jeder Lauf bei den Startwerten, und der
 Kreislauf wäre eine Schleife, die sich nur schnell dreht.
+
+---
+
+## 6. Stand nach dem Anschluss der Zeitdimension (16.09., abends)
+
+```
+Evidenz: REAL
+Evidenzzustand            NICHTS_GEMESSEN → BEWERTBAR
+gemessene Beiträge        0 → 16
+davon bewertbar           0 → 16
+Vergleichsbasis reicht    false → true
+Beobachtungen             0 → 2        (mediaFormat: REEL n=9, CAROUSEL n=7)
+davon belastbar           0 → 0
+Zeitwissen                0 → 8 Stunden
+gewählte Stunde           18 → 18      (Quelle: Startwert, beide Läufe)
+
+URTEIL: CLOSED_STATE
+```
+
+Vier Dinge stehen in diesen Zeilen, die vorher nicht darin standen:
+
+1. **16 statt 12.** Vier Messungen waren von einem schmaleren Lauf
+   überschrieben worden. Sie sind zurück, und die Ingestion führt
+   seitdem zusammen statt zu ersetzen (§8 im Agent-Graph-Dokument).
+2. **Die Beobachtungen heißen jetzt `mediaFormat`.** Sie hießen
+   `visualType` und bedeuteten etwas anderes.
+3. **Zeitwissen 8.** Der Rückkanal für die Stunde ist angeschlossen.
+   Vorher wurde dort `null` übergeben.
+4. **Quelle: Startwert.** Und das ist kein Rückschritt, sondern die
+   Schwelle bei der Arbeit.
+
+### Warum die Stunde trotzdem nicht entscheidet
+
+| Stunde (UTC) | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 |
+|---|---|---|---|---|---|---|---|---|
+| Beiträge | 2 | 1 | 1 | 1 | 2 | 3 | **4** | 2 |
+
+`minimumSampleForExploit` ist **5**. Die größte Stichprobe ist **4**.
+
+Aus vier Beiträgen zu einer Uhrzeit folgt keine Uhrzeitempfehlung — das
+wäre ein Zufall mit Zeitstempel. Die Schwelle nachgeben zu lassen wäre
+die einzige Art, das Urteil zu verbessern, **ohne etwas zu lernen**.
+
+`CLOSED_STATE` ist hier deshalb die *richtige* Folgerung. Was fehlt, ist
+kein Code: es ist **eine** weitere Messung in einer der belegten
+Stunden. `LC11` zeigt an einem gebauten Fall, was dann passiert — die
+Quelle springt auf `gemessen`, und die gewählte Stunde kippt.
+
+### Was für den Archetyp-Kanal fehlt, ist etwas anderes
+
+`Formatwissen: 0`, in beiden Läufen. Die 26 Bestandsbeiträge stammen vom
+Owner, nicht aus der Pipeline. Sie tragen **keinen Archetyp**, weil das
+System nie einen entschieden hat. Ihn nachträglich zu vergeben, damit
+das Feld gefüllt aussieht, wäre erfundene Vorgeschichte — und sie flösse
+als Formatwissen in genau die Entscheidung ein, die der Nachweis prüft.
+
+Dieser Kanal öffnet sich erst, wenn **selbst erzeugte** Beiträge
+veröffentlicht und gemessen sind. Das ist eine Owner-Entscheidung, keine
+Implementierungsaufgabe.

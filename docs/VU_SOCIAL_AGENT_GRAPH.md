@@ -189,3 +189,120 @@ aus dem die antwortende Fassung gebaut wurde, und der Workflow wartet
 auf **seinen eigenen**. Kein Statuscode, keine Zeitspanne — die
 Identität. Das beendet die Fehlerklasse, statt ihre dritte Ausprägung zu
 behandeln.
+
+---
+
+## 8. Ein vierter Fehler mit einem anderen Gesicht: der stille Verlust
+
+Die drei aus §7 sahen alle gleich aus. Dieser sah nach gar nichts aus.
+
+Am 16.09. um **17:59** standen **16 gemessene Beiträge** in
+`social/data/performance.json`. Um **18:05** standen dort **12**. Kein
+roter Lauf, keine Fehlermeldung, kein Hinweis irgendwo: die zweite
+Ingestion erreichte wegen des damals zu klein gerechneten
+Subrequest-Budgets weniger Beiträge und schrieb die Datei **neu**.
+
+Vier Messungen waren weg. Nicht veraltet — weg.
+
+Bemerkt habe ich es nur, weil ein Monitor auf „mehr als 12" wartete und
+nicht ausgelöst wurde. Er wartete auf etwas, das bereits dagewesen und
+inzwischen gelöscht worden war.
+
+**Die Regel, die daraus folgt:** gemessene Leistung ist ein **Beleg**,
+kein Zwischenstand. Ein Lauf, der weniger erreicht, ist ein schmalerer
+Blick auf dieselbe Welt und kein Löschauftrag.
+
+| Fall | Was gewinnt |
+|---|---|
+| neue Messung | immer — sie ist jünger |
+| neues Scheitern gegen vorhandene Messung | nie — die Abfrage misslang, nicht die Zahl von gestern |
+| Beitrag, nach dem dieser Lauf nicht fragte | bleibt — ein kürzeres Fenster ist kein Löschgrund |
+
+Übernommene Zeilen tragen `carriedOver`, den Zeitpunkt des letzten
+Versuchs und dessen Grund. `capturedAt` bleibt der Zeitpunkt der
+**ursprünglichen** Messung: eine übernommene Zahl mit neuem Datum wäre
+eine Fälschung des Alters, und Alter entscheidet in dieser Datei über
+`VERIFIED` gegen `STALE`.
+
+Und `run: { requested, measured, carriedOver }` hält fest, was **dieser
+Lauf** geschafft hat. Ohne diese Trennung würde das Zusammenführen genau
+den schrumpfenden Lauf verdecken, der den Anlass gab.
+
+`PI15`–`PI22` halten das fest. `PI15` ist der Vorfall selbst.
+
+---
+
+## 9. Der Draht, der nie angeschlossen war
+
+`Strategy.selectTiming` kann gemessene Stunden verarbeiten, seit es die
+Funktion gibt. Übergeben wurde ihr `timingKnowledge: null`.
+
+Diese Dimension war also nicht *zu dünn belegt*. Sie war **tot**, und
+keine Menge Messung hätte daran je etwas geändert. Das ist derselbe
+Befund wie beim leeren `archetypeKnowledge` — nur eine Ebene später
+gefunden.
+
+Die Stunde ist dabei die einzige Eigenschaft fremder Bestandsbeiträge,
+die **ohne jede Übersetzung** sowohl gemessen als auch entschieden wird:
+Instagram meldet den Zeitstempel, die Strategie wählt eine Stunde. Kein
+Vokabular dazwischen, also auch keine Annahme dazwischen.
+
+| Test | Was er zeigt |
+|---|---|
+| `LC11` | ab n=6 wird `timingSource` = `gemessen`, die Stunde kippt |
+| `LC12` | heutiger Stand: 8 Stunden gemessen, größte Stichprobe **n=4** → entscheidet **nicht** |
+| `LC13` | ohne Leistung kein Zeitwissen — ein Datum ist keine Beobachtung |
+
+`LC12` ist der wichtigere der drei. Der Unterschied zwischen „nicht
+gemessen" und „gemessen, aber zu dünn" ist der Unterschied zwischen
+einer fehlenden Anbindung und einer Aufgabe, die Zeit braucht.
+
+---
+
+## 10. `mediaFormat` steht neben `visualType`, nicht darin
+
+`visualType` ist unser Vokabular für die **gestalterische Entscheidung**:
+`CHART`, `DATA_CARD`, `MOTION_GRAPHIC`, `CAROUSEL`, `VIDEO`.
+
+Dort lag bisher die Instagram-Kohorte. `REEL` kommt in diesem Vokabular
+gar nicht vor, und `CAROUSEL` vermischte sich stillschweigend mit
+unserem `CAROUSEL`. Die zwei Beobachtungen, die daraus entstanden,
+hießen `visualType` und bedeuteten etwas anderes.
+
+Aus „Instagram meldet ein Video" folgt weder `MOTION_GRAPHIC` noch
+`VIDEO` — beides wäre eine Entscheidung, die bei diesen Beiträgen
+niemand getroffen hat.
+
+Deshalb: `mediaFormat` ist, was der **Plattform-Container** sagt.
+`visualType` bleibt bei fremden Beiträgen `null`. Getrennt zu halten
+kostet ein Feld; zusammenzuwerfen kostet die Unterscheidbarkeit von
+Gemessenem und Angenommenem (`LC14`).
+
+`mediaFormat` läuft bewusst als Lerndimension mit, obwohl die Strategie
+dafür noch keinen Parameter hat. Die Sicherheitsgrenze stoppt die
+Änderung **mit Begründung**. Das ist der Unterschied zwischen „wir können
+es nicht messen" und „wir messen es, können damit aber noch nichts
+entscheiden". Die zweite Aussage ist eine Aufgabe; die erste wäre eine
+Ausrede.
+
+---
+
+## 11. Warum der Nachweis jeden Zustand zweimal fährt
+
+Ein Zyklus **entscheidet in Stufe 4** und **misst in Stufe 8**. Eine
+Messung, die während eines Laufs eintrifft, erreicht die Entscheidung
+dieses Laufs nicht mehr — sie wird am Ende ins Gedächtnis geschrieben
+und wirkt beim nächsten Mal.
+
+Das ist kein Mangel, sondern die Zeit: eine Entscheidung kann nur
+benutzen, was bei ihr schon bekannt war.
+
+Der Nachweis lief je Zustand genau **einmal** und hätte deshalb **nie**
+eine geänderte Entscheidung zeigen können. Er hätte daraus geschlossen,
+der Lernpfad trage nicht — ein Beweis, der an seiner eigenen Bauweise
+scheitert und das Ergebnis dem Gegenstand anlastet.
+
+Beide Zustände laufen jetzt zweimal, mit Rückschreiben in den
+Datenordner wie in der Produktion (`--out` = `--data`), und verglichen
+werden die jeweils zweiten Läufe. **Beide** zweimal — sonst wäre die
+Zahl der Läufe ein zweiter Unterschied zwischen den Zuständen.
