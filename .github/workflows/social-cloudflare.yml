@@ -109,6 +109,32 @@ jobs:
           fi
           echo "Zugangsdaten sind gesetzt (Namen geprueft, keine Werte gelesen)."
 
+      - name: Ist der Admin-Schluessel als GitHub-Secret hinterlegt?
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Der Smoke-Publish-Workflow braucht diesen Schluessel. Ob er als
+        # Repository-Secret existiert, laesst sich von aussen nicht
+        # nachsehen — die GitHub-API gibt Secrets nicht heraus, und der
+        # Weg dorthin ist ohnehin gesperrt. HIER ist er da, also wird
+        # hier gemessen.
+        #
+        # Gemeldet wird: vorhanden ja/nein und ob er die Mindestlaenge
+        # erreicht, die der Worker verlangt. Nie der Wert, nie die
+        # genaue Laenge.
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): FEHLT"
+            echo "github_admin_key=missing" >> "$GITHUB_OUTPUT"
+          elif [ ${#KEY} -lt 32 ]; then
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): vorhanden, aber KUERZER als 32 Zeichen"
+            echo "github_admin_key=tooShort" >> "$GITHUB_OUTPUT"
+          else
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): vorhanden, mindestens 32 Zeichen"
+            echo "github_admin_key=present" >> "$GITHUB_OUTPUT"
+          fi
+        id: ghkey
+        continue-on-error: true
+
       - name: Betriebsart bestimmen
         id: mode
         # Ein Dispatch kann diesen Workflow nicht ausloesen, solange er
@@ -397,3 +423,6 @@ jobs:
           echo "visionuniverse.de auf dem Konto: ${{ steps.zones.outputs.zone_present || 'unbekannt' }}"
           echo "Zone aktiv: ${{ steps.zones.outputs.zone_active || 'unbekannt' }}"
           echo "Zonen auf dem Konto: ${{ steps.zones.outputs.zone_names || 'unbekannt' }}"
+          echo ""
+          echo "=== GITHUB-SECRET fuer den Smoke-Publish ==="
+          echo "VU_SOCIAL_ADMIN_KEY: ${{ steps.ghkey.outputs.github_admin_key || 'unbekannt' }}"
