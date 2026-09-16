@@ -175,6 +175,19 @@ jobs:
           cat /tmp/preflight.log >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Zonen auf dem Konto — ist eine eigene Domain moeglich?
+        id: zones
+        # Meta lehnt die workers.dev-Adresse als App-Domain ab. Die
+        # Alternative ist eine eigene Subdomain, und die setzt voraus,
+        # dass die Zone auf DIESEM Cloudflare-Konto liegt. Das wird hier
+        # gefragt statt beim Deployen herausgefunden: eine Custom Domain
+        # ohne Zone laesst `wrangler deploy` fehlschlagen und reisst die
+        # ganze Strecke mit.
+        #
+        # Nur lesend. Zonennamen stehen im oeffentlichen DNS.
+        continue-on-error: true
+        run: node scripts/social/provision-cloudflare.mjs --list-zones social.visionuniverse.de
+
       - name: Preflight-Bericht sichern
         uses: actions/upload-artifact@v4
         with:

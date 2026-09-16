@@ -282,6 +282,71 @@ function compareSecrets(before, after) {
 
 /* ------------------------------------------------------------------ */
 
+
+/* ------------------------------------------------------------------ */
+/* WELCHE ZONEN LIEGEN AUF DIESEM KONTO                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Eine Worker Custom Domain setzt voraus, dass die Zone auf DIESEM
+ * Cloudflare-Konto liegt. Ohne sie schlaegt `wrangler deploy` fehl und
+ * reisst die Deployment-Strecke mit — deshalb wird das vorher gefragt
+ * und nicht beim Deployen herausgefunden.
+ *
+ * Zonennamen sind keine Geheimnisse: sie stehen im oeffentlichen DNS.
+ * Ausgegeben werden trotzdem nur Name und Status, nichts weiter.
+ */
+async function listZones(wanted) {
+  console.log("");
+  console.log("Zonen auf diesem Konto");
+
+  const result = await api(`/zones?account.id=${accountId}&per_page=50`);
+  if (!result.ok || !Array.isArray(result.body && result.body.result)) {
+    console.log("  NICHT lesbar (" + describe(result) + ").");
+    console.log("  Moeglicherweise fehlt dem Token das Recht 'Zone: Read'. Das ist kein");
+    console.log("  Fehler dieses Laufs — es heisst nur, dass die Frage offen bleibt.");
+    if (process.env.GITHUB_OUTPUT) {
+      writeFileSync(process.env.GITHUB_OUTPUT, "zone_readable=false\n", { flag: "a" });
+    }
+    return { zones: null };
+  }
+
+  const zones = result.body.result.map((z) => ({ name: z.name, status: z.status }));
+  if (!zones.length) {
+    console.log("  (keine)");
+  }
+  for (const zone of zones) console.log(`  ${zone.name}  [${zone.status}]`);
+
+  if (!wanted) return { zones };
+
+  /* Eine Custom Domain darf eine Subdomain sein — die ZONE ist der
+     registrierbare Name darueber. */
+  const base = String(wanted).split(".").slice(-2).join(".");
+  const hit = zones.find((z) => z.name === base);
+
+  console.log("");
+  if (!hit) {
+    console.log(`Zone ${base}: NICHT auf diesem Konto.`);
+    console.log(`Eine Worker Custom Domain auf ${wanted} ist damit nicht moeglich,`);
+    console.log("solange die Zone nicht hier liegt.");
+  } else if (hit.status !== "active") {
+    console.log(`Zone ${base}: vorhanden, Status "${hit.status}".`);
+    console.log("Eine Custom Domain braucht eine aktive Zone.");
+  } else {
+    console.log(`Zone ${base}: aktiv — eine Custom Domain auf ${wanted} ist moeglich.`);
+  }
+
+  if (process.env.GITHUB_OUTPUT) {
+    writeFileSync(process.env.GITHUB_OUTPUT,
+      "zone_readable=true\n" +
+      `zone_present=${hit ? "true" : "false"}\n` +
+      `zone_active=${hit && hit.status === "active" ? "true" : "false"}\n`,
+      { flag: "a" });
+  }
+  return { zones, zone: hit || null };
+}
+
+
 async function main() {
   requireCredentials();
   console.log("VISION UNIVERSE SOCIAL — Cloudflare bereitstellen");
@@ -308,6 +373,12 @@ async function main() {
       console.log("HINWEIS: Diese erwarteten Secrets sind nicht gesetzt: " + stillMissing.join(", "));
       console.log("Ohne sie laeuft der OAuth-Flow nicht. Der Worker meldet das selbst ueber /health.");
     }
+    return;
+  }
+
+  if (has("--list-zones")) {
+    const wanted = argv[argv.indexOf("--list-zones") + 1];
+    await listZones(wanted && !wanted.startsWith("--") ? wanted : null);
     return;
   }
 
