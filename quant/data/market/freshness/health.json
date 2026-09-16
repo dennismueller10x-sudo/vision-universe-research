@@ -1,12 +1,12 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T08:17:43.087Z",
+  "checkedAt": "2026-09-16T10:22:28.468Z",
   "target": "repository",
   "market": {
     "state": "PRE_MARKET",
     "localDate": "2026-09-16",
-    "localTime": "04:17:43",
+    "localTime": "06:22:28",
     "lastCompletedSession": "2026-09-15",
     "currentSession": "2026-09-16",
     "expectedIntradaySession": "2026-09-15"
@@ -50,56 +50,28 @@
     "state": "OK"
   },
   "daily": {
-    "universeAsOf": "2026-09-14",
-    "generatedAt": "2026-09-15T18:25:48.079Z",
-    "state": "STALE",
-    "reason": "lastSessionMissing",
-    "label": "Schluss Mo., 14.09. · nicht aktuell",
+    "universeAsOf": "2026-09-15",
+    "generatedAt": "2026-09-16T10:22:21.235Z",
+    "state": "LAST_SESSION",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Dienstag",
     "expectedSession": "2026-09-15",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 0,
-        "STALE": 40,
+        "LAST_SESSION": 40,
+        "STALE": 0,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastSessionMissing": 40
+        "lastCompletedSession": 40
       },
-      "staleSample": [
-        "AAPL",
-        "ABBV",
-        "ABCL",
-        "ABNB",
-        "ABX",
-        "ACIC",
-        "ACMR",
-        "ACN",
-        "ACT",
-        "ACTG",
-        "ADBE",
-        "ADC",
-        "ADI",
-        "ADMA",
-        "ADP",
-        "ADPT",
-        "ADSK",
-        "AEP",
-        "AFG",
-        "AFRM",
-        "AGEN",
-        "AGL",
-        "AIR",
-        "AIRT",
-        "ALAB"
-      ],
-      "seriesIndexCount": 6438
+      "staleSample": [],
+      "seriesIndexCount": 6439
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Tageskurse STALE: asOf 2026-09-14, erwartet 2026-09-15 (lastSessionMissing)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
