@@ -535,6 +535,13 @@ jobs:
         # Insights duerfen den Lauf nicht umwerfen — sie sind selbst ein
         # Befund, und der Zyklus kommt mit fehlenden Daten zurecht.
         run: |
+          # Nur die Laenge, nie der Wert. Zwei Laeufe endeten hier in
+          # unter einer Sekunde, und ohne diese Zeile liess sich nicht
+          # unterscheiden, ob der Schluessel fehlte oder der Abruf
+          # fehlschlug.
+          echo "Schluessel: ${#KEY} Zeichen"
+          echo "Ziel: https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA"
+
           if [ -z "$KEY" ]; then
             echo "Kein Admin-Schluessel — keine Messung. (Keine Aussage ueber die Zahlen.)"
             exit 0
@@ -567,7 +574,11 @@ jobs:
             echo "Insights-Endpunkt antwortet mit HTTP $code — nichts eingepflegt."
             echo "Das ist eine Aussage ueber den Endpunkt, NICHT ueber die Leistung des Beitrags."
             head -c 400 tmp/social/insights.json || true
-            exit 0
+            echo ""
+            # Laut scheitern. Der Schluessel ist da, der Abruf nicht -
+            # das ist ein Befund und kein Rauschen. continue-on-error
+            # faengt es fuer den Lauf ab; sichtbar wird es trotzdem.
+            exit 1
           fi
 
           node scripts/social/ingest-performance.mjs \
