@@ -142,3 +142,44 @@ export async function updateHealth(env, patch) {
 }
 
 export { CONNECTION_KEY };
+
+/* ------------------------------------------------------------------ */
+/* DAS PROTOKOLL DES SMOKE-TESTS                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Eigener Schluessel, nicht Teil der Verbindung.
+ *
+ * Der Grund: ein Trennen loescht die Verbindung. Das Protokoll eines
+ * bereits veroeffentlichten Beitrags darf davon nicht verschwinden —
+ * der Beitrag ist ja noch da. Wer beides in einen Datensatz legt,
+ * verliert beim Trennen den Beleg dafuer, dass etwas oeffentlich
+ * gemacht wurde.
+ */
+const SMOKE_KEY = "smoke:publish:v1";
+
+export async function readSmokeLog(env) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const raw = await env.VU_SOCIAL_KV.get(SMOKE_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (err) { return null; }
+}
+
+export async function appendSmokeLog(env, eintrag) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const vorhanden = await readSmokeLog(env);
+  const log = {
+    version: 1,
+    attempts: (vorhanden && Array.isArray(vorhanden.attempts) ? vorhanden.attempts : []).concat([eintrag]),
+    lastAttemptAt: eintrag.at,
+    /* Einmal veroeffentlicht, bleibt veroeffentlicht. Ein spaeterer
+       Fehlversuch darf diesen Beleg nicht ueberschreiben. */
+    published: Boolean((vorhanden && vorhanden.published) || eintrag.mediaId),
+    mediaId: (vorhanden && vorhanden.mediaId) || eintrag.mediaId || null,
+    permalink: (vorhanden && vorhanden.permalink) || eintrag.permalink || null
+  };
+  await env.VU_SOCIAL_KV.put(SMOKE_KEY, JSON.stringify(log));
+  return log;
+}
+
+export { SMOKE_KEY };

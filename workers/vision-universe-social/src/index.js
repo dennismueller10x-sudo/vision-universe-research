@@ -51,11 +51,12 @@ import { createState, verifyState, clearStateCookie, timingSafeEqual } from "./s
 import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
   debugToken, probePageLinkage, resolveAccountsFromAssets,
+  createMediaContainer, mediaContainerStatus, publishMediaContainer, verifyMedia,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
-import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth } from "./store.js";
+import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog } from "./store.js";
 import { redact, redactText, fingerprint } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 
@@ -255,6 +256,251 @@ function isAllowedTarget(account, erlaubt) {
   }
   if (erlaubt.accountId && String(account.instagramAccountId) !== erlaubt.accountId) return false;
   return true;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* DER SMOKE-TEST: GENAU EIN BEITRAG, AUSDRUECKLICH AUSGELOEST         */
+/* ------------------------------------------------------------------ */
+
+/* Die Bestaetigung ist absichtlich unbequem zu tippen. Ein `?confirm=1`
+   waere in einer Browserzeile versehentlich erzeugt, dieses hier nicht. */
+const SMOKE_CONFIRM = "PUBLISH-ONE-TEST-POST";
+const SMOKE_AGAIN = "JA-ICH-WEISS-DASS-EIN-ZWEITER-BEITRAG-ENTSTEHT";
+
+/* Wie lange auf einen Container gewartet wird, bevor aufgegeben wird.
+   Ein Bild ist normalerweise sofort fertig; die Schleife ist fuer den
+   Fall, dass es das ausnahmsweise nicht ist. */
+const CONTAINER_TRIES = 5;
+const CONTAINER_WAIT_MS = 1500;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Traegt einen Meta-Fehler vollstaendig zusammen — ohne Token.
+ *
+ * Bei einem fehlgeschlagenen Beitrag ist die Frage nicht "hat es
+ * geklappt", sondern "woran genau lag es". Meta beantwortet das in
+ * `code`, `error_subcode` und `fbtrace_id`; ohne diese drei ist eine
+ * Ruecksprache mit dem Support wertlos.
+ *
+ * Die Meldung selbst laeuft durch dieselbe Schwaerzung wie alles
+ * andere: Meta spiegelt regelmaessig den ganzen Request zurueck, und
+ * darin steht das Token.
+ */
+function metaFehlerdaten(result, env) {
+  if (!result || result.ok) return null;
+  const geheim = [env && env.META_APP_SECRET, env && env.VU_SOCIAL_ADMIN_KEY];
+  return {
+    reason: result.reason || null,
+    message: redactText(String(result.message || "").slice(0, 500), geheim),
+    metaCode: result.metaCode === undefined ? null : result.metaCode,
+    metaSubcode: result.metaSubcode === undefined ? null : result.metaSubcode,
+    metaType: result.metaType || null,
+    fbtraceId: result.fbtraceId || null,
+    httpStatus: result.httpStatus === undefined ? null : result.httpStatus,
+    retryable: Boolean(result.retryable)
+  };
+}
+
+/**
+ * Prueft, dass das Bild ueberhaupt erreichbar ist — BEVOR Meta es
+ * abholen soll.
+ *
+ * Ohne diesen Schritt kommt ein unerreichbares Bild als Meta-Fehlercode
+ * zurueck, der nach einem Problem mit dem Konto aussieht. Der Unterschied
+ * zwischen "Instagram mag das Bild nicht" und "die Adresse antwortet
+ * nicht" gehoert festgestellt, bevor Meta gefragt wird.
+ */
+async function pruefeBild(imageUrl, fetchImpl) {
+  const holen = fetchImpl || fetch;
+  let antwort;
+  try {
+    antwort = await holen(imageUrl, { method: "HEAD" });
+  } catch (err) {
+    return { ok: false, reason: "imageUnreachable",
+      message: "Die Bildadresse ist nicht erreichbar: " + String(err && err.message).slice(0, 160) };
+  }
+  if (!antwort.ok) {
+    return { ok: false, reason: "imageUnreachable",
+      message: `Die Bildadresse antwortet mit HTTP ${antwort.status}. Meta koennte sie ebenfalls ` +
+        "nicht abholen." };
+  }
+  const typ = String(antwort.headers.get("content-type") || "");
+  if (!/^image\/jpe?g/i.test(typ)) {
+    return { ok: false, reason: "imageNotJpeg",
+      message: `Die Bildadresse liefert \`${typ || "keinen Inhaltstyp"}\`. Instagram nimmt fuer ` +
+        "einen Bildbeitrag JPEG." };
+  }
+  return { ok: true, contentType: typ,
+    contentLength: Number(antwort.headers.get("content-length")) || null };
+}
+
+async function handleSmokePublish(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  if (url.searchParams.get("confirm") !== SMOKE_CONFIRM) {
+    return json({
+      error: "confirmationRequired",
+      message: "Dieser Endpunkt veroeffentlicht einen ECHTEN Beitrag im verbundenen " +
+        "Instagram-Konto. Er laeuft nur mit ausdruecklicher Bestaetigung.",
+      confirmWith: `?confirm=${SMOKE_CONFIRM}`,
+      published: false
+    }, 400);
+  }
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected",
+      message: "Es besteht keine Verbindung. Es wurde nichts veroeffentlicht.", published: false }, 409);
+  }
+
+  /* Die Allowlist noch einmal, gegen den GESPEICHERTEN Datensatz. Sie
+     wurde beim Verbinden geprueft — aber zwischen damals und jetzt kann
+     die Konfiguration geaendert worden sein, und ein Beitrag ist nicht
+     zuruecknehmbar. */
+  const erlaubt = allowedTargets(env);
+  if (!isAllowedTarget({
+    instagramAccountId: record.instagramAccountId,
+    instagramUsername: record.instagramUsername
+  }, erlaubt)) {
+    return json({
+      error: "targetNotAllowed",
+      message: "Das gespeicherte Konto steht nicht (mehr) auf der Ziel-Allowlist. Es wurde nichts " +
+        "veroeffentlicht.",
+      storedAccount: record.instagramUsername || record.instagramAccountId,
+      allowed: erlaubt.beschreibung,
+      published: false
+    }, 403);
+  }
+
+  /* GENAU EINER. Die Graph API kennt kein Idempotenz-Token: ein zweiter
+     Aufruf erzeugt einen zweiten Beitrag. Diese Sperre ist die einzige,
+     die das verhindert. */
+  const vorher = await readSmokeLog(env);
+  if (vorher && vorher.published && url.searchParams.get("again") !== SMOKE_AGAIN) {
+    return json({
+      error: "alreadyPublished",
+      message: "Der Smoke-Test wurde bereits durchgefuehrt. Ein erneuter Aufruf erzeugt einen " +
+        "ZWEITEN Beitrag — die Graph API kennt kein Idempotenz-Token.",
+      mediaId: vorher.mediaId,
+      permalink: vorher.permalink,
+      published: true,
+      repeatWith: `&again=${SMOKE_AGAIN}`
+    }, 409);
+  }
+
+  const ctx = graphContext(env);
+  const imageUrl = String(env.VU_SOCIAL_SMOKE_IMAGE_URL || "").trim();
+  const caption = String(env.VU_SOCIAL_SMOKE_CAPTION || "").trim();
+  const beginn = new Date().toISOString();
+
+  if (!imageUrl) {
+    return json({ error: "noImageConfigured",
+      message: "VU_SOCIAL_SMOKE_IMAGE_URL ist nicht gesetzt. Ohne Bild kein Bildbeitrag.",
+      published: false }, 400);
+  }
+
+  const bild = await pruefeBild(imageUrl, ctx.fetchImpl);
+  if (!bild.ok) {
+    const eintrag = { at: beginn, stage: "imageCheck", ok: false,
+      imageUrl, error: { reason: bild.reason, message: bild.message } };
+    await appendSmokeLog(env, eintrag);
+    return json({ error: bild.reason, message: bild.message, published: false, stage: "imageCheck" }, 400);
+  }
+
+  /* 1. Container. Bis hierher ist nichts oeffentlich. */
+  const container = await createMediaContainer(ctx, {
+    instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken,
+    imageUrl, caption
+  });
+  if (!container.ok) {
+    const fehler = metaFehlerdaten(container, env);
+    await appendSmokeLog(env, { at: beginn, stage: "createContainer", ok: false, imageUrl, error: fehler });
+    return json({ error: container.reason, stage: "createContainer", meta: fehler,
+      published: false }, 502);
+  }
+
+  /* 2. Zustand abfragen, bevor freigegeben wird. */
+  let zustand = null;
+  for (let i = 0; i < CONTAINER_TRIES; i += 1) {
+    const s = await mediaContainerStatus(ctx, {
+      containerId: container.data.containerId, accessToken: record.pageAccessToken
+    });
+    zustand = s.ok ? s.data : null;
+    if (!zustand || zustand.statusCode === "FINISHED" || zustand.statusCode === null) break;
+    if (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED") break;
+    await sleep(CONTAINER_WAIT_MS);
+  }
+
+  if (zustand && (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) {
+    const fehler = { reason: "containerNotUsable",
+      message: `Der Container steht auf ${zustand.statusCode}: ${zustand.status || "ohne Begruendung"}. ` +
+        "Es wurde nichts veroeffentlicht." };
+    await appendSmokeLog(env, { at: beginn, stage: "containerStatus", ok: false,
+      imageUrl, containerId: container.data.containerId, error: fehler });
+    return json({ error: fehler.reason, message: fehler.message, stage: "containerStatus",
+      containerId: container.data.containerId, published: false }, 502);
+  }
+
+  /* 3. Ab hier ist es oeffentlich. */
+  const freigabe = await publishMediaContainer(ctx, {
+    instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken,
+    containerId: container.data.containerId
+  });
+  if (!freigabe.ok) {
+    const fehler = metaFehlerdaten(freigabe, env);
+    await appendSmokeLog(env, { at: beginn, stage: "publish", ok: false,
+      imageUrl, containerId: container.data.containerId, error: fehler });
+    return json({ error: freigabe.reason, stage: "publish", meta: fehler,
+      containerId: container.data.containerId,
+      message: "Die Freigabe schlug fehl. Ob dabei etwas veroeffentlicht wurde, ist NICHT sicher — " +
+        "vor einem zweiten Versuch im Konto nachsehen.",
+      published: false }, 502);
+  }
+
+  /* 4. Zurueckgelesen. Eine Medien-ID ist eine Zusage, der Permalink ist
+        der Beleg. */
+  const geprueft = await verifyMedia(ctx, {
+    mediaId: freigabe.data.mediaId, accessToken: record.pageAccessToken
+  });
+
+  const eintrag = {
+    at: beginn,
+    finishedAt: new Date().toISOString(),
+    stage: "verify",
+    ok: geprueft.ok,
+    imageUrl,
+    imageContentType: bild.contentType,
+    containerId: container.data.containerId,
+    containerStatus: zustand ? zustand.statusCode : null,
+    mediaId: freigabe.data.mediaId,
+    permalink: geprueft.ok ? geprueft.data.permalink : null,
+    mediaType: geprueft.ok ? geprueft.data.mediaType : null,
+    timestamp: geprueft.ok ? geprueft.data.timestamp : null,
+    instagramAccountId: record.instagramAccountId,
+    instagramUsername: record.instagramUsername,
+    error: geprueft.ok ? null : metaFehlerdaten(geprueft, env)
+  };
+  const log = await appendSmokeLog(env, eintrag);
+
+  return json({
+    published: true,
+    mediaId: freigabe.data.mediaId,
+    permalink: eintrag.permalink,
+    mediaType: eintrag.mediaType,
+    timestamp: eintrag.timestamp,
+    containerId: container.data.containerId,
+    account: record.instagramUsername,
+    verified: geprueft.ok,
+    verifyError: eintrag.error,
+    attempts: log ? log.attempts.length : 1,
+    note: "Ein einzelner Testbeitrag. Es laeuft keine Automatik — der naechste Beitrag " +
+      "entsteht nur durch einen weiteren ausdruecklichen Aufruf."
+  }, geprueft.ok ? 200 : 207);
 }
 
 /**
@@ -767,6 +1013,18 @@ export default {
           }, 405);
         }
         return await handleDisconnect(request, url, env);
+      }
+      if (path === "/social/meta/smoke-publish") {
+        /* Nur POST. Ein GET waere ueber einen untergeschobenen Link
+           ausloesbar — und das Ergebnis waere ein oeffentlicher Beitrag. */
+        if (request.method !== "POST") {
+          return json({
+            error: "methodNotAllowed",
+            message: "Veroeffentlichen nur per POST — ein GET waere ueber einen Link ausloesbar.",
+            published: false
+          }, 405);
+        }
+        return await handleSmokePublish(request, url, env);
       }
       if (path === "/" || path === "/social" || path === "/social/meta") {
         const publicRecord = env.VU_SOCIAL_KV ? await readPublic(env) : { connected: false };

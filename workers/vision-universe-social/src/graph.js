@@ -120,7 +120,22 @@ export async function graph(ctx, path, params = {}, token = null, init = {}) {
      spiegelt regelmaessig den gesamten Request zurueck. */
   const message = redactText(error.message || text || `HTTP ${response.status}`,
     [ctx.appSecret, token]);
-  return classify(response.status, error, message);
+
+  /* Die Rohdaten des Fehlers reisen mit. `classify` bildet auf einen
+     kanonischen Grund ab — das ist richtig fuer die Entscheidung, aber
+     zu wenig fuer eine Diagnose: ohne `code`, `error_subcode` und
+     `fbtrace_id` ist eine Ruecksprache mit dem Meta-Support wertlos,
+     und ohne sie laesst sich auch nicht nachlesen, welcher der vielen
+     Faelle hinter einem Grund eingetreten ist.
+     Kein Token: `message` ist bereits geschwaerzt, die uebrigen Felder
+     sind Zahlen und Kennungen. */
+  return Object.assign(classify(response.status, error, message), {
+    httpStatus: response.status,
+    metaCode: error.code === undefined ? null : error.code,
+    metaSubcode: error.error_subcode === undefined ? null : error.error_subcode,
+    metaType: error.type || null,
+    fbtraceId: error.fbtrace_id || null
+  });
 }
 
 /* ------------------------------------------------------------------ OAuth */
@@ -622,5 +637,93 @@ export async function resolveAccountsFromAssets(ctx, userToken, granular) {
     }, k)),
     pagesWithoutInstagram: 0,
     authorizedPageIds: assets.data.pageIds
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* VEROEFFENTLICHEN — ZWEI SCHRITTE, GETRENNT GEHALTEN                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Instagram veroeffentlicht in zwei Schritten: erst ein Container, dann
+ * dessen Freigabe. Sie stehen hier als ZWEI Funktionen, nicht als eine.
+ *
+ * Der Grund ist nicht Stilfrage. Zwischen beiden liegt der einzige
+ * Moment, in dem sich noch nichts Oeffentliches ereignet hat: der
+ * Container existiert, ist pruefbar, und niemand sieht ihn. Wer beides
+ * in eine Funktion legt, verliert diesen Moment — und mit ihm die
+ * Moeglichkeit, vor der Veroeffentlichung abzubrechen.
+ *
+ * Die Graph API kennt ausserdem KEIN Idempotenz-Token. Ein
+ * wiederholter media_publish-Aufruf erzeugt einen zweiten Beitrag. Das
+ * Verhindern davon ist deshalb Sache des Aufrufers und nicht dieser
+ * Schicht — hier steht nur, dass es so ist.
+ */
+export async function createMediaContainer(ctx, { instagramAccountId, accessToken, imageUrl, caption }) {
+  const params = { image_url: String(imageUrl) };
+  if (caption) params.caption = String(caption);
+
+  const result = await graph(ctx, `${instagramAccountId}/media`, params, accessToken, { method: "POST" });
+  if (!result.ok) return result;
+  if (!result.data || !result.data.id) {
+    return fail("containerNotCreated",
+      "Die Plattform hat keinen Container-Bezeichner geliefert. Es wurde nichts veroeffentlicht.");
+  }
+  return ok({ containerId: String(result.data.id) });
+}
+
+/**
+ * Der Zustand eines Containers.
+ *
+ * Bei einem Bild ist er meist sofort FINISHED. Gefragt wird trotzdem:
+ * ein Container in ERROR laesst sich zwar freigeben, aber die Freigabe
+ * schlaegt dann fehl — und zwar NACH dem Punkt, an dem man noch
+ * folgenlos haette abbrechen koennen.
+ */
+export async function mediaContainerStatus(ctx, { containerId, accessToken }) {
+  const result = await graph(ctx, String(containerId),
+    { fields: "status_code,status" }, accessToken);
+  if (!result.ok) return result;
+  return ok({
+    statusCode: (result.data && result.data.status_code) ? String(result.data.status_code) : null,
+    status: (result.data && result.data.status) ? String(result.data.status) : null
+  });
+}
+
+/** Die Freigabe. Ab hier ist der Beitrag oeffentlich. */
+export async function publishMediaContainer(ctx, { instagramAccountId, accessToken, containerId }) {
+  const result = await graph(ctx, `${instagramAccountId}/media_publish`,
+    { creation_id: String(containerId) }, accessToken, { method: "POST" });
+  if (!result.ok) return result;
+  if (!result.data || !result.data.id) {
+    return fail("publishNoMediaId",
+      "Die Freigabe meldete keinen Medien-Bezeichner. Ob etwas veroeffentlicht wurde, ist damit " +
+      "OFFEN — es darf nicht erneut versucht werden, ohne im Konto nachzusehen.");
+  }
+  return ok({ mediaId: String(result.data.id) });
+}
+
+/**
+ * Liest den veroeffentlichten Beitrag zurueck.
+ *
+ * Eine Medien-ID aus der Antwort ist eine Zusage. Der Permalink ist der
+ * Beleg — er laesst sich oeffnen.
+ */
+export async function verifyMedia(ctx, { mediaId, accessToken }) {
+  const result = await graph(ctx, String(mediaId),
+    { fields: "id,permalink,timestamp,media_type,caption" }, accessToken);
+  if (!result.ok) return result;
+
+  const data = result.data || {};
+  if (String(data.id) !== String(mediaId)) {
+    return fail("mediaIdentityMismatch",
+      "Die API antwortet unter dieser Medien-ID mit einer anderen ID.");
+  }
+  return ok({
+    mediaId: String(data.id),
+    permalink: data.permalink ? String(data.permalink) : null,
+    timestamp: data.timestamp ? String(data.timestamp) : null,
+    mediaType: data.media_type ? String(data.media_type) : null,
+    caption: data.caption ? String(data.caption) : null
   });
 }

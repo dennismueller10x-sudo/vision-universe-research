@@ -142,6 +142,31 @@ META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
 # META_IG_ACCOUNT_ID = ""
 
 # -------------------------------------------------------------------------
+# SMOKE-TEST — genau EIN ausdruecklich ausgeloester Testbeitrag
+# -------------------------------------------------------------------------
+#
+# Der Endpunkt /social/meta/smoke-publish veroeffentlicht einen echten
+# Beitrag. Er laeuft nur per POST, nur mit Admin-Schluessel, nur mit
+# ausdruecklicher Bestaetigung und nur EINMAL — die Graph API kennt kein
+# Idempotenz-Token, ein zweiter Aufruf erzeugt einen zweiten Beitrag.
+#
+# Das Bild muss fuer Meta oeffentlich abrufbar und JPEG sein. Diese
+# Adresse liegt auf der bestehenden Vision-Universe-Seite (GitHub Pages):
+# 1280x720, Seitenverhaeltnis 1.778 — innerhalb dessen, was Instagram
+# fuer einen Bildbeitrag annimmt (zwischen 4:5 und 1.91:1, Breite
+# 320-1440 px).
+#
+# Der Worker prueft die Adresse selbst, BEVOR er Meta bittet sie
+# abzuholen: sonst kaeme ein unerreichbares Bild als Meta-Fehlercode
+# zurueck, der nach einem Problem mit dem Konto aussieht.
+VU_SOCIAL_SMOKE_IMAGE_URL = "https://research.visionuniverse.de/dashboard/assets/news-small-caps.jpg"
+
+# Die Bildunterschrift sagt, was der Beitrag ist. Wer ihn sieht, soll
+# nicht raten muessen — und wer ihn spaeter loescht, soll ihn
+# wiedererkennen.
+VU_SOCIAL_SMOKE_CAPTION = "Technischer Verbindungstest der Vision Universe Social-Infrastruktur. Dieser Beitrag wird nach der Pruefung wieder entfernt."
+
+# -------------------------------------------------------------------------
 # SPEICHER
 # -------------------------------------------------------------------------
 # Genau EIN Datensatz: die aktuelle Meta-Verbindung (siehe src/store.js).
