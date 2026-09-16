@@ -379,8 +379,13 @@ jobs:
             echo "---"
             echo "Aktion: \`${{ inputs.action || 'preflight (Push-Lauf)' }}\` · Preflight: \`${{ steps.preflight.outputs.verdict }}\`"
             echo ""
-            echo "Es wurde **kein Beitrag veroeffentlicht** und **kein Meta-Login ausgefuehrt**."
-            echo "Der Worker hat keinen Publishing-Endpunkt."
+            echo "Dieser Lauf hat **keinen Beitrag veroeffentlicht** und **keinen Meta-Login**"
+            echo "ausgefuehrt."
+            echo ""
+            echo "Der Worker hat seit dem Smoke-Test einen Publishing-Endpunkt"
+            echo "(\`/social/meta/smoke-publish\`). Er veroeffentlicht nur per POST, nur mit"
+            echo "Admin-Schluessel, nur mit ausdruecklicher Bestaetigung und nur einmal."
+            echo "Die Verifikation prueft, dass er ohne Schluessel mit 401 antwortet."
           } >> "$GITHUB_STEP_SUMMARY"
 
           # Der Zonen-Befund noch einmal am Ende — im Protokoll steht er
