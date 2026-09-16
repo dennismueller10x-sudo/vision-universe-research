@@ -190,9 +190,11 @@ ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" |
              text: s[0] ? s[0].textContent : null };
   });
   ok("Lazy: Platzhalter ist eindeutig kein Chart", skelett.chart === false && skelett.text === "Kurs lädt", JSON.stringify(skelett));
-  const hoeheVor = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => n.getBoundingClientRect().height));
+  /* Ganze Pixel: die Renderer liefern mitten im Layout Sub-Pixel-Werte
+     (131.99994 vs. 132), die keinen Sprung bedeuten. */
+  const hoeheVor = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => Math.round(n.getBoundingClientRect().height)));
   await lz.waitForLoadState("networkidle"); await warten(lz, 800);
-  const hoeheNach = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => n.getBoundingClientRect().height));
+  const hoeheNach = await lz.evaluate(() => [...document.querySelectorAll(".dx-poster-media")].slice(0, 6).map((n) => Math.round(n.getBoundingClientRect().height)));
   ok("Lazy: keine Layout-Spruenge (Hoehe vor/nach dem Laden gleich)", JSON.stringify(hoeheVor) === JSON.stringify(hoeheNach), hoeheVor + " -> " + hoeheNach);
   const stand = await lz.evaluate(() => window.VUDiscover.SeriesLoader.stats());
   const eindeutig = new Set(serien).size;
