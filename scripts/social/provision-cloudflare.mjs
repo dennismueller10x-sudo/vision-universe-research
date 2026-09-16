@@ -205,16 +205,50 @@ async function resolveUrl() {
   return { url, changed: true };
 }
 
-function setUrl(url) {
+/**
+ * Traegt die oeffentliche Basis-URL nach.
+ *
+ * -----------------------------------------------------------------------
+ * WARUM DAS NUR EINE LUECKE FUELLT UND NIE ETWAS ERSETZT
+ * -----------------------------------------------------------------------
+ *
+ * Der Workflow liest die Adresse nach dem Deployment aus der
+ * wrangler-Ausgabe — und zwar mit einem Muster, das nur
+ * `*.workers.dev` trifft. Solange es keine andere Adresse gab, war das
+ * richtig.
+ *
+ * Mit einer Custom Domain ist es falsch: `workers_dev` bleibt aktiv, die
+ * wrangler-Ausgabe nennt weiterhin die workers.dev-Adresse, und dieser
+ * Schritt wuerde die eigene Domain damit ueberschreiben. Beim naechsten
+ * Deployment stuende wieder die Adresse in der Konfiguration, die Meta
+ * gerade abgelehnt hat — und niemand haette etwas davon gemerkt, weil
+ * der Lauf gruen bliebe.
+ *
+ * Deshalb: dieser Aufruf fuellt eine Luecke. Eine gesetzte Adresse
+ * bleibt stehen. Wer sie wirklich aendern will, sagt es mit --force-url.
+ */
+function setUrl(url, options = {}) {
   if (!/^https:\/\/[a-z0-9.-]+$/i.test(url)) {
     fail("Keine plausible https-URL: " + url);
   }
   const clean = url.replace(/\/+$/, "");
   const source = loadConfig();
-  if (readTomlValue(source, "PUBLIC_BASE_URL") === clean) {
+  const current = readTomlValue(source, "PUBLIC_BASE_URL") || "";
+
+  if (current === clean) {
     console.log("PUBLIC_BASE_URL ist bereits " + clean);
     return { url: clean, changed: false };
   }
+
+  const configured = current && !current.startsWith("REPLACE_WITH");
+  if (configured && !options.force) {
+    console.log("PUBLIC_BASE_URL ist bereits gesetzt: " + current);
+    console.log("Nicht ueberschrieben mit: " + clean);
+    console.log("Dieser Schritt fuellt nur eine Luecke. Eine bewusst eingetragene Adresse");
+    console.log("— etwa eine eigene Domain — bleibt stehen. Zum Aendern: --force-url.");
+    return { url: current, changed: false };
+  }
+
   writeFileSync(CONFIG, setTomlValue(source, "PUBLIC_BASE_URL", clean));
   console.log("PUBLIC_BASE_URL gesetzt: " + clean);
   return { url: clean, changed: true };
@@ -382,8 +416,9 @@ async function main() {
     return;
   }
 
-  if (has("--url")) {
-    setUrl(argv[argv.indexOf("--url") + 1]);
+  if (has("--url") || has("--force-url")) {
+    const flag = has("--force-url") ? "--force-url" : "--url";
+    setUrl(argv[argv.indexOf(flag) + 1], { force: flag === "--force-url" });
     return;
   }
 
