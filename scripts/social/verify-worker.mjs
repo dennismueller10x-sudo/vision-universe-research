@@ -50,6 +50,16 @@ function arg(name, fallback) {
 const OUT_DIR = arg("--out", null);
 const resolveOut = (t) => (isAbsolute(t) ? t : join(ROOT, t));
 
+
+/** Eine Variable aus wrangler.toml — dieselbe Quelle wie das Deployment. */
+function configuredValue(key) {
+  if (!existsSync(CONFIG)) return null;
+  const match = readFileSync(CONFIG, "utf8")
+    .match(new RegExp(`^\\s*${key}\\s*=\\s*"([^"]*)"`, "m"));
+  if (!match) return null;
+  return match[1].startsWith("REPLACE_WITH") ? null : match[1];
+}
+
 function configuredUrl() {
   if (!existsSync(CONFIG)) return null;
   const match = readFileSync(CONFIG, "utf8").match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
@@ -210,11 +220,52 @@ async function main() {
   record("Antworten werden nicht zwischengespeichert",
     cache === "no-store" ? "PASS" : "WARN", "cache-control: " + (cache || "nicht gesetzt"));
 
-  /* 10. Nichts veroeffentlicht — der Worker hat gar keinen Endpunkt dafuer. */
-  const publish = await call("/social/meta/publish", { method: "POST" });
-  record("Kein Publishing-Endpunkt vorhanden",
-    [401, 404].includes(publish.status) ? "PASS" : "WARN",
-    "HTTP " + publish.status + " — es gibt keinen Weg, ueber diesen Worker zu veroeffentlichen.");
+  /* 10. Das Smoke-Bild — erreichbar und JPEG?
+
+     Diese Pruefung steht hier, weil sie hier moeglich ist. Der Worker
+     prueft dasselbe, aber erst im Moment des Veroeffentlichens — und
+     dann hat der Owner den Aufruf schon abgeschickt. Eine Adresse, die
+     nicht antwortet, soll VORHER auffallen. */
+  const bildUrl = configuredValue("VU_SOCIAL_SMOKE_IMAGE_URL");
+  if (!bildUrl) {
+    record("Smoke-Bild konfiguriert", "SKIP", "VU_SOCIAL_SMOKE_IMAGE_URL steht nicht in wrangler.toml.");
+  } else {
+    report.smokeImageUrl = bildUrl;
+    try {
+      const bild = await fetch(bildUrl, { method: "HEAD", redirect: "follow" });
+      const typ = String(bild.headers.get("content-type") || "");
+      if (!bild.ok) {
+        record("Smoke-Bild erreichbar", "FAIL",
+          `HTTP ${bild.status} — Meta koennte es ebenfalls nicht abholen.`);
+      } else if (!/^image\/jpe?g/i.test(typ)) {
+        record("Smoke-Bild erreichbar", "FAIL",
+          `Inhaltstyp ${typ || "fehlt"} — Instagram nimmt fuer einen Bildbeitrag JPEG.`);
+      } else {
+        record("Smoke-Bild erreichbar", "PASS",
+          `${typ}, ${bild.headers.get("content-length") || "?"} Bytes`);
+      }
+    } catch (err) {
+      record("Smoke-Bild erreichbar", "FAIL",
+        "Nicht abrufbar: " + String(err && err.message).slice(0, 120));
+    }
+  }
+
+  /* 11. Der Publishing-Endpunkt existiert — und ist verschlossen.
+
+     Frueher hiess diese Zeile "es gibt keinen Weg zu veroeffentlichen".
+     Das stimmt nicht mehr, und eine Pruefung, die eine ueberholte
+     Zusicherung wiederholt, ist schlimmer als keine. */
+  const smoke = await call("/social/meta/smoke-publish", { method: "POST" });
+  record("Publishing-Endpunkt verschlossen",
+    [401, 403].includes(smoke.status) ? "PASS" : "FAIL",
+    "HTTP " + smoke.status + (smoke.status === 401
+      ? " ohne Admin-Schluessel — er veroeffentlicht nichts ohne Schluessel und Bestaetigung."
+      : " — erwartet war 401."));
+
+  /* 12. Nichts veroeffentlicht durch DIESEN Lauf. */
+  record("Dieser Lauf hat nichts veroeffentlicht", "PASS",
+    "Es wurde kein `confirm` mitgeschickt — der Endpunkt lehnt ohne Bestaetigung ab, " +
+    "und ohne Admin-Schluessel kommt er gar nicht so weit.");
 
   const failed = report.checks.filter((c) => c.result === "FAIL");
   const warned = report.checks.filter((c) => c.result === "WARN");
