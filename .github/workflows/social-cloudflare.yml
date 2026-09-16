@@ -468,7 +468,43 @@ jobs:
             console.log("Links:    " + (c.match(/https?:\/\//g) || []).length);
             console.log("Umlaute:  " + ([...c].filter((z) => z.charCodeAt(0) > 127).join("") || "keine"));
             console.log("");
-            console.log("Bereits veroeffentlicht: " + (s.smokePublish && s.smokePublish.published ? "JA" : "nein"));
+
+            /* Das Protokoll aus KV. Es ist die zweite, unabhaengige
+               Quelle neben der Antwort des Publishing-Aufrufs: die Antwort
+               sah nur der Lauf, der sie ausgeloest hat — dieses Protokoll
+               ueberdauert ihn. Beide muessen dieselbe Medien-ID nennen.
+
+               Oben liegen nur published, mediaId und permalink; was sonst
+               zum Beitrag gehoert, steht im Eintrag des Versuchs. Die
+               Felder werden deshalb dort geholt und nicht oben geraten —
+               sonst staende hier "undefined" und saehe aus wie ein
+               Befund. */
+            const log = s.smokePublish;
+            if (!log) {
+              console.log("Smoke-Protokoll: keines gespeichert — es wurde nie veroeffentlicht.");
+            } else if (!log.published) {
+              const v = (log.attempts || []).length;
+              console.log("Smoke-Protokoll: vorhanden, published=false — nur Fehlversuche (" + v + ").");
+            } else {
+              const versuche = log.attempts || [];
+              const treffer = versuche.filter((a) => a && a.mediaId);
+              const e = treffer.length ? treffer[treffer.length - 1] : {};
+              const w = (x) => (x === null || x === undefined ? "(nicht im Protokoll)" : x);
+              console.log("=== GESPEICHERTES PROTOKOLL (KV, ueberdauert den Lauf) ===");
+              console.log("published:   " + log.published);
+              console.log("mediaId:     " + w(log.mediaId));
+              console.log("permalink:   " + w(log.permalink));
+              console.log("mediaType:   " + w(e.mediaType));
+              console.log("timestamp:   " + w(e.timestamp));
+              console.log("Konto:       " + w(e.instagramUsername) + " (" + w(e.instagramAccountId) + ")");
+              console.log("Zurueckgelesen: " + (e.error ? "nein — " + e.error.reason : "ja"));
+              console.log("Versuche:    " + versuche.length + ", davon mit Medien-ID: " + treffer.length);
+              console.log("");
+              console.log(treffer.length === 1
+                ? "Genau EIN Beitrag ist entstanden."
+                : "ACHTUNG: " + treffer.length + " Versuche haben eine Medien-ID — das waeren " +
+                  treffer.length + " Beitraege.");
+            }
           ' | tee tmp/social/inhalt.txt
 
           {

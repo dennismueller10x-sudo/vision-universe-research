@@ -407,3 +407,46 @@ test("S19 · Der Inhalt des Testbeitrags steht nicht hinter offener Tuer", async
   const antwort = await worker.fetch(request("/social/meta/status"), env);
   assert.equal(antwort.status, 401);
 });
+
+test("S20 · Das Protokoll weist genau EINEN Beitrag aus", async () => {
+  /* Die Zahl der Eintraege mit Medien-ID ist die Zahl der entstandenen
+     Beitraege — nicht die Zahl der Versuche. Ein Fehlversuch vor dem
+     Erfolg darf die Bilanz nicht verfaelschen, und ein zweiter Erfolg
+     muesste sie verfaelschen, weil er ein zweiter Beitrag waere. */
+  const { env } = await smokeEnv();
+  await worker.fetch(ruf(), env);
+
+  const log = JSON.parse(await env.VU_SOCIAL_KV.get(SMOKE_KEY));
+  const mitId = log.attempts.filter((a) => a && a.mediaId);
+  assert.equal(mitId.length, 1, "genau ein Eintrag traegt eine Medien-ID");
+  assert.equal(log.published, true);
+  assert.equal(log.mediaId, mitId[0].mediaId);
+
+  /* Der Eintrag traegt, was der Beitrag ist — das Protokoll oben nur,
+     DASS er ist. Wer spaeter nachsieht, braucht beides. */
+  assert.equal(mitId[0].instagramUsername, ZIEL);
+  assert.equal(mitId[0].mediaType, "IMAGE");
+});
+
+test("S21 · Ein Fehlversuch NACH dem Erfolg loescht den Beleg nicht", async () => {
+  /* Der Beitrag ist dann ja immer noch da. Ein Protokoll, das ihn
+     vergisst, waere schlimmer als keines: es wuerde behaupten, es sei
+     nichts veroeffentlicht worden. */
+  const { env } = await smokeEnv();
+  await worker.fetch(ruf(), env);
+  const vorher = JSON.parse(await env.VU_SOCIAL_KV.get(SMOKE_KEY));
+
+  /* Ein zweiter Aufruf MIT der Wiederholungs-Bestaetigung, der scheitert. */
+  const g2 = publishGraph({ containerFehler: true });
+  const env2 = createEnv({
+    META_IG_ALLOWED_USERNAMES: ZIEL, VU_SOCIAL_SMOKE_IMAGE_URL: BILD,
+    VU_SOCIAL_SMOKE_CAPTION: CAPTION,
+    VU_SOCIAL_KV: env.VU_SOCIAL_KV, __graph: g2, __fetchImpl: g2.fetchImpl
+  });
+  await worker.fetch(ruf(`&again=${AGAIN}`), env2);
+
+  const nachher = JSON.parse(await env.VU_SOCIAL_KV.get(SMOKE_KEY));
+  assert.equal(nachher.published, true);
+  assert.equal(nachher.mediaId, vorher.mediaId);
+  assert.equal(nachher.permalink, vorher.permalink);
+});
