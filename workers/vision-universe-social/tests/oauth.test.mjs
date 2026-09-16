@@ -269,7 +269,11 @@ test("W19 · Ohne Instagram-Konto wird nichts gespeichert und der Grund genannt"
   assert.equal(callback.status, 400);
   const html = await callback.text();
   assert.match(html, /noInstagramAccount/);
-  assert.match(html, /Professional/);
+  /* Die Meldung sagt jetzt, WAS die API geantwortet hat: Seitenliste
+     nicht leer, Feld nicht gefuellt. Frueher stand hier eine Diagnose
+     ("kein Professional-Konto"), die der Abruf gar nicht belegen kann. */
+  assert.match(html, /nicht leer/i);
+  assert.match(html, /instagram_business_account/);
   assert.equal(env.VU_SOCIAL_KV.__size(), 0);
 });
 
@@ -420,9 +424,12 @@ test("W29 · Eine zweite Autorisierung ersetzt die erste, ohne Reste zu lassen",
 });
 
 test("W30 · Ein konfiguriertes Zielkonto sperrt eine fremde Autorisierung", async () => {
+  /* Der Grund heisst jetzt `targetNotAllowed` statt `accountMismatch`:
+     derselbe Schutz, aber er greift ueber ID UND Handle, nicht nur ueber
+     die ID. Ein Name fuer einen Begriff. */
   const env = createEnv({ META_IG_ACCOUNT_ID: "17841499999999999" });
   const { callback } = await completeConnect(worker, env);
   assert.equal(callback.status, 400);
-  assert.match(await callback.text(), /accountMismatch/);
+  assert.match(await callback.text(), /targetNotAllowed/);
   assert.equal(env.VU_SOCIAL_KV.__size(), 0);
 });

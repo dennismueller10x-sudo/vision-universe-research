@@ -165,11 +165,18 @@ test("B10 · Leere Liste OHNE pages_show_list heisst: nicht gefragt, nicht geseh
     "Ueber die Instagram-Einrichtung darf nichts behauptet werden");
 });
 
-test("B11 · Leere Liste MIT pages_show_list heisst: wirklich kein Konto", async () => {
+test("B11 · Leere Liste MIT pages_show_list heisst: keine Seite sichtbar", async () => {
+  /* Frueher hiess dieser Fall `noInstagramAccount` - dieselbe Meldung wie
+     "Seite da, aber ohne Instagram". Zwei voellig verschiedene Ursachen
+     unter einem Namen: die eine loest man im Login-Dialog, die andere in
+     der Instagram-Verknuepfung. Wer beides gleich nennt, schickt den
+     Owner mit 50 Prozent Wahrscheinlichkeit an die falsche Stelle. */
   const result = await resolveAccounts(GCTX({ data: [] }), "token",
     ["instagram_basic", "pages_show_list"]);
   assert.equal(result.ok, false);
-  assert.equal(result.reason, "noInstagramAccount");
+  assert.equal(result.reason, "noPagesVisible");
+  assert.match(result.message, /nichts gesagt|nichts, woran/,
+    "Ueber Instagram darf hier nichts behauptet werden");
 });
 
 test("B12 · Seiten ohne Instagram bleiben noInstagramAccount, nicht Rechtefrage", async () => {
@@ -178,13 +185,17 @@ test("B12 · Seiten ohne Instagram bleiben noInstagramAccount, nicht Rechtefrage
   const result = await resolveAccounts(GCTX({ data: [{ id: "1", name: "Seite" }] }), "token",
     ["instagram_basic"]);
   assert.equal(result.reason, "noInstagramAccount");
+  assert.ok(Array.isArray(result.pages) && result.pages.length === 1,
+    "Der Bericht nennt die sichtbare Seite - sonst weiss niemand, WELCHE gemeint ist");
+  assert.equal(result.pages[0].pageId, "1");
+  assert.equal(result.pages[0].hasInstagramBusinessAccount, false);
 });
 
 test("B13 · Ohne Angabe der erteilten Rechte wird nichts behauptet", async () => {
-  /* Wer die Rechte nicht mitgibt, bekommt die alte, vorsichtigere
-     Meldung — keine erfundene Diagnose. */
+  /* Wer die Rechte nicht mitgibt, bekommt die vorsichtigere Meldung —
+     keine erfundene Diagnose ueber ein Recht, das nicht geprueft wurde. */
   const result = await resolveAccounts(GCTX({ data: [] }), "token", undefined);
-  assert.equal(result.reason, "noInstagramAccount");
+  assert.equal(result.reason, "noPagesVisible");
 });
 
 test("B14 · Ein verbundenes Konto kommt unveraendert durch", async () => {

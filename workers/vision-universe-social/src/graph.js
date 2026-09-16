@@ -208,6 +208,117 @@ export async function exchangeForLongLived(ctx, { appId, appSecret, token }) {
  * Instagram-Professional-Konto auf — und gibt je Seite das PAGE-TOKEN
  * zurueck, mit dem spaeter gearbeitet wird.
  */
+
+/* ------------------------------------------------------------------ */
+/* WELCHE ASSETS HAT DER NUTZER TATSAECHLICH AUSGEWAEHLT              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Liest die granularen Scopes des Tokens.
+ *
+ * Bei einer Business-Anmeldung waehlt der Nutzer im Dialog einzelne
+ * Seiten und Konten aus. Welche das waren, steht NICHT im Token und
+ * nicht in /me/permissions — dort steht nur, WELCHE Rechte erteilt
+ * wurden, nicht FUER WELCHE Assets.
+ *
+ * `granular_scopes` beantwortet genau das: pro Recht eine Liste von
+ * `target_ids`. Das ist der dokumentierte Weg, und er ist hier
+ * entscheidend: er trennt "der Nutzer hat die Seite gar nicht
+ * freigegeben" von "die Seite ist frei, aber /me/accounts zeigt sie
+ * nicht".
+ *
+ * Braucht ein App-Token (`<app-id>|<app-secret>`). Das ist kein
+ * zusaetzliches Recht — es ist dasselbe Geheimnis, das der Worker
+ * ohnehin fuer den Code-Tausch benutzt.
+ */
+export async function debugToken(ctx, { appId, appSecret, inputToken }) {
+  const result = await graph(ctx, "debug_token", {
+    input_token: inputToken,
+    access_token: `${appId}|${appSecret}`
+  });
+  if (!result.ok) return result;
+
+  const data = (result.data && result.data.data) || {};
+  const granular = Array.isArray(data.granular_scopes) ? data.granular_scopes : [];
+  return ok({
+    scopes: Array.isArray(data.scopes) ? data.scopes : [],
+    /* Nur Recht und Ziel-IDs — keine Tokens, keine Nutzerdaten. */
+    granular: granular.map((entry) => ({
+      scope: String(entry.scope || ""),
+      targetIds: Array.isArray(entry.target_ids) ? entry.target_ids.map(String) : null
+    }))
+  });
+}
+
+/**
+ * Fragt die API, ueber WELCHES Feld eine Seite ihr Instagram-Konto
+ * nennt — statt es zu raten.
+ *
+ * Der Grund fuer diese Umstaendlichkeit: `instagram_business_account`
+ * ist das Feld, das die Dokumentation nennt, aber es ist nicht das
+ * einzige, ueber das eine Seite mit einem Instagram-Konto verbunden
+ * sein kann. Welches im konkreten Fall gefuellt ist, haengt daran, WIE
+ * die Verknuepfung entstanden ist — und das laesst sich von aussen
+ * nicht ansehen.
+ *
+ * Jedes Feld wird EINZELN abgefragt. Ein Feld, das diese API-Version
+ * nicht kennt oder das dieser Zugang nicht lesen darf, wuerde in einer
+ * Sammelabfrage die ganze Antwort kippen; einzeln kostet es nur eine
+ * Fehlermeldung, die wir protokollieren.
+ *
+ * Diese Funktion urteilt nicht. Sie berichtet, was die API sagt.
+ */
+const LINKAGE_FIELDS = [
+  "instagram_business_account",
+  "connected_instagram_account",
+  "page_backed_instagram_accounts"
+];
+
+export async function probePageLinkage(ctx, pageId, token) {
+  const findings = [];
+  for (const field of LINKAGE_FIELDS) {
+    const result = await graph(ctx, String(pageId), { fields: `${field}{id,username}` }, token);
+    if (!result.ok) {
+      findings.push({ field, readable: false, note: String(result.message || "").slice(0, 120) });
+      continue;
+    }
+    const value = result.data ? result.data[field] : null;
+    /* page_backed_instagram_accounts ist eine Liste, die anderen sind Objekte. */
+    const node = Array.isArray(value && value.data) ? (value.data[0] || null) : value;
+    findings.push({
+      field,
+      readable: true,
+      present: Boolean(node && node.id),
+      instagramAccountId: node && node.id ? String(node.id) : null,
+      instagramUsername: node && node.username ? String(node.username) : null
+    });
+  }
+  return findings;
+}
+
+
+/**
+ * Was von einer Seitenzeile berichtet werden darf.
+ *
+ * Ausdruecklich OHNE `access_token`: die Zeilen aus /me/accounts tragen
+ * je ein Page-Token, und dieser Bericht landet auf einer Seite im
+ * Browser des Owners. Deshalb wird hier aufgezaehlt, was mitkommt,
+ * statt auszuschliessen, was nicht mitkommen soll — eine Positivliste
+ * vergisst nichts, wenn die API spaeter ein Feld hinzufuegt.
+ */
+function pageReport(rows) {
+  return rows.map((page) => ({
+    pageId: page.id ? String(page.id) : null,
+    pageName: page.name || null,
+    hasInstagramBusinessAccount: Boolean(page.instagram_business_account &&
+      page.instagram_business_account.id),
+    instagramAccountId: (page.instagram_business_account && page.instagram_business_account.id)
+      ? String(page.instagram_business_account.id) : null,
+    instagramUsername: (page.instagram_business_account && page.instagram_business_account.username)
+      ? String(page.instagram_business_account.username) : null
+  }));
+}
+
 /**
  * Findet die Instagram-Konten hinter den Seiten dieses Zugangs.
  *
@@ -254,12 +365,29 @@ export async function resolveAccounts(ctx, userToken, grantedScopes) {
       "in der Login-Konfiguration bei Meta, nicht in dieser Anfrage.");
   }
 
+  /* ZWEI LAGEN, DIE BISHER DENSELBEN NAMEN TRUGEN.
+     `noInstagramAccount` hat frueher beides gemeldet: "gar keine Seite
+     sichtbar" und "Seite sichtbar, aber ohne Instagram". Das sind
+     voellig verschiedene Ursachen mit verschiedenen Loesungen, und die
+     gemeinsame Meldung hat sie ununterscheidbar gemacht. */
+  if (rows.length === 0) {
+    return fail("noPagesVisible",
+      "Dieser Zugang sieht KEINE einzige Facebook-Seite — die Seitenliste ist leer, obwohl " +
+      "das Recht `pages_show_list` erteilt wurde. Ueber die Instagram-Verbindung ist damit " +
+      "nichts gesagt: es gab nichts, woran sie haette haengen koennen. Zu pruefen ist, ob " +
+      "die Seite im Business-Login-Dialog tatsaechlich ausgewaehlt wurde — die granularen " +
+      "Scopes im Bericht sagen, welche Assets der Zugang nennt.",
+      { pages: pageReport(rows) });
+  }
+
   if (connected.length === 0) {
     return fail("noInstagramAccount",
-      "Keine Facebook-Seite dieses Zugangs hat ein verbundenes Instagram-Professional-Konto. " +
-      "Das ist eine Einrichtungsfrage in Meta und kein Fehler des Abrufs: In der Meta-Business-Suite " +
-      "muss das Instagram-Konto ein Professional-Konto sein UND mit einer Seite verbunden, " +
-      "auf die dieser Zugang Rechte hat.");
+      "Die Seitenliste ist NICHT leer, aber keine der sichtbaren Seiten nennt ein " +
+      "Instagram-Konto im Feld `instagram_business_account`. Das heisst nicht zwingend, " +
+      "dass keine Verbindung besteht: eine Seite kann ihr Instagram-Konto ueber ein anderes " +
+      "Feld fuehren, je nachdem wie die Verknuepfung entstanden ist. Der Bericht nennt, was " +
+      "die API pro Feld tatsaechlich geantwortet hat.",
+      { pages: pageReport(rows) });
   }
   if (rows.length > 0 && connected.length < rows.length) {
     return ok({ accounts: connected, pagesWithoutInstagram: rows.length - connected.length });

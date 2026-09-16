@@ -119,11 +119,26 @@ META_API_VERSION = "v21.0"
 # instagram_manage_insights, pages_show_list.
 META_LOGIN_CONFIG_ID = "1555849235747979"
 
-# Optional: wenn gesetzt, akzeptiert der Callback NUR dieses
-# Instagram-Professional-Konto. Das ist die Sperre dagegen, dass eine
-# versehentliche Autorisierung mit einem falschen Konto die Verbindung
-# ueberschreibt. Leer lassen, bis die Konto-ID bekannt ist — danach
-# eintragen und erneut deployen.
+# -------------------------------------------------------------------------
+# ZIEL-ALLOWLIST — das einzig zulaessige Publishing-Ziel
+# -------------------------------------------------------------------------
+#
+# Ein Autorisierungsdialog zeigt alles, worauf der angemeldete Mensch
+# Rechte hat: private Konten, Konten anderer Projekte, alte Seiten. Ein
+# Fehlgriff dort ist schnell passiert und faellt erst auf, wenn ein
+# Beitrag am falschen Ort steht — dann ist er veroeffentlicht.
+#
+# Deshalb entscheidet nicht der Dialog, welches Konto zulaessig ist,
+# sondern diese Liste. Ein Konto, das nicht daraufsteht, wird gar nicht
+# erst gespeichert und kann damit nie Publishing-Ziel werden.
+META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
+
+# Dasselbe ueber die numerische Konto-ID. Sie ist erst nach der ersten
+# erfolgreichen Aufloesung bekannt — dafuer laesst sie sich, anders als
+# ein Handle, nicht umbenennen. Sobald sie bekannt ist, gehoert sie hier
+# eingetragen: dann haengt die Sperre nicht mehr an einem Namen.
+#
+# Sind beide gesetzt, muessen BEIDE passen.
 # META_IG_ACCOUNT_ID = ""
 
 # -------------------------------------------------------------------------

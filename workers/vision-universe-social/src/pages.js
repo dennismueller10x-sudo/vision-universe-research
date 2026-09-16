@@ -117,11 +117,33 @@ ${missingBlock}
     200, headers);
 }
 
-export function errorPage(reason, message, status = 400, headers = {}) {
+/**
+ * Die Abbruchseite.
+ *
+ * `details` ist optional und traegt den Befund, den die API geliefert
+ * hat — welche Seiten sichtbar waren, welche Felder gefuellt, welche
+ * Assets der Nutzer freigegeben hat.
+ *
+ * Das steht hier und nicht in einem Protokoll, weil ein Abbruch sonst
+ * seine eigene Ursache verliert: der Autorisierungscode ist verbraucht,
+ * das Token nirgends gespeichert, und die naechste Frage waere wieder
+ * "bitte noch einmal einloggen". Ein Fehler, der sagt was er gesehen
+ * hat, kostet einen Versuch. Einer, der es nicht sagt, kostet beliebig
+ * viele.
+ *
+ * Es sind ausschliesslich Kennungen und Ja/Nein-Werte — nie ein Token.
+ */
+export function errorPage(reason, message, status = 400, headers = {}, details = null) {
+  const befund = details ? `
+<div class="card"><strong>Was die API geantwortet hat</strong>
+<pre style="white-space:pre-wrap;word-break:break-word;font-size:.85em;margin:.5em 0 0">${
+    escapeHtml(JSON.stringify(details, null, 2))}</pre>
+<p class="muted">Kennungen und Ja/Nein-Werte. Kein Token, kein Geheimnis.</p></div>` : "";
+
   return htmlResponse("Nicht verbunden", `
 <div class="card bad"><strong>Die Verbindung wurde nicht hergestellt.</strong>
 <p class="muted">Grund: <code>${escapeHtml(reason)}</code></p></div>
-<div class="card"><p>${escapeHtml(message)}</p></div>
+<div class="card"><p>${escapeHtml(message)}</p></div>${befund}
 <div class="card"><strong>Was jetzt?</strong>
 <p class="muted">Der Vorgang wurde abgebrochen, bevor etwas gespeichert wurde. Eine bestehende
 Verbindung ist unveraendert. Der Link zum erneuten Versuch ist derselbe wie beim ersten Mal.</p></div>`,

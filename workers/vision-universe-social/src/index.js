@@ -50,6 +50,7 @@
 import { createState, verifyState, clearStateCookie, timingSafeEqual } from "./state.js";
 import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
+  debugToken, probePageLinkage,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
@@ -204,6 +205,102 @@ Variable gesetzt — niemals im Repository.</p></div>`, 503);
   });
 }
 
+
+
+/* ------------------------------------------------------------------ */
+/* ZIEL-ALLOWLIST                                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Welche Instagram-Konten ueberhaupt Ziel sein duerfen.
+ *
+ * Zwei Wege, weil zwei verschiedene Dinge bekannt sind:
+ *
+ *   META_IG_ALLOWED_USERNAMES  der Handle — bekannt, bevor je eine
+ *                              Verbindung bestand
+ *   META_IG_ACCOUNT_ID         die numerische ID — erst nach der ersten
+ *                              erfolgreichen Aufloesung bekannt, dafuer
+ *                              unveraenderlich
+ *
+ * Ein Handle laesst sich umbenennen, eine ID nicht. Sobald die ID
+ * bekannt ist, gehoert sie eingetragen — dann traegt die Sperre nicht
+ * mehr an einem Namen, den jemand aendern koennte.
+ *
+ * Sind beide gesetzt, muessen BEIDE passen. Das ist kein Doppel-Gemoppel:
+ * stimmt die ID und der Handle nicht, ist irgendwo etwas vertauscht, und
+ * das soll auffallen statt durchzurutschen.
+ */
+function allowedTargets(env) {
+  const usernames = String(env.META_IG_ALLOWED_USERNAMES || "")
+    .split(",").map((s) => s.trim().toLowerCase().replace(/^@/, "")).filter(Boolean);
+  const accountId = String(env.META_IG_ACCOUNT_ID || "").trim();
+
+  const teile = [];
+  if (usernames.length) teile.push(usernames.map((u) => "@" + u).join(" oder "));
+  if (accountId) teile.push("Konto-ID " + accountId);
+
+  return {
+    usernames,
+    accountId: accountId || null,
+    configured: usernames.length > 0 || Boolean(accountId),
+    beschreibung: teile.join(" UND ") || "(keine Einschraenkung)"
+  };
+}
+
+function isAllowedTarget(account, erlaubt) {
+  if (!erlaubt.configured) return true;
+  if (erlaubt.usernames.length) {
+    const handle = String(account.instagramUsername || "").toLowerCase().replace(/^@/, "");
+    if (!handle || !erlaubt.usernames.includes(handle)) return false;
+  }
+  if (erlaubt.accountId && String(account.instagramAccountId) !== erlaubt.accountId) return false;
+  return true;
+}
+
+/**
+ * Sammelt, was die API im Fehlerfall tatsaechlich gesagt hat.
+ *
+ * Drei Fragen, die zusammen entscheiden, wo die Ursache liegt:
+ *
+ *   1. Welche Assets hat der Nutzer im Dialog freigegeben?
+ *      (`granular_scopes` — nur dort steht das, nicht in
+ *      /me/permissions)
+ *   2. Welche Seiten sieht der Zugang?
+ *   3. Ueber welches Feld nennt eine Seite ihr Instagram-Konto — und
+ *      was antwortet die API auf die anderen Felder?
+ *
+ * Erst diese drei zusammen trennen "im Dialog nicht ausgewaehlt" von
+ * "ausgewaehlt, aber nicht sichtbar" von "sichtbar, aber ueber ein
+ * anderes Feld verknuepft". Einzeln sieht jede Lage aus wie die anderen.
+ *
+ * Jeder Teil darf fehlschlagen, ohne den Bericht zu verlieren: ein
+ * unvollstaendiger Befund ist mehr wert als keiner.
+ */
+async function linkageReport(ctx, env, userToken, accounts) {
+  const report = { pages: accounts.pages || [], grantedAssets: null, linkageProbe: null };
+
+  try {
+    const debug = await debugToken(ctx, {
+      appId: env.META_APP_ID, appSecret: env.META_APP_SECRET, inputToken: userToken
+    });
+    report.grantedAssets = debug.ok ? debug.data.granular : { error: debug.reason };
+  } catch (err) {
+    report.grantedAssets = { error: "unreadable" };
+  }
+
+  /* Die Feldprobe nur, wenn es ueberhaupt eine Seite gibt — sonst gibt
+     es nichts zu befragen. */
+  const first = (report.pages || [])[0];
+  if (first && first.pageId) {
+    try {
+      report.linkageProbe = await probePageLinkage(ctx, first.pageId, userToken);
+    } catch (err) {
+      report.linkageProbe = { error: "unreadable" };
+    }
+  }
+  return report;
+}
+
 async function handleCallback(request, url, env) {
   const { missing } = configProblems(env);
   if (missing.length) {
@@ -295,21 +392,46 @@ async function handleCallback(request, url, env) {
 
   const accounts = await resolveAccounts(ctx, userToken, permissions.data.granted);
   if (!accounts.ok) {
+    /* Ein Abbruch verliert sonst seine eigene Ursache: der Code ist
+       verbraucht, das Token nirgends gespeichert, und die naechste Frage
+       waere wieder "bitte noch einmal einloggen". Deshalb wird HIER
+       gemessen, solange das Token noch in der Hand ist. */
+    const befund = await linkageReport(ctx, env, userToken, accounts);
+    const status = ["noInstagramAccount", "noPagesVisible", "missingPagePermission"]
+      .includes(accounts.reason) ? 400 : 502;
     return errorPage(accounts.reason, accounts.message || "Kontoaufloesung fehlgeschlagen.",
-      accounts.reason === "noInstagramAccount" ? 400 : 502, { "set-cookie": clearCookie });
+      status, { "set-cookie": clearCookie }, befund);
   }
 
-  /* Bei mehreren Konten: entweder das konfigurierte, sonst das erste —
-     und die Mehrdeutigkeit wird im Datensatz vermerkt, nicht verschwiegen. */
-  const preferred = env.META_IG_ACCOUNT_ID
-    ? accounts.data.accounts.find((a) => a.instagramAccountId === String(env.META_IG_ACCOUNT_ID))
-    : null;
-  if (env.META_IG_ACCOUNT_ID && !preferred) {
-    return errorPage("accountMismatch",
-      "Der Zugang hat Instagram-Konten, aber keines davon ist das konfigurierte " +
-      "(META_IG_ACCOUNT_ID). Es wurde nichts gespeichert.", 400, { "set-cookie": clearCookie });
+  /* DIE ZIEL-ALLOWLIST.
+
+     Ein Autorisierungsdialog zeigt alles, worauf der angemeldete Mensch
+     Rechte hat — auch private Konten und Konten anderer Projekte. Ein
+     Fehlgriff dort ist schnell passiert und faellt erst auf, wenn ein
+     Beitrag am falschen Ort steht. Dann ist er veroeffentlicht.
+
+     Deshalb entscheidet nicht der Dialog, welches Konto zulaessig ist,
+     sondern diese Liste. Sie wird VOR dem Speichern geprueft: ein Konto,
+     das nicht daraufsteht, wird nicht gespeichert und damit nie zum
+     Publishing-Ziel. */
+  const erlaubt = allowedTargets(env);
+  const zulaessig = accounts.data.accounts.filter((a) => isAllowedTarget(a, erlaubt));
+
+  if (erlaubt.configured && zulaessig.length === 0) {
+    return errorPage("targetNotAllowed",
+      `Der Zugang nennt ${accounts.data.accounts.length} Instagram-Konto(en), aber keines ` +
+      "davon steht auf der Ziel-Allowlist. Es wurde nichts gespeichert. Zulaessig ist " +
+      `ausschliesslich: ${erlaubt.beschreibung}.`,
+      400, { "set-cookie": clearCookie },
+      { gefunden: accounts.data.accounts.map((a) => ({
+        instagramAccountId: a.instagramAccountId,
+        instagramUsername: a.instagramUsername,
+        pageName: a.pageName
+      })), erlaubt: erlaubt.beschreibung });
   }
-  const chosen = preferred || accounts.data.accounts[0];
+
+  const auswahl = erlaubt.configured ? zulaessig : accounts.data.accounts;
+  const chosen = auswahl[0];
 
   if (!chosen.pageAccessToken) {
     return errorPage("noPageToken",
