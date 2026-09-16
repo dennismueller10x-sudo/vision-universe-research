@@ -183,3 +183,103 @@ export async function appendSmokeLog(env, eintrag) {
 }
 
 export { SMOKE_KEY };
+
+/* =========================================================================
+   DIE VEROEFFENTLICHUNGS-ANSPRUECHE
+
+   -------------------------------------------------------------------------
+   WARUM EIN ANSPRUCH UND KEIN PROTOKOLL
+   -------------------------------------------------------------------------
+
+   Ein Protokoll haelt fest, was passiert IST. Zwischen `POST /media` und
+   `POST /media_publish` liegen zwei Aufrufe, und stirbt der Worker
+   dazwischen, weiss ein zweiter Versuch nicht, ob der Beitrag schon
+   existiert — die Graph API kennt kein Idempotenz-Token, das die Frage
+   beantworten koennte.
+
+   Deshalb wird der Anspruch VOR dem ersten Graph-Aufruf angemeldet. Er
+   sagt: "fuer dieses Inhaltsobjekt laeuft gerade ein Versuch". Ein
+   zweiter Aufruf sieht ihn und veroeffentlicht NICHT — auch dann nicht,
+   wenn der erste abgestuerzt ist. Der Preis ist ein Zustand, den ein
+   Mensch aufloesen muss; der Gegenwert ist, dass niemals zwei Beitraege
+   aus einem Inhaltsobjekt entstehen.
+
+   Lieber ein haengender Anspruch als ein doppelter Beitrag. Ein
+   haengender Anspruch faellt auf und ist reparierbar; ein doppelter
+   Beitrag faellt dem Publikum auf und ist es nicht.
+   ========================================================================= */
+
+const CLAIM_PREFIX = "publish:claim:";
+
+/** Zustaende eines Anspruchs. Mehr gibt es nicht, und das ist Absicht. */
+const CLAIM_STATES = ["IN_FLIGHT", "PUBLISHED", "FAILED"];
+
+function claimKey(contentId) {
+  return CLAIM_PREFIX + String(contentId);
+}
+
+export async function readClaim(env, contentId) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const raw = await env.VU_SOCIAL_KV.get(claimKey(contentId));
+  return raw ? JSON.parse(raw) : null;
+}
+
+/**
+ * Meldet einen Anspruch an — aber nur, wenn keiner besteht.
+ *
+ * Gibt `{ ok: false, claim }` zurueck, wenn schon einer da ist. Der
+ * Aufrufer entscheidet dann anhand des Zustands, was das bedeutet; diese
+ * Funktion urteilt nicht.
+ *
+ * KV ist nicht transaktional. Zwei gleichzeitige Aufrufe koennten beide
+ * "frei" sehen. Das ist bekannt und wird nicht wegdiskutiert: der
+ * Endpunkt ist admin-geschuetzt und wird von einem Scheduler mit
+ * Nebenlaeufigkeitssperre aufgerufen, nicht von Publikum. Die Sperre
+ * hier faengt den haeufigen Fall (Wiederholung nach Absturz), nicht den
+ * seltenen (echte Gleichzeitigkeit).
+ */
+export async function claimPublish(env, contentId, meta) {
+  if (!env.VU_SOCIAL_KV) {
+    return { ok: false, claim: null, reason: "noStorage",
+      message: "Ohne KV laesst sich kein Anspruch anmelden — und ohne Anspruch " +
+        "darf nicht veroeffentlicht werden." };
+  }
+
+  const vorhanden = await readClaim(env, contentId);
+  if (vorhanden) return { ok: false, claim: vorhanden, reason: "claimExists" };
+
+  const claim = {
+    version: 1,
+    contentId: String(contentId),
+    state: "IN_FLIGHT",
+    claimedAt: (meta && meta.now) || new Date().toISOString(),
+    attempts: 1,
+    mediaId: null,
+    permalink: null,
+    fingerprint: (meta && meta.fingerprint) || null
+  };
+  await env.VU_SOCIAL_KV.put(claimKey(contentId), JSON.stringify(claim));
+  return { ok: true, claim };
+}
+
+/** Haelt das Ergebnis fest. Ein Anspruch wird nie geloescht. */
+export async function settleClaim(env, contentId, patch) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const vorhanden = (await readClaim(env, contentId)) || { contentId: String(contentId) };
+
+  /* Einmal PUBLISHED bleibt PUBLISHED. Ein spaeterer Fehlversuch darf
+     den Beleg nicht ueberschreiben — der Beitrag ist dann ja da. */
+  const state = vorhanden.state === "PUBLISHED" ? "PUBLISHED" : (patch.state || vorhanden.state);
+
+  const claim = Object.assign({}, vorhanden, patch, {
+    state,
+    mediaId: vorhanden.mediaId || patch.mediaId || null,
+    permalink: vorhanden.permalink || patch.permalink || null,
+    settledAt: patch.now || new Date().toISOString()
+  });
+  delete claim.now;
+  await env.VU_SOCIAL_KV.put(claimKey(contentId), JSON.stringify(claim));
+  return claim;
+}
+
+export { CLAIM_PREFIX, CLAIM_STATES, claimKey };

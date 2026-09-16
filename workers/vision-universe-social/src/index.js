@@ -57,7 +57,8 @@ import {
   REQUIRED_SCOPES, DEFAULT_API_VERSION
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
-import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog } from "./store.js";
+import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
+         readClaim, claimPublish, settleClaim } from "./store.js";
 import { redact, redactText, fingerprint } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 
@@ -501,6 +502,204 @@ async function handleSmokePublish(request, url, env) {
     attempts: log ? log.attempts.length : 1,
     note: "Ein einzelner Testbeitrag. Es laeuft keine Automatik — der naechste Beitrag " +
       "entsteht nur durch einen weiteren ausdruecklichen Aufruf."
+  }, geprueft.ok ? 200 : 207);
+}
+
+/**
+ * Veroeffentlicht EIN Inhaltsobjekt — hoechstens einmal.
+ *
+ * -------------------------------------------------------------------------
+ * WARUM DER ANSPRUCH VOR DEM ERSTEN AUFRUF ANGEMELDET WIRD
+ * -------------------------------------------------------------------------
+ *
+ * Zwischen `POST /media` (Container) und `POST /media_publish` (Freigabe)
+ * liegen zwei Aufrufe. Stirbt der Worker dazwischen, weiss ein zweiter
+ * Versuch nicht, ob der Beitrag existiert — die Graph API kennt kein
+ * Idempotenz-Token, das die Frage beantworten koennte, und `verifyMedia`
+ * braeuchte die Medien-ID, die genau dann fehlt.
+ *
+ * Der Anspruch wird deshalb VORHER angemeldet. Ein zweiter Aufruf sieht
+ * ihn und veroeffentlicht nicht — auch dann nicht, wenn der erste
+ * abgestuerzt ist. Das kostet im Fehlerfall einen Zustand, den ein Mensch
+ * aufloesen muss.
+ *
+ * Lieber ein haengender Anspruch als ein doppelter Beitrag: der eine
+ * faellt uns auf und ist reparierbar, der andere faellt dem Publikum auf
+ * und ist es nicht.
+ *
+ * -------------------------------------------------------------------------
+ * WAS DIESER ENDPUNKT NICHT IST
+ * -------------------------------------------------------------------------
+ *
+ * Er ist kein Scheduler und keine Automatik. Er veroeffentlicht genau
+ * das Inhaltsobjekt, das der Aufruf nennt, und nur wenn der globale
+ * Schalter das erlaubt. Ohne `VU_SOCIAL_AUTOPUBLISH=on` antwortet er
+ * 403 — unabhaengig von allem anderen.
+ */
+async function handlePublish(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  /* DIE GLOBALE SPERRE. Sie steht vor allem anderen, damit sie nicht
+     versehentlich hinter eine Bedingung rutscht. */
+  if (String(env.VU_SOCIAL_AUTOPUBLISH || "").toLowerCase() !== "on") {
+    return json({
+      error: "publishingDisabled",
+      message: "Veroeffentlichen ist global abgeschaltet (VU_SOCIAL_AUTOPUBLISH). " +
+        "Dieser Endpunkt tut nichts, solange der Schalter aus ist.",
+      published: false
+    }, 403);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch (err) { body = {}; }
+
+  const contentId = String(body.contentId || url.searchParams.get("contentId") || "").trim();
+  const imageUrl = String(body.imageUrl || "").trim();
+  const caption = String(body.caption === undefined ? "" : body.caption);
+
+  if (!contentId) {
+    return json({ error: "contentIdRequired",
+      message: "Ohne Kennung des Inhaltsobjekts gibt es nichts, worauf sich die " +
+        "Einmaligkeit beziehen koennte.", published: false }, 400);
+  }
+  if (!imageUrl) {
+    return json({ error: "imageUrlRequired",
+      message: "Ohne Bild kein Bildbeitrag.", published: false }, 400);
+  }
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected",
+      message: "Es besteht keine Verbindung. Es wurde nichts veroeffentlicht.",
+      published: false }, 409);
+  }
+
+  /* Die Allowlist erneut, gegen den GESPEICHERTEN Datensatz — zwischen
+     Verbinden und Veroeffentlichen kann sich die Konfiguration geaendert
+     haben. */
+  const erlaubt = allowedTargets(env);
+  if (!isAllowedTarget({
+    instagramAccountId: record.instagramAccountId,
+    instagramUsername: record.instagramUsername
+  }, erlaubt)) {
+    return json({ error: "targetNotAllowed",
+      message: "Das gespeicherte Konto steht nicht (mehr) auf der Ziel-Allowlist.",
+      storedAccount: record.instagramUsername || record.instagramAccountId,
+      allowed: erlaubt.beschreibung, published: false }, 403);
+  }
+
+  /* ---------------------------------------------------- DER ANSPRUCH */
+  const beginn = new Date().toISOString();
+  const angemeldet = await claimPublish(env, contentId, { now: beginn });
+
+  if (!angemeldet.ok && angemeldet.reason === "noStorage") {
+    return json({ error: "noStorage", message: angemeldet.message, published: false }, 503);
+  }
+
+  if (!angemeldet.ok) {
+    const c = angemeldet.claim;
+    if (c.state === "PUBLISHED") {
+      /* Idempotenter Erfolg: derselbe Aufruf, dasselbe Ergebnis, kein
+         zweiter Beitrag. */
+      return json({
+        published: true, idempotent: true, contentId,
+        mediaId: c.mediaId, permalink: c.permalink,
+        message: "Dieses Inhaltsobjekt wurde bereits veroeffentlicht. " +
+          "Es entstand kein zweiter Beitrag."
+      }, 200);
+    }
+    if (c.state === "IN_FLIGHT") {
+      return json({
+        error: "claimInFlight", published: false, contentId, claim: c,
+        message: "Fuer dieses Inhaltsobjekt laeuft (oder lief) bereits ein Versuch, " +
+          "angemeldet " + c.claimedAt + ". Ob dabei ein Beitrag entstanden ist, weiss " +
+          "niemand ohne nachzusehen — deshalb wird hier NICHT erneut veroeffentlicht. " +
+          "Im Konto nachsehen und den Anspruch aufloesen."
+      }, 409);
+    }
+    return json({
+      error: "claimFailedEarlier", published: false, contentId, claim: c,
+      message: "Ein frueherer Versuch ist gescheitert. Der Anspruch bleibt bestehen, " +
+        "damit eine Wiederholung eine Entscheidung ist und kein Reflex."
+    }, 409);
+  }
+
+  /* ------------------------------------------------ DIE VEROEFFENTLICHUNG */
+  const ctx = graphContext(env);
+
+  const bild = await pruefeBild(imageUrl, ctx.fetchImpl);
+  if (!bild.ok) {
+    await settleClaim(env, contentId, { state: "FAILED", stage: "imageCheck",
+      error: { reason: bild.reason, message: bild.message }, now: beginn });
+    return json({ error: bild.reason, message: bild.message, stage: "imageCheck",
+      published: false, contentId }, 400);
+  }
+
+  const container = await createMediaContainer(ctx, {
+    instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken, imageUrl, caption
+  });
+  if (!container.ok) {
+    const fehler = metaFehlerdaten(container, env);
+    await settleClaim(env, contentId, { state: "FAILED", stage: "createContainer",
+      error: fehler, now: beginn });
+    return json({ error: container.reason, stage: "createContainer", meta: fehler,
+      published: false, contentId }, 502);
+  }
+
+  let zustand = null;
+  for (let i = 0; i < CONTAINER_TRIES; i += 1) {
+    const s = await mediaContainerStatus(ctx, {
+      containerId: container.data.containerId, accessToken: record.pageAccessToken });
+    zustand = s.ok ? s.data : null;
+    if (!zustand || zustand.statusCode === "FINISHED" || zustand.statusCode === null) break;
+    if (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED") break;
+  }
+  if (zustand && (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) {
+    await settleClaim(env, contentId, { state: "FAILED", stage: "containerStatus",
+      error: { reason: "containerNotReady", status: zustand.statusCode }, now: beginn });
+    return json({ error: "containerNotReady", stage: "containerStatus",
+      status: zustand.statusCode, published: false, contentId,
+      message: "Der Container ist nicht freigabefaehig. Es wurde nichts veroeffentlicht." }, 502);
+  }
+
+  const freigabe = await publishMediaContainer(ctx, {
+    instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken, containerId: container.data.containerId });
+
+  if (!freigabe.ok) {
+    /* Der Zustand ist OFFEN, nicht gescheitert. Nach media_publish weiss
+       niemand ohne nachzusehen, ob etwas entstanden ist — und der
+       Anspruch bleibt deshalb IN_FLIGHT und nicht FAILED. */
+    const fehler = metaFehlerdaten(freigabe, env);
+    await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "publish",
+      error: fehler, uncertain: true, now: beginn });
+    return json({ error: freigabe.reason, stage: "publish", meta: fehler,
+      published: false, uncertain: true, contentId,
+      message: "Die Freigabe schlug fehl. Ob ein Beitrag entstanden ist, ist NICHT sicher — " +
+        "vor einem zweiten Versuch im Konto nachsehen." }, 502);
+  }
+
+  const geprueft = await verifyMedia(ctx, {
+    mediaId: freigabe.data.mediaId, accessToken: record.pageAccessToken });
+
+  const claim = await settleClaim(env, contentId, {
+    state: "PUBLISHED", stage: "verify",
+    mediaId: freigabe.data.mediaId,
+    permalink: geprueft.ok ? geprueft.data.permalink : null,
+    verified: geprueft.ok, now: beginn
+  });
+
+  return json({
+    published: true, idempotent: false, contentId,
+    mediaId: freigabe.data.mediaId,
+    permalink: claim.permalink,
+    mediaType: geprueft.ok ? geprueft.data.mediaType : null,
+    timestamp: geprueft.ok ? geprueft.data.timestamp : null,
+    containerId: container.data.containerId,
+    account: record.instagramUsername,
+    verified: geprueft.ok
   }, geprueft.ok ? 200 : 207);
 }
 
@@ -1197,6 +1396,18 @@ export default {
           }, 405);
         }
         return await handleSmokePublish(request, url, env);
+      }
+      if (path === "/social/meta/publish") {
+        /* Nur POST. Ein GET waere ueber einen untergeschobenen Link
+           ausloesbar, und das Ergebnis waere ein oeffentlicher Beitrag. */
+        if (request.method !== "POST") {
+          return json({
+            error: "methodNotAllowed",
+            message: "Veroeffentlichen nur per POST — ein GET waere ueber einen Link ausloesbar.",
+            published: false
+          }, 405);
+        }
+        return await handlePublish(request, url, env);
       }
       if (path === "/social/meta/insights") {
         /* Lesend. GET genuegt, weil nichts entsteht — im Gegensatz zu
