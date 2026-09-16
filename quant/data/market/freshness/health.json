@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T14:20:05.965Z",
+  "checkedAt": "2026-09-16T14:36:26.734Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-16",
-    "localTime": "10:20:05",
+    "localTime": "10:36:26",
     "lastCompletedSession": "2026-09-15",
     "currentSession": "2026-09-16",
     "expectedIntradaySession": "2026-09-16"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-16T14:20:02.617Z",
+    "indexGeneratedAt": "2026-09-16T14:36:22.586Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-16",
@@ -22,38 +22,34 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-16",
-      "asOf": "2026-09-16T14:20:00.000Z",
-      "asOfLocal": "10:20",
+      "asOf": "2026-09-16T14:35:00.000Z",
+      "asOfLocal": "10:35",
       "regularComplete": false,
-      "snapshots": 512,
+      "snapshots": 513,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 10:20",
+    "dataLabel": "Heute · Stand 10:35",
     "entries": 520,
     "byState": {
-      "LIVE": 510,
+      "LIVE": 513,
       "LAST_SESSION": 0,
-      "STALE": 10,
+      "STALE": 7,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 510,
-      "currentSessionMissing": 8,
-      "runningSessionStaleAsOf": 2
+      "runningSession": 513,
+      "currentSessionMissing": 7
     },
     "staleSample": [
       "ATHS",
-      "BTMD",
-      "FOA",
       "HCM",
       "JFIN",
       "LOT",
       "NRP",
       "RDIB",
-      "TVA",
-      "UFG"
+      "TVA"
     ],
     "universeSessions": [
       "2026-09-15"
