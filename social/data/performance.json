@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-09-16T17:55:48.914Z",
+  "account": "visionuniverse.aktienreports",
+  "accountId": "17841480148117405",
+  "requested": 1,
+  "measured": 0,
+  "unmeasured": [
+    {
+      "mediaId": "17992767560843861",
+      "reason": "providerError"
+    }
+  ],
+  "snapshots": [
+    {
+      "snapshot": {
+        "snapshotId": "snap_17992767560843861",
+        "publicationId": "ext_17992767560843861",
+        "providerId": "meta",
+        "capturedAt": "2026-09-16T17:55:48.862Z",
+        "ageHours": null,
+        "metrics": {
+          "impressions": null,
+          "reach": null,
+          "views": null,
+          "watchTimeSeconds": null,
+          "completionRate": null,
+          "likes": null,
+          "comments": null,
+          "shares": null,
+          "saves": null,
+          "clicks": null,
+          "followersGained": null,
+          "engagementRate": null,
+          "profileVisits": null
+        },
+        "providerMetrics": {},
+        "state": "UNAVAILABLE"
+      },
+      "mediaId": "17992767560843861",
+      "permalink": null,
+      "publishedAt": null,
+      "mediaType": null,
+      "unanswered": [],
+      "provenance": {
+        "source": "instagram.graph",
+        "apiVersion": "v21.0",
+        "accountId": "17841480148117405",
+        "account": "visionuniverse.aktienreports",
+        "fetchedAt": "2026-09-16T17:55:48.862Z",
+        "measured": false
+      },
+      "error": {
+        "reason": "providerError",
+        "message": "Unsupported get request. Object with ID '17992767560843861' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api",
+        "metaCode": 100,
+        "metaSubcode": 33,
+        "metaType": "GraphMethodException",
+        "fbtraceId": "AxlLTlX3ASySaPwgIL_qH2L",
+        "httpStatus": 400,
+        "retryable": false
+      }
+    }
+  ]
+}
