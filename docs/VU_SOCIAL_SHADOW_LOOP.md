@@ -28,7 +28,44 @@ Beide fahren den **echten** Zyklus als Unterprozess, zweimal, gegen
 verschiedene Datenstände. Signale, Code und Konfiguration sind in beiden
 Läufen identisch; der einzige Unterschied ist die eingetroffene Evidenz.
 
-### Durchgang A — gemessene Evidenz (n=1)
+### Durchgang A — gemessene Evidenz
+
+**Befund: es gibt derzeit keine messbare reale Performance.**
+
+Der Abruf funktioniert. Die Antwort ist eindeutig:
+
+```
+mediaId    17992767560843861
+Zustand    UNAVAILABLE
+gemessen   0
+Fehler     code 100, subcode 33, GraphMethodException
+           "Object with ID ... does not exist, cannot be loaded due to
+            missing permissions, or does not support this operation."
+fbtraceId  AxlLTlX3ASySaPwgIL_qH2L
+```
+
+Der eine veröffentlichte Beitrag wurde nach der Prüfung **archiviert**.
+Archivierte Medien gibt die Graph API nicht mehr heraus — auch den
+Permalink nicht.
+
+Das ist kein Fehler des Systems, sondern eine Tatsache über die
+Sichtbarkeit einer API-Ressource. Entscheidend ist, wie das System damit
+umgeht: `UNAVAILABLE`, `measured: false`, Metriken auf `null`. **Es macht
+daraus keine Reichweite von 0.** Wäre es das, hätte das System gelernt,
+dass dieses Format nicht funktioniert — aus einem Archivierungsvorgang.
+`PI11` und `PI12` halten das fest.
+
+Der Nachweis meldet für diesen Durchgang folgerichtig:
+
+```
+Evidenzzustand         NICHTS_GEMESSEN → NICHTS_GEMESSEN
+URTEIL: NOT_CLOSED
+```
+
+Der Loop schließt sich mit realen Zahlen erst, wenn es einen sichtbaren
+Beitrag gibt. Das ist eine Owner-Entscheidung, kein Baufehler.
+
+### Durchgang A' — wie es mit einem sichtbaren Beitrag aussähe (n=1)
 
 ```
 Evidenzzustand         NICHTS_GEMESSEN → GEMESSEN_NICHT_BEWERTBAR

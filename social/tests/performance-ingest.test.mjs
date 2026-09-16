@@ -1,5 +1,5 @@
 /* =========================================================================
-   VU SOCIAL — Performance-Ingestion (PI1–PI10)
+   VU SOCIAL — Performance-Ingestion (PI1–PI12)
 
    Die Stelle, an der gemessene Plattformzahlen zu Evidenz werden. Ein
    Fehler hier ist teurer als anderswo: eine falsch zugeordnete Zahl wird
@@ -11,6 +11,7 @@ import { createRequire } from "node:module";
 import { ingest, snapshotAusBeitrag } from "../../scripts/social/ingest-performance.mjs";
 
 const require = createRequire(import.meta.url);
+const Performance = require("../engines/performance.js");
 
 const JETZT = "2026-09-18T12:00:00Z";
 
@@ -98,9 +99,60 @@ test("PI10 · Die Snapshots taugen als Basis fuer den Performance Score", () => 
   /* Der eigentliche Zweck: die Ausgabe muss in performance.buildBaseline
      passen, sonst ist der Rueckweg an der naechsten Stelle unterbrochen. */
   const e = ingest({ posts: [beitrag()] }, { now: JETZT });
-  const Performance = require("../engines/performance.js");
   const basis = Performance.buildBaseline(e.snapshots.map((z) => z.snapshot));
   assert.equal(basis.sampleSize, 1);
   assert.equal(basis.sufficient, false, "n=1 ist keine Basis — und sagt das auch");
   assert.match(basis.reason, /Nur 1 Beitraege/);
+});
+
+test("PI11 · Ein archivierter Beitrag ist ungemessen, nicht schlecht", () => {
+  /* Der reale Fall dieses Projekts. Der eine veroeffentlichte Beitrag
+     wurde vom Owner archiviert; die Graph API gibt ihn seitdem nicht
+     mehr heraus:
+
+       code 100, subcode 33, GraphMethodException
+       "Object with ID ... does not exist, cannot be loaded due to
+        missing permissions, or does not support this operation."
+
+     Waere daraus eine Reichweite von 0 geworden, haette das System
+     gelernt, dass dieses Format nicht funktioniert — aus einer Tatsache
+     ueber die Sichtbarkeit einer API-Ressource. Das ist die teuerste
+     Sorte stiller Fehler: sie sieht wie Evidenz aus. */
+  const z = snapshotAusBeitrag({
+    mediaId: "17992767560843861",
+    media: null,
+    mediaError: { reason: "providerError", metaCode: 100, metaSubcode: 33 },
+    metrics: null,
+    metricsError: { reason: "providerError", metaCode: 100, metaSubcode: 33,
+      metaType: "GraphMethodException", fbtraceId: "AxlLTlX3ASySaPwgIL_qH2L" },
+    provenance: { source: "instagram.graph", fetchedAt: JETZT, measured: false }
+  }, { now: JETZT });
+
+  assert.equal(z.snapshot.state, "UNAVAILABLE");
+  assert.equal(z.snapshot.metrics.reach, null, "keine 0");
+  assert.equal(z.snapshot.metrics.engagementRate, null);
+  assert.equal(z.error.metaSubcode, 33, "die Ursache reist mit");
+  assert.equal(z.error.fbtraceId, "AxlLTlX3ASySaPwgIL_qH2L",
+    "ohne fbtrace_id ist eine Rueckfrage bei Meta wertlos");
+});
+
+test("PI12 · Ein unmessbarer Beitrag gelangt nicht in die Vergleichsbasis", () => {
+  /* Die Folge von PI11 eine Stufe weiter: buildBaseline filtert
+     Snapshots ohne Metriken nicht selbst heraus — der Zyklus tut es,
+     indem er UNAVAILABLE aussortiert. Dieser Test haelt fest, dass die
+     Aussortierung noetig IST, damit sie nicht jemand als ueberfluessig
+     entfernt. */
+  const e = ingest({ posts: [
+    beitrag(),
+    beitrag({ mediaId: "999", metrics: null, metricsError: { reason: "providerError" } })
+  ] }, { now: JETZT });
+
+  const alle = e.snapshots.map((z) => z.snapshot);
+  const nurGemessene = alle.filter((s) => s.state !== "UNAVAILABLE");
+
+  assert.equal(alle.length, 2);
+  assert.equal(nurGemessene.length, 1);
+  assert.equal(Performance.buildBaseline(nurGemessene).sampleSize, 1);
+  assert.equal(Performance.buildBaseline(alle).sampleSize, 2,
+    "ungefiltert zaehlte der unmessbare Beitrag mit — genau deshalb wird gefiltert");
 });
