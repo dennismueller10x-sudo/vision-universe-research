@@ -453,7 +453,7 @@
       /* Was das Unternehmen gemacht hat - ein belegter Satz aus den
          Jahresabschluessen (Fundamentals-Engine). Nur wo einer vorliegt. */
       card.hook && card.hook.text && !kompakt ? el("p", { class: "dx-hook",
-        title: "Aus den SEC-Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") }, [
+        title: "Aus den Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") + " · Herkunft: Daten & Quellen" }, [
         el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
         document.createTextNode(card.hook.text)
       ]) : null

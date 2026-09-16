@@ -27,7 +27,7 @@
 (function (global) {
   "use strict";
 
-  var MODULE_VERSION = "discover-live-hub-1.2.0";
+  var MODULE_VERSION = "discover-live-hub-1.3.0";
   var MIN_POLL_MS = 60000;
   var MAX_TIMEOUT_MS = 2147483647;
 
@@ -295,7 +295,14 @@
     if (!st.enabled) return;
     scheduleRollover();
     if (st.timer || !shouldPoll()) return;
-    var ms = Math.max(MIN_POLL_MS, (st.meta.intraday.refreshMinutes || 10) * 60000);
+    /* V4.1 §4: bei offener Boerse alle drei Minuten nachfragen (die
+       Auslieferung kommt alle ~6 Minuten; wer die Seite offen hat, sieht
+       den neuen Stand innerhalb weniger Minuten statt erst nach zehn).
+       Das Verzeichnis ist ein Abruf mit Revalidierung, kein Datenstrom. */
+    var minuten = st.meta.intraday.refreshMinutes || 10;
+    var r = resolution();
+    if (r && r.marketState === "OPEN") minuten = Math.min(minuten, 3);
+    var ms = Math.max(MIN_POLL_MS, minuten * 60000);
     st.timer = global.setInterval(function () { tick(); }, ms);
   }
   function stopInterval() {

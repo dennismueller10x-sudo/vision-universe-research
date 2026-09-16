@@ -54,9 +54,11 @@
         absatz(rt.available
           ? "Der Tagesverlauf auf Karten und Aktienseiten besteht aus 5-Minuten-Kursen der laufenden oder der letzten abgeschlossenen regulären Sitzung " +
             "(09:30–16:00 New York). Die Kurse stammen aus dem IEX-Bestand von Tiingo (nur an der IEX gehandeltes Volumen; die Kursart nennt der Anbieter nicht). " +
-            "Ein Workflow holt sie während der Sitzung alle " + (intr.refreshMinutes || 10) + " Minuten; die Seite nennt deshalb „Stand HH:MM“ und nie „live“."
+            "Ein Workflow holt sie während der Sitzung im Takt von " + (intr.refreshMinutes || 5) + " Minuten; ein Lauf dauert rund fünf Minuten, die Auslieferung ein bis zwei. " +
+            "„Markt geöffnet · Live“ heißt deshalb: laufende Sitzung, jüngster Stand höchstens rund zehn Minuten alt — die genaue Uhrzeit steht am Chart („Stand HH:MM“). Sekundengenau ist das nicht, und es wird nicht behauptet. " +
+            "Vorbörsliche Kurse liegen ab 08:00 New Yorker Zeit vor (14:00 deutscher Zeit, nur IEX-Volumen), der Tagesverlauf beginnt aber mit der regulären Sitzung um 09:30 (15:30 deutscher Zeit); ein früherer Beginn ist möglich, aber nicht freigeschaltet."
           : "Für dieses Universum wird kein Tagesverlauf ausgeliefert."),
-        zeile("Verzögerung", "bis zu " + (intr.refreshMinutes || 10) + " Minuten (Workflow-Takt) plus Auslieferung der Seite"),
+        zeile("Verzögerung", "in der Regel fünf bis acht Minuten (Lauf plus Auslieferung), im Zeitplan alle " + (intr.refreshMinutes || 5) + " Minuten"),
         zeile("Zeitzone", "Uhrzeiten auf der Seite sind New Yorker Zeit"),
         zeile("Aktualität", "Jeder Verlauf trägt einen Frische-Zustand: aktuell (laufende Sitzung), letzter Handelstag, nicht aktuell (älter als der letzte Handelstag) oder nicht verfügbar. " +
               "Ein Stand, der nicht der letzte Handelstag ist, wird nie als solcher beschriftet; er heißt „nicht aktuell“. Karenz nach Sitzungsbeginn und -schluss: " +

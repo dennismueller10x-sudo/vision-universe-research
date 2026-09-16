@@ -164,3 +164,19 @@ test("IS4 · validate lehnt Punkte ausserhalb der Sitzung, Unordnung und fehlend
   assert.equal(Snap.validate(Object.assign({}, ok, { dataMode: "mock" })).ok, false);
   assert.equal(Snap.cacheKey("ref_AAPL", "2026-09-11", "5min"), "ref_AAPL|2026-09-11|5min");
 });
+
+/* V4.1 §4: ein Zeitplan-Lauf kurz vor der Eroeffnung wartet auf sie. */
+test("TS-W1 · 09:27 NY am Handelstag: der Lauf wartet bis eine Minute nach 09:30", () => {
+  const x = r("2026-09-16T13:27:00Z");
+  assert.equal(x.marketState, "PRE_MARKET");
+  assert.equal(T.openWaitMs(x, Date.parse("2026-09-16T13:27:00Z"), 7), 4 * 60000);
+});
+test("TS-W2 · 09:15 NY: zu frueh, es wird nicht gewartet", () => {
+  const x = r("2026-09-16T13:15:00Z");
+  assert.equal(T.openWaitMs(x, Date.parse("2026-09-16T13:15:00Z"), 7), 0);
+});
+test("TS-W3 · offene Boerse, Nachboerse und Wochenende warten nie", () => {
+  assert.equal(T.openWaitMs(r("2026-09-16T14:00:00Z"), Date.parse("2026-09-16T14:00:00Z"), 7), 0);
+  assert.equal(T.openWaitMs(r("2026-09-16T21:00:00Z"), Date.parse("2026-09-16T21:00:00Z"), 7), 0);
+  assert.equal(T.openWaitMs(r("2026-09-19T13:27:00Z"), Date.parse("2026-09-19T13:27:00Z"), 7), 0);
+});

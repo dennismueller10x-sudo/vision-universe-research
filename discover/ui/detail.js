@@ -91,6 +91,7 @@
   /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
      sobald die naechste Seite gezeichnet wird. */
   var detailAbo = null;
+  var detailResize = null;
 
   /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
      der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
@@ -167,6 +168,17 @@
     var state = createState(detail);
     S.clear(root);
     if (detailAbo) { detailAbo(); detailAbo = null; }
+    if (detailResize) { global.removeEventListener("resize", detailResize); detailResize = null; }
+    /* Der grosse Chart ist pixelgenau gezeichnet: dreht sich das Telefon,
+       wird er neu gezeichnet (entprellt). */
+    var letzteBreite = global.innerWidth, resizeTimer = null;
+    detailResize = function () {
+      if (global.innerWidth === letzteBreite) return;
+      letzteBreite = global.innerWidth;
+      if (resizeTimer) global.clearTimeout(resizeTimer);
+      resizeTimer = global.setTimeout(function () { if (state.redraw) state.redraw(); }, 180);
+    };
+    global.addEventListener("resize", detailResize);
 
     /* Die Farbwelt des Titels steht am Kopf der Seite und hoert weiter
        unten auf. Das ist keine Laune: oben wird entdeckt, unten wird
@@ -208,23 +220,32 @@
        Kurs, in 30 Sekunden, das Unternehmen, damals vs. heute, die
        Entwicklung, heute, Bewertung, dafuer und dagegen, dann Quant und
        Technik, dann die naechste Aktie. */
+    /* V4.1 §23: Kopf, Kurs, grosser Chart, warum interessant, in 30
+       Sekunden, das Geschaeft in Klartext, die grosse Fundamental Journey,
+       das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
+       Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
     var kapitel = function (node) { if (node) root.appendChild(node); };
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
-    if (DF.damalsHeute) kapitel(DF.damalsHeute(detail));
     if (DF.journey) kapitel(DF.journey(detail));
     if (DF.heute) kapitel(DF.heute(detail));
+    if (DF.damalsHeute) kapitel(DF.damalsHeute(detail));
     if (DF.bewertung) kapitel(DF.bewertung(detail));
     kapitel(waage(detail));
 
     /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
-       kommt mit einem Wisch. */
-    kapitel(kapitelTrenner());
-    kapitel(belege(detail));
-    kapitel(panels(detail));
-    kapitel(technicalIntelligence(detail));
+       kommt mit einem Wisch. V4.1 §25: auf dem Telefon ist sie
+       zugeklappt (ein Tipp oeffnet sie), am Schreibtisch offen - nichts
+       davon ist geloescht, es steht nur nach dem Verstehen. */
+    var analyse = el("details", { class: "dx-analyse dx-fade" }, [kapitelTrenner()]);
+    var telefon = !!(global.matchMedia && global.matchMedia("(max-width: 860px)").matches);
+    if (!telefon) analyse.open = true;
+    [belege(detail), panels(detail), technicalIntelligence(detail)].forEach(function (node) {
+      if (node) analyse.appendChild(node);
+    });
+    kapitel(analyse);
     kapitel(continueDiscovery(detail, options));
     if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
     kapitel(provenance(detail));
@@ -472,8 +493,13 @@
     var gitter = el("div", { class: "dx-30" });
     /* Profitabilitaet, Cashflow, Bilanz, Verwaesserung aus den
        Jahresabschluessen (detail-fundamentals.js) - nur wo Daten vorliegen. */
+    /* Die fundamentalen Einordnungen (Profitabilitaet, Cashflow, Bilanz)
+       stehen in V4.1 auf den Zahlen-Karten; hier nur, wenn es die Karten
+       fuer diesen Titel nicht gibt. */
     var DF = D.DetailFundamentals;
-    var zusatz = DF && DF.healthZeilen ? DF.healthZeilen(detail) : [];
+    var f = detail.fundamentals;
+    var hatCluster = !!(f && f.available && f.latest && f.latest.available);
+    var zusatz = !hatCluster && DF && DF.healthZeilen ? DF.healthZeilen(detail) : [];
     var zeilen = daten.zeilen.slice(0, 2).concat(zusatz).concat(daten.zeilen.slice(2));
     zeilen.forEach(function (z) {
       var erklaerung = D.Einordnung.erklaerung(z.id);
@@ -518,22 +544,36 @@
     }
     if (!w.dafuer.length && !w.beachten.length) return null;
 
+    /* V4.1 §24: kompakt. Drei Punkte je Seite stehen offen - jeder mit
+       seinem Beleg; was darueber hinausgeht, liegt hinter "Weitere
+       Punkte", statt die Seite zu einer Liste zu machen. */
+    var OFFEN = 3;
+    function punkt(e, art) {
+      return el("li", {}, [
+        el("i", { class: "dx-waage-marke", "aria-hidden": "true",
+                  text: art === "pro" ? "+" : "−" }),
+        el("div", {}, [
+          el("b", { text: e.text }),
+          e.beleg ? el("span", { text: e.beleg }) : null
+        ])
+      ]);
+    }
     function spalte(titel, eintraege, art) {
       var host = el("div", { class: "dx-waage-spalte dx-waage-spalte--" + art }, [
         el("h3", { text: titel })
       ]);
       var liste = el("ul", {});
-      eintraege.forEach(function (e) {
-        liste.appendChild(el("li", {}, [
-          el("i", { class: "dx-waage-marke", "aria-hidden": "true",
-                    text: art === "pro" ? "+" : "−" }),
-          el("div", {}, [
-            el("b", { text: e.text }),
-            e.beleg ? el("span", { text: e.beleg }) : null
-          ])
-        ]));
-      });
+      eintraege.slice(0, OFFEN).forEach(function (e) { liste.appendChild(punkt(e, art)); });
       host.appendChild(liste);
+      var rest = eintraege.slice(OFFEN);
+      if (rest.length) {
+        var mehr = el("ul", {});
+        rest.forEach(function (e) { mehr.appendChild(punkt(e, art)); });
+        host.appendChild(el("details", { class: "dx-weitere dx-waage-weitere" }, [
+          el("summary", { text: "Weitere Punkte (" + rest.length + ")" }),
+          mehr
+        ]));
+      }
       return host;
     }
 
@@ -577,6 +617,11 @@
     }
 
     var K = D.Klartext;
+    var fu = detail.fundamentals;
+    if (fu && fu.available && fu.latest && fu.latest.available) {
+      /* Die Zahlen stehen auf den Karten "Das Unternehmen in Zahlen". */
+      return section;
+    }
     var zahlen = [
       { label: g.basis === "FY" ? "Umsatz (Geschäftsjahr)" : "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
         zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
@@ -605,19 +650,10 @@
       ]));
     });
     section.appendChild(gitter);
-
-    var quelle = g.quelle === "SEC_CONSUMER"
-      ? (g.basis === "TTM"
-          ? "Aus den Quartals- und Jahresberichten bei der SEC. Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen" +
-            (g.zeitraum && g.zeitraum.durch ? " (bis " + g.zeitraum.durch.replace("FY", "GJ ").replace("Q", " Q") + ")" : "") +
-            "; das Wachstum vergleicht mit den vier Quartalen davor."
-          : "Aus dem Jahresabschluss bei der SEC (Geschäftsjahr " + (g.zeitraum && g.zeitraum.fy ? g.zeitraum.fy : "") + "); Zwölfmonatswerte liegen für diesen Titel nicht vor.")
-      : g.quelle === "SEC_CANONICAL"
-      ? "Aus den Quartalsberichten bei der SEC, Zeitraum " +
-        (g.zeitraum && g.zeitraum.von ? g.zeitraum.von + " bis " + g.zeitraum.bis : "unbekannt") +
-        ". Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen."
-      : "Synthetische Kennzahlen des Vision-Universe-Modelluniversums — erzeugt, nicht gemessen.";
-    section.appendChild(el("p", { class: "dx-kapitel-fuss", text: quelle }));
+    section.appendChild(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [
+      document.createTextNode((g.basis === "TTM" ? "Zwölfmonatswerte aus den vier jüngsten Quartalen" : "Geschäftsjahr " + (g.zeitraum && g.zeitraum.fy ? g.zeitraum.fy : "")) + " · "),
+      el("a", { href: "#/daten", text: "Daten & Quellen" })
+    ]));
     return section;
   }
 
@@ -638,10 +674,11 @@
      damit niemand aus Versehen in Ebene 3 landet und denkt, er habe
      etwas nicht verstanden. */
   function kapitelTrenner() {
-    return el("div", { class: "dx-trenner dx-fade" }, [
+    return el("summary", { class: "dx-trenner" }, [
       el("span", { text: "Ab hier: die Analyse" }),
       el("p", { text: "Alle Kennzahlen, aus denen die Einordnungen oben entstehen — " +
-                      "Scores, Perzentile, technische Lage und Herkunft der Daten." })
+                      "Scores, Perzentile und technische Lage." }),
+      el("b", { class: "dx-trenner-schalter", "aria-hidden": "true" })
     ]);
   }
 
@@ -674,10 +711,7 @@
       ]));
     });
     section.appendChild(grid);
-    section.appendChild(el("p", { class: "dx-kapitel-fuss",
-      text: "Jeder Satz folgt aus einer ausgelieferten Kennzahl und einer festen Schwelle " +
-            "(discover/engines/narrative.js). Keine Formulierung entsteht aus einem Sprachmodell, " +
-            "und kein Befund ohne seine Zahl." }));
+    section.appendChild(el("p", { class: "dx-kapitel-fuss", text: "Jeder Satz folgt aus einer Kennzahl und einer festen Schwelle — kein Sprachmodell, kein Befund ohne Zahl." }));
     return section;
   }
 
@@ -913,14 +947,26 @@
       ])
     ]);
     chartBox.appendChild(kopf);
-    var svgNode = MC.renderRange(sel.points, { width: mobil ? 640 : 1120, height: mobil ? 240 : 380, symbol: state.detail.symbol,
+    /* V4.1 §5: der Chart ist die Hauptflaeche. Die viewBox ist pixelgenau
+       (Breite des Kastens, Hoehe als Anteil des Bildschirms), damit die
+       Schrift nicht mitskaliert und die Linie auf dem Telefon so hoch ist
+       wie ein halber Bildschirm. */
+    var mass = chartMass(chartBox, mobil);
+    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
                                                  range: z.id, label: z.wort, grain: z.quelle });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
     }
-    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle });
+    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle,
+                             "data-direction": svgNode ? svgNode.getAttribute("data-direction") : null });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
+    beruehrung(svgNode, kopf, {
+      preis: function (pt) { return C().money(pt.close); },
+      delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
+      wann: function (pt) { return C().dateShort(pt.date); },
+      wort: z.wort
+    });
     if (!sel.complete) {
       chartBox.appendChild(el("p", { class: "dx-intraday-note", text: "Die Kursreihe beginnt am " + C().dateShort(sel.from) + " — der Zeitraum ist deshalb kürzer als gewählt." }));
     }
@@ -961,26 +1007,113 @@
       return;
     }
     var mobil = global.innerWidth < 860;
-    var svgNode = MC.renderIntraday(p.snapshot, { width: mobil ? 640 : 960, height: mobil ? 260 : 400,
-                                                  axis: true, symbol: state.detail.symbol,
-                                                  label: p.label && p.label.label });
+    var snap = p.snapshot;
+    /* Kopf wie beim Zeitraum-Chart: letzter Kurs, Veraenderung gegen den
+       Vortagesschluss, das Wort dazu - eine Sprache fuer alle Zeitraeume. */
+    var punkte = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
+    var letzterKurs = punkte.length ? punkte[punkte.length - 1][1] : null;
+    var basis = isNum(snap.previousClose) ? snap.previousClose : (punkte.length ? punkte[0][1] : null);
+    var tagesDelta = isNum(letzterKurs) && isNum(basis) && basis > 0 ? (letzterKurs / basis - 1) * 100 : null;
+    var kopf = el("div", { class: "dx-chart-hero" }, [
+      el("div", { class: "dx-chart-hero-preis" }, [
+        el("b", { class: "num", text: isNum(letzterKurs) ? C().money(letzterKurs) : "" }),
+        el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
+        el("span", { class: "dx-chart-hero-wort", text: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute" })
+      ]),
+      el("div", { class: "dx-chart-hero-meta" }, [
+        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + C().money(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · 5-Minuten-Kurse" }),
+        C().liveLabel(p.label, snap)
+      ])
+    ]);
+    chartBox.appendChild(kopf);
+    var mass = chartMass(chartBox, mobil);
+    var svgNode = MC.renderIntraday(snap, { width: mass.w, height: mass.h,
+                                            axis: true, symbol: state.detail.symbol,
+                                            label: p.label && p.label.label });
     if (!svgNode) {
       chartBox.appendChild(C().emptyState("Kein Tagesverlauf", "Der Snapshot dieses Titels ist unvollständig."));
       return;
     }
     svgNode.classList.add("dx-intraday-chart");
-    var rahmen = el("div", { class: "dx-intraday", "data-live": p.snapshot.regularComplete ? "complete" : "running",
-                             "data-freshness": (p.freshness && p.freshness.freshnessState) || "" });
+    var rahmen = el("div", { class: "dx-intraday", "data-live": snap.regularComplete ? "complete" : "running",
+                             "data-freshness": (p.freshness && p.freshness.freshnessState) || "",
+                             "data-direction": svgNode.getAttribute("data-direction") });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
-    var snap = p.snapshot;
+    beruehrung(svgNode, kopf, {
+      preis: function (pt) { return C().money(pt.close); },
+      delta: function (pt) { return isNum(basis) && basis > 0 ? (pt.close / basis - 1) * 100 : null; },
+      wann: function (pt) { return pt.time + " New York"; },
+      wort: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute"
+    });
     var text = " · 5-Minuten-Kurse · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (p.freshness && p.freshness.freshnessState === "STALE"
         ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
         : snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
-    chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [C().liveLabel(p.label, snap),
-      el("span", { text: text })]));
+    chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [el("span", { text: text.replace(/^ · /, "") })]));
+  }
+
+  /* Die Masse des grossen Charts: so breit wie der Kasten, auf dem Telefon
+     rund die Haelfte des Bildschirms hoch (V4.1 §5: 50-70 % eines
+     Viewports als Hauptflaeche), am Schreibtisch 440 px. */
+  function chartMass(chartBox, mobil) {
+    var w = Math.round(chartBox.getBoundingClientRect().width || chartBox.clientWidth || 0);
+    if (!w) w = mobil ? Math.max(320, global.innerWidth - 32) : 1120;
+    var h = mobil ? Math.round(Math.max(300, Math.min(global.innerHeight * 0.52, 480))) : 440;
+    return { w: w, h: h };
+  }
+
+  /* V4.1 §5: Beruehrung. Finger oder Zeiger auf dem Chart zeigen den Kurs an
+     dieser Stelle - im Kopf (Kurs, Veraenderung, Datum) und als Marke im
+     Bild. Loslassen stellt den letzten Kurs wieder her. Senkrechtes
+     Wischen bleibt Blaettern (touch-action: pan-y). */
+  function beruehrung(svgNode, kopf, fmt) {
+    if (!svgNode || !svgNode.__punkte || svgNode.__punkte.length < 2) return;
+    var punkte = svgNode.__punkte, basis = svgNode.__basis || {};
+    var preisNode = kopf.querySelector(".dx-chart-hero-preis > b");
+    var deltaNode = kopf.querySelector(".dx-chart-hero-preis > span.num");
+    var wortNode = kopf.querySelector(".dx-chart-hero-wort");
+    var original = { preis: preisNode.textContent, delta: deltaNode.textContent, deltaClass: deltaNode.className, wort: wortNode.textContent };
+    var ns = "http://www.w3.org/2000/svg";
+    var g = document.createElementNS(ns, "g"); g.setAttribute("class", "dx-scrub"); g.setAttribute("aria-hidden", "true");
+    var linie = document.createElementNS(ns, "line"); linie.setAttribute("class", "dx-scrub-line");
+    var punkt = document.createElementNS(ns, "circle"); punkt.setAttribute("class", "dx-scrub-node"); punkt.setAttribute("r", "5");
+    g.appendChild(linie); g.appendChild(punkt);
+    var vb = (svgNode.getAttribute("viewBox") || "0 0 0 0").split(" ").map(Number);
+    var aktiv = false;
+    function naechster(clientX) {
+      var r = svgNode.getBoundingClientRect();
+      var x = (clientX - r.left) / Math.max(1, r.width) * vb[2];
+      var best = punkte[0], d = Infinity;
+      for (var i = 0; i < punkte.length; i++) { var dd = Math.abs(punkte[i].x - x); if (dd < d) { d = dd; best = punkte[i]; } }
+      return best;
+    }
+    function zeigen(pt) {
+      if (!aktiv) { aktiv = true; svgNode.appendChild(g); svgNode.classList.add("dx-scrubbing"); }
+      linie.setAttribute("x1", pt.x); linie.setAttribute("x2", pt.x);
+      linie.setAttribute("y1", basis.padTop || 0); linie.setAttribute("y2", vb[3] - (basis.padBottom || 0));
+      punkt.setAttribute("cx", pt.x); punkt.setAttribute("cy", pt.y);
+      preisNode.textContent = fmt.preis(pt);
+      var delta = fmt.delta(pt);
+      deltaNode.textContent = isNum(delta) ? prozentGross(delta) : "";
+      deltaNode.className = "num " + C().toneClass(delta);
+      wortNode.textContent = fmt.wann(pt);
+    }
+    function ende() {
+      if (!aktiv) return;
+      aktiv = false;
+      if (g.parentNode) g.parentNode.removeChild(g);
+      svgNode.classList.remove("dx-scrubbing");
+      preisNode.textContent = original.preis; deltaNode.textContent = original.delta;
+      deltaNode.className = original.deltaClass; wortNode.textContent = original.wort;
+    }
+    svgNode.addEventListener("pointerdown", function (e) { if (e.pointerType === "mouse" && e.button !== 0) return; zeigen(naechster(e.clientX)); });
+    svgNode.addEventListener("pointermove", function (e) { if (e.pointerType === "mouse" ? true : aktiv) zeigen(naechster(e.clientX)); });
+    svgNode.addEventListener("pointerup", ende);
+    svgNode.addEventListener("pointercancel", ende);
+    svgNode.addEventListener("pointerleave", ende);
+    svgNode.addEventListener("touchend", ende, { passive: true });
   }
 
   function intradayAlsZeilen(p) {
@@ -1328,10 +1461,15 @@
       body.push(el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
         text: wave.message || "Für diesen Titel liegt keine Wellenzählung vor." }));
     }
-    body.push(el("p", { style: "margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6",
-      text: wave.disclaimer ||
-        "Elliott Wave wird ausschließlich aus der bestehenden Vision-Universe-Engine gelesen. " +
-        "Discover erzeugt keine eigene Wellenzählung." }));
+    /* Der Hinweis zur Herkunft steht nur, wo es ein Ergebnis gibt; ohne
+       Ergebnis genuegt der Satz darueber (V4.1 §25: keine leeren Kapitel
+       mit Fusstext). */
+    if (wave.status === "available" || wave.status === "lowConfidence") {
+      body.push(el("p", { style: "margin:14px 0 0;font-size:11.5px;color:var(--discover-dim);line-height:1.6",
+        text: wave.disclaimer ||
+          "Elliott Wave wird ausschließlich aus der bestehenden Vision-Universe-Engine gelesen. " +
+          "Discover erzeugt keine eigene Wellenzählung." }));
+    }
 
     var weitere = [];
     ["marketStructure", "supportResistance"].forEach(function (key) {
@@ -1399,26 +1537,16 @@
     return section;
   }
 
+  /* V4.1 §11: eine Zeile - Stand, Weg zu Daten & Quellen, Hinweis. Die
+     Herkunft (Anbieter, Lizenz, Methodik, Versionen) steht auf der
+     Seite Daten & Quellen, nicht unter jeder Aktie. */
   function provenance(detail) {
-    var series = detail.series || {};
     return el("section", { class: "dx-foot dx-fade" }, [
-      el("div", {}, [
-        el("b", { text: "Datenherkunft: " }),
-        document.createTextNode([
-          detail.dataMode === "real" ? "reale Marktdaten (Herkunft und Lizenz: Daten & Quellen)"
-                                     : "synthetisches Modelluniversum",
-          "Stand " + (detail.asOf || "unbekannt"),
-          "Universum " + detail.universeLabel,
-          series.available ? "Kursreihe: " + (series.priceSeriesType || "unbekannt")
-                           : "keine Kursreihe ausgeliefert",
-          detail.dataQuality ? "Datenqualität " + detail.dataQuality : null
-        ].filter(Boolean).join(" · "))
-      ]),
-      el("div", { style: "margin-top:6px" }, [
-        el("b", { text: "Methodik: " }),
-        document.createTextNode(detail.methodologyVersion + " · Contract " + detail.contractVersion)
-      ]),
-      el("div", { style: "margin-top:6px" }, [document.createTextNode(detail.disclaimer || "")])
+      el("div", { class: "dx-foot-links" }, [
+        document.createTextNode("Stand " + (detail.asOf ? C().dateShort(detail.asOf) : "unbekannt") + " · "),
+        el("a", { href: "#/daten", text: "Daten & Quellen" }),
+        document.createTextNode(" · " + (detail.disclaimer || "Keine Anlageempfehlung."))
+      ])
     ]);
   }
 

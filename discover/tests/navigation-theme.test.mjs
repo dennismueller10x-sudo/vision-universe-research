@@ -95,7 +95,9 @@ test("theme=\"dark\" faerbt den Header - und nur Discover setzt es", () => {
   assert.ok(!dunkel.html.includes("rgba(255,255,255,.96)"), "heller Grund im Dark-Modus");
 
   const seite = readFileSync(join(root, "discover", "index.html"), "utf8");
-  assert.match(seite, /<vu-navigation theme="dark">/);
+  /* V4.1: das Element traegt weitere Attribute (no-preview); der dunkle
+     Standard bleibt, das Farbschema schaltet ihn zur Laufzeit um. */
+  assert.match(seite, /<vu-navigation theme="dark"(\s[^>]*)?>/);
 });
 
 test("ein unbekannter Wert faellt auf hell zurueck, nicht auf dunkel", () => {
@@ -137,4 +139,69 @@ test("die Markierung der aktuellen Seite haengt am Pfad, nicht am Theme", () => 
   assert.deepEqual(aktuell("/quant/"), ["Quant"]);
   assert.deepEqual(aktuell("/discover/", { theme: "dark" }), ["Discover"]);
   assert.deepEqual(aktuell("/macro/2026/"), ["Macro"]);
+});
+
+/* ------------------------------------------------ V4.1: Plakette und Wechsel */
+function baueKopfMitStil(attribute) {
+  attribute = attribute || {};
+  let klasse = null;
+  const sandbox = {
+    HTMLElement: class {},
+    customElements: { define: (_name, k) => { klasse = k; } },
+    document: { createElement: () => ({
+      _attrs: {}, href: "", textContent: "",
+      setAttribute(n, v) { this._attrs[n] = v; },
+      getAttribute(n) { return n in this._attrs ? this._attrs[n] : null; }
+    }) },
+    location: { pathname: "/discover/" }
+  };
+  vm.runInNewContext(quelle, sandbox);
+  const nav = { append() {}, classList: { remove() {}, toggle: () => false }, addEventListener() {}, setAttribute() {} };
+  const knopf = { addEventListener() {}, setAttribute() {}, focus() {} };
+  const style = { textContent: "" };
+  let html = "";
+  const shadow = {
+    set innerHTML(v) { html = v; style.textContent = v.slice(v.indexOf("<style>") + 7, v.indexOf("</style>")); },
+    get innerHTML() { return html; },
+    querySelector: (sel) => (sel === "nav" ? nav : sel === "button" ? knopf : sel === "style" ? style : null),
+    querySelectorAll: () => [], addEventListener() {}
+  };
+  const el = Object.create(klasse.prototype);
+  el.shadowRoot = null;
+  el.getAttribute = (n) => (n in attribute ? attribute[n] : null);
+  el.attachShadow = () => { el.shadowRoot = shadow; return shadow; };
+  el.connectedCallback();
+  return { el, klasse, style, html: () => html, attribute };
+}
+
+test("V4.1: ohne no-preview steht die Plakette 'Development Preview' im Kopf", () => {
+  const k = baueKopfMitStil({ theme: "dark" });
+  assert.match(k.html(), /class="preview"/);
+  assert.match(k.html(), /Development Preview/);
+});
+
+test("V4.1: no-preview nimmt die Plakette aus dem Kopf - auch aus dem Vorlesetext", () => {
+  const k = baueKopfMitStil({ theme: "dark", "no-preview": "" });
+  assert.ok(!k.html().includes('class="preview"'), "die Plakette steht noch im Markup");
+  assert.ok(!k.html().includes("Development Preview"), "der Vorlesetext nennt die Plakette noch");
+  assert.match(k.html(), /aria-label="Vision Universe Startseite"/);
+  const seite = readFileSync(join(root, "discover", "index.html"), "utf8");
+  assert.match(seite, /<vu-navigation[^>]*\sno-preview[\s>]/, "Discover setzt no-preview nicht");
+});
+
+test("V4.1: das Attribut theme wird beobachtet und schaltet die Farben zur Laufzeit um", () => {
+  const k = baueKopfMitStil({ theme: "dark" });
+  assert.ok(k.klasse.observedAttributes.includes("theme"));
+  assert.match(k.style.textContent, /rgba\(8,8,10,\.92\)/);
+  k.attribute.theme = "light";
+  k.el.attributeChangedCallback("theme", "dark", "light");
+  assert.match(k.style.textContent, /rgba\(255,255,255,\.96\)/);
+  assert.ok(!k.style.textContent.includes("rgba(8,8,10,.92)"), "der dunkle Grund blieb stehen");
+  k.attribute.theme = "dark";
+  k.el.attributeChangedCallback("theme", "light", "dark");
+  assert.match(k.style.textContent, /rgba\(8,8,10,\.92\)/);
+  /* Ein anderes Attribut aendert nichts, ein Element ohne Schatten faellt nicht um. */
+  k.el.attributeChangedCallback("no-preview", null, "");
+  const roh = Object.create(k.klasse.prototype); roh.shadowRoot = null; roh.getAttribute = () => "light";
+  assert.doesNotThrow(() => roh.attributeChangedCallback("theme", null, "light"));
 });

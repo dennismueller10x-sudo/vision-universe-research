@@ -90,7 +90,9 @@ const MAX_REQUESTS = parseInt(arg("--max-requests", String(INTRADAY.maxRequestsP
 const CONCURRENCY = parseInt(arg("--concurrency", "4"), 10);
 const REFRESH_MINUTES = INTRADAY.refreshMinutes || 10;
 const RETENTION = INTRADAY.retentionSessions || 2;
-const NOW = arg("--now", null) ? new Date(arg("--now")) : new Date();
+let NOW = arg("--now", null) ? new Date(arg("--now")) : new Date();
+/* V4.1 §4: ein Zeitplan-Lauf kurz vor 09:30 wartet auf die Eroeffnung. */
+const OPEN_WAIT_MINUTES = 7;
 
 export const INTRADAY_DIR = join("quant", "data", "market", "intraday");
 const OUT_DIR = join(root, INTRADAY_DIR);
@@ -119,7 +121,22 @@ const oeffentlich = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intr
 console.log(`  Veroeffentlichung: ${oeffentlich.allowed ? "freigegeben - " + oeffentlich.basis : "NICHT freigegeben (" + oeffentlich.message + ")"}`);
 
 /* ---------------------------------------------------------- Sitzung */
-const lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+let lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+/* Der Zeitplan trifft die Eroeffnung nie genau. Ein automatischer Lauf,
+   der wenige Minuten vor 09:30 New York startet, holte bisher den Vortag
+   und hielt den naechsten Lauf auf (Vorfall 16.09.2026: Lauf 13:27 UTC ->
+   Dienstag, erster Lauf der laufenden Sitzung erst 13:43 UTC). Jetzt
+   wartet er bis eine Minute nach der Eroeffnung und holt die laufende
+   Sitzung. Mit --now (Tests) wird nie gewartet. */
+if (SCOPE === "auto" && SESSION_ARG === "auto" && !arg("--now", null)) {
+  const warten = TradingSession.openWaitMs(lage, NOW.getTime(), OPEN_WAIT_MINUTES);
+  if (warten > 0) {
+    console.log(`  Eroeffnung in ${Math.round((warten - 60000) / 60000)} min (${lage.nextOpen}) - der Lauf wartet ${Math.round(warten / 1000)} s, um die laufende Sitzung zu holen.`);
+    await new Promise((r) => setTimeout(r, warten));
+    NOW = new Date();
+    lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+  }
+}
 const session = SESSION_ARG === "auto" ? lage.displaySession : TradingSession.sessionFor(SESSION_ARG, { calendar: CALENDAR });
 if (!session) { console.error("  Keine Sitzung bestimmbar."); process.exit(1); }
 console.log(`  Jetzt: ${lage.now} = ${lage.localDate} ${lage.localTime} New York · ${lage.marketState}`);

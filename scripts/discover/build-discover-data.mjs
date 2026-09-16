@@ -110,6 +110,67 @@ function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 function round(v, d) { return isNum(v) ? Math.round(v * Math.pow(10, d)) / Math.pow(10, d) : null; }
 
 let bytesWritten = 0, filesWritten = 0;
+/* V4.1 §19: Feed-Quellen in der Reihenfolge, in der sie reihum gezogen
+   werden, mit dem Namen, der auf dem Bildschirm steht. */
+const FEED_SOURCES = [
+  ["market-leaders", "Die stärksten Aktien"], ["bekannte-namen", "Bekannte Namen in Bewegung"],
+  ["new-52-week-highs", "Neue Jahreshochs"], ["umsatz-waechst-stark", "Umsatz wächst stark"],
+  ["momentum-leaders", "Seit Monaten im Aufwind"], ["cashflow-maschinen", "Cashflow-Maschinen"],
+  ["ueberraschungen", "Überraschungen"], ["sp500-staerkste", "Stärkste im S&P 500"],
+  ["gewinne-beschleunigen", "Gewinne beschleunigen"], ["comeback", "Comeback?"],
+  ["langfristige-compounder", "Langfristige Compounder"], ["ndx-staerkste", "Stärkste im NASDAQ-100"],
+  ["breakout-watch", "Gerade in Bewegung"], ["qualitaet-wachstum", "Qualität + Wachstum"],
+  ["thema-ki", "Künstliche Intelligenz"], ["relative-strength", "Dem Markt voraus"],
+  ["djia-staerkste", "Stärkste im Dow Jones"], ["profitables-wachstum", "Profitables Wachstum"],
+  ["margen-werden-staerker", "Margen werden stärker"], ["trend-quality", "Stabile Aufwärtstrends"],
+  ["fundamentale-turnarounds", "Fundamentale Turnarounds"], ["thema-robotik", "Robotik & Automation"],
+  ["starke-bilanz-wachstum", "Starke Bilanz + Wachstum"], ["qualitaet-zum-preis", "Qualität zum vernünftigen Preis"],
+  ["thema-mobilitaet", "Autos & Mobilität"]
+];
+const FEED_MAX = 400;
+const FEED_BATCH = 12;
+function feedOrder(rowsById, quellen, max) {
+  const eimer = quellen.map(([rowId, herkunft]) => {
+    const row = rowsById.get(rowId);
+    return { rowId, herkunft, cards: row && row.cards ? row.cards.slice() : [], zeiger: 0 };
+  }).filter((e) => e.cards.length);
+  const out = [], gesehen = new Set();
+  let letzteSektoren = [], letzterBekannt = null;
+  const passt = (card) => {
+    if (!card || gesehen.has(card.symbol)) return false;
+    const sec = card.sector || null;
+    if (sec && letzteSektoren.length >= 2 && letzteSektoren[0] === sec && letzteSektoren[1] === sec) return false;
+    return true;
+  };
+  let leerRunden = 0;
+  while (out.length < max && leerRunden < 2) {
+    let genommen = 0;
+    for (const e of eimer) {
+      if (out.length >= max) break;
+      /* Erster passender Kandidat aus der Quelle; bevorzugt einer, der den
+         Bekanntheitswechsel haelt (bekannt nach unbekannt und umgekehrt). */
+      let wahl = -1;
+      for (let k = e.zeiger; k < e.cards.length && k < e.zeiger + 8; k++) {
+        const c = e.cards[k];
+        if (!passt(c)) continue;
+        const bekannt = c.recognitionTier === 1 ? 1 : 0;
+        if (wahl < 0) wahl = k;
+        if (letzterBekannt === null || bekannt !== letzterBekannt) { wahl = k; break; }
+      }
+      if (wahl < 0) continue;
+      const c = e.cards[wahl];
+      e.cards.splice(wahl, 1);
+      gesehen.add(c.symbol);
+      out.push({ card: c, rowId: e.rowId, herkunft: e.herkunft });
+      letzteSektoren = [c.sector || null, letzteSektoren[0] || null];
+      letzterBekannt = c.recognitionTier === 1 ? 1 : 0;
+      genommen++;
+    }
+    leerRunden = genommen ? 0 : leerRunden + 1;
+  }
+  return out;
+}
+
 function write(rel, data) {
   const file = join(OUT, rel);
   mkdirSync(dirname(file), { recursive: true });
@@ -2032,6 +2093,26 @@ for (const universe of universes) {
             "gelesen von scripts/market/ingest-intraday.mjs --scope=discover."
     });
     console.log(`     ${universe.universeId.padEnd(9)} Live-Umfang: ${live.size} Titel`);
+
+    /* V4.1 §17-19: der Feed "Entdecken" - eine deterministische, abwechslungs-
+       reiche Reihenfolge aus den ausgelieferten Reihen. Keine zweite
+       Rangliste: jede Karte traegt, aus welcher Sammlung sie kommt. Die
+       Quellen werden reihum abgefragt (Staerkste, bekannte Namen,
+       Jahreshochs, Wachstum, Momentum, Cashflow, Ueberraschungen, ...);
+       ein Titel erscheint einmal; nie drei Titel desselben Sektors in
+       Folge; bekannte und unbekannte Namen wechseln sich ab, wo die
+       Quellen es hergeben. Der Client zeigt Stuecke von batchSize und
+       laedt die naechsten Karten von den Aktienseiten nach. */
+    const feed = feedOrder(rowsById, FEED_SOURCES, FEED_MAX);
+    write(`feed/${universe.universeId}.json`, {
+      schemaVersion: "discover-feed-1.0.0", universeId: universe.universeId,
+      generatedAt: universe.generatedAt, asOf: universe.asOf,
+      batchSize: FEED_BATCH, count: feed.length,
+      rule: "Reihum aus den Sammlungen (" + FEED_SOURCES.map((x) => x[0]).join(", ") + "); ein Titel einmal; hoechstens zwei Titel eines Sektors in Folge; bekannte und weniger bekannte Namen im Wechsel, sofern verfuegbar. Deterministisch, ohne Zufall und ohne Modell.",
+      cards: feed.slice(0, FEED_BATCH).map((f) => f.card),
+      order: feed.map((f) => ({ s: f.card.symbol, rowId: f.rowId, herkunft: f.herkunft, sec: f.card.sector || null, k: f.card.recognitionTier === 1 ? 1 : 0 }))
+    });
+    console.log(`     ${universe.universeId.padEnd(9)} Feed: ${feed.length} Titel aus ${FEED_SOURCES.length} Sammlungen`);
   }
 
   /* Suchindex: klein genug fuer einen einzigen Abruf. */

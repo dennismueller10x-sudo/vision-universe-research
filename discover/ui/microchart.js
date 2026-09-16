@@ -32,7 +32,7 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var MODULE_VERSION = "discover-microchart-1.1.0";
+  var MODULE_VERSION = "discover-microchart-1.2.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function svg(tag, attrs) {
@@ -212,17 +212,34 @@
       node.appendChild(svg("line", { class: "dx-range-grid", x1: padL, x2: w - padR, y1: y(v).toFixed(1), y2: y(v).toFixed(1) }));
     });
     node.appendChild(svg("line", { class: "dx-art-base", x1: padL, x2: w - padR, y1: y(closes[0]).toFixed(1), y2: y(closes[0]).toFixed(1) }));
-    var d = "";
-    p.forEach(function (pt) { d += (d ? "L" : "M") + x(pt[0]).toFixed(1) + " " + y(pt[1]).toFixed(1) + " "; });
+    var d = "", karte = [];
+    p.forEach(function (pt) {
+      var px = x(pt[0]), py = y(pt[1]);
+      karte.push({ x: px, y: py, date: pt[0], close: pt[1] });
+      d += (d ? "L" : "M") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+    });
     node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxr" + lauf + ")",
       d: d + "L" + x(p[p.length - 1][0]).toFixed(1) + " " + (h - padBottom) + " L" + x(p[0][0]).toFixed(1) + " " + (h - padBottom) + " Z" }));
     node.appendChild(svg("path", { class: "dx-art-line dx-range-line", d: d.trim(), "vector-effect": "non-scaling-stroke" }));
     var lx = x(p[p.length - 1][0]), ly = y(closes[closes.length - 1]);
     node.appendChild(svg("circle", { class: "dx-art-node", cx: lx.toFixed(1), cy: ly.toFixed(1), r: 3.4 }));
-    /* Kursachse rechts: Hoch, Tief, letzter Kurs. */
+    /* Kursachse rechts: Hoch, zwei Zwischenwerte, Tief, letzter Kurs. */
     var fmt = function (v) { return v >= 1000 ? Math.round(v).toLocaleString("de-DE") : v.toFixed(2).replace(".", ","); };
-    node.appendChild(svg("text", { class: "dx-range-axis", x: w - padR + 8, y: (y(hi) + 4).toFixed(1), text: fmt(hi) }));
-    node.appendChild(svg("text", { class: "dx-range-axis", x: w - padR + 8, y: (y(lo) + 4).toFixed(1), text: fmt(lo) }));
+    var stufen = [hi, lo];
+    if (h >= 220) {
+      stufen = [hi];
+      [2, 1].forEach(function (k) { stufen.push(log ? Math.exp(tr(lo) + (tr(hi) - tr(lo)) * k / 3) : lo + (hi - lo) * k / 3); });
+      stufen.push(lo);
+    }
+    stufen.forEach(function (v, i) {
+      var klasse = "dx-range-axis" + (i === 0 || i === stufen.length - 1 ? "" : " dx-range-axis--mid");
+      if (i !== 0 && i !== stufen.length - 1) node.appendChild(svg("line", { class: "dx-range-grid", x1: padL, x2: w - padR, y1: y(v).toFixed(1), y2: y(v).toFixed(1) }));
+      node.appendChild(svg("text", { class: klasse, x: w - padR + 8, y: (y(v) + 4).toFixed(1), text: fmt(v) }));
+    });
+    /* Fuer die Beruehrung auf der Aktienseite: jeder Punkt mit seinen
+       Bildkoordinaten (die viewBox ist dort pixelgenau). */
+    node.__punkte = karte;
+    node.__basis = { close: closes[0], date: p[0][0], padBottom: padBottom, padTop: padTop, padL: padL, padR: padR };
     if (Math.abs(ly - y(hi)) > 14 && Math.abs(ly - y(lo)) > 14) {
       node.appendChild(svg("text", { class: "dx-range-axis dx-range-axis--last", x: w - padR + 8, y: (ly + 4).toFixed(1), text: fmt(closes[closes.length - 1]) }));
     }
@@ -301,11 +318,16 @@
        dann sagt die Beschreibung das auch. */
     node.appendChild(svg("line", { class: "dx-art-base", x1: padX, x2: w - padRight,
       y1: y(base).toFixed(1), y2: y(base).toFixed(1) }));
-    var d = "";
+    var d = "", karte = [];
     snap.points.forEach(function (p) {
       if (!isNum(p[1])) return;
-      d += (d ? "L" : "M") + x(minutesOf(p[0])).toFixed(1) + " " + y(p[1]).toFixed(1) + " ";
+      var px = x(minutesOf(p[0])), py = y(p[1]);
+      karte.push({ x: px, y: py, time: p[0], close: p[1] });
+      d += (d ? "L" : "M") + px.toFixed(1) + " " + py.toFixed(1) + " ";
     });
+    node.__punkte = karte;
+    node.__basis = { close: base, time: snap.sessionOpenLocal || "09:30", padBottom: padBottom, padTop: padTop, padL: padX, padR: padRight,
+                     previousClose: isNum(snap.previousClose) ? snap.previousClose : null };
     var xLast = x(minutesOf(snap.points[snap.points.length - 1][0])), xFirst = x(minutesOf(snap.points[0][0]));
     if (opt.area !== false) {
       node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxi" + lauf + ")",
@@ -320,8 +342,10 @@
     if (axis) {
       var marken = [];
       for (var m = Math.ceil(openMin / 60) * 60; m <= closeMin; m += 60) marken.push(m);
+      /* Eine Stundenmarke, die der Rand-Beschriftung (09:30, 16:00) zu
+         nahe kaeme, faellt weg - pixelgenau, nicht nach Minuten. */
       marken.forEach(function (m) {
-        if (m - openMin < 20 || closeMin - m < 20) return;
+        if (x(m) - x(openMin) < 40 || x(closeMin) - x(m) < 40) return;
         node.appendChild(svg("line", { class: "dx-micro-grid", x1: x(m).toFixed(1), x2: x(m).toFixed(1),
           y1: padTop, y2: (h - padBottom).toFixed(1) }));
         node.appendChild(svg("text", { class: "dx-micro-axis", x: x(m).toFixed(1), y: h - 4,

@@ -30,12 +30,10 @@
     }
   };
 
-  class VisionNavigation extends HTMLElement {
-    connectedCallback() {
-      if (this.shadowRoot) return;
-      const t = THEMES[this.getAttribute('theme') === 'dark' ? 'dark' : 'light'];
-      const root = this.attachShadow({mode: 'open'});
-      root.innerHTML = `<style>
+  /* Die Farbwerte des Kopfes als Funktion des Schemas: so kann Discover
+     das Attribut theme spaeter umschalten (Hell/Dunkel/System, V4.1), und
+     der Kopf zieht mit, ohne neu aufgebaut zu werden. */
+  const styles = (t) => `
         :host{display:block;position:fixed;inset:0 0 auto;z-index:1000000;color:${t.ink};font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
         *{box-sizing:border-box}header{background:${t.bg};backdrop-filter:blur(18px);border-bottom:1px solid ${t.border}}
         .shell{width:min(1400px,calc(100% - 64px));margin:auto}.row{height:88px;display:flex;align-items:center;justify-content:space-between;gap:32px}
@@ -48,7 +46,24 @@
         @media(max-width:1100px){.shell{width:calc(100% - 42px)}img{width:240px}nav{display:none}button{display:block}nav.open{display:flex;position:absolute;top:88px;left:0;right:0;max-height:calc(100dvh - 88px);overflow:auto;flex-direction:column;align-items:stretch;background:${t.panelBg};padding:0 21px 18px;border-bottom:1px solid ${t.panelBorder}}nav a{border:0;border-top:1px solid ${t.divider};padding:16px 0}}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:12px}.brand{gap:8px}img{width:154px;max-width:48vw}.preview{max-width:76px;padding:4px 7px;white-space:normal;text-align:center;font-size:7px;line-height:1.15}nav.open{top:70px;max-height:calc(100dvh - 70px)}}
               :host([theme="dark"]) img{filter:invert(1) brightness(1.08)}
-      </style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite — Development Preview"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"><span class="preview" aria-label="Vision Universe — Development Preview">Development Preview</span></a><nav id="menu" aria-label="Hauptnavigation"></nav><button type="button" aria-label="Navigation öffnen" aria-controls="menu" aria-expanded="false"><span></span><span></span><span></span></button></div></div></header>`;
+`;
+
+  class VisionNavigation extends HTMLElement {
+    static get observedAttributes() { return ['theme']; }
+    attributeChangedCallback(name) {
+      if (name !== 'theme' || !this.shadowRoot) return;
+      const style = this.shadowRoot.querySelector('style');
+      if (style) style.textContent = styles(THEMES[this.getAttribute('theme') === 'dark' ? 'dark' : 'light']);
+    }
+    connectedCallback() {
+      if (this.shadowRoot) return;
+      const t = THEMES[this.getAttribute('theme') === 'dark' ? 'dark' : 'light'];
+      /* Der Hinweis "Development Preview" ist Teil des Kopfes jeder Seite.
+         Eine Seite, die fuer Nutzer fertig ist, schreibt no-preview an das
+         Element - dann entfaellt die Plakette dort, sonst nirgends. */
+      const preview = this.getAttribute('no-preview') === null;
+      const root = this.attachShadow({mode: 'open'});
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite${preview ? ' — Development Preview' : ''}"><img src="/assets/vision-universe-logo.png" alt="Vision Universe">${preview ? '<span class="preview" aria-label="Vision Universe — Development Preview">Development Preview</span>' : ''}</a><nav id="menu" aria-label="Hauptnavigation"></nav><button type="button" aria-label="Navigation öffnen" aria-controls="menu" aria-expanded="false"><span></span><span></span><span></span></button></div></div></header>`;
       const nav = root.querySelector('nav');
       for (const [label, href] of items) {
         const a = document.createElement('a'); a.href = href; a.textContent = label;

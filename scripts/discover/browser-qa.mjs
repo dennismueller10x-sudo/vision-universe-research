@@ -760,9 +760,44 @@ await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
     await seite.close();
     return wert;
   };
-  const dunkel = await lese("/discover/");
+  /* V4.1 §12: Discover hat ein Farbschema (System, Hell, Dunkel). Der
+     Header folgt ihm - dunkel, wenn Discover dunkel ist, hell, wenn hell.
+     Gemessen wird beides: die Kopplung (Attribut = Schema der Seite) und
+     der dunkle Fall mit gespeicherter Wahl. */
+  const gekoppelt = await (async () => {
+    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
+    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
+    await seite.waitForTimeout(700);
+    const w = await seite.evaluate(() => ({
+      schema: document.documentElement.getAttribute("data-theme"),
+      nav: document.querySelector("vu-navigation").getAttribute("theme"),
+      bg: getComputedStyle(document.querySelector("vu-navigation").shadowRoot.querySelector("header")).backgroundColor }));
+    await seite.close();
+    return w;
+  })();
+  assert(gekoppelt.schema === "light" || gekoppelt.schema === "dark", "Discover traegt kein Farbschema: " + gekoppelt.schema);
+  assert(gekoppelt.nav === gekoppelt.schema, "der Header folgt dem Schema nicht: " + JSON.stringify(gekoppelt));
+  assert(gekoppelt.schema === "dark" ? /rgba?\(8, 8, 10/.test(gekoppelt.bg) : /rgba?\(255, 255, 255/.test(gekoppelt.bg),
+    "Header und Schema passen nicht zusammen: " + JSON.stringify(gekoppelt));
+  const dunkel = await (async () => {
+    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
+    await seite.addInitScript(() => { try { localStorage.setItem("vu-discover-theme-v1", "dark"); } catch (e) {} });
+    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
+    await seite.waitForTimeout(700);
+    const w = await seite.evaluate(() => {
+      const nav = document.querySelector("vu-navigation");
+      return { bg: getComputedStyle(nav.shadowRoot.querySelector("header")).backgroundColor,
+               badge: !!nav.shadowRoot.querySelector(".preview"),
+               ink: getComputedStyle(nav.shadowRoot.querySelector("nav a")).color,
+               ziele: [...nav.shadowRoot.querySelectorAll("nav a")]
+                 .map((x) => x.getAttribute("href")).join(",") };
+    });
+    await seite.close();
+    return w;
+  })();
   assert(dunkel, "auf /discover/ fehlt die Navigation");
   assert(/rgba?\(8, 8, 10/.test(dunkel.bg), "der Discover-Header ist nicht dunkel: " + dunkel.bg);
+  assert(!dunkel.badge, "die Plakette 'Development Preview' steht noch im Discover-Kopf");
   for (const pfad of ["/quant/", "/dashboard/", "/news/", "/macro/", "/academy/"]) {
     const hell = await lese(pfad);
     assert(hell, "auf " + pfad + " fehlt die Navigation");
@@ -953,7 +988,7 @@ await check("Einzeln entdecken bleibt ein Angebot, kein Zwang", async () => {
   await mobilVorschau.waitForTimeout(2500);
   const feed = await mobilVorschau.$$(".dx-feed");
   assert(feed.length === 0, "der Einzelmodus draengt sich auf der Startseite auf");
-  const einstieg = await mobilVorschau.$(".dx-einzeln");
+  const einstieg = await mobilVorschau.$(".dx-fnav-entdecken, .dx-entdecken");
   assert(einstieg, "es gibt keinen Einstieg in den Einzelmodus");
   const text = await mobilVorschau.evaluate(() => document.body.innerText);
   assert(!/jetzt kaufen|nicht verpassen|nur heute/i.test(text),
@@ -1069,7 +1104,11 @@ await check("mobil: die Karte liest sich Name, Zahl, Aussage, Bild (V4 §26)", a
 });
 
 await check("mobil: Suche als Vollbild mit Farbwelt je Treffer", async () => {
-  await mobil.click(".dx-searchbtn");
+  /* V4.1 §14: auf dem Telefon oeffnet die schwebende Leiste die Suche;
+     der Knopf im Kopf ist dort nicht mehr sichtbar. */
+  await mobil.evaluate(() => window.scrollTo(0, 0));
+  await mobil.waitForTimeout(300);
+  await mobil.click(".dx-fnav-suchen");
   await mobil.waitForTimeout(600);
   const box = await mobil.$eval(".dx-search", (n) => n.getBoundingClientRect().toJSON());
   assert(box.width >= 380 && box.height >= 700, "das Overlay füllt den Bildschirm nicht");
