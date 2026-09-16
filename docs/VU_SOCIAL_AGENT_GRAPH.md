@@ -158,3 +158,34 @@ Exploitation (`DATA_STORY`, das belegte Format) und zwei Exploration
   nur keine.
 - **Kein autonomes Publishing.** `GLOBAL_AUTOPUBLISH` ist aus, Autonomie
   steht auf Stufe 0.
+
+
+---
+
+## 7. Drei Fehler mit demselben Gesicht
+
+Während dieses Baus sind mir vier Fehler unterlaufen, von denen drei
+dasselbe Bild erzeugten: **ein Schritt, der schnell und grün endet.**
+Das liest sich wie „es gab nichts zu tun" und bedeutete jedes Mal etwas
+anderes.
+
+| Ursache | Wie es aussah |
+|---|---|
+| Die alte Worker-Fassung antwortete (Propagation) | Feld fehlt → „nicht gesetzt" |
+| `git diff` sieht keine unverfolgten Dateien | „keine Änderung" für eine gerade erzeugte Datei |
+| Budget rechnete mit veralteter Aufrufzahl | „Too many subrequests" → sah aus wie ein Netzproblem bei Meta |
+
+Und einer, der schlimmer war als die drei: **eine Diagnose, die zu den
+Beobachtungen passte und trotzdem falsch war.** Ich hatte behauptet,
+`[ test ] && befehl` töte den Schritt unter `bash -e`. Eine Shell nebenan
+widerlegt das in zwei Zeilen — ich hatte sie nicht gefragt. Die
+Behauptung stand in einer Commit-Nachricht und hätte beinahe zu
+Änderungen an zwei fremden produktiven Workflows geführt, in denen kein
+Fehler ist. `SE1`–`SE4` halten jetzt fest, was wirklich gilt.
+
+**Was daraus folgte:** auf einen Statuscode zu warten reicht nicht, wenn
+die alte Fassung auch 200 antwortet. `/health` nennt deshalb den Commit,
+aus dem die antwortende Fassung gebaut wurde, und der Workflow wartet
+auf **seinen eigenen**. Kein Statuscode, keine Zeitspanne — die
+Identität. Das beendet die Fehlerklasse, statt ihre dritte Ausprägung zu
+behandeln.
