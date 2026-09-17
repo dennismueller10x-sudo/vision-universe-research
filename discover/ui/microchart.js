@@ -343,9 +343,15 @@
       var marken = [];
       for (var m = Math.ceil(openMin / 60) * 60; m <= closeMin; m += 60) marken.push(m);
       /* Eine Stundenmarke, die der Rand-Beschriftung (09:30, 16:00) zu
-         nahe kaeme, faellt weg - pixelgenau, nicht nach Minuten. */
+         nahe kaeme, faellt weg - pixelgenau, nicht nach Minuten. Der
+         Mindestabstand ist die halbe Stundenmarke plus die ganze
+         Randmarke plus Luft: beide sind fuenfstellig ("15:00") und bei
+         11,5 px Schrift rund 32 px breit, also 16 + 32 + 6. Mit den
+         frueheren 40 px stiessen auf dem Telefon "15:00" und "16:00"
+         aneinander. */
+      var randAbstand = 54;
       marken.forEach(function (m) {
-        if (x(m) - x(openMin) < 40 || x(closeMin) - x(m) < 40) return;
+        if (x(m) - x(openMin) < randAbstand || x(closeMin) - x(m) < randAbstand) return;
         node.appendChild(svg("line", { class: "dx-micro-grid", x1: x(m).toFixed(1), x2: x(m).toFixed(1),
           y1: padTop, y2: (h - padBottom).toFixed(1) }));
         node.appendChild(svg("text", { class: "dx-micro-axis", x: x(m).toFixed(1), y: h - 4,
