@@ -68,10 +68,24 @@ new_sqlite_classes = ["VuLive"]
 # Diese Datei liegt im Git. Ein Schluessel in ihr waere ein Schluessel im
 # Git - und der bliebe es auch nach dem Loeschen.
 [vars]
-# Nachmeldung auf der offenen Anbieterverbindung. Bleibt "false", bis der
-# Nachweis bei offener Boerse vorliegt (§1). Solange baut der
-# Subscription Manager bei jeder Aenderung sauber neu auf.
-TIINGO_DYNAMIC_SUBSCRIBE = "false"
+# Nachmeldung auf der offenen Anbieterverbindung.
+#
+# GEMESSEN am 17.09.2026 um 09:53 New York, bei laufender Sitzung
+# (quant/data/market/commercial/dynamic-subscribe-verification.json):
+#
+#   Kontrolle    AAPL 46, NVDA 63 Ereignisse - beide handeln
+#   P0 ["AAPL"]  AAPL 52, NVDA 0  - die Tickerliste filtert wirklich
+#   P1 +NVDA     AAPL 55, NVDA 74 - Nachmelden wirkt
+#   P2 -AAPL     AAPL 0,  NVDA 65 - Abmelden wirkt auch
+#
+#   Dieselbe Verbindung ueber alle drei Phasen, keine Ablehnung.
+#
+# Damit darf der Subscription Manager nachmelden statt neu aufzubauen:
+# ein Titelwechsel kostet keinen Verbindungsaufbau und keine Luecke von
+# ein, zwei Sekunden mehr. Faellt die Nachmeldung im Betrieb doch einmal
+# aus, faellt der Manager von selbst auf "reconnect" zurueck - der Modus
+# ist gebaut, getestet und bleibt es.
+TIINGO_DYNAMIC_SUBSCRIBE = "true"
 # Ursprungspruefung fuer die oertliche Entwicklung. In der
 # veroeffentlichten Umgebung nicht gesetzt.
 ALLOW_LOCAL_ORIGIN = "false"
