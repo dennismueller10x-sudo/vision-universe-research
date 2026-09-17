@@ -426,11 +426,29 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     DIE INHALTSKENNUNG
+
+     Sie haengt am Titel und am Datenstand — zwei Belegpakete zum
+     selben Titel an verschiedenen Tagen sind verschiedene Inhalte.
+
+     Sie steht HIER und nicht beim Anfragenden, weil zwei Stellen sie
+     berechnen: das Skript, das den Creative Request stellt, und der
+     Zyklus, der das Ergebnis spaeter sucht. Zwei Rechenwege waeren
+     zwei Gelegenheiten zu driften — und eine Drift hiesse, dass der
+     Zyklus das fertige Ergebnis nie findet und es niemandem auffaellt.
+     ------------------------------------------------------------------- */
+  function contentIdFor(entity, asOf) {
+    return "vu-" + String(entity || "").toLowerCase() + "-" +
+      String(asOf || "").replace(/[^0-9]/g, "").slice(0, 8);
+  }
+
   var api = {
     DIMENSIONS: DIMENSIONS,
     SUFFICIENCY_DEFAULTS: SUFFICIENCY_DEFAULTS,
     fromTechnicalBundle: fromTechnicalBundle,
-    assessSufficiency: assessSufficiency
+    assessSufficiency: assessSufficiency,
+    contentIdFor: contentIdFor
   };
 
   if (isNode) module.exports = api;

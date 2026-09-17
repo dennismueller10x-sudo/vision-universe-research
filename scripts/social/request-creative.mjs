@@ -49,11 +49,9 @@ const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 
 export const LEDGER_DATEI = "social/data/creative-invocations.json";
 
-/** Die Inhaltskennung. Sie haengt am Titel und am Datenstand. */
-export function contentIdFor(symbol, asOf) {
-  return "vu-" + String(symbol).toLowerCase() + "-" +
-    String(asOf || "").replace(/[^0-9]/g, "").slice(0, 8);
-}
+/** Die Inhaltskennung. Eine Definition, in der Engine — der Zyklus
+    rechnet dieselbe aus, um das Ergebnis spaeter wiederzufinden. */
+export const contentIdFor = EvidencePackage.contentIdFor;
 
 /* --------------------------------------------------------------- Lauf */
 if (import.meta.url === `file://${process.argv[1]}`) {

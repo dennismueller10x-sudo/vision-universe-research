@@ -71,6 +71,7 @@ const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
 const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
 const AutorVorlage = require(join(ROOT, "social/providers/authoring/template/adapter.js"));
 const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapter.js"));
+const AutorChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 
 /* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
    Chromium und gehoert deshalb nicht in die Browser-Ladbarkeit der
@@ -332,12 +333,52 @@ function buildTimingKnowledge(memory) {
 /* =====================================================================
    DIE AUTOREN
 
-   Reihenfolge ist Absicht: das Modell zuerst, die Vorlage als
-   Rueckfall. Heute meldet sich das Modell ab — es gibt keinen Client —
-   und die Vorlage schreibt. Sobald ein Client da ist, dreht sich das um,
-   ohne dass hier etwas geaendert werden muss.
+   Reihenfolge ist Absicht: der Creative Agent zuerst, dann das Modell,
+   dann die Vorlage als Rueckfall. Wer nichts liefert, wird
+   uebersprungen — ein abwesender Autor ist kein Fehler, sondern der
+   Normalfall bei einem asynchronen Provider.
+
+   -------------------------------------------------------------------
+   DER TRANSPORT DES CREATIVE AGENTS
+
+   Der Agent schreibt sein Ergebnis auf einen eigenen Request-Branch.
+   Dieser Zyklus liest NICHT ueber das Netz: er liest Dateien im
+   Arbeitsverzeichnis. Dazwischen steht scripts/social/ingest-creative.mjs
+   — das holt das Ergebnis, prueft Kennungen und Asset und legt es
+   erst dann hier ab.
+
+   Die Trennung ist keine Umstaendlichkeit. Ein Zyklus, der waehrend
+   der Inhaltserzeugung ins Netz greift, ist nicht mehr
+   reproduzierbar, und ein ungeprueftes Ergebnis waere schon im
+   Kandidaten, bevor irgendein Tor es gesehen haette.
    ===================================================================== */
+const CREATIVE_TRANSPORT = {
+  readResult: function (contentId) {
+    const pfad = join(ROOT, "authoring/requests", String(contentId), "authoring-result.json");
+    if (!existsSync(pfad)) return null;
+    return JSON.parse(readFileSync(pfad, "utf8"));
+  },
+  readAsset: function (relPfad) {
+    const pfad = join(ROOT, String(relPfad));
+    if (!existsSync(pfad)) return null;
+    return readFileSync(pfad);
+  },
+  /* Roh, nicht geparst: der Blob-SHA haengt an den Bytes. Wer das
+     Objekt neu serialisiert, bekommt einen anderen Hash und damit
+     andere Varianten-Kennungen als die, die der Agent vorgerechnet
+     bekommen hat. */
+  readBriefRaw: function (contentId) {
+    const pfad = join(ROOT, "authoring/requests", String(contentId), "authoring-brief.json");
+    if (!existsSync(pfad)) return null;
+    return readFileSync(pfad);
+  }
+};
+
 const autorenRegistry = Authoring.createRegistry();
+autorenRegistry.register(AutorChatGptWork.createChatGptWorkAuthor({
+  transport: CREATIVE_TRANSPORT,
+  variants: 4
+}));
 autorenRegistry.register(AutorModell.createModelAuthor({
   /* Kein Client. Das Anbinden kostet laufend Geld und ist eine
      Owner-Entscheidung, keine Implementierungsfrage. */
@@ -345,7 +386,7 @@ autorenRegistry.register(AutorModell.createModelAuthor({
   modelId: null
 }));
 autorenRegistry.register(AutorVorlage.createTemplateAuthor({}));
-const AUTOR_REIHENFOLGE = ["model", "template"];
+const AUTOR_REIHENFOLGE = ["chatgpt-work", "model", "template"];
 
 /**
  * Ein Schreiber, der die bereits gewaehlte Variante durchreicht.
@@ -757,8 +798,17 @@ async function main() {
       now: NOW
     });
 
+    /* Die Kennung, unter der ein Creative Result zu diesem Inhalt
+       laege. Sie wird hier genauso gerechnet wie beim Stellen der
+       Anfrage — aus derselben Funktion, damit die beiden Seiten nicht
+       driften koennen. */
+    const creativeContentId = (evidenzPaket && evidenzPaket.ok)
+      ? EvidencePackage.contentIdFor(evidenzPaket.entity, evidenzPaket.asOf)
+      : null;
+
     const geschrieben = Authoring.run(autorenRegistry, brief, {
       authors: AUTOR_REIHENFOLGE,
+      contentId: creativeContentId,
       mode: strategyDecision.mode,
       patternKnowledge: musterWissen.knowledge,
       patternUsage: musterWissen.usage,
@@ -829,13 +879,26 @@ async function main() {
   }
 
   const autorenLage = autorenRegistry.usable();
+  const namensBreite = Math.max(10,
+    ...autorenLage.map((a) => String(a.authorId).length)) + 2;
   log("\nAutoren:");
   for (const a of autorenLage) {
-    log("  " + a.authorId.padEnd(10) + (a.ok ? "einsatzbereit" : "nicht verfuegbar"));
+    log("  " + a.authorId.padEnd(namensBreite) + (a.ok ? "einsatzbereit" : "nicht verfuegbar"));
     if (!a.ok) detail("   ", a.reason);
   }
 
   log("\nContent: " + packages.length + " Paket(e) erzeugt, " + rejections.length + " verworfen");
+  /* WER geschrieben hat, nicht nur DASS geschrieben wurde. Ohne diese
+     Zeile laesst sich von aussen nicht unterscheiden, ob der Creative
+     Agent geliefert hat oder ob still die Vorlage eingesprungen ist —
+     und genau das ist der Unterschied, auf den es bei einem
+     asynchronen Provider ankommt. */
+  for (const pk of packages) {
+    const a = pk.authoring || {};
+    log("   " + (pk.result.package.topic || "?") + ": " +
+      (a.authorId || "?") + " / " + (a.pattern || "?") +
+      " (" + (a.passed || 0) + " von " + (a.considered || 0) + " Varianten bestanden)");
+  }
   for (const r of rejections) log("   verworfen [" + r.stage + "] " + r.topic + ": " + r.reason);
 
   componentStates["content.pipeline"] = {

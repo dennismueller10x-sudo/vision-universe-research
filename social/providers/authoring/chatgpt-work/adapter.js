@@ -354,8 +354,9 @@
        sich der Autor gegen echte Dateien, gegen einen Doppelgaenger und
        gegen GitHub testen, ohne dass er drei Wege kennt.
 
-         readResult(contentId) -> Objekt | null
-         readAsset(pfad)       -> Buffer | null
+         readResult(contentId)   -> Objekt | null
+         readAsset(pfad)         -> Buffer | null
+         readBriefRaw(contentId) -> Buffer | String | null   (optional)
     */
     var transport = options.transport || null;
 
@@ -414,9 +415,43 @@
             "asynchron; bis dahin schreibt der deterministische Autor." };
         }
 
-        var agentBrief = opts.agentBrief || buildAgentBrief(brief, opts);
-        var sha = opts.briefBlobSha ||
-          blobSha(JSON.stringify(agentBrief, null, 2) + "\n");
+        /* -------------------------------------------------------------
+           WELCHER BRIEF GILT
+
+           Der Agent hat eine DATEI bekommen. Sie ist das Artefakt, an
+           dem er zu messen ist — nicht eine Rekonstruktion aus
+           denselben Parametern.
+
+           Der Unterschied ist nicht theoretisch: die Rekonstruktion
+           haengt an einem Dutzend langer Textbausteine (Auftrag,
+           Palette, Bildanweisung), die an zwei Stellen gepflegt
+           werden muessten. Weicht ein Zeichen ab, weicht der Blob-SHA
+           ab, und dann weichen alle vier erwarteten Varianten-Kennungen
+           ab. Das Ergebnis waere formal korrekt und wuerde trotzdem
+           abgewiesen.
+
+           Deshalb: erst die echte Datei, dann eine uebergebene, und
+           erst zuletzt die Rekonstruktion.
+           ------------------------------------------------------------- */
+        var briefRoh = null;
+        if (transport && typeof transport.readBriefRaw === "function") {
+          try { briefRoh = transport.readBriefRaw(contentId); }
+          catch (err) { briefRoh = null; }
+        }
+
+        var agentBrief, sha;
+        if (briefRoh) {
+          try { agentBrief = JSON.parse(String(briefRoh)); }
+          catch (err) {
+            return { variants: [], reason: "Der abgelegte Agent-Brief ist kein " +
+              "gueltiges JSON: " + String(err && err.message || err).slice(0, 120) };
+          }
+          sha = blobSha(briefRoh);
+        } else {
+          agentBrief = opts.agentBrief || buildAgentBrief(brief, opts);
+          sha = opts.briefBlobSha ||
+            blobSha(JSON.stringify(agentBrief, null, 2) + "\n");
+        }
 
         /* Verglichen wird gegen den Brief, den der Agent BEKOMMEN hat —
            nicht gegen die interne Kennung des Content Briefs. Der Agent
