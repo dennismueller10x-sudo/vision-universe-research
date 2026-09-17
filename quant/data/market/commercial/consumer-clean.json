@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "consumer-clean-1.0.0",
+  "auftrag": "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview)",
+  "checkedAt": "2026-09-17T17:56:14.187Z",
+  "scanned": {
+    "pages": 7,
+    "uiModules": 31
+  },
+  "scope": "Ausgelieferte Seiten und die Module, die Consumer-Text erzeugen. Kommentare und Dokumentation sind ausgenommen - sie sprechen ueber die Sache, sie zeigen sie nicht.",
+  "sourcesPage": [
+    "discover/ui/daten.js",
+    "discover/quellen.html",
+    "discover/data"
+  ],
+  "findings": {
+    "developmentPreview": [],
+    "developmentPreviewAusserhalbConsumer": [
+      {
+        "file": "assets/site-navigation.js",
+        "line": 53,
+        "context": "Vision Universe Startseite${preview ? ' — Development Preview' : ''}"
+      },
+      {
+        "file": "assets/site-navigation.js",
+        "line": 55,
+        "context": "<span class=\"preview\" aria-label=\"Vision Universe — Development Preview\">Develop"
+      }
+    ],
+    "anbieterImConsumerText": []
+  },
+  "ownerDecision": {
+    "frage": "Soll die Plakette 'Development Preview' auch ausserhalb von Discover verschwinden?",
+    "betroffen": 2,
+    "note": "Discover ist die einzige Seite, die no-preview setzt. Alle uebrigen Seiten - Quant-Werkzeuge, Dashboards, Magazin, Academy, Startseite - tragen die Plakette weiter. Das ist kein Versehen dieses Passes, sondern der Stand vor ihm; ob es so bleibt, entscheidet der Owner.",
+    "machbar": "Ein Attribut je Seite, oder die Vorgabe in assets/site-navigation.js umdrehen."
+  },
+  "verdict": "PASS"
+}

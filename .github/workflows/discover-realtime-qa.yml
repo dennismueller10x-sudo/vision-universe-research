@@ -113,14 +113,14 @@ jobs:
           node scripts/discover/browser-qa-realtime.mjs \
             --symbols '${{ github.event_name == 'workflow_dispatch' && inputs.symbols || 'AAPL,NVDA,MSFT,VLO,PANW' }}' \
             --watch-seconds '${{ github.event_name == 'workflow_dispatch' && inputs.watchSeconds || '60' }}' \
-            --shots realtime-shots
+            --shots docs/screenshots/discover-v41-realtime
 
       - name: Aufnahmen sichern
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: realtime-shots
-          path: realtime-shots
+          path: docs/screenshots/discover-v41-realtime
           if-no-files-found: warn
 
       - name: Kein Schluessel im Bericht
@@ -136,7 +136,7 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/commercial
+          git add quant/data/market/commercial docs/screenshots/discover-v41-realtime
           if git diff --cached --quiet; then
             echo "Keine Aenderung."
           else

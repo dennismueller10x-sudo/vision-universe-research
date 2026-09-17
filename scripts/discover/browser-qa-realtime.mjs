@@ -238,9 +238,19 @@ for (const sym of SYMBOLE) {
               ", Chart " + chartAenderungen + "x");
 
   if (SHOTS && (sym === "AAPL" || sym === "NVDA")) {
-    await p.screenshot({ path: SHOTS + "/realtime-" + sym.toLowerCase() + "-dark.png" });
+    await p.screenshot({ path: SHOTS + "/mobil-dunkel-03-live-" + sym.toLowerCase() + ".png" });
   }
   await p.context().close();
+
+  /* Und dieselbe Flaeche im hellen Schema - die Haelfte der Nutzer sieht
+     sie so, und ein Etikett, das nur im Dunkeln lesbar ist, ist keines. */
+  if (SHOTS && (sym === "AAPL" || sym === "NVDA")) {
+    const hell = await seite(Object.assign({}, MOBIL, { colorScheme: "light" }));
+    await aktienseite(hell, sym);
+    await hell.waitForTimeout(8000);
+    await hell.screenshot({ path: SHOTS + "/mobil-hell-03-live-" + sym.toLowerCase() + ".png" });
+    await hell.context().close();
+  }
 }
 
 /* §20: verbunden, Chart bewegt sich, keine Konsolenfehler. */

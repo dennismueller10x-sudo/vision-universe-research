@@ -19,6 +19,8 @@
    Exit-Code 1 bei mindestens einem Fehlschlag.
    ========================================================================= */
 import { chromium } from "playwright";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { mkdirSync } from "node:fs";
 
 function arg(name, fallback) {
@@ -40,13 +42,43 @@ async function shot(page, name) { if (SHOTS) await page.screenshot({ path: SHOTS
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
 /* Konsolenfehler werden je Seite gesammelt. Ein Schriftdienst, den eine
    abgeschottete Umgebung nicht erreicht, ist kein Fehler des Produkts. */
+/* Was diese Umgebung nicht erreichen kann, ist kein Fehler des Produkts.
+   Schriftdienste gehoerten schon immer dazu; seit dem 17.09.2026 auch der
+   Realtime-Strom: diese Entwicklungsumgebung kommt nicht an Cloudflare
+   vorbei (der Egress-Filter beantwortet den Tunnel mit 403).
+
+   Die Ausnahme ist eng gefasst, und das ist der Punkt: sie greift nur
+   fuer GENAU die Adresse, die in der Auslieferung steht (unten wird
+   geprueft, dass die Fehlermeldung diese Adresse nennt), und nur fuer
+   Meldungen ueber den Verbindungsaufbau. Eine falsche Adresse, ein
+   Fehler im Hub oder eine Ausnahme im Chart faellt weiterhin auf.
+
+   Der echte Nachweis, dass der Strom laeuft, gehoert ohnehin nicht
+   hierher: den fuehrt scripts/discover/browser-qa-realtime.mjs in
+   GitHub Actions, wo der Weg offen ist. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync(join(process.cwd(), "discover/data/meta.json"), "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
 const IGNORIERT = /fonts\.googleapis|fonts\.gstatic|ERR_CERT_AUTHORITY_INVALID/;
 async function openPage(opts) {
   const ctx = await browser.newContext(Object.assign({ colorScheme: "dark" }, opts));
   const p = await ctx.newPage();
   p.__errors = []; p.__bad = [];
   p.on("pageerror", (e) => p.__errors.push(String(e.message)));
-  p.on("console", (m) => { if (m.type() === "error" && !IGNORIERT.test(m.text())) p.__errors.push(m.text()); });
+  p.on("console", (m) => {
+    if (m.type() !== "error") return;
+    const t = m.text();
+    if (IGNORIERT.test(t)) return;
+    if (STROM_UNERREICHBAR.test(t)) { p.__stromUnerreichbar = (p.__stromUnerreichbar || 0) + 1; return; }
+    p.__errors.push(t);
+  });
   p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE)) p.__bad.push(r.status() + " " + r.url()); });
   return p;
 }
@@ -328,9 +360,16 @@ await check("Schreibtisch: kein Ueberlauf, keine eigenen 4xx, keine Konsolenfehl
    der Riegel dagegen, dass eine nicht ausgerollte Adresse trotzdem
    angewaehlt wird - das waere auf jeder Aktienseite ein
    Verbindungsversuch ins Leere und ein "Live", das keines ist. */
-await check("Strom: Tor zu, kein WebSocket, kein Schluessel in der Auslieferung", async () => {
+await check("Strom: eingeschaltet, genau eine Adresse, und der Browser waehlt sie", async () => {
+  /* Seit dem 17.09.2026 ist der Strom an (Owner-Freigabe). Diese Pruefung
+     ist damit keine Riegelpruefung mehr, sondern eine Verdrahtungspruefung:
+     steht die Adresse in der Auslieferung, ruft der Browser genau sie auf,
+     und bleibt die Aktienseite auch dann vollstaendig, wenn der Strom
+     nicht zustande kommt?
+
+     Ob er wirklich Kurse liefert, prueft browser-qa-realtime.mjs in
+     GitHub Actions - hier kommt keine Verbindung nach Cloudflare zustande. */
   const p = await openPage(MOBIL);
-  /* WebSocket faelschen, BEVOR die Seite laeuft - danach waere es zu spaet. */
   await p.addInitScript(() => {
     window.__sockets = [];
     const Echt = window.WebSocket;
@@ -338,7 +377,7 @@ await check("Strom: Tor zu, kein WebSocket, kein Schluessel in der Auslieferung"
     window.WebSocket.prototype = Echt.prototype;
   });
   await p.goto(BASE + "/discover/#/s/US_REAL/AAPL", { waitUntil: "networkidle" });
-  await warten(p, 3000);
+  await warten(p, 4000);
 
   const befund = await p.evaluate(() => {
     const Hub = window.VUDiscover && window.VUDiscover.LiveHub;
@@ -349,20 +388,26 @@ await check("Strom: Tor zu, kein WebSocket, kein Schluessel in der Auslieferung"
       streamAvailable: stream ? stream.available : null,
       streamUrl: stream ? stream.url : null,
       priceType: stream ? stream.priceType : null,
+      scope: stream ? stream.scope : null,
       hubLive: !!(Hub && typeof Hub.live === "function"),
-      hubState: Hub && Hub.liveState ? Hub.liveState().state : null
+      hubAvailable: Hub && Hub.liveAvailable ? Hub.liveAvailable() : null
     };
   });
 
   assert(befund.hubLive, "der Hub kennt live() nicht - die Erweiterung fehlt");
-  assert(befund.streamAvailable === false, "der Strom ist eingeschaltet, obwohl der Worker nicht ausgerollt ist");
-  assert(befund.streamUrl === null, "eine Adresse wird ausgeliefert, obwohl der Strom aus ist: " + befund.streamUrl);
+  assert(befund.streamAvailable === true, "der Strom ist in der Auslieferung nicht eingeschaltet");
+  assert(befund.streamUrl === STROM_URL, "Adresse in der Auslieferung: " + befund.streamUrl);
   assert(befund.priceType === "REALTIME_REFERENCE", "priceType ist " + befund.priceType);
-  assert(befund.sockets.length === 0, "es wurde verbunden: " + befund.sockets.join(", "));
-  assert(befund.hubState === "IDLE", "Hub-Zustand " + befund.hubState);
+  assert(befund.scope === "stockPage", "der Strom gilt nur der Aktienseite, nicht " + befund.scope);
+  assert(befund.hubAvailable === true, "der Hub haelt den Strom fuer nicht verfuegbar");
 
-  /* Und die Aktienseite zeigt trotzdem ihren Tagesverlauf - "nichts
-     wird schlechter" ist keine Absichtserklaerung, sondern pruefbar. */
+  /* Genau eine Adresse, und zwar die aus der Auslieferung. Ein Tippfehler
+     im Schalter faellt hier auf, auch ohne erreichbaren Worker. */
+  const fremde = befund.sockets.filter((u) => u !== STROM_URL);
+  assert(befund.sockets.length > 0, "es wurde gar nicht verbunden");
+  assert(fremde.length === 0, "es wurde eine fremde Adresse gewaehlt: " + fremde.join(", "));
+
+  /* Und die Aktienseite steht trotzdem: Chart da, keine Ausnahmen. */
   const chart = await p.$(".dx-intraday-chart, .dx-chart svg, .dx-chart-hero, svg.dx-line");
   assert(chart !== null, "ohne Strom fehlt der Chart");
   assert(p.__errors.length === 0, p.__errors.slice(0, 3).join(" | "));

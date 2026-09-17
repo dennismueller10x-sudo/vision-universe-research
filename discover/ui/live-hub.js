@@ -619,7 +619,10 @@
          es, damit es niemand woanders erfinden muss. */
       priceType: "REALTIME_REFERENCE",
       source: "TIINGO_IEX_LEVEL6",
-      note: "Kursreferenz aus einem Teilmarkt (IEX). Kein offizieller Abschluss."
+      /* Ohne Anbieternamen: die gehoeren auf "Daten & Quellen" und
+         nirgendwo sonst (§14). Was die Zahl IST, steht trotzdem hier -
+         das ist keine Herkunftsangabe, sondern eine Einschraenkung. */
+      note: "Kursreferenz aus einem Teilmarkt. Kein offizieller Abschluss."
     };
     if (frisch && p.snapshot) {
       var sicht = {};
