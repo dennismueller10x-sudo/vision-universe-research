@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-17T10:00:00Z",
+  "generatedAt": "2026-09-17T10:35:00Z",
   "provider": "mock",
   "health": {
-    "generatedAt": "2026-09-17T10:00:00Z",
+    "generatedAt": "2026-09-17T10:35:00Z",
     "overall": "WARNING",
     "counts": {
       "PASS": 11,
@@ -59,7 +59,7 @@
         "lastSuccessAt": "2026-09-15T12:00:00Z",
         "failureMode": null,
         "nextAction": null,
-        "detail": "Letzter Erfolg vor 46 h."
+        "detail": "Letzter Erfolg vor 46.6 h."
       },
       {
         "component": "signals.market",
@@ -106,7 +106,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -116,7 +116,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -126,7 +126,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -136,7 +136,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -146,7 +146,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -176,7 +176,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-17T10:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:35:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -274,41 +274,37 @@
   "published": [],
   "auditEntries": 4,
   "learning": {
-    "measuredPosts": 16,
-    "maturePosts": 16,
+    "measuredPosts": 25,
+    "maturePosts": 25,
     "awaitingMaturity": 0,
-    "baselineSufficient": true,
-    "baselineReason": "REEL: 9 Beitraege als Vergleichsbasis. | CAROUSEL: 7 Beitraege als Vergleichsbasis.",
+    "baselineSufficient": false,
+    "baselineReason": "REEL: 10 Beitraege als Vergleichsbasis. | CAROUSEL: 12 Beitraege als Vergleichsbasis. | IMAGE: Nur 3 Beitraege; ab 5 entsteht eine belastbare Basis.",
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-17T10:00:00Z",
-      "sampleSize": 16,
+      "assessedAt": "2026-09-17T10:35:00Z",
+      "sampleSize": 25,
       "cohorts": [
         {
           "cohort": "REEL",
           "regime": "BOOTSTRAP",
-          "sampleSize": 9,
+          "sampleSize": 10,
           "activeDimensions": [
             "reach",
-            "engagement"
+            "engagement",
+            "retention"
           ],
-          "activeWeightShare": 0.24,
+          "activeWeightShare": 0.34,
           "excluded": [
-            {
-              "dimension": "retention",
-              "state": "NOT_APPLICABLE",
-              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
-            },
             {
               "dimension": "shares",
               "state": "DEGENERATE",
-              "reason": "Alle 9 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+              "reason": "Alle 10 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
             },
             {
               "dimension": "saves",
               "state": "DEGENERATE",
-              "reason": "Alle 9 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+              "reason": "Alle 10 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
             },
             {
               "dimension": "followerConversion",
@@ -333,12 +329,12 @@
           ],
           "baselineSufficient": true,
           "methodologyVersion": "1.0.0+bootstrap.reel",
-          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 9 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 9 von 20 (Ziel: GROWING)."
+          "reason": "Von der kanonischen Gewichtung sind 34 % belegt, bei 10 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 34 % von 45 % und Stichprobe 10 von 20 (Ziel: GROWING)."
         },
         {
           "cohort": "CAROUSEL",
           "regime": "BOOTSTRAP",
-          "sampleSize": 7,
+          "sampleSize": 12,
           "activeDimensions": [
             "reach",
             "engagement"
@@ -353,17 +349,17 @@
             {
               "dimension": "shares",
               "state": "DEGENERATE",
-              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
             },
             {
               "dimension": "saves",
               "state": "DEGENERATE",
-              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
             },
             {
               "dimension": "followerConversion",
               "state": "DEGENERATE",
-              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
             },
             {
               "dimension": "quality",
@@ -383,36 +379,93 @@
           ],
           "baselineSufficient": true,
           "methodologyVersion": "1.0.0+bootstrap.carousel",
-          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 7 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 7 von 20 (Ziel: GROWING)."
+          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 12 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 12 von 20 (Ziel: GROWING)."
+        },
+        {
+          "cohort": "IMAGE",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 3,
+          "activeDimensions": [],
+          "activeWeightShare": 0,
+          "excluded": [
+            {
+              "dimension": "reach",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "engagement",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "retention",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "shares",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "saves",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": false,
+          "methodologyVersion": "1.0.0+bootstrap.image",
+          "reason": "Von der kanonischen Gewichtung sind 0 % belegt, bei 3 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 0 % von 45 % und Stichprobe 3 von 20 (Ziel: GROWING)."
         }
       ]
     },
-    "regimeChanged": false,
-    "regimeReason": "Unveraendert: BOOTSTRAP.",
+    "regimeChanged": true,
+    "regimeReason": "Uebergang BOOTSTRAP -> BOOTSTRAP, ausgeloest durch gemessene Evidenz: 25 Beitraege. Kein Datum, keine Handeingabe.",
     "crossRegimeExcluded": 0,
-    "scoreablePosts": 16,
-    "dataPoints": 16,
+    "scoreablePosts": 22,
+    "dataPoints": 22,
     "evidenceState": "BEWERTBAR",
     "observations": [
       {
         "dimension": "mediaFormat",
         "value": "REEL",
-        "sampleSize": 9,
+        "sampleSize": 10,
         "sufficient": false,
-        "note": "Das 95-%-Intervall [-0.02, 0.055] enthaelt die Null. Der beobachtete Unterschied von 0.018 ist mit Zufall vereinbar."
+        "note": "Das 95-%-Intervall [-0.01, 0.042] enthaelt die Null. Der beobachtete Unterschied von 0.016 ist mit Zufall vereinbar."
       },
       {
         "dimension": "mediaFormat",
         "value": "CAROUSEL",
-        "sampleSize": 7,
+        "sampleSize": 12,
         "sufficient": false,
-        "note": "Das 95-%-Intervall [-0.055, 0.02] enthaelt die Null. Der beobachtete Unterschied von -0.018 ist mit Zufall vereinbar."
+        "note": "Das 95-%-Intervall [-0.042, 0.01] enthaelt die Null. Der beobachtete Unterschied von -0.016 ist mit Zufall vereinbar."
       }
     ],
     "strategyBefore": "strategy_initial",
     "strategyAfter": "strategy_initial",
     "strategyChanged": false,
-    "strategyReason": "Keine Strategieaenderung: von 2 Beobachtungen war keine belastbar. Das ist der Normalfall bei kleinen Stichproben und kein Fehler.",
+    "strategyReason": "Keine Strategieaenderung: von 4 Beobachtungen war keine belastbar. Das ist der Normalfall bei kleinen Stichproben und kein Fehler.",
     "archetypeKnowledge": {},
     "timingKnowledge": {
       "8": {
@@ -457,7 +510,7 @@
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-17T10:00:00Z",
+      "decidedAt": "2026-09-17T10:35:00Z",
       "packageId": "pkg_79a8c5e229fe58ee",
       "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
@@ -493,7 +546,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-17T10:00:00Z",
+      "decidedAt": "2026-09-17T10:35:00Z",
       "packageId": "pkg_1990f31a6c5cc926",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
@@ -529,7 +582,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-17T10:00:00Z",
+      "decidedAt": "2026-09-17T10:35:00Z",
       "packageId": "pkg_743bef21317d6165",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
@@ -565,7 +618,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-17T10:00:00Z",
+      "decidedAt": "2026-09-17T10:35:00Z",
       "packageId": "pkg_af1673122c0e1a8e",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",

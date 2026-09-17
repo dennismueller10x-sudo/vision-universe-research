@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T10:00:00Z",
+  "generatedAt": "2026-09-17T10:35:00Z",
   "currentVersionId": "strategy_initial",
   "versions": [
     {
@@ -40,6 +40,34 @@
       ],
       "sufficient": false,
       "note": "Das 95-%-Intervall [-0.055, 0.02] enthaelt die Null. Der beobachtete Unterschied von -0.018 ist mit Zufall vereinbar."
+    },
+    {
+      "observationId": "obs_c217298cf158b9b8",
+      "createdAt": "2026-09-17T04:58:57.108Z",
+      "dimension": "mediaFormat",
+      "value": "REEL",
+      "sampleSize": 10,
+      "effect": 0.016000000000000125,
+      "confidenceInterval": [
+        -0.010035002196925838,
+        0.04203500219692609
+      ],
+      "sufficient": false,
+      "note": "Das 95-%-Intervall [-0.01, 0.042] enthaelt die Null. Der beobachtete Unterschied von 0.016 ist mit Zufall vereinbar."
+    },
+    {
+      "observationId": "obs_75f7e5ecdeb41440",
+      "createdAt": "2026-09-17T04:58:57.108Z",
+      "dimension": "mediaFormat",
+      "value": "CAROUSEL",
+      "sampleSize": 12,
+      "effect": -0.016000000000000125,
+      "confidenceInterval": [
+        -0.04203500219692609,
+        0.010035002196925838
+      ],
+      "sufficient": false,
+      "note": "Das 95-%-Intervall [-0.042, 0.01] enthaelt die Null. Der beobachtete Unterschied von -0.016 ist mit Zufall vereinbar."
     }
   ],
   "evidenceRegimes": [
@@ -151,6 +179,168 @@
       ],
       "previousRegime": null,
       "transitionReason": "Erster Befund: BOOTSTRAP bei 16 Beitraegen."
+    },
+    {
+      "evidenceRegime": "BOOTSTRAP",
+      "assessedAt": "2026-09-17T10:35:00Z",
+      "sampleSize": 25,
+      "cohorts": [
+        {
+          "cohort": "REEL",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 10,
+          "activeDimensions": [
+            "reach",
+            "engagement",
+            "retention"
+          ],
+          "activeWeightShare": 0.34,
+          "excluded": [
+            {
+              "dimension": "shares",
+              "state": "DEGENERATE",
+              "reason": "Alle 10 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "saves",
+              "state": "DEGENERATE",
+              "reason": "Alle 10 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": true,
+          "methodologyVersion": "1.0.0+bootstrap.reel",
+          "reason": "Von der kanonischen Gewichtung sind 34 % belegt, bei 10 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 34 % von 45 % und Stichprobe 10 von 20 (Ziel: GROWING)."
+        },
+        {
+          "cohort": "CAROUSEL",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 12,
+          "activeDimensions": [
+            "reach",
+            "engagement"
+          ],
+          "activeWeightShare": 0.24,
+          "excluded": [
+            {
+              "dimension": "retention",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "shares",
+              "state": "DEGENERATE",
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "saves",
+              "state": "DEGENERATE",
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "DEGENERATE",
+              "reason": "Alle 12 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": true,
+          "methodologyVersion": "1.0.0+bootstrap.carousel",
+          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 12 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 12 von 20 (Ziel: GROWING)."
+        },
+        {
+          "cohort": "IMAGE",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 3,
+          "activeDimensions": [],
+          "activeWeightShare": 0,
+          "excluded": [
+            {
+              "dimension": "reach",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "engagement",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "retention",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "shares",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "saves",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "INSUFFICIENT_EVIDENCE",
+              "reason": "Nur 3 Messwerte; ab 5 entsteht eine Vergleichsbasis."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": false,
+          "methodologyVersion": "1.0.0+bootstrap.image",
+          "reason": "Von der kanonischen Gewichtung sind 0 % belegt, bei 3 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 0 % von 45 % und Stichprobe 3 von 20 (Ziel: GROWING)."
+        }
+      ],
+      "previousRegime": "BOOTSTRAP",
+      "transitionReason": "Uebergang BOOTSTRAP -> BOOTSTRAP, ausgeloest durch gemessene Evidenz: 25 Beitraege. Kein Datum, keine Handeingabe."
     }
   ],
   "currentRegime": "BOOTSTRAP"

@@ -1061,7 +1061,22 @@ async function main() {
     };
   });
 
+  /* Ein zweiter Lauf zum selben Zeitpunkt erzeugt dieselben Pakete mit
+     denselben Kennungen. Sie erneut einzutragen waere kein zweiter
+     Beitrag, sondern eine zweite Abschrift desselben — und sobald
+     Eintraege eine Leistung tragen, zaehlte jede Abschrift mit.
+
+     Geprueft wird die Paketkennung, nicht der Inhalt: sie ist ein Hash
+     ueber den Inhalt, und zwei gleiche Inhalte SIND dieselbe
+     Entscheidung. */
+  const bekanntePakete = new Set(memory.all()
+    .map((e) => e.packageId).filter(Boolean).map(String));
+
+  let neueEintraege = 0;
   for (const d of shadowDecisions) {
+    if (bekanntePakete.has(String(d.packageId))) continue;
+    bekanntePakete.add(String(d.packageId));
+    neueEintraege += 1;
     const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
     memory.add({
       publicationId: null, packageId: pkg.packageId, publishedAt: null,
@@ -1080,7 +1095,9 @@ async function main() {
     });
   }
   log("\nSchatten-Entscheidungen: " + shadowDecisions.length +
-      " (entschieden, nicht gesendet)");
+      " (entschieden, nicht gesendet)" +
+      (neueEintraege === shadowDecisions.length ? ""
+        : "; " + (shadowDecisions.length - neueEintraege) + " davon standen schon im Gedaechtnis"));
 
   /* ================================================================
      11b. DIE FRACHT  —  waere dieser Beitrag ueberhaupt sendbar?
