@@ -326,3 +326,35 @@ test("LS-14 die Zaehlung stimmt und reset() laesst nichts offen", async () => {
   assert.equal(h.Hub.liveStats().connected, false);
   assert.equal(h.Hub.liveStats().ticks, 0);
 });
+
+test("LS-15 die Kette steht im Befund: Anbieter, Cloudflare, Browser", () => {
+  /* Owner §19: Provider Timestamp, Cloudflare Receive, VU State, Client
+     Receive, Chart Render. Die ersten drei muessen im Rueckruf ankommen,
+     sonst ist die Latenz, die spaeter im Bericht steht, eine Zahl ueber
+     die halbe Strecke. */
+  const h = welt(OFFEN, STROM);
+  return aufAktienseite(h).then((a) => {
+    h.sockets[0].oeffnen();
+    const providerAt = Date.parse(OFFEN) - 300;
+    const cloudflareAt = Date.parse(OFFEN) - 120;
+    h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, cloudflareAt, 120, 124, 119, 123.45, providerAt]] });
+
+    const l = a.letzte().live;
+    assert.equal(l.providerAt, new Date(providerAt).toISOString());
+    assert.equal(l.providerLagMs, 180, "Anbieter -> Cloudflare");
+    assert.equal(typeof l.clientLagMs, "number", "Cloudflare -> Browser");
+    assert.equal(l.fresh, true);
+  });
+});
+
+test("LS-16 ohne Anbieterzeitstempel wird nichts erfunden", () => {
+  const h = welt(OFFEN, STROM);
+  return aufAktienseite(h).then((a) => {
+    h.sockets[0].oeffnen();
+    h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
+    const l = a.letzte().live;
+    assert.equal(l.providerAt, null);
+    assert.equal(l.providerLagMs, null, "keine Zahl ist besser als eine geratene");
+    assert.equal(l.price, 123.45);
+  });
+});

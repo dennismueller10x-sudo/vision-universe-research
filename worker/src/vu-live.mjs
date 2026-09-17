@@ -262,7 +262,8 @@ export class VuLive {
         /* Was schon bekannt ist, sofort schicken - sonst bleibt der
            Chart bis zum naechsten Ereignis ohne Live-Punkt. */
         const w = this.werte.get(sym);
-        if (w) this.sende(ws, { op: "u", t: this.now(), v: [[sym, w.last, w.at, w.o, w.h, w.l, w.c]] });
+        if (w) this.sende(ws, { op: "u", t: this.now(),
+                                v: [[sym, w.last, w.at, w.o, w.h, w.l, w.c, w.pAt]] });
       }
       /* Gezaehlt wird, was gewuenscht ist - nicht, was in dieser
          Millisekunde schon angemeldet ist. Der Abgleich mit dem
@@ -318,8 +319,14 @@ export class VuLive {
                       dataClass: "REALTIME_STREAM" });
     const kerze = serie.last();
 
+    /* Der Zeitstempel DES ANBIETERS, nicht der unsere. Erst mit ihm
+       laesst sich die Kette auseinandernehmen: wann hat Tiingo den Kurs
+       gesehen, wann Cloudflare, wann der Browser. Ohne ihn waere jede
+       Latenzangabe eine Angabe ueber die halbe Strecke. */
+    const pAt = tick.timestamp ? Date.parse(tick.timestamp) : NaN;
+
     this.werte.set(sym, {
-      last: preis, at: at,
+      last: preis, at: at, pAt: isFinite(pAt) ? pAt : null,
       o: kerze ? kerze.open : preis, h: kerze ? kerze.high : preis,
       l: kerze ? kerze.low : preis, c: kerze ? kerze.close : preis,
       bucket: kerze ? kerze.bucket : null
@@ -341,7 +348,7 @@ export class VuLive {
       for (const sym of eintrag.symbols) {
         if (!this.schmutzig.has(sym)) continue;
         const w = this.werte.get(sym);
-        if (w) nutz.push([sym, w.last, w.at, w.o, w.h, w.l, w.c]);
+        if (w) nutz.push([sym, w.last, w.at, w.o, w.h, w.l, w.c, w.pAt]);
       }
       if (nutz.length) this.sende(ws, { op: "u", t, v: nutz });
     }

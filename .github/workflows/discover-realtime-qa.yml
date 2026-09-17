@@ -1,0 +1,192 @@
+name: Discover — Realtime im echten Browser (§19/§20)
+
+# DER NACHWEIS, DEN NUR EIN ECHTER BROWSER FUEHREN KANN
+#
+# Owner 17.09.2026 §19/§20: die Aktienseite soll sich waehrend der
+# Sitzung von selbst mit live.visionuniverse.de verbinden, den Chart
+# ohne Neuladen fortschreiben und bei einem Abriss sichtbar zurueckfallen.
+#
+# WARUM NICHT LOKAL
+#
+# Die Entwicklungsumgebung erreicht Cloudflare nicht (der Egress-Filter
+# antwortet mit 403). Hier ist der Weg offen - und nur hier ist der
+# Nachweis einer, der etwas heisst.
+#
+# WARUM DIE SEITE UNTER IHREM ECHTEN NAMEN LAEUFT
+#
+# Der Worker prueft den Ursprung an der Verbindung selbst und kennt genau
+# drei Vision-Universe-Adressen. Statt die Freigabe fuer einen Test
+# aufzuweichen, wird der Test unter den richtigen Namen gestellt: der
+# Arbeitsbaum wird ueber TLS ausgeliefert, und Chromium bekommt
+# research.visionuniverse.de:443 auf den lokalen Server abgebildet. Der
+# Ursprungskopf ist dann echt, und die Pruefung im Worker laeuft
+# unveraendert.
+#
+# An der veroeffentlichten Seite aendert das nichts. Abgebildet wird nur
+# ein Name im Testbrowser.
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: 'Titel, mit Komma getrennt'
+        type: string
+        default: 'AAPL,NVDA,MSFT,VLO,PANW'
+      watchSeconds:
+        description: 'Beobachtungsdauer je Titel in Sekunden'
+        type: string
+        default: '60'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/discover-realtime-qa.yml'
+      - 'scripts/discover/browser-qa-realtime.mjs'
+      - 'scripts/discover/serve-https.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  qa:
+    name: Aktienseite mit echtem Strom
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[rt-qa]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const cal = JSON.parse(require("fs").readFileSync("./quant/config/market-calendar.json", "utf8"));
+            const s = MH.sessionAt(Date.now(), { calendar: cal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " (" + s.localTime + " New York)");
+            if (s.phase !== "REGULAR") {
+              console.log("Ausserhalb der regulaeren Sitzung sind die Kursnachweise nicht aussagekraeftig.");
+            }
+          '
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Zertifikat fuer den echten Namen
+        run: |
+          mkdir -p /tmp/vu-tls
+          openssl req -x509 -newkey rsa:2048 -nodes -days 2 \
+            -keyout /tmp/vu-tls/key.pem -out /tmp/vu-tls/cert.pem \
+            -subj "/CN=research.visionuniverse.de" \
+            -addext "subjectAltName=DNS:research.visionuniverse.de" 2>/dev/null
+          echo "Zertifikat erzeugt (selbstsigniert, nur fuer diesen Lauf)."
+
+      - name: Arbeitsbaum ueber TLS ausliefern
+        run: |
+          node scripts/discover/serve-https.mjs --port 8443 > /tmp/tls.log 2>&1 &
+          sleep 3
+          cat /tmp/tls.log
+          curl -sk https://127.0.0.1:8443/discover/data/meta.json | head -c 120 && echo ""
+
+      - name: Der Schalter steht auf an
+        run: |
+          node -e '
+            const m = require("./discover/data/meta.json");
+            const s = m.realtime.stream;
+            console.log("stream.available =", s.available, "| url =", s.url);
+            if (!s.available || !s.url) {
+              console.error("Der Strom ist in der Auslieferung nicht eingeschaltet - dieser Nachweis waere leer.");
+              process.exit(1);
+            }
+          '
+
+      - name: Aktienseiten beobachten, Abriss und Wiederanlauf
+        id: qa
+        run: |
+          node scripts/discover/browser-qa-realtime.mjs \
+            --symbols '${{ github.event_name == 'workflow_dispatch' && inputs.symbols || 'AAPL,NVDA,MSFT,VLO,PANW' }}' \
+            --watch-seconds '${{ github.event_name == 'workflow_dispatch' && inputs.watchSeconds || '60' }}' \
+            --shots realtime-shots
+
+      - name: Aufnahmen sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: realtime-shots
+          path: realtime-shots
+          if-no-files-found: warn
+
+      - name: Kein Schluessel im Bericht
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Bericht committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Realtime-Browser-QA aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime auf der Aktienseite — echter Browser, echter Strom'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-realtime-browser-qa.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-realtime-browser-qa.json");
+                console.log("Ursprung: `" + r.origin + "` · Sitzung: **" + r.session.phase + "**");
+                console.log("");
+                console.log("| Titel | Strom | Ticks | erster Kurs | Anbieter→Cloudflare | Cloudflare→Browser | E2E | Chart |");
+                console.log("|---|---|---|---|---|---|---|---|");
+                for (const s of r.symbols) {
+                  const l = s.latencyMs;
+                  console.log("| " + s.symbol + " | " + s.verdict + " | " + s.ticks + " | " +
+                    (s.firstTickMs === null ? "—" : s.firstTickMs + " ms") + " | " +
+                    (l ? l.providerToCloudflare + " ms" : "—") + " | " +
+                    (l ? l.cloudflareToClient + " ms" : "—") + " | " +
+                    (l ? "**" + l.endToEnd + " ms**" : "—") + " | " + s.chartUpdatesAfterLoad + "× |");
+                }
+                console.log("");
+                console.log("_" + r.honesty + "_");
+                console.log("");
+                if (r.reconnect) {
+                  console.log("**Abriss und Wiederanlauf**");
+                  console.log("");
+                  console.log("| Zeitpunkt | Zustand | verbunden | Etikett |");
+                  console.log("|---|---|---|---|");
+                  for (const k of ["vorher", "nachAbriss", "nachWiederanlauf"]) {
+                    const x = r.reconnect[k];
+                    if (x) console.log("| " + k + " | " + x.state + " | " + x.connected + " | " + (x.label || "—") + " |");
+                  }
+                  console.log("");
+                }
+                console.log("| Prüfung | Ergebnis |");
+                console.log("|---|---|");
+                for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                console.log("");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

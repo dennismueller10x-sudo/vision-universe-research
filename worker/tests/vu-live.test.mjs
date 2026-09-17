@@ -531,3 +531,22 @@ test("VL-33 der Verbindungsaufbau benutzt https, nicht wss", async () => {
   assert.equal(h.prov.urls[0].indexOf("wss://"), -1);
   assert.match(h.prov.urls[0], /api\.tiingo\.com\/iex$/, "und zwar zum IEX-Strom");
 });
+
+test("VL-34 der Anbieterzeitstempel faehrt bis zum Browser durch", async () => {
+  /* §19 verlangt die Kette: Provider-Zeitstempel, Cloudflare-Empfang,
+     VU-Zustand, Client-Empfang. Ohne den ersten waere jede Latenzangabe
+     eine Angabe ueber die halbe Strecke - und die klingt immer gut. */
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  const providerZeit = h.uhr.now() - 250;
+  h.prov.kurs("NVDA", 200.5, providerZeit);
+  h.uhr.vor(1000);
+  await takte();
+
+  const v = ws.letzte("u").v[0];
+  assert.equal(v.length, 8, "die Nutzlast traegt acht Felder");
+  assert.equal(typeof v[7], "number", "das achte ist der Anbieterzeitstempel");
+  assert.equal(v[7], providerZeit);
+  assert.equal(v[2] - v[7] >= 0, true, "Cloudflare sieht den Kurs nicht vor dem Anbieter");
+});

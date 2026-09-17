@@ -1,7 +1,7 @@
 {
   "schemaVersion": "deploy-preconditions-1.0.0",
   "auftrag": "Owner-Freigabe 17.09.2026: Deployment nur bei gruenen Nachweisen",
-  "checkedAt": "2026-09-17T14:11:14.496Z",
+  "checkedAt": "2026-09-17T17:02:59.987Z",
   "maxAgeHours": 24,
   "conditions": [
     {
@@ -66,9 +66,9 @@
     {
       "name": "REALTIME_FALLBACK",
       "status": "PASS",
-      "reason": "220 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
+      "reason": "223 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
       "evidence": {
-        "total": 220,
+        "total": 223,
         "suites": [
           {
             "suite": "subscription-manager",
@@ -91,8 +91,8 @@
           {
             "suite": "worker/vu-live",
             "pattern": "worker/tests/vu-live.test.mjs",
-            "tests": 33,
-            "pass": 33,
+            "tests": 34,
+            "pass": 34,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -100,8 +100,8 @@
           {
             "suite": "discover/live-stream",
             "pattern": "discover/tests/live-stream.test.mjs",
-            "tests": 14,
-            "pass": 14,
+            "tests": 16,
+            "pass": 16,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -175,9 +175,9 @@
     {
       "name": "SECRET_SCAN",
       "status": "PASS",
-      "reason": "24763 Dateien geprueft, keine Zugangsdaten.",
+      "reason": "24766 Dateien geprueft, keine Zugangsdaten.",
       "evidence": {
-        "files": 24763
+        "files": 24766
       }
     },
     {

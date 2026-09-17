@@ -525,6 +525,10 @@
         if (!Array.isArray(z) || z.length < 2) return;
         var sym = String(z[0]).toUpperCase();
         lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
+                          /* Wann der Anbieter den Kurs gesehen hat. Damit
+                             laesst sich die Strecke auseinandernehmen:
+                             Anbieter -> Cloudflare -> Browser. */
+                          providerAt: typeof z[7] === "number" ? z[7] : null,
                           receivedAt: jetzt };
         delete lv.abgelehnt[sym];
         lv.stats.ticks++;
@@ -596,6 +600,10 @@
       at: w ? new Date(w.at).toISOString() : null,
       ageMs: alter,
       open: w ? w.open : null, high: w ? w.high : null, low: w ? w.low : null, close: w ? w.close : null,
+      /* Die Kette, in Millisekunden und ohne Schoenrechnung. */
+      providerAt: w && w.providerAt ? new Date(w.providerAt).toISOString() : null,
+      providerLagMs: w && w.providerAt ? (w.at - w.providerAt) : null,
+      clientLagMs: w ? (w.receivedAt - w.at) : null,
       /* Stufe 6 von Tiingo ist eine Kursreferenz aus einem Teilmarkt.
          Kein Abschluss, kein offizieller Schlusskurs - und hier steht
          es, damit es niemand woanders erfinden muss. */
