@@ -32,6 +32,7 @@ on:
       - 'claude/**'
     paths:
       - 'scripts/market/probe-cloudflare-access.mjs'
+      - 'scripts/market/probe-cloudflare-scope.mjs'
       - '.github/workflows/cloudflare-probe.yml'
       - 'worker/wrangler.toml'
 
@@ -119,27 +120,53 @@ jobs:
             const fs = require("fs");
             const t = fs.readFileSync("/tmp/whoami.txt", "utf8");
             const hat = (s) => new RegExp(s, "i").test(t);
+            /* WICHTIG: wrangler gibt die Rechteliste NUR aus, wenn das
+               Token selbst "User Details:Read" traegt. Fehlt das, steht
+               dort ein Verweis aufs Dashboard - und dann sagt diese
+               Ausgabe NICHTS ueber die Rechte. Sie als "keine Rechte" zu
+               lesen waere ein Fehlschluss, und der erste Lauf am
+               17.09.2026 hat genau ihn produziert. */
+            const gelistet = /Token Permissions|Scope \(Access\)|scopes/i.test(t) &&
+                             !/To see token permissions visit/i.test(t);
             const out = {
-              schemaVersion: "cloudflare-token-permissions-1.0.0",
+              schemaVersion: "cloudflare-token-permissions-1.1.0",
               checkedAt: new Date().toISOString(),
-              note: "Keine Werte, keine Account-IDs. Nur, was das vorhandene Token darf.",
+              note: "Keine Werte, keine Account-IDs.",
               authenticated: /You are logged in|Account Name|authenticated/i.test(t),
-              permissions: {
+              accountsResolved: (t.match(/^\u2502 [^\u2502]+\u2502 <maskiert>/gm) || []).length,
+              permissionsListed: gelistet,
+              permissionsNote: gelistet
+                ? "wrangler hat die Rechte ausgegeben; die Werte unten sind gemessen."
+                : "wrangler hat die Rechte NICHT ausgegeben, sondern auf das Dashboard verwiesen - " +
+                  "dem Token fehlt dafuer User Details:Read. Aus dieser Ausgabe folgt deshalb NICHTS " +
+                  "ueber Workers-Rechte. Die Antwort gibt der Umfangsnachweis (probe-cloudflare-scope.mjs).",
+              permissions: gelistet ? {
                 workersScriptsEdit: hat("Workers Scripts.*Edit|workers_scripts.*edit"),
                 workersScriptsRead: hat("Workers Scripts.*Read|workers_scripts.*read"),
-                accountSettingsRead: hat("Account Settings.*Read"),
-                anyWorkers: hat("Workers")
-              },
+                accountSettingsRead: hat("Account Settings.*Read")
+              } : null,
               raw: t.split("\n").filter((z) => z.trim()).slice(0, 40)
             };
             fs.mkdirSync("quant/data/market/commercial", { recursive: true });
             fs.writeFileSync("quant/data/market/commercial/cloudflare-token-permissions.json",
                              JSON.stringify(out, null, 2) + "\n");
             console.log("");
-            console.log("angemeldet:            " + out.authenticated);
-            console.log("Workers Scripts:Edit:  " + out.permissions.workersScriptsEdit);
-            console.log("Workers (irgendetwas): " + out.permissions.anyWorkers);
+            console.log("angemeldet:        " + out.authenticated);
+            console.log("Konten aufgeloest: " + out.accountsResolved);
+            console.log("Rechte gelistet:   " + out.permissionsListed);
+            if (!out.permissionsListed) console.log("  " + out.permissionsNote);
           '
+
+      # Schritt 2b: die Frage, die whoami offen laesst. Vier Leseaufrufe
+      # gegen die Cloudflare-API sagen, ob das vorhandene Token Workers
+      # und Durable Objects ueberhaupt SIEHT. Ein reines R2-Token sieht
+      # sie nicht. Geschrieben wird nichts.
+      - name: Umfang des Tokens messen (nur GET)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/probe-cloudflare-scope.mjs
 
       # Schritt 3: baut das Buendel ueberhaupt mit dem echten Bundler? Das
       # braucht keinen Zugang und aendert nichts - aber es ist die Antwort
@@ -226,5 +253,28 @@ jobs:
               '
             else
               echo 'Kein Zugang gesetzt oder wrangler hat nicht geantwortet.'
+            fi
+            echo ''
+            echo '### Reicht das vorhandene Token? (nur Leseaufrufe)'
+            echo ''
+            if [ -f quant/data/market/commercial/cloudflare-scope-probe.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/cloudflare-scope-probe.json");
+                console.log("| Frage | Status | Antwort | Anzahl |");
+                console.log("|---|---|---|---|");
+                for (const c of r.checks) {
+                  console.log("| " + c.question + " | " + c.status + " | " +
+                    (c.ok ? "ja" : (c.cloudflareErrors ? c.cloudflareErrors.map((e) => e.code).join(", ") : "nein")) +
+                    " | " + (c.count === null ? "—" : c.count) + " |");
+                }
+                console.log("");
+                console.log("**" + r.verdict + "**");
+                console.log("");
+                console.log(r.consequence);
+                console.log("");
+                console.log("_" + r.caveat + "_");
+              '
+            else
+              echo 'Kein Umfangsnachweis entstanden.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
