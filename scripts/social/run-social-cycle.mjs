@@ -864,6 +864,11 @@ async function main() {
       } : null,
       /* Welche Variante gewonnen hat und wogegen. Ohne diese Angabe
          laesst sich spaeter nicht lernen, WAS gewirkt hat. */
+      /* Was der Autor ausser Text mitgebracht hat: das geprueft
+         zurueckgelesene Bildasset, die unverbindliche Empfehlung des
+         Agenten, der Verarbeitungsnachweis. Ohne diese Zeile waere das
+         Bild im letzten Schritt verschwunden. */
+      production: geschrieben.production || null,
       authoring: {
         briefId: brief.briefId,
         authorId: gewaehlteVariante.authorId,
@@ -1450,8 +1455,22 @@ async function main() {
   log("\n--- FRACHT ---");
   let sendbar = 0;
   for (const d of shadowDecisions) {
-    const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
-    const bildplan = AssetRenderer.plan(pkg, {});
+    const eintrag = packages.find((e) => e.result.package.packageId === d.packageId);
+    const pkg = eintrag.result.package;
+
+    /* -----------------------------------------------------------------
+       ZWEI WEGE ZU EINEM BILD
+
+       Hat der Autor ein geprueftes Asset mitgebracht, ist das Bild
+       schon da: erzeugt, committet, frisch zurueckgelesen. Dann wird
+       es UEBERNOMMEN und nicht ersetzt.
+
+       Sonst zeichnet der Zyklus seine Karte wie bisher.
+       ----------------------------------------------------------------- */
+    const mitgebracht = eintrag.production && eintrag.production.asset;
+    const bildplan = mitgebracht
+      ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
+      : AssetRenderer.plan(pkg, {});
 
     d.asset = {
       plannable: bildplan.ok,
@@ -1466,6 +1485,16 @@ async function main() {
       /* Der Bildwert gehoert an die Entscheidung. Ein Bild, das sich
          zeichnen laesst, ist noch keines, das etwas sagt. */
       quality: bildplan.quality || (bildplan.ok ? null : (bildplan.quality || null)),
+      /* Woher das Bild stammt. Ein uebernommenes und ein gezeichnetes
+         Bild sind verschiedene Dinge, und der Unterschied gehoert in
+         die Provenance und nicht in eine Fussnote. */
+      origin: bildplan.modus === "uebernahme" ? "generative" : "rendered",
+      sourceAsset: bildplan.modus === "uebernahme" ? {
+        path: bildplan.quelle, sha256: bildplan.sha256,
+        mimeType: bildplan.mimeType,
+        variantId: (mitgebracht && mitgebracht.visual_variant_id) || null,
+        strategy: (mitgebracht && mitgebracht.visual_strategy) || null
+      } : null,
       rendered: false
     };
 
@@ -1479,11 +1508,16 @@ async function main() {
     if (RENDER) {
       try {
         const ziel = join(ROOT, ASSET_DIR, pkg.packageId + ".jpg");
-        const befund = AssetRenderer.render(bildplan, ziel,
-          { schrift: AssetRenderer.ladeSchrift(ROOT) });
+        const befund = bildplan.modus === "uebernahme"
+          ? AssetRenderer.uebernimm(bildplan, ziel, { root: ROOT })
+          : AssetRenderer.render(bildplan, ziel,
+              { schrift: AssetRenderer.ladeSchrift(ROOT) });
         d.asset.rendered = true;
         d.asset.bytes = befund.bytes;
-        log("  " + pkg.packageId + ": gezeichnet, " + befund.breite + "x" + befund.hoehe);
+        log("  " + pkg.packageId + ": " +
+          (bildplan.modus === "uebernahme"
+            ? "uebernommen aus " + bildplan.quelle + ", "
+            : "gezeichnet, ") + befund.breite + "x" + befund.hoehe);
       } catch (err) {
         /* Ein gescheitertes Zeichnen macht den Plan nicht falsch — es
            macht den Beitrag heute nicht sendbar. Der Unterschied steht
@@ -1494,15 +1528,23 @@ async function main() {
         log("  " + pkg.packageId + ": ZEICHNEN GESCHEITERT — " + d.asset.renderError);
       }
     } else {
-      log("  " + pkg.packageId + ": sendbar (" + d.asset.visualType + "), nicht gezeichnet");
+      log("  " + pkg.packageId + ": sendbar (" + d.asset.visualType + "), " +
+        (bildplan.modus === "uebernahme" ? "nicht uebernommen" : "nicht gezeichnet"));
     }
   }
   for (const d of shadowDecisions) {
-    if (d.asset && d.asset.quality) {
-      detail(d.packageId + ": Bildwert " + d.asset.quality.score +
-        (d.asset.quality.warnings.length ? ", " + d.asset.quality.warnings.length +
-          " Hinweis(e)" : ""));
+    const g = d.asset && d.asset.quality;
+    if (!g) continue;
+    /* Die Kartenpruefung misst Redundanz, Vollstaendigkeit und
+       Lesbarkeit von TEXT. Ein generatives Bild traegt laut Brief
+       keinen. "Nicht anwendbar" zu melden ist ehrlicher, als eine
+       Punktzahl zu erfinden oder stillschweigend zu bestehen. */
+    if (g.applicable === false) {
+      detail(d.packageId + ": Bildwert nicht anwendbar — " + g.explanation);
+      continue;
     }
+    detail(d.packageId + ": Bildwert " + g.score +
+      ((g.warnings || []).length ? ", " + g.warnings.length + " Hinweis(e)" : ""));
   }
   log("Sendbar: " + sendbar + " von " + shadowDecisions.length +
       (RENDER ? " (gezeichnet)" : " (nur geplant — --render zeichnet)"));
@@ -1630,5 +1672,6 @@ main().catch((err) => {
      den Lauf rot machen. Die Meldung wird gekuerzt, damit ein Stacktrace
      keine Umgebungswerte mitschleppt. */
   console.error("Zyklus abgebrochen:", String(err && err.message).slice(0, 400));
+  if (process.env.VU_DEBUG) console.error(err && err.stack);
   process.exitCode = 1;
 });

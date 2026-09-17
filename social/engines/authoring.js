@@ -459,6 +459,20 @@
     var reihenfolge = options.authors || registry.ids();
     var versuche = [];
     var varianten = [];
+    /* -----------------------------------------------------------------
+       WAS EIN AUTOR AUSSER TEXT MITBRINGT
+
+       Der generative Autor liefert nicht nur Varianten: er liefert ein
+       geprueftes Bildasset, die unverbindliche Empfehlung des Agenten
+       und den Verarbeitungsnachweis.
+
+       Bis hierher hat run() davon nur `variants` weitergereicht und
+       den Rest fallen lassen. Ein Bild, das erzeugt, committet und
+       zurueckgelesen wurde, waere damit im letzten Schritt
+       verschwunden — und der Zyklus haette stattdessen eine eigene
+       Karte gezeichnet, ohne dass es jemandem auffaellt.
+       ----------------------------------------------------------------- */
+    var ausgaben = {};
 
     for (var i = 0; i < reihenfolge.length; i += 1) {
       var a = registry.get(reihenfolge[i]);
@@ -471,6 +485,15 @@
       versuche.push({ authorId: a.authorId, ok: true, variants: neu.length });
       varianten = varianten.concat(neu);
 
+      if (neu.length) {
+        ausgaben[a.authorId] = {
+          asset: (ergebnis && ergebnis.asset) || null,
+          recommendation: (ergebnis && ergebnis.recommendation) || null,
+          verification: (ergebnis && ergebnis.verification) || null,
+          processing: (ergebnis && ergebnis.processing) || null
+        };
+      }
+
       /* `firstUsable` ist die Regel fuer den Betrieb: der bevorzugte
          Autor schreibt, die uebrigen sind Rueckfall. Ohne sie liefen
          generativer und deterministischer Autor immer beide, und die
@@ -482,12 +505,19 @@
     var bewertet = evaluate(varianten, brief, options.gates || {});
     var auswahl = select(bewertet, options);
 
+    var gewaehlt = auswahl.chosen ? auswahl.chosen.variant : null;
+
     return {
       briefId: brief.briefId,
       attempts: versuche,
       variants: varianten,
       evaluated: bewertet,
-      selection: auswahl
+      selection: auswahl,
+      outputs: ausgaben,
+      /* Die Beigaben des Autors, der die gewaehlte Variante
+         geschrieben hat. Nicht die des ersten und nicht die aller —
+         die des einen, dessen Text gewonnen hat. */
+      production: (gewaehlt && ausgaben[gewaehlt.authorId]) || null
     };
   }
 

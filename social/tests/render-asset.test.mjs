@@ -20,13 +20,17 @@
    ========================================================================= */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, rmSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, rmSync, mkdirSync, readFileSync, writeFileSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { createRequire } from "node:module";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 
+const require = createRequire(import.meta.url);
+
 import {
-  plan, render, ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
+  plan, render, planUebernahme, uebernimm, ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
   GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD
 } from "../../scripts/social/render-asset.mjs";
 
@@ -286,4 +290,108 @@ test("RA21 · Der Anzeigewert traegt die Einheit", () => {
     { text: "Relative Staerke", numeric: null, source: { source: "SEC" } }
   ] }));
   assert.equal(p.ebenen.zahl, "76 %");
+});
+
+/* ------------------------------------------------------------------ */
+/* DAS BILD, DAS SCHON EXISTIERT                                       */
+/*                                                                     */
+/* Der Creative Agent ist Visual Producer. Sein Bild wurde erzeugt,    */
+/* committet und frisch zurueckgelesen. Zeichnete der Zyklus daraufhin */
+/* seine eigene Karte, waere es im letzten Schritt verschwunden.       */
+/* ------------------------------------------------------------------ */
+
+function testPng(breite, hoehe) {
+  const zlib = require("node:zlib");
+  const crc = (buf) => {
+    let t = [];
+    for (let n = 0; n < 256; n += 1) {
+      let c = n;
+      for (let k = 0; k < 8; k += 1) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c >>> 0;
+    }
+    let x = 0xFFFFFFFF;
+    for (const b of buf) x = t[(x ^ b) & 0xFF] ^ (x >>> 8);
+    return (x ^ 0xFFFFFFFF) >>> 0;
+  };
+  const chunk = (typ, daten) => {
+    const l = Buffer.alloc(4); l.writeUInt32BE(daten.length);
+    const k = Buffer.concat([Buffer.from(typ, "ascii"), daten]);
+    const p = Buffer.alloc(4); p.writeUInt32BE(crc(k));
+    return Buffer.concat([l, k, p]);
+  };
+  const zeile = Buffer.concat([Buffer.from([0]),
+    Buffer.concat(Array.from({ length: breite }, () => Buffer.from([200, 40, 90])))]);
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(breite, 0); ihdr.writeUInt32BE(hoehe, 4);
+  ihdr[8] = 8; ihdr[9] = 2;
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", zlib.deflateSync(Buffer.concat(Array.from({ length: hoehe }, () => zeile)))),
+    chunk("IEND", Buffer.alloc(0))
+  ]);
+}
+
+test("RA20 · Ein nicht zurueckgelesenes Asset wird nicht uebernommen", () => {
+  /* Der Bildproof hat einen abgeschnittenen Transfer produziert, dessen
+     Anfang intakt war. Nur ein bestaetigtes Asset darf durch. */
+  const p = planUebernahme({}, { asset_path: "a/b.png", state: "COMMITTED",
+    width: 1080, height: 1350 });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "assetNotVerified");
+});
+
+test("RA21 · Ohne Abmessungen gibt es keine Uebernahme", () => {
+  const p = planUebernahme({}, { asset_path: "a/b.png", state: "READBACK_VERIFIED" });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "noDimensions");
+});
+
+test("RA22 · Die Kartenpruefung ist hier nicht anwendbar und sagt das", () => {
+  /* Ein generatives Bild traegt laut Brief keinen Text. Eine Punktzahl
+     zu erfinden waere schlimmer als keine — und stillschweigend zu
+     bestehen waere am schlimmsten. */
+  const p = planUebernahme({}, { asset_path: "a/b.png", state: "READBACK_VERIFIED",
+    width: 1080, height: 1350 });
+  assert.equal(p.ok, true);
+  assert.equal(p.visualType, "GENERATIVE");
+  assert.equal(p.quality.applicable, false);
+  assert.ok(p.quality.explanation);
+});
+
+test("RA23 · Ein veraendertes Asset auf dem Datentraeger faellt auf", { skip: chromiumDa ? false :
+  "Kein Chromium in dieser Umgebung." }, () => {
+  /* Zwischen Pruefung und Uebernahme liegt ein Schreibvorgang. */
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-uebernahme-"));
+  try {
+    mkdirSync(join(wurzel, "a"), { recursive: true });
+    writeFileSync(join(wurzel, "a/b.png"), testPng(64, 80));
+    const p = planUebernahme({}, { asset_path: "a/b.png", state: "READBACK_VERIFIED",
+      width: 64, height: 80, mime_type: "image/png",
+      asset_sha256: "0".repeat(64) });
+    assert.throws(() => uebernimm(p, join(wurzel, "ziel.jpg"), { root: wurzel }),
+      /Hash/);
+  } finally { rmSync(wurzel, { recursive: true, force: true }); }
+});
+
+test("RA24 · Die Uebernahme wechselt das Format und bearbeitet das Bild nicht",
+  { skip: chromiumDa ? false : "Kein Chromium in dieser Umgebung." }, () => {
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-uebernahme-"));
+  try {
+    const bild = testPng(240, 300);
+    mkdirSync(join(wurzel, "a"), { recursive: true });
+    writeFileSync(join(wurzel, "a/b.png"), bild);
+    const sha = require("node:crypto").createHash("sha256").update(bild).digest("hex");
+
+    const p = planUebernahme({}, { asset_path: "a/b.png", state: "READBACK_VERIFIED",
+      width: 240, height: 300, mime_type: "image/png", asset_sha256: sha });
+    const ziel = join(wurzel, "ziel.jpg");
+    const b = uebernimm(p, ziel, { root: wurzel });
+
+    assert.equal(b.istJpeg, true);
+    assert.equal(b.breite, 240);
+    assert.equal(b.hoehe, 300);
+    assert.equal(b.modus, "uebernahme");
+    assert.equal(b.quelle, "a/b.png");
+  } finally { rmSync(wurzel, { recursive: true, force: true }); }
 });

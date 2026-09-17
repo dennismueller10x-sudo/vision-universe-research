@@ -48,6 +48,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
 const VisualQuality = require(
@@ -454,4 +455,133 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("\n[ok] " + ziel);
   console.log("     " + befund.breite + "x" + befund.hoehe + ", " + statSync(ziel).size + " Bytes, JPEG");
+}
+
+/* =========================================================================
+   DAS BILD, DAS SCHON EXISTIERT
+
+   -------------------------------------------------------------------------
+   WARUM UEBERNEHMEN UND NICHT ZEICHNEN
+   -------------------------------------------------------------------------
+
+   Der Creative Agent ist nicht nur Autor, sondern Visual Producer. Sein
+   Bild wurde erzeugt, committet, frisch zurueckgelesen und gegen Hash,
+   MIME und Abmessungen bestaetigt.
+
+   Zeichnete der Zyklus daraufhin seine eigene Karte, waere dieses Bild
+   im letzten Schritt verschwunden — und der Kandidat trueg ein Visual,
+   das der Agent nie gemacht hat, waehrend sein geprueftes Asset
+   ungenutzt im Request-Verzeichnis liegt.
+
+   -------------------------------------------------------------------------
+   WARUM UEBERHAUPT EINE UMWANDLUNG
+   -------------------------------------------------------------------------
+
+   Der Agent liefert PNG. Der Veroeffentlichungspfad verlangt JPEG —
+   nicht als Geschmacksfrage: die Bild-Veroeffentlichung der Graph API
+   nimmt JPEG. Ein PNG unter der Endung .jpg waere ein Fehler, der erst
+   im Moment der Veroeffentlichung auffaellt, und dann ist der Anspruch
+   schon angemeldet.
+
+   Umgewandelt wird mit demselben Chromium, das die Karten zeichnet:
+   eine Seite, die nur aus dem Bild besteht, aufgenommen in seiner
+   eigenen Groesse. Keine zusaetzliche Abhaengigkeit, und dieselbe
+   Rueckleseprobe wie beim Zeichnen.
+
+   -------------------------------------------------------------------------
+   WAS DABEI NICHT PASSIEREN DARF
+   -------------------------------------------------------------------------
+
+   Skalieren, Beschneiden, Nachschaerfen. Das Bild ist das Werk des
+   Agenten; die Umwandlung ist ein Formatwechsel und keine Bearbeitung.
+   Weicht die Groesse der Aufnahme von der des Originals ab, ist das ein
+   Fehler und kein Rundungsproblem.
+   ========================================================================= */
+
+/** Der Bildplan fuer ein bereits vorhandenes, geprueftes Asset. */
+export function planUebernahme(pkg, asset) {
+  if (!asset || !asset.asset_path) {
+    return { ok: false, reason: "noAsset",
+      message: "Kein Asset zum Uebernehmen." };
+  }
+  if (asset.state !== "READBACK_VERIFIED" && asset.state !== "COMPLETED") {
+    return { ok: false, reason: "assetNotVerified", visualType: "GENERATIVE",
+      message: "Das Asset steht auf " + asset.state + ". Nur ein frisch " +
+        "zurueckgelesenes Asset darf uebernommen werden." };
+  }
+  if (!asset.width || !asset.height) {
+    return { ok: false, reason: "noDimensions", visualType: "GENERATIVE",
+      message: "Das Asset nennt keine Abmessungen." };
+  }
+  return {
+    ok: true,
+    modus: "uebernahme",
+    visualType: "GENERATIVE",
+    quelle: asset.asset_path,
+    breite: asset.width,
+    hoehe: asset.height,
+    sha256: asset.asset_sha256 || null,
+    mimeType: asset.mime_type || null,
+    /* Ein uebernommenes Bild hat keine Textebene, die sich pruefen
+       liesse — es traegt laut Brief gar keinen Text. Die Bildguete der
+       Karten ist hier deshalb nicht anwendbar, und das steht da, statt
+       stillschweigend als "bestanden" zu gelten. */
+    quality: { applicable: false,
+      explanation: "Generatives Bild ohne Textebene. Die Kartenpruefung " +
+        "misst Redundanz, Vollstaendigkeit und Lesbarkeit von Text und " +
+        "trifft hier auf nichts." }
+  };
+}
+
+/** Wandelt das vorhandene Asset nach JPEG und liest das Ergebnis zurueck. */
+export function uebernimm(p, zielPfad, options = {}) {
+  if (!p.ok || p.modus !== "uebernahme") {
+    throw new Error("Kein uebernehmbarer Plan: " + (p.message || "unbekannt"));
+  }
+  const wurzel = options.root || join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const quellPfad = join(wurzel, p.quelle);
+  if (!existsSync(quellPfad)) {
+    throw new Error("Das Asset liegt nicht unter " + p.quelle + ".");
+  }
+
+  /* Noch einmal am Datentraeger nachgesehen. Zwischen Pruefung und
+     Uebernahme liegt ein Schreibvorgang, und ein abgeschnittener
+     Transfer hat einen intakten Anfang. */
+  const roh = readFileSync(quellPfad);
+  if (p.sha256) {
+    const ist = createHash("sha256").update(roh).digest("hex");
+    if (ist !== p.sha256) {
+      throw new Error("Das Asset auf dem Datentraeger hat den Hash " + ist +
+        ", erwartet war " + p.sha256 + ".");
+    }
+  }
+
+  const daten = "data:" + (p.mimeType || "image/png") + ";base64," + roh.toString("base64");
+  const seiteHtml = "<!doctype html><html><head><meta charset=\"utf-8\"><style>" +
+    "html,body{margin:0;padding:0;background:#000;}" +
+    "img{display:block;width:" + p.breite + "px;height:" + p.hoehe + "px;}" +
+    "</style></head><body><img src=\"" + daten + "\"></body></html>";
+
+  const arbeit = join(tmpdir(), `vu-uebernahme-${process.pid}-${Date.now()}.html`);
+  writeFileSync(arbeit, seiteHtml);
+  mkdirSync(dirname(zielPfad), { recursive: true });
+
+  execFileSync(chromiumPfad(), [
+    "--headless", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    "--force-device-scale-factor=1",
+    `--window-size=${p.breite},${p.hoehe}`,
+    `--screenshot=${zielPfad}`,
+    "file://" + arbeit
+  ], { stdio: ["ignore", "ignore", "pipe"] });
+
+  if (!existsSync(zielPfad)) throw new Error("Chromium hat keine Datei geschrieben.");
+
+  const befund = pruefeJpeg(zielPfad);
+  if (!befund.istJpeg) throw new Error("Die Ausgabe ist kein JPEG (Signatur passt nicht).");
+  if (befund.breite !== p.breite || befund.hoehe !== p.hoehe) {
+    throw new Error(`Die Umwandlung hat die Groesse veraendert: erwartet ` +
+      `${p.breite}x${p.hoehe}, erhalten ${befund.breite}x${befund.hoehe}. ` +
+      `Ein Formatwechsel darf das Bild nicht bearbeiten.`);
+  }
+  return Object.assign({ pfad: zielPfad, modus: "uebernahme", quelle: p.quelle }, befund);
 }
