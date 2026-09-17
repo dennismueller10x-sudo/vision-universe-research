@@ -44,6 +44,9 @@ function arg(name, fallback) {
 }
 const BASIS = String(arg("--url", process.env.VU_LIVE_URL || "")).replace(/\/+$/, "");
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "commercial"));
+/* Damit zwei Endpunkte zwei Berichte ergeben und nicht einer den
+   anderen ueberschreibt. */
+const BERICHT_NAME = arg("--report-name", "vu-live-smoke.json");
 const SYMBOLE = String(arg("--symbols", "AAPL,NVDA,MSFT,VLO,PANW")).split(",").map((s) => s.trim().toUpperCase());
 const HOER_SEKUNDEN = Math.max(5, parseInt(arg("--seconds", "45"), 10) || 45);
 const ERLAUBTER_URSPRUNG = "https://research.visionuniverse.de";
@@ -249,7 +252,7 @@ async function main() {
 function schreibe() {
   geschrieben = true;
   mkdirSync(OUT_DIR, { recursive: true });
-  const pfad = join(OUT_DIR, "vu-live-smoke.json");
+  const pfad = join(OUT_DIR, BERICHT_NAME);
   writeFileSync(pfad, JSON.stringify(bericht, null, 2) + "\n");
   console.log("");
   for (const c of bericht.checks) {
