@@ -72,7 +72,10 @@ const OUT = arg("out", join(root, "quant", "data", "market", "commercial"));
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 
 const sitzung = MarketHours.sessionAt(Date.now(), { calendar: kalender, exchange: "XNYS" });
-/* Messfenster 17.09.2026 */
+/* Messfenster 17.09.2026, zweiter Lauf: jetzt mit den heutigen
+   Intraday-Snapshots auf dem Branch. Erst damit hat der laufende Kurs
+   etwas, woran er anknuepfen kann - und erst dann darf das Etikett
+   "Markt geoeffnet - Live" ueberhaupt entstehen. */
 
 const bericht = {
   schemaVersion: "vu-realtime-browser-qa-1.0.0",
@@ -256,6 +259,21 @@ if (sitzung.phase === "REGULAR") {
 }
 alleOk = pruefung("keineFehler", "keine Konsolenfehler auf den Aktienseiten", fehlerfrei,
                   bericht.symbols.filter((s) => s.consoleErrors.length).map((s) => s.symbol)) && alleOk;
+
+/* §4: das Etikett ist die eine Aussage, die der Nutzer liest. Es darf
+   "Live" nur sagen, wenn der Strom wirklich frisch ist - und es MUSS es
+   sagen, wenn er es ist. Beides wird hier geprueft. */
+if (sitzung.phase === "REGULAR") {
+  const mitLive = bericht.symbols.filter((s) => s.labels.some((l) => /Live/i.test(l)));
+  const liveOhneTicks = bericht.symbols.filter(
+    (s) => s.ticks === 0 && s.labels.some((l) => /Live/i.test(l)));
+  alleOk = pruefung("liveEtikett", "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
+                    mitLive.length >= 2,
+                    bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.labels))) && alleOk;
+  alleOk = pruefung("keinLiveOhneKurs", "kein Titel zeigt 'Live' ohne frische Kurse",
+                    liveOhneTicks.length === 0,
+                    liveOhneTicks.map((s) => s.symbol)) && alleOk;
+}
 
 /* §20 zweiter Teil: Abriss, Rueckfall, Wiederanlauf. */
 {
