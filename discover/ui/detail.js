@@ -193,7 +193,7 @@
     root.appendChild(el("a", { class: "dx-back", href: "#/u/" + (options.universeId || "US_REAL") }, [
       document.createTextNode("← Discover")
     ]));
-    root.appendChild(hero(detail));
+    root.appendChild(hero(detail, state));
 
     /* Die Reihenfolge der Seite ist das Produkt.
 
@@ -264,6 +264,7 @@
          keiner, ist das hier Zeile fuer Zeile das alte Verhalten. */
       detailAbo = (Hub.live || Hub.subscribe)(detail.symbol, function (p) {
         state.intraday = p.snapshot ? p : null;
+        heroNachfuehren(detail, state);
         if (!erledigt) { erledigt = true; resolve(state.intraday); return; }
         if (state.redraw && state.range === "1D") state.redraw();
       });
@@ -298,10 +299,68 @@
   }
 
   /* ------------------------------------------------------------- Kopf */
-  function hero(detail) {
+  /**
+   * Der Kurs im Kopf, wenn ein frischer Realtime-Kurs vorliegt.
+   *
+   * Gerechnet wird gegen den Vortagesschluss des Snapshots - dieselbe
+   * Bezugsgroesse, die der Chart benutzt. Sonst stuenden zwei
+   * Prozentzahlen auf einem Bildschirm, die dasselbe zu messen
+   * behaupten.
+   */
+  function heroKurs(detail, state) {
+    var live = state && state.intraday && state.intraday.live;
+    var snap = state && state.intraday && state.intraday.snapshot;
+    if (!live || !live.fresh || !isNum(live.price)) return { hat: false };
+    var basis = snap && isNum(snap.previousClose) ? snap.previousClose : null;
+    return {
+      hat: true,
+      preis: live.price,
+      change: isNum(basis) && basis > 0 ? (live.price / basis - 1) * 100 : C().valueOf(detail.changePercent)
+    };
+  }
+
+  /* Der Kopf wird beim ersten Zeichnen gebaut, der Strom kommt erst
+     danach. Statt den ganzen Kopf neu zu bauen - was bei jedem Tick
+     einen Sprung im Layout ergaebe - werden die beiden Zahlen darin
+     nachgefuehrt. */
+  function heroNachfuehren(detail, state) {
+    var knoten = state && state.heroPreisKnoten;
+    if (!knoten) return;
+    var k = heroKurs(detail, state);
+    if (!k.hat) return;
+    var b = knoten.querySelector("b.num");
+    var span = knoten.querySelector("span.num, span");
+    if (b) b.textContent = C().money(k.preis);
+    if (span && isNum(k.change)) {
+      span.textContent = C().pctPoints(k.change) + " heute";
+      span.className = C().toneClass(k.change);
+    }
+  }
+
+  function hero(detail, state) {
     var preis = C().valueOf(detail.price);
     var change = C().valueOf(detail.changePercent);
     var m = detail.metrics;
+
+    /* ZWEI KURSE AUF EINEM BILDSCHIRM SIND EINER ZU VIEL
+
+       Gesehen am 17.09.2026 um 14:05 New York, NVDA: oben "212,17 $
+       +0,57 % zum Vortag", darunter im Chart "219,46 $ +3,44 % heute".
+       Beide Zahlen waren richtig und beide bezogen sich auf etwas
+       anderes - der Kopf auf den letzten ausgelieferten Tagesschluss,
+       der Chart auf den laufenden Tag. Vor Realtime fiel das kaum auf;
+       mit einem mitlaufenden Chart daneben ist es eine offene Frage an
+       den Leser, welche der beiden gilt.
+
+       Liegt ein frischer Realtime-Kurs vor, gilt er. Er ist der juengere
+       und er ist der, den der Chart zeigt. Die Veraenderung rechnet dann
+       gegen den Vortagesschluss des Snapshots - dieselbe Bezugsgroesse
+       wie im Chart, damit auch die Prozentzahl dieselbe ist.
+
+       Ohne frischen Strom bleibt alles, wie es war. */
+    var mitLive = heroKurs(detail, state);
+    if (mitLive.hat) { preis = mitLive.preis; change = mitLive.change; }
+    var heute = mitLive.hat;
 
     var text = detail.plain || (D.Klartext ? D.Klartext.karte(detail, {}) : {});
 
@@ -310,13 +369,15 @@
        Zahl auf einer Skala, die niemand kennt), sondern der Kurs, wo er
        ausgeliefert werden darf, sonst die grosse Klartext-Zahl. Der Score
        steht weiter unten im Kapitel fuer die Analyse. */
+    var preisKnoten = null;
     var rechts = isNum(preis)
-      ? el("div", { class: "dx-price" }, [
+      ? (preisKnoten = el("div", { class: "dx-price" }, [
           el("b", { class: "num", text: C().money(preis) }),
           el("span", { class: C().toneClass(change),
-                       /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute". */
-                       text: isNum(change) ? C().pctPoints(change) + " zum Vortag" : "" })
-        ])
+                       /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute".
+                          Mit laufendem Kurs ist es das sehr wohl, und dann steht es auch da. */
+                       text: isNum(change) ? C().pctPoints(change) + (heute ? " heute" : " zum Vortag") : "" })
+        ]))
       : (text.zahl
           ? el("div", { class: "dx-price" }, [
               el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
@@ -344,6 +405,7 @@
         }))
       : null;
 
+    if (state) state.heroPreisKnoten = preisKnoten;
     return el("section", { class: "dx-dhero dx-fade in", "data-world": detail.world || null }, [
       el("div", { class: "dx-dhero-bg" }),
       /* Dasselbe Datenbild wie auf dem Poster, nur groesser - damit die

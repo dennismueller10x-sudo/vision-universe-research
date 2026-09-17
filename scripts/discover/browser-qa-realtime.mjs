@@ -172,6 +172,19 @@ const BEOBACHTER = () => {
   }, 250);
 };
 
+/* Der Chart liegt unter dem Kopf. Fuer eine Aufnahme, die den laufenden
+   Kurs zeigen soll, wird dorthin gescrollt - und der Kopf mit seiner
+   Kurszahl bleibt gerade noch im Bild, damit beide Zahlen zugleich zu
+   sehen sind. */
+async function zumChart(p) {
+  await p.evaluate(() => {
+    const h = [...document.querySelectorAll("h2")].find((x) => /kursverlauf/i.test(x.textContent));
+    if (h) (h.closest("section") || h).scrollIntoView({ block: "start" });
+    else window.scrollBy(0, 700);
+  });
+  await p.waitForTimeout(900);
+}
+
 async function aktienseite(p, symbol) {
   await p.goto(BASIS + "/discover/#/s/US_REAL/" + symbol, { waitUntil: "networkidle" });
   await p.waitForTimeout(2500);
@@ -211,8 +224,28 @@ for (const sym of SYMBOLE) {
     ? Math.round(latenzen.reduce((a, x) => a + x[f], 0) / latenzen.length) : null;
   const chartAenderungen = (r.chartRevs || []).filter((c) => c.at > start + 1500).length;
 
+  /* §5: der Kopf und der Chart duerfen nicht zwei verschiedene Kurse
+     zeigen. Vor der Korrektur stand oben der letzte ausgelieferte
+     Tagesschluss und darunter der laufende - beide richtig, beide auf
+     etwas anderes bezogen, und der Leser durfte raten. */
+  const kurse = await p.evaluate(() => {
+    const kopf = document.querySelector(".dx-price b.num");
+    const chart = document.querySelector(".dx-chart-hero-preis > b.num");
+    const zahl = (n) => {
+      if (!n) return null;
+      const t = n.textContent.replace(/[^0-9,.-]/g, "").replace(/\./g, "").replace(",", ".");
+      const v = parseFloat(t);
+      return isFinite(v) ? v : null;
+    };
+    return { kopf: zahl(kopf), chart: zahl(chart),
+             kopfText: kopf ? kopf.parentElement.textContent.trim().slice(0, 60) : null };
+  });
+  const abweichung = (kurse.kopf && kurse.chart)
+    ? Math.abs(kurse.kopf - kurse.chart) / kurse.chart : null;
+
   const eintrag = {
     symbol: sym,
+    prices: Object.assign({}, kurse, { deviation: abweichung }),
     connected: zustand.live.connected,
     streamState: zustand.live.state,
     subscribed: zustand.live.subscribed,
@@ -238,6 +271,10 @@ for (const sym of SYMBOLE) {
               ", Chart " + chartAenderungen + "x");
 
   if (SHOTS && (sym === "AAPL" || sym === "NVDA")) {
+    /* Auf den Chart, nicht auf den Seitenanfang: die Aufnahme soll
+       zeigen, worum es geht. Beim ersten Versuch war der laufende Kurs
+       unter der Falz. */
+    await zumChart(p);
     await p.screenshot({ path: SHOTS + "/mobil-dunkel-03-live-" + sym.toLowerCase() + ".png" });
   }
   await p.context().close();
@@ -247,7 +284,8 @@ for (const sym of SYMBOLE) {
   if (SHOTS && (sym === "AAPL" || sym === "NVDA")) {
     const hell = await seite(Object.assign({}, MOBIL, { colorScheme: "light" }));
     await aktienseite(hell, sym);
-    await hell.waitForTimeout(8000);
+    await hell.waitForTimeout(10000);
+    await zumChart(hell);
     await hell.screenshot({ path: SHOTS + "/mobil-hell-03-live-" + sym.toLowerCase() + ".png" });
     await hell.context().close();
   }
@@ -270,6 +308,17 @@ if (sitzung.phase === "REGULAR") {
   alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen",
                     mitChart.length >= 2, { charts: mitChart.map((s) => s.symbol) }) && alleOk;
 }
+if (sitzung.phase === "REGULAR") {
+  /* Ein Prozent Toleranz: der Kopf zeigt gerundet, der Chart auch, und
+     zwischen zwei Ticks liegt eine Sekunde. Fuenf Prozent Unterschied
+     wie am 17.09. bei NVDA sind keine Rundung. */
+  const auseinander = bericht.symbols.filter(
+    (s) => s.ticks > 0 && s.prices.deviation !== null && s.prices.deviation > 0.01);
+  alleOk = pruefung("einKurs", "Kopf und Chart zeigen denselben Kurs",
+                    auseinander.length === 0,
+                    bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.prices))) && alleOk;
+}
+
 alleOk = pruefung("keineFehler", "keine Konsolenfehler auf den Aktienseiten", fehlerfrei,
                   bericht.symbols.filter((s) => s.consoleErrors.length).map((s) => s.symbol)) && alleOk;
 
