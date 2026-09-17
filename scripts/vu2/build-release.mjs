@@ -55,6 +55,11 @@ export async function buildRelease({root,output}){
  let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
  bundled=bundled.replace('</body>','<script src="/vu2/release-bundle.js"></script></body>');
  await writeFile(resolve(output,'vu2/index.html'),bundled);
+ // Activate the reviewed Quant 2.0 entry only in the release projection.
+ // Source workspaces stay intact, keeping rollback a reversible Git action.
+ const quantEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=/vu2/"><link rel="canonical" href="/vu2/"><title>Vision Universe® Quant 2.0</title></head><body><p><a href="/vu2/">Vision Universe® Quant 2.0 öffnen</a></p><script>location.replace("/vu2/"+location.search+location.hash)</script></body></html>';
+ await mkdir(resolve(output,'quant'),{recursive:true});
+ await writeFile(resolve(output,'quant/index.html'),quantEntry);
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],status:'PASS'};

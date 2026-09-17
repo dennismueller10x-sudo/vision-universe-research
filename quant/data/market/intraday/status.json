@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T22:33:08.900Z",
+  "generatedAt": "2026-09-17T17:03:55.521Z",
   "provider": "tiingo",
   "interval": "5min",
   "extendedHours": true,
@@ -7,14 +7,14 @@
   "scopeArg": "auto",
   "universeId": "US_REAL",
   "session": {
-    "sessionDate": "2026-09-16",
+    "sessionDate": "2026-09-17",
     "kind": "current",
-    "isRunning": false,
-    "isComplete": true,
+    "isRunning": true,
+    "isComplete": false,
     "earlyClose": false
   },
-  "marketStateAtRun": "AFTER_HOURS",
-  "localTimeAtRun": "2026-09-16 18:28:07",
+  "marketStateAtRun": "OPEN",
+  "localTimeAtRun": "2026-09-17 12:58:53",
   "gates": {
     "ENABLE_LIVE_MARKET_DATA": true,
     "ENABLE_PUBLIC_LIVE_MARKET_DATA": true
@@ -27,18 +27,18 @@
   "summary": {
     "requested": 524,
     "fetched": 524,
-    "written": 24,
-    "grown": 0,
-    "unchanged": 495,
+    "written": 503,
+    "grown": 500,
+    "unchanged": 17,
     "skippedImmutable": 0,
-    "notPublishable": 5,
+    "notPublishable": 4,
     "failed": 0,
     "requests": 524,
     "reasons": {
-      "noRegularBars": 5
+      "noRegularBars": 4
     },
     "stopped": null,
-    "runtimeMs": 301661,
+    "runtimeMs": 301304,
     "providerRequests": 524,
     "retries": 0
   },
@@ -51,387 +51,452 @@
   "perSymbol": {
     "AAPL": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:55"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ABBV": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ABCL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ABNB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "ABX": {
+    "ABCL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ACIC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ABX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ACMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ACN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ACT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ACTG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "ABT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ACT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ACN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADBE": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:15"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ACTG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "ADC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADMA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADSK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ADPT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AEP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AFG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AGEN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AFRM": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:30"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AGEN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AGL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "ALAB": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AIR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "12:55"
     },
     "AIRT": {
       "ok": true,
       "reason": "unchanged",
-      "points": 34
-    },
-    "ALAB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AIR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ALHC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AMD": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:50"
-    },
-    "ALL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ALNY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 36
     },
     "AMAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ALHC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ALNY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ALL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AMD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AMGN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AME": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AMLX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "AMPL": {
+    "AME": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AMZN": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:10"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "AMT": {
+    "AMPL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ANAB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "AMT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ANET": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "APA": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:30"
-    },
-    "ANIP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ANGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:55"
+    },
+    "APA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ANIP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "API": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:55"
     },
     "APO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "APLD": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:55"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "APP": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:45"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "APPN": {
+    "APLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ARCT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ARDX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "ARES": {
+    "APPN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ARWR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ARES": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ASML": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ASTE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ATAT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ATHS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 63
+      "reason": "grown",
+      "points": 36,
+      "asOfLocal": "12:55"
+    },
+    "ATAT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ATLC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ATKR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AVAH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AVGO": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:35"
-    },
-    "AXP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "AXSM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AXP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "AVAH": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BAC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BABA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BBY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BCRX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BKKT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BETR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "BMY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BKNG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "BNS": {
+    "BETR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BKKT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BMY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BORR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BOW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BNS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BRK-A": {
       "ok": true,
@@ -441,1775 +506,2090 @@
     },
     "BROS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BSM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BTMD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BULL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BVS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BULL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BTMD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "12:55"
     },
     "BWIN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BWLP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BWMN": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 77,
-      "asOfLocal": "16:00"
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "BXP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BYD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BZ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "BXSL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CARG": {
+    "BYD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "BZ": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "C": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CAR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CARG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CCI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CCC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CBOE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CDE": {
+    "CCC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CDNA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CCS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "12:55"
+    },
+    "CCI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CDE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CDNS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CGNX": {
+    "CDNA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CFFI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CHCO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CHCT": {
+    "CHCO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CFFI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "CGNX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CHRD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CL": {
+    "CHCT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "CHT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "CL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CMBT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CLSK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CLMB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:50"
     },
     "CMI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CLSK": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CMRE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "CMPR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CNC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CNO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "COHR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CMPR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "COIN": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:35"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "COP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "COST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CPSS": {
       "ok": true,
       "reason": "unchanged",
-      "points": 75
+      "points": 37
     },
     "CRDO": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:30"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "COST": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CRL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRWD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CSCO": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:25"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CRNC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "CRM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CRWD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "CSCO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CSX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CVBF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CVNA": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:00"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CSTL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "D": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "CVX": {
+    "CVNA": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:35"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "CVS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "DAC": {
+    "CVX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "DBRG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DDOG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DAVE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:50"
     },
-    "DE": {
+    "DAC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 37,
+      "asOfLocal": "12:55"
+    },
+    "DDOG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "DBRG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DELL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "DIS": {
+    "DE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DGX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DINO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "DIS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DJCO": {
       "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 40
     },
     "DK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DKNG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DOV": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DRTS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DUK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DUOL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DVN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "DXCM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ECO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EDRY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "EGP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:50"
     },
     "EMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "EGP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ENR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ENS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ENVA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EOG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EPAM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EQIX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EQNR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EQPT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "EQIX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EQT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "ESEA": {
       "ok": true,
       "reason": "unchanged",
-      "points": 74
-    },
-    "ESNT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 36
     },
     "ETN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ESNT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:55"
     },
     "ETON": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "EVGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EVLV": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "F": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EXC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "EVLV": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "EXPD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FANG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "F": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FAST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FDMT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FCF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "FDMT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FDX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FIGS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FIVE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FIVN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FIX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FND": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FOA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FRSH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 35,
+      "asOfLocal": "12:55"
     },
     "FRO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "FRSH": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FTAI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FTH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "refreshed",
+      "points": 40,
+      "asOfLocal": "12:45"
     },
     "GABC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "FTNT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GCT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GEO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GGG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "GEO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GILD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GIS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "GILD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GLBE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GOOGL": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:55"
-    },
-    "GNK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GMED": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "GOOGL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "GNK": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
     },
     "GOTU": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GRDN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GRBK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "GPC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "GTLB": {
+    "GS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "GTY": {
+    "GRDN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "HAE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "GSL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "GT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "GTLB": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "GTY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "HAE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "GSL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HAS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "HD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HASI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HELP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HCM": {
       "ok": true,
       "reason": "unchanged",
-      "points": 75
-    },
-    "HD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HIMS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 33
     },
     "HLNE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "HIMS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HIPO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HMC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "HOG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HON": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HOOD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HOMB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "HON": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "HMC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "HOOD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HPE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HRTG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HSAI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HTLM": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "HPQ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "HZO": {
+    "HSAI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "IBEX": {
+    "HRTG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "IBM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HURC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 71
-    },
-    "IDCC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IEX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ILMN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IMMR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "INCY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INSP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INOD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IMPP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INVA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INTU": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:45"
-    },
-    "INTC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INSW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IONQ": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:50"
-    },
-    "IPSC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IOVA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IQV": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ITW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IREN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JCI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JFIN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 18
-    },
-    "JNJ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JRSH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "KDP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JPM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KKR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KNSA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KNSL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KNX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KPLT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "KO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KRG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KRP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "KRT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "LCII": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LFST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LHX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LILAK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LITE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LLY": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:45"
-    },
-    "LMT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LOT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 40
-    },
-    "LOW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LQDA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LPG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LTC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LVS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LYFT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MAN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "MCD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MDT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MEOH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MELI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MFC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "META": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MGNI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MLCO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MMM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MNKD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MNST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MPC": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:55"
-    },
-    "MPWR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MRDN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "MRK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MRNA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MRVI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MSC": {
+    "HTLM": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 1,
       "discarded": 0
     },
-    "MSFT": {
+    "HZO": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:50"
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "MTG": {
+    "HURC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "IBEX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IBM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IEX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IDCC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "13:00"
+    },
+    "ILMN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IMMR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "13:00"
+    },
+    "IMPP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:55"
+    },
+    "INCY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "INSP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "INOD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "INSW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "INTC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "INTU": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "INVA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IONQ": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IOVA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IPSC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "IQV": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "IREN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "JCI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "ITW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "JFIN": {
       "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 19
     },
-    "MTRN": {
+    "JNJ": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "JPM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "JRSH": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "KKR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KDP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KNX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KNSA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KNSL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "KO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KPLT": {
       "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 35
     },
-    "MTW": {
+    "KRP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "KRT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 40,
+      "asOfLocal": "12:55"
+    },
+    "KRG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LB": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LCII": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LFST": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LHX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "LITE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LLY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LILAK": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LOT": {
       "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 17
+    },
+    "LMT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LPG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "LOW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LQDA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LTC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "LVS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "LX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 40
+    },
+    "LYFT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MCD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MAN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MDT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "META": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MEOH": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MELI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MFC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "MLCO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MMM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MGNI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "MNKD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "MO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MNST": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MPC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MPWR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MRK": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MRDN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 38,
+      "asOfLocal": "13:00"
+    },
+    "MRNA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MRVI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "MRVL": {
       "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MSC": {
+      "ok": true,
       "reason": "unchanged",
-      "points": 78
+      "points": 7
+    },
+    "MS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MSFT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MTRN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "MTW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "MTG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "MU": {
       "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:50"
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "MUX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "MVST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "NAT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NBIS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NAT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NCNO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NEE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NEM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NEO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NEE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NFG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NFLX": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "16:55"
-    },
-    "NKE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NOG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NMIH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NKE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NFLX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NOG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NOW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NRP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 55
+      "reason": "first",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "NTAP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NTNX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NTRA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NUE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NVGS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NVAX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NVDA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NUE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "NVGS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NVMI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "O": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "NXST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "ODD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "OHI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "OKTA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "OMER": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "ONC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
+    },
+    "OMER": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "OPRX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "ORGO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "12:55"
     },
     "ORCL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "OXY": {
+    "ORGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:50"
     },
     "PAA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PAGP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "OXY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PARR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PANW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PAYC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PAYX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PCAR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PBF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PAYS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PAYC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PBF": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PAYX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PCAR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PCLA": {
       "ok": true,
       "reason": "unchanged",
-      "points": 75
+      "points": 31
     },
     "PD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PDD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PEBO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PFE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PEP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PEN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PESI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "PG": {
+    "PFE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PEP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PGY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PHR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "PLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PII": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PLSE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "PLMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
-    "PNC": {
+    "PLSE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PMI": {
       "ok": true,
       "reason": "unchanged",
-      "points": 77
+      "points": 32
+    },
+    "PM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PNC": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PRCH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PSA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PSNL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "PSTL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "PSX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "QCOM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "QFIN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "QCOM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "PSX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "QNST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "QTWO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RBA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "QTWO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "RBLX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RDDT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RDIB": {
       "ok": true,
       "reason": "unchanged",
-      "points": 62
-    },
-    "RDW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 9
     },
     "REGN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RELY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "RDW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "RILY": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "RKLB": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "RNG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RFAI": {
       "ok": true,
       "reason": "unchanged",
-      "points": 62
-    },
-    "RKLB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RILY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RNG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ROK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 22
     },
     "ROST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "ROOT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
-    "RRX": {
+    "ROK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RPD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "RVTY": {
+    "RRX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RUSHB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "RTX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "RSG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SAFT": {
+    "RVTY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "RTX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SABR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SAN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "RYTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SBUX": {
+    "SAFT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SCHW": {
+    "SAN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SDGR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SEZL": {
+    "SCHW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SHEL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SHW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SLDE": {
+    "SEZL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "SBUX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "SHEL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SLB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SLF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SLN": {
+    "SLDE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SMCI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SMP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "SLN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SOHU": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 38,
+      "asOfLocal": "13:00"
     },
     "SON": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SONY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "SOPH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "SPG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SRCE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "STG": {
       "ok": true,
@@ -2219,484 +2599,582 @@
     },
     "SSNC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "STOK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
+    },
+    "SRCE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "STRF": {
       "ok": true,
       "reason": "unchanged",
-      "points": 75
-    },
-    "SU": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "STT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SWKS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 33
     },
     "SUN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "SWVL": {
+    "STT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "SU": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "T": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TAK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "SWVL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 41,
+      "asOfLocal": "12:55"
+    },
+    "SWKS": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TAL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TATT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TALO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TARS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TATT": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TCOM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TFC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TEM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TEN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TGT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "THG": {
+    "TFC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TIGR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "THO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "TM": {
+    "THG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "TKR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "13:00"
     },
     "TJX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TIGR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TKR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TM": {
+      "ok": true,
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "TMDX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TOWN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TNK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "TPR": {
+    "TOWN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TPG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "TRIP": {
+    "TPR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TREE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TRIP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TRMD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TRS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TRST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TRV": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TRST": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 40,
+      "asOfLocal": "12:50"
     },
     "TSLA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TSSI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TTAN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TTD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TTE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "TW": {
+    "TSSI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TTAN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TTD": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TVA": {
       "ok": true,
       "reason": "noRegularBars",
-      "bars": 1,
+      "bars": 0,
       "discarded": 0
     },
     "TUYA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 72
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "12:55"
+    },
+    "TTE": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TW": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TWST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TXG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TXN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "TXNM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "TXG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "UFG": {
       "ok": true,
       "reason": "unchanged",
-      "points": 62
-    },
-    "UL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "UNP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 2
     },
     "UNH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "UL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "UNP": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "UPS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "USB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "UTZ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "V": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "VEEV": {
+    "USB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VICI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VFF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "VEEV": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VICR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "VICI": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VIOT": {
       "ok": true,
       "reason": "unchanged",
-      "points": 77
-    },
-    "VISN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VNO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "points": 2
     },
     "VLO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "VISN": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "VNO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VOD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VRSN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VSTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VRTX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VZ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "VTS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "VRTX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WABC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "WB": {
+    "VZ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WAY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WB": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WDC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WELL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WFC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WGO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WING": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WIX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WBD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "WMT": {
+    "WING": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WIX": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WELL": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WSE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WGO": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "WTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 39,
+      "asOfLocal": "13:00"
     },
-    "WTRG": {
+    "WMT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WULF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "XEL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "XERS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
-    "XNCR": {
+    "XEL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WTRG": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "XHLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
     },
     "XOM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "WULF": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
+    },
+    "XNCR": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "YEXT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ZVRA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     },
     "ZCSH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "grown",
+      "points": 42,
+      "asOfLocal": "12:55"
+    },
+    "ZVRA": {
+      "ok": true,
+      "reason": "grown",
+      "points": 43,
+      "asOfLocal": "13:00"
     }
   },
   "note": "Bilanz des Intraday-Laufs. Keine Kurse - nur Zaehlungen und Gruende."

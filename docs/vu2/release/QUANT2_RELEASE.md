@@ -3,6 +3,14 @@
 Scope: feature freeze. Existing PR96/a32a15d; no Discovery product changes, no new data architecture.
 Owner decision: 8 MiB delivery budget remains fixed; full canonical fundamentals remain in R2.
 
+## Production Pages handoff
+
+- Production source before cutover: `main/(root)` at `c16e0badd510abc1801797d173c9985405c019f2`.
+- Target source: GitHub Actions workflow `Quant 2.0 Production Pages`.
+- The workflow builds the reviewed delivery projection, enforces the fixed 8 MiB SEC budget, proves canonical R2 storage is unchanged, and deploys only that artifact.
+- `/quant/` becomes the stable Quant 2.0 entry and redirects to the reviewed `/vu2/` experience in the release artifact. Source workspaces remain intact.
+- Rollback point: `c16e0badd510abc1801797d173c9985405c019f2`. Revert the release merge and restore Pages branch delivery from `main/(root)` if a critical production fault requires rollback.
+
 | State / responsible role | Exit gate | Recovery / escalation |
 | --- | --- | --- |
 | SYNC / release orchestrator | PR96 exact head and main observed | Main overlap re-audit only |
