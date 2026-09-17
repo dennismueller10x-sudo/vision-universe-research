@@ -1,14 +1,12 @@
 {
-  "schemaVersion": "cloudflare-token-permissions-1.0.0",
-  "checkedAt": "2026-09-17T11:42:28.886Z",
-  "note": "Keine Werte, keine Account-IDs. Nur, was das vorhandene Token darf.",
+  "schemaVersion": "cloudflare-token-permissions-1.1.0",
+  "checkedAt": "2026-09-17T11:46:17.034Z",
+  "note": "Keine Werte, keine Account-IDs.",
   "authenticated": true,
-  "permissions": {
-    "workersScriptsEdit": false,
-    "workersScriptsRead": false,
-    "accountSettingsRead": false,
-    "anyWorkers": false
-  },
+  "accountsResolved": 1,
+  "permissionsListed": false,
+  "permissionsNote": "wrangler hat die Rechte NICHT ausgegeben, sondern auf das Dashboard verwiesen - dem Token fehlt dafuer User Details:Read. Aus dieser Ausgabe folgt deshalb NICHTS ueber Workers-Rechte. Die Antwort gibt der Umfangsnachweis (probe-cloudflare-scope.mjs).",
+  "permissions": null,
   "raw": [
     " ⛅️ wrangler 4.133.0",
     "────────────────────",

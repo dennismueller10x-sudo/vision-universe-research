@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cloudflare-scope-probe-1.0.0",
+  "auftrag": "Owner-Update 17.09.2026: reicht das vorhandene Token fuer Workers und Durable Objects?",
+  "checkedAt": "2026-09-17T11:46:17.077Z",
+  "note": "Nur Leseaufrufe. Keine Werte, keine Account-ID, keine Namen - nur Status und Anzahlen.",
+  "environment": "github-actions",
+  "method": "GET gegen api.cloudflare.com/client/v4",
+  "caveat": "Ein 200 belegt Leserecht, nicht Schreibrecht. Geschrieben wird hier nichts.",
+  "accountIdAvailable": true,
+  "checks": [
+    {
+      "id": "workersScripts",
+      "question": "Workers lesbar?",
+      "status": 200,
+      "ok": true,
+      "count": 1,
+      "cloudflareErrors": null,
+      "note": null
+    },
+    {
+      "id": "durableObjects",
+      "question": "Durable Objects lesbar?",
+      "status": 200,
+      "ok": true,
+      "count": 0,
+      "cloudflareErrors": null,
+      "note": null
+    },
+    {
+      "id": "workersSubdomain",
+      "question": "gibt es ein *.workers.dev?",
+      "status": 200,
+      "ok": true,
+      "count": null,
+      "cloudflareErrors": null,
+      "note": null
+    },
+    {
+      "id": "r2Buckets",
+      "question": "R2 lesbar (zum Vergleich)?",
+      "status": 200,
+      "ok": true,
+      "count": null,
+      "cloudflareErrors": null,
+      "note": null
+    }
+  ],
+  "verdict": "WORKERS_READABLE",
+  "consequence": "Das vorhandene Token liest Workers UND Durable Objects. Ein reines R2-Token kann das nicht - es ist also kein R2-Token, sondern ein Zugang mit Workers-Umfang. Ob es auch SCHREIBEN darf, zeigt erst das Deployment selbst; Cloudflares Vorlage 'Edit Cloudflare Workers' vergibt Lesen und Schreiben zusammen."
+}
