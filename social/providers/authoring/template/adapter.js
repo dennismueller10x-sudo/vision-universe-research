@@ -31,6 +31,25 @@
 (function (global) {
   "use strict";
 
+  /* -------------------------------------------------------------------
+     UMLAUTE IM VEROEFFENTLICHTEN TEXT
+
+     Der Quelltext dieses Repositories ist ASCII — aus gutem Grund: er
+     laeuft durch Shells, Workflows und Editoren, deren Kodierung
+     niemand garantiert.
+
+     Der VEROEFFENTLICHTE Text ist etwas anderes. "Fuer jeden Titel" auf
+     einem deutschen Markenkonto sieht aus, als haette es eine Maschine
+     geschrieben, die kein Deutsch kann — und genau das waere es dann
+     auch.
+
+     Die Umlaute stehen deshalb als Escape-Sequenzen: die Datei bleibt
+     ASCII, der Text wird deutsch. Beides zugleich, ohne Kompromiss.
+     ------------------------------------------------------------------- */
+  var AE = "\u00E4", OE = "\u00F6", UE = "\u00FC";
+  var Ae = "\u00C4", Oe = "\u00D6", Ue = "\u00DC", SZ = "\u00DF";
+  var STRICH = "\u2014";   /* Geviertstrich */
+
   var isNode = (typeof module !== "undefined" && module.exports);
   var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
 
@@ -54,7 +73,7 @@
   var HOOK_PATTERNS = [
     { id: "value-first",
       note: "Zahl zuerst. Im Feed sieht man sie vor dem Satz.",
-      build: function (e, brief) { return wert(e) + " — " + wer(e, brief) + ", " + e.metric + "."; } },
+      build: function (e, brief) { return wert(e) + " " + STRICH + " " + wer(e, brief) + ", " + e.metric + "."; } },
 
     { id: "subject-first",
       note: "Gegenstand zuerst. Wer den Titel kennt, bleibt haengen.",
@@ -87,29 +106,32 @@
       build: function (e, brief) {
         return "Unsere technische Auswertung bewertet " + wer(e, brief) + " derzeit mit " +
           wert(e) + " im " + e.metric + ". " +
-          "Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, " +
-          "was als Naechstes passiert. " +
+          "Der Wert beschreibt die aktuelle Lage " + STRICH + " nicht ihre Ursache und " +
+          "nicht, was als n" + AE + "chstes passiert. " +
           "Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine " +
-          "Einschaetzung ohne Grundlage.";
+          "Einsch" + AE + "tzung ohne Grundlage.";
       } },
 
     { id: "method-first",
       note: "Erst das Verfahren, dann die Zahl. Fuer ein Publikum, das " +
             "wissen will, woher etwas kommt.",
       build: function (e, brief) {
-        return "Wir bewerten Titel nach einem festen Verfahren und veroeffentlichen " +
-          "das Ergebnis unveraendert — auch wenn es unspektakulaer ausfaellt. " +
-          "Fuer " + wer(e, brief) + " steht der " + e.metric + " aktuell bei " + wert(e) + ". " +
-          "Was daraus folgt, entscheidet niemand hier fuer Sie.";
+        return "Wir bewerten Titel nach einem festen Verfahren und ver" + OE +
+          "ffentlichen das Ergebnis unver" + AE + "ndert " + STRICH +
+          " auch wenn es unspektakul" + AE + "r ausf" + AE + "llt. " +
+          "F" + UE + "r " + wer(e, brief) + " steht der " + e.metric + " aktuell bei " +
+          wert(e) + ". " +
+          "Was daraus folgt, entscheidet niemand hier f" + UE + "r Sie.";
       } },
 
     { id: "limit-first",
       note: "Die Grenze zuerst. Nimmt dem Leser die falsche Erwartung ab, " +
             "bevor er sie aufbaut.",
       build: function (e, brief) {
-        return "Diese Zahl sagt nicht, was " + wer(e, brief) + " als Naechstes tut. " +
+        return "Diese Zahl sagt nicht, was " + wer(e, brief) + " als n" + AE +
+          "chstes tut. " +
           "Sie sagt, wie die Lage heute aussieht: " + e.metric + " bei " + wert(e) + ", " +
-          "erhoben nach einem Verfahren, das fuer jeden Titel dasselbe ist. " +
+          "erhoben nach einem Verfahren, das f" + UE + "r jeden Titel dasselbe ist. " +
           "Mehr behaupten wir nicht, und weniger auch nicht.";
       } }
   ];
@@ -118,7 +140,8 @@
      Karte ohnehin zeigt. */
   var VISUAL_PATTERNS = [
     { id: "limit", build: function () { return "Lagebeschreibung, keine Prognose."; } },
-    { id: "method", build: function () { return "Gleiches Verfahren fuer jeden Titel."; } },
+    { id: "method", build: function () {
+        return "Gleiches Verfahren f" + UE + "r jeden Titel."; } },
     { id: "plain", build: function (e) { return "Stand " + (e.observedAt || "heute").slice(0, 10) + "."; } }
   ];
 

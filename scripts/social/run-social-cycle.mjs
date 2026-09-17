@@ -1235,6 +1235,7 @@ async function main() {
          ist, den jemand vergessen kann. */
       authoringPattern: (entry.authoring && entry.authoring.pattern) || null,
       authoringAuthorId: (entry.authoring && entry.authoring.authorId) || null,
+      authoring: entry.authoring || null,
       /* Die Herkunft gehoert an die Entscheidung, nicht in eine zweite
          Tabelle, die man dazu-joinen muss. Ein Join, den jemand
          vergessen kann, ist keine Kette. */
@@ -1327,6 +1328,9 @@ async function main() {
          dieselbe Kennung tragen — drei Namen fuer denselben Beitrag
          waeren drei Gelegenheiten, sie auseinanderlaufen zu lassen. */
       imageUrl: bildplan.ok ? (SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + ".jpg") : null,
+      /* Der Bildwert gehoert an die Entscheidung. Ein Bild, das sich
+         zeichnen laesst, ist noch keines, das etwas sagt. */
+      quality: bildplan.quality || (bildplan.ok ? null : (bildplan.quality || null)),
       rendered: false
     };
 
@@ -1356,6 +1360,13 @@ async function main() {
       }
     } else {
       log("  " + pkg.packageId + ": sendbar (" + d.asset.visualType + "), nicht gezeichnet");
+    }
+  }
+  for (const d of shadowDecisions) {
+    if (d.asset && d.asset.quality) {
+      detail(d.packageId + ": Bildwert " + d.asset.quality.score +
+        (d.asset.quality.warnings.length ? ", " + d.asset.quality.warnings.length +
+          " Hinweis(e)" : ""));
     }
   }
   log("Sendbar: " + sendbar + " von " + shadowDecisions.length +

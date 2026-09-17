@@ -149,6 +149,45 @@
           "ohne Hinweis darauf, dass er keine Anlageberatung ist." });
     }
 
+    /* -------------------------------------------------------------------
+       UMSCHRIEBENE UMLAUTE
+
+       Der Quelltext dieses Repositories ist ASCII, und das ist richtig:
+       er laeuft durch Shells, Workflows und Editoren, deren Kodierung
+       niemand garantiert.
+
+       Der VEROEFFENTLICHTE Text ist etwas anderes. "Fuer jeden Titel"
+       auf einem deutschen Markenkonto sieht aus, als haette es eine
+       Maschine geschrieben, die kein Deutsch kann — und genau das waere
+       es dann auch. Der erste gerenderte Kandidat trug es im Bild.
+
+       Geprueft wird eine Wortliste und keine Regel: "ue" gehoert in
+       "Museum" und in "neue", und jede allgemeine Regel wuerde entweder
+       diese Woerter treffen oder gar nichts. Eine Liste ist ehrlicher —
+       sie faengt, was sie kennt, und behauptet nichts darueber hinaus.
+       ------------------------------------------------------------------- */
+    /* Eine Liste als Quelltext-String: ein mehrzeiliges Regex-Literal
+       gibt es in JavaScript nicht, und in eine Zeile gequetscht waere
+       die Liste nicht mehr lesbar — eine unlesbare Liste wird nicht
+       gepflegt. */
+    var UMSCHRIFT_WOERTER = [
+      "fuer", "ueber", "ueberpruef\\w*", "koenn\\w+", "muess\\w+", "waer\\w+",
+      "groess\\w+", "naechst\\w+", "spaeter", "zurueck", "waehrend", "gemaess",
+      "veroeffentlich\\w*", "unveraendert", "ausfaell\\w+", "unspektakulaer",
+      "einschaetzung", "haett\\w+", "staerk\\w+", "schwaech\\w+", "moeglich\\w*",
+      "taeglich", "jaehrlich", "erhoeh\\w+", "verhaeltnis", "erklaer\\w+",
+      "waehl\\w+", "beruecksichtig\\w*", "zusaetzlich", "ausschliesslich"
+    ];
+
+    var umschrieben = all.match(
+      new RegExp("\\b(?:" + UMSCHRIFT_WOERTER.join("|") + ")\\b", "gi")) || [];
+    if (umschrieben.length) {
+      blocking.push({ id: "transliterated-umlauts",
+        message: "Umschriebene Umlaute im veroeffentlichten Text: " +
+          Array.from(new Set(umschrieben.map(function (w) { return w.toLowerCase(); })))
+            .join(", ") + ". Der Quelltext darf ASCII sein, der Beitrag nicht." });
+    }
+
     BLOCKING_TERMS.forEach(function (t) {
       if (new RegExp(t.re.source, t.re.flags).test(all)) blocking.push({ id: t.id, message: t.message });
     });

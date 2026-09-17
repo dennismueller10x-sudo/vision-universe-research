@@ -37,6 +37,12 @@
 (function (global) {
   "use strict";
 
+  /* Umlaute als Escapes: der Quelltext bleibt ASCII, der
+     veroeffentlichte Text wird deutsch. "Fuer jeden Titel" auf einem
+     deutschen Markenkonto sieht aus, als haette es eine Maschine
+     geschrieben, die kein Deutsch kann. */
+  var AE = "\u00E4", OE = "\u00F6", UE = "\u00FC", STRICH = "\u2014";
+
   var isNode = (typeof module !== "undefined" && module.exports);
   var Schema     = isNode ? require("./schema.js")     : global.VUSocialSchema;
   var FactCheck  = isNode ? require("./fact-check.js") : global.VUSocialFactCheck;
@@ -451,10 +457,10 @@
         var caption =
           "Unsere technische Auswertung bewertet " + wer + " derzeit mit " +
           valueText + " im " + f.metric + ". " +
-          "Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, " +
-          "was als Naechstes passiert. " +
+          "Der Wert beschreibt die aktuelle Lage " + STRICH + " nicht ihre Ursache und " +
+          "nicht, was als n" + AE + "chstes passiert. " +
           "Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine " +
-          "Einschaetzung ohne Grundlage. " +
+          "Einsch" + AE + "tzung ohne Grundlage. " +
           "Keine Anlageberatung.";
         return {
           caption: caption,

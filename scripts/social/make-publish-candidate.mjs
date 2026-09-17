@@ -254,8 +254,67 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const ziel = zielmetrik(bericht.learning && bericht.learning.evidenceRecord
     ? bericht.learning.evidenceRecord : null, "IMAGE");
 
+  /* -------------------------------------------------------------------
+     VERSIONIERUNG
+
+     Ein verbesserter Kandidat ersetzt einen frueheren — aber er
+     ueberschreibt ihn nicht. Der fruehere ist der Beleg dafuer, was das
+     System vorher vorgelegt hat und warum es geaendert wurde; ihn still
+     zu entfernen hiesse, die eigene Entwicklung zu loeschen.
+
+     Der alte bekommt `SUPERSEDED` und einen Zeiger nach vorn, der neue
+     einen nach hinten. Ein Kandidat, ueber den bereits ENTSCHIEDEN
+     wurde, wird nicht angefasst: eine Freigabe oder Ablehnung ist ein
+     Vorgang und kein Zwischenstand.
+     ------------------------------------------------------------------- */
+  const verzeichnis = join(ROOT, KANDIDATEN_DIR);
+  let offene = [];
+  let vorgaenger = null;
+  let version = 1;
+
+  if (existsSync(verzeichnis)) {
+    offene = readdirSync(verzeichnis)
+      .filter((f) => f.endsWith(".json") && !f.endsWith(".request.json"))
+      .map((f) => ({ datei: f, daten: JSON.parse(readFileSync(join(verzeichnis, f), "utf8")) }))
+      .filter((x) => x.daten.state === "AWAITING_APPROVAL")
+      .sort((a, b) => String(a.daten.createdAt).localeCompare(String(b.daten.createdAt)));
+
+    if (offene.length) {
+      vorgaenger = offene[offene.length - 1];
+      version = Math.max.apply(null,
+        offene.map((x) => Number(x.daten.version) || 1)) + 1;
+    }
+  }
+
+  /* -------------------------------------------------------------------
+     DERSELBE INHALT IST DERSELBE KANDIDAT
+
+     Ein zweiter Lauf mit unveraenderten Daten erzeugt denselben Text,
+     dasselbe Bild und denselben Abdruck. Daraus einen zweiten Kandidaten
+     zu machen hiesse, eine zweite Entscheidung zu erzeugen, wo es nur
+     eine gibt — und die Kandidatenkette ist eine Herkunftsspur, keine
+     Ablage fuer Wiederholungen.
+
+     Mir selbst ist genau das passiert: vier Entwicklungslaeufe, vier
+     Kandidaten, eine Kette mit Zeigern auf Dateien, die es nicht mehr
+     gab.
+     ------------------------------------------------------------------- */
+  const identisch = offene.filter((x) => x.daten.contentHash === abdruck);
+  if (identisch.length) {
+    const vorhanden = identisch[0].daten;
+    console.log("\nUNVERAENDERT — es gibt bereits einen offenen Kandidaten mit genau");
+    console.log("diesem Inhalt: " + vorhanden.candidateId + " (Fassung " +
+      (vorhanden.version || 1) + ", erstellt " + vorhanden.createdAt + ").");
+    console.log("Es wurde kein zweiter angelegt. Der Abdruck ist derselbe:");
+    console.log("  " + abdruck);
+    process.exit(0);
+  }
+
   const kandidat = {
     candidateId,
+    version,
+    supersedes: vorgaenger ? vorgaenger.daten.candidateId : null,
+    supersedesAll: offene.map((x) => x.daten.candidateId),
     createdAt: NOW,
     state: "AWAITING_APPROVAL",
 
@@ -282,7 +341,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
          Unterlegenen ist eine Behauptung ueber eine Rangfolge, die
          niemand nachsehen kann. */
       alternatives: unterlegen,
-      expectedPrimaryMetric: ziel
+      expectedPrimaryMetric: ziel,
+      /* Wer den Text geschrieben hat, welches Muster gewann und wogegen.
+         Der Owner entscheidet ueber einen Beitrag — und darf wissen, wie
+         er zustande kam. */
+      authoring: d.authoring || null,
+      visualQuality: d.asset && d.asset.quality
+        ? { score: d.asset.quality.score, warnings: d.asset.quality.warnings.length }
+        : null
     },
 
     /* Die Kette, die dieser Beitrag spaeter tragen muss. Sie entsteht
@@ -313,6 +379,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Gewaehlt:  " + d.packageId + "  (Gelegenheitsscore " + gewaehlt.score + ")");
   if (unterlegen.length) console.log("Unterlegen: " + unterlegen.join(", "));
   console.log("\n--- KANDIDAT " + candidateId + " ---");
+  console.log("Version:    " + version + (vorgaenger
+    ? "  (ersetzt " + vorgaenger.daten.candidateId + ")" : ""));
+  console.log("Autor:      " + (kandidat.presentation.authoring
+    ? kandidat.presentation.authoring.authorId + ", Muster " +
+      kandidat.presentation.authoring.pattern : "—"));
   console.log("Thema:      " + kandidat.presentation.topic);
   console.log("Hook:       " + kandidat.presentation.hook);
   console.log("Archetyp:   " + (kandidat.provenance.archetype || "—") +
@@ -333,6 +404,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const dir = join(ROOT, KANDIDATEN_DIR);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, candidateId + ".json"), JSON.stringify(kandidat, null, 2) + "\n");
+
+  /* ALLE offenen, nicht nur den juengsten.
+
+     Zwei gleichzeitig freigabefaehige Kandidaten sind zwei Beitraege,
+     zwischen denen niemand entschieden hat — und der Owner koennte den
+     aelteren freigeben, ohne zu merken, dass es einen besseren gibt.
+     Die erste Fassung ersetzte nur den letzten und liess genau diesen
+     Zustand entstehen. */
+  for (const alt of offene) {
+    if (alt.daten.candidateId === candidateId) continue;
+    alt.daten.state = "SUPERSEDED";
+    alt.daten.supersededBy = candidateId;
+    alt.daten.supersededAt = NOW;
+    alt.daten.supersededReason =
+      "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. " +
+      "Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben.";
+    writeFileSync(join(dir, alt.datei), JSON.stringify(alt.daten, null, 2) + "\n");
+    console.log("Ersetzt:     " + alt.daten.candidateId + " (bleibt als SUPERSEDED)");
+  }
   console.log("\nGeschrieben: " + KANDIDATEN_DIR + "/" + candidateId + ".json");
   console.log("Freigabe:    Workflow 'Social Publish Candidate' mit candidateId=" + candidateId);
 }

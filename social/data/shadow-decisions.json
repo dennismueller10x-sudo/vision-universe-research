@@ -1,20 +1,44 @@
 {
-  "generatedAt": "2026-09-17T10:35:00Z",
+  "generatedAt": "2026-09-17T14:00:00Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-17T10:35:00Z",
-      "packageId": "pkg_79a8c5e229fe58ee",
+      "decidedAt": "2026-09-17T14:00:00Z",
+      "packageId": "pkg_46e61d5176431be5",
       "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "XOM: 76 im Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet XOM derzeit mit 76 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Was diese Zahl nicht sagt: XOM, 76 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet XOM derzeit mit 76 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
+      "authoringPattern": "limit-first/state-limit-reason",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_7fa62b6c6130f8c0",
+        "authorId": "template",
+        "pattern": "limit-first/state-limit-reason",
+        "variantId": "var_2a35bf99af686905",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "considered": 4,
+        "passed": 4,
+        "rejected": [],
+        "attempts": [
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
       "opportunityId": "opp_xom_2026-09-17",
       "signalIds": [
         "sig_092494d1c4e827dd"
@@ -33,24 +57,55 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_79a8c5e229fe58ee.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_46e61d5176431be5.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "explanation": "Bildwert 100."
+        },
         "rendered": true,
         "bytes": 42678
       }
     },
     {
-      "decidedAt": "2026-09-17T10:35:00Z",
-      "packageId": "pkg_1990f31a6c5cc926",
+      "decidedAt": "2026-09-17T14:00:00Z",
+      "packageId": "pkg_7c96172787154d9b",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "AAPL: 65.3 im Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet AAPL derzeit mit 65.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Was diese Zahl nicht sagt: AAPL, 65.3 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet AAPL derzeit mit 65.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
+      "authoringPattern": "limit-first/state-limit-reason",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_f6f8233989822af5",
+        "authorId": "template",
+        "pattern": "limit-first/state-limit-reason",
+        "variantId": "var_1b6e73b76d8d6b03",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "considered": 4,
+        "passed": 4,
+        "rejected": [],
+        "attempts": [
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
       "opportunityId": "opp_aapl_2026-09-17",
       "signalIds": [
         "sig_8f4ebf5dbb1869f9"
@@ -69,24 +124,55 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_1990f31a6c5cc926.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_7c96172787154d9b.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "explanation": "Bildwert 100."
+        },
         "rendered": true,
         "bytes": 45495
       }
     },
     {
-      "decidedAt": "2026-09-17T10:35:00Z",
-      "packageId": "pkg_743bef21317d6165",
+      "decidedAt": "2026-09-17T14:00:00Z",
+      "packageId": "pkg_b264952642fc75a2",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "JPM: 63.3 im Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet JPM derzeit mit 63.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Was diese Zahl nicht sagt: JPM, 63.3 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet JPM derzeit mit 63.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
+      "authoringPattern": "limit-first/state-limit-reason",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_041215ba7ce017f6",
+        "authorId": "template",
+        "pattern": "limit-first/state-limit-reason",
+        "variantId": "var_68327d0bcdc19337",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "considered": 4,
+        "passed": 4,
+        "rejected": [],
+        "attempts": [
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
       "opportunityId": "opp_jpm_2026-09-17",
       "signalIds": [
         "sig_62bbe8d8d1ae222c"
@@ -105,24 +191,55 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_743bef21317d6165.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_b264952642fc75a2.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "explanation": "Bildwert 100."
+        },
         "rendered": true,
         "bytes": 45371
       }
     },
     {
-      "decidedAt": "2026-09-17T10:35:00Z",
-      "packageId": "pkg_af1673122c0e1a8e",
+      "decidedAt": "2026-09-17T14:00:00Z",
+      "packageId": "pkg_861a43270b608103",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "MSFT: 60.6 im Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet MSFT derzeit mit 60.6 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: MSFT bei 60.6.",
+      "caption": "Diese Zahl sagt nicht, was MSFT als nächstes tut. Sie sagt, wie die Lage heute aussieht: Technical Opportunity Score bei 60.6, erhoben nach einem Verfahren, das für jeden Titel dasselbe ist. Mehr behaupten wir nicht, und weniger auch nicht. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
+      "authoringPattern": "metric-frame/limit-first",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_d470f911cd4e53fd",
+        "authorId": "template",
+        "pattern": "metric-frame/limit-first",
+        "variantId": "var_309de3b7965b9593",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "considered": 4,
+        "passed": 4,
+        "rejected": [],
+        "attempts": [
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
       "opportunityId": "opp_msft_2026-09-17",
       "signalIds": [
         "sig_6dde03ed207a3699"
@@ -141,9 +258,16 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_af1673122c0e1a8e.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_861a43270b608103.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "explanation": "Bildwert 100."
+        },
         "rendered": true,
-        "bytes": 45598
+        "bytes": 37440
       }
     }
   ]

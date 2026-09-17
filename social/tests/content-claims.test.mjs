@@ -70,7 +70,7 @@ test("CC3 · Die Caption sagt, was die Zahl NICHT sagt", () => {
      eine Aussage ueber die Zukunft — und genau das ist sie nicht. */
   const { draft } = teile();
   assert.match(draft.caption, /nicht\s+ihre\s+Ursache/i);
-  assert.match(draft.caption, /was\s+als\s+Naechstes/i);
+  assert.match(draft.caption, /was\s+als\s+n\u00E4chstes/i);
 });
 
 test("CC4 · Hook und Caption nennen dieselbe Zahl", () => {
@@ -140,4 +140,78 @@ test("CC10 · Die Vorlage erzeugt einen Text, der die Markenpruefung besteht", (
   const { draft, hook, thesis } = teile();
   const b = Brand.check({ hook, caption: draft.caption, thesis, cta: draft.cta });
   assert.equal(b.passed, true, JSON.stringify(b.blocking));
+});
+
+/* =========================================================================
+   CC11–CC14 — DER VEROEFFENTLICHTE TEXT IST NICHT DER QUELLTEXT
+
+   Der Quelltext dieses Repositories ist ASCII, und das ist richtig: er
+   laeuft durch Shells, Workflows und Editoren, deren Kodierung niemand
+   garantiert.
+
+   Der veroeffentlichte Text ist etwas anderes. "Fuer jeden Titel" auf
+   einem deutschen Markenkonto sieht aus, als haette es eine Maschine
+   geschrieben, die kein Deutsch kann — und genau das waere es dann auch.
+   Der erste gerenderte Kandidat trug es im Bild.
+   ========================================================================= */
+
+test("CC11 · Umschriebene Umlaute blockieren den Beitrag", () => {
+  const b = Brand.check({
+    hook: "Ein Hook.",
+    caption: "Wir veroeffentlichen das Ergebnis unveraendert fuer jeden Titel, " +
+      "und mehr steht dazu bis auf Weiteres nicht fest.",
+    thesis: "t"
+  });
+  const treffer = b.blocking.find((x) => x.id === "transliterated-umlauts");
+  assert.ok(treffer, "nicht erkannt");
+  assert.match(treffer.message, /veroeffentlichen/);
+  assert.match(treffer.message, /fuer/);
+});
+
+test("CC12 · Mit echten Umlauten geht derselbe Satz durch", () => {
+  const b = Brand.check({
+    hook: "Ein Hook.",
+    caption: "Wir veröffentlichen das Ergebnis unverändert für jeden Titel, " +
+      "und mehr steht dazu bis auf Weiteres nicht fest.",
+    thesis: "t"
+  });
+  assert.ok(!b.blocking.some((x) => x.id === "transliterated-umlauts"));
+});
+
+test("CC13 · Woerter mit echtem 'ue' werden nicht getroffen", () => {
+  /* "ue" gehoert in "Museum" und in "neue". Eine allgemeine Regel
+     wuerde entweder diese Woerter treffen oder gar nichts — deshalb
+     eine Liste, die faengt, was sie kennt, und nichts darueber hinaus
+     behauptet. */
+  const b = Brand.check({
+    hook: "Ein Hook.",
+    caption: "Neue Daten aus dem Museum der Statistik, und die Steuerung bleibt " +
+      "unverändert bestehen wie zuvor auch schon.",
+    thesis: "t"
+  });
+  assert.ok(!b.blocking.some((x) => x.id === "transliterated-umlauts"),
+    JSON.stringify(b.blocking));
+});
+
+test("CC14 · Alle Varianten des Autors sind sauberes Deutsch", () => {
+  /* Der Zusammenhang, auf den es ankommt: was der Autor schreibt, muss
+     durch das Tor passen, das davor steht. */
+  const Brief = require("../engines/content-brief.js");
+  const Template = require("../providers/authoring/template/adapter.js");
+
+  const brief = Brief.build({
+    opportunity: { topic: "Technisches Setup — XOM", premise: "SECURITY_METRIC",
+      hasCause: false },
+    strategyDecision: { archetype: "STOCK_STORY" },
+    evidence: [{ entity: "XOM", metric: "Technical Opportunity Score", value: 76,
+      source: { source: "vu.technical", observedAt: "2026-09-16T00:00:00Z",
+                state: "VERIFIED" } }]
+  });
+
+  for (const v of Template.createTemplateAuthor({}).write(brief, {}).variants) {
+    const b = Brand.check({ hook: v.hook, caption: v.caption, cta: v.cta,
+      hashtags: v.hashtags });
+    assert.ok(!b.blocking.some((x) => x.id === "transliterated-umlauts"),
+      v.pattern + ": " + JSON.stringify(b.blocking));
+  }
 });
