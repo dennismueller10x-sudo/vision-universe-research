@@ -26,13 +26,14 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await writeFile(join(root,'quant/data/sec/canonical/private.json'),'[1,2,3]');
   await writeFile(join(root,'quant/data/sec/consumer/private.json'),'[4,5,6]');
   await writeFile(join(root,'quant/data/sec/inspector_index.json'),JSON.stringify({companies:[]}));
-  await writeFile(join(root,'quant/data/sec/quant-factor-inputs.json'),'{}');
+  for(const name of ['quant-factor-inputs.json','coverage_matrix.json','pit_gates.json'])await writeFile(join(root,'quant/data/sec/'+name),JSON.stringify({evidence:'retained',name}));
   await writeFile(join(root,'index.html'),'existing home');
   await mkdir(join(root,'vu2'));await writeFile(join(root,'vu2/index.html'),'<body><script src="/vu2/app.js"></script></body>');await writeFile(join(root,'vu2/app.js'),'void 0;');
   execFileSync('git',['init','-q'],{cwd:root});execFileSync('git',['add','.'],{cwd:root});
   execFileSync('git',['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture'],{cwd:root});
   await assert.rejects(buildRelease({root,output:join(root,'site')}),/OUTPUT_MUST_BE_OUTSIDE_SOURCE/);
   const report=await buildRelease({root,output});assert.equal(report.status,'PASS');
+  for(const name of ['coverage_matrix.json','pit_gates.json'])assert.deepEqual(JSON.parse(await readFile(join(output,'quant/data/sec/'+name),'utf8')),JSON.parse(await readFile(join(root,'quant/data/sec/'+name),'utf8')));
   assert.equal(await readFile(join(root,'quant/data/sec/canonical/private.json'),'utf8'),'[1,2,3]');
   await assert.rejects(readFile(join(output,'quant/data/sec/canonical/private.json')),/ENOENT/);
   await assert.rejects(readFile(join(output,'quant/data/sec/consumer/private.json')),/ENOENT/);

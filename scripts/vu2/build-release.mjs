@@ -30,7 +30,7 @@ export async function buildRelease({root,output}){
  const load=async p=>JSON.parse(await readFile(resolve(root,p),'utf8'));
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
- await json('quant/data/sec/quant-factor-inputs.json',await load('quant/data/sec/quant-factor-inputs.json'));
+ for(const name of ['quant-factor-inputs.json','coverage_matrix.json','pit_gates.json'])await json('quant/data/sec/'+name,await load('quant/data/sec/'+name));
  for(const company of index.companies){
   if(!/^[A-Z0-9.-]+$/.test(company.ticker)||!/^\d{10}$/.test(company.cik))throw Error('INVALID_INDEX_IDENTITY');
   const source=await load('quant/data/sec/inspector/'+company.ticker+'.json');

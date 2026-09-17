@@ -18,8 +18,8 @@ Specialist release_delivery_review independently reviewed storage/runtime consum
 
 ## Delivery evidence
 Source disk footprint:103248 KiB. Exact tracked blob totals: consumer87198341 bytes/5067files; inspector4542149/6files; canonical3046782/5files; SEC root379538/8files. Disk allocation differs from content bytes.
-`build-release.mjs` copies existing runtime assets, excludes full SEC/fundamental storage, emits index/factor panel and the existing five inspector product projections. Every inspector row and metric retained. Only unconsumed source fields omitted. All annual/quarterly/TTM contract results compare exactly to source. R2 objects and canonical source files never mutated.
-Measured projected SEC content:2685137 bytes of8388608; largest605317 bytes, under2MiB. Existing disk allocation8MiB check also retained against actual artifact. Symlink inputs, output-inside-source and stale destination reuse rejected.
+`build-release.mjs` copies existing runtime assets, excludes full SEC/fundamental storage, emits index/factor panel, existing coverage/PIT evidence and the existing five inspector product projections. Every inspector row and metric retained. Only unconsumed source fields omitted. All annual/quarterly/TTM contract results compare exactly to source. R2 objects and canonical source files never mutated.
+Measured projected SEC content:2762706 bytes of8388608; largest605317 bytes, under2MiB. Existing disk allocation8MiB check also retained against actual artifact. Symlink inputs, output-inside-source and stale destination reuse rejected.
 Delivery-only VU2 classic-script concatenation preserves document order and source code. Instrument shard JSON compaction preserves all data and paths. Discovery files untouched. Browser QA now serves the actual packaged candidate, not the source tree. Candidate upload is not a deployment.
 
 ## Identity release defect
@@ -32,3 +32,5 @@ Budget CI measures the candidate artifact; production budget is NOT certified un
 
 Rollback source point: dac0c7d076a36b959563e80bdb499a6cbd3955db. Previous actual Pages deployment/artifact still must be captured before production; source SHA alone is not ROLLBACK_READY.
 Known inherited limitations: real professional backtest gate remains unavailable, no future/PIT safety fabricated; full lifecycle production certification not inherited from old bounded R2 proof; realtime price semantics UNSPECIFIED. Current preview/display scope unchanged. Final release audit and production smoke NOT complete. No GO-LIVE claimed.
+
+Recovery record: first packaged browser run35207566755 reached all desktop views but failed the injected service-error recovery: injection targeted the old unbundled URL. The same rejection and recovery assertions now target either delivery form and inject immediately after the original service code, before app initialization. No assertion removed. Adversarial review also caught missing coverage_matrix/pit_gates files; both existing evidence artifacts now retained with exact JSON equality tests. First revised SEC35207566769 and Quant35207566761 PASS. Company Master35207823967 PASS. Final repaired-head remote gates still required.
