@@ -852,3 +852,169 @@ node scripts/social/decide-candidate.mjs --candidate <id> --hold --reason "..."
 `--hold` ohne `--reason` wird abgewiesen. Der Grund sagt, **was fehlt,
 damit es weitergeht** — und ohne ihn wäre das Zurückhalten als
 Rückmeldung wertlos.
+
+---
+
+## 26. Sechsmal STARTED, kein Ergebnis — und ein Zustand, den es nicht gab
+
+PR #101 meldete **sechsmal** `STARTED` zu **derselben** `delivery_id`
+und lieferte nie:
+
+| # | Zeit (UTC) | Abstand | Faktor |
+|---|---|---|---|
+| 1 | 11:45:48 | — | |
+| 2 | 11:51:30 | +5,7 min | |
+| 3 | 12:00:34 | +9,1 min | 1,59 |
+| 4 | 12:13:39 | +13,1 min | 1,44 |
+| 5 | 12:34:53 | +21,2 min | 1,62 |
+| 6 | 13:11:37 | +36,7 min | 1,73 |
+
+Der fast konstante Wachstumsfaktor ist die Signatur eines
+exponentiellen Backoffs. Das ist ein **Muster in den Zeitstempeln**,
+kein bewiesener Mechanismus — die Schnittstelle zeigt keinen.
+
+Der Owner hat die Work-Oberfläche geprüft: mehrere **leere Chats**.
+Kein Inhalt, keine Fehlermeldung, kein Abbruchgrund. Auch dort keine
+Root Cause.
+
+### Der Anbieter hat keinen Fehlerkanal
+
+Das ist der eigentliche strukturelle Befund. Der Agent kann melden,
+dass er **angefangen** hat. Er hat noch nie gemeldet, dass er
+**aufgehört** hat. Ein Ausfall sieht deshalb exakt aus wie ein langer
+Lauf.
+
+Und der Orchestrator stand still — nicht wegen des Anbieters, sondern
+weil es für „nichts Beobachtbares im Fenster" **keinen Zustand gab**.
+Dieselbe Diagnose wie bei `HELD_FOR_ENRICHMENT`, eine Ebene tiefer.
+
+### Die Frist ist gemessen, nicht ausgedacht
+
+```
+PR #98, verifizierter Lauf mit Text UND Bild
+STARTED 09:48:36Z  →  Result-Commit 09:54:21Z  =  345 s
+```
+
+Eine Messung ist keine Verteilung. Der Faktor 10 im
+`BOOTSTRAP`-Regime ist **Schutz gegen das eigene Nichtwissen**, kein
+Quantil — er fällt auf 4 und dann 2, sobald es Streuung zu messen gibt.
+
+```
+345 s × 10 = 3450 s = 57,5 min
+```
+
+Untergrenze 690 s, damit das Fenster nie den einzigen bekannten
+Erfolgsfall abschneidet.
+
+`STALE_NO_RESULT` sagt **einen** Satz: der externe Provider hat im
+Fenster nichts Beobachtbares geliefert. Kein Content Failure, kein
+Performance Failure, kein Owner Reject, kein Evidence Reject — und
+keine Aussage darüber, ob der Lauf beim Anbieter noch läuft. Es ist
+**nicht terminal**: taucht später ein Ergebnis auf, darf es verarbeitet
+werden. Und es **blockiert den Graphen nicht**.
+
+---
+
+## 27. Das Experiment — und die Kontrolle, die zuerst fehlte
+
+Statt eines blinden Retrys drei isolierte, nicht produktive Anfragen
+mit eigenen `content_id`s, `brief_id`s und Processing Keys.
+
+Zuerst kostenlose Evidenz: der **Strukturvergleich** der drei Briefe.
+
+| | PR #97 ✅ | PR #98 ✅ | PR #101 ❌ |
+|---|---|---|---|
+| Bytes | 1 524 | 2 932 | 11 910 |
+| Verschachtelung | 2 | 3 | **3** |
+| längster String | 164 | 205 | **176** |
+| `evidence` | — | — | 23 |
+| Nicht-ASCII | `ß ö ü` | `ß ä ö ü` | **`× – — “ „`** |
+
+Die Verschachtelung ist gleich, der längste String in PR #101 sogar
+**kürzer**. Es gibt keine pathologische Struktur. Aber PR #101 trägt
+**typografische Zeichen**, die beiden Proofs fehlen — aus den
+Quant-Daten: `Band „Konstruktiv"`, `0–100`, `0.83× zum Median`. Eine
+zweite Variable, die vorher niemand gesehen hatte.
+
+Daraus der Aufbau:
+
+| | Achse | Bytes | `evidence` | Sonderzeichen |
+|---|---|---|---|---|
+| **D1** | Struktur bei bewährter Größe | 4 258 | 3 | ja |
+| **D2** | Größe allein | 11 984 | — | nein |
+| **D3** | **Kontrolle** | 2 891 | — | nein |
+
+### D3 war der Fehler im Aufbau
+
+D1 und D2 variierten gegen einen **historischen** Erfolg, ohne zu
+prüfen, ob die Grundlinie **jetzt** noch trägt. D3 ist deshalb der
+PR-#98-Brief **wörtlich** — nur `brief_id`, `content_id`,
+`fixture_type` und der Asset-Pfad unterscheiden sich, inhaltlich kein
+Zeichen.
+
+Ein Experiment, das seine eigene Grundlinie nicht nachmisst, kann einen
+Ausfall nicht von einer Nutzlastgrenze unterscheiden. Das war keine
+Kleinigkeit: ohne D3 hätten D1 und D2 gemeinsam „beides ist schuld"
+ergeben — und das wäre falsch gewesen.
+
+---
+
+## 28. Der Wiederanlauf braucht kein neues Verfahren
+
+Schweigt der Anbieter, muss derselbe Inhalt erneut angefragt werden
+können. Das ging nicht, ohne die Idempotenz zu verletzen: derselbe
+Brief → derselbe Blob-SHA → derselbe Processing Key → das Ledger weist
+den zweiten Anlauf zu Recht ab.
+
+Der Anlauf steht jetzt **im Brief**:
+
+```json
+"attempt": 2,
+"supersedes_attempt": 1,
+"attempt_reason": "Voriger Anlauf ohne beobachtbares Ergebnis."
+```
+
+Damit ändern sich seine Bytes, damit sein Blob-SHA, damit sein
+Processing Key und damit alle Varianten-Kennungen. Jeder Anlauf ist
+ein eigener Vorgang, und die Idempotenzgrenze bleibt exakt dort, wo sie
+war.
+
+```
+Anlauf 1  sha 8460175fca71  supersedes null
+Anlauf 2  sha 61851e27507f  supersedes 1
+Anlauf 3  sha ff389571122d  supersedes 2
+```
+
+Der Zähler steigt **nicht von selbst**. Er ist ein Parameter, und wer
+ihn setzt, hat sich entschieden — eine Automatik wäre genau die
+unkontrollierte Retry-Schleife, die es nicht geben soll.
+
+---
+
+## 29. Der Ledger führt sich selbst — und trennt Beobachtung von Notiz
+
+Von sechs `STARTED`-Meldungen standen **zwei** im Ledger: die beiden,
+die ich zufällig gesehen und von Hand nachgetragen hatte.
+
+Beim ersten Lauf gegen echte Daten fielen sofort zwei Fehler auf, beide
+meine:
+
+**Vier von fünf Handeinträgen trugen erfundene Zeitstempel**, zwei
+davon in der Zukunft. Die Auswertung zählte daraufhin neun `STARTED`
+statt sechs und hielt einen seit Stunden stehengebliebenen Lauf für
+`IN_FLIGHT`.
+
+**Ein negatives Alter fiel durch jeden Fristvergleich.** Eine Aktivität
+in der Zukunft ist ein Datenfehler, kein frischer Lauf.
+
+Einträge tragen deshalb `observed`. Nur Beobachtetes geht in die
+Auswertung; die Handeinträge bleiben als Provenance stehen. Ein Ledger,
+das Beobachtetes und Notiertes vermengt, kann seine einzige Frage nicht
+mehr beantworten — und an ihr hängt die Einstufung
+`LOOP_PROTECTION_OPERATIONALLY_SUPPORTED`.
+
+Mehrfaches `STARTED` bleibt **sichtbar**. Sechs Anläufe sind eine
+Tatsache. Die Idempotenzgrenze liegt woanders: am Processing Key und am
+unveränderlichen abgeschlossenen Ergebnis. Sichtbarkeit und
+Verarbeitung zu vermengen war der Fehler, der die vier Meldungen
+verschluckt hat.
