@@ -78,11 +78,23 @@ jobs:
 
       - name: Umfang bestimmen
         id: scope
+        # Die Commit-Nachricht kommt ueber die Umgebung, nicht ueber eine
+        # Textersetzung in der Kommandozeile.
+        #
+        # Vorher stand hier ${{ github.event.head_commit.message }} mitten
+        # in einem Shell-Aufruf. Am 17.09.2026 hat das eine Nachricht mit
+        # einem Anfuehrungszeichen darin zerlegt - der Schritt brach ab,
+        # und der Lauf sah aus wie ein Datenfehler. Eine Commit-Nachricht
+        # ist Text von aussen; sie gehoert nie unquotiert in ein Skript.
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}
         run: |
-          SCOPE='${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}'
+          SCOPE="$DISPATCH_SCOPE"
           # Auf Entwicklungsbranches darf die Marke den Umfang nennen: [intraday-snapshot:universe]
-          if [ -z "$SCOPE" ] && [ "${{ github.event_name }}" = "push" ]; then
-            SCOPE=$(printf '%s' "${{ github.event.head_commit.message }}" | grep -o '\[intraday-snapshot:[a-z,A-Z]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
+          if [ -z "$SCOPE" ] && [ "$EVENT_NAME" = "push" ]; then
+            SCOPE=$(printf '%s' "$COMMIT_MESSAGE" | grep -o '\[intraday-snapshot:[a-zA-Z,]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
           fi
           if [ -z "$SCOPE" ]; then
             # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss. Alle anderen

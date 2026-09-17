@@ -276,7 +276,12 @@ alleOk = pruefung("keineFehler", "keine Konsolenfehler auf den Aktienseiten", fe
     window.__vuVorAbriss = Hub.liveStats();
     Hub.liveClose("testAbriss");
   });
-  await p.waitForTimeout(2500);
+  /* Sofort nachsehen, nicht erst nach zwei Sekunden. Der Wiederanlauf
+     setzt nach einer Sekunde ein - wer spaeter misst, misst ihn und
+     nicht den Abriss. Genau das ist beim ersten Lauf passiert: "nach
+     dem Abriss noch verbunden" war kein Befund ueber das Produkt,
+     sondern einer ueber meinen Messzeitpunkt. */
+  await p.waitForTimeout(300);
   const nachAbriss = await p.evaluate(() => {
     const Hub = window.VUDiscover.LiveHub;
     const l = document.querySelector(".dx-live-label");

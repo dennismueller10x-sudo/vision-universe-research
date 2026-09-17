@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "zero-cost-mode-1.0.0",
+  "contract": "ZERO_COST_MODE = HARD",
+  "decidedBy": "Owner",
+  "decidedAt": "2026-09-17",
+  "checkedAt": "2026-09-17T17:15:33.588Z",
+  "scanned": {
+    "files": 254,
+    "roots": [
+      ".github/workflows",
+      "scripts",
+      "worker",
+      "quant/engines",
+      "quant/config",
+      "providers",
+      "discover/ui",
+      "discover/engines"
+    ]
+  },
+  "rules": [
+    {
+      "id": "cloudflareSubscriptionApi",
+      "what": "Aufruf der Cloudflare-Billing- oder Subscription-API"
+    },
+    {
+      "id": "subscriptionWrite",
+      "what": "schreibender Aufruf auf einen Tarif"
+    },
+    {
+      "id": "usageModelFlag",
+      "what": "wrangler-Schalter, der ein Abrechnungsmodell setzt"
+    },
+    {
+      "id": "usageModelConfig",
+      "what": "usage_model in der Konfiguration"
+    },
+    {
+      "id": "durableObjectsOhneSqlite",
+      "what": "Durable Objects ohne SQLite-Backend - die gibt es nur im kostenpflichtigen Tarif"
+    },
+    {
+      "id": "planWechsel",
+      "what": "Formulierung, die nach einem automatischen Tarifwechsel aussieht"
+    }
+  ],
+  "findings": [],
+  "worker": {
+    "sqliteBackedDurableObject": true,
+    "noUsageModel": true
+  },
+  "PAID_SERVICES_ENABLED": 0,
+  "note": "Gesucht wird, was ausfuehrbar ist - Aufrufe, Schalter, Konfiguration. Das Wort 'Paid' in einer Erklaerung ist kein Verstoss; dieses Repository sagt an vielen Stellen, dass Workers Paid nicht aktiviert wird, und genau deshalb gibt es diese Pruefung.",
+  "fallback": "Realtime -> Snapshot -> letzte abgeschlossene Sitzung -> Historie. Bei PROTECT (85 %) wird Realtime kontrolliert beendet; das Produkt gibt kein Geld aus.",
+  "verdict": "PASS"
+}

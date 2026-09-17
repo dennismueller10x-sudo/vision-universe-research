@@ -167,12 +167,25 @@ function bedingung(name, ok, begruendung, belege) {
   ];
   const treffer = verboten.filter((v) => v.muster.test(toml)).map((v) => v.name);
   const sqlite = /new_sqlite_classes\s*=/.test(toml);
-  bedingung("PAID_SERVICES_ENABLED", treffer.length === 0 && sqlite,
-    treffer.length === 0 && sqlite
-      ? "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt."
+  /* Seit dem 17.09.2026 gilt ZERO_COST_MODE = HARD. Die Konfiguration
+     allein genuegt dafuer nicht: es darf auch KEIN Skript und KEIN
+     Workflow einen Tarif anfassen koennen. Das prueft
+     assert-zero-cost-mode.mjs, und sein Urteil gehoert hierher. */
+  const hartesUrteil = lies("zero-cost-mode.json");
+  const hartFrisch = hartesUrteil && alterStunden(hartesUrteil) !== null &&
+                     alterStunden(hartesUrteil) <= MAX_ALTER_STUNDEN;
+  const hartOk = !!(hartFrisch && hartesUrteil.verdict === "PASS");
+  bedingung("PAID_SERVICES_ENABLED", treffer.length === 0 && sqlite && hartOk,
+    treffer.length === 0 && sqlite && hartOk
+      ? "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der " +
+        "kostenlose Tarif verlangt; und in " + hartesUrteil.scanned.files + " ausfuehrbaren Dateien steht " +
+        "kein Aufruf, der einen Tarif aendern koennte."
       : (treffer.length ? "Gefunden: " + treffer.join(", ") + "." : "") +
-        (sqlite ? "" : " new_sqlite_classes fehlt - ohne das laeuft ein Durable Object nur im kostenpflichtigen Tarif."),
-    { found: treffer, sqliteBacked: sqlite });
+        (sqlite ? "" : " new_sqlite_classes fehlt - ohne das laeuft ein Durable Object nur im kostenpflichtigen Tarif.") +
+        (hartOk ? "" : " ZERO_COST_MODE-Pruefung fehlt oder ist nicht gruen" +
+                       (hartesUrteil && hartesUrteil.findings ? " (" + hartesUrteil.findings.length + " Funde)" : "") + "."),
+    { found: treffer, sqliteBacked: sqlite, zeroCostModeVerdict: hartesUrteil ? hartesUrteil.verdict : null,
+      zeroCostFindings: hartesUrteil ? hartesUrteil.findings : null });
 })();
 
 /* ---- Zugang (kein Abnahmepunkt, aber ohne ihn geht nichts) ----------- */

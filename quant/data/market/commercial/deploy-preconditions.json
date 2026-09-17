@@ -1,7 +1,7 @@
 {
   "schemaVersion": "deploy-preconditions-1.0.0",
   "auftrag": "Owner-Freigabe 17.09.2026: Deployment nur bei gruenen Nachweisen",
-  "checkedAt": "2026-09-17T17:03:51.388Z",
+  "checkedAt": "2026-09-17T17:15:58.954Z",
   "maxAgeHours": 24,
   "conditions": [
     {
@@ -175,18 +175,20 @@
     {
       "name": "SECRET_SCAN",
       "status": "PASS",
-      "reason": "24766 Dateien geprueft, keine Zugangsdaten.",
+      "reason": "24767 Dateien geprueft, keine Zugangsdaten.",
       "evidence": {
-        "files": 24766
+        "files": 24767
       }
     },
     {
       "name": "PAID_SERVICES_ENABLED",
       "status": "PASS",
-      "reason": "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt.",
+      "reason": "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt; und in 254 ausfuehrbaren Dateien steht kein Aufruf, der einen Tarif aendern koennte.",
       "evidence": {
         "found": [],
-        "sqliteBacked": true
+        "sqliteBacked": true,
+        "zeroCostModeVerdict": "PASS",
+        "zeroCostFindings": []
       }
     }
   ],

@@ -550,3 +550,41 @@ test("VL-34 der Anbieterzeitstempel faehrt bis zum Browser durch", async () => {
   assert.equal(v[7], providerZeit);
   assert.equal(v[2] - v[7] >= 0, true, "Cloudflare sieht den Kurs nicht vor dem Anbieter");
 });
+
+test("VL-35 der ganze Weg: 70 Prozent warnen, 85 Prozent beenden, Snapshot uebernimmt", async () => {
+  /* Owner §21 verlangt die Simulation als Nachweis, nicht als Zusage.
+     Hier laeuft sie in einem Stueck: aus OK wird WARNING, aus WARNING
+     PROTECT - und der Browser bekommt bei jedem Schritt zu hoeren, was
+     gilt, samt dem Weg zurueck auf den Snapshot. */
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  assert.deepEqual(h.obj.manager.symbols(), ["NVDA"]);
+  assert.equal(h.obj.budget.snapshot().verdict, "OK");
+
+  /* 70 Prozent der nutzbaren Anfragen. */
+  h.obj.budget.noteProviderMessages(20 * 64000);
+  await takte();
+  assert.equal(ws.letzte("budget").verdict, "WARNING");
+  assert.deepEqual(h.obj.manager.symbols(), ["NVDA"], "gewarnt ist nicht abgeschaltet");
+
+  /* 85 Prozent. */
+  h.obj.budget.noteProviderMessages(20 * 14000);
+  await takte();
+  const budget = ws.letzte("budget");
+  const status = ws.letzte("status");
+  assert.equal(budget.verdict, "PROTECT");
+  assert.equal(status.state, "IDLE");
+  assert.equal(status.reason, "budgetProtect");
+  assert.equal(status.fallback, "snapshot");
+  assert.deepEqual(h.obj.manager.symbols(), [], "im Schutzmodus laeuft kein Strom weiter");
+
+  /* Und es gibt keinen Weg nach oben: der Waechter kennt kein Upgrade,
+     nur Ablehnung. */
+  assert.equal(h.obj.budget.realtimeAllowed(), false);
+  assert.equal(h.obj.manager.acquire("AAPL", "wer-auch-immer").allowed, false);
+  const bericht = JSON.stringify(h.obj.health()).toLowerCase();
+  for (const wort of ["upgrade", "paid", "subscription", "billing"]) {
+    assert.equal(bericht.indexOf(wort), -1, "im Zustandsbericht steht " + wort);
+  }
+});

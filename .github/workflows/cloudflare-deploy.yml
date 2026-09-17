@@ -78,6 +78,11 @@ jobs:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
         run: node scripts/market/assert-no-secrets.mjs --all --record
 
+      # ZERO_COST_MODE = HARD. Kein Skript und kein Workflow darf einen
+      # Tarif anfassen koennen - das wird durchsucht, nicht versprochen.
+      - name: Zero-Cost-Vertrag pruefen (PAID_SERVICES_ENABLED = 0)
+        run: node scripts/market/assert-zero-cost-mode.mjs
+
       # Bricht ab, wenn eine der sechs Abnahmebedingungen nicht auf gruen
       # steht. Das ist der Unterschied zwischen einer Freigabe und einer
       # Absichtserklaerung.
