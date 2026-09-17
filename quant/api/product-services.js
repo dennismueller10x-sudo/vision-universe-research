@@ -14,8 +14,16 @@ const Strategy=typeof module!=='undefined'&&module.exports?require('../engines/s
 const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
+const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
+const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready;
+ const directory=Directory.create({loadJSON:load});
+ async function identity(ticker){
+  const result=await directory.getInstrument(ticker),i=result.instrument;
+  if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId)||!/^\d{10}$/.test(i.cik))return null;
+  return i;
+ }
  function init(){if(!ready)ready=Promise.all([
   load('/quant/config/development-preview.json'),load('/quant/config/feature-gates.json'),
   load('/quant/data/sec/quant-factor-inputs.json')
@@ -24,17 +32,18 @@ function create(options){
  function unavailable(reason){return {state:'UNAVAILABLE',reason,stocks:[]};}
  function metric(value,unit){return {value:Number.isFinite(value)?value:null,unit,state:Number.isFinite(value)?'AVAILABLE':'SOURCE_MISSING'};}
  function validDate(d){return typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d;}
- function row(c,ticker){
+ async function row(c,ticker){
   const s=c.panel.securities[ticker];
   if(!s||!s.available||s.ticker!==ticker||s.securityId!=='sec_'+ticker)return null;
   if(!s.provenance||s.provenance.isMock!==false)return null;
+  const instrument=await identity(ticker);if(!instrument)return null;
   const marketDate=s.marketData&&s.marketData.asOf;
   if(!validDate(marketDate)||marketDate>new Date().toISOString().slice(0,10))return null;
   const f=s.fundamentals||{};
   if(!validDate(f._asOfAvailableAt)||f._asOfAvailableAt>new Date().toISOString().slice(0,10))return null;
   const allowed=permission(c,ticker).allowed;
   const m=(key,unit,market=false)=>metric(market&&!allowed?null:f[key],unit);
-  return {securityId:s.securityId,ticker,name:s.reference.name,industry:s.reference.industry||null,
+  return {securityId:instrument.instrumentId,instrumentId:instrument.instrumentId,masterMemberId:instrument.masterMemberId,issuerId:instrument.issuerId,sourceSecurityId:s.securityId,ticker,name:s.reference.name,industry:s.reference.industry||null,
    state:'AVAILABLE',marketState:allowed?'AVAILABLE':'UNAVAILABLE',asOf:s.marketData&&s.marketData.asOf,
    fundamentalsAsOf:s.asOfPeriodEnd,availableAt:f._asOfAvailableAt||null,
    price:permission(c,ticker,'raw').allowed?m('price','USD',true):{value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'},momentum6m:m('momentum6m','percent',true),
@@ -51,7 +60,7 @@ function create(options){
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
- async function getUniverse(){try{const c=await init();const stocks=(c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)).filter(Boolean);return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'APPROVED_DISPLAY_SET',totalMarketState:'UNAVAILABLE',reason:'NO_APPROVED_FULL_MARKET_VIEW'};}catch{return unavailable('SOURCE_MISSING');}}
+ async function getUniverse(){try{const c=await init();const stocks=(await Promise.all((c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)))).filter(Boolean);return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'APPROVED_DISPLAY_SET',totalMarketState:'UNAVAILABLE',reason:'NO_APPROVED_FULL_MARKET_VIEW'};}catch{return unavailable('SOURCE_MISSING');}}
  async function getMarketIntelligence(){
   const universe=await getUniverse();
   return {version:'1.0.0',state:universe.state,scope:universe.scope,
@@ -66,7 +75,7 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker).allowed)return unavailable('DISPLAY_NOT_PERMITTED');
-   const stock=row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
+   const stock=await row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
    const source=await load('/quant/data/technical/instruments/'+ticker+'.json'),b=source.bundle;
    if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>stock.asOf||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
@@ -81,9 +90,9 @@ function create(options){
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
-   const stock=row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
-   try{const p=await load('/quant/data/market/golden-preview/daily/ref_'+ticker+'.json');
-    if(p.securityId!=='ref_'+ticker||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
+   const stock=await row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
+   try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
+    if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}stock.quant=await getQuantWorkspace(ticker);stock.health=await marketHealth([stock]);return stock;
@@ -91,7 +100,7 @@ function create(options){
  async function getSignals({lookback=20}={}){
   try{const c=await init(),calendar=await load('/quant/config/market-calendar.json'),results=await Promise.all((c.preview.scope||[]).map(async ticker=>{
    if(!permission(c,ticker,'raw').allowed||!permission(c,ticker).allowed)return {ticker,state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED',events:[]};
-   try{return {ticker,...MarketSignals.build(await load('/quant/data/market/golden-preview/daily/ref_'+ticker+'.json'),{ticker,recipes:getRecipes(),lookback,calendar})};}catch{return {ticker,state:'UNAVAILABLE',reason:'SOURCE_MISSING',events:[]};}
+   try{const stock=await row(c,ticker);if(!stock)return {ticker,state:'UNAVAILABLE',reason:'INVALID_IDENTITY',events:[]};return {ticker,...MarketSignals.build(await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json'),{ticker,recipes:getRecipes(),lookback,calendar})};}catch{return {ticker,state:'UNAVAILABLE',reason:'SOURCE_MISSING',events:[]};}
   }));const available=results.filter(r=>r.state==='AVAILABLE');return {state:available.length?'AVAILABLE':'UNAVAILABLE',partial:available.length!==results.length,results,events:available.flatMap(r=>r.events).sort((a,b)=>b.asOf.localeCompare(a.asOf)||a.ticker.localeCompare(b.ticker)),scope:'APPROVED_DISPLAY_SET'};
   }catch{return {state:'UNAVAILABLE',events:[],results:[],reason:'SOURCE_MISSING'};}
  }
@@ -118,12 +127,15 @@ function create(options){
  async function getQuantWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
-   return QuantWorkspace.build(row(c,ticker),c.panel.securities[ticker],c.panel.versions);
+   const stock=await row(c,ticker);
+   // Source alias validated by row() before adapting to the shared primary ID.
+   return QuantWorkspace.build(stock,stock?{...c.panel.securities[ticker],securityId:stock.securityId}:null,c.panel.versions);
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getTechnicalWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
+   const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
    const source=await load('/quant/data/technical/instruments/'+ticker+'.json');
    if(source.source!=='tiingo')return unavailable('UNSUPPORTED_MARKET_SOURCE');
    return TechnicalWorkspace.build(source,{ticker});
@@ -132,10 +144,11 @@ function create(options){
  async function getHistoricalFundamentals(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
-   const index=await load('/quant/data/sec/inspector_index.json'),identity=index.companies?.find(s=>s.ticker===ticker);
-   if(!identity?.cik)return unavailable('SOURCE_MISSING');
+   const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+   const index=await load('/quant/data/sec/inspector_index.json'),entry=index.companies?.find(s=>s.ticker===ticker);
+   if(!entry?.cik||entry.cik!==instrument.cik)return unavailable('INVALID_IDENTITY');
    const source=await load('/quant/data/sec/inspector/'+ticker+'.json');
-   return History.build(source,{ticker,cik:identity.cik,metric:selection.metric,period:selection.period});
+   return History.build(source,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
   }catch{return unavailable('SOURCE_MISSING');}
  }
  function getRecipes(){return [

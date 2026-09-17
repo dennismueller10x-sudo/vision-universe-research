@@ -28,11 +28,21 @@ jobs:
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3
       - name: Install Chromium
         run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Build the exact static release artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
       - name: Test desktop and mobile preview
         env:
           NODE_PATH: /tmp/vu2-qa/node_modules
           VU_QA_OUTPUT: /tmp/vu2-screenshots
-        run: node scripts/vu2/browser-qa.mjs
+        run: |
+          cd "$RUNNER_TEMP/quant2-site"
+          node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant2-release-candidate
+          path: ${{ runner.temp }}/quant2-site
+          include-hidden-files: true
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         if: always()
         with:
