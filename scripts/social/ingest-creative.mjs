@@ -218,8 +218,59 @@ export function legeAb(ref, contentId, bericht) {
 export function ledgerLaden() {
   const pfad = join(ROOT, LEDGER_DATEI);
   const roh = existsSync(pfad) ? JSON.parse(readFileSync(pfad, "utf8")) : { entries: [] };
-  const l = Ledger.createLedger(roh.entries || []);
+  const l = Ledger.createLedger(roh.entries || [], roh.latencyObservations || []);
   return { ledger: l, pfad: pfad };
+}
+
+/**
+ * Wann wurde das Ergebnis committet?
+ *
+ * Nicht "jetzt": zwischen dem Commit des Agenten und unserem Einlesen
+ * liegt beliebig viel Zeit. Eine Laufzeit, die unsere Reaktionszeit
+ * mitmisst, misst den Anbieter nicht mehr.
+ */
+export function ergebnisZeitpunkt(ref, contentId, repoRoot) {
+  const pfad = ChatGptWork.requestDir(contentId) + "/authoring-result.json";
+  try {
+    const aus = execFileSync("git",
+      ["log", "-1", "--format=%cI", ref, "--", pfad],
+      { cwd: repoRoot || ROOT, encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"] }).trim();
+    return aus || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Traegt die gemessene Laufzeit nach, wenn ein Ergebnis bestaetigt ist.
+ *
+ * Ohne diesen Schritt bleibt die Frist fuer immer im BOOTSTRAP-Regime:
+ * drei Stufen, von denen zwei unerreichbar sind, waeren keine Skala.
+ */
+export function laufzeitNachtragen(ledger, bericht, ref, options) {
+  options = options || {};
+  if (!bericht || !bericht.ok || !bericht.processingKey) return null;
+
+  const eintraege = ledger.all().filter((e) =>
+    e.processingKey === bericht.processingKey && e.observed === true);
+  const zeiten = eintraege.map((e) => e.at).filter(Boolean).sort();
+  if (!zeiten.length) return null;
+
+  const letzteAktivitaet = zeiten[zeiten.length - 1];
+  const fertig = options.resultAt ||
+    ergebnisZeitpunkt(ref, bericht.result.content_id, options.repoRoot);
+  if (!fertig) return null;
+
+  const sekunden = (Date.parse(fertig) - Date.parse(letzteAktivitaet)) / 1000;
+  return ledger.recordLatency({
+    processingKey: bericht.processingKey,
+    contentId: bericht.result.content_id,
+    seconds: sekunden,
+    startedAt: letzteAktivitaet,
+    resultAt: fertig,
+    source: "ingest"
+  });
 }
 
 export function ledgerSchreiben(pfad, ledger, nowIso) {
@@ -303,6 +354,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const d of dateien) console.log("  " + d.replace(ROOT + "/", ""));
   }
 
+  /* Die Messung vor dem Eintrag: sie beschreibt denselben Vorgang und
+     soll nicht an einem spaeteren Fehler verlorengehen. */
+  const gemessen = laufzeitNachtragen(ledger, bericht, REF);
+  if (gemessen && gemessen.written) {
+    console.log("\nLaufzeit gemessen und aufgeschrieben. Die Frist waechst mit " +
+      "den Daten, statt eine Konstante zu bleiben.");
+  }
+
   ledger.record({
     processingKey: bericht.processingKey,
     state: bericht.state,
@@ -311,6 +370,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     briefId: bericht.briefId,
     briefBlobSha: bericht.briefBlobSha,
     pullRequest: arg("pr", null) ? Number(arg("pr", null)) : null,
+    observed: true,
     note: bericht.explanation
   });
   ledgerSchreiben(pfad, ledger, NOW);

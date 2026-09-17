@@ -174,3 +174,56 @@ test("PL16 · Der Ledger verschluckt die Beobachtungsherkunft nicht", () => {
   assert.equal(l.all()[1].observed, false);
   assert.equal(l.all()[1].timestampProvenance, "hand-entered-approximate");
 });
+
+/* ------------------------------------------------------------------ */
+/* DIE SKALA MUSS ERREICHBAR SEIN                                      */
+/* ------------------------------------------------------------------ */
+
+test("PL17 · Das Regime kann BOOTSTRAP verlassen", () => {
+  /* Die Frist kannte drei Stufen, aber nichts schrieb je eine neue
+     Messung auf. Eine Skala mit drei Stufen, von denen zwei
+     unerreichbar sind, ist keine Skala — dieselbe tote Dimension wie
+     seinerzeit das fest verdrahtete timingKnowledge. */
+  const l = Ledger.createLedger([], []);
+  assert.equal(L.lease(l.latencies()).regime, "BOOTSTRAP");
+  assert.equal(L.lease(l.latencies()).seconds, 3450);
+
+  for (let i = 0; i < 12; i += 1) {
+    l.recordLatency({ processingKey: "k" + i, seconds: 300 + i * 5 });
+  }
+  const reif = L.lease(l.latencies());
+  assert.equal(reif.regime, "MATURE");
+  assert.equal(reif.sampleSize, 12);
+  assert.ok(reif.seconds < 3450, "mehr Wissen fuehrte nicht zu einer engeren Frist");
+});
+
+test("PL18 · Dieselbe Messung wird nicht zweimal gezaehlt", () => {
+  /* Sonst zoege ein mehrfach eingelesenes Ergebnis die Stichprobe auf,
+     ohne dass mehr gemessen worden waere. */
+  const l = Ledger.createLedger([], []);
+  assert.equal(l.recordLatency({ processingKey: "k", seconds: 345 }).written, true);
+  const zweite = l.recordLatency({ processingKey: "k", seconds: 999 });
+  assert.equal(zweite.written, false);
+  assert.equal(zweite.reason, "alreadyMeasured");
+  assert.deepEqual(l.latencies(), [345]);
+});
+
+test("PL19 · Unplausible Dauern werden nicht aufgeschrieben", () => {
+  const l = Ledger.createLedger([], []);
+  for (const s of [0, -5, NaN, null, "viel"]) {
+    assert.equal(l.recordLatency({ processingKey: "k" + s, seconds: s }).written, false);
+  }
+  assert.deepEqual(l.latencies(), []);
+});
+
+test("PL20 · Die Messungen ueberleben einen Neustart", () => {
+  /* Ohne das faellt die Frist bei jedem Lauf auf die eine
+     Referenzmessung zurueck. */
+  const a = Ledger.createLedger([], []);
+  a.recordLatency({ processingKey: "k1", seconds: 320 });
+  a.recordLatency({ processingKey: "k2", seconds: 360 });
+  const schnappschuss = a.snapshot({ now: "2026-09-17T18:00:00Z" });
+
+  const b = Ledger.createLedger(schnappschuss.entries, schnappschuss.latencyObservations);
+  assert.deepEqual(b.latencies(), [320, 360]);
+});

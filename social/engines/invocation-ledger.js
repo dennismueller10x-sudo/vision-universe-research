@@ -70,8 +70,9 @@
      ein Ergebnis auf, darf es verarbeitet werden. */
   var TERMINAL = Lifecycle.TERMINAL.concat(ALTBESTAND);
 
-  function createLedger(entries) {
+  function createLedger(entries, latencies) {
     var eintraege = Array.isArray(entries) ? entries.slice() : [];
+    var laufzeiten = Array.isArray(latencies) ? latencies.slice() : [];
 
     function byKey(processingKey) {
       for (var i = eintraege.length - 1; i >= 0; i -= 1) {
@@ -179,9 +180,59 @@
       return { written: true, reason: null, existing: vorhanden };
     }
 
+    /* -------------------------------------------------------------------
+       DIE GEMESSENEN LAUFZEITEN
+
+       Die Frist fuer STALE_NO_RESULT stammt aus einer einzigen Messung
+       (PR 98: 345 s). Das Regime kannte BOOTSTRAP, GROWING und MATURE —
+       aber es gab keinen Weg, jemals aus BOOTSTRAP herauszukommen, weil
+       niemand neue Messungen aufschrieb.
+
+       Eine Skala mit drei Stufen, von denen zwei unerreichbar sind, ist
+       keine Skala. Es ist dieselbe tote Dimension wie seinerzeit das
+       fest verdrahtete `timingKnowledge: null`.
+
+       Gemessen wird von der LETZTEN beobachteten Aktivitaet bis zum
+       Ergebnis. Bei mehreren Anlaeufen laesst sich nicht sagen, welcher
+       geliefert hat — und fuer eine Frist ist ohnehin die Frage
+       massgeblich, wie lange nach einem Lebenszeichen noch ein Ergebnis
+       kommen darf.
+       ------------------------------------------------------------------- */
+    function recordLatency(spec) {
+      if (!spec || !spec.processingKey) {
+        throw new Error("VUSocialInvocationLedger: Laufzeit ohne processingKey");
+      }
+      var sekunden = Number(spec.seconds);
+      if (!isFinite(sekunden) || sekunden <= 0) {
+        return { written: false, reason: "implausible" };
+      }
+      /* Dieselbe Messung nicht zweimal. */
+      for (var i = 0; i < laufzeiten.length; i += 1) {
+        if (laufzeiten[i].processingKey === spec.processingKey) {
+          return { written: false, reason: "alreadyMeasured", existing: laufzeiten[i] };
+        }
+      }
+      laufzeiten.push({
+        processingKey: spec.processingKey,
+        contentId: spec.contentId || null,
+        seconds: Math.round(sekunden),
+        startedAt: spec.startedAt || null,
+        resultAt: spec.resultAt || null,
+        source: spec.source || "ingest",
+        note: "Von der letzten beobachteten Aktivitaet bis zum bestaetigten Ergebnis."
+      });
+      return { written: true, reason: null };
+    }
+
     return {
       mayInvoke: mayInvoke,
       record: record,
+      recordLatency: recordLatency,
+      /** Die gemessenen Dauern in Sekunden, fuer die Fristberechnung. */
+      latencies: function () {
+        return laufzeiten.map(function (x) { return x.seconds; });
+      },
+      latencyRecords: function () { return laufzeiten.slice(); },
       get: byKey,
       all: function () { return eintraege.slice(); },
       /** Wie oft wurde zu diesem Schluessel ueberhaupt geschrieben? */
@@ -199,7 +250,10 @@
             "Schnittstelle liefert keine vollstaendige Run-Historie; " +
             "FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. " +
             "Alle Schutzschichten bleiben aktiv.",
-          entries: eintraege.slice()
+          entries: eintraege.slice(),
+          /* Die Messungen reisen mit: ohne sie faellt die Frist bei
+             jedem Neustart auf die eine Referenzmessung zurueck. */
+          latencyObservations: laufzeiten.slice()
         };
       }
     };
