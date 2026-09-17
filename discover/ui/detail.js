@@ -257,7 +257,12 @@
     var liveErst = new Promise(function (resolve) {
       if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
       var erledigt = false;
-      detailAbo = Hub.subscribe(detail.symbol, function (p) {
+      /* Die Aktienseite ist der EINZIGE Ort, der den Strom benutzt
+         (Zero-Cost Realtime V1 §6). live() beginnt mit demselben
+         Snapshot wie subscribe() - der Chart ist also nie leer - und
+         schreibt danach fort, falls ein Strom zustande kommt. Kommt
+         keiner, ist das hier Zeile fuer Zeile das alte Verhalten. */
+      detailAbo = (Hub.live || Hub.subscribe)(detail.symbol, function (p) {
         state.intraday = p.snapshot ? p : null;
         if (!erledigt) { erledigt = true; resolve(state.intraday); return; }
         if (state.redraw && state.range === "1D") state.redraw();
@@ -997,6 +1002,51 @@
     return (v > 0 ? "+" : v < 0 ? "−" : "") + text + " %";
   }
 
+  /* Die Ortszeit der Boerse zu einem Zeitstempel - dieselbe Sprache, in
+     der die Punkte des Snapshots stehen ("10:15"). */
+  function ortszeit(iso, zone) {
+    try {
+      return new Intl.DateTimeFormat("de-DE", { timeZone: zone || "America/New_York",
+                                                hour: "2-digit", minute: "2-digit", hour12: false })
+        .format(new Date(iso));
+    } catch (err) { return null; }
+  }
+
+  /**
+   * Der Snapshot, fortgeschrieben um den laufenden Kurs - falls es einen
+   * gibt und er frisch ist.
+   *
+   * Was hier passiert und was nicht: der letzte Punkt der Reihe wird
+   * ersetzt oder ein neuer angehaengt. Dazwischen wird nichts
+   * interpoliert, nichts geglaettet und nichts erfunden. Das Original
+   * bleibt unangetastet - gezeichnet wird eine Kopie.
+   *
+   * Die Zahl ist eine Kursreferenz aus einem Teilmarkt (Tiingo IEX,
+   * Stufe 6), kein Abschluss. Deshalb steht sie in derselben Reihe wie
+   * die Bars desselben Anbieters und derselben Boerse - und nirgends
+   * steht "Last Trade".
+   */
+  function mitLaufendemKurs(p) {
+    var snap = p && p.snapshot;
+    var live = p && p.live;
+    if (!snap || !live || !live.fresh || !isNum(live.price) || snap.regularComplete) return snap;
+    var zeit = ortszeit(live.at, snap.timezone);
+    if (!zeit) return snap;
+    var punkte = (snap.points || []).slice();
+    var letzter = punkte.length ? punkte[punkte.length - 1] : null;
+    if (letzter && String(letzter[0]) > zeit) return snap;      /* Nachzuegler: nichts tun */
+    if (letzter && String(letzter[0]) === zeit) punkte[punkte.length - 1] = [zeit, live.price];
+    else punkte.push([zeit, live.price]);
+    var kopie = {};
+    Object.keys(snap).forEach(function (k) { kopie[k] = snap[k]; });
+    kopie.points = punkte;
+    kopie.pointCount = punkte.length;
+    kopie.asOf = live.at;
+    kopie.asOfLocal = zeit;
+    kopie.streaming = true;
+    return kopie;
+  }
+
   function zeichneIntraday(state, chartBox, paneHost, controls) {
     var MC = D.MicroChart;
     var p = state.intraday;
@@ -1007,7 +1057,7 @@
       return;
     }
     var mobil = global.innerWidth < 860;
-    var snap = p.snapshot;
+    var snap = mitLaufendemKurs(p);
     /* Kopf wie beim Zeitraum-Chart: letzter Kurs, Veraenderung gegen den
        Vortagesschluss, das Wort dazu - eine Sprache fuer alle Zeitraeume. */
     var punkte = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
@@ -1035,7 +1085,8 @@
       return;
     }
     svgNode.classList.add("dx-intraday-chart");
-    var rahmen = el("div", { class: "dx-intraday", "data-live": snap.regularComplete ? "complete" : "running",
+    var rahmen = el("div", { class: "dx-intraday",
+                             "data-live": snap.regularComplete ? "complete" : (snap.streaming ? "streaming" : "running"),
                              "data-freshness": (p.freshness && p.freshness.freshnessState) || "",
                              "data-direction": svgNode.getAttribute("data-direction") });
     rahmen.appendChild(svgNode);
@@ -1050,7 +1101,10 @@
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (p.freshness && p.freshness.freshnessState === "STALE"
         ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
-        : snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
+        : snap.regularComplete ? ""
+          : snap.streaming
+            ? " · der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss"
+            : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
     chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [el("span", { text: text.replace(/^ · /, "") })]));
   }
 

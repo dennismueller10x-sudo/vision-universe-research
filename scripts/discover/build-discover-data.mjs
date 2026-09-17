@@ -2217,6 +2217,26 @@ console.log("6/6  Meta …");
 /* Die Live-Lage, wie der Client sie liest: Gate UND Grundlage. Auf GitHub
    Pages heisst "live" Snapshot-Refresh im Sitzungstakt; die Seite nennt
    den Stand mit Uhrzeit. Ein LIVE-Punkt ohne Strom gibt es nicht. */
+function streamMeta(intradayVerfuegbar) {
+  const cfg = PREVIEW_CONFIG.stream || {};
+  const an = intradayVerfuegbar && cfg.enabled === true && !!cfg.url;
+  return {
+    available: an,
+    reason: an ? null : (cfg.reason || (intradayVerfuegbar ? "streamDisabled" : "intradayUnavailable")),
+    url: an ? cfg.url : null,
+    freshSeconds: cfg.freshSeconds || 90,
+    maxSymbolsPerClient: cfg.maxSymbolsPerClient || 5,
+    scope: "stockPage",
+    priceType: "REALTIME_REFERENCE",
+    source: "TIINGO_IEX_LEVEL6",
+    message: an
+      ? "Auf der Aktienseite wird der Kurs waehrend der Sitzung fortlaufend nachgefuehrt. Die Zahl ist " +
+        "eine Kursreferenz aus einem Teilmarkt, kein offizieller Abschluss; bleibt der Strom aus, zeigt " +
+        "die Seite den Snapshot-Stand mit Uhrzeit."
+      : "Der fortlaufende Kurs ist nicht eingeschaltet. Die Aktienseite zeigt den Snapshot-Stand mit Uhrzeit."
+  };
+}
+
 function realtimeMeta() {
   const intraday = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intraday", audience: "public",
                                          form: "raw", gates: GATES });
@@ -2245,6 +2265,12 @@ function realtimeMeta() {
       freshness: Object.assign({ contractVersion: "freshness-contract-1.0.0", graceMinutes: 30, graceHours: 6 },
                                cfg.freshness ? { graceMinutes: cfg.freshness.graceMinutes, graceHours: cfg.freshness.graceHours } : {})
     } : null,
+    /* Der Strom (Zero-Cost Realtime V1, Variante C). Ein eigenes Tor:
+       er ist aus, solange die Konfiguration ihn nicht ausdruecklich
+       einschaltet. Eine nicht ausgerollte Adresse waere sonst ein
+       Verbindungsversuch auf jeder Aktienseite - und ein "Live", das
+       keines ist. Karten und Feed benutzen ihn nicht. */
+    stream: streamMeta(verfuegbar),
     realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
     derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
                     "breakoutScore", "percentiles", "movingAverages"]

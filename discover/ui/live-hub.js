@@ -23,13 +23,49 @@
    Abonnenten laeuft kein Timer; ein verstecktes Fenster haelt an.
    Das ist die Antwort auf "keine 7.000 Streams": es gibt nie mehr
    Abonnements als Karten im Bild.
+
+   ZUSATZ V1: EIN STROM, WENN EINE AKTIENSEITE OFFEN IST
+
+   Seit Zero-Cost Realtime V1 gibt es einen zweiten, freiwilligen Weg:
+   live(symbol, cb). Er ist eine ERGAENZUNG, kein Ersatz.
+
+     - Er beginnt mit demselben Snapshot wie subscribe(). Der Chart ist
+       nie leer, auch wenn kein Strom zustande kommt.
+     - Erst danach oeffnet er einen WebSocket zum Vision-Universe-Worker
+       (EINER, fuer alle betrachteten Titel zusammen) und schreibt die
+       laufende Kerze fort.
+     - Faellt der Worker aus, ist abgeschaltet, nicht erreichbar oder das
+       kostenlose Kontingent erschoepft, bleibt genau der Zustand
+       zurueck, den es vorher gab: der Snapshot-Pfad mit seiner
+       Beschriftung. Nichts wird schlechter, nichts wird stiller.
+
+   Die Karten und der Feed benutzen ihn NICHT. Sie bleiben auf dem
+   Snapshot-Pfad - hundert sichtbare Karten waeren hundert abonnierte
+   Titel, und genau das ist die Rechnung, die dieses Produkt nicht
+   aufmachen will.
+
+   Was der Strom NICHT darf: behaupten, er sei ein Abschluss. Tiingos
+   Stufe 6 liefert eine Kursreferenz aus einem Teilmarkt; sie heisst hier
+   REALTIME_REFERENCE und nirgends "Last Trade". Und "Markt geoeffnet ·
+   Live" steht nur dann, wenn der letzte Tick wirklich frisch ist -
+   sonst gilt weiter die Beschriftung des Snapshots.
    ========================================================================= */
 (function (global) {
   "use strict";
 
-  var MODULE_VERSION = "discover-live-hub-1.3.0";
+  var MODULE_VERSION = "discover-live-hub-1.4.0";
   var MIN_POLL_MS = 60000;
   var MAX_TIMEOUT_MS = 2147483647;
+
+  /* Wie jung ein Tick sein muss, damit er die Beschriftung bestimmen
+     darf. Ein illiquider Titel handelt minutenlang nicht - das ist kein
+     Ausfall, und der Snapshot bleibt dann die Auskunft. */
+  var LIVE_FRESH_MS = 90000;
+  /* Wiederanlauf nach einem Abriss. Verdoppelnd, gedeckelt, und nur
+     solange ueberhaupt jemand zusieht und die Boerse offen ist. */
+  var LIVE_RETRY_BASE_MS = 1000;
+  var LIVE_RETRY_MAX_MS = 30000;
+  var LIVE_PING_MS = 25000;
 
   function fresh() {
     return {
@@ -42,6 +78,24 @@
     };
   }
   var st = fresh();
+
+  /* Der Strom hat seinen eigenen Zustand. Getrennt gefuehrt, damit ein
+     reset() des Snapshot-Pfads ihn nicht halb stehen laesst - und damit
+     man in einem Test beides einzeln ansehen kann. */
+  function frischLive() {
+    return {
+      cfg: null, socket: null, state: "IDLE", reason: null, seit: null,
+      subs: Object.create(null),        /* SYMBOL -> [cb] */
+      werte: Object.create(null),       /* SYMBOL -> {price, at, o,h,l,c, receivedAt} */
+      abgelehnt: Object.create(null),   /* SYMBOL -> Grund */
+      angemeldet: Object.create(null),  /* was der Worker bestaetigt hat */
+      hello: null, versuche: 0, retry: null, ping: null, verfall: null,
+      stats: { opens: 0, closes: 0, errors: 0, messages: 0, ticks: 0, denied: 0,
+               retries: 0, subscribes: 0, unsubscribes: 0, notifications: 0,
+               lastMessageAt: null, lastTickAt: null }
+    };
+  }
+  var lv = frischLive();
 
   function TS() { return global.VURealtime && global.VURealtime.TradingSession; }
   function Snap() { return global.VURealtime && global.VURealtime.IntradaySnapshot; }
@@ -65,6 +119,12 @@
     if (opts.now) st.now = opts.now;
     if (opts.fetch) st.fetch = opts.fetch;
     st.enabled = !!(st.meta && st.meta.available === true && st.meta.intraday && st.meta.intraday.index && TS() && Snap());
+    /* Der Strom ist ein eigenes Tor. Er ist aus, solange die Auslieferung
+       ihn nicht ausdruecklich einschaltet (meta.realtime.stream.available)
+       - eine nicht ausgerollte Adresse waere sonst ein Verbindungsversuch
+       auf jeder Aktienseite. */
+    lv.cfg = (st.meta && st.meta.stream) || null;
+    if (opts.socketFactory) lv.factory = opts.socketFactory;
     bind();
     return api;
   }
@@ -76,8 +136,12 @@
       st.visible = global.document.visibilityState !== "hidden";
       if (st.visible) { if (anySubs()) { tick(); startPolling(); } }
       else stopPolling();
+      /* Ein verstecktes Fenster streamt nicht. Das ist nicht nur hoeflich:
+         jede Nachricht in den Hintergrund kostet aus dem kostenlosen
+         Kontingent, das jemand anderes gerade sehen will. */
+      stromPflegen();
     });
-    global.addEventListener("pagehide", function () { stopPolling(); });
+    global.addEventListener("pagehide", function () { stopPolling(); stromSchliessen("pagehide"); });
   }
 
   function resolution() { return TS().resolve(st.now(), { calendar: st.calendar }); }
@@ -313,11 +377,343 @@
     if (st.rollover) { global.clearTimeout(st.rollover); st.rollover = null; }
   }
 
+
+  /* =======================================================================
+     DER STROM (Zero-Cost Realtime V1, Variante C)
+
+     Eine Verbindung je Browserfenster, nicht je Titel. Sie traegt alle
+     Titel, die gerade offen sind - in der Regel einen.
+     ======================================================================= */
+
+  function stromKonfig() { return lv.cfg || {}; }
+  function frischMs() { return stromKonfig().freshSeconds ? stromKonfig().freshSeconds * 1000 : LIVE_FRESH_MS; }
+  function stromFabrik() { return lv.factory || global.WebSocket || null; }
+
+  /** Ist der Strom ueberhaupt vorgesehen? (Konfiguration, nicht Lage.) */
+  function stromVerfuegbar() {
+    var c = stromKonfig();
+    return !!(st.enabled && c.available === true && c.url && stromFabrik());
+  }
+
+  function marktOffen() {
+    if (!st.enabled || !TS()) return false;
+    var r = resolution();
+    return !!(r && r.marketState === "OPEN");
+  }
+
+  function stromSymbole() { return Object.keys(lv.subs).filter(function (k) { return lv.subs[k].length; }); }
+
+  /**
+   * Soll gerade eine Verbindung bestehen?
+   *
+   * Vier Bedingungen, und jede einzelne ist ein Grund, es zu lassen:
+   * niemand sieht zu, das Fenster ist versteckt, die Boerse ist zu, oder
+   * der Strom ist gar nicht eingerichtet. Nur wenn alle vier dafuer
+   * sprechen, wird verbunden.
+   */
+  function stromGewuenscht() {
+    return stromVerfuegbar() && st.visible && marktOffen() && stromSymbole().length > 0;
+  }
+
+  function setzeStrom(zustand, grund) {
+    if (lv.state === zustand && lv.reason === (grund || null)) return;
+    lv.state = zustand;
+    lv.reason = grund || null;
+    if (zustand === "OPEN") lv.seit = st.now().toISOString();
+    stromSymbole().forEach(meldeStrom);
+  }
+
+  function stromPflegen() {
+    if (!stromGewuenscht()) {
+      if (lv.socket || lv.retry) stromSchliessen(marktOffen() ? "idle" : "marketClosed");
+      return;
+    }
+    if (!lv.socket && !lv.retry) stromOeffnen();
+    else if (lv.state === "OPEN") stromAbgleichen();
+  }
+
+  function stromOeffnen() {
+    var Sock = stromFabrik();
+    if (!Sock) return;
+    setzeStrom("CONNECTING", null);
+    var ws;
+    try { ws = new Sock(stromKonfig().url); }
+    catch (err) { lv.stats.errors++; stromWiederholen("connectFailed"); return; }
+    lv.socket = ws;
+    lv.angemeldet = Object.create(null);
+
+    ws.onopen = function () {
+      lv.stats.opens++;
+      lv.versuche = 0;
+      setzeStrom("OPEN", null);
+      stromAbgleichen();
+      stromPing();
+    };
+    ws.onmessage = function (ev) {
+      lv.stats.messages++;
+      lv.stats.lastMessageAt = st.now().toISOString();
+      var n = null;
+      try { n = JSON.parse(typeof ev.data === "string" ? ev.data : ""); } catch (e) { return; }
+      if (n) stromNachricht(n);
+    };
+    ws.onerror = function () { lv.stats.errors++; };
+    ws.onclose = function (ev) {
+      lv.stats.closes++;
+      lv.socket = null;
+      stromPingAus();
+      /* Ein Abriss ist kein Fehler des Nutzers und keine Meldung wert -
+         aber er darf nicht als "live" durchgehen. Der Snapshot-Pfad
+         laeuft ohnehin weiter; er wird jetzt wieder die Auskunft. */
+      if (stromGewuenscht()) stromWiederholen((ev && ev.code === 1000) ? "closed" : "disconnected");
+      else setzeStrom("IDLE", lv.reason);
+    };
+  }
+
+  function stromWiederholen(grund) {
+    setzeStrom("RECONNECTING", grund);
+    if (lv.retry) return;
+    var ms = Math.min(LIVE_RETRY_MAX_MS, LIVE_RETRY_BASE_MS * Math.pow(2, lv.versuche));
+    lv.versuche++;
+    lv.stats.retries++;
+    lv.retry = global.setTimeout(function () {
+      lv.retry = null;
+      if (stromGewuenscht()) stromOeffnen();
+      else setzeStrom("IDLE", null);
+    }, ms);
+  }
+
+  function stromSchliessen(grund) {
+    if (lv.retry) { global.clearTimeout(lv.retry); lv.retry = null; }
+    if (lv.verfall) { global.clearTimeout(lv.verfall); lv.verfall = null; }
+    stromPingAus();
+    var ws = lv.socket;
+    lv.socket = null;
+    lv.angemeldet = Object.create(null);
+    if (ws) { try { ws.close(1000, "vu"); } catch (e) { /* schon zu */ } }
+    setzeStrom("IDLE", grund || null);
+  }
+
+  function stromPing() {
+    stromPingAus();
+    lv.ping = global.setInterval(function () {
+      if (lv.socket && lv.state === "OPEN") stromSenden({ op: "ping" });
+    }, LIVE_PING_MS);
+  }
+  function stromPingAus() { if (lv.ping) { global.clearInterval(lv.ping); lv.ping = null; } }
+
+  function stromSenden(objekt) {
+    if (!lv.socket) return false;
+    try { lv.socket.send(JSON.stringify(objekt)); return true; }
+    catch (err) { lv.stats.errors++; return false; }
+  }
+
+  /** Was fehlt, nachmelden; was niemand mehr ansieht, abmelden. */
+  function stromAbgleichen() {
+    if (lv.state !== "OPEN") return;
+    var will = stromSymbole();
+    var neu = will.filter(function (s2) { return !lv.angemeldet[s2]; });
+    var weg = Object.keys(lv.angemeldet).filter(function (s2) { return will.indexOf(s2) === -1; });
+    if (neu.length) { stromSenden({ op: "subscribe", symbols: neu }); neu.forEach(function (s2) { lv.angemeldet[s2] = true; }); }
+    if (weg.length) { stromSenden({ op: "unsubscribe", symbols: weg }); weg.forEach(function (s2) { delete lv.angemeldet[s2]; }); }
+  }
+
+  function stromNachricht(n) {
+    if (n.op === "u" && Array.isArray(n.v)) {
+      var jetzt = st.now().getTime();
+      var betroffen = [];
+      n.v.forEach(function (z) {
+        if (!Array.isArray(z) || z.length < 2) return;
+        var sym = String(z[0]).toUpperCase();
+        lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
+                          receivedAt: jetzt };
+        delete lv.abgelehnt[sym];
+        lv.stats.ticks++;
+        betroffen.push(sym);
+      });
+      lv.stats.lastTickAt = new Date(jetzt).toISOString();
+      betroffen.forEach(meldeStrom);
+      planeVerfall();
+      return;
+    }
+    if (n.op === "hello") { lv.hello = n; return; }
+    if (n.op === "denied") {
+      lv.stats.denied++;
+      var sym2 = String(n.symbol || "").toUpperCase();
+      lv.abgelehnt[sym2] = n.reason || "denied";
+      delete lv.angemeldet[sym2];
+      meldeStrom(sym2);
+      return;
+    }
+    if (n.op === "budget") {
+      /* Das Kontingent ist der Grund, warum dieses Produkt nichts
+         kostet. Ist es erschoepft, wird zurueckgefallen - nicht
+         weitergestreamt und nicht abgerechnet. */
+      if (n.verdict === "EXHAUSTED") { stromSchliessen("budgetExhausted"); }
+      return;
+    }
+    if (n.op === "session") {
+      if (n.session !== "REGULAR") stromSchliessen("marketClosed");
+      else stromPflegen();
+      return;
+    }
+    if (n.op === "status") {
+      if (n.state && n.state !== "LIVE") setzeStrom(lv.socket ? "DEGRADED" : "IDLE", n.reason || null);
+      else if (lv.socket) setzeStrom("OPEN", null);
+      return;
+    }
+    if (n.op === "subscribed" && Array.isArray(n.symbols)) {
+      lv.angemeldet = Object.create(null);
+      n.symbols.forEach(function (s2) { lv.angemeldet[String(s2).toUpperCase()] = true; });
+    }
+  }
+
+  /**
+   * Der Befund zum Strom fuer genau einen Titel - und, wenn er frisch
+   * genug ist, die daraus abgeleitete Beschriftung.
+   *
+   * Der Snapshot wird dabei NICHT angefasst. Beurteilt wird eine
+   * abgeleitete Sicht, deren Stand der Tick ist; das Original bleibt das
+   * Original, und wer beides vergleichen will, findet die urspruengliche
+   * Bewertung unter snapshotFreshness.
+   */
+  function anreichern(p, sym) {
+    var w = lv.werte[sym] || null;
+    var alter = w ? (st.now().getTime() - w.receivedAt) : null;
+    var offen = !!(p.resolution && p.resolution.marketState === "OPEN");
+    var frisch = !!(w && offen && alter !== null && alter <= frischMs());
+    p.live = {
+      available: stromVerfuegbar(),
+      state: lv.state,
+      reason: lv.abgelehnt[sym] || lv.reason || null,
+      fresh: frisch,
+      price: w ? w.price : null,
+      at: w ? new Date(w.at).toISOString() : null,
+      ageMs: alter,
+      open: w ? w.open : null, high: w ? w.high : null, low: w ? w.low : null, close: w ? w.close : null,
+      /* Stufe 6 von Tiingo ist eine Kursreferenz aus einem Teilmarkt.
+         Kein Abschluss, kein offizieller Schlusskurs - und hier steht
+         es, damit es niemand woanders erfinden muss. */
+      priceType: "REALTIME_REFERENCE",
+      source: "TIINGO_IEX_LEVEL6",
+      note: "Kursreferenz aus einem Teilmarkt (IEX). Kein offizieller Abschluss."
+    };
+    if (frisch && p.snapshot) {
+      var sicht = {};
+      Object.keys(p.snapshot).forEach(function (k) { sicht[k] = p.snapshot[k]; });
+      sicht.asOf = p.live.at;
+      sicht.lastBarTimestamp = p.live.at;
+      var fr = freshness(sicht, p.resolution);
+      if (fr) {
+        p.snapshotFreshness = p.freshness;
+        p.freshness = fr;
+        if (fr.label) {
+          p.label = fr.label;
+          if (!p.label.timezoneNote) p.label.timezoneNote = "Uhrzeiten in New Yorker Zeit";
+        }
+      }
+    }
+    return p;
+  }
+
+  /**
+   * Ein Etikett, das "Live" sagt, muss sich selbst widerrufen koennen.
+   *
+   * Ohne das bliebe "Markt geoeffnet · Live" stehen, bis der
+   * Snapshot-Pfad das naechste Mal nachfragt - bei einem abgerissenen
+   * Strom also minutenlang. Der Zeitgeber laeuft genau bis zu dem
+   * Moment, in dem der juengste Tick zu alt wird, und meldet dann neu.
+   */
+  function planeVerfall() {
+    if (lv.verfall) { global.clearTimeout(lv.verfall); lv.verfall = null; }
+    var syms = stromSymbole();
+    if (!syms.length) return;
+    var juengster = 0;
+    syms.forEach(function (s2) {
+      var w = lv.werte[s2];
+      if (w && w.receivedAt > juengster) juengster = w.receivedAt;
+    });
+    if (!juengster) return;
+    var rest = juengster + frischMs() - st.now().getTime();
+    lv.verfall = global.setTimeout(function () {
+      lv.verfall = null;
+      stromSymbole().forEach(meldeStrom);
+      planeVerfall();
+    }, Math.max(250, rest + 250));
+  }
+
+  function meldeStrom(sym) {
+    var liste = lv.subs[sym];
+    if (!liste || !liste.length) return;
+    /* Solange weder Snapshot noch Tick vorliegen, gibt es nichts zu
+       sagen - und eine Meldung mit leerem Snapshot waere genau der
+       leere Chart, den V1 ausschliesst. Der Snapshot-Pfad meldet sich
+       von selbst, sobald er da ist. */
+    if (!peek(sym) && !lv.werte[sym]) return;
+    var p = anreichern(payload(sym, peek(sym)), sym);
+    liste.slice().forEach(function (cb) { lv.stats.notifications++; cb(p); });
+  }
+
+  /**
+   * Abonniert einen Titel MIT Strom - fuer die Aktienseite.
+   *
+   * Der Rueckruf bekommt zuerst den Snapshot (wie subscribe()), danach
+   * jede Aenderung: neuer Snapshot, neuer Tick, neue Lage des Stroms.
+   * Kommt kein Strom zustande, verhaelt sich das hier wie subscribe() -
+   * dieselben Daten, dieselbe Beschriftung, nur ein zusaetzliches Feld
+   * live, das die Lage benennt.
+   *
+   * @returns {function} kuendigen
+   */
+  function live(symbol, cb) {
+    var sym = String(symbol || "").trim().toUpperCase();
+    if (!sym) return function () {};
+    var liste = lv.subs[sym] || (lv.subs[sym] = []);
+    liste.push(cb);
+    lv.stats.subscribes++;
+
+    /* Der Boden zuerst: derselbe Snapshot-Pfad wie ueberall sonst. */
+    var abSnapshot = subscribe(sym, function (p) { cb(anreichern(p, sym)); });
+    stromPflegen();
+
+    return function () {
+      abSnapshot();
+      var i = liste.indexOf(cb);
+      if (i !== -1) { liste.splice(i, 1); lv.stats.unsubscribes++; }
+      if (!liste.length) {
+        delete lv.subs[sym];
+        delete lv.werte[sym];
+        delete lv.abgelehnt[sym];
+        if (lv.state === "OPEN") stromAbgleichen();
+      }
+      stromPflegen();
+    };
+  }
+
   var api = {
     MODULE_VERSION: MODULE_VERSION,
     init: init,
     enabled: function () { return st.enabled; },
     subscribe: subscribe, prefetch: prefetch, peek: peek, entryFor: entryFor, resolveEntry: resolveEntry,
+    /* Der Strom. Alles darunter ist Auskunft, nichts davon Steuerung -
+       ausser liveClose(), das ein Test oder ein Seitenwechsel braucht. */
+    live: live,
+    liveAvailable: stromVerfuegbar,
+    liveWanted: stromGewuenscht,
+    liveState: function () {
+      return { state: lv.state, reason: lv.reason, since: lv.seit, url: (lv.cfg && lv.cfg.url) || null,
+               symbols: stromSymbole(), subscribed: Object.keys(lv.angemeldet),
+               hello: lv.hello, connected: !!lv.socket };
+    },
+    liveValue: function (symbol) { return lv.werte[String(symbol || "").toUpperCase()] || null; },
+    liveClose: stromSchliessen,
+    liveStats: function () {
+      var out = {};
+      Object.keys(lv.stats).forEach(function (k) { out[k] = lv.stats[k]; });
+      out.state = lv.state; out.reason = lv.reason;
+      out.symbols = stromSymbole().length;
+      out.connected = !!lv.socket;
+      return out;
+    },
     loadIndex: loadIndex, resolution: function () { return st.enabled ? resolution() : null; },
     describe: function (snap) {
       if (!TS()) return null;
@@ -335,7 +731,14 @@
       out.cachedSnapshots = Object.keys(st.snapshots).length;
       return out;
     },
-    reset: function () { stopPolling(); st = fresh(); }
+    reset: function () {
+      stopPolling();
+      stromSchliessen("reset");
+      var fabrik = lv.factory;
+      lv = frischLive();
+      lv.factory = fabrik;
+      st = fresh();
+    }
   };
 
   global.VUDiscover = global.VUDiscover || {};

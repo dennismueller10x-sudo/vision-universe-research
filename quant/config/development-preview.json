@@ -90,5 +90,14 @@
     }
   ],
   "benchmark": "SPY",
-  "benchmarkNote": "Die Vergleichsgroesse fuer relative Staerke (quant/config/tiingo-scale.json, benchmark). Sie gehoert zum Abruf-Umfang (Tageskurse in der Arbeitsablage, kompakte Reihe), ist aber kein Discover-Titel: ein ETF wird gebraucht, nicht bewertet."
+  "benchmarkNote": "Die Vergleichsgroesse fuer relative Staerke (quant/config/tiingo-scale.json, benchmark). Sie gehoert zum Abruf-Umfang (Tageskurse in der Arbeitsablage, kompakte Reihe), ist aber kein Discover-Titel: ein ETF wird gebraucht, nicht bewertet.",
+  "stream": {
+    "note": "Zero-Cost Realtime V1 (Variante C): ein Cloudflare Worker mit EINEM Durable Object haelt genau eine Tiingo-Verbindung und streamt daraus nur die Titel, die gerade jemand ansieht. Gilt ausschliesslich fuer die Aktienseite - Karten und Feed bleiben auf dem Snapshot-Pfad, weil hundert sichtbare Karten hundert abonnierte Titel waeren. Die gelieferte Zahl ist eine Kursreferenz aus einem Teilmarkt (Tiingo IEX, Stufe 6), kein Abschluss: priceType REALTIME_REFERENCE.",
+    "enabled": false,
+    "reason": "Der Worker ist gebaut und getestet, aber NICHT ausgerollt: CLOUDFLARE_API_TOKEN und CLOUDFLARE_ACCOUNT_ID liegen nicht vor. Solange enabled false ist, oeffnet der Browser keine Verbindung und die Aktienseite verhaelt sich genau wie bisher.",
+    "url": "wss://live.visionuniverse.de/live",
+    "freshSeconds": 90,
+    "freshSecondsNote": "Wie jung ein Tick sein muss, damit er die Beschriftung bestimmen darf. Aelter heisst nicht 'Ausfall' - ein illiquider Titel handelt minutenlang nicht; dann gilt weiter die Beschriftung des Snapshots.",
+    "maxSymbolsPerClient": 5
+  }
 }
