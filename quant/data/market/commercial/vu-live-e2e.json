@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-live-e2e-1.0.0",
   "auftrag": "Zero-Cost Realtime V1 §17 (Last) und §18 (E2E)",
-  "checkedAt": "2026-09-17T13:42:57.451Z",
+  "checkedAt": "2026-09-17T13:56:04.856Z",
   "session": {
     "phase": "REGULAR",
     "localDate": "2026-09-17",
-    "localTime": "09:42:57",
+    "localTime": "09:56:04",
     "isOpen": true
   },
   "runtime": {
@@ -23,35 +23,35 @@
       "symbols": 1,
       "clients": 20,
       "seconds": 30,
-      "providerMessages": 22,
-      "providerEventsPerSecond": 0.73,
-      "providerEventsPerSecondPerSymbol": 0.73,
+      "providerMessages": 32,
+      "providerEventsPerSecond": 1.07,
+      "providerEventsPerSecondPerSymbol": 1.07,
       "client": {
-        "clientMessages": 300,
-        "entries": 300,
+        "clientMessages": 360,
+        "entries": 360,
         "symbolsSeen": 1,
         "perSymbol": {
-          "AAPL": 300
+          "AAPL": 360
         },
         "denied": 0,
         "statusMessages": 40,
         "coalesceDelayMs": {
-          "count": 300,
-          "mean": 828,
-          "p50": 1001,
+          "count": 360,
+          "mean": 627,
+          "p50": 582,
           "p95": 1002,
           "max": 1002
         }
       },
-      "fanIn": 0.07,
+      "fanIn": 0.09,
       "cpu": {
-        "userMs": 76,
-        "systemMs": 7,
-        "sharePercent": 0.27
+        "userMs": 124,
+        "systemMs": 9,
+        "sharePercent": 0.44
       },
       "memoryMB": {
         "before": 6.1,
-        "after": 8.8
+        "after": 8.9
       },
       "budget": {
         "requests": 23,
@@ -67,42 +67,42 @@
       "symbols": 5,
       "clients": 20,
       "seconds": 30,
-      "providerMessages": 103,
-      "providerEventsPerSecond": 3.43,
-      "providerEventsPerSecondPerSymbol": 0.69,
+      "providerMessages": 128,
+      "providerEventsPerSecond": 4.27,
+      "providerEventsPerSecondPerSymbol": 0.85,
       "client": {
-        "clientMessages": 324,
-        "entries": 324,
+        "clientMessages": 336,
+        "entries": 336,
         "symbolsSeen": 5,
         "perSymbol": {
-          "AAPL": 64,
-          "NVDA": 96,
-          "MSFT": 48,
-          "AMZN": 72,
-          "META": 44
+          "AAPL": 80,
+          "NVDA": 100,
+          "MSFT": 44,
+          "AMZN": 64,
+          "META": 48
         },
         "denied": 0,
         "statusMessages": 40,
         "coalesceDelayMs": {
-          "count": 324,
-          "mean": 553,
-          "p50": 497,
-          "p95": 1001,
+          "count": 336,
+          "mean": 453,
+          "p50": 407,
+          "p95": 1000,
           "max": 1001
         }
       },
-      "fanIn": 0.32,
+      "fanIn": 0.38,
       "cpu": {
-        "userMs": 55,
-        "systemMs": 3,
-        "sharePercent": 0.19
+        "userMs": 62,
+        "systemMs": 2,
+        "sharePercent": 0.21
       },
       "memoryMB": {
-        "before": 8.6,
-        "after": 9.5
+        "before": 8.7,
+        "after": 9.1
       },
       "budget": {
-        "requests": 27,
+        "requests": 28,
         "requestShare": 0,
         "verdict": "OK",
         "symbolsPeak": 5
@@ -115,44 +115,44 @@
       "symbols": 10,
       "clients": 20,
       "seconds": 30,
-      "providerMessages": 183,
-      "providerEventsPerSecond": 6.1,
-      "providerEventsPerSecondPerSymbol": 0.61,
+      "providerMessages": 191,
+      "providerEventsPerSecond": 6.37,
+      "providerEventsPerSecondPerSymbol": 0.64,
       "client": {
-        "clientMessages": 302,
-        "entries": 302,
+        "clientMessages": 286,
+        "entries": 286,
         "symbolsSeen": 10,
         "perSymbol": {
-          "AAPL": 40,
-          "NVDA": 46,
-          "MSFT": 24,
-          "AMZN": 44,
-          "META": 32,
-          "GOOGL": 28,
-          "TSLA": 24,
-          "AVGO": 8,
-          "AMD": 14,
-          "NFLX": 42
+          "AAPL": 46,
+          "NVDA": 50,
+          "MSFT": 20,
+          "AMZN": 36,
+          "META": 10,
+          "GOOGL": 16,
+          "TSLA": 30,
+          "AVGO": 18,
+          "AMD": 20,
+          "NFLX": 40
         },
         "denied": 0,
         "statusMessages": 40,
         "coalesceDelayMs": {
-          "count": 302,
-          "mean": 513,
-          "p50": 487,
-          "p95": 1001,
+          "count": 286,
+          "mean": 454,
+          "p50": 410,
+          "p95": 1000,
           "max": 1001
         }
       },
-      "fanIn": 0.61,
+      "fanIn": 0.67,
       "cpu": {
-        "userMs": 80,
-        "systemMs": 2,
-        "sharePercent": 0.27
+        "userMs": 71,
+        "systemMs": 0,
+        "sharePercent": 0.24
       },
       "memoryMB": {
-        "before": 9.3,
-        "after": 9.3
+        "before": 9.6,
+        "after": 9.6
       },
       "budget": {
         "requests": 31,
@@ -168,58 +168,59 @@
       "symbols": 25,
       "clients": 20,
       "seconds": 30,
-      "providerMessages": 378,
-      "providerEventsPerSecond": 12.6,
-      "providerEventsPerSecondPerSymbol": 0.5,
+      "providerMessages": 366,
+      "providerEventsPerSecond": 12.2,
+      "providerEventsPerSecondPerSymbol": 0.49,
       "client": {
-        "clientMessages": 260,
-        "entries": 310,
-        "symbolsSeen": 24,
+        "clientMessages": 261,
+        "entries": 304,
+        "symbolsSeen": 25,
         "perSymbol": {
-          "AAPL": 18,
-          "BAC": 21,
-          "NVDA": 27,
-          "PFE": 8,
-          "MSFT": 8,
-          "KO": 18,
-          "PEP": 17,
-          "AMZN": 21,
-          "CSCO": 18,
-          "META": 14,
-          "GOOGL": 13,
-          "TSLA": 14,
-          "AVGO": 7,
-          "AMD": 10,
+          "AAPL": 24,
+          "BAC": 16,
+          "NVDA": 25,
+          "PFE": 6,
+          "MSFT": 11,
+          "KO": 20,
+          "AMZN": 20,
+          "PEP": 13,
+          "META": 7,
+          "CSCO": 17,
+          "GOOGL": 10,
+          "TSLA": 15,
+          "AVGO": 10,
+          "AMD": 14,
           "NFLX": 20,
-          "JPM": 10,
-          "V": 8,
-          "MA": 6,
-          "XOM": 7,
-          "CVX": 13,
-          "UNH": 5,
-          "LLY": 5,
+          "JPM": 4,
+          "V": 10,
+          "MA": 9,
+          "XOM": 4,
+          "CVX": 9,
+          "UNH": 9,
+          "LLY": 3,
           "COST": 4,
-          "WMT": 18
+          "WMT": 19,
+          "HD": 5
         },
         "denied": 0,
         "statusMessages": 40,
         "coalesceDelayMs": {
-          "count": 310,
-          "mean": 505,
-          "p50": 485,
+          "count": 304,
+          "mean": 479,
+          "p50": 459,
           "p95": 1000,
-          "max": 1001
+          "max": 1002
         }
       },
-      "fanIn": 1.45,
+      "fanIn": 1.4,
       "cpu": {
-        "userMs": 136,
-        "systemMs": 20,
-        "sharePercent": 0.52
+        "userMs": 147,
+        "systemMs": 12,
+        "sharePercent": 0.53
       },
       "memoryMB": {
-        "before": 9.8,
-        "after": 10.3
+        "before": 9.4,
+        "after": 9.8
       },
       "budget": {
         "requests": 40,
@@ -235,83 +236,94 @@
       "symbols": 50,
       "clients": 20,
       "seconds": 30,
-      "providerMessages": 516,
-      "providerEventsPerSecond": 17.2,
-      "providerEventsPerSecondPerSymbol": 0.34,
+      "providerMessages": 587,
+      "providerEventsPerSecond": 19.57,
+      "providerEventsPerSecondPerSymbol": 0.39,
       "client": {
-        "clientMessages": 277,
-        "entries": 410,
-        "symbolsSeen": 39,
+        "clientMessages": 350,
+        "entries": 485,
+        "symbolsSeen": 50,
         "perSymbol": {
-          "AAPL": 19,
-          "BAC": 23,
-          "PANW": 6,
-          "NVDA": 26,
-          "PFE": 6,
-          "VLO": 2,
-          "MSFT": 9,
-          "KO": 21,
+          "AAPL": 20,
+          "BAC": 16,
+          "PANW": 8,
+          "NVDA": 24,
+          "PFE": 12,
+          "VLO": 3,
           "MRK": 2,
-          "AMZN": 17,
-          "PEP": 21,
-          "ABBV": 7,
-          "META": 16,
-          "CSCO": 20,
-          "TMO": 7,
-          "INTC": 25,
-          "NKE": 15,
-          "GOOGL": 18,
-          "TSLA": 7,
-          "MCD": 6,
-          "QCOM": 2,
+          "MSFT": 7,
+          "KO": 12,
+          "PEP": 9,
+          "ABBV": 2,
+          "AMZN": 15,
+          "META": 8,
+          "CSCO": 19,
+          "TMO": 10,
+          "INTC": 26,
+          "GOOGL": 12,
+          "NKE": 9,
+          "TSLA": 17,
+          "MCD": 7,
+          "QCOM": 6,
+          "AVGO": 15,
+          "SBUX": 8,
           "TXN": 4,
-          "AVGO": 11,
-          "SBUX": 3,
-          "AMD": 8,
-          "LOW": 5,
-          "ORCL": 6,
-          "NFLX": 20,
+          "AMD": 12,
+          "ORCL": 7,
+          "LOW": 1,
           "CRM": 11,
-          "UPS": 3,
-          "ADBE": 7,
-          "JPM": 10,
+          "NFLX": 20,
+          "UPS": 1,
+          "JPM": 16,
+          "ADBE": 9,
           "MU": 13,
-          "V": 6,
-          "MA": 8,
-          "GS": 4,
-          "MS": 6,
-          "XOM": 7,
-          "CVX": 3
+          "V": 8,
+          "GS": 6,
+          "MA": 12,
+          "XOM": 6,
+          "MS": 2,
+          "CVX": 10,
+          "CAT": 8,
+          "UNH": 6,
+          "BA": 4,
+          "GE": 4,
+          "LLY": 3,
+          "T": 8,
+          "COST": 3,
+          "WMT": 14,
+          "VZ": 14,
+          "HD": 4,
+          "DIS": 12
         },
-        "denied": 11,
-        "statusMessages": 60,
+        "denied": 0,
+        "statusMessages": 40,
         "coalesceDelayMs": {
-          "count": 410,
-          "mean": 444,
-          "p50": 411,
-          "p95": 958,
+          "count": 485,
+          "mean": 470,
+          "p50": 445,
+          "p95": 983,
           "max": 1001
         }
       },
-      "fanIn": 1.86,
+      "fanIn": 1.68,
       "cpu": {
-        "userMs": 150,
-        "systemMs": 16,
-        "sharePercent": 0.55
+        "userMs": 172,
+        "systemMs": 7,
+        "sharePercent": 0.6
       },
       "memoryMB": {
-        "before": 10.3,
-        "after": 10.8
+        "before": 10.5,
+        "after": 10.5
       },
       "budget": {
-        "requests": 47,
+        "requests": 51,
         "requestShare": 0.001,
         "verdict": "OK",
-        "symbolsPeak": 39
+        "symbolsPeak": 50
       },
       "managerState": "LIVE",
-      "subscribedSymbols": 39,
-      "coverageOk": false
+      "subscribedSymbols": 50,
+      "coverageOk": true
     }
   ],
   "e2e": {
@@ -324,41 +336,41 @@
     ],
     "seconds": 60,
     "firstTickMs": {
-      "AAPL": 2206,
-      "NVDA": 2206,
-      "MSFT": 8717,
-      "VLO": 23363,
-      "PANW": 5510
+      "AAPL": 2107,
+      "NVDA": 2107,
+      "MSFT": 2107,
+      "VLO": 24762,
+      "PANW": 4617
     },
     "delivered": {
-      "AAPL": 38,
-      "NVDA": 45,
-      "MSFT": 18,
-      "VLO": 3,
-      "PANW": 16
+      "AAPL": 37,
+      "NVDA": 46,
+      "MSFT": 15,
+      "VLO": 4,
+      "PANW": 17
     },
     "client": {
-      "clientMessages": 46,
-      "entries": 120,
+      "clientMessages": 47,
+      "entries": 119,
       "symbolsSeen": 5,
       "perSymbol": {
-        "AAPL": 38,
-        "NVDA": 45,
-        "PANW": 16,
-        "MSFT": 18,
-        "VLO": 3
+        "AAPL": 37,
+        "NVDA": 46,
+        "MSFT": 15,
+        "PANW": 17,
+        "VLO": 4
       },
       "denied": 0,
       "statusMessages": 2,
       "coalesceDelayMs": {
-        "count": 120,
-        "mean": 481,
-        "p50": 456,
+        "count": 119,
+        "mean": 496,
+        "p50": 443,
         "p95": 1000,
         "max": 1001
       }
     },
-    "providerMessages": 179,
+    "providerMessages": 168,
     "budget": {
       "requests": 10,
       "requestShare": 0,
@@ -378,5 +390,5 @@
     "note": "firstTickMs ist die Zeit vom subscribe des Browsers bis zum ersten Kurs desselben Titels beim Browser - einschliesslich Verbindungsaufbau zum Anbieter und einem Zusammenfassungsfenster von einer Sekunde. Der Sprung ueber Cloudflares Kante ist NICHT enthalten: der Worker ist nicht ausgerollt."
   },
   "synthetic": false,
-  "coverageOk": false
+  "coverageOk": true
 }
