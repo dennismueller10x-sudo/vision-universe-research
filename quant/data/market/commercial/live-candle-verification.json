@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T18:36:55.598Z",
+  "generatedAt": "2026-09-17T08:53:07.857Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "realtimeStreamAndLiveCandle",
@@ -8,16 +8,16 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "35135112757",
-    "commit": "6b57dc74ab44934b18851868a473891600a1ab24",
+    "runId": "35201902439",
+    "commit": "8f7b4e4d7c67362c0cc18c028f6a5e15a7382eff",
     "ref": "claude/vision-universe-discover-h93fmv",
     "wsUrl": "wss://api.tiingo.com/iex",
     "secondsPerMeasurement": 90
   },
   "sessionAtRun": {
-    "phase": "REGULAR",
-    "localDate": "2026-09-16",
-    "localTime": "14:33:45",
+    "phase": "PRE",
+    "localDate": "2026-09-17",
+    "localTime": "04:51:28",
     "closedReason": null,
     "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
   },
@@ -25,40 +25,24 @@
     "minEventsForStream": 3,
     "minTicksInCandle": 2
   },
-  "LIVE_CHART_READY": "TRUE",
-  "liveChartReason": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+  "LIVE_CHART_READY": "UNKNOWN",
+  "liveChartReason": "Gemessen wurde in der Phase PRE. Ein ausbleibender Kurs misst dann die Handelspause und nicht den Tarif. Der Lauf ist waehrend der regulaeren Sitzung zu wiederholen.",
   "priceSemantics": {
     "outcome": "UNSPECIFIED",
     "priceType": "UNSPECIFIED",
     "classification": "PROVIDER_CONFIRMATION_REQUIRED",
-    "probes": 24,
-    "matchCountsByField": {
-      "tngoLastMatches": 9,
-      "midMatches": 6
-    },
-    "fieldProbeCounts": {
-      "tngoLastProbes": 24,
-      "midProbes": 24,
-      "prevCloseProbes": 24,
-      "openProbes": 24,
-      "highProbes": 24,
-      "lowProbes": 24
-    },
+    "probes": 0,
+    "matchCountsByField": {},
+    "fieldProbeCounts": {},
     "withinBidAsk": null,
-    "leadingCandidate": {
-      "field": "tngoLast",
-      "type": "REFERENCE",
-      "matches": 9,
-      "of": 24,
-      "note": "Haeufigster Treffer, aber nicht eindeutig genug fuer einen Befund. Ein Indiz, keine Zuordnung."
-    },
+    "leadingCandidate": null,
     "absentFields": [
       "last",
       "bidPrice",
       "askPrice"
     ],
-    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen. Am haeufigsten traf tngoLast (9/24). Bemerkenswert: last, bidPrice, askPrice kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs steht also nicht einmal zum Vergleich zur Verfuegung.",
-    "known": "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze.",
+    "evidence": "Kein Vergleich moeglich (keine Proben).",
+    "known": "Der Strom wurde gemessen; eine bewegte Kerze ist dabei nicht entstanden.",
     "unknown": "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
     "safeForIntradayIntelligence": false,
     "providerConfirmationRequired": true,
@@ -91,7 +75,6 @@
   "streamFindings": {
     "connectionAccepted": true,
     "acceptedThresholdLevels": [
-      6,
       6
     ],
     "rejectedThresholdLevels": [
@@ -103,41 +86,28 @@
     "tradeStreamAvailable": false,
     "quoteMessagesObserved": 0,
     "tradeMessagesObserved": 0,
-    "unparsedPriceMessages": 141,
-    "observedMessageShape": [
-      {
-        "service": "iex",
-        "length": 3,
-        "fields": [
-          "isoTimestamp",
-          "requestedTicker",
-          "number"
-        ]
-      },
-      {
-        "service": "iex",
-        "length": 3,
-        "fields": [
-          "isoTimestamp",
-          "requestedTicker",
-          "number"
-        ]
-      },
-      {
-        "service": "iex",
-        "length": 3,
-        "fields": [
-          "isoTimestamp",
-          "requestedTicker",
-          "number"
-        ]
-      }
-    ],
-    "priceTypeVerified": false,
-    "priceTypeNote": "Die Kursart ist nicht belegt. Sie zu klaeren ist der naechste Schritt - beim Anbieter, nicht im Code: die Nachrichtenform der neuen IEX-Stufe traegt keinen Typ. Bis dahin darf keine Kennzahl auf dieser Kerze als 'auf Abschluessen gerechnet' ausgewiesen werden.",
+    "unparsedPriceMessages": 0,
+    "observedMessageShape": [],
+    "priceTypeVerified": true,
+    "priceTypeNote": null,
     "note": "Eine Kerze entsteht aus ausgefuehrten Trades. Quotes bewegen einen Chart ebenfalls sichtbar, sind aber eine andere Groesse - Geld und Brief statt Abschluss. Beides zu vermischen waere der Fehler, den die Trennung hier verhindert."
   },
   "silenceEvidence": [
+    {
+      "thresholdLevel": 6,
+      "messages": 2,
+      "adminMessages": 2,
+      "subscriptionAck": {
+        "messageType": "H",
+        "code": 200,
+        "message": "HeartBeat",
+        "hasSubscriptionId": false
+      },
+      "closeCode": null,
+      "closeReason": null,
+      "stableForFullDuration": true,
+      "durationSeconds": 90
+    },
     {
       "thresholdLevel": 5,
       "messages": 1,
@@ -170,69 +140,39 @@
     }
   ],
   "marketOpenExperience": {
-    "visibleMovementPossible": true,
+    "visibleMovementPossible": false,
     "fromExecutedTrades": false,
     "fromQuotesOnly": false,
-    "basis": "Mehrere aufeinanderfolgende Kursereignisse, und daraus ist eine laufende Minutenkerze mit mehr als einem Update entstanden. EINSCHRAENKUNG: der Anbieter nennt die Kursart nicht (priceType UNSPECIFIED). Der Chart bewegt sich; ob die Zahl ein Abschluss oder ein Referenzkurs ist, ist damit nicht belegt - und alles, was auf der Kerze rechnet, braucht diese Auskunft.",
+    "basis": "Gemessen wurde in der Phase PRE. Ein ausbleibender Kurs misst dann die Handelspause und nicht den Tarif. Der Lauf ist waehrend der regulaeren Sitzung zu wiederholen.",
     "decisionRequired": null
   },
   "measurements": [
     {
       "scope": "primary",
-      "result": "PASSED",
+      "result": "UNKNOWN",
       "thresholdLevel": 6,
       "firehose": false,
       "symbols": [
         "NVDA"
       ],
       "durationSeconds": 90,
-      "sessionPhaseAtStart": "REGULAR",
-      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseAtStart": "PRE",
+      "sessionPhaseAtEnd": "PRE",
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 303,
+        "openedAfterMs": 255,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 143,
+        "messages": 2,
         "adminMessages": 2,
-        "messageTypes": {
-          "noTypeField": 141
-        },
-        "messageShape": [
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          },
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          },
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          }
-        ],
-        "unparsedPriceMessages": 141,
+        "messageTypes": {},
+        "messageShape": [],
+        "unparsedPriceMessages": 0,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -240,89 +180,66 @@
         "closeCode": null,
         "closeReason": null,
         "subscriptionForm": "tickers",
-        "payloadBytes": 13920,
-        "payloadBytesPerSecond": 155,
+        "payloadBytes": 178,
+        "payloadBytesPerSecond": 2,
         "stableForFullDuration": true
       },
       "events": {
-        "count": 141,
-        "firstAfterMs": 827,
-        "lastAfterMs": 89956,
-        "perSecond": 1.58,
+        "count": 0,
+        "firstAfterMs": null,
+        "lastAfterMs": null,
+        "perSecond": null,
         "gapMs": {
-          "min": 399,
-          "median": 557,
-          "p90": 965,
-          "max": 1667
+          "min": null,
+          "median": null,
+          "p90": null,
+          "max": null
         },
         "providerLagSeconds": {
-          "min": 0,
-          "median": 0,
-          "max": 0
+          "min": null,
+          "median": null,
+          "max": null
         },
-        "withTimestamp": 141,
-        "withSymbol": 141,
-        "bySymbol": {
-          "NVDA": 141
-        },
-        "consecutive": true
+        "withTimestamp": 0,
+        "withSymbol": 0,
+        "bySymbol": {},
+        "consecutive": false
       },
       "candle": {
-        "symbol": "NVDA",
-        "bucket": "2026-09-16T14:35",
-        "ticksInBucket": 25,
-        "perSymbol": {
-          "NVDA": {
-            "bars": 3,
-            "ticksInLastBar": 25,
-            "maxTicksInAnyBar": 93,
-            "rangeRelative": 0.000721
-          }
-        },
-        "maxTicksInAnyBucket": 93,
-        "barsFormed": 3,
-        "hasOpen": true,
-        "hasHigh": true,
-        "hasLow": true,
-        "hasClose": true,
-        "hasTimestamp": true,
-        "rangeRelative": 0.000721,
-        "closeMovedFromOpen": -0.00007,
-        "origin": "REALTIME_DEVELOPING",
-        "confirmed": false,
-        "priceTypes": {
-          "UNSPECIFIED": 141
-        },
-        "messageForms": {
-          "iexNoTypeField": 141
-        },
+        "symbol": null,
+        "bucket": null,
+        "ticksInBucket": 0,
+        "perSymbol": {},
+        "maxTicksInAnyBucket": 0,
+        "barsFormed": 0,
+        "hasOpen": false,
+        "hasHigh": false,
+        "hasLow": false,
+        "hasClose": false,
+        "hasTimestamp": false,
+        "rangeRelative": null,
+        "closeMovedFromOpen": null,
+        "origin": null,
+        "confirmed": null,
+        "priceTypes": {},
+        "messageForms": {},
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 141,
-          "accepted": 3,
+          "ticks": 0,
+          "accepted": 0,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
           "rejectedMalformed": 0
         },
-        "multipleUpdatesInSameCandle": true
+        "multipleUpdatesInSameCandle": false
       },
       "priceFieldProbe": {
-        "probes": 8,
-        "fieldProbeCounts": {
-          "tngoLastProbes": 8,
-          "midProbes": 8,
-          "prevCloseProbes": 8,
-          "openProbes": 8,
-          "highProbes": 8,
-          "lowProbes": 8
-        },
-        "matchCountsByField": {
-          "tngoLastMatches": 3,
-          "midMatches": 3
-        },
+        "probes": 0,
+        "fieldProbeCounts": {},
+        "matchCountsByField": {},
         "withinBidAskOf": 0,
         "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 524,
+        "medianStreamPriceAgeMs": null,
         "error": null,
         "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
@@ -336,12 +253,12 @@
         "NVDA"
       ],
       "durationSeconds": 90,
-      "sessionPhaseAtStart": "REGULAR",
-      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseAtStart": "PRE",
+      "sessionPhaseAtEnd": "PRE",
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 277,
+        "openedAfterMs": 195,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -428,12 +345,12 @@
         "NVDA"
       ],
       "durationSeconds": 90,
-      "sessionPhaseAtStart": "REGULAR",
-      "sessionPhaseAtEnd": "REGULAR",
+      "sessionPhaseAtStart": "PRE",
+      "sessionPhaseAtEnd": "PRE",
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 205,
+        "openedAfterMs": 176,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -513,161 +430,12 @@
     },
     {
       "scope": "secondary",
-      "result": "PASSED",
-      "thresholdLevel": 6,
-      "firehose": false,
+      "result": "SKIPPED",
       "symbols": [
         "AAPL",
         "MSFT"
       ],
-      "durationSeconds": 90,
-      "sessionPhaseAtStart": "REGULAR",
-      "sessionPhaseAtEnd": "REGULAR",
-      "sessionPhaseChanged": false,
-      "connection": {
-        "opened": true,
-        "openedAfterMs": 256,
-        "subscriptionAck": {
-          "messageType": "H",
-          "code": 200,
-          "message": "HeartBeat",
-          "hasSubscriptionId": false
-        },
-        "messages": 133,
-        "adminMessages": 2,
-        "messageTypes": {
-          "noTypeField": 131
-        },
-        "messageShape": [
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          },
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          },
-          {
-            "service": "iex",
-            "length": 3,
-            "fields": [
-              "isoTimestamp",
-              "requestedTicker",
-              "number"
-            ]
-          }
-        ],
-        "unparsedPriceMessages": 131,
-        "tradeMessages": 0,
-        "quoteMessages": 0,
-        "rejectedSubscription": null,
-        "socketError": null,
-        "closeCode": null,
-        "closeReason": null,
-        "subscriptionForm": "tickers",
-        "payloadBytes": 12927,
-        "payloadBytesPerSecond": 144,
-        "stableForFullDuration": true
-      },
-      "events": {
-        "count": 131,
-        "firstAfterMs": 543,
-        "lastAfterMs": 89998,
-        "perSecond": 1.46,
-        "gapMs": {
-          "min": 4,
-          "median": 547,
-          "p90": 1399,
-          "max": 2309
-        },
-        "providerLagSeconds": {
-          "min": 0,
-          "median": 0,
-          "max": 0
-        },
-        "withTimestamp": 131,
-        "withSymbol": 131,
-        "bySymbol": {
-          "MSFT": 38,
-          "AAPL": 93
-        },
-        "consecutive": true
-      },
-      "candle": {
-        "symbol": "AAPL",
-        "bucket": "2026-09-16T14:36",
-        "ticksInBucket": 61,
-        "perSymbol": {
-          "MSFT": {
-            "bars": 2,
-            "ticksInLastBar": 25,
-            "maxTicksInAnyBar": 25,
-            "rangeRelative": 0.001353
-          },
-          "AAPL": {
-            "bars": 2,
-            "ticksInLastBar": 61,
-            "maxTicksInAnyBar": 61,
-            "rangeRelative": 0.001335
-          }
-        },
-        "maxTicksInAnyBucket": 61,
-        "barsFormed": 2,
-        "hasOpen": true,
-        "hasHigh": true,
-        "hasLow": true,
-        "hasClose": true,
-        "hasTimestamp": true,
-        "rangeRelative": 0.001335,
-        "closeMovedFromOpen": -0.001095,
-        "origin": "REALTIME_DEVELOPING",
-        "confirmed": false,
-        "priceTypes": {
-          "UNSPECIFIED": 131
-        },
-        "messageForms": {
-          "iexNoTypeField": 131
-        },
-        "priceTypeVerified": false,
-        "mergeStats": {
-          "ticks": 92,
-          "accepted": 2,
-          "rejectedFuture": 0,
-          "rejectedConfirmed": 1,
-          "rejectedMalformed": 0
-        },
-        "multipleUpdatesInSameCandle": true
-      },
-      "priceFieldProbe": {
-        "probes": 16,
-        "fieldProbeCounts": {
-          "tngoLastProbes": 16,
-          "midProbes": 16,
-          "prevCloseProbes": 16,
-          "openProbes": 16,
-          "highProbes": 16,
-          "lowProbes": 16
-        },
-        "matchCountsByField": {
-          "tngoLastMatches": 6,
-          "midMatches": 3
-        },
-        "withinBidAskOf": 0,
-        "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 1098,
-        "error": null,
-        "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
-      }
+      "reason": "Die Erstmessung lieferte kein Kursereignis. Weitere Titel zu messen wuerde dasselbe Ergebnis wiederholen, nicht pruefen."
     }
   ]
 }

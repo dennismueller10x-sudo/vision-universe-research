@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "vu-live-e2e-1.0.0",
+  "auftrag": "Zero-Cost Realtime V1 §17 (Last) und §18 (E2E)",
+  "checkedAt": "2026-09-17T08:54:10.856Z",
+  "session": {
+    "phase": "PRE",
+    "localDate": "2026-09-17",
+    "localTime": "04:54:10",
+    "isOpen": false
+  },
+  "runtime": {
+    "node": "v22.23.2",
+    "platform": "linux"
+  },
+  "scope": {
+    "included": "Tiingo IEX -> tiingo-link -> transport -> Parser -> subscription-manager -> bar-merge -> free-budget -> VuLive -> Browser-Attrappe",
+    "excluded": "Cloudflares Kante (Worker nicht ausgerollt: CLOUDFLARE_API_TOKEN und CLOUDFLARE_ACCOUNT_ID fehlen). Die gemessenen Zeiten enthalten diesen Sprung NICHT."
+  },
+  "result": "UNKNOWN",
+  "reason": "marketClosed:PRE",
+  "load": [],
+  "e2e": null,
+  "synthetic": false,
+  "note": "Ausserhalb der regulaeren Sitzung gibt es keine Ereignisse. Eine Lastmessung ohne Last misst nichts; die Zahlen einer geschlossenen Boerse waeren keine Aussage ueber den Betrieb."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "dynamic-subscribe-verification-1.0.0",
+  "frage": "Laesst sich die Tickerliste eines bestehenden Stufe-6-Sockets aendern, ohne die Verbindung neu aufzubauen?",
+  "auftrag": "Zero-Cost Realtime V1 §1",
+  "checkedAt": "2026-09-17T08:54:10.773Z",
+  "endpoint": "wss://api.tiingo.com/iex",
+  "thresholdLevel": 6,
+  "symbols": {
+    "a": "AAPL",
+    "b": "NVDA"
+  },
+  "phaseSeconds": 45,
+  "session": {
+    "phase": "PRE",
+    "localDate": "2026-09-17",
+    "localTime": "04:54:10",
+    "isOpen": false,
+    "calendarCoverage": true
+  },
+  "result": "UNKNOWN",
+  "reason": "marketClosed:PRE",
+  "consequence": "Nur waehrend der regulaeren Sitzung messbar. Der Manager bleibt bis dahin im Modus 'reconnect' - der ist immer richtig, nur teurer.",
+  "control": null,
+  "phases": [],
+  "serverMessages": [],
+  "sent": []
+}
