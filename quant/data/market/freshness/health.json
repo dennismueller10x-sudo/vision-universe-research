@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T19:46:06.904Z",
+  "checkedAt": "2026-09-17T20:00:11.656Z",
   "target": "repository",
   "market": {
-    "state": "OPEN",
+    "state": "AFTER_HOURS",
     "localDate": "2026-09-17",
-    "localTime": "15:46:06",
-    "lastCompletedSession": "2026-09-16",
+    "localTime": "16:00:11",
+    "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T19:46:02.805Z",
+    "indexGeneratedAt": "2026-09-17T20:00:07.522Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-17",
@@ -22,48 +22,39 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-17",
-      "asOf": "2026-09-17T19:45:00.000Z",
-      "asOfLocal": "15:45",
+      "asOf": "2026-09-17T19:55:00.000Z",
+      "asOfLocal": "15:55",
       "regularComplete": false,
       "snapshots": 520,
       "universe": false
     },
-    "dataState": "LIVE",
-    "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 15:45",
+    "dataState": "LAST_SESSION",
+    "dataReason": "closePendingWithinGrace",
+    "dataLabel": "Heute · Stand 15:55 · Schluss folgt",
     "entries": 520,
     "byState": {
-      "LIVE": 513,
-      "LAST_SESSION": 0,
-      "STALE": 7,
+      "LIVE": 0,
+      "LAST_SESSION": 520,
+      "STALE": 0,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 513,
-      "runningSessionStaleAsOf": 7
+      "closePendingWithinGrace": 520
     },
-    "staleSample": [
-      "CPSS",
-      "LOT",
-      "NRP",
-      "PCLA",
-      "RDIB",
-      "RFAI",
-      "UFG"
-    ],
+    "staleSample": [],
     "universeSessions": [
       "2026-09-16"
     ],
-    "universeCoversLastSession": true,
+    "universeCoversLastSession": false,
     "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-09-15",
     "generatedAt": "2026-09-16T23:48:18.104Z",
     "state": "STALE",
-    "reason": "lastSessionMissing",
+    "reason": "olderThanLastSession",
     "label": "Schluss Di., 15.09. · nicht aktuell",
-    "expectedSession": "2026-09-16",
+    "expectedSession": "2026-09-17",
     "sample": {
       "sample": 40,
       "byState": {
@@ -73,7 +64,7 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastSessionMissing": 40
+        "olderThanLastSession": 40
       },
       "staleSample": [
         "AAPL",
@@ -107,7 +98,7 @@
   },
   "overall": "STALE",
   "findings": [
-    "Tageskurse STALE: asOf 2026-09-15, erwartet 2026-09-16 (lastSessionMissing)"
+    "Tageskurse STALE: asOf 2026-09-15, erwartet 2026-09-17 (olderThanLastSession)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
