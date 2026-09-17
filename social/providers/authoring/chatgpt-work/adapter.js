@@ -1,0 +1,507 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — Autor: ChatGPT Work (generativ, ueber GitHub)
+
+   -------------------------------------------------------------------------
+   WARUM DIESER AUTOR ANDERS IST ALS DIE ANDEREN
+   -------------------------------------------------------------------------
+
+   Der Vorlagen-Autor antwortet sofort. Dieser antwortet SPAETER: Vision
+   Universe legt einen Brief auf einen Request-Branch, oeffnet einen Pull
+   Request, und das PR-Ereignis loest den Creative Agent aus. Er schreibt
+   sein Ergebnis samt Bildasset auf denselben Branch zurueck.
+
+   Der Adapter hat deshalb zwei Haelften, die sich nie gleichzeitig
+   sehen:
+
+     request(brief)   erzeugt den Brief-Inhalt und sagt, wohin er gehoert
+     ingest(result)   liest, PRUEFT und uebersetzt das Ergebnis
+
+   Dazwischen liegt ein fremdes System. Das ist keine Schwaeche der
+   Bauweise, sondern ihr Zweck: der Agent bekommt kein Netz zu uns,
+   keinen Schluessel, keinen Aufruf. Er bekommt eine Datei und legt eine
+   Datei zurueck.
+
+   -------------------------------------------------------------------------
+   DIE KENNUNGEN LEITET VISION UNIVERSE AB — NICHT DER AGENT
+   -------------------------------------------------------------------------
+
+   Der Owner verlangt: eine einmal verwendete `hook_variant_id` darf
+   niemals spaeter einen anderen Text bezeichnen.
+
+   Das laesst sich nicht dadurch erreichen, dass man dem Agenten glaubt.
+   Er koennte dieselbe Kennung zweimal vergeben, und im ersten Textproof
+   tat er es beinahe: dort hiessen die Varianten `vu-proof-hook-001-a/b/c`
+   — frei gewaehlt und an nichts gebunden.
+
+   Die Kennung ist deshalb eine FUNKTION des Inhalts:
+
+     content_id : brief_blob_sha : hook_type : ordinal
+
+   Vision Universe rechnet sie nach und vergleicht. Weicht der Agent ab,
+   ist das ein Befund und keine Geschmacksfrage — eine Kennung, die sich
+   nicht nachrechnen laesst, kann spaeter keine Messung tragen.
+
+   -------------------------------------------------------------------------
+   DIE EMPFEHLUNG IST EINE EMPFEHLUNG
+   -------------------------------------------------------------------------
+
+   Der Agent darf eine redaktionelle Meinung abgeben. Sie heisst
+   `recommended_hook` und traegt `is_canonical_selection: false`.
+
+   Ein Ergebnis mit `selected_hook` wird zurueckgewiesen. Nicht, weil
+   die Wahl schlecht waere, sondern weil die kanonische Auswahl zur
+   Strategie gehoert und die Strategie bei Vision Universe liegt. Wer
+   das einmal durchgehen laesst, hat die Verantwortungsgrenze
+   verschoben, ohne sie zu verhandeln.
+   ========================================================================= */
+(function (global) {
+  "use strict";
+
+  var isNode = (typeof module !== "undefined" && module.exports);
+  var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
+  var AssetIntegrity = isNode ? require("../../../engines/asset-integrity.js")
+                              : global.VUSocialAssetIntegrity;
+  var nodeCrypto = isNode ? require("crypto") : null;
+
+  /* Der Pfad, unter dem Brief, Ergebnis und Assets liegen. Er steht im
+     realen Proof und wird hier nicht neu erfunden. */
+  function requestDir(contentId) {
+    return "authoring/requests/" + String(contentId);
+  }
+
+  /**
+   * Der Git-Blob-SHA eines Inhalts.
+   *
+   * Git hasht nicht den Inhalt allein, sondern "blob <laenge>" gefolgt
+   * von einem Nullbyte und dem Inhalt. Diese Formel steht hier, weil die
+   * Kennungen daran haengen: wer sie nachrechnen will, muss das koennen,
+   * ohne Git zu starten.
+   */
+  function blobSha(inhalt) {
+    if (!nodeCrypto) throw new Error("VUSocialAuthorChatGptWork: nur unter Node.");
+    var buf = Buffer.isBuffer(inhalt) ? inhalt : Buffer.from(String(inhalt), "utf8");
+    var kopf = Buffer.from("blob " + buf.length + "\u0000", "utf8");
+    return nodeCrypto.createHash("sha1").update(Buffer.concat([kopf, buf])).digest("hex");
+  }
+
+  function ordinal(i) { return String(i + 1).padStart(2, "0"); }
+
+  /** content_id : brief_blob_sha : hook_type : ordinal */
+  function hookVariantId(contentId, briefBlobSha, hookType, index) {
+    return [contentId, briefBlobSha, hookType, ordinal(index)].join(":");
+  }
+
+  /** content_id : brief_blob_sha : visual : strategy : ordinal */
+  function visualVariantId(contentId, briefBlobSha, strategy, index) {
+    return [contentId, briefBlobSha, "visual", strategy, ordinal(index)].join(":");
+  }
+
+  /** Der Schluessel, unter dem ein Lauf hoechstens einmal verarbeitet wird. */
+  function processingKey(briefId, contentId, briefBlobSha, schemaVersion) {
+    return [briefId, contentId, briefBlobSha, schemaVersion || "1.0"].join(":");
+  }
+
+  /* -------------------------------------------------------------------
+     DER BRIEF FUER DEN AGENTEN
+
+     Er ist eine UEBERSETZUNG des kanonischen Content Briefs in die Form,
+     die der verifizierte Proof benutzt — keine zweite Quelle. Was der
+     Agent sehen darf, entscheidet weiterhin `content-brief.js`.
+     ------------------------------------------------------------------- */
+  function buildAgentBrief(brief, options) {
+    options = options || {};
+    var contentId = options.contentId || brief.contentId || brief.briefId;
+    var visualStrategy = options.visualStrategy || brief.visualType || "FUTURE_TECH";
+
+    return {
+      schema_version: "1.0",
+      fixture_type: options.fixtureType || "production_authoring_request",
+      test_fixture: options.testFixture === true,
+      brief_id: brief.briefId,
+      content_id: contentId,
+      brand: "Vision Universe",
+      language: (brief.constraints && brief.constraints.language) || "de",
+      channel: options.channel || "instagram",
+      format: options.format || "single-post",
+      topic: brief.topic,
+      objective: options.objective ||
+        "Aus der freigegebenen Evidenz einen belegbaren Beitrag formulieren.",
+      audience: options.audience || "Anleger mit Interesse an nachvollziehbaren Daten",
+
+      hook_strategy: {
+        strategy_id: options.hookStrategyId || ("vu-" + String(brief.archetype || "generic")
+          .toLowerCase().replace(/_/g, "-") + "-v1"),
+        hook_type: options.hookType || "value_first",
+        instruction: options.hookInstruction ||
+          "Formuliere Varianten innerhalb dieser Strategie. Keine andere Strategie " +
+          "waehlen, keine Prognose, keine Empfehlung."
+      },
+
+      visual_strategy: {
+        strategy_id: visualStrategy,
+        instruction: options.visualInstruction ||
+          "Eine hochwertige, abstrakte Szene im Vision-Universe-Register.",
+        creative_freedom: "Motiv, Komposition, Lichtfuehrung und Materialitaet " +
+          "innerhalb der Strategie.",
+        palette: options.palette || ["deep black", "white", "chrome", "electric cyan"],
+        style: options.visualStyle || "premium cinematic 3D technology visualization",
+        composition: options.visualComposition || "portrait 4:5, generous negative space",
+        restrictions: ["Kein Text im Bild", "Kein Logo", "Keine Kurse im Bild",
+          "Keine Renditezahlen", "Kein Wasserzeichen"]
+      },
+
+      /* DIE BELEGE. Genau die, die `content-brief.js` freigegeben hat. */
+      evidence: (brief.evidence || []).map(function (e) {
+        return { id: e.id, entity: e.entity, metric: e.metric, value: e.value,
+                 unit: e.unit, source: e.source, observed_at: e.observedAt,
+                 state: e.state, note: e.note || null };
+      }),
+      must_not_claim: (brief.mustNotClaim || []).map(function (m) {
+        return { id: m.id, text: m.text };
+      }),
+
+      asset_requirements: {
+        count: 1,
+        preferred_mime_type: "image/png",
+        preferred_width: options.width || 1080,
+        preferred_height: options.height || 1350,
+        deterministic_path: requestDir(contentId) + "/assets/visual-01.png"
+      },
+
+      authoring_requirements: {
+        hook_variant_count: Number(options.variants) || 4,
+        stable_hook_variant_ids: true,
+        hook_ids_bound_to_brief_blob_sha: true,
+        visual_variant_ids_bound_to_brief_blob_sha: true,
+        /* Die Grenze, um die es geht: eine Empfehlung ja, eine
+           kanonische Auswahl nein. */
+        recommended_hook_allowed: true,
+        canonical_selected_hook_allowed: false,
+        evidence_refs_required: true,
+        actual_image_asset_required: options.requireAsset !== false,
+        publishing_allowed: false
+      },
+
+      constraints: [
+        "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+        "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+        "Keine anderen Titel nennen.",
+        "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+        "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+        "Kein `selected_hook` — nur `recommended_hook`.",
+        "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+        "Keine Veroeffentlichung."
+      ],
+
+      publishing_allowed: false
+    };
+  }
+
+  /* -------------------------------------------------------------------
+     DIE PRUEFUNG DES ERGEBNISSES
+     ------------------------------------------------------------------- */
+  function verifyResult(result, context) {
+    context = context || {};
+    var befunde = [];
+    var r = result || {};
+
+    function fehlt(feld, wert) {
+      if (wert === null || wert === undefined || wert === "") {
+        befunde.push({ id: "missing:" + feld, message: "Im Ergebnis fehlt " + feld + "." });
+      }
+    }
+
+    fehlt("brief_id", r.brief_id);
+    fehlt("content_id", r.content_id);
+    fehlt("caption", r.caption);
+
+    if (context.briefId && r.brief_id !== context.briefId) {
+      befunde.push({ id: "briefIdMismatch",
+        message: "Das Ergebnis gehoert zu Brief " + r.brief_id + ", erwartet war " +
+          context.briefId + "." });
+    }
+    if (context.contentId && r.content_id !== context.contentId) {
+      befunde.push({ id: "contentIdMismatch",
+        message: "Das Ergebnis nennt Inhalt " + r.content_id + ", erwartet war " +
+          context.contentId + "." });
+    }
+
+    /* DIE GRENZE. Ein `selected_hook` waere die kanonische Auswahl, und
+       die gehoert zur Strategie. */
+    if (r.selected_hook) {
+      befunde.push({ id: "canonicalSelectionByAgent",
+        message: "Das Ergebnis enthaelt `selected_hook`. Die kanonische Auswahl " +
+          "gehoert zur Strategie und damit zu Vision Universe; der Agent darf nur " +
+          "`recommended_hook` mit is_canonical_selection=false liefern." });
+    }
+    if (r.recommended_hook && r.recommended_hook.is_canonical_selection === true) {
+      befunde.push({ id: "recommendationClaimsCanonical",
+        message: "Die Empfehlung behauptet, kanonisch zu sein." });
+    }
+    if (r.publishing_allowed === true) {
+      befunde.push({ id: "publishingClaimed",
+        message: "Das Ergebnis behauptet, Veroeffentlichung sei erlaubt." });
+    }
+
+    /* Die Kennungen. Nachgerechnet, nicht geglaubt. */
+    var varianten = Array.isArray(r.hook_variants) ? r.hook_variants : [];
+    if (!varianten.length) {
+      befunde.push({ id: "noHookVariants", message: "Keine Hook-Varianten im Ergebnis." });
+    }
+
+    varianten.forEach(function (v, i) {
+      if (!v || !v.text) {
+        befunde.push({ id: "emptyVariant", message: "Variante " + (i + 1) + " ohne Text." });
+        return;
+      }
+      if (!context.briefBlobSha || !context.contentId) return;
+
+      var erwartet = hookVariantId(context.contentId, context.briefBlobSha,
+        v.hook_type || (context.hookType || "unknown"), i);
+      if (v.hook_variant_id !== erwartet) {
+        befunde.push({ id: "hookIdMismatch",
+          message: "Variante " + (i + 1) + " traegt die Kennung " + v.hook_variant_id +
+            ", nachgerechnet ist " + erwartet + ". Eine Kennung, die sich nicht " +
+            "nachrechnen laesst, kann spaeter keine Messung tragen." });
+      }
+      if (v.brief_revision && v.brief_revision !== context.briefBlobSha) {
+        befunde.push({ id: "briefRevisionMismatch",
+          message: "Variante " + (i + 1) + " nennt eine fremde Brief-Revision." });
+      }
+    });
+
+    /* Eine Kennung darf nicht zweimal vorkommen. */
+    var gesehen = Object.create(null);
+    varianten.forEach(function (v) {
+      if (!v || !v.hook_variant_id) return;
+      if (gesehen[v.hook_variant_id]) {
+        befunde.push({ id: "duplicateHookId",
+          message: "Die Kennung " + v.hook_variant_id + " kommt mehrfach vor." });
+      }
+      gesehen[v.hook_variant_id] = true;
+    });
+
+    return {
+      ok: befunde.length === 0,
+      findings: befunde,
+      explanation: befunde.length === 0
+        ? "Ergebnis vollstaendig, Kennungen nachgerechnet, Verantwortungsgrenze gewahrt."
+        : befunde.length + " Befund(e): " +
+          befunde.map(function (b) { return b.id; }).join(", ") + "."
+    };
+  }
+
+  /** Prueft die Bildvarianten gegen die tatsaechlichen Bytes. */
+  function verifyAssets(result, leseAsset) {
+    var varianten = Array.isArray(result && result.visual_variants)
+      ? result.visual_variants : [];
+    var befunde = [];
+    var geprueft = [];
+
+    varianten.forEach(function (v) {
+      if (!v || !v.asset_path) {
+        befunde.push({ id: "missingAssetPath", message: "Bildvariante ohne Pfad." });
+        return;
+      }
+      var bytes;
+      try { bytes = leseAsset(v.asset_path); }
+      catch (err) {
+        befunde.push({ id: "assetUnreadable",
+          message: "Asset nicht lesbar: " + v.asset_path + " (" +
+            String(err && err.message || err).slice(0, 120) + ")" });
+        return;
+      }
+      if (!bytes) {
+        befunde.push({ id: "assetMissing", message: "Asset fehlt: " + v.asset_path });
+        return;
+      }
+
+      var pruefung = AssetIntegrity.verify(bytes, {
+        asset_sha256: v.asset_sha256, mime_type: v.mime_type,
+        width: v.width, height: v.height
+      });
+      geprueft.push({ visual_variant_id: v.visual_variant_id,
+        asset_path: v.asset_path, verification: pruefung });
+
+      if (!pruefung.ok) {
+        befunde.push({ id: "assetVerification",
+          message: v.asset_path + ": " + pruefung.explanation });
+      }
+    });
+
+    return {
+      ok: befunde.length === 0,
+      checked: geprueft,
+      findings: befunde,
+      state: befunde.length === 0
+        ? (geprueft.length ? "READBACK_VERIFIED" : "PENDING")
+        : "RECOVERY_REQUIRED",
+      explanation: befunde.length === 0
+        ? (geprueft.length ? geprueft.length + " Asset(s) zurueckgelesen und geprueft."
+                           : "Keine Bildvarianten im Ergebnis.")
+        : befunde.map(function (b) { return b.message; }).join(" | ")
+    };
+  }
+
+  /* -------------------------------------------------------------------
+     DER AUTOR
+     ------------------------------------------------------------------- */
+  function createChatGptWorkAuthor(options) {
+    options = options || {};
+
+    /* Der Transport wird HINEINGEREICHT und nicht hier gebaut: so laesst
+       sich der Autor gegen echte Dateien, gegen einen Doppelgaenger und
+       gegen GitHub testen, ohne dass er drei Wege kennt.
+
+         readResult(contentId) -> Objekt | null
+         readAsset(pfad)       -> Buffer | null
+    */
+    var transport = options.transport || null;
+
+    return {
+      authorId: options.authorId || "chatgpt-work",
+      kind: "generative",
+      capabilities: {
+        variants: Number(options.variants) || 4,
+        hooks: true, captions: true, visualLines: false, structure: true,
+        images: true,
+        /* Netz ja — aber ueber GitHub, nicht ueber eine Modell-API. Das
+           ist der Unterschied, auf dem die Kostenentscheidung beruht. */
+        requiresNetwork: true,
+        requiresCredentials: false,
+        requiresClassicModelApi: false,
+        asynchronous: true,
+        transport: "github-pull-request-event"
+      },
+
+      available: function () {
+        if (!transport || typeof transport.readResult !== "function") {
+          return { ok: false, reason:
+            "Kein Transport angebunden. Dieser Autor arbeitet ueber einen " +
+            "Request-Branch und ein PR-Ereignis; ohne Lesezugriff auf das " +
+            "Ergebnis kann er nichts liefern." };
+        }
+        return { ok: true, reason: null };
+      },
+
+      buildAgentBrief: buildAgentBrief,
+      blobSha: blobSha,
+      hookVariantId: hookVariantId,
+      visualVariantId: visualVariantId,
+      processingKey: processingKey,
+      requestDir: requestDir,
+      verifyResult: verifyResult,
+      verifyAssets: verifyAssets,
+
+      write: function (brief, opts) {
+        opts = opts || {};
+        var contentId = opts.contentId || brief.contentId || brief.briefId;
+
+        var ergebnis;
+        try { ergebnis = transport.readResult(contentId); }
+        catch (err) {
+          return { variants: [], reason: "Ergebnis nicht lesbar: " +
+            String(err && err.message || err).slice(0, 160) };
+        }
+
+        if (!ergebnis) {
+          /* Kein Ergebnis ist kein Fehler. Der Agent laeuft asynchron;
+             der Lauf faellt auf den deterministischen Autor zurueck, und
+             der naechste Lauf findet das Ergebnis vor. */
+          return { variants: [], pending: true, reason:
+            "Noch kein Creative Result fuer " + contentId + ". Der Agent arbeitet " +
+            "asynchron; bis dahin schreibt der deterministische Autor." };
+        }
+
+        var agentBrief = opts.agentBrief || buildAgentBrief(brief, opts);
+        var sha = opts.briefBlobSha ||
+          blobSha(JSON.stringify(agentBrief, null, 2) + "\n");
+
+        /* Verglichen wird gegen den Brief, den der Agent BEKOMMEN hat —
+           nicht gegen die interne Kennung des Content Briefs. Der Agent
+           kennt nur, was in der Datei stand; ihn an etwas zu messen, das
+           er nie gesehen hat, waere ein Befund ueber uns. */
+        var geprueft = verifyResult(ergebnis, {
+          briefId: agentBrief.brief_id || brief.briefId,
+          contentId: contentId, briefBlobSha: sha,
+          hookType: agentBrief.hook_strategy && agentBrief.hook_strategy.hook_type
+        });
+        if (!geprueft.ok) {
+          return { variants: [], reason: "Ergebnis zurueckgewiesen: " + geprueft.explanation,
+            verification: geprueft };
+        }
+
+        var assets = verifyAssets(ergebnis, function (pfad) {
+          return transport.readAsset ? transport.readAsset(pfad) : null;
+        });
+        if (!assets.ok) {
+          return { variants: [], reason: "Bildasset zurueckgewiesen: " + assets.explanation,
+            assets: assets };
+        }
+
+        var e = (brief.evidence || [])[0] || null;
+        var bild = (ergebnis.visual_variants || [])[0] || null;
+
+        return {
+          variants: (ergebnis.hook_variants || []).map(function (v) {
+            return Authoring.variant({
+              variantId: v.hook_variant_id,
+              authorId: options.authorId || "chatgpt-work",
+              kind: "generative",
+              hook: v.text,
+              caption: ergebnis.caption,
+              /* Der Agent liefert keine Bildzeile — das Bild IST die
+                 Aussage. Die Karte des deterministischen Autors braucht
+                 eine; ein generatives Visual nicht. */
+              visualLine: null,
+              hashtags: options.hashtags || [],
+              pattern: "chatgpt-work/" + (v.hook_type || "unbenannt"),
+              claims: e ? [
+                { text: String(e.value) + (e.unit ? " " + e.unit : ""), numeric: e.value,
+                  source: { source: e.source, entity: e.entity, metric: e.metric,
+                            observedAt: e.observedAt, state: e.state || "VERIFIED" } },
+                { text: String(e.metric), numeric: null,
+                  source: { source: e.source, entity: e.entity, metric: e.metric,
+                            observedAt: e.observedAt, state: e.state || "VERIFIED" } }
+              ] : [],
+              notes: "generativ ueber ChatGPT Work, Brief-Revision " + sha.slice(0, 12)
+            });
+          }),
+          /* Was Vision Universe zusaetzlich braucht und was NICHT in die
+             Variante gehoert: die Empfehlung des Agenten (unverbindlich)
+             und das geprueft zurueckgelesene Bildasset. */
+          recommendation: ergebnis.recommended_hook || null,
+          asset: bild ? {
+            visual_variant_id: bild.visual_variant_id,
+            visual_strategy: bild.visual_strategy,
+            brief_revision: bild.brief_revision || sha,
+            asset_path: bild.asset_path,
+            asset_sha256: bild.asset_sha256,
+            mime_type: bild.mime_type,
+            width: bild.width, height: bild.height,
+            state: assets.state
+          } : null,
+          processing: ergebnis.processing || null,
+          verification: geprueft,
+          assets: assets,
+          reason: null
+        };
+      }
+    };
+  }
+
+  var api = {
+    requestDir: requestDir,
+    blobSha: blobSha,
+    hookVariantId: hookVariantId,
+    visualVariantId: visualVariantId,
+    processingKey: processingKey,
+    buildAgentBrief: buildAgentBrief,
+    verifyResult: verifyResult,
+    verifyAssets: verifyAssets,
+    createChatGptWorkAuthor: createChatGptWorkAuthor
+  };
+
+  if (isNode) module.exports = api;
+  else global.VUSocialAuthorChatGptWork = api;
+})(typeof window !== "undefined" ? window : globalThis);

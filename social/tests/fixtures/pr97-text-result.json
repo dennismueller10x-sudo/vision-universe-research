@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "vu-proof-brief-2026-09-17-001",
+  "content_id": "vu-proof-content-2026-09-17-001",
+  "fixture_type": "technical_proof",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "curiosity-gap-process-proof-v1",
+    "hook_type": "curiosity_gap",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-proof-hook-001-a",
+      "hook_type": "curiosity_gap",
+      "text": "Was passiert, wenn aus einem klaren Brief automatisch ein prüfbares Creative-Ergebnis wird?"
+    },
+    {
+      "hook_variant_id": "vu-proof-hook-001-b",
+      "hook_type": "curiosity_gap",
+      "text": "Kann ein Creative Agent seinen Weg vom Brief bis zum Ergebnis nachvollziehbar dokumentieren?"
+    },
+    {
+      "hook_variant_id": "vu-proof-hook-001-c",
+      "hook_type": "curiosity_gap",
+      "text": "Wie wird aus einer festen Hook-Strategie ein Ergebnis, das Maschinen direkt weiterverarbeiten können?"
+    }
+  ],
+  "selected_hook": {
+    "hook_variant_id": "vu-proof-hook-001-c",
+    "hook_type": "curiosity_gap",
+    "text": "Wie wird aus einer festen Hook-Strategie ein Ergebnis, das Maschinen direkt weiterverarbeiten können?",
+    "selection_reason": "Die Variante benennt den im Brief geforderten Prozessnachweis und bleibt vollständig innerhalb der vorgegebenen Curiosity-Gap-Strategie."
+  },
+  "caption": "Dieser technische Proof zeigt einen kontrollierten Authoring-Schritt: Ein strukturierter Vision-Universe-Brief wird gelesen, innerhalb seiner vorgegebenen Hook-Strategie verarbeitet und als maschinenlesbares Ergebnis zurückgegeben. Testfixture – keine Marktbehauptung, keine Anlageberatung und keine Veröffentlichung.",
+  "visual_brief": {
+    "purpose": "Technische Visualisierung des Authoring-Roundtrips",
+    "composition": "Dunkler Vision-Universe-Hintergrund mit drei klar verbundenen Modulen: Brief, Creative Agent und strukturiertes JSON-Ergebnis.",
+    "style": "Clean, hochwertig, technisch, schwarz mit gezielten farbigen Lichtakzenten.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Aktienkurs",
+      "Keine Renditezahl",
+      "Keine Marktprognose",
+      "Nicht veröffentlichen"
+    ]
+  },
+  "evidence_refs": [
+    {
+      "ref_id": "brief-hook-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/hook_strategy",
+      "supports": "hook_strategy and hook_type"
+    },
+    {
+      "ref_id": "brief-topic",
+      "source": "authoring-brief.json",
+      "json_pointer": "/topic",
+      "supports": "caption and hook wording"
+    },
+    {
+      "ref_id": "brief-publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/authoring_requirements/publishing_allowed",
+      "supports": "publishing_allowed"
+    },
+    {
+      "ref_id": "brief-constraints",
+      "source": "authoring-brief.json",
+      "json_pointer": "/constraints",
+      "supports": "quality checks and visual restrictions"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_technical_proof",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_requested_id": true,
+      "hook_strategy_inherited_from_brief": true,
+      "stable_hook_variant_ids_present": true,
+      "hook_types_present": true,
+      "required_hook_variant_count_met": true,
+      "evidence_refs_present": true,
+      "contains_productive_market_claims": false,
+      "contains_investment_advice": false,
+      "publishing_gate_closed": true
+    }
+  },
+  "publishing_allowed": false
+}
