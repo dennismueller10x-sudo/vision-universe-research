@@ -100,7 +100,14 @@ test("E2 · Der vollstaendige Kreislauf laeuft und schliesst sich", async () => 
   const strategyDecision = Strategy.decide({
     opportunityId: "opp_loop_1",
     timeSensitivity: signalResult.internal.timeSensitivity,
-    hasNumbers: true, platform: "instagram"
+    hasNumbers: true, platform: "instagram",
+    /* Die Praemisse kommt aus dem Signal und nicht aus der Luft: ein
+       52-Wochen-Hoch handelt von einer Kennzahl zu einem Wertpapier.
+       Ohne diese Angabe passt kein Archetyp — das ist die vorsichtige
+       Lesart und beabsichtigt: lieber kein Beitrag als ein falsch
+       etikettierter. */
+    premise: signalResult.internal.premise,
+    hasCause: signalResult.internal.hasCause
   }, { archetypeKnowledge: {}, recentArchetypeUsage: {}, timingKnowledge: null },
      { currentHour: 12 });
   assert.equal(strategyDecision.decidable, true);

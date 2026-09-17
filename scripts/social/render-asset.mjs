@@ -174,13 +174,42 @@ export function plan(pkg, options = {}) {
       message: "Unbekannte Bildform: " + typ + "." };
   }
 
-  const aussage = (pkg.hook || pkg.thesis || pkg.topic || "").trim();
+  /* -------------------------------------------------------------------
+     WAS IM BILD STEHT, UND WOHER ES KOMMT
+
+     Zuerst die Textebene des Bildbriefs: das ist der vorgesehene Ort
+     fuer das, was im BILD steht, und er ist nicht dasselbe wie die Hook.
+
+     Die Hook ist der Einstieg fuer den Feed. Sie nennt Zahl und
+     Kennzahl — beides zeigt die Karte schon gross. Der erste gerenderte
+     Kandidat las deshalb:
+
+         76
+         Technical Opportunity Score
+         XOM: 76 im Technical Opportunity Score.
+
+     Dreimal dasselbe. Die Textebene traegt stattdessen den Satz, der die
+     Zahl EINORDNET, und der steht nirgends sonst. Fehlt sie, bleibt die
+     Hook als Rueckfall — ein doppelter Text ist immer noch besser als
+     gar keiner.
+     ------------------------------------------------------------------- */
+  const ebene = ((pkg.visualBrief && pkg.visualBrief.textLayers) || [])
+    .find((l) => l && l.text && String(l.text).trim());
+  const aussage = String(
+    (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+
   if (!aussage) {
     return { ok: false, reason: "noStatement", visualType: typ,
-      message: "Weder Hook noch These noch Thema — es gibt nichts zu zeigen." };
+      message: "Weder Textebene noch Hook noch These noch Thema — es gibt nichts zu zeigen." };
   }
 
-  const ebenen = { aussage, zahl: null, zahlText: null, quelle: null };
+  /* Der Name gehoert auf die Karte. Eine Zahl ohne ihren Gegenstand ist
+     eine Zahl ohne Aussage — und im Feed sieht man das Bild vor dem
+     Text. */
+  const entitaet = (pkg.visualBrief && pkg.visualBrief.entity)
+    ? String(pkg.visualBrief.entity).trim() : null;
+
+  const ebenen = { aussage, entitaet, zahl: null, zahlText: null, quelle: null };
 
   if (typ === "DATA_CARD" || typ === "NUMBER_VISUAL") {
     const zahl = ersteBelegteZahl(pkg);
@@ -235,6 +264,7 @@ function seite(p, schriftDaten) {
 
   const zahlBlock = p.ebenen.zahl ? `
     <div class="zahlblock">
+      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
       <div class="zahl">${escape(p.ebenen.zahl)}</div>
       ${p.ebenen.zahlText ? `<div class="zahltext">${escape(p.ebenen.zahlText)}</div>` : ""}
     </div>` : "";
@@ -260,6 +290,8 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .marke b{color:${FARBEN.weiss};font-weight:700}
 .mitte{display:flex;flex-direction:column;gap:20px}
 .zahlblock{margin-bottom:34px}
+.entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
+  text-transform:uppercase;margin-bottom:16px}
 .zahl{font-size:${zahlGroesse}px;line-height:.95;font-weight:800;letter-spacing:-.03em;
   color:${FARBEN.weiss};font-variant-numeric:tabular-nums}
 .zahltext{font-size:32px;line-height:1.35;color:${FARBEN.gedeckt};font-weight:500;margin-top:18px}

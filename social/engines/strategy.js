@@ -39,21 +39,38 @@
   /* Welcher Archetyp zu welcher Art Anlass passt. Das ist Startwissen,
      keine Wahrheit: die Learning Engine darf die Gewichte bewegen (§21),
      die Zuordnung selbst bleibt menschliche Entscheidung. */
+  /* -------------------------------------------------------------------
+     WOVON EIN ARCHETYP HANDELN KANN
+
+     `premises` sagt, welcher ART von Anlass ein Archetyp braucht. Ohne
+     diese Angabe war FUTURE_TECHNOLOGY fuer einen Kurs-Score zulaessig —
+     er ist TIMELY und braucht keine Zahl, und mehr fragte die Eignung
+     nicht.
+
+     Ein Archetyp OHNE `premises` passt zu allem. Das ist die bewusste
+     Ausnahme fuer die wirklich formatfreien (EDUCATIONAL, WEEKLY_THEME):
+     sie handeln von dem, was der Text daraus macht.
+     ------------------------------------------------------------------- */
   var ARCHETYPE_FIT = {
-    BREAKING_MARKET_INSIGHT: { timeSensitivity: ["BREAKING"], needsNumber: true,  depth: "shallow" },
-    EXPLAIN_THE_MOVE:        { timeSensitivity: ["BREAKING", "TIMELY"], needsNumber: true, depth: "medium" },
-    FUTURE_TECHNOLOGY:       { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: false, depth: "medium" },
-    STOCK_STORY:             { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true,  depth: "deep" },
-    DATA_STORY:              { timeSensitivity: ["TIMELY"], needsNumber: true,  depth: "medium" },
-    MYTH_VS_REALITY:         { timeSensitivity: ["EVERGREEN"], needsNumber: true,  depth: "medium" },
-    OPPORTUNITY_RISK:        { timeSensitivity: ["TIMELY"], needsNumber: true,  depth: "deep" },
+    BREAKING_MARKET_INSIGHT: { timeSensitivity: ["BREAKING"], needsNumber: true,  premises: ["EVENT", "MARKET_STATE"], depth: "shallow" },
+    /* needsCause: der Name verspricht die Erklaerung einer Bewegung. Ohne
+       ein Ereignis, das einen Anlass kennt, kann der Beitrag sie nicht
+       geben — und das Etikett waere spaeter als Evidenz zitiert worden
+       ("EXPLAIN_THE_MOVE erreicht n Reichweite"), obwohl etwas anderes
+       gemessen wurde. */
+    EXPLAIN_THE_MOVE:        { timeSensitivity: ["BREAKING", "TIMELY"], needsNumber: true, needsCause: true, depth: "medium" },
+    FUTURE_TECHNOLOGY:       { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: false, premises: ["CONCEPT"], depth: "medium" },
+    STOCK_STORY:             { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true,  premises: ["SECURITY_METRIC", "EVENT"], depth: "deep" },
+    DATA_STORY:              { timeSensitivity: ["TIMELY"], needsNumber: true,  premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "medium" },
+    MYTH_VS_REALITY:         { timeSensitivity: ["EVERGREEN"], needsNumber: true,  premises: ["CONCEPT"], depth: "medium" },
+    OPPORTUNITY_RISK:        { timeSensitivity: ["TIMELY"], needsNumber: true,  premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "deep" },
     EDUCATIONAL:             { timeSensitivity: ["EVERGREEN"], needsNumber: false, depth: "medium" },
-    MARKET_CONTEXT:          { timeSensitivity: ["TIMELY"], needsNumber: true,  depth: "medium" },
-    CONTRARIAN_INSIGHT:      { timeSensitivity: ["TIMELY"], needsNumber: true,  depth: "deep" },
-    VISUAL_DATA_STORY:       { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true, depth: "shallow" },
-    COMPANY_DEEP_DIVE:       { timeSensitivity: ["EVERGREEN"], needsNumber: true,  depth: "deep" },
+    MARKET_CONTEXT:          { timeSensitivity: ["TIMELY"], needsNumber: true,  premises: ["MARKET_STATE", "SECURITY_METRIC"], depth: "medium" },
+    CONTRARIAN_INSIGHT:      { timeSensitivity: ["TIMELY"], needsNumber: true,  premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "deep" },
+    VISUAL_DATA_STORY:       { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true, premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "shallow" },
+    COMPANY_DEEP_DIVE:       { timeSensitivity: ["EVERGREEN"], needsNumber: true,  premises: ["SECURITY_METRIC", "EVENT"], depth: "deep" },
     WEEKLY_THEME:            { timeSensitivity: ["EVERGREEN"], needsNumber: false, depth: "medium" },
-    TREND_EXPLAINER:         { timeSensitivity: ["TIMELY"], needsNumber: false, depth: "medium" }
+    TREND_EXPLAINER:         { timeSensitivity: ["TIMELY"], needsNumber: false, premises: ["MARKET_STATE", "CONCEPT"], depth: "medium" }
   };
 
   var DEFAULT_PARAMETERS = {
@@ -130,6 +147,15 @@
       /* Ein Archetyp, der Zahlen braucht, ohne Zahlen im Anlass, erzeugt
          entweder einen leeren Beitrag oder eine erfundene Zahl (§27). */
       if (fit.needsNumber && !opportunity.hasNumbers) return false;
+      /* Ein Archetyp, der eine Ursache verspricht, ohne Anlass im
+         Ereignis, erzeugt entweder einen Text, der die Frage offen
+         laesst, oder eine erfundene Begruendung. */
+      if (fit.needsCause && !opportunity.hasCause) return false;
+      /* Kein `premises` heisst: passt zu allem. Steht etwas da, muss die
+         Praemisse der Gelegenheit darin vorkommen — und eine Gelegenheit
+         ohne bekannte Praemisse passt dann NICHT. Die vorsichtige
+         Lesart: lieber kein Beitrag als ein falsch etikettierter. */
+      if (fit.premises && fit.premises.indexOf(opportunity.premise) === -1) return false;
       return true;
     });
 
@@ -137,7 +163,8 @@
       return {
         archetype: null,
         reason: "Kein Archetyp passt zu Dringlichkeit '" + sensitivity + "'" +
-                (opportunity.hasNumbers ? "" : " ohne belegte Zahlen") + ".",
+                (opportunity.hasNumbers ? "" : " ohne belegte Zahlen") +
+                (opportunity.hasCause ? "" : " ohne Anlass im Ereignis") + ".",
         candidates: []
       };
     }

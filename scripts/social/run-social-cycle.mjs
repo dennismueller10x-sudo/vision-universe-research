@@ -515,6 +515,13 @@ async function main() {
       opportunityId: opportunity.opportunityId,
       timeSensitivity: opportunity.timeSensitivity,
       hasNumbers: c.internal.hasNumbers === true,
+      /* Bringt das Ereignis einen Anlass mit, oder nur einen Zustand?
+         Ein technischer Score beschreibt eine Lage, und die Lage ist
+         nicht ihr eigener Grund. */
+      hasCause: c.internal.hasCause === true,
+      /* Wovon der Anlass handelt. Ohne diese Angabe waere ein Kurs-Score
+         als FUTURE_TECHNOLOGY zulaessig. */
+      premise: c.internal.premise || null,
       platform: "instagram"
     }, {
       /* DER RUECKKANAL. Hier stand eine leere Menge — deshalb konnte

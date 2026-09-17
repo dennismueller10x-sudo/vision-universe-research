@@ -327,7 +327,18 @@
       visualBrief: visual.visualType ? Visual.buildBrief({
         visualType: visual.visualType,
         title: pkg.hook,
-        dataReferences: r.data.facts.map(function (f) { return f.metric + "@" + f.source.source; })
+        dataReferences: r.data.facts.map(function (f) { return f.metric + "@" + f.source.source; }),
+        /* Die Textebenen sind der vorgesehene Ort fuer das, was im BILD
+           steht. Sie waren leer, und deshalb griff der Renderer auf die
+           Hook zurueck — und wiederholte damit, was die Karte ohnehin
+           zeigt. */
+        textLayers: (function () {
+          var w = input.writer;
+          var line = (w && typeof w.visualLine === "function")
+            ? w.visualLine(opportunity, { research: r.data }) : null;
+          return line ? [{ id: "statement", text: String(line) }] : [];
+        })(),
+        entity: (r.data.facts[0] && r.data.facts[0].entity) || null
       }) : null,
       variants: (function () {
         var v = {}; v[platform] = { caption: adapted.data.caption, hashtags: adapted.data.hashtags }; return v;
@@ -408,6 +419,20 @@
             { id: "relevance", note: "Was es fuer Anleger bedeutet" }
           ]
         };
+      },
+      /* Die Zeile FUERS BILD. Nicht die Hook.
+
+         Die Karte zeigt die Zahl und ihre Bezeichnung bereits gross. Die
+         Hook daruntersetzen hiesse, beides ein zweites Mal zu lesen —
+         der erste gerenderte Kandidat las "76 / Technical Opportunity
+         Score / XOM: 76 im Technical Opportunity Score."
+
+         Das Bild braucht an dieser Stelle den Satz, der die Zahl
+         EINORDNET, und der steht nirgends sonst. */
+      visualLine: function (opportunity, parts) {
+        var f = parts && parts.research && parts.research.facts[0];
+        if (!f) return null;
+        return "Lagebeschreibung, keine Prognose.";
       },
       draft: function (opportunity, parts) {
         var facts = parts.research.facts;

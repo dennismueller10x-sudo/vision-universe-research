@@ -60,6 +60,66 @@
     BRIEFING_HIGHLIGHT:  { label: "Kernaussage aus dem Briefing", class: "INTERNAL", sensitivity: "TIMELY", needsNumber: false }
   };
 
+  /* -------------------------------------------------------------------
+     WELCHE EREIGNISSE EINE URSACHE MITBRINGEN
+
+     Ein Beitrag, der "warum bewegt sich X" verspricht, braucht ein
+     Ereignis, das eine Bewegung UND einen Anlass kennt. Geschaeftszahlen
+     sind so ein Anlass. Ein technischer Score ist keiner: er beschreibt
+     eine Lage, und die Lage ist nicht ihr eigener Grund.
+
+     Der Unterschied ist nicht akademisch. Der erste echte Kandidat trug
+     den Archetyp EXPLAIN_THE_MOVE fuer einen Text, der keine Bewegung
+     erklaert — und genau dieses Etikett waere spaeter als Evidenz
+     zitiert worden: "EXPLAIN_THE_MOVE erreicht n Reichweite". Gemessen
+     worden waere etwas anderes.
+     ------------------------------------------------------------------- */
+  var CAUSAL_EVENT_TYPES = [
+    "EARNINGS_RELEASE",   /* ein Ereignis mit Datum und Inhalt */
+    "REGIME_CHANGE",      /* ein benennbarer Wechsel */
+    "SECTOR_ROTATION",    /* eine Verschiebung zwischen Gruppen */
+    "MOMENTUM_SHIFT"      /* ein Wechsel, kein Zustand */
+  ];
+
+  function providesCause(eventType) {
+    return CAUSAL_EVENT_TYPES.indexOf(String(eventType)) !== -1;
+  }
+
+  /* -------------------------------------------------------------------
+     WOVON EIN EREIGNIS HANDELT
+
+     Die Archetyp-Eignung kannte bisher zwei Fragen: wie dringend, und
+     gibt es eine Zahl. Beides sagt nichts darueber, WOVON der Beitrag
+     handeln wuerde.
+
+     Die Folge war im ersten echten Kandidaten zu sehen: ein technischer
+     Score zu XOM bekam den Archetyp FUTURE_TECHNOLOGY — zulaessig, weil
+     der TIMELY ist und keine Zahl braucht. Das Etikett waere dann als
+     Evidenz zitiert worden ("FUTURE_TECHNOLOGY erreicht n Reichweite"),
+     und gemessen worden waere eine Kurskarte.
+
+     Die Praemisse ist kein Themenklassifikator. Sie sagt nur, welcher
+     ART der Anlass ist — und das weiss der Ereignistyp.
+     ------------------------------------------------------------------- */
+  var EVENT_PREMISE = {
+    NEW_52W_HIGH:        "SECURITY_METRIC",
+    NEW_52W_LOW:         "SECURITY_METRIC",
+    MOMENTUM_SHIFT:      "SECURITY_METRIC",
+    QUANT_SCORE_JUMP:    "SECURITY_METRIC",
+    VALUATION_EXTREME:   "SECURITY_METRIC",
+    RANKING_ENTRY:       "SECURITY_METRIC",
+    TECHNICAL_SETUP:     "SECURITY_METRIC",
+    FUNDAMENTAL_TREND:   "SECURITY_METRIC",
+    EARNINGS_RELEASE:    "EVENT",
+    REGIME_CHANGE:       "MARKET_STATE",
+    SECTOR_ROTATION:     "MARKET_STATE",
+    BRIEFING_HIGHLIGHT:  "CONCEPT"
+  };
+
+  function premiseOf(eventType) {
+    return EVENT_PREMISE[String(eventType)] || null;
+  }
+
   /* Quellen, die es geben WIRD, aber heute nicht gibt. Sie stehen hier,
      damit die Health-Matrix sie nennen kann — eine Quelle, die im Bericht
      fehlt, wird nicht vermisst. */
@@ -151,6 +211,11 @@
         label: definition.label,
         timeSensitivity: definition.sensitivity,
         hasNumbers: event.value !== null && event.value !== undefined,
+        /* Bringt dieses Ereignis einen ANLASS mit, oder nur einen
+           Zustand? Ein technischer Score beschreibt eine Lage, und die
+           Lage ist nicht ihr eigener Grund. */
+        hasCause: providesCause(event.type),
+        premise: premiseOf(event.type),
         strength: Schema.numberOrNull(event.strength),
         context: event.context || null
       },
@@ -258,6 +323,10 @@
 
   var api = {
     INTERNAL_EVENT_TYPES: INTERNAL_EVENT_TYPES,
+    CAUSAL_EVENT_TYPES: CAUSAL_EVENT_TYPES,
+    providesCause: providesCause,
+    EVENT_PREMISE: EVENT_PREMISE,
+    premiseOf: premiseOf,
     PLANNED_SOURCES: PLANNED_SOURCES,
     fromInternalEvent: fromInternalEvent,
     fromExternalSignal: fromExternalSignal,

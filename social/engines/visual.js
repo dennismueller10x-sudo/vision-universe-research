@@ -135,8 +135,12 @@
          enthaelt, wird zur zweiten Wahrheitsquelle. */
       dataReferences: Array.isArray(spec.dataReferences) ? spec.dataReferences.slice() : [],
       annotations: Array.isArray(spec.annotations) ? spec.annotations.slice() : [],
+      /* Die Entitaet gehoert in den Brief, weil sie im Bild steht und
+         nicht nur im Text: eine Karte mit einer Zahl und ohne den Namen
+         dazu ist eine Zahl ohne Gegenstand. */
+      entity: spec.entity || null,
       atlas: null,
-      textLayers: [],
+      textLayers: Array.isArray(spec.textLayers) ? spec.textLayers.slice() : [],
       constraints: []
     };
 

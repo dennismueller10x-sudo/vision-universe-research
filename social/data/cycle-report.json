@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-15T12:00:00Z",
+  "generatedAt": "2026-09-17T10:00:00Z",
   "provider": "mock",
   "health": {
-    "generatedAt": "2026-09-15T12:00:00Z",
+    "generatedAt": "2026-09-17T10:00:00Z",
     "overall": "WARNING",
     "counts": {
       "PASS": 11,
@@ -59,7 +59,7 @@
         "lastSuccessAt": "2026-09-15T12:00:00Z",
         "failureMode": null,
         "nextAction": null,
-        "detail": "Letzter Erfolg vor 0 h."
+        "detail": "Letzter Erfolg vor 46 h."
       },
       {
         "component": "signals.market",
@@ -106,7 +106,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -116,7 +116,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -126,7 +126,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -136,7 +136,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -146,7 +146,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -176,7 +176,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-15T12:00:00Z",
+        "lastSuccessAt": "2026-09-17T10:00:00Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -200,65 +200,405 @@
   "signals": 4,
   "opportunities": [
     {
-      "opportunityId": "opp_aapl_2026-09-15",
+      "opportunityId": "opp_aapl_2026-09-17",
       "topic": "Technisches Setup — AAPL",
+      "score": 63,
+      "proposable": true,
+      "explanation": "Opportunity Score 63 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "signalIds": [
+        "sig_8f4ebf5dbb1869f9"
+      ]
+    },
+    {
+      "opportunityId": "opp_jpm_2026-09-17",
+      "topic": "Technisches Setup — JPM",
+      "score": 62,
+      "proposable": true,
+      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "signalIds": [
+        "sig_62bbe8d8d1ae222c"
+      ]
+    },
+    {
+      "opportunityId": "opp_msft_2026-09-17",
+      "topic": "Technisches Setup — MSFT",
+      "score": 62,
+      "proposable": true,
+      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "signalIds": [
+        "sig_6dde03ed207a3699"
+      ]
+    },
+    {
+      "opportunityId": "opp_xom_2026-09-17",
+      "topic": "Technisches Setup — XOM",
       "score": 67,
       "proposable": true,
-      "explanation": "Opportunity Score 67 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , ."
-    },
-    {
-      "opportunityId": "opp_jpm_2026-09-15",
-      "topic": "Technisches Setup — JPM",
-      "score": 66,
-      "proposable": true,
-      "explanation": "Opportunity Score 66 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , ."
-    },
-    {
-      "opportunityId": "opp_msft_2026-09-15",
-      "topic": "Technisches Setup — MSFT",
-      "score": 65,
-      "proposable": true,
-      "explanation": "Opportunity Score 65 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , ."
-    },
-    {
-      "opportunityId": "opp_xom_2026-09-15",
-      "topic": "Technisches Setup — XOM",
-      "score": 71,
-      "proposable": true,
-      "explanation": "Opportunity Score 71 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , ."
+      "explanation": "Opportunity Score 67 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "signalIds": [
+        "sig_092494d1c4e827dd"
+      ]
     }
   ],
   "packages": [
     {
-      "packageId": "pkg_b935ec1e2fb6ffaa",
+      "packageId": "pkg_79a8c5e229fe58ee",
       "topic": "Technisches Setup — XOM",
-      "archetype": "EXPLAIN_THE_MOVE",
+      "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "Warum bewegt sich XOM gerade?"
+      "hook": "XOM: 76 im Technical Opportunity Score."
     },
     {
-      "packageId": "pkg_9a1651255c548e89",
+      "packageId": "pkg_1990f31a6c5cc926",
       "topic": "Technisches Setup — AAPL",
-      "archetype": "EXPLAIN_THE_MOVE",
+      "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "Warum bewegt sich AAPL gerade?"
+      "hook": "AAPL: 65.3 im Technical Opportunity Score."
     },
     {
-      "packageId": "pkg_9410920d244220c9",
+      "packageId": "pkg_743bef21317d6165",
       "topic": "Technisches Setup — JPM",
-      "archetype": "EXPLAIN_THE_MOVE",
+      "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "Warum bewegt sich JPM gerade?"
+      "hook": "JPM: 63.3 im Technical Opportunity Score."
     },
     {
-      "packageId": "pkg_154ee37d9e8d6411",
+      "packageId": "pkg_af1673122c0e1a8e",
       "topic": "Technisches Setup — MSFT",
-      "archetype": "EXPLAIN_THE_MOVE",
+      "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
-      "hook": "Warum bewegt sich MSFT gerade?"
+      "hook": "MSFT: 60.6 im Technical Opportunity Score."
     }
   ],
   "rejections": [],
   "published": [],
-  "auditEntries": 20
+  "auditEntries": 4,
+  "learning": {
+    "measuredPosts": 16,
+    "maturePosts": 16,
+    "awaitingMaturity": 0,
+    "baselineSufficient": true,
+    "baselineReason": "REEL: 9 Beitraege als Vergleichsbasis. | CAROUSEL: 7 Beitraege als Vergleichsbasis.",
+    "evidenceRegime": "BOOTSTRAP",
+    "evidenceRecord": {
+      "evidenceRegime": "BOOTSTRAP",
+      "assessedAt": "2026-09-17T10:00:00Z",
+      "sampleSize": 16,
+      "cohorts": [
+        {
+          "cohort": "REEL",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 9,
+          "activeDimensions": [
+            "reach",
+            "engagement"
+          ],
+          "activeWeightShare": 0.24,
+          "excluded": [
+            {
+              "dimension": "retention",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "shares",
+              "state": "DEGENERATE",
+              "reason": "Alle 9 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "saves",
+              "state": "DEGENERATE",
+              "reason": "Alle 9 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": true,
+          "methodologyVersion": "1.0.0+bootstrap.reel",
+          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 9 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 9 von 20 (Ziel: GROWING)."
+        },
+        {
+          "cohort": "CAROUSEL",
+          "regime": "BOOTSTRAP",
+          "sampleSize": 7,
+          "activeDimensions": [
+            "reach",
+            "engagement"
+          ],
+          "activeWeightShare": 0.24,
+          "excluded": [
+            {
+              "dimension": "retention",
+              "state": "NOT_APPLICABLE",
+              "reason": "Die Plattform meldet diese Groesse fuer diesen Medientyp nicht."
+            },
+            {
+              "dimension": "shares",
+              "state": "DEGENERATE",
+              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "saves",
+              "state": "DEGENERATE",
+              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "followerConversion",
+              "state": "DEGENERATE",
+              "reason": "Alle 7 Werte sind 0. Eine Groesse, die nicht unterscheidet, kann keinen Beitrag von einem anderen trennen — als 0-Leistung gelesen wuerde sie jeden abwerten."
+            },
+            {
+              "dimension": "quality",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "brandFit",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            },
+            {
+              "dimension": "strategicValue",
+              "state": "NO_INPUT",
+              "reason": "Interne Bewertung, die nur fuer selbst erzeugte Beitraege vorliegt. Fuer uebernommene Bestandsbeitraege gibt es sie nicht — das ist kein Messfehler."
+            }
+          ],
+          "baselineSufficient": true,
+          "methodologyVersion": "1.0.0+bootstrap.carousel",
+          "reason": "Von der kanonischen Gewichtung sind 24 % belegt, bei 7 Beitraegen. Fuer BOOTSTRAP genuegt das; fuer die naechste Stufe fehlen Gewichtung 24 % von 45 % und Stichprobe 7 von 20 (Ziel: GROWING)."
+        }
+      ]
+    },
+    "regimeChanged": false,
+    "regimeReason": "Unveraendert: BOOTSTRAP.",
+    "crossRegimeExcluded": 0,
+    "scoreablePosts": 16,
+    "dataPoints": 16,
+    "evidenceState": "BEWERTBAR",
+    "observations": [
+      {
+        "dimension": "mediaFormat",
+        "value": "REEL",
+        "sampleSize": 9,
+        "sufficient": false,
+        "note": "Das 95-%-Intervall [-0.02, 0.055] enthaelt die Null. Der beobachtete Unterschied von 0.018 ist mit Zufall vereinbar."
+      },
+      {
+        "dimension": "mediaFormat",
+        "value": "CAROUSEL",
+        "sampleSize": 7,
+        "sufficient": false,
+        "note": "Das 95-%-Intervall [-0.055, 0.02] enthaelt die Null. Der beobachtete Unterschied von -0.018 ist mit Zufall vereinbar."
+      }
+    ],
+    "strategyBefore": "strategy_initial",
+    "strategyAfter": "strategy_initial",
+    "strategyChanged": false,
+    "strategyReason": "Keine Strategieaenderung: von 2 Beobachtungen war keine belastbar. Das ist der Normalfall bei kleinen Stichproben und kein Fehler.",
+    "archetypeKnowledge": {},
+    "timingKnowledge": {
+      "8": {
+        "mean": 50,
+        "sampleSize": 2
+      },
+      "9": {
+        "mean": 40,
+        "sampleSize": 1
+      },
+      "10": {
+        "mean": 50,
+        "sampleSize": 1
+      },
+      "11": {
+        "mean": 50,
+        "sampleSize": 1
+      },
+      "12": {
+        "mean": 51.5,
+        "sampleSize": 2
+      },
+      "13": {
+        "mean": 50,
+        "sampleSize": 3
+      },
+      "14": {
+        "mean": 50,
+        "sampleSize": 4
+      },
+      "15": {
+        "mean": 50,
+        "sampleSize": 2
+      }
+    }
+  },
+  "experiments": {
+    "running": 0,
+    "recorded": 0,
+    "decided": [],
+    "open": []
+  },
+  "shadowDecisions": [
+    {
+      "decidedAt": "2026-09-17T10:00:00Z",
+      "packageId": "pkg_79a8c5e229fe58ee",
+      "topic": "Technisches Setup — XOM",
+      "archetype": "STOCK_STORY",
+      "visualType": "DATA_CARD",
+      "hook": "XOM: 76 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet XOM derzeit mit 76 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "opportunityId": "opp_xom_2026-09-17",
+      "signalIds": [
+        "sig_092494d1c4e827dd"
+      ],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 97 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "asset": {
+        "plannable": true,
+        "visualType": "DATA_CARD",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_79a8c5e229fe58ee.jpg",
+        "rendered": true,
+        "bytes": 42678
+      }
+    },
+    {
+      "decidedAt": "2026-09-17T10:00:00Z",
+      "packageId": "pkg_1990f31a6c5cc926",
+      "topic": "Technisches Setup — AAPL",
+      "archetype": "STOCK_STORY",
+      "visualType": "DATA_CARD",
+      "hook": "AAPL: 65.3 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet AAPL derzeit mit 65.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "opportunityId": "opp_aapl_2026-09-17",
+      "signalIds": [
+        "sig_8f4ebf5dbb1869f9"
+      ],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 36 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "asset": {
+        "plannable": true,
+        "visualType": "DATA_CARD",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_1990f31a6c5cc926.jpg",
+        "rendered": true,
+        "bytes": 45495
+      }
+    },
+    {
+      "decidedAt": "2026-09-17T10:00:00Z",
+      "packageId": "pkg_743bef21317d6165",
+      "topic": "Technisches Setup — JPM",
+      "archetype": "STOCK_STORY",
+      "visualType": "DATA_CARD",
+      "hook": "JPM: 63.3 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet JPM derzeit mit 63.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "opportunityId": "opp_jpm_2026-09-17",
+      "signalIds": [
+        "sig_62bbe8d8d1ae222c"
+      ],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 31 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "asset": {
+        "plannable": true,
+        "visualType": "DATA_CARD",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_743bef21317d6165.jpg",
+        "rendered": true,
+        "bytes": 45371
+      }
+    },
+    {
+      "decidedAt": "2026-09-17T10:00:00Z",
+      "packageId": "pkg_af1673122c0e1a8e",
+      "topic": "Technisches Setup — MSFT",
+      "archetype": "STOCK_STORY",
+      "visualType": "DATA_CARD",
+      "hook": "MSFT: 60.6 im Technical Opportunity Score.",
+      "caption": "Unsere technische Auswertung bewertet MSFT derzeit mit 60.6 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als Naechstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschaetzung ohne Grundlage. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "opportunityId": "opp_msft_2026-09-17",
+      "signalIds": [
+        "sig_6dde03ed207a3699"
+      ],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 45 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "asset": {
+        "plannable": true,
+        "visualType": "DATA_CARD",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_af1673122c0e1a8e.jpg",
+        "rendered": true,
+        "bytes": 45598
+      }
+    }
+  ]
 }

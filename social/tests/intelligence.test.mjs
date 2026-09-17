@@ -321,7 +321,8 @@ test("I20 · Erkundung waehlt die duennste Datenlage, nicht den Zufall", () => {
                           MARKET_CONTEXT: { mean: 0.5, sampleSize: 12 } }
   };
   const chosen = Strategy.selectArchetype(
-    { timeSensitivity: "TIMELY", hasNumbers: true }, context.archetypeKnowledge, {},
+    { timeSensitivity: "TIMELY", hasNumbers: true, premise: "SECURITY_METRIC" },
+    context.archetypeKnowledge, {},
     Strategy.DEFAULT_PARAMETERS, "EXPLORE");
   assert.match(chosen.reason, /duennste Datenlage/);
   assert.notEqual(chosen.archetype, "DATA_STORY");
@@ -351,4 +352,82 @@ test("I23 · Zeitkritische Beitraege warten auf kein Zeitfenster", () => {
     { timeSensitivity: "BREAKING", currentHour: 14 });
   assert.equal(res.hour, 14);
   assert.match(res.reason, /wartet auf kein Zeitfenster/);
+});
+
+/* =========================================================================
+   I30–I34 — WOVON EIN BEITRAG HANDELN KANN
+
+   Die Archetyp-Eignung kannte zwei Fragen: wie dringend, und gibt es
+   eine Zahl. Beides sagt nichts darueber, WOVON der Beitrag handeln
+   wuerde — und nichts darueber, ob er halten kann, was sein Name
+   verspricht.
+
+   Der erste echte Kandidat zeigte beides an einem Beispiel: ein
+   technischer Score zu XOM bekam zuerst EXPLAIN_THE_MOVE (der Text
+   erklaert keine Bewegung) und danach FUTURE_TECHNOLOGY (eine Kurskarte
+   ist keine Zukunftstechnologie). Beide Etiketten waeren spaeter als
+   Evidenz zitiert worden, und gemessen worden waere jeweils etwas
+   anderes.
+   ========================================================================= */
+
+test("I30 · EXPLAIN_THE_MOVE braucht einen Anlass, nicht nur eine Zahl", () => {
+  /* Der Name verspricht die Erklaerung einer Bewegung. Ein technischer
+     Score beschreibt eine Lage — und die Lage ist nicht ihr eigener
+     Grund. */
+  const ohneAnlass = Strategy.selectArchetype(
+    { timeSensitivity: "TIMELY", hasNumbers: true, hasCause: false,
+      premise: "SECURITY_METRIC" }, {}, {}, Strategy.DEFAULT_PARAMETERS, "EXPLOIT");
+  assert.notEqual(ohneAnlass.archetype, "EXPLAIN_THE_MOVE");
+
+  const mitAnlass = Strategy.selectArchetype(
+    { timeSensitivity: "TIMELY", hasNumbers: true, hasCause: true, premise: "EVENT" },
+    { EXPLAIN_THE_MOVE: { mean: 0.9, sampleSize: 20 } }, {},
+    Strategy.DEFAULT_PARAMETERS, "EXPLOIT");
+  assert.equal(mitAnlass.archetype, "EXPLAIN_THE_MOVE");
+});
+
+test("I31 · Ein Kurs-Score wird nicht zu FUTURE_TECHNOLOGY", () => {
+  const chosen = Strategy.selectArchetype(
+    { timeSensitivity: "TIMELY", hasNumbers: true, hasCause: false,
+      premise: "SECURITY_METRIC" }, {}, {}, Strategy.DEFAULT_PARAMETERS, "EXPLORE");
+  assert.notEqual(chosen.archetype, "FUTURE_TECHNOLOGY");
+  assert.ok(["DATA_STORY", "MARKET_CONTEXT", "OPPORTUNITY_RISK", "CONTRARIAN_INSIGHT",
+    "VISUAL_DATA_STORY", "STOCK_STORY"].includes(chosen.archetype),
+    "gewaehlt wurde " + chosen.archetype);
+});
+
+test("I32 · Eine unbekannte Praemisse ergibt KEINEN Archetyp", () => {
+  /* Die vorsichtige Lesart, und hier die richtige: lieber kein Beitrag
+     als ein falsch etikettierter. Ein Etikett, das niemand gepruefte
+     hat, wird spaeter als Evidenz zitiert. */
+  const chosen = Strategy.selectArchetype(
+    { timeSensitivity: "TIMELY", hasNumbers: true, premise: null },
+    {}, {}, Strategy.DEFAULT_PARAMETERS, "EXPLOIT");
+  assert.equal(chosen.archetype, null);
+  assert.match(chosen.reason, /Kein Archetyp passt/);
+});
+
+test("I33 · Die Praemisse kommt aus dem Ereignistyp", () => {
+  const Signals = require("../engines/signals.js");
+  assert.equal(Signals.premiseOf("TECHNICAL_SETUP"), "SECURITY_METRIC");
+  assert.equal(Signals.premiseOf("EARNINGS_RELEASE"), "EVENT");
+  assert.equal(Signals.premiseOf("SECTOR_ROTATION"), "MARKET_STATE");
+  assert.equal(Signals.premiseOf("gibt-es-nicht"), null);
+});
+
+test("I34 · Ein technisches Setup bringt keinen Anlass mit", () => {
+  const Signals = require("../engines/signals.js");
+  assert.equal(Signals.providesCause("TECHNICAL_SETUP"), false);
+  assert.equal(Signals.providesCause("EARNINGS_RELEASE"), true);
+
+  /* Und das steht im Signal selbst, nicht nur in einer Tabelle. */
+  const res = Signals.fromInternalEvent({
+    type: "TECHNICAL_SETUP", entity: "XOM", metric: "Technical Opportunity Score",
+    value: 76, observedAt: "2026-09-16T00:00:00Z", source: "vu.technical",
+    provider: "vu-technical-intelligence", state: "VERIFIED", strength: 0.76
+  }, { now: "2026-09-17T10:00:00Z" });
+
+  assert.equal(res.ok, true);
+  assert.equal(res.internal.hasCause, false);
+  assert.equal(res.internal.premise, "SECURITY_METRIC");
 });
