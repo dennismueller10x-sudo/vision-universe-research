@@ -28,7 +28,7 @@ async function auditAccessibility(page,view,width){
  accessibility.push({view,width,engine:result.testEngine,violations:result.violations,incomplete:result.incomplete,passedRules:result.passes.length});
  await writeFile(out+'/accessibility.json',JSON.stringify({scope:'Automated WCAG 2.1 A/AA checks; not a manual accessibility certification',results:accessibility},null,2));
 }
-try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.clock.install({time:staleClock});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.clock.setFixedTime(staleClock);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','portfolio','watchlist','atlas']){
  const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
