@@ -33,6 +33,14 @@ name: Tiingo Commercial — Scale Gates
 #   [tiingo-capability] Faehigkeitsnachweis des Commercial-Zugangs
 #   [tiingo-realtime]   Strom- und Live-Kerzen-Nachweis
 #
+# ACHTUNG, zweite Falle (17.09.2026): die Bedingung prueft die GANZE
+# Commit-Nachricht, nicht nur ihre erste Zeile. Wer eine Marke im
+# Fliesstext erwaehnt - "ausgeloest wird das mit [tiingo-realtime]" -
+# loest sie damit aus. Genau das ist passiert: ein Commit, der die
+# Werkzeuge nur beschrieb, startete um 04:54 New Yorker Zeit einen Lauf.
+# Teuer war er nicht, weil beide Skripte ausserhalb der Sitzung UNKNOWN
+# melden statt zu raten - aber die Marke gehoert nicht in die Prosa.
+#
 # ACHTUNG bei allen drei Marken: der Push muss eine Datei aus der
 # paths-Liste unten AENDERN. Ein leerer Commit traegt die Marke zwar in
 # der Nachricht, aendert aber keinen Pfad - GitHub legt dann gar keinen

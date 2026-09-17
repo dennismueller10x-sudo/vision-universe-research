@@ -289,6 +289,15 @@ prüfen und nicht das System.
 gefüllt. Die Werkzeuge stehen bereit; ausgelöst werden sie mit der Marke
 `[tiingo-realtime]`.*
 
+**Die Werkzeugkette selbst ist bereits belegt.** Am 17.09.2026 um
+04:54 New Yorker Zeit lief der Workflow versehentlich an — die
+Commit-Nachricht erwähnte die Auslösemarke im Fließtext, und die
+Bedingung prüft die ganze Nachricht. Der Lauf kostete nichts und belegte
+zweierlei: die Verkabelung (Checkout → Messung → Schlüsselprüfung →
+Commit → Push) funktioniert, und beide Skripte melden außerhalb der
+Sitzung `UNKNOWN (marketClosed:PRE)` statt zu raten. Genau dafür ist die
+Sitzungsprüfung da.
+
 ### §1 — Lässt sich die Tickerliste eines offenen Sockets ändern?
 
 **Status: steht aus.**
