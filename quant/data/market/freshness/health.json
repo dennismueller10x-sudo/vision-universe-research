@@ -1,89 +1,116 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T14:20:05.965Z",
+  "checkedAt": "2026-09-17T17:27:14.301Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
-    "localDate": "2026-09-16",
-    "localTime": "10:20:05",
-    "lastCompletedSession": "2026-09-15",
-    "currentSession": "2026-09-16",
-    "expectedIntradaySession": "2026-09-16"
+    "localDate": "2026-09-17",
+    "localTime": "13:27:14",
+    "lastCompletedSession": "2026-09-16",
+    "currentSession": "2026-09-17",
+    "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-16T14:20:02.617Z",
+    "indexGeneratedAt": "2026-09-17T17:27:10.186Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-09-16",
+      "sessionDate": "2026-09-17",
       "kind": "current",
       "isRunning": true,
       "isComplete": false
     },
     "dataSession": {
-      "sessionDate": "2026-09-16",
-      "asOf": "2026-09-16T14:20:00.000Z",
-      "asOfLocal": "10:20",
+      "sessionDate": "2026-09-17",
+      "asOf": "2026-09-17T17:25:00.000Z",
+      "asOfLocal": "13:25",
       "regularComplete": false,
-      "snapshots": 512,
+      "snapshots": 520,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 10:20",
-    "entries": 520,
+    "dataLabel": "Heute · Stand 13:25",
+    "entries": 521,
     "byState": {
-      "LIVE": 510,
+      "LIVE": 512,
       "LAST_SESSION": 0,
-      "STALE": 10,
+      "STALE": 9,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 510,
-      "currentSessionMissing": 8,
-      "runningSessionStaleAsOf": 2
+      "runningSession": 512,
+      "runningSessionStaleAsOf": 8,
+      "olderThanLastSession": 1
     },
     "staleSample": [
-      "ATHS",
-      "BTMD",
-      "FOA",
-      "HCM",
+      "AIRT",
       "JFIN",
-      "LOT",
-      "NRP",
+      "PCLA",
       "RDIB",
+      "RFAI",
       "TVA",
-      "UFG"
+      "UFG",
+      "VIOT",
+      "MSC"
     ],
     "universeSessions": [
       "2026-09-15"
     ],
-    "universeCoversLastSession": true,
+    "universeCoversLastSession": false,
     "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-09-15",
-    "generatedAt": "2026-09-16T10:22:21.235Z",
-    "state": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Dienstag",
-    "expectedSession": "2026-09-15",
+    "generatedAt": "2026-09-17T16:56:16.357Z",
+    "state": "STALE",
+    "reason": "lastSessionMissing",
+    "label": "Schluss Di., 15.09. · nicht aktuell",
+    "expectedSession": "2026-09-16",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 40,
-        "STALE": 0,
+        "LAST_SESSION": 0,
+        "STALE": 40,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "lastSessionMissing": 40
       },
-      "staleSample": [],
+      "staleSample": [
+        "AAPL",
+        "ABBV",
+        "ABCL",
+        "ABNB",
+        "ABT",
+        "ABX",
+        "ACIC",
+        "ACMR",
+        "ACN",
+        "ACT",
+        "ACTG",
+        "ADBE",
+        "ADC",
+        "ADI",
+        "ADMA",
+        "ADP",
+        "ADPT",
+        "ADSK",
+        "AEP",
+        "AFG",
+        "AFRM",
+        "AGEN",
+        "AGL",
+        "AIR",
+        "AIRT"
+      ],
       "seriesIndexCount": 6439
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Tageskurse STALE: asOf 2026-09-15, erwartet 2026-09-16 (lastSessionMissing)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
