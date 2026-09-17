@@ -367,16 +367,38 @@
   function createTemplateWriter(options) {
     options = options || {};
     return {
+      /* -----------------------------------------------------------------
+         WAS DIESE VORLAGE SAGEN DARF
+
+         Sie sieht genau das, was `sourceRef` durchlaesst: Kennzahl,
+         Wert, Einheit, Entitaet, Quelle. Keinen Trend, keinen Anlass,
+         keine Ursache — die stehen im Signal, aber nicht im Beleg.
+
+         Die frueheren Texte behaupteten trotzdem eine Erklaerung: die
+         Hook fragte "Warum bewegt sich XOM gerade?", und die Caption
+         antwortete "Der Grund liegt in den Daten: Technical Opportunity
+         Score steht bei 76." Das ist keine Antwort auf die Frage. Es ist
+         eine Zahl mit dem Wort "Grund" davor.
+
+         Die Markenpruefung liess es durch, weil sie auf das Wort
+         "Grund" prueft. Eine Hook-Einloesung, die an einem Wort haengt,
+         ist an einem Wort zu haben — deshalb stellt die Vorlage die
+         Frage jetzt gar nicht erst.
+         ----------------------------------------------------------------- */
       thesis: function (opportunity, researchData) {
         var fact = researchData.facts[0];
         if (!fact) return null;
-        return opportunity.topic + ": " + (fact.entity ? fact.entity + " " : "") +
-               "zeigt eine Entwicklung, die sich an " + fact.metric + " ablesen laesst.";
+        return (fact.entity ? fact.entity + ": " : "") + fact.metric + " steht bei " +
+               String(fact.value) + (fact.unit ? " " + fact.unit : "") +
+               ". Das ist eine Lagebeschreibung, keine Prognose.";
       },
       hook: function (opportunity, thesisData, researchData) {
         var fact = researchData.facts[0];
         if (!fact) return null;
-        return "Warum bewegt sich " + (fact.entity || opportunity.topic) + " gerade?";
+        /* Nennt, was da ist. Verspricht nichts, was der Text nicht
+           einloest. */
+        return (fact.entity || opportunity.topic) + ": " + String(fact.value) +
+               (fact.unit ? " " + fact.unit : "") + " im " + fact.metric + ".";
       },
       structure: function (opportunity, thesisData, researchData) {
         return {
@@ -392,11 +414,23 @@
         if (!facts.length) return null;
         var f = facts[0];
         var valueText = String(f.value) + (f.unit ? " " + f.unit : "");
+        var wer = f.entity || opportunity.topic;
+
+        /* Drei Saetze, und keiner behauptet mehr als der Beleg hergibt:
+           was gemessen wurde, was die Zahl NICHT sagt, und warum wir sie
+           trotzdem zeigen.
+
+           Der mittlere Satz ist der wichtigste. Eine Kennzahl ohne ihre
+           Grenze liest sich wie eine Aussage ueber die Zukunft, und
+           genau das ist sie nicht. */
         var caption =
-          "Der Grund liegt in den Daten: " + f.metric + " steht bei " + valueText + ". " +
-          "Das erklaert die Bewegung, weil sich daran ablesen laesst, wie sich die Lage " +
-          "gegenueber dem Vorzeitraum veraendert hat. " +
-          "Fuer Anleger heisst das vor allem eines: die Entwicklung ist messbar und nicht Stimmung.";
+          "Unsere technische Auswertung bewertet " + wer + " derzeit mit " +
+          valueText + " im " + f.metric + ". " +
+          "Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, " +
+          "was als Naechstes passiert. " +
+          "Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine " +
+          "Einschaetzung ohne Grundlage. " +
+          "Keine Anlageberatung.";
         return {
           caption: caption,
           cta: options.cta || "Mehr Daten dazu auf Vision Universe.",

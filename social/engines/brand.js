@@ -122,6 +122,33 @@
     var blocking = [];
     var warnings = [];
 
+    /* -------------------------------------------------------------------
+       DER PFLICHTHINWEIS BEI EINZELWERTEN
+
+       Ein Beitrag, der ein einzelnes Wertpapier benennt UND ihm eine
+       bewertende Zahl zuordnet, liest sich fuer ein Publikum wie eine
+       Empfehlung — unabhaengig davon, wie sachlich er formuliert ist und
+       unabhaengig davon, was er zu sein beansprucht.
+
+       Das ist keine juristische Bewertung; die kann diese Datei nicht
+       leisten und soll sie nicht. Es ist die vorsichtige Vorgabe: wo ein
+       Name und eine Zahl zusammenkommen, steht der Hinweis dabei. Ihn
+       wegzulassen ist dann eine Entscheidung, die jemand treffen muss —
+       und nicht etwas, das man vergisst.
+
+       Blockierend und nicht warnend, weil eine Warnung in einem
+       automatischen Pfad niemanden erreicht. ------------------------- */
+    var nenntEinzelwert = /(?:^|[\s(])[A-Z]{2,5}(?:[\s.,:;)]|$)/.test(all) ||
+      /\b(?:Aktie|Wertpapier|Titel)\b/i.test(all);
+    var hatBewertendeZahl = /\d/.test(caption);
+    var hatHinweis = /keine\s+anlageberatung|keine\s+anlage-?\s*oder\s+steuerberatung|keine\s+empfehlung|nur\s+zu\s+informationszwecken/i.test(all);
+
+    if (nenntEinzelwert && hatBewertendeZahl && !hatHinweis) {
+      blocking.push({ id: "missing-disclaimer",
+        message: "Der Beitrag nennt einen Einzelwert und ordnet ihm eine Zahl zu, " +
+          "ohne Hinweis darauf, dass er keine Anlageberatung ist." });
+    }
+
     BLOCKING_TERMS.forEach(function (t) {
       if (new RegExp(t.re.source, t.re.flags).test(all)) blocking.push({ id: t.id, message: t.message });
     });
