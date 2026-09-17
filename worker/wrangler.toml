@@ -1,0 +1,79 @@
+# =============================================================================
+# VISION UNIVERSE — worker/wrangler.toml
+#
+# Zero-Cost Realtime V1. Alles hier ist so gewaehlt, dass es in die
+# kostenlosen Kontingente passt und dort bleibt.
+#
+# WAS HIER ABSICHTLICH FEHLT
+#
+#   Kein usage_model = "bundled"/"unbound"   -> kein Workers Paid
+#   Keine zweite Durable-Object-Klasse       -> keine Shards
+#   Kein Cron-Trigger                        -> das Objekt weckt sich selbst
+#                                               nur, solange jemand zusieht
+#   Kein KV, kein R2, kein D1                -> es wird nichts gespeichert;
+#                                               Historie kommt aus dem
+#                                               bestehenden statischen Pfad
+#
+# WAS NOCH NICHT PASSIERT IST
+#
+# Dieses Projekt ist NICHT veroeffentlicht. Fuer ein Deployment fehlen
+# CLOUDFLARE_API_TOKEN und CLOUDFLARE_ACCOUNT_ID (siehe
+# docs/VU_ZERO_COST_REALTIME_V1.md). Bis dahin ist diese Datei eine
+# Beschreibung, keine Tatsache.
+# =============================================================================
+
+name = "vu-live"
+main = "src/index.mjs"
+compatibility_date = "2026-09-17"
+
+# Kein nodejs_compat: die geliehenen Engines sind reines ES5 ohne
+# Node-Bausteine. Jede Kompatibilitaetsfahne mehr ist Startzeit, die
+# jeder Verbindungsaufbau bezahlt.
+compatibility_flags = []
+
+# Die Beobachtung ist an, damit ein Fehlerbild ueberhaupt sichtbar wird.
+# Protokolliert werden nur Anzahlen und Gruende - kein Schluessel, keine
+# Kurse (siehe vu-live.mjs, notiere()).
+[observability]
+enabled = true
+
+# --- Das eine Durable Object -------------------------------------------------
+[[durable_objects.bindings]]
+name = "VU_LIVE"
+class_name = "VuLive"
+
+# SQLite-Backend ist auf dem kostenlosen Plan Pflicht - der klassische
+# Key-Value-Speicher eines Durable Object ist dort nicht verfuegbar.
+# Gespeichert wird trotzdem nichts ausser dem Wecker.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["VuLive"]
+
+# --- Variablen ---------------------------------------------------------------
+# Hier stehen nur Schalter. Der Tiingo-Schluessel gehoert NICHT hierher,
+# sondern als Secret in die Umgebung:
+#
+#     wrangler secret put TIINGO_API_KEY
+#
+# Diese Datei liegt im Git. Ein Schluessel in ihr waere ein Schluessel im
+# Git - und der bliebe es auch nach dem Loeschen.
+[vars]
+# Nachmeldung auf der offenen Anbieterverbindung. Bleibt "false", bis der
+# Nachweis bei offener Boerse vorliegt (§1). Solange baut der
+# Subscription Manager bei jeder Aenderung sauber neu auf.
+TIINGO_DYNAMIC_SUBSCRIBE = "false"
+# Ursprungspruefung fuer die oertliche Entwicklung. In der
+# veroeffentlichten Umgebung nicht gesetzt.
+ALLOW_LOCAL_ORIGIN = "false"
+
+# --- Endpunkt ----------------------------------------------------------------
+# Bevorzugt: live.visionuniverse.de
+#
+# Auskommentiert, weil eine Route ohne die zugehoerige Zone im
+# Cloudflare-Konto das Deployment abbricht. Sie wird eingeschaltet, wenn
+# die Zone visionuniverse.de im Konto liegt und der Owner den Endpunkt
+# freigibt - eine Zeile, kein Umbau.
+#
+# [[routes]]
+# pattern = "live.visionuniverse.de"
+# custom_domain = true
