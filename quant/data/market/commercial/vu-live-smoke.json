@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-live-smoke-1.0.0",
   "auftrag": "Zero-Cost Realtime V1: Smoke-Test der ausgerollten Runtime",
-  "checkedAt": "2026-09-17T14:08:36.192Z",
+  "checkedAt": "2026-09-17T14:11:40.214Z",
   "endpoint": "https://vu-live.little-credit-15d3.workers.dev",
   "session": {
     "phase": "REGULAR",
-    "localTime": "10:08:36",
+    "localTime": "10:11:40",
     "isOpen": true
   },
   "checks": [
@@ -75,16 +75,17 @@
     {
       "id": "ticks",
       "question": "liefert ein Abonnement waehrend der Sitzung Kurse?",
-      "ok": false,
+      "ok": true,
       "detail": {
         "session": "REGULAR",
-        "delivered": 0,
+        "delivered": 5,
         "of": 5,
-        "closeCode": 1006,
+        "closeCode": 1000,
         "ops": [
           "hello",
           "subscribed",
-          "status"
+          "status",
+          "u"
         ],
         "states": [
           {
@@ -95,7 +96,7 @@
             "modeReason": null,
             "verdict": null,
             "session": "REGULAR",
-            "at": "2026-09-17T14:08:37.325Z"
+            "at": "2026-09-17T14:11:42.734Z"
           },
           {
             "op": "status",
@@ -105,7 +106,7 @@
             "modeReason": null,
             "verdict": null,
             "session": "REGULAR",
-            "at": "2026-09-17T14:08:37.405Z"
+            "at": "2026-09-17T14:11:42.814Z"
           }
         ]
       }
@@ -113,18 +114,18 @@
   ],
   "latency": {
     "firstTickMs": {
-      "AAPL": null,
-      "NVDA": null,
-      "MSFT": null,
-      "VLO": null,
-      "PANW": null
+      "AAPL": 2481,
+      "NVDA": 2481,
+      "MSFT": 4999,
+      "VLO": 8314,
+      "PANW": 3493
     },
-    "median": null,
-    "max": null,
+    "median": 3493,
+    "max": 8314,
     "note": "Zeit vom subscribe des Clients bis zum ersten Kurs desselben Titels beim Client. Enthaelt Cloudflares Kante, den Verbindungsaufbau zum Anbieter und ein Zusammenfassungsfenster von einer Sekunde."
   },
-  "result": "FAIL",
-  "reason": "ticks",
+  "result": "PASS",
+  "reason": null,
   "budget": {
     "verdict": "OK",
     "share": {
@@ -155,7 +156,7 @@
       "modeReason": null,
       "verdict": null,
       "session": "REGULAR",
-      "at": "2026-09-17T14:08:37.325Z"
+      "at": "2026-09-17T14:11:42.734Z"
     },
     {
       "op": "status",
@@ -165,7 +166,48 @@
       "modeReason": null,
       "verdict": null,
       "session": "REGULAR",
-      "at": "2026-09-17T14:08:37.405Z"
+      "at": "2026-09-17T14:11:42.814Z"
     }
-  ]
+  ],
+  "healthAfter": {
+    "manager": {
+      "state": "LIVE",
+      "reason": null,
+      "mode": "dynamic",
+      "modeReason": null,
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "PANW",
+        "VLO"
+      ],
+      "clients": 0
+    },
+    "values": 5,
+    "series": 5,
+    "budget": {
+      "verdict": "OK",
+      "used": {
+        "providerMessages": 139,
+        "clientMessages": 1,
+        "connections": 1,
+        "alarms": 2,
+        "requests": 10,
+        "activeSeconds": 60,
+        "durationGBs": 8,
+        "peakSymbols": 5,
+        "peakClients": 1
+      }
+    },
+    "log": [
+      {
+        "at": "2026-09-17T14:11:42.688Z",
+        "ereignis": "providerOpen",
+        "daten": {
+          "tickers": 5
+        }
+      }
+    ]
+  }
 }

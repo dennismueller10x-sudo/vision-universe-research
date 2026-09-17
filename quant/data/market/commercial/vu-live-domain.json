@@ -1,7 +1,7 @@
 {
   "schemaVersion": "vu-live-domain-1.0.0",
   "auftrag": "Owner 17.09.2026: bevorzugt live.visionuniverse.de, research.* unberuehrt",
-  "checkedAt": "2026-09-17T14:03:04.099Z",
+  "checkedAt": "2026-09-17T14:12:30.764Z",
   "hostname": "live.visionuniverse.de",
   "mode": "apply",
   "guard": {
@@ -13,9 +13,9 @@
     ]
   },
   "zoneFound": true,
-  "alreadyAttached": false,
-  "applied": true,
-  "result": "ATTACHED",
+  "alreadyAttached": true,
+  "applied": false,
+  "result": "ALREADY_ATTACHED",
   "reason": null,
   "steps": [
     {
@@ -30,18 +30,10 @@
       "name": "Name schon vergeben?",
       "status": 200,
       "detail": {
-        "attached": false,
-        "service": null
-      }
-    },
-    {
-      "name": "Namen anlegen",
-      "status": 200,
-      "detail": {
-        "ok": true,
-        "errors": []
+        "attached": true,
+        "service": "vu-live"
       }
     }
   ],
-  "consequence": "https://live.visionuniverse.de zeigt jetzt auf vu-live. research.visionuniverse.de wurde nicht angefasst und liegt weiter auf GitHub Pages."
+  "consequence": "live.visionuniverse.de zeigt bereits auf vu-live. Nichts zu tun."
 }
