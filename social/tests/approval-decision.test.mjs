@@ -200,17 +200,26 @@ test("AD8 · Eine Ablehnung ohne Grund wird abgelehnt", () => {
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });
 
-test("AD9 · Die Ablehnung landet in einer eigenen Datei", () => {
+test("AD9 \u00b7 Die Ablehnung landet in einer eigenen Datei", () => {
+  /* Dieser Test schrieb frueher in social/data/approval-feedback.json —
+     also in den echten Bestand — und raeumte hinterher auf. Das
+     Aufraeumen war der Beweis, dass er wusste, was er tat.
+
+     Die Rueckmeldung folgt jetzt dem Datenstand. Der Test braucht kein
+     Sicherungsband mehr, weil er den Produktionsbestand gar nicht mehr
+     erreicht. */
   const p = platz("feedback");
-  const fb = join(ROOT, "social/data/approval-feedback.json");
-  const vorher = existsSync(fb) ? readFileSync(fb, "utf8") : null;
+  const echt = join(ROOT, "social/data/approval-feedback.json");
+  const unberuehrt = existsSync(echt) ? readFileSync(echt, "utf8") : null;
   try {
     legeAn(p.abs, kandidat());
     const aus = lauf(p.rel, "cand_test_1", ["--reject", "--reason", "Ton zu werblich"]);
     assert.match(aus, /ABGELEHNT/);
     assert.match(aus, /KEINE Leistung/);
 
-    const daten = JSON.parse(readFileSync(fb, "utf8"));
+    const eigene = join(p.abs, "approval-feedback.json");
+    assert.ok(existsSync(eigene), "keine Rueckmeldung im eigenen Datenstand");
+    const daten = JSON.parse(readFileSync(eigene, "utf8"));
     const meins = daten.entries.filter((e) => e.candidateId === "cand_test_1");
     assert.equal(meins.length, 1);
     assert.equal(meins[0].reason, "Ton zu werblich");
@@ -218,25 +227,23 @@ test("AD9 · Die Ablehnung landet in einer eigenen Datei", () => {
     const k = JSON.parse(readFileSync(join(p.abs, "cand_test_1.json"), "utf8"));
     assert.equal(k.state, "REJECTED");
     assert.equal(k.rejection.reason, "Ton zu werblich");
+
+    /* Und der echte Bestand hat sich nicht geruehrt. */
+    assert.equal(existsSync(echt) ? readFileSync(echt, "utf8") : null, unberuehrt,
+      "der Testlauf hat den Produktionsbestand veraendert");
   } finally {
     rmSync(p.abs, { recursive: true, force: true });
-    if (vorher === null) rmSync(fb, { force: true });
-    else writeFileSync(fb, vorher);
   }
 });
 
 test("AD10 · Ein abgelehnter Kandidat erzeugt keine Anfrage", () => {
   const p = platz("keine-anfrage");
-  const fb = join(ROOT, "social/data/approval-feedback.json");
-  const vorher = existsSync(fb) ? readFileSync(fb, "utf8") : null;
   try {
     legeAn(p.abs, kandidat());
     lauf(p.rel, "cand_test_1", ["--reject", "--reason", "nein"]);
     assert.ok(!existsSync(join(p.abs, "cand_test_1.request.json")));
   } finally {
     rmSync(p.abs, { recursive: true, force: true });
-    if (vorher === null) rmSync(fb, { force: true });
-    else writeFileSync(fb, vorher);
   }
 });
 

@@ -21,7 +21,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -130,6 +130,7 @@ function platz(name) {
 }
 
 function kandidatDatei(dirAbs, id, state) {
+  mkdirSync(dirAbs, { recursive: true });
   writeFileSync(join(dirAbs, id + ".json"), JSON.stringify({
     candidateId: id, version: 1, state: state,
     createdAt: "2026-09-17T10:00:00Z",
@@ -189,5 +190,47 @@ test("OD14 · Genau eines von approve, reject und hold", () => {
     kandidatDatei(p.abs, "cand_x", "AWAITING_APPROVAL");
     assert.throws(() => entscheide(p.rel, "cand_x", ["--hold", "--reject", "--reason", "x"]));
     assert.throws(() => entscheide(p.rel, "cand_x", []));
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+/* ------------------------------------------------------------------ */
+/* DIE FEHLERART, DREIMAL GEFUNDEN                                     */
+/* ------------------------------------------------------------------ */
+
+test("OD15 · Kein Testlauf schreibt in den Produktionsbestand", () => {
+  /* Dreimal in diesem Abschnitt gefunden:
+       1. make-publish-candidate.mjs schrieb Kandidaten in einen festen
+          Ordner statt in den zum Datenstand gehoerenden
+       2. quant/tests schreiben quant/data/universe neu
+       3. decide-candidate.mjs schrieb die Rueckmeldung in eine feste
+          Datei, obwohl --dir die Kandidaten verschob
+
+     Der gemeinsame Bau: Eingabestand aus einem Parameter, Ausgabestand
+     aus einer Konstante. Dieser Test prueft die Klasse und nicht den
+     Einzelfall — er vergleicht den gesamten Produktionsbestand vor und
+     nach einem vollstaendigen Entscheidungslauf. */
+  const bestand = join(ROOT, "social/data");
+  const vorher = new Map();
+  for (const f of readdirSync(bestand)) {
+    const p = join(bestand, f);
+    if (statSync(p).isFile()) vorher.set(f, readFileSync(p, "utf8"));
+  }
+
+  const p = platz("kein-produktionsschreiben");
+  try {
+    kandidatDatei(p.abs, "cand_a", "AWAITING_APPROVAL");
+    kandidatDatei(p.abs, "cand_b", "AWAITING_APPROVAL");
+    entscheide(p.rel, "cand_a", ["--hold", "--reason", "Evidenz reicht nicht."]);
+    entscheide(p.rel, "cand_b", ["--reject", "--reason", "Passt nicht."]);
+
+    for (const [f, inhalt] of vorher) {
+      assert.equal(readFileSync(join(bestand, f), "utf8"), inhalt,
+        "social/data/" + f + " wurde von einem Testlauf veraendert");
+    }
+    /* Und die Rueckmeldung liegt im eigenen Datenstand. */
+    const eigene = join(p.abs, "approval-feedback.json");
+    assert.ok(existsSync(eigene), "keine Rueckmeldung im eigenen Datenstand");
+    const fb = JSON.parse(readFileSync(eigene, "utf8"));
+    assert.deepEqual(fb.entries.map((e) => e.decision).sort(), ["HOLD", "REJECT"]);
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });

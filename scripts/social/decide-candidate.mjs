@@ -38,7 +38,7 @@
      node scripts/social/decide-candidate.mjs --candidate cand_... --reject --reason "..."
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -47,7 +47,40 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 
+/* -------------------------------------------------------------------
+   WOHIN DIE RUECKMELDUNG GEHOERT
+
+   Hier stand ein fester Pfad. `--dir` verschob die Kandidaten, die
+   Rueckmeldung landete trotzdem immer in derselben echten Datei — und
+   ein Test mit dem Kandidaten "cand_hold", Thema "Thema", Hook "Ein
+   Hook." stand danach in social/data/approval-feedback.json.
+
+   Das ist der DRITTE Fund derselben Fehlerart in diesem Abschnitt:
+   erst der Kandidatenordner, dann die Quant-Universumsdateien, jetzt
+   die Rueckmeldungen. Ein Skript, das seinen Eingabestand aus einem
+   Parameter nimmt und seinen Ausgabestand aus einer Konstante, schreibt
+   frueher oder spaeter Testdaten in den Produktionsbestand.
+
+   Die Rueckmeldung folgt jetzt dem Kandidatenordner: sie gehoert zu
+   denselben Kandidaten und hat im selben Datenstand zu liegen.
+   ------------------------------------------------------------------- */
 export const FEEDBACK_DATEI = "social/data/approval-feedback.json";
+
+/**
+ * Die Rueckmeldedatei zum Datenstand, in dem die Kandidaten liegen.
+ *
+ * `--dir` wird an zwei Stellen verschieden gemeint: produktiv zeigt es
+ * auf social/data/publish-candidates, im Test auf den Datenstand
+ * selbst. Statt eine der beiden Lesarten zu erraten, wird sie am Namen
+ * erkannt — und das ist keine Spitzfindigkeit: die erste Fassung hat
+ * blind dirname() genommen und die Rueckmeldung eine Ebene zu hoch
+ * abgelegt, wo sie niemand gesucht haette.
+ */
+export function feedbackDatei(kandidatenDir) {
+  const d = String(kandidatenDir || "social/data/publish-candidates");
+  const wurzel = basename(d) === "publish-candidates" ? dirname(d) : d;
+  return join(wurzel, "approval-feedback.json");
+}
 
 /**
  * Die Rueckmeldung zu einer Ablehnung.
@@ -119,6 +152,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const NOW = arg("now", new Date().toISOString());
   const BY = arg("by", "owner");
   const REASON = arg("reason", null);
+  /* Folgt dem Kandidatenordner — siehe oben. */
+  const FEEDBACK_REL = feedbackDatei(DIR);
   const APPROVE = flag("approve");
   const REJECT = flag("reject");
   /* -------------------------------------------------------------------
@@ -172,7 +207,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         "zu erwartende Leistung des Beitrags." };
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fbh = join(ROOT, FEEDBACK_DATEI);
+    const fbh = join(ROOT, FEEDBACK_REL);
     const bestandH = existsSync(fbh) ? JSON.parse(readFileSync(fbh, "utf8")) : { entries: [] };
     bestandH.entries = (bestandH.entries || []).concat([
       feedbackEintrag(kandidat, "HOLD", { reason: REASON, by: BY, now: NOW })]);
@@ -185,7 +220,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("erwartete Leistung. Er geht in keinen Leistungsvergleich ein.");
     console.log("\nKein Lauf, keine Recovery und kein Test aendert diesen Zustand.");
     console.log("Nur eine neue Entscheidung tut das.");
-    console.log("\nGeschrieben: " + FEEDBACK_DATEI);
+    console.log("\nGeschrieben: " + FEEDBACK_REL);
     process.exit(0);
   }
 
@@ -208,7 +243,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     kandidat.rejection = { reason: REASON, decidedBy: BY, decidedAt: NOW };
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fb = join(ROOT, FEEDBACK_DATEI);
+    const fb = join(ROOT, FEEDBACK_REL);
     const bestand = existsSync(fb) ? JSON.parse(readFileSync(fb, "utf8")) : { entries: [] };
     bestand.entries = (bestand.entries || []).concat([
       feedbackEintrag(kandidat, "REJECT", { reason: REASON, by: BY, now: NOW })]);
@@ -219,7 +254,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("\nABGELEHNT. Grund festgehalten.");
     console.log("Dieser Beitrag wurde nie veroeffentlicht und hat deshalb KEINE Leistung —");
     console.log("weder eine schlechte noch eine gute. Er geht in keinen Leistungsvergleich ein.");
-    console.log("\nGeschrieben: " + FEEDBACK_DATEI);
+    console.log("\nGeschrieben: " + FEEDBACK_REL);
     process.exit(0);
   }
 
