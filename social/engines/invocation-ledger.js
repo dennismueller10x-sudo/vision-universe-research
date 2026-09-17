@@ -42,12 +42,33 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var STATES = ["REQUESTED", "IN_FLIGHT", "COMPLETED", "REJECTED", "RECOVERY_REQUIRED"];
+  /* -------------------------------------------------------------------
+     DAS VOKABULAR KOMMT AUS EINER QUELLE
+
+     Hier standen fuenf Zustaende als eigene Liste. Als PR 101 sechsmal
+     STARTED meldete und nie lieferte, fehlte darin genau einer:
+     "nichts Beobachtbares im Fenster". Eine zweite Liste an anderer
+     Stelle haette dasselbe Loch an einer anderen Stelle gehabt.
+
+     provider-lifecycle.js fuehrt die Zustaende, dieser Ledger schreibt
+     sie auf. COMPLETED und REJECTED bleiben als Altbestand gueltig —
+     sie stehen in bereits geschriebenen Daten, und Daten umzudeuten ist
+     keine Migration, sondern Geschichtsfaelschung.
+     ------------------------------------------------------------------- */
+  var Lifecycle = isNode ? require("./provider-lifecycle.js")
+    : global.VUSocialProviderLifecycle;
+
+  var ALTBESTAND = ["COMPLETED", "REJECTED"];
+  var STATES = Lifecycle.STATES.concat(ALTBESTAND);
 
   /* Ein fertiges Ergebnis ist fertig. Von hier aus geht es nirgends
      mehr hin — ein spaeterer Lauf, der es aendern wollte, ist der Lauf,
-     den es nicht geben darf. */
-  var TERMINAL = ["COMPLETED", "REJECTED"];
+     den es nicht geben darf.
+
+     STALE_NO_RESULT gehoert ausdruecklich NICHT dazu. Es sagt, dass wir
+     nichts gesehen haben, nicht dass nichts kommt. Taucht spaeter doch
+     ein Ergebnis auf, darf es verarbeitet werden. */
+  var TERMINAL = Lifecycle.TERMINAL.concat(ALTBESTAND);
 
   function createLedger(entries) {
     var eintraege = Array.isArray(entries) ? entries.slice() : [];
@@ -138,6 +159,21 @@
         briefBlobSha: entry.briefBlobSha || null,
         pullRequest: entry.pullRequest === undefined ? null : entry.pullRequest,
         deliveryId: entry.deliveryId || null,
+        /* -------------------------------------------------------------
+           BEOBACHTET ODER NOTIERT
+
+           Dieses Feld fehlte in der Aufzaehlung, und die Aufzaehlung
+           laesst weg, was sie nicht kennt. Ergebnis: sechs frisch
+           eingelesene Agent-Meldungen landeten im Ledger und zaehlten
+           anschliessend als null, weil ihr `observed` unterwegs
+           verlorenging.
+
+           Es ist dieselbe Fehlerart, die hier schon mehrfach zugeschlagen
+           hat — eine Weissliste, die stillschweigend Felder verschluckt.
+           ------------------------------------------------------------- */
+        observed: entry.observed === true,
+        timestampProvenance: entry.timestampProvenance ||
+          (entry.observed === true ? "observed" : "hand-entered-approximate"),
         note: entry.note || null
       });
       return { written: true, reason: null, existing: vorhanden };
