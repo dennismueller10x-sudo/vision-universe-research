@@ -16,9 +16,11 @@ vorher gab. Laufende Zusatzkosten: **0 €**, und zwar nicht als Ziel,
 sondern als Schaltung — der Budgetwächter schaltet ab, bevor eine
 Freigrenze fällt.
 
-Eingeschaltet ist nichts. Der Schalter steht auf `false`, weil der
-Worker nicht ausgerollt ist — nicht, weil etwas fehlte: der Zugang ist
-vorhanden und geprüft (§1).
+Der Worker **läuft** seit dem 17.09.2026 auf Cloudflare Free, unter
+`live.visionuniverse.de` und unter seiner workers.dev-Adresse, mit
+echten Kursen (§7a). Der **Client**-Schalter steht noch auf `false`: die
+Aktienseite benutzt den Strom bewusst noch nicht, solange V4.1 nicht
+nach `main` gemergt ist.
 
 ---
 
@@ -289,13 +291,15 @@ sondern eine Zusicherung, die fehlschlagen kann.
 | Bereich | Neu | Was sie prüfen |
 |---|---|---|
 | `quant/tests/subscription-manager.test.mjs` | 21 | Referenzzählung, Nachlauf, beide Betriebsarten, Abriss |
-| `quant/tests/free-budget.test.mjs` | 15 | Schwellen, Vorausschau, Tageswechsel, Laufzeitgrenze |
-| `worker/tests/vu-live.test.mjs` | 32 | Das Objekt und der Worker auf einer Cloudflare-Attrappe |
+| `quant/tests/free-budget.test.mjs` | 17 | Schwellen, Vorausschau, Tageswechsel, Laufzeitgrenze |
+| `worker/tests/vu-live.test.mjs` | 33 | Das Objekt und der Worker auf einer Cloudflare-Attrappe |
 | `discover/tests/live-stream.test.mjs` | 14 | Der Client: Rückfall, Etikett, Sichtbarkeit, Semantik |
-| **Summe neu** | **82** | |
+| **Summe neu** | **84** | |
 
-**Bestehende Tests: unverändert grün.** 965 Quant, 206 Discover — keine
-einzige wurde abgeschwächt, keine übersprungen.
+**Alle Tests grün: 967 Quant, 220 Discover, 33 Worker.** Keine wurde
+abgeschwächt, keine übersprungen. Vier Erwartungen in `free-budget`
+tragen neue Zahlen, weil die *Annahme* dahinter eine neue ist (§7) —
+geprüft wird dasselbe Verhalten, nur gegen die richtige Größe.
 
 Die Cloudflare-Attrappe (`worker/tests/harness.mjs`) fälscht genau drei
 Dinge, die die Plattform stellt: `WebSocketPair`, `Response` mit Status
@@ -322,51 +326,142 @@ prüfen und nicht das System.
 
 ---
 
-## 7. Messungen bei offener Börse
+## 7. Messungen bei offener Börse (17.09.2026)
 
-*Dieser Abschnitt wird nach dem Lauf während der regulären US-Sitzung
-gefüllt. Die Werkzeuge stehen bereit; ausgelöst werden sie mit der Marke
-`[tiingo-realtime]`.*
-
-**Die Werkzeugkette selbst ist bereits belegt.** Am 17.09.2026 um
-04:54 New Yorker Zeit lief der Workflow versehentlich an — die
-Commit-Nachricht erwähnte die Auslösemarke im Fließtext, und die
-Bedingung prüft die ganze Nachricht. Der Lauf kostete nichts und belegte
-zweierlei: die Verkabelung (Checkout → Messung → Schlüsselprüfung →
-Commit → Push) funktioniert, und beide Skripte melden außerhalb der
-Sitzung `UNKNOWN (marketClosed:PRE)` statt zu raten. Genau dafür ist die
-Sitzungsprüfung da.
+Alle drei Nachweise liefen während der regulären US-Sitzung.
 
 ### §1 — Lässt sich die Tickerliste eines offenen Sockets ändern?
 
-**Status: steht aus.**
-Bericht: `quant/data/market/commercial/dynamic-subscribe-verification.json`
+**DYNAMIC_SUPPORTED**, gemessen um 09:53 New York.
+`quant/data/market/commercial/dynamic-subscribe-verification.json`
 
-Bis zur Messung läuft der Subscription Manager im Modus **`reconnect`**
-(`TIINGO_DYNAMIC_SUBSCRIBE = "false"`). Der ist immer richtig, nur
-teurer: jeder Titelwechsel kostet einen Verbindungsaufbau. Auf Verdacht
-nachzumelden wäre der Weg in einen Zustand, in dem ein Titel zu sehen
-ist, den niemand abonniert hat.
+| Phase | AAPL | NVDA | Was das zeigt |
+|---|---|---|---|
+| Kontrolle (eigener Socket, beide Titel) | 46 | 63 | Beide handeln in diesem Fenster |
+| P0 — Socket mit `["AAPL"]` | 52 | **0** | Die Tickerliste filtert wirklich |
+| P1 — `subscribe ["NVDA"]` auf demselben Socket | 55 | **74** | Nachmelden wirkt |
+| P2 — `unsubscribe ["AAPL"]` | **0** | 65 | Abmelden wirkt auch |
+
+Dieselbe Verbindung über alle drei Phasen, keine Ablehnung des Servers.
+Der Subscription Manager läuft deshalb im Modus **`dynamic`**: ein
+Titelwechsel kostet keinen Verbindungsaufbau mehr. Fällt die Nachmeldung
+im Betrieb doch einmal aus, fällt er von selbst auf `reconnect` zurück —
+der Modus bleibt gebaut und getestet.
+
+**Der Kontrolllauf hat sich bezahlt gemacht.** Im ersten Anlauf las mein
+Nachweisskript den Parser falsch (`parseIexMessage` liefert einen
+Umschlag `{tick, raw}`, nicht den Tick selbst), und die Kontrolle sah
+null Ereignisse für AAPL und NVDA um 09:42 New York. Ohne sie stünde
+jetzt `DYNAMIC_REJECTED` im Bericht, und niemand hätte es gemerkt.
 
 ### §17 — Last: 1, 5, 10, 25, 50 gleichzeitig aktive Titel
 
-**Status: steht aus.**
-Bericht: `quant/data/market/commercial/vu-live-e2e.json`
+Je 30 Sekunden, 20 Zuschauer, echte Kurse.
+`quant/data/market/commercial/vu-live-e2e.json`
 
-Trockenlauf mit Attrappe bestanden: 25 von 25 Titeln abonniert,
-400 Anbieterereignisse zu 160 Browser-Nachrichten, Zusammenfassung
-p95 413 ms.
+| Titel | Ereignisse/s | je Titel | an Browser | Verhältnis | CPU | RAM | Kontingent | 50/50 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 1,07 | 1,07 | 360 | 0,09 | 0,44 % | 8,9 MB | 0,0 % | ✅ |
+| 5 | 4,27 | 0,85 | 336 | 0,38 | 0,21 % | 9,1 MB | 0,0 % | ✅ |
+| 10 | 6,37 | 0,64 | 286 | 0,67 | 0,24 % | 9,6 MB | 0,0 % | ✅ |
+| 25 | 12,20 | 0,49 | 261 | 1,40 | 0,53 % | 9,8 MB | 0,0 % | ✅ |
+| **50** | **19,57** | **0,39** | **350** | **1,68** | **0,60 %** | **10,5 MB** | **0,1 %** | ✅ |
+
+Der Deckel ist nicht die Rechenzeit und nicht der Speicher — bei
+fünfzig Titeln sind beide praktisch unbelastet.
 
 ### §18 — E2E: AAPL, NVDA, MSFT, VLO, PANW
 
-**Status: steht aus.**
+Alle fünf geliefert. Zusammenfassung p50 443 ms, p95 1 000 ms — das ist
+das Fenster selbst.
 
-**Was dieser Test ausdrücklich NICHT misst:** den Sprung über
-Cloudflares Kante. Der Worker ist nicht ausgerollt; gemessen wird alles,
-was Vision Universe selbst verantwortet — Tiingo → tiingo-link →
-transport → Parser → subscription-manager → bar-merge → free-budget →
-VuLive → Browser. Eine Zahl für eine Strecke, die niemand gemessen hat,
-wäre schlimmer als keine.
+### Eine Annahme, die diese Messung widerlegt hat
+
+Die Vorausschau des Budgetwächters rechnete mit **1,7** Ereignissen je
+Sekunde und Titel: der Spitze *eines* Titels im ganzen Band. Gemessen
+wurden für einen Korb aus 50 abonnierten Titeln **0,34** je Titel — ein
+Fünftel davon.
+
+Die Folge war sichtbar: die Schranke lehnte den **40. von 50** Titeln
+ab, während der tatsächliche Verbrauch bei **0,1 %** des Kontingents
+lag. Eine Schranke, die bei einem Tausendstel des Verbrauchs schließt,
+schützt nichts — sie verhindert nur den Betrieb.
+
+Gerechnet wird jetzt mit dem gemessenen Korbdurchschnitt mal 2,5 =
+**0,85**: deutlich über der Messung, immer noch unter der Einzelspitze.
+Beide Messwerte bleiben als Konstanten dokumentiert.
+
+**Warum das sicher bleibt:** die Vorausschau entscheidet nur die
+*Aufnahme*. WARNING bei 70 % und PROTECT bei 85 % hängen am **gezählten**
+Verbrauch, nicht an der Annahme. Ein eigener Test (FB-17) erzwingt das
+mit einer absichtlich winzigen Annahme. Die Schwellen selbst sind
+unverändert.
+
+---
+
+## 7a. Production-Proof (17.09.2026, 10:16 New York)
+
+**Ausgerollt auf Cloudflare Free. Beide Endpunkte grün.**
+
+| | `live.visionuniverse.de` | `vu-live.little-credit-15d3.workers.dev` |
+|---|---|---|
+| `/version` mit richtiger Semantik | ✅ | ✅ |
+| `/health` ohne Schlüssel | ✅ | ✅ |
+| Fremder Ursprung bleibt draußen | ✅ | ✅ |
+| CORS für `research.visionuniverse.de` | ✅ | ✅ |
+| WebSocket + Begrüßung | ✅ | ✅ |
+| Kurse während der Sitzung | ✅ | ✅ |
+| **Ergebnis** | **PASS** | **PASS** |
+
+**Erster Kurs beim Client, einschließlich Cloudflares Kante:**
+
+| Titel | `live.visionuniverse.de` | workers.dev |
+|---|---|---|
+| AAPL | 2 788 ms | 2 481 ms |
+| NVDA | 2 788 ms | 2 481 ms |
+| MSFT | 1 751 ms | 4 999 ms |
+| PANW | 4 984 ms | 3 493 ms |
+| VLO | 11 171 ms | 8 314 ms |
+| **Median** | **2 788 ms** | **2 481 ms** |
+
+Darin enthalten: Verbindungsaufbau zum Worker, Aufbau der
+Anbieterverbindung und ein Zusammenfassungsfenster von einer Sekunde.
+VLO ist der illiquideste der fünf — das ist der Markt, nicht das System.
+
+**Cloudflare-Status nach dem Lauf** (aus `/health` des laufenden
+Objekts): Manager `LIVE`, Modus `dynamic`, fünf Titel abonniert,
+187 Anbieternachrichten, **13 Anfragen**, Kontingent-Urteil **OK**.
+
+**Deployment:** 119,09 KiB hochgeladen (gzip 27,90 KiB), Startzeit 6 ms,
+Bindung `env.VU_LIVE (VuLive) Durable Object`, `TIINGO_API_KEY` als
+Cloudflare-Secret über stdin gesetzt. `live.visionuniverse.de` neu
+angelegt; **`research.visionuniverse.de` unberührt auf GitHub Pages.**
+
+### Der Fehler, der zwischen Deployment und Betrieb stand
+
+Das erste Deployment war erfolgreich, `/health` grün, die Begrüßung kam
+beim Browser an — und kein einziger Kurs. Von außen sah das aus wie ein
+stiller Markt.
+
+Es war eine Zeile: **Cloudflare nimmt für ein WebSocket-Upgrade kein
+`wss://` entgegen, nur `http` oder `https`.** Der Rest der Welt schreibt
+die Adresse eines WebSockets mit `wss`, und so stand sie überall in
+diesem Repository. `fetch("wss://api.tiingo.com/iex")` ergibt in workerd
+nie eine Antwort mit `webSocket`; der Transport meldete `transportFailed`,
+und alles Weitere war korrektes Verhalten auf einer kaputten Verbindung.
+
+Zwei Dinge daraus, beide im Code:
+
+- `alsHttp()` in `tiingo-link.mjs` — drei Zeilen.
+- **VL-33**: die Testattrappe hält jetzt fest, *womit* der Link
+  aufzubauen versucht, und der Test besteht auf `https`. Ein Fehler, den
+  man von außen nicht sehen kann, braucht einen Test, der ihn von innen
+  sieht.
+
+Der Smoke-Test meldete anfangs nur „0 von 5 geliefert" ohne Grund — die
+Statusmeldungen mit `transportFailed` hatte er weggeworfen. Er hebt sie
+jetzt auf, holt am Ende `/health` und schneidet über `wrangler tail` das
+Protokoll des Objekts mit.
 
 ---
 
@@ -374,8 +469,8 @@ wäre schlimmer als keine.
 
 | Punkt | Warum offen | Folge |
 |---|---|---|
-| Deployment | Nicht ausgeführt — Owner-Entscheidung, nicht Mangel an Zugang (§1) | Der Schalter bleibt auf `false` |
-| Schreibrecht des Tokens | Nur durch Schreiben beweisbar | Zeigt sich beim ersten Deployment |
+| Client-Schalter | `stream.enabled` steht auf `false` | Die Aktienseite nutzt den Strom noch nicht — der Worker läuft, das Produkt zeigt ihn nicht |
+| Schreibrecht des Tokens | ✅ bewiesen durch das Deployment selbst | — |
 | Freigrenze wird geteilt | Ein weiterer Worker liegt im Konto, sein Verbrauch ist ungemessen | Reserve von 10 000 Anfragen muss ihn abdecken |
 | §1 Nachmeldung | Nur bei offener Börse messbar | Modus `reconnect` |
 | §17/§18 | Nur bei offener Börse messbar | — |
@@ -432,9 +527,11 @@ scripts/market/assert-no-secrets.mjs          --all (§12)
 | Schlüssel nirgends außer in der Anmeldung | ✅ gescannt |
 | Bestehende Tests nicht abgeschwächt | ✅ 965 + 206 grün |
 | V4.1 nicht zurückgebaut | ✅ Browser-QA 30/30 (29 bestehende + 1 neue) |
-| §1 Nachmeldung gemessen | ⏳ Messfenster |
-| §17 Lasttest | ⏳ Messfenster |
-| §18 E2E | ⏳ Messfenster |
+| §1 Nachmeldung gemessen | ✅ DYNAMIC_SUPPORTED |
+| §17 Lasttest 1/5/10/25/50 | ✅ 50 von 50, 0,1 % Kontingent |
+| §18 E2E fünf Titel | ✅ alle geliefert |
+| Deployment auf Cloudflare Free | ✅ ausgerollt, beide Endpunkte PASS |
+| `live.visionuniverse.de` | ✅ angelegt, `research.*` unberührt |
+| PAID_SERVICES_ENABLED = 0 | ✅ |
 | Zugang vorhanden und geprüft | ✅ gemessen (§1) |
-| Deployment | ⏸ nicht ausgeführt, Owner-Entscheidung |
 | Merge nach `main` | ⛔ nicht erfolgt, Owner-Abnahme |
