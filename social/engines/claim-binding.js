@@ -160,6 +160,24 @@
   function coveredNumbers(evidence) {
     var werte = [];
     (evidence || []).forEach(function (e) {
+      /* ---------------------------------------------------------------
+         AUCH DIE ZAHLEN IM BELEGSATZ
+
+         Die Quant-Engines liefern fertig formulierte Belege: "Kurs ueber
+         SMA50 (3.05 ATR)". Der Satz IST der Beleg — er stammt aus
+         derselben provenienzgebundenen Quelle wie der Wert daneben.
+
+         Nur den `value` zu decken hiesse, einen Autor fuer das Zitieren
+         eines Belegs zu bestrafen. Die erste Fassung tat genau das, und
+         sie haette jede reichhaltige Evidenz unbenutzbar gemacht: je
+         mehr Belegsaetze, desto mehr angeblich unbelegte Zahlen.
+         --------------------------------------------------------------- */
+      if (e.statement) {
+        numberTokens(String(e.statement)).forEach(function (t) {
+          alternativeReadings(t.raw).forEach(function (w) { werte.push(w); });
+        });
+      }
+
       var v = normaliseNumber(e.value);
       if (v === null) return;
       werte.push(v);
@@ -229,9 +247,15 @@
     });
 
     /* Datumsangaben gegen die Beobachtungszeitpunkte der Belege. */
-    var belegDaten = (evidence || [])
-      .map(function (e) { return String(e.observedAt || "").slice(0, 10); })
-      .filter(function (d) { return new RegExp("^" + ISO_DATE_SOURCE + "$").test(d); });
+    var belegDaten = [];
+    (evidence || []).forEach(function (e) {
+      var d = String(e.observedAt || "").slice(0, 10);
+      if (new RegExp("^" + ISO_DATE_SOURCE + "$").test(d)) belegDaten.push(d);
+      /* Und Datumsangaben, die in einem Belegsatz stehen. */
+      if (e.statement) {
+        dateTokens(String(e.statement)).forEach(function (t) { belegDaten.push(t.raw); });
+      }
+    });
     dateTokens(pruefbar).forEach(function (t) {
       if (belegDaten.indexOf(t.raw) !== -1) { bound.push({ kind: "date", raw: t.raw }); return; }
       unbound.push({ kind: "date", raw: t.raw,
@@ -241,6 +265,20 @@
     var entitaeten = (evidence || [])
       .map(function (e) { return String(e.entity || "").toUpperCase(); })
       .filter(Boolean);
+
+    /* Kuerzel, die in einem BELEGSATZ stehen, sind belegt — genau wie
+       die Zahlen darin. "Kurs ueber SMA50 (3.05 ATR)" bringt ATR, SMA
+       und RSI mit; sie als unbekannte Wertpapiere zu melden, hiesse
+       einen Autor fuer das Zitieren eines Belegs zu bestrafen.
+
+       Die feste Liste unten bleibt fuer Begriffe, die im Autorentext
+       vorkommen duerfen, ohne in einem Beleg zu stehen. */
+    (evidence || []).forEach(function (e) {
+      if (!e.statement) return;
+      tickerTokens(String(e.statement)).forEach(function (tok) {
+        if (entitaeten.indexOf(tok) === -1) entitaeten.push(tok);
+      });
+    });
     tickerTokens(pruefbar).forEach(function (tok) {
       if (NON_TICKER.indexOf(tok) !== -1) return;
       if (entitaeten.indexOf(tok) !== -1) { bound.push({ kind: "entity", raw: tok }); return; }

@@ -205,3 +205,20 @@ test("CB22 · Die Verneinung rettet nicht den Rest des Textes", () => {
      ganzen Absatz. */
   assert.equal(ok("Keine Anlageberatung. XOM duerfte weiter zulegen."), false);
 });
+
+test("CB23 · Ein Kuerzel aus einem Belegsatz ist belegt", () => {
+  /* "Kurs ueber SMA50 (3.05 ATR)" bringt ATR und SMA mit. Sie als
+     unbekannte Wertpapiere zu melden hiesse, einen Autor fuer das
+     Zitieren eines Belegs zu bestrafen. */
+  const ev = [{ entity: "XOM", metric: "Trend", value: 82.3,
+    statement: "Kurs ueber SMA50 (3.05 ATR)", observedAt: "2026-09-11T00:00:00Z" }];
+  assert.equal(CB.check("Kurs ueber SMA50 (3.05 ATR).", ev, {}).ok, true);
+});
+
+test("CB24 · Ein fremdes Kuerzel bleibt ein Befund", () => {
+  /* Die Lockerung gilt fuer Begriffe AUS den Belegen — nicht fuer
+     beliebige Grossbuchstaben. */
+  const ev = [{ entity: "XOM", metric: "Trend", value: 82.3,
+    statement: "Kurs ueber SMA50 (3.05 ATR)", observedAt: "2026-09-11T00:00:00Z" }];
+  assert.equal(CB.check("XOM und AAPL im Vergleich.", ev, {}).ok, false);
+});
