@@ -46,6 +46,17 @@
       "pullRequest": 101,
       "deliveryId": "2c4ca770-b28d-11f1-9dd2-d4cdebdcbfbd",
       "note": "Dritter Anstoss zu demselben unveraenderten Brief. PR 99 lag auf einem Branch ausserhalb der Konvention, PR 100 trug einen anderen Titel und war kein Draft. Beide verifizierten Proof-Laeufe hatten: Branch authoring/request/<content_id>, Titel VU-AUTHORING-REQUEST: <content_id>, Draft. PR 101 hat alle drei. Gleicher Blob, gleicher Processing Key - die Wiederholung kann nichts doppelt verarbeiten. ANGELAUFEN 11:45:48Z: der Agent meldet STARTED mit exakt dem Processing Key, den Vision Universe vorher ausgerechnet hat. Der Ausloeser war eng: Branch, Titelpraefix VU-AUTHORING-REQUEST und Draft-Status zusammen."
+    },
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:dabd135913761bf0f1be526f3362888359f5561a:1.0",
+      "state": "IN_FLIGHT",
+      "at": "2026-09-17T11:51:30Z",
+      "contentId": "vu-xom-20260911",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "dabd135913761bf0f1be526f3362888359f5561a",
+      "pullRequest": 101,
+      "deliveryId": "2c4ca770-b28d-11f1-9dd2-d4cdebdcbfbd",
+      "note": "BEOBACHTUNG: zweites STARTED zu DERSELBEN delivery_id (erstes 11:45:48Z). Der Agent ist auf ein einziges Ereignis zweimal angelaufen. Genau dafuer gibt es den Processing Key: er ist in beiden Laeufen identisch, das abgeschlossene Ergebnis ist unveraenderlich, und ein zweiter Schreibversuch wird festgehalten statt ausgefuehrt. Der Fall ist zugleich der Beleg dafuer, warum LOOP_PROTECTION_OPERATIONALLY_SUPPORTED und nicht FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN gilt: die Laufzahl ist von aussen nicht vollstaendig einsehbar, und hier war sie hoeher als eins."
     }
   ]
 }
