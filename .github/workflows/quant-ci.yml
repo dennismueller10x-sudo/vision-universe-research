@@ -7,12 +7,12 @@ name: Quant CI
 on:
   push:
     branches: [main]
-    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['scripts/vu2/build-release.mjs', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
-    paths: ['quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['scripts/vu2/build-release.mjs', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
