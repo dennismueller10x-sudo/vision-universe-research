@@ -988,6 +988,11 @@ async function main() {
          worden", fragt die Entscheidung. */
       caption: pkg.caption || null,
       hashtags: Array.isArray(pkg.hashtags) ? pkg.hashtags.slice() : [],
+      /* Die Herkunft gehoert an die Entscheidung, nicht in eine zweite
+         Tabelle, die man dazu-joinen muss. Ein Join, den jemand
+         vergessen kann, ist keine Kette. */
+      opportunityId: entry.candidate.opportunity.opportunityId,
+      signalIds: entry.candidate.opportunity.signalIds || [],
       plannedHourUtc: d.timingHour,
       timingSource: d.timingSource || null,
       timingReason: d.timingReason || null,
@@ -1099,7 +1104,12 @@ async function main() {
     signals: signalData.signals.length,
     opportunities: candidates.map((c) => ({
       opportunityId: c.opportunity.opportunityId, topic: c.opportunity.topic,
-      score: c.score.score, proposable: c.score.proposable, explanation: c.score.explanation
+      score: c.score.score, proposable: c.score.proposable, explanation: c.score.explanation,
+      /* Die Signale, aus denen diese Gelegenheit entstand. Ohne sie
+         bricht die Herkunftskette an ihrem Anfang ab — und der Anfang
+         ist die Stelle, an der sich spaeter am wenigsten rekonstruieren
+         laesst. */
+      signalIds: c.opportunity.signalIds || []
     })),
     packages: packages.map((p) => ({
       packageId: p.result.package.packageId, topic: p.result.package.topic,
