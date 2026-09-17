@@ -227,3 +227,62 @@ test("PL20 · Die Messungen ueberleben einen Neustart", () => {
   const b = Ledger.createLedger(schnappschuss.entries, schnappschuss.latencyObservations);
   assert.deepEqual(b.latencies(), [320, 360]);
 });
+
+/* ------------------------------------------------------------------ */
+/* DAS ZWEITE FENSTER                                                  */
+/* ------------------------------------------------------------------ */
+
+test("PL21 · Wer ewig neu anfaengt, laeuft trotzdem ab", () => {
+  /* Der Kontrolllauf D3 hat den Fehler gezeigt: der Anbieter meldet im
+     Backoff immer wieder STARTED, und jede Meldung setzt die Ruhe-Uhr
+     zurueck. Mit nur einem Fenster waere er NIE stale geworden. PR 101
+     wurde es nur, weil seine Wiederholungen nach sechs Versuchen
+     aufhoerten - also aus Zufall und nicht aus Logik. */
+  const frist = L.lease();
+
+  /* Lebenszeichen alle 10 Minuten, seit vier Stunden. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T14:00:00Z",
+    lastActivityAt: "2026-09-17T17:55:00Z",
+    startedCount: 20
+  }, { now: "2026-09-17T18:00:00Z" });
+
+  assert.equal(z.state, "STALE_NO_RESULT");
+  assert.equal(z.window, "total");
+  assert.ok(z.totalSeconds > frist.totalSeconds);
+  assert.match(z.explanation, /faengt nicht endlos an/);
+});
+
+test("PL22 · Das Gesamtfenster ist weiter als eine beobachtete Backoff-Folge", () => {
+  /* PR 101 lief ueber 86 Minuten Wiederholungen. Ein Gesamtfenster
+     darunter haette mitten in einen noch laufenden Backoff
+     hineingeschnitten. */
+  const f = L.lease();
+  assert.ok(f.totalSeconds > 86 * 60,
+    "das Gesamtfenster schneidet eine beobachtete Wiederholungsfolge ab");
+  assert.equal(f.totalFactor, 3);
+});
+
+test("PL23 · Innerhalb beider Fenster bleibt es IN_FLIGHT", () => {
+  /* Der reale Stand von D3 kurz nach dem vierten STARTED. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T17:16:36Z",
+    lastActivityAt: "2026-09-17T17:45:03Z",
+    startedCount: 4
+  }, { now: "2026-09-17T18:00:00Z" });
+  assert.equal(z.state, "IN_FLIGHT");
+  assert.equal(z.window, "quiet");
+});
+
+test("PL24 · Das Ruhefenster wirkt weiterhin fuer sich", () => {
+  /* PR 101: Wiederholungen hoerten auf, seither Stille. Das
+     Gesamtfenster war da noch nicht ausgeschoepft - das Ruhefenster
+     muss allein greifen. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T11:45:48Z",
+    lastActivityAt: "2026-09-17T13:11:37Z",
+    startedCount: 6
+  }, { now: "2026-09-17T14:30:00Z" });
+  assert.equal(z.state, "STALE_NO_RESULT");
+  assert.equal(z.window, "quiet");
+});

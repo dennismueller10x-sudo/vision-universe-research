@@ -181,6 +181,10 @@ export function beobachtung(ledger, processingKey, extra) {
 
   return Object.assign({
     startedCount: started.length,
+    /* Beide Enden. Die letzte Aktivitaet misst die Ruhe, die erste den
+       ganzen Vorgang — ein Anbieter im Backoff setzt sonst mit jeder
+       Meldung die Uhr zurueck und wird nie stale. */
+    firstActivityAt: letzte.length ? letzte[0] : null,
     lastActivityAt: letzte.length ? letzte[letzte.length - 1] : null,
     deliveryIds: Array.from(new Set(gesehen.map((e) => e.deliveryId).filter(Boolean))),
     entries: alle.length,

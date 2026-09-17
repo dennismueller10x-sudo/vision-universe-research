@@ -136,6 +136,11 @@
   var MIN_LEASE_SEKUNDEN = 690;      /* 2 x 345 */
   var MAX_LEASE_SEKUNDEN = 43200;    /* 12 Stunden */
 
+  /* Wie viele volle Fristen darf ein Vorgang INSGESAMT dauern, auch wenn
+     der Anbieter zwischendurch Lebenszeichen sendet? Siehe die
+     Begruendung bei `totalSeconds`. */
+  var GESAMT_FAKTOR = 3;
+
   function sekundenZwischen(a, b) {
     var t1 = Date.parse(a), t2 = Date.parse(b);
     if (!isFinite(t1) || !isFinite(t2)) return null;
@@ -177,6 +182,27 @@
       sampleSize: messungen.length,
       longestObserved: laengste,
       clamped: frist !== Math.round(roh),
+      /* -----------------------------------------------------------------
+         DAS ZWEITE FENSTER
+
+         Die Frist oben misst die RUHE: wie lange nach einem Lebenszeichen
+         darf noch ein Ergebnis kommen. Sie allein reicht nicht.
+
+         Der Kontrolllauf D3 hat es gezeigt: der Anbieter meldet im
+         Backoff immer wieder STARTED — 5,9 dann 9,5 dann 13,1 Minuten
+         Abstand. Jede dieser Meldungen setzt die Ruhe-Uhr zurueck. Ein
+         Anbieter, der ewig weitermeldet, waere damit NIE stale. PR 101
+         wurde es nur, weil seine Wiederholungen nach sechs Versuchen
+         aufhoerten.
+
+         Deshalb ein zweites Fenster ueber den GESAMTEN Vorgang: drei
+         volle Fristen ohne Ergebnis. Die beobachtete Wiederholungsfolge
+         von PR 101 lief ueber 86 Minuten; drei Fristen sind mit 172
+         Minuten komfortabel darueber, und der Faktor steht hier, statt
+         sich in einer Zahl zu verstecken.
+         ----------------------------------------------------------------- */
+      totalSeconds: Math.min(MAX_LEASE_SEKUNDEN * 3, frist * GESAMT_FAKTOR),
+      totalFactor: GESAMT_FAKTOR,
       explanation: "Laengster beobachteter Lauf " + laengste + " s, Regime " + r.id +
         " (n=" + messungen.length + "), Faktor " + r.factor + " ergibt " +
         Math.round(roh) + " s" +
@@ -264,6 +290,25 @@
         { ageSeconds: Math.round(alter) });
     }
 
+    /* Das Gesamtfenster, unabhaengig davon, wie oft der Anbieter
+       zwischendurch STARTED meldet. */
+    var erste = beobachtung.firstActivityAt || letzte;
+    var gesamt = sekundenZwischen(erste, jetzt);
+    if (gesamt !== null && gesamt >= 0 && frist.totalSeconds &&
+        gesamt > frist.totalSeconds && beobachtung.startedCount > 0) {
+      return fertig("STALE_NO_RESULT",
+        "Der Vorgang laeuft seit " + Math.round(gesamt) + " s und hat " +
+        beobachtung.startedCount + "x STARTED gemeldet, ohne je ein Ergebnis zu " +
+        "liefern. Das Gesamtfenster betraegt " + frist.totalSeconds + " s (" +
+        frist.totalFactor + " volle Fristen). Weitere Lebenszeichen aendern daran " +
+        "nichts: ein Anbieter, der nur meldet, dass er wieder anfaengt, faengt " +
+        "nicht endlos an. " +
+        "Kein Content-Fehler, kein Leistungsurteil, keine Ablehnung — und keine " +
+        "Aussage darueber, ob der Lauf beim Anbieter noch laeuft.",
+        { ageSeconds: Math.round(alter), totalSeconds: Math.round(gesamt),
+          startedCount: beobachtung.startedCount, window: "total" });
+    }
+
     if (beobachtung.startedCount > 0 && alter > frist.seconds) {
       return fertig("STALE_NO_RESULT",
         "Seit der letzten beobachtbaren Aktivitaet sind " + Math.round(alter) +
@@ -273,15 +318,22 @@
         "Das ist kein Content-Fehler, kein Leistungsurteil, keine Ablehnung " +
         "und keine Aussage darueber, ob der Lauf beim Anbieter noch laeuft — " +
         "das kann diese Schnittstelle nicht sehen.",
-        { ageSeconds: Math.round(alter), startedCount: beobachtung.startedCount });
+        { ageSeconds: Math.round(alter),
+          totalSeconds: (gesamt !== null && gesamt >= 0) ? Math.round(gesamt) : null,
+          startedCount: beobachtung.startedCount, window: "quiet" });
     }
 
     if (beobachtung.startedCount > 0) {
       return fertig("IN_FLIGHT",
         "Der Agent hat " + beobachtung.startedCount + "x STARTED gemeldet, " +
-        "zuletzt vor " + Math.round(alter) + " s. Die Frist betraegt " +
-        frist.seconds + " s.",
-        { ageSeconds: Math.round(alter), startedCount: beobachtung.startedCount });
+        "zuletzt vor " + Math.round(alter) + " s (Frist " + frist.seconds + " s)" +
+        (gesamt !== null && gesamt >= 0
+          ? ", der Vorgang laeuft seit " + Math.round(gesamt) + " s von hoechstens " +
+            frist.totalSeconds + " s"
+          : "") + ".",
+        { ageSeconds: Math.round(alter),
+          totalSeconds: gesamt !== null ? Math.round(gesamt) : null,
+          startedCount: beobachtung.startedCount, window: "quiet" });
     }
 
     if (alter > frist.seconds) {

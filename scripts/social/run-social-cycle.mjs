@@ -413,6 +413,7 @@ function creativeZustand(contentId, nowIso) {
 
   const z = Lifecycle.classify({
     startedCount: alle.filter((e) => e.state === "IN_FLIGHT").length,
+    firstActivityAt: zeiten.length ? zeiten[0] : null,
     lastActivityAt: zeiten.length ? zeiten[zeiten.length - 1] : null,
     resultPresent: existsSync(ergebnisPfad)
   }, { now: nowIso });
