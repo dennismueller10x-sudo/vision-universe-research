@@ -32,7 +32,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var CONTRACT_VERSION = "discover-contract-1.0.0";
+  var CONTRACT_VERSION = "discover-contract-1.3.0";
 
   var FIELD_STATUS = [
     "CALCULATED", "WITHHELD_REDISTRIBUTION", "SOURCE_MISSING",
@@ -43,7 +43,9 @@
 
   var SIGNALS = [
     "new52WeekHigh", "nearHigh", "marketLeader", "momentumLeader",
-    "relativeStrengthLeader", "breakout", "trendIntact", "sectorLeader"
+    "relativeStrengthLeader", "breakout", "trendIntact", "sectorLeader",
+    /* Fundamental (discover/engines/fundamentals.js, aus dem SEC-Consumer-Bundle) */
+    "fundamentals", "compounder", "turnaround", "netCash"
   ];
 
   var METRICS = [
@@ -53,7 +55,11 @@
     "volatility252d", "maxDrawdown252d", "volumeRatio20over60", "volumeSpikeRatio",
     "trendAlignment", "leadershipScore", "momentumScore", "relativeStrengthScore",
     "breakoutScore", "leadershipPercentile", "momentumPercentile",
-    "relativeStrengthPercentile"
+    "relativeStrengthPercentile",
+    /* Fundamental (Praefix f_): Geschaeftsjahre der SEC-Pipeline; Bewertung
+       aus Kurs und Fundamentals. null, wo die Reihe fehlt - nie geschaetzt. */
+    "f_revenue", "f_revenueGrowth3y", "f_revenueGrowth10y", "f_revenueGrowthTTM", "f_netMargin", "f_fcfMargin",
+    "f_earningsAcceleration", "f_marginExpansion3y", "f_roe", "f_pe", "f_ps", "f_fcfYield"
   ];
 
   /* Technical-Intelligence-Zustaende (§7). Bewusst dieselben vier Worte wie
@@ -105,8 +111,11 @@
       contractVersion: CONTRACT_VERSION,
       symbol: String(raw.symbol || raw.ticker || "").toUpperCase(),
       securityId: raw.securityId || null,
+      instrumentId: raw.instrumentId || null,
       companyName: raw.companyName || null,
       companyNameStatus: raw.companyName ? "CALCULATED" : (raw.companyNameStatus || "SOURCE_MISSING"),
+      legalName: raw.legalName || null,
+      nameSource: raw.nameSource || null,
       universeId: raw.universeId || null,
       dataMode: DATA_MODES.indexOf(raw.dataMode) === -1 ? "mock" : raw.dataMode,
       isMock: raw.dataMode !== "real",
@@ -138,6 +147,20 @@
       performancePathStatus: Array.isArray(raw.performancePath) ? "CALCULATED"
         : (raw.performancePathStatus || "INSUFFICIENT_HISTORY"),
       hasPriceSeries: !!raw.hasPriceSeries,
+      /* Die Micro-Kursreihe (V3). Sie ist die einzige Grundlage, aus der
+         eine Karte einen Verlauf zeichnen darf - und sie traegt ihre
+         Herkunft: Quelle, Reihentyp, Stand. Ohne Status CALCULATED gibt
+         es keine Punkte, und ohne Punkte gibt es keinen Chart. Der
+         rebasierte Renditepfad bleibt als ZAHLENREIHE erhalten, wird aber
+         nicht mehr als Linie gezeichnet (Chart Truth Contract, §12). */
+      priceSeries: raw.priceSeries && typeof raw.priceSeries === "object" ? raw.priceSeries
+        : { status: raw.priceSeriesStatus || "SOURCE_MISSING", source: null,
+            priceSeriesType: null, asOf: null, ranges: null, points: null, message: null },
+      /* Redaktionelle Metadata (discover/config/company-recognition.json):
+         womit die Firma Geld verdient, und wie bekannt sie ist. Kein Score,
+         keine Kennzahl - eine Beschriftung. */
+      was: typeof raw.was === "string" && raw.was ? raw.was : null,
+      recognitionTier: isNum(raw.recognitionTier) ? raw.recognitionTier : null,
       signals: {},
       metrics: {},
       metricStatus: {},
@@ -203,6 +226,28 @@
         throw new Error("discover/contract: Metrik " + m + " ohne Wert, aber Status CALCULATED");
       }
     });
+    /* Der Chart Truth Contract: Punkte nur mit Status CALCULATED, und
+       CALCULATED nur mit Punkten. Alles andere waere ein Verlauf, den
+       niemand belegen kann - oder ein belegter, den niemand sieht. */
+    var ps = stock.priceSeries;
+    if (ps && typeof ps === "object") {
+      var hatPunkte = (Array.isArray(ps.points) && ps.points.length > 0) ||
+                      (ps.ranges && Object.keys(ps.ranges).length > 0);
+      /* Eine Karte darf die Reihe auch als Verweis tragen (path): die
+         Punkte liegen dann in discover/data/series/ und werden geladen,
+         sobald die Karte sichtbar ist. Der Verweis ist ein Beleg wie die
+         Punkte selbst - die Nachrechnung prueft, dass die Datei existiert. */
+      var hatVerweis = typeof ps.path === "string" && ps.path.length > 0;
+      if (ps.status === "CALCULATED" && !hatPunkte && !hatVerweis) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries CALCULATED ohne Punkte und ohne Verweis");
+      }
+      if (ps.status !== "CALCULATED" && hatPunkte) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries traegt Punkte mit Status " + ps.status);
+      }
+      if (ps.status === "CALCULATED" && !ps.source) {
+        throw new Error("discover/contract: " + stock.symbol + " priceSeries ohne Herkunft");
+      }
+    }
     /* Ein Signal ohne die Kennzahl, aus der es entsteht, waere eine
        Behauptung. Die beiden teuersten pruefen wir direkt. */
     if (stock.signals.new52WeekHigh && stock.metrics.distanceTo52wHigh === null) {
@@ -230,7 +275,13 @@
       sparklineStatus: stock.sparklineStatus,
       performancePath: stock.performancePath,
       performancePathStatus: stock.performancePathStatus,
+      priceSeries: stock.priceSeries || null,
+      was: stock.was || null,
+      recognitionTier: stock.recognitionTier || null,
       world: stock.world || null,
+      /* Der fundamentale Einstieg in die Geschichte des Titels: ein Satz,
+         eine Zahl, mit Beleg - gefuellt vom Build aus der Fundamentals-Engine. */
+      hook: stock.hook || null,
       signals: stock.signals,
       metrics: stock.metrics,
       metricStatus: stock.metricStatus,
@@ -242,6 +293,13 @@
          was der Leser gesehen hat. */
       sectorRank: stock.sectorRank || null,
       plain: stock.plain || null,
+      /* V4 §17-20: warum steht der Titel hier - maschinenlesbar. Der Build
+         fuellt rankingReason je Reihe (Rang, Sortierwert, Regel, Score-
+         Beitraege, Bekanntheitszuschlag); indexMemberships nennt die
+         Indizes laut Fondsbestand (quant/data/market/index-membership). */
+      rankingReason: stock.rankingReason || null,
+      indexMemberships: stock.indexMemberships || [],
+      qualification: stock.qualification || null,
       dataQuality: stock.dataQuality,
       asOf: stock.asOf
     };
@@ -257,6 +315,7 @@
     return {
       symbol: stock.symbol, companyName: stock.companyName, sector: stock.sector,
       dataMode: stock.dataMode, world: stock.world || null,
+      was: stock.was || null,
       price: stock.price, changePercent: stock.changePercent,
       performancePath: stock.performancePath,
       badges: (stock.badges || []).slice(0, 1),

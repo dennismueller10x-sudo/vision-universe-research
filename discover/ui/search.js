@@ -72,14 +72,18 @@
         /* Reihenfolge mit Absicht: ein exakter Ticker zuerst, dann Ticker,
            die so beginnen, dann Namenstreffer. Wer "NVDA" tippt, meint
            nicht "NVR". */
-        var exakt = [], beginnt = [], enthaelt = [];
+        var exakt = [], beginnt = [], nameBeginnt = [], enthaelt = [], sektor = [];
         index.entries.forEach(function (e) {
           var name = (e.n || "").toUpperCase();
+          var sec = (e.sec || "").toUpperCase();
           if (e.s === q) exakt.push(e);
           else if (e.s.indexOf(q) === 0) beginnt.push(e);
+          else if (name.indexOf(q) === 0) nameBeginnt.push(e);
           else if (name.indexOf(q) !== -1 || e.s.indexOf(q) !== -1) enthaelt.push(e);
+          else if (q.length >= 3 && sec.indexOf(q) !== -1) sektor.push(e);
         });
-        treffer = exakt.concat(beginnt, enthaelt).slice(0, 14);
+        /* Firma, Ticker, dann Sektor - und nie mehr als 14 Knoten im DOM. */
+        treffer = exakt.concat(beginnt, nameBeginnt, enthaelt, sektor).slice(0, 14);
         zeichnen(index);
       }).catch(function () {
         S.clear(results);
@@ -110,7 +114,7 @@
              Firmennamen, keine Kuerzelliste. */
           el("span", { class: "nm" }, [
             document.createTextNode(hit.n || hit.s),
-            el("em", { text: [hit.s, hit.sec, hit.m ? null : "Modelltitel",
+            el("em", { text: [hit.s, hit.a || hit.sec, hit.m ? null : "Modelltitel",
                               hit.h ? "am Jahreshoch" : null].filter(Boolean).join(" · ") })
           ]),
           miniPfad(hit),

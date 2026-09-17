@@ -41,6 +41,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
+const { resolveProductUniverse } = await import(join(root, "scripts", "market", "universe-source.mjs"));
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
@@ -54,6 +55,8 @@ const Indicators = require(join(root, "discover", "engines", "indicators.js"));
 const TI = require(join(root, "discover", "engines", "technical-intelligence.js"));
 const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"));
+const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"));
+const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -61,6 +64,46 @@ const GATES_CONFIG = readJSON(join(root, "quant", "config", "feature-gates.json"
 const PREVIEW_CONFIG = readJSON(join(root, "quant", "config", "development-preview.json"));
 const GATES = DisplayPolicy.gatesFromConfig(GATES_CONFIG);
 DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
+
+/* Redaktionelle Metadata (V3). Beides ist Beschriftung, keine Kennzahl:
+   die Bekanntheitsliste bestimmt nie, OB ein Titel in einer Reihe steht,
+   und ein Thema ist eine Zuordnung, keine Aussage ueber eine Aktie. */
+const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies || {};
+
+/* Kompakte Kursreihen (ein Jahr Tagesschluss) fuer den freigegebenen
+   Umfang - quant/data/market/discover-series/, geschrieben von
+   scripts/market/publish-discover-series.mjs, geprueft vom Hygiene-Guard.
+   Fuer jeden Titel dort gibt es einen echten Micro-Chart; fuer jeden
+   anderen die Renditeleiter. Der Build erweitert nichts: er liest, was
+   die Richtlinie freigegeben hat. */
+function discoverSeriesIndex() {
+  const dir = join(root, "quant", "data", "market", "discover-series");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json") || name === "index.json") continue;
+    const payload = readJSON(join(dir, name));
+    if (payload && payload.ticker && Array.isArray(payload.points) && payload.points.length >= 30) {
+      map.set(payload.ticker, payload);
+    }
+  }
+  return map;
+}
+const THEMES = readJSON(join(root, "discover", "config", "themes.json"));
+
+/* Die Reihen: die der Methodik plus eine je Themenwelt. Themenreihen
+   entstehen aus derselben Maschine wie alle anderen (buildRow) - mit
+   einer Aufnahmeregel, die "steht in der Themenliste" heisst, und einer
+   Sortierung nach Kennzahl. Was auf der Karte steht, ist gerechnet. */
+function themeRows() {
+  return (THEMES.themes || []).map((t) => ({
+    id: "thema-" + t.id, title: t.title, subtitle: t.lead, theme: t.id, editorial: true,
+    sort: "leadershipScore", direction: "desc", limit: 30, require: ["leadershipScore"],
+    filter: "thema", tickers: t.tickers, world: t.world || "sectors", microRange: "6M",
+    minMembers: isNum(THEMES.minMembers) ? THEMES.minMembers : 5
+  }));
+}
+const ROWS = METHODOLOGY.rows.concat(themeRows());
 
 function readJSON(p) { return JSON.parse(readFileSync(p, "utf8")); }
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -221,6 +264,50 @@ function weeklySparkline(closes, points = 40) {
   return out;
 }
 
+/* ------------------------------------------------- Micro-Kursreihe (V3)
+
+   Die Karten zeichnen keinen Renditepfad mehr als Linie. Was sie zeichnen
+   duerfen, ist eine echte Kursreihe - und die gibt es nur, wo sie
+   ausgeliefert werden darf. Diese Funktion baut daraus die kleinste Form,
+   die eine Karte braucht: vier Zeitraeume, je hoechstens 64 Punkte,
+   Schlusskurse auf zwei Stellen, mit Herkunft und Stand. Zwischen den
+   Punkten liegt nichts Erfundenes: jeder Punkt ist ein Tagesschluss. */
+/* Ein Jahr Tagesschluss je Titel (270 Handelstage, mit Reserve). Die
+   Zeitraeume 1M/3M/6M/1J sind Fenster darauf, die der Micro-Chart selbst
+   schneidet - ein Datensatz je Titel, nicht vier. */
+const MICRO_DAYS = 270;
+
+function microSeries(dated, source, priceSeriesType) {
+  const valid = (dated || []).filter((b) => isNum(b.close) && b.date);
+  if (valid.length < 10) {
+    return withheldSeries("INSUFFICIENT_HISTORY", "Zu wenig Historie für einen Verlauf.");
+  }
+  const fenster = valid.slice(-Math.min(MICRO_DAYS, valid.length));
+  return { status: "CALCULATED", source, priceSeriesType: priceSeriesType || "SPLIT_ADJUSTED",
+           dataMode: null, grain: "daily", asOf: fenster[fenster.length - 1].date,
+           from: fenster[0].date, to: fenster[fenster.length - 1].date,
+           points: fenster.map((b) => [b.date, round(b.close, 2)]), path: null, message: null };
+}
+function withheldSeries(status, message) {
+  return { status, source: null, priceSeriesType: null, asOf: null, from: null, to: null,
+           points: null, path: null, message };
+}
+/**
+ * Der Verweis, den eine Karte traegt: Status, Herkunft, Stand, Zeitraum
+ * und der Pfad zur Reihe - keine Punkte. Die Punkte laedt die Karte,
+ * sobald sie sichtbar ist (ui/series-loader.js); ein Titel in drei
+ * Sammlungen laedt sie einmal.
+ */
+function seriesRef(series, range, universeId, symbol, path) {
+  if (!series || series.status !== "CALCULATED") return series;
+  return { status: series.status, source: series.source, priceSeriesType: series.priceSeriesType,
+           asOf: series.asOf, range: range || "6M", from: series.from, to: series.to,
+           points: null, path: path || ("/discover/data/series/" + universeId + "/" + symbol + ".json"),
+           message: null };
+}
+/* Kompatibilitaet: aeltere Stellen im Build nennen die Funktion noch so. */
+const slimSeries = (series, range) => series;
+
 /* ============================================================ Kennzahlen */
 
 /** Flache Kennzahlen aus einem market-factors-Ergebnis. */
@@ -254,15 +341,72 @@ function scoreAll(metrics, values) {
 }
 
 /* ====================================================== Universum: REAL */
-function buildRealUniverse(nameMap, goldenBars) {
-  const factors = readJSON(join(root, "quant", "data", "market", "factors", "factors-GATE_500.json"));
-  const universe = readJSON(join(root, "quant", "data", "market", "scale", "universe-GATE_500.json"));
-  const byTicker = new Map(universe.securities.map((s) => [s.ticker, s]));
+/* Die Faktordatei des Produktuniversums: factors-FULL_UNIVERSE.json, gerechnet
+   von build-market-factors.mjs --gate FULL_UNIVERSE --product-universe ueber
+   den Company Master. Kein Rueckfall auf ein kleineres Gate mehr (die
+   Uebergangsloesung bis 2026-09-13): fehlt die Datei, bricht der Build ab. */
+function pickFactorsFile() {
+  const file = join(root, "quant", "data", "market", "factors", "factors-FULL_UNIVERSE.json");
+  if (!existsSync(file)) {
+    throw new Error("factors-FULL_UNIVERSE.json fehlt - Einzelzeilen fuer das Produktuniversum werden vom " +
+                    "Workflow market-data-refresh.yml gerechnet (build-market-factors.mjs --product-universe).");
+  }
+  return { gate: "FULL_UNIVERSE", file };
+}
+
+/* Der kanonische Company Master (quant/data/universe/instruments/**, main):
+   dieselbe instrumentId in Discover, Suche und Aktienseite. Fehlt er,
+   laeuft der Build weiter und die Payloads tragen keine instrumentId. */
+function loadMasterIndex() {
+  const dir = join(root, "quant", "data", "universe", "instruments");
+  const map = new Map();
+  if (!existsSync(dir)) return map;
+  for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+    let payload; try { payload = readJSON(join(dir, f)); } catch { continue; }
+    for (const inst of payload.instruments || []) if (inst.symbol && !map.has(inst.symbol)) map.set(inst.symbol, inst);
+  }
+  return map;
+}
+
+function buildRealUniverse(nameMap, goldenBars, compactSeries) {
+  const masterByTicker = loadMasterIndex();
+  const universeSource = resolveProductUniverse(root);
+  const faktorQuelle = pickFactorsFile();
+  const factors = readJSON(faktorQuelle.file);
+  const byTicker = new Map(universeSource.securities.map((s) => [s.ticker, s]));
+  const factorTickers = new Set(factors.securities.map((f) => f.ticker));
+  const withFactorRows = universeSource.securities.filter((s) => factorTickers.has(s.ticker)).length;
+  const factorCoverage = {
+    universe: universeSource.securities.length,
+    withFactorRows,
+    factorsGate: faktorQuelle.gate,
+    factorsUniverseSource: factors.universeSource || null,
+    /* partial heisst jetzt: die Faktordatei kennt nicht jeden Titel des
+       Produktuniversums - z. B. weil sie vor der Uebernahme des Company
+       Masters gerechnet wurde. Der naechste Workflow-Lauf schliesst das. */
+    partial: withFactorRows < universeSource.securities.length * 0.9,
+    note: withFactorRows < universeSource.securities.length * 0.9
+      ? `Faktorzeilen fuer ${withFactorRows} von ${universeSource.securities.length} Titeln des Produktuniversums; der naechste Lauf von market-data-refresh.yml rechnet den Rest.`
+      : "Faktorzeilen fuer das Produktuniversum (Company Master)."
+  };
 
   const stocks = [];
+  const consumerPolicy = { allowed: 0, excludedByType: {} };
   for (const sec of factors.securities) {
+    /* Nur Titel des Produktuniversums: was der Company Master ausschliesst
+       (Warrants, Units, Rights, Testwerte), bekommt keine Karte - auch wenn
+       eine Faktorzeile existiert. */
+    if (!byTicker.has(sec.ticker)) continue;
     const values = sec.values || {};
     const ref = byTicker.get(sec.ticker) || {};
+    /* Consumer-Instrumentenpolitik (universe-source.mjs): Discover zeigt
+       Unternehmen, keine Vorzugspapiere, Units, Warrants, Fonds. */
+    if (ref.consumer === false) {
+      const typ = ref.instrumentType || "UNKNOWN";
+      consumerPolicy.excludedByType[typ] = (consumerPolicy.excludedByType[typ] || 0) + 1;
+      continue;
+    }
+    consumerPolicy.allowed++;
     const metrics = flatMetrics(values);
     const scores = scoreAll(metrics, values);
     const named = nameMap.get(sec.ticker);
@@ -273,33 +417,67 @@ function buildRealUniverse(nameMap, goldenBars) {
     metrics.breakoutScore = scores.breakout.score;
 
     const golden = goldenBars.get(sec.ticker);
-    const goldenCloses = golden ? splitAdjustedCloses(golden.bars).map((b) => b.close) : null;
+    const goldenDated = golden ? splitAdjustedCloses(golden.bars) : null;
+    const goldenCloses = goldenDated ? goldenDated.map((b) => b.close) : null;
+    const erkannt = RECOGNITION[sec.ticker] || null;
+    /* Die kompakte Reihe: fuer jeden Titel, den der Umfang freigibt. Die
+       volle Golden-Five-Historie hat Vorrang - dieselben Kurse, nur
+       laenger. */
+    const kompakt = compactSeries.get(sec.ticker) || null;
+    const kompaktDated = kompakt ? kompakt.points.map((p) => ({ date: p[0], close: p[1] })) : null;
+    /* Der Pfad der Reihe: die kompakte Reihe wird nicht kopiert, die Karte
+       laedt die kanonische Datei aus quant/data/market/discover-series/.
+       Nur Titel mit voller Historie und ohne kompakte Reihe bekommen eine
+       Kopie im Series-Store. */
+    const seriesPath = kompakt ? "/quant/data/market/discover-series/" + (kompakt.securityId || sec.securityId) + ".json" : null;
+    const kursCloses = goldenCloses || (kompaktDated ? kompaktDated.map((b) => b.close) : null);
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
+      instrumentId: (masterByTicker.get(sec.ticker) || {}).instrumentId || null,
       securityId: sec.securityId,
-      companyName: named ? named.name : null,
-      companyNameStatus: named ? "CALCULATED" : "SOURCE_MISSING",
+      /* Name: displayName der kanonischen Namensschicht, sonst ihr
+         companyName, sonst die Repository-Namensquellen, sonst nichts -
+         der Ticker wird nie als Name eingetragen. */
+      companyName: ref.displayName || ref.companyName || (named ? named.name : null),
+      companyNameStatus: (ref.companyName || named) ? "CALCULATED" : "SOURCE_MISSING",
+      legalName: ref.companyName || null,
+      nameSource: ref.nameSource || (named ? named.source : null),
       universeId: "US_REAL",
       dataMode: "real",
       provider: factors.provider || "tiingo",
       exchange: sec.exchange || ref.exchange || null,
-      sector: sec.sector || (named && named.sector) || null,
-      sectorStatus: sec.sector ? (sec.sectorStatus || "CURATED") : "SOURCE_MISSING",
+      /* Sektor: aus der Faktorzeile, sonst aus der Universumsquelle (kuratierte
+         Zuordnung), sonst aus der Namensquelle - nie geraten. */
+      sector: sec.sector || ref.sector || (named && named.sector) || null,
+      sectorStatus: sec.sector ? (sec.sectorStatus || "CURATED")
+                  : ref.sector ? (ref.sectorStatus || "CURATED") : "SOURCE_MISSING",
       /* Absolute Kursniveaus realer Titel bleiben nach der
          Redistributionsregel des Bestandssystems zurueck. Die Card zeigt
          deshalb keinen Preis - und sagt warum, statt eine Null. */
-      price: goldenCloses
-        ? Contract.field(round(goldenCloses[goldenCloses.length - 1], 4))
+      /* Der letzte Schlusskurs: aus der vollen Historie oder aus der
+         kompakten Reihe - beide sind freigegeben (Eigentuemerentscheidung
+         2026-09-13). Ohne Reihe bleibt das Feld leer und sagt warum. */
+      price: kursCloses
+        ? Contract.field(round(kursCloses[kursCloses.length - 1], 4))
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
-      changePercent: goldenCloses && goldenCloses.length > 1
-        ? Contract.field(round((goldenCloses[goldenCloses.length - 1] / goldenCloses[goldenCloses.length - 2] - 1) * 100, 4))
+      changePercent: kursCloses && kursCloses.length > 1
+        ? Contract.field(round((kursCloses[kursCloses.length - 1] / kursCloses[kursCloses.length - 2] - 1) * 100, 4))
         : Contract.field(null, "WITHHELD_REDISTRIBUTION"),
       sparkline: goldenCloses ? weeklySparkline(goldenCloses) : null,
       sparklineStatus: goldenCloses ? "CALCULATED" : "WITHHELD_REDISTRIBUTION",
       performancePath: performancePath(metrics),
-      hasPriceSeries: !!goldenCloses,
+      hasPriceSeries: !!goldenCloses || !!kompaktDated,
+      priceSeries: goldenDated
+        ? microSeries(goldenDated, "tiingo", "SPLIT_ADJUSTED")
+        : kompaktDated
+          ? microSeries(kompaktDated, kompakt.provider || "tiingo", kompakt.priceSeriesType || "SPLIT_ADJUSTED")
+          : withheldSeries("WITHHELD_REDISTRIBUTION",
+              "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
+      was: erkannt ? erkannt.was : null,
+      recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
+      bars: isNum(sec.bars) ? sec.bars : null,
       metrics,
       metricStatus: withheldMetricStatus(metrics, sec.fieldStatus),
       dataQuality: sec.dataQuality || null,
@@ -309,11 +487,36 @@ function buildRealUniverse(nameMap, goldenBars) {
     });
     stock.scoreDetail = scores;
     stock.rawValues = values;
+    stock.seriesPath = seriesPath;
+    /* Laenge der Kurshistorie beim Anbieter (Faktorzeile) - fuer die
+       Qualifikation "staerkste Aktien" (>= 250 Handelstage). */
+    stock.bars = isNum(sec.bars) ? sec.bars : null;
+    /* Kursspanne der ausgelieferten Reihe - fuer "Kurs + Fundamentals". */
+    const dated = goldenDated || kompaktDated;
+    if (dated && dated.length >= 2) {
+      stock.priceRange = { start: { date: dated[0].date, close: dated[0].close },
+                           end: { date: dated[dated.length - 1].date, close: dated[dated.length - 1].close } };
+    }
+    attachFundamentals(stock, FUNDAMENTALS.get(sec.ticker) || null);
     stocks.push(stock);
   }
+  const fundamentalsCoverage = {
+    withFundamentals: stocks.filter((s) => s.signals.fundamentals).length,
+    h3: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_3Y).length,
+    h5: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_5Y).length,
+    h10: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_10Y).length,
+    ttm: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_TTM).length,
+    withValuation: stocks.filter((s) => isNum(s.metrics.f_pe)).length,
+    source: FUNDAMENTALS.size ? "quant/data/sec/consumer" : null
+  };
 
   return {
     universeId: "US_REAL",
+    universeSource: { source: universeSource.source, file: universeSource.file, version: universeSource.version,
+                      counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
+    factorCoverage,
+    fundamentalsCoverage,
+    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs" }),
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
     provider: factors.provider,
@@ -322,7 +525,7 @@ function buildRealUniverse(nameMap, goldenBars) {
     generatedAt: factors.generatedAt,
     engine: factors.engine,
     redistribution: factors.redistribution,
-    sourceFile: "quant/data/market/factors/factors-GATE_500.json",
+    sourceFile: faktorQuelle.file.replace(root + "/", ""),
     stocks
   };
 }
@@ -331,9 +534,158 @@ function withheldMetricStatus(metrics, fieldStatus) {
   const out = {};
   for (const key of Contract.METRICS) {
     if (isNum(metrics[key])) { out[key] = "CALCULATED"; continue; }
-    out[key] = "INSUFFICIENT_HISTORY";
+    out[key] = key.indexOf("f_") === 0 ? "SOURCE_MISSING" : "INSUFFICIENT_HISTORY";
   }
   return out;
+}
+
+/* =========================================================== Fundamentals
+
+   Was das Unternehmen gemacht hat - aus dem Consumer-Bundle der SEC-
+   Pipeline, gerechnet von discover/engines/fundamentals.js. Am Titel
+   haengen die Kennzahlen (Praefix f_), die Signale fuer Sammlungen, der
+   Karten-Hook und die Bewertung aus Kurs und Fundamentals. Fehlt das
+   Bundle, bleibt alles null/false und die Statusfelder sagen SOURCE_MISSING. */
+function attachFundamentals(stock, model) {
+  stock.fundamentalModel = model || null;
+  stock.fundamentalCapabilities = Fundamentals.capabilities(model);
+  if (!model) return;
+  /* V4 §22: Plausibilitaet und Aktualitaet. Ein juengstes Geschaeftsjahr,
+     das aelter als zwei Jahre ist (RLMD: FY2013), traegt keine Kennzahl
+     auf Karten oder Sammlungen; die Aktienseite nennt den Stand und den
+     Grund. Margen mit unpassendem Nenner (CCI: 1 337 % FCF-Marge) bleiben
+     null - mit Grund (fundamentalOmitted). */
+  const fopts = { sector: stock.sector || null };
+  const stale = Fundamentals.staleness(model);
+  if (stale.stale) {
+    stock.fundamentalStale = stale;
+    stock.fundamentalOmitted = { all: { reason: stale.reason, detail: "Juengstes Geschaeftsjahr " + stale.fiscalYear + " (Ende " + stale.end + "), " + stale.ageYears + " Jahre alt" } };
+    for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) stock.metricStatus[key] = "STALE_FUNDAMENTALS";
+    stock.signals.fundamentals = true;
+    stock.hook = null;
+    return;
+  }
+  const sig = Fundamentals.signals(model, fopts);
+  stock.fundamentalOmitted = sig.omitted && Object.keys(sig.omitted).length ? sig.omitted : null;
+  const m = stock.metrics;
+  const v = (x) => (x && isNum(x.value)) ? x.value : null;
+  const revRows = model.annual.revenue || [];
+  m.f_revenue = revRows.length ? revRows[revRows.length - 1].v : null;
+  m.f_revenueGrowth3y = v(sig.revenueGrowth3y);
+  m.f_revenueGrowth10y = v(sig.revenueGrowth10y);
+  m.f_netMargin = v(sig.netMargin);
+  m.f_fcfMargin = v(sig.fcfMargin);
+  m.f_earningsAcceleration = v(sig.earningsAcceleration);
+  m.f_marginExpansion3y = v(sig.marginExpansion3y);
+  const latest = Fundamentals.latest(model, fopts);
+  m.f_roe = latest.derived && isNum(latest.derived.roe) ? latest.derived.roe : null;
+  const g = Unternehmen.ausConsumerBundle(model, { preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price) });
+  m.f_revenueGrowthTTM = isNum(g.umsatzWachstum) ? g.umsatzWachstum : null;
+  /* Bewertung: Kurs x Aktien gegen Umsatz/FCF, Kurs gegen Gewinn je Aktie.
+     Basis (TTM oder FY) steht dran; nichts wird gemischt. */
+  const preis = Contract.valueOf(stock.price);
+  const bewertung = valuationOf(model, g, preis);
+  m.f_pe = bewertung.pe ? bewertung.pe.value : null;
+  m.f_ps = bewertung.ps ? bewertung.ps.value : null;
+  m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
+  stock.fundamentalValuation = bewertung;
+  stock.geschaeftszahlenKompakt = g;
+  stock.signals.fundamentals = true;
+  stock.signals.compounder = !!(sig.compounder && sig.compounder.value === true);
+  stock.signals.turnaround = !!(sig.turnaround && sig.turnaround.value === true);
+  stock.signals.netCash = !!(sig.netCash && sig.netCash.value === true);
+  for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) stock.metricStatus[key] = isNum(m[key]) ? "CALCULATED" : "SOURCE_MISSING";
+  stock.hook = fundamentalHook(model, sig);
+}
+
+function valuationOf(model, g, preis) {
+  const out = { available: false, basis: g.basis || null };
+  if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
+  const M = 1e6;
+  const aktienReihe = (model.annual.shares_outstanding && model.annual.shares_outstanding.length) ? model.annual.shares_outstanding
+                    : (model.annual.diluted_weighted_average_shares || []);
+  const aktien = aktienReihe.length ? aktienReihe[aktienReihe.length - 1] : null;
+  if (aktien && aktien.v > 0) {
+    out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
+    if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
+    const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
+              : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
+    if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
+  }
+  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
+  else out.peReason = g.kgvStatus;
+  out.available = !!(out.pe || out.ps || out.fcfYield);
+  out.price = preis;
+  return out;
+}
+
+/* Der Einstieg in die Geschichte: EIN belegter Satz, EINE Zahl. */
+function fundamentalHook(model, sig) {
+  const story = Fundamentals.story(model);
+  const bevorzugt = ["revenue_doubled", "profit_faster", "turned_profitable", "margin_up", "shares_down", "revenue_up", "fcf_up"];
+  for (const id of bevorzugt) {
+    const s = (story.statements || []).find((x) => x.id === id);
+    if (s) return { id: s.id, text: s.text, metric: s.evidence.metric, from: s.evidence.periodStart.fy, to: s.evidence.periodEnd.fy,
+                    valueStart: s.evidence.valueStart, valueEnd: s.evidence.valueEnd, source: s.evidence.source, asOf: s.evidence.asOf };
+  }
+  if (sig.revenueGrowth3y && isNum(sig.revenueGrowth3y.value)) {
+    const g = sig.revenueGrowth3y;
+    return { id: "revenue_cagr_3y", text: "Umsatz " + (g.value >= 0 ? "+" : "") + Math.round(g.value * 100) + " % pro Jahr über drei Jahre",
+             metric: "revenue", from: g.evidence.periodStart.fy, to: g.evidence.periodEnd.fy, valueStart: g.evidence.valueStart, valueEnd: g.evidence.valueEnd,
+             source: g.evidence.source, asOf: g.evidence.asOf };
+  }
+  return null;
+}
+
+/* Bewertung im Vergleich: der Median des Universums als Massstab - eine
+   Aussage wie "deutlich hoeher bewertet als der breite Markt" braucht
+   genau diesen Vergleich, sonst ist sie eine Behauptung. */
+function applyValuationContext(universe) {
+  const pes = universe.stocks.map((s) => s.metrics.f_pe).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
+  const pss = universe.stocks.map((s) => s.metrics.f_ps).filter((x) => isNum(x) && x > 0 && x < 500).sort((a, b) => a - b);
+  const median = (arr) => arr.length ? arr[Math.floor(arr.length / 2)] : null;
+  universe.valuationContext = { peMedian: median(pes), psMedian: median(pss), peCount: pes.length, psCount: pss.length,
+                                rule: "deutlich höher: KGV > 1,5 × Median; günstiger: KGV < 0,67 × Median; sonst im Bereich des Markts" };
+  for (const s of universe.stocks) {
+    if (!s.fundamentalValuation || !s.fundamentalValuation.available) continue;
+    const b = s.fundamentalValuation;
+    const pm = universe.valuationContext.peMedian;
+    if (b.pe && isNum(pm) && pm > 0) {
+      const x = b.pe.value / pm;
+      b.relative = { peVsMedian: x, peMedian: pm, universeCount: pes.length,
+                     label: b.pe.value <= 0 ? "Kein Gewinn" : x > 1.5 ? "Deutlich höher bewertet als der breite Markt"
+                          : x < 0.67 ? "Günstiger bewertet als der breite Markt" : "Im Bereich des breiten Markts",
+                     stufe: b.pe.value <= 0 ? "negativ" : x > 1.5 ? "hoch" : x < 0.67 ? "niedrig" : "mittel" };
+    } else if (b.peReason) {
+      b.relative = { label: null, stufe: null, reason: b.peReason };
+    }
+  }
+  return universe;
+}
+
+/* Der Fundamentals-Block der Aktienseite. */
+function fundamentalsDetail(universe, stock) {
+  const model = stock.fundamentalModel;
+  if (!model) {
+    return { available: false, reason: "SOURCE_MISSING",
+             message: "Für diesen Titel liegen keine Geschäftszahlen der SEC vor (kein CIK, keine XBRL-Fakten oder nicht im Companyfacts-Archiv)." };
+  }
+  const compare = Fundamentals.compare(model);
+  const journey = Fundamentals.journey(model);
+  const story = Fundamentals.story(model);
+  const health = Fundamentals.health(model);
+  const latest = Fundamentals.latest(model);
+  const pvf = stock.priceRange ? Fundamentals.priceVsFundamentals(model, stock.priceRange.start, stock.priceRange.end) : { available: false };
+  return {
+    available: true, version: Fundamentals.VERSION, source: model.source, asOf: model.asOf, cik: model.cik,
+    capabilities: stock.fundamentalCapabilities,
+    fiscalYears: model.years, latestFiscalYear: model.years[model.years.length - 1] || null,
+    ttmThrough: (model.coverage && model.coverage.ttmThrough) || null,
+    units: model.units,
+    compare, journey, story, health, latest,
+    valuation: Object.assign({ context: universe.valuationContext || null }, stock.fundamentalValuation || { available: false }),
+    priceVsFundamentals: pvf
+  };
 }
 
 /* ==================================================== Universum: MODELL */
@@ -396,6 +748,10 @@ function buildModelUniverse() {
       sparkline: weeklySparkline(closes),
       performancePath: performancePath(metrics),
       hasPriceSeries: true,
+      priceSeries: microSeries(bars.map((b) => ({ date: b.date, close: b.close })),
+                               "VisionUniverseMock", "SPLIT_ADJUSTED"),
+      was: null,
+      recognitionTier: null,
       metrics,
       metricStatus: withheldMetricStatus(metrics),
       dataQuality: result.dataQuality || "PASS",
@@ -589,7 +945,84 @@ function discoveryEligibility(stock) {
 }
 
 
+/* Die Basis einer fundamentalen Sammlung: ein Unternehmen, das im letzten
+   Geschaeftsjahr mindestens 100 Mio. $ umgesetzt hat, und ein Wachstum
+   ohne Basiseffekt (<= 300 % pro Jahr). CorMedix mit +1 583 % p. a. auf
+   einer Basis von wenigen Millionen ist eine wahre Zahl und trotzdem
+   keine Entdeckung, die "Umsatz waechst stark" anfuehren sollte. */
+const FUND_MIN_REVENUE_USD = 100e6, FUND_MAX_GROWTH = 3.0;
+function fundBasis(s) {
+  const m = s.metrics;
+  if (!isNum(m.f_revenue) || m.f_revenue < FUND_MIN_REVENUE_USD) return false;
+  if (isNum(m.f_revenueGrowth3y) && m.f_revenueGrowth3y > FUND_MAX_GROWTH) return false;
+  return true;
+}
+/* V4 §18: "Die staerksten Aktien" - Qualifikation zuerst, Rang danach.
+   Ein Score allein qualifiziert nicht: ein 2-$-Titel mit 10 000 Stueck
+   Tagesumsatz hat dieselbe Skala wie NVIDIA. Die Regeln stehen in der
+   Methodik (qualification) und je Titel unter qualification.reasons. */
+const QUAL = METHODOLOGY.qualification || { minCoverage: 0.8, minBars: 250, minPrice: 5, minAvgDollarVolume20d: 5e6 };
+function applyQualification(universe) {
+  for (const s of universe.stocks) {
+    const reasons = [];
+    const lead = s.scoreDetail && s.scoreDetail.leadership;
+    const preis = Contract.valueOf(s.price);
+    const vol = (s.rawValues && isNum(s.rawValues.avgVolume20d)) ? s.rawValues.avgVolume20d
+              : (isNum(s.metrics.avgVolume20d) ? s.metrics.avgVolume20d : null);
+    if (!isNum(s.bars) && s.rawValues && isNum(s.rawValues.bars)) s.bars = s.rawValues.bars;
+    const dollar = isNum(vol) && isNum(preis) ? vol * preis : null;
+    if (!lead || lead.status !== "SCORED") reasons.push("NO_LEADERSHIP_SCORE");
+    else if (isNum(lead.coverage) && lead.coverage < QUAL.minCoverage) reasons.push("SCORE_COVERAGE_BELOW_" + Math.round(QUAL.minCoverage * 100));
+    if (!isNum(s.bars) || s.bars < QUAL.minBars) reasons.push("HISTORY_BELOW_" + QUAL.minBars + "_BARS");
+    if (!isNum(preis)) reasons.push("NO_PRICE");
+    else if (preis < QUAL.minPrice) reasons.push("PRICE_BELOW_" + QUAL.minPrice);
+    if (dollar === null) reasons.push("NO_DOLLAR_VOLUME");
+    else if (dollar < QUAL.minAvgDollarVolume20d) reasons.push("DOLLAR_VOLUME_BELOW_" + Math.round(QUAL.minAvgDollarVolume20d / 1e6) + "M");
+    if (s.discoveryEligible === false) reasons.push("NOT_TRADING");
+    s.qualification = { strongest: reasons.length === 0, reasons, avgDollarVolume20d: dollar === null ? null : Math.round(dollar),
+                        bars: isNum(s.bars) ? s.bars : null, scoreCoverage: lead && isNum(lead.coverage) ? lead.coverage : null,
+                        rule: QUAL.id || "strongest" };
+  }
+  universe.qualificationSummary = { rule: QUAL, qualified: universe.stocks.filter((s) => s.qualification.strongest).length,
+                                    of: universe.stocks.length };
+  return universe;
+}
+
+/* V4 §19-20: Index-Mitgliedschaft aus den veroeffentlichten Fondsbestaenden
+   (quant/data/market/index-membership). Fehlt eine Datei, gibt es die Reihe
+   nicht - geraten wird nichts. */
+function attachIndexMembership(universe) {
+  const dir = join(root, "quant", "data", "market", "index-membership");
+  const idxFile = join(dir, "index.json");
+  universe.indexes = [];
+  for (const s of universe.stocks) { s.indexMemberships = []; s.indexMembershipDetail = {}; }
+  if (!existsSync(idxFile)) { console.log("     Index-Mitgliedschaft: keine Daten (quant/data/market/index-membership fehlt) - Index-Reihen entfallen."); return universe; }
+  const verzeichnis = readJSON(idxFile);
+  const bySymbol = new Map(universe.stocks.map((s) => [s.symbol, s]));
+  for (const e of verzeichnis.indexes || []) {
+    const f = join(dir, e.indexId + ".json");
+    if (!existsSync(f)) continue;
+    const doc = readJSON(f);
+    let hits = 0;
+    for (const m of doc.members || []) {
+      const st = bySymbol.get(m.symbol);
+      if (!st) continue;
+      st.indexMemberships.push(doc.indexId);
+      st.indexMembershipDetail[doc.indexId] = { weight: m.weight, asOf: doc.asOf };
+      hits++;
+    }
+    universe.indexes.push({ indexId: doc.indexId, indexName: doc.indexName, shortLabel: doc.shortLabel || e.shortLabel || doc.indexName,
+                            asOf: doc.asOf, asOfSource: doc.asOfSource, source: doc.source, proxy: doc.proxy, memberCount: doc.memberCount,
+                            inUniverse: hits, unmatchedCount: doc.unmatchedCount, path: e.path, stale: e.stale === true });
+    console.log(`     Index ${doc.indexId}: ${doc.memberCount} Mitglieder laut ${doc.proxy.etf} (${doc.asOf}), ${hits} im Universum`);
+  }
+  return universe;
+}
+
 const ROW_FILTERS = {
+  strongest: (s) => !!(s.qualification && s.qualification.strongest),
+  indexMember: (s, config) => !!(s.qualification && s.qualification.strongest) &&
+    Array.isArray(s.indexMemberships) && s.indexMemberships.indexOf(config.indexId) !== -1,
   nearOrAtHigh: (s) => s.signals.new52WeekHigh || s.signals.nearHigh ||
     (isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh >= -METHODOLOGY.high52w.watchPct),
   /* Nur das belegte Signal, nicht der Score.
@@ -603,13 +1036,80 @@ const ROW_FILTERS = {
      Titel, die stimmen, als acht, von denen die Haelfte das Gegenteil
      zeigt. */
   breakout: (s) => s.signals.breakout === true,
-  trendIntact: (s) => s.signals.trendIntact === true
+  trendIntact: (s) => s.signals.trendIntact === true,
+
+  /* V3. Die Regeln stehen auch in der Methodik (rows[].rule) - hier ist
+     ihr Code, dort ihr Wortlaut. */
+  /* Bekannt UND in Bewegung. Die Bekanntheit ist redaktionell; die
+     Bewegung ist gerechnet. Ohne die zweite Bedingung waere die Reihe
+     eine Liste von Namen, nicht von Beobachtungen. */
+  bekannt: (s) => s.recognitionTier === 1 &&
+    (s.signals.new52WeekHigh || s.signals.nearHigh || s.signals.breakout ||
+     (isNum(s.metrics.return3M) && s.metrics.return3M >= 0.05)),
+  /* Deutlich gefallen, seit drei Monaten klar im Plus, noch nicht wieder
+     oben. Alle drei Bedingungen aus Kennzahlen - "Comeback?" traegt sein
+     Fragezeichen zu Recht. */
+  comeback: (s) => isNum(s.metrics.maxDrawdown252d) && s.metrics.maxDrawdown252d <= -0.25 &&
+    isNum(s.metrics.return3M) && s.metrics.return3M >= 0.10 &&
+    isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh <= -0.08,
+  /* Stark, aber ohne bekannten Namen: das Komplement zu "bekannt". */
+  ueberraschung: (s) => !isNum(s.recognitionTier) &&
+    isNum(s.metrics.leadershipPercentile) && s.metrics.leadershipPercentile >= 85,
+  /* Steht in der Themenliste. Mehr prueft ein Thema nicht - es ist eine
+     Zuordnung, und die Reihe zeigt, was die Zahlen dazu sagen. */
+  thema: (s, config) => Array.isArray(config.tickers) && config.tickers.indexOf(s.symbol) !== -1,
+
+  /* FUNDAMENTAL (discover/engines/fundamentals.js). Jede Regel liest nur
+     Kennzahlen, die aus Geschaeftsjahren der SEC-Bundles gerechnet sind;
+     ein Titel ohne Bundle faellt durch (null). Der Wortlaut steht in der
+     Methodik (rows[].rule). */
+  fundUmsatz: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.15,
+  fundGewinne: (s) => fundBasis(s) && isNum(s.metrics.f_earningsAcceleration) && s.metrics.f_earningsAcceleration >= 0.05 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
+  fundMargen: (s) => fundBasis(s) && isNum(s.metrics.f_marginExpansion3y) && s.metrics.f_marginExpansion3y >= 2 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= -0.25,
+  fundCashflow: (s) => fundBasis(s) && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin >= 0.15 && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin > 0,
+  fundQualitaetWachstum: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10,
+  fundCompounder: (s) => fundBasis(s) && s.signals.compounder === true,
+  fundProfitablesWachstum: (s) => fundBasis(s) && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10 &&
+    isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.05 && isNum(s.metrics.f_fcfMargin) && s.metrics.f_fcfMargin > 0,
+  fundTurnaround: (s) => fundBasis(s) && s.signals.turnaround === true,
+  fundQualitaetPreis: (s) => fundBasis(s) && isNum(s.metrics.f_netMargin) && s.metrics.f_netMargin >= 0.10 &&
+    isNum(s.metrics.f_pe) && s.metrics.f_pe > 0 && s.metrics.f_pe <= 20,
+  fundBilanzWachstum: (s) => fundBasis(s) && s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
 };
+
+/* V4 §17: warum steht der Titel auf diesem Platz - maschinenlesbar, aus
+   Zahlen, die die Karte ohnehin traegt. */
+function rankingReason(s, config, rank, of, scoreKey) {
+  const detail = scoreKey && s.scoreDetail ? s.scoreDetail[scoreKey] : null;
+  const contributions = detail && Array.isArray(detail.contributions)
+    ? detail.contributions.filter((c) => isNum(c.contribution)).sort((a, b) => b.contribution - a.contribution).slice(0, 3)
+        .map((c) => ({ id: c.id, label: c.label || c.id, value: c.value, normalized: c.normalized, weight: c.weight, contribution: c.contribution }))
+    : [];
+  const pctKey = { leadership: "leadershipPercentile", momentum: "momentumPercentile", rs: "relativeStrengthPercentile" }[scoreKey];
+  return {
+    rowId: config.id, rank, of, sortField: config.sort, sortDirection: config.direction,
+    sortValue: isNum(s.metrics[config.sort]) ? s.metrics[config.sort] : null,
+    signalFirst: config.signalFirst || null, filter: config.filter || null, rule: config.rule || null,
+    score: detail ? { id: scoreKey, value: detail.score, percentile: pctKey && isNum(s.metrics[pctKey]) ? s.metrics[pctKey] : null,
+                      coverage: detail.coverage, contributions } : null,
+    qualification: s.qualification ? { strongest: s.qualification.strongest, reasons: s.qualification.reasons } : null,
+    index: config.indexId ? { indexId: config.indexId, weight: s.indexMembershipDetail && s.indexMembershipDetail[config.indexId] ? s.indexMembershipDetail[config.indexId].weight : null } : null,
+    recognitionTier: s.recognitionTier || null,
+    boost: null
+  };
+}
 
 function buildRow(universe, config) {
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
-    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s)) return false;
+    /* V4 §21: Qualifikation zuerst - Kurs-Reihen zeigen nur liquide,
+       gehandelte Titel mit Historie; ein eingefrorener Kurs an einem
+       "Jahreshoch" ist keine Entdeckung. */
+    if (config.qualify === true && !(s.qualification && s.qualification.strongest)) return false;
+    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
   /* Zweitschluessel, damit eine Zeile nicht an Gleichstaenden haengt: bei
@@ -640,11 +1140,37 @@ function buildRow(universe, config) {
      Browser rechnen - aber dann stuende auf dem Bildschirm ein Satz, den
      keine Pruefung je gesehen hat. So rechnet ihn der Build, und
      verify-discover-data.mjs rechnet ihn nach. */
-  const auswahl = pool.slice(0, isNum(config.limit) ? config.limit : pool.length);
+  /* Fundamentale Reihen zaehlen Unternehmen, nicht Gattungen: HBAN, HBANL
+     und HBANZ tragen dasselbe SEC-Bundle. Je CIK bleibt der liquideste
+     Titel (Dollarumsatz), die anderen fallen aus der Reihe - nicht aus dem
+     Universum. */
+  let bereinigt = pool;
+  if (config.filter && String(config.filter).indexOf("fund") === 0) {
+    const jeCik = new Map();
+    for (const s of pool) {
+      const cik = s.fundamentalModel && s.fundamentalModel.cik ? String(s.fundamentalModel.cik) : null;
+      if (!cik) continue;
+      const alt = jeCik.get(cik);
+      const dv = (x) => (x.qualification && isNum(x.qualification.avgDollarVolume20d)) ? x.qualification.avgDollarVolume20d : -1;
+      if (!alt || dv(s) > dv(alt)) jeCik.set(cik, s);
+    }
+    bereinigt = pool.filter((s) => {
+      const cik = s.fundamentalModel && s.fundamentalModel.cik ? String(s.fundamentalModel.cik) : null;
+      return !cik || jeCik.get(cik) === s;
+    });
+  }
+  const auswahl = bereinigt.slice(0, isNum(config.limit) ? config.limit : bereinigt.length);
   /* Die Uebersetzung kennt die ganze Reihe, nicht nur die einzelne Karte -
      sonst steht derselbe wahre Satz zwoelfmal untereinander. */
   const texte = Klartext.reihe(auswahl, config.id);
-  const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), { plain: texte[i] }));
+  const scoreKey = { leadershipScore: "leadership", momentumScore: "momentum", relativeStrengthScore: "rs", breakoutScore: "breakout" }[config.sort] || null;
+  const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), {
+    plain: texte[i],
+    /* Der Verweis auf die Reihe, nicht die Reihe: geladen wird, was
+       sichtbar wird. */
+    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol, s.seriesPath),
+    rankingReason: rankingReason(s, config, i + 1, bereinigt.length, scoreKey)
+  }));
   /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
      der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
      Uebersetzung liest, muss deshalb auch auf der Karte stehen. */
@@ -652,16 +1178,26 @@ function buildRow(universe, config) {
     s.discoveryEligible !== false &&
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
 
+  const index = config.indexId ? (universe.indexes || []).find((x) => x.indexId === config.indexId) || null : null;
   return {
     rowId: config.id, title: config.title, subtitle: config.subtitle,
     world: config.world || "leadership",
+    /* V4 §19: Herkunft der Index-Mitgliedschaft an der Reihe. */
+    index: index ? { indexId: index.indexId, indexName: index.indexName, shortLabel: index.shortLabel, asOf: index.asOf,
+                     source: index.source, proxy: index.proxy, memberCount: index.memberCount, inUniverse: index.inUniverse } : null,
+    qualification: (config.filter === "strongest" || config.filter === "indexMember" || config.qualify === true) ? (universe.qualificationSummary || null) : null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     methodologyVersion: METHODOLOGY.methodologyVersion,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
     sort: config.sort, direction: config.direction,
+    microRange: config.microRange || "6M",
+    rule: config.rule || null,
+    theme: config.theme || null,
+    editorial: config.editorial === true,
     coverage: {
       universeSize: universe.stocks.length,
-      matched: pool.length,
+      matched: bereinigt.length,
+      matchedBeforeCompanyDedupe: pool.length,
       returned: cards.length,
       notEvaluable,
       note: notEvaluable > 0
@@ -702,7 +1238,7 @@ const MEMBERSHIP_RANK_LIMIT = 60;
 
 function buildMemberships(universe) {
   const perSymbol = new Map();
-  for (const config of METHODOLOGY.rows) {
+  for (const config of ROWS) {
     const row = buildRow(universe, Object.assign({}, config, { limit: Infinity }));
     row.cards.forEach((card, index) => {
       if (index >= MEMBERSHIP_RANK_LIMIT) return;
@@ -729,6 +1265,79 @@ function buildMemberships(universe) {
  * Geschaeftsmodell - der Vergleich ist ausdruecklich einer des
  * Kursverhaltens, und die Ueberschrift sagt das.
  */
+/* ================================================= Next Discovery
+
+   Eine Aktie fuehrt zur naechsten. Deterministische Aehnlichkeit ueber
+   das, was vorliegt: Sektor, Kursverhalten (Leadership-Perzentil,
+   Volatilitaet), Fundamentals (Umsatzwachstum, Nettomarge, Bewertung).
+   Fehlt eine Dimension, faellt sie aus dem Abstand - sie wird nicht
+   geschaetzt. Jede Liste sagt, wonach sie sortiert ist. */
+function similarityDistance(a, b) {
+  const dims = [
+    ["leadershipPercentile", 100], ["volatility252d", 0.6], ["f_revenueGrowth3y", 0.5], ["f_netMargin", 0.4]
+  ];
+  let sum = 0, n = 0;
+  for (const [k, scale] of dims) {
+    const x = a.metrics[k], y = b.metrics[k];
+    if (!isNum(x) || !isNum(y)) continue;
+    sum += Math.pow((x - y) / scale, 2); n++;
+  }
+  const pa = a.metrics.f_pe, pb = b.metrics.f_pe;
+  if (isNum(pa) && isNum(pb) && pa > 0 && pb > 0) { sum += Math.pow((Math.log(pa) - Math.log(pb)) / 1.0, 2); n++; }
+  if (!n) return null;
+  return Math.sqrt(sum / n);
+}
+
+function buildNextDiscovery(universe, stock, anzahl) {
+  const n = anzahl || 8;
+  const pool = universe.stocks.filter((o) => o.symbol !== stock.symbol && o.discoveryEligible !== false);
+  const mini = (o) => Contract.toMiniCard(o);
+  const sektor = stock.sectorStatus === "CURATED" && stock.sector ? stock.sector : null;
+  const out = { basis: [] };
+
+  /* Aehnliche Aktien: kleinster Abstand, Sektor zuerst. */
+  const mitAbstand = pool.map((o) => ({ o, d: similarityDistance(stock, o) })).filter((x) => x.d !== null);
+  const sortiert = mitAbstand.sort((x, y) => (x.o.sector === sektor ? 0 : 1) - (y.o.sector === sektor ? 0 : 1) || x.d - y.d || (x.o.symbol < y.o.symbol ? -1 : 1));
+  out.similar = { title: "Ähnliche Aktien", rule: "kleinster Abstand über Kursverhalten, Wachstum, Marge und Bewertung; gleicher Sektor zuerst",
+                  cards: sortiert.slice(0, n).map((x) => mini(x.o)) };
+
+  /* Gleicher Sektor: die staerksten Titel des Sektors. */
+  if (sektor) {
+    const gleich = pool.filter((o) => o.sector === sektor && isNum(o.metrics.leadershipScore))
+      .sort((a, b) => b.metrics.leadershipScore - a.metrics.leadershipScore);
+    if (gleich.length) out.sameSector = { title: "Mehr aus " + sektor, sector: sektor, rule: "staerkste Titel des Sektors nach Leadership Score", cards: gleich.slice(0, n).map(mini) };
+  }
+
+  /* Gleiches Thema: aus den redaktionellen Themenlisten. */
+  const themen = ROWS.filter((r) => r.theme && Array.isArray(r.tickers) && r.tickers.indexOf(stock.symbol) !== -1);
+  if (themen.length) {
+    const th = themen[0];
+    const mitglieder = pool.filter((o) => th.tickers.indexOf(o.symbol) !== -1);
+    if (mitglieder.length) out.sameTheme = { title: "Gleiches Thema · " + th.title, rowId: th.id, rule: "redaktionelle Themenliste " + th.id, cards: mitglieder.slice(0, n).map(mini) };
+  }
+
+  /* Aehnliches Wachstum / aehnliche Qualitaet: nur mit Fundamentals. */
+  const g = stock.metrics.f_revenueGrowth3y, m = stock.metrics.f_netMargin, pe = stock.metrics.f_pe;
+  if (isNum(g)) {
+    const nah = pool.filter((o) => isNum(o.metrics.f_revenueGrowth3y) && Math.abs(o.metrics.f_revenueGrowth3y - g) <= 0.05)
+      .sort((a, b) => Math.abs(a.metrics.f_revenueGrowth3y - g) - Math.abs(b.metrics.f_revenueGrowth3y - g) || (a.symbol < b.symbol ? -1 : 1));
+    if (nah.length) out.similarGrowth = { title: "Ähnliches Umsatzwachstum", rule: "Umsatz-CAGR 3J innerhalb von ±5 Prozentpunkten", cards: nah.slice(0, n).map(mini) };
+  }
+  if (isNum(m)) {
+    const nah = pool.filter((o) => isNum(o.metrics.f_netMargin) && Math.abs(o.metrics.f_netMargin - m) <= 0.03 && (!sektor || o.sector === sektor))
+      .sort((a, b) => Math.abs(a.metrics.f_netMargin - m) - Math.abs(b.metrics.f_netMargin - m) || (a.symbol < b.symbol ? -1 : 1));
+    if (nah.length >= 3) out.similarQuality = { title: "Ähnliche Profitabilität", rule: "Nettomarge innerhalb von ±3 Prozentpunkten" + (sektor ? ", gleicher Sektor" : ""), cards: nah.slice(0, n).map(mini) };
+  }
+  if (isNum(pe) && pe > 0) {
+    const guenstiger = pool.filter((o) => isNum(o.metrics.f_pe) && o.metrics.f_pe > 0 && o.metrics.f_pe < pe * 0.8 &&
+                                          isNum(o.metrics.f_netMargin) && o.metrics.f_netMargin >= 0.05 && (!sektor || o.sector === sektor))
+      .sort((a, b) => a.metrics.f_pe - b.metrics.f_pe || (a.symbol < b.symbol ? -1 : 1));
+    if (guenstiger.length >= 3) out.cheaperAlternatives = { title: "Günstiger bewertete Alternativen", rule: "KGV unter 80 % des eigenen, Nettomarge ≥ 5 %" + (sektor ? ", gleicher Sektor" : ""), cards: guenstiger.slice(0, n).map(mini) };
+  }
+  out.basis = Object.keys(out).filter((k) => k !== "basis");
+  return out;
+}
+
 function buildSimilar(universe, stock, anzahl) {
   const score = stock.metrics.leadershipScore;
   if (!isNum(score)) return [];
@@ -765,6 +1374,8 @@ function buildFeatured(universe, anzahl) {
     let rang = s.metrics.leadershipPercentile;
     if (s.hasPriceSeries) rang += 12;          // traegt eine grosse Flaeche
     if (s.companyName) rang += 6;              // ein Name wirkt anders als ein Kuerzel
+    if (s.recognitionTier === 1) rang += 10;   // ein Name, den man kennt (V3)
+    else if (s.recognitionTier === 2) rang += 5;
     if (s.signals.new52WeekHigh) rang += 4;
     if (s.signals.breakout) rang += 3;
     return { stock: s, rang };
@@ -841,6 +1452,188 @@ function heroReasons(stock) {
   return out.slice(0, 3);
 }
 
+/* ============================================================ Startseite
+
+   WAS EINE SURFACE IST
+
+   Die Startseite besteht nicht mehr aus Reihen, die alle gleich aussehen,
+   sondern aus Surfaces verschiedener Art: die nummerierte Rangliste, die
+   breite Reihe, die kompakte, die Themenwelt, die eine grosse Karte, die
+   Sektorkacheln, der Einstieg in den Einzelmodus. Jede Surface zeigt eine
+   AUSWAHL aus einer gerechneten Reihe - nie etwas, das nicht in einer
+   Reihe steht.
+
+   ZWEI SCHICHTEN UEBER DER RANGLISTE
+
+   1. Discovery-Reihenfolge (relevance.js): innerhalb der qualifizierten
+      Titel einer Reihe ruecken bekannte Namen nach vorn - im oberen
+      Fenster, mit kleinem Bonus. Die Rangliste selbst bleibt, wie sie
+      ist; die Kategorieseite zeigt sie unveraendert.
+   2. Diversity ueber die Seite: ein Titel fuehrt hoechstens eine Surface
+      an, erscheint hoechstens zweimal. Entfernt wird nur, umsortiert nie.
+
+   Beides ist deterministisch und wird in verify-discover-data.mjs
+   nachgeprueft: jede Karte einer Surface muss in ihrer Reihe stehen. */
+function buildHome(universe, rowsById, sectorPayload, featured) {
+  const plan = (METHODOLOGY.home && METHODOLOGY.home.surfaces) || [];
+  const U = universe.universeId;
+  const heroSymbols = new Set(featured.map((f) => f.symbol));
+  const surfaces = [];
+  const sektorWelten = (METHODOLOGY.visualLanguage && METHODOLOGY.visualLanguage.sectorWorlds) || {};
+
+  for (const step of plan) {
+    if (step.type === "hero") {
+      /* Die Eingangsflaeche zaehlt als Auftritte, damit die Reihen darunter
+         nicht mit demselben Titel beginnen. */
+      surfaces.push({ type: "hero", id: "hero", pure: true, show: featured.length,
+                      cards: featured, title: null });
+      continue;
+    }
+    if (step.type === "story") {
+      /* DIE ENTWICKLUNG: ein Unternehmen, dessen Zahlen eine Geschichte
+         erzaehlen - aus einer fundamentalen Reihe, bekannter Name zuerst,
+         mindestens zwei belegte Saetze. Ohne Kandidaten keine Flaeche. */
+      const quellen = (step.rowIds || ["langfristige-compounder", "umsatz-waechst-stark", "gewinne-beschleunigen"]);
+      const kandidaten = [];
+      for (const rid of quellen) {
+        const row = rowsById.get(rid);
+        if (!row || !row.cards) continue;
+        const liste = row.cards.map((c) => universe.stocks.find((s) => s.symbol === c.symbol)).filter((s) => s && s.fundamentalModel);
+        liste.sort((a, b) => ((a.recognitionTier || 3) - (b.recognitionTier || 3)) || (a.symbol < b.symbol ? -1 : 1));
+        for (const s of liste) {
+          if (kandidaten.some((k) => k.stock.symbol === s.symbol)) continue;
+          const st = Fundamentals.story(s.fundamentalModel);
+          if (st.available && st.statements.length >= 2) kandidaten.push({ stock: s, story: st, rowId: rid, row });
+        }
+      }
+      if (!kandidaten.length) continue;
+      /* Wie die grosse Karte wird der Titel erst NACH der Diversity gewaehlt
+         (siehe unten): der erste Kandidat, der weder die Eingangsflaeche traegt
+         noch eine Reihe anfuehrt. */
+      surfaces.push({ type: "story", id: "story", pure: true, show: 1, cards: [], quelle: kandidaten,
+                      kicker: step.kicker || "DIE ENTWICKLUNG", title: step.title || "Was das Unternehmen gemacht hat",
+                      world: "fundamentals" });
+      continue;
+    }
+    if (step.type === "immersive") {
+      surfaces.push({ type: "immersive", id: "immersive", pure: true, show: 0, cards: [],
+                      title: step.title, lead: step.lead, href: "#/einzeln/" + U });
+      continue;
+    }
+    if (step.type === "sectors") {
+      surfaces.push({ type: "sectors", id: "sectors", rowId: "sector-leaders", pure: true, show: 0,
+                      cards: [], title: METHODOLOGY.sectorRows.title,
+                      subtitle: "Die stärksten Titel je Sektor.",
+                      sectors: sectorPayload, href: "#/c/" + U + "/sector-leaders" });
+      continue;
+    }
+    if (step.type === "sector-row") {
+      const list = (universe.sectors.get(step.sector) || []).filter((s) => s.discoveryEligible !== false);
+      if (list.length < 4) continue;
+      const texte = Klartext.reihe(list, "sektor-" + step.sector);
+      const cards = list.map((s, i) => Object.assign(Contract.toCard(s), {
+        plain: texte[i], priceSeries: seriesRef(s.priceSeries, "6M", U, s.symbol, s.seriesPath)
+      }));
+      const ordered = Relevance.discoveryOrder(cards, { recognition: RECOGNITION }).cards;
+      surfaces.push({ type: "row", variant: step.variant || "compact", id: "sektor-" + slug(step.sector),
+                      rowId: "sector-leaders", sector: step.sector, title: step.title,
+                      subtitle: "Die stärksten Titel des Sektors " + step.sector + ".",
+                      world: sektorWelten[step.sector] || "sectors", microRange: "6M",
+                      cards: ordered, show: step.show || 10, total: list.length,
+                      href: "#/c/" + U + "/sector-leaders" });
+      continue;
+    }
+
+    const row = rowsById.get(step.rowId);
+    if (!row || !row.cards || !row.cards.length) continue;
+    if (row.config && (row.config.theme || row.config.minMembers) && row.coverage.matched < (row.config.minMembers || 5)) continue;
+
+    if (step.type === "featured-card") {
+      /* Die eine grosse Karte wird erst NACH der Diversity gefuellt: sie
+         soll einen Namen zeigen, der sonst nirgends vorn steht. Hier
+         steht nur der Platzhalter mit der Reihe, aus der sie schoepft. */
+      surfaces.push({ type: "featured-card", id: "featured", rowId: row.rowId, pure: true, show: 0,
+                      kicker: step.kicker || "IM BLICK", title: row.title, world: row.world,
+                      microRange: row.microRange, cards: [], href: null,
+                      quelle: Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards });
+      continue;
+    }
+
+    const pure = step.type === "ranking";
+    const geordnet = pure ? { cards: row.cards, trace: null } : Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION });
+    /* Der Bekanntheitszuschlag steht an der Karte (rankingReason.boost):
+       quantRank = Platz in der Rangliste, discoveryRank = Platz auf der
+       Startseite - beides nachrechenbar. */
+    const ordered = geordnet.cards.map((c, i) => {
+      const t = geordnet.trace ? geordnet.trace[i] : null;
+      return Object.assign({}, c, { rankingReason: Object.assign({}, c.rankingReason || {}, {
+        boost: t ? { source: "recognition", tier: t.tier, bonus: t.bonus, quantRank: t.quantRank, discoveryRank: t.discoveryRank } : null }) });
+    });
+    surfaces.push({
+      type: step.type, variant: step.variant || null, id: step.id || row.rowId, rowId: row.rowId,
+      title: step.title || row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
+      theme: row.theme || null, editorial: row.editorial === true, rule: row.rule || null,
+      index: row.index || null,
+      /* Eine Rangliste zeigt ihre ersten Plaetze; die ganze Reihe steht
+         hinter "Alle anzeigen". Mehr Karten im Stueck wuerden nur das
+         Nachladen verzoegern. */
+      cards: pure ? ordered.slice(0, step.show || 10) : ordered, show: step.show || 10, pure, total: row.coverage.matched,
+      href: "#/c/" + U + "/" + row.rowId
+    });
+  }
+
+  const diversified = Relevance.diversify(surfaces, {
+    leadPositions: 2, maxAppearances: 2, shortList: 6, exceptionalPercentile: 99
+  });
+  /* Jetzt die grosse Karte: der erste Name aus ihrer Reihe, der weder
+     die Eingangsflaeche traegt noch irgendwo anfuehrt noch schon zweimal
+     zu sehen ist - und der eine Taetigkeit hat, die auf die Karte kann.
+     Keine Geschichte, die nicht auf der Karte steht. */
+  const fuehrt = new Set(), gesehen = Object.create(null);
+  diversified.forEach((v) => (v.cards || []).forEach((c, i) => {
+    gesehen[c.symbol] = (gesehen[c.symbol] || 0) + 1;
+    if (i < 2 && v.type !== "hero") fuehrt.add(c.symbol);
+  }));
+  diversified.forEach((v) => {
+    if (v.type === "story") {
+      const frei = (k) => !heroSymbols.has(k.stock.symbol) && !fuehrt.has(k.stock.symbol) && (gesehen[k.stock.symbol] || 0) < 2;
+      const wahl = v.quelle.find(frei) || v.quelle[0];
+      delete v.quelle;
+      const s = wahl.stock;
+      const cmp = Fundamentals.compare(s.fundamentalModel);
+      v.cards = [Object.assign(Contract.toCard(s), { priceSeries: seriesRef(s.priceSeries, "1J", U, s.symbol, s.seriesPath),
+                                                     plain: Klartext.karte(s, { rowId: wahl.rowId }) })];
+      v.rowId = wahl.rowId;
+      v.story = { statements: wahl.story.statements.slice(0, 3).map((x) => ({ id: x.id, text: x.text, evidence: x.evidence })),
+                  horizon: wahl.story.horizon, asOf: wahl.story.asOf, source: wahl.story.source };
+      v.compare = cmp.available ? { horizon: cmp.horizon, rows: cmp.rows.filter((r) => ["revenue", "net_income", "operating_margin", "free_cash_flow"].includes(r.id)).slice(0, 4) } : null;
+      v.href = "#/s/" + U + "/" + s.symbol;
+      v.sourceRow = { rowId: wahl.rowId, title: wahl.row.title };
+      return;
+    }
+    if (v.type !== "featured-card") return;
+    const frei = (c) => !heroSymbols.has(c.symbol) && !fuehrt.has(c.symbol) && (gesehen[c.symbol] || 0) < 2;
+    const wahl = v.quelle.find((c) => frei(c) && c.was) || v.quelle.find(frei);
+    delete v.quelle;
+    if (!wahl) { v.cards = []; return; }
+    v.cards = [wahl];
+    v.id = "featured-" + wahl.symbol;
+    v.href = "#/s/" + U + "/" + wahl.symbol;
+  });
+  const behalten = diversified.filter((s) =>
+    s.type === "hero" || s.type === "immersive" || s.type === "sectors" ||
+    (s.type === "featured-card" && s.cards.length === 1) || (s.type === "story" && s.cards.length === 1) ||
+    s.cards.length >= 3);
+  /* Die Karten der Startseite tragen keine `config`-Objekte und keine
+     Hilfsfelder; was bleibt, ist genau das, was die Oberflaeche liest. */
+  const hidden = diversified.reduce((n, s) => n + (s.hidden || 0), 0);
+  behalten.forEach((s) => { delete s.pure; delete s.hidden; });
+  return { surfaces: behalten, coverage: { planned: plan.length, shown: behalten.length, hidden } };
+}
+function slug(text) {
+  return String(text).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 /* ====================================================== Geschaeftszahlen
 
    Woher kommen Umsatz, Gewinn und Bewertung?
@@ -870,9 +1663,38 @@ function secFaktenIndex() {
   return map;
 }
 
-function geschaeftszahlen(stock, secFakten, modellzeilen) {
+/* Die kompakten Consumer-Bundles der SEC-Pipeline (scripts/quant/sec/consumer.py):
+   je Ticker ein Lesemodell der Fundamentals-Engine. Fehlt das Verzeichnis,
+   fehlen die Fundamentals - die Seite sagt es, statt zu schaetzen. */
+function consumerFundamentalsIndex() {
+  const dir = join(root, "quant", "data", "sec", "consumer");
+  const map = new Map();
+  const indexFile = join(dir, "index.json");
+  if (!existsSync(indexFile)) return map;
+  const index = readJSON(indexFile);
+  const cache = new Map();
+  for (const [ticker, entry] of Object.entries(index.byTicker || {})) {
+    const file = join(root, "quant", "data", "sec", entry.file);
+    if (!existsSync(file)) continue;
+    let model = cache.get(file);
+    if (model === undefined) {
+      try { model = Fundamentals.fromBundle(readJSON(file)); } catch (err) { model = null; }
+      cache.set(file, model);
+    }
+    if (model) map.set(ticker, model);
+  }
+  return map;
+}
+
+function geschaeftszahlen(stock, secFakten, modellzeilen, fundamentalsByTicker) {
   if (stock.dataMode === "mock") {
     return Unternehmen.ausModellzeile(modellzeilen.get(stock.symbol) || null);
+  }
+  const model = fundamentalsByTicker && fundamentalsByTicker.get(stock.symbol);
+  if (model) {
+    return Unternehmen.ausConsumerBundle(model, {
+      preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price)
+    });
   }
   const fakten = secFakten.get(stock.symbol);
   if (!fakten) {
@@ -927,6 +1749,30 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     series.bars = series.inline.daily.dates.length;
   }
 
+  /* Kompakte Reihe (ein Jahr Tagesschluss) fuer Titel ohne Technical-
+     Bundle: die Aktienseite zeichnet daraus 1M bis 1J - 5J und Max bleiben
+     ehrlich gesperrt, weil die Reihe sie nicht traegt. */
+  if (!series.available && stock.priceSeries && stock.priceSeries.status === "CALCULATED" &&
+      Array.isArray(stock.priceSeries.points)) {
+    series = { available: true, source: "discover-series",
+               path: stock.seriesPath || ("/discover/data/series/" + universe.universeId + "/" + stock.symbol + ".json"),
+               priceSeriesType: stock.priceSeries.priceSeriesType || "SPLIT_ADJUSTED",
+               dataMode: stock.dataMode, bars: stock.priceSeries.points.length,
+               from: stock.priceSeries.from, reason: null, message: null };
+  }
+
+  /* V4 §13: lange Wochenreihe (5J, Max) aus der Historienablage, wenn sie
+     veroeffentlicht ist (scripts/market/publish-long-series.mjs). Der
+     Client haengt die Tagesreihe hinten an. */
+  const langFile = join(root, "quant", "data", "market", "discover-series-long", stock.securityId + ".json");
+  if (series.available && existsSync(langFile)) {
+    try {
+      const lang = readJSON(langFile);
+      series.long = { path: "/quant/data/market/discover-series-long/" + stock.securityId + ".json", grain: lang.grain || "weekly",
+                      from: lang.from, to: lang.to, weeks: lang.barCount, priceSeriesType: lang.priceSeriesType || "SPLIT_ADJUSTED" };
+    } catch (e) { series.long = null; }
+  } else series.long = null;
+
   if (!series.available && stock.dataMode === "real") {
     series.reason = "WITHHELD_REDISTRIBUTION";
     series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
@@ -939,6 +1785,8 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     methodologyVersion: METHODOLOGY.methodologyVersion,
     symbol: stock.symbol, companyName: stock.companyName,
     companyNameStatus: stock.companyNameStatus,
+    legalName: stock.legalName || null,
+    nameSource: stock.nameSource || null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     dataMode: stock.dataMode, provider: stock.provider, exchange: stock.exchange,
     sector: stock.sector, sectorStatus: stock.sectorStatus, industry: stock.industry,
@@ -946,9 +1794,22 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     price: stock.price, changePercent: stock.changePercent,
     sparkline: stock.sparkline, sparklineStatus: stock.sparklineStatus,
     performancePath: stock.performancePath, performancePathStatus: stock.performancePathStatus,
+    priceSeries: seriesRef(stock.priceSeries, "1J", universe.universeId, stock.symbol, stock.seriesPath),
+    was: stock.was || null, recognitionTier: stock.recognitionTier || null,
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
     high52w: stock.high52w,
+    /* V4: Index-Mitgliedschaft (Fondsbestand, Stichtag), Qualifikation fuer
+       "staerkste Aktien", weggelassene Fundamentalkennzahlen mit Grund. */
+    indexMemberships: (stock.indexMemberships || []).map((id) => {
+      const ix = (universe.indexes || []).find((x) => x.indexId === id) || {};
+      const d = stock.indexMembershipDetail ? stock.indexMembershipDetail[id] : null;
+      return { indexId: id, indexName: ix.indexName || id, shortLabel: ix.shortLabel || id, asOf: ix.asOf || null,
+               weight: d ? d.weight : null, proxy: ix.proxy ? ix.proxy.etf : null, source: ix.source || null };
+    }),
+    qualification: stock.qualification || null,
+    fundamentalOmitted: stock.fundamentalOmitted || null,
+    fundamentalStale: stock.fundamentalStale || null,
     scores: {
       leadership: stock.scoreDetail.leadership,
       momentum: stock.scoreDetail.momentum,
@@ -978,8 +1839,17 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     /* Weiter entdecken: wo steht dieser Titel noch, und wer steht ihm nahe? */
     memberships: (memberships && memberships.get(stock.symbol)) || [],
     similar: buildSimilar(universe, stock, 8),
+    discoverNext: buildNextDiscovery(universe, stock, 8),
     series,
     technicalIntelligence: TI.fromBundle(bundle, { seriesAvailable: series.available }),
+    /* Identitaet: securityId (Wertpapierstamm) und instrumentId (Company
+       Master auf main) - dieselbe Kennung in Discover, Suche und Aktienseite. */
+    securityId: stock.securityId || null,
+    instrumentId: stock.instrumentId || null,
+    fundamentals: fundamentalsDetail(universe, stock),
+    /* Der belegte Satz aus den Abschluessen - auf der Karte, im Hero der
+       Startseite und im Kopf der Aktienseite derselbe. */
+    hook: stock.hook || null,
     discoveryEligible: stock.discoveryEligible !== false,
     ineligibleReason: stock.ineligibleReason || null,
     ineligibleMessage: stock.ineligibleMessage || null,
@@ -1025,27 +1895,38 @@ mkdirSync(OUT, { recursive: true });
 
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");
 const nameMap = buildNameMap();
+const FUNDAMENTALS = consumerFundamentalsIndex();
+console.log(`     Fundamentals (SEC Consumer): ${FUNDAMENTALS.size} Titel`);
 const goldenBars = loadGoldenPreviewBars();
-const real = applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars));
+const compact = discoverSeriesIndex();
+const real = applyQualification(attachIndexMembership(applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact)))));
+console.log(`     Qualifikation "staerkste Aktien": ${real.qualificationSummary.qualified} von ${real.qualificationSummary.of} Titeln`);
 console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
-            `${goldenBars.size} mit freigegebener Kursreihe`);
+            `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
+            `(${goldenBars.size} volle Historie, ${compact.size} kompakt)`);
 
-console.log("2/5  Modelluniversum (synthetisch) …");
-const model = applyPercentilesAndSignals(buildModelUniverse());
-console.log(`     ${model.stocks.length} Titel, Stand ${model.asOf}`);
+/* Das synthetische Modelluniversum (VU_MODEL) wird seit dem 15.09.2026 nicht
+   mehr ausgeliefert: Discover zeigt ausschliesslich reale Titel. Der
+   Generator bleibt fuer Tests des Quant-Moduls bestehen, buildModelUniverse()
+   wird hier nicht mehr aufgerufen. */
 
 const instruments = technicalInstrumentIndex();
-const universes = [real, model];
+const universes = [real];
 const rowIndex = [];
+const homeIndex = [];
+const homeSymbols = new Map();
 
 console.log("3/5  Zeilen-Payloads …");
 for (const universe of universes) {
   const rows = [];
-  for (const config of METHODOLOGY.rows) {
+  const rowsById = new Map();
+  for (const config of ROWS) {
     const row = buildRow(universe, config);
     write(`rows/${universe.universeId}/${config.id}.json`, row);
+    rowsById.set(config.id, Object.assign({}, row, { config }));
     rows.push({ rowId: row.rowId, title: row.title, subtitle: row.subtitle,
-                returned: row.coverage.returned, matched: row.coverage.matched });
+                returned: row.coverage.returned, matched: row.coverage.matched,
+                theme: config.theme || null });
   }
 
   /* Sektorzeilen */
@@ -1078,6 +1959,50 @@ for (const universe of universes) {
   /* Die Eingangsflaeche. Eine eigene, sehr kleine Datei: sie wird als
      erste geladen und darf nicht auf eine 250-KB-Zeile warten. */
   const featured = buildFeatured(universe, 5);
+
+  /* Die Startseite (V3): eine Folge von Surfaces, gerechnet und in
+     Stuecken ausgeliefert. Das erste Stueck traegt, was ueber der Falz
+     steht; die weiteren laedt die Seite nach, sobald man dorthin
+     scrollt. */
+  const home = buildHome(universe, rowsById, sectorPayload, featured);
+  const chunkSizes = (METHODOLOGY.home && METHODOLOGY.home.chunkSizes) || [6, 7];
+  /* Ein Stueck ist durch Anzahl UND Groesse begrenzt: das erste muss klein
+     bleiben, auch wenn ein Universum (das Modelluniversum traegt seine
+     Reihen in den Karten) mehr Bytes je Flaeche hat. Ab drei Flaechen darf
+     ein Stueck enden, wenn die naechste Flaeche die Grenze sprengen wuerde. */
+  const chunkMaxBytes = (METHODOLOGY.home && METHODOLOGY.home.chunkMaxBytes) || 300 * 1024;
+  const stuecke = [];
+  let rest = home.surfaces.slice();
+  for (let i = 0; rest.length; i++) {
+    const n = i < chunkSizes.length ? chunkSizes[i] : rest.length;
+    const teil = [];
+    let bytes = 0;
+    while (rest.length && teil.length < n) {
+      const next = Buffer.byteLength(JSON.stringify(rest[0]));
+      if (teil.length >= 3 && i < chunkSizes.length && bytes + next > chunkMaxBytes) break;
+      teil.push(rest.shift());
+      bytes += next;
+    }
+    stuecke.push(teil);
+  }
+  const chunkNames = stuecke.map((_, i) => `home/${universe.universeId}${i ? "." + (i + 1) : ""}.json`);
+  stuecke.forEach((teil, i) => {
+    write(chunkNames[i], {
+      universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
+      asOf: universe.asOf, generatedAt: universe.generatedAt,
+      methodologyVersion: METHODOLOGY.methodologyVersion,
+      chunk: i + 1, chunks: stuecke.length,
+      next: i + 1 < stuecke.length ? "/discover/data/" + chunkNames[i + 1] : null,
+      surfaces: teil,
+      coverage: i === 0 ? home.coverage : undefined
+    });
+  });
+  homeIndex.push({ universeId: universe.universeId, chunks: chunkNames.map((n) => "/discover/data/" + n),
+                   surfaces: home.surfaces.length, hidden: home.coverage.hidden });
+  /* Jede Karte der Startseite braucht eine Detailseite - auch im
+     Modelluniversum, wo nicht jeder Titel eine bekommt. */
+  homeSymbols.set(universe.universeId,
+    new Set(home.surfaces.flatMap((s) => (s.cards || []).map((c) => c.symbol))));
   write(`featured/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label,
     universeKind: universe.kind, asOf: universe.asOf, generatedAt: universe.generatedAt,
@@ -1089,12 +2014,44 @@ for (const universe of universes) {
 
   rowIndex.push({ universeId: universe.universeId, rows });
 
+  /* Der Live-Umfang: welche Titel stehen auf einer Discover-Flaeche
+     (Startseite, Reihen, Sektorkacheln, Eingangsflaeche)? Genau fuer die
+     holt der Intraday-Ingest (scripts/market/ingest-intraday.mjs
+     --scope=discover) waehrend der Sitzung Snapshots. Der Rest des
+     Universums bekommt seinen Tagesverlauf nach Handelsschluss. */
+  if (universe.kind === "real") {
+    const live = new Set();
+    for (const [, row] of rowsById) (row.cards || []).forEach((c) => live.add(c.symbol));
+    sectorPayload.forEach((sp) => sp.cards.forEach((c) => live.add(c.symbol)));
+    featured.forEach((f) => live.add(f.symbol));
+    (homeSymbols.get(universe.universeId) || new Set()).forEach((sym) => live.add(sym));
+    write(`live-scope/${universe.universeId}.json`, {
+      universeId: universe.universeId, generatedAt: universe.generatedAt, asOf: universe.asOf,
+      count: live.size, symbols: [...live].sort(),
+      note: "Titel auf Discover-Flaechen. Umfang des Intraday-Ingests waehrend der Sitzung; " +
+            "gelesen von scripts/market/ingest-intraday.mjs --scope=discover."
+    });
+    console.log(`     ${universe.universeId.padEnd(9)} Live-Umfang: ${live.size} Titel`);
+  }
+
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
+  /* Welche Kuerzel eine Aktienseite tragen - der Vertrag mit dem Company
+     Master (scripts/universe/build-sec-universe.mjs liest ihn, main). */
+  write(`stock-index/${universe.universeId}.json`, {
+    universeId: universe.universeId,
+    count: universe.stocks.length,
+    note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
+          "Company Master bekommen ihre Seite aus dem Master (quant/data/universe/).",
+    symbols: universe.stocks.map((s) => s.symbol).sort()
+  });
+
   write(`search/${universe.universeId}.json`, {
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     asOf: universe.asOf, count: universe.stocks.length,
     entries: universe.stocks.map((s) => ({
+      i: s.instrumentId || null,
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
+      a: s.was || null,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,
       h: s.signals.new52WeekHigh ? 1 : 0,
@@ -1111,7 +2068,28 @@ for (const universe of universes) {
   });
 }
 
-console.log("4/5  Detailseiten …");
+console.log("4/6  Kursreihen (Series-Store) …");
+for (const universe of universes) {
+  let n = 0;
+  for (const stock of universe.stocks) {
+    const ps = stock.priceSeries;
+    if (!ps || ps.status !== "CALCULATED" || !Array.isArray(ps.points)) continue;
+    /* Kanonische Reihe vorhanden: kein Duplikat im Series-Store. */
+    if (stock.seriesPath) continue;
+    write(`series/${universe.universeId}/${stock.symbol}.json`, {
+      contractVersion: Contract.CONTRACT_VERSION,
+      symbol: stock.symbol, instrumentId: stock.symbol, universeId: universe.universeId,
+      dataMode: stock.dataMode,
+      status: ps.status, source: ps.source, priceSeriesType: ps.priceSeriesType,
+      grain: "daily", range: "1J", from: ps.from, to: ps.to, asOf: ps.asOf,
+      points: ps.points, message: null
+    });
+    n++;
+  }
+  console.log(`     ${universe.universeId.padEnd(9)} ${n} Kursreihen`);
+}
+
+console.log("5/6  Detailseiten …");
 const detailSets = new Map();
 for (const universe of universes) {
   /* Fuer welche Titel wird eine Detailseite ausgeliefert?
@@ -1125,7 +2103,7 @@ for (const universe of universes) {
     symbols = new Set(universe.stocks.map((s) => s.symbol));
   } else {
     symbols = new Set();
-    for (const config of METHODOLOGY.rows) {
+    for (const config of ROWS) {
       const row = buildRow(universe, config);
       row.cards.forEach((c) => symbols.add(c.symbol));
     }
@@ -1135,6 +2113,7 @@ for (const universe of universes) {
     for (const id of instruments.keys()) {
       if (universe.stocks.some((s) => s.symbol === id)) symbols.add(id);
     }
+    for (const sym of homeSymbols.get(universe.universeId) || []) symbols.add(sym);
   }
   detailSets.set(universe.universeId, symbols);
 
@@ -1146,17 +2125,53 @@ for (const universe of universes) {
   for (const stock of universe.stocks) {
     if (!symbols.has(stock.symbol)) continue;
     const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
-    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen);
+    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen, FUNDAMENTALS);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
   }
   console.log(`     ${universe.universeId.padEnd(9)} ${written} Detailseiten`);
 }
 
-console.log("5/5  Meta …");
+console.log("6/6  Meta …");
+/* Die Live-Lage, wie der Client sie liest: Gate UND Grundlage. Auf GitHub
+   Pages heisst "live" Snapshot-Refresh im Sitzungstakt; die Seite nennt
+   den Stand mit Uhrzeit. Ein LIVE-Punkt ohne Strom gibt es nicht. */
+function realtimeMeta() {
+  const intraday = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intraday", audience: "public",
+                                         form: "raw", gates: GATES });
+  const cfg = PREVIEW_CONFIG.intraday || {};
+  const verfuegbar = intraday.allowed && GATES.ENABLE_PUBLIC_LIVE_MARKET_DATA === true && cfg.enabled !== false;
+  return {
+    available: verfuegbar,
+    mode: verfuegbar ? "snapshot" : "eod",
+    reason: verfuegbar ? null : (intraday.reason || "gateDisabled"),
+    message: verfuegbar
+      ? "Der Tagesverlauf (" + (cfg.interval || "5min") + "-Kurse) wird waehrend der Sitzung alle " +
+        (cfg.refreshMinutes || 10) + " Minuten erneuert. Die Seite nennt den Stand mit Uhrzeit; " +
+        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar, ein aelterer Stand heisst 'nicht aktuell'. " +
+        "Herkunft und Lizenz der Daten: Daten & Quellen."
+      : (intraday.message || "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt.") +
+        " Discover zeigt den letzten ausgelieferten Stand und kennzeichnet ihn als solchen.",
+    basis: intraday.basis || null, checkedAt: intraday.checkedAt || null,
+    intraday: verfuegbar ? {
+      index: "/quant/data/market/intraday/index.json",
+      pathPattern: "/quant/data/market/intraday/<sessionDate>/<securityId>.json",
+      interval: cfg.interval || "5min", refreshMinutes: cfg.refreshMinutes || 10,
+      extendedHours: cfg.extendedHours !== false, provider: "tiingo", venue: "IEX",
+      isLiveStream: false, isDelayed: true,
+      /* Der Freshness-Vertrag: der Client beurteilt jede Reihe mit denselben
+         Karenzen wie Ingest und Health-Check (freshness.js). */
+      freshness: Object.assign({ contractVersion: "freshness-contract-1.0.0", graceMinutes: 30, graceHours: 6 },
+                               cfg.freshness ? { graceMinutes: cfg.freshness.graceMinutes, graceHours: cfg.freshness.graceHours } : {})
+    } : null,
+    realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
+    derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
+                    "breakoutScore", "percentiles", "movingAverages"]
+  };
+}
 const meta = {
   module: "discover",
-  moduleVersion: "discover-1.0.0",
+  moduleVersion: "discover-4.0.0",
   contractVersion: Contract.CONTRACT_VERSION,
   methodologyVersion: METHODOLOGY.methodologyVersion,
   visualLanguage: METHODOLOGY.visualLanguage,
@@ -1164,7 +2179,15 @@ const meta = {
   engines: {
     high52w: High52w.ENGINE_VERSION, scoring: Scoring.ENGINE_VERSION,
     indicators: Indicators.ENGINE_VERSION, technicalIntelligence: TI.ENGINE_VERSION,
+    relevance: Relevance.ENGINE_VERSION, klartext: Klartext.ENGINE_VERSION || null,
     factors: Factors.VERSION
+  },
+  home: homeIndex,
+  editorial: {
+    recognition: { entries: Object.keys(RECOGNITION).length, source: "discover/config/company-recognition.json" },
+    themes: (THEMES.themes || []).map((t) => ({ id: t.id, title: t.title, members: t.tickers.length })),
+    note: "Bekanntheit und Themen sind redaktionelle Zuordnungen. Sie entscheiden nie, ob ein Titel " +
+          "in einer Reihe steht - nur, wie weit vorn er innerhalb der qualifizierten Titel gezeigt wird."
   },
   generatedAt: new Date().toISOString(),
   gates: GATES,
@@ -1172,16 +2195,12 @@ const meta = {
     acc[name] = DisplayPolicy.gateReason(GATES_CONFIG, name);
     return acc;
   }, {}),
-  realtime: {
-    available: false,
-    reason: "gateDisabled",
-    message: "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt und für Realtime liegt keine " +
-             "Anzeigeerlaubnis vor. Discover zeigt den letzten ausgelieferten Stand und " +
-             "kennzeichnet ihn als solchen - es gibt keinen LIVE-Punkt ohne Live-Daten.",
-    realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
-    derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
-                    "breakoutScore", "percentiles", "movingAverages"]
-  },
+  realtime: realtimeMeta(),
+  universeSource: real.universeSource,
+  /* V4: Positionierung (§4), Index-Mitgliedschaften (§19), Qualifikation (§18). */
+  positioning: METHODOLOGY.positioning || null,
+  indexes: real.indexes || [],
+  qualification: real.qualificationSummary || null,
   universes: universes.map((u) => ({
     universeId: u.universeId, label: u.label, kind: u.kind, provider: u.provider,
     benchmark: u.benchmark, asOf: u.asOf, generatedAt: u.generatedAt,
@@ -1189,18 +2208,29 @@ const meta = {
     securities: u.stocks.length,
     withPriceSeries: u.stocks.filter((s) => s.hasPriceSeries).length,
     withCompanyName: u.stocks.filter((s) => s.companyName).length,
+    consumerPolicy: u.consumerPolicy || null,
     curatedSectors: u.sectors.size,
     notTradingExcluded: u.stocks.filter((s) => s.discoveryEligible === false)
       .map((s) => ({ symbol: s.symbol, reason: s.ineligibleReason })),
     detailPages: detailSets.get(u.universeId).size,
+    factorCoverage: u.factorCoverage || null,
+    fundamentalsCoverage: u.fundamentalsCoverage || null,
+    valuationContext: u.valuationContext || null,
+    universeSource: u.universeSource ? { source: u.universeSource.source, file: u.universeSource.file,
+                                         version: u.universeSource.version, counts: u.universeSource.counts,
+                                         handover: u.universeSource.handover } : null,
     redistribution: u.redistribution || null,
     note: METHODOLOGY.universes[u.universeId].note,
     rankingScope: METHODOLOGY.universes[u.universeId].rankingScope
   })),
   rows: rowIndex,
+  rowConfigs: ROWS.map((r) => ({ id: r.id, title: r.title, theme: r.theme || null,
+                                 microRange: r.microRange || "6M", rule: r.rule || null })),
   sources: [
-    "quant/data/market/factors/factors-GATE_500.json",
-    "quant/data/market/scale/universe-GATE_500.json",
+    real.sourceFile,
+    real.universeSource.file,
+    "quant/data/market/discover-series/*.json",
+    "quant/data/market/intraday/index.json",
     "quant/data/market/golden-preview/daily/*.json",
     "quant/data/technical/index.json",
     "quant/data/securities.json",

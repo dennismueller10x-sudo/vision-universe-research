@@ -197,3 +197,57 @@ test("auf den Karten der Startseite steht kein Fachkürzel mehr", () => {
     }
   }
 });
+
+/* ---------------------------------------------------------------------
+   Fundamentale Geschichten (SEC-Kennzahlen f_*).
+   --------------------------------------------------------------------- */
+function jung(over) {
+  /* Ein junger Titel: Abschluesse vorhanden, aber keine Zwoelfmonatsrendite. */
+  return Object.assign({
+    symbol: "JUNG", companyName: "Junge AG",
+    signals: { new52WeekHigh: false, nearHigh: false, marketLeader: false, momentumLeader: false,
+               relativeStrengthLeader: false, breakout: false, compounder: false, turnaround: false, netCash: true },
+    metrics: { return12M: null, return6M: null, return3M: 0.02, return1M: 0.01,
+               f_revenueGrowth3y: 0.23, f_netMargin: 0.12, f_fcfMargin: 0.18 }
+  }, over || {});
+}
+
+test("fundamentale Reihe: der Satz sagt, warum der Titel in der Reihe ist - mit der Zahl der Reihe", () => {
+  const k = K.karte(jung(), { rowId: "umsatz-waechst-stark" });
+  assert.equal(k.storyId, "fUmsatzStark");
+  assert.match(k.story, /Umsatz wächst seit drei Jahren/);
+  assert.equal(k.zahl.quelle, "f_revenueGrowth3y");
+  assert.equal(k.zahl.roh, 0.23);
+  assert.match(k.zahl.label, /Umsatz p\. a\./);
+  const c = K.karte(jung(), { rowId: "cashflow-maschinen" });
+  assert.equal(c.storyId, "fCashflowMaschine"); assert.equal(c.zahl.quelle, "f_fcfMargin");
+});
+
+test("ohne Kursgeschichte sprechen die Abschluesse - auch auf einer Kursreihe", () => {
+  const k = K.karte(jung(), { rowId: "momentum-leaders" });
+  assert.ok(k.story, "ein junger Titel mit Abschluessen bleibt nicht ohne Aussage");
+  assert.equal(k.storyId, "fUmsatzStark");
+  assert.equal(k.zahl.quelle, "f_revenueGrowth3y", "die Zahl gehoert zum Satz");
+});
+
+test("auf einer Kursreihe steht der Kurs vor den Abschluessen", () => {
+  const s = jung({ metrics: { return12M: 0.4, return6M: 0.2, return3M: 0.1, return1M: 0.05, f_revenueGrowth3y: 0.23, f_netMargin: 0.12 } });
+  const k = K.karte(s, { rowId: "momentum-leaders" });
+  assert.ok(!/^f/.test(k.storyId), "Kursgeschichte zuerst: " + k.storyId);
+  assert.equal(k.zahl.quelle, "return6M");
+});
+
+test("fundamentale Reihe: derselbe wahre Satz steht nicht sechsmal untereinander", () => {
+  const liste = [1, 2, 3, 4, 5, 6].map((i) => jung({ symbol: "J" + i }));
+  const texte = K.reihe(liste, "umsatz-waechst-stark");
+  const ids = texte.map((t) => t.storyId);
+  assert.ok(texte.every((t) => t.story), "jede Karte traegt einen Satz");
+  for (const id of new Set(ids)) assert.ok(ids.filter((x) => x === id).length <= K.MAX_JE_REIHE, id);
+});
+
+test("keine fundamentale Geschichte behauptet Staerke ueber einer negativen Zahl", () => {
+  const s = jung({ metrics: { f_revenueGrowth3y: -0.2, f_netMargin: -0.05 }, signals: { netCash: false } });
+  const k = K.karte(s, { rowId: "umsatz-waechst-stark" });
+  assert.equal(k.storyId, "fVerlust"); assert.equal(k.zahl.quelle, "f_netMargin");
+  for (const g of K.FUNDAMENTAL_GESCHICHTEN) assert.ok(g.id && typeof g.wenn === "function" && typeof g.satz === "function");
+});

@@ -79,16 +79,71 @@
       detail: detail, range: "1Y",
       overlays: OVERLAYS.reduce(function (acc, o) { acc[o.id] = o.on === true; return acc; }, {}),
       panes: PANES.reduce(function (acc, p) { acc[p.id] = p.on === true; return acc; }, {}),
-      bars: null, weeklyBars: null, bundle: null, mehrOffen: false
+      bars: null, weeklyBars: null, bundle: null, mehrOffen: false,
+      /* V4 §12-15: Verbraucher-Chart zuerst (Linie, Zeitraum, Kurs); der
+         Analyse-Chart (Kerzen, Volumen, Overlays) ist ein Werkzeug. */
+      dailyPoints: null, weeklyPoints: null, seriesAsOf: null, pro: false,
+      /* Der Tagesverlauf aus dem Live-Hub (Snapshot + Beschriftung). */
+      intraday: null, redraw: null
     };
+  }
+
+  /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
+     sobald die naechste Seite gezeichnet wird. */
+  var detailAbo = null;
+
+  /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
+     der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
+     gesperrt - nichts wird aus einem Jahr auf fuenf gestreckt. */
+  function langeReihe(series) {
+    if (!series.long || !series.long.path) return Promise.resolve(null);
+    var Loader = D.SeriesLoader;
+    var holen = Loader ? Loader.get(series.long.path) : S.loadJSON(series.long.path);
+    return holen.catch(function () { return null; });
+  }
+  function wochenPunkte(lang, daily) {
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling;
+    if (!SS) return null;
+    if (lang && Array.isArray(lang.points) && lang.points.length) return SS.mergeWeeklyWithDaily(lang.points, daily || []);
+    return null;
+  }
+  function punkteAlsBars(punkte) {
+    var close = punkte.map(function (p) { return p[1]; });
+    return { timestamps: punkte.map(function (p) { return p[0]; }), open: close.slice(), high: close.slice(),
+             low: close.slice(), close: close, volume: close.map(function () { return null; }) };
   }
 
   function loadSeries(detail) {
     var series = detail.series || {};
     if (series.source === "technical-instrument" && series.path) {
-      return S.loadJSON(series.path).then(function (payload) {
+      return Promise.all([S.loadJSON(series.path), langeReihe(series)]).then(function (teile) {
+        var payload = teile[0], lang = teile[1];
+        var b = payload.bars || {};
+        var daily = (b.timestamps || []).map(function (t, i) { return [String(t).slice(0, 10), b.close[i]]; });
+        var wochen = wochenPunkte(lang, daily);
         return { bars: payload.bars, bundle: payload.bundle || null,
-                 priceSeriesType: payload.priceSeriesType || null };
+                 dailyPoints: daily, weeklyPoints: wochen, weeklyBars: wochen ? punkteAlsBars(wochen) : null,
+                 priceSeriesType: payload.priceSeriesType || null,
+                 asOf: daily.length ? daily[daily.length - 1][0] : null };
+      });
+    }
+    /* Kompakte Reihe (ein Jahr Tagesschluss): dieselbe Datei wie der
+       Micro-Chart der Karte. Sie traegt nur Schlusskurse - Open/High/Low
+       sind deshalb der Schluss, Volumen fehlt, und 5J/Max bleiben
+       gesperrt, weil die Reihe sie nicht hergibt. */
+    if (series.source === "discover-series" && series.path) {
+      var Loader = D.SeriesLoader;
+      var holen = Loader ? Loader.get(series.path) : S.loadJSON(series.path);
+      return Promise.all([holen, langeReihe(series)]).then(function (teile) {
+        var reihe = teile[0], lang = teile[1];
+        var dates = reihe.points.map(function (p) { return p[0]; });
+        var close = reihe.points.map(function (p) { return p[1]; });
+        var wochen = wochenPunkte(lang, reihe.points);
+        return { bars: { timestamps: dates, open: close.slice(), high: close.slice(), low: close.slice(),
+                         close: close, volume: close.map(function () { return null; }) },
+                 dailyPoints: reihe.points, weeklyPoints: wochen,
+                 weeklyBars: wochen ? punkteAlsBars(wochen) : null, bundle: null,
+                 priceSeriesType: reihe.priceSeriesType || null, closeOnly: true, asOf: reihe.asOf || reihe.to || null };
       });
     }
     if (series.source === "inline" && series.inline) {
@@ -111,6 +166,7 @@
     options = options || {};
     var state = createState(detail);
     S.clear(root);
+    if (detailAbo) { detailAbo(); detailAbo = null; }
 
     /* Die Farbwelt des Titels steht am Kopf der Seite und hoert weiter
        unten auf. Das ist keine Laune: oben wird entdeckt, unten wird
@@ -144,27 +200,69 @@
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
 
-    root.appendChild(why(detail));
-    root.appendChild(ueberblick(detail));
-    root.appendChild(waage(detail));
-    root.appendChild(unternehmen(detail));
-    root.appendChild(continueDiscovery(detail, options));
+    /* Ein Kapitel, das fuer diesen Titel nichts zu sagen hat (kein Signal,
+       keine Belege), gibt null zurueck - und faellt dann weg, statt die
+       Seite zu Fall zu bringen. Im grossen Universum ist das der
+       Normalfall fuer viele Titel ohne Discovery-Signal. */
+    /* Die Streaming-Reihenfolge (Auftrag §36): Kopf, warum interessant,
+       Kurs, in 30 Sekunden, das Unternehmen, damals vs. heute, die
+       Entwicklung, heute, Bewertung, dafuer und dagegen, dann Quant und
+       Technik, dann die naechste Aktie. */
+    var DF = D.DetailFundamentals || {};
+    var kapitel = function (node) { if (node) root.appendChild(node); };
+    kapitel(why(detail));
+    kapitel(ueberblick(detail));
+    kapitel(unternehmen(detail));
+    if (DF.damalsHeute) kapitel(DF.damalsHeute(detail));
+    if (DF.journey) kapitel(DF.journey(detail));
+    if (DF.heute) kapitel(DF.heute(detail));
+    if (DF.bewertung) kapitel(DF.bewertung(detail));
+    kapitel(waage(detail));
 
     /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
        kommt mit einem Wisch. */
-    root.appendChild(kapitelTrenner());
-    root.appendChild(belege(detail));
-    root.appendChild(panels(detail));
-    root.appendChild(technicalIntelligence(detail));
-    root.appendChild(provenance(detail));
+    kapitel(kapitelTrenner());
+    kapitel(belege(detail));
+    kapitel(panels(detail));
+    kapitel(technicalIntelligence(detail));
+    kapitel(continueDiscovery(detail, options));
+    if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
+    kapitel(provenance(detail));
 
-    loadSeries(detail).then(function (loaded) {
+    /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
+       Titel. Er wird abgewartet, bevor der Chart entsteht - damit der
+       Standard-Zeitraum 1T ist, wenn es einen gibt, und 1J, wenn nicht. */
+    var Hub = D.LiveHub;
+    var liveErst = new Promise(function (resolve) {
+      if (!Hub || !Hub.enabled() || detail.dataMode !== "real") { resolve(null); return; }
+      var erledigt = false;
+      detailAbo = Hub.subscribe(detail.symbol, function (p) {
+        state.intraday = p.snapshot ? p : null;
+        if (!erledigt) { erledigt = true; resolve(state.intraday); return; }
+        if (state.redraw && state.range === "1D") state.redraw();
+      });
+      /* Ein Hub, der nicht antwortet, haelt die Seite nicht auf. */
+      global.setTimeout(function () { if (!erledigt) { erledigt = true; resolve(null); } }, 4000);
+    });
+
+    Promise.all([loadSeries(detail), liveErst]).then(function (teile) {
+      var loaded = teile[0];
       S.clear(chartHost);
-      chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
-      if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
-      state.bars = loaded.bars;
-      state.weeklyBars = loaded.weeklyBars || null;
-      state.bundle = loaded.bundle;
+      /* Ohne Kursreihe heisst das Kapitel nicht "Kursverlauf" - es zeigt
+         keinen. Es zeigt die Wertentwicklung ueber vier Zeitraeume. */
+      var hatChart = !!loaded || !!state.intraday;
+      chartHost.appendChild(el("h2", { text: hatChart ? "Kursverlauf" : "Wertentwicklung" }));
+      if (!hatChart) { chartHost.appendChild(noSeries(detail)); return; }
+      if (loaded) {
+        state.bars = loaded.bars;
+        state.weeklyBars = loaded.weeklyBars || null;
+        state.bundle = loaded.bundle;
+        state.dailyPoints = loaded.dailyPoints || null;
+        state.weeklyPoints = loaded.weeklyPoints || null;
+        state.seriesAsOf = loaded.asOf || null;
+      }
+      if (state.intraday) state.range = "1D";
+      else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
       chartHost.appendChild(chartSection(state));
     }).catch(function (err) {
       S.clear(chartHost);
@@ -190,7 +288,8 @@
       ? el("div", { class: "dx-price" }, [
           el("b", { class: "num", text: C().money(preis) }),
           el("span", { class: C().toneClass(change),
-                       text: isNum(change) ? C().pctPoints(change) + " heute" : "" })
+                       /* Schluss gegen Vortagesschluss - am Wochenende ist das nicht "heute". */
+                       text: isNum(change) ? C().pctPoints(change) + " zum Vortag" : "" })
         ])
       : (text.zahl
           ? el("div", { class: "dx-price" }, [
@@ -225,8 +324,7 @@
          Seite nicht bei null anfaengt, sondern dort weitermacht, wo man
          geklickt hat. */
       D.Artwork ? el("div", { class: "dx-dhero-art", "aria-hidden": "true" }, [
-        D.Artwork.stockArtwork(detail, { width: 720, height: 220, ticker: false,
-                                         scale: "hero", nodes: true })
+        C().lazyArtwork(detail, { width: 720, height: 220, ticker: false, scale: "hero", range: "1J" })
       ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [
@@ -234,9 +332,26 @@
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]
             .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
+          /* V4 §19: Index-Mitgliedschaft mit Herkunft und Stichtag - aus den
+             veroeffentlichten Fondsbestaenden, nicht geraten. */
+          Array.isArray(detail.indexMemberships) && detail.indexMemberships.length
+            ? el("p", { class: "dx-index-badges" }, detail.indexMemberships.map(function (ix) {
+                return el("span", { class: "dx-index-badge",
+                  title: ix.indexName + " – Mitglied laut " + (ix.proxy ? "Bestand des Fonds " + ix.proxy : "Liste des Indexeigentümers") +
+                         ", Stichtag " + C().dateShort(ix.asOf) + (isNum(ix.weight) ? ", Gewicht " + ix.weight.toFixed(2).replace(".", ",") + " %" : "") },
+                  [document.createTextNode(ix.shortLabel || ix.indexId)]);
+              }))
+            : null,
           text.story ? el("p", { class: "dx-dhero-story" }, [
             el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
             document.createTextNode(text.story)
+          ]) : null,
+          /* Fundamentaler Kontext im Kopf: ein Satz aus den Jahresabschluessen,
+             mit den Geschaeftsjahren, aus denen er stammt (nie ohne). */
+          detail.hook && detail.hook.text ? el("p", { class: "dx-dhero-hook" }, [
+            el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+            document.createTextNode(detail.hook.text),
+            el("span", { class: "dx-hero-hook-src", text: "Geschäftsjahre " + detail.hook.from + "–" + detail.hook.to })
           ]) : null,
           el("div", { class: "dx-dhero-sigs" },
              (detail.badges || []).map(function (b) { return C().signalChip(b); }))
@@ -355,7 +470,12 @@
     ]);
 
     var gitter = el("div", { class: "dx-30" });
-    daten.zeilen.forEach(function (z) {
+    /* Profitabilitaet, Cashflow, Bilanz, Verwaesserung aus den
+       Jahresabschluessen (detail-fundamentals.js) - nur wo Daten vorliegen. */
+    var DF = D.DetailFundamentals;
+    var zusatz = DF && DF.healthZeilen ? DF.healthZeilen(detail) : [];
+    var zeilen = daten.zeilen.slice(0, 2).concat(zusatz).concat(daten.zeilen.slice(2));
+    zeilen.forEach(function (z) {
       var erklaerung = D.Einordnung.erklaerung(z.id);
       var zelle = el("div", { class: "dx-30-zelle" + (z.wert ? "" : " dx-30-zelle--leer") }, [
         el("span", { class: "dx-30-label", text: z.label }),
@@ -388,6 +508,14 @@
   function waage(detail) {
     if (!D.Einordnung) return null;
     var w = D.Einordnung.waage(detail);
+    /* Belegte Chancen und Risiken aus den Fundamentals dazu (ohne Dopplung). */
+    var DF = D.DetailFundamentals;
+    if (DF && DF.waageZeilen) {
+      var extra = DF.waageZeilen(detail);
+      var ids = {}; w.dafuer.concat(w.beachten).forEach(function (e) { ids[e.id] = true; });
+      extra.dafuer.forEach(function (e) { if (!ids[e.id]) w.dafuer.push(e); });
+      extra.beachten.forEach(function (e) { if (!ids[e.id]) w.beachten.push(e); });
+    }
     if (!w.dafuer.length && !w.beachten.length) return null;
 
     function spalte(titel, eintraege, art) {
@@ -410,7 +538,8 @@
     }
 
     return el("section", { class: "dx-chapter dx-fade" }, [
-      el("h2", { text: "Dafür und dagegen" }),
+      el("p", { class: "dx-kicker", text: "Chancen und Risiken" }),
+      el("h2", { text: "Was dafür spricht — und was dagegen" }),
       el("div", { class: "dx-waage" }, [
         spalte("Das spricht dafür", w.dafuer, "pro"),
         spalte("Das sollte man beachten", w.beachten, "contra")
@@ -432,9 +561,14 @@
     if (!g) return null;
     var name = detail.companyName || detail.symbol;
     var section = el("section", { class: "dx-chapter dx-fade" }, [
-      el("h2", { text: "Das Unternehmen" })
+      el("p", { class: "dx-kicker", text: "Das Unternehmen" }),
+      el("h2", { text: "Was macht " + name + "?" })
     ]);
-
+    /* Womit die Firma Geld verdient (redaktionell) und wo sie steht. */
+    var beschreibung = [detail.was || null, detail.sector ? "Sektor " + detail.sector : null, detail.industry ? "Branche " + detail.industry : null,
+                        detail.exchange ? "Notiert an der " + detail.exchange : null].filter(Boolean);
+    if (beschreibung.length) section.appendChild(el("p", { class: "dx-chapter-lead", text: beschreibung.join(" · ") }));
+    else section.appendChild(el("p", { class: "dx-chapter-lead dx-why-empty", text: "Für diesen Titel ist keine Beschreibung des Geschäfts hinterlegt — erfunden wird keine." }));
     if (g.status !== "CALCULATED") {
       section.appendChild(el("p", { class: "dx-why-empty",
         text: g.message || "Für diesen Titel liegen keine Geschäftszahlen vor. Vision Universe " +
@@ -444,11 +578,11 @@
 
     var K = D.Klartext;
     var zahlen = [
-      { label: "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
-        zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + " gegenüber dem Vorjahr" : null,
+      { label: g.basis === "FY" ? "Umsatz (Geschäftsjahr)" : "Umsatz (12 Monate)", wert: geld(g.umsatzTTM),
+        zusatz: isNum(g.umsatzWachstum) ? K.prozent(g.umsatzWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.umsatzWachstum) },
-      { label: "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
-        zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + " gegenüber dem Vorjahr" : null,
+      { label: g.basis === "FY" ? "Gewinn (Geschäftsjahr)" : "Gewinn (12 Monate)", wert: geld(g.gewinnTTM),
+        zusatz: isNum(g.gewinnWachstum) ? K.prozent(g.gewinnWachstum) + (g.basis === "FY" ? " gegenüber dem Vorjahr" : " gegenüber den zwölf Monaten davor") : null,
         ton: tonVon(g.gewinnWachstum) },
       { label: "Vom Umsatz bleibt als Gewinn", wert: isNum(g.marge) ? K.prozent(g.marge, false) : "–",
         zusatz: null, ton: null },
@@ -472,7 +606,13 @@
     });
     section.appendChild(gitter);
 
-    var quelle = g.quelle === "SEC_CANONICAL"
+    var quelle = g.quelle === "SEC_CONSUMER"
+      ? (g.basis === "TTM"
+          ? "Aus den Quartals- und Jahresberichten bei der SEC. Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen" +
+            (g.zeitraum && g.zeitraum.durch ? " (bis " + g.zeitraum.durch.replace("FY", "GJ ").replace("Q", " Q") + ")" : "") +
+            "; das Wachstum vergleicht mit den vier Quartalen davor."
+          : "Aus dem Jahresabschluss bei der SEC (Geschäftsjahr " + (g.zeitraum && g.zeitraum.fy ? g.zeitraum.fy : "") + "); Zwölfmonatswerte liegen für diesen Titel nicht vor.")
+      : g.quelle === "SEC_CANONICAL"
       ? "Aus den Quartalsberichten bei der SEC, Zeitraum " +
         (g.zeitraum && g.zeitraum.von ? g.zeitraum.von + " bis " + g.zeitraum.bis : "unbekannt") +
         ". Zwölfmonatswerte aus den vier jüngsten abgeschlossenen Quartalen."
@@ -550,8 +690,12 @@
     var paneHost = el("div", {});
 
     var gates = (global.VUDiscoverMeta && global.VUDiscoverMeta.gates) || {};
-    var daily = { eod: barsAsRows(state.bars), intraday: [] };
-    var weekly = state.weeklyBars ? { eod: barsAsRows(state.weeklyBars), intraday: [] } : null;
+    /* Der Tagesverlauf als Zeilen fuer die Zeitraum-Engine: sie entscheidet
+       damit, ob 1T verfuegbar ist - dieselbe Regel wie ueberall (Gate vor
+       Daten). Gezeichnet wird 1T aus dem Snapshot selbst. */
+    var intradayRows = intradayAlsZeilen(state.intraday);
+    var daily = { eod: state.bars ? barsAsRows(state.bars) : [], intraday: intradayRows };
+    var weekly = state.weeklyBars ? { eod: barsAsRows(state.weeklyBars), intraday: intradayRows } : null;
 
     function quelleFuer(rangeId) {
       var mitTag = Ranges.selectRange(rangeId, daily, { gates: gates });
@@ -568,31 +712,34 @@
       return { bars: state.bars, selection: mitTag, grain: "daily" };
     }
 
-    var leiste = Ranges.rangeBar(weekly || daily, { gates: gates });
+    /* V4 §13: die Zeitraeume, in denen ein Mensch denkt. 1T aus dem
+       Tagesverlauf (Gate vor Daten, wie ueberall), 1W bis 1J aus der
+       Tagesreihe, 5J und Max aus der Wochenreihe - jeder Zeitraum nur, wenn
+       die Reihe ihn wirklich traegt. Ein gesperrter Knopf sagt, warum. */
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling;
+    var engineLeiste = Ranges.rangeBar(weekly || daily, { gates: gates });
+    var eintag = engineLeiste.filter(function (r) { return r.id === "1D"; })[0] || { id: "1D", label: "1T", available: false, message: "Kein Tagesverlauf" };
+    var leiste = [eintag].concat(verbraucherZeitraeume(state, SS));
     leiste.forEach(function (r) {
-      /* Die Leiste zeigt die Zeitraeume, in denen ein Mensch denkt:
-         heute, eine Woche, ein Monat, ein halbes Jahr, ein Jahr, fuenf
-         Jahre, alles. Drei Jahre und zehn Jahre liegen dazwischen, ohne
-         eine eigene Frage zu beantworten - sie sind auf der Analyseebene
-         ueber dieselbe Engine erreichbar. */
-      if (["3M", "YTD", "3Y", "10Y"].indexOf(r.id) !== -1) return;
-      /* Die Engine nennt den Zeitraum "5T", weil sie in Handelstagen
-         denkt. Ein Mensch sagt "1 Woche". Umbenannt wird nur die
-         Beschriftung - die Auswahl bleibt dieselbe Engine-Entscheidung. */
-      var beschriftung = r.id === "5D" ? "1W" : r.label;
-      var knopf = el("button", { type: "button", text: beschriftung,
+      var knopf = el("button", { type: "button", text: r.label,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
         title: r.available ? "" : (r.message || "Nicht verfügbar") });
       knopf.addEventListener("click", function () {
         if (!r.available) return;
         state.range = r.id;
         Array.prototype.forEach.call(tf.children, function (b) {
-          b.setAttribute("aria-pressed", String(b.textContent === beschriftung));
+          b.setAttribute("aria-pressed", String(b.textContent === r.label));
         });
         zeichnen();
+        if (D.Analytics && D.Analytics.track) D.Analytics.track("detail:range", { symbol: state.detail.symbol, range: r.id });
       });
       tf.appendChild(knopf);
     });
+    /* Wenn der Standard-Zeitraum nicht verfuegbar ist, der erste verfuegbare. */
+    if (!leiste.some(function (r) { return r.id === state.range && r.available; })) {
+      var erster = leiste.filter(function (r) { return r.available; })[0];
+      if (erster) { state.range = erster.id; Array.prototype.forEach.call(tf.children, function (b) { b.setAttribute("aria-pressed", String(b.textContent === erster.label)); }); }
+    }
 
     wrap.appendChild(el("div", { class: "dx-chart-head" }, [tf]));
     wrap.appendChild(chartBox);
@@ -619,6 +766,9 @@
     }
 
     function zeichnen() {
+      state.redraw = zeichnen;
+      if (state.range === "1D") { zeichneIntraday(state, chartBox, paneHost, controls); return; }
+      if (!state.pro || state.range === "1W") { zeichneVerbraucher(state, chartBox, paneHost, controls, zeichnen); return; }
       var gewaehlt = quelleFuer(state.range);
       var selection = gewaehlt.selection;
       var aktiveBars = gewaehlt.bars;
@@ -694,9 +844,170 @@
     return wrap;
   }
 
+  /* Der Tagesverlauf auf der Aktienseite: derselbe Renderer wie auf der
+     Karte (ein Chart-Engine fuer Intraday), groesser und mit Zeitachse.
+     Keine Overlays: gleitende Durchschnitte ueber 5-Minuten-Kurse waeren
+     andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
+     bleibt deshalb zu. */
+  var VERBRAUCHER_ZEITRAEUME = [
+    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
+    { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
+    { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
+    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
+    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
+    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+  ];
+  function tageZwischen(a, b) { return (Date.parse(b) - Date.parse(a)) / 86400000; }
+  function verbraucherZeitraeume(state, SS) {
+    var daily = state.dailyPoints || [], weekly = state.weeklyPoints || null;
+    return VERBRAUCHER_ZEITRAEUME.map(function (z) {
+      var out = { id: z.id, label: z.label, available: false, message: null };
+      if (!SS) { out.message = "Zeitraum-Engine nicht geladen"; return out; }
+      var punkte = z.quelle === "weekly" ? (weekly || null) : daily;
+      if (z.id === "MAX") {
+        punkte = weekly || daily;
+        out.available = punkte.length >= 5;
+        if (!out.available) out.message = "Keine Kursreihe";
+        return out;
+      }
+      if (!punkte || punkte.length < 2) { out.message = z.quelle === "weekly" ? "Für diesen Titel liegt noch keine lange Kursreihe vor." : "Keine Kursreihe"; return out; }
+      var deckung = tageZwischen(punkte[0][0], punkte[punkte.length - 1][0]);
+      /* Ein Zeitraum ist verfuegbar, wenn die Reihe mindestens 60 % davon
+         traegt; bei weniger sagt der Knopf, wie weit sie reicht. */
+      if (deckung >= z.tage * 0.6) out.available = true;
+      else out.message = "Die Kursreihe reicht nur " + Math.round(deckung) + " Tage zurück (ab " + C().dateShort(punkte[0][0]) + ").";
+      return out;
+    });
+  }
+
+  /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
+     Zeitraum, das Datum. Kein Rahmen, kein Werkzeugkasten, keine Fachbegriffe.
+     Farbe folgt der Welt, aus der man kommt; Gruen und Rot bleiben den Zahlen. */
+  function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
+    var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
+    S.clear(chartBox); S.clear(paneHost); S.clear(controls);
+    var z = VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === state.range; })[0] || VERBRAUCHER_ZEITRAEUME[3];
+    var punkte = z.quelle === "weekly" ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
+    if (z.id === "MAX") punkte = state.weeklyPoints || state.dailyPoints || [];
+    if (!SS || !MC || !MC.renderRange || punkte.length < 2) {
+      chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
+      return;
+    }
+    var sel = SS.sliceRange(punkte, z.id, punkte[punkte.length - 1][0]);
+    if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
+    var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
+    var veraenderung = erster > 0 ? (letzter / erster - 1) * 100 : null;
+    var mobil = global.innerWidth < 860;
+    /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
+       Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
+    var kopf = el("div", { class: "dx-chart-hero" }, [
+      el("div", { class: "dx-chart-hero-preis" }, [
+        el("b", { class: "num", text: C().money(letzter) }),
+        el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
+        el("span", { class: "dx-chart-hero-wort", text: z.wort })
+      ]),
+      el("div", { class: "dx-chart-hero-meta" }, [
+        el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
+          (z.quelle === "weekly" ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt" }),
+        frischeTages(state)
+      ])
+    ]);
+    chartBox.appendChild(kopf);
+    var svgNode = MC.renderRange(sel.points, { width: mobil ? 640 : 1120, height: mobil ? 240 : 380, symbol: state.detail.symbol,
+                                                 range: z.id, label: z.wort, grain: z.quelle });
+    if (svgNode && svgNode.getAttribute("data-scale") === "log") {
+      kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
+    }
+    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle });
+    rahmen.appendChild(svgNode);
+    chartBox.appendChild(rahmen);
+    if (!sel.complete) {
+      chartBox.appendChild(el("p", { class: "dx-intraday-note", text: "Die Kursreihe beginnt am " + C().dateShort(sel.from) + " — der Zeitraum ist deshalb kürzer als gewählt." }));
+    }
+    controls.appendChild(controlBar(state, redraw));
+  }
+
+  /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
+     der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
+  function frischeTages(state) {
+    var Hub = D.LiveHub, FR = global.VURealtime && global.VURealtime.Freshness;
+    var asOf = state.seriesAsOf;
+    if (!asOf || !FR || !Hub || !Hub.resolution) return null;
+    var r = Hub.resolution();
+    if (!r) return null;
+    var meta = (global.VUDiscoverMeta && global.VUDiscoverMeta.realtime && global.VUDiscoverMeta.realtime.intraday) || {};
+    var f = FR.assess({ resolution: r, series: { to: asOf, asOf: asOf }, kind: "daily", now: new Date(),
+                        options: meta.freshness ? { graceHours: meta.freshness.graceHours, graceMinutes: meta.freshness.graceMinutes } : null });
+    return el("span", { class: "dx-live-label dx-live-label--" + f.label.tone, "data-freshness": f.freshnessState,
+                        title: f.freshnessState === "STALE" ? "Die Tagesreihe ist älter als der letzte Handelstag (" + f.expectedSessionDate + ")." : "" },
+      [el("i", { "aria-hidden": "true" }), document.createTextNode(f.label.label)]);
+  }
+
+  /* "+27,8 %" bis 100, darueber ohne Nachkommastellen und mit
+     Tausenderpunkt: "+545.625 %" statt "+545625,00 %". */
+  function prozentGross(v) {
+    var abs = Math.abs(v);
+    var text = abs >= 100 ? Math.round(abs).toLocaleString("de-DE") : abs.toFixed(abs >= 10 ? 1 : 2).replace(".", ",");
+    return (v > 0 ? "+" : v < 0 ? "−" : "") + text + " %";
+  }
+
+  function zeichneIntraday(state, chartBox, paneHost, controls) {
+    var MC = D.MicroChart;
+    var p = state.intraday;
+    S.clear(chartBox); S.clear(paneHost); S.clear(controls);
+    if (!p || !p.snapshot || !MC || !MC.renderIntraday) {
+      chartBox.appendChild(C().emptyState("Kein Tagesverlauf",
+        "Für diesen Titel liegt kein Tagesverlauf vor."));
+      return;
+    }
+    var mobil = global.innerWidth < 860;
+    var svgNode = MC.renderIntraday(p.snapshot, { width: mobil ? 640 : 960, height: mobil ? 260 : 400,
+                                                  axis: true, symbol: state.detail.symbol,
+                                                  label: p.label && p.label.label });
+    if (!svgNode) {
+      chartBox.appendChild(C().emptyState("Kein Tagesverlauf", "Der Snapshot dieses Titels ist unvollständig."));
+      return;
+    }
+    svgNode.classList.add("dx-intraday-chart");
+    var rahmen = el("div", { class: "dx-intraday", "data-live": p.snapshot.regularComplete ? "complete" : "running",
+                             "data-freshness": (p.freshness && p.freshness.freshnessState) || "" });
+    rahmen.appendChild(svgNode);
+    chartBox.appendChild(rahmen);
+    var snap = p.snapshot;
+    var text = " · 5-Minuten-Kurse · Uhrzeiten New York" +
+      (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
+      (p.freshness && p.freshness.freshnessState === "STALE"
+        ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
+        : snap.regularComplete ? "" : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
+    chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [C().liveLabel(p.label, snap),
+      el("span", { text: text })]));
+  }
+
+  function intradayAlsZeilen(p) {
+    if (!p || !p.snapshot || !Array.isArray(p.snapshot.points)) return [];
+    var snap = p.snapshot;
+    return snap.points.map(function (pt) {
+      return { date: snap.sessionDate, timestamp: snap.sessionDate + "T" + pt[0], close: pt[1],
+               open: pt[1], high: pt[1], low: pt[1], volume: null };
+    });
+  }
+
   /** Schnellzugriff, darunter auf Wunsch die ganze Liste. */
   function controlBar(state, redraw) {
     var host = el("div", {});
+    /* V4 §15: der Analyse-Chart ist ein Werkzeug, kein Standard. */
+    var pro = el("label", { class: "dx-pro-toggle" }, [
+      el("input", { type: "checkbox", checked: state.pro ? "checked" : null }),
+      el("span", { text: "Analyse-Chart: Kerzen, Volumen, Overlays und Indikatoren" })
+    ]);
+    pro.querySelector("input").addEventListener("change", function (e) {
+      state.pro = !!e.target.checked;
+      if (state.pro && state.range === "1W") state.range = "1M";
+      redraw();
+      if (D.Analytics && D.Analytics.track) D.Analytics.track("detail:pro", { symbol: state.detail.symbol, on: state.pro });
+    });
+    host.appendChild(pro);
+    if (!state.pro) return host;
     var schnell = el("div", { class: "dx-controls" }, [
       el("span", { class: "dx-ctrl-label", text: "Overlay" })
     ]);
@@ -861,19 +1172,29 @@
              low: cut(bars.low), close: cut(bars.close), volume: cut(bars.volume) };
   }
 
-  /** Ohne Kursreihe: der Renditepfad gross, plus der Grund. */
+  /** Ohne Kursreihe: die Renditeleiter gross, plus der Grund.
+
+      Vorher stand hier der rebasierte Renditepfad als Kurve. Er war
+      rechnerisch korrekt und sah trotzdem aus wie ein Kurschart - seit
+      V3 gibt es ohne Kursreihe keine Kurve mehr, nur die vier Renditen
+      als Balken (Chart Truth Contract, §12). */
   function noSeries(detail) {
     var host = el("div", {});
-    if (Array.isArray(detail.performancePath) && detail.performancePath.length > 2) {
-      var chart = C().pathChart(detail.performancePath, { width: 900, height: 300,
-        label: detail.symbol + ": Renditepfad über zwölf Monate" });
-      chart.setAttribute("class", "dx-spark dx-hero-chart");
+    var MC = D.MicroChart;
+    var leiter = MC ? MC.ladder(detail.metrics, { width: 900, height: 260, values: true,
+                                                    symbol: detail.symbol }) : null;
+    if (leiter) {
+      leiter.classList.add("dx-ladder-gross");
       host.appendChild(el("div", { class: "dx-chart", style: "padding:22px" }, [
-        chart,
+        el("p", { class: "dx-chart-head", style: "margin:0 0 10px" }, [
+          el("b", { text: "Rendite über 1, 3, 6 und 12 Monate" }),
+          el("span", { text: " · als Balken, nicht als Kurskurve" })
+        ]),
+        leiter,
         el("p", { style: "margin:14px 2px 0;font-size:12px;color:var(--discover-dim);line-height:1.6",
-          text: "Rebasiert auf 100, zurückgerechnet aus den ausgelieferten Renditen über 12, 6, " +
-                "3 und 1 Monat. Vier Stützstellen und der heutige Stand — zwischen ihnen wird " +
-                "nichts behauptet." })
+          text: "Vier Zeiträume, vier gerechnete Renditen — dazwischen wird nichts behauptet. " +
+                "Für diesen Titel liegt noch keine Kursreihe vor; deshalb gibt es hier keinen " +
+                "Kursverlauf, und keiner wird geschätzt." })
       ]));
     }
     host.appendChild(el("div", { style: "margin-top:18px" }, [
@@ -1084,7 +1405,7 @@
       el("div", {}, [
         el("b", { text: "Datenherkunft: " }),
         document.createTextNode([
-          detail.dataMode === "real" ? "reale Marktdaten (" + (detail.provider || "Anbieter") + ")"
+          detail.dataMode === "real" ? "reale Marktdaten (Herkunft und Lizenz: Daten & Quellen)"
                                      : "synthetisches Modelluniversum",
           "Stand " + (detail.asOf || "unbekannt"),
           "Universum " + detail.universeLabel,
@@ -1101,6 +1422,127 @@
     ]);
   }
 
+  /* ===================================================== Aktienseite aus
+     dem Company Master
+
+     Fuer einen Titel, fuer den KEINE Discover-Payload ausgeliefert wird -
+     also fuer die grosse Mehrheit des erweiterten Universums. Vorher
+     endete dieser Weg in einem Leerzustand mit der Ueberschrift "Keine
+     Detailseite". Das war korrekt und trotzdem falsch: die Seite wusste
+     sehr wohl etwas ueber den Titel, sie zeigte es nur nicht.
+
+     Was hier steht, ist ausschliesslich, was im Master steht: Identitaet,
+     Handelsplatz, Gattung, Listungsstand - und was der Datenweg fuer
+     diesen Titel kann und was nicht. Keine Kennzahl, kein Chart, keine
+     erfundene Null (§48). */
+  function renderInstrument(root, result, options) {
+    options = options || {};
+    var inst = result.instrument;
+    var caps = result.capabilities || {};
+    S.clear(root);
+    root.removeAttribute("data-world");
+
+    root.appendChild(el("a", { class: "dx-back", href: "#/u/" + (options.universeId || "US_REAL") }, [
+      document.createTextNode("← Discover")
+    ]));
+
+    var gattung = {
+      COMMON_STOCK: "Stammaktie", ADR: "American Depositary Receipt", PREFERRED: "Vorzugsaktie",
+      ETF: "ETF", ETN: "ETN", FUND: "Fonds", WARRANT: "Optionsschein",
+      OTHER: "sonstiges Instrument", UNKNOWN: "Gattung nicht bestimmbar"
+    }[inst.securityType] || inst.securityType;
+
+    var kopf = el("header", { class: "dx-hero dx-hero--schmal" }, [
+      el("p", { class: "dx-hero-kicker", text: [inst.exchange, gattung,
+                inst.active === false ? "nicht mehr gelistet" : null]
+                .filter(Boolean).join(" · ") }),
+      el("h1", { text: inst.companyName || inst.symbol }),
+      el("p", { class: "dx-hero-sub", text: inst.companyName
+        ? inst.symbol + " · " + (inst.country || "Land unbekannt")
+        : "Für diesen Titel liegt kein Firmenname vor. Die Tickerliste des Kursanbieters " +
+          "führt keine Namen; angezeigt wird deshalb das Kürzel." })
+    ]);
+    root.appendChild(kopf);
+
+    /* Stammdaten. Jede Zeile ist eine Angabe aus dem Master, keine
+       abgeleitete Aussage. */
+    var zeilen = [
+      ["Kürzel", inst.symbol],
+      ["Interne Kennung", inst.instrumentId],
+      ["Handelsplatz", inst.exchange + (inst.mic ? " (" + inst.mic + ")" : "")],
+      ["Gattung", gattung + (inst.shareClass ? " · Klasse " + inst.shareClass : "")],
+      ["Land", inst.country || "nicht bestimmbar"],
+      ["Währung", inst.currency || "nicht angegeben"],
+      ["Erster Handelstag", inst.firstTradeDate || "nicht angegeben"],
+      ["Status", inst.active === false
+        ? "beendet" + (inst.delistedAt ? " am " + inst.delistedAt : "")
+        : (inst.active === true ? "laufendes Listing" : "nicht belegbar")],
+      ["CIK (SEC)", inst.cik || "keine"]
+    ];
+    var tabelle = el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Stammdaten" }),
+      el("dl", { class: "dx-stammdaten" }, zeilen.reduce(function (acc, z) {
+        acc.push(el("dt", { text: z[0] }));
+        acc.push(el("dd", { text: String(z[1]) }));
+        return acc;
+      }, []))
+    ]);
+    root.appendChild(tabelle);
+
+    /* Was diese Seite zeigen KANN - und was nicht, mit Grund. Das ist die
+       eigentliche Nachricht der Seite. */
+    var kannListe = [
+      ["Kursverlauf", caps.HAS_PRICE_HISTORY,
+       "Für diesen Titel wird keine Kursreihe ausgeliefert. Der Datenweg kann sie liefern; " +
+       "die Reihen selbst bleiben bis zur Lizenzklärung in der Arbeitsablage."],
+      ["Kursstand", caps.HAS_PRICE_SNAPSHOT,
+       "Absolute Kursniveaus realer Titel werden nach der Redistributionsregel nicht ausgeliefert."],
+      ["Geschäftszahlen", caps.HAS_FUNDAMENTALS,
+       inst.cik
+         ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
+         : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
+      ["Bewertung", caps.HAS_VALUATION, "Bewertungskennzahlen brauchen Geschäftszahlen."],
+      ["Analystenschätzungen", caps.HAS_ANALYSTS,
+       "Analystendaten sind lizenzpflichtig und nicht Teil dieses Systems."],
+      ["Themen", caps.HAS_THEMES, "Themen sind im Modell vorgesehen und noch nicht befüllt."]
+    ];
+    root.appendChild(el("section", { class: "dx-chapter dx-fade" }, [
+      el("h2", { text: "Was für diesen Titel vorliegt" }),
+      el("ul", { class: "dx-kann" }, kannListe.map(function (k) {
+        return el("li", { class: k[1] ? "ja" : "nein" }, [
+          el("b", { text: k[0] }),
+          document.createTextNode(k[1] ? " liegt vor" : " liegt nicht vor — " + k[2])
+        ]);
+      }))
+    ]));
+
+    if (result.alternateListings && result.alternateListings.length) {
+      root.appendChild(el("section", { class: "dx-chapter dx-fade" }, [
+        el("h2", { text: "Weitere Listings unter diesem Kürzel" }),
+        el("p", { class: "dx-hint", text:
+          "Dasselbe Kürzel wird an mehr als einem Handelsplatz geführt. Genau dafür trägt " +
+          "jedes Instrument eine eigene Kennung und nicht nur einen Ticker." }),
+        el("ul", { class: "dx-kann" }, result.alternateListings.map(function (a) {
+          return el("li", {}, [el("b", { text: a.exchange || "unbekannter Platz" }),
+                               document.createTextNode(" · " + a.instrumentId)]);
+        }))
+      ]));
+    }
+
+    root.appendChild(el("footer", { class: "dx-foot" }, [
+      el("div", {}, [
+        el("b", { text: "Quelle: " }),
+        document.createTextNode("Vision Universe® Company Master · " +
+          (result.masterVersion || "company-master") + " · Stand " + (result.asOf || "unbekannt"))
+      ]),
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(
+        "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
+        "Verlaufsbild und Einordnung braucht es Daten, die für diesen Titel nicht ausgeliefert " +
+        "werden — sie werden hier nicht ersetzt.")])
+    ]));
+  }
+
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Detail = { render: render, OVERLAYS: OVERLAYS, PANES: PANES };
+  global.VUDiscover.Detail = { render: render, renderInstrument: renderInstrument,
+                               OVERLAYS: OVERLAYS, PANES: PANES };
 })(window);

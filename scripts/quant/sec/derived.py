@@ -18,7 +18,7 @@ import logging
 from .model import (
     NormalizedFact, Provenance, SOURCE_DERIVED, TRANSFORM_FORMULA,
     QUALITY_HIGH, QUALITY_MEDIUM, QUALITY_LOW,
-    MISSING_INPUT, DIVISION_BY_ZERO, NOT_APPLICABLE_FOR_SECTOR,
+    MISSING_INPUT, DIVISION_BY_ZERO, MIXED_CURRENCY, NOT_APPLICABLE_FOR_SECTOR,
 )
 from .restatements import POLICY_AS_OF_LATEST, to_instant
 from .version import FORMULA_VERSION
@@ -26,11 +26,18 @@ from .version import FORMULA_VERSION
 LOGGER = logging.getLogger("vu.sec.derived")
 
 # Canonical metrics this module reconstructs, in dependency order.
-RECONSTRUCTED = ("gross_profit", "free_cash_flow", "total_debt", "net_debt",
+RECONSTRUCTED = ("gross_profit", "ebitda", "free_cash_flow", "total_debt", "net_debt",
                  "invested_capital", "accruals")
 
 FORMULAS = {
     "gross_profit": "revenue - cost_of_revenue",
+    # EBITDA war bis hierher als UNSUPPORTED gefuehrt, und der Grund stand
+    # ehrlich dabei: die Abschreibungen fehlten in der Metrikregistry. Sie
+    # stehen fast nie in der GuV, sondern in der Kapitalflussrechnung, und
+    # ohne sie ist EBITDA nicht ableitbar. Mit der Registry-Version 1.1.0
+    # ist depreciation_and_amortization gemappt - erst deshalb steht die
+    # Formel hier und nicht als Annahme.
+    "ebitda": "operating_income + depreciation_and_amortization",
     "free_cash_flow": "operating_cash_flow - capital_expenditures",
     "total_debt": "long_term_debt + short_term_debt",
     "net_debt": "total_debt - cash_and_equivalents",
@@ -149,7 +156,36 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
 
     out = {}
 
-    def emit(metric, operands, compute, unit="USD"):
+    def _waehrung(unit):
+        """Die Waehrung einer Einheit, oder None wenn sie keine ist."""
+        if not unit:
+            return None
+        if len(unit) == 3 and unit.isalpha() and unit.isupper():
+            return unit
+        if unit.endswith("/shares"):
+            code = unit.split("/", 1)[0]
+            return code if len(code) == 3 and code.isalpha() and code.isupper() else None
+        return None
+
+    def emit(metric, operands, compute, unit=None):
+        """Eine abgeleitete Groesse aus ihren Eingangsgroessen.
+
+        WAEHRUNGEN WERDEN NICHT VERMISCHT.
+
+        Seit Fremdwaehrungen zugelassen sind, koennen die Operanden in
+        verschiedenen Waehrungen stehen - ein Emittent, der die Bilanz
+        in EUR und eine Einzelangabe in USD meldet, ist keine
+        Seltenheit. `operating_cash_flow` minus `capital_expenditures`
+        waere dann eine Subtraktion zweier Waehrungen: eine Zahl, die
+        entsteht, und eine Aussage, die falsch ist.
+        Umzurechnen kommt nicht in Frage - dafuer braeuchte es einen
+        Kurs zum Stichtag, und den zu schaetzen zerstoerte die
+        Point-in-Time-Eigenschaft. Also bleibt die Groesse unavailable
+        mit Grund.
+
+        Die Einheit des Ergebnisses ist die der Eingangsgroessen, nicht
+        pauschal USD.
+        """
         blocked = resolver.sector_block(metric)
         if blocked:
             out[metric] = _unavailable(cik, metric, NOT_APPLICABLE_FOR_SECTOR,
@@ -166,13 +202,22 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
                                            fiscal_year, fiscal_period)
                 return None
             facts.append(fact)
+        # Alle monetaeren Operanden muessen dieselbe Waehrung tragen.
+        waehrungen = {w for w in (_waehrung(f.unit) for f in facts) if w}
+        if len(waehrungen) > 1:
+            out[metric] = _unavailable(
+                cik, metric, MIXED_CURRENCY,
+                "MIXED:" + "+".join(sorted(waehrungen)), fiscal_year, fiscal_period)
+            return None
         try:
             value = compute(*[fact.value for fact in facts])
         except ZeroDivisionError:
             out[metric] = _unavailable(cik, metric, DIVISION_BY_ZERO, "ZERO_DENOMINATOR",
                                        fiscal_year, fiscal_period)
             return None
-        fact = _derived_fact(cik, metric, value, unit, facts, fiscal_year,
+        ergebnis_einheit = unit if unit is not None else (
+            waehrungen.pop() if waehrungen else "USD")
+        fact = _derived_fact(cik, metric, value, ergebnis_einheit, facts, fiscal_year,
                              fiscal_period, facts[0])
         out[metric] = fact
         return fact
@@ -183,6 +228,14 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
         out["gross_profit"] = reported_gross
     else:
         emit("gross_profit", ("revenue", "cost_of_revenue"), lambda r, c: r - c)
+
+    # EBITDA. Die Abschreibungen stehen in der Kapitalflussrechnung, nicht in
+    # der GuV - genau deshalb war diese Kennzahl bis zur Registry-Version 1.1.0
+    # nicht ableitbar. Wo ein Emittent sie nicht meldet, bleibt EBITDA
+    # unavailable mit Grund; das operative Ergebnis als EBITDA auszugeben waere
+    # eine Behauptung ueber eine Groesse, die nie gemessen wurde.
+    emit("ebitda", ("operating_income", "depreciation_and_amortization"),
+         lambda op, da: op + da)
 
     emit("free_cash_flow", ("operating_cash_flow", "capital_expenditures"),
          lambda ocf, capex: ocf - capex)

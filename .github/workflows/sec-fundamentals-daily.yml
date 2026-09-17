@@ -1,0 +1,226 @@
+name: SEC Fundamentals — Daily Incremental
+
+# Der taegliche Incremental-Lifecycle der Fundamentalschicht.
+#
+# Die historische Basis ist einmal gebaut (sec-fundamentals-universe.yml,
+# [sec-backfill]) und liegt dauerhaft in R2 unter v1/sec/fundamentals/.
+# Dieser Workflow haelt sie aktuell: einmal am Tag den SEC-Tagesindex
+# lesen, GENAU die Emittenten mit neuen oder geaenderten Filings frisch
+# holen, normalisieren, nach R2 schreiben, zurueckladen, die abhaengigen
+# Artefakte selektiv nachziehen und Bericht erstatten.
+#
+# KEIN FULL BACKFILL IM NORMALBETRIEB. Faellt der lokale Speicher weg
+# (Actions-Cache verdraengt), kommt er aus R2 zurueck - Objekt fuer
+# Objekt, sha256-geprueft - und nicht von der SEC.
+#
+# ZEITPUNKT. Die SEC schliesst den Tagesindex eines Tages nach dem
+# Annahmeschluss (22:00 ET = 02:00/03:00 UTC am Folgetag). 06:15 UTC
+# liegt sicher danach, vor dem US-Handelstag und ausserhalb der
+# Kursfenster der uebrigen Pipelines. An Wochenenden gibt es keinen
+# Index; der Lauf stellt das fest und endet mit 0 Aenderungen.
+#
+# SEC FAIR ACCESS. Eine Anfrage je Kalendertag fuer den Index, zwei je
+# geaendertem Emittenten (Uebersicht, Fakten), zwei fuer die
+# Ticker-Zuordnung. An einem normalen Tag sind das unter 300 Anfragen;
+# zum Quartalsende einige tausend - und nie 5.000 fuer nichts.
+
+on:
+  schedule:
+    - cron: '15 6 * * *'
+  # Vor dem Merge auf main kennt die GitHub-API den Workflow fuer einen
+  # Dispatch nicht (404). Ein Push, der den Lifecycle selbst aendert,
+  # loest deshalb einen echten Lauf aus - das ist zugleich der Nachweis.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/sec-fundamentals-daily.yml'
+      - 'scripts/quant/sec/daily.py'
+      - 'scripts/quant/cli.py'
+  workflow_dispatch:
+    inputs:
+      since:
+        description: 'Ersten Indextag erzwingen (YYYY-MM-DD, leer = seit dem letzten Lauf)'
+        type: string
+        default: ''
+      ciks:
+        description: 'Nur diese CIKs verarbeiten (kommagetrennt; Recovery / Test)'
+        type: string
+        default: ''
+      dry_run:
+        description: 'Nur erkennen, nichts holen, nichts schreiben'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Dieselbe Gruppe wie der Backfill: zwei Laeufe, die denselben
+# Faktenspeicher und dieselbe Ablage schreiben, laufen nie gleichzeitig.
+concurrency:
+  group: sec-backfill
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    name: Taeglicher Incremental-Lauf
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Committete JSON-Dateien sind gueltig und markerfrei
+        run: bash scripts/ci/pruefe-json.sh
+
+      - name: SEC-Tests (ohne Netz)
+        run: python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py' 2>&1 | tail -3
+
+      - name: Faktenspeicher aus dem Zwischenspeicher laden
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
+          restore-keys: |
+            sec-fundamentals-
+
+      - name: Sind die Zugangsdaten fuer die dauerhafte Ablage hinterlegt?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          fehlt=0
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET \
+                   VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; fehlt=1; fi
+          done
+          [ "$fehlt" -eq 0 ] || exit 1
+
+      # Der Speicher ist ein Cache. Fehlt er oder ist er unvollstaendig,
+      # kommt er aus R2 - nicht von der SEC. Bei warmem Cache schreibt
+      # dieser Schritt nichts (sha256 je Objekt stimmt).
+      - name: Faktenspeicher aus R2 wiederherstellen, wo er fehlt
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/sec/persist-fundamentals.mjs --restore
+
+      - name: CIK-Zuordnung (zwei Anfragen fuer den ganzen US-Markt)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+
+      - name: SEC-Universum aus dem Master
+        run: node scripts/universe/build-sec-universe.mjs
+
+      - name: Neue und geaenderte Filings verarbeiten
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          args=""
+          [ -n "${{ inputs.since }}" ] && args="$args --since ${{ inputs.since }}"
+          [ -n "${{ inputs.ciks }}" ] && args="$args --ciks ${{ inputs.ciks }}"
+          [ "${{ inputs.dry_run }}" = "true" ] && args="$args --dry-run"
+          python3 scripts/quant/cli.py daily $args
+
+      - name: Wie viele Emittenten wurden aktualisiert?
+        id: updated
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          r = json.load(open("quant/data/fundamentals/daily/latest-run.json"))
+          ciks = ",".join(u["cik"] for u in r["updated"][:12])
+          print(f"count={r['ISSUERS_UPDATED']}")
+          print(f"sample={ciks}")
+          print(f"status={r['STATUS']}")
+          print(f"dry={str(r.get('DRY_RUN', False)).lower()}")
+          PY
+
+      # Zuerst sichern, dann persistieren - nur wenn sich etwas geaendert
+      # hat. Ein Tag ohne Filing schreibt keinen 2-GB-Cache-Eintrag.
+      - name: Faktenspeicher sichern
+        if: steps.updated.outputs.count != '0' && steps.updated.outputs.dry != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-${{ github.run_id }}
+
+      - name: Dauerhafte Ablage - nur geaenderte Objekte nach R2
+        if: steps.updated.outputs.dry != 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/sec/persist-fundamentals.mjs --push
+
+      # §14: Reload-Test fuer die aktualisierte Stichprobe - aus R2, ohne
+      # SEC, byte-gleich und kanonisch identisch.
+      - name: Reload der aktualisierten Stichprobe ohne SEC
+        if: steps.updated.outputs.count != '0' && steps.updated.outputs.dry != 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/quant/sec/persist-fundamentals.mjs --reload "${{ steps.updated.outputs.sample }}"
+          python3 scripts/quant/cli.py verify-reload --ciks "${{ steps.updated.outputs.sample }}"
+
+      - name: Abhaengige Artefakte nur fuer die aktualisierten Emittenten
+        run: |
+          node scripts/universe/build-universe-indexes.mjs
+          python3 scripts/quant/cli.py daily-downstream
+
+      - name: Groessenkontrolle
+        run: bash scripts/ci/pruefe-datengroesse.sh
+
+      - name: State, Health Report und Artefakte committen
+        if: steps.updated.outputs.dry != 'true'
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "SEC Fundamentals daily: ${{ steps.updated.outputs.status }}, ${{ steps.updated.outputs.count }} Emittenten aktualisiert (Lauf ${{ github.run_id }})" \
+            quant/data/fundamentals quant/data/universe quant/data/sec \
+            docs/VU_SEC_FINAL_RECOVERY_REPORT.md
+
+      - name: Health Report
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("quant/data/fundamentals/daily/latest-run.json")
+          if not p.exists():
+              print("Kein Laufbericht - der Lauf ist vor der Erkennung gescheitert."); raise SystemExit(1)
+          r = json.load(open(p))
+          for k in ("RUN_DATE", "STATUS", "LAST_SUCCESSFUL_RUN", "SEC_CHANGES_FOUND", "NEW_FILINGS",
+                    "AMENDMENTS_FOUND", "ISSUERS_CHECKED", "ISSUERS_CHANGED", "ISSUERS_UPDATED",
+                    "NO_CHANGE", "FAILED_ISSUERS", "RETRY_QUEUE", "FACTBOOKS_UPDATED",
+                    "ANNUAL_HISTORIES_UPDATED", "QUARTERLY_HISTORIES_UPDATED", "PIT_HISTORIES_UPDATED",
+                    "R2_OBJECTS_WRITTEN", "RELOAD_WITHOUT_SEC_REFETCH", "DOWNSTREAM_INVALIDATIONS",
+                    "TOTAL_RUNTIME"):
+              print(f"  {k:<32} {r.get(k)}")
+          if r["STATUS"] == "FAILURE":
+              raise SystemExit(1)
+          PY

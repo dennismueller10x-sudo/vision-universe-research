@@ -41,7 +41,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "discover-klartext-1.0.0";
+  var ENGINE_VERSION = "discover-klartext-1.1.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
@@ -79,7 +79,11 @@
   }
 
   var MONATE = { return12M: "in 12 Monaten", return6M: "in 6 Monaten",
-                 return3M: "in 3 Monaten", return1M: "im letzten Monat" };
+                 return3M: "in 3 Monaten", return1M: "im letzten Monat",
+                 /* Fundamentale Zahlen aus den Jahresabschluessen (SEC) - nur auf
+                    Reihen, die von Umsatz, Gewinn und Cashflow sprechen. */
+                 f_revenueGrowth3y: "Umsatz p. a. · 3 Jahre", f_revenueGrowth10y: "Umsatz p. a. · 10 Jahre",
+                 f_netMargin: "Nettomarge", f_fcfMargin: "Free-Cashflow-Marge" };
   /* Dieselben Zeitraeume ausgeschrieben - in einem Satz steht "in zwoelf
      Monaten", in einer Kennzahl "in 12 Monaten". */
   var AUSGESCHRIEBEN = { return12M: "in zwölf Monaten", return6M: "in sechs Monaten",
@@ -97,10 +101,14 @@
     var m = stock.metrics || {};
     var folge = wunsch ? [wunsch, "return12M", "return6M", "return3M", "return1M"]
                        : ["return12M", "return6M", "return3M", "return1M"];
+    /* Eine fundamentale Zahl ohne Wert: die Karte zeigt dann die Kurszahl,
+       nicht eine andere Kennzahl unter falscher Ueberschrift. */
     for (var i = 0; i < folge.length; i++) {
       var key = folge[i];
       if (isNum(m[key])) {
-        return { wert: prozent(m[key]), label: MONATE[key], roh: m[key], quelle: key,
+        /* Eine Marge traegt kein Pluszeichen: "73 % Nettomarge", nicht "+73 %". */
+        var marge = key === "f_netMargin" || key === "f_fcfMargin";
+        return { wert: marge ? prozent(m[key], false) : prozent(m[key]), label: MONATE[key], roh: m[key], quelle: key,
                  ton: m[key] > 0 ? "up" : (m[key] < 0 ? "down" : null) };
       }
     }
@@ -221,7 +229,8 @@
          Dann wird nicht die Zahl geschönt, sondern der Satz präzisiert. */
       id: "zuletztSchwaecher",
       wenn: function (s, zahl) {
-        return !!zahl && isNum(zahl.roh) && zahl.roh < 0 &&
+        return !!zahl && isNum(zahl.roh) && zahl.roh < 0 && !!MONATE[zahl.quelle] &&
+               zahl.quelle.indexOf("return") === 0 &&
                isNum(s.metrics.return12M) && s.metrics.return12M > 0;
       },
       satz: function (s, zahl) {
@@ -256,6 +265,145 @@
       zahl: "return12M", positiv: true
     }
   ];
+
+  /* --------------------------------------------------------------------
+     Die fundamentalen Geschichten.
+
+     Sie lesen die Kennzahlen aus den Jahresabschluessen (f_*, Quelle SEC
+     EDGAR companyfacts, im Build aus discover/engines/fundamentals.js
+     gerechnet). Auf einer Reihe, die von Umsatz, Gewinn oder Cashflow
+     spricht, stehen sie VOR den Kursgeschichten - der Satz auf der Karte
+     soll sagen, warum der Titel in dieser Reihe ist. Ueberall sonst sind
+     sie der letzte Ausweg: ein junger Titel ohne Zwoelfmonatskurs, aber
+     mit Abschluessen, bekommt so trotzdem einen wahren Satz.
+
+     Jede Regel ist reine Rechnung ueber ausgelieferte Felder; die
+     Nachrechnung in verify-discover-data.mjs kommt auf denselben Satz.
+     -------------------------------------------------------------------- */
+  function fnum(s, key) { return s.metrics && isNum(s.metrics[key]) ? s.metrics[key] : null; }
+  var FUNDAMENTAL_GESCHICHTEN = [
+    {
+      id: "fCompounder",
+      wenn: function (s) { return !!(s.signals && s.signals.compounder === true); },
+      satz: function () { return "Zehn Jahre gewachsen und in jedem Jahr profitabel"; },
+      zahl: "f_revenueGrowth10y", positiv: true
+    },
+    {
+      /* (1 + g)^10 >= 2: der Umsatz hat sich ueber zehn Geschaeftsjahre
+         mindestens verdoppelt. */
+      id: "fUmsatzVerdoppelt",
+      wenn: function (s) { var g = fnum(s, "f_revenueGrowth10y"); return g !== null && Math.pow(1 + g, 10) >= 2; },
+      satz: function (s) {
+        return Math.pow(1 + fnum(s, "f_revenueGrowth10y"), 10) >= 3
+          ? "Umsatz in zehn Jahren mehr als verdreifacht" : "Umsatz in zehn Jahren mehr als verdoppelt";
+      },
+      zahl: "f_revenueGrowth10y", positiv: true
+    },
+    {
+      id: "fTurnaround",
+      wenn: function (s) { return !!(s.signals && s.signals.turnaround === true); },
+      satz: function () { return "Aus dem Verlust in den Gewinn gedreht"; },
+      zahl: "f_netMargin"
+    },
+    {
+      id: "fGewinneBeschleunigen",
+      wenn: function (s) {
+        var a = fnum(s, "f_earningsAcceleration"), m = fnum(s, "f_netMargin");
+        return a !== null && a >= 0.05 && m !== null && m > 0;
+      },
+      satz: function () { return "Gewinn wächst schneller als im Jahr davor"; },
+      zahl: "f_netMargin", positiv: true
+    },
+    {
+      id: "fMargenStaerker",
+      wenn: function (s) { var d = fnum(s, "f_marginExpansion3y"); return d !== null && d >= 0.02; },
+      satz: function () { return "Operative Marge in drei Jahren ausgeweitet"; },
+      zahl: "f_netMargin"
+    },
+    {
+      id: "fUmsatzStark",
+      wenn: function (s) { var g = fnum(s, "f_revenueGrowth3y"); return g !== null && g >= 0.15; },
+      satz: function (s) {
+        return fnum(s, "f_revenueGrowth3y") >= 0.30
+          ? "Umsatz wächst seit drei Jahren sehr schnell" : "Umsatz wächst seit drei Jahren deutlich";
+      },
+      zahl: "f_revenueGrowth3y", positiv: true
+    },
+    {
+      id: "fCashflowMaschine",
+      wenn: function (s) { var f = fnum(s, "f_fcfMargin"); return f !== null && f >= 0.15; },
+      satz: function () { return "Verdient aus jedem Umsatz-Dollar viel freien Cashflow"; },
+      zahl: "f_fcfMargin", positiv: true
+    },
+    {
+      id: "fHoheMarge",
+      wenn: function (s) { var m = fnum(s, "f_netMargin"); return m !== null && m >= 0.20; },
+      satz: function () { return "Sehr hohe Gewinnmarge"; },
+      zahl: "f_netMargin", positiv: true
+    },
+    {
+      id: "fGuenstig",
+      wenn: function (s) {
+        var pe = fnum(s, "f_pe"), m = fnum(s, "f_netMargin");
+        return pe !== null && pe > 0 && pe <= 20 && m !== null && m >= 0.10;
+      },
+      satz: function () { return "Profitabel und moderat bewertet"; },
+      zahl: "f_netMargin", positiv: true
+    },
+    {
+      id: "fNettokasse",
+      wenn: function (s) { return !!(s.signals && s.signals.netCash === true); },
+      satz: function () { return "Mehr Kasse als Schulden"; },
+      zahl: null
+    },
+    {
+      id: "fProfitabelWachsend",
+      wenn: function (s) {
+        var g = fnum(s, "f_revenueGrowth3y"), m = fnum(s, "f_netMargin");
+        return g !== null && g >= 0.10 && m !== null && m >= 0.03;
+      },
+      satz: function () { return "Wächst und verdient dabei Geld"; },
+      zahl: "f_revenueGrowth3y", positiv: true
+    },
+    {
+      id: "fProfitabel",
+      wenn: function (s) { var m = fnum(s, "f_netMargin"); return m !== null && m > 0; },
+      satz: function () { return "Schreibt schwarze Zahlen"; },
+      zahl: "f_netMargin", positiv: true
+    },
+    {
+      id: "fVerlust",
+      wenn: function (s) { var m = fnum(s, "f_netMargin"); return m !== null && m < 0; },
+      satz: function () { return "Noch nicht profitabel"; },
+      zahl: "f_netMargin"
+    }
+  ];
+
+  /* Welche Reihen fundamental sprechen - und in welcher Reihenfolge ihre
+     Geschichten gesucht werden. */
+  var FUNDAMENTALE_REIHEN = {
+    "umsatz-waechst-stark":   ["fUmsatzStark", "fProfitabelWachsend", "fCompounder", "fUmsatzVerdoppelt"],
+    "gewinne-beschleunigen":  ["fGewinneBeschleunigen", "fTurnaround", "fProfitabelWachsend", "fHoheMarge"],
+    "margen-werden-staerker": ["fMargenStaerker", "fHoheMarge", "fCashflowMaschine", "fProfitabel"],
+    "cashflow-maschinen":     ["fCashflowMaschine", "fHoheMarge", "fCompounder", "fProfitabel"],
+    "qualitaet-wachstum":     ["fProfitabelWachsend", "fHoheMarge", "fUmsatzStark", "fCompounder"],
+    "langfristige-compounder": ["fCompounder", "fUmsatzVerdoppelt", "fHoheMarge", "fProfitabelWachsend"],
+    "profitables-wachstum":   ["fProfitabelWachsend", "fUmsatzStark", "fCashflowMaschine", "fHoheMarge"],
+    "fundamentale-turnarounds": ["fTurnaround", "fProfitabel", "fUmsatzStark"],
+    "qualitaet-zum-preis":    ["fGuenstig", "fHoheMarge", "fNettokasse", "fProfitabel"],
+    "starke-bilanz-wachstum": ["fNettokasse", "fUmsatzStark", "fProfitabelWachsend", "fCompounder"]
+  };
+  var FUNDAMENTALE_ZAHL = {
+    "umsatz-waechst-stark": "f_revenueGrowth3y", "gewinne-beschleunigen": "f_netMargin",
+    "margen-werden-staerker": "f_netMargin", "cashflow-maschinen": "f_fcfMargin",
+    "qualitaet-wachstum": "f_revenueGrowth3y", "langfristige-compounder": "f_revenueGrowth10y",
+    "profitables-wachstum": "f_revenueGrowth3y", "fundamentale-turnarounds": "f_netMargin",
+    "qualitaet-zum-preis": "f_netMargin", "starke-bilanz-wachstum": "f_revenueGrowth3y"
+  };
+  function fundamentalNach(id) {
+    for (var i = 0; i < FUNDAMENTAL_GESCHICHTEN.length; i++) if (FUNDAMENTAL_GESCHICHTEN[i].id === id) return FUNDAMENTAL_GESCHICHTEN[i];
+    return null;
+  }
 
   /* Der Zusatz: eine kurze zweite Beobachtung, die NICHT wiederholt, was
      die Überschrift schon sagt. Deshalb trägt jede Regel, welche
@@ -412,23 +560,48 @@
        Fall, der diese Umstellung ausgelöst hat: "Über zwölf Monate im
        Plus" über einer Karte, auf der -19,6 % stand. Ein Satz, der seiner
        eigenen Zahl widerspricht, ist schlimmer als gar keiner. */
+    var fundamental = FUNDAMENTALE_REIHEN[opt.rowId] || null;
     var vorgabe = ZAHL_JE_REIHE[opt.rowId] || null;
+    /* Auf einer fundamentalen Reihe traegt die Karte die fundamentale Zahl -
+       wenn der Titel sie hat. Sonst die Kurszahl, ehrlich beschriftet. */
+    if (fundamental && FUNDAMENTALE_ZAHL[opt.rowId] && isNum(stock.metrics[FUNDAMENTALE_ZAHL[opt.rowId]])) {
+      vorgabe = FUNDAMENTALE_ZAHL[opt.rowId];
+    }
     var zahl = hauptzahl(stock, vorgabe);
 
     var schonGesagt = SAGT_DIE_REIHE_SCHON[opt.rowId] || [];
     var treffer = null;
 
     var gesperrt = opt.ausser || [];
+    function passt(g, ohne) {
+      if (ohne && schonGesagt.indexOf(g.id) !== -1) return false;
+      if (ohne && gesperrt.indexOf(g.id) !== -1) return false;
+      if (!g.wenn(stock, zahl)) return false;
+      /* Eine Geschichte, die Stärke behauptet, darf nicht über einer
+         negativen Zahl stehen. */
+      if (g.positiv && zahl && isNum(zahl.roh) && zahl.roh < 0) return false;
+      return true;
+    }
     function suche(ohne) {
-      for (var i = 0; i < GESCHICHTEN.length; i++) {
-        var g = GESCHICHTEN[i];
-        if (ohne && schonGesagt.indexOf(g.id) !== -1) continue;
-        if (ohne && gesperrt.indexOf(g.id) !== -1) continue;
-        if (!g.wenn(stock, zahl)) continue;
-        /* Eine Geschichte, die Stärke behauptet, darf nicht über einer
-           negativen Zahl stehen. */
-        if (g.positiv && zahl && isNum(zahl.roh) && zahl.roh < 0) continue;
-        return g;
+      var i, g;
+      /* Fundamentale Reihe: erst die Geschichten der Reihe, dann alle
+         fundamentalen, dann der Kurs. */
+      if (fundamental) {
+        for (i = 0; i < fundamental.length; i++) {
+          g = fundamentalNach(fundamental[i]);
+          if (g && passt(g, ohne)) return g;
+        }
+        for (i = 0; i < FUNDAMENTAL_GESCHICHTEN.length; i++) {
+          if (passt(FUNDAMENTAL_GESCHICHTEN[i], ohne)) return FUNDAMENTAL_GESCHICHTEN[i];
+        }
+      }
+      for (i = 0; i < GESCHICHTEN.length; i++) {
+        if (passt(GESCHICHTEN[i], ohne)) return GESCHICHTEN[i];
+      }
+      /* Kein Kurs-Satz (junger Titel ohne Zwoelfmonatskurs): die
+         Abschluesse sprechen. */
+      for (i = 0; i < FUNDAMENTAL_GESCHICHTEN.length; i++) {
+        if (passt(FUNDAMENTAL_GESCHICHTEN[i], ohne)) return FUNDAMENTAL_GESCHICHTEN[i];
       }
       return null;
     }
@@ -437,6 +610,11 @@
     /* Ohne Vorgabe der Reihe bestimmt die Geschichte den Zeitraum: unter
        "Seit Monaten im Aufwärtstrend" gehört die Sechsmonatszahl. */
     if (!vorgabe && treffer && treffer.zahl) zahl = hauptzahl(stock, treffer.zahl);
+    /* Ein fundamentaler Satz traegt seine eigene Zahl - nie eine Kurszahl
+       und nie die Kennzahl einer anderen Aussage. */
+    if (treffer && treffer.zahl && treffer.zahl.indexOf("f_") === 0 && isNum(stock.metrics[treffer.zahl])) {
+      zahl = hauptzahl(stock, treffer.zahl);
+    }
     if (treffer && treffer.zahl === null && !vorgabe) {
       zahl = treffer.id === "steht" ? null : zahl;
     }
@@ -599,7 +777,9 @@
     karte: karte, plakette: plakette, PLAKETTEN: PLAKETTEN,
     zeitachse: zeitachse, jahresspanne: jahresspanne,
     prozent: prozent, staerkerAls: staerkerAls, topProzent: topProzent,
-    GESCHICHTEN: GESCHICHTEN, ZUSAETZE: ZUSAETZE
+    GESCHICHTEN: GESCHICHTEN, ZUSAETZE: ZUSAETZE,
+    FUNDAMENTAL_GESCHICHTEN: FUNDAMENTAL_GESCHICHTEN, FUNDAMENTALE_REIHEN: FUNDAMENTALE_REIHEN,
+    FUNDAMENTALE_ZAHL: FUNDAMENTALE_ZAHL
   };
 
   if (isNode) module.exports = api;

@@ -18,7 +18,7 @@
 
    Ausfuehren: node scripts/technical/build-technical-data.mjs
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -74,7 +74,16 @@ function compactBundle(b, from, fromTime) {
 
 console.log("Vision Universe Technical Intelligence — Praekomputation\n");
 const started = Date.now();
-if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+/* Nur das eigene Erzeugnis wegraeumen. quant/data/technical/scale/ gehoert dem
+   Scale-Gate (run-technical-scale.mjs) und ist kanonisches Artefakt
+   (scripts/quant/tests/test_canonical_market.py); ein Wipe des ganzen
+   Verzeichnisses loeschte es beim Marktdaten-Refresh (Lauf 35000271379). */
+if (existsSync(OUT)) {
+  for (const f of readdirSync(OUT)) {
+    if (f === "scale") continue;
+    rmSync(join(OUT, f), { recursive: true, force: true });
+  }
+}
 mkdirSync(OUT, { recursive: true });
 const store = Storage.createJsonFileStore(join(OUT, "snapshots"));
 const index = [];

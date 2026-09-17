@@ -12,14 +12,14 @@
    sein, WELCHES UNTERNEHMEN, WELCHES SIGNAL und WIE DER VERLAUF AUSSIEHT -
    und erst danach die Zahl.
 
-   WAS GEZEICHNET WIRD, WENN ES KEINE KURSREIHE GIBT
+   WAS GEZEICHNET WIRD, WENN ES KEINE KURSREIHE GIBT (V3)
 
    Fuer reale Titel bleiben absolute Kursniveaus nach der
-   Redistributionsregel zurueck. Statt einer leeren Flaeche zeichnet die
-   Karte dann den REBASIERTEN RENDITEPFAD: fuenf Stuetzstellen (12M, 6M,
-   3M, 1M, heute), zurueckgerechnet aus den freigegebenen Renditen und auf
-   100 normiert. Die Stuetzstellen sind sichtbar markiert - zwischen ihnen
-   wird nichts behauptet, was nicht ausgeliefert wurde.
+   Redistributionsregel zurueck. Die Karte zeichnet dann KEINE Linie -
+   sondern die vier Renditen ueber 1, 3, 6 und 12 Monate als Balken
+   (ui/microchart.js). Eine Linie gibt es nur aus einer ausgelieferten
+   Kursreihe. Der fruehere Renditepfad sah aus wie ein Chart und war
+   keiner; das ist vorbei.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -32,16 +32,29 @@
   function valueOf(f) { return f && typeof f === "object" ? f.value : (isNum(f) ? f : null); }
   function statusOf(f) { return f && typeof f === "object" ? f.status : "SOURCE_MISSING"; }
 
+  /* Prozent in deutscher Schreibweise: Komma, echtes Minus, geschuetztes
+     Leerzeichen vor dem Zeichen - dieselbe Form wie im Klartext. */
+  function prozentText(p, d) {
+    var s = Math.abs(p).toFixed(d).replace(".", ",");
+    return (p > 0 ? "+" : p < 0 ? "\u2212" : "") + s + "\u00a0%";
+  }
   function pct(v, digits) {
     if (!isNum(v)) return "–";
     var scaled = v * 100;
     var d = digits === undefined ? (Math.abs(scaled) < 1 ? 2 : 1) : digits;
-    return (scaled >= 0 ? "+" : "") + scaled.toFixed(d) + " %";
+    return prozentText(scaled, d);
   }
   function pctPoints(v, digits) {
     if (!isNum(v)) return "–";
-    return (v >= 0 ? "+" : "") + v.toFixed(digits === undefined ? 2 : digits) + " %";
+    return prozentText(v, digits === undefined ? 2 : digits);
   }
+  /** "11.09.2026" aus einem ISO-Datum - fuer Stand-Angaben ohne Anbietername. */
+  function dateShort(iso) {
+    if (!iso || String(iso).length < 10) return String(iso || "");
+    var t = String(iso);
+    return t.slice(8, 10) + "." + t.slice(5, 7) + "." + t.slice(0, 4);
+  }
+
   function money(v) {
     if (!isNum(v)) return "–";
     return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
@@ -180,13 +193,155 @@
    */
   function posterMedia(card, opts) {
     opts = opts || {};
-    var host = el("div", { class: "dx-poster-media" });
-    host.appendChild(D().Artwork.stockArtwork(card, {
-      width: opts.width || 300, height: opts.height || 104,
-      ticker: opts.ticker === true, band: opts.band !== false,
-      scale: opts.scale || "poster"
-    }));
+    return lazyArtwork(card, Object.assign({ klasse: "dx-poster-media" }, opts));
+  }
+
+  /* Ein Beobachter fuer alle Karten: sobald ein Datenbild in die Naehe
+     des Bildschirms kommt, wird seine Reihe geholt. Nicht vorher. */
+  var lazyBeobachter = null;
+  function beobachten(node, fn) {
+    if (!global.IntersectionObserver) { fn(); return; }
+    if (!lazyBeobachter) {
+      lazyBeobachter = new global.IntersectionObserver(function (eintraege) {
+        eintraege.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          lazyBeobachter.unobserve(e.target);
+          var cb = e.target.__lazy;
+          delete e.target.__lazy;
+          if (cb) cb();
+        });
+      }, { rootMargin: "240px 320px" });
+    }
+    node.__lazy = fn;
+    lazyBeobachter.observe(node);
+  }
+
+  /* Ein zweiter Beobachter fuer den Tagesverlauf - mit Rand von nur 80
+     Pixeln und ohne Abmelden: eine Karte abonniert, wenn sie im Bild ist,
+     und kuendigt, wenn sie es verlaesst. Ausserhalb des Bildschirms gibt
+     es kein Abonnement - nie mehr Abonnements als sichtbare Karten. */
+  var liveBeobachter = null;
+  function liveBeobachten(node, rein, raus) {
+    if (!global.IntersectionObserver) { rein(); return; }
+    if (!liveBeobachter) {
+      liveBeobachter = new global.IntersectionObserver(function (eintraege) {
+        eintraege.forEach(function (e) {
+          var t = e.target;
+          if (e.isIntersecting) { if (t.__liveRein) t.__liveRein(); }
+          else if (t.__liveRaus) t.__liveRaus();
+        });
+      }, { rootMargin: "80px 0px" });
+    }
+    node.__liveRein = rein; node.__liveRaus = raus;
+    liveBeobachter.observe(node);
+  }
+
+  /**
+   * Das Datenbild einer Karte - sofort, wenn die Reihe da ist (oder es
+   * keine gibt: dann die Leiter); sonst ein Platzhalter, der eindeutig
+   * kein Chart ist, und die Reihe, sobald die Karte sichtbar wird.
+   *
+   * Seit dem Live-Hub kommt davor der Tagesverlauf: traegt der Titel
+   * einen Intraday-Snapshot (Verzeichnis des Hubs), zeigt die Karte die
+   * laufende oder letzte Sitzung mit Beschriftung ("Heute · Stand 15:42",
+   * "Letzter Handelstag · Freitag") - und laedt die Tagesreihe nur, wenn
+   * es keinen gibt. Ein Abruf je sichtbarer Karte, nicht zwei.
+   *
+   * Der Platzhalter hat dieselbe Hoehe wie das Bild: beim Laden springt
+   * nichts. Dieselbe Reihe wird je Titel einmal geladen (series-loader).
+   */
+  function lazyArtwork(card, opts) {
+    opts = opts || {};
+    var w = opts.width || 300, h = opts.height || 104;
+    var artOpts = { width: w, height: h, ticker: opts.ticker === true, scale: opts.scale || "poster",
+                    range: opts.range || (card.priceSeries && card.priceSeries.range) || null };
+    var host = el("div", { class: opts.klasse || "dx-lazy-media" });
+    var ps = card.priceSeries;
+    var Loader = D() && D().SeriesLoader;
+    var Hub = D() && D().LiveHub;
+    var verweis = ps && ps.status === "CALCULATED" && ps.path && !ps.points && Loader;
+    var liveFaehig = !!(Hub && Hub.enabled() && card.dataMode === "real" && opts.live !== false && card.symbol);
+    host.setAttribute("data-symbol", card.symbol || "");
+    if (!verweis && !liveFaehig) {
+      host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+      return host;
+    }
+
+    /* Der Tagesverlauf hat Vorrang - wenn das Verzeichnis den Titel kennt.
+       Das Verzeichnis liegt beim Start der Seite vor (app.js laedt es mit
+       der Metadatei); die Entscheidung faellt deshalb hier synchron. */
+    var liveEintrag = liveFaehig ? Hub.resolveEntry(card.symbol) : null;
+
+    function tagesreihe() {
+      if (host.__live) return;
+      if (!verweis) { S.clear(host); host.appendChild(D().Artwork.stockArtwork(card, artOpts)); return; }
+      Loader.get(ps.path).then(function (reihe) {
+        if (host.__live) return;
+        var voll = Object.assign({}, card, { priceSeries: Loader.merge(ps, reihe) });
+        S.clear(host);
+        host.removeAttribute("data-loading");
+        host.appendChild(D().Artwork.stockArtwork(voll, artOpts));
+      }).catch(function () {
+        /* Die Reihe kam nicht: dann das, was ohne sie gilt - die Leiter.
+           Kein leeres Bild, kein Fehlertext auf der Karte. */
+        if (host.__live) return;
+        S.clear(host);
+        host.removeAttribute("data-loading");
+        host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+      });
+    }
+
+    if (verweis || liveEintrag) {
+      host.setAttribute("data-series", verweis ? ps.path : "");
+      host.setAttribute("data-loading", "true");
+      host.style.setProperty("--ar", w + " / " + h);
+      host.appendChild(el("div", { class: "dx-art-skeleton", "aria-hidden": "true", text: "Kurs lädt" }));
+    } else {
+      host.appendChild(D().Artwork.stockArtwork(card, artOpts));
+    }
+    if (verweis) {
+      beobachten(host, function () { if (!liveEintrag) tagesreihe(); });
+    }
+    if (liveFaehig) liveBinden(host, card, artOpts, tagesreihe);
     return host;
+  }
+
+  /* Abonnieren im Bild, kuendigen ausserhalb. Der Rueckruf zeichnet den
+     Tagesverlauf neu, wenn ein neuerer Stand kommt - und faellt auf die
+     Tagesreihe zurueck, wenn es fuer den Titel keinen gibt. */
+  function liveBinden(host, card, artOpts, tagesreihe) {
+    var Hub = D().LiveHub, MC = D().MicroChart;
+    var abo = null;
+    function zeigen(p) {
+      if (!p.snapshot) {
+        if (!host.__live) tagesreihe();
+        return;
+      }
+      var svgNode = MC.renderIntraday(p.snapshot, { width: artOpts.width, height: artOpts.height,
+                                                    symbol: card.symbol, label: p.label && p.label.label });
+      if (!svgNode) { if (!host.__live) tagesreihe(); return; }
+      host.__live = true;
+      S.clear(host);
+      host.removeAttribute("data-loading");
+      host.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
+      host.setAttribute("data-session", p.snapshot.sessionDate);
+      host.setAttribute("data-freshness", (p.freshness && p.freshness.freshnessState) || "");
+      host.appendChild(svgNode);
+      host.appendChild(liveLabel(p.label, p.snapshot));
+    }
+    liveBeobachten(host,
+      function () { if (!abo) abo = Hub.subscribe(card.symbol, zeigen); },
+      function () { if (abo) { abo(); abo = null; } });
+  }
+
+  /** "Heute · Stand 15:42" - die Beschriftung des Tagesverlaufs. */
+  function liveLabel(label, snap) {
+    var text = (label && label.label) || "";
+    var tone = (label && label.tone) || (snap && snap.regularComplete ? "complete" : "live");
+    return el("span", { class: "dx-live-label dx-live-label--" + tone, "data-freshness": (label && label.state) || "",
+                        title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
+                               "5-Minuten-Kurse" + (tone === "stale" ? " · dieser Stand ist nicht der letzte Handelstag" : "") },
+      [el("i", { "aria-hidden": "true" }), document.createTextNode(text)]);
   }
 
   function D() { return global.VUDiscover; }
@@ -242,9 +397,12 @@
     var preis = valueOf(card.price);
     var change = valueOf(card.changePercent);
 
+    var gesehen = D() && D().memory && D().memory.opened(card.symbol);
     var node = el("a", {
-      class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : ""),
+      class: "dx-poster" + (kompakt ? " dx-poster--compact" : "") + (breit ? " dx-poster--wide" : "") +
+             (gesehen ? " dx-poster--gesehen" : ""),
       href: "#/s/" + (options.universeId || "US_REAL") + "/" + card.symbol,
+      "data-symbol": card.symbol,
       /* Die Karte trägt die Welt ihrer REIHE; das Signal darauf trägt seine
          eigene. So bleibt die Reihe als Welt erkennbar, ohne dass ein
          abweichendes Signal verschwiegen wird. */
@@ -268,32 +426,54 @@
           ])
         ])
       ]),
+      /* Womit die Firma Geld verdient - ein Einzeiler aus der
+         redaktionellen Liste. Er beantwortet "Was ist das?", bevor die
+         Zahl "Was ist passiert?" beantwortet. Wo keiner vorliegt, steht
+         auch keiner: erfunden wird nichts. */
+      card.was && !kompakt ? el("p", { class: "dx-was-line", text: card.was }) : null,
+      /* V4 §6/§26 - die Hierarchie der Karte: UNTERNEHMEN, KENNZAHL,
+         KLARTEXT, CHART, dann die fundamentale Geschichte. */
+      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
+      text.zahl ? el("div", { class: "dx-zahl" }, [
+        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+        el("span", { text: text.zahl.label })
+      ]) : null,
       /* Die eine Aussage. Der Punkt davor trägt die Farbwelt - die Farbe
          wiederholt, was im Text steht, sie ersetzt ihn nie. */
       text.story ? el("p", { class: "dx-story" }, [
         el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
         document.createTextNode(text.story)
       ]) : null,
-      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
-      text.zahl ? el("div", { class: "dx-zahl" }, [
-        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
-        el("span", { text: text.zahl.label })
-      ]) : null,
       posterMedia(card, {
         height: kompakt ? 66 : (breit ? 132 : 92),
         width: breit ? 392 : (kompakt ? 224 : 300),
         ticker: breit === true || options.variant === "rank",
         scale: kompakt ? "mini" : "poster"
-      })
+      }),
+      /* Was das Unternehmen gemacht hat - ein belegter Satz aus den
+         Jahresabschluessen (Fundamentals-Engine). Nur wo einer vorliegt. */
+      card.hook && card.hook.text && !kompakt ? el("p", { class: "dx-hook",
+        title: "Aus den SEC-Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") }, [
+        el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+        document.createTextNode(card.hook.text)
+      ]) : null
     ]);
 
     /* Die kurze Zusatzinfo. Sie wiederholt die Überschrift nicht - dafür
-       sorgt klartext.js - und sie ist immer Text, nie nur Farbe. */
-    if (text.zusatz && !kompakt) {
+       sorgt klartext.js - und sie ist immer Text, nie nur Farbe. Rechts
+       daneben der Grund weiterzuklicken: ein Pfeil, der sagt, dass hinter
+       der Karte eine Seite liegt - auch ohne Hover. */
+    if (!kompakt) {
       node.appendChild(el("div", { class: "dx-poster-foot" }, [
-        el("span", { class: "dx-zusatz", text: text.zusatz })
+        text.zusatz ? el("span", { class: "dx-zusatz", text: text.zusatz }) : el("span", {}),
+        el("span", { class: "dx-poster-cta", "aria-hidden": "true", text: "Ansehen →" })
       ]));
     }
+    node.addEventListener("click", function () {
+      var A = D() && D().Analytics;
+      if (A) A.track("card_open", { universeId: options.universeId || "US_REAL", rowId: options.rowId || null,
+                                    symbol: card.symbol, position: options.position || options.rank || null });
+    });
 
     /* Der Hover-Vorhang zeigt, was als Nächstes interessiert: dieselbe
        Aktie über drei Zeiträume. Keine Scores - drei Zahlen, die jeder
@@ -425,12 +605,12 @@
         ? rankPoster(card, { rowId: row.rowId, universeId: row.universeId, rank: index + 1,
                              world: welt, variant: "rank" })
         : poster(card, { rowId: row.rowId, universeId: row.universeId, variant: variant,
-                         world: welt, hinweis: hinweis });
+                         world: welt, hinweis: hinweis, position: index + 1 });
       item.setAttribute("role", "listitem");
       track.appendChild(item);
     });
 
-    section.appendChild(withRailNav(track, { label: row.rowId }));
+    section.appendChild(withRailNav(track, { label: row.rowId, universeId: row.universeId }));
     return section;
   }
 
@@ -453,8 +633,20 @@
 
     var swipe = D() && D().Swipe ? D().Swipe.verbinden(track, {
       label: options.label || null,
+      universeId: options.universeId || null,
       onKarte: options.onKarte || null,
-      prefetch: options.prefetch || null
+      /* Vorbereiten, was als Naechstes kommt: die Aktienseite der
+         naechsten ein, zwei Karten - nicht die ganze Sammlung. */
+      prefetch: options.prefetch || function (index) {
+        /* Die Kursreihe der naechsten ein, zwei Karten - nicht die ganze
+           Sammlung, nicht die Aktienseite. Ein Titel, der schon geladen
+           ist, kostet nichts. */
+        var kind = track.children[index];
+        var media = kind && kind.querySelector && kind.querySelector("[data-series]");
+        var sym = kind && kind.getAttribute && kind.getAttribute("data-symbol");
+        if (D().LiveHub && D().LiveHub.enabled() && sym && D().LiveHub.resolveEntry(sym)) D().LiveHub.prefetch(sym);
+        else if (media && D().SeriesLoader && media.getAttribute("data-series")) D().SeriesLoader.prefetch(media.getAttribute("data-series"));
+      }
     }) : null;
 
     function schritt(richtung) {
@@ -514,10 +706,11 @@
   }
 
   var api = {
+    dateShort: dateShort,
     pct: pct, pctPoints: pctPoints, money: money, score: score, times: times,
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,
-    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia,
+    areaChart: areaChart, pathChart: pathChart, posterMedia: posterMedia, lazyArtwork: lazyArtwork, liveLabel: liveLabel,
     SIGNAL_TONE: SIGNAL_TONE,
     signalChip: signalChip, poster: poster, rankPoster: rankPoster, sectorTile: sectorTile,
     rail: rail, railHead: railHead, withRailNav: withRailNav, grid: grid,

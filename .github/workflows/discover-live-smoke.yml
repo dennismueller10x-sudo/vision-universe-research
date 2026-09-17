@@ -1,0 +1,93 @@
+# Discover Live-Rauchtest: dieselben drei Browser-QA-Suiten, die vor jeder
+# Abnahme lokal laufen (V4 §40), gegen die VEROEFFENTLICHTE Seite - plus der
+# strenge Freshness-Check. Nur per Hand startbar; schreibt nichts ins
+# Repository, laedt Screenshots als Artefakt hoch. Grund: die Abnahme muss
+# den ausgelieferten Stand pruefen, nicht den Arbeitsbaum.
+name: Discover Live-Rauchtest (Browser-QA gegen die veroeffentlichte Seite)
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Freshness der veroeffentlichten Seite (streng)
+        id: freshness
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/market/check-freshness.mjs --strict --site='${{ inputs.site }}' | tee smoke-freshness.txt
+
+      - name: Browser-QA V4 (Startseite, Eingang mit Wischgeste, Ranglisten, Aktienseite)
+        id: qa4
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa.mjs --url '${{ inputs.site }}' --shots smoke-shots/v4 | tee smoke-qa4.txt
+
+      - name: Browser-QA V3 (Netflix-Rhythmus, Themen, Einzeln entdecken)
+        id: qa3
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-v3.mjs '${{ inputs.site }}' smoke-shots/v3 | tee smoke-qa3.txt
+
+      - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
+        id: qalive
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
+
+      - name: Screenshots und Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-live-smoke
+          path: |
+            smoke-shots
+            smoke-*.txt
+          if-no-files-found: ignore
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Discover Live-Rauchtest gegen ${{ inputs.site }}'
+            echo ''
+            echo "| Pruefung | Ergebnis |"; echo "|---|---|"
+            echo "| Freshness (streng) | ${{ steps.freshness.outcome }} |"
+            echo "| Browser-QA V4 | ${{ steps.qa4.outcome }} |"
+            echo "| Browser-QA V3 | ${{ steps.qa3.outcome }} |"
+            echo "| Browser-QA Live | ${{ steps.qalive.outcome }} |"
+            for f in smoke-freshness.txt smoke-qa4.txt smoke-qa3.txt smoke-qalive.txt; do
+              echo ''; echo "#### $f"; echo '```'; tail -40 "$f" 2>/dev/null || echo "kein Ergebnis"; echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ergebnis
+        if: steps.freshness.outcome == 'failure' || steps.qa4.outcome == 'failure' || steps.qa3.outcome == 'failure' || steps.qalive.outcome == 'failure'
+        run: |
+          echo "::error::Live-Rauchtest nicht bestanden (siehe Zusammenfassung)."
+          exit 1

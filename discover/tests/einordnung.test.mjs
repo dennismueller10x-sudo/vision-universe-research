@@ -194,7 +194,10 @@ test("die ausgelieferten Detailseiten erfinden keine Geschäftszahlen", () => {
     assert.ok(g, datei + ": kein Feld fuer Geschaeftszahlen");
     if (g.status === "CALCULATED") {
       mitZahlen++;
-      assert.equal(g.quelle, "SEC_CANONICAL", datei + ": Zahlen ohne benannte Quelle");
+      /* Zwei benannte Quellen: die kanonischen Bundles der Golden Five und
+         die Consumer-Bundles derselben SEC-Pipeline (Bulk companyfacts). */
+      assert.ok(g.quelle === "SEC_CANONICAL" || g.quelle === "SEC_CONSUMER", datei + ": Zahlen ohne benannte Quelle");
+      if (g.quelle === "SEC_CONSUMER") assert.ok(g.basis === "TTM" || g.basis === "FY", datei + ": Consumer-Zahlen ohne Basis");
       assert.ok(typeof g.umsatzTTM === "number", datei + ": Status ohne Umsatz");
     } else {
       ohneZahlen++;
@@ -203,16 +206,18 @@ test("die ausgelieferten Detailseiten erfinden keine Geschäftszahlen", () => {
       assert.ok(g.message, datei + ": fehlende Daten ohne Begruendung");
     }
   }
-  /* Die Golden Five sind die einzigen realen Titel mit SEC-Fakten. */
-  assert.equal(mitZahlen, 5, "unerwartet viele reale Titel mit Geschaeftszahlen: " + mitZahlen);
+  /* Ohne Consumer-Bundles sind die Golden Five die einzigen realen Titel
+     mit SEC-Fakten; mit Bundles hat jeder Titel Zahlen, dessen CIK im
+     Consumer-Index steht - und keiner darueber hinaus. */
+  const index = join(root, "quant", "data", "sec", "consumer", "index.json");
+  if (existsSync(index)) {
+    const byTicker = JSON.parse(readFileSync(index, "utf8")).byTicker || {};
+    const imIndex = readdirSync(basis).filter((f) => byTicker[f.replace(/\.json$/, "")]).length;
+    assert.ok(mitZahlen >= 5, "Golden Five fehlen: " + mitZahlen);
+    assert.ok(mitZahlen <= imIndex + 5, "mehr Titel mit Zahlen als Bundles: " + mitZahlen + " > " + imIndex);
+  } else {
+    assert.equal(mitZahlen, 5, "unerwartet viele reale Titel mit Geschaeftszahlen: " + mitZahlen);
+  }
   assert.ok(ohneZahlen > 400, "zu wenige Titel geprueft");
 });
 
-test("das Modelluniversum kennzeichnet seine Zahlen als erzeugt", () => {
-  const basis = join(root, "discover", "data", "stocks", "VU_MODEL");
-  if (!existsSync(basis)) return;
-  const datei = readdirSync(basis)[0];
-  const d = JSON.parse(readFileSync(join(basis, datei), "utf8"));
-  assert.equal(d.geschaeftszahlen.quelle, "VU_MODEL");
-  assert.equal(d.dataMode, "mock");
-});

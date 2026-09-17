@@ -35,14 +35,103 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #         NVDA's 10-Ks for the years ending January 2011 to January 2014 tag it
 #         one year low, which produced two fiscal years labelled 2010, no 2014,
 #         and four years off by one.
-NORMALIZATION_LOGIC_VERSION = "1.5.0"
+#
+# 1.6.0 — EBITDA ist ableitbar. Die Metrikregistry 1.1.0 mappt
+#         depreciation_and_amortization; damit faellt der Eintrag aus
+#         UNSUPPORTED_METRICS weg und der Wert wird gerechnet statt
+#         weggelassen. Fuer jeden bereits gespeicherten Factbook heisst
+#         das: neu normalisieren, sonst fehlt EBITDA dort weiter und
+#         niemand merkt es.
+# 1.7.0 — Fremdwaehrungen und die IFRS-Taxonomie.
+#
+#         Zwei Mauern fielen gleichzeitig, und beide standen vor
+#         denselben Emittenten. 35 Kennzahlen akzeptierten nur `USD`;
+#         Unilever meldet in EUR, Canadian National in CAD, und ein
+#         korrekt gemapptes Konzept scheiterte trotzdem an der Einheit.
+#         Und die Registry kannte ausschliesslich us-gaap - fuer einen
+#         20-F-Einreicher gab es also gar nichts zu mappen.
+#
+#         Jetzt gilt: jede ISO-Waehrung dort, wo USD galt, UMGERECHNET
+#         WIRD NICHTS (ein Kurs von heute auf eine Periode von 2012
+#         waere geraten und zerstoerte die Point-in-Time-Eigenschaft),
+#         die Waehrung steht am Wert, und die Registry 1.2.0 mappt 31
+#         gemessene ifrs-full-Konzepte plus die Bilanzidentitaet
+#         LiabilitiesAndStockholdersEquity.
+#
+#         Fuer jeden gespeicherten Factbook heisst das: neu
+#         normalisieren. Ohne diesen Versionssprung wuerden die 5.437
+#         zwischengespeicherten Emittenten als aktuell gelten, der Lauf
+#         meldete Erfolg, und von der ganzen Mapping-Arbeit kaeme nichts
+#         an.
+# 1.8.0 — Perioden vor dem ersten und ohne ein volles Geschaeftsjahr.
+#
+#         Zwei Luecken im Kalender, beide gemessen an Emittenten, die
+#         trotz gemappter Taxonomie keinen einzigen Wert lieferten
+#         (UNPLACEABLE_PERIOD ohne UNKNOWN_CONCEPT):
+#
+#         (a) Die Eroeffnungsbilanz im ersten Jahresabschluss ist genau
+#             ein Jahr vor dem ersten Geschaeftsjahresende datiert, ein
+#             40-F traegt drei Vergleichsjahre. Der Kalender projizierte
+#             nur nach vorn; alles vor dem ersten bekannten Jahresende
+#             war unplatzierbar. Jetzt wird - spiegelbildlich zur
+#             Vorwaertsprojektion - rueckwaerts auf Jahrestage
+#             projiziert, das Label relativ zum naechsten verankerten
+#             Jahr vergeben. Projektionen laufen ueber Kalender-
+#             Jahrestage statt ueber 365 Tage, damit ein Schaltjahr
+#             das Jahresende nicht in das Nachbarjahr driften laesst.
+#
+#         (b) Ein Rumpf-Erstgeschaeftsjahr (Mai bis Dezember) erzeugt
+#             keine FY-Dauer; ohne eine solche kannte der Kalender kein
+#             Jahresende, und JEDER Fakt des Emittenten war
+#             unplatzierbar - auch die Bilanz, deren Stichtag der
+#             Jahresabschluss selbst nennt. Fehlt jede FY-Dauer, gilt
+#             jetzt der Bilanzstichtag des Jahresabschlusses (Formular
+#             10-K/20-F/40-F, fp=FY) als Jahresende, ersatzweise das
+#             bei der SEC registrierte Jahresende (MMDD) auf den
+#             tatsaechlich gemeldeten Stichtagen - auch ueber die
+#             Kalendergrenze hinweg (0101, 0103). Gemessen an Lauf 16:
+#             ALLE 69 verbliebenen Emittenten ohne Wert hatten einen
+#             leeren Kalender; 35 davon hatten nur 10-Qs eingereicht,
+#             deren Q1-Bericht die Vorjahresbilanz als Vergleich traegt.
+#             Erfunden wird kein Datum; die Herkunft steht als
+#             anchor_source am Kalender.
+#             Die Rumpfperiode selbst bleibt UNEXPECTED_DURATION - ein
+#             Siebenmonatsumsatz ist kein Jahresumsatz.
+#
+#         (c) Die Branchenschicht (§10). Banken, Versicherer und REITs
+#             bekommen im kanonischen Buendel einen EIGENEN Block
+#             `industrySpecificMetrics` mit eigenen metricIds; der
+#             Kernvertrag in `facts` bleibt unveraendert. Welche
+#             Konzepte die Schicht traegt, sagt die Registry - gemessen
+#             am Vokabular der Emittenten ohne `revenue`, nicht aus dem
+#             Gedaechtnis.
+# 1.9.0 — Das registrierte Jahresende traegt auch ohne einen Bericht
+#         auf dem Jahresende. Gemessen an Lauf 34766155710: die letzten
+#         drei Emittenten ohne Wert waren im Fruehjahr gegruendete
+#         Gesellschaften mit 10-Qs fuer Q2 und Q3 und noch keiner
+#         Vorjahresbilanz - nichts war auf einem Jahresende datiert, und
+#         der Kalender blieb leer. Die bei der SEC registrierten
+#         Jahresenden, die die gemeldeten Stichtage einrahmen, sind
+#         die eigene Erklaerung des Emittenten; sie werden auf die
+#         Jahre projiziert, in denen er gemeldet hat. Rumpfperioden ab
+#         Gruendung bleiben UNEXPECTED_DURATION.
+# 1.10.0 — Geschaeftsjahresgrenzen nur aus Jahresberichten (10-K, 20-F, 40-F,
+#          10-KT, auch /A), und eine Zwoelfmonatsperiode, die nicht auf einem
+#          Geschaeftsjahresende endet, wird nicht als FY gefuehrt. Amazon
+#          meldet in jedem 10-Q Zwoelfmonatswerte; die Kalendergrenzen aus
+#          allen FY-Dauern zerlegten das Jahr in Halbjahre, Q2 hiess Q1 und
+#          FY2025 trug den Juni-Wert. Gemessen im Bulk-Archiv: ~250 von 5 066
+#          Emittenten mit mindestens einem solchen Jahr.
+NORMALIZATION_LOGIC_VERSION = "1.10.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
 METRIC_REGISTRY_MIN_VERSION = 1
 
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
-FORMULA_VERSION = "1.0.0"
+# 1.2.0 — abgeleitete Groessen vermischen keine Waehrungen mehr und
+#         tragen die Waehrung ihrer Eingangsgroessen statt pauschal USD.
+FORMULA_VERSION = "1.2.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
@@ -64,7 +153,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "2afb58fcf5a4f9bdf9d463ec3abc58694452b757a47da85d0c700a5637cef3cd"
+    "a708371225a27350f1ebc58e06cc358f6a8a550a8c44a6bcf1f90fd2d62d1c6a"
 )
 
 

@@ -1,0 +1,2703 @@
+{
+  "generatedAt": "2026-09-16T22:33:08.900Z",
+  "provider": "tiingo",
+  "interval": "5min",
+  "extendedHours": true,
+  "scope": "discover (discover/data/live-scope/US_REAL.json)",
+  "scopeArg": "auto",
+  "universeId": "US_REAL",
+  "session": {
+    "sessionDate": "2026-09-16",
+    "kind": "current",
+    "isRunning": false,
+    "isComplete": true,
+    "earlyClose": false
+  },
+  "marketStateAtRun": "AFTER_HOURS",
+  "localTimeAtRun": "2026-09-16 18:28:07",
+  "gates": {
+    "ENABLE_LIVE_MARKET_DATA": true,
+    "ENABLE_PUBLIC_LIVE_MARKET_DATA": true
+  },
+  "publicDisplay": {
+    "allowed": true,
+    "basis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.",
+    "reason": null
+  },
+  "summary": {
+    "requested": 524,
+    "fetched": 524,
+    "written": 24,
+    "grown": 0,
+    "unchanged": 495,
+    "skippedImmutable": 0,
+    "notPublishable": 5,
+    "failed": 0,
+    "requests": 524,
+    "reasons": {
+      "noRegularBars": 5
+    },
+    "stopped": null,
+    "runtimeMs": 301661,
+    "providerRequests": 524,
+    "retries": 0
+  },
+  "quota": {
+    "hourUsed": 524,
+    "hourLimit": 7500,
+    "dayUsed": 524,
+    "dayLimit": 50000
+  },
+  "perSymbol": {
+    "AAPL": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:55"
+    },
+    "ABBV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ABCL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ABNB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ABX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ACIC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "ACMR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ACN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ACT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ACTG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ABT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADBE": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:15"
+    },
+    "ADC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADMA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADSK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ADPT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AEP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AFG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AGEN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AFRM": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:30"
+    },
+    "AGL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AIRT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 34
+    },
+    "ALAB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AIR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ALHC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMD": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:50"
+    },
+    "ALL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ALNY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMAT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMGN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AME": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMLX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMPL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AMZN": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:10"
+    },
+    "AMT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ANAB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ANET": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "APA": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:30"
+    },
+    "ANIP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ANGO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "API": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "APO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "APLD": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:55"
+    },
+    "APP": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:45"
+    },
+    "APPN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ARCT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ARDX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ARES": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ARWR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ASML": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ASTE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ATAT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ATHS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 63
+    },
+    "ATLC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "ATKR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AVAH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AVGO": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
+    "AXP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "AXSM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BAC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BABA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BBY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BCRX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BKKT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BETR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "BMY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BKNG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BNS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BORR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BOW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BRK-A": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BROS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BSM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BTMD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BULL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BVS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "BWIN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BWLP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BWMN": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 77,
+      "asOfLocal": "16:00"
+    },
+    "BXP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BYD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BZ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "BXSL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CARG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "C": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:25"
+    },
+    "CAR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CAT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CCI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CCC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CBOE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CDE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CDNA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CCS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "CDNS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CGNX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CFFI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CHCO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CHCT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 74
+    },
+    "CHRD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CHT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CMBT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CLSK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CLMB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "CMI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CMRE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "CMPR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "CNC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CNO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "COHR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "COIN": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
+    "COP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "COST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CPSS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "CRDO": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:30"
+    },
+    "CRL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CRM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CRWD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CSCO": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:25"
+    },
+    "CRNC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CSX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CVBF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CVNA": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:00"
+    },
+    "CSTL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "D": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "CVX": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:35"
+    },
+    "CVS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DAC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "DBRG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DDOG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DAVE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DELL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DIS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DGX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DINO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DJCO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DKNG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DOV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DRTS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "DUK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DUOL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DVN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "DXCM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ECO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EDRY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "EGP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EMR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ENR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ENS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ENVA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EOG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EPAM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EQIX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EQNR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EQPT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EQT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ESEA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 74
+    },
+    "ESNT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ETN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ETON": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EVGO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EVLV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "F": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EXC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "EXPD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FANG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FAST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FDMT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FCF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FDX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FIGS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FIVE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FIVN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FIX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FND": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FOA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FRSH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FRO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FTAI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "FTH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GABC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 74
+    },
+    "FTNT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GCT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GEO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GGG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GILD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GIS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GLBE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GOOGL": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:55"
+    },
+    "GNK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GMED": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GOTU": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GRDN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GRBK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GPC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GTLB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GTY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "HAE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "GSL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "GT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HAS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HASI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HELP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HCM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "HD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HIMS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HLNE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HIPO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HMC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HOG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HON": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HOOD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HOMB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HPE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HRTG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HSAI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HTLM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HPQ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HZO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IBEX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "IBM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "HURC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 71
+    },
+    "IDCC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IEX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ILMN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IMMR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "INCY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "INSP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "INOD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IMPP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "INVA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "INTU": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:45"
+    },
+    "INTC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "INSW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IONQ": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:50"
+    },
+    "IPSC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IOVA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IQV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ITW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "IREN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "JCI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "JFIN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 18
+    },
+    "JNJ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "JRSH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "KDP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "JPM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KKR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KNSA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KNSL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KNX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KPLT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 76
+    },
+    "KO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KRG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "KRP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "KRT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "LCII": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LFST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LHX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LILAK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LITE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LLY": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:45"
+    },
+    "LMT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LOT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 40
+    },
+    "LOW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LQDA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LPG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LTC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LVS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LYFT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "LX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MAN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "MCD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MDT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MEOH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MELI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MFC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "META": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MGNI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MLCO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MMM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MNKD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MNST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MPC": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:55"
+    },
+    "MPWR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MRDN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "MRK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MRNA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MRVI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MSC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MSFT": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:50"
+    },
+    "MTG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MTRN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MTW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MRVL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MU": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:50"
+    },
+    "MUX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "MVST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "NAT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NBIS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NCNO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NEE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NEM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NEO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NFG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NFLX": {
+      "ok": true,
+      "reason": "refreshed",
+      "points": 78,
+      "asOfLocal": "16:55"
+    },
+    "NKE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NOG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NMIH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NOW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NRP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 55
+    },
+    "NTAP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NTNX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NTRA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NUE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NVGS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NVAX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NVDA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NVMI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "O": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "NXST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "ODD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "OHI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "OKTA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "OMER": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ONC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "OPRX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "ORGO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ORCL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "OXY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PAA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PAGP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PARR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PANW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PAYC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PAYX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PCAR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PBF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PAYS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PCLA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "PD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PDD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PEBO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PFE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PEP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PEN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PESI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PGY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PHR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PLD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PII": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PLSE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PLMR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PNC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PMI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "PRCH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PSA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PSNL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "PSTL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "PSX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "QCOM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "QFIN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "QNST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "QTWO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "RBA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RBLX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RDDT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RDIB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 62
+    },
+    "RDW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "REGN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RELY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RFAI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 62
+    },
+    "RKLB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RILY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RNG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ROK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ROST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ROOT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "RRX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RPD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RVTY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RUSHB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "RTX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RSG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SAFT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SABR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SAN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "RYTM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SBUX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SCHW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SDGR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SEZL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SHEL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SHW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SLDE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SLB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SLF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SLN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SMCI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SMP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "SO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SOHU": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "SON": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SONY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SOPH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SPG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SRCE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "STG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "SSNC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "STOK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "STRF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 75
+    },
+    "SU": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "STT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SWKS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SUN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "SWVL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "T": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TAK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TAL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TATT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TALO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TARS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TCOM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TFC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TEM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TEN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TGT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "THG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TIGR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "THO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "TKR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "TJX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TMDX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TOWN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TNK": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TPR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TPG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TRIP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TREE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TRMD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TRS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TRST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TRV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TSLA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TSSI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TTAN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TTD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TTE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TW": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TVA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TUYA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 72
+    },
+    "TWST": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TXG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TXN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "TXNM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "UFG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 62
+    },
+    "UL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "UNP": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "UNH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "UPS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "USB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "UTZ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "V": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VEEV": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VICI": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VFF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "VICR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VIOT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 77
+    },
+    "VISN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VNO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VLO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VOD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VRSN": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VSTM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VRTX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VZ": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "VTS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WABC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WB": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WAT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WAY": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WDC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WELL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WFC": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WGO": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WING": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WIX": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WBD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WMT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WSE": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WTM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WTRG": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "WULF": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XEL": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XERS": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XNCR": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XHLD": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "XOM": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "YEXT": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ZVRA": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    },
+    "ZCSH": {
+      "ok": true,
+      "reason": "unchanged",
+      "points": 78
+    }
+  },
+  "note": "Bilanz des Intraday-Laufs. Keine Kurse - nur Zaehlungen und Gruende."
+}

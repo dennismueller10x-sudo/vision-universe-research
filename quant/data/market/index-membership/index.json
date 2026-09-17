@@ -1,0 +1,37 @@
+{
+ "schemaVersion": "index-membership-index-1.0.0",
+ "generatedAt": "2026-09-15T11:05:38.631Z",
+ "indexes": [
+  {
+   "indexId": "SP500",
+   "indexName": "S&P 500",
+   "shortLabel": "S&P 500",
+   "asOf": "2026-09-15",
+   "memberCount": 498,
+   "unmatchedCount": 6,
+   "proxy": "SPY",
+   "path": "/quant/data/market/index-membership/SP500.json"
+  },
+  {
+   "indexId": "NDX",
+   "indexName": "NASDAQ-100",
+   "shortLabel": "NASDAQ-100",
+   "asOf": "2026-09-15",
+   "memberCount": 100,
+   "unmatchedCount": 1,
+   "proxy": "Nasdaq, Inc. (Indexeigentuemer, Quote-API)",
+   "path": "/quant/data/market/index-membership/NDX.json"
+  },
+  {
+   "indexId": "DJIA",
+   "indexName": "Dow Jones Industrial Average",
+   "shortLabel": "Dow Jones",
+   "asOf": "2026-09-15",
+   "memberCount": 30,
+   "unmatchedCount": 0,
+   "proxy": "DIA",
+   "path": "/quant/data/market/index-membership/DJIA.json"
+  }
+ ],
+ "note": "Verzeichnis der Index-Mitgliedschaften (Fondsbestaende der abbildenden ETFs, siehe quant/config/index-membership.json)."
+}

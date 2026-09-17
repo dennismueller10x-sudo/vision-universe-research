@@ -1,0 +1,94 @@
+name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
+
+# V4 §13: die Aktienseite zeigt 5J und Max aus echten Schlusskursen. Die
+# Historie liegt in der Historienablage (R2); dieses Skript liest sie (ein
+# GET je Titel, keine Kursabfrage beim Anbieter) und veroeffentlicht je
+# Titel den Schlusskurs des letzten Handelstags jeder ISO-Woche
+# (quant/data/market/discover-series-long/). Die Tagesreihe des juengsten
+# Jahres haengt der Client hinten an.
+#
+# Zeitplan nur auf dem Default-Branch: monatlich, erster Samstag. Oefter
+# ist nicht noetig - der Client haengt die taegliche Jahresreihe hinten an,
+# die Wochenreihe muss nur bis an deren Anfang reichen. (6 308 Reihen sind
+# rund 113 MB; jeder Lauf schreibt sie neu, die Git-Historie waechst
+# entsprechend - deshalb monatlich, nicht woechentlich.) Auf
+# Entwicklungsbranches dient ein Push mit der Marke `[long-series]`.
+# Speicherzugang aus den Secrets; ohne ihn kein Lauf.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 7 1-7 * 6'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: long-series
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[long-series]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Zugang zum Speicher vorhanden?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "$v fehlt - ohne Speicherzugang keine langen Reihen."; exit 1; fi
+          done
+          echo "Zugang vorhanden."
+
+      - name: Wochenreihen aus der Historienablage veroeffentlichen
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/publish-long-series.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Kein Schluessel in den Daten
+        env:
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+        run: |
+          if grep -rq -- "$VU_HISTORY_S3_SECRET_ACCESS_KEY" quant/data/market/discover-series-long 2>/dev/null; then echo "Schluessel in den Daten!"; exit 1; fi
+          if grep -rq -- "$VU_HISTORY_S3_ACCESS_KEY_ID" quant/data/market/discover-series-long 2>/dev/null; then echo "Schluessel in den Daten!"; exit 1; fi
+          echo "sauber"
+
+      - name: Groesse
+        run: du -sh quant/data/market/discover-series-long
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A quant/data/market/discover-series-long
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Lange Kursreihen: $(node -e 'const i=require("./quant/data/market/discover-series-long/index.json");console.log(i.count+" Wochenreihen, "+JSON.stringify(i.summary))')"
+            git pull --rebase
+            git push
+          fi

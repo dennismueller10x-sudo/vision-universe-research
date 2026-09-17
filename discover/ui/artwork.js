@@ -10,8 +10,10 @@
 
      KOMPOSITION          woher sie kommt
      ------------------------------------------------------------------
-     Verlaufslinie        Kursreihe, sonst rebasierter Renditepfad
-     Schwankungsband      volatility252d, als Hüllkurve um den Verlauf
+     Verlaufslinie        NUR aus einer ausgelieferten Kursreihe
+                          (priceSeries, Status CALCULATED)
+     Renditeleiter        sonst: Rendite über 1M, 3M, 6M, 1J als Balken -
+                          dieselben Zahlen, aber sichtbar KEIN Verlauf
      Jahresspannen-Leiste distanceTo52wHigh / distanceTo52wLow
      Lichtschein          Position in der Jahresspanne (Ort) und
                           leadershipPercentile (Stärke)
@@ -19,18 +21,21 @@
      Tickertypografie     das Kürzel selbst, als Fläche
      Farbwelt             die Kategorie der Reihe (Category Color System)
 
-   WAS HIER NICHT PASSIERT
+   WAS HIER NICHT MEHR PASSIERT (V3)
 
-   Zwischen den Stützstellen des Renditepfades wird nichts erfunden. Das
-   Schwankungsband ist eine Hüllkurve aus einer ausgelieferten Kennzahl und
-   keine Kursspanne. Und keine Form entsteht aus dem Namen oder dem Zufall:
-   zwei Titel sehen nur dann gleich aus, wenn ihre Zahlen gleich sind.
+   Die erste Fassung zeichnete für Titel ohne Kursreihe einen rebasierten
+   Renditepfad: vier Renditen als Punkte, durch Linien verbunden. Das war
+   rechnerisch korrekt - und sah trotzdem aus wie ein Kurschart. Seit V3
+   gibt es keine Linie ohne Kursreihe. Wo keine ausgeliefert wird, stehen
+   die vier Renditen als Balken (ui/microchart.js, ladderInto), und keine
+   Form entsteht aus dem Namen oder dem Zufall: zwei Titel sehen nur dann
+   gleich aus, wenn ihre Zahlen gleich sind.
    ========================================================================= */
 (function (global) {
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var ENGINE_VERSION = "discover-artwork-1.0.0";
+  var ENGINE_VERSION = "discover-artwork-3.0.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
@@ -57,19 +62,23 @@
   }
 
   /**
-   * Die Punkte des Verlaufs, normiert auf 0..1 (x) und 0..1 (y).
-   * Kursreihe, wo eine ausgeliefert wird; sonst der rebasierte Renditepfad.
+   * Die Werte des Verlaufs - und zwar ausschliesslich aus einer
+   * ausgelieferten Kursreihe. Gibt es keine, gibt es keinen Verlauf.
+   * Der rebasierte Renditepfad (performancePath) wird hier bewusst NICHT
+   * mehr gelesen: er ist eine Zahlenreihe, keine Kurve.
    */
-  function verlauf(card) {
-    if (Array.isArray(card.sparkline) && card.sparkline.length > 2) {
-      var werte = card.sparkline.filter(isNum);
-      if (werte.length < 3) return null;
-      return { werte: card.sparkline, art: "price", stuetzstellen: false };
+  function verlauf(card, range) {
+    var MC = global.VUDiscover && global.VUDiscover.MicroChart;
+    var ps = card.priceSeries;
+    var punkte = MC ? MC.pointsFor(ps, range || (ps && ps.range) || "6M") : null;
+    if (ps && ps.status === "CALCULATED" && ps.source && Array.isArray(punkte) && punkte.length >= 5) {
+      return { werte: punkte.map(function (p) { return p[1]; }), art: "price",
+               range: range || ps.range || "6M", source: ps.source, asOf: ps.asOf };
     }
-    if (Array.isArray(card.performancePath) && card.performancePath.length > 2) {
-      return { werte: card.performancePath.map(function (p) { return p.value; }),
-               art: "rebased", stuetzstellen: true,
-               labels: card.performancePath.map(function (p) { return p.label; }) };
+    /* Aeltere Auslieferungen ohne priceSeries, aber mit Sparkline (Golden
+       Five): auch das sind echte Schlusskurse. */
+    if (!ps && Array.isArray(card.sparkline) && card.sparkline.filter(isNum).length >= 5) {
+      return { werte: card.sparkline, art: "price", range: "1J", source: "technical-instrument", asOf: card.asOf || null };
     }
     return null;
   }
@@ -87,7 +96,7 @@
     var w = options.width || 300;
     var h = options.height || 140;
     var m = card.metrics || {};
-    var reihe = verlauf(card);
+    var reihe = verlauf(card, options.range);
 
     var node = svg("svg", {
       class: "dx-art dx-art--" + (options.scale || "poster"),
@@ -150,10 +159,28 @@
     }
 
     if (!reihe) {
-      node.appendChild(svg("text", { class: "dx-art-none", x: w / 2, y: h / 2,
-        "text-anchor": "middle", text: "kein Verlauf ausgeliefert" }));
+      /* Keine Kursreihe: die Renditeleiter. Vier Balken, vier Zahlen -
+         und sichtbar kein Verlauf. Auf grossen Flaechen mit Werten, auf
+         der Karte nur mit den Zeitraeumen; die Karte nennt die Zahl
+         ohnehin gross darueber. */
+      var MC = global.VUDiscover && global.VUDiscover.MicroChart;
+      var gross = options.scale === "hero";
+      /* Unten bleibt Platz fuer die Jahresspannen-Leiste (12 Einheiten),
+         damit die Zeitraum-Beschriftung nicht in die Marken laeuft. */
+      var innen = { x: w * 0.06, y: gross ? h * 0.10 : h * 0.10, w: w * 0.88,
+                    h: h - (gross ? h * 0.10 : h * 0.10) - (options.scale === "mini" ? 6 : 14) };
+      var ok = MC && MC.ladderInto(node, m, innen, { values: gross, labels: options.scale !== "mini",
+                                                    scale: options.scale });
+      if (!ok) {
+        node.appendChild(svg("text", { class: "dx-art-none", x: w / 2, y: h / 2,
+          "text-anchor": "middle", text: "keine Rendite ausgeliefert" }));
+      }
+      node.setAttribute("data-art", "ladder");
+      /* Die Jahresspannen-Leiste bleibt: sie ist ein Zustand, kein Verlauf. */
+      leiste(node, position, w, h, padXFor(w), options);
       return node;
     }
+    node.setAttribute("data-art", "price");
 
     /* Geometrie des Verlaufs. */
     var padTop = Math.max(10, h * 0.16), padBottom = Math.max(14, h * 0.2), padX = w * 0.03;
@@ -164,40 +191,12 @@
     var x = function (i) { return padX + (i / (reihe.werte.length - 1)) * (w - padX * 2); };
     var y = function (v) { return h - padBottom - ((v - lo) / (hi - lo)) * (h - padTop - padBottom); };
 
-    /* --------------------------------------------------- 3 Schwankungsband
-       Die Hüllkurve ist keine Kursspanne, sondern die ausgelieferte
-       Jahresvolatilität, auf den gezeigten Zeitraum skaliert und um den
-       Verlauf gelegt. Ein ruhiger Titel bekommt ein schmales Band, ein
-       unruhiger ein weites - das ist der sichtbare Unterschied zwischen
-       einem stetigen Marktführer und einem zappeligen Ausbrecher. */
-    var vol = m.volatility252d;
-    if (options.band !== false && isNum(vol) && vol > 0 && reihe.werte.length > 1) {
-      var anteil = clamp(vol / 0.7, 0.03, 1) * 0.34;    // 70 % Jahresvol = ein Drittel der Höhe
-      var oben = "", unten = "";
-      reihe.werte.forEach(function (v, i) {
-        if (!isNum(v)) return;
-        /* Das Band wächst zum aktuellen Rand hin - die Unsicherheit über
-           den Weg ZWISCHEN zwei Stützstellen ist in der Mitte am größten,
-           nicht am Stützpunkt selbst. */
-        var naehe = reihe.stuetzstellen
-          ? 1 - Math.abs((i / (reihe.werte.length - 1)) * 2 - 1) * 0.55
-          : 1;
-        var breite = spanne * anteil * naehe;
-        oben += (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v + breite).toFixed(1) + " ";
-      });
-      for (var j = reihe.werte.length - 1; j >= 0; j--) {
-        var wert = reihe.werte[j];
-        if (!isNum(wert)) continue;
-        var naehe2 = reihe.stuetzstellen
-          ? 1 - Math.abs((j / (reihe.werte.length - 1)) * 2 - 1) * 0.55 : 1;
-        unten += "L" + x(j).toFixed(1) + " " + y(wert - spanne * anteil * naehe2).toFixed(1) + " ";
-      }
-      node.appendChild(svg("path", { class: "dx-art-band", d: (oben + unten + "Z").trim() }));
-    }
-
-    /* ------------------------------------------------------ 4 Nulllinie
-       Der Stand vor zwölf Monaten. Ohne ihn sagt die Form nichts darüber,
-       ob der Titel überhaupt gestiegen ist. */
+    /* ------------------------------------------------------ 3 Startlinie
+       Der erste Schlusskurs des Zeitraums. Ohne ihn sagt die Form nichts
+       darüber, ob der Titel im Zeitraum überhaupt gestiegen ist. Ein
+       Schwankungsband gibt es auf dem echten Chart nicht mehr: es gehörte
+       zum Renditepfad, und auf einer Kursreihe sähe es aus wie ein
+       Indikator. */
     node.appendChild(svg("line", { class: "dx-art-base", x1: 0, x2: w,
       y1: y(werte[0]).toFixed(1), y2: y(werte[0]).toFixed(1) }));
 
@@ -211,19 +210,9 @@
       d: d + "L" + x(reihe.werte.length - 1).toFixed(1) + " " + h + " L" + x(0).toFixed(1) + " " + h + " Z" }));
     node.appendChild(svg("path", { class: "dx-art-line", d: d.trim() }));
 
-    /* Stützstellen sichtbar lassen: der Renditepfad hat vier davon und den
-       heutigen Stand - das darf die Darstellung nicht verwischen. */
-    if (reihe.stuetzstellen) {
-      reihe.werte.forEach(function (v, i) {
-        if (!isNum(v)) return;
-        node.appendChild(svg("circle", { class: "dx-art-node", cx: x(i).toFixed(1),
-          cy: y(v).toFixed(1), r: i === reihe.werte.length - 1 ? 3 : 1.8 }));
-      });
-    } else {
-      var letzter = reihe.werte.length - 1;
-      node.appendChild(svg("circle", { class: "dx-art-node", cx: x(letzter).toFixed(1),
-        cy: y(werte[werte.length - 1]).toFixed(1), r: 2.8 }));
-    }
+    var letzter = reihe.werte.length - 1;
+    node.appendChild(svg("circle", { class: "dx-art-node", cx: x(letzter).toFixed(1),
+      cy: y(werte[werte.length - 1]).toFixed(1), r: 2.8 }));
 
     /* --------------------------------------------------- 6 Hochmarke (§6)
        Nur wenn die Engine ein neues 52-Wochen-Hoch belegt hat. */
@@ -235,33 +224,39 @@
         d: "M" + (w - padX) + " " + (yTop - 3) + " l0 6 l-5 -3 Z" }));
     }
 
-    /* ------------------------------------------- 7 Jahresspannen-Leiste
-       Zwölf Marken für das Jahr, die aktuelle Position hervorgehoben. Auf
-       kleinen Formaten entfällt sie - eine Leiste, die man nicht lesen
-       kann, ist Dekoration. */
-    if (position !== null && options.scale !== "mini") {
-      var marken = 12;
-      var yLeiste = h - 6;
-      for (var k = 0; k < marken; k++) {
-        var px = padX + (k / (marken - 1)) * (w - padX * 2);
-        var aktiv = Math.round(position * (marken - 1)) === k;
-        node.appendChild(svg("rect", {
-          class: "dx-art-tick" + (aktiv ? " on" : ""),
-          x: px.toFixed(1), y: aktiv ? yLeiste - 5 : yLeiste - 2,
-          width: aktiv ? 2.4 : 1.4, height: aktiv ? 7 : 3, rx: 0.7
-        }));
-      }
-    }
+    leiste(node, position, w, h, padX, options);
     return node;
+  }
+
+  function padXFor(w) { return w * 0.03; }
+
+  /* ----------------------------------------------- Jahresspannen-Leiste
+     Zwölf Marken für das Jahr, die aktuelle Position hervorgehoben. Auf
+     kleinen Formaten entfällt sie - eine Leiste, die man nicht lesen
+     kann, ist Dekoration. */
+  function leiste(node, position, w, h, padX, options) {
+    if (position === null || options.scale === "mini") return;
+    var marken = 12;
+    var yLeiste = h - 6;
+    for (var k = 0; k < marken; k++) {
+      var px = padX + (k / (marken - 1)) * (w - padX * 2);
+      var aktiv = Math.round(position * (marken - 1)) === k;
+      node.appendChild(svg("rect", {
+        class: "dx-art-tick" + (aktiv ? " on" : ""),
+        x: px.toFixed(1), y: aktiv ? yLeiste - 5 : yLeiste - 2,
+        width: aktiv ? 2.4 : 1.4, height: aktiv ? 7 : 3, rx: 0.7
+      }));
+    }
   }
 
   /** Was ein Screenreader hört. Dieselben Daten, nur als Satz. */
   function beschreibung(card, reihe) {
     var m = card.metrics || {};
     var teile = [card.symbol];
-    if (!reihe) teile.push("kein Verlauf ausgeliefert");
-    else if (reihe.art === "price") teile.push("Kursverlauf der letzten 52 Wochen");
-    else teile.push("rebasierter Renditepfad über zwölf Monate");
+    if (!reihe) teile.push("Rendite über 1, 3, 6 und 12 Monate als Balken, kein Kursverlauf");
+    else teile.push("Kursverlauf über " + ({ "1M": "einen Monat", "3M": "drei Monate",
+                     "6M": "sechs Monate", "1J": "zwölf Monate" }[reihe.range] || reihe.range) +
+                    ", Tagesschlusskurse, Stand " + (reihe.asOf || "unbekannt"));
     if (isNum(m.return12M)) {
       teile.push("zwölf Monate " + (m.return12M >= 0 ? "plus " : "minus ") +
                  Math.abs(m.return12M * 100).toFixed(1) + " Prozent");

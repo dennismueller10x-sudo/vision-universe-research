@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from quant.sec.fiscal import FiscalCalendar, classify_duration
+from quant.sec.model import RawFact
 from quant.sec.provider import SECProvider
 from quant.tests.fixtures import build_year_ends, standard_company
 
@@ -112,6 +113,139 @@ class CalendarLearningTests(unittest.TestCase):
                 assigned = calendar.fiscal_year_for(fact.end)
                 self.assertNotEqual(assigned, fact.filing_fy)
                 self.assertEqual(assigned, int(fact.end[:4]))
+
+
+def _fact(concept, start, end, form="10-K", fp="FY", fy=2008, accession="a1",
+          taxonomy="us-gaap"):
+    return RawFact(cik="1", taxonomy=taxonomy, concept=concept, unit="USD", value=1.0,
+                   start=start, end=end, accession=accession, form=form,
+                   filed="2009-03-01", filing_fy=fy, filing_fp=fp)
+
+
+class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):
+    """Measured on the store: filers with every concept mapped and no value.
+
+    Their facts were UNPLACEABLE_PERIOD, not UNKNOWN_CONCEPT -- the calendar,
+    not the taxonomy, refused them.
+    """
+
+    def test_opening_balance_sheet_before_the_first_year_end_is_placed(self):
+        # First 10-K: FY2008 income statement plus balance sheets at both ends.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Revenues", "2008-01-01", "2008-12-31"),
+            _fact("Assets", None, "2008-12-31"),
+            _fact("Assets", None, "2007-12-31"),
+        ])
+        self.assertEqual(calendar.anchor_source, "ANNUAL_DURATIONS")
+        self.assertEqual(calendar.assign(None, "2007-12-31"), (2007, "FY", "instant"))
+        self.assertEqual(calendar.assign(None, "2007-06-30"), (2007, "Q2", "instant"))
+
+    def test_forty_f_comparatives_three_years_back_keep_their_own_labels(self):
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Revenues", "2022-01-01", "2022-12-31", form="40-F", fy=2022),
+            _fact("Revenues", "2021-01-01", "2021-12-31", form="40-F", fy=2022),
+        ])
+        self.assertEqual(calendar.assign("2020-01-01", "2020-12-31"), (2020, "FY", "FY"))
+        self.assertEqual(calendar.assign(None, "2019-12-31"), (2019, "FY", "instant"))
+
+    def test_backward_projection_follows_anniversaries_across_leap_years(self):
+        # 2008 is a leap year: 2008-12-31 minus 365 days is 2008-01-01, and a
+        # 365-day step would have labelled the 2007 opening balance sheet 2008.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Revenues", "2008-01-01", "2008-12-31"),
+        ])
+        self.assertEqual(calendar.fiscal_year_for("2007-12-31"), 2007)
+        self.assertEqual(calendar.fiscal_year_for("2005-12-31"), 2005)
+        self.assertEqual(calendar.fiscal_year_for("2025-12-31"), 2025)
+
+    def test_a_stub_first_year_still_yields_a_year_end_from_the_annual_filing(self):
+        # Reporting began in May; the first 20-F covers seven months. No
+        # full-year duration exists anywhere, yet the filing says fp=FY and
+        # dates its balance sheet on 31 December.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Revenue", "2008-05-12", "2008-12-31", form="20-F", taxonomy="ifrs-full"),
+            _fact("Assets", None, "2008-12-31", form="20-F", taxonomy="ifrs-full"),
+            _fact("EntityCommonStockSharesOutstanding", None, "2009-02-15",
+                  form="20-F", taxonomy="dei"),
+        ])
+        self.assertEqual(calendar.anchor_source, "ANNUAL_FILING_INSTANTS")
+        self.assertEqual(calendar.fy_ends, [date(2008, 12, 31)])
+        self.assertEqual(calendar.labels[date(2008, 12, 31)], 2008)
+        self.assertEqual(calendar.assign(None, "2008-12-31"), (2008, "FY", "instant"))
+        self.assertEqual(calendar.assign_cover_date("2009-02-15"), (2008, "FY"))
+        # The seven-month period is not an annual figure and stays unplaced.
+        self.assertEqual(calendar.assign("2008-05-12", "2008-12-31")[2], "UNKNOWN")
+
+    def test_a_cover_date_never_becomes_a_year_end(self):
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("EntityCommonStockSharesOutstanding", None, "2009-02-15",
+                  form="20-F", taxonomy="dei"),
+        ])
+        self.assertEqual(calendar.fy_ends, [])
+        self.assertEqual(calendar.anchor_source, "NONE")
+
+    def test_registered_year_end_applies_only_to_reported_balance_sheet_dates(self):
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2008-12-31", form="10-Q", fp="Q3"),
+            _fact("Assets", None, "2008-09-30", form="10-Q", fp="Q3"),
+        ], fiscal_year_end_hint="1231")
+        self.assertEqual(calendar.anchor_source, "REGISTERED_YEAR_END")
+        self.assertEqual(calendar.fy_ends, [date(2008, 12, 31)])
+        self.assertEqual(calendar.assign(None, "2008-09-30"), (2008, "Q3", "instant"))
+
+    def test_a_ten_q_only_filer_gets_its_year_from_the_comparative_balance_sheet(self):
+        # Measured on the store: 35 of the 69 issuers still without a value
+        # had filed nothing but 10-Qs. A Q1 10-Q carries the prior year-end
+        # balance sheet as comparative, and the SEC registration says which
+        # day the year ends -- together that is a calendar, not a guess.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2026-03-31", form="10-Q", fp="Q1", fy=2026),
+            _fact("Assets", None, "2025-12-31", form="10-Q", fp="Q1", fy=2026),
+            _fact("Revenues", "2026-01-01", "2026-03-31", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="1231")
+        self.assertEqual(calendar.anchor_source, "REGISTERED_YEAR_END")
+        self.assertEqual(calendar.fy_ends, [date(2025, 12, 31)])
+        self.assertEqual(calendar.assign(None, "2025-12-31"), (2025, "FY", "instant"))
+        self.assertEqual(calendar.assign(None, "2026-03-31"), (2026, "Q1", "instant"))
+        self.assertEqual(calendar.assign("2026-01-01", "2026-03-31"), (2026, "Q1", "Q"))
+
+    def test_a_registered_year_end_across_the_calendar_boundary_still_matches(self):
+        # Registered 0101 (Elmet) or 0103 (a 52/53-week retailer): the
+        # balance sheet is dated on the far side of New Year.
+        elmet = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2025-12-31", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="0101")
+        self.assertEqual(elmet.fy_ends, [date(2025, 12, 31)])
+        retailer = FiscalCalendar.from_raw_facts("2", [
+            _fact("Assets", None, "2026-01-03", form="10-Q", fp="Q1", fy=2026),
+            _fact("Assets", None, "2026-04-04", form="10-Q", fp="Q1", fy=2026),
+        ], fiscal_year_end_hint="0103")
+        self.assertEqual(retailer.fy_ends, [date(2026, 1, 3)])
+        self.assertEqual(retailer.assign(None, "2026-04-04")[1], "Q1")
+
+    def test_a_filer_with_no_report_on_a_year_end_gets_the_registered_year_projected(self):
+        # A SPAC formed in March: 10-Qs for Q2 and Q3, nothing dated on a
+        # year end yet. The registered day (1231) brackets what it reported.
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2025-06-30", form="10-Q", fp="Q2", fy=2025),
+            _fact("Assets", None, "2025-09-30", form="10-Q", fp="Q3", fy=2025),
+            _fact("GeneralAndAdministrativeExpense", "2025-03-12", "2025-06-30",
+                  form="10-Q", fp="Q2", fy=2025),
+        ], fiscal_year_end_hint="1231")
+        self.assertEqual(calendar.anchor_source, "REGISTERED_YEAR_END_PROJECTED")
+        self.assertEqual(calendar.fy_ends, [date(2024, 12, 31)])
+        self.assertEqual(calendar.assign(None, "2025-06-30"), (2025, "Q2", "instant"))
+        self.assertEqual(calendar.assign(None, "2025-09-30"), (2025, "Q3", "instant"))
+        # Inception-to-date is not a quarter and stays unplaced, with reason.
+        self.assertEqual(calendar.assign("2025-03-12", "2025-06-30")[2], "UNKNOWN")
+
+    def test_the_anchor_source_survives_a_round_trip_through_the_store(self):
+        calendar = FiscalCalendar.from_raw_facts("1", [
+            _fact("Assets", None, "2008-12-31", form="20-F"),
+        ])
+        rebuilt = FiscalCalendar.from_dict(calendar.to_dict())
+        self.assertEqual(rebuilt.anchor_source, "ANNUAL_FILING_INSTANTS")
+        self.assertEqual(rebuilt.fy_ends, calendar.fy_ends)
 
 
 class _NullClient:

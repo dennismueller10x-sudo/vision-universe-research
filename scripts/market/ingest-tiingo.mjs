@@ -31,6 +31,8 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
+import { publishDiscoverSeries } from "./publish-discover-series.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -62,6 +64,25 @@ const PUBLISH = args.has("--publish");
    --publish, sondern verlangt seine eigene, eng begrenzte Erlaubnis. */
 const PUBLISH_PREVIEW = args.has("--publish-preview");
 const PREVIEW_CONFIG_PATH = join(root, "quant", "config", "development-preview.json");
+/* --scope-from-preview: das Universum des Laufs ist der in
+   development-preview.json freigegebene Umfang - eine Tickerliste oder
+   ein ganzes Gate-Universum -, nicht das zwoelf Titel grosse Testset.
+   Damit holt EIN Lauf genau die Titel, die auch ausgeliefert werden
+   duerfen: 5 heute, 498 oder 7.000, sobald der Eigentuemer den Umfang
+   aendert. Requests je Lauf = Titel im Umfang. */
+const SCOPE_FROM_PREVIEW = args.has("--scope-from-preview");
+/* --commercial: Kontingente des Commercial-Zugangs (providers/tiingo/
+   adapter.js#COMMERCIAL_LIMITS) statt der Free-Grenzen. Das ganze
+   Produktuniversum passt nicht in 50 Anfragen je Stunde; dieselbe
+   Umschaltung, die run-scale-gate.mjs benutzt - kein zweiter Adapter. */
+const COMMERCIAL = args.has("--commercial") || process.env.TIINGO_PLAN === "commercial";
+const REQUEST_BUDGET = parseInt((process.argv.find((a) => a.startsWith("--request-budget=")) || "").slice(17), 10) || 0;
+const CONCURRENCY = parseInt((process.argv.find((a) => a.startsWith("--concurrency=")) || "").slice(14), 10) || 0;
+const PREVIEW_SCOPE = (PUBLISH_PREVIEW || SCOPE_FROM_PREVIEW)
+  ? resolveScope(root, JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"))) : null;
+const SECURITIES = SCOPE_FROM_PREVIEW
+  ? PREVIEW_SCOPE.securities.map((s) => Object.assign({}, s, { mic: s.mic || null }))
+  : CONFIG.securities;
 const apiKey = process.env.TIINGO_API_KEY || null;
 /* Die Gates kommen aus derselben Datei, die auch der Browser liest.
    Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
@@ -142,7 +163,7 @@ function writeStatus(fields) {
 }
 
 console.log("Vision Universe — Tiingo-Import\n");
-console.log(`  Universum: ${CONFIG.universeId} (${CONFIG.securities.length} Titel)`);
+console.log(`  Universum: ${SCOPE_FROM_PREVIEW ? "development-preview.json (Umfang)" : CONFIG.universeId} (${SECURITIES.length} Titel)`);
 console.log(`  Modus:     ${DRY_RUN ? "Probelauf" : INITIAL ? "Erstimport" : "inkrementell"}`);
 
 /* ------------------------------------------------------- Ohne Zugang */
@@ -169,7 +190,7 @@ if (!apiKey) {
 /* ---------------------------------------------------------- Aufbau */
 
 const registry = SymbolMapping.createRegistry(
-  CONFIG.securities.map((s) => ({
+  SECURITIES.map((s) => ({
     securityId: s.securityId,
     providerId: Tiingo.PROVIDER_ID,
     providerSymbol: s.ticker,
@@ -183,11 +204,22 @@ const registry = SymbolMapping.createRegistry(
   }))
 );
 
-const capabilities = Tiingo.freePlanCapabilities();
+const capabilities = COMMERCIAL ? Tiingo.commercialPlanCapabilities() : Tiingo.freePlanCapabilities();
+if (COMMERCIAL && (REQUEST_BUDGET > 0 || CONCURRENCY > 0)) {
+  capabilities.limits = Object.assign({}, capabilities.limits,
+    REQUEST_BUDGET > 0 ? { requestsPerHour: REQUEST_BUDGET,
+                           requestsPerDay: Math.max(capabilities.limits.requestsPerDay, REQUEST_BUDGET) } : {},
+    CONCURRENCY > 0 ? { concurrency: CONCURRENCY } : {});
+  capabilities.limits.provenance = Object.assign({}, capabilities.limits.provenance,
+    { requestsPerHour: "SAFETY_CEILING", budgetNote: "Vom Aufrufer gesetzt (--request-budget). Weiterhin unsere Zahl, nicht Tiingos." });
+}
 const provider = Tiingo.createTiingoProvider({
   apiKey, capabilities, symbolRegistry: registry,
+  baseUrl: process.env.TIINGO_BASE_URL || undefined,
   fetchImpl: (url, init) => fetch(url, init)
 });
+console.log(`  Zugang:    ${capabilities.plan || (COMMERCIAL ? "commercial" : "free")} · ` +
+            `${capabilities.limits.requestsPerHour}/h, ${capabilities.limits.concurrency || 1} gleichzeitig`);
 const store = MarketStore.createMarketStore({ root, providerId: Tiingo.PROVIDER_ID });
 
 /* Interne Nutzung pruefen - der Import selbst ist eine interne Handlung. */
@@ -205,7 +237,7 @@ const strictPlans = {};
 if (STRICT_INCREMENTAL) {
   if (closedSession.state !== "AVAILABLE") throw Error(closedSession.reason);
   // Preflight every required history before the first provider request.
-  for (const security of CONFIG.securities) {
+  for (const security of SECURITIES) {
     const plan = EodGate.plan(store.lastStoredDate(security.securityId), closedSession, eodCalendar);
     if (plan.state === "BLOCKED") throw Error(plan.reason + ":" + security.securityId);
     strictPlans[security.securityId] = plan;
@@ -214,27 +246,60 @@ if (STRICT_INCREMENTAL) {
 const runId = STRICT_INCREMENTAL ? "strict-eod-" + closedSession.date : MarketStore.ingestionRunId(INITIAL);
 const checkpoint = store.loadCheckpoint(runId);
 if (STRICT_INCREMENTAL) checkpoint.done = checkpoint.done.filter(id => strictPlans[id]?.state === "CURRENT");
+
+/* Der Checkpoint ist die Wiederaufnahme EINES Laufs (Budget erschoepft,
+   Runner weg) - kein Gedaechtnis ueber Tage. Ein Checkpoint von gestern
+   wuerde heute jeden Titel als "erledigt" ueberspringen, und die Kurse
+   blieben still stehen. Deshalb: neuer Tag, neue Liste; nur die
+   Ablehnungen (rejected) bleiben als Sperre bestehen. */
+const heute = new Date().toISOString().slice(0, 10);
+if (!STRICT_INCREMENTAL && checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
+  console.log(`  Checkpoint vom ${checkpoint.startedAt.slice(0, 10)} verworfen (neuer Tag): ${checkpoint.done.length} erledigte Titel werden neu geprueft.`);
+  checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
+}
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
-const pending = store.remaining(checkpoint, CONFIG.securities.map((s) => s.securityId));
-console.log(`  Ausstehend: ${pending.length} von ${CONFIG.securities.length}` +
+const REJECT_RETRY_DAYS = 7;
+if (!checkpoint.rejected) checkpoint.rejected = {};
+const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
+console.log(`  Ausstehend: ${pending.length} von ${SECURITIES.length}` +
             (checkpoint.done.length ? ` (${checkpoint.done.length} bereits erledigt)` : ""));
-console.log(`  Kontingent: ${Tiingo.FREE_LIMITS.requestsPerHour}/Stunde, ` +
-            `${Tiingo.FREE_LIMITS.requestsPerDay}/Tag\n`);
+console.log(`  Kontingent: ${capabilities.limits.requestsPerHour}/Stunde, ` +
+            `${capabilities.limits.requestsPerDay}/Tag\n`);
+
+/* Ab wann Tageskurse geholt werden: fullHistory-Titel ab initialFrom (die
+   Aktienseite braucht 5J/Max), alle anderen ab discoverSeries.historyFrom -
+   genug fuer 252-Tage-Faktoren und die kompakte Jahresreihe. */
+const HISTORY_FROM = (PREVIEW_SCOPE && JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8")).discoverSeries || {}).historyFrom || null;
+function initialFromFor(security) {
+  if (!SCOPE_FROM_PREVIEW || !HISTORY_FROM) return CONFIG.fetch.initialFrom;
+  return PREVIEW_SCOPE.fullHistory.has(security.ticker) ? CONFIG.fetch.initialFrom : HISTORY_FROM;
+}
 
 const perSecurity = {};
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
 
-for (const security of CONFIG.securities) {
+for (const security of SECURITIES) {
   const id = security.securityId;
   const label = `  ${security.ticker.padEnd(6)}`;
 
   if (checkpoint.done.includes(id)) { skipped++; console.log(`${label} uebersprungen (erledigt)`); continue; }
+  /* Eine abgelehnte Reihe (Qualitaetspruefung) wird nicht jeden Tag erneut
+     angefragt: sieben Tage Ruhe, dann ein neuer Versuch. Der Grund steht
+     im Checkpoint - und im Statusbericht. */
+  const zuletztAbgelehnt = checkpoint.rejected && checkpoint.rejected[id];
+  if (!INITIAL && zuletztAbgelehnt && (Date.now() - Date.parse(zuletztAbgelehnt.at)) < REJECT_RETRY_DAYS * 86400000) {
+    skipped++; rejected++;
+    perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed", deferred: true,
+                        message: zuletztAbgelehnt.codes, rejectedAt: zuletztAbgelehnt.at };
+    console.log(`${label} uebersprungen (abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
+    continue;
+  }
 
   const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
   const from = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
-    ? CONFIG.fetch.initialFrom
-    : store.nextFetchFrom(id, { initialFrom: CONFIG.fetch.initialFrom });
+    ? initialFromFor(security)
+    : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
@@ -297,7 +362,10 @@ for (const security of CONFIG.securities) {
     const codes = validation.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed",
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
-    console.log(`${label} ABGELEHNT — ${validation.stats?.errors ?? codes.length} Fehler (${codes[0]})`);
+    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: codes.join(", ") };
+    /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
+       (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
+    console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
@@ -319,6 +387,7 @@ for (const security of CONFIG.securities) {
       claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
       findings: semantik.findings.slice(0, 8)
     };
+    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", ") };
     console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
                 `verhaelt sich wie ${semantik.inferredStatus}`);
     store.saveCheckpoint(checkpoint);
@@ -377,6 +446,18 @@ for (const security of CONFIG.securities) {
 
 /* ------------------------------------------------------ Abschluss */
 
+/* Lauf vollstaendig (kein Abbruch am Kontingent): die Liste der erledigten
+   Titel wird geleert, damit der naechste Lauf wieder jeden Titel nachlaedt.
+   Bei Abbruch bleibt sie stehen - genau dafuer ist sie da. */
+const vollstaendig = !DRY_RUN && SECURITIES.every((s) => checkpoint.done.includes(s.securityId) ||
+  (perSecurity[s.securityId] && perSecurity[s.securityId].reason !== "rateLimited" && perSecurity[s.securityId].reason !== "quotaExceeded"));
+if (vollstaendig && !STRICT_INCREMENTAL) {
+  checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
+  checkpoint.completedAt = new Date().toISOString();
+  store.saveCheckpoint(checkpoint);
+  console.log("\n  Lauf vollstaendig - Checkpoint zurueckgesetzt (Ablehnungen bleiben gemerkt).");
+}
+
 if (DRY_RUN) {
   console.log("\n  Probelauf — nichts abgerufen, nichts geschrieben.");
   process.exit(0);
@@ -393,7 +474,7 @@ console.log(`    Kontingent: ${quota.hourUsed}/${quota.hourLimit} Stunde, ${quot
 console.log(`    Bandbreite: ${(quota.bytesUsed / 1048576).toFixed(1)} MB`);
 
 if (STRICT_INCREMENTAL) {
-  const pendingIds = store.remaining(checkpoint, CONFIG.securities.map(s=>s.securityId));
+  const pendingIds = store.remaining(checkpoint, SECURITIES.map(s=>s.securityId));
   checkpoint.health = {
     observedAt: new Date().toISOString(), through: closedSession.date,
     processingState: pendingIds.length ? "INCOMPLETE" : "COMPLETE",
@@ -430,7 +511,7 @@ if (PUBLISH) {
   }
   console.log("\n  Veroeffentlichter Ausschnitt:");
   console.log(`  Grundlage: ${anzeige.basis}`);
-  for (const security of CONFIG.securities) {
+  for (const security of SECURITIES) {
     const p = store.publish(security.securityId, { permission: anzeige });
     if (p.published) {
       console.log(`    ${security.ticker.padEnd(6)} ${p.bars} von ${p.of} Bars (${Math.round(p.bytes / 1024)} KB)`);
@@ -460,16 +541,23 @@ if (PUBLISH_PREVIEW) {
      Schreiben des bereits geholten Bestands). */
   const GOLDEN_PREVIEW_BAR_LIMIT = 5000;
   const previewConfig = JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"));
-  DisplayPolicy.declareFromConfig(previewConfig);
+  /* Der Umfang, aufgeloest: Tickerliste und/oder Universum. Die
+     Richtlinie bekommt die aufgeloeste Liste, damit sie je Titel
+     entscheiden kann. */
+  DisplayPolicy.declareFromConfig(expandPreviewConfig(previewConfig, PREVIEW_SCOPE));
 
   const previewStore = MarketStore.createMarketStore({
     root, providerId: Tiingo.PROVIDER_ID, workingDir: store.workingDir,
     publishedDir: join(root, "quant", "data", "market", "golden-preview")
   });
 
-  console.log("\n  Development-Preview-Veroeffentlichung (Golden Five):");
-  const scope = new Set(previewConfig.scope || []);
-  for (const security of CONFIG.securities) {
+  console.log("\n  Development-Preview-Veroeffentlichung (volle Historie, fullHistory-Titel):");
+  /* Die volle Historie (5.000 Bars, ~500 KB je Titel) nur fuer die Titel,
+     die die Aktienseite mit 5J/Max und die Technical Intelligence
+     brauchen. Alle anderen im Umfang bekommen die kompakte Discover-Reihe
+     weiter unten - ein Jahr Tagesschluss, 5 KB. */
+  const scope = PREVIEW_SCOPE.fullHistory;
+  for (const security of SECURITIES) {
     if (!scope.has(security.ticker)) continue;
     const anzeige = DisplayPolicy.check({
       providerId: "tiingo", dataClass: "marketData", audience: "development_preview",
@@ -487,6 +575,15 @@ if (PUBLISH_PREVIEW) {
       console.error(`    ${security.ticker.padEnd(6)} NICHT veroeffentlicht: ${p.message || p.reason}`);
     }
   }
+
+  /* Die kompakten Discover-Reihen fuer JEDEN Titel im Umfang - dieselbe
+     Richtlinie, dieselbe Arbeitsablage, ein anderer Ausschnitt. */
+  console.log("\n  Kompakte Discover-Kursreihen (1 Jahr Tagesschluss, alle Titel im Umfang):");
+  const reihen = publishDiscoverSeries({ root, workingDir: store.workingDir, fromPublished: true,
+                                        log: (m) => console.log(m) });
+  console.log(`    ${reihen.written.length} geschrieben, ${reihen.skipped.length} uebersprungen` +
+              (reihen.skipped.length ? " (" + reihen.skipped.map((x) => x.ticker + ":" + x.reason).slice(0, 8).join(", ") +
+               (reihen.skipped.length > 8 ? ", …" : "") + ")" : ""));
 }
 
 writeStatus({
@@ -496,11 +593,11 @@ writeStatus({
   /* Woher jede zugesagte Faehigkeit ihren Wert hat. Ohne diese Angabe ist
      die Matrix eine Behauptung; mit ihr ist sie nachpruefbar. */
   evidence: capabilities.evidence,
-  limits: Tiingo.FREE_LIMITS,
+  limits: capabilities.limits,
   adjustmentStatus: provider.adjustmentStatus(),
   health: { status: health.status, message: health.message },
   quota: quota,
-  summary: { requested: CONFIG.securities.length, ok, failed, rejected, skipped,
+  summary: { requested: SECURITIES.length, ok, failed, rejected, skipped,
              requests: stats.requests, cacheHits: stats.cacheHits, retries: stats.retries,
              bytesReceived: stats.bytesReceived },
   securities: perSecurity,

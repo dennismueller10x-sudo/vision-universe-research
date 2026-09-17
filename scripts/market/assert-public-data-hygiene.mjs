@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveScope } from "./preview-scope.mjs";
 
 /* --root=<path> is test-only: it lets DH3/DH4 point this guard at a
    throwaway fixture tree instead of the real repository, so a test that
@@ -61,6 +62,89 @@ if (existsSync(previewDaily)) {
       findings.push(`quant/data/market/golden-preview/daily/${name}: real bars for ticker ` +
                     `'${payload.ticker || "unknown"}' outside the declared Golden Five scope ` +
                     `(${[...previewScope].join(", ")})`);
+    }
+  }
+}
+
+/* Discover-Kursreihen (kompakt, 1 Jahr Tagesschluss): derselbe Umfang wie
+   golden-preview, aufgeloest ueber preview-scope.mjs - eine Tickerliste
+   ODER ein Universum (scopeUniverse). Eine Reihe fuer einen Titel, den die
+   Konfiguration nicht nennt, ist ein Leck, kein Versehen. */
+const seriesDir = join(root, "quant", "data", "market", "discover-series");
+if (existsSync(seriesDir)) {
+  let seriesScope = new Set();
+  try {
+    seriesScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(seriesDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !seriesScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) {
+      findings.push(`quant/data/market/discover-series/${name}: published without a stated basis`);
+    }
+  }
+}
+
+/* Lange Discover-Reihen (Wochenschluss, 5J/Max): derselbe Umfang, dieselbe
+   Grundlage wie die Tagesreihen - und nur Wochenpunkte [Datum, Schluss],
+   keine OHLC, kein Volumen. */
+const longDir = join(root, "quant", "data", "market", "discover-series-long");
+if (existsSync(longDir)) {
+  let longScope = new Set();
+  try {
+    longScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series-long/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(longDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series-long", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !longScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) findings.push(`quant/data/market/discover-series-long/${name}: published without a stated basis`);
+    if (payload.grain !== "weekly") findings.push(`quant/data/market/discover-series-long/${name}: grain ${payload.grain} statt weekly`);
+    if (payload.points.some((p) => !Array.isArray(p) || p.length !== 2)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: points are not [date, close] pairs`);
+    }
+  }
+}
+
+/* Intraday-Snapshots (5-Minuten-Verlaeufe je Sitzung): derselbe Umfang,
+   dieselbe Grundlage. Ein Snapshot fuer einen Titel ausserhalb des
+   Umfangs oder ohne Grundlage ist ein Leck. Und: kein Punkt ausserhalb
+   der regulaeren Sitzung in `points` - erweiterte Zeiten liegen getrennt. */
+const intradayDir = join(root, "quant", "data", "market", "intraday");
+if (existsSync(intradayDir)) {
+  let intradayScope = new Set();
+  try {
+    intradayScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/intraday/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const date of readdirSync(intradayDir).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n))) {
+    for (const name of readdirSync(join(intradayDir, date)).filter((n) => n.endsWith(".json"))) {
+      const payload = json(join("quant", "data", "market", "intraday", date, name));
+      if (!payload || !Array.isArray(payload.points) || !payload.points.length) continue;
+      if (!payload.symbol || !intradayScope.has(payload.symbol)) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: intraday points for ticker ` +
+                      `'${payload.symbol || "unknown"}' outside the declared scope`);
+      }
+      if (!payload.publishBasis) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: published without a stated basis`);
+      }
+      if (payload.sessionDate !== date) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: sessionDate ${payload.sessionDate} does not match its directory`);
+      }
     }
   }
 }

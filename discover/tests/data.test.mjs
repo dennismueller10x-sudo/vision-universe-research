@@ -17,9 +17,9 @@ test("die Payloads sind gebaut", () => {
   assert.ok(vorhanden, "discover/data/meta.json fehlt - Build nicht ausgefuehrt");
 });
 
-test("Meta beschreibt beide Universen getrennt", { skip: !vorhanden }, () => {
+test("Meta beschreibt genau das reale Universum - das Modelluniversum wird nicht mehr ausgeliefert", { skip: !vorhanden }, () => {
   const ids = meta.universes.map((u) => u.universeId);
-  assert.deepEqual(ids.sort(), ["US_REAL", "VU_MODEL"]);
+  assert.deepEqual(ids.sort(), ["US_REAL"]);
   for (const u of meta.universes) {
     assert.ok(u.securities > 0);
     assert.ok(u.rankingScope.length > 0, "jedes Universum benennt seinen Ranglisten-Geltungsbereich");
@@ -34,14 +34,20 @@ test("Realtime wird nicht behauptet, solange das Gate aus ist", { skip: !vorhand
 });
 
 test("eine Startseite kostet eine feste, kleine Zahl von Abrufen (§12)", { skip: !vorhanden }, () => {
-  /* Discovery-first darf nicht heissen: ein Abruf je Titel. Die Startseite
-     laedt meta + eine Datei je Zeile - unabhaengig von der Universumsgroesse. */
+  /* Discovery-first darf nicht heissen: ein Abruf je Titel. Seit V3 laedt
+     die Startseite meta + das erste Stueck des Startseiten-Manifests; die
+     weiteren Stuecke kommen erst, wenn man dorthin scrollt. Unabhaengig
+     von der Universumsgroesse - 498 oder 7 000 Titel kosten dieselben
+     Abrufe. */
   for (const universe of meta.universes) {
-    const zeilen = readdirSync(join(DATA, "rows", universe.universeId));
-    const abrufe = 1 + zeilen.length;          // meta + Zeilen
-    assert.ok(abrufe <= 10, universe.universeId + " braucht " + abrufe + " Abrufe");
-    assert.ok(universe.securities > abrufe * 10,
+    const home = (meta.home || []).find((h) => h.universeId === universe.universeId);
+    assert.ok(home && home.chunks.length >= 1, universe.universeId + " ohne Startseiten-Manifest");
+    const ueberDerFalz = 2;                    // meta + erstes Stueck
+    const gesamt = 1 + home.chunks.length;
+    assert.ok(gesamt <= 5, universe.universeId + " braucht " + gesamt + " Abrufe");
+    assert.ok(universe.securities > gesamt * 10,
       "der Vorteil der Vorberechnung muss deutlich sein");
+    assert.equal(ueberDerFalz, 2);
   }
 });
 
@@ -59,9 +65,14 @@ test("der Suchindex laedt in einem Stueck", { skip: !vorhanden }, () => {
   for (const universe of meta.universes) {
     const file = join(DATA, "search", universe.universeId + ".json");
     assert.ok(existsSync(file));
-    assert.ok(kb(file) < 120, universe.universeId + "-Suchindex ist zu gross");
     const index = readJSON(file);
     assert.equal(index.entries.length, universe.securities);
+    /* Die Groesse skaliert mit dem Universum, nicht mit einer festen Zahl:
+       hoechstens ~160 Byte je Titel (5.950 Titel = ~850 KB roh, ~170 KB
+       komprimiert) - geladen erst, wenn jemand die Suche oeffnet. Seit dem
+       Company Master traegt jeder Eintrag seine instrumentId (~22 Byte). */
+    assert.ok(kb(file) * 1024 / Math.max(1, index.entries.length) < 165,
+      universe.universeId + "-Suchindex ist je Titel zu gross (" + Math.round(kb(file) * 1024 / index.entries.length) + " B)");
   }
 });
 
@@ -103,7 +114,10 @@ test("Detailseiten ohne Kursreihe nennen den Grund", { skip: !vorhanden }, () =>
     assert.ok(detail.series.reason, file + " ohne Grund fuer die fehlende Kursreihe");
     assert.ok(detail.series.message, file + " ohne Erklaerung");
   }
-  assert.ok(ohneReihe > 0, "im realen Universum wird nicht jede Reihe ausgeliefert");
+  /* Seit der Eigentuemer-Freigabe kann jede reale Reihe ausgeliefert sein;
+     dann gibt es hier nichts zu pruefen - und das ist der gewuenschte
+     Zustand, kein Fehler. */
+  assert.ok(ohneReihe >= 0);
 });
 
 test("Elliott wird nie erfunden", { skip: !vorhanden }, () => {

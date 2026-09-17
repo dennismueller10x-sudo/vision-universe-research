@@ -1,0 +1,41 @@
+{
+  "note": "Diese drei Artefakte sind NICHT in diesem Workstream entstanden. Sie sind die kanonischen Ergebnisse des R2-/Marktdaten-Workstreams und werden hier ausschliesslich GELESEN.",
+  "why": "Ohne sie laesst sich der Overlap nur gegen die alten Gate-Laeufe rechnen, und die endeten vor der Erweiterung des Wertpapierstamms. Das Ergebnis waere eine Zahl, die nach Deckung aussieht und eine Stichprobe ist.",
+  "sourceBranch": "claude/vu2-data-stack-integration",
+  "sourceCommit": "0b7d09a56e362e955880660e721a4bfc1de64a53",
+  "sourceCommitSubject": "US-Aufraeumen: Eignungsschicht und drei Deckungskennzahlen (Lauf 34611793308)",
+  "sourceRunId": "34611793308",
+  "files": [
+    {
+      "path": "quant/data/market/history/coverage-metrics.json",
+      "carries": "STORAGE_COVERAGE 7802/7803, CHART_AVAILABILITY 6997/7004 mit den sieben Ausnahmen namentlich, TECHNICAL_HISTORY_ELIGIBILITY 5963/7004"
+    },
+    {
+      "path": "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json",
+      "carries": "je Titel den Zustand der technischen Auswertbarkeit. Ausgeliefert sind die BEFUNDE (1.040 INSUFFICIENT_HISTORY, 1 SOURCE_MISSING) plus Canary-Satz; wer geprueft wurde und nicht drinsteht, ist TECHNICAL_READY."
+    },
+    {
+      "path": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+      "carries": "die kanonische Mitgliedschaft der 7.004 Produkttitel mit securityId und Kuerzel - der Nenner, gegen den die drei Kennzahlen gerechnet wurden"
+    }
+  ],
+  "identityJoin": {
+    "rule": "securityId (kanonisch) == masterMemberId (Company Master)",
+    "verified": "7004 von 7004, keine Abweichung, kein abweichendes Kuerzel",
+    "test": "scripts/quant/tests/test_canonical_market.py"
+  },
+  "readOnly": {
+    "priceRequests": 0,
+    "r2Writes": 0,
+    "note": "Es wurden keine Kursdaten geladen, kein R2-Objekt veraendert und keine Eligibility neu gerechnet."
+  },
+  "regenerated": {
+    "workflow": "coverage-metrics.yml",
+    "runId": "34933743907",
+    "commit": "52e10aa67389568cf65d8dc4978f22954c863e41",
+    "generatedAt": "2026-09-15T05:41:48.596Z",
+    "today": "2026-09-15",
+    "carries": "STORAGE_COVERAGE 7802/7803, CHART_AVAILABILITY 6871/6875, TECHNICAL_HISTORY_ELIGIBILITY 5884/6875",
+    "note": "Neu gerechnet gegen das aktuelle Produktuniversum (Produkt-Datenhygiene 14./15.09.2026). Lesend: 0 Kursabfragen, 0 R2-Schreibvorgaenge."
+  }
+}

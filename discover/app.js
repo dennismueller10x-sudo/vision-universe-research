@@ -9,17 +9,21 @@
      #/u/US_REAL                 Startseite eines Universums
      #/c/US_REAL/market-leaders  Kategorie
      #/s/US_REAL/NVDA            Titel
+     #/einzeln/US_REAL           Einzeln entdecken
 
    Geladen wird ausschliesslich aus discover/data/** - fertige Payloads aus
-   dem Build. Eine Startseite kostet damit einen Abruf je Reihe, nicht
-   einen je Titel.
+   dem Build.
 
-   RHYTHMUS DER STARTSEITE (§6)
+   DIE STARTSEITE (V3)
 
-   Keine zwei Reihen sehen gleich aus. Die Reihenfolge ist bewusst gesetzt:
-   Eingangsflaeche, dann die nummerierte Signature-Reihe, dann eine
-   Poster-Reihe, dann eine kompakte, dann wieder Poster - und zum Schluss
-   die Sektoren als Kacheln statt als Karten.
+   Sie ist kein Skript mehr, das Reihen aneinanderhaengt, sondern ein
+   Manifest aus dem Build (discover/data/home/<U>.json): eine Folge von
+   Surfaces, jede mit ihrer Auswahl. Welche Karte wo steht, hat der Build
+   entschieden und nachgerechnet - hier wird nur gezeichnet. Das Manifest
+   kommt in Stuecken: das erste traegt, was ueber der Falz steht; die
+   weiteren laedt die Seite nach, sobald man in ihre Naehe scrollt. Eine
+   Startseite kostet damit zwei Abrufe, egal ob das Universum 498 oder
+   7 000 Titel hat.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -29,28 +33,8 @@
   var el = S.el;
   var BASE = "/discover/data/";
 
-  /* Die Dramaturgie der Startseite. `variant` bestimmt die Kartenform. */
-  var HOME_SEQUENCE = [
-    { rowId: "market-leaders", variant: "rank", limit: 10, as: "top-10" },
-    { rowId: "new-52-week-highs", variant: "wide" },
-    { rowId: "breakout-watch", variant: "compact" },
-    { rowId: "momentum-leaders", variant: "poster" },
-    { rowId: "relative-strength", variant: "poster" },
-    { rowId: "trend-quality", variant: "compact" },
-    { rowId: "sector-leaders", variant: "sector" }
-  ];
-
-  /* Wie viele Poster eine Reihe auf der Startseite zeigt. Mehr als etwa
-     zwanzig wischt ohnehin niemand durch; die vollständige Rangliste steht
-     hinter "Alle anzeigen". */
-  /* Wie viele Karten eine Reihe auf der Startseite zeigt. Die Zahl steht
-     bewusst unter dem, was die Rangliste liefert (30): die Differenz ist
-     der Vorrat, aus dem die Mehrfachnennungs-Regeln weiter unten schöpfen
-     können, ohne dass eine Reihe kurz wird. Die vollständige Rangliste
-     steht auf der Kategorieseite. */
-  var RAIL_LIMIT = 12;
-
-  var state = { meta: null, universeId: "US_REAL", calendar: null, search: null, searchUi: null };
+  var state = { meta: null, universeId: "US_REAL", calendar: null, search: null, searchUi: null,
+                memory: null };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function C() { return D.Cards; }
@@ -65,9 +49,19 @@
       state.meta = parts[0];
       state.calendar = parts[1];
       global.VUDiscoverMeta = state.meta;
+      /* Das Gedaechtnis des Geraets - einmal je Sitzung. Die Karten
+         fragen es ueber D.memory, ob man einen Titel schon kennt. */
+      if (!state.memory && D.Memory) { state.memory = D.Memory.create(); D.memory = state.memory; }
       if (state.meta.universes && state.meta.universes.length) {
         var bekannt = state.meta.universes.some(function (u) { return u.universeId === state.universeId; });
         if (!bekannt) state.universeId = state.meta.universes[0].universeId;
+      }
+      /* Der Live-Hub: ein Verzeichnis, einmal - danach entscheidet jede
+         Karte synchron, ob sie einen Tagesverlauf hat. Ohne Freigabe
+         (meta.realtime.available) bleibt er aus, und nichts wird geholt. */
+      if (D.LiveHub) {
+        D.LiveHub.init({ realtime: state.meta.realtime, calendar: state.calendar });
+        return D.LiveHub.loadIndex().catch(function () { return null; }).then(function () { return state.meta; });
       }
       return state.meta;
     });
@@ -81,10 +75,40 @@
 
   /* ------------------------------------------------------- Marktstatus */
   function marketState() {
-    return D.RealtimeSource.assess({
+    var lage = D.RealtimeSource.assess({
       gates: state.meta.gates, audience: "public", calendar: state.calendar,
       asOf: universeMeta().asOf, now: new Date()
     });
+    /* Der Session-Resolver benennt, welche Sitzung gerade gilt und wie
+       sie heisst - dieselbe Sprache wie auf den Karten. */
+    var T = global.VURealtime && global.VURealtime.TradingSession;
+    if (T) {
+      lage.trading = T.resolve(new Date(), { calendar: state.calendar });
+      var Hub = D.LiveHub, idx = Hub && Hub.enabled() ? Hub.index() : null;
+      /* Der Datenstand des Verzeichnisses (dataSession: juengste Sitzung mit
+         Snapshots, spaetester Stand) - nicht der Zeitpunkt des Laufs. Der
+         Freshness-Vertrag sagt, ob das der Stand ist, der jetzt gelten
+         muesste; "Stand Freitag" bei gehandeltem Montag heisst dann
+         "Stand Fr., 11.09. · nicht aktuell". */
+      var stand = null;
+      if (idx && idx.dataSession && idx.dataSession.sessionDate) {
+        stand = { sessionDate: idx.dataSession.sessionDate, asOf: idx.dataSession.asOf, asOfLocal: idx.dataSession.asOfLocal,
+                  regularComplete: idx.dataSession.regularComplete !== false };
+      } else if (idx && idx.entries) {
+        var syms = Object.keys(idx.entries);
+        for (var i = 0; i < syms.length; i++) {
+          var e = idx.entries[syms[i]];
+          if (!stand || e.sessionDate > stand.sessionDate || (e.sessionDate === stand.sessionDate && e.asOf > stand.asOf)) {
+            stand = { sessionDate: e.sessionDate, asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: !!e.regularComplete };
+          }
+        }
+      }
+      var fr = Hub && Hub.enabled() && Hub.freshness ? Hub.freshness(stand) : null;
+      lage.freshness = fr;
+      lage.beschreibung = fr ? fr.label : T.describe(lage.trading, stand);
+      lage.liveSnapshots = !!(idx && idx.entryCount);
+    }
+    return lage;
   }
 
   /**
@@ -100,16 +124,40 @@
                : lage.session === "REGULAR" ? "dx-status--open"
                : (lage.session === "PRE" || lage.session === "AFTER") ? "dx-status--ext" : "";
 
-    var status = el("div", { class: "dx-status " + klasse,
-      title: lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS)." }, [
+    /* Die Zeile sagt, was gilt: "Geöffnet · Stand 15:42" waehrend der
+       Sitzung, sonst "Geschlossen · Letzter Handelstag · Freitag". Kein
+       "Live" ohne Strom, kein technischer Code. */
+    var zusatz;
+    if (lage.beschreibung && lage.liveSnapshots) {
+      /* Kurz genug fuer die Leiste - auch auf dem Telefon: "Stand 15:42",
+         "Schluss 16:00", "Stand Freitag". Das Wort davor sagt schon, ob
+         die Boerse offen ist. */
+      zusatz = lage.beschreibung.label.replace(/^Heute · /, "").replace(/^Letzter Handelstag · /, "Stand ");
+      /* Ein veralteter Stand kurz genug fuer die Leiste des Telefons:
+         "11.09. · nicht aktuell". */
+      if (lage.freshness && lage.freshness.freshnessState === "STALE") zusatz = zusatz.replace(/^Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., /, "");
+    } else {
+      zusatz = universe.asOf ? S.formatDate(universe.asOf) : "";
+    }
+    if (lage.freshness && lage.freshness.freshnessState === "STALE") klasse += " dx-status--stale";
+    var status = el("div", { class: "dx-status " + klasse, "data-freshness": lage.freshness ? lage.freshness.freshnessState : "",
+      title: (lage.beschreibung ? lage.beschreibung.timezoneNote + ". " : "") +
+             (lage.freshness && lage.freshness.freshnessState === "STALE"
+               ? "Der ausgelieferte Stand ist aelter als der letzte Handelstag (" + lage.freshness.expectedSessionDate + "). "
+               : "") +
+             (lage.message || "Sitzung nach dem hinterlegten Handelskalender (XNYS).") }, [
       el("span", { class: "dx-dot" }),
       el("b", { text: "US Market" }),
-      document.createTextNode(lage.mode === "live" ? "Live" : sessionWort(lage)),
-      document.createTextNode(universe.asOf ? " · " + S.formatDate(universe.asOf) : "")
+      document.createTextNode(lage.mode === "live" ? "Live"
+        : (lage.beschreibung ? (lage.beschreibung.marketStateWord || lage.beschreibung.state) : sessionWort(lage))),
+      document.createTextNode(zusatz ? " · " + zusatz : "")
     ]);
 
+    /* Der Universumsschalter erscheint nur, wenn es etwas zu schalten gibt.
+       Seit dem 15.09.2026 wird nur das reale Universum ausgeliefert. */
     var switcher = el("div", { class: "dx-switch", role: "group", "aria-label": "Universum" });
-    (state.meta.universes || []).forEach(function (u) {
+    if ((state.meta.universes || []).length < 2) switcher = null;
+    ((state.meta.universes || []).length < 2 ? [] : state.meta.universes).forEach(function (u) {
       var knopf = el("button", { type: "button", text: u.label,
                                  "aria-pressed": String(u.universeId === state.universeId) });
       knopf.addEventListener("click", function () {
@@ -135,8 +183,6 @@
                             title: "Eine Aktie pro Bildschirm — zum Durchwischen",
                             "aria-label": "Einzeln entdecken" }, [
       el("i", { "aria-hidden": "true" }),
-      /* Auf dem Telefon bleibt nur das Zeichen: die Leiste hat dort zwei
-         Zeilen, und eine dritte waere der Anfang eines Menues. */
       el("span", { text: "Einzeln entdecken" })
     ]);
 
@@ -146,7 +192,7 @@
         el("span", { text: "Vision Universe®" })
       ]),
       status, switcher, einzeln, suche
-    ]);
+    ].filter(Boolean));
   }
 
   function sessionWort(lage) {
@@ -183,15 +229,9 @@
 
   /* -------------------------------------------------------- Startseite */
   /**
-   * Der Hinweis zur Datenlage. Er erklaert, warum die Poster zeigen, was
+   * Der Hinweis zur Datenlage. Er erklaert, warum die Karten zeigen, was
    * sie zeigen - und er ist keine Warnung, also steht er auch in keinem
-   * Kasten.
-   *
-   * Warum <details>: am Telefon kostet der volle Wortlaut den Platz, an dem
-   * die erste Reihe anfangen muesste. Abschneiden kam nicht in Frage - ein
-   * Satz, den man nicht zu Ende lesen kann, ist schlechter als einer, den
-   * man aufklappt. Auf breiten Schirmen ist er offen und sieht aus wie
-   * vorher; das Dreieck blendet das Stylesheet aus.
+   * Kasten. Auf dem Telefon zugeklappt, am Schreibtisch offen.
    */
   function datenhinweis(marke, kurz, lang) {
     var offen = !global.matchMedia || global.matchMedia("(min-width:861px)").matches;
@@ -211,233 +251,151 @@
 
     var heroHost = el("div", {});
     var body = el("div", { class: "dx-page" });
+    var pos = positioning();
+    if (pos) app.appendChild(pos);
     app.appendChild(heroHost);
     app.appendChild(body);
-
     heroHost.appendChild(el("div", { class: "dx-hero" }, [el("div", { class: "dx-hero-bg" })]));
 
-    S.loadJSON(BASE + "featured/" + state.universeId + ".json").then(function (payload) {
-      S.clear(heroHost);
-      heroHost.appendChild(D.Hero.render(payload, { universeId: state.universeId }));
-    }).catch(function () {
-      S.clear(heroHost);
-      heroHost.appendChild(C().note("Eingangsfläche nicht ladbar",
-        "Die Auswahl der Featured-Titel konnte nicht geladen werden. Die Reihen darunter " +
-        "sind davon nicht betroffen."));
-    });
-
     var universe = universeMeta();
-    /* Der Hinweis zur Datenlage gehört unter die Eingangsfläche, aber nicht
-       in einen Kasten: er erklärt, warum die Poster zeigen, was sie zeigen —
-       er ist keine Warnung. */
+    var ctx = {
+      universeId: state.universeId, universeLabel: universe.label, universeSize: universe.securities,
+      asOf: universe.asOf, meta: state.meta,
+      sectorWorlds: (state.meta.visualLanguage && state.meta.visualLanguage.sectorWorlds) || {}
+    };
+    if (D.Analytics) D.Analytics.track("discover_impression", { universeId: state.universeId });
+
+    /* Der Hinweis zur Datenlage: unter der Eingangsflaeche, nicht in
+       einem Kasten - er erklaert, warum die Karten zeigen, was sie
+       zeigen, er warnt nicht. */
+    var hinweis = null;
     if (universe.kind === "mock") {
-      body.appendChild(datenhinweis("Modelluniversum",
+      hinweis = datenhinweis("Modelluniversum",
         "Alle " + universe.securities + " Titel dieser Ansicht sind synthetisch erzeugt.",
         "Sie tragen vollständige Kursreihen und zeigen deshalb Kurs, Verlauf und Chart — aber " +
         "keine reale Marktaussage. Ranglisten werden ausschließlich innerhalb dieses " +
-        "Universums gerechnet."));
-    } else if (universe.redistribution) {
-      body.appendChild(datenhinweis("Kursniveaus",
-        "Absolute Kurse realer Titel sind Anbieterdaten und bleiben zurück.",
-        "Die Karten zeigen deshalb, wie sich der Kurs entwickelt hat — nicht, wo er steht. " +
-        "Bei " + universe.withPriceSeries + " freigegebenen Titeln steht zusätzlich der " +
-        "Kurs selbst."));
+        "Universums gerechnet.");
+    } else if (universe.securities > universe.withPriceSeries) {
+      /* Nur solange nicht jeder Titel eine Kursreihe traegt: dann sagt die
+         Seite, wie viele es sind - und dass der Rest Balken zeigt, keine
+         Linie. Tragen alle eine Reihe, gibt es keinen Hinweis. */
+      hinweis = datenhinweis("Kursreihen",
+        "Für " + universe.withPriceSeries + " von " + universe.securities + " Titeln liegt eine Kursreihe vor.",
+        "Titel ohne Kursreihe zeigen Renditen über 1, 3, 6 und 12 Monate als Balken — keinen " +
+        "Kursverlauf. Die übrigen Reihen kommen mit dem nächsten Marktdaten-Lauf; geschätzt wird nichts.");
     }
 
-    var plaetze = {};
-    HOME_SEQUENCE.forEach(function (schritt) {
-      var host = el("div", {});
-      host.appendChild(C().skeletonRail(schritt.variant === "compact" ? 6 : 5));
-      plaetze[schritt.as || schritt.rowId] = host;
-      body.appendChild(host);
-    });
-
-    /* Alle Zeilen gleichzeitig laden, aber der Reihe nach zeichnen.
-
-       Der Grund ist nicht die Optik, sondern die Wiederholung: die
-       stärksten Titel eines Marktes stehen naturgemäß in mehreren
-       Ranglisten zugleich. Die erste Fassung dieser Seite hat daraus die
-       einfachste Regel gemacht — jeder Titel nur einmal. Sie war zu
-       streng. Dass ein Marktführer zugleich ein neues Jahreshoch hat, ist
-       gerade die Aussage, die man sehen will; sie zu verstecken, damit die
-       Seite abwechslungsreicher wirkt, verschweigt einen Befund.
-
-       Die Regeln stehen deshalb hier, an einer Stelle, zusammen — und sie
-       entfernen nur, sie sortieren nie um. Eine Rangliste, deren
-       Reihenfolge die Darstellung ändert, wäre keine mehr. */
-    var DEDUP = {
-      /* Wie oft darf ein Titel auf der Startseite stehen? Zweimal: die
-         Mehrfachnennung ist die Aussage, die dritte ist Monotonie. */
-      maxAuftritte: 2,
-      /* Und wie viele Zweitnennungen verträgt eine einzelne Reihe? Drei
-         von zwölf. Darüber liest sich die Reihe als Wiederholung der
-         vorigen, nicht als eigene Kategorie. */
-      maxWiederholungenJeReihe: 3,
-      /* Direkt untereinander nicht: derselbe Titel in zwei aufeinander
-         folgenden Reihen sieht wie ein Fehler aus, auch wenn er keiner
-         ist. Eine Reihe Abstand genügt, damit die Zweitnennung als
-         zweite Nennung gelesen wird. */
-      nichtInFolge: true
-    };
-
-    /* Was bisher gezeigt wurde: Anzahl der Auftritte je Titel und die
-       Reihe, in der er zuerst stand - letztere nur, um die Zweitnennung
-       beschriften zu können. */
-    var auftritte = Object.create(null);
-    var herkunft = Object.create(null);
-    var vorigeReihe = Object.create(null);
-
-    /**
-     * Wählt aus einer Rangliste die Karten, die diese Reihe zeigt.
-     * Reihenfolge bleibt; entfernt wird nach den Regeln oben.
-     */
-    function auswahl(cards, limit) {
-      var raus = [], wiederholt = 0, uebersprungen = 0;
-      /* Eine kurze Rangliste wird nicht noch kuerzer.
-
-         "Gerade in Bewegung" hat an manchen Tagen vier Treffer. Wenn davon
-         zwei schon oben standen, blieben zwei Karten uebrig - und eine
-         Reihe mit zwei Karten sieht aus wie ein Fehler, nicht wie ein
-         Befund. Unterhalb dieser Grenze zeigt die Reihe, was sie hat. */
-      if (cards.length <= 6) return { cards: cards.slice(0, limit), wiederholt: 0, uebersprungen: 0 };
-      for (var i = 0; i < cards.length && raus.length < limit; i++) {
-        var c = cards[i], n = auftritte[c.symbol] || 0;
-        if (n > 0) {
-          if (n >= DEDUP.maxAuftritte) { uebersprungen++; continue; }
-          if (wiederholt >= DEDUP.maxWiederholungenJeReihe) { uebersprungen++; continue; }
-          if (DEDUP.nichtInFolge && vorigeReihe[c.symbol]) { uebersprungen++; continue; }
-          wiederholt++;
-        }
-        raus.push(c);
-      }
-      return { cards: raus, wiederholt: wiederholt, uebersprungen: uebersprungen };
+    var homeInfo = (state.meta.home || []).filter(function (h) {
+      return h.universeId === state.universeId;
+    })[0];
+    if (!homeInfo || !homeInfo.chunks || !homeInfo.chunks.length) {
+      S.clear(heroHost);
+      body.appendChild(C().emptyState("Keine Startseite ausgeliefert",
+        "Für dieses Universum liegt kein Startseiten-Manifest vor (discover/data/home/). " +
+        "Erzeugt wird es mit node scripts/discover/build-discover-data.mjs."));
+      return;
     }
 
-    function vormerken(cards, titel) {
-      var neu = Object.create(null);
-      cards.forEach(function (c) {
-        auftritte[c.symbol] = (auftritte[c.symbol] || 0) + 1;
-        if (!herkunft[c.symbol]) herkunft[c.symbol] = titel;
-        neu[c.symbol] = true;
-      });
-      vorigeReihe = neu;
-    }
-
-    var kette = Promise.resolve();
-
-    HOME_SEQUENCE.forEach(function (schritt) {
-      var laden = S.loadJSON(BASE + "rows/" + state.universeId + "/" + schritt.rowId + ".json");
-      kette = kette.then(function () {
-        return laden.then(function (row) {
-          var host = plaetze[schritt.as || schritt.rowId];
-          S.clear(host);
-          if (schritt.variant === "sector") {
-            /* Die Sektorkacheln sind keine Reihe im selben Sinn: sie zeigen
-               je Sektor die Spitze und sind der Ort, an dem ein Titel
-               auftauchen DARF, den man oben schon gesehen hat - sonst
-               stünde in einem Sektor nicht sein stärkster Titel. Sie
-               zählen deshalb nicht in die Auftritte hinein. */
-            host.appendChild(sectorRail(row));
-            vorigeReihe = Object.create(null);
-          } else if (schritt.as === "top-10") {
-            /* Die Signature-Reihe wird nie gefiltert: TOP 10 zeigt die
-               echte Rangliste, sonst wäre sie keine. */
-            host.appendChild(topTen(row));
-            vormerken((row.cards || []).slice(0, 10), "TOP 10");
-            /* Die Nachbarschaftsregel gilt zwischen zwei gleichartigen
-               Reihen. Nach der Signature-Reihe gilt sie nicht: TOP 10
-               sieht anders aus als eine Reihe - grosse Ziffern, andere
-               Kachel -, und ein Name, der dort stand und gleich darunter
-               unter NEUE 52-WOCHEN-HOCHS wieder auftaucht, liest sich
-               nicht als Dublette, sondern als die Aussage, um die es
-               geht: dieser Marktfuehrer macht gerade ein neues Hoch. */
-            vorigeReihe = Object.create(null);
-          } else {
-            var gewaehlt = auswahl(row.cards || [], RAIL_LIMIT);
-            var sichtbar = Object.assign({}, row, { cards: gewaehlt.cards });
-            var hinweise = Object.create(null);
-            gewaehlt.cards.forEach(function (c) {
-              if (auftritte[c.symbol]) hinweise[c.symbol] = herkunft[c.symbol];
-            });
-            host.appendChild(C().rail(sichtbar, {
-              variant: schritt.variant, universeId: state.universeId, limit: RAIL_LIMIT,
-              hinweise: hinweise,
-              countSuffix: gewaehlt.uebersprungen
-                ? " · " + gewaehlt.uebersprungen + " mehrfach genannte ausgeblendet"
-                : null
-            }));
-            vormerken(gewaehlt.cards, row.title);
+    /* Sichtbarkeit der Surfaces: ein Beobachter fuer alle. Daraus
+       entstehen collection_view und die gemerkte Position - und sonst
+       nichts. */
+    var beobachter = global.IntersectionObserver ? new global.IntersectionObserver(function (eintraege) {
+      eintraege.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var node = e.target;
+        beobachter.unobserve(node);
+        var index = Number(node.getAttribute("data-surface-index"));
+        if (D.Analytics) {
+          D.Analytics.track("collection_view", { universeId: state.universeId,
+            rowId: node.getAttribute("data-row") || null,
+            surface: node.getAttribute("data-surface-type") || null });
+          if (node.getAttribute("data-surface-type") === "theme") {
+            D.Analytics.track("theme_open", { universeId: state.universeId,
+              themeId: (node.getAttribute("data-row") || "").replace(/^thema-/, "") });
           }
-          C().revealOnScroll(host);
-        }).catch(function (err) {
-          var host = plaetze[schritt.as || schritt.rowId];
-          S.clear(host);
-          host.appendChild(C().note("Reihe nicht ladbar",
-            "»" + schritt.rowId + "« konnte nicht geladen werden (" +
-            (err && err.message) + "). Die übrigen Reihen sind davon nicht betroffen."));
-        });
+        }
+        if (state.memory && isNum(index)) state.memory.setPosition(state.universeId, index);
       });
-    });
+    }, { threshold: 0.35 }) : null;
 
-    body.appendChild(footer());
-    C().revealOnScroll(body);
-  }
+    var laufendeNummer = 0;
+    var geladen = Object.create(null);
 
-  /**
-   * Die Signature-Reihe: zehn Titel, grosse Ziffern.
-   * Sie entsteht aus derselben Rangliste wie MARKTFUEHRER - ein zweiter
-   * Datensatz dafuer waere eine zweite Wahrheit.
-   */
-  function topTen(row) {
-    var konfig = (state.meta.topTen || {});
-    var zehn = Object.assign({}, row, {
-      rowId: "top-10",
-      title: konfig.title || "TOP 10 MARKET LEADERS",
-      subtitle: konfig.subtitle || "Die zehn stärksten Titel — nach Leadership Score des Universums.",
-      cards: (row.cards || []).slice(0, 10)
-    });
-    var section = C().rail(zehn, { variant: "rank", universeId: state.universeId, limit: 10 });
-    /* Der Verweis fuehrt auf die vollstaendige Rangliste, nicht auf eine
-       Kategorie, die es nicht gibt. */
-    var mehr = section.querySelector(".dx-more");
-    if (mehr) mehr.setAttribute("href", "#/c/" + state.universeId + "/market-leaders");
-    return section;
-  }
-
-  /** Sektoren als Kacheln: je Sektor eine kleine Rangliste. */
-  function sectorRail(payload) {
-    var section = el("section", { class: "dx-rail-section dx-fade" });
-    section.appendChild(C().railHead(payload.title || "SECTOR LEADERS",
-      "Die stärksten Titel je Sektor.", {
-        count: payload.coverage.curatedSectors + " Sektoren",
-        href: "#/c/" + state.universeId + "/sector-leaders", moreLabel: "Alle Sektoren"
-      }));
-
-    if (!payload.sectors || !payload.sectors.length) {
-      section.appendChild(C().emptyState("Keine kuratierte Sektorzuordnung",
-        "Für dieses Universum liegt keine kuratierte Sektorzuordnung vor. Ein Sektorrang aus " +
-        "einer unbelegten Zuordnung wäre ein Rang über eine Vermutung."));
-      return section;
+    function zeichneSurface(surface) {
+      if (surface.type === "hero") {
+        S.clear(heroHost);
+        heroHost.appendChild(D.Hero.render({ stocks: surface.cards || [] }, { universeId: state.universeId }));
+        if (hinweis) body.appendChild(hinweis);
+        return;
+      }
+      var node = D.Surfaces.render(surface, ctx);
+      if (!node) return;
+      node.setAttribute("data-surface-index", String(laufendeNummer++));
+      body.appendChild(node);
+      if (beobachter) beobachter.observe(node);
+      /* "Zuletzt angesehen" direkt nach der Rangliste - dort, wo man
+         beim zweiten Besuch weitermachen will. */
+      if (surface.type === "ranking" && surface.id === "top-10" && state.memory) {
+        var zuletzt = D.Surfaces.recent(state.memory, ctx);
+        if (zuletzt) body.appendChild(zuletzt);
+        /* Die eine ehrliche Personalisierung: Nachbarn des zuletzt
+           geoeffneten Titels, vom Geraet gemerkt (engines/memory.js). */
+        var weil = D.Surfaces.becauseYouViewed ? D.Surfaces.becauseYouViewed(state.memory, ctx) : null;
+        if (weil) body.appendChild(weil);
+      }
     }
 
-    section.setAttribute("data-world", payload.world || "sectors");
-    var track = el("div", { class: "dx-rail", role: "list", "aria-label": "Sektoren" });
-    var sektorWelten = (state.meta.visualLanguage && state.meta.visualLanguage.sectorWorlds) || {};
-    payload.sectors.forEach(function (sector) {
-      var tile = C().sectorTile(sector, { universeId: state.universeId,
-                                          world: sektorWelten[sector.sector] || "sectors" });
-      tile.setAttribute("role", "listitem");
-      track.appendChild(tile);
-    });
-    section.appendChild(C().withRailNav(track));
-    if (payload.coverage.withoutSector) {
-      section.appendChild(el("p", { class: "dx-inline-note" }, [
-        el("b", { text: "Sektorabdeckung · " }),
-        document.createTextNode(payload.coverage.withoutSector + " Titel dieses Universums tragen " +
-          "keine kuratierte Sektorzuordnung und erscheinen deshalb in keiner Sektorreihe.")
-      ]));
+    /* Das naechste Stueck kommt, sobald man in seine Naehe scrollt - nicht
+       sofort. Wer nach der dritten Reihe eine Aktie oeffnet, hat den Rest
+       nie geladen. */
+    function nachladen(next) {
+      var sentinel = el("div", { class: "dx-sentinel", "aria-hidden": "true" });
+      body.appendChild(sentinel);
+      if (global.IntersectionObserver) {
+        var io = new global.IntersectionObserver(function (eintraege) {
+          if (!eintraege.some(function (e) { return e.isIntersecting; })) return;
+          io.disconnect();
+          ladeStueck(next, sentinel);
+        }, { rootMargin: "900px 0px" });
+        io.observe(sentinel);
+      } else {
+        ladeStueck(next, sentinel);
+      }
     }
-    return section;
+
+    function ladeStueck(url, sentinel) {
+      if (geladen[url]) return Promise.resolve();
+      geladen[url] = true;
+      return S.loadJSON(url).then(function (teil) {
+        if (sentinel && sentinel.parentNode) sentinel.parentNode.removeChild(sentinel);
+        (teil.surfaces || []).forEach(zeichneSurface);
+        C().revealOnScroll(body);
+        if (teil.next) nachladen(teil.next);
+        else { body.appendChild(footer()); C().revealOnScroll(body); }
+      }).catch(function (err) {
+        if (sentinel && sentinel.parentNode) sentinel.parentNode.removeChild(sentinel);
+        body.appendChild(C().note("Startseite nicht vollständig ladbar",
+          "Ein Teil der Startseite (" + url + ") konnte nicht geladen werden (" +
+          (err && err.message) + "). Was oben steht, ist davon nicht betroffen."));
+        body.appendChild(footer());
+      });
+    }
+
+    body.appendChild(C().skeletonRail(5));
+    var erster = homeInfo.chunks[0];
+    S.loadJSON(erster).then(function (teil) {
+      S.clear(body);
+      geladen[erster] = true;
+      (teil.surfaces || []).forEach(zeichneSurface);
+      C().revealOnScroll(body);
+      if (teil.next) nachladen(teil.next);
+      else body.appendChild(footer());
+    }).catch(function (err) {
+      S.clear(heroHost);
+      S.clear(body);
+      body.appendChild(C().note("Startseite nicht ladbar",
+        "Das Startseiten-Manifest konnte nicht geladen werden (" + (err && err.message) + ")."));
+    });
   }
 
   /* ----------------------------------------------------- Kategorieseite */
@@ -451,10 +409,18 @@
     app.appendChild(body);
     body.appendChild(C().skeletonRail(6));
 
+    if (state.memory) state.memory.recordCollection(rowId);
+    if (D.Analytics) D.Analytics.track("collection_view", { universeId: universeId, rowId: rowId, surface: "category" });
+
     S.loadJSON(BASE + "rows/" + universeId + "/" + rowId + ".json").then(function (row) {
       S.clear(body);
       if (rowId === "sector-leaders") {
-        body.appendChild(sectorRail(row));
+        body.appendChild(D.Surfaces.sectors({
+          type: "sectors", id: "sectors", rowId: "sector-leaders", title: row.title,
+          subtitle: row.subtitle, sectors: row.sectors || [],
+          withoutSector: row.coverage && row.coverage.withoutSector
+        }, { universeId: universeId,
+             sectorWorlds: (state.meta.visualLanguage && state.meta.visualLanguage.sectorWorlds) || {} }));
         body.appendChild(footer());
         C().revealOnScroll(body);
         return;
@@ -465,6 +431,15 @@
         count: row.coverage.matched + " von " + row.coverage.universeSize,
         href: "#/u/" + universeId, moreLabel: "Zurück zu Discover"
       }));
+      /* Was die Reihe prueft, steht dabei - in einem Satz. Eine Themen-
+         reihe sagt zusaetzlich, dass ihre Zugehoerigkeit redaktionell ist. */
+      if (row.rule || row.editorial) {
+        body.appendChild(C().note(row.editorial ? "Redaktionelle Zuordnung" : "Regel dieser Sammlung",
+          row.editorial
+            ? "Welche Unternehmen zu diesem Thema gehören, ist eine Einordnung der Redaktion — keine " +
+              "Kennzahl. Die Reihenfolge und alle Zahlen auf den Karten sind gerechnet."
+            : row.rule));
+      }
 
       var filter = { sector: null, capBucket: null };
       var leiste = el("div", { class: "dx-filters", role: "group", "aria-label": "Filter" });
@@ -546,12 +521,17 @@
     root.appendChild(app);
     document.body.classList.add("dx-feed-aktiv");
 
+    /* Zwanzig Titel aus sechs Sammlungen, abwechselnd - und dann Schluss.
+       Bekannte Namen sind dabei, Ueberraschungen auch. */
     var quellen = [
-      { rowId: "market-leaders", herkunft: "Die stärksten Aktien", anzahl: 4 },
+      { rowId: "market-leaders", herkunft: "Die stärksten Aktien", anzahl: 5 },
+      { rowId: "bekannte-namen", herkunft: "Bekannte Namen in Bewegung", anzahl: 4 },
       { rowId: "new-52-week-highs", herkunft: "Neue Jahreshochs", anzahl: 4 },
       { rowId: "momentum-leaders", herkunft: "Seit Monaten im Aufwind", anzahl: 3 },
-      { rowId: "breakout-watch", herkunft: "Gerade in Bewegung", anzahl: 2 }
+      { rowId: "comeback", herkunft: "Comeback?", anzahl: 2 },
+      { rowId: "ueberraschungen", herkunft: "Überraschungen", anzahl: 2 }
     ];
+    var ZIEL = 20;
 
     Promise.all(quellen.map(function (q) {
       return S.loadJSON(BASE + "rows/" + universeId + "/" + q.rowId + ".json")
@@ -561,28 +541,51 @@
       /* Abwechselnd aus den Sammlungen nehmen: sonst stehen die ersten
          vier Bildschirme alle in derselben Welt. Ein Titel erscheint
          hoechstens einmal. */
+      /* Jede Sammlung gibt ihre ersten Titel - und ein paar mehr als
+         gebraucht, weil derselbe Titel oft in mehreren Sammlungen steht
+         und nur einmal gezeigt wird. */
       var eimer = teile.filter(Boolean).map(function (t) {
-        return (t.row.cards || []).slice(0, t.q.anzahl).map(function (c) {
+        return (t.row.cards || []).slice(0, t.q.anzahl + 6).map(function (c) {
           return Object.assign({}, c, { herkunft: t.q.herkunft });
         });
       });
-      var karten = [], gesehen = Object.create(null), runde = 0;
-      while (karten.length < 13 && runde < 8) {
-        for (var i = 0; i < eimer.length; i++) {
-          var k = eimer[i][runde];
-          if (!k || gesehen[k.symbol]) continue;
+      var quote = teile.filter(Boolean).map(function (t) { return t.q.anzahl; });
+      /* Abwechselnd, jede Sammlung bis zu ihrer Quote; was durch
+         Doppelte fehlt, fuellen die uebrigen in einer zweiten Runde auf. */
+      var karten = [], gesehen = Object.create(null);
+      var genommen = eimer.map(function () { return 0; });
+      var zeiger = eimer.map(function () { return 0; });
+      function ziehe(i) {
+        while (zeiger[i] < eimer[i].length) {
+          var k = eimer[i][zeiger[i]++];
+          if (gesehen[k.symbol]) continue;
           gesehen[k.symbol] = true;
-          karten.push(k);
+          karten.push(k); genommen[i]++;
+          return true;
         }
-        runde++;
+        return false;
       }
+      for (var runde = 0; runde < 6 && karten.length < ZIEL; runde++) {
+        for (var i = 0; i < eimer.length && karten.length < ZIEL; i++) {
+          if (genommen[i] < quote[i]) ziehe(i);
+        }
+      }
+      for (var j = 0; j < eimer.length && karten.length < ZIEL; j++) {
+        while (karten.length < ZIEL && ziehe(j)) { /* auffuellen */ }
+      }
+      /* Die Ausgaenge am Ende: die Themenwelten, dann zurueck. */
+      var weiter = ((state.meta.editorial && state.meta.editorial.themes) || []).slice(0, 3)
+        .map(function (t) {
+          return { label: "Weiter mit " + t.title.charAt(0) + t.title.slice(1).toLowerCase(),
+                   href: "#/c/" + universeId + "/thema-" + t.id };
+        });
       S.clear(app);
       if (!karten.length) {
         app.appendChild(C().note("Nichts zu entdecken",
           "Für dieses Universum werden derzeit keine Reihen ausgeliefert."));
         return;
       }
-      D.Feed.render(app, karten, { universeId: universeId, zurueck: "#/u/" + universeId });
+      D.Feed.render(app, karten, { universeId: universeId, zurueck: "#/u/" + universeId, weiter: weiter });
     });
   }
 
@@ -597,20 +600,86 @@
     app.appendChild(host);
     host.appendChild(C().skeletonRail(3));
 
+    /* Erst das Verzeichnis der ausgelieferten Seiten, dann die Seite.
+
+       Die Reihenfolge ist der Unterschied zwischen einer sauberen Konsole
+       und einem absichtlichen 404 je Aufruf: im erweiterten Universum hat
+       die grosse Mehrheit der Titel KEINE ausgelieferte Detailseite, und
+       sie blind anzufragen hiesse, den Normalfall als Fehler zu
+       behandeln. */
+    S.loadJSON(BASE + "stock-index/" + universeId + ".json")
+      .catch(function () { return null; })
+      .then(function (index) {
+        var ausgeliefert = !index || !index.symbols ||
+                           index.symbols.indexOf(symbol) >= 0;
+        if (!ausgeliefert) { ausMaster(host, universeId, symbol); return; }
+        ladeDetail(host, universeId, symbol);
+      });
+  }
+
+  function ladeDetail(host, universeId, symbol) {
     S.loadJSON(BASE + "stocks/" + universeId + "/" + symbol + ".json").then(function (detail) {
       D.Detail.render(host, detail, { universeId: universeId, meta: state.meta });
       C().revealOnScroll(host);
       document.title = (detail.companyName || symbol) + " — Vision Universe® Discover";
+      if (state.memory) state.memory.recordView(symbol, { universeId: universeId,
+        companyName: detail.companyName || null, world: detail.world || null });
+      if (D.Analytics) D.Analytics.track("stock_open", { universeId: universeId, symbol: symbol, from: "detail" });
     }).catch(function () {
-      S.clear(host);
-      host.appendChild(el("a", { class: "dx-back", href: "#/", text: "← Discover" }));
-      host.appendChild(el("div", { style: "padding:20px 0" }, [
-        C().emptyState("Keine Detailseite für " + symbol,
-          "Für diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
-          "ausgeliefert. Im Modelluniversum tragen nur die Titel der Discovery-Reihen eine " +
-          "eigene Seite — eine Kursreihe je Titel wäre über das ganze Universum unnötig groß.")
-      ]));
+      /* Keine ausgelieferte Detailseite. Das ist ab jetzt der REGELFALL
+         und kein Fehler: der Company Master fuehrt tausende Titel, fuer
+         die keine Discovery-Reihe gerechnet wird. Statt eines
+         Leerzustands wird die Seite aus dem Master gebaut - Identitaet,
+         Handelsplatz, Gattung, und was der Datenweg fuer diesen Titel
+         kann (§17, §48).
+
+         Erst wenn auch der Master den Titel nicht kennt, ist es wirklich
+         nichts - und dann sagt die Seite genau das. */
+      ausMaster(host, universeId, symbol);
     });
+  }
+
+  function ausMaster(host, universeId, symbol) {
+    var dir = (global.VUInstrumentDirectory && global.VUCompanyMaster)
+      ? global.VUInstrumentDirectory.create({}) : null;
+    if (!dir) { nichtGefunden(host, universeId, symbol, null); return; }
+
+    dir.getInstrument(symbol).then(function (res) {
+      if (res.status !== "OK") { nichtGefunden(host, universeId, symbol, res); return; }
+      return dir.manifest().catch(function () { return null; }).then(function (manifest) {
+        return dir.search(symbol, { limit: 1 }).catch(function () { return null; })
+          .then(function (treffer) {
+            var eintrag = treffer && treffer.entries && treffer.entries.length
+              ? treffer.entries[0] : null;
+            D.Detail.renderInstrument(host, {
+              instrument: res.instrument,
+              alternateListings: res.alternateListings,
+              capabilities: dir.capabilities(eintrag),
+              masterVersion: manifest ? manifest.version : null,
+              asOf: manifest ? manifest.asOf : null
+            }, { universeId: universeId });
+            C().revealOnScroll(host);
+            document.title = (res.instrument.companyName || symbol) +
+                             " — Vision Universe® Discover";
+          });
+      });
+    }).catch(function (err) {
+      nichtGefunden(host, universeId, symbol, { status: "ERROR", reason: err && err.message });
+    });
+  }
+
+  function nichtGefunden(host, universeId, symbol, res) {
+    S.clear(host);
+    host.appendChild(el("a", { class: "dx-back", href: "#/", text: "← Discover" }));
+    host.appendChild(el("div", { style: "padding:20px 0" }, [
+      C().emptyState("Kein Titel mit dem Kürzel " + symbol,
+        res && res.status === "NOT_IN_UNIVERSE"
+          ? "Der Company Master führt kein Instrument mit diesem Kürzel. Das Universum umfasst " +
+            "die US-Primärbörsen; außerbörsliche Titel und Fonds sind nicht enthalten."
+          : "Für diesen Titel wird in »" + universeMeta(universeId).label + "« keine Detailseite " +
+            "ausgeliefert, und das Instrumentenverzeichnis ist nicht erreichbar" +
+            (res && res.reason ? " (" + res.reason + ")" : "") + ".")
+    ]));
   }
 
   function footer() {
@@ -629,7 +698,29 @@
         el("b", { text: "Universum: " }),
         document.createTextNode(universe.rankingScope + " " + universe.note)
       ]),
-      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)])
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(state.meta.disclaimer)]),
+      /* V4 §11: die Herkunft der Daten hat eine eigene Seite - Marktdaten,
+         Tagesverlauf, Geschaeftszahlen, Index-Mitgliedschaft, Aktualisierung,
+         Verzoegerung, Methoden, Lizenzen. Auf den Karten steht kein
+         Anbietername mehr; hier steht, woher alles kommt. */
+      el("div", { class: "dx-foot-links", style: "margin-top:10px" }, [
+        el("a", { href: "#/daten", text: "Daten & Quellen" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/", text: "Discover" }),
+        document.createTextNode(" · "),
+        el("a", { href: "#/einzeln/" + state.universeId, text: "Einzeln entdecken" })
+      ])
+    ]);
+  }
+
+  /* V4 §3-4: in fuenf Sekunden verstehen, was Discover ist - ein Satz,
+     eine zweite Zeile, keine Einfuehrungsseite. */
+  function positioning() {
+    var pos = state.meta.positioning || {};
+    if (!pos.line) return null;
+    return el("div", { class: "dx-positioning" }, [
+      el("p", { class: "dx-positioning-line", text: pos.line }),
+      pos.second ? el("p", { class: "dx-positioning-second", text: pos.second }) : null
     ]);
   }
 
@@ -646,7 +737,16 @@
          bliebe die Uebersicht in einem Zustand haengen, den niemand
          angefordert hat. */
       if (teile[0] !== "einzeln") document.body.classList.remove("dx-feed-aktiv");
-      if (teile[0] === "einzeln") {
+      if (teile[0] === "daten") {
+        S.clear(root);
+        var seite = el("div", { class: "dx-app" });
+        root.appendChild(seite);
+        seite.appendChild(appBar());
+        seite.appendChild(D.Daten.render({ meta: state.meta, universe: universeMeta(), calendar: state.calendar }));
+        seite.appendChild(footer());
+        document.title = "Daten & Quellen — Discover";
+        window.scrollTo(0, 0);
+      } else if (teile[0] === "einzeln") {
         renderFeed(root, teile[1] || state.universeId);
       } else if (teile[0] === "s" && teile.length >= 3) {
         renderDetail(root, teile[1], decodeURIComponent(teile[2]).toUpperCase());

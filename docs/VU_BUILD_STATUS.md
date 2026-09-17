@@ -28,6 +28,15 @@ Bereinigungssemantik.**
 | 3 | Bildsprache: Farbwelten, datengetriebenes Artwork, dunkler Header | `VU_DISCOVER_VISUAL_IDENTITY.md` |
 | 4 | Consumer Layer: Klartext statt Scores, Sammlungen, drei Ebenen | `VU_DISCOVER_CONSUMER_LAYER.md` |
 | 5 | Aktienseite als Ebene 2, Swipe-Grundlage, Einzeln entdecken | `VU_DISCOVER_STOCK_EXPERIENCE.md` |
+| 6 | V3: Surfaces, Relevanz, Diversity, Chart Truth Contract, Themenwelten (Branch, nicht gemergt) | `VU_DISCOVER_V3.md`, `VU_DISCOVER_V3_COLLECTION_AUDIT.md` |
+| 7 | Price Data Completion: Umfang an einer Stelle, kompakte Reihen, Series-Store, Lazy Loading (Branch) | `VU_DISCOVER_PRICE_DATA_COMPLETION.md`, `VU_DISCOVER_PRICE_COVERAGE.md` |
+| 8 | Full Market Universe & Live Intraday: Eigentümer-Freigabe (13.09.2026) in Richtlinie/Gates/Profil, kanonische Universumsquelle mit Company-Master-Übergabepunkt, Trading Session Resolver, Intraday-Vertrag + Ingest + Snapshots, Live-Hub, Micro-Intraday auf Karten/Hero/Aktienseite (1T), Workflows `market-data-refresh.yml` + `intraday-snapshots.yml`. Erste CI-Läufe: 5 379 Jahresreihen, 5 339 Faktorzeilen/Karten (100 % mit Chart), 4 348 Intraday-Snapshots (Branch, nicht gemergt, nicht veröffentlicht) | `VU_DISCOVER_FULL_UNIVERSE_LIVE.md`, `VU_DISCOVER_PRICE_COVERAGE.md` |
+| 9 | Company-Master-Integration: `us-security-master-1.1.0` (2e22a2e, 7 004 Titel) als kanonische Universumsquelle, Fallback auf 5 684 entfernt, Capability Matrix je Instrument, Sektor-Overlay aus der Gate-Datei, Collections neu berechnet. CI-Läufe: 6 514 Faktorzeilen/Aktienseiten, 6 555 Jahresreihen, 5 188 Intraday-Snapshots; 793 Quant-/167 Discover-Tests, 29+38+63 Browser-Prüfungen grün (Branch, nicht gemergt, nicht veröffentlicht, V3 visuell unverändert) | `VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md`, `VU_DISCOVER_PRICE_COVERAGE.md` |
+| 10 | Company Name Enrichment: kanonische Namensschicht `security-master/company-names.json` (Tiingo-Stammdaten → SEC-Tickerverzeichnis → kuratiert, Schlüssel statt Ähnlichkeit, Widerspruchsregel, Herkunft je Zeile), universe-source-Overlay, Discover bevorzugt displayName → legalName → Ticker. 6 981 / 7 004 Namen (99,67 %), 23 offen (Anbieter ohne Namen, Testsymbole); 801 Quant-/170 Discover-Tests, Verifier, Matrix grün; Mitgliedschaft, Kurse, Faktoren, Intraday unverändert (Branch, nicht gemergt, nicht veröffentlicht) | `VU_COMPANY_NAME_ENRICHMENT.md` |
+| 13 | V4 Consumer Discovery Experience (Branch `claude/vision-universe-discover-h93fmv`, auf `main`): Root Cause „Letzter Handelstag · Freitag" (Zeitpläne liefen bis 15.09. 05:04 UTC nur auf dem Entwicklungsbranch, kein Lauf am 14.09.; kein Frische-Zustand), Freshness-Vertrag LIVE/LAST_SESSION/STALE/UNAVAILABLE in Ingest, Verzeichnis, Live-Hub, Karten, Statuszeile, Aktienseite; Nachzug `--scope=auto`; Health-Check + Freshness-Monitor (rot bei STALE); Daten & Quellen ohne Anbieternamen auf Karten; Verbraucher-Chart 1T/1W/1M/6M/1J aus Tages-, 5J/Max aus 6 308 Wochenreihen (R2); Eingangsfläche als Spur mit Wischgeste; Qualifikation „stärkste Aktien" (2 613 / 5 947), rankingReason je Karte, Index-Mitgliedschaft S&P 500 498 / NASDAQ-100 100 / Dow 30 aus Fondsbeständen bzw. Indexeigentümer (Stichtag 15.09.2026), Plausibilitätsregeln (CCI 1 337 % weg, mit Grund), Reihenfolge §23, Farbwelten, Kartenhierarchie. Tests 926 Quant / 191 Discover / 471 Python, Verifier 60 937, Browser-QA 63 + 38 + 33, 19 Screenshots `docs/screenshots/discover-v4/` (nicht gemergt, nicht veröffentlicht; Owner-Abnahme) | `VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md` |
+| 14 | Release-Abnahme V4 (15.09.2026, Branch, nicht gemergt): Freshness-Fix gegen echte Tiingo-Daten per `workflow_dispatch` — Universum Montag 2026-09-14 nachgezogen (5 207 Snapshots), Discover-Umfang Dienstag LIVE, Refresh Tageskurse bis 2026-09-14; Pfad Provider→Ingest→Storage→Export→UI mit sessionDate/lastBarTimestamp/asOf/freshnessState dokumentiert; Freitag-Stand heißt „nicht aktuell“, nie „Letzter Handelstag“. Drei Release-Blocker behoben: erstes Startseiten-Stück wieder < 320 KB (Test unverändert), Refresh-Commit mit `--autostash` (Test-Rückstände), Technik-Bau lässt `scale/` stehen (kanonisches Coverage-Artefakt) — die letzten beiden betreffen `main` heute Abend. Tests 926 / 193 / 471, Verifier 63 383, Browser-QA 63 + 38 + 33, 23 Screenshots. **GO** unter Owner-Abnahme | `VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md` Abschnitt U |
+| 12 | Live-Schaltung 15.09.2026: Modelluniversum aus Discover entfernt (nur `US_REAL`), Zweig auf `main` gemergt (kanonische SEC-Schicht von `main`, Normalisierung 1.10.0, Consumer-Export als zweite Ausgabe), `instrumentId` des Company Masters auf jeder Aktienseite, `stock-index`-Vertrag, Company-Master-Artefakte aus der neuen Eligibility, Deckungskennzahlen gegen 6 875 neu abgenommen (`coverage-metrics.yml`, Lauf 34933743907: Charts 6 871, Technik 5 884); Tests 873 Quant / 191 Discover / 471 Python, Verifier 57 901, Browser-QA grün — **veröffentlicht unter `https://research.visionuniverse.de/discover/`** | `VU_DISCOVER_V3_NETFLIX_BUILD.md` §24b |
+| 11 | MASTER BUILD „Netflix of Stock Research": (A) Testsymbole und Nicht-Aktien über Klassifizierer + Namensschicht ausgeschlossen (Produktuniversum 7 004 → 6 875, Consumer-Policy 5 947 Titel, NASDAQ-Suffixcode P/O/N/M für Vorzüge, `displayName`-Schicht); (B) Consumer-Fundamentals aus dem SEC-Bulk-Archiv über die bestehende Pipeline (5 066 / 6 878 Unternehmen, 10 J 2 039, TTM 4 739; Annual/Quarterly/TTM getrennt, PIT auf Filing-Datum; Normalisierung 1.6.0), Engines Damals vs. heute / Journey / Story / Health / Signale, 10 fundamentale Sammlungen; (C) Discover mit Story-Fläche, Rhythmus aus 31 Flächen, Karten-Hook, „Weil du … angesehen hast", Aktienseite in Streaming-Reihenfolge (15 Sektionen), Next Discovery, Empfehlungs-Vertrag. Tests 801 Quant / 192 Discover / 267 Python, Verifier 66 148 Nachrechnungen, Browser-QA 63 + 38 + 29 grün, 25 Screenshots unter `docs/screenshots/discover-v3-netflix/` (Branch, nicht gemergt, nicht veröffentlicht) | `VU_DISCOVER_V3_NETFLIX_BUILD.md`, `VU_FUNDAMENTAL_INTELLIGENCE.md` |
 
 Stand Stufe 5: 118 Discover-Tests, 684 Quant-Tests, 9 502 Nachrechnungen
 der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
@@ -37,6 +46,33 @@ der ausgelieferten Daten, 63 Browser-Prüfungen — alles grün.
 Menüeintrag **Discover** steht in `assets/site-navigation.js` an zweiter
 Stelle und erscheint damit auf jeder Seite. Der Einzelmodus liegt unter
 `/discover/#/einzeln/US_REAL` und ist aus der Discover-Leiste erreichbar.
+
+### Stufe 6 — Discover V3 (Branch `claude/vision-universe-discover-v3`)
+
+Nicht gemergt, nicht veröffentlicht. 150 Discover-Tests, 13 654
+Nachrechnungen, 63/63 + 31/31 Browser-Prüfungen, 684 Quant-Tests. Die
+Startseite ist ein Manifest aus 21 Surfaces in sieben Formen; bekannte Namen
+rücken innerhalb qualifizierter Titel nach vorn; kein Renditepfad wird mehr
+als Kurve gezeichnet — fünf echte Charts, 493 Renditeleitern. Details und
+Empfehlung zur Veröffentlichung in `VU_DISCOVER_V3.md`.
+
+### Stufe 7 — Price Data Completion (Branch `claude/vision-universe-discover-v3`)
+
+Befund: alle 498 Titel haben Historie bei Tiingo und wurden ingestiert
+(Gate 500: 500/500, ∅ 9 077 Bars ab 1990); ausgeliefert werden fünf, weil
+`development-preview.json` den Umfang gegen eine ungeklärte Lizenz
+(`LEGAL_REVIEW_REQUIRED`) so setzt. Das ist Richtlinie, nicht Technik — und
+wurde nicht umgangen. Gebaut: Umfang als Tickerliste ODER Universum
+(`scopeUniverse`), aufgelöst von `scripts/market/preview-scope.mjs`; kompakte
+Ein-Jahres-Reihen (`quant/data/market/discover-series/`, ~7 KB je Titel) für
+jeden Titel im Umfang; Ingest mit `--scope-from-preview`; Hygiene-Guard und
+Workflow folgen dem Umfang; Discover-Series-Store
+(`discover/data/series/<U>/<SYMBOL>.json`), Karten tragen Verweise, Reihen
+laden bei Sichtbarkeit (Dedup je Titel, Prefetch der nächsten Karten,
+Platzhalter ohne Chart). 153 Discover-Tests, 44 Hygiene-/Gate-Tests, 15 996
+Nachrechnungen, Browser-QA V3 39/39. Heute 5 Charts von 498 — die Erweiterung
+ist eine Zeile in der Konfiguration und eine Lizenzentscheidung des
+Eigentümers.
 
 ### Auslieferungskette, geprüft
 
@@ -74,6 +110,86 @@ Datenlage für Ebene 2: Geschäftszahlen liegen für fünf reale Titel vor
 (SEC-Einreichungen der Golden Five) und für das Modelluniversum;
 Analystendaten und Segmentdaten gibt es nicht, entsprechende Abschnitte
 wurden deshalb nicht gebaut.
+
+## Universe Expansion — 498 → 5.690 (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Der Grund für die 498 stand in zwei Zeilen Code, nicht beim Anbieter.**
+`build-market-factors.mjs` schreibt Faktor-Einzelzeilen nur bis 500 Titel
+ins Repository (Dateigröße, nicht Lizenz), und `build-discover-data.mjs`
+las genau die dadurch größte Datei: `factors-GATE_500.json`. 500
+ausgewählt, 2 ohne ausreichende Historie, 498 im Frontend — während der
+FULL-UNIVERSE-Lauf längst 5.684 Titel geholt hatte.
+Vollständige Herleitung: `docs/VU_UNIVERSE_EXPANSION.md`.
+
+| Stufe | Inhalt | Bericht |
+|---|---|---|
+| 1 | Company Master: stabile `instrumentId`, idempotenter Sync, Fähigkeitsmatrix, Qualitäts- und Deckungsbericht | `VU_UNIVERSE_EXPANSION.md` |
+| 2 | Suche und Aktienseite gegen den Master — lazy, scherbenweise | `VU_UNIVERSE_EXPANSION.md` |
+| 3 | CIK-Zuordnung und SEC-Universum aus dem Master, Sammelweg für companyfacts | `VU_SEC_UNIVERSE_SCALE.md` |
+
+| | vorher | nachher |
+|---|---|---|
+| Instrumente im ausgelieferten Universum | 498 | **5.690** |
+| Primärschlüssel | Ticker | `instrumentId` (`vu_<14 hex>`) |
+| delistete Titel | nicht geführt | 15, mit Datum |
+| Suche kennt | 498 | das ganze Universum |
+| Aktienseite öffnet | 498 | jedes Instrument im Master |
+| Firmennamen | 498 | 517 (SEC-Lauf schließt den Rest) |
+
+**Keine Obergrenze im Code.** `quant/config/company-master.json` führt
+`size.maxInstruments: null`, und die CI prüft sowohl diese Zeile als auch,
+dass kein `MAX_STOCKS`-artiges Konstrukt auftaucht.
+
+Gemessen bei 25.000 / 50.000 Instrumenten: Sync 196 / 449 ms, Indexbau
+21 / 56 ms, Suche 0,015 / 0,025 ms je Anfrage, **größte Suchscherbe 5 / 9
+KB** — der Browser lädt Kilobyte, nicht das Universum.
+
+**731 Quant-Tests, 118 Discover-Tests, 257 Python-Tests, 650 Prüfungen des
+Masters, 19 + 63 Browser-Prüfungen** — alles grün.
+
+Noch offen und ausschließlich ein Workflow-Lauf: `sec.gov` und
+`api.tiingo.com` sind aus der Bauumgebung nicht erreichbar. Der Job
+`sync` in `.github/workflows/universe-master.yml` holt das vollständige
+Anbieterverzeichnis (108.573 Zeilen) und die CIK-Zuordnung; erst danach
+stehen Firmennamen und CIK für das ganze US-Universum.
+
+## Fundamental Data Expansion (Zweig `claude/vision-universe-expansion-j633h8`)
+
+**Quelle der Wahrheit ist der akzeptierte US-Wertpapierstamm**, nicht mehr
+der 5.690er Stand: 7.803 Mitglieder, **7.004 Produkttitel**, 799
+bestätigte Nicht-Aktien. Der Company Master *konsumiert* diese
+Entscheidung — die Eignungsdatei nennt ihre Mitgliederliste mit sha256,
+und der Bau bricht ab, wenn sie abweicht.
+
+| | |
+|---|---:|
+| Instrumente (Listings) | 7.809 |
+| Mitglieder | 7.803 |
+| **Produkttitel** | **7.004** |
+| Emittenten mit CIK | 5 |
+| Emittenten mit Geschäftszahlen | 5 (18,25–18,75 Jahre, 73–76 Quartale) |
+| Metrikregistry | 27 → **40** Kennzahlen, EBITDA ableitbar |
+
+Drei Identitätsebenen: `instrumentId` (Listing), `masterMemberId`
+(Mitglied), `issuerId` (Gesellschaft = CIK). Produkttitel werden als
+**Mitglieder** gezählt — sechs Mitglieder liegen an zwei Börsen.
+
+**Drei echte Befunde aus dem Abgleich:** 308 Vorzugspapiere galten als
+Stammaktien (getrennte Tickerschreibweise `CTA-P-B`); 2.119 aus dem
+Wertpapierstamm angehängte Titel hätten einen Kursverlauf zugeschrieben
+bekommen, den es nie gab; die Screenerfähigkeit folgte der eigenen
+Klassifikation statt der Produktentscheidung und hätte 457 Optionsscheine
+in den Aktienscreener gelassen.
+
+Berichte: `docs/VU_FUNDAMENTAL_DATA_EXPANSION.md`,
+`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md`. Maschinenlesbar unter
+`quant/data/fundamentals/` und `quant/data/universe/`.
+
+**279 Python-Tests, 683 Master-Prüfungen, 118 Discover-Tests** — grün.
+Offen und ausschließlich ein Workflow-Lauf: `sec.gov` ist aus der
+Bauumgebung mit HTTP 403 gesperrt. `sec-fundamentals-universe.yml` mit
+`backfill: true` füllt 7.291 fehlende Firmennamen, die CIKs und die
+Fundamentalhistorie.
 
 ## Completed
 
@@ -186,7 +302,12 @@ Integrationsstand fuers Preview: `docs/VU_REALTIME_PREVIEW_INTEGRATION.md`.
 
 ## In Progress
 
-Nichts. Alle drei Phasen sind abgeschlossen.
+Universe- und Fundamental-Expansion: gebaut, gemessen, geprüft. Was fehlt,
+sind **zwei Workflow-Läufe mit Zugang** — `universe-master.yml`
+(`sync: true`) und `sec-fundamentals-universe.yml` (`backfill: true`). Sie
+füllen Firmennamen, CIK und Fundamentalhistorie für das Produktuniversum.
+Ohne sie bleibt die gemessene Coverage bei 5 von 7.004, und genau so steht
+sie im Bericht.
 
 ## Known Limitations
 

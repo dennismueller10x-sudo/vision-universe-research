@@ -3,6 +3,12 @@
 Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 
+> **Stand 13.09.2026 (Zweig `claude/vision-universe-discover-v3`):** Universum,
+> Universumsquelle seit 13.09.2026: der Company Master (`VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md`). Live-Schicht und Intraday-Charts sind in `VU_DISCOVER_FULL_UNIVERSE_LIVE.md`
+> beschrieben — kanonische Universumsquelle (`scripts/market/universe-source.mjs`),
+> Trading Session Resolver, Intraday-Snapshots, Live-Hub. Die Golden-Five-/
+> GATE_500-Grenze ist keine Produktgrenze mehr.
+
 ## 1. Was Discover ist
 
 Die visuelle Entdeckungsschicht von Vision Universe. Statt eines Screener-
@@ -258,3 +264,13 @@ Titel) — der Guard ist mit einer eingeschleusten Verletzung geprueft worden.
   Titel des Modelluniversums, die in einer Zeile erscheinen.
 * Intraday (1D/5D) bleibt abgeblendet, solange `ENABLE_LIVE_MARKET_DATA`
   aus ist.
+
+
+## V3 (2026-09-13)
+
+Die Startseite ist ein Manifest (`discover/data/home/<U>.json`, in Stücken),
+gerechnet von `buildHome` mit `discover/engines/relevance.js`. Karten tragen
+`priceSeries` (Chart Truth Contract) sowie `was` und `recognitionTier` aus
+`discover/config/company-recognition.json`. Der rebasierte Renditepfad wird
+nicht mehr gezeichnet; ohne Kursreihe steht die Renditeleiter
+(`discover/ui/microchart.js`). Vollständig in `docs/VU_DISCOVER_V3.md`.

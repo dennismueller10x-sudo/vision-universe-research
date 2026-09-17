@@ -1,0 +1,97 @@
+name: Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)
+
+# Die drei Deckungskennzahlen (STORAGE_COVERAGE, CHART_AVAILABILITY,
+# TECHNICAL_HISTORY_ELIGIBILITY) werden gegen das AKTUELLE Produktuniversum
+# gerechnet: ein GET auf den Index des R2-Speichers, keine Kursabfrage, kein
+# Schreiben in den Speicher (build-coverage-metrics.mjs). Danach werden Company
+# Master, Indizes und der Fundamental-Abgleich neu gebaut, damit
+# market-capability.json und reconciliation.json denselben Nenner tragen wie
+# die Eligibility. Grund fuer diesen Workflow: die Produkt-Datenhygiene vom
+# 14./15.09.2026 hat das Produktuniversum von 7 004 auf 6 875 Titel gesetzt;
+# der zuvor abgenommene Stand (0b7d09a5, Lauf 34611793308) galt fuer 7 004.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zugang zum Speicher vorhanden?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "$v fehlt - ohne Speicherzugang keine Deckungskennzahl."; exit 1; fi
+          done
+          echo "Zugang vorhanden."
+
+      - name: Deckungskennzahlen gegen das aktuelle Produktuniversum (ein GET, keine Kurse)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/build-coverage-metrics.mjs
+
+      - name: Herkunft festhalten
+        run: |
+          node -e '
+            const fs = require("fs");
+            const p = "quant/data/market/history/CANONICAL_SOURCE.json";
+            const c = JSON.parse(fs.readFileSync(p, "utf8"));
+            const m = JSON.parse(fs.readFileSync("quant/data/market/history/coverage-metrics.json", "utf8"));
+            c.regenerated = {
+              workflow: "coverage-metrics.yml", runId: String(process.env.GITHUB_RUN_ID), commit: process.env.GITHUB_SHA,
+              generatedAt: m.generatedAt, today: m.today,
+              carries: "STORAGE_COVERAGE " + m.STORAGE_COVERAGE.stored + "/" + m.STORAGE_COVERAGE.denominator +
+                       ", CHART_AVAILABILITY " + m.CHART_AVAILABILITY.renderable + "/" + m.CHART_AVAILABILITY.denominator +
+                       ", TECHNICAL_HISTORY_ELIGIBILITY " + m.TECHNICAL_HISTORY_ELIGIBILITY.eligible + "/" + m.TECHNICAL_HISTORY_ELIGIBILITY.denominator,
+              note: "Neu gerechnet gegen das aktuelle Produktuniversum (Produkt-Datenhygiene 14./15.09.2026). Lesend: 0 Kursabfragen, 0 R2-Schreibvorgaenge."
+            };
+            fs.writeFileSync(p, JSON.stringify(c, null, 2) + "\n");
+            console.log(c.regenerated.carries);
+          '
+
+      - name: Company Master, Indizes, Abgleich
+        run: |
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/verify-company-master.mjs
+          python3 scripts/quant/cli.py reconcile
+
+      - name: Regressionssuite
+        run: |
+          python3 scripts/quant/cli.py test
+          node --test "quant/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/market/history quant/data/universe quant/data/fundamentals
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const m=require("./quant/data/market/history/coverage-metrics.json"); console.log("Charts "+m.CHART_AVAILABILITY.renderable+"/"+m.CHART_AVAILABILITY.denominator+", Technik "+m.TECHNICAL_HISTORY_ELIGIBILITY.eligible)')
+          git commit -m "Deckungskennzahlen gegen das Produktuniversum neu gerechnet: $Z (Lauf ${{ github.run_id }})"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"

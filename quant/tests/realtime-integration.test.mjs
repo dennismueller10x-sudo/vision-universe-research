@@ -249,13 +249,22 @@ test("I13 · Es gibt keinen pauschalen Satz ueber synthetische Daten", () => {
 
 /* ======================================================== Lizenzen === */
 
-test("I14 · Die Gates stehen aus und tragen eine Begruendung mit Datum", () => {
+test("I14 · Die Gates tragen eine Begruendung mit Datum - und ein offenes Gate nennt die Freigabe", () => {
+  /* Seit 2026-09-13 stehen beide Gates offen (Eigentuemerentscheidung,
+     quant/config/development-preview.json). Ein offenes Gate ohne
+     eingetragene Grundlage in der Anzeigerichtlinie waere trotzdem wirkungslos
+     (I15) - hier wird geprueft, dass die Begruendung die Entscheidung nennt. */
+  const preview = JSON.parse(readFileSync(join(ROOT, "quant/config/development-preview.json"), "utf8"));
+  const grundlage = (preview.grants || []).some((g) => g.publicRealtimeAllowed === true && g.basis && g.checkedAt);
   for (const name of ["ENABLE_LIVE_MARKET_DATA", "ENABLE_PUBLIC_LIVE_MARKET_DATA"]) {
     const gate = GATES.gates[name];
     assert.ok(gate, "Gate fehlt: " + name);
-    assert.equal(gate.enabled, false, name + " darf in diesem Workstream nicht offen sein.");
     assert.ok(gate.reason && gate.reason.length > 20);
     assert.match(gate.changedAt, /^\d{4}-\d{2}-\d{2}$/);
+    if (gate.enabled === true) {
+      assert.ok(grundlage, name + " ist offen, aber kein Grant traegt publicRealtimeAllowed mit Grundlage und Datum.");
+      assert.match(gate.reason, /Eigentuemerentscheidung|Eigentümerentscheidung/, name + ": ein offenes Gate nennt die Entscheidung");
+    }
   }
 });
 

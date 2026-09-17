@@ -1,16 +1,94 @@
 {
-  "schemaVersion": "1.0.0",
-  "note": "Explizite, datierte Freigabe fuer Phase 5 (Golden Five), gelesen von quant/engines/display-policy.js#declareFromConfig. Dies ist eine bewusste Produktentscheidung des Eigentuemers ueber ein eng begrenztes Titel-Set, KEINE Aussage ueber eine geklaerte Tiingo-/Twelve-Data-Redistributionslizenz und KEIN globales Gate fuer alle Marktdaten. research.visionuniverse.de ist ein oeffentliches, nicht zugriffsgeschuetztes GitHub-Pages-Repository (Repository selbst public, kein Cloudflare Access, kein privater Host) - jede hier freigegebene Datenklasse ist damit fuer jeden im Internet sichtbar, ungeachtet der Bezeichnung 'Development Preview'. Siehe docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md und docs/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md fuer den vollen Befund. ENABLE_PUBLIC_LIVE_MARKET_DATA (quant/config/feature-gates.json) bleibt unveraendert false.",
-  "decidedBy": "Repository owner, 2026-09-08 (explizite, informierte Anweisung im Chat-Verlauf dieser Phase; keine externe Rechtspruefung)",
-  "scope": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
+  "schemaVersion": "2.0.0",
+  "note": "Freigabe-Umfang und Grants fuer die oeffentliche Anzeige von Tiingo-Marktdaten, gelesen von quant/engines/display-policy.js#declareFromConfig. STAND 2026-09-13: Der Eigentuemer hat erklaert, dass die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data vorliegt (freigegebenes grosses Paket). Die fruehere Golden-Five-/GATE_500-Grenze ist damit KEINE Produktgrenze mehr; der Umfang ist das Produktuniversum (scopeUniverse = PRODUCT_UNIVERSE, aufgeloest ueber scripts/market/universe-source.mjs: Company Master falls im Branch, sonst universe-FULL_UNIVERSE.json). Was hier steht, ist oeffentlich sichtbar - research.visionuniverse.de ist ein oeffentliches GitHub-Pages-Repository.",
+  "decidedBy": "Repository owner, 2026-09-13 (explizite Anweisung im Auftrag 'FULL MARKET UNIVERSE & LIVE INTRADAY CHARTS': 'Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor. Wir verwenden das entsprechend freigegebene grosse Paket.'). Der Vertragstext liegt dem Repository nicht vor; es wurde keine eigene Rechtspruefung vorgenommen - die Grundlage ist die Erklaerung des Eigentuemers.",
+  "history": [
+    {
+      "date": "2026-09-08",
+      "decision": "Development Preview fuer AAPL/MSFT/NVDA/JPM/XOM (Golden Five), Realtime ausgeschlossen."
+    },
+    {
+      "date": "2026-09-13",
+      "decision": "Oeffentliche Anzeige (roh, abgeleitet, Intraday, Realtime) fuer das Produktuniversum; MVP-Grenzen aufgehoben."
+    }
+  ],
+  "scope": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "JPM",
+    "XOM"
+  ],
+  "scopeUniverse": "PRODUCT_UNIVERSE",
+  "scopeNote": "Der Umfang ist die Vereinigung aus `scope` (Tickerliste; hier die fullHistory-Titel) und `scopeUniverse` (PRODUCT_UNIVERSE = Company Master (quant/data/market/security-master/eligibility.json, alle Entscheidungen ausser EXCLUDED), oder der Name eines Gate-Universums aus quant/data/market/scale/). Aufgeloest von scripts/market/preview-scope.mjs; gelesen von ingest-tiingo.mjs (--scope-from-preview), ingest-intraday.mjs, publish-discover-series.mjs, assert-public-data-hygiene.mjs und dem Discover-Build. Es gibt keine zweite Titelliste. Der Benchmark (benchmark) kommt zum Abruf-Umfang hinzu.",
+  "discoverSeries": {
+    "note": "Kompakte Kursreihen fuer Discover-Micro-Charts: ein Jahr Tagesschlusskurse je Titel des Umfangs (quant/data/market/discover-series/, ~5 KB je Titel). Die VOLLE Historie (quant/data/market/golden-preview/daily/) wird nur fuer fullHistory veroeffentlicht - sie traegt die Aktienseite mit 5J/Max und die Technical Intelligence. historyFrom: ab wann Tageskurse fuer Titel ausserhalb fullHistory geholt werden - genug fuer 252-Tage-Faktoren plus Reserve, nicht die ganze Historie ab 1990 (die liegt im Skalierungs-Workflow).",
+    "range": "1Y",
+    "maxPoints": 270,
+    "historyFrom": "2023-01-01",
+    "fullHistory": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "JPM",
+      "XOM"
+    ]
+  },
+  "intraday": {
+    "note": "Intraday-Snapshots (5-Minuten-Bars ueber Tiingo/IEX, inkl. erweiterter Zeiten) fuer die Discover-Karten und die Aktienseite (1T). Auf GitHub Pages gibt es keinen Server: 'live' heisst hier, dass ein Workflow die Snapshots waehrend der Sitzung alle refreshMinutes neu holt und ausliefert, und die Seite den Stand mit Uhrzeit nennt ('Heute · Stand 15:42'). Sekundengenaue Aktualisierung gibt es damit nicht, und sie wird auch nicht behauptet.",
+    "enabled": true,
+    "interval": "5min",
+    "extendedHours": true,
+    "refreshMinutes": 10,
+    "scopes": {
+      "discover": "Titel auf Discover-Flaechen (discover/data/live-scope/<Universum>.json) - waehrend der Sitzung alle refreshMinutes.",
+      "universe": "Das ganze Produktuniversum - einmal nach Handelsschluss (letzte abgeschlossene Sitzung), damit jede Aktienseite ein 1T hat."
+    },
+    "retentionSessions": 2,
+    "maxRequestsPerRun": 7500,
+    "freshness": {
+      "note": "Freshness-Vertrag (quant/engines/realtime/freshness.js): graceMinutes = wie lange nach 09:30 der Vortag bzw. nach 16:00 ein unvollstaendiger Stand noch LAST_SESSION ist (drei Workflow-Laeufe); graceHours = wie lange nach Schluss der Tagesschluss der kompakten Reihen fehlen darf (Abendlauf 22:30 UTC + Build + Auslieferung). Danach: STALE, und die Seite sagt 'nicht aktuell'.",
+      "graceMinutes": 30,
+      "graceHours": 6
+    }
+  },
   "grants": [
     {
       "providerId": "tiingo",
       "dataClass": "marketData",
       "developmentPreviewDisplayAllowed": true,
-      "developmentPreviewScope": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
-      "basis": "Eigentuemerentscheidung, Phase 5 Golden Five: End-of-Day-Kurse dieser fuenf Titel duerfen in der Development Preview sichtbar sein, obwohl provider-profiles.json fuer Tiingo weiterhin licensing.status=LEGAL_REVIEW_REQUIRED trägt und die Seite oeffentlich ohne Zugriffsschutz ausgeliefert wird. Realtime bleibt ausgeschlossen (kein Laufzeitbeleg fuer dieses Konto).",
-      "checkedAt": "2026-09-08"
+      "developmentPreviewScope": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "JPM",
+        "XOM"
+      ],
+      "publicRawDisplayAllowed": true,
+      "publicDerivedDisplayAllowed": true,
+      "publicRealtimeAllowed": true,
+      "basis": "Erklaerung des Eigentuemers vom 2026-09-13: Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor (freigegebenes grosses Paket). Gilt fuer Tageskurse, abgeleitete Werte und Kursverlaeufe des Produktuniversums auf research.visionuniverse.de. Kein Vertragstext im Repository, keine eigene Rechtspruefung.",
+      "checkedAt": "2026-09-13"
+    },
+    {
+      "providerId": "tiingo",
+      "dataClass": "intraday",
+      "publicRawDisplayAllowed": true,
+      "publicDerivedDisplayAllowed": true,
+      "publicRealtimeAllowed": true,
+      "basis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.",
+      "checkedAt": "2026-09-13"
+    },
+    {
+      "providerId": "tiingo",
+      "dataClass": "realtime",
+      "publicRawDisplayAllowed": true,
+      "publicDerivedDisplayAllowed": true,
+      "publicRealtimeAllowed": true,
+      "basis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Ein WebSocket-Strom laeuft auf GitHub Pages nicht (kein Server, Schluessel nie im Browser); die Erlaubnis ist eingetragen, damit ein Relay sie ohne zweite Richtlinie nutzen kann.",
+      "checkedAt": "2026-09-13"
     }
-  ]
+  ],
+  "benchmark": "SPY",
+  "benchmarkNote": "Die Vergleichsgroesse fuer relative Staerke (quant/config/tiingo-scale.json, benchmark). Sie gehoert zum Abruf-Umfang (Tageskurse in der Arbeitsablage, kompakte Reihe), ist aber kein Discover-Titel: ein ETF wird gebraucht, nicht bewertet."
 }

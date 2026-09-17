@@ -14,7 +14,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from quant.sec.derived import FORMULAS, RECONSTRUCTED, reconstruct
 from quant.sec.model import (
     SOURCE_DERIVED, SOURCE_SEC, TRANSFORM_FORMULA, CompanyProfile,
-    MISSING_INPUT, NOT_APPLICABLE_FOR_SECTOR, DIVISION_BY_ZERO,
+    MISSING_INPUT, NOT_APPLICABLE_FOR_SECTOR, DIVISION_BY_ZERO, MIXED_CURRENCY,
+    NormalizedFact, Provenance, PERIOD_ANNUAL, QUALITY_HIGH, missing,
 )
 from quant.sec.normalize import normalize_company
 from quant.sec.periods import PeriodResolver
@@ -224,3 +225,89 @@ class MissingAndBlockedTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class _StubFactbook:
+    def __init__(self, cik):
+        self.cik = cik
+
+
+class _StubResolver:
+    """Das Minimum, das reconstruct() braucht: annual() und sector_block().
+
+    Der Fixture-Aufbau baut eine ganze Gesellschaft in USD. Fuer die
+    Waehrungsfrage braucht es davon nichts - nur zwei Werte mit
+    Einheiten.
+    """
+
+    def __init__(self, facts):
+        self.factbook = _StubFactbook("0009999999")
+        self._facts = facts
+
+    def sector_block(self, metric):
+        return None
+
+    def annual(self, metric, fiscal_year, as_of, policy=None, lag_days=0):
+        fact = self._facts.get(metric)
+        if fact is not None:
+            return fact
+        return missing("0009999999", metric, MISSING_INPUT,
+                       fiscal_year=fiscal_year, fiscal_period="FY")
+
+    def quarter(self, metric, fiscal_year, index, as_of, policy=None, lag_days=0):
+        return self.annual(metric, fiscal_year, as_of)
+
+
+def _waehrungsfakt(metric, value, unit):
+    return NormalizedFact(
+        cik="0009999999", metric=metric, value=value, unit=unit,
+        fiscal_year=2023, fiscal_period="FY", period_start="2023-01-01",
+        period_end="2023-12-31", period_kind=PERIOD_ANNUAL, available=True,
+        reason=None, quality=QUALITY_HIGH, flags=[],
+        provenance=Provenance(taxonomy="ifrs-full", concept="Test",
+                              accession="acc-1", form="20-F", filed="2024-03-01"))
+
+
+class WaehrungsTests(unittest.TestCase):
+    """Abgeleitete Groessen vermischen keine Waehrungen.
+
+    Seit Fremdwaehrungen zugelassen sind (Normalisierung 1.7.0), koennen
+    die Operanden in verschiedenen Waehrungen stehen. `emit` stand auf
+    unit="USD" und haette den freien Cashflow von Unilever als
+    USD-Betrag ausgewiesen - aus EUR-Eingangsgroessen gerechnet. Eine
+    Zahl entsteht, eine Aussage ist falsch.
+
+    Umzurechnen kommt nicht in Frage: dafuer braeuchte es einen Kurs zum
+    Stichtag, und den zu schaetzen zerstoerte die
+    Point-in-Time-Eigenschaft, die diese Schicht traegt.
+    """
+
+    def test_das_ergebnis_traegt_die_waehrung_seiner_eingangsgroessen(self):
+        resolver = _StubResolver({
+            "operating_cash_flow": _waehrungsfakt("operating_cash_flow", 100.0, unit="EUR"),
+            "capital_expenditures": _waehrungsfakt("capital_expenditures", 30.0, unit="EUR"),
+        })
+        out = reconstruct(resolver, 2023, "FY", date(2024, 6, 1))
+        fcf = out["free_cash_flow"]
+        self.assertTrue(fcf.available)
+        self.assertEqual(fcf.value, 70.0)
+        self.assertEqual(fcf.unit, "EUR", "ein Euro-Cashflow ergibt einen Euro-Wert")
+
+    def test_gemischte_waehrungen_ergeben_keine_zahl(self):
+        resolver = _StubResolver({
+            "operating_cash_flow": _waehrungsfakt("operating_cash_flow", 100.0, unit="EUR"),
+            "capital_expenditures": _waehrungsfakt("capital_expenditures", 30.0, unit="USD"),
+        })
+        out = reconstruct(resolver, 2023, "FY", date(2024, 6, 1))
+        fcf = out["free_cash_flow"]
+        self.assertFalse(fcf.available, "lieber keine Zahl als eine falsche")
+        self.assertEqual(fcf.reason, MIXED_CURRENCY)
+
+    def test_usd_bleibt_der_normalfall(self):
+        resolver = _StubResolver({
+            "operating_cash_flow": _waehrungsfakt("operating_cash_flow", 100.0, unit="USD"),
+            "capital_expenditures": _waehrungsfakt("capital_expenditures", 30.0, unit="USD"),
+        })
+        out = reconstruct(resolver, 2023, "FY", date(2024, 6, 1))
+        self.assertEqual(out["free_cash_flow"].unit, "USD")

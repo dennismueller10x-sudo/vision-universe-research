@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.0.0",
-  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist.",
+  "mapping_version": "1.5.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
       "id": "FINANCIALS",
@@ -19,8 +19,630 @@
       ],
       "reason": "UNSUPPORTED_ACCOUNTING_STRUCTURE",
       "note": "Depository, credit, security and insurance institutions (SIC 6000-6499) have no cost of revenue, so gross-profit style metrics are undefined rather than missing. Debt is an operating input for a bank, not leverage, so total debt, net debt, debt/equity and ROIC do not carry their usual meaning. Metrics that remain computable but are not comparable to industrials (capex, free cash flow, operating margin) stay available and are flagged in docs/SEC_NORMALIZATION.md rather than suppressed."
+    },
+    {
+      "id": "BLANK_CHECK_SPAC",
+      "sic_min": 6770,
+      "sic_max": 6770,
+      "not_applicable": [
+        "revenue",
+        "cost_of_revenue",
+        "gross_profit",
+        "operating_income",
+        "ebitda",
+        "capital_expenditures",
+        "free_cash_flow",
+        "inventory",
+        "receivables",
+        "research_and_development",
+        "sga_expense",
+        "depreciation_and_amortization"
+      ],
+      "reason": "NOT_APPLICABLE_FOR_SECTOR",
+      "note": "Blank-Check-Gesellschaften (SIC 6770) haben keinen Geschaeftsbetrieb: kein Umsatz, keine Herstellkosten, keine Investitionen. Ein Treuhandkonto ist keine Bilanzsumme und Zinsen darauf sind kein Umsatz. Diese Kennzahlen sind fuer die Struktur nicht sinnvoll - NOT_APPLICABLE, nicht MISSING. Bilanz, Eigenkapital, Kasse und Nettoergebnis bleiben zulaessig, weil ein SPAC sie tatsaechlich hat."
     }
   ],
+  "industries": {
+    "BANK": {
+      "label": "Bank / Kreditinstitut",
+      "sic_ranges": [
+        [
+          6020,
+          6036
+        ],
+        [
+          6099,
+          6099
+        ],
+        [
+          6111,
+          6111
+        ],
+        [
+          6141,
+          6141
+        ],
+        [
+          6153,
+          6153
+        ],
+        [
+          6159,
+          6163
+        ]
+      ],
+      "note": "Depository and credit institutions. Their income statement starts with interest, not revenue; the core contract stays as it is and this layer is published beside it."
+    },
+    "INSURER": {
+      "label": "Versicherer",
+      "sic_ranges": [
+        [
+          6311,
+          6399
+        ],
+        [
+          6411,
+          6411
+        ]
+      ],
+      "note": "Premiums and benefits, not revenue and cost of revenue."
+    },
+    "REIT": {
+      "label": "Real Estate Investment Trust",
+      "sic_ranges": [
+        [
+          6798,
+          6798
+        ]
+      ],
+      "note": "Rental income and property; FFO is not an XBRL concept and is not derived here."
+    }
+  },
+  "industry_metrics": {
+    "net_interest_income": {
+      "label": "Net interest income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestIncomeExpenseNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34749245361 on issuers with values but no revenue: 223 issuers, 34,830 facts. Further bank, insurer and REIT concepts are added from the per-SIC measurement (unmapped-concepts-banks/insurers/reits.json), never from memory."
+    },
+    "interest_and_dividend_income": {
+      "label": "Interest and dividend income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestAndDividendIncomeOperating",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 287 of 329 issuers in SIC scope)."
+    },
+    "interest_and_fee_income_loans": {
+      "label": "Interest and fee income on loans and leases",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestAndFeeIncomeLoansAndLeases",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 267 of 329 issuers in SIC scope)."
+    },
+    "interest_expense_deposits": {
+      "label": "Interest expense on deposits",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestExpenseDeposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 260 of 329 issuers in SIC scope)."
+    },
+    "net_interest_income_after_provision": {
+      "label": "Net interest income after provision for credit losses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InterestIncomeExpenseAfterProvisionForLoanLoss",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "provision_for_credit_losses": {
+      "label": "Provision for loan and lease losses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProvisionForLoanAndLeaseLosses",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 263 of 329 issuers in SIC scope)."
+    },
+    "noninterest_income": {
+      "label": "Noninterest income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NoninterestIncome",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 295 of 329 issuers in SIC scope)."
+    },
+    "noninterest_expense": {
+      "label": "Noninterest expense",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NoninterestExpense",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "deposits": {
+      "label": "Deposits",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Deposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 296 of 329 issuers in SIC scope)."
+    },
+    "time_deposits": {
+      "label": "Time deposits",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "TimeDeposits",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 286 of 329 issuers in SIC scope)."
+    },
+    "loans_and_leases_net": {
+      "label": "Loans and leases receivable, net",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LoansAndLeasesReceivableNetReportedAmount",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 270 of 329 issuers in SIC scope)."
+    },
+    "allowance_for_loan_losses": {
+      "label": "Allowance for loan and lease losses",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LoansAndLeasesReceivableAllowance",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 273 of 329 issuers in SIC scope)."
+    },
+    "available_for_sale_debt_securities": {
+      "label": "Available-for-sale debt securities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK",
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AvailableForSaleSecuritiesDebtSecurities",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 281 of 329 issuers in SIC scope). Insurers: 89 of 104."
+    },
+    "cash_and_due_from_banks": {
+      "label": "Cash and due from banks",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "BANK"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CashAndDueFromBanks",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-banks.json, 269 of 329 issuers in SIC scope)."
+    },
+    "premiums_earned": {
+      "label": "Premiums earned, net",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PremiumsEarnedNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 94 of 104 issuers in SIC scope)."
+    },
+    "net_investment_income": {
+      "label": "Net investment income",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetInvestmentIncome",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 86 of 104 issuers in SIC scope)."
+    },
+    "benefits_and_claims_incurred": {
+      "label": "Policyholder benefits and claims incurred, net",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PolicyholderBenefitsAndClaimsIncurredNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 88 of 104 issuers in SIC scope)."
+    },
+    "benefits_losses_and_expenses": {
+      "label": "Benefits, losses and expenses",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "BenefitsLossesAndExpenses",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 79 of 104 issuers in SIC scope)."
+    },
+    "claims_liability": {
+      "label": "Liability for claims and claims adjustment expense",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilityForClaimsAndClaimsAdjustmentExpense",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 93 of 104 issuers in SIC scope)."
+    },
+    "unearned_premiums": {
+      "label": "Unearned premiums",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "UnearnedPremiums",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 79 of 104 issuers in SIC scope)."
+    },
+    "deferred_policy_acquisition_costs": {
+      "label": "Deferred policy acquisition costs",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DeferredPolicyAcquisitionCosts",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 88 of 104 issuers in SIC scope)."
+    },
+    "total_investments": {
+      "label": "Investments",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "INSURER"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Investments",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-insurers.json, 87 of 104 issuers in SIC scope)."
+    },
+    "real_estate_gross": {
+      "label": "Real estate investment property, gross",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateGrossAtCarryingValue",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyAtCost",
+          "priority": 20
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 139 of 175 issuers in SIC scope). At-cost variant: 112."
+    },
+    "real_estate_net": {
+      "label": "Real estate investment property, net",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyNet",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 131 of 175 issuers in SIC scope)."
+    },
+    "real_estate_accumulated_depreciation": {
+      "label": "Real estate accumulated depreciation",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateAccumulatedDepreciation",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RealEstateInvestmentPropertyAccumulatedDepreciation",
+          "priority": 20
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 137 of 175 issuers in SIC scope). Property variant: 119."
+    },
+    "secured_debt": {
+      "label": "Secured debt",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "SecuredDebt",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 114 of 175 issuers in SIC scope)."
+    },
+    "impairment_of_real_estate": {
+      "label": "Impairment of real estate",
+      "kind": "duration",
+      "statement": "income_statement",
+      "units": [
+        "USD"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ImpairmentOfRealEstate",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 116 of 175 issuers in SIC scope)."
+    },
+    "dividends_declared_per_share": {
+      "label": "Common stock dividends declared per share",
+      "kind": "duration",
+      "statement": "other",
+      "units": [
+        "USD/shares"
+      ],
+      "industries": [
+        "REIT"
+      ],
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "CommonStockDividendsPerShareDeclared",
+          "priority": 10
+        }
+      ],
+      "note": "Measured in run 34766155710 (unmapped-concepts-reits.json, 161 of 175 issuers in SIC scope)."
+    }
+  },
   "metrics": {
     "revenue": {
       "label": "Revenue",
@@ -59,6 +681,11 @@
           "taxonomy": "us-gaap",
           "concept": "SalesRevenueServicesNet",
           "priority": 60
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Revenue",
+          "priority": 200
         }
       ]
     },
@@ -119,6 +746,11 @@
           "taxonomy": "us-gaap",
           "concept": "OperatingIncomeLoss",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossFromOperatingActivities",
+          "priority": 200
         }
       ]
     },
@@ -139,6 +771,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossBeforeTax",
+          "priority": 200
         }
       ]
     },
@@ -154,6 +791,16 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeTaxExpenseBenefit",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "IncomeTaxExpenseContinuingOperations",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentTaxExpenseIncome",
+          "priority": 210
         }
       ]
     },
@@ -179,6 +826,16 @@
           "taxonomy": "us-gaap",
           "concept": "NetIncomeLossAvailableToCommonStockholdersBasic",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLossAttributableToOwnersOfParent",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "ProfitLoss",
+          "priority": 210
         }
       ]
     },
@@ -199,6 +856,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsPerBasicShare",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "BasicEarningsLossPerShare",
+          "priority": 200
         }
       ]
     },
@@ -219,6 +881,11 @@
           "taxonomy": "us-gaap",
           "concept": "IncomeLossFromContinuingOperationsPerDilutedShare",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "DilutedEarningsLossPerShare",
+          "priority": 200
         }
       ]
     },
@@ -239,6 +906,11 @@
           "taxonomy": "us-gaap",
           "concept": "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInOperatingActivities",
+          "priority": 200
         }
       ]
     },
@@ -270,6 +942,11 @@
           "taxonomy": "us-gaap",
           "concept": "PaymentsToAcquireOtherPropertyPlantAndEquipment",
           "priority": 40
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "priority": 200
         }
       ]
     },
@@ -290,6 +967,16 @@
           "taxonomy": "us-gaap",
           "concept": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashAndCashEquivalents",
+          "priority": 200
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Cash",
+          "priority": 195
         }
       ]
     },
@@ -330,6 +1017,21 @@
           "taxonomy": "us-gaap",
           "concept": "Assets",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Assets",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "EquityAndLiabilities",
+          "priority": 210
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilitiesAndStockholdersEquity",
+          "priority": 190
         }
       ]
     },
@@ -345,6 +1047,11 @@
           "taxonomy": "us-gaap",
           "concept": "Liabilities",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Liabilities",
+          "priority": 200
         }
       ]
     },
@@ -365,6 +1072,16 @@
           "taxonomy": "us-gaap",
           "concept": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "EquityAttributableToOwnersOfParent",
+          "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Equity",
+          "priority": 210
         }
       ]
     },
@@ -385,6 +1102,11 @@
           "taxonomy": "us-gaap",
           "concept": "LongTermDebt",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "LongtermBorrowings",
+          "priority": 200
         }
       ]
     },
@@ -430,6 +1152,11 @@
           "taxonomy": "us-gaap",
           "concept": "DebtLongtermAndShorttermCombinedAmount",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "Borrowings",
+          "priority": 200
         }
       ]
     },
@@ -470,6 +1197,11 @@
           "taxonomy": "us-gaap",
           "concept": "WeightedAverageNumberOfDilutedSharesOutstanding",
           "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "AdjustedWeightedAverageShares",
+          "priority": 200
         }
       ]
     },
@@ -490,6 +1222,11 @@
           "taxonomy": "us-gaap",
           "concept": "WeightedAverageNumberOfShareOutstandingBasicAndDiluted",
           "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "WeightedAverageShares",
+          "priority": 200
         }
       ]
     },
@@ -553,6 +1290,11 @@
           "taxonomy": "us-gaap",
           "concept": "InterestExpenseNonoperating",
           "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "FinanceCosts",
+          "priority": 200
         }
       ]
     },
@@ -596,6 +1338,324 @@
           "taxonomy": "us-gaap",
           "concept": "AllocatedShareBasedCompensationExpense",
           "priority": 20
+        }
+      ]
+    },
+    "depreciation_and_amortization": {
+      "label": "Depreciation & Amortization",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Die Abschreibungen stehen fast immer in der Kapitalflussrechnung, nicht in der GuV. Ohne sie ist EBITDA nicht ableitbar - genau das war bis hier als UNSUPPORTED vermerkt.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationDepletionAndAmortization",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationAmortizationAndAccretionNet",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DepreciationAndAmortization",
+          "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Depreciation",
+          "priority": 40
+        }
+      ]
+    },
+    "current_assets": {
+      "label": "Current Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Nicht jede Bilanz ist klassifiziert: Banken und Versicherer weisen keine kurzfristigen Aktiva aus. Fehlt hier heisst deshalb oefter 'nicht anwendbar' als 'nicht gemeldet'.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AssetsCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentAssets",
+          "priority": 200
+        }
+      ]
+    },
+    "current_liabilities": {
+      "label": "Current Liabilities",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "LiabilitiesCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentLiabilities",
+          "priority": 200
+        }
+      ]
+    },
+    "inventory": {
+      "label": "Inventory",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InventoryNet",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "InventoryGross",
+          "priority": 20
+        }
+      ]
+    },
+    "receivables": {
+      "label": "Receivables",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsReceivableNetCurrent",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ReceivablesNetCurrent",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "AccountsNotesAndLoansReceivableNetCurrent",
+          "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CurrentTradeReceivables",
+          "priority": 200
+        }
+      ]
+    },
+    "retained_earnings": {
+      "label": "Retained Earnings",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RetainedEarningsAccumulatedDeficit",
+          "priority": 10
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "RetainedEarnings",
+          "priority": 200
+        }
+      ]
+    },
+    "goodwill": {
+      "label": "Goodwill",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "note": "Fehlender Goodwill ist der Normalfall, nicht eine Luecke: wer nie zugekauft hat, hat keinen.",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "Goodwill",
+          "priority": 10
+        }
+      ]
+    },
+    "intangible_assets": {
+      "label": "Intangible Assets",
+      "kind": "instant",
+      "statement": "balance_sheet",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "IntangibleAssetsNetExcludingGoodwill",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "FiniteLivedIntangibleAssetsNet",
+          "priority": 20
+        }
+      ]
+    },
+    "investing_cash_flow": {
+      "label": "Investing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInInvestingActivitiesContinuingOperations",
+          "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInInvestingActivities",
+          "priority": 200
+        }
+      ]
+    },
+    "financing_cash_flow": {
+      "label": "Financing Cash Flow",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivities",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "NetCashProvidedByUsedInFinancingActivitiesContinuingOperations",
+          "priority": 20
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "CashFlowsFromUsedInFinancingActivities",
+          "priority": 200
+        }
+      ]
+    },
+    "share_repurchases": {
+      "label": "Share Repurchases",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfCommonStock",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "PaymentsForRepurchaseOfEquity",
+          "priority": 20
+        }
+      ]
+    },
+    "debt_issued": {
+      "label": "Debt Issued",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromIssuanceOfLongTermDebt",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromIssuanceOfDebt",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "ProceedsFromNotesPayable",
+          "priority": 30
+        }
+      ]
+    },
+    "debt_repaid": {
+      "label": "Debt Repaid",
+      "kind": "duration",
+      "statement": "cash_flow",
+      "units": [
+        "USD"
+      ],
+      "optional": true,
+      "sign": "outflow_positive",
+      "concepts": [
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfLongTermDebt",
+          "priority": 10
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfDebt",
+          "priority": 20
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "RepaymentsOfNotesPayable",
+          "priority": 30
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "RepaymentsOfBorrowingsClassifiedAsFinancingActivities",
+          "priority": 200
         }
       ]
     }

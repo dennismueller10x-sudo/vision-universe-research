@@ -1,5 +1,5 @@
 {
-  "methodologyVersion": "discover-v1.0.0",
+  "methodologyVersion": "discover-v4.0.0",
   "note": "Regelwerk für Vision Universe DISCOVER. Jede Zahl, die auf einer Discovery Card steht, entsteht aus dieser Datei und den ausgelieferten Kennzahlen - nicht aus einer Einschätzung. Wer eine Gewichtung ändert, ändert sie hier, und der Build rechnet sie nach.",
   "boundary": "Discover liest bestehende Vision-Universe-Daten und schreibt ausschließlich nach discover/data/**. Es verändert keine bestehende Engine, keine bestehende Datei und keinen bestehenden Contract.",
   "universes": {
@@ -10,14 +10,6 @@
       "provider": "tiingo",
       "note": "Reale US-Titel. Absolute Kursniveaus bleiben nach der Redistributionsregel des Bestandssystems zurück (fieldStatus WITHHELD_REDISTRIBUTION); ausgeliefert werden Zustände, Abstände und Renditen.",
       "rankingScope": "Alle Ranglisten, Perzentile und Leadership-Scores werden AUSSCHLIESSLICH innerhalb dieses Universums gerechnet."
-    },
-    "VU_MODEL": {
-      "label": "VU Modelluniversum",
-      "kind": "mock",
-      "source": "quant/data/securities.json + quant/engines/mock-generator.js",
-      "provider": "VisionUniverseMock",
-      "note": "Synthetisches Universum. Kein realer Titel, keine reale Aussage - aber vollständige Kursreihen, damit die Darstellung (Preis, Sparkline, Chart) ohne erfundene Werte gezeigt werden kann.",
-      "rankingScope": "Getrennt gerechnet. Ein Rang aus diesem Universum wird nie mit einem realen Titel verglichen."
     }
   },
   "leadershipScore": {
@@ -247,19 +239,73 @@
       "filter": "nearOrAtHigh",
       "secondarySort": "leadershipScore",
       "signalFirst": "new52WeekHigh",
-      "world": "highs"
+      "world": "highs",
+      "microRange": "1J",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "market-leaders",
       "title": "DIE STÄRKSTEN AKTIEN",
-      "subtitle": "Aktien, die den Markt über Monate anführen.",
+      "subtitle": "Aktien, die den Markt über Monate anführen — nur liquide, gehandelte Titel mit vollständiger Kurshistorie.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 30,
       "require": [
         "leadershipScore"
       ],
-      "world": "leadership"
+      "world": "leadership",
+      "microRange": "6M",
+      "filter": "strongest",
+      "rule": "Qualifikation zuerst, Rang danach. Qualifiziert ist ein Titel, wenn (1) die Kursstaerke aus mindestens 80 % der Komponenten gerechnet werden konnte, (2) mindestens 250 Handelstage Kurshistorie vorliegen, (3) der Kurs ueber 5 $ liegt und (4) im Schnitt der letzten 20 Handelstage mindestens 5 Mio. $ am Tag gehandelt wurden. Unter den Qualifizierten entscheidet der Leadership-Score (Abstand zum Jahreshoch, Rendite ueber 3/6/12 Monate, relative Staerke zum Markt, Trendqualitaet, Volumen, Drawdown). Kein Blick in die Zukunft: alle Fenster enden am letzten Handelstag."
+    },
+    {
+      "id": "sp500-staerkste",
+      "title": "STÄRKSTE AKTIEN IM S&P 500",
+      "subtitle": "Die 500 größten US-Unternehmen — sortiert nach Kursstärke über Monate.",
+      "indexId": "SP500",
+      "filter": "indexMember",
+      "sort": "leadershipScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "leadershipScore"
+      ],
+      "world": "leadership",
+      "microRange": "6M",
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
+    },
+    {
+      "id": "ndx-staerkste",
+      "title": "STÄRKSTE AKTIEN IM NASDAQ-100",
+      "subtitle": "Die 100 größten Nasdaq-Titel ohne Finanzwerte — sortiert nach Kursstärke.",
+      "indexId": "NDX",
+      "filter": "indexMember",
+      "sort": "leadershipScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "leadershipScore"
+      ],
+      "world": "momentum",
+      "microRange": "6M",
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
+    },
+    {
+      "id": "djia-staerkste",
+      "title": "STÄRKSTE AKTIEN IM DOW JONES",
+      "subtitle": "Die 30 Industrie-Klassiker der Wall Street — sortiert nach Kursstärke.",
+      "indexId": "DJIA",
+      "filter": "indexMember",
+      "sort": "leadershipScore",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "leadershipScore"
+      ],
+      "world": "compounder",
+      "microRange": "6M",
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
     },
     {
       "id": "momentum-leaders",
@@ -271,7 +317,10 @@
       "require": [
         "momentumScore"
       ],
-      "world": "momentum"
+      "world": "momentum",
+      "microRange": "6M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "breakout-watch",
@@ -285,7 +334,10 @@
       ],
       "filter": "breakout",
       "signalFirst": "breakout",
-      "world": "breakout"
+      "world": "breakout",
+      "microRange": "3M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "relative-strength",
@@ -298,20 +350,243 @@
         "relativeStrengthScore"
       ],
       "secondarySort": "momentumScore",
-      "world": "strength"
+      "world": "strength",
+      "microRange": "6M",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
     },
     {
       "id": "trend-quality",
       "title": "STABILE AUFWÄRTSTRENDS",
-      "subtitle": "Aktien, die seit Monaten über ihrem Durchschnittskurs liegen.",
+      "subtitle": "Seit Monaten über dem Durchschnittskurs — die ruhigsten zuerst.",
+      "sort": "volatility252d",
+      "direction": "asc",
+      "limit": 30,
+      "require": [
+        "leadershipScore",
+        "volatility252d"
+      ],
+      "filter": "trendIntact",
+      "world": "quality",
+      "microRange": "6M",
+      "secondarySort": "leadershipScore",
+      "qualify": true,
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+    },
+    {
+      "id": "bekannte-namen",
+      "title": "BEKANNTE NAMEN IN BEWEGUNG",
+      "subtitle": "Marken, die man aus dem Alltag kennt — und deren Kurs gerade etwas tut.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "return3M"
+      ],
+      "filter": "bekannt",
+      "secondarySort": "leadershipScore",
+      "world": "strength",
+      "microRange": "3M",
+      "rule": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)"
+    },
+    {
+      "id": "comeback",
+      "title": "COMEBACK?",
+      "subtitle": "Deutlich gefallen — und seit drei Monaten wieder klar im Plus.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "require": [
+        "return3M",
+        "maxDrawdown252d",
+        "distanceTo52wHigh"
+      ],
+      "filter": "comeback",
+      "secondarySort": "leadershipScore",
+      "world": "comeback",
+      "microRange": "6M",
+      "rule": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "qualify": true
+    },
+    {
+      "id": "ueberraschungen",
+      "title": "ÜBERRASCHUNGEN",
+      "subtitle": "Stark, aber kaum jemandem ein Begriff — Titel ohne bekannten Namen.",
       "sort": "leadershipScore",
       "direction": "desc",
       "limit": 30,
       "require": [
         "leadershipScore"
       ],
-      "filter": "trendIntact",
-      "world": "quality"
+      "filter": "ueberraschung",
+      "world": "strength",
+      "microRange": "6M",
+      "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85 Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "qualify": true
+    },
+    {
+      "id": "umsatz-waechst-stark",
+      "title": "UMSATZ WÄCHST STARK",
+      "subtitle": "Unternehmen, deren Umsatz über drei Geschäftsjahre um mindestens 15 % pro Jahr gewachsen ist.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundUmsatz",
+      "require": [
+        "f_revenueGrowth3y"
+      ],
+      "minMembers": 5,
+      "world": "growth",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "gewinne-beschleunigen",
+      "title": "GEWINNE BESCHLEUNIGEN",
+      "subtitle": "Der Gewinn wuchs im letzten Geschäftsjahr schneller als im Jahr davor.",
+      "sort": "f_earningsAcceleration",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundGewinne",
+      "require": [
+        "f_earningsAcceleration"
+      ],
+      "minMembers": 5,
+      "world": "growth",
+      "microRange": "1J",
+      "rule": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "margen-werden-staerker",
+      "title": "MARGEN WERDEN STÄRKER",
+      "subtitle": "Die operative Marge ist über drei Geschäftsjahre um mindestens zwei Prozentpunkte gestiegen.",
+      "sort": "f_marginExpansion3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundMargen",
+      "require": [
+        "f_marginExpansion3y"
+      ],
+      "minMembers": 5,
+      "world": "cashflow",
+      "microRange": "1J",
+      "rule": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte. Nettomarge ≥ −25 % (eine Marge von −400 % wird nicht „stärker\"). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "cashflow-maschinen",
+      "title": "CASHFLOW-MASCHINEN",
+      "subtitle": "Mindestens 15 Cent freier Cashflow je Dollar Umsatz im letzten Geschäftsjahr.",
+      "sort": "f_fcfMargin",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundCashflow",
+      "require": [
+        "f_fcfMargin"
+      ],
+      "minMembers": 5,
+      "world": "cashflow",
+      "microRange": "1J",
+      "rule": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "qualitaet-wachstum",
+      "title": "QUALITÄT + WACHSTUM",
+      "subtitle": "Zweistelliges Umsatzwachstum und mindestens zehn Prozent Nettomarge.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundQualitaetWachstum",
+      "require": [
+        "f_revenueGrowth3y",
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "cashflow",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "langfristige-compounder",
+      "title": "LANGFRISTIGE COMPOUNDER",
+      "subtitle": "Zehn Jahre Umsatzwachstum von mindestens zehn Prozent pro Jahr, in jedem Jahr profitabel.",
+      "sort": "f_revenueGrowth10y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundCompounder",
+      "require": [
+        "f_revenueGrowth10y"
+      ],
+      "minMembers": 5,
+      "world": "compounder",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "profitables-wachstum",
+      "title": "PROFITABLES WACHSTUM",
+      "subtitle": "Wächst, verdient Geld und erzeugt freien Cashflow.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundProfitablesWachstum",
+      "require": [
+        "f_revenueGrowth3y",
+        "f_netMargin",
+        "f_fcfMargin"
+      ],
+      "minMembers": 5,
+      "world": "growth",
+      "microRange": "1J",
+      "rule": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "fundamentale-turnarounds",
+      "title": "FUNDAMENTALE TURNAROUNDS",
+      "subtitle": "Vor zwei Jahren Verlust, heute Gewinn.",
+      "sort": "return3M",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundTurnaround",
+      "require": [
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "comeback",
+      "microRange": "1J",
+      "rule": "Nettogewinn FY(t−2) < 0 und FY(t) > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "qualitaet-zum-preis",
+      "title": "QUALITÄT ZUM VERNÜNFTIGEN PREIS",
+      "subtitle": "Mindestens zehn Prozent Nettomarge bei einem Kurs-Gewinn-Verhältnis bis 20.",
+      "sort": "f_pe",
+      "direction": "asc",
+      "limit": 30,
+      "filter": "fundQualitaetPreis",
+      "require": [
+        "f_pe",
+        "f_netMargin"
+      ],
+      "minMembers": 5,
+      "world": "cashflow",
+      "microRange": "1J",
+      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+    },
+    {
+      "id": "starke-bilanz-wachstum",
+      "title": "STARKE BILANZ + WACHSTUM",
+      "subtitle": "Mehr Kasse als Schulden und zweistelliges Umsatzwachstum.",
+      "sort": "f_revenueGrowth3y",
+      "direction": "desc",
+      "limit": 30,
+      "filter": "fundBilanzWachstum",
+      "require": [
+        "f_revenueGrowth3y"
+      ],
+      "minMembers": 5,
+      "world": "growth",
+      "microRange": "1J",
+      "rule": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
     }
   ],
   "sectorRows": {
@@ -347,7 +622,7 @@
   "top10": {
     "id": "top-10",
     "title": "DIE ZEHN STÄRKSTEN AKTIEN",
-    "subtitle": "Die Gesamtwertung von Vision Universe — Platz 1 bis 10.",
+    "subtitle": "Platz 1 bis 10 nach Kursstärke über mehrere Monate — die Gesamtwertung von Vision Universe.",
     "source": "market-leaders",
     "limit": 10,
     "world": "leadership"
@@ -361,11 +636,11 @@
       },
       "highs": {
         "label": "52-Wochen-Hochs",
-        "hint": "Ice Blue / Cyan"
+        "hint": "Eisblau"
       },
       "momentum": {
         "label": "Momentum",
-        "hint": "Violet / Magenta"
+        "hint": "Cyan / Türkis"
       },
       "breakout": {
         "label": "Breakouts",
@@ -386,6 +661,26 @@
       "risk": {
         "label": "Schwäche / Risiko",
         "hint": "Coral"
+      },
+      "fundamentals": {
+        "label": "Unternehmensentwicklung",
+        "hint": "Gold / Warm Amber"
+      },
+      "growth": {
+        "label": "Wachstum",
+        "hint": "Violett"
+      },
+      "cashflow": {
+        "label": "Qualität / Cashflow",
+        "hint": "Blau"
+      },
+      "comeback": {
+        "label": "Comeback",
+        "hint": "Magenta"
+      },
+      "compounder": {
+        "label": "Compounder",
+        "hint": "ruhiges Premium: Graphit / Champagner"
       }
     },
     "sectorWorlds": {
@@ -424,5 +719,245 @@
       },
       "boundary": "Keine Form entsteht aus Zufall, Hash oder Namen. Zwischen den Stützstellen des Renditepfades wird nichts interpoliert; das Schwankungsband ist eine Hüllkurve aus einer Kennzahl, keine Kursspanne."
     }
+  },
+  "home": {
+    "note": "Die Dramaturgie der Startseite (V3 Netflix-Rhythmus). Groesse, Dichte, Farbe und Informationsmenge wechseln beim Scrollen: cineastische Eingangsflaeche, Standard-Reihe, Rangliste, Poster, Unternehmensgeschichte (Fundamentals), Themenwelt, grosse Karte, Sektorwelt, kompakte Reihen, Einstieg ins Einzeln-Entdecken. Jede Surface zeigt eine Auswahl aus einer gerechneten Reihe; fundamentale Reihen erscheinen nur ab minMembers Titeln. V4 (§23): Reihenfolge der Entdeckungsreise - Eingang, bekannte Namen, staerkste Aktien, S&P 500, NASDAQ-100, Dow Jones, Jahreshochs, Unternehmensgeschichte, Wachstum, Cashflow/Qualitaet, Themenwelten, Comeback, unter dem Radar, Einzeln entdecken. Erstes Stueck bis 320 KB (Vertrag aus discover/tests/v3.test.mjs; V4: Karten tragen rankingReason, drei Index-Ranglisten stehen vorn - das erste Stueck endet deshalb nach der Dow-Jones-Rangliste).",
+    "chunkSizes": [
+      8,
+      8
+    ],
+    "surfaces": [
+      {
+        "type": "hero"
+      },
+      {
+        "type": "row",
+        "rowId": "bekannte-namen",
+        "variant": "wide",
+        "show": 10
+      },
+      {
+        "type": "ranking",
+        "rowId": "market-leaders",
+        "id": "top-10",
+        "show": 10
+      },
+      {
+        "type": "ranking",
+        "rowId": "sp500-staerkste",
+        "id": "top-sp500",
+        "show": 10,
+        "title": "TOP 10 · S&P 500"
+      },
+      {
+        "type": "ranking",
+        "rowId": "ndx-staerkste",
+        "id": "top-ndx",
+        "show": 10,
+        "title": "TOP 10 · NASDAQ-100"
+      },
+      {
+        "type": "ranking",
+        "rowId": "djia-staerkste",
+        "id": "top-djia",
+        "show": 10,
+        "title": "TOP 10 · DOW JONES"
+      },
+      {
+        "type": "row",
+        "rowId": "new-52-week-highs",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "story",
+        "kicker": "DIE ENTWICKLUNG",
+        "title": "Was das Unternehmen gemacht hat",
+        "rowIds": [
+          "langfristige-compounder",
+          "umsatz-waechst-stark",
+          "gewinne-beschleunigen"
+        ]
+      },
+      {
+        "type": "row",
+        "rowId": "umsatz-waechst-stark",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "gewinne-beschleunigen",
+        "variant": "wide",
+        "show": 10
+      },
+      {
+        "type": "ranking",
+        "rowId": "cashflow-maschinen",
+        "id": "top-10-cashflow",
+        "show": 10,
+        "title": "TOP 10 · CASHFLOW-MASCHINEN"
+      },
+      {
+        "type": "featured-card",
+        "rowId": "qualitaet-wachstum",
+        "kicker": "QUALITÄT + WACHSTUM"
+      },
+      {
+        "type": "row",
+        "rowId": "margen-werden-staerker",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-ki",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "breakout-watch",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "row",
+        "rowId": "momentum-leaders",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "row",
+        "rowId": "langfristige-compounder",
+        "variant": "wide",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "relative-strength",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "sectors"
+      },
+      {
+        "type": "sector-row",
+        "sector": "Technology",
+        "title": "TECHNOLOGIE",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Health Care",
+        "title": "GESUNDHEIT",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "qualitaet-zum-preis",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-robotik",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "comeback",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "fundamentale-turnarounds",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "theme",
+        "rowId": "thema-mobilitaet",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Energy",
+        "title": "ENERGIE",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Financials",
+        "title": "FINANZEN",
+        "show": 10
+      },
+      {
+        "type": "sector-row",
+        "sector": "Consumer Discretionary",
+        "title": "KONSUM",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "starke-bilanz-wachstum",
+        "variant": "poster",
+        "show": 10
+      },
+      {
+        "type": "row",
+        "rowId": "trend-quality",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "row",
+        "rowId": "ueberraschungen",
+        "variant": "poster",
+        "show": 10,
+        "title": "UNTER DEM RADAR"
+      },
+      {
+        "type": "row",
+        "rowId": "profitables-wachstum",
+        "variant": "compact",
+        "show": 12
+      },
+      {
+        "type": "immersive",
+        "title": "Noch nichts gefunden?",
+        "lead": "Entdecke Aktien eine nach der anderen — eine pro Bildschirm, mit Kurs, Geschichte und Zahlen."
+      }
+    ],
+    "chunkMaxBytes": 327680
+  },
+  "fundamentals": {
+    "note": "Fundamentale Reihen lesen nur Kennzahlen aus SEC-Jahresabschluessen (discover/engines/fundamentals.js, quant/data/sec/consumer). Eine Reihe erscheint erst ab minMembers Titeln - keine Sammlung ohne Datenbasis.",
+    "engine": "fundamentals-1.1.0",
+    "health": {
+      "growth": "Umsatz-CAGR über den adaptiven Horizont: ≥20 % Sehr stark, ≥10 % Stark, ≥3 % Solide, ≥0 Flach, sonst Rückläufig",
+      "profitability": "Nettomarge FY: ≥20 % Sehr stark, ≥10 % Stark, ≥3 % Solide, ≥0 Knapp, sonst Negativ",
+      "cashflow": "FCF-Marge FY: ≥15 % Sehr stark, ≥8 % Stark, >0 Solide, sonst Negativ",
+      "balance": "Nettokasse Sehr solide; Nettoschulden ≤2× FCF Solide; ≤4× Belastet; sonst Angespannt",
+      "dilution": "Aktienanzahl über den Horizont: ≤−3 % Rückkäufe, ≤+2 % Gering, ≤+10 % Moderat, sonst Hoch"
+    },
+    "valuation": "KGV gegen den Median des Universums: >1,5× deutlich höher, <0,67× günstiger, sonst im Bereich des Markts"
+  },
+  "indexMembership": {
+    "note": "Index-Reihen (S&P 500, NASDAQ-100, Dow Jones) lesen quant/data/market/index-membership/<indexId>.json: Mitgliedschaft laut Tagesbestand des abbildenden Fonds mit Stichtag (Quelle, Fonds, nicht Zuordenbare in der Datei). Keine Ticker-Heuristik. Fehlt die Datei, faellt die Reihe weg - sie wird nicht geraten.",
+    "source": "quant/config/index-membership.json"
+  },
+  "qualification": {
+    "id": "strongest",
+    "note": "Qualifikation fuer \"Staerkste Aktien\" und die Index-Reihen (V4 §18): Score-Abdeckung >= 0.8, >= 250 Handelstage, Kurs > 5 $, durchschnittlicher Dollarumsatz (20 Tage) >= 5 Mio. $. Die Gruende stehen je Titel unter qualification.reasons.",
+    "minCoverage": 0.8,
+    "minBars": 250,
+    "minPrice": 5,
+    "minAvgDollarVolume20d": 5000000
+  },
+  "positioning": {
+    "line": "Entdecke Aktien, die gerade auffallen – und verstehe in Sekunden, warum.",
+    "second": "Kurse, Trends und Geschäftszahlen aus echten Daten. Keine Empfehlung."
   }
 }

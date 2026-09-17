@@ -76,7 +76,7 @@ test('existing Golden-Five market histories use unchanged engine outputs through
   for (const ticker of ['AAPL','MSFT','NVDA','JPM','XOM']) {
     const path=new URL('../data/market/golden-preview/daily/ref_'+ticker+'.json',import.meta.url);
     const s=Engine.computeFactors(JSON.parse(readFileSync(path,'utf8')));
-    const context=input(s);context.provenance.securityId='ref_'+ticker;
+    const context=input(s);context.provenance.securityId='ref_'+ticker;context.decisionDate=new Date().toISOString().slice(0,10);
     const view=Contract.buildMarketView({...context,securityId:'ref_'+ticker});
     assert.equal(view.availability.state,'AVAILABLE',ticker);
     assert.equal(view.metrics.momentum_6m.value,s.values.returns['6M'],ticker);

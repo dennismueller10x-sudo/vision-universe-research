@@ -20,7 +20,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOWS = ROOT / ".github" / "workflows"
-SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml")
+SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml",
+                 "sec-fundamentals-universe.yml")
 
 
 def workflow_text(name):
@@ -200,11 +201,35 @@ class DataBudgetTests(unittest.TestCase):
 
     BUDGET_KB = 8192
     MAX_FILE_BYTES = 2 * 1024 * 1024
+    # The consumer fundamentals (one compact bundle per company of the product
+    # universe, ~5 000 files of 15-25 KB, refreshed weekly by
+    # sec-consumer-fundamentals.yml) are a deliberate exception with their own
+    # budget: they are the fundamental layer of the public site, not review
+    # material. Whether they stay in the repository or move to an object store
+    # is an owner decision recorded in docs/VU_DISCOVER_V3_NETFLIX_BUILD.md.
+    CONSUMER_BUDGET_KB = 160 * 1024
+    CONSUMER_DIR = "consumer"
 
     @classmethod
     def files(cls):
-        return [p for p in (ROOT / "quant" / "data" / "sec").rglob("*")
+        root = ROOT / "quant" / "data" / "sec"
+        return [p for p in root.rglob("*")
+                if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts]
+
+    @classmethod
+    def consumer_files(cls):
+        return [p for p in (ROOT / "quant" / "data" / "sec" / cls.CONSUMER_DIR).rglob("*")
                 if p.is_file()]
+
+    def test_the_consumer_bundles_stay_within_their_own_budget(self):
+        files = self.consumer_files()
+        if not files:
+            self.skipTest("no consumer bundles committed")
+        total = sum(p.stat().st_size for p in files) // 1024
+        self.assertLessEqual(total, self.CONSUMER_BUDGET_KB,
+                             f"quant/data/sec/consumer is {total}KB, over the {self.CONSUMER_BUDGET_KB}KB budget")
+        for path in files:
+            self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
 
     def test_no_single_artifact_is_too_large_to_review(self):
         for path in self.files():
@@ -307,3 +332,57 @@ class CompanyAgnosticTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BackfillOrderTests(unittest.TestCase):
+    """Was teuer erkauft ist, wird committet, bevor etwas Optionales laeuft.
+
+    Lauf 34712221410 hat 5.406 Emittenten ingestiert und die Coverage
+    sauber gemessen - und das Ergebnis verloren. Der Schritt danach
+    frischt nur den fuenfteiligen Validierungssatz auf; er hat den Runner
+    umgebracht, und Commit und Bilanz standen dahinter. Ein OOM-Kill ist
+    nicht abfangbar: `|| true` greift nicht, `continue-on-error` auch
+    nicht. Die einzige Verteidigung ist die Reihenfolge.
+    """
+
+    BACKFILL = "sec-fundamentals-universe.yml"
+
+    def setUp(self):
+        self.text = workflow_text(self.BACKFILL)
+
+    def test_die_messung_wird_vor_der_auffrischung_committet(self):
+        self.assertLess(
+            self.text.index("name: Messung committen"),
+            self.text.index("name: Bestehende Produktartefakte auffrischen"),
+            "Der Commit der Messung steht hinter einem optionalen Schritt - "
+            "genau die Reihenfolge, die Lauf 34712221410 das Ergebnis gekostet hat.")
+
+    def test_der_zwischenspeicher_wird_immer_gesichert(self):
+        block = self.text.split("name: SEC-Zwischenspeicher sichern")[1]
+        self.assertIn("if: always()", block.split("- name:")[0])
+
+    def test_die_bilanz_laeuft_auch_nach_einem_fehlschlag(self):
+        block = self.text.split("name: Bilanz")[1]
+        self.assertIn("if: always()", block.split("\n          run:")[0])
+
+    def test_die_auffrischung_verdeckt_keine_fehler_mehr(self):
+        """`|| true` hat einen NameError verdeckt: export und canonical
+        schrieben nichts, und der Schritt meldete Erfolg."""
+        block = self.text.split("name: Bestehende Produktartefakte auffrischen")[1]
+        # Nur der ausgefuehrte Teil zaehlt; im Kommentar darueber steht
+        # `|| true` als Beschreibung des Befunds.
+        rumpf = block.split("- name:")[0].split("run: |")[1]
+        self.assertNotIn("|| true", rumpf)
+        self.assertIn("::error::", rumpf)
+
+    def test_die_auffrischung_ist_auf_den_validierungssatz_begrenzt(self):
+        block = self.text.split("name: Bestehende Produktartefakte auffrischen")[1]
+        block = block.split("- name:")[0]
+        for befehl in ("coverage", "export", "canonical"):
+            self.assertIn(befehl, block)
+        self.assertIn("--universe quant/config/sec-universe.json", block)
+
+    def test_jedes_aufgerufene_shellskript_existiert(self):
+        for script in set(re.findall(r"bash\s+(scripts/[\w./-]+\.sh)", self.text)):
+            with self.subTest(script=script):
+                self.assertTrue((ROOT / script).exists(), f"{script} fehlt")

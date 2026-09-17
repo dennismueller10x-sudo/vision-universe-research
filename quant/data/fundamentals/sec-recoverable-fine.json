@@ -1,0 +1,345 @@
+{
+  "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
+  "denominator": {
+    "SEC_RECOVERABLE": 153
+  },
+  "accountedFor": 153,
+  "unaccounted": 0,
+  "byCause": [
+    {
+      "cause": "SPAC_BLANK_CHECK",
+      "count": 7,
+      "percent": 4.5752,
+      "consequence": "NOT_APPLICABLE",
+      "examples": [
+        {
+          "symbol": "BREZ",
+          "cik": "0002095443",
+          "evidence": "SIC 6770 / Name 'Breeze Acquisition Corp. II'"
+        },
+        {
+          "symbol": "JTTT",
+          "cik": "0002145659",
+          "evidence": "SIC 6770 / Name 'JATT III Acquisition Corp'"
+        },
+        {
+          "symbol": "NSAI",
+          "cik": "0002133719",
+          "evidence": "SIC 6770 / Name 'NorthStrive Acquisition Corp I.'"
+        },
+        {
+          "symbol": "OCAC",
+          "cik": "0001926314",
+          "evidence": "SIC 6770 / Name 'Ocean Capital Acquisition Corp'"
+        }
+      ]
+    },
+    {
+      "cause": "SPECIAL_PURPOSE_ENTITY",
+      "count": 56,
+      "percent": 36.6013,
+      "consequence": "NOT_APPLICABLE",
+      "examples": [
+        {
+          "symbol": "AIO",
+          "cik": "0001778114",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'Virtus Artificial Intelligence & Technol'"
+        },
+        {
+          "symbol": "ASGI",
+          "cik": "0001793855",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'abrdn Global Infrastructure Income Fund'"
+        },
+        {
+          "symbol": "BCAT",
+          "cik": "0001809541",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock Capital Allocation Term Trust'"
+        },
+        {
+          "symbol": "BMEZ",
+          "cik": "0001785971",
+          "evidence": "Investmentgesellschaft ohne SIC, Name 'BlackRock Health Sciences Term Trust'"
+        }
+      ]
+    },
+    {
+      "cause": "BANK",
+      "count": 1,
+      "percent": 0.6536,
+      "consequence": "INDUSTRY_LAYER",
+      "examples": [
+        {
+          "symbol": "PICS",
+          "cik": "0001841644",
+          "evidence": "SIC 6141"
+        }
+      ]
+    },
+    {
+      "cause": "NO_XBRL_FACTS",
+      "count": 39,
+      "percent": 25.4902,
+      "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
+      "examples": [
+        {
+          "symbol": "BANX",
+          "cik": "0001578987",
+          "evidence": "companyfacts leer, Formular -"
+        },
+        {
+          "symbol": "BTQ",
+          "cik": "0001821866",
+          "evidence": "companyfacts leer, Formular 40-F/A"
+        },
+        {
+          "symbol": "CRT",
+          "cik": "0000881787",
+          "evidence": "companyfacts leer, Formular 10-Q"
+        },
+        {
+          "symbol": "DTSS",
+          "cik": "0002110423",
+          "evidence": "companyfacts leer, Formular -"
+        }
+      ]
+    },
+    {
+      "cause": "NO_XBRL_FINANCIALS",
+      "count": 3,
+      "percent": 1.9608,
+      "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
+      "examples": [
+        {
+          "symbol": "ALPS",
+          "cik": "0002025774",
+          "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F"
+        },
+        {
+          "symbol": "CIB",
+          "cik": "0002058897",
+          "evidence": "1 Fakten, nur Deckblatt (dei), Formular 20-F"
+        },
+        {
+          "symbol": "CNI",
+          "cik": "0000016868",
+          "evidence": "6 Fakten, nur Deckblatt (dei), Formular 40-F"
+        }
+      ]
+    },
+    {
+      "cause": "VERY_YOUNG_LISTING",
+      "count": 47,
+      "percent": 30.719,
+      "consequence": "RESOLVES_WITH_TIME",
+      "examples": [
+        {
+          "symbol": "AGBK",
+          "cik": "0002081206",
+          "evidence": "companyfacts leer, notiert seit 2026-02-11"
+        },
+        {
+          "symbol": "AGMB",
+          "cik": "0002020932",
+          "evidence": "1 Fakten, nur Deckblatt, notiert seit 2026-02-06"
+        },
+        {
+          "symbol": "AIIR",
+          "cik": "0002097725",
+          "evidence": "companyfacts leer, notiert seit 2026-05-18"
+        },
+        {
+          "symbol": "AUGO",
+          "cik": "0001468642",
+          "evidence": "1 Fakten, nur Deckblatt, notiert seit 2025-07-16"
+        }
+      ]
+    }
+  ],
+  "byConsequence": {
+    "RESOLVES_WITH_TIME": 47,
+    "NOT_APPLICABLE": 63,
+    "EXTERNAL_PROVIDER_CANDIDATE": 42,
+    "INDUSTRY_LAYER": 1
+  },
+  "stillRecoverableBySec": 0,
+  "ciksByCause": {
+    "SPAC_BLANK_CHECK": [
+      "0001926314",
+      "0002079109",
+      "0002095443",
+      "0002122392",
+      "0002133719",
+      "0002134856",
+      "0002145659"
+    ],
+    "SPECIAL_PURPOSE_ENTITY": [
+      "0000102426",
+      "0000825202",
+      "0000826020",
+      "0000880406",
+      "0001495222",
+      "0001495222",
+      "0001495222",
+      "0001495222",
+      "0001495222",
+      "0001495222",
+      "0001495222",
+      "0001517767",
+      "0001523289",
+      "0001551047",
+      "0001604174",
+      "0001604174",
+      "0001604174",
+      "0001622148",
+      "0001717457",
+      "0001745059",
+      "0001746967",
+      "0001754836",
+      "0001754836",
+      "0001756908",
+      "0001768666",
+      "0001771226",
+      "0001774342",
+      "0001778114",
+      "0001785971",
+      "0001788399",
+      "0001790177",
+      "0001793129",
+      "0001793855",
+      "0001809541",
+      "0001810523",
+      "0001812923",
+      "0001817159",
+      "0001819559",
+      "0001820378",
+      "0001832871",
+      "0001835068",
+      "0001836057",
+      "0001843181",
+      "0001855066",
+      "0001861115",
+      "0001864208",
+      "0001864843",
+      "0001866874",
+      "0001870833",
+      "0001886878",
+      "0001896036",
+      "0001998043",
+      "0001998043",
+      "0002044327",
+      "0002065812",
+      "0002131040"
+    ],
+    "BANK": [
+      "0001841644"
+    ],
+    "NO_XBRL_FACTS": [
+      "0000041091",
+      "0000062362",
+      "0000066901",
+      "0000071508",
+      "0000071508",
+      "0000313364",
+      "0000319654",
+      "0000319655",
+      "0000710752",
+      "0000881787",
+      "0001103838",
+      "0001267332",
+      "0001283337",
+      "0001283464",
+      "0001284143",
+      "0001286405",
+      "0001294808",
+      "0001340909",
+      "0001343491",
+      "0001348952",
+      "0001353226",
+      "0001356284",
+      "0001357660",
+      "0001505413",
+      "0001520048",
+      "0001568194",
+      "0001569650",
+      "0001569650",
+      "0001578987",
+      "0001716951",
+      "0001716951",
+      "0001724009",
+      "0001821866",
+      "0001823255",
+      "0001843974",
+      "0001857047",
+      "0001930147",
+      "0002110423",
+      "0002136387"
+    ],
+    "NO_XBRL_FINANCIALS": [
+      "0000016868",
+      "0002025774",
+      "0002058897"
+    ],
+    "VERY_YOUNG_LISTING": [
+      "0001467093",
+      "0001468642",
+      "0001487326",
+      "0001526475",
+      "0001548536",
+      "0001716951",
+      "0001732379",
+      "0001782265",
+      "0001839970",
+      "0001903784",
+      "0001912884",
+      "0001919776",
+      "0001930147",
+      "0001930147",
+      "0002000756",
+      "0002000756",
+      "0002002660",
+      "0002004711",
+      "0002020932",
+      "0002025416",
+      "0002027329",
+      "0002039972",
+      "0002041208",
+      "0002044241",
+      "0002052053",
+      "0002054507",
+      "0002070534",
+      "0002076975",
+      "0002080073",
+      "0002080845",
+      "0002081119",
+      "0002081206",
+      "0002087398",
+      "0002092314",
+      "0002092967",
+      "0002095096",
+      "0002097725",
+      "0002098395",
+      "0002101240",
+      "0002104296",
+      "0002108383",
+      "0002109869",
+      "0002111860",
+      "0002113060",
+      "0002119292",
+      "0002124403",
+      "0002132582"
+    ]
+  },
+  "ciksStillRecoverable": [],
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.10.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "generatedAtUtc": "2026-09-17T06:40:17+00:00"
+}

@@ -204,8 +204,19 @@ test("Q11 · Alle Profile lassen sich auswerten und keines wird geschoent", () =
       assert.equal(r.evidence.runtimeVerified.length, 0,
         `${r.providerId}: ohne Zugang kann nichts gemessen worden sein`);
     }
-    assert.equal(r.licensingStatus.status, "LEGAL_REVIEW_REQUIRED",
-      `${r.providerId}: Lizenzlage darf nicht als geklaert gelten`);
+    /* Zwei zulaessige Zustaende: offen (LEGAL_REVIEW_REQUIRED) oder vom
+       Eigentuemer erklaert (OWNER_DECLARED_LICENSED, seit 2026-09-13 fuer
+       Tiingo) - Letzteres nur mit datierter Erklaerung im Profil. Kein
+       Profil darf ohne Beleg als geklaert gelten. */
+    if (r.licensingStatus.status === "OWNER_DECLARED_LICENSED") {
+      assert.ok(r.licensingStatus.declaration && r.licensingStatus.declaration.date && r.licensingStatus.declaration.by,
+        `${r.providerId}: OWNER_DECLARED_LICENSED ohne datierte Erklaerung`);
+      assert.equal(r.licensingStatus.declaration.contractInRepository, false,
+        `${r.providerId}: es liegt kein Vertragstext im Repository - das muss das Profil sagen`);
+    } else {
+      assert.equal(r.licensingStatus.status, "LEGAL_REVIEW_REQUIRED",
+        `${r.providerId}: Lizenzlage darf nicht als geklaert gelten`);
+    }
   }
 
   // Kein einziger Anbieter besteht derzeit alle drei Gates.
@@ -251,7 +262,7 @@ test("Q14 · Die Entscheidungstabelle bildet den Belegstand ab", () => {
       assert.equal(row.runtimeVerifiedCount, 0,
         "die Tabelle muss zeigen, wo nichts gemessen wurde");
     }
-    assert.equal(row.licenseConfidence, "LEGAL_REVIEW_REQUIRED");
+    assert.ok(["LEGAL_REVIEW_REQUIRED", "OWNER_DECLARED_LICENSED"].includes(row.licenseConfidence), row.licenseConfidence);
   }
 
   /* Und die Gegenprobe: die Spalte zeigt den Unterschied auch an. Stuende
