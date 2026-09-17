@@ -1,22 +1,22 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-16T23:48:23.546Z",
+  "checkedAt": "2026-09-17T13:15:28.745Z",
   "target": "repository",
   "market": {
-    "state": "AFTER_HOURS",
-    "localDate": "2026-09-16",
-    "localTime": "19:48:23",
+    "state": "PRE_MARKET",
+    "localDate": "2026-09-17",
+    "localTime": "09:15:28",
     "lastCompletedSession": "2026-09-16",
-    "currentSession": "2026-09-16",
+    "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-16"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-16T22:33:08.898Z",
+    "indexGeneratedAt": "2026-09-17T13:15:24.168Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-16",
-      "kind": "current",
+      "kind": "last",
       "isRunning": false,
       "isComplete": true
     },
@@ -30,7 +30,7 @@
     },
     "dataState": "LAST_SESSION",
     "dataReason": "lastCompletedSession",
-    "dataLabel": "Heute · Schluss 16:00",
+    "dataLabel": "Letzter Handelstag · Mittwoch",
     "entries": 520,
     "byState": {
       "LIVE": 0,
@@ -55,26 +55,54 @@
   "daily": {
     "universeAsOf": "2026-09-15",
     "generatedAt": "2026-09-16T23:48:18.104Z",
-    "state": "LAST_SESSION",
-    "reason": "closePendingWithinGrace",
-    "label": "Schluss Di., 15.09. · Mittwoch folgt",
+    "state": "STALE",
+    "reason": "lastSessionMissing",
+    "label": "Schluss Di., 15.09. · nicht aktuell",
     "expectedSession": "2026-09-16",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 40,
-        "STALE": 0,
+        "LAST_SESSION": 0,
+        "STALE": 40,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "closePendingWithinGrace": 40
+        "lastSessionMissing": 40
       },
-      "staleSample": [],
+      "staleSample": [
+        "AAPL",
+        "ABBV",
+        "ABCL",
+        "ABNB",
+        "ABT",
+        "ABX",
+        "ACIC",
+        "ACMR",
+        "ACN",
+        "ACT",
+        "ACTG",
+        "ADBE",
+        "ADC",
+        "ADI",
+        "ADMA",
+        "ADP",
+        "ADPT",
+        "ADSK",
+        "AEP",
+        "AFG",
+        "AFRM",
+        "AGEN",
+        "AGL",
+        "AIR",
+        "AIRT"
+      ],
       "seriesIndexCount": 6439
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Tageskurse STALE: asOf 2026-09-15, erwartet 2026-09-16 (lastSessionMissing)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
