@@ -406,3 +406,123 @@ Zwei Fehler in einer Zeile:
 
 Nach dem Backfill: **16 gemessen, 16 zugeordnet, 16 bewertbar, 2
 Beobachtungen.**
+
+---
+
+## 15. Die Autorenschicht — und wo die Trennlinie verläuft
+
+Der Owner hat AI Authoring freigegeben und zugleich die Linie gezogen.
+Sie sitzt jetzt im Code:
+
+```
+FAKTEN / EVIDENZ      deterministisch, an Belege gebunden
+STRATEGIE / BRIEF     die bestehende Intelligence
+───────────────────────────────────────────── hier hinüber
+AUTHORING             generativ
+───────────────────────────────────────────── und hier zurück
+CLAIM VALIDATION      deterministisch
+BRAND / QUALITY       deterministisch bzw. evidenzgebunden
+```
+
+| Stufe | Datei | Was sie beiträgt |
+|---|---|---|
+| Brief | `content-brief.js` | alles, was ein Autor über die Welt erfährt — und nur das |
+| Autoren | `providers/authoring/*` | Varianten nach benannten Mustern |
+| Bindung | `claim-binding.js` | jede Zahl, jedes Kürzel, jeder Sprechakt gegen die Belege |
+| Bildgüte | `visual-quality.js` | die Karte als Einheit, nicht als Datei |
+| Komposition | `authoring.js` | sagen Hook, Bildzeile und Caption dreimal dasselbe? |
+| Auswahl | `authoring.js` | Marke → gemessene Wirkung → Komposition → Nutzung |
+
+**Der Brief ist die ganze Sicherung.** Ein Autor bekommt keine Signale,
+keine Suche, kein Gedächtnis, kein Werkzeug. Das ist nicht Misstrauen
+gegen ein bestimmtes Modell — es ist die einzige Bauweise, in der die
+Frage *woher stammt diese Zahl* beantwortbar bleibt: eine Zahl im
+Ergebnis kann nur aus dem Brief stammen, sonst ist sie erfunden.
+
+Die wichtigste Liste im Brief heißt `mustNotClaim`. Sie sagt, was die
+Belege **nicht** hergeben. Ein Autor, der nur die Belege sieht, weiß
+nicht, was fehlt; er sieht eine Zahl und denkt sich den Rest dazu.
+
+---
+
+## 16. Vier Prüfer, die zuerst das Falsche verworfen haben
+
+Jeder neue Prüfer hat als Erstes meine eigenen, korrekten Texte
+abgelehnt. Das ist kein Zufall, sondern die Regel: ein Prüfer, der zu
+grob greift, sieht zuerst wie Strenge aus und ist in Wahrheit Blindheit.
+
+| Prüfer | Was er zu Unrecht verwarf | Warum |
+|---|---|---|
+| Claim Binding | „Stand 2026-09-16" | ein ISO-Datum in drei Zahlen zerlegt |
+| Claim Binding | „…, **weil** eine nachvollziehbare Zahl mehr wert ist" | ein Satz über die **eigene** Entscheidung ist keine Marktaussage |
+| Claim Binding | „Lagebeschreibung, **keine** Prognose." | Verneinung nicht gesehen |
+| Bildgüte | jede Karte ohne Zahl | Quellenpflicht hängt an der **Zahl**, nicht an der Karte |
+| Komposition | **alle vier** Varianten | Hook und Caption **sollen** Titel und Zahl teilen |
+
+**Die gemeinsame Gefahr:** ein Prüfer, der richtige Texte verwirft, wird
+abgeschaltet — und dann prüft er gar nichts mehr. Jeder dieser Fälle hat
+einen Test bekommen, der die Richtung festhält.
+
+Und einer in die Gegenrichtung: *„wir erwarten mehr"* ging durch, weil
+die Regel nur *„erwarten wir"* kannte. Im Deutschen steht das Verb mal
+vorn und mal hinten.
+
+---
+
+## 17. Der Fehler, den kein einzelner Prüfer sehen kann
+
+```
+Hook:      "Was diese Zahl nicht sagt: XOM, 76 im ... Score."
+Bildzeile: "Lagebeschreibung, keine Prognose."
+Caption:   "... nicht ihre Ursache und nicht, was als nächstes passiert."
+```
+
+Jedes Stück bestand jede Prüfung. Zusammen sagen sie dreimal dieselbe
+Sache mit denselben Mitteln.
+
+Die Markenprüfung sieht Hook und Caption. Die Bildgüte sieht die Karte.
+**Den Zusammenhang sah niemand** — bis es eine Prüfung dafür gab.
+
+---
+
+## 18. Der Quelltext darf ASCII sein, der Beitrag nicht
+
+Die erste Karte aus der neuen Autorenschicht las:
+
+> Gleiches Verfahren **fuer** jeden Titel.
+
+Die ASCII-Konvention dieses Repositories ist richtig: der Quelltext
+läuft durch Shells, Workflows und Editoren, deren Kodierung niemand
+garantiert. Sie gilt für den **Quelltext**.
+
+Auf einem deutschen Markenkonto sieht „fuer jeden Titel" aus, als hätte
+es eine Maschine geschrieben, die kein Deutsch kann — und genau das wäre
+es dann auch. Die Umlaute stehen jetzt als Escape-Sequenzen: die Datei
+bleibt ASCII, der Text wird deutsch.
+
+Die Markenprüfung blockiert Rückfälle anhand einer **Wortliste**, nicht
+einer Regel. „ue" gehört in „Museum" und in „neue"; jede allgemeine
+Regel würde entweder diese Wörter treffen oder gar nichts. Eine Liste
+fängt, was sie kennt, und behauptet nichts darüber hinaus.
+
+---
+
+## 19. Der generative Autor ist fertig und hat keinen Client
+
+`social/providers/authoring/model/adapter.js` ist vollständig: Prompt aus
+dem Brief, Antwortparser, Variantenbau, feindliche Tests.
+
+Im Repository existiert **kein Modellanbieter, kein Schlüssel, keine
+Abrechnung**. Der Adapter meldet sich deshalb über `available()` ab,
+statt im Lauf zu scheitern — ein Ausfall, der erst im Lauf auffällt,
+wäre ein Beitrag ohne Text. Der deterministische Autor schreibt
+solange weiter.
+
+```
+Autoren:
+  model     nicht verfuegbar
+  template  einsatzbereit
+```
+
+Das Anbinden kostet laufend Geld und ist damit eine Owner-Entscheidung,
+keine Implementierungsfrage.
