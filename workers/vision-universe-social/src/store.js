@@ -256,7 +256,12 @@ export async function claimPublish(env, contentId, meta) {
     attempts: 1,
     mediaId: null,
     permalink: null,
-    fingerprint: (meta && meta.fingerprint) || null
+    fingerprint: (meta && meta.fingerprint) || null,
+    /* Warum dieser Beitrag entstehen durfte. Ein Anspruch, der das nicht
+       traegt, beantwortet spaeter die Frage "wer wollte das" nicht mehr —
+       und das ist bei einem oeffentlichen Beitrag die erste Frage. */
+    via: (meta && meta.via) || null,
+    approval: (meta && meta.approval) || null
   };
   await env.VU_SOCIAL_KV.put(claimKey(contentId), JSON.stringify(claim));
   return { ok: true, claim };

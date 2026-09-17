@@ -59,7 +59,7 @@ import {
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
          readClaim, claimPublish, settleClaim } from "./store.js";
-import { redact, redactText, fingerprint } from "./redact.js";
+import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 
 /* Ein Admin-Schluessel unter dieser Laenge wird abgelehnt. Der Worker hat
@@ -540,23 +540,76 @@ async function handlePublish(request, url, env) {
   const gate = requireAdmin(request, url, env);
   if (!gate.ok) return gate.response;
 
-  /* DIE GLOBALE SPERRE. Sie steht vor allem anderen, damit sie nicht
-     versehentlich hinter eine Bedingung rutscht. */
-  if (String(env.VU_SOCIAL_AUTOPUBLISH || "").toLowerCase() !== "on") {
-    return json({
-      error: "publishingDisabled",
-      message: "Veroeffentlichen ist global abgeschaltet (VU_SOCIAL_AUTOPUBLISH). " +
-        "Dieser Endpunkt tut nichts, solange der Schalter aus ist.",
-      published: false
-    }, 403);
-  }
-
   let body = {};
   try { body = await request.json(); } catch (err) { body = {}; }
 
   const contentId = String(body.contentId || url.searchParams.get("contentId") || "").trim();
   const imageUrl = String(body.imageUrl || "").trim();
   const caption = String(body.caption === undefined ? "" : body.caption);
+
+  /* ---------------------------------------------------------------------
+     DIE ZWEI ERLAUBNISSE
+
+     Es gibt genau zwei Gruende, warum dieser Endpunkt etwas
+     veroeffentlichen darf, und sie sind NICHT dasselbe:
+
+       AUTOPUBLISH   Das System darf von sich aus senden. Ein Schalter in
+                     der Umgebung, heute aus, und seine Freigabe ist eine
+                     eigene Owner-Entscheidung.
+
+       APPROVAL      Ein Mensch hat GENAU DIESEN Beitrag freigegeben.
+                     Kein Schalter, sondern eine Aussage ueber einen
+                     Inhalt — und sie gilt nur fuer ihn.
+
+     Die zweite als "Autopublish mit Extraschritt" zu bauen waere der
+     Fehler, den dieser Block verhindert: dann haette ein gesetzter
+     Schalter irgendwann jede Freigabe ersetzt. Beide Wege fuehren zur
+     selben Veroeffentlichung, aber sie werden getrennt geprueft und
+     getrennt protokolliert.
+     --------------------------------------------------------------------- */
+  const autopublish = String(env.VU_SOCIAL_AUTOPUBLISH || "").toLowerCase() === "on";
+  const approval = (body.approval && typeof body.approval === "object") ? body.approval : null;
+
+  let genehmigung = null;
+  if (approval) {
+    const gewuenscht = String(approval.contentHash || "").trim().toLowerCase();
+    if (!gewuenscht) {
+      return json({ error: "approvalWithoutHash", published: false,
+        message: "Eine Freigabe ohne Inhaltsabdruck gibt nichts frei. Sie koennte auf " +
+          "jeden beliebigen Text angewendet werden." }, 400);
+    }
+
+    /* Nachgerechnet aus dem, was TATSAECHLICH gesendet werden soll —
+       nicht aus dem, was die Freigabe behauptet. Eine Freigabe, die
+       ihren eigenen Gegenstand mitbringt, prueft nichts. */
+    const tatsaechlich = await contentHash({ contentId, imageUrl, caption });
+
+    if (tatsaechlich !== gewuenscht) {
+      return json({
+        error: "approvalMismatch", published: false,
+        expectedHash: gewuenscht, actualHash: tatsaechlich,
+        message: "Der freigegebene Inhalt und der zu sendende Inhalt sind nicht derselbe. " +
+          "Es wurde nichts veroeffentlicht. Eine Aenderung nach der Freigabe braucht eine " +
+          "neue Freigabe — das ist der Zweck des Abdrucks und kein Formfehler."
+      }, 409);
+    }
+
+    genehmigung = {
+      candidateId: approval.candidateId ? String(approval.candidateId) : null,
+      approvedBy: approval.approvedBy ? String(approval.approvedBy) : null,
+      approvedAt: approval.approvedAt ? String(approval.approvedAt) : null,
+      contentHash: tatsaechlich
+    };
+  }
+
+  if (!autopublish && !genehmigung) {
+    return json({
+      error: "publishingDisabled",
+      message: "Veroeffentlichen ist global abgeschaltet (VU_SOCIAL_AUTOPUBLISH) und es " +
+        "liegt keine Freigabe fuer diesen Inhalt vor. Dieser Endpunkt tut nichts.",
+      published: false
+    }, 403);
+  }
 
   if (!contentId) {
     return json({ error: "contentIdRequired",
@@ -591,7 +644,15 @@ async function handlePublish(request, url, env) {
 
   /* ---------------------------------------------------- DER ANSPRUCH */
   const beginn = new Date().toISOString();
-  const angemeldet = await claimPublish(env, contentId, { now: beginn });
+  const angemeldet = await claimPublish(env, contentId, {
+    now: beginn,
+    /* Die Freigabe reist mit dem Anspruch. Wer spaeter fragt, warum
+       dieser Beitrag entstand, bekommt die Antwort aus derselben Quelle
+       wie die Medien-ID — und nicht aus einem zweiten Protokoll, das
+       auch fehlen koennte. */
+    approval: genehmigung,
+    via: genehmigung ? "APPROVAL" : "AUTOPUBLISH"
+  });
 
   if (!angemeldet.ok && angemeldet.reason === "noStorage") {
     return json({ error: "noStorage", message: angemeldet.message, published: false }, 503);
@@ -604,6 +665,7 @@ async function handlePublish(request, url, env) {
          zweiter Beitrag. */
       return json({
         published: true, idempotent: true, contentId,
+        via: c.via || null, approval: c.approval || null,
         mediaId: c.mediaId, permalink: c.permalink,
         message: "Dieses Inhaltsobjekt wurde bereits veroeffentlicht. " +
           "Es entstand kein zweiter Beitrag."
@@ -693,6 +755,11 @@ async function handlePublish(request, url, env) {
 
   return json({
     published: true, idempotent: false, contentId,
+    /* Auf welchem der beiden Wege dieser Beitrag entstand. Wer spaeter
+       fragt "wer wollte das", soll es nicht aus dem Fehlen eines
+       Schalters erschliessen muessen. */
+    via: genehmigung ? "APPROVAL" : "AUTOPUBLISH",
+    approval: genehmigung,
     mediaId: freigabe.data.mediaId,
     permalink: claim.permalink,
     mediaType: geprueft.ok ? geprueft.data.mediaType : null,

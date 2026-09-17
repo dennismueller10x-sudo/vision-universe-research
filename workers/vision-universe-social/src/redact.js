@@ -90,3 +90,51 @@ export async function fingerprint(value) {
 }
 
 export const REDACT_MASK = MASK;
+
+/* =========================================================================
+   DER INHALTSABDRUCK
+
+   -------------------------------------------------------------------------
+   WOZU
+   -------------------------------------------------------------------------
+
+   Der Owner gibt EINEN Beitrag frei — nicht eine Absicht, nicht eine
+   Kennung, sondern genau diesen Text unter genau diesem Bild. Ohne einen
+   Abdruck darueber waere "nach der Freigabe nichts mehr aendern" eine
+   Zusage, die niemand pruefen kann: zwischen Freigabe und Aufruf liegt
+   ein Automat, und ein Automat haelt keine Zusagen, er fuehrt Code aus.
+
+   Der Abdruck macht daraus eine Pruefung. Die Freigabe nennt den
+   Abdruck; der Worker rechnet ihn aus dem nach, was tatsaechlich
+   gesendet werden soll. Stimmen sie nicht ueberein, wird nicht
+   veroeffentlicht — und zwar unabhaengig davon, ob die Abweichung ein
+   Angriff, ein Fehler oder ein spaeterer Einfall war.
+
+   -------------------------------------------------------------------------
+   WAS HINEINGEHT
+   -------------------------------------------------------------------------
+
+   Genau die drei Dinge, die oeffentlich werden: das Inhaltsobjekt, das
+   Bild und der Text. Nichts sonst — kein Zeitstempel, keine Version,
+   keine Kennung des Freigebenden. Was nicht oeffentlich wird, darf den
+   Abdruck nicht aendern, sonst waere eine Freigabe schon dadurch
+   ungueltig, dass jemand sie erneut aufschreibt.
+
+   Die Reihenfolge ist festgelegt und nicht alphabetisch sortiert: sie
+   steht hier, und dieselbe Reihenfolge steht im Repository. Zwei
+   Implementierungen derselben Frage sind unvermeidlich, weil der Worker
+   nichts aus dem Repository laden kann — aber sie sind gegeneinander
+   getestet.
+   ========================================================================= */
+export async function contentHash(spec) {
+  const kanonisch = JSON.stringify({
+    contentId: String((spec && spec.contentId) || ""),
+    imageUrl: String((spec && spec.imageUrl) || ""),
+    caption: String(spec && spec.caption !== undefined && spec.caption !== null
+      ? spec.caption : "")
+  });
+  const daten = new TextEncoder().encode(kanonisch);
+  const digest = await crypto.subtle.digest("SHA-256", daten);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+}
