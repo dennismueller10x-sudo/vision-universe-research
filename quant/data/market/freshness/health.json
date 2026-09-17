@@ -1,36 +1,36 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T20:00:11.656Z",
+  "checkedAt": "2026-09-17T21:17:45.828Z",
   "target": "repository",
   "market": {
     "state": "AFTER_HOURS",
     "localDate": "2026-09-17",
-    "localTime": "16:00:11",
+    "localTime": "17:17:45",
     "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T20:00:07.522Z",
+    "indexGeneratedAt": "2026-09-17T21:17:41.366Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-17",
       "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
       "sessionDate": "2026-09-17",
-      "asOf": "2026-09-17T19:55:00.000Z",
-      "asOfLocal": "15:55",
-      "regularComplete": false,
-      "snapshots": 520,
-      "universe": false
+      "asOf": "2026-09-17T20:55:00.000Z",
+      "asOfLocal": "16:55",
+      "regularComplete": true,
+      "snapshots": 5274,
+      "universe": true
     },
     "dataState": "LAST_SESSION",
-    "dataReason": "closePendingWithinGrace",
-    "dataLabel": "Heute · Stand 15:55 · Schluss folgt",
+    "dataReason": "lastCompletedSession",
+    "dataLabel": "Heute · Schluss 16:00",
     "entries": 520,
     "byState": {
       "LIVE": 0,
@@ -39,13 +39,14 @@
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "closePendingWithinGrace": 520
+      "lastCompletedSession": 520
     },
     "staleSample": [],
     "universeSessions": [
-      "2026-09-16"
+      "2026-09-16",
+      "2026-09-17"
     ],
-    "universeCoversLastSession": false,
+    "universeCoversLastSession": true,
     "state": "OK"
   },
   "daily": {

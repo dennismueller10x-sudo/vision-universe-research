@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-17T20:00:11.580Z",
+  "generatedAt": "2026-09-17T21:17:45.746Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -23,7 +23,7 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5615,
     "historicalQualityAccepted": 6441,
-    "intradayAvailable": 520,
+    "intradayAvailable": 5273,
     "liveCapable": 520,
     "factorEligible": 6398,
     "fundamentals": 5376,
@@ -36,7 +36,8 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 6351,
+    "NOT_IN_LIVE_SCOPE": 4753,
+    "NO_IEX_BARS": 1602,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 927,
     "INSUFFICIENT_HISTORY": 822,
@@ -52,7 +53,6 @@
     "NAME_MISSING": 20,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
-    "NO_IEX_BARS": 4,
     "NO_COMPACT_SERIES": 4,
     "NO_FACTOR_ROW": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
@@ -245,7 +245,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
+        "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -257,7 +257,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NO_INTRADAY_SNAPSHOT"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {
