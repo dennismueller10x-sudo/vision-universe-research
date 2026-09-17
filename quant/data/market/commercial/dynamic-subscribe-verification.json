@@ -2,7 +2,7 @@
   "schemaVersion": "dynamic-subscribe-verification-1.0.0",
   "frage": "Laesst sich die Tickerliste eines bestehenden Stufe-6-Sockets aendern, ohne die Verbindung neu aufzubauen?",
   "auftrag": "Zero-Cost Realtime V1 §1",
-  "checkedAt": "2026-09-17T08:54:10.773Z",
+  "checkedAt": "2026-09-17T13:42:11.993Z",
   "endpoint": "wss://api.tiingo.com/iex",
   "thresholdLevel": 6,
   "symbols": {
@@ -11,17 +11,84 @@
   },
   "phaseSeconds": 45,
   "session": {
-    "phase": "PRE",
+    "phase": "REGULAR",
     "localDate": "2026-09-17",
-    "localTime": "04:54:10",
-    "isOpen": false,
+    "localTime": "09:42:11",
+    "isOpen": true,
     "calendarCoverage": true
   },
-  "result": "UNKNOWN",
-  "reason": "marketClosed:PRE",
-  "consequence": "Nur waehrend der regulaeren Sitzung messbar. Der Manager bleibt bis dahin im Modus 'reconnect' - der ist immer richtig, nur teurer.",
-  "control": null,
+  "result": "INCONCLUSIVE",
+  "reason": "controlInactive",
+  "consequence": "In diesem Fenster handelte mindestens einer der beiden Titel nicht oft genug. Ein Nein waere hier nicht belegt, sondern erschlossen. Der Manager bleibt im Modus 'reconnect'.",
+  "control": {
+    "phase": "control",
+    "sekunden": 45,
+    "symbols": {},
+    "aActive": false,
+    "bActive": false,
+    "note": "Ohne diesen Lauf waere 'keine Ereignisse nach der Nachmeldung' nicht von 'der Titel handelt gerade nicht' zu unterscheiden."
+  },
   "phases": [],
-  "serverMessages": [],
+  "serverMessages": [
+    {
+      "at": "2026-09-17T13:42:12.392Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "subscriptionId": 50627752
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-09-17T13:42:12.392Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-09-17T13:42:12.660Z",
+      "nachricht": {
+        "service": "iex",
+        "messageType": "A",
+        "data": [
+          "2026-09-17T09:42:12.550391808-04:00",
+          "nvda",
+          218.53
+        ]
+      }
+    },
+    {
+      "at": "2026-09-17T13:42:13.039Z",
+      "nachricht": {
+        "service": "iex",
+        "messageType": "A",
+        "data": [
+          "2026-09-17T09:42:12.999965098-04:00",
+          "aapl",
+          332.045
+        ]
+      }
+    },
+    {
+      "at": "2026-09-17T13:42:13.281Z",
+      "nachricht": {
+        "service": "iex",
+        "messageType": "A",
+        "data": [
+          "2026-09-17T09:42:13.149721479-04:00",
+          "nvda",
+          218.485
+        ]
+      }
+    }
+  ],
   "sent": []
 }

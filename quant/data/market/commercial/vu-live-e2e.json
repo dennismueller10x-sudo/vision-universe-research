@@ -1,12 +1,12 @@
 {
   "schemaVersion": "vu-live-e2e-1.0.0",
   "auftrag": "Zero-Cost Realtime V1 §17 (Last) und §18 (E2E)",
-  "checkedAt": "2026-09-17T08:54:10.856Z",
+  "checkedAt": "2026-09-17T13:42:57.451Z",
   "session": {
-    "phase": "PRE",
+    "phase": "REGULAR",
     "localDate": "2026-09-17",
-    "localTime": "04:54:10",
-    "isOpen": false
+    "localTime": "09:42:57",
+    "isOpen": true
   },
   "runtime": {
     "node": "v22.23.2",
@@ -14,12 +14,369 @@
   },
   "scope": {
     "included": "Tiingo IEX -> tiingo-link -> transport -> Parser -> subscription-manager -> bar-merge -> free-budget -> VuLive -> Browser-Attrappe",
-    "excluded": "Cloudflares Kante (Worker nicht ausgerollt: CLOUDFLARE_API_TOKEN und CLOUDFLARE_ACCOUNT_ID fehlen). Die gemessenen Zeiten enthalten diesen Sprung NICHT."
+    "excluded": "Cloudflares Kante. Der Worker ist nicht ausgerollt - nicht, weil Zugangsdaten fehlten (die sind vorhanden und geprueft), sondern weil das eine Entscheidung ist. Die gemessenen Zeiten enthalten diesen Sprung NICHT."
   },
-  "result": "UNKNOWN",
-  "reason": "marketClosed:PRE",
-  "load": [],
-  "e2e": null,
+  "result": "PASS",
+  "reason": null,
+  "load": [
+    {
+      "symbols": 1,
+      "clients": 20,
+      "seconds": 30,
+      "providerMessages": 22,
+      "providerEventsPerSecond": 0.73,
+      "providerEventsPerSecondPerSymbol": 0.73,
+      "client": {
+        "clientMessages": 300,
+        "entries": 300,
+        "symbolsSeen": 1,
+        "perSymbol": {
+          "AAPL": 300
+        },
+        "denied": 0,
+        "statusMessages": 40,
+        "coalesceDelayMs": {
+          "count": 300,
+          "mean": 828,
+          "p50": 1001,
+          "p95": 1002,
+          "max": 1002
+        }
+      },
+      "fanIn": 0.07,
+      "cpu": {
+        "userMs": 76,
+        "systemMs": 7,
+        "sharePercent": 0.27
+      },
+      "memoryMB": {
+        "before": 6.1,
+        "after": 8.8
+      },
+      "budget": {
+        "requests": 23,
+        "requestShare": 0,
+        "verdict": "OK",
+        "symbolsPeak": 1
+      },
+      "managerState": "LIVE",
+      "subscribedSymbols": 1,
+      "coverageOk": true
+    },
+    {
+      "symbols": 5,
+      "clients": 20,
+      "seconds": 30,
+      "providerMessages": 103,
+      "providerEventsPerSecond": 3.43,
+      "providerEventsPerSecondPerSymbol": 0.69,
+      "client": {
+        "clientMessages": 324,
+        "entries": 324,
+        "symbolsSeen": 5,
+        "perSymbol": {
+          "AAPL": 64,
+          "NVDA": 96,
+          "MSFT": 48,
+          "AMZN": 72,
+          "META": 44
+        },
+        "denied": 0,
+        "statusMessages": 40,
+        "coalesceDelayMs": {
+          "count": 324,
+          "mean": 553,
+          "p50": 497,
+          "p95": 1001,
+          "max": 1001
+        }
+      },
+      "fanIn": 0.32,
+      "cpu": {
+        "userMs": 55,
+        "systemMs": 3,
+        "sharePercent": 0.19
+      },
+      "memoryMB": {
+        "before": 8.6,
+        "after": 9.5
+      },
+      "budget": {
+        "requests": 27,
+        "requestShare": 0,
+        "verdict": "OK",
+        "symbolsPeak": 5
+      },
+      "managerState": "LIVE",
+      "subscribedSymbols": 5,
+      "coverageOk": true
+    },
+    {
+      "symbols": 10,
+      "clients": 20,
+      "seconds": 30,
+      "providerMessages": 183,
+      "providerEventsPerSecond": 6.1,
+      "providerEventsPerSecondPerSymbol": 0.61,
+      "client": {
+        "clientMessages": 302,
+        "entries": 302,
+        "symbolsSeen": 10,
+        "perSymbol": {
+          "AAPL": 40,
+          "NVDA": 46,
+          "MSFT": 24,
+          "AMZN": 44,
+          "META": 32,
+          "GOOGL": 28,
+          "TSLA": 24,
+          "AVGO": 8,
+          "AMD": 14,
+          "NFLX": 42
+        },
+        "denied": 0,
+        "statusMessages": 40,
+        "coalesceDelayMs": {
+          "count": 302,
+          "mean": 513,
+          "p50": 487,
+          "p95": 1001,
+          "max": 1001
+        }
+      },
+      "fanIn": 0.61,
+      "cpu": {
+        "userMs": 80,
+        "systemMs": 2,
+        "sharePercent": 0.27
+      },
+      "memoryMB": {
+        "before": 9.3,
+        "after": 9.3
+      },
+      "budget": {
+        "requests": 31,
+        "requestShare": 0,
+        "verdict": "OK",
+        "symbolsPeak": 10
+      },
+      "managerState": "LIVE",
+      "subscribedSymbols": 10,
+      "coverageOk": true
+    },
+    {
+      "symbols": 25,
+      "clients": 20,
+      "seconds": 30,
+      "providerMessages": 378,
+      "providerEventsPerSecond": 12.6,
+      "providerEventsPerSecondPerSymbol": 0.5,
+      "client": {
+        "clientMessages": 260,
+        "entries": 310,
+        "symbolsSeen": 24,
+        "perSymbol": {
+          "AAPL": 18,
+          "BAC": 21,
+          "NVDA": 27,
+          "PFE": 8,
+          "MSFT": 8,
+          "KO": 18,
+          "PEP": 17,
+          "AMZN": 21,
+          "CSCO": 18,
+          "META": 14,
+          "GOOGL": 13,
+          "TSLA": 14,
+          "AVGO": 7,
+          "AMD": 10,
+          "NFLX": 20,
+          "JPM": 10,
+          "V": 8,
+          "MA": 6,
+          "XOM": 7,
+          "CVX": 13,
+          "UNH": 5,
+          "LLY": 5,
+          "COST": 4,
+          "WMT": 18
+        },
+        "denied": 0,
+        "statusMessages": 40,
+        "coalesceDelayMs": {
+          "count": 310,
+          "mean": 505,
+          "p50": 485,
+          "p95": 1000,
+          "max": 1001
+        }
+      },
+      "fanIn": 1.45,
+      "cpu": {
+        "userMs": 136,
+        "systemMs": 20,
+        "sharePercent": 0.52
+      },
+      "memoryMB": {
+        "before": 9.8,
+        "after": 10.3
+      },
+      "budget": {
+        "requests": 40,
+        "requestShare": 0,
+        "verdict": "OK",
+        "symbolsPeak": 25
+      },
+      "managerState": "LIVE",
+      "subscribedSymbols": 25,
+      "coverageOk": true
+    },
+    {
+      "symbols": 50,
+      "clients": 20,
+      "seconds": 30,
+      "providerMessages": 516,
+      "providerEventsPerSecond": 17.2,
+      "providerEventsPerSecondPerSymbol": 0.34,
+      "client": {
+        "clientMessages": 277,
+        "entries": 410,
+        "symbolsSeen": 39,
+        "perSymbol": {
+          "AAPL": 19,
+          "BAC": 23,
+          "PANW": 6,
+          "NVDA": 26,
+          "PFE": 6,
+          "VLO": 2,
+          "MSFT": 9,
+          "KO": 21,
+          "MRK": 2,
+          "AMZN": 17,
+          "PEP": 21,
+          "ABBV": 7,
+          "META": 16,
+          "CSCO": 20,
+          "TMO": 7,
+          "INTC": 25,
+          "NKE": 15,
+          "GOOGL": 18,
+          "TSLA": 7,
+          "MCD": 6,
+          "QCOM": 2,
+          "TXN": 4,
+          "AVGO": 11,
+          "SBUX": 3,
+          "AMD": 8,
+          "LOW": 5,
+          "ORCL": 6,
+          "NFLX": 20,
+          "CRM": 11,
+          "UPS": 3,
+          "ADBE": 7,
+          "JPM": 10,
+          "MU": 13,
+          "V": 6,
+          "MA": 8,
+          "GS": 4,
+          "MS": 6,
+          "XOM": 7,
+          "CVX": 3
+        },
+        "denied": 11,
+        "statusMessages": 60,
+        "coalesceDelayMs": {
+          "count": 410,
+          "mean": 444,
+          "p50": 411,
+          "p95": 958,
+          "max": 1001
+        }
+      },
+      "fanIn": 1.86,
+      "cpu": {
+        "userMs": 150,
+        "systemMs": 16,
+        "sharePercent": 0.55
+      },
+      "memoryMB": {
+        "before": 10.3,
+        "after": 10.8
+      },
+      "budget": {
+        "requests": 47,
+        "requestShare": 0.001,
+        "verdict": "OK",
+        "symbolsPeak": 39
+      },
+      "managerState": "LIVE",
+      "subscribedSymbols": 39,
+      "coverageOk": false
+    }
+  ],
+  "e2e": {
+    "symbols": [
+      "AAPL",
+      "NVDA",
+      "MSFT",
+      "VLO",
+      "PANW"
+    ],
+    "seconds": 60,
+    "firstTickMs": {
+      "AAPL": 2206,
+      "NVDA": 2206,
+      "MSFT": 8717,
+      "VLO": 23363,
+      "PANW": 5510
+    },
+    "delivered": {
+      "AAPL": 38,
+      "NVDA": 45,
+      "MSFT": 18,
+      "VLO": 3,
+      "PANW": 16
+    },
+    "client": {
+      "clientMessages": 46,
+      "entries": 120,
+      "symbolsSeen": 5,
+      "perSymbol": {
+        "AAPL": 38,
+        "NVDA": 45,
+        "PANW": 16,
+        "MSFT": 18,
+        "VLO": 3
+      },
+      "denied": 0,
+      "statusMessages": 2,
+      "coalesceDelayMs": {
+        "count": 120,
+        "mean": 481,
+        "p50": 456,
+        "p95": 1000,
+        "max": 1001
+      }
+    },
+    "providerMessages": 179,
+    "budget": {
+      "requests": 10,
+      "requestShare": 0,
+      "verdict": "OK"
+    },
+    "managerState": "LIVE",
+    "hello": {
+      "op": "hello",
+      "mode": "reconnect",
+      "session": "REGULAR",
+      "coalesceMs": 1000,
+      "maxSymbols": 50,
+      "budget": "OK",
+      "priceType": "REALTIME_REFERENCE",
+      "source": "TIINGO_IEX_LEVEL6"
+    },
+    "note": "firstTickMs ist die Zeit vom subscribe des Browsers bis zum ersten Kurs desselben Titels beim Browser - einschliesslich Verbindungsaufbau zum Anbieter und einem Zusammenfassungsfenster von einer Sekunde. Der Sprung ueber Cloudflares Kante ist NICHT enthalten: der Worker ist nicht ausgerollt."
+  },
   "synthetic": false,
-  "note": "Ausserhalb der regulaeren Sitzung gibt es keine Ereignisse. Eine Lastmessung ohne Last misst nichts; die Zahlen einer geschlossenen Boerse waeren keine Aussage ueber den Betrieb."
+  "coverageOk": false
 }
