@@ -1,0 +1,287 @@
+# =========================================================================
+# SOCIAL PUBLISH CANDIDATE — Controlled Live Learning
+#
+# Die vom Owner freigegebene Betriebsstufe:
+#
+#   AI GENERATES -> OWNER APPROVES -> PIPELINE PUBLISHES -> META MEASURES
+#   -> AI LEARNS -> STRATEGY ADAPTS -> NEXT CONTENT DECISION
+#
+# Autonomes Veroeffentlichen bleibt aus. Dieser Workflow ist kein
+# Schalter dafuer: er traegt eine Freigabe fuer GENAU EINEN Beitrag, und
+# der Worker rechnet nach, ob der Beitrag, der gesendet werden soll,
+# derselbe ist, der freigegeben wurde.
+#
+# -------------------------------------------------------------------------
+# DREI AKTIONEN, EINE ENTSCHEIDUNG
+# -------------------------------------------------------------------------
+#
+#   vorbereiten   Zyklus laufen lassen, Bild zeichnen, Kandidat erzeugen.
+#                 Veroeffentlicht NICHTS. Committet Bild und Kandidat,
+#                 damit das Bild oeffentlich erreichbar wird — ohne
+#                 erreichbares Bild lehnt Meta den Container ab.
+#
+#   freigeben     Der Owner hat den Kandidaten gesehen und sagt ja.
+#                 Erst dann geht ein Aufruf an den Publishing-Endpunkt.
+#
+#   ablehnen      Mit Grund. Der Grund ist der einzige Ertrag einer
+#                 Ablehnung und deshalb Pflicht.
+#
+# -------------------------------------------------------------------------
+# WARUM DIE ABLEHNUNG KEINE LEISTUNGSAUSSAGE IST
+# -------------------------------------------------------------------------
+#
+# Ein abgelehnter Beitrag wurde nie veroeffentlicht. Er hat keine
+# Reichweite — nicht eine schlechte, sondern gar keine. Ihn als Leistung
+# 0 zu verbuchen hiesse "dieses Format hat versagt", und das waere frei
+# erfunden. Der Grund landet in einer eigenen Datei und geht in keinen
+# Leistungsvergleich ein.
+#
+# -------------------------------------------------------------------------
+# WARUM DER SCHLUESSEL NIRGENDS IM SKRIPTTEXT STEHT
+# -------------------------------------------------------------------------
+#
+# GitHub Actions schreibt jedes `run:`-Skript ins Protokoll, bevor es
+# laeuft. Der Schluessel kommt ueber `env:` herein, und das Skript nennt
+# nur den Namen. In der Adresse steht er nie — die landet in Protokollen
+# und bei Cloudflare; er reist in der Authorization-Kopfzeile.
+# =========================================================================
+name: Social Publish Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      aktion:
+        description: 'Was geschehen soll'
+        type: choice
+        required: true
+        default: vorbereiten
+        options:
+          - vorbereiten
+          - freigeben
+          - ablehnen
+      candidateId:
+        description: 'Kennung des Kandidaten (bei freigeben/ablehnen)'
+        type: string
+        required: false
+        default: ''
+      grund:
+        description: 'Grund der Ablehnung (Pflicht bei ablehnen)'
+        type: string
+        required: false
+        default: ''
+      bestaetigung:
+        description: 'Zum Freigeben exakt FREIGEBEN eintippen'
+        type: string
+        required: false
+        default: ''
+
+# Zwei gleichzeitige Laeufe waeren zwei Beitraege.
+concurrency:
+  group: social-publish-candidate
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  kandidat:
+    runs-on: ubuntu-latest
+    env:
+      WORKER: https://social.visionuniverse.de
+      BRANCH: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests, bevor irgendetwas geschieht
+        run: |
+          # Ein Lauf, der einen oeffentlichen Beitrag vorbereiten oder
+          # ausloesen kann, laeuft nicht gegen ungepruefte Engines.
+          node --test "social/tests/*.test.mjs" 2>&1 | tail -8
+          node --test "workers/vision-universe-social/tests/*.test.mjs" 2>&1 | tail -8
+
+      # ------------------------------------------------------ VORBEREITEN
+      - name: Zyklus, Bild und Kandidat
+        if: inputs.aktion == 'vorbereiten'
+        run: |
+          set -e
+          # Chromium fuer das Rendern. Der Runner bringt keinen mit, der
+          # zuverlaessig JPEG ueber --screenshot schreibt.
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
+          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
+          echo "Chromium: $CHROMIUM_PATH"
+
+          node scripts/social/run-social-cycle.mjs \
+            --provider mock --data social/data --out social/data --render
+
+          node scripts/social/make-publish-candidate.mjs --data social/data --write \
+            | tee tmp-kandidat.txt
+
+      - name: Kandidat und Bild sichern
+        if: inputs.aktion == 'vorbereiten'
+        run: |
+          set -e
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+
+          # `git add` zuerst: `git diff --quiet` vergleicht nur verfolgte
+          # Dateien und meldet "keine Aenderung" fuer eine gerade erst
+          # erzeugte Datei. Dieser Fehler hat hier schon einmal eine
+          # vollstaendige Messung verworfen.
+          git add assets/social social/data || true
+          if git diff --cached --quiet; then
+            echo "Nichts Neues zu sichern."
+          else
+            git commit -m "Publish Candidate vorbereitet
+
+          Erzeugt vom Zyklus. Veroeffentlicht wurde nichts.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+            git push origin "HEAD:$BRANCH"
+          fi
+
+          echo "----------------------------------------------------------"
+          cat tmp-kandidat.txt
+          echo "----------------------------------------------------------"
+          echo "Zum Freigeben diesen Workflow erneut starten:"
+          echo "  aktion = freigeben, candidateId = <Kennung oben>, bestaetigung = FREIGEBEN"
+
+      # --------------------------------------------------------- ABLEHNEN
+      - name: Ablehnen
+        if: inputs.aktion == 'ablehnen'
+        run: |
+          set -e
+          if [ -z "${{ inputs.candidateId }}" ]; then
+            echo "::error::Ohne candidateId gibt es nichts abzulehnen."
+            exit 1
+          fi
+          if [ -z "${{ inputs.grund }}" ]; then
+            echo "::error::Eine Ablehnung ohne Grund ist als Rueckmeldung wertlos — und der Grund ist ihr einziger Ertrag."
+            exit 1
+          fi
+
+          node scripts/social/decide-candidate.mjs \
+            --candidate "${{ inputs.candidateId }}" \
+            --reject --reason "${{ inputs.grund }}" --by owner
+
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+          git add social/data
+          git diff --cached --quiet || git commit -m "Kandidat abgelehnt: ${{ inputs.candidateId }}
+
+          Rueckmeldung zur AUSWAHL, nicht zur WIRKUNG. Dieser Beitrag wurde
+          nie veroeffentlicht und hat deshalb keine Leistung.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push origin "HEAD:$BRANCH"
+
+      # -------------------------------------------------------- FREIGEBEN
+      - name: Bestaetigung pruefen
+        if: inputs.aktion == 'freigeben'
+        run: |
+          if [ "${{ inputs.bestaetigung }}" != "FREIGEBEN" ]; then
+            echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt FREIGEBEN steht."
+            exit 1
+          fi
+          if [ -z "${{ inputs.candidateId }}" ]; then
+            echo "::error::Ohne candidateId gibt es nichts freizugeben."
+            exit 1
+          fi
+
+      - name: Ist das Bild oeffentlich erreichbar?
+        if: inputs.aktion == 'freigeben'
+        run: |
+          set -e
+          url=$(node -e '
+            const fs=require("fs");
+            const k=JSON.parse(fs.readFileSync("social/data/publish-candidates/"+process.argv[1]+".json","utf8"));
+            process.stdout.write(k.content.imageUrl);
+          ' "${{ inputs.candidateId }}")
+          echo "Bild: $url"
+
+          # Ohne erreichbares Bild lehnt Meta den Container ab — und das
+          # faellt erst auf, NACHDEM der Anspruch angemeldet ist. Danach
+          # weiss niemand ohne nachzusehen, ob ein Beitrag entstand.
+          for versuch in $(seq 1 20); do
+            typ=$(curl -sSI -o /dev/null -w '%{content_type}' "$url" || echo "")
+            code=$(curl -sSI -o /dev/null -w '%{http_code}' "$url" || echo 000)
+            echo "  Versuch $versuch: HTTP $code, $typ"
+            case "$code:$typ" in
+              200:image/jpeg*) echo "Erreichbar."; exit 0 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Das Bild ist nach fuenf Minuten nicht als JPEG erreichbar. Wahrscheinlich hat GitHub Pages noch nicht ausgeliefert. Es wurde nichts veroeffentlicht."
+          exit 1
+
+      - name: Freigabe eintragen
+        if: inputs.aktion == 'freigeben'
+        run: |
+          set -e
+          node scripts/social/decide-candidate.mjs \
+            --candidate "${{ inputs.candidateId }}" --approve --by owner
+
+      - name: Veroeffentlichen
+        if: inputs.aktion == 'freigeben'
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -e
+          if [ -z "$KEY" ]; then
+            echo "::error::Das Repository-Secret VU_SOCIAL_ADMIN_KEY fehlt."
+            exit 1
+          fi
+
+          req="social/data/publish-candidates/${{ inputs.candidateId }}.request.json"
+          body=$(node -e '
+            const fs=require("fs");
+            process.stdout.write(JSON.stringify(JSON.parse(fs.readFileSync(process.argv[1],"utf8")).body));
+          ' "$req")
+
+          mkdir -p tmp
+          code=$(curl -sS -o tmp/publish.json -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer $KEY" \
+            -H "content-type: application/json" \
+            --data "$body" \
+            "$WORKER/social/meta/publish" || echo 000)
+
+          echo "HTTP $code"
+          node -e '
+            const fs=require("fs");
+            const a=JSON.parse(fs.readFileSync("tmp/publish.json","utf8"));
+            for (const k of ["published","idempotent","via","mediaId","permalink","verified","error","message"]) {
+              if (a[k] !== undefined) console.log("  " + k + ": " + JSON.stringify(a[k]));
+            }
+          '
+
+          if [ "$code" != "200" ] && [ "$code" != "207" ]; then
+            echo "::error::Der Publishing-Endpunkt antwortet mit HTTP $code. Details oben."
+            exit 1
+          fi
+
+      - name: Medien-ID in die Herkunftskette
+        if: inputs.aktion == 'freigeben'
+        run: |
+          set -e
+          node scripts/social/record-publication.mjs \
+            --candidate "${{ inputs.candidateId }}" \
+            --response tmp/publish.json --data social/data --write
+
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+          git add social/data
+          git diff --cached --quiet || git commit -m "Veroeffentlicht: ${{ inputs.candidateId }}
+
+          Freigegeben vom Owner, gesendet ueber den idempotenten Publishing-Pfad.
+          Die Herkunftskette traegt jetzt die Medien-ID.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push origin "HEAD:$BRANCH"

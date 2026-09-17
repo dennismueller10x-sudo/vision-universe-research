@@ -141,7 +141,24 @@
         experimentId: (spec.lineage && spec.lineage.experimentId) || null,
         hypothesis: (spec.lineage && spec.lineage.hypothesis) || null,
         strategyVersion: (spec.lineage && spec.lineage.strategyVersion) || null,
-        decidedMode: (spec.lineage && spec.lineage.decidedMode) || null
+        decidedMode: (spec.lineage && spec.lineage.decidedMode) || null,
+
+        /* DIE FREIGABE.
+
+           "Wer wollte das" ist bei einem oeffentlichen Beitrag die erste
+           Frage, und sie muss aus derselben Quelle beantwortbar sein wie
+           alles andere — nicht aus einem zweiten Protokoll, das auch
+           fehlen koennte.
+
+           Diese vier Felder standen zuerst nicht in dieser Liste. Sie
+           waren im Eintrag, sie waren im Test, und sie waeren beim
+           Speichern verschwunden: dieselbe Falle, in die schon
+           `performanceRegime` getappt ist. Eine Whitelist ist eine gute
+           Verteidigung und ein schlechtes Gedaechtnis. */
+        candidateId: (spec.lineage && spec.lineage.candidateId) || null,
+        approvedBy: (spec.lineage && spec.lineage.approvedBy) || null,
+        approvedAt: (spec.lineage && spec.lineage.approvedAt) || null,
+        contentHash: (spec.lineage && spec.lineage.contentHash) || null
       },
 
       /* Die Kennung auf der Plattform. Ohne sie laesst sich gemessene
