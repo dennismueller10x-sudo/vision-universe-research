@@ -500,10 +500,67 @@ es eine Maschine geschrieben, die kein Deutsch kann — und genau das wäre
 es dann auch. Die Umlaute stehen jetzt als Escape-Sequenzen: die Datei
 bleibt ASCII, der Text wird deutsch.
 
-Die Markenprüfung blockiert Rückfälle anhand einer **Wortliste**, nicht
-einer Regel. „ue" gehört in „Museum" und in „neue"; jede allgemeine
-Regel würde entweder diese Wörter treffen oder gar nichts. Eine Liste
-fängt, was sie kennt, und behauptet nichts darüber hinaus.
+Die Markenprüfung blockierte Rückfälle zunächst anhand einer
+**Wortliste**: dreißig Formen, die wir kannten.
+
+### Die Liste hat den eigentlichen Fall nicht gekannt
+
+Sobald die Rückfallebene die reiche Evidenz nutzte, stand in der
+Caption:
+
+> TREND_STRUCTURE **traegt** 27.35 von 30 Punkten bei.
+
+Der Satz kam nicht vom Autor. Er kam aus den **Quant-Daten**. Die sind
+ASCII — „SMA50 ueber SMA200", „Relative Staerke nicht verfuegbar" —,
+und solange sie nur gerechnet wurden, war das folgenlos. Seit das
+Evidence Package sie an den Autor weiterreicht, sind sie
+veröffentlichter Text.
+
+„traegt" stand in keiner Liste. Eine Aufzählung fängt, woran jemand
+gedacht hat, und schweigt über den Rest. Bei einem **Sperrgatter** ist
+das die falsche Richtung von Unwissen.
+
+### Zwei getrennte Aufgaben statt einer Liste
+
+`social/engines/german-text.js` trennt, was die Liste vermengt hat:
+
+| | |
+|---|---|
+| `normalize()` | repariert, **was wir kennen**. Exakte Wortformen und die produktive Endung `-taet`. Es rät nie. |
+| `residue()` | meldet, **was wir nicht kennen**. Unbekanntes blockiert, statt durchzurutschen. |
+
+Keine Regel über Digraphen: jedes „au"+„e" und jedes „eu"+„e" erzeugt
+die Folge „ue", ohne dass je ein Umlaut gemeint war. „dauert", „neue",
+„Feuer" und „Frauen" bleiben deshalb unangetastet — `GT5` hält das
+fest, und `GT6b` die qu-Klasse (Frequenz, Sequenz, Request), die sich
+beim ersten Lauf selbst gemeldet hat.
+
+Repariert wird an der **einen** Stelle, durch die jeder Beleg läuft.
+Der Eingriff ist rein orthografisch, und `EP4` beweist es: die Zahlen
+müssen identisch bleiben, und `statementVerbatim` trägt den
+unveränderten Engine-Satz mit, wo sich etwas geändert hat.
+
+### Der erste Fund stand im eigenen Beweismaterial
+
+`V9` behauptete seit jeher, dieser Text sei veröffentlichungsfähig:
+
+> Weil die Nachfrage nach Rechenzentren **waechst** und die Marge daher
+> steigt.
+
+Er war es nicht. Ein Prüfer, der schärfer wird, prüft zuerst die
+eigenen Fixtures.
+
+### Dieselbe Reparatur an der Provider-Grenze
+
+Der Brief liefert dem Creative Agent Belegsätze. Kommen die in
+ASCII-Umschrift, übernimmt er sie so — er kann nicht wissen, dass
+„traegt" ein Fehler ist. Der Adapter repariert deshalb beim Einlesen,
+**bevor** fremder Text ein Kandidat wird.
+
+Die Kennung bleibt dabei, was sie verspricht: die Reparatur ist
+deterministisch, also bezeichnet dieselbe `hook_variant_id` bei jedem
+Lauf denselben Text (`CG25`), und der unveränderte Agententext reist in
+`textVerbatim` mit.
 
 ---
 
@@ -526,3 +583,201 @@ Autoren:
 
 Das Anbinden kostet laufend Geld und ist damit eine Owner-Entscheidung,
 keine Implementierungsfrage.
+
+---
+
+## 20. Der Creative Provider ohne Modell-API
+
+Der Owner hat den Weg außerhalb des Builds nachgewiesen:
+
+```
+VU/GitHub → PR-Ereignis → ChatGPT Work Creative Agent
+          → strukturiertes Authoring Result + generatives Bild → GitHub
+```
+
+Keine klassische OpenAI-Text-API, keine klassische OpenAI-Bild-API,
+kein Schlüssel, keine laufenden Kosten. Textnachweis über PR #97,
+Text-und-Bild-Nachweis über PR #98.
+
+`social/providers/authoring/chatgpt-work/adapter.js` ist deshalb der
+erste generative Autor **innerhalb** der vorhandenen Autorenschicht —
+keine zweite Content-Pipeline.
+
+### Wer wofür zuständig ist
+
+| Vision Universe | ChatGPT Work |
+|---|---|
+| Signal Intelligence, Evidence, Opportunity Ranking | — |
+| Strategy Memory, Hook Strategy, EXPLORE/EXPLOIT | — |
+| Visual Strategy, Experimente | — |
+| **kanonische Hook-Auswahl** | editorische Empfehlung, `is_canonical_selection: false` |
+| Claim Validation, Brand/Quality/Safety Gates | — |
+| Publishing, Performance Attribution, Learning | — |
+| — | **Creative Author + Creative Visual Producer** |
+
+Ein `selected_hook` im Ergebnis wird beim Einlesen **abgewiesen**. Die
+Auswahl gehört zur Strategie, und die Strategie gehört uns.
+
+### Die Kennungen stehen fest, bevor der Agent läuft
+
+```
+hook_variant_id   = content_id : brief_blob_sha : hook_type : ordinal
+visual_variant_id = content_id : brief_blob_sha : visual : strategy : ordinal
+processing_key    = brief_id : content_id : brief_blob_sha : schema_version
+```
+
+Vision Universe rechnet sie nach und weist ab, was nicht übereinstimmt.
+Eine einmal verwendete `hook_variant_id` bezeichnet **niemals später**
+einen anderen Text.
+
+Der `brief_blob_sha` ist der git-Blob-SHA der Datei, die der Agent
+bekommen hat — `sha1("blob " + länge + NUL + inhalt)`, nachgeprüft
+gegen `git hash-object`. Gerechnet wird er aus den **Bytes der
+abgelegten Datei**, nicht aus einer Rekonstruktion: die hinge an einem
+Dutzend langer Textbausteine, die an zwei Stellen gepflegt werden
+müssten, und ein abweichendes Zeichen ließe alle vier erwarteten
+Kennungen falsch werden.
+
+---
+
+## 21. Ein intakter Anfang ist kein intaktes Bild
+
+Der Bildnachweis hat einen **abgeschnittenen Transfer** produziert. Die
+PNG-Signatur stand korrekt am Anfang der Datei. Ein Korrekturcommit hat
+sie ersetzt.
+
+Ein Ergebnis mit Binärasset darf deshalb erst nach dieser Kette
+`COMPLETED` heißen:
+
+```
+GENERATE → MIME prüfen → Dimensionen prüfen → Hash berechnen
+        → Git Blob/Tree/Commit
+        → FRISCHER READBACK vom finalen Commit
+        → Hash, Größe, MIME, Dimensionen erneut vergleichen
+        → COMPLETED
+```
+
+`social/engines/asset-integrity.js` prüft deshalb auch das **Dateiende**:
+PNG muss auf einen `IEND`-Chunk enden, JPEG auf `FF D9`, RIFF auf die
+angekündigte Länge. Ein Anfang beweist nichts über einen Rest.
+
+Zustände: `PENDING → GENERATED → COMMITTED → READBACK_VERIFIED →
+COMPLETED`, daneben `RECOVERY_REQUIRED`.
+
+Teilweise oder beschädigte Assets gelangen nie in Quality Gates oder
+Publishing. **Kein stiller Force-Update-Recovery-Pfad in Produktion**,
+wenn dadurch Provenance verloren geht.
+
+---
+
+## 22. Das Ledger sagt, was es beweisen kann
+
+`social/engines/invocation-ledger.js` hält fest, was zu einem
+Processing Key geschah. Ein fertiges Ergebnis wird nicht überschrieben
+— aber der **abgewiesene Schreibversuch wird festgehalten**: ein
+Ledger, das Versuche verschweigt, beantwortet die Frage nicht mehr, wie
+oft etwas lief.
+
+Der Beweisstatus reist mit den Daten:
+
+```
+LOOP_PROTECTION_OPERATIONALLY_SUPPORTED
+```
+
+und **nicht** `FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN`. Kein rekursiver
+Result-Commit wurde beobachtet; die verfügbare Schnittstelle liefert
+keine vollständige Run-Historie. Wer die Daten später liest, soll nicht
+annehmen müssen, was sie wert sind.
+
+Alle Schutzschichten bleiben aktiv: schmaler PR-Trigger, Branch-, Pfad-
+und Statusgrenzen, `enable_commit_updates=false`, Processing Key,
+unveränderliches abgeschlossenes Ergebnis, Invocation Ledger,
+idempotente Ergebnisverarbeitung.
+
+### Drei Zustände gehören ins Ledger, zwei davon endgültig
+
+`COMPLETED`, `REJECTED`, `RECOVERY_REQUIRED`.
+
+Ein fehlender Brief, unlesbares JSON oder eine Abweichung in **unserer
+eigenen** SHA-Rechnung sind Befunde über die Umgebung oder über uns.
+Sie als `REJECTED` einzutragen würde den Schlüssel dauerhaft
+verbrennen, obwohl der Agent nichts falsch gemacht hat.
+
+---
+
+## 23. Ein hoher Score ist keine Geschichte
+
+`quant/data/technical/instruments/XOM.json` enthielt die ganze Zeit:
+Score-Band, Beiträge je Familie mit ihren Maxima, fertig formulierte
+deutsche Trendsätze, vier Momentum-Horizonte, Volatilitätsregime,
+Volumen, Datengrundlage — und den Satz
+
+> Methodologischer Setup-Rang 0–100. Keine Wahrscheinlichkeit, keine
+> Renditeerwartung.
+
+Extrahiert worden war daraus je ein Feld: `opportunityScore`.
+
+`social/engines/evidence-package.js` baut daraus jetzt **23 belegte
+Aussagen über 6 Dimensionen**, jede mit Quelle, Stand und Zeiger ins
+Bundle. `RELATIVE_STRENGTH` und `STRUCTURE` stehen ausdrücklich als
+**nicht verfügbar** samt Grund — eine fehlende Dimension ist eine
+Aussage, keine Lücke.
+
+Das `EVIDENCE_SUFFICIENCY`-Gate davor verlangt mindestens drei
+Dimensionen, fünf Aussagen, eine Einordnung und einen datierten Anker.
+Eine Opportunity mit hohem Score ist nicht automatisch
+veröffentlichungswürdig.
+
+---
+
+## 24. Das Netz gehört nicht in den Zyklus
+
+Der Agent arbeitet asynchron auf einem eigenen Request-Branch. Der
+Zyklus liest **Dateien** und geht nicht ins Netz:
+
+```
+request-creative.mjs   Brief bauen, ablegen, Ledger REQUESTED
+        ↓                     (PR öffnet ein Mensch oder ein Workflow)
+   PR-Ereignis  →  ChatGPT Work  →  Ergebnis + Asset auf den Branch
+        ↓
+ingest-creative.mjs    holen, prüfen, ablegen, Ledger COMPLETED
+        ↓
+run-social-cycle.mjs   liest nur noch Dateien
+```
+
+Ein Zyklus, der während der Inhaltserzeugung ins Netz greift, ist nicht
+mehr reproduzierbar: derselbe Stand liefert je nach Zeitpunkt etwas
+anderes. Und ein ungeprüftes Ergebnis wäre schon im Kandidaten, bevor
+ein Tor es gesehen hätte.
+
+Gelesen wird über **git**, nicht über eine API: der Branch liegt
+ohnehin im Klon, git liefert die Bytes unverändert, und der Blob-SHA
+lässt sich gegen dieselbe Quelle prüfen, aus der er stammt.
+
+### Kein Ergebnis ist kein Fehler
+
+```
+Autoren:
+  chatgpt-work  einsatzbereit
+  model         nicht verfuegbar
+  template      einsatzbereit
+```
+
+Fehlt das Ergebnis, meldet der Autor `pending` und die Vorlage
+schreibt. Damit das von außen **sichtbar** ist — bei einem asynchronen
+Provider genau der Unterschied, auf den es ankommt — nennt der Zyklus
+jetzt, wer geschrieben hat:
+
+```
+Content: 4 Paket(e) erzeugt, 0 verworfen
+   Technisches Setup — XOM: chatgpt-work / chatgpt-work/value_first (2 von 4 Varianten bestanden)
+   Technisches Setup — AAPL: template / value-first/state-limit-reason (3 von 4 Varianten bestanden)
+```
+
+### Eine Kennung, eine Definition
+
+`contentIdFor(entity, asOf)` steht in `evidence-package.js`, und beide
+Seiten rufen dieselbe Funktion: das Skript, das den Request stellt, und
+der Zyklus, der das Ergebnis später sucht. Zwei Rechenwege wären zwei
+Gelegenheiten zu driften — und eine Drift hieße, dass der Zyklus das
+fertige Ergebnis nie findet und es niemandem auffällt.

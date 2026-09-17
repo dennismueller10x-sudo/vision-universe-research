@@ -35,6 +35,17 @@
       "pullRequest": 100,
       "deliveryId": null,
       "note": "PR 99 (Branch creative/vu-xom-20260911) blieb ohne Agent-Reaktion und ist geschlossen. Derselbe Brief liegt unveraendert auf authoring/request/vu-xom-20260911 — der Branch-Konvention beider verifizierten Proof-Laeufe. Gleicher Blob, gleicher Processing Key: eine Doppelverarbeitung bleibt ausgeschlossen."
+    },
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:dabd135913761bf0f1be526f3362888359f5561a:1.0",
+      "state": "IN_FLIGHT",
+      "at": "2026-09-17T11:47:00Z",
+      "contentId": "vu-xom-20260911",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "dabd135913761bf0f1be526f3362888359f5561a",
+      "pullRequest": 101,
+      "deliveryId": null,
+      "note": "Dritter Anstoss zu demselben unveraenderten Brief. PR 99 lag auf einem Branch ausserhalb der Konvention, PR 100 trug einen anderen Titel und war kein Draft. Beide verifizierten Proof-Laeufe hatten: Branch authoring/request/<content_id>, Titel VU-AUTHORING-REQUEST: <content_id>, Draft. PR 101 hat alle drei. Gleicher Blob, gleicher Processing Key - die Wiederholung kann nichts doppelt verarbeiten."
     }
   ]
 }
