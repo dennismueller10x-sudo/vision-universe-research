@@ -237,7 +237,11 @@ liefert: `sessionClosed`, `budgetProtect`, `budgetExhausted`,
 ### §19 — V4.1 bleibt
 
 Kein Rückbau. Die 29 Browser-Prüfungen der V4.1-Abnahme laufen
-unverändert grün (29/29), die 206 bestehenden Discover-Tests ebenso.
+unverändert grün, die 206 bestehenden Discover-Tests ebenso. Dazu eine
+dreißigste, die den Riegel selbst prüft: auf der Aktienseite wird **kein**
+WebSocket geöffnet, solange der Strom aus ist — und der Tagesverlauf ist
+trotzdem da. „Nichts wird schlechter" ist damit keine Absichtserklärung,
+sondern eine Zusicherung, die fehlschlagen kann.
 
 ---
 
@@ -377,7 +381,7 @@ scripts/market/assert-no-secrets.mjs          --all (§12)
 | Rückfall ohne Verschlechterung | ✅ getestet |
 | Schlüssel nirgends außer in der Anmeldung | ✅ gescannt |
 | Bestehende Tests nicht abgeschwächt | ✅ 965 + 206 grün |
-| V4.1 nicht zurückgebaut | ✅ 29/29 Browser-QA |
+| V4.1 nicht zurückgebaut | ✅ Browser-QA 30/30 (29 bestehende + 1 neue) |
 | §1 Nachmeldung gemessen | ⏳ Messfenster |
 | §17 Lasttest | ⏳ Messfenster |
 | §18 E2E | ⏳ Messfenster |

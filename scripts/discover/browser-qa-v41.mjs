@@ -323,6 +323,52 @@ await check("Schreibtisch: kein Ueberlauf, keine eigenen 4xx, keine Konsolenfehl
   assert(d.__errors.length === 0, d.__errors.slice(0, 3).join(" | "));
 });
 
+/* Zero-Cost Realtime V1 §2/§12: der Strom ist ein eigenes Tor, und es
+   ist zu, solange der Worker nicht ausgerollt ist. Diese Pruefung ist
+   der Riegel dagegen, dass eine nicht ausgerollte Adresse trotzdem
+   angewaehlt wird - das waere auf jeder Aktienseite ein
+   Verbindungsversuch ins Leere und ein "Live", das keines ist. */
+await check("Strom: Tor zu, kein WebSocket, kein Schluessel in der Auslieferung", async () => {
+  const p = await openPage(MOBIL);
+  /* WebSocket faelschen, BEVOR die Seite laeuft - danach waere es zu spaet. */
+  await p.addInitScript(() => {
+    window.__sockets = [];
+    const Echt = window.WebSocket;
+    window.WebSocket = function (url) { window.__sockets.push(String(url)); return new Echt(url); };
+    window.WebSocket.prototype = Echt.prototype;
+  });
+  await p.goto(BASE + "/discover/#/s/US_REAL/AAPL", { waitUntil: "networkidle" });
+  await warten(p, 3000);
+
+  const befund = await p.evaluate(() => {
+    const Hub = window.VUDiscover && window.VUDiscover.LiveHub;
+    const meta = window.VUDiscoverMeta || {};
+    const stream = (meta.realtime && meta.realtime.stream) || null;
+    return {
+      sockets: window.__sockets || [],
+      streamAvailable: stream ? stream.available : null,
+      streamUrl: stream ? stream.url : null,
+      priceType: stream ? stream.priceType : null,
+      hubLive: !!(Hub && typeof Hub.live === "function"),
+      hubState: Hub && Hub.liveState ? Hub.liveState().state : null
+    };
+  });
+
+  assert(befund.hubLive, "der Hub kennt live() nicht - die Erweiterung fehlt");
+  assert(befund.streamAvailable === false, "der Strom ist eingeschaltet, obwohl der Worker nicht ausgerollt ist");
+  assert(befund.streamUrl === null, "eine Adresse wird ausgeliefert, obwohl der Strom aus ist: " + befund.streamUrl);
+  assert(befund.priceType === "REALTIME_REFERENCE", "priceType ist " + befund.priceType);
+  assert(befund.sockets.length === 0, "es wurde verbunden: " + befund.sockets.join(", "));
+  assert(befund.hubState === "IDLE", "Hub-Zustand " + befund.hubState);
+
+  /* Und die Aktienseite zeigt trotzdem ihren Tagesverlauf - "nichts
+     wird schlechter" ist keine Absichtserklaerung, sondern pruefbar. */
+  const chart = await p.$(".dx-intraday-chart, .dx-chart svg, .dx-chart-hero, svg.dx-line");
+  assert(chart !== null, "ohne Strom fehlt der Chart");
+  assert(p.__errors.length === 0, p.__errors.slice(0, 3).join(" | "));
+  await p.context().close();
+});
+
 await browser.close();
 const fails = results.filter((r) => !r.ok);
 console.log("\n  " + (results.length - fails.length) + "/" + results.length + " bestanden");
