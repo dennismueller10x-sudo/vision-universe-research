@@ -42,3 +42,9 @@ Rollback source point: dac0c7d076a36b959563e80bdb499a6cbd3955db. Previous actual
 Known inherited limitations: real professional backtest gate remains unavailable, no future/PIT safety fabricated; full lifecycle production certification not inherited from old bounded R2 proof; realtime price semantics UNSPECIFIED. Current preview/display scope unchanged. Final release audit and production smoke NOT complete. No GO-LIVE claimed.
 
 Recovery record: first packaged browser run35207566755 reached all desktop views but failed the injected service-error recovery: injection targeted the old unbundled URL. The same rejection and recovery assertions now target either delivery form and inject immediately after the original service code, before app initialization. No assertion removed. Adversarial review also caught missing coverage_matrix/pit_gates files; both existing evidence artifacts now retained with exact JSON equality tests. First revised SEC35207566769 and Quant35207566761 PASS. Company Master35207823967 PASS. Final repaired-head remote gates still required.
+
+## Production activation
+
+- PR #96 merged as `b429417308e31c0b9543641f6cf06bfc97b86385` after all release-candidate gates passed.
+- Owner switched GitHub Pages from branch-root publishing to GitHub Actions.
+- This documentation-only commit triggers the reviewed production artifact workflow; live and smoke status remain pending until deployment verification.
