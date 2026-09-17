@@ -75,7 +75,10 @@ const sitzung = MarketHours.sessionAt(Date.now(), { calendar: kalender, exchange
 /* Messfenster 17.09.2026, zweiter Lauf: jetzt mit den heutigen
    Intraday-Snapshots auf dem Branch. Erst damit hat der laufende Kurs
    etwas, woran er anknuepfen kann - und erst dann darf das Etikett
-   "Markt geoeffnet - Live" ueberhaupt entstehen. */
+   "Markt geoeffnet - Live" ueberhaupt entstehen.
+
+   Dritter Lauf: mit der Korrektur am Etikett (isLive und Ortszeit in der
+   abgeleiteten Sicht). */
 
 const bericht = {
   schemaVersion: "vu-realtime-browser-qa-1.0.0",
