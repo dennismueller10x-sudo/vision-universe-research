@@ -247,9 +247,11 @@ jobs:
                 console.log("| Prüfung | Ergebnis |");
                 console.log("|---|---|");
                 console.log("| angemeldet | " + (r.authenticated ? "ja" : "**nein**") + " |");
-                for (const k of Object.keys(r.permissions)) {
+                console.log("| Rechte von wrangler gelistet | " + (r.permissionsListed ? "ja" : "**nein**") + " |");
+                for (const k of Object.keys(r.permissions || {})) {
                   console.log("| " + k + " | " + (r.permissions[k] ? "ja" : "nein") + " |");
                 }
+                if (!r.permissionsListed) { console.log(""); console.log("_" + r.permissionsNote + "_"); }
               '
             else
               echo 'Kein Zugang gesetzt oder wrangler hat nicht geantwortet.'

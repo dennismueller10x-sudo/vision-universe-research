@@ -68,7 +68,13 @@ const PRUEFUNGEN = [
   { id: "workersSubdomain", pfad: "/accounts/" + account + "/workers/subdomain",
     frage: "gibt es ein *.workers.dev?", zaehlt: false },
   { id: "r2Buckets", pfad: "/accounts/" + account + "/r2/buckets",
-    frage: "R2 lesbar (zum Vergleich)?", zaehlt: true }
+    frage: "R2 lesbar (zum Vergleich)?", zaehlt: true },
+  /* Fuer die Null-Euro-Zusage entscheidend, und zwar aus einem Grund,
+     den der Kostenentwurf bisher nicht kannte: die Freigrenzen gelten
+     JE KONTO, nicht je Worker. Laeuft dort schon etwas, teilt sich
+     vu-live die 100.000 Anfragen mit ihm. */
+  { id: "workersAccountSettings", pfad: "/accounts/" + account + "/workers/account-settings",
+    frage: "Kontoeinstellungen (Tarif) lesbar?", zaehlt: false }
 ];
 
 const bericht = {
@@ -120,6 +126,20 @@ if (!token || !account) {
                 p.frage + (eintrag.count !== null ? "  (" + eintrag.count + ")" : "") +
                 (eintrag.cloudflareErrors ? "  " + eintrag.cloudflareErrors.map((e) => e.code).join(",") : ""));
   }
+
+  /* Was schon im Konto liegt, teilt sich die Freigrenze mit uns. */
+  const einstellungen = bericht.checks.find((c) => c.id === "workersAccountSettings");
+  const skripte = bericht.checks.find((c) => c.id === "workersScripts");
+  bericht.sharedFreeTier = {
+    existingWorkerScripts: skripte && skripte.count !== null ? skripte.count : null,
+    note: "Die kostenlosen Kontingente gelten JE KONTO, nicht je Worker. Jeder Worker, der hier " +
+          "schon laeuft, verbraucht aus denselben 100.000 Anfragen je Tag. Der Budgetwaechter von " +
+          "vu-live sieht diesen Verbrauch nicht - er zaehlt nur den eigenen.",
+    consequence: skripte && skripte.count ? "Es liegt bereits " + skripte.count +
+                 " Worker-Skript im Konto. Die Reserve des Waechters (10.000 Anfragen) muss das " +
+                 "abdecken, oder sie wird erhoeht." : "Kein weiterer Worker im Konto."
+  };
+  if (einstellungen) bericht.workersAccountSettingsReadable = !!einstellungen.ok;
 
   const workers = bericht.checks.find((c) => c.id === "workersScripts");
   const dos = bericht.checks.find((c) => c.id === "durableObjects");
