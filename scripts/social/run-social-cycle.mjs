@@ -72,6 +72,8 @@ const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js")
 const AutorVorlage = require(join(ROOT, "social/providers/authoring/template/adapter.js"));
 const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapter.js"));
 const AutorChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
+const Lifecycle    = require(join(ROOT, "social/engines/provider-lifecycle.js"));
+const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 
 /* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
    Chromium und gehoert deshalb nicht in die Browser-Ladbarkeit der
@@ -374,6 +376,51 @@ const CREATIVE_TRANSPORT = {
   }
 };
 
+/* -------------------------------------------------------------------
+   WAS DER EXTERNE ANBIETER GERADE TUT — SOWEIT SICHTBAR
+
+   PR 101 meldete sechsmal STARTED und lieferte nie. Der Zyklus lief
+   weiter, weil der Autor `pending` meldet und die Vorlage einspringt —
+   aber im Bericht stand davon nichts. Ein Anbieter, der seit Stunden
+   schweigt, sah genauso aus wie einer, der gerade erst angefangen hat.
+
+   Der Zustand wird deshalb aus dem Ledger bestimmt und genannt. Er
+   aendert am Lauf nichts: STALE_NO_RESULT blockiert ausdruecklich
+   nicht. Er macht nur sichtbar, woran man sonst vorbeiliest.
+   ------------------------------------------------------------------- */
+function creativeZustand(contentId, nowIso) {
+  if (!contentId) return null;
+
+  const briefPfad = join(ROOT, "authoring/requests", String(contentId),
+    "authoring-brief.json");
+  if (!existsSync(briefPfad)) return null;
+
+  let schluessel = null;
+  try {
+    const roh = readFileSync(briefPfad);
+    const brief = JSON.parse(String(roh));
+    schluessel = AutorChatGptWork.processingKey(brief.brief_id, contentId,
+      AutorChatGptWork.blobSha(roh), brief.schema_version || "1.0");
+  } catch (err) { return null; }
+
+  const ledgerRoh = readJson("social/data/creative-invocations.json", { entries: [] });
+  const alle = (ledgerRoh.entries || []).filter((e) =>
+    e.processingKey === schluessel && e.observed === true);
+
+  const zeiten = alle.map((e) => e.at).filter(Boolean).sort();
+  const ergebnisPfad = join(ROOT, "authoring/requests", String(contentId),
+    "authoring-result.json");
+
+  const z = Lifecycle.classify({
+    startedCount: alle.filter((e) => e.state === "IN_FLIGHT").length,
+    lastActivityAt: zeiten.length ? zeiten[zeiten.length - 1] : null,
+    resultPresent: existsSync(ergebnisPfad)
+  }, { now: nowIso });
+
+  return Object.assign({ contentId, processingKey: schluessel,
+    deliveryIds: Array.from(new Set(alle.map((e) => e.deliveryId).filter(Boolean))) }, z);
+}
+
 const autorenRegistry = Authoring.createRegistry();
 autorenRegistry.register(AutorChatGptWork.createChatGptWorkAuthor({
   transport: CREATIVE_TRANSPORT,
@@ -668,6 +715,7 @@ async function main() {
   }
 
   /* ------------------------------------------------ 3. Gelegenheiten */
+  const creativeZustaende = [];
   const candidates = buildOpportunities(signalData.signals, signalData.internal, memory,
                                         registry, PROVIDER_ID || "mock");
   const proposable = candidates.filter((c) => c.score.proposable);
@@ -806,6 +854,9 @@ async function main() {
       ? EvidencePackage.contentIdFor(evidenzPaket.entity, evidenzPaket.asOf)
       : null;
 
+    const creativeLage = creativeZustand(creativeContentId, NOW);
+    if (creativeLage) creativeZustaende.push(creativeLage);
+
     const geschrieben = Authoring.run(autorenRegistry, brief, {
       authors: AUTOR_REIHENFOLGE,
       contentId: creativeContentId,
@@ -907,6 +958,25 @@ async function main() {
   for (const a of autorenLage) {
     log("  " + a.authorId.padEnd(namensBreite) + (a.ok ? "einsatzbereit" : "nicht verfuegbar"));
     if (!a.ok) detail("   ", a.reason);
+  }
+
+  if (creativeZustaende.length) {
+    log("\nCreative Provider:");
+    for (const z of creativeZustaende) {
+      log("  " + z.contentId + ": " + z.state +
+        (z.blocking ? "  (wartet)" : "  (blockiert den Zyklus nicht)"));
+      if (z.startedCount) {
+        log("    " + z.startedCount + "x STARTED, zuletzt vor " +
+          Math.round((z.ageSeconds || 0) / 60) + " min; Frist " +
+          Math.round(z.lease.seconds / 60) + " min (" + z.lease.regime + ", n=" +
+          z.lease.sampleSize + ")");
+      }
+      if (z.state === "STALE_NO_RESULT") {
+        log("    Kein Content-Fehler und kein Leistungsurteil: der Anbieter hat im");
+        log("    Beobachtungsfenster nichts Beobachtbares geliefert. Ob sein Lauf noch");
+        log("    laeuft, kann diese Schnittstelle nicht sehen.");
+      }
+    }
   }
 
   log("\nContent: " + packages.length + " Paket(e) erzeugt, " + rejections.length + " verworfen");
@@ -1570,6 +1640,11 @@ async function main() {
   const report = {
     generatedAt: NOW,
     provider: PROVIDER_ID,
+    /* Der Zustand des externen Creative-Providers, soweit beobachtbar.
+       Er gehoert in den Bericht und nicht nur auf die Konsole: wer den
+       Lauf spaeter liest, soll sehen, ob die Vorlage eingesprungen ist
+       und warum. */
+    creativeProvider: creativeZustaende,
     health: matrix,
     autonomy,
     signals: signalData.signals.length,
