@@ -1,0 +1,176 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — social/engines/invocation-ledger.js
+
+   WAS SCHON EINMAL ANGESTOSSEN WURDE
+
+   -------------------------------------------------------------------------
+   DER BEWEISSTATUS, DEN DER OWNER GENANNT HAT
+   -------------------------------------------------------------------------
+
+   Im realen Proof wurde KEIN rekursiver Result-Commit beobachtet. Der
+   Trigger ist eng (`pull_request/opened`), `enable_commit_updates` ist
+   aus, und ein Ledger existiert.
+
+   Aber die verfuegbare Schnittstelle liefert KEINE vollstaendige
+   Run-Historie. Damit gilt:
+
+     LOOP_PROTECTION_OPERATIONALLY_SUPPORTED
+
+   und ausdruecklich NICHT:
+
+     FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN
+
+   Der Unterschied ist keine Formalie. "Wir haben keine Rekursion
+   gesehen" und "es kann keine geben" sind zwei verschiedene Aussagen,
+   und nur die zweite erlaubt es, Schutzschichten wegzulassen.
+
+   Solange die erste gilt, bleiben ALLE Schichten:
+
+     enger PR-Trigger          das Ereignis selbst
+     Branch-/Pfad-/Statusgates wo darf ein Ergebnis ueberhaupt liegen
+     enable_commit_updates=false   der Agent reagiert nicht auf sich selbst
+     Processing Key            ein Lauf je Brief-Revision
+     immutable completed       ein fertiges Ergebnis wird nie ueberschrieben
+     dieses Ledger             was schon angestossen wurde
+     idempotente Verarbeitung  zweimal lesen aendert nichts
+
+   Eine einzelne Schicht wegzulassen, weil die anderen schon greifen,
+   ist genau die Rechnung, die bei einem unbewiesenen Loop nicht aufgeht.
+   ========================================================================= */
+(function (global) {
+  "use strict";
+
+  var isNode = (typeof module !== "undefined" && module.exports);
+
+  var STATES = ["REQUESTED", "IN_FLIGHT", "COMPLETED", "REJECTED", "RECOVERY_REQUIRED"];
+
+  /* Ein fertiges Ergebnis ist fertig. Von hier aus geht es nirgends
+     mehr hin — ein spaeterer Lauf, der es aendern wollte, ist der Lauf,
+     den es nicht geben darf. */
+  var TERMINAL = ["COMPLETED", "REJECTED"];
+
+  function createLedger(entries) {
+    var eintraege = Array.isArray(entries) ? entries.slice() : [];
+
+    function byKey(processingKey) {
+      for (var i = eintraege.length - 1; i >= 0; i -= 1) {
+        if (eintraege[i].processingKey === processingKey) return eintraege[i];
+      }
+      return null;
+    }
+
+    /**
+     * Darf dieser Lauf angestossen werden?
+     *
+     * Die Antwort ist oefter nein, als man denkt — und jedes Nein hat
+     * einen anderen Grund, der auch benannt wird. "Schon gelaufen" und
+     * "laeuft gerade" verlangen verschiedene Reaktionen.
+     */
+    function mayInvoke(processingKey, options) {
+      options = options || {};
+      var vorhanden = byKey(processingKey);
+      if (!vorhanden) return { ok: true, reason: null, existing: null };
+
+      if (vorhanden.state === "COMPLETED") {
+        return { ok: false, reason: "completed", existing: vorhanden,
+          message: "Fuer diesen Schluessel liegt bereits ein fertiges Ergebnis vor. " +
+            "Es wird wiederverwendet und nicht neu erzeugt." };
+      }
+      if (vorhanden.state === "REJECTED") {
+        return { ok: false, reason: "rejected", existing: vorhanden,
+          message: "Dieser Lauf wurde bereits zurueckgewiesen. Eine Wiederholung " +
+            "braucht eine neue Brief-Revision — sonst entstuenden dieselben " +
+            "Kennungen fuer anderen Text." };
+      }
+      if (vorhanden.state === "RECOVERY_REQUIRED") {
+        return { ok: false, reason: "recovery", existing: vorhanden,
+          message: "Dieser Lauf steht in RECOVERY_REQUIRED. Ein stiller zweiter " +
+            "Versuch wuerde die Herkunft verwischen; die Wiederherstellung ist " +
+            "eine Entscheidung." };
+      }
+
+      /* IN_FLIGHT oder REQUESTED. */
+      var alter = options.now && vorhanden.at
+        ? (Date.parse(options.now) - Date.parse(vorhanden.at)) / 3600000 : null;
+      var frist = typeof options.staleAfterHours === "number" ? options.staleAfterHours : 6;
+
+      if (alter !== null && alter > frist) {
+        return { ok: false, reason: "staleInFlight", existing: vorhanden,
+          message: "Ein Lauf zu diesem Schluessel steht seit " +
+            Math.round(alter) + " Stunden offen. Das ist laenger als erwartet; " +
+            "ob der Agent noch arbeitet, weiss niemand ohne nachzusehen. " +
+            "Es wird NICHT erneut angestossen." };
+      }
+      return { ok: false, reason: "inFlight", existing: vorhanden,
+        message: "Ein Lauf zu diesem Schluessel laeuft bereits." };
+    }
+
+    function record(entry) {
+      if (!entry || !entry.processingKey) {
+        throw new Error("VUSocialInvocationLedger: Eintrag ohne processingKey");
+      }
+      if (STATES.indexOf(entry.state) === -1) {
+        throw new Error("VUSocialInvocationLedger: unbekannter Zustand " + entry.state);
+      }
+
+      var vorhanden = byKey(entry.processingKey);
+      if (vorhanden && TERMINAL.indexOf(vorhanden.state) !== -1) {
+        /* Ein fertiges Ergebnis wird nicht ueberschrieben. Der Versuch
+           wird festgehalten — ein Ledger, das Versuche verschweigt,
+           beantwortet die Frage nicht mehr, wie oft etwas lief. */
+        eintraege.push({
+          processingKey: entry.processingKey,
+          state: vorhanden.state,
+          at: entry.at || null,
+          note: "Zweiter Eintrag zu einem abgeschlossenen Schluessel abgewiesen " +
+            "(Versuch: " + entry.state + ").",
+          rejectedWrite: true
+        });
+        return { written: false, reason: "terminal", existing: vorhanden };
+      }
+
+      eintraege.push({
+        processingKey: entry.processingKey,
+        state: entry.state,
+        at: entry.at || null,
+        contentId: entry.contentId || null,
+        briefId: entry.briefId || null,
+        briefBlobSha: entry.briefBlobSha || null,
+        pullRequest: entry.pullRequest === undefined ? null : entry.pullRequest,
+        deliveryId: entry.deliveryId || null,
+        note: entry.note || null
+      });
+      return { written: true, reason: null, existing: vorhanden };
+    }
+
+    return {
+      mayInvoke: mayInvoke,
+      record: record,
+      get: byKey,
+      all: function () { return eintraege.slice(); },
+      /** Wie oft wurde zu diesem Schluessel ueberhaupt geschrieben? */
+      countFor: function (key) {
+        return eintraege.filter(function (e) { return e.processingKey === key; }).length;
+      },
+      snapshot: function (meta) {
+        return {
+          generatedAt: (meta && meta.now) || null,
+          /* Der Beweisstatus reist mit den Daten. Wer sie spaeter liest,
+             soll nicht annehmen muessen, was sie wert sind. */
+          loopProtection: "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
+          loopProtectionNote:
+            "Kein rekursiver Result-Commit beobachtet. Die verfuegbare " +
+            "Schnittstelle liefert keine vollstaendige Run-Historie; " +
+            "FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. " +
+            "Alle Schutzschichten bleiben aktiv.",
+          entries: eintraege.slice()
+        };
+      }
+    };
+  }
+
+  var api = { STATES: STATES, TERMINAL: TERMINAL, createLedger: createLedger };
+
+  if (isNode) module.exports = api;
+  else global.VUSocialInvocationLedger = api;
+})(typeof window !== "undefined" ? window : globalThis);
