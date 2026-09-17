@@ -28,6 +28,22 @@ import Transport from "../../quant/engines/realtime/transport.js";
 import TiingoRealtime from "../../providers/tiingo/realtime.js";
 
 const DEFAULT_WS_URL = "wss://api.tiingo.com/iex";
+
+/**
+ * Cloudflare nimmt fuer ein Upgrade KEIN wss:// entgegen - nur http oder
+ * https. Der Rest der Welt schreibt die Adresse eines WebSockets aber
+ * mit wss, und so steht sie ueberall in diesem Repository.
+ *
+ * Diese drei Zeilen sind der Unterschied zwischen "der Worker laeuft"
+ * und "der Worker liefert". Beim ersten Deployment am 17.09.2026 fehlten
+ * sie: /health war gruen, die Verbindung kam zustande, der Browser bekam
+ * seine Begruessung - und keinen einzigen Kurs. Der Transport meldete
+ * transportFailed, weil fetch("wss://...") in workerd nie eine Antwort
+ * mit webSocket ergibt.
+ */
+function alsHttp(url) {
+  return String(url || "").replace(/^wss:\/\//i, "https://").replace(/^ws:\/\//i, "http://");
+}
 /* Gemessen am 16.09.2026: nur diese Stufe nimmt dieses Konto an. */
 const THRESHOLD_LEVEL = 6;
 
@@ -86,7 +102,7 @@ export function createTiingoLink(opts) {
       /* Der Verbindungsaufbau ist asynchron; transport.js erwartet ihn
          synchron. Deshalb wird der Socket hier geholt und der Transport
          erst gestartet, wenn er vorliegt. */
-      fetchImpl(wsUrl, { headers: { Upgrade: "websocket" } }).then((antwort) => {
+      fetchImpl(alsHttp(wsUrl), { headers: { Upgrade: "websocket" } }).then((antwort) => {
         const ws = antwort.webSocket;
         if (!ws) {
           handlers.onError({ reason: "transportFailed", fatal: true,

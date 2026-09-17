@@ -163,6 +163,10 @@ export function anbieter(opts) {
   opts = opts || {};
   const griff = {
     verbindungen: 0,
+    /* Womit der Link den Aufbau versucht hat. Cloudflare nimmt fuer ein
+       Upgrade kein wss:// entgegen, und das ist von aussen nicht zu
+       sehen - also wird es hier festgehalten. */
+    urls: [],
     anmeldungen: [],        /* jede Nachricht, die der Link geschickt hat */
     sockets: [],
     aktuell: null,
@@ -184,7 +188,8 @@ export function anbieter(opts) {
       return letzte.length ? letzte[letzte.length - 1].eventData.tickers : [];
     }
   };
-  const fetchImpl = async () => {
+  const fetchImpl = async (url) => {
+    griff.urls.push(String(url));
     if (opts.verweigern) return new PappResponse("kein Upgrade", { status: 400 });
     griff.verbindungen++;
     const s = macheSocket("provider");

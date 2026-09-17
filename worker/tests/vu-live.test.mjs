@@ -513,3 +513,21 @@ test("VL-32 unbekannte Pfade sind 404, und die Wurzel erklaert sich", async () =
   const nichts = await worker.fetch(anfrage("https://live.visionuniverse.de/kurse"), env);
   assert.equal(nichts.status, 404);
 });
+
+test("VL-33 der Verbindungsaufbau benutzt https, nicht wss", async () => {
+  /* Cloudflare nimmt fuer ein Upgrade nur http oder https entgegen. Der
+     Rest der Welt schreibt die Adresse eines WebSockets mit wss, und so
+     steht sie in diesem Repository ueberall.
+
+     Beim ersten Deployment hat genau das gefehlt: der Worker lief,
+     /health war gruen, die Begruessung kam an - und kein einziger Kurs.
+     Von aussen sah das aus wie ein stiller Markt. Dieser Test ist der
+     Riegel dagegen, dass es noch einmal unbemerkt passiert. */
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  assert.equal(h.prov.urls.length, 1);
+  assert.match(h.prov.urls[0], /^https:\/\//, "aufgebaut wurde mit " + h.prov.urls[0]);
+  assert.equal(h.prov.urls[0].indexOf("wss://"), -1);
+  assert.match(h.prov.urls[0], /api\.tiingo\.com\/iex$/, "und zwar zum IEX-Strom");
+});

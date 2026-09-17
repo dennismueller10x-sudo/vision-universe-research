@@ -1,7 +1,7 @@
 {
   "schemaVersion": "deploy-preconditions-1.0.0",
   "auftrag": "Owner-Freigabe 17.09.2026: Deployment nur bei gruenen Nachweisen",
-  "checkedAt": "2026-09-17T14:02:01.332Z",
+  "checkedAt": "2026-09-17T14:07:29.732Z",
   "maxAgeHours": 24,
   "conditions": [
     {
@@ -66,9 +66,9 @@
     {
       "name": "REALTIME_FALLBACK",
       "status": "PASS",
-      "reason": "219 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
+      "reason": "220 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
       "evidence": {
-        "total": 219,
+        "total": 220,
         "suites": [
           {
             "suite": "subscription-manager",
@@ -91,8 +91,8 @@
           {
             "suite": "worker/vu-live",
             "pattern": "worker/tests/vu-live.test.mjs",
-            "tests": 32,
-            "pass": 32,
+            "tests": 33,
+            "pass": 33,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -175,9 +175,9 @@
     {
       "name": "SECRET_SCAN",
       "status": "PASS",
-      "reason": "24761 Dateien geprueft, keine Zugangsdaten.",
+      "reason": "24762 Dateien geprueft, keine Zugangsdaten.",
       "evidence": {
-        "files": 24761
+        "files": 24762
       }
     },
     {

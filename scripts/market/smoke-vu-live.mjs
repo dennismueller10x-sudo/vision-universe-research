@@ -109,16 +109,25 @@ async function main() {
   } catch (err) { h.detail = { error: String(err && err.message || err) }; }
 
   /* 3 + 4: die Tuer ------------------------------------------------------ */
-  const fremd = pruefung("originRejected", "wird ein fremder Ursprung abgewiesen?");
+  const fremd = pruefung("originRejected", "bleibt ein fremder Ursprung draussen?");
   try {
-    const r = await fetch(httpUrl("/live"), {
-      headers: { Origin: FREMDER_URSPRUNG, Upgrade: "websocket", Connection: "Upgrade" }
+    /* Upgrade ist ein verbotener Kopf: fetch() setzt ihn nicht, es
+       scheitert daran (gemessen am 17.09.2026: "fetch failed"). Geprueft
+       wird die Ursprungspruefung deshalb ueber zwei legale Anfragen -
+       und das genuegt, denn ein Browser kommt ohne freigegebenen
+       Ursprung an beiden nicht vorbei. */
+    const vorflug = await fetch(httpUrl("/version"), {
+      method: "OPTIONS",
+      headers: { Origin: FREMDER_URSPRUNG, "Access-Control-Request-Method": "GET" }
     });
-    /* 403 ist die Antwort des Workers, 426 hiesse "kein echtes Upgrade" -
-       beides ist KEIN Socket, aber nur 403 ist die Ursprungspruefung. */
-    fremd.ok = r.status === 403;
-    fremd.detail = { status: r.status,
-                     allowOrigin: r.headers.get("access-control-allow-origin") };
+    const einfach = await fetch(httpUrl("/version"), { headers: { Origin: FREMDER_URSPRUNG } });
+    const kopfA = vorflug.headers.get("access-control-allow-origin");
+    const kopfB = einfach.headers.get("access-control-allow-origin");
+    fremd.ok = !kopfA && !kopfB;
+    fremd.detail = { preflightStatus: vorflug.status, preflightAllowOrigin: kopfA,
+                     getStatus: einfach.status, getAllowOrigin: kopfB,
+                     note: "Ohne Access-Control-Allow-Origin lehnt der Browser die Antwort ab, " +
+                           "und der WebSocket kommt gar nicht erst zustande." };
   } catch (err) { fremd.detail = { error: String(err && err.message || err) }; }
 
   const vorflug = pruefung("corsPreflight", "bekommt research.visionuniverse.de den CORS-Kopf?");
@@ -153,6 +162,7 @@ async function main() {
       return;
     }
     const ersteKurse = Object.create(null);
+    const zustaende = [];
     const eingang = [];
     let abonniertAt = null;
     const ende = setTimeout(() => { try { ws.close(1000, "smoke"); } catch (e) {} }, HOER_SEKUNDEN * 1000);
@@ -180,6 +190,16 @@ async function main() {
       if (n.op === "denied" && !kurse.detail) {
         kurse.detail = { denied: n.symbol, reason: n.reason, session: n.session || null };
       }
+      /* Kommen keine Kurse, steht der Grund hier - und nur hier. Der
+         erste Deployment-Lauf meldete "0 von 5 geliefert" ohne ihn, und
+         damit war nicht zu sehen, dass der Transport gar nicht erst
+         zustande kam. */
+      if (n.op === "status" || n.op === "session" || n.op === "budget") {
+        zustaende.push({ op: n.op, state: n.state || null, reason: n.reason || null,
+                         mode: n.mode || null, modeReason: n.modeReason || null,
+                         verdict: n.verdict || null, session: n.session || null,
+                         at: new Date().toISOString() });
+      }
     });
     ws.addEventListener("error", () => { /* das Ergebnis steht in den Feldern */ });
     ws.addEventListener("close", (ev) => {
@@ -198,8 +218,10 @@ async function main() {
       kurse.ok = s.phase === "REGULAR" ? geliefert.length === SYMBOLE.length : true;
       kurse.detail = Object.assign(kurse.detail || {}, {
         session: s.phase, delivered: geliefert.length, of: SYMBOLE.length,
-        closeCode: ev && ev.code, ops: [...new Set(eingang)]
+        closeCode: ev && ev.code, ops: [...new Set(eingang)],
+        states: zustaende.slice(0, 12)
       });
+      bericht.states = zustaende.slice(0, 20);
       fertig();
     });
   });
@@ -211,6 +233,7 @@ async function main() {
 }
 
 function schreibe() {
+  geschrieben = true;
   mkdirSync(OUT_DIR, { recursive: true });
   const pfad = join(OUT_DIR, "vu-live-smoke.json");
   writeFileSync(pfad, JSON.stringify(bericht, null, 2) + "\n");
@@ -229,6 +252,20 @@ function schreibe() {
   if (bericht.result !== "PASS") process.exitCode = 1;
   return bericht;
 }
+
+/* Ein Lauf, der nichts hinterlaesst, ist kein Nachweis. Beim ersten
+   Deployment-Lauf hat dieses Skript 46 Sekunden gearbeitet und weder
+   eine Zeile ausgegeben noch eine Datei geschrieben - was danach
+   aussah, als sei es gar nicht gelaufen. Dieser Riegel schreibt den
+   Bericht auch dann, wenn der Prozess auf einem anderen Weg endet. */
+let geschrieben = false;
+process.on("exit", () => {
+  if (!geschrieben) {
+    bericht.result = bericht.result === "UNKNOWN" ? "FAIL" : bericht.result;
+    bericht.reason = bericht.reason || "processExitedEarly";
+    try { schreibe(); } catch (e) { /* mehr geht nicht */ }
+  }
+});
 
 main().catch((err) => {
   bericht.result = "FAIL";
