@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T13:15:28.745Z",
+  "checkedAt": "2026-09-17T13:32:32.396Z",
   "target": "repository",
   "market": {
-    "state": "PRE_MARKET",
+    "state": "OPEN",
     "localDate": "2026-09-17",
-    "localTime": "09:15:28",
+    "localTime": "09:32:32",
     "lastCompletedSession": "2026-09-16",
     "currentSession": "2026-09-17",
-    "expectedIntradaySession": "2026-09-16"
+    "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T13:15:24.168Z",
+    "indexGeneratedAt": "2026-09-17T13:32:27.960Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-16",
@@ -29,8 +29,8 @@
       "universe": true
     },
     "dataState": "LAST_SESSION",
-    "dataReason": "lastCompletedSession",
-    "dataLabel": "Letzter Handelstag · Mittwoch",
+    "dataReason": "previousSessionWithinOpenGrace",
+    "dataLabel": "Letzter Handelstag · Mittwoch · heutige Kurse folgen",
     "entries": 520,
     "byState": {
       "LIVE": 0,
@@ -39,8 +39,8 @@
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "lastCompletedSession": 519,
-      "lastSessionMissing": 1
+      "previousSessionWithinOpenGrace": 519,
+      "olderThanLastSession": 1
     },
     "staleSample": [
       "TVA"
