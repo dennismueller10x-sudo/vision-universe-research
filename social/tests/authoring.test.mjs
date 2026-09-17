@@ -289,7 +289,61 @@ test("AU22 · Die Auswahl folgt derselben Regel wie die Archetyp-Auswahl", () =>
   assert.equal(mitWissen.selection.chosen.variant.pattern, muster);
   assert.match(mitWissen.selection.reason, /n=7/);
 
+  /* Unter der Mindeststichprobe wird das Wissen NICHT benutzt — und die
+     Begruendung nennt dann, was stattdessen entschieden hat. Eine
+     Begruendung, die den letzten Sortierschluessel nennt statt den
+     wirksamen, ist eine falsche Begruendung; sie steht spaeter im
+     Kandidaten, den ein Mensch liest. */
   const zuDuenn = Authoring.run(reg, brief(), { gates: GATES, mode: "EXPLOIT",
     patternKnowledge: { [muster]: { mean: 82, sampleSize: 2 } } });
-  assert.match(zuDuenn.selection.reason, /Kein Muster hat genug Daten/);
+  assert.notEqual(zuDuenn.selection.chosen.variant.pattern, muster,
+    "n=2 darf nicht als bewaehrt gelten");
+  assert.ok(!/n=2/.test(zuDuenn.selection.reason),
+    "und die Begruendung darf sich nicht auf die duenne Zahl berufen");
+  assert.match(zuDuenn.selection.reason, /Komposition|seltensten benutzte/);
+});
+
+test("AU23 · Gemessenes schlaegt Gerechnetes", () => {
+  /* Die Komposition ist eine gute Heuristik; eine gemessene Wirkung ist
+     eine Beobachtung. Wo beides vorliegt, gewinnt die Beobachtung —
+     sonst waere das Lernen eine Zierde. */
+  const reg = registry(Template.createTemplateAuthor({}));
+  const ohne = Authoring.run(reg, brief(), { gates: GATES });
+  const bestKomposition = ohne.selection.chosen.variant.pattern;
+  const schlechter = ohne.selection.alternatives[ohne.selection.alternatives.length - 1];
+
+  const mitMessung = Authoring.run(reg, brief(), { gates: GATES, mode: "EXPLOIT",
+    patternKnowledge: { [schlechter.pattern]: { mean: 90, sampleSize: 9 } } });
+
+  assert.equal(mitMessung.selection.chosen.variant.pattern, schlechter.pattern);
+  assert.notEqual(mitMessung.selection.chosen.variant.pattern, bestKomposition);
+  assert.match(mitMessung.selection.reason, /n=9/);
+});
+
+test("AU24 · Dreimal dieselbe Figur faellt auf", () => {
+  /* Hook, Bildzeile und Caption koennen jede fuer sich tadellos sein und
+     zusammen dreimal dasselbe sagen. Keine einzelne Pruefung sieht das:
+     die Markenpruefung sieht Hook und Caption, die Bildguete sieht die
+     Karte. Der Fehler sitzt DAZWISCHEN. */
+  const schlecht = Authoring.compositionCheck({
+    hook: "Keine Prognose, nur eine Lagebeschreibung.",
+    visualLine: "Lagebeschreibung, keine Prognose.",
+    caption: "Eine Lagebeschreibung und keine Prognose, mehr ist es nicht."
+  }, {});
+  assert.equal(schlecht.passed, false);
+  assert.match(schlecht.explanation, /ueberschneiden/);
+});
+
+test("AU25 · Gegenstand und Zahl duerfen sich wiederholen", () => {
+  /* Ein Hook, der den Titel verschweigt, ist kein Hook. Die erste
+     Fassung mass die rohe Ueberschneidung und verwarf deshalb ALLE vier
+     Varianten — sie bestrafte genau das, was richtig war. */
+  const ev = [{ entity: "XOM", metric: "Technical Opportunity Score", value: 76 }];
+  const gut = Authoring.compositionCheck({
+    hook: "XOM: 76 im Technical Opportunity Score.",
+    visualLine: "Lagebeschreibung, keine Prognose.",
+    caption: "Unsere Auswertung bewertet XOM derzeit mit 76 im Technical Opportunity " +
+      "Score. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist."
+  }, { evidence: ev });
+  assert.equal(gut.passed, true, gut.explanation);
 });
