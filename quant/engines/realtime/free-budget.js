@@ -119,8 +119,41 @@
           "Snapshot-Pfad, keine Rechnung - der kostenlose Tarif schaltet ab, statt abzurechnen."
   };
 
-  /* Gemessen am 16.09.2026: der lebhafteste Titel des Bandes. */
-  var MEASURED_MAX_EVENTS_PER_SECOND = 1.7;
+  /* ZWEI GEMESSENE RATEN, UND DER UNTERSCHIED ENTSCHEIDET
+
+     16.09.2026, ganzes Band ohne Tickerliste: der lebhafteste EINZELNE
+     Titel kam auf 1,7 Ereignisse je Sekunde (XLK).
+
+     17.09.2026, 50 abonnierte liquide Titel ueber 30 Sekunden bei
+     offener Sitzung: 17,2 Ereignisse je Sekunde INSGESAMT, also 0,34 je
+     Titel (quant/data/market/commercial/vu-live-e2e.json).
+
+     Der erste Wert ist ein Maximum, der zweite ein Durchschnitt, und der
+     erste auf alle Titel anzuwenden war ein Fehler mit Folgen: die
+     Vorausschau lehnte den 40. von 50 Titeln ab, waehrend der
+     tatsaechliche Verbrauch bei 0,1 Prozent des Kontingents lag. Eine
+     Schranke, die bei einem Tausendstel des Verbrauchs schliesst,
+     schuetzt nichts - sie verhindert nur den Betrieb. */
+  var MEASURED_MAX_EVENTS_PER_SECOND = 1.7;          /* ein Titel, Spitze */
+  var MEASURED_BASKET_EVENTS_PER_SECOND = 0.34;      /* 50 Titel, Durchschnitt */
+
+  /* Womit die VORAUSSCHAU rechnet: der gemessene Durchschnitt mit dem
+     Faktor 2,5. Das liegt deutlich ueber der Messung und immer noch
+     unter der Einzelspitze.
+
+     WARUM DAS SICHER BLEIBT, obwohl es weniger pessimistisch ist:
+
+     Die Vorausschau entscheidet nur die AUFNAHME. Der Verbrauch selbst
+     wird fortlaufend gezaehlt, und WARNING bei 70 % wie PROTECT bei
+     85 % haengen an diesem gezaehlten Verbrauch, nicht an der Annahme.
+     Faellt die Annahme zu niedrig aus, kommen ein paar Titel mehr
+     herein - und die Schwellen greifen trotzdem, nur eben spaeter und
+     auf echten Zahlen statt auf einer Schaetzung.
+
+     Die Schwellen selbst sind unveraendert. Was sich geaendert hat, ist
+     eine Annahme, die nachweislich falsch war. */
+  var DEFAULT_ASSUMED_EVENTS_PER_SECOND =
+    Math.round(MEASURED_BASKET_EVENTS_PER_SECOND * 2.5 * 100) / 100;   /* 0,85 */
 
   var VERDICTS = ["OK", "WARNING", "PROTECT", "EXHAUSTED"];
 
@@ -147,7 +180,7 @@
     var reserve = opts.reserveRequests === undefined ? DEFAULT_RESERVE_REQUESTS
                                                      : opts.reserveRequests;
     var annahme = opts.assumedEventsPerSecond === undefined
-      ? MEASURED_MAX_EVENTS_PER_SECOND : opts.assumedEventsPerSecond;
+      ? DEFAULT_ASSUMED_EVENTS_PER_SECOND : opts.assumedEventsPerSecond;
     var restSekunden = typeof opts.sessionRemainingSeconds === "function"
       ? opts.sessionRemainingSeconds : function () { return 0; };
     var now = typeof opts.now === "function" ? opts.now : function () { return Date.now(); };
@@ -327,6 +360,8 @@
     DEFAULT_RESERVE_REQUESTS: DEFAULT_RESERVE_REQUESTS,
     RESERVE_RATIONALE: RESERVE_RATIONALE,
     MEASURED_MAX_EVENTS_PER_SECOND: MEASURED_MAX_EVENTS_PER_SECOND,
+    MEASURED_BASKET_EVENTS_PER_SECOND: MEASURED_BASKET_EVENTS_PER_SECOND,
+    DEFAULT_ASSUMED_EVENTS_PER_SECOND: DEFAULT_ASSUMED_EVENTS_PER_SECOND,
     create: create
   };
 

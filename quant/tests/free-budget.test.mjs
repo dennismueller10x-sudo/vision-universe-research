@@ -76,38 +76,52 @@ test("FB-5 ueber der Grenze heisst EXHAUSTED, nicht 'ein bisschen teurer'", () =
 
 test("FB-6 gerechnet wird vorher: ein Symbol kostet bis zum Handelsschluss", () => {
   const { b } = baue({ rest: 5.5 * 3600 });
-  /* Ein Symbol, 1,7 Ereignisse je Sekunde, 19.800 Sekunden Rest:
-     33.660 Nachrichten = 1.683 Anfragen. */
+  /* Ein Symbol, 0,85 Ereignisse je Sekunde, 19.800 Sekunden Rest:
+     16.830 Nachrichten = 842 Anfragen.
+
+     0,85 ist der am 17.09.2026 gemessene Durchschnitt eines Korbes aus
+     50 liquiden Titeln (0,34) mit dem Faktor 2,5 - nicht mehr die
+     Einzelspitze von 1,7, die auf alle Titel angewandt den 40. von 50
+     abgelehnt hat, waehrend der echte Verbrauch bei 0,1 Prozent lag. */
   const f = b.forecast(1);
   assert.equal(f.remainingSeconds, 19800);
-  assert.equal(f.projectedMessages, 33660);
-  assert.equal(f.projectedRequests, 1683);
+  assert.equal(f.projectedMessages, 16830);
+  assert.equal(f.projectedRequests, 842);
   assert.equal(f.verdict, "OK");
 });
 
 test("FB-7 mayAdd erlaubt das erste Symbol und lehnt ab, bevor die Grenze faellt", () => {
   const { b } = baue({ rest: 5.5 * 3600 });
   assert.equal(b.mayAdd("NVDA", 0).allow, true);
-  /* Fuenfzig Titel ueber fuenfeinhalb Stunden: 1,7 x 50 x 19.800
-     = 1.683.000 Nachrichten = 84.150 Anfragen von 90.000 nutzbaren.
-     Das ist ueber 85 Prozent und wird abgelehnt. */
-  const viele = b.mayAdd("NEU", 50);
+
+  /* Die Grenze liegt bei fuenfeinhalb Stunden Rest rechnerisch beim
+     91. Titel: 91 x 0,85 x 19.800 / 20 = 76.598 von 90.000 nutzbaren
+     Anfragen, also ueber 85 Prozent. Der 90. geht noch. */
+  assert.equal(b.mayAdd("NEU", 89).allow, true, "der 90. Titel wurde zu frueh abgelehnt");
+  const viele = b.mayAdd("NEU", 90);
   assert.equal(viele.allow, false);
   assert.equal(viele.reason, "budgetProtect");
-  assert.equal(viele.projection.symbols, 51);
+  assert.equal(viele.projection.symbols, 91);
+
+  /* Und die Zahl, auf die es im Betrieb ankommt: fuenfzig gleichzeitig
+     betrachtete Titel - die harte Obergrenze des Objekts - passen
+     bequem. Genau das hat die alte Annahme verhindert. */
+  assert.equal(b.mayAdd("NEU", 49).allow, true, "fuenfzig Titel muessen durchgehen");
+  assert.equal(b.forecast(50).requestShare < 0.6, true,
+    "fuenfzig Titel verbrauchen " + Math.round(b.forecast(50).requestShare * 100) + " % der Anfragen");
 });
 
 test("FB-8 kurz vor Handelsschluss ist mehr erlaubt als am Morgen", () => {
-  /* Bei 23.040 Sekunden Rest liegt die Schutzschwelle rechnerisch bei
-     39 Symbolen: 39 x 1,7 x 23.040 / 20 = 76.378 von 90.000 nutzbaren
-     Anfragen. Der einundvierzigste Titel geht also morgens nicht mehr,
-     zehn Minuten vor Schluss dagegen muehelos. */
+  /* Bei 23.040 Sekunden Rest liegt die Schutzschwelle rechnerisch beim
+     79. Titel: 79 x 0,85 x 23.040 / 20 = 77.357 von 90.000 nutzbaren
+     Anfragen. Zehn Minuten vor Schluss dagegen kostet derselbe Titel
+     fast nichts mehr - die Restzeit ist der Faktor, nicht die Zahl. */
   const morgens = baue({ rest: 6.4 * 3600 });
   const abends = baue({ rest: 600 });
-  assert.equal(morgens.b.mayAdd("X", 40).allow, false, "morgens wurde zu viel erlaubt");
-  assert.equal(abends.b.mayAdd("X", 40).allow, true, "abends wurde zu wenig erlaubt");
+  assert.equal(morgens.b.mayAdd("X", 78).allow, false, "morgens wurde zu viel erlaubt");
+  assert.equal(abends.b.mayAdd("X", 200).allow, true, "abends wurde zu wenig erlaubt");
   /* Und der Gegenbeweis, dass die Grenze nicht willkuerlich frueh liegt. */
-  assert.equal(morgens.b.mayAdd("X", 20).allow, true, "morgens wurde zu frueh abgelehnt");
+  assert.equal(morgens.b.mayAdd("X", 50).allow, true, "morgens wurde zu frueh abgelehnt");
 });
 
 test("FB-9 die Laufzeit hat ihre eigene Grenze", () => {
@@ -162,10 +176,41 @@ test("FB-13 Spitzenwerte werden gemerkt, auch wenn sie wieder fallen", () => {
   assert.equal(s.used.peakClients, 40);
 });
 
-test("FB-14 die Annahme je Symbol ist die gemessene Hoechstrate, nicht der Median", () => {
-  assert.equal(FB.MEASURED_MAX_EVENTS_PER_SECOND, 1.7);
+test("FB-14 die Annahme je Symbol ist gemessen, und zwar am richtigen Gegenstand", () => {
+  /* Zwei Messungen, und die Unterscheidung ist der ganze Punkt:
+
+       1,7   die Spitze EINES Titels im ganzen Band (XLK, 16.09.2026)
+       0,34  der Durchschnitt von 50 ABONNIERTEN Titeln (17.09.2026)
+
+     Gerechnet wird mit dem Durchschnitt mal 2,5 - deutlich ueber der
+     Messung, immer noch unter der Einzelspitze. Die Spitze auf jeden
+     Titel anzuwenden hiess, den lebhaftesten Titel des Marktes fuer den
+     Normalfall zu halten. */
+  assert.equal(FB.MEASURED_MAX_EVENTS_PER_SECOND, 1.7, "die Einzelspitze bleibt dokumentiert");
+  assert.equal(FB.MEASURED_BASKET_EVENTS_PER_SECOND, 0.34);
+  assert.equal(FB.DEFAULT_ASSUMED_EVENTS_PER_SECOND, 0.85);
+  assert.equal(FB.DEFAULT_ASSUMED_EVENTS_PER_SECOND < FB.MEASURED_MAX_EVENTS_PER_SECOND, true,
+    "die Annahme darf die Einzelspitze nicht ueberschreiten");
+  assert.equal(FB.DEFAULT_ASSUMED_EVENTS_PER_SECOND > FB.MEASURED_BASKET_EVENTS_PER_SECOND * 2, true,
+    "und sie muss deutlich ueber dem gemessenen Durchschnitt liegen");
   const { b } = baue();
-  assert.equal(b.snapshot().assumedEventsPerSecondPerSymbol, 1.7);
+  assert.equal(b.snapshot().assumedEventsPerSecondPerSymbol, 0.85);
+});
+
+test("FB-17 die Schwellen haengen am gezaehlten Verbrauch, nicht an der Annahme", () => {
+  /* Der Grund, warum eine weniger pessimistische Annahme sicher bleibt:
+     WARNING und PROTECT entstehen aus dem, was tatsaechlich
+     durchgelaufen ist. Waere die Annahme zu niedrig, kaemen ein paar
+     Titel mehr herein - und die Schwellen griffen trotzdem. */
+  const { b, urteile } = baue({ opts: { assumedEventsPerSecond: 0.001 } });
+  assert.equal(b.snapshot().assumedEventsPerSecondPerSymbol, 0.001);
+  assert.equal(b.mayAdd("X", 400).allow, true, "mit winziger Annahme kommt alles herein");
+  b.noteProviderMessages(20 * 64000);
+  assert.equal(b.verdict(), "WARNING", "die Warnung kommt aus dem echten Verbrauch");
+  b.noteProviderMessages(20 * 14000);
+  assert.equal(b.verdict(), "PROTECT");
+  assert.equal(b.mayAdd("Y", 1).allow, false, "und dann kommt nichts mehr herein");
+  assert.deepEqual(urteile, ["WARNING", "PROTECT"]);
 });
 
 test("FB-15 ein leeres Restfenster verlangt keine Vorausschau", () => {

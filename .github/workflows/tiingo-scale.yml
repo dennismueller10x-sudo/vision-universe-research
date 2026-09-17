@@ -248,7 +248,7 @@ jobs:
       cancel-in-progress: false
     if: >-
       (github.event_name == 'workflow_dispatch' && inputs.realtime) ||
-      contains(github.event.head_commit.message, '[tiingo-realtime]')
+      contains(github.event.head_commit.message, '[tiingo-realtime')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -273,7 +273,13 @@ jobs:
           echo "Regulaerer US-Handel: 13:30-20:00 UTC (Sommerzeit), 14:30-21:00 UTC (Winterzeit)."
           echo "Ausserhalb dieser Zeit kann der Nachweis nur UNKNOWN ergeben."
 
+      # Die beiden Messungen von vorletzter Woche laufen nicht jedes Mal
+      # mit. Sie dauern zusammen fuenf Minuten und beantworten Fragen,
+      # die beantwortet sind; die Marke [tiingo-realtime:v1] laesst sie
+      # aus und misst nur die drei Nachweise von Zero-Cost Realtime V1.
       - name: Strom messen (NVDA zuerst, thresholdLevel 6 und 5)
+        if: >-
+          !contains(github.event.head_commit.message, '[tiingo-realtime:v1]')
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
@@ -286,6 +292,8 @@ jobs:
       # Stufe lang genug fuer Titelzahl, Ereignisrate und Bandbreite.
       # Kein zweiter Client, keine neue Architektur.
       - name: Firehose messen (Stufen ohne Tickerliste)
+        if: >-
+          !contains(github.event.head_commit.message, '[tiingo-realtime:v1]')
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |

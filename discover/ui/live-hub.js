@@ -546,9 +546,15 @@
     }
     if (n.op === "budget") {
       /* Das Kontingent ist der Grund, warum dieses Produkt nichts
-         kostet. Ist es erschoepft, wird zurueckgefallen - nicht
-         weitergestreamt und nicht abgerechnet. */
-      if (n.verdict === "EXHAUSTED") { stromSchliessen("budgetExhausted"); }
+         kostet. Ist die Schutzschwelle erreicht, wird zurueckgefallen -
+         nicht weitergestreamt und nicht abgerechnet.
+
+         PROTECT und nicht erst EXHAUSTED: zwischen 85 und 100 Prozent
+         waere der Strom zwar noch moeglich, aber sein Ende dann ein
+         Abbruch mitten im Handel statt eines geordneten Rueckfalls. */
+      if (n.verdict === "PROTECT" || n.verdict === "EXHAUSTED") {
+        stromSchliessen(n.verdict === "PROTECT" ? "budgetProtect" : "budgetExhausted");
+      }
       return;
     }
     if (n.op === "session") {

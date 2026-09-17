@@ -136,7 +136,14 @@ function oeffne(tickers) {
     ws.onmessage = (ev) => {
       let roh = null;
       try { roh = JSON.parse(typeof ev.data === "string" ? ev.data : String(ev.data)); } catch (e) { return; }
-      const tick = TiingoRealtime.parseIexMessage(ev);
+      /* parseIexMessage liefert einen Umschlag {tick, raw}, nicht den
+         Tick selbst. Der erste Lauf am 17.09.2026 hat genau das
+         uebersehen: alle Kurse landeten in der Verwaltungsablage, die
+         Kontrolle sah null Ereignisse fuer AAPL und NVDA um 09:42 New
+         York - und meldete INCONCLUSIVE. Die Anordnung war richtig; der
+         Leser war es nicht. */
+      const umschlag = TiingoRealtime.parseIexMessage(ev);
+      const tick = umschlag && umschlag.tick ? umschlag.tick : null;
       if (tick && tick.symbol) {
         griff.ereignisse.push({ at: jetzt(), symbol: String(tick.symbol).toUpperCase() });
         return;

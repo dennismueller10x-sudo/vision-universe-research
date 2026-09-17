@@ -363,14 +363,31 @@ export class VuLive {
     for (const ws of this.clients.keys()) {
       this.sende(ws, { op: "budget", verdict: schnappschuss.verdict });
     }
-    /* Im Schutzmodus wird nichts Neues mehr abonniert; bei erschoepftem
-       Kontingent wird der Strom kontrolliert beendet. Der Browser faellt
-       auf den Snapshot-Pfad zurueck - das ist der Zweck der ganzen
-       Uebung: Rueckfall statt Rechnung. */
-    if (schnappschuss.verdict === "EXHAUSTED") {
-      this.manager.shutdown("budgetExhausted");
+    /* PROTECT IST DAS ENDE, NICHT DIE VORSTUFE ZUM ENDE.
+
+       Owner-Regel vom 17.09.2026: "bei PROTECT Realtime kontrolliert
+       deaktivieren, automatischer Fallback auf den bestehenden
+       Snapshot-/Intraday-Pfad".
+
+       Die erste Fassung hat bei PROTECT nur keine neuen Titel mehr
+       aufgenommen und erst bei erschoepftem Kontingent abgeschaltet.
+       Das war zu spaet gedacht: zwischen 85 und 100 Prozent laufen die
+       bereits abonnierten Titel weiter und verbrauchen den Rest - und
+       das Ende waere dann kein kontrollierter Rueckfall, sondern ein
+       Abbruch mitten im Handel.
+
+       Jetzt gilt: bei PROTECT wird der Strom beendet, der Browser
+       erfaehrt den Grund und faellt auf den Snapshot-Pfad zurueck. Die
+       15 Prozent Rest bleiben, wofuer sie da sind - als Rest. */
+    if (schnappschuss.verdict === "PROTECT" || schnappschuss.verdict === "EXHAUSTED") {
+      const grund = schnappschuss.verdict === "PROTECT" ? "budgetProtect" : "budgetExhausted";
+      this.manager.shutdown(grund);
+      this.notiere("realtimeDeaktiviert", { verdict: schnappschuss.verdict, grund: grund });
       for (const ws of this.clients.keys()) {
-        this.sende(ws, { op: "status", state: "IDLE", reason: "budgetExhausted" });
+        this.sende(ws, { op: "status", state: "IDLE", reason: grund,
+                         fallback: "snapshot",
+                         message: "Der Kurs laeuft nicht mehr mit. Die Seite zeigt weiter den " +
+                                  "Stand mit Uhrzeit." });
       }
     }
   }

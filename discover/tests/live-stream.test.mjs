@@ -265,9 +265,12 @@ test("LS-10 erschoepftes Kontingent heisst Rueckfall, nicht Rechnung", async () 
   h.sockets[0].sagt({ op: "budget", verdict: "WARNING" });
   assert.equal(h.sockets[0].geschlossen, false, "gewarnt ist nicht abgeschaltet");
 
-  h.sockets[0].sagt({ op: "budget", verdict: "EXHAUSTED" });
+  /* PROTECT ist das Ende, nicht die Vorstufe zum Ende (Owner-Regel
+     17.09.2026). Zwischen 85 und 100 Prozent waere der Strom zwar noch
+     moeglich, aber sein Ende dann ein Abbruch statt eines Rueckfalls. */
+  h.sockets[0].sagt({ op: "budget", verdict: "PROTECT" });
   assert.equal(h.sockets[0].geschlossen, true);
-  assert.equal(a.letzte().live.reason, "budgetExhausted");
+  assert.equal(a.letzte().live.reason, "budgetProtect");
   assert.equal(h.protokoll.opens, 1, "kein Wiederanlauf gegen eine Grenze");
   assert.equal(a.letzte().snapshot.points.length, 7);
 });

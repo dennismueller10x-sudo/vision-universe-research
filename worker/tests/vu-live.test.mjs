@@ -307,18 +307,29 @@ test("VL-19 die Warnung erreicht den Browser, bevor etwas ausfaellt", async () =
   assert.equal(h.obj.manager.symbols().length, 1, "gewarnt ist nicht abgeschaltet");
 });
 
-test("VL-20 im Schutzmodus kommt nichts Neues mehr dazu", async () => {
+test("VL-20 der Schutzmodus beendet den Strom, statt ihn auslaufen zu lassen", async () => {
+  /* Owner-Regel vom 17.09.2026: "bei PROTECT Realtime kontrolliert
+     deaktivieren". Nicht erst bei erschoepftem Kontingent - zwischen
+     85 und 100 Prozent waere das Ende ein Abbruch mitten im Handel
+     statt eines geordneten Rueckfalls. */
   const h = baue();
   const ws = await verbinde(h);
   await abonniere(h, ws, ["NVDA"]);
+  assert.deepEqual(h.obj.manager.symbols(), ["NVDA"]);
+
   h.obj.budget.noteProviderMessages(20 * 78000);            /* > 85 % */
   await takte();
   assert.equal(ws.letzte("budget").verdict, "PROTECT");
 
+  const status = ws.letzte("status");
+  assert.equal(status.reason, "budgetProtect");
+  assert.equal(status.fallback, "snapshot", "der Browser muss wissen, wohin er faellt");
+  assert.deepEqual(h.obj.manager.symbols(), [], "im Schutzmodus laeuft nichts weiter");
+
+  /* Und es kommt auch nichts Neues mehr herein. */
   await abonniere(h, ws, ["AAPL"]);
   assert.equal(ws.letzte("denied").symbol, "AAPL");
   assert.equal(h.obj.manager.symbols().indexOf("AAPL"), -1);
-  assert.equal(h.obj.manager.symbols().indexOf("NVDA") !== -1, true, "das Laufende bleibt laufen");
 });
 
 test("VL-21 ist das Kontingent erschoepft, wird abgeschaltet statt abgerechnet", async () => {
