@@ -35,11 +35,18 @@ jobs:
 
       - name: Methodik- und Datendateien sind gueltiges JSON
         run: |
-          files=$(find quant/methodology quant/data quant/config -name '*.json')
-          for file in $files; do
-            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
-          done
-          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+          # Keep the exact find scope and JSON.parse validator, but avoid
+          # starting tens of thousands of runtimes after universe expansion.
+          set -o pipefail
+          find quant/methodology quant/data quant/config -name '*.json' -print0 | node -e '
+            const fs = require("node:fs");
+            const files = fs.readFileSync(0, "utf8").split("\0").filter(Boolean);
+            for (const file of files) {
+              try { JSON.parse(fs.readFileSync(file, "utf8")); }
+              catch { console.error("Invalid JSON: " + file); process.exit(1); }
+            }
+            console.log(files.length + " JSON-Dateien geprueft");
+          '
 
       - name: HTML-Seiten binden die gemeinsame Shell und die Navigation ein
         run: |
