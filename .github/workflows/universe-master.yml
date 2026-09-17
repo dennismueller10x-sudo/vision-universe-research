@@ -55,6 +55,9 @@ on:
       - '.github/workflows/universe-master.yml'
   pull_request:
     paths:
+      - 'quant/api/product-services.js'
+      - 'quant/tests/product-identity-release.test.mjs'
+      - '.github/workflows/universe-master.yml'
       - 'quant/engines/company-master.js'
       - 'quant/engines/instrument-directory.js'
       - 'quant/config/company-master.json'
