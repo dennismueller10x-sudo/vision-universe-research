@@ -77,9 +77,15 @@
   ];
 
   /* Visuelle Strategien (§13). */
+  /* GENERATIVE steht neben den gezeichneten Formen und nicht in ihnen:
+     ein generatives Bild wird nicht aus einem Bildplan gezeichnet,
+     sondern von einem Creative Agent erzeugt und uebernommen. Es als
+     DATA_CARD zu fuehren hiesse, dem Lernen eine Bildform beizubringen,
+     die nie zu sehen war. */
   var VISUAL_TYPES = [
     "CHART", "NUMBER_VISUAL", "ATLAS", "COMPANY_VISUAL", "DATA_CARD",
-    "CAROUSEL", "MOTION_GRAPHIC", "VIDEO", "MINIMAL_TYPOGRAPHY", "MIXED"
+    "CAROUSEL", "MOTION_GRAPHIC", "VIDEO", "MINIMAL_TYPOGRAPHY", "MIXED",
+    "GENERATIVE"
   ];
 
   /* Kanonische Metriken (§17). Jede Plattform meldet eine Teilmenge; was

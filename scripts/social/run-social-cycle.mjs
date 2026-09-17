@@ -838,6 +838,23 @@ async function main() {
       continue;
     }
 
+    /* -----------------------------------------------------------------
+       DIE BILDFORM FOLGT DEM BILD
+
+       Die Pipeline hat eine Bildform gewaehlt, weil sie eine Karte
+       zeichnen wollte. Bringt der Autor ein geprueftes generatives
+       Bild mit, wird keine Karte gezeichnet — und dann ist DATA_CARD
+       eine Angabe ueber etwas, das niemand je gesehen hat.
+
+       Sie steht in der Provenance, im Gedaechtnis und in der
+       Kohortenbildung des Lernens. Dort falsch zu stehen heisst, dass
+       spaeter die Leistung generativer Bilder der Kartenform
+       zugeschrieben wird.
+       ----------------------------------------------------------------- */
+    if (geschrieben.production && geschrieben.production.asset) {
+      result.package.visualType = "GENERATIVE";
+    }
+
     /* Die Wiederholungssperre laeuft NACH der Pipeline: sie braucht den
        fertigen Text, um Aehnlichkeit zu messen. */
     const fatigue = Fatigue.check({

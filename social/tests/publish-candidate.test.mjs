@@ -21,7 +21,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -251,5 +251,35 @@ test("PC14 · Bei erreichter Frequenzgrenze entsteht kein Kandidat", () => {
     assert.match(aus, /Frequenzgrenze/);
     assert.match(aus, /keine Messung an ihm/,
       "und der Grund wird genannt, nicht nur die Regel");
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+test("PC20 · Ein fremder Datenstand erreicht die echte Freigabe nicht", () => {
+  /* Der Kandidatenordner lag fest, unabhaengig von --data. Das Skript
+     las damit aus dem Datenstand, den man ihm nannte, und schrieb in
+     den EINEN echten Kandidatenordner — denselben, den die
+     Owner-Freigabe liest.
+
+     Aufgefallen ist es an einem Kandidaten mit dem Thema "Stark", der
+     Hook "Ein Hook." und dem Text "Ein Text.", der dort aus einem
+     frueheren Testlauf lag. Ein Test, der der Freigabe etwas zum
+     Freigeben unterschiebt, ist kein Test mehr. */
+  const echt = join(ROOT, "social/data/publish-candidates");
+  const vorher = existsSync(echt) ? readdirSync(echt).sort() : [];
+
+  const p = platz("fremder-stand");
+  try {
+    stand(p.abs, [entscheidung({ packageId: "pkg_fremd", topic: "Fremd" })],
+      [{ opportunityId: "opp_a", score: 90, proposable: true, explanation: "stark" }]);
+    lauf(p.rel, ["--write"]);
+
+    const nachher = existsSync(echt) ? readdirSync(echt).sort() : [];
+    assert.deepEqual(nachher, vorher,
+      "der Lauf hat in den echten Kandidatenordner geschrieben");
+
+    /* Und der eigene Ordner ist da, wo der Datenstand ist. */
+    const eigener = join(p.abs, "publish-candidates");
+    assert.ok(existsSync(eigener), "kein Kandidatenordner im eigenen Datenstand");
+    assert.ok(readdirSync(eigener).some((f) => f.endsWith(".json")));
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });

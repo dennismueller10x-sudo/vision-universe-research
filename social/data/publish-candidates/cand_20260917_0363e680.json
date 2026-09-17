@@ -6,7 +6,7 @@
     "cand_20260917_eb5a2b4f"
   ],
   "createdAt": "2026-09-17T16:05:00Z",
-  "state": "SUPERSEDED",
+  "state": "AWAITING_APPROVAL",
   "content": {
     "contentId": "pkg_211d4c6ed3b103aa",
     "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_211d4c6ed3b103aa.jpg",
@@ -97,7 +97,8 @@
     "in7Tagen": 0,
     "in30Tagen": 0
   },
-  "supersededBy": "cand_20260917_ee9f1b30",
+  "supersededBy": null,
   "supersededAt": "2026-09-17T12:00:00Z",
-  "supersededReason": "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben."
+  "supersededReason": "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben.",
+  "repairNote": "Dieser Kandidat stand auf SUPERSEDED, abgeloest von cand_20260917_ee9f1b30 — einem Testartefakt mit dem Thema 'Stark', der Hook 'Ein Hook.' und dem Text 'Ein Text.'. make-publish-candidate.mjs schrieb in einen festen Ordner statt in den, der zum Datenstand gehoerte; jeder Testlauf mit --write landete damit im echten Freigabeordner. Das Artefakt ist entfernt, der Zustand hier auf AWAITING_APPROVAL zurueckgesetzt. Die Kette zu cand_20260917_eb5a2b4f bleibt unangetastet: die ist echt."
 }

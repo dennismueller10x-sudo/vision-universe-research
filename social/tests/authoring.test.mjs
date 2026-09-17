@@ -347,3 +347,75 @@ test("AU25 · Gegenstand und Zahl duerfen sich wiederholen", () => {
   }, { evidence: ev });
   assert.equal(gut.passed, true, gut.explanation);
 });
+
+/* ------------------------------------------------------------------ */
+/* WAS EIN AUTOR AUSSER TEXT MITBRINGT                                 */
+/* ------------------------------------------------------------------ */
+
+test("AU30 · Die Beigaben des Autors gehen nicht verloren", () => {
+  /* Der generative Autor liefert ein geprueftes Bildasset, die
+     unverbindliche Empfehlung des Agenten und den
+     Verarbeitungsnachweis. run() hat davon lange nur `variants`
+     weitergereicht — ein Bild, das erzeugt, committet und
+     zurueckgelesen wurde, waere damit im letzten Schritt
+     verschwunden. */
+  const reg = Authoring.createRegistry();
+  reg.register({
+    authorId: "mit-bild", kind: "generative",
+    capabilities: { variants: 1, hooks: true, captions: true, visualLines: false,
+      structure: true, images: true },
+    available: () => ({ ok: true, reason: null }),
+    write: () => ({
+      variants: [Authoring.variant({ authorId: "mit-bild", kind: "generative",
+        hook: "Eine Hook mit 42 Punkten.", caption: "Eine Bildunterschrift.",
+        pattern: "test/eins" })],
+      asset: { asset_path: "a/b.png", state: "READBACK_VERIFIED",
+               width: 1080, height: 1350 },
+      recommendation: { is_canonical_selection: false },
+      processing: { status: "COMPLETED" },
+      reason: null
+    })
+  });
+
+  const brief = { briefId: "brief_test", evidence: [
+    { entity: "XYZ", metric: "Punkte", value: 42, statement: "42 Punkte." }] };
+  const lauf = Authoring.run(reg, brief, { authors: ["mit-bild"] });
+
+  assert.ok(lauf.production, "production fehlt");
+  assert.equal(lauf.production.asset.state, "READBACK_VERIFIED");
+  assert.equal(lauf.production.recommendation.is_canonical_selection, false);
+  assert.equal(lauf.outputs["mit-bild"].processing.status, "COMPLETED");
+});
+
+test("AU31 · `production` gehoert dem Autor der GEWAEHLTEN Variante", () => {
+  /* Nicht dem ersten und nicht allen. Liefe der Bild-Autor, gewaenne
+     aber der Text eines anderen, waere sein Asset eine Beigabe zu einem
+     Text, der nicht von ihm ist. */
+  const reg = Authoring.createRegistry();
+  const bau = (id, hook, extras) => ({
+    authorId: id, kind: "deterministic",
+    capabilities: { variants: 1, hooks: true, captions: true, visualLines: false,
+      structure: true, images: false },
+    available: () => ({ ok: true, reason: null }),
+    write: () => Object.assign({
+      variants: [Authoring.variant({ authorId: id, kind: "deterministic",
+        hook: hook, caption: "Caption von " + id + ", 42 Punkte im Test.",
+        pattern: id + "/eins" })],
+      reason: null
+    }, extras || {})
+  });
+  reg.register(bau("ohne-bild", "Erste Hook, 42 Punkte."));
+  reg.register(bau("mit-bild", "Zweite Hook, 42 Punkte.",
+    { asset: { asset_path: "a/b.png", state: "READBACK_VERIFIED" } }));
+
+  const brief = { briefId: "brief_test", evidence: [
+    { entity: "XYZ", metric: "Punkte", value: 42, statement: "42 Punkte." }] };
+
+  /* firstUsable: der erste Autor liefert, der zweite kommt nie dran. */
+  const lauf = Authoring.run(reg, brief, { authors: ["ohne-bild", "mit-bild"] });
+  assert.equal(lauf.selection.chosen.variant.authorId, "ohne-bild");
+  assert.equal(lauf.production.asset, null,
+    "das Asset eines nie gelaufenen Autors darf nicht am Text eines anderen haengen");
+  assert.equal(lauf.outputs["mit-bild"], undefined,
+    "ein Autor, der nie geschrieben hat, hat auch nichts beigetragen");
+});

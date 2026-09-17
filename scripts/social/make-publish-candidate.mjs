@@ -55,7 +55,29 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 
-export const KANDIDATEN_DIR = "social/data/publish-candidates";
+/* -------------------------------------------------------------------
+   WOHIN DIE KANDIDATEN GEHOEREN
+
+   Hier stand ein fester Pfad — unabhaengig von --data. Das Skript las
+   also aus dem Datenstand, den man ihm nannte, und schrieb in den
+   einen echten Kandidatenordner.
+
+   Aufgefallen ist es, weil ein Testlauf dort einen Kandidaten mit dem
+   Thema "Stark", der Hook "Ein Hook." und dem Text "Ein Text."
+   hinterlassen hatte. Genau diesen Ordner liest die Owner-Freigabe.
+
+   Der Ordner folgt jetzt dem Datenstand. Fuer den Produktionsaufruf
+   --data social/data aendert sich nichts; ein Test mit eigenem
+   Datenstand bekommt seinen eigenen Ordner und kann die Freigabe nicht
+   mehr erreichen.
+   ------------------------------------------------------------------- */
+export const KANDIDATEN_UNTERORDNER = "publish-candidates";
+export const KANDIDATEN_DIR = "social/data/" + KANDIDATEN_UNTERORDNER;
+
+/** Der Kandidatenordner zu einem Datenstand. */
+export function kandidatenDir(datenstand) {
+  return join(datenstand || "social/data", KANDIDATEN_UNTERORDNER);
+}
 
 function readJson(pfad, fallback) {
   return existsSync(pfad) ? JSON.parse(readFileSync(pfad, "utf8")) : fallback;
@@ -115,6 +137,17 @@ export function frequenzbefund(eintraege, grenzen, nowIso) {
  * ueberhaupt belegt ist. Gibt es fuer die Kohorte keine Vergleichsbasis,
  * steht das da — und keine Zahl.
  */
+/** Die Bildguete in der Form, die zum jeweiligen Bild passt. */
+export function visuelleGuete(asset) {
+  const g = asset && asset.quality;
+  if (!g) return null;
+  if (g.applicable === false) {
+    return { applicable: false, explanation: g.explanation || null };
+  }
+  return { applicable: true, score: g.score,
+    warnings: (g.warnings || []).length };
+}
+
 export function zielmetrik(befund, kohorte) {
   const k = (befund && befund.cohorts && befund.cohorts[kohorte]) || null;
 
@@ -150,6 +183,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const WRITE = args.includes("--write");
 
   const DATA = arg("data", "social/data");
+  /* Der Kandidatenordner folgt dem Datenstand — siehe oben. */
+  const KAND_REL = kandidatenDir(DATA);
   const NOW = arg("now", new Date().toISOString());
   const D = (n) => join(ROOT, DATA, n);
 
@@ -267,7 +302,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      wurde, wird nicht angefasst: eine Freigabe oder Ablehnung ist ein
      Vorgang und kein Zwischenstand.
      ------------------------------------------------------------------- */
-  const verzeichnis = join(ROOT, KANDIDATEN_DIR);
+  const verzeichnis = join(ROOT, KAND_REL);
   let offene = [];
   let vorgaenger = null;
   let version = 1;
@@ -346,9 +381,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
          Der Owner entscheidet ueber einen Beitrag — und darf wissen, wie
          er zustande kam. */
       authoring: d.authoring || null,
-      visualQuality: d.asset && d.asset.quality
-        ? { score: d.asset.quality.score, warnings: d.asset.quality.warnings.length }
-        : null
+      /* -----------------------------------------------------------------
+         WOHER DAS BILD KOMMT
+
+         Ein uebernommenes und ein gezeichnetes Bild sind verschiedene
+         Dinge. Der Owner entscheidet ueber einen Beitrag und darf
+         wissen, ob das Visual aus dem Creative Agent stammt oder aus
+         der eigenen Kartenzeichnung.
+
+         Und die Bildguete misst Text. Ein generatives Bild traegt laut
+         Brief keinen — "nicht anwendbar" mit Begruendung ist hier die
+         einzige ehrliche Angabe. Eine Punktzahl zu erfinden waere
+         schlecht, stillschweigend zu bestehen waere schlimmer.
+         ----------------------------------------------------------------- */
+      visualOrigin: (d.asset && d.asset.origin) || "rendered",
+      visualQuality: visuelleGuete(d.asset)
     },
 
     /* Die Kette, die dieser Beitrag spaeter tragen muss. Sie entsteht
@@ -362,6 +409,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       hook: d.hook,
       mediaFormat: "IMAGE",
       visualType: d.visualType,
+      /* Die Owner-Entscheidung nennt `visual` ausdruecklich als Glied
+         der Kette. Ein generatives Bild hat dort mehr zu sagen als
+         seine Bildform: die Variantenkennung, die Strategie und den
+         Hash der Datei, aus der es entstanden ist. */
+      visual: d.asset && d.asset.sourceAsset ? {
+        origin: "generative",
+        variantId: d.asset.sourceAsset.variantId,
+        strategy: d.asset.sourceAsset.strategy,
+        assetPath: d.asset.sourceAsset.path,
+        assetSha256: d.asset.sourceAsset.sha256,
+        mimeType: d.asset.sourceAsset.mimeType
+      } : { origin: "rendered", visualType: d.visualType },
       caption: inhalt.caption,
       plannedHourUtc: d.plannedHourUtc,
       experimentId: d.experimentId || null,
@@ -401,7 +460,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(0);
   }
 
-  const dir = join(ROOT, KANDIDATEN_DIR);
+  const dir = join(ROOT, KAND_REL);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, candidateId + ".json"), JSON.stringify(kandidat, null, 2) + "\n");
 
@@ -423,6 +482,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     writeFileSync(join(dir, alt.datei), JSON.stringify(alt.daten, null, 2) + "\n");
     console.log("Ersetzt:     " + alt.daten.candidateId + " (bleibt als SUPERSEDED)");
   }
-  console.log("\nGeschrieben: " + KANDIDATEN_DIR + "/" + candidateId + ".json");
+  console.log("\nGeschrieben: " + KAND_REL + "/" + candidateId + ".json");
   console.log("Freigabe:    Workflow 'Social Publish Candidate' mit candidateId=" + candidateId);
 }
