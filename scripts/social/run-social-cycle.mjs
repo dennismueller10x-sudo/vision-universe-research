@@ -66,6 +66,10 @@ const AuditLog     = require(join(ROOT, "social/engines/audit-log.js"));
 const ProviderCore = require(join(ROOT, "social/engines/provider.js"));
 const Capabilities = require(join(ROOT, "social/engines/capabilities.js"));
 const Brand        = require(join(ROOT, "social/engines/brand.js"));
+const Authoring    = require(join(ROOT, "social/engines/authoring.js"));
+const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
+const AutorVorlage = require(join(ROOT, "social/providers/authoring/template/adapter.js"));
+const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapter.js"));
 
 /* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
    Chromium und gehoert deshalb nicht in die Browser-Ladbarkeit der
@@ -324,6 +328,113 @@ function buildTimingKnowledge(memory) {
   return Object.keys(stuendlich).length ? { hourly: stuendlich } : null;
 }
 
+/* =====================================================================
+   DIE AUTOREN
+
+   Reihenfolge ist Absicht: das Modell zuerst, die Vorlage als
+   Rueckfall. Heute meldet sich das Modell ab — es gibt keinen Client —
+   und die Vorlage schreibt. Sobald ein Client da ist, dreht sich das um,
+   ohne dass hier etwas geaendert werden muss.
+   ===================================================================== */
+const autorenRegistry = Authoring.createRegistry();
+autorenRegistry.register(AutorModell.createModelAuthor({
+  /* Kein Client. Das Anbinden kostet laufend Geld und ist eine
+     Owner-Entscheidung, keine Implementierungsfrage. */
+  client: null,
+  modelId: null
+}));
+autorenRegistry.register(AutorVorlage.createTemplateAuthor({}));
+const AUTOR_REIHENFOLGE = ["model", "template"];
+
+/**
+ * Ein Schreiber, der die bereits gewaehlte Variante durchreicht.
+ *
+ * `content.js` ruft einen Schreiber fuer These, Hook und Entwurf. Die
+ * Autorenschicht hat diese Entscheidung schon getroffen; dieser Schimmer
+ * gibt sie weiter, damit die Tore in `content.js` dieselbe Fassung
+ * sehen, die gewonnen hat — und nicht eine neu erzeugte.
+ */
+function schreiberAus(variante) {
+  return {
+    thesis: function (opportunity, researchData) {
+      var f = researchData.facts[0];
+      if (!f) return null;
+      return (f.entity ? f.entity + ": " : "") + f.metric + " steht bei " +
+             String(f.value) + (f.unit ? " " + f.unit : "") +
+             ". Das ist eine Lagebeschreibung, keine Prognose.";
+    },
+    hook: function () { return variante.hook; },
+    structure: function () {
+      return { beats: [
+        { id: "observation", note: "Was gemessen wurde" },
+        { id: "limit", note: "Was die Zahl nicht sagt" },
+        { id: "relevance", note: "Warum wir sie zeigen" }
+      ] };
+    },
+    visualLine: function () { return variante.visualLine; },
+    draft: function () {
+      return {
+        caption: variante.caption,
+        cta: variante.cta,
+        hashtags: variante.hashtags,
+        claims: variante.claims
+      };
+    }
+  };
+}
+
+/**
+ * Was ueber Textmuster bekannt ist.
+ *
+ * Dieselbe Bauart wie `buildArchetypeKnowledge`: zaehlen und mitteln,
+ * nicht urteilen. Ob eine Zahl belastbar ist, entscheidet die
+ * Mindeststichprobe in der Auswahl.
+ */
+function buildPatternKnowledge(memory, nowIso) {
+  const nach = Object.create(null);
+  const nutzung = Object.create(null);
+  const grenze = Date.parse(nowIso) - 30 * 86400000;
+
+  for (const e of memory.all()) {
+    const muster = e.authoringPattern || (e.lineage && e.lineage.authoringPattern) || null;
+    if (!muster) continue;
+
+    if (e.publishedAt && Date.parse(e.publishedAt) >= grenze) {
+      nutzung[muster] = (nutzung[muster] || 0) + 1;
+    }
+    const p = e.performance;
+    if (p === null || p === undefined || !Number.isFinite(Number(p))) continue;
+    (nach[muster] = nach[muster] || []).push(Number(p));
+  }
+
+  const knowledge = Object.create(null);
+  for (const [muster, werte] of Object.entries(nach)) {
+    knowledge[muster] = {
+      mean: werte.reduce((a, b) => a + b, 0) / werte.length,
+      sampleSize: werte.length
+    };
+  }
+
+  /* Was davon in den Brief gehoert: die Muster, die sich als wirksam
+     gezeigt haben — als Hinweis, nicht als Vorschrift. Ein Autor, der
+     bloss kopiert, lernt nichts. */
+  const bewaehrt = Object.entries(knowledge)
+    .filter(([, k]) => k.sampleSize >= 5)
+    .sort((a, b) => b[1].mean - a[1].mean)
+    .slice(0, 3)
+    .map(([m]) => m);
+
+  return {
+    knowledge, usage: nutzung,
+    brief: {
+      hookPatterns: bewaehrt,
+      note: bewaehrt.length
+        ? "Diese Muster haben gemessen getragen. Sie sind ein Hinweis, keine Vorschrift."
+        : "Noch keine gemessene Praeferenz. Erkundung ist hier die richtige Wahl."
+    }
+  };
+}
+
 function buildOpportunities(signals, internal, memory, registry, providerId) {
   const clusters = Signals.cluster(signals);
   const out = [];
@@ -469,6 +580,7 @@ async function main() {
      eine Entscheidung erreichen. */
   const archetypeKnowledge = buildArchetypeKnowledge(memory);
   const timingKnowledge = buildTimingKnowledge(memory);
+  const musterWissen = buildPatternKnowledge(memory, NOW);
   const gemessen = Object.keys(archetypeKnowledge).length;
   log("Formatwissen: " + (gemessen
     ? gemessen + " Format(e) mit gemessener Leistung"
@@ -547,11 +659,65 @@ async function main() {
       value: p.value, unit: p.unit, state: p.state, observedAt: p.observedAt
     }));
 
+    /* ================================================================
+       DIE AUTORENSCHICHT
+
+       Sie ersetzt in `content.js` genau eine Stufe: die, in der Text
+       entsteht. Alles davor (Recherche, Belege) und alles danach
+       (Faktenpruefung, Marke, Muedigkeit) bleibt, wie es war — eine
+       zweite Content-Pipeline waere zwei Wahrheiten ueber denselben
+       Beitrag.
+
+       Der Autor bekommt den Brief und liefert Varianten; die Auswahl
+       trifft die Bewertung. Was gewinnt, reicht `content.js` als
+       Schreiber durch, damit dessen Tore es noch einmal sehen. Zweimal
+       geprueft ist hier kein Aufwand, sondern die Reihenfolge: die
+       Autorenschicht prueft die VARIANTE, content.js das PAKET.
+       ================================================================ */
+    const brief = ContentBrief.build({
+      opportunity: {
+        opportunityId: opportunity.opportunityId,
+        topic: opportunity.topic,
+        premise: c.internal.premise || null,
+        hasCause: c.internal.hasCause === true,
+        timeSensitivity: opportunity.timeSensitivity
+      },
+      strategyDecision: {
+        archetype: strategyDecision.archetype,
+        mode: strategyDecision.mode,
+        strategyVersion: activeStrategy.versionId
+      },
+      visual: { visualType: null },
+      evidence: sources,
+      learned: musterWissen.brief,
+      platform: "instagram",
+      now: NOW
+    });
+
+    const geschrieben = Authoring.run(autorenRegistry, brief, {
+      authors: AUTOR_REIHENFOLGE,
+      mode: strategyDecision.mode,
+      patternKnowledge: musterWissen.knowledge,
+      patternUsage: musterWissen.usage,
+      gates: {
+        brand: (v) => Brand.check({ hook: v.hook, caption: v.caption, cta: v.cta,
+          hashtags: v.hashtags })
+      }
+    });
+
+    if (!geschrieben.selection.chosen) {
+      rejections.push({ topic: opportunity.topic, stage: "AUTHORING",
+        reason: geschrieben.selection.reason });
+      continue;
+    }
+
+    const gewaehlteVariante = geschrieben.selection.chosen.variant;
+
     const result = Content.run({
       opportunity, sources, strategyDecision,
       visualAvailability: { timeSeries: false, keyNumber: sources.some((s) => s.value !== null) },
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
-      writer: Content.createTemplateWriter()
+      writer: schreiberAus(gewaehlteVariante)
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
 
     if (!result.ok) {
@@ -573,7 +739,28 @@ async function main() {
     }
     result.package.validation.fatigueCheck = { passed: true, explanation: fatigue.explanation };
 
-    packages.push({ candidate: c, strategyDecision, result, fatigue });
+    packages.push({ candidate: c, strategyDecision, result, fatigue,
+      /* Welche Variante gewonnen hat und wogegen. Ohne diese Angabe
+         laesst sich spaeter nicht lernen, WAS gewirkt hat. */
+      authoring: {
+        briefId: brief.briefId,
+        authorId: gewaehlteVariante.authorId,
+        pattern: gewaehlteVariante.pattern,
+        variantId: gewaehlteVariante.variantId,
+        reason: geschrieben.selection.reason,
+        considered: geschrieben.variants.length,
+        passed: geschrieben.evaluated.filter((e) => e.passed).length,
+        rejected: geschrieben.selection.rejected.map((r) => ({
+          pattern: r.variant.pattern, reasons: r.reasons })),
+        attempts: geschrieben.attempts
+      } });
+  }
+
+  const autorenLage = autorenRegistry.usable();
+  log("\nAutoren:");
+  for (const a of autorenLage) {
+    log("  " + a.authorId.padEnd(10) + (a.ok ? "einsatzbereit" : "nicht verfuegbar"));
+    if (!a.ok) detail("   ", a.reason);
   }
 
   log("\nContent: " + packages.length + " Paket(e) erzeugt, " + rejections.length + " verworfen");
@@ -1043,6 +1230,11 @@ async function main() {
          worden", fragt die Entscheidung. */
       caption: pkg.caption || null,
       hashtags: Array.isArray(pkg.hashtags) ? pkg.hashtags.slice() : [],
+      /* Welches Textmuster gewonnen hat. Es reist mit der Entscheidung,
+         damit die Attribution spaeter nicht auf einen Join angewiesen
+         ist, den jemand vergessen kann. */
+      authoringPattern: (entry.authoring && entry.authoring.pattern) || null,
+      authoringAuthorId: (entry.authoring && entry.authoring.authorId) || null,
       /* Die Herkunft gehoert an die Entscheidung, nicht in eine zweite
          Tabelle, die man dazu-joinen muss. Ein Join, den jemand
          vergessen kann, ist keine Kette. */
@@ -1083,6 +1275,8 @@ async function main() {
       platform: "instagram", topic: pkg.topic, entities: pkg.entities || [],
       archetype: pkg.archetype, visualType: pkg.visualType,
       hook: pkg.hook, caption: pkg.caption, cta: pkg.cta || null,
+      authoringPattern: d.authoringPattern || null,
+      authoringAuthorId: d.authoringAuthorId || null,
       /* Ungemessen, weil ungesendet. Nicht 0. */
       performance: null,
       lineage: {
@@ -1185,8 +1379,11 @@ async function main() {
     })),
     packages: packages.map((p) => ({
       packageId: p.result.package.packageId, topic: p.result.package.topic,
+      opportunityId: p.candidate.opportunity.opportunityId,
       archetype: p.result.package.archetype, visualType: p.result.package.visualType,
-      hook: p.result.package.hook
+      hook: p.result.package.hook,
+      /* Wer geschrieben hat, welches Muster gewann und wogegen. */
+      authoring: p.authoring || null
     })),
     rejections,
     published: published.map((p) => ({

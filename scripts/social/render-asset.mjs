@@ -43,9 +43,15 @@
      node scripts/social/render-asset.mjs --package paket.json --plan-only
    ========================================================================= */
 import { writeFileSync, readFileSync, existsSync, mkdirSync, statSync } from "node:fs";
+import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { dirname, resolve, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
+
+const require = createRequire(import.meta.url);
+const VisualQuality = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -239,7 +245,7 @@ export function plan(pkg, options = {}) {
     ebenen.quelle = zahl.quelle;
   }
 
-  return {
+  var entwurf = {
     ok: true,
     visualType: typ,
     packageId: pkg.packageId || null,
@@ -247,6 +253,25 @@ export function plan(pkg, options = {}) {
     hoehe: Number(options.hoehe) || 1350,
     ebenen
   };
+
+  /* -------------------------------------------------------------------
+     EIN TECHNISCH KORREKTES BILD IST NOCH KEIN VEROEFFENTLICHUNGSWUERDIGES
+
+     Bis hierher wurde geprueft, ob sich die Karte ZEICHNEN laesst. Das
+     ist eine andere Frage als die, ob sie etwas SAGT. Die erste
+     gerenderte Karte war ein gueltiges JPEG in der richtigen Groesse mit
+     der richtigen Schrift — und las dreimal dasselbe.
+     ------------------------------------------------------------------- */
+  const guete = VisualQuality.check(entwurf, { hook: pkg.hook });
+  entwurf.quality = guete;
+
+  if (!guete.passed) {
+    return { ok: false, reason: "visualQuality", visualType: typ,
+      quality: guete,
+      message: "Die Karte laesst sich zeichnen, sagt aber nichts: " + guete.explanation };
+  }
+
+  return entwurf;
 }
 
 /* -------------------------------------------------------------- Zeichnen */

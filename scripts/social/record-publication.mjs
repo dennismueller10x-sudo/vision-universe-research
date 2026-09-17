@@ -55,6 +55,8 @@ export function eintragAusKandidat(kandidat, antwort, meta) {
     archetype: p.archetype || null,
     visualType: p.visualType || null,
     mediaFormat: p.mediaFormat || null,
+    authoringPattern: p.authoringPattern || null,
+    authoringAuthorId: p.authoringAuthorId || null,
     hook: p.hook || null,
     caption: kandidat.content.caption,
     cta: null,

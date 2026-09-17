@@ -106,6 +106,20 @@
          Getrennt zu halten kostet ein Feld. Zusammenzuwerfen kostet die
          Unterscheidbarkeit von Gemessenem und Angenommenem. */
       mediaFormat: spec.mediaFormat || null,
+
+      /* WELCHES TEXTMUSTER diesen Beitrag geschrieben hat, und wer.
+
+         Ohne diese zwei Felder laesst sich messen, DASS ein Beitrag
+         getragen hat — aber nicht, WAS daran. Genau das ist die Frage,
+         die die Autorenschicht beantworten koennen soll: welcher
+         Einstieg, welcher Aufbau, welcher Schwerpunkt.
+
+         Und sie gehoeren in diese Whitelist, nicht nur in den Eintrag:
+         dieselbe Falle hat schon `performanceRegime` und die Freigabe
+         erwischt. Eine Whitelist ist eine gute Verteidigung und ein
+         schlechtes Gedaechtnis. */
+      authoringPattern: spec.authoringPattern || null,
+      authoringAuthorId: spec.authoringAuthorId || null,
       hook: spec.hook || null,
       hookTokens: hookTokens,
       captionTokens: tokenize(spec.caption),
