@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T16:53:40.158Z",
+  "checkedAt": "2026-09-17T17:03:59.819Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-17",
-    "localTime": "12:53:40",
+    "localTime": "13:03:59",
     "lastCompletedSession": "2026-09-16",
     "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T16:53:35.860Z",
+    "indexGeneratedAt": "2026-09-17T17:03:55.519Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-17",
@@ -22,31 +22,28 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-17",
-      "asOf": "2026-09-17T16:50:00.000Z",
-      "asOfLocal": "12:50",
+      "asOf": "2026-09-17T17:00:00.000Z",
+      "asOfLocal": "13:00",
       "regularComplete": false,
-      "snapshots": 519,
+      "snapshots": 520,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 12:50",
+    "dataLabel": "Heute · Stand 13:00",
     "entries": 520,
     "byState": {
-      "LIVE": 511,
+      "LIVE": 513,
       "LAST_SESSION": 0,
-      "STALE": 9,
+      "STALE": 7,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 511,
-      "runningSessionStaleAsOf": 8,
-      "currentSessionMissing": 1
+      "runningSession": 513,
+      "runningSessionStaleAsOf": 7
     },
     "staleSample": [
-      "BTMD",
       "LOT",
-      "NRP",
       "PCLA",
       "RDIB",
       "RFAI",
