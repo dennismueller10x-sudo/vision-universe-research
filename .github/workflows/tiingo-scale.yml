@@ -70,6 +70,9 @@ on:
       - 'scripts/market/build-health-report.mjs'
       - 'scripts/market/verify-tiingo-commercial.mjs'
       - 'scripts/market/verify-live-candle.mjs'
+      - 'scripts/market/verify-dynamic-subscribe.mjs'
+      - 'scripts/market/verify-vu-live-e2e.mjs'
+      - 'worker/src/vu-live.mjs'
       - 'scripts/technical/run-technical-scale.mjs'
       - 'quant/config/tiingo-scale.json'
       - 'quant/config/gate-100-seed.json'
@@ -281,10 +284,35 @@ jobs:
           node scripts/market/verify-live-candle.mjs \
             --firehose --levels 0,5,6 --probe-seconds 25 --seconds 120
 
+      # Zero-Cost Realtime V1 §1: die eine Frage, von der der Betriebsmodus
+      # des Subscription Managers abhaengt. Laesst sich die Tickerliste
+      # eines BESTEHENDEN Sockets aendern, spart jeder Titelwechsel einen
+      # Verbindungsaufbau; laesst sie sich nicht aendern, wird sauber neu
+      # aufgebaut. Auf Verdacht nachzumelden waere der Weg in einen
+      # Zustand, in dem ein Titel zu sehen ist, den niemand abonniert hat.
+      - name: Nachmeldung auf offener Verbindung pruefen (§1)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-dynamic-subscribe.mjs \
+            --phase-seconds "${{ github.event_name == 'workflow_dispatch' && inputs.realtimeSeconds || '45' }}"
+
+      # §17 und §18: die ganze Kette einmal durch, mit echtem Anbieter -
+      # Laststufen 1/5/10/25/50 und ein E2E-Lauf auf den fuenf genannten
+      # Titeln. Der Sprung ueber Cloudflares Kante fehlt darin, weil der
+      # Worker nicht ausgerollt ist; der Bericht sagt das ausdruecklich,
+      # statt eine ungemessene Zahl auszuweisen.
+      - name: vu-live Last und E2E (§17, §18)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-vu-live-e2e.mjs \
+            --phases 1,5,10,25,50 --phase-seconds 30 --e2e-seconds 60 --clients 20
+
       - name: Kein Schluessel im Bericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/market/assert-no-secrets.mjs
+        run: node scripts/market/assert-no-secrets.mjs --all
 
       - name: Bericht sichern
         uses: actions/upload-artifact@v4
@@ -293,6 +321,8 @@ jobs:
           path: |
             quant/data/market/commercial/live-candle-verification.json
             quant/data/market/commercial/firehose-capability.json
+            quant/data/market/commercial/dynamic-subscribe-verification.json
+            quant/data/market/commercial/vu-live-e2e.json
           if-no-files-found: warn
 
       # Der Bericht wird committet, wie der Faehigkeitsnachweis auch: der
@@ -348,6 +378,57 @@ jobs:
                     (m.events.perSecond === null ? "-" : m.events.perSecond) + " | " +
                     (m.events.gapMs.median === null ? "-" : m.events.gapMs.median) + " | " +
                     m.candle.maxTicksInAnyBucket + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+            echo ''
+            echo '### Zero-Cost Realtime V1 — Nachmeldung auf offener Verbindung (§1)'
+            echo ''
+            if [ -f quant/data/market/commercial/dynamic-subscribe-verification.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/dynamic-subscribe-verification.json");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                console.log("");
+                console.log(r.consequence || "");
+                if (r.phases && r.phases.length) {
+                  console.log("");
+                  console.log("| Phase | " + r.symbols.a + " | " + r.symbols.b + " |");
+                  console.log("|---|---|---|");
+                  for (const p of r.phases) console.log("| " + p.phase + " | " + p.a + " | " + p.b + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+            echo ''
+            echo '### Zero-Cost Realtime V1 — Last und E2E (§17, §18)'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-e2e.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-e2e.json");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                console.log("");
+                console.log("Nicht enthalten: " + r.scope.excluded);
+                if (r.load && r.load.length) {
+                  console.log("");
+                  console.log("| Titel | Ereignisse/s | Nachrichten an Browser | CPU % | Kontingent % | Urteil |");
+                  console.log("|---|---|---|---|---|---|");
+                  for (const l of r.load) {
+                    console.log("| " + l.symbols + " | " + l.providerEventsPerSecond + " | " +
+                      l.client.clientMessages + " | " + l.cpu.sharePercent + " | " +
+                      Math.round(l.budget.requestShare * 1000) / 10 + " | " + l.budget.verdict + " |");
+                  }
+                }
+                if (r.e2e) {
+                  console.log("");
+                  console.log("| Titel | erster Kurs (ms) | Aktualisierungen |");
+                  console.log("|---|---|---|");
+                  for (const s of r.e2e.symbols) {
+                    console.log("| " + s + " | " + (r.e2e.firstTickMs[s] === null ? "keiner" : r.e2e.firstTickMs[s]) +
+                      " | " + r.e2e.delivered[s] + " |");
+                  }
                 }
               '
             else

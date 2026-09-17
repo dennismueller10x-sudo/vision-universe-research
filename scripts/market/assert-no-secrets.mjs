@@ -22,14 +22,40 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const TARGET = join(root, "quant", "data", "market");
+
+/* Der Regelfall: die frisch geschriebenen Marktdatendateien.
+
+   --all prueft zusaetzlich alles, was ein Deployment anfasst oder
+   ausliefert (Zero-Cost Realtime V1 §12: "Nach Deployment Secrets-Scan
+   durchfuehren"). Der Worker-Quelltext gehoert ausdruecklich dazu: er
+   ist die einzige Stelle im Repository, die einen Anbieterschluessel
+   ueberhaupt in die Hand nimmt, und der darf dort nur als Name einer
+   Umgebungsvariablen vorkommen - nie als Wert. */
+const ALL = process.argv.includes("--all");
+const TARGETS = ALL
+  ? ["quant/data/market", "worker", "discover/data", "discover/ui", "discover/engines",
+     "quant/config", "providers", ".github/workflows", "scripts/market"].map((r) => join(root, r))
+  : [join(root, "quant", "data", "market")];
 
 /* Umgebungsvariablen, deren Wert niemals in einer Datei stehen darf. */
 const SECRET_ENV = ["TWELVE_DATA_API_KEY", "EODHD_API_KEY", "FMP_API_KEY",
                     "FINNHUB_API_KEY", "TIINGO_API_KEY", "POLYGON_API_KEY"];
 
-/* Musterbasierte Erkennung, unabhaengig von der Umgebung. */
-const PATTERNS = [
+/* Musterbasierte Erkennung, unabhaengig von der Umgebung.
+
+   ZWEI LISTEN, UND DER UNTERSCHIED IST WICHTIG
+
+   In einer Datendatei ist ein Feld "authorization" schon der Befund:
+   dort hat kein Anmeldefeld etwas zu suchen. In Quelltext ist es das
+   Gegenteil - jede Datei, die sich bei einem Anbieter anmeldet, muss
+   das Wort enthalten. Ein Muster, das dort anschlaegt, wird nach dem
+   dritten Fehlalarm abgeschaltet, und dann faengt es auch den echten
+   Fall nicht mehr.
+
+   Deshalb: in Daten das breite Netz, in Quelltext nur die Formen, die
+   OHNE Kontext ein Geheimnis sind - und der Abgleich gegen die
+   tatsaechlichen Werte aus der Umgebung, der ueberall gilt. */
+const DATA_PATTERNS = [
   { name: "apikey-Parameter", re: /\bapi[_-]?key\s*[:=]\s*["']?[A-Za-z0-9_-]{8,}/i },
   { name: "token-Feld", re: /\b(access_token|auth_token|bearer)\s*[:=]\s*["']?[A-Za-z0-9._-]{12,}/i },
   { name: "Authorization-Header", re: /"authorization"\s*:/i },
@@ -39,6 +65,23 @@ const PATTERNS = [
   { name: "GitHub-Token", re: /\bgh[pousr]_[A-Za-z0-9]{16,}/ },
   { name: "privater Schluessel", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ }
 ];
+
+/* Fuer Quelltext, Konfiguration und Workflows. Jede dieser Formen ist
+   ein fest eingetragenes Geheimnis - ein Name einer Umgebungsvariablen
+   sieht anders aus. */
+const SOURCE_PATTERNS = [
+  { name: "OpenAI-artiger Schluessel", re: /\bsk-[A-Za-z0-9]{16,}/ },
+  { name: "AWS-Zugriffsschluessel", re: /\bAKIA[0-9A-Z]{16}\b/ },
+  { name: "GitHub-Token", re: /\bgh[pousr]_[A-Za-z0-9]{16,}/ },
+  { name: "Cloudflare-artiges API-Token", re: /\b(CLOUDFLARE_API_TOKEN|CF_API_TOKEN)\s*[:=]\s*["'][A-Za-z0-9_-]{20,}["']/ },
+  { name: "privater Schluessel", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
+  { name: "fest eingetragener Authorization-Wert", re: /["']?[Aa]uthorization["']?\s*[:=]\s*["'](Token|Bearer)\s+[A-Za-z0-9._-]{12,}["']/ },
+  { name: "fest eingetragener Schluesselwert", re: /\b(api[_-]?key|apiKey|apikey)\s*[:=]\s*["'][A-Za-z0-9_-]{16,}["']/ }
+];
+
+/* Welche Liste fuer welche Datei. */
+const DATEN = /\.(json|ndjson|csv|tsv|txt|log)$/i;
+function musterFuer(datei) { return DATEN.test(datei) ? DATA_PATTERNS : SOURCE_PATTERNS; }
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -55,7 +98,7 @@ const secrets = SECRET_ENV
   .map((name) => ({ name, value: process.env[name] }))
   .filter((e) => e.value && e.value.length >= 8);
 
-const files = walk(TARGET);
+const files = TARGETS.reduce((a, t2) => a.concat(walk(t2)), []);
 const findings = [];
 
 for (const file of files) {
@@ -67,7 +110,7 @@ for (const file of files) {
       findings.push(`${relative}: enthaelt den Wert von ${secret.name}`);
     }
   }
-  for (const pattern of PATTERNS) {
+  for (const pattern of musterFuer(file)) {
     const match = source.match(pattern.re);
     if (match) {
       /* Der Fund selbst wird NICHT ausgegeben — sonst stuende der Schluessel
@@ -77,7 +120,8 @@ for (const file of files) {
   }
 }
 
-console.log(`Schluesselpruefung: ${files.length} Datei(en) unter quant/data/market`);
+console.log(`Schluesselpruefung: ${files.length} Datei(en) unter ` +
+            TARGETS.map((t2) => t2.slice(root.length + 1)).join(", "));
 console.log(`  Umgebungswerte im Abgleich: ${secrets.length}`);
 
 if (findings.length) {
