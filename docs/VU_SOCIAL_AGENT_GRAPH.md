@@ -1018,3 +1018,76 @@ Tatsache. Die Idempotenzgrenze liegt woanders: am Processing Key und am
 unveränderlichen abgeschlossenen Ergebnis. Sichtbarkeit und
 Verarbeitung zu vermengen war der Fehler, der die vier Meldungen
 verschluckt hat.
+
+---
+
+## 30. Das Ergebnis: die Nutzlast ist unschuldig
+
+Vier unabhängige Anfragen, vier Wiederholungsfolgen. Die Nutzlasten
+könnten unterschiedlicher kaum sein — **die Signatur ist dieselbe**.
+
+| | Brief | `evidence` | Sonderzeichen | n | Folge (min) | Dauer |
+|---|---|---|---|---|---|---|
+| PR #101 | 11 910 B | 23 | ja | 6 | 5,7 · 9,1 · 13,1 · 21,2 · 36,7 | 86 min |
+| D1 | 4 258 B | 3 | ja | 6 | 6,1 · 9,2 · 12,3 · 21,5 · 36,6 | 86 min |
+| D2 | 11 984 B | — | nein | 6 | 7,1 · 9,2 · 12,9 · 20,9 · 36,4 | 87 min |
+| D3 | **2 891 B** | — | nein | 4+ | 5,9 · 9,5 · 13,1 | läuft |
+| PR #98 ✅ | 2 932 B | — | nein | **1** | — | **5 min 45 s** |
+
+Die Streuung zwischen den Läufen beträgt auf einem 36-Minuten-Abstand
+**höchstens 1,4 Minuten**. Das ist kein Zufall und keine Last: das ist
+ein fester Wiederholungsplan.
+
+### Was damit ausgeschlossen ist
+
+**A — Nutzlastgröße.** D3 ist 2 891 B und scheitert. PR #98 ist
+2 932 B und hat geliefert. Zwischen beiden liegen 41 Bytes.
+
+**B — Evidenzstruktur und Zeichen.** D2 trägt weder `evidence` noch
+typografische Zeichen und scheitert. D3 erst recht nicht.
+
+**C — der Bildschritt.** PR #98 hat mit demselben Bildauftrag ein
+echtes PNG erzeugt.
+
+**D3 ist der Beweis**: derselbe Brief, Zeichen für Zeichen, der um
+09:54:21Z ein Ergebnis samt generiertem Bild geliefert hat, liefert
+heute nichts — und zwar mit exakt derselben Signatur wie die
+Produktionsanfrage.
+
+Der Fehler ist **eingabeunabhängig**. Er liegt beim Anbieter.
+
+### Was damit *nicht* bewiesen ist
+
+Die **innere** Ursache. Die Work-Oberfläche zeigt leere Chats, diese
+Schnittstelle zeigt `STARTED`. Beides zusammen sagt nicht, woran der
+Lauf scheitert. `UNKNOWN` bleibt `UNKNOWN` — nur ist der Raum der
+Möglichkeiten jetzt erheblich kleiner.
+
+Und nicht bewiesen ist, dass sechs Anläufe das Maximum sind. PR #101,
+D1 und D2 hörten nach sechs auf; D3 stand bei Redaktionsschluss bei
+vier. Das ist ein konsistentes Bild, kein bewiesener Grenzwert.
+
+---
+
+## 31. Das Experiment hat auch das Messgerät geprüft
+
+Der Kontrolllauf hat einen Fehler in `classify()` sichtbar gemacht.
+
+Die Frist maß die Zeit seit der **letzten** Aktivität. Jede
+Backoff-Meldung setzt diese Uhr zurück — ein Anbieter, der unbegrenzt
+weiter `STARTED` meldet, wäre damit **nie** stale geworden.
+
+PR #101 wurde es nur, weil seine Wiederholungen nach sechs Versuchen
+aufhörten. Also aus Zufall und nicht aus Logik.
+
+Seither zwei Fenster:
+
+| | | |
+|---|---|---|
+| **Ruhe** | 3 450 s | Wie lange nach einem Lebenszeichen darf noch etwas kommen? |
+| **Gesamt** | 10 350 s | Wie lange darf der ganze Vorgang dauern, egal wie oft der Anbieter meldet, dass er wieder anfängt? |
+
+Der Faktor 3 steht im Quelltext mit seiner Begründung: die beobachtete
+Folge läuft über 86 Minuten, drei Fristen sind mit 173 Minuten
+komfortabel darüber. Ein Experiment, das nur den Prüfling misst und
+nicht das Messgerät, hätte diesen Fehler stehen lassen.
