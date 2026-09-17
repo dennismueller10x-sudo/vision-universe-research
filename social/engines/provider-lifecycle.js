@@ -171,6 +171,9 @@
      ------------------------------------------------------------------- */
   var REFERENZMESSUNGEN = [
     { source: "PR 98", contentId: "vu-image-trigger-proof-20260917-001",
+      processingKey: "vu-image-trigger-proof-brief-20260917-001:" +
+        "vu-image-trigger-proof-20260917-001:" +
+        "54cc68516173cd745674ed837e96e5bbec04bdde:1.0",
       startedAt: "2026-09-17T09:48:36Z", resultAt: "2026-09-17T09:54:21Z",
       seconds: 345, kind: "text+image",
       note: "Verifizierter Zero-API-Lauf mit Text und generativem Bild." }
@@ -212,10 +215,33 @@
    * `observations` sind gemessene Dauern in Sekunden von STARTED bis
    * Ergebnis. Fehlen sie, gilt die Referenzmessung.
    */
-  function lease(observations) {
+  function lease(observations, options) {
+    /* -----------------------------------------------------------------
+       DIE REFERENZ IST EINE MESSUNG, KEIN RUECKFALL
+
+       Hier stand: nimm die Beobachtungen, ODER - wenn es keine gibt -
+       die Referenz. Das hatte eine haessliche Folge, die beim ersten
+       echten Gebrauch sofort zuschlug.
+
+       Aus PR 103 wurde eine zweite echte Messung aufgeschrieben: 213 s.
+       Damit galten die Beobachtungen als vorhanden, die Referenzmessung
+       von 345 s fiel heraus, und die Frist SCHRUMPFTE von 3450 auf
+       2130 s - weil die laengere der beiden Messungen verschwunden war.
+       Eine Stichprobe, die beim Hinzufuegen eines Datenpunkts kleiner
+       wird, ist keine Stichprobe.
+
+       Die Referenz ist eine gemessene Laufzeit wie jede andere. Sie
+       gehoert dazu - ausser der Lauf, aus dem sie stammt, wurde selbst
+       schon aufgeschrieben; dann waere sie doppelt.
+       ----------------------------------------------------------------- */
+    var erfasst = (options && options.recordedKeys) || [];
     var messungen = (observations && observations.length)
-      ? observations.slice()
-      : REFERENZMESSUNGEN.map(function (m) { return m.seconds; });
+      ? observations.slice() : [];
+
+    REFERENZMESSUNGEN.forEach(function (m) {
+      if (erfasst.indexOf(m.processingKey) !== -1) return;
+      messungen.push(m.seconds);
+    });
 
     messungen = messungen.filter(function (x) {
       return typeof x === "number" && isFinite(x) && x > 0; });

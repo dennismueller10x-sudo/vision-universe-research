@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T19:12:00Z",
+  "generatedAt": "2026-09-17T19:42:00Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -394,5 +394,15 @@
       "note": "Selbsttaetig erfasst aus der Agent-Meldung (STARTED, pull_request/opened). Nicht von Hand nachgetragen."
     }
   ],
-  "latencyObservations": []
+  "latencyObservations": [
+    {
+      "processingKey": "vu-diag-size-brief-20260917:vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:1.0",
+      "contentId": "vu-diag-size-20260917",
+      "seconds": 213,
+      "startedAt": "2026-09-17T18:28:51Z",
+      "resultAt": "2026-09-17T18:32:24Z",
+      "source": "pr103-verified",
+      "note": "Von der letzten beobachteten Aktivitaet bis zum bestaetigten Ergebnis."
+    }
+  ]
 }

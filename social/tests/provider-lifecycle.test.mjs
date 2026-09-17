@@ -198,7 +198,10 @@ test("PL17 · Das Regime kann BOOTSTRAP verlassen", () => {
   }
   const reif = L.lease(l.latencies());
   assert.equal(reif.regime, "MATURE");
-  assert.equal(reif.sampleSize, 12);
+  /* 12 aufgeschriebene plus die Referenzmessung. Diese Zahl stand
+     frueher auf 12 - unter dem Modell, in dem die Referenz beim ersten
+     eigenen Datenpunkt herausfiel. Genau das war der Fehler. */
+  assert.equal(reif.sampleSize, 13);
   assert.ok(reif.seconds < 3450, "mehr Wissen fuehrte nicht zu einer engeren Frist");
 });
 
@@ -390,4 +393,40 @@ test("PL30 · Ein gemeldeter Fehler bleibt ein Fehler", () => {
     providerError: "quota exceeded"
   }, { now: "2026-09-17T18:12:00Z" });
   assert.equal(z.state, "PROVIDER_FAILED");
+});
+
+test("PL31 · Eine zusaetzliche Messung darf die Stichprobe nicht schrumpfen", () => {
+  /* Der Bug, der beim ersten echten Gebrauch sofort zuschlug: die
+     Referenz war ein RUECKFALL statt einer Messung. Sobald die erste
+     Beobachtung aufgeschrieben war (213 s aus PR 103), fiel die
+     Referenz von 345 s heraus - und die Frist SCHRUMPFTE von 3450 auf
+     2130 s, weil die laengere Messung verschwunden war.
+
+     Eine Stichprobe, die beim Hinzufuegen eines Datenpunkts kleiner
+     wird, ist keine Stichprobe. */
+  const ohne = L.lease();
+  const mit = L.lease([213]);
+
+  assert.equal(ohne.sampleSize, 1);
+  assert.equal(mit.sampleSize, 2, "die Referenzmessung ist herausgefallen");
+  assert.ok(mit.seconds >= ohne.seconds,
+    "eine zusaetzliche Messung hat die Frist verkuerzt");
+  assert.equal(mit.longestObserved, 345);
+});
+
+test("PL32 · Der Referenzlauf wird nicht doppelt gezaehlt", () => {
+  /* Wird ausgerechnet der Lauf aufgeschrieben, aus dem die Referenz
+     stammt, gehoert er einmal in die Stichprobe und nicht zweimal. */
+  const doppelt = L.lease([345],
+    { recordedKeys: [L.REFERENZMESSUNGEN[0].processingKey] });
+  assert.equal(doppelt.sampleSize, 1);
+});
+
+test("PL33 · Die Referenz nennt den Lauf, aus dem sie stammt", () => {
+  /* Ohne Kennung liesse sich die Doppelzaehlung nicht verhindern - und
+     niemand koennte nachsehen, woher die Zahl kommt. */
+  const r = L.REFERENZMESSUNGEN[0];
+  assert.match(r.processingKey, /vu-image-trigger-proof-20260917-001/);
+  assert.match(r.processingKey, /54cc68516173cd745674ed837e96e5bbec04bdde/);
+  assert.equal(L.sekundenZwischen(r.startedAt, r.resultAt), r.seconds);
 });
