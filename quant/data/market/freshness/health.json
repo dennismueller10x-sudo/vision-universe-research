@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T19:04:05.886Z",
+  "checkedAt": "2026-09-17T19:19:41.848Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-17",
-    "localTime": "15:04:05",
+    "localTime": "15:19:41",
     "lastCompletedSession": "2026-09-16",
     "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T19:04:01.681Z",
+    "indexGeneratedAt": "2026-09-17T19:19:37.710Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-17",
@@ -22,32 +22,30 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-17",
-      "asOf": "2026-09-17T19:00:00.000Z",
-      "asOfLocal": "15:00",
+      "asOf": "2026-09-17T19:15:00.000Z",
+      "asOfLocal": "15:15",
       "regularComplete": false,
       "snapshots": 520,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 15:00",
+    "dataLabel": "Heute · Stand 15:15",
     "entries": 520,
     "byState": {
-      "LIVE": 509,
+      "LIVE": 511,
       "LAST_SESSION": 0,
-      "STALE": 11,
+      "STALE": 9,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 509,
-      "runningSessionStaleAsOf": 11
+      "runningSession": 511,
+      "runningSessionStaleAsOf": 9
     },
     "staleSample": [
       "ATHS",
       "CPSS",
       "LOT",
-      "PCLA",
-      "PMI",
       "RDIB",
       "RFAI",
       "STRF",
