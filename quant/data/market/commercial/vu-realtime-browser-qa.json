@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.0.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-09-17T18:04:20.806Z",
+  "checkedAt": "2026-09-17T18:14:28.030Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "14:04:20",
+    "localTime": "14:14:28",
     "isOpen": true
   },
   "note": "Die Seite laeuft unter ihrem echten Ursprung; nur der Name ist im Testbrowser auf 127.0.0.1 abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
@@ -13,34 +13,16 @@
   "symbols": [
     {
       "symbol": "AAPL",
+      "prices": {
+        "kopf": 335.83,
+        "chart": 335.83,
+        "kopfText": "335,83 $+1,35 % heute",
+        "deviation": 0
+      },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "AAPL"
-      ],
-      "ticks": 31,
-      "firstTickMs": 2499,
-      "chartUpdatesAfterLoad": 29,
-      "labels": [
-        "Heute · Stand 13:20 · nicht aktuell",
-        "Markt geöffnet · Live"
-      ],
-      "latencyMs": {
-        "samples": 31,
-        "providerToCloudflare": 15,
-        "cloudflareToClient": 648,
-        "endToEnd": 663,
-        "max": 1050
-      },
-      "consoleErrors": [],
-      "verdict": "TICKS"
-    },
-    {
-      "symbol": "NVDA",
-      "connected": true,
-      "streamState": "OPEN",
-      "subscribed": [
-        "NVDA"
       ],
       "ticks": 37,
       "firstTickMs": 249,
@@ -50,79 +32,128 @@
       ],
       "latencyMs": {
         "samples": 37,
-        "providerToCloudflare": 14,
-        "cloudflareToClient": 721,
-        "endToEnd": 735,
-        "max": 1080
+        "providerToCloudflare": 20,
+        "cloudflareToClient": 646,
+        "endToEnd": 666,
+        "max": 1061
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    },
+    {
+      "symbol": "NVDA",
+      "prices": {
+        "kopf": 219.59,
+        "chart": 219.59,
+        "kopfText": "219,59 $+3,50 % heute",
+        "deviation": 0
+      },
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "NVDA"
+      ],
+      "ticks": 32,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 22,
+      "labels": [
+        "Markt geöffnet · Live"
+      ],
+      "latencyMs": {
+        "samples": 32,
+        "providerToCloudflare": 16,
+        "cloudflareToClient": 688,
+        "endToEnd": 704,
+        "max": 1056
       },
       "consoleErrors": [],
       "verdict": "TICKS"
     },
     {
       "symbol": "MSFT",
+      "prices": {
+        "kopf": 495.23,
+        "chart": 495.23,
+        "kopfText": "495,23 $−0,38 % heute",
+        "deviation": 0
+      },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "MSFT"
       ],
-      "ticks": 10,
-      "firstTickMs": 250,
-      "chartUpdatesAfterLoad": 8,
+      "ticks": 26,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 23,
       "labels": [
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 10,
-        "providerToCloudflare": 30,
-        "cloudflareToClient": 1050,
-        "endToEnd": 1080,
-        "max": 1168
+        "samples": 26,
+        "providerToCloudflare": 27,
+        "cloudflareToClient": 836,
+        "endToEnd": 863,
+        "max": 1071
       },
       "consoleErrors": [],
       "verdict": "TICKS"
     },
     {
       "symbol": "VLO",
+      "prices": {
+        "kopf": 410.59,
+        "chart": 410.59,
+        "kopfText": "410,59 $+3,41 % heute",
+        "deviation": 0
+      },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "VLO"
       ],
-      "ticks": 10,
-      "firstTickMs": 249,
-      "chartUpdatesAfterLoad": 8,
+      "ticks": 1,
+      "firstTickMs": 41249,
+      "chartUpdatesAfterLoad": 1,
       "labels": [
+        "Heute · Stand 13:25 · nicht aktuell",
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 10,
-        "providerToCloudflare": 14,
-        "cloudflareToClient": 1003,
-        "endToEnd": 1017,
-        "max": 1083
+        "samples": 1,
+        "providerToCloudflare": 12,
+        "cloudflareToClient": 1013,
+        "endToEnd": 1025,
+        "max": 1025
       },
       "consoleErrors": [],
       "verdict": "TICKS"
     },
     {
       "symbol": "PANW",
+      "prices": {
+        "kopf": 372.76,
+        "chart": 372.76,
+        "kopfText": "372,76 $−0,62 % heute",
+        "deviation": 0
+      },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "PANW"
       ],
-      "ticks": 13,
-      "firstTickMs": 249,
-      "chartUpdatesAfterLoad": 6,
+      "ticks": 6,
+      "firstTickMs": 12000,
+      "chartUpdatesAfterLoad": 5,
       "labels": [
+        "Heute · Stand 13:25 · nicht aktuell",
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 13,
-        "providerToCloudflare": 14,
-        "cloudflareToClient": 1005,
-        "endToEnd": 1019,
-        "max": 1075
+        "samples": 6,
+        "providerToCloudflare": 13,
+        "cloudflareToClient": 1030,
+        "endToEnd": 1043,
+        "max": 1044
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -135,7 +166,7 @@
       "label": "Markt geöffnet · Live"
     },
     "nachAbriss": {
-      "state": "IDLE",
+      "state": "RECONNECTING",
       "connected": false,
       "label": "Markt geöffnet · Live",
       "chartDa": true
@@ -145,18 +176,18 @@
       "connected": true,
       "label": "Markt geöffnet · Live",
       "stats": {
-        "opens": 3,
+        "opens": 2,
         "closes": 1,
         "errors": 0,
-        "messages": 14,
+        "messages": 13,
         "ticks": 9,
         "denied": 0,
         "retries": 1,
         "subscribes": 1,
         "unsubscribes": 0,
-        "notifications": 16,
-        "lastMessageAt": "2026-09-17T18:10:19.238Z",
-        "lastTickAt": "2026-09-17T18:10:19.238Z",
+        "notifications": 14,
+        "lastMessageAt": "2026-09-17T18:20:31.976Z",
+        "lastTickAt": "2026-09-17T18:20:31.976Z",
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -179,8 +210,8 @@
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
       "ok": true,
       "detail": [
-        "AAPL:31",
-        "NVDA:37"
+        "AAPL:37",
+        "NVDA:32"
       ]
     },
     {
@@ -198,6 +229,18 @@
       }
     },
     {
+      "id": "einKurs",
+      "question": "Kopf und Chart zeigen denselben Kurs",
+      "ok": true,
+      "detail": [
+        "AAPL: {\"kopf\":335.83,\"chart\":335.83,\"kopfText\":\"335,83 $+1,35 % heute\",\"deviation\":0}",
+        "NVDA: {\"kopf\":219.59,\"chart\":219.59,\"kopfText\":\"219,59 $+3,50 % heute\",\"deviation\":0}",
+        "MSFT: {\"kopf\":495.23,\"chart\":495.23,\"kopfText\":\"495,23 $−0,38 % heute\",\"deviation\":0}",
+        "VLO: {\"kopf\":410.59,\"chart\":410.59,\"kopfText\":\"410,59 $+3,41 % heute\",\"deviation\":0}",
+        "PANW: {\"kopf\":372.76,\"chart\":372.76,\"kopfText\":\"372,76 $−0,62 % heute\",\"deviation\":0}"
+      ]
+    },
+    {
       "id": "keineFehler",
       "question": "keine Konsolenfehler auf den Aktienseiten",
       "ok": true,
@@ -208,11 +251,11 @@
       "question": "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
       "ok": true,
       "detail": [
-        "AAPL: [\"Heute · Stand 13:20 · nicht aktuell\",\"Markt geöffnet · Live\"]",
+        "AAPL: [\"Markt geöffnet · Live\"]",
         "NVDA: [\"Markt geöffnet · Live\"]",
         "MSFT: [\"Markt geöffnet · Live\"]",
-        "VLO: [\"Markt geöffnet · Live\"]",
-        "PANW: [\"Markt geöffnet · Live\"]"
+        "VLO: [\"Heute · Stand 13:25 · nicht aktuell\",\"Markt geöffnet · Live\"]",
+        "PANW: [\"Heute · Stand 13:25 · nicht aktuell\",\"Markt geöffnet · Live\"]"
       ]
     },
     {
@@ -226,7 +269,7 @@
       "question": "nach dem Abriss ist der Strom nicht mehr verbunden",
       "ok": true,
       "detail": {
-        "state": "IDLE",
+        "state": "RECONNECTING",
         "connected": false,
         "label": "Markt geöffnet · Live",
         "chartDa": true
@@ -237,7 +280,7 @@
       "question": "der Chart bleibt nach dem Abriss stehen (kein leerer Chart)",
       "ok": true,
       "detail": {
-        "state": "IDLE",
+        "state": "RECONNECTING",
         "connected": false,
         "label": "Markt geöffnet · Live",
         "chartDa": true
@@ -252,18 +295,18 @@
         "connected": true,
         "label": "Markt geöffnet · Live",
         "stats": {
-          "opens": 3,
+          "opens": 2,
           "closes": 1,
           "errors": 0,
-          "messages": 14,
+          "messages": 13,
           "ticks": 9,
           "denied": 0,
           "retries": 1,
           "subscribes": 1,
           "unsubscribes": 0,
-          "notifications": 16,
-          "lastMessageAt": "2026-09-17T18:10:19.238Z",
-          "lastTickAt": "2026-09-17T18:10:19.238Z",
+          "notifications": 14,
+          "lastMessageAt": "2026-09-17T18:20:31.976Z",
+          "lastTickAt": "2026-09-17T18:20:31.976Z",
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
