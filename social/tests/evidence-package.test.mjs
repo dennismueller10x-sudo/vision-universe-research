@@ -28,6 +28,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const EP = require("../engines/evidence-package.js");
 const CB = require("../engines/claim-binding.js");
+const German = require("../engines/german-text.js");
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const BUNDLE = JSON.parse(
@@ -60,16 +61,45 @@ test("EP3 · Der Score zerlegt sich in seine Beitraege", () => {
   /* Ohne das ist eine Punktzahl eine Meinung mit Nachkommastelle. */
   const beitraege = PAKET.evidence.filter((e) => e.id.startsWith("score-contribution-"));
   assert.ok(beitraege.length >= 5);
-  assert.match(beitraege.map((e) => e.statement).join(" "), /TREND_STRUCTURE traegt .* von 30/);
+  assert.match(beitraege.map((e) => e.statement).join(" "),
+    /TREND_STRUCTURE tr\u00e4gt .* von 30/);
 });
 
-test("EP4 · Die Belegsaetze der Engines werden uebernommen, nicht neu formuliert", () => {
+test("EP4 \u00b7 Die Belegsaetze der Engines werden uebernommen, nicht neu formuliert", () => {
   /* Sie neu zu formulieren hiesse, eine zweite Lesart derselben Zahl zu
-     erzeugen. */
+     erzeugen.
+
+     Uebernommen heisst seit der Schreibungs-Reparatur: bis auf die
+     Orthografie. "Kurs ueber SMA50" wird zu "Kurs <ue>ber SMA50" —
+     dieselbe Aussage, dieselben Zahlen, deutsche Schreibung. Dass
+     wirklich NUR das passiert ist, steht in statementVerbatim: der
+     unveraenderte Engine-Satz reist mit, wo sich etwas geaendert hat. */
   const trend = PAKET.evidence.filter((e) => e.dimension === "TREND");
   const original = (BUNDLE.trend.evidence || []).map((e) => e.statement);
-  const uebernommen = trend.filter((e) => original.includes(e.statement));
+
+  const uebernommen = trend.filter((e) =>
+    original.includes(e.statement) || original.includes(e.statementVerbatim));
   assert.ok(uebernommen.length >= 3, "die Engine-Saetze fehlen");
+
+  /* Und der Beweis, dass die Reparatur nichts weiter angefasst hat. */
+  for (const e of trend) {
+    if (!e.statementVerbatim) continue;
+    assert.equal(German.normalize(e.statementVerbatim), e.statement,
+      e.id + ": die Aenderung ist mehr als Orthografie");
+    assert.deepEqual(
+      (e.statementVerbatim.match(/[0-9]+(?:\.[0-9]+)?/g) || []),
+      (e.statement.match(/[0-9]+(?:\.[0-9]+)?/g) || []),
+      e.id + ": die Zahlen haben sich geaendert");
+  }
+});
+
+test("EP4b \u00b7 Kein Belegsatz traegt unbekannte Umschrift", () => {
+  /* Was das Woerterbuch nicht kennt, wird nicht geraten. Es wird
+     gemeldet — und hier faellt auf, wenn es jemand gemeldet und dann
+     liegen gelassen hat. */
+  const offen = PAKET.evidence.filter((e) => e.statementResidue);
+  assert.deepEqual(offen.map((e) => e.id + ": " + e.statementResidue.join(",")), [],
+    "unbekannte Umschrift in den Belegsaetzen");
 });
 
 test("EP5 · Jede Aussage traegt Quelle, Stand und Zeiger", () => {
@@ -107,7 +137,8 @@ test("EP8 · Eine nicht verfuegbare Dimension wird NICHT ersetzt", () => {
 
 test("EP9 · Der Hinweis der Engine dazu reist mit", () => {
   const hinweis = PAKET.evidence.filter((e) => e.id.startsWith("score-note-"));
-  assert.match(hinweis.map((e) => e.statement).join(" "), /Relative Staerke nicht verfuegbar/);
+  assert.match(hinweis.map((e) => e.statement).join(" "),
+    /Relative St\u00e4rke nicht verf\u00fcgbar/);
 });
 
 /* ------------------------------------------------------------------ */

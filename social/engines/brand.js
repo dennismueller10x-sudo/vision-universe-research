@@ -29,6 +29,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
+  var German = isNode ? require("./german-text.js") : global.VUSocialGermanText;
 
   /* Vokabular, das nicht in einen VU-Beitrag gehoert. Getrennt nach
      Schwere: `blocking` verhindert die Veroeffentlichung, `warning`
@@ -161,31 +162,24 @@
        Maschine geschrieben, die kein Deutsch kann — und genau das waere
        es dann auch. Der erste gerenderte Kandidat trug es im Bild.
 
-       Geprueft wird eine Wortliste und keine Regel: "ue" gehoert in
-       "Museum" und in "neue", und jede allgemeine Regel wuerde entweder
-       diese Woerter treffen oder gar nichts. Eine Liste ist ehrlicher —
-       sie faengt, was sie kennt, und behauptet nichts darueber hinaus.
-       ------------------------------------------------------------------- */
-    /* Eine Liste als Quelltext-String: ein mehrzeiliges Regex-Literal
-       gibt es in JavaScript nicht, und in eine Zeile gequetscht waere
-       die Liste nicht mehr lesbar — eine unlesbare Liste wird nicht
-       gepflegt. */
-    var UMSCHRIFT_WOERTER = [
-      "fuer", "ueber", "ueberpruef\\w*", "koenn\\w+", "muess\\w+", "waer\\w+",
-      "groess\\w+", "naechst\\w+", "spaeter", "zurueck", "waehrend", "gemaess",
-      "veroeffentlich\\w*", "unveraendert", "ausfaell\\w+", "unspektakulaer",
-      "einschaetzung", "haett\\w+", "staerk\\w+", "schwaech\\w+", "moeglich\\w*",
-      "taeglich", "jaehrlich", "erhoeh\\w+", "verhaeltnis", "erklaer\\w+",
-      "waehl\\w+", "beruecksichtig\\w*", "zusaetzlich", "ausschliesslich"
-    ];
+       Hier stand eine Wortliste: dreissig Formen, die wir kannten. Sie
+       hat "traegt" nicht gekannt — und genau das kam aus den
+       Quant-Daten in den ersten evidenzgestuetzten Entwurf. Eine
+       Aufzaehlung faengt, was jemand daran gedacht hat einzutragen,
+       und schweigt ueber alles andere. Bei einem Sperrgatter ist das
+       die falsche Richtung von Unwissen.
 
-    var umschrieben = all.match(
-      new RegExp("\\b(?:" + UMSCHRIFT_WOERTER.join("|") + ")\\b", "gi")) || [];
+       Geprueft wird jetzt der Rest: german-text.js meldet Woerter mit
+       verdaechtigen Digraphen, die weder echtes Deutsch noch im
+       Reparatur-Woerterbuch sind. Unbekanntes blockiert, statt
+       durchzurutschen.
+       ------------------------------------------------------------------- */
+    var umschrieben = German.residue(all);
     if (umschrieben.length) {
       blocking.push({ id: "transliterated-umlauts",
         message: "Umschriebene Umlaute im veroeffentlichten Text: " +
-          Array.from(new Set(umschrieben.map(function (w) { return w.toLowerCase(); })))
-            .join(", ") + ". Der Quelltext darf ASCII sein, der Beitrag nicht." });
+          umschrieben.join(", ") +
+          ". Der Quelltext darf ASCII sein, der Beitrag nicht." });
     }
 
     BLOCKING_TERMS.forEach(function (t) {

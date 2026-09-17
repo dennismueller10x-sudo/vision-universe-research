@@ -58,6 +58,51 @@
     return String(e.value) + (e.unit ? " " + e.unit : "");
   }
 
+  /* -------------------------------------------------------------------
+     DIE UEBRIGEN BELEGE
+
+     Die erste Fassung nahm `evidence[0]` und liess den Rest liegen. Das
+     war richtig, solange der Brief genau einen Beleg trug — und falsch,
+     sobald er dreiundzwanzig traegt.
+
+     Genommen wird, was die Engines fertig formuliert haben. Sie neu zu
+     schreiben hiesse, eine zweite Lesart derselben Zahl zu erzeugen; sie
+     wegzulassen hiesse, eine Karte mit einer Zahl darauf zu bauen,
+     obwohl der Beleg danebenliegt.
+     ------------------------------------------------------------------- */
+  function belegsaetze(brief, ausser) {
+    return (brief.evidence || [])
+      .filter(function (e) {
+        return e && e.statement && String(e.statement).trim() &&
+          (!ausser || e.id !== ausser.id);
+      })
+      .map(function (e) { return String(e.statement).trim(); });
+  }
+
+  /** Zwei bis drei Belege, die zusammen etwas erzaehlen. */
+  function auswahl(brief, ausser, wieViele) {
+    var alle = belegsaetze(brief, ausser);
+    /* Belege ueber verschiedene Dimensionen zuerst: drei Saetze ueber
+       denselben Gegenstand sind ein Satz mit Wiederholungen. */
+    var gesehen = Object.create(null);
+    var breit = [];
+    (brief.evidence || []).forEach(function (e) {
+      if (!e || !e.statement || (ausser && e.id === ausser.id)) return;
+      var dim = e.dimension || "?";
+      if (gesehen[dim]) return;
+      gesehen[dim] = true;
+      breit.push(String(e.statement).trim());
+    });
+    var quelle = breit.length >= wieViele ? breit : alle;
+    return quelle.slice(0, wieViele);
+  }
+
+  function satzreihe(saetze) {
+    return saetze.map(function (s) {
+      return /[.!?]$/.test(s) ? s : s + ".";
+    }).join(" ");
+  }
+
   function wer(e, brief) {
     return e.entity || brief.topic || "der Titel";
   }
@@ -124,6 +169,20 @@
           "Was daraus folgt, entscheidet niemand hier f" + UE + "r Sie.";
       } },
 
+    { id: "evidence-led",
+      note: "Die Belege selbst. Nur moeglich, wenn der Brief mehr als eine " +
+            "Zahl traegt — und dann die ehrlichste Form, weil nichts " +
+            "umformuliert wird.",
+      needs: 3,
+      build: function (e, brief) {
+        var belege = auswahl(brief, e, 3);
+        return "Unsere technische Auswertung bewertet " + wer(e, brief) + " mit " +
+          wert(e) + " im " + e.metric + ". " +
+          "Was dahintersteht: " + satzreihe(belege) + " " +
+          "Der Wert beschreibt die Lage " + STRICH + " nicht ihre Ursache und nicht, " +
+          "was als n" + AE + "chstes passiert.";
+      } },
+
     { id: "limit-first",
       note: "Die Grenze zuerst. Nimmt dem Leser die falsche Erwartung ab, " +
             "bevor er sie aufbaut.",
@@ -175,9 +234,17 @@
         var hinweis = brief.constraints && brief.constraints.disclaimer;
         var varianten = [];
 
+        /* Muster, die mehrere Belege brauchen, fallen weg, wenn der Brief
+           sie nicht traegt. Sie mit einem Beleg zu bauen ergaebe einen
+           Satz mit einer Aufzaehlung aus einem Element. */
+        var belegZahl = (brief.evidence || []).filter(function (x) {
+          return x && x.statement; }).length;
+        var moeglich = CAPTION_PATTERNS.filter(function (x) {
+          return !x.needs || belegZahl >= x.needs; });
+
         for (var i = 0; i < wieViele; i += 1) {
           var h = HOOK_PATTERNS[i % HOOK_PATTERNS.length];
-          var c = CAPTION_PATTERNS[i % CAPTION_PATTERNS.length];
+          var c = moeglich[i % moeglich.length];
           var v = VISUAL_PATTERNS[i % VISUAL_PATTERNS.length];
 
           var caption = c.build(e, brief);

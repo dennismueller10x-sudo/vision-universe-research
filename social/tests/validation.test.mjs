@@ -117,10 +117,14 @@ test("V8 · Eine Hook, die der Text nicht einloest, ist blockierend", () => {
     "Das ist die Grenze zwischen starker Hook und Clickbait");
 });
 
-test("V9 · Eine starke Hook MIT Einloesung besteht", () => {
+test("V9 \u00b7 Eine starke Hook MIT Einloesung besteht", () => {
+  /* "waechst" stand hier, bis die Umschrift-Pruefung eine Wortliste
+     verliess. Der Text war als veroeffentlichbar behauptet und war es
+     nicht — der erste Fund der neuen Pruefung stand in ihrem eigenen
+     Beweismaterial. */
   const res = Brand.check({
     hook: "Warum steigt NVDA gerade?",
-    caption: "Weil die Nachfrage nach Rechenzentren waechst und die Marge daher steigt. " +
+    caption: "Weil die Nachfrage nach Rechenzentren w\u00e4chst und die Marge daher steigt. " +
              "Das zeigt sich deutlich in den letzten Quartalszahlen."
   });
   assert.equal(res.passed, true);

@@ -52,6 +52,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
+  var German = isNode ? require("./german-text.js") : global.VUSocialGermanText;
 
   /* Die Dimensionen, nach denen ein Beitrag erzaehlen kann. Jede ist
      entweder belegt oder ausdruecklich nicht — ein Dazwischen gibt es
@@ -67,11 +68,35 @@
     return Math.round(x * 100 * f) / f;
   }
 
+  /* -------------------------------------------------------------------
+     DIE SCHREIBUNG DER BELEGSAETZE
+
+     Die Quant-Daten sind ASCII: "TREND_STRUCTURE traegt 27.35 von 30
+     Punkten bei". Solange diese Saetze nur gerechnet wurden, war das
+     folgenlos. Seit sie an den Autor gehen, sind sie Rohstoff fuer
+     veroeffentlichten Text — und "traegt" auf einem deutschen
+     Markenkonto ist ein Fehler.
+
+     Repariert wird hier, an der einen Stelle, durch die jeder Beleg
+     laeuft. Der Eingriff ist rein orthografisch: keine Zahl, keine
+     Kennung und keine Aussage aendert sich.
+
+     Was das Woerterbuch nicht kennt, wird nicht geraten, sondern
+     gemeldet. `statementResidue` traegt es bis in die Gates.
+     ------------------------------------------------------------------- */
   function ev(spec) {
+    var roh = spec.statement;
+    var sauber = German.clean(roh);
+    var geaendert = (sauber.text !== roh);
+
     return {
       id: spec.id,
       dimension: spec.dimension,
-      statement: spec.statement,
+      statement: sauber.text,
+      /* Nur wenn wirklich etwas geaendert wurde. Sonst waere es ein
+         zweites Feld mit demselben Inhalt. */
+      statementVerbatim: geaendert ? roh : null,
+      statementResidue: sauber.residue.length ? sauber.residue : null,
       value: spec.value === undefined ? null : spec.value,
       unit: spec.unit || null,
       /* Beschreibt dieser Beleg eine ENTWICKLUNG ueber Zeit? Der Brief
