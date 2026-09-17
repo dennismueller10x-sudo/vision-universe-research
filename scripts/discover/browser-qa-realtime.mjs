@@ -81,7 +81,7 @@ const sitzung = MarketHours.sessionAt(Date.now(), { calendar: kalender, exchange
    abgeleiteten Sicht). */
 
 const bericht = {
-  schemaVersion: "vu-realtime-browser-qa-1.0.0",
+  schemaVersion: "vu-realtime-browser-qa-1.1.0",
   auftrag: "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
   checkedAt: new Date().toISOString(),
   origin: URSPRUNG,
@@ -90,7 +90,7 @@ const bericht = {
         "abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
   honesty: "Ein Titel ohne Marktereignis liefert keinen Kurs. Das ist kein Systemfehler und wird hier " +
            "auch nicht als Latenz gezaehlt.",
-  symbols: [], reconnect: null, checks: [], result: "UNKNOWN", reason: null
+  symbols: [], reconnect: null, expiry: null, checks: [], result: "UNKNOWN", reason: null
 };
 
 function pruefung(id, frage, ok, detail) {
@@ -400,6 +400,76 @@ if (sitzung.phase === "REGULAR") {
                       nachWiederanlauf.connected === true, nachWiederanlauf) && alleOk;
   }
   if (SHOTS) await p.screenshot({ path: SHOTS + "/realtime-fallback.png" });
+  await p.context().close();
+}
+
+/* §20 dritter Teil: der Widerruf.
+ *
+ * Der zweite Teil zeigt den Abriss - aber nicht, dass das Etikett
+ * danach auch verschwindet. Direkt nach dem Abriss steht dort mit Recht
+ * noch "Live": der letzte Kurs ist eine Drittelsekunde alt. Die Zusage
+ * aus §4 ist eine andere - eine Kursreferenz, die aelter als 90
+ * Sekunden ist, darf nicht mehr "Live" heissen.
+ *
+ * Also wird hier der Wiederanlauf verhindert (die Fabrik liefert einen
+ * Socket, der nie aufgeht - ein Funkloch, das bleibt) und gewartet, bis
+ * das Fenster abgelaufen ist. Danach muss dort der ehrliche Stand mit
+ * Uhrzeit stehen, und der Chart muss noch da sein. */
+if (sitzung.phase === "REGULAR") {
+  const p = await seite();
+  await aktienseite(p, "AAPL");
+  await p.waitForTimeout(8000);
+
+  const vorher = await p.evaluate(() => {
+    const l = document.querySelector(".dx-live-label");
+    return { label: l ? l.textContent.trim() : null,
+             live: window.VUDiscover.LiveHub.liveValue("AAPL") ? true : false };
+  });
+
+  /* Erst das Funkloch, dann der Abriss - in dieser Reihenfolge, sonst
+     ist die Verbindung nach einer Sekunde wieder da. */
+  await p.evaluate(() => {
+    window.WebSocket = function Funkloch() {
+      this.readyState = 3;
+      setTimeout(() => { if (this.onerror) this.onerror({ type: "error" });
+                         if (this.onclose) this.onclose({ code: 1006, reason: "Funkloch" }); }, 10);
+    };
+    window.WebSocket.prototype.send = function () {};
+    window.WebSocket.prototype.close = function () {};
+    window.VUDiscover.LiveHub.liveClose("testVerfall");
+  });
+
+  /* Das Fenster ist 90 Sekunden; gewartet wird bis sicher darueber. */
+  const frisch = await p.evaluate(() => {
+    const m = window.VUDiscoverMeta;
+    const s = m && m.realtime && m.realtime.stream;
+    return (s && s.freshSeconds) || 90;
+  });
+  await p.waitForTimeout(frisch * 1000 + 8000);
+
+  const nachher = await p.evaluate(() => {
+    const Hub = window.VUDiscover.LiveHub;
+    const l = document.querySelector(".dx-live-label");
+    const svg = document.querySelector(".dx-intraday-chart, .dx-intraday svg");
+    const punkte = svg ? (svg.querySelector("path[d]") || {}).getAttribute : null;
+    return { label: l ? l.textContent.trim() : null,
+             connected: Hub.liveState().connected, state: Hub.liveState().state,
+             chartDa: !!svg, chartHatLinie: !!punkte,
+             kopf: (document.querySelector(".dx-chart-hero-preis > b.num") || {}).textContent || null };
+  });
+
+  bericht.expiry = { freshSeconds: frisch, vorher, nachher };
+  console.log("");
+  console.log("  Widerruf: '" + vorher.label + "' -> '" + nachher.label + "' nach " + frisch + " s ohne Kurs");
+
+  alleOk = pruefung("liveWiderrufen",
+                    "nach " + frisch + " s ohne frischen Kurs sagt die Seite nicht mehr 'Live'",
+                    !!nachher.label && !/Live/i.test(nachher.label), nachher) && alleOk;
+  alleOk = pruefung("snapshotUebernimmt",
+                    "der Snapshot uebernimmt: ehrlicher Stand mit Uhrzeit, Chart bleibt gezeichnet",
+                    !!nachher.chartDa && !!nachher.chartHatLinie && /Stand|Handelstag/i.test(nachher.label || ""),
+                    nachher) && alleOk;
+  if (SHOTS) { await zumChart(p); await p.screenshot({ path: SHOTS + "/realtime-widerruf.png" }); }
   await p.context().close();
 }
 

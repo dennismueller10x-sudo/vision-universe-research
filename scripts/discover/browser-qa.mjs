@@ -20,7 +20,7 @@
    Einen lokalen Server startet man vorher mit:
                    python3 -m http.server 8765
    ========================================================================= */
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const args = process.argv.slice(2);
@@ -63,6 +63,36 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
    Fehler verschlucken. */
 const IGNORE = /fonts\.googleapis|fonts\.gstatic|favicon\.ico/;
 
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist.
+ *
+ * Seit V2 steht in der Auslieferung eine Realtime-Adresse bei
+ * Cloudflare. Diese Entwicklungsumgebung erreicht sie nicht (der
+ * Egress-Filter lehnt den Tunnel ab), und ein fehlgeschlagener
+ * WebSocket-Aufbau schreibt eine Zeile in die Konsole, die kein
+ * Skript verhindern kann - auch nicht der Hub, der den Fehler selbst
+ * korrekt behandelt und auf den Snapshot zurueckfaellt.
+ *
+ * Die Ausnahme ist eng gefasst: sie greift nur fuer GENAU die Adresse
+ * aus der Auslieferung und nur fuer Meldungen ueber den
+ * Verbindungsaufbau. Ein Fehler im Hub, eine falsche Adresse oder eine
+ * Ausnahme im Chart faellt weiterhin auf. Gezaehlt wird trotzdem, und
+ * am Ende steht die Zahl im Protokoll.
+ *
+ * Dass der Strom laeuft, weist diese Suite ohnehin nicht nach; das tut
+ * scripts/discover/browser-qa-realtime.mjs in GitHub Actions, wo der
+ * Weg offen ist - dort gilt "keine Konsolenfehler" ohne Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync(join(process.cwd(), "discover/data/meta.json"), "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
+
 async function openPage(options) {
   const page = await browser.newPage(options);
   const errors = [];
@@ -71,6 +101,7 @@ async function openPage(options) {
     if (m.type() !== "error") return;
     const herkunft = (m.location && m.location().url) || "";
     if (IGNORE.test(herkunft) || IGNORE.test(m.text())) return;
+    if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; }
     errors.push("CONSOLE " + m.text() + " (" + herkunft + ")");
   });
   page.on("requestfailed", (r) => {
@@ -1177,5 +1208,11 @@ await browser.close();
 
 console.log("\nVision Universe DISCOVER — Browser-QA\n");
 for (const [status, name] of results) console.log(`  ${status}  ${name}`);
-console.log(`\n  ${results.length - failures}/${results.length} bestanden\n`);
+console.log(`\n  ${results.length - failures}/${results.length} bestanden`);
+if (stromUnerreichbar) {
+  console.log(`  Hinweis: ${stromUnerreichbar} Konsolenzeile(n) ueber den nicht erreichbaren Strom ` +
+              `(${STROM_URL}) - diese Umgebung kommt nicht bis Cloudflare. Der Nachweis, dass der ` +
+              `Strom laeuft, steht in scripts/discover/browser-qa-realtime.mjs.`);
+}
+console.log("");
 process.exit(failures ? 1 : 0);

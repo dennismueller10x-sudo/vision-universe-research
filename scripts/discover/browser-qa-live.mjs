@@ -15,18 +15,36 @@
      node scripts/discover/browser-qa-live.mjs http://127.0.0.1:8121 [shots-dir] [--clock=ISO]
    ========================================================================= */
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const BASE = args[0] || "http://127.0.0.1:8121";
 const SHOTS = args[1]; if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const CLOCK = (process.argv.find((a) => a.startsWith("--clock=")) || "").slice(8) || null;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist: ein
+   fehlgeschlagener WebSocket-Aufbau schreibt eine Konsolenzeile, die
+   kein Skript verhindern kann. Die Ausnahme gilt nur fuer GENAU die
+   Adresse aus der Auslieferung und nur fuer den Verbindungsaufbau; sie
+   wird gezaehlt und am Ende ausgewiesen. Dass der Strom laeuft, weist
+   scripts/discover/browser-qa-realtime.mjs in Actions nach - dort ohne
+   jede Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync("discover/data/meta.json", "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
 const punkte = []; let fehler = 0;
 const ok = (n, c, d) => { punkte.push([c ? "ok  " : "FAIL", n, d || ""]); if (!c) fehler++; };
 async function seite(ctx) {
   const p = await ctx.newPage(); p.__m = []; p.__bad = []; p.__req = [];
   if (CLOCK) { await p.clock.install({ time: new Date(CLOCK) }); }
-  p.on("console", (m) => { if (m.type() === "error") { const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
+  p.on("console", (m) => { if (m.type() === "error") { if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; } const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
   p.on("pageerror", (e) => p.__m.push("pageerror: " + e.message));
   p.on("request", (r) => { if (r.url().startsWith(BASE)) p.__req.push(r.url().replace(BASE, "")); });
   p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE) && !r.url().includes("favicon")) p.__bad.push(r.status() + " " + r.url().replace(BASE, "")); });
@@ -57,6 +75,7 @@ if (eintraege === 0) {
   await browser.close();
   console.log("\nDiscover Live-QA (ohne Snapshots) — " + punkte.length + " Pruefpunkte, " + fehler + " Fehler\n");
   for (const [s, n, dd] of punkte) console.log(`  ${s} ${n}${dd ? "  — " + dd : ""}`);
+if (stromUnerreichbar) console.log("\n  Hinweis: " + stromUnerreichbar + " Konsolenzeile(n) ueber den nicht erreichbaren Strom (" + STROM_URL + ").");
   process.exit(fehler ? 1 : 0);
 }
 /* Die Eingangsflaeche fuellt den ersten Bildschirm; die Karten beginnen
