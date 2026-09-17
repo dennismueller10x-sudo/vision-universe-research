@@ -1,52 +1,49 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-17T13:32:32.396Z",
+  "checkedAt": "2026-09-17T13:46:57.389Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-17",
-    "localTime": "09:32:32",
+    "localTime": "09:46:57",
     "lastCompletedSession": "2026-09-16",
     "currentSession": "2026-09-17",
     "expectedIntradaySession": "2026-09-17"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-17T13:32:27.960Z",
+    "indexGeneratedAt": "2026-09-17T13:46:53.258Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-09-16",
-      "kind": "last",
-      "isRunning": false,
-      "isComplete": true
+      "sessionDate": "2026-09-17",
+      "kind": "current",
+      "isRunning": true,
+      "isComplete": false
     },
     "dataSession": {
-      "sessionDate": "2026-09-16",
-      "asOf": "2026-09-16T20:55:00.000Z",
-      "asOfLocal": "16:55",
-      "regularComplete": true,
-      "snapshots": 5259,
-      "universe": true
+      "sessionDate": "2026-09-17",
+      "asOf": "2026-09-17T13:45:00.000Z",
+      "asOfLocal": "09:45",
+      "regularComplete": false,
+      "snapshots": 470,
+      "universe": false
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "previousSessionWithinOpenGrace",
-    "dataLabel": "Letzter Handelstag · Mittwoch · heutige Kurse folgen",
-    "entries": 520,
+    "dataState": "LIVE",
+    "dataReason": "runningSession",
+    "dataLabel": "Heute · Stand 09:45",
+    "entries": 519,
     "byState": {
-      "LIVE": 0,
-      "LAST_SESSION": 519,
-      "STALE": 1,
+      "LIVE": 470,
+      "LAST_SESSION": 49,
+      "STALE": 0,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "previousSessionWithinOpenGrace": 519,
-      "olderThanLastSession": 1
+      "runningSession": 470,
+      "previousSessionWithinOpenGrace": 49
     },
-    "staleSample": [
-      "TVA"
-    ],
+    "staleSample": [],
     "universeSessions": [
-      "2026-09-15",
       "2026-09-16"
     ],
     "universeCoversLastSession": true,
