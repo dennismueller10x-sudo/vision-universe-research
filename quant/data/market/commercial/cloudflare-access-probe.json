@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cloudflare-access-probe-1.0.0",
   "auftrag": "Owner-Update 17.09.2026: vorhandene Secrets nutzen, keine neuen erzeugen",
-  "checkedAt": "2026-09-17T11:41:33.380Z",
+  "checkedAt": "2026-09-17T11:42:20.755Z",
   "note": "Dieser Bericht enthaelt keine Werte. Nur Namen, Formen und Rechte.",
-  "environment": "local",
-  "environmentNote": "AUSSERHALB VON ACTIONS gelaufen. Secrets gibt es dort nicht; 'fehlt' heisst hier nur 'nicht sichtbar', nicht 'nicht vorhanden'.",
+  "environment": "github-actions",
+  "environmentNote": "In Actions - hier liegen die Secrets, der Befund gilt.",
   "secrets": [
     {
       "name": "CLOUDFLARE_API_TOKEN",
-      "present": false,
+      "present": true,
       "role": "Token, von wrangler direkt gelesen",
-      "form": null
+      "form": "unbekannt(53 Zeichen)"
     },
     {
       "name": "CLOUDFLARE_API_KEY",
@@ -50,22 +50,20 @@
     }
   ],
   "accountId": {
-    "derivable": false,
-    "source": null,
-    "reason": "noEndpointAndNoAccountId",
-    "form": null
+    "derivable": true,
+    "source": "VU_HISTORY_S3_ENDPOINT",
+    "jurisdiction": null,
+    "reason": null,
+    "form": "accountIdOderHex32"
   },
-  "verdict": "INCOMPLETE",
-  "missing": [
-    "ein Cloudflare-Zugang unter einem der geprueften Namen",
-    "CLOUDFLARE_ACCOUNT_ID"
-  ],
-  "consequence": "Es fehlt: ein Cloudflare-Zugang unter einem der geprueften Namen, CLOUDFLARE_ACCOUNT_ID.",
+  "verdict": "READY_TO_CHECK_PERMISSIONS",
+  "missing": [],
+  "consequence": "Namen und Account-ID sind da. Ob die RECHTE des Tokens fuer Workers und Durable Objects reichen, sagt der naechste Schritt (wrangler whoami) - der Name allein sagt es nicht.",
   "token": {
-    "foundAs": null,
-    "form": null,
-    "usableDirectly": false,
+    "foundAs": "CLOUDFLARE_API_TOKEN",
+    "form": "unbekannt(53 Zeichen)",
+    "usableDirectly": true,
     "needsEmail": false,
-    "note": "Unter keinem der geprueften Namen liegt ein Cloudflare-Zugang."
+    "note": "wrangler liest diesen Namen von selbst."
   }
 }
