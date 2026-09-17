@@ -25,11 +25,14 @@ jobs:
       - name: Test resource budget failure cases
         run: node --test scripts/vu2/resource-budget.test.mjs
       - name: Install isolated browser test dependency
-        run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3
+        run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
       - name: Install Chromium
         run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Build the exact static release artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
+      - name: Compact delivery script without changing identifiers or removing code
+        run: |
+          /tmp/vu2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/quant2-site/vu2/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/quant2-site/vu2/release-bundle.js"
       - name: Test desktop and mobile preview
         env:
           NODE_PATH: /tmp/vu2-qa/node_modules

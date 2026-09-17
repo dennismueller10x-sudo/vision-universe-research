@@ -91,9 +91,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  }
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});
  const serviceRoute=/\/(?:quant\/api\/product-services|vu2\/release-bundle)\.js$/;
- const serviceSource=await readFile(resolve(root,'quant/api/product-services.js'),'utf8');
- await page.route(serviceRoute,async route=>{const response=await route.fetch(),body=await response.text();if(!body.includes(serviceSource))throw Error('QA service injection target missing');const injected=serviceSource+`
-;{const original=VUProductServices.create;VUProductServices.create=(...args)=>({...original(...args),getHomeIntelligence:async()=>{throw Error('QA injected product rejection');}});}`;await route.fulfill({response,body:body.replace(serviceSource,injected)});});
+ // Install the same rejection before service initialization, independent of
+ // whitespace/minification. Removing this route restores the original service.
+ await page.route(serviceRoute,async route=>{const response=await route.fetch();const injected=`
+Object.defineProperty(window,'VUProductServices',{configurable:true,set(service){
+ const original=service.create;
+ Object.defineProperty(window,'VUProductServices',{configurable:true,writable:true,value:{...service,create:(...args)=>({...original(...args),getHomeIntelligence:async()=>{throw Error('QA injected product rejection');}})}});
+}});
+`;
+ await route.fulfill({response,body:injected+await response.text()});});
  await page.goto(origin+'/vu2/?view=home');await page.getByRole('heading',{name:'Ansicht derzeit nicht verfügbar',exact:true}).waitFor();if(await page.locator('h1').count()!==1||await page.locator('a.row').count())throw Error('failed render retained partial content');await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});await page.unroute(serviceRoute);await page.getByRole('link',{name:'Erneut versuchen',exact:true}).click();await page.getByRole('heading',{name:'Was ist für dich wichtig?',exact:true}).waitFor();checks.push({view:'render-failure-recovery',width,pass:true});
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
  const visibleNav=page.locator(width===390?'.mobile-nav':'.nav');if(await visibleNav.getByRole('link',{name:'Research',exact:true}).getAttribute('aria-current')!=='location')throw Error('research context missing');
