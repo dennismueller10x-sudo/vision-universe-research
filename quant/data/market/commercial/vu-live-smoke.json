@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-live-smoke-1.0.0",
   "auftrag": "Zero-Cost Realtime V1: Smoke-Test der ausgerollten Runtime",
-  "checkedAt": "2026-09-17T14:11:40.214Z",
+  "checkedAt": "2026-09-17T17:04:17.025Z",
   "endpoint": "https://vu-live.little-credit-15d3.workers.dev",
   "session": {
     "phase": "REGULAR",
-    "localTime": "10:11:40",
+    "localTime": "13:04:17",
     "isOpen": true
   },
   "checks": [
@@ -96,7 +96,7 @@
             "modeReason": null,
             "verdict": null,
             "session": "REGULAR",
-            "at": "2026-09-17T14:11:42.734Z"
+            "at": "2026-09-17T17:04:18.209Z"
           },
           {
             "op": "status",
@@ -106,7 +106,7 @@
             "modeReason": null,
             "verdict": null,
             "session": "REGULAR",
-            "at": "2026-09-17T14:11:42.814Z"
+            "at": "2026-09-17T17:04:18.469Z"
           }
         ]
       }
@@ -114,14 +114,14 @@
   ],
   "latency": {
     "firstTickMs": {
-      "AAPL": 2481,
-      "NVDA": 2481,
-      "MSFT": 4999,
-      "VLO": 8314,
-      "PANW": 3493
+      "AAPL": 2211,
+      "NVDA": 2211,
+      "MSFT": 8824,
+      "VLO": 3234,
+      "PANW": 12631
     },
-    "median": 3493,
-    "max": 8314,
+    "median": 3234,
+    "max": 12631,
     "note": "Zeit vom subscribe des Clients bis zum ersten Kurs desselben Titels beim Client. Enthaelt Cloudflares Kante, den Verbindungsaufbau zum Anbieter und ein Zusammenfassungsfenster von einer Sekunde."
   },
   "result": "PASS",
@@ -156,7 +156,7 @@
       "modeReason": null,
       "verdict": null,
       "session": "REGULAR",
-      "at": "2026-09-17T14:11:42.734Z"
+      "at": "2026-09-17T17:04:18.209Z"
     },
     {
       "op": "status",
@@ -166,7 +166,7 @@
       "modeReason": null,
       "verdict": null,
       "session": "REGULAR",
-      "at": "2026-09-17T14:11:42.814Z"
+      "at": "2026-09-17T17:04:18.469Z"
     }
   ],
   "healthAfter": {
@@ -189,20 +189,20 @@
     "budget": {
       "verdict": "OK",
       "used": {
-        "providerMessages": 139,
+        "providerMessages": 115,
         "clientMessages": 1,
         "connections": 1,
-        "alarms": 2,
-        "requests": 10,
-        "activeSeconds": 60,
-        "durationGBs": 8,
+        "alarms": 1,
+        "requests": 8,
+        "activeSeconds": 30,
+        "durationGBs": 4,
         "peakSymbols": 5,
         "peakClients": 1
       }
     },
     "log": [
       {
-        "at": "2026-09-17T14:11:42.688Z",
+        "at": "2026-09-17T17:04:18.398Z",
         "ereignis": "providerOpen",
         "daten": {
           "tickers": 5
