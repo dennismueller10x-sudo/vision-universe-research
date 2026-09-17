@@ -148,12 +148,46 @@ jobs:
         env:
           VU_LIVE_URL: ${{ steps.deploy.outputs.url }}
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           if [ -z "$VU_LIVE_URL" ]; then
             echo "Keine Adresse aus dem Deployment - Smoke-Test nicht moeglich."
             exit 1
           fi
+          # Das Protokoll des Workers mitschneiden, waehrend der Test
+          # laeuft. Eine Ausnahme im Durable Object ist von aussen nur
+          # als abgerissener Socket zu sehen; hier steht sie im Klartext.
+          ( cd worker && npx --yes wrangler@4 tail vu-live --format json > /tmp/tail.json 2>/tmp/tail.err & echo $! > /tmp/tail.pid )
+          sleep 8
+          set +e
           node scripts/market/smoke-vu-live.mjs --url "$VU_LIVE_URL" --seconds 45
+          ERGEBNIS=$?
+          set -e
+          sleep 3
+          [ -f /tmp/tail.pid ] && kill "$(cat /tmp/tail.pid)" 2>/dev/null || true
+          echo ""
+          echo "--- Worker-Protokoll (Ausnahmen und Meldungen) ---"
+          if [ -s /tmp/tail.json ]; then
+            node -e '
+              const fs = require("fs");
+              const zeilen = fs.readFileSync("/tmp/tail.json", "utf8").split("\n").filter(Boolean);
+              let gezeigt = 0;
+              for (const z of zeilen) {
+                let e = null;
+                try { e = JSON.parse(z); } catch (err) { continue; }
+                const aus = (e.exceptions || []).map((x) => "AUSNAHME: " + x.name + ": " + x.message);
+                const log = (e.logs || []).map((l) => (l.level || "log") + ": " +
+                  (l.message || []).map((m) => typeof m === "string" ? m : JSON.stringify(m)).join(" "));
+                for (const t of aus.concat(log)) {
+                  if (gezeigt++ < 40) console.log("  " + t.replace(/[0-9a-f]{32}/g, "<maskiert>").slice(0, 300));
+                }
+              }
+              if (!gezeigt) console.log("  (keine Ausnahmen, keine Meldungen)");
+            '
+          else
+            echo "  (kein Mitschnitt: $(head -c 200 /tmp/tail.err 2>/dev/null))"
+          fi
+          exit $ERGEBNIS
 
       # ---- Der bevorzugte Name -------------------------------------------
       - name: live.visionuniverse.de anlegen

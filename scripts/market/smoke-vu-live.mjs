@@ -226,6 +226,20 @@ async function main() {
     });
   });
 
+  /* Zum Schluss noch einmal /health - jetzt hat das Objekt gearbeitet,
+     und sein Protokoll sagt, was dabei passiert ist. Genau das fehlte
+     beim ersten Lauf: "0 von 5 geliefert" ohne einen Hinweis darauf,
+     woran es lag. */
+  try {
+    const r = await fetch(httpUrl("/health"), { headers: { Origin: ERLAUBTER_URSPRUNG } });
+    const k = await r.json();
+    bericht.healthAfter = {
+      manager: k.manager || null, values: k.values, series: k.series,
+      budget: k.budget ? { verdict: k.budget.verdict, used: k.budget.used } : null,
+      log: k.log || null
+    };
+  } catch (err) { bericht.healthAfter = { error: String(err && err.message || err) }; }
+
   const alles = bericht.checks.every((c) => c.ok);
   bericht.result = alles ? "PASS" : "FAIL";
   bericht.reason = alles ? null : bericht.checks.filter((c) => !c.ok).map((c) => c.id).join(",");
@@ -245,6 +259,11 @@ function schreibe() {
   if (bericht.latency) {
     console.log("");
     console.log("  erste Kurse (ms): " + JSON.stringify(bericht.latency.firstTickMs));
+  }
+  if (bericht.healthAfter && bericht.healthAfter.log) {
+    console.log("");
+    console.log("  Protokoll des Objekts:");
+    for (const z of bericht.healthAfter.log) console.log("    " + JSON.stringify(z));
   }
   console.log("");
   console.log("ERGEBNIS: " + bericht.result + (bericht.reason ? " (" + bericht.reason + ")" : ""));
