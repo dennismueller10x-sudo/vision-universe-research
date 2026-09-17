@@ -57,6 +57,7 @@ const Performance  = require(join(ROOT, "social/engines/performance.js"));
 const Learning     = require(join(ROOT, "social/engines/learning.js"));
 const Experiments  = require(join(ROOT, "social/engines/experiments.js"));
 const EvidenceRegime = require(join(ROOT, "social/engines/evidence-regime.js"));
+const MessFenster  = require(join(ROOT, "social/engines/measurement-window.js"));
 const Explain      = require(join(ROOT, "social/engines/explain.js"));
 const Health       = require(join(ROOT, "social/engines/health.js"));
 const Autonomy     = require(join(ROOT, "social/engines/autonomy.js"));
@@ -125,6 +126,7 @@ function readJson(relativePath, fallback) {
   return JSON.parse(readFileSync(file, "utf8"));
 }
 
+const FENSTER_CONFIG = readJson("social/config/measurement-windows.json", null);
 const killSwitchConfig = readJson("social/config/kill-switch.json", { gates: {} });
 const autonomyConfig = readJson("social/config/autonomy.json", { desiredLevel: 0 });
 const killSwitch = KillSwitch.fromConfig(killSwitchConfig);
@@ -682,20 +684,61 @@ async function main() {
     ? JSON.parse(readFileSync(perfFile, "utf8")) : null;
 
   const alleZeilen = perfData ? (perfData.snapshots || []) : [];
-  const snapshots = alleZeilen.map((z) => z.snapshot)
-    .filter((x) => x && x.state !== "UNAVAILABLE");
+
+  /* ------------------------------------------------------------------
+     REIF ODER NUR GEMESSEN
+
+     Social-Performance entsteht ueber Zeit. Eine Reichweite nach zehn
+     Minuten ist keine kleine Reichweite — sie ist noch keine. Die Zahl
+     ist richtig; sie beantwortet nur eine andere Frage als die
+     gestellte.
+
+     Wer sie trotzdem ins Lernen laesst, vergleicht nicht Formate,
+     sondern Messzeitpunkte: jeder frische Beitrag sieht schlechter aus
+     als jeder aeltere, und das System schliesst daraus auf Formate,
+     Uhrzeiten und Hooks.
+
+     Gelernt wird deshalb NUR auf reifen Messungen. Die unreifen bleiben
+     sichtbar — sie sind der Grund, warum die Stichprobe heute kleiner
+     ist als die Zahl der Beitraege, und dieser Grund verschwindet nach
+     ein paar Tagen von selbst.
+     ------------------------------------------------------------------ */
+  const gemesseneZeilen = alleZeilen.filter((z) =>
+    z.snapshot && z.snapshot.state !== "UNAVAILABLE");
+  /* Gerechnet, nicht nachgeschlagen. `ageHours` steht im Snapshot und
+     ist das Alter der MESSUNG — nicht des Beitrags. Genau darauf kommt
+     es an: ein Beitrag, der heute einen Monat alt ist, dessen einzige
+     Messung aber nach vier Stunden genommen wurde, hat keine reife
+     Messung. Er braucht eine neue, keine grosszuegigere Auslegung. */
+  const reifeZeilen = gemesseneZeilen.filter((z) =>
+    MessFenster.isMature(z.snapshot.ageHours, FENSTER_CONFIG));
+  const unreif = gemesseneZeilen.length - reifeZeilen.length;
+
+  const snapshots = reifeZeilen.map((z) => z.snapshot);
 
   /* Welche Zieldimensionen die Datenlage HEUTE traegt — je Medientyp.
      Ein Reel gegen Reels, ein Bild gegen Bilder: ein gemeinsamer Median
-     waere eine Zahl, die keinen von beiden beschreibt. */
-  const befund = EvidenceRegime.assess(alleZeilen, { now: NOW });
+     waere eine Zahl, die keinen von beiden beschreibt.
+
+     Auch das Regime sieht nur die reifen Zeilen: ein Median aus
+     halbgewachsenen Zahlen waere eine Basis, gegen die jeder aeltere
+     Beitrag gut aussieht. */
+  const befund = EvidenceRegime.assess(reifeZeilen, { now: NOW });
 
   log("\n--- MESSEN ---");
   if (!perfData) {
     log("Keine Leistungsdaten (social/data/performance.json fehlt).");
     log("Der Kreislauf laeuft vorwaerts, aber er kommt nicht zurueck.");
   } else {
-    log("Gemessene Beitraege: " + snapshots.length + " von " + (perfData.requested || 0));
+    log("Gemessene Beitraege: " + gemesseneZeilen.length + " von " + (perfData.requested || 0));
+    if (unreif) {
+      const naechste = gemesseneZeilen.filter((z) =>
+        !MessFenster.isMature(z.snapshot.ageHours, FENSTER_CONFIG));
+      log("Davon reif:          " + reifeZeilen.length + "  (" + unreif +
+          " noch im Wachstum: " + naechste.map((z) => z.window || "?").join(", ") + ")");
+      log("                     Unreife Zahlen sind nicht schlechte Zahlen — sie sind " +
+          "noch keine. Sie gehen nicht ins Lernen.");
+    }
     log("Evidenzregime:       " + befund.regime + "  (Stichprobe " + befund.sampleSize +
         (befund.unusable ? ", " + befund.unusable + " nicht messbar" : "") + ")");
     for (const [kohorte, k] of Object.entries(befund.cohorts)) {
@@ -794,7 +837,8 @@ async function main() {
   if (regimeEintrag.changed) log("Evidenzregime festgehalten: " + regimeEintrag.reason);
 
   const neueBeobachtungen = strategyMemory.recordObservations(beobachtungen);
-  log("Gemessen:       " + snapshots.length + " Beitrag/Beitraege");
+  log("Reif gemessen:  " + snapshots.length + " Beitrag/Beitraege" +
+      (unreif ? "  (" + unreif + " noch im Wachstum, nicht im Lernen)" : ""));
   log("Bewertbar:      " + lernzeilen.length + " (Regime " + aktivesRegime + ")");
   if (andereRegime) {
     log("                " + andereRegime + " aus einem anderen Regime bleiben draussen — " +
@@ -830,11 +874,15 @@ async function main() {
        waere eine Aussage, die mehr behauptet als bekannt ist — und bei
        16 gemessenen Beitraegen waere "es gibt noch keine gemessenen
        Beitraege" schlicht falsch. */
-    if (!snapshots.length) {
+    if (!snapshots.length && !gemesseneZeilen.length) {
       log("Keine Beobachtung moeglich — es wurde noch nichts gemessen.");
+    } else if (!snapshots.length) {
+      log("Keine Beobachtung moeglich: " + gemesseneZeilen.length + " Beitrag/Beitraege sind " +
+          "gemessen, aber noch keiner ist reif. Das loest sich von selbst — der aelteste " +
+          "braucht noch Zeit, nicht Code.");
     } else if (!lernzeilen.length) {
-      log("Keine Beobachtung moeglich: " + snapshots.length + " Beitrag/Beitraege sind " +
-          "GEMESSEN, aber keinem Gedaechtniseintrag zugeordnet. Es fehlen die Eintraege, " +
+      log("Keine Beobachtung moeglich: " + snapshots.length + " reif gemessene " +
+          "Beitraege sind keinem Gedaechtniseintrag zugeordnet. Es fehlen die Eintraege, " +
           "nicht die Zahlen — scripts/social/backfill-account-memory.mjs legt sie an.");
     } else {
       log("Keine Beobachtung moeglich: " + lernzeilen.length + " bewertbare Beitraege, " +
@@ -1132,7 +1180,9 @@ async function main() {
          noch nicht bewertbar" zu unterscheiden. Genau diese Verwechslung
          laesst spaeter jemanden nach einem Fehler suchen, wo eine
          Stichprobe einfach zu klein ist. */
-      measuredPosts: snapshots.length,
+      measuredPosts: gemesseneZeilen.length,
+      maturePosts: reifeZeilen.length,
+      awaitingMaturity: unreif,
       /* Die Vergleichsbasis gibt es jetzt je Kohorte. "Reicht sie" ist
          damit keine einzelne Wahrheit mehr — und so steht es auch da. */
       baselineSufficient: Object.values(befund.cohorts).length > 0 &&

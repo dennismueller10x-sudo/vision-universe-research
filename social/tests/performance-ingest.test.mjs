@@ -70,10 +70,24 @@ test("PI6 · Ein frischer Beitrag ist STALE, kein VERIFIED", () => {
   assert.equal(z.snapshot.state, "STALE");
 });
 
-test("PI7 · Ein gereifter Beitrag ist VERIFIED", () => {
+test("PI7 · 43 Stunden sind NICHT reif — auch wenn es frueher so galt", () => {
+  /* Frueher hiess VERIFIED "aelter als 24 Stunden". Das war zu frueh:
+     die Reichweite waechst danach noch deutlich weiter, und ein Beitrag,
+     der so bewertet wird, sieht systematisch schlechter aus als ein
+     aelterer. Die Bewertung haette dann nicht Formate verglichen,
+     sondern Messzeitpunkte. */
   const z = snapshotAusBeitrag(beitrag(), { now: JETZT });
+  assert.ok(z.snapshot.ageHours > 24 && z.snapshot.ageHours < 72);
+  assert.equal(z.window, "PRELIMINARY");
+  assert.equal(z.snapshot.state, "STALE");
+});
+
+test("PI7b · Nach sieben Tagen ist sie reif", () => {
+  const z = snapshotAusBeitrag(
+    beitrag({ media: { timestamp: "2026-09-01T10:00:00+0000", mediaType: "IMAGE" } }),
+    { now: JETZT });
+  assert.equal(z.window, "MATURE");
   assert.equal(z.snapshot.state, "VERIFIED");
-  assert.ok(z.snapshot.ageHours > 24);
 });
 
 test("PI8 · Ohne Zahlen wird nichts erfunden", () => {

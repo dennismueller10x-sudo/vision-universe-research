@@ -33,6 +33,14 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Schema = require(join(ROOT, "social/engines/schema.js"));
+const MessFenster = require(join(ROOT, "social/engines/measurement-window.js"));
+
+/* Die Fenstergrenzen stehen in der Konfiguration, weil sie eine Annahme
+   ueber Instagram sind und keine Naturkonstante. */
+const FENSTER_CONFIG = (function () {
+  const pfad = join(ROOT, "social/config/measurement-windows.json");
+  return existsSync(pfad) ? JSON.parse(readFileSync(pfad, "utf8")) : null;
+})();
 
 const args = process.argv.slice(2);
 const arg = (n, d) => { const i = args.indexOf("--" + n); return i === -1 ? d : args[i + 1]; };
@@ -113,18 +121,21 @@ export function snapshotAusBeitrag(post, options = {}) {
     ? Math.round(((Date.parse(now) - Date.parse(veroeffentlicht)) / 3600000) * 10) / 10
     : null;
 
-  /* Der Zustand sagt, was die Zahlen wert sind — nicht ob sie da sind.
-     STALE statt VERIFIED, wenn der Beitrag so frisch ist, dass Instagram
-     die Werte noch nachtraegt: eine Reichweite nach zehn Minuten ist
-     keine Reichweite, sondern ein Zwischenstand. */
-  let state = "UNAVAILABLE";
-  if (gemessen) {
-    state = (alterStunden !== null && alterStunden < (options.reifeStunden || 24))
-      ? "STALE" : "VERIFIED";
-  }
+  /* Der Zustand sagt, was die Zahlen WERT sind — nicht ob sie da sind.
 
-  return {
-    snapshot: Schema.metricSnapshot({
+     Eine Reichweite nach zehn Minuten ist keine kleine Reichweite; sie
+     ist noch keine Reichweite. Die Zahl ist richtig, sie beantwortet nur
+     eine andere Frage als die gestellte. Deshalb entscheidet das
+     Messfenster und nicht das Vorhandensein.
+
+     VERIFIED heisst ab jetzt REIF. Eine Messung nach 25 Stunden galt
+     frueher als verifiziert und waechst in Wahrheit noch. */
+  const fenster = MessFenster.windowFor(alterStunden, FENSTER_CONFIG);
+
+  let state = "UNAVAILABLE";
+  if (gemessen) state = MessFenster.isMature(alterStunden, FENSTER_CONFIG) ? "VERIFIED" : "STALE";
+
+  const snapshot = Schema.metricSnapshot({
       snapshotId: "snap_" + String(post.mediaId),
       publicationId: options.publicationId || ("ext_" + String(post.mediaId)),
       providerId: "meta",
@@ -136,7 +147,31 @@ export function snapshotAusBeitrag(post, options = {}) {
          erweist. Ohne sie waere eine Korrektur Datenverlust. */
       providerMetrics: roh,
       state
-    }),
+    });
+
+  /* Das Fenster gehoert an den Snapshot UND an die Zeile.
+
+     An den Snapshot, weil er ohne sein Fenster nicht interpretierbar ist
+     — eine Zahl ohne Alter ist eine Zahl ohne Bedeutung. An die Zeile,
+     weil die Faelligkeit der naechsten Messung ueber die Zeilen laeuft
+     und ein Feld, das man erst auspacken muss, irgendwann vergessen
+     wird. `Schema.metricSnapshot` kennt das Feld nicht, deshalb steht es
+     danach dort. */
+  /* NUR das Fenster wird gespeichert, und auch das nur als Etikett: es
+     sagt, WANN diese Messung genommen wurde. Die Frage "ist sie reif"
+     wird nirgends gespeichert, sondern aus `ageHours` gerechnet.
+
+     Ein gespeichertes `mature` waere eine Momentaufnahme einer sich
+     bewegenden Eigenschaft — und damit von der Sekunde des Schreibens an
+     potenziell falsch. Zwei Wahrheiten ueber dieselbe Frage sind hier
+     besonders teuer: die eine steht in der Datei, die andere ergibt
+     sich aus der Uhr, und sie widersprechen sich genau dann, wenn es
+     darauf ankommt. */
+  snapshot.window = fenster;
+
+  return {
+    snapshot,
+    window: fenster,
     mediaId: String(post.mediaId),
     permalink: (post.media && post.media.permalink) || null,
     publishedAt: veroeffentlicht,
@@ -216,7 +251,38 @@ export function merge(bestand, neu, options = {}) {
     gesehen.add(id);
     const vorher = alt.get(id);
 
-    if (istGemessen(z)) { aufgefrischt += 1; zeilen.push(z); continue; }
+    if (istGemessen(z)) {
+      aufgefrischt += 1;
+      /* DIE MESSREIHE.
+
+         Frueher ersetzte die neue Messung die alte. Damit war die
+         Wachstumskurve weg — und mit ihr die einzige Moeglichkeit,
+         spaeter zu pruefen, ob die angenommenen Fenstergrenzen stimmen.
+         Die Grenzen sind eine Annahme ueber Instagram; ohne Reihen
+         bleibt sie fuer immer eine.
+
+         Aufbewahrt wird je Fenster die letzte Messung. Zehn Messungen im
+         selben Fenster sind zehnmal dieselbe Aussage; eine je Fenster
+         ist die Kurve. */
+      const reihe = (vorher && Array.isArray(vorher.history)) ? vorher.history.slice() : [];
+      if (vorher && istGemessen(vorher) && vorher.snapshot.window) {
+        const schonDa = reihe.some((h) => h.window === vorher.snapshot.window);
+        if (!schonDa || vorher.snapshot.window === z.snapshot.window) {
+          const ohneAltes = reihe.filter((h) => h.window !== vorher.snapshot.window);
+          ohneAltes.push({
+            window: vorher.snapshot.window,
+            capturedAt: vorher.snapshot.capturedAt,
+            ageHours: vorher.snapshot.ageHours,
+            metrics: vorher.snapshot.metrics
+          });
+          reihe.length = 0;
+          Array.prototype.push.apply(reihe, ohneAltes);
+        }
+      }
+      reihe.sort((a, b) => (a.ageHours || 0) - (b.ageHours || 0));
+      zeilen.push(Object.assign({}, z, { history: reihe }));
+      continue;
+    }
 
     if (vorher && istGemessen(vorher)) {
       /* Der Versuch misslang, die Messung bleibt. Warum er misslang,
