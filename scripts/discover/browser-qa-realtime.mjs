@@ -452,9 +452,11 @@ if (sitzung.phase === "REGULAR") {
     const l = document.querySelector(".dx-live-label");
     const svg = document.querySelector(".dx-intraday-chart, .dx-intraday svg");
     const punkte = svg ? (svg.querySelector("path[d]") || {}).getAttribute : null;
+    const fuss = document.querySelector(".dx-intraday-note");
     return { label: l ? l.textContent.trim() : null,
              connected: Hub.liveState().connected, state: Hub.liveState().state,
              chartDa: !!svg, chartHatLinie: !!punkte,
+             fussnote: fuss ? fuss.textContent.trim() : null,
              kopf: (document.querySelector(".dx-chart-hero-preis > b.num") || {}).textContent || null };
   });
 
@@ -469,6 +471,17 @@ if (sitzung.phase === "REGULAR") {
                     "der Snapshot uebernimmt: ehrlicher Stand mit Uhrzeit, Chart bleibt gezeichnet",
                     !!nachher.chartDa && !!nachher.chartHatLinie && /Stand|Handelstag/i.test(nachher.label || ""),
                     nachher) && alleOk;
+  /* Und die Fussnote muss zum Etikett passen. Genau hier stand vorher ein
+     falscher Satz: das Etikett sagte richtig "Heute · Stand 13:20 · nicht
+     aktuell", die Fussnote darunter behauptete, der Stand sei nicht vom
+     letzten Handelstag - und nannte im selben Satz den heutigen Tag als
+     erwartet. Zwei Gruende fuer STALE, ein Satz; jetzt zwei. */
+  alleOk = pruefung("fussnoteStimmt",
+                    "die Fussnote widerspricht dem Etikett nicht (Stand von heute bleibt von heute)",
+                    !/Heute/.test(nachher.label || "") ||
+                    !/nicht der letzte Handelstag/.test(nachher.fussnote || ""),
+                    { label: nachher.label, fussnote: nachher.fussnote }) && alleOk;
+
   if (SHOTS) { await zumChart(p); await p.screenshot({ path: SHOTS + "/realtime-widerruf.png" }); }
   await p.context().close();
 }

@@ -1162,12 +1162,35 @@
     var text = " · 5-Minuten-Kurse · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (p.freshness && p.freshness.freshnessState === "STALE"
-        ? " · dieser Stand ist nicht der letzte Handelstag (" + (p.freshness.expectedSessionDate || "") + " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf"
+        ? staleSatz(p.freshness, snap)
         : snap.regularComplete ? ""
           : snap.streaming
             ? " · der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss"
             : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
     chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [el("span", { text: text.replace(/^ · /, "") })]));
+  }
+
+  /* STALE hat zwei Gesichter, und sie brauchen zwei Saetze.
+   *
+   * Der Fall, fuer den der Vertrag gebaut wurde: die Reihe ist von einer
+   * aelteren Sitzung, heute wird schon gehandelt - dann ist "dieser Stand
+   * ist nicht der letzte Handelstag" genau richtig.
+   *
+   * Der andere Fall (Grund `runningSessionStaleAsOf`): die Reihe ist vom
+   * laufenden Handelstag, aber der Datenlauf ist stehen geblieben. Dann
+   * war derselbe Satz falsch - gefunden an der Widerrufs-Aufnahme, wo
+   * ueber "Heute · Stand 13:20 · nicht aktuell" die Fussnote behauptete,
+   * der Stand sei nicht vom heutigen Tag, und im selben Atemzug den
+   * heutigen Tag als erwartet nannte. Die Beschriftung war richtig, die
+   * Fussnote nicht. */
+  function staleSatz(f, snap) {
+    if (f.reason === "runningSessionStaleAsOf") {
+      var stand = snap && snap.asOfLocal ? " (Stand " + snap.asOfLocal + ")" : "";
+      return " · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben" + stand +
+             "; neuere Kurse folgen mit dem nächsten Datenlauf";
+    }
+    return " · dieser Stand ist nicht der letzte Handelstag (" + (f.expectedSessionDate || "") +
+           " erwartet); neuere Kurse folgen mit dem nächsten Datenlauf";
   }
 
   /* Die Masse des grossen Charts: so breit wie der Kasten, auf dem Telefon

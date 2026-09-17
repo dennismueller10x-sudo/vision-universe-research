@@ -82,6 +82,27 @@ catch (err) {
 }
 
 const anfragen = [];
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist: seit V2 steht
+   eine Realtime-Adresse bei Cloudflare in der Auslieferung, und der
+   Egress-Filter dieser Umgebung lehnt den Tunnel ab. Der
+   fehlgeschlagene WebSocket-Aufbau schreibt eine Konsolenzeile, die
+   kein Skript verhindern kann; der Hub behandelt den Fehler korrekt und
+   faellt auf den Snapshot zurueck. Die Ausnahme gilt nur fuer GENAU
+   diese Adresse und nur fuer den Verbindungsaufbau - und wird gezaehlt.
+   Dass der Strom laeuft, weist scripts/discover/browser-qa-realtime.mjs
+   in Actions nach, dort ohne Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync("discover/data/meta.json", "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
+
 const punkte = [];
 let fehler = 0;
 function pruef(name, ok, detail) {
@@ -104,6 +125,7 @@ async function seite(ctx, marke) {
     const ort = (m.location() && m.location().url) || "";
     if (ort && !ort.startsWith(BASE)) return;
     if (ort.indexOf("/favicon.ico") !== -1) return;
+    if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; }
     page.__meldungen.push(m.text() + (ort ? "  <- " + ort.replace(BASE, "") : ""));
   });
   page.on("pageerror", (e) => page.__meldungen.push("pageerror: " + e.message));
@@ -129,8 +151,17 @@ pruef("6 Gemeinsame Navigation mit Discover-Eintrag", await d.evaluate(() => {
   return !!(n && n.shadowRoot &&
     [...n.shadowRoot.querySelectorAll("a")].some((a) => /discover/i.test(a.textContent)));
 }));
-pruef("6 Navigation: dunkles Thema auf Discover",
-  await d.evaluate(() => document.querySelector("vu-navigation").getAttribute("theme") === "dark"));
+/* Bis V4.1 war Discover immer dunkel, und diese Pruefung verlangte
+   theme="dark". Seit V4.1 entscheidet der Nutzer (System, Hell, Dunkel),
+   und die gemeinsame Navigation muss dem folgen - im hellen Schema ist
+   eine dunkle Leiste der Fehler, nicht das Ziel. Geprueft wird deshalb
+   die Gleichheit, nicht ein fester Wert. */
+pruef("6 Navigation folgt dem Farbschema der Seite", await d.evaluate(() => {
+  const nav = document.querySelector("vu-navigation");
+  const seite = document.documentElement.getAttribute("data-theme");
+  return !!nav && (seite === "light" || seite === "dark") && nav.getAttribute("theme") === seite;
+}), await d.evaluate(() => "data-theme " + document.documentElement.getAttribute("data-theme") +
+                           " / nav " + document.querySelector("vu-navigation").getAttribute("theme")));
 if (SHOTS) await d.screenshot({ path: SHOTS + "/01-discover-desktop.png" });
 
 const spur = await d.evaluate(async () => {
@@ -236,4 +267,5 @@ schlecht.forEach((a) => {
 console.log("\n=== ABNAHMEPUNKTE ===");
 punkte.forEach((p) => console.log(p[0] + "  " + p[1] + (p[2] ? "   [" + p[2] + "]" : "")));
 console.log("\nFehlschlaege: " + (fehler + schlecht.length));
+if (stromUnerreichbar) console.log("Hinweis: " + stromUnerreichbar + " Konsolenzeile(n) ueber den nicht erreichbaren Strom (" + STROM_URL + ").");
 process.exit(fehler + schlecht.length ? 1 : 0);
