@@ -16,9 +16,11 @@
 
    WAS HIER NICHT DRIN IST, UND WARUM
 
-   Der Sprung ueber Cloudflares Kante. Der Worker ist gebaut und
-   getestet, aber nicht ausgerollt - CLOUDFLARE_API_TOKEN und
-   CLOUDFLARE_ACCOUNT_ID liegen nicht vor. Gemessen wird deshalb alles,
+   Der Sprung ueber Cloudflares Kante. Der Worker ist gebaut, getestet
+   und der Zugang ist geprueft (CLOUDFLARE_API_TOKEN vorhanden,
+   Account-ID aus dem R2-Endpunkt ableitbar) - er ist nur nicht
+   ausgerollt, und das ist eine Entscheidung, kein Mangel. Gemessen
+   wird deshalb alles,
    was Vision Universe selbst verantwortet, und der Bericht sagt genau
    das, statt eine Zahl auszuweisen, die niemand gemessen hat.
 
@@ -305,8 +307,9 @@ async function main() {
     scope: {
       included: "Tiingo IEX -> tiingo-link -> transport -> Parser -> subscription-manager -> bar-merge -> " +
                 "free-budget -> VuLive -> Browser-Attrappe",
-      excluded: "Cloudflares Kante (Worker nicht ausgerollt: CLOUDFLARE_API_TOKEN und " +
-                "CLOUDFLARE_ACCOUNT_ID fehlen). Die gemessenen Zeiten enthalten diesen Sprung NICHT."
+      excluded: "Cloudflares Kante. Der Worker ist nicht ausgerollt - nicht, weil Zugangsdaten " +
+                "fehlten (die sind vorhanden und geprueft), sondern weil das eine Entscheidung ist. " +
+                "Die gemessenen Zeiten enthalten diesen Sprung NICHT."
     },
     result: "UNKNOWN", reason: null,
     load: [], e2e: null

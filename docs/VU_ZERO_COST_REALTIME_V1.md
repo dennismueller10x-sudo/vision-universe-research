@@ -17,39 +17,78 @@ sondern als Schaltung — der Budgetwächter schaltet ab, bevor eine
 Freigrenze fällt.
 
 Eingeschaltet ist nichts. Der Schalter steht auf `false`, weil der
-Worker nicht ausgerollt ist (siehe §13).
+Worker nicht ausgerollt ist — nicht, weil etwas fehlte: der Zugang ist
+vorhanden und geprüft (§1).
 
 ---
 
-## 1. STOP: was der Owner einmalig tun muss
+## 1. Der Zugang: gemessen, nicht angefordert
 
-Für ein Deployment fehlen genau **zwei** Werte. Sie sind im Repository
-nicht vorhanden und werden hier auch nicht angefordert — der Bericht
-nennt nur, was fehlt.
+**Stand 17.09.2026, nach drei Nachweisläufen in Actions. Es fehlt nichts.**
 
-| Secret | Wozu | Woher |
+Der ursprüngliche Bericht forderte zwei Werte an. Das war voreilig: im
+Repository lag bereits alles Nötige, nur benutzte es niemand. Drei
+Läufe haben nachgesehen, statt weiter zu vermuten.
+
+| Frage | Antwort | Beleg |
 |---|---|---|
-| `CLOUDFLARE_ACCOUNT_ID` | Das Konto, in dem der Worker liegt. | Cloudflare Dashboard → rechte Spalte „Account ID" |
-| `CLOUDFLARE_API_TOKEN` | Ein Token mit **genau** den Rechten `Workers Scripts:Edit` und `Workers Durable Objects:Edit` (nicht mehr). | Cloudflare Dashboard → My Profile → API Tokens → Create Token |
+| Unter welchem Namen liegt das Cloudflare-Secret? | **`CLOUDFLARE_API_TOKEN`** — genau der Name, den wrangler von selbst liest. Kein Umhängen, kein neues Secret. | `cloudflare-access-probe.json` |
+| Funktioniert es? | **Ja.** `wrangler whoami` meldet sich an und löst genau ein Konto auf. | `cloudflare-token-permissions.json` |
+| Reicht sein Umfang? | **Ja, mindestens lesend.** Workers, Durable Objects, workers.dev-Subdomain, R2 und Kontoeinstellungen antworten alle mit 200. Ein reines R2-Token könnte Workers nicht sehen. | `cloudflare-scope-probe.json` |
+| Fehlt `CLOUDFLARE_ACCOUNT_ID`? | **Nein.** Sie ist aus dem bestehenden `VU_HISTORY_S3_ENDPOINT` ableitbar: der R2-Endpunkt hat die Form `https://<account>.r2.cloudflarestorage.com` (so steht es seit jeher in `s3-driver.mjs`, Zeile 121). | `cloudflare-access-probe.json` |
+| Baut der Worker überhaupt? | **Ja.** `wrangler deploy --dry-run`: 117,55 KiB, gzip 27,33 KiB, Bindung `env.VU_LIVE (VuLive) Durable Object`. | Lauf 35217043124 |
+| Ist `TIINGO_API_KEY` da? | **Ja**, als Repository-Secret. Für den Worker muss er zusätzlich als Cloudflare-Secret gesetzt werden — siehe unten. | — |
 
-**Die minimale einmalige Owner-Aktion:**
+**Nichts wurde erzeugt, ersetzt, rotiert oder aufgerüstet.** Alle Aufrufe
+waren GET; der einzige Schreibvorgang war ein Commit ins Repository.
 
-1. Beide Werte als GitHub-Secrets im Repository hinterlegen
-   (`Settings → Secrets and variables → Actions`).
-2. Den Tiingo-Schlüssel als Cloudflare-Secret setzen — **einmal**, und
-   ausdrücklich nicht in eine Datei:
-   `npx wrangler secret put TIINGO_API_KEY` (aus `worker/`).
-3. Danach in `quant/config/development-preview.json` den Schalter
-   `stream.enabled` auf `true` setzen und Discover neu bauen.
+### Eine Aussage, die ich zurücknehme
 
-**Workers Paid wird NICHT aktiviert.** Der ganze Entwurf steht darauf,
-dass er das nicht braucht; ein Upgrade wäre kein Ausbau, sondern das
-Aufgeben der Zusage.
+Der erste Lauf meldete „Workers Scripts:Edit: false". Das war kein
+Messwert. `wrangler whoami` gibt die Rechteliste nur aus, wenn das Token
+selbst `User Details:Read` trägt; fehlt das, verweist es aufs Dashboard —
+und genau das stand im Protokoll. Aus dieser Ausgabe folgt über
+Workers-Rechte **nichts**. Sie als Nein zu lesen hieße, aus einer Stille
+eine Auskunft zu machen; dieselbe Regel, die beim Firehose für die Titel
+galt, gilt hier für die Rechte. Der Umfangsnachweis hat die Frage dann
+beantwortet.
 
-Ohne diese beiden Werte ist alles andere in diesem Bericht gebaut,
-getestet und nachgewiesen — nur nicht in Betrieb.
+### Was noch nicht bewiesen ist
 
----
+**Schreibrecht.** Ein 200 auf `workers/scripts` belegt Lesen. Ob das
+Token auch schreiben darf, zeigt erst das Deployment selbst — beweisen
+ließe es sich nur durch Schreiben, und geschrieben wurde nichts.
+Cloudflares eigene Vorlage „Edit Cloudflare Workers" vergibt Lesen und
+Schreiben zusammen; der Befund ist also ein starker Hinweis und wird
+hier auch nur so genannt.
+
+### Der eine offene Punkt für die Null-Euro-Zusage
+
+Im Konto liegt **bereits ein Worker-Skript**. Die kostenlosen
+Kontingente gelten **je Konto, nicht je Worker** — dieser Worker
+verbraucht aus denselben 100 000 Anfragen je Tag, und der Budgetwächter
+von `vu-live` sieht diesen Verbrauch nicht: er zählt nur den eigenen.
+
+Die Reserve des Wächters (10 000 Anfragen je Tag, 10 %) muss den anderen
+Worker abdecken. Ob sie das tut, ist eine Frage an die Zahlen dieses
+Workers, nicht an diesen Entwurf — und sie ist offen, weil sein
+Verbrauch hier nicht gemessen wurde.
+
+### Wenn ausgerollt werden soll
+
+Zwei Schritte, beide einmalig, beide ohne neue Zugangsdaten:
+
+1. Den Tiingo-Schlüssel als **Cloudflare**-Secret setzen (er liegt heute
+   nur als GitHub-Secret vor): `wrangler secret put TIINGO_API_KEY` —
+   im Deployment-Workflow aus dem bestehenden GitHub-Secret gespeist,
+   nicht von Hand.
+2. Nach erfolgreichem Deployment `stream.enabled` in
+   `quant/config/development-preview.json` auf `true` setzen und Discover
+   neu bauen.
+
+**Workers Paid bleibt aus.** Der ganze Entwurf steht darauf, dass er es
+nicht braucht; ein Upgrade wäre kein Ausbau, sondern das Aufgeben der
+Zusage.
 
 ## 2. Die Entscheidung dahinter (Variante C)
 
@@ -335,7 +374,9 @@ wäre schlimmer als keine.
 
 | Punkt | Warum offen | Folge |
 |---|---|---|
-| Deployment | Zwei Secrets fehlen (§1) | Der Schalter bleibt auf `false` |
+| Deployment | Nicht ausgeführt — Owner-Entscheidung, nicht Mangel an Zugang (§1) | Der Schalter bleibt auf `false` |
+| Schreibrecht des Tokens | Nur durch Schreiben beweisbar | Zeigt sich beim ersten Deployment |
+| Freigrenze wird geteilt | Ein weiterer Worker liegt im Konto, sein Verbrauch ist ungemessen | Reserve von 10 000 Anfragen muss ihn abdecken |
 | §1 Nachmeldung | Nur bei offener Börse messbar | Modus `reconnect` |
 | §17/§18 | Nur bei offener Börse messbar | — |
 | Cloudflare-Latenz | Nicht ausgerollt | Wird nicht geschätzt |
@@ -394,5 +435,6 @@ scripts/market/assert-no-secrets.mjs          --all (§12)
 | §1 Nachmeldung gemessen | ⏳ Messfenster |
 | §17 Lasttest | ⏳ Messfenster |
 | §18 E2E | ⏳ Messfenster |
-| Deployment | ⛔ zwei Secrets fehlen (§1) |
+| Zugang vorhanden und geprüft | ✅ gemessen (§1) |
+| Deployment | ⏸ nicht ausgeführt, Owner-Entscheidung |
 | Merge nach `main` | ⛔ nicht erfolgt, Owner-Abnahme |

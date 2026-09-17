@@ -16,10 +16,13 @@
 #
 # WAS NOCH NICHT PASSIERT IST
 #
-# Dieses Projekt ist NICHT veroeffentlicht. Fuer ein Deployment fehlen
-# CLOUDFLARE_API_TOKEN und CLOUDFLARE_ACCOUNT_ID (siehe
-# docs/VU_ZERO_COST_REALTIME_V1.md). Bis dahin ist diese Datei eine
-# Beschreibung, keine Tatsache.
+# Dieses Projekt ist NICHT veroeffentlicht - aber nicht, weil etwas
+# fehlte. Am 17.09.2026 ist nachgemessen worden: CLOUDFLARE_API_TOKEN
+# liegt unter genau diesem Namen im Repository, sein Umfang deckt
+# Workers und Durable Objects (lesend belegt), und die Account-ID ist
+# aus dem bestehenden R2-Endpunkt ableitbar. Was fehlt, ist die
+# Entscheidung auszurollen - und der Tiingo-Schluessel als
+# Cloudflare-Secret. Siehe docs/VU_ZERO_COST_REALTIME_V1.md §1.
 # =============================================================================
 
 name = "vu-live"
