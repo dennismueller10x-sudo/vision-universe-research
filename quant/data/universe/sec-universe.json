@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-09-16T06:41:58.466Z",
+  "generated_at_utc": "2026-09-17T06:39:47.767Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -3647,17 +3647,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "APGE",
-      "name": "Apogee Therapeutics, Inc.",
-      "cik": "0001974640",
-      "instrumentId": "vu_92fa1e8e3e14df",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "APH",
       "name": "Amphenol Corp /De/",
       "cik": "0000820313",
@@ -6272,6 +6261,21 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "BCCQ",
+      "name": "Bleichroeder Acquisition Corp. III",
+      "cik": "0002128045",
+      "instrumentId": "vu_8ad688e4db1a26",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "BCCQU",
+        "BCCQW"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -18922,6 +18926,21 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "FDMM",
+      "name": "Freedom Metals Acquisition Corp.",
+      "cik": "0002129659",
+      "instrumentId": "vu_b69de457b515b0",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "FDMMU",
+        "FDMMW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "FDMT",
       "name": "4D Molecular Therapeutics, Inc.",
       "cik": "0001650648",
@@ -27437,17 +27456,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "IZM",
-      "name": "ICZOOM Group Inc.",
-      "cik": "0001854572",
-      "instrumentId": "vu_e3b090b1617f41",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "J",
       "name": "Jacobs Solutions",
       "cik": "0000052988",
@@ -35483,17 +35491,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "NFE",
-      "name": "New Fortress Energy Inc.",
-      "cik": "0001749723",
-      "instrumentId": "vu_416959a8199d67",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "NFG",
       "name": "National Fuel Gas",
       "cik": "0000070145",
@@ -37478,6 +37475,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "OCAC",
+      "name": "Ocean Capital Acquisition Corp",
+      "cik": "0001926314",
+      "instrumentId": "vu_96aadc5aa52b97",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "OCC",
       "name": "Optical Cable Corp",
       "cik": "0001000230",
@@ -37867,17 +37875,6 @@
       "name": "Oil States International, Inc",
       "cik": "0001121484",
       "instrumentId": "vu_89ee7567d78aa8",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "OKE",
-      "name": "ONEOK Inc.",
-      "cik": "0001039684",
-      "instrumentId": "vu_4669417bfbd990",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -49762,6 +49759,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "TCGX",
+      "name": "TCGX Acquisition Corp.",
+      "cik": "0002137965",
+      "instrumentId": "vu_10014e793cc264",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "TCI",
       "name": "Transcontinental Realty Investors",
       "cik": "0000733590",
@@ -57566,6 +57574,17 @@
       "role": "universe"
     },
     {
+      "ticker": "APGE",
+      "name": "Apogee Therapeutics, Inc.",
+      "cik": "0001974640",
+      "instrumentId": "vu_92fa1e8e3e14df",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "APMCU",
       "name": "AmperCap Acquisition Co",
       "cik": "0002101393",
@@ -57853,21 +57872,6 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "BBLGW"
-      ],
-      "role": "universe"
-    },
-    {
-      "ticker": "BCCQ",
-      "name": "Bleichroeder Acquisition Corp. III",
-      "cik": "0002128045",
-      "instrumentId": "vu_8ad688e4db1a26",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "BCCQU",
-        "BCCQW"
       ],
       "role": "universe"
     },
@@ -59095,21 +59099,6 @@
       "role": "universe"
     },
     {
-      "ticker": "FDMM",
-      "name": "Freedom Metals Acquisition Corp.",
-      "cik": "0002129659",
-      "instrumentId": "vu_b69de457b515b0",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "FDMMU",
-        "FDMMW"
-      ],
-      "role": "universe"
-    },
-    {
       "ticker": "FEAM",
       "name": "5E Advanced Materials, Inc.",
       "cik": "0001888654",
@@ -59822,6 +59811,17 @@
       "role": "universe"
     },
     {
+      "ticker": "IZM",
+      "name": "ICZOOM Group Inc.",
+      "cik": "0001854572",
+      "instrumentId": "vu_e3b090b1617f41",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "JAGX",
       "name": "Jaguar Health, Inc.",
       "cik": "0001585608",
@@ -60440,6 +60440,17 @@
       "role": "universe"
     },
     {
+      "ticker": "NFE",
+      "name": "New Fortress Energy Inc.",
+      "cik": "0001749723",
+      "instrumentId": "vu_416959a8199d67",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "NHPAP",
       "name": "National Healthcare Properties, Inc.",
       "cik": "0001561032",
@@ -60594,17 +60605,6 @@
       "role": "universe"
     },
     {
-      "ticker": "OCAC",
-      "name": "Ocean Capital Acquisition Corp",
-      "cik": "0001926314",
-      "instrumentId": "vu_96aadc5aa52b97",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "OCG",
       "name": "Oriental Culture Holding LTD",
       "cik": "0001776067",
@@ -60632,6 +60632,17 @@
       "cik": "0001957538",
       "instrumentId": "vu_13a570fc960925",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "OKE",
+      "name": "ONEOK Inc.",
+      "cik": "0001039684",
+      "instrumentId": "vu_4669417bfbd990",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -61651,17 +61662,6 @@
       "name": "Thunder Bridge Capital Partners V, Ltd.",
       "cik": "0002140030",
       "instrumentId": "vu_be6d145d179d4b",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "TCGX",
-      "name": "TCGX Acquisition Corp.",
-      "cik": "0002137965",
-      "instrumentId": "vu_10014e793cc264",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
