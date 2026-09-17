@@ -45,6 +45,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
+const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 
 export const FEEDBACK_DATEI = "social/data/approval-feedback.json";
 
@@ -120,11 +121,26 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const REASON = arg("reason", null);
   const APPROVE = flag("approve");
   const REJECT = flag("reject");
+  /* -------------------------------------------------------------------
+     DIE DRITTE ENTSCHEIDUNG
+
+     APPROVE und REJECT waren lange die einzigen. "Nicht
+     veroeffentlichen, weil die Evidenz nicht reicht" ist aber weder das
+     eine noch das andere: keine Freigabe, und keine Ablehnung des
+     Beitrags.
+
+     Ohne eigenen Zustand blieb diese Entscheidung nirgends stehen — und
+     was nirgends steht, ueberschreibt der naechste Lauf, ohne es zu
+     merken. Genau das ist mit cand_20260917_0363e680 passiert.
+     ------------------------------------------------------------------- */
+  const HOLD = flag("hold");
 
   if (!ID) { console.error("Kein --candidate."); process.exit(2); }
-  if (APPROVE === REJECT) {
-    console.error("Genau eines von --approve oder --reject. Beides oder keines ist keine " +
-      "Entscheidung.");
+
+  const gewaehlt = [APPROVE, REJECT, HOLD].filter(Boolean).length;
+  if (gewaehlt !== 1) {
+    console.error("Genau eines von --approve, --reject oder --hold. Mehreres oder " +
+      "nichts ist keine Entscheidung.");
     process.exit(2);
   }
 
@@ -134,6 +150,44 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("VISION UNIVERSE SOCIAL — Entscheidung ueber " + ID);
   console.log("Zustand:   " + kandidat.state);
+
+  /* --------------------------------------------------------- HOLD */
+  if (HOLD) {
+    if (!REASON) {
+      console.error("\n--hold ohne --reason. Ein Zurueckhalten ohne Grund ist als " +
+        "Rueckmeldung wertlos — und der Grund sagt, was fehlt, damit es weitergeht.");
+      process.exit(2);
+    }
+
+    /* Der Owner darf jeden Zustand setzen; das IST das Owner-Gate.
+       Geprueft wird trotzdem, damit ein Tippfehler im Zielzustand
+       auffaellt. */
+    const erlaubt = OwnerDecision.mayTransition(kandidat.state, "HELD_FOR_ENRICHMENT",
+      { actor: "owner" });
+    if (!erlaubt.ok) { console.error("\n" + erlaubt.explanation); process.exit(3); }
+
+    kandidat.state = "HELD_FOR_ENRICHMENT";
+    kandidat.hold = { reason: REASON, decidedBy: BY, decidedAt: NOW,
+      note: "Zurueckgehalten, nicht abgelehnt. Dies ist KEINE Aussage ueber die " +
+        "zu erwartende Leistung des Beitrags." };
+    writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
+
+    const fbh = join(ROOT, FEEDBACK_DATEI);
+    const bestandH = existsSync(fbh) ? JSON.parse(readFileSync(fbh, "utf8")) : { entries: [] };
+    bestandH.entries = (bestandH.entries || []).concat([
+      feedbackEintrag(kandidat, "HOLD", { reason: REASON, by: BY, now: NOW })]);
+    bestandH.generatedAt = NOW;
+    mkdirSync(dirname(fbh), { recursive: true });
+    writeFileSync(fbh, JSON.stringify(bestandH, null, 2) + "\n");
+
+    console.log("\nZURUECKGEHALTEN. Grund festgehalten.");
+    console.log("Das ist keine Ablehnung des Beitrags und keine Aussage ueber seine");
+    console.log("erwartete Leistung. Er geht in keinen Leistungsvergleich ein.");
+    console.log("\nKein Lauf, keine Recovery und kein Test aendert diesen Zustand.");
+    console.log("Nur eine neue Entscheidung tut das.");
+    console.log("\nGeschrieben: " + FEEDBACK_DATEI);
+    process.exit(0);
+  }
 
   if (kandidat.state !== "AWAITING_APPROVAL") {
     console.error("\nDieser Kandidat wartet nicht auf eine Entscheidung (Zustand " +

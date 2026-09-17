@@ -53,6 +53,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
+const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 
 /* -------------------------------------------------------------------
@@ -299,8 +300,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
      Der alte bekommt `SUPERSEDED` und einen Zeiger nach vorn, der neue
      einen nach hinten. Ein Kandidat, ueber den bereits ENTSCHIEDEN
-     wurde, wird nicht angefasst: eine Freigabe oder Ablehnung ist ein
-     Vorgang und kein Zwischenstand.
+     wurde, wird nicht angefasst: eine Freigabe, eine Ablehnung oder ein
+     Zurueckhalten ist ein Vorgang und kein Zwischenstand.
+
+     Welche Zustaende das sind, sagt owner-decision.js und nicht eine
+     Zeichenkette an dieser Stelle. Der Unterschied ist nicht kosmetisch:
+     als HELD_FOR_ENRICHMENT dazukam, haette eine Zeichenkette hier
+     stillschweigend weiter gestimmt und an jeder anderen Stelle
+     stillschweigend gefehlt.
      ------------------------------------------------------------------- */
   const verzeichnis = join(ROOT, KAND_REL);
   let offene = [];
@@ -311,7 +318,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     offene = readdirSync(verzeichnis)
       .filter((f) => f.endsWith(".json") && !f.endsWith(".request.json"))
       .map((f) => ({ datei: f, daten: JSON.parse(readFileSync(join(verzeichnis, f), "utf8")) }))
-      .filter((x) => x.daten.state === "AWAITING_APPROVAL")
+      .filter((x) => OwnerDecision.istMaschinell(x.daten.state) &&
+        x.daten.state !== "SUPERSEDED")
       .sort((a, b) => String(a.daten.createdAt).localeCompare(String(b.daten.createdAt)));
 
     if (offene.length) {
@@ -473,13 +481,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      Zustand entstehen. */
   for (const alt of offene) {
     if (alt.daten.candidateId === candidateId) continue;
-    alt.daten.state = "SUPERSEDED";
-    alt.daten.supersededBy = candidateId;
-    alt.daten.supersededAt = NOW;
-    alt.daten.supersededReason =
-      "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. " +
-      "Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben.";
-    writeFileSync(join(dir, alt.datei), JSON.stringify(alt.daten, null, 2) + "\n");
+
+    const neuerStand = Object.assign({}, alt.daten, {
+      state: "SUPERSEDED",
+      supersededBy: candidateId,
+      supersededAt: NOW,
+      supersededReason:
+        "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. " +
+        "Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben."
+    });
+
+    /* Das Sperrgatter. Der Filter oben sollte entschiedene Kandidaten
+       gar nicht erst durchlassen — aber ein Filter ist eine Absicht und
+       das hier ist eine Grenze. Wer sie beruehrt, bekommt einen Wurf
+       und keinen Vermerk. */
+    OwnerDecision.guardWrite(alt.daten, neuerStand, { actor: "machine" });
+
+    writeFileSync(join(dir, alt.datei), JSON.stringify(neuerStand, null, 2) + "\n");
     console.log("Ersetzt:     " + alt.daten.candidateId + " (bleibt als SUPERSEDED)");
   }
   console.log("\nGeschrieben: " + KAND_REL + "/" + candidateId + ".json");

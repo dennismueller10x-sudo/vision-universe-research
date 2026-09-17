@@ -283,3 +283,46 @@ test("PC20 · Ein fremder Datenstand erreicht die echte Freigabe nicht", () => {
     assert.ok(readdirSync(eigener).some((f) => f.endsWith(".json")));
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });
+
+test("PC21 · Ein Lauf ersetzt keinen zurueckgehaltenen Kandidaten", () => {
+  /* Der zweite Teil des Vorfalls. Das Testartefakt hatte den echten
+     Kandidaten als SUPERSEDED markiert, weil die Supersede-Regel ALLE
+     offenen Kandidaten anfasst.
+
+     "Offen" heisst jetzt: maschinell. Ein zurueckgehaltener Kandidat
+     ist entschieden und faellt nicht darunter — und selbst wenn der
+     Filter ihn durchliesse, wirft der Guard beim Schreiben. */
+  const p = platz("held-bleibt");
+  try {
+    stand(p.abs, [entscheidung({ packageId: "pkg_neu", topic: "Neu" })],
+      [{ opportunityId: "opp_a", score: 90, proposable: true, explanation: "stark" }]);
+
+    const kdir = join(p.abs, "publish-candidates");
+    mkdirSync(kdir, { recursive: true });
+    const gehalten = {
+      candidateId: "cand_gehalten", version: 1, state: "HELD_FOR_ENRICHMENT",
+      createdAt: "2026-09-17T09:00:00Z",
+      content: { contentId: "pkg_alt", imageUrl: "https://x.invalid/a.jpg", caption: "Alt." },
+      contentHash: "0".repeat(64),
+      hold: { reason: "Evidenz reicht nicht.", decidedBy: "owner",
+              decidedAt: "2026-09-17T09:30:00Z" }
+    };
+    writeFileSync(join(kdir, "cand_gehalten.json"),
+      JSON.stringify(gehalten, null, 2) + "\n");
+
+    lauf(p.rel, ["--write"]);
+
+    const nachher = JSON.parse(readFileSync(join(kdir, "cand_gehalten.json"), "utf8"));
+    assert.equal(nachher.state, "HELD_FOR_ENRICHMENT",
+      "der Lauf hat eine Owner-Entscheidung ueberschrieben");
+    assert.equal(nachher.supersededBy, undefined);
+    assert.equal(nachher.hold.reason, "Evidenz reicht nicht.");
+
+    /* Und der neue Kandidat entsteht trotzdem — der Schutz sperrt die
+       Entscheidung, nicht den Betrieb. */
+    const neue = readdirSync(kdir).filter((f) => f !== "cand_gehalten.json");
+    assert.ok(neue.length >= 1, "kein neuer Kandidat entstanden");
+    assert.equal(JSON.parse(readFileSync(join(kdir, neue[0]), "utf8")).state,
+      "AWAITING_APPROVAL");
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});

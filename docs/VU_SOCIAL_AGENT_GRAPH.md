@@ -781,3 +781,74 @@ Seiten rufen dieselbe Funktion: das Skript, das den Request stellt, und
 der Zyklus, der das Ergebnis später sucht. Zwei Rechenwege wären zwei
 Gelegenheiten zu driften — und eine Drift hieße, dass der Zyklus das
 fertige Ergebnis nie findet und es niemandem auffällt.
+
+---
+
+## 25. Eine Entscheidung, die keinen Zustand hatte
+
+Der Owner hatte über `cand_20260917_0363e680` bereits entschieden:
+**nicht veröffentlichen, wegen unzureichender Evidenz zurückhalten, und
+ausdrücklich keine Ablehnung wegen erwarteter Leistung.**
+
+Bei der Reparatur der Kandidatenkette (§ oben: das Testartefakt im
+Freigabeordner) habe ich ihn auf `AWAITING_APPROVAL` gesetzt. Damit war
+diese Entscheidung überschrieben.
+
+### Der Fehler war nicht die Reparatur
+
+Das Zustandsvokabular kannte vier Werte:
+
+```
+AWAITING_APPROVAL   APPROVED   REJECTED   SUPERSEDED
+```
+
+„Zurückgehalten, weil die Evidenz nicht reicht" ist keiner davon. Es
+ist keine Freigabe, keine Ablehnung, kein Warten und keine Ersetzung.
+Die Entscheidung war damit **nirgends persistiert** — und was nirgends
+steht, überschreibt der nächste Vorgang, ohne etwas zu bemerken.
+
+Ein Zustandsraum, in dem sich eine reale Owner-Entscheidung nicht
+ausdrücken lässt, produziert diesen Fehler zuverlässig. Die Reparatur
+war nur die Gelegenheit.
+
+### Die Linie
+
+`social/engines/owner-decision.js` zieht sie:
+
+| | |
+|---|---|
+| **entschieden** | `APPROVED`, `REJECTED`, `HELD_FOR_ENRICHMENT` — ein Mensch hat entschieden, nur ein Mensch ändert das |
+| **maschinell** | `AWAITING_APPROVAL`, `SUPERSEDED` — der Lauf setzt sie, der Lauf darf sie ändern |
+
+Lauf, Recovery, Test und Kettenreparatur bewegen sich ausschließlich im
+maschinellen Teil. Berühren sie einen entschiedenen Zustand, **wirft**
+der Guard — er vermerkt nicht und führt trotzdem aus. Ein Vorgang, der
+eine Owner-Entscheidung anfassen wollte, hat eine falsche Annahme über
+die Welt, und die soll auffallen.
+
+Die Gegenrichtung gilt auch: eine Maschine darf **keinen** entschiedenen
+Zustand setzen (`machineCannotDecide`). Ein Lauf, der selbst auf
+`REJECTED` ginge, hätte entschieden.
+
+`OD3` prüft jeden entschiedenen Ausgangszustand gegen jeden
+Zielzustand, `OD6` dass der Owner weiterhin alles darf, `OD7` dass der
+Betrieb nicht mitgesperrt ist, und `PC21` fährt einen echten Lauf gegen
+einen zurückgehaltenen Kandidaten: er bleibt unberührt, und der neue
+Kandidat entsteht trotzdem.
+
+### `HELD_FOR_ENRICHMENT` ist kein Leistungsurteil
+
+Aus demselben Grund wie `REJECTED`: der Beitrag ist nie erschienen. Er
+hat keine Leistung — weder eine gute noch eine schlechte — und geht in
+keinen Leistungsvergleich ein (`OD2`).
+
+Die Entscheidung läuft über den normalen Weg, nicht über eine
+Handkorrektur an der Datei:
+
+```
+node scripts/social/decide-candidate.mjs --candidate <id> --hold --reason "..."
+```
+
+`--hold` ohne `--reason` wird abgewiesen. Der Grund sagt, **was fehlt,
+damit es weitergeht** — und ohne ihn wäre das Zurückhalten als
+Rückmeldung wertlos.

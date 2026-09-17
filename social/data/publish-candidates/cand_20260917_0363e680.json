@@ -6,7 +6,7 @@
     "cand_20260917_eb5a2b4f"
   ],
   "createdAt": "2026-09-17T16:05:00Z",
-  "state": "AWAITING_APPROVAL",
+  "state": "HELD_FOR_ENRICHMENT",
   "content": {
     "contentId": "pkg_211d4c6ed3b103aa",
     "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_211d4c6ed3b103aa.jpg",
@@ -100,5 +100,11 @@
   "supersededBy": null,
   "supersededAt": "2026-09-17T12:00:00Z",
   "supersededReason": "Ersetzt durch eine Fassung aus der verbesserten Autoren- und Bildschicht. Diese Fassung bleibt als Beleg erhalten und wurde nicht ueberschrieben.",
-  "repairNote": "Dieser Kandidat stand auf SUPERSEDED, abgeloest von cand_20260917_ee9f1b30 — einem Testartefakt mit dem Thema 'Stark', der Hook 'Ein Hook.' und dem Text 'Ein Text.'. make-publish-candidate.mjs schrieb in einen festen Ordner statt in den, der zum Datenstand gehoerte; jeder Testlauf mit --write landete damit im echten Freigabeordner. Das Artefakt ist entfernt, der Zustand hier auf AWAITING_APPROVAL zurueckgesetzt. Die Kette zu cand_20260917_eb5a2b4f bleibt unangetastet: die ist echt."
+  "repairNote": "Verlauf dieses Zustands, vollstaendig: (1) Ein Testartefakt (cand_20260917_ee9f1b30, Thema 'Stark') hatte diesen Kandidaten als SUPERSEDED markiert - make-publish-candidate.mjs schrieb in einen festen Ordner statt in den zum Datenstand gehoerenden. (2) Bei der Reparatur wurde er auf AWAITING_APPROVAL gesetzt. Das war falsch: damit war eine bereits getroffene Owner-Entscheidung ueberschrieben. (3) Der Owner hat korrigiert. Der Zustand ist HELD_FOR_ENRICHMENT - zurueckgehalten wegen unzureichender Evidenz, ausdruecklich keine Ablehnung wegen erwarteter Leistung. Moeglich war Schritt (2), weil es fuer diese Entscheidung keinen Zustand gab: das Vokabular kannte nur AWAITING_APPROVAL, APPROVED, REJECTED und SUPERSEDED. Was nirgends steht, kann jede Reparatur ueberschreiben. Seit owner-decision.js ist die Entscheidung ein Zustand und der Zustand eine Grenze: kein Lauf, keine Recovery und kein Test kommt daran vorbei. Die Kette zu cand_20260917_eb5a2b4f bleibt unangetastet.",
+  "hold": {
+    "reason": "Nicht veroeffentlichen: die Evidenz hinter dem Beitrag reicht nicht. Der Kandidat hat eine strukturelle Produktluecke sichtbar gemacht - die Content-Schicht war hinter der uebrigen Intelligence zurueck. Ausdruecklich KEINE Ablehnung wegen erwarteter Leistung. Er wartet auf eine evidenzreiche Fassung.",
+    "decidedBy": "owner",
+    "decidedAt": "2026-09-17T12:05:00Z",
+    "note": "Zurueckgehalten, nicht abgelehnt. Dies ist KEINE Aussage ueber die zu erwartende Leistung des Beitrags."
+  }
 }
