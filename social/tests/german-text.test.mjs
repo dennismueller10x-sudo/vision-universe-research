@@ -72,6 +72,18 @@ test("GT6 · Fremdwoerter mit ue bleiben stehen", () => {
   assert.deepEqual(G.residue(echt), []);
 });
 
+test("GT6b \u00b7 Die qu-Klasse ist kein Umlaut", () => {
+  /* "Request" hat die Pruefung als Umschrift gemeldet — q+u+e ergibt
+     dieselbe Buchstabenfolge. Frequenz, Sequenz und konsequent sind
+     deutsche Woerter derselben Klasse. */
+  const echt = "Der Request nennt Frequenz und Sequenz, konsequent gemessen.";
+  assert.deepEqual(G.residue(echt), []);
+  assert.equal(G.normalize(echt), echt);
+
+  /* Und die Gegenprobe: "guenstig" ist keine qu-Klasse. */
+  assert.deepEqual(G.residue("guenstig"), ["guenstig"]);
+});
+
 test("GT7 · Bereits richtiges Deutsch aendert sich nicht", () => {
   const richtig = "Der Wert beschreibt die Lage — nicht ihre Ursache. " +
     "Für jeden Titel gilt dasselbe Verfahren.";

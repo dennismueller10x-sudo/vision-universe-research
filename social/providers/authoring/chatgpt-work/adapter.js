@@ -59,6 +59,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
+  var German = isNode ? require("../../../engines/german-text.js") : global.VUSocialGermanText;
   var AssetIntegrity = isNode ? require("../../../engines/asset-integrity.js")
                               : global.VUSocialAssetIntegrity;
   var nodeCrypto = isNode ? require("crypto") : null;
@@ -442,14 +443,40 @@
         var e = (brief.evidence || [])[0] || null;
         var bild = (ergebnis.visual_variants || [])[0] || null;
 
+        /* ---------------------------------------------------------------
+           DIE SCHREIBUNG DES AGENTENTEXTES
+
+           Der Brief liefert dem Agenten Belegsaetze. Kommen sie aus den
+           Quant-Daten in ASCII-Umschrift, uebernimmt er sie so — er
+           kann nicht wissen, dass "traegt" ein Fehler ist.
+
+           Repariert wird deshalb hier, bevor der Text ein Kandidat
+           wird. Der Eingriff ist rein orthografisch und
+           deterministisch: dieselbe Kennung bezeichnet danach immer
+           denselben Text, und der unveraenderte Originaltext reist in
+           textVerbatim mit.
+
+           Was das Woerterbuch nicht kennt, wird nicht geraten. Es steht
+           in textResidue, und das Marken-Tor blockiert die betroffene
+           Variante — die uebrigen laufen weiter.
+           --------------------------------------------------------------- */
+        var captionSauber = German.clean(ergebnis.caption);
+
         return {
           variants: (ergebnis.hook_variants || []).map(function (v) {
+            var hookSauber = German.clean(v.text);
+            var rest = hookSauber.residue.concat(captionSauber.residue);
+
             return Authoring.variant({
               variantId: v.hook_variant_id,
               authorId: options.authorId || "chatgpt-work",
               kind: "generative",
-              hook: v.text,
-              caption: ergebnis.caption,
+              hook: hookSauber.text,
+              caption: captionSauber.text,
+              textVerbatim: (hookSauber.text !== v.text ||
+                captionSauber.text !== ergebnis.caption)
+                ? { hook: v.text, caption: ergebnis.caption } : null,
+              textResidue: rest,
               /* Der Agent liefert keine Bildzeile — das Bild IST die
                  Aussage. Die Karte des deterministischen Autors braucht
                  eine; ein generatives Visual nicht. */

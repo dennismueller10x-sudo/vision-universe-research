@@ -201,6 +201,7 @@
     /eue/,              /* neue, Feuer, Steuer, treue, Abenteuer */
     /oue/,              /* Silhouette */
     /uell\b|uelle|uett|uum\b|ue\b/,  /* aktuell, Duett, Kontinuum, Statue */
+    /que/,              /* Frequenz, Sequenz, konsequent, Request, Queue */
     /^zoe$|^aloe$|^poe/,             /* Zoe, Aloe, Poesie, Poet */
     /^koex|^koed/,                   /* Koexistenz, koedukativ */
     /^goethe|^boeing/,

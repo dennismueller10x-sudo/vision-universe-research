@@ -256,3 +256,78 @@ test("CG20 · Die Empfehlung des Agenten entscheidet NICHTS", () => {
   assert.ok(lauf.evaluated.length > 0);
   assert.equal(typeof lauf.selection.chosen, "object");
 });
+
+/* ------------------------------------------------------------------ */
+/* DIE SCHREIBUNG DES AGENTENTEXTES                                    */
+/* ------------------------------------------------------------------ */
+
+test("CG24 · Umschrift im Agententext wird repariert, nicht veroeffentlicht", () => {
+  /* Der Brief liefert dem Agenten Belegsaetze. Kommen sie in
+     ASCII-Umschrift aus den Quant-Daten, uebernimmt er sie so — er
+     kann nicht wissen, dass "traegt" ein Fehler ist. */
+  const roh = JSON.parse(JSON.stringify(ERGEBNIS));
+  roh.caption = "TREND_STRUCTURE traegt 27.35 von 30 Punkten bei. " +
+    "Relative Staerke nicht verfuegbar.";
+
+  const a = autorMit({ readResult: () => roh, readAsset: leseAsset });
+  const r = a.write(vuBrief(), {
+    contentId: roh.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+
+  assert.equal(r.variants.length, 3, r.reason || "");
+  assert.match(r.variants[0].caption, /trägt 27\.35 von 30/);
+  assert.match(r.variants[0].caption, /Stärke nicht verfügbar/);
+  assert.ok(!/traegt|Staerke|verfuegbar/.test(r.variants[0].caption));
+});
+
+test("CG25 · Der unveraenderte Agententext bleibt als Provenance erhalten", () => {
+  const roh = JSON.parse(JSON.stringify(ERGEBNIS));
+  roh.caption = "TREND_STRUCTURE traegt 27.35 von 30 Punkten bei.";
+
+  const a = autorMit({ readResult: () => roh, readAsset: leseAsset });
+  const r = a.write(vuBrief(), {
+    contentId: roh.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+
+  assert.equal(r.variants[0].textVerbatim.caption, roh.caption);
+  /* Und die Kennung meint weiterhin denselben Text: die Reparatur ist
+     deterministisch, also bezeichnet dieselbe Kennung bei jedem Lauf
+     dasselbe Ergebnis. */
+  const nochmal = a.write(vuBrief(), {
+    contentId: roh.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+  assert.equal(nochmal.variants[0].variantId, r.variants[0].variantId);
+  assert.equal(nochmal.variants[0].caption, r.variants[0].caption);
+});
+
+test("CG26 · Wo nichts zu reparieren war, entsteht kein zweiter Text", () => {
+  const a = autorMit({ readResult: () => ERGEBNIS, readAsset: leseAsset });
+  const r = a.write(vuBrief(), {
+    contentId: ERGEBNIS.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+  assert.equal(r.variants[0].textVerbatim, null);
+  assert.equal(r.variants[0].textResidue, null);
+});
+
+test("CG27 · Unbekannte Umschrift wird gemeldet und blockiert die Variante", () => {
+  /* Nicht geraten, nicht verschwiegen. Die Variante faellt am
+     Marken-Tor — die uebrigen laufen weiter. */
+  const roh = JSON.parse(JSON.stringify(ERGEBNIS));
+  roh.caption = "Ein voellig unbekanntes Wort steht hier.";
+
+  const a = autorMit({ readResult: () => roh, readAsset: leseAsset });
+  const r = a.write(vuBrief(), {
+    contentId: roh.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+
+  assert.ok(r.variants[0].textResidue.includes("voellig"));
+
+  const marke = Brand.check({ hook: r.variants[0].hook, caption: r.variants[0].caption });
+  assert.equal(marke.passed, false);
+  assert.ok(marke.blocking.map((b) => b.id).includes("transliterated-umlauts"));
+});

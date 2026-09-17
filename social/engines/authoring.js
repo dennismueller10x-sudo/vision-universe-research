@@ -114,6 +114,13 @@
          gewirkt hat. */
       pattern: spec.pattern || null,
       claims: Array.isArray(spec.claims) ? spec.claims.slice() : [],
+      /* Wo die Schreibung repariert wurde, reist das Original mit. Ein
+         Text, der als der eines Autors gilt, darf nicht unbemerkt ein
+         anderer sein — auch dann nicht, wenn nur Umlaute gesetzt
+         wurden. */
+      textVerbatim: spec.textVerbatim || null,
+      textResidue: Array.isArray(spec.textResidue) && spec.textResidue.length
+        ? spec.textResidue.slice() : null,
       notes: spec.notes || null
     };
   }
