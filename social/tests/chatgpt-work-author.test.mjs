@@ -331,3 +331,66 @@ test("CG27 · Unbekannte Umschrift wird gemeldet und blockiert die Variante", ()
   assert.equal(marke.passed, false);
   assert.ok(marke.blocking.map((b) => b.id).includes("transliterated-umlauts"));
 });
+
+/* ------------------------------------------------------------------ */
+/* DER ERNEUTE ANLAUF                                                  */
+/* ------------------------------------------------------------------ */
+
+function briefFuerAnlauf() {
+  return { briefId: "brief_x", topic: "Thema", archetype: "STOCK_STORY",
+    evidence: [{ entity: "XOM", metric: "Score", value: 76, statement: "76 Punkte." }],
+    constraints: {} };
+}
+
+test("CG28 · Ein zweiter Anlauf ist ein eigener Vorgang", () => {
+  /* Schweigt der Anbieter, muss derselbe Inhalt noch einmal angefragt
+     werden koennen. Ohne eigenen Anlauf-Zaehler ergibt derselbe Brief
+     denselben Blob-SHA und denselben Processing Key - und das Ledger
+     weist den zweiten Anlauf zu Recht ab. */
+  const a1 = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1", attempt: 1 });
+  const a2 = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1", attempt: 2 });
+
+  const sha1 = CW.blobSha(JSON.stringify(a1, null, 2) + "\n");
+  const sha2 = CW.blobSha(JSON.stringify(a2, null, 2) + "\n");
+  assert.notEqual(sha1, sha2, "zwei Anlaeufe teilen sich einen Blob-SHA");
+
+  assert.notEqual(
+    CW.processingKey("brief_x", "vu-x-1", sha1, "1.0"),
+    CW.processingKey("brief_x", "vu-x-1", sha2, "1.0"));
+});
+
+test("CG29 · Die Idempotenzgrenze bleibt, wo sie war", () => {
+  /* Kein neues Verfahren: der Anlauf steht IM Brief, alles andere folgt
+     aus dem vorhandenen Mechanismus. Derselbe Anlauf ergibt zweimal
+     dasselbe. */
+  const a = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1", attempt: 2 });
+  const b = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1", attempt: 2 });
+  assert.equal(CW.blobSha(JSON.stringify(a, null, 2) + "\n"),
+               CW.blobSha(JSON.stringify(b, null, 2) + "\n"));
+});
+
+test("CG30 · Der Neuversuch verliert seine Vorgeschichte nicht", () => {
+  /* Ein Neuversuch ohne Kette ist von einem Erstversuch nicht zu
+     unterscheiden - und dann laesst sich nicht sagen, wie oft der
+     Anbieter fuer diesen Inhalt gebraucht wurde. */
+  const a1 = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1" });
+  assert.equal(a1.attempt, 1);
+  assert.equal(a1.supersedes_attempt, null);
+  assert.equal(a1.attempt_reason, null);
+
+  const a3 = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1",
+    attempt: 3, attemptReason: "Anbieter schwieg zweimal." });
+  assert.equal(a3.attempt, 3);
+  assert.equal(a3.supersedes_attempt, 2);
+  assert.equal(a3.attempt_reason, "Anbieter schwieg zweimal.");
+});
+
+test("CG31 · Der Zaehler steigt nicht von selbst", () => {
+  /* Er ist ein Parameter, und wer ihn setzt, hat sich entschieden. Eine
+     Automatik hier waere genau die unkontrollierte Retry-Schleife, die
+     es nicht geben soll. */
+  const a = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1" });
+  const b = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1" });
+  assert.equal(a.attempt, 1);
+  assert.equal(b.attempt, 1);
+});

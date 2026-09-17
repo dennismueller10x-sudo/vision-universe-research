@@ -114,12 +114,42 @@
     var contentId = options.contentId || brief.contentId || brief.briefId;
     var visualStrategy = options.visualStrategy || brief.visualType || "FUTURE_TECH";
 
+    /* -------------------------------------------------------------------
+       DER ERNEUTE ANLAUF
+
+       Schweigt der Anbieter, muss derselbe Inhalt irgendwann noch einmal
+       angefragt werden koennen. Genau das war bisher nicht moeglich,
+       ohne die Idempotenz zu verletzen: derselbe Brief ergibt denselben
+       Blob-SHA, denselben Processing Key — und das Ledger weist den
+       zweiten Anlauf zu Recht ab.
+
+       Die Loesung braucht kein neues Verfahren. Der Anlauf steht IM
+       BRIEF. Damit aendern sich seine Bytes, damit sein Blob-SHA, damit
+       sein Processing Key und damit alle Varianten-Kennungen — jeder
+       Anlauf ist sauber ein eigener Vorgang, und die Idempotenzgrenze
+       bleibt genau da, wo sie war.
+
+       `supersedes_attempt` haelt die Kette zusammen: der zweite Anlauf
+       weiss, wessen Nachfolger er ist. Ein Neuversuch, der seine
+       Vorgeschichte verliert, ist von einem Erstversuch nicht mehr zu
+       unterscheiden — und dann laesst sich nicht mehr sagen, wie oft der
+       Anbieter fuer diesen Inhalt gebraucht wurde.
+
+       Erhoeht wird der Zaehler NICHT selbsttaetig. Er ist ein Parameter,
+       und wer ihn setzt, hat sich entschieden.
+       ------------------------------------------------------------------- */
+    var anlauf = Number(options.attempt) || 1;
+
     return {
       schema_version: "1.0",
       fixture_type: options.fixtureType || "production_authoring_request",
       test_fixture: options.testFixture === true,
       brief_id: brief.briefId,
       content_id: contentId,
+      attempt: anlauf,
+      supersedes_attempt: anlauf > 1 ? (anlauf - 1) : null,
+      attempt_reason: anlauf > 1 ? (options.attemptReason ||
+        "Voriger Anlauf ohne beobachtbares Ergebnis.") : null,
       brand: "Vision Universe",
       language: (brief.constraints && brief.constraints.language) || "de",
       channel: options.channel || "instagram",
