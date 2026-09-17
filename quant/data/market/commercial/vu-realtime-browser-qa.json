@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "vu-realtime-browser-qa-1.0.0",
+  "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
+  "checkedAt": "2026-09-17T17:07:41.315Z",
+  "origin": "https://research.visionuniverse.de",
+  "session": {
+    "phase": "REGULAR",
+    "localTime": "13:07:41",
+    "isOpen": true
+  },
+  "note": "Die Seite laeuft unter ihrem echten Ursprung; nur der Name ist im Testbrowser auf 127.0.0.1 abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
+  "honesty": "Ein Titel ohne Marktereignis liefert keinen Kurs. Das ist kein Systemfehler und wird hier auch nicht als Latenz gezaehlt.",
+  "symbols": [
+    {
+      "symbol": "AAPL",
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "AAPL"
+      ],
+      "ticks": 38,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 33,
+      "labels": [
+        "Stand Mi., 16.09. · nicht aktuell"
+      ],
+      "latencyMs": {
+        "samples": 38,
+        "providerToCloudflare": 14,
+        "cloudflareToClient": 674,
+        "endToEnd": 688,
+        "max": 1048
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    },
+    {
+      "symbol": "NVDA",
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "NVDA"
+      ],
+      "ticks": 37,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 26,
+      "labels": [
+        "Stand Mi., 16.09. · nicht aktuell"
+      ],
+      "latencyMs": {
+        "samples": 37,
+        "providerToCloudflare": 16,
+        "cloudflareToClient": 637,
+        "endToEnd": 653,
+        "max": 1065
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    },
+    {
+      "symbol": "MSFT",
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "MSFT"
+      ],
+      "ticks": 11,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 10,
+      "labels": [
+        "Stand Mi., 16.09. · nicht aktuell"
+      ],
+      "latencyMs": {
+        "samples": 11,
+        "providerToCloudflare": 18,
+        "cloudflareToClient": 798,
+        "endToEnd": 817,
+        "max": 1069
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    },
+    {
+      "symbol": "VLO",
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "VLO"
+      ],
+      "ticks": 3,
+      "firstTickMs": 499,
+      "chartUpdatesAfterLoad": 2,
+      "labels": [
+        "Stand Mi., 16.09. · nicht aktuell"
+      ],
+      "latencyMs": {
+        "samples": 3,
+        "providerToCloudflare": 13,
+        "cloudflareToClient": 1034,
+        "endToEnd": 1047,
+        "max": 1050
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    },
+    {
+      "symbol": "PANW",
+      "connected": true,
+      "streamState": "OPEN",
+      "subscribed": [
+        "PANW"
+      ],
+      "ticks": 6,
+      "firstTickMs": 2749,
+      "chartUpdatesAfterLoad": 6,
+      "labels": [
+        "Stand Mi., 16.09. · nicht aktuell"
+      ],
+      "latencyMs": {
+        "samples": 6,
+        "providerToCloudflare": 13,
+        "cloudflareToClient": 926,
+        "endToEnd": 940,
+        "max": 1046
+      },
+      "consoleErrors": [],
+      "verdict": "TICKS"
+    }
+  ],
+  "reconnect": {
+    "vorher": {
+      "state": "OPEN",
+      "connected": true,
+      "label": "Stand Mi., 16.09. · nicht aktuell"
+    },
+    "nachAbriss": {
+      "state": "OPEN",
+      "connected": true,
+      "label": "Stand Mi., 16.09. · nicht aktuell",
+      "chartDa": true
+    },
+    "nachWiederanlauf": {
+      "state": "OPEN",
+      "connected": true,
+      "label": "Stand Mi., 16.09. · nicht aktuell",
+      "stats": {
+        "opens": 2,
+        "closes": 1,
+        "errors": 0,
+        "messages": 15,
+        "ticks": 11,
+        "denied": 0,
+        "retries": 1,
+        "subscribes": 1,
+        "unsubscribes": 0,
+        "notifications": 16,
+        "lastMessageAt": "2026-09-17T17:13:17.880Z",
+        "lastTickAt": "2026-09-17T17:13:17.880Z",
+        "state": "OPEN",
+        "reason": null,
+        "symbols": 1,
+        "connected": true
+      }
+    }
+  },
+  "checks": [
+    {
+      "id": "connected",
+      "question": "jede Aktienseite verbindet sich mit dem Strom",
+      "ok": true,
+      "detail": {
+        "verbunden": 5,
+        "von": 5
+      }
+    },
+    {
+      "id": "ticksAAPLNVDA",
+      "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
+      "ok": true,
+      "detail": [
+        "AAPL:38",
+        "NVDA:37"
+      ]
+    },
+    {
+      "id": "chartBewegt",
+      "question": "der Chart zeichnet sich neu, ohne Neuladen",
+      "ok": true,
+      "detail": {
+        "charts": [
+          "AAPL",
+          "NVDA",
+          "MSFT",
+          "VLO",
+          "PANW"
+        ]
+      }
+    },
+    {
+      "id": "keineFehler",
+      "question": "keine Konsolenfehler auf den Aktienseiten",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "abrissGemeldet",
+      "question": "nach dem Abriss ist der Strom nicht mehr verbunden",
+      "ok": false,
+      "detail": {
+        "state": "OPEN",
+        "connected": true,
+        "label": "Stand Mi., 16.09. · nicht aktuell",
+        "chartDa": true
+      }
+    },
+    {
+      "id": "chartBleibt",
+      "question": "der Chart bleibt nach dem Abriss stehen (kein leerer Chart)",
+      "ok": true,
+      "detail": {
+        "state": "OPEN",
+        "connected": true,
+        "label": "Stand Mi., 16.09. · nicht aktuell",
+        "chartDa": true
+      }
+    },
+    {
+      "id": "wiederanlauf",
+      "question": "der Strom baut von selbst wieder auf",
+      "ok": true,
+      "detail": {
+        "state": "OPEN",
+        "connected": true,
+        "label": "Stand Mi., 16.09. · nicht aktuell",
+        "stats": {
+          "opens": 2,
+          "closes": 1,
+          "errors": 0,
+          "messages": 15,
+          "ticks": 11,
+          "denied": 0,
+          "retries": 1,
+          "subscribes": 1,
+          "unsubscribes": 0,
+          "notifications": 16,
+          "lastMessageAt": "2026-09-17T17:13:17.880Z",
+          "lastTickAt": "2026-09-17T17:13:17.880Z",
+          "state": "OPEN",
+          "reason": null,
+          "symbols": 1,
+          "connected": true
+        }
+      }
+    }
+  ],
+  "result": "FAIL",
+  "reason": "abrissGemeldet"
+}
