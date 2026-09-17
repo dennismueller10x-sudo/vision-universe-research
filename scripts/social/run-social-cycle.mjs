@@ -68,6 +68,7 @@ const Capabilities = require(join(ROOT, "social/engines/capabilities.js"));
 const Brand        = require(join(ROOT, "social/engines/brand.js"));
 const Authoring    = require(join(ROOT, "social/engines/authoring.js"));
 const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
+const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
 const AutorVorlage = require(join(ROOT, "social/providers/authoring/template/adapter.js"));
 const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapter.js"));
 
@@ -435,6 +436,36 @@ function buildPatternKnowledge(memory, nowIso) {
   };
 }
 
+/**
+ * Das Evidenzpaket zu einer Gelegenheit.
+ *
+ * Es liest das technische Bundle der Quant-Schicht und rechnet NICHTS
+ * nach. Wo dort UNAVAILABLE steht, steht hier UNAVAILABLE.
+ */
+function ladeEvidenzPaket(sources, nowIso) {
+  const mitEntitaet = (sources || []).find((s) => s && s.entity);
+  if (!mitEntitaet) {
+    return { ok: false, message: "Keine Entitaet in der Herkunft — kein Bundle ladbar." };
+  }
+
+  const pfad = join(ROOT, "quant/data/technical/instruments",
+    String(mitEntitaet.entity).toUpperCase() + ".json");
+  if (!existsSync(pfad)) {
+    return { ok: false, message: "Kein technisches Bundle fuer " + mitEntitaet.entity + "." };
+  }
+
+  let roh;
+  try { roh = JSON.parse(readFileSync(pfad, "utf8")); }
+  catch (err) { return { ok: false, message: "Bundle unlesbar: " + err.message }; }
+
+  return EvidencePackage.fromTechnicalBundle(roh.bundle, {
+    entity: mitEntitaet.entity,
+    source: mitEntitaet.source || (roh.bundle && roh.bundle.source) || null,
+    sourceRevision: roh.sourceRevision || null,
+    now: nowIso
+  });
+}
+
 function buildOpportunities(signals, internal, memory, registry, providerId) {
   const clusters = Signals.cluster(signals);
   const out = [];
@@ -660,6 +691,38 @@ async function main() {
     }));
 
     /* ================================================================
+       DAS EVIDENZPAKET
+
+       Die Herkunft eines Signals nennt eine Zahl. Das technische Bundle
+       dahinter nennt zwei Dutzend — Band, Beitraege je Familie,
+       Trendbelege, Momentum ueber vier Horizonte, Volatilitaetsregime,
+       Datengrundlage und den Satz, dass der Score keine
+       Wahrscheinlichkeit ist.
+
+       Der erste Kandidat sagte "76", weil nur "76" mitgenommen wurde.
+       ================================================================ */
+    const evidenzPaket = ladeEvidenzPaket(sources, NOW);
+    const evidenzSaetze = evidenzPaket && evidenzPaket.ok
+      ? evidenzPaket.evidence.map((e) => ({
+          source: e.source, provider: null, entity: e.entity, metric: e.metric,
+          value: e.value, unit: e.unit, state: e.state, observedAt: e.observedAt,
+          statement: e.statement, pointer: e.pointer, dimension: e.dimension }))
+      : sources;
+
+    /* Ein hoher Score ist nicht automatisch veroeffentlichungswuerdig. */
+    const hinreichend = evidenzPaket && evidenzPaket.ok
+      ? EvidencePackage.assessSufficiency(evidenzPaket)
+      : { sufficient: false, explanation:
+          "Kein Evidenzpaket: " + ((evidenzPaket && evidenzPaket.message) ||
+            "kein technisches Bundle zum Titel gefunden."), reasons: [] };
+
+    if (!hinreichend.sufficient) {
+      rejections.push({ topic: opportunity.topic, stage: "EVIDENCE_SUFFICIENCY",
+        reason: hinreichend.explanation });
+      continue;
+    }
+
+    /* ================================================================
        DIE AUTORENSCHICHT
 
        Sie ersetzt in `content.js` genau eine Stufe: die, in der Text
@@ -688,7 +751,7 @@ async function main() {
         strategyVersion: activeStrategy.versionId
       },
       visual: { visualType: null },
-      evidence: sources,
+      evidence: evidenzSaetze,
       learned: musterWissen.brief,
       platform: "instagram",
       now: NOW
@@ -740,6 +803,15 @@ async function main() {
     result.package.validation.fatigueCheck = { passed: true, explanation: fatigue.explanation };
 
     packages.push({ candidate: c, strategyDecision, result, fatigue,
+      evidencePackage: evidenzPaket && evidenzPaket.ok ? {
+        packageId: evidenzPaket.packageId,
+        entity: evidenzPaket.entity,
+        asOf: evidenzPaket.asOf,
+        dimensions: evidenzPaket.dimensionsAvailable,
+        statements: evidenzPaket.evidence.length,
+        unavailable: evidenzPaket.unavailable,
+        sufficiency: hinreichend
+      } : null,
       /* Welche Variante gewonnen hat und wogegen. Ohne diese Angabe
          laesst sich spaeter nicht lernen, WAS gewirkt hat. */
       authoring: {

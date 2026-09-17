@@ -74,6 +74,11 @@
       statement: spec.statement,
       value: spec.value === undefined ? null : spec.value,
       unit: spec.unit || null,
+      /* Beschreibt dieser Beleg eine ENTWICKLUNG ueber Zeit? Der Brief
+         verbietet sonst Aussagen ueber Verlaeufe — zu Recht, solange nur
+         ein Stand vorliegt. Liegen Horizonte vor, waere dasselbe Verbot
+         ein Widerspruch zum mitgelieferten Beleg. */
+      temporal: spec.temporal === true,
       entity: spec.entity || null,
       metric: spec.metric || null,
       source: spec.source || null,
@@ -217,7 +222,7 @@
         if (!h[k] || typeof h[k].return !== "number") return;
         evidence.push(ev({
           id: "momentum-" + k.toLowerCase(), dimension: "MOMENTUM", entity: entity,
-          metric: k + "-Rendite", value: pct(h[k].return), unit: "%",
+          metric: k + "-Rendite", value: pct(h[k].return), unit: "%", temporal: true,
           source: source, observedAt: asOf, pointer: "/momentum/horizons/" + k + "/return",
           statement: k + "-Entwicklung " + pct(h[k].return) + " %" +
             (typeof h[k].z === "number" ? " (z=" + h[k].z + ")" : "") + "."

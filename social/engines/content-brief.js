@@ -85,7 +85,12 @@
           unit: e.unit || null,
           source: (e.source && e.source.source) || e.source || null,
           observedAt: (e.source && e.source.observedAt) || e.observedAt || null,
-          state: (e.source && e.source.state) || e.state || null
+          state: (e.source && e.source.state) || e.state || null,
+          /* Der fertige Belegsatz der Engine und die Angabe, ob er eine
+             Entwicklung beschreibt. Beides reist mit, weil beides die
+             Regeln unten beeinflusst. */
+          statement: e.statement || null,
+          temporal: e.temporal === true
         };
       });
 
@@ -124,7 +129,14 @@
       });
     }
 
-    var hatZeitreihe = evidence.some(function (e) { return Array.isArray(e.series); });
+    /* Ein Beleg ueber einen Zeitraum ist eine Reihe — auch wenn er als
+       einzelne Zahl daherkommt ("12M-Entwicklung 47.6 %"). Die erste
+       Fassung sah nur auf `series` und verbot deshalb Aussagen ueber
+       Entwicklung in einem Brief, der vier Horizonte MITLIEFERTE. Ein
+       Verbot, das dem beigelegten Beleg widerspricht, ist keine Regel,
+       sondern ein Fehler. */
+    var hatZeitreihe = evidence.some(function (e) {
+      return Array.isArray(e.series) || e.temporal === true; });
     if (!hatZeitreihe) {
       mustNotClaim.push({
         id: "trend",
