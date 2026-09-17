@@ -19,3 +19,5 @@ Main SEC report latest-run.json (2026-09-17, producer run35190129149): SUCCESS;5
 
 ## Risks / rollback
 Production market durability still lacks complete checkpoint lineage, provider finality, corporate-action reconciliation, dependent-feature and account-wide accounting/concurrency evidence. PR92 sample restoration does not close these. No unattended market activation. Integration remains a reviewable branch; rollback is to PR92 with all original PRs retained. Full current-main convergence carries existing source/data changes, not newly fabricated data. Any new shared-contract main drift requires re-comparison before merge.
+
+Self-review amendment: regular (non-strict) checkpoint keys retain main's cross-day rejection cooldown and daily reset. Strict keys remain per-session. Added a sixth CLI case proving yesterday's done list resets while the rejected-history cooldown survives and no provider request occurs. Prior1070-test full-suite result predates this additional case; final remote regression required.

@@ -243,7 +243,8 @@ if (STRICT_INCREMENTAL) {
     strictPlans[security.securityId] = plan;
   }
 }
-const runId = STRICT_INCREMENTAL ? "strict-eod-" + closedSession.date : MarketStore.ingestionRunId(INITIAL);
+// Keep main's cross-day rejection ledger for regular imports; strict EOD owns a session-specific checkpoint.
+const runId = STRICT_INCREMENTAL ? "strict-eod-" + closedSession.date : (INITIAL ? "initial" : "incremental");
 const checkpoint = store.loadCheckpoint(runId);
 if (STRICT_INCREMENTAL) checkpoint.done = checkpoint.done.filter(id => strictPlans[id]?.state === "CURRENT");
 
