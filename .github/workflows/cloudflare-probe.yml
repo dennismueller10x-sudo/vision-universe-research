@@ -1,0 +1,230 @@
+name: Cloudflare — Zugang pruefen (nur lesen)
+
+# WAS SCHON DA IST, HERAUSFINDEN - OHNE ES ANZUFASSEN
+#
+# Owner-Update vom 17.09.2026: im Repository liegen bereits ein Secret mit
+# dem Praefix CLOUDFLARE_API_, TIINGO_API_KEY und die VU_HISTORY_S3_*-Gruppe
+# fuer die bestehende R2-Anbindung. Also wird nichts Neues erzeugt und
+# nichts ersetzt - erst wird nachgesehen.
+#
+# Kein Workflow im Repository liest heute ein CLOUDFLARE_*. Der genaue Name
+# steht deshalb nirgends, und er laesst sich nur hier herausfinden: Secrets
+# gibt es ausschliesslich in Actions.
+#
+# DIESER WORKFLOW AENDERT NICHTS AN CLOUDFLARE.
+#   Kein deploy, kein secret put, kein Upgrade, keine Rotation.
+#   `wrangler whoami` liest, `--dry-run` baut lokal. Mehr passiert nicht.
+#
+# UND ER GIBT KEINEN WERT AUS.
+#   Gemeldet werden Namen, Formen und Rechte. Jede 32-stellige Hexfolge
+#   wird aus der Ausgabe geschnitten, und die abgeleitete Account-ID wird
+#   der Ablaufumgebung als Maske angemeldet, bevor sie irgendwo hingeht.
+#
+# Ausloeser: Marke im Commit-Betreff. Die Bedingung prueft die ganze
+# Nachricht - die Marke gehoert deshalb NICHT in den Fliesstext eines
+# anderen Commits (diese Falle hat am 17.09.2026 schon einmal
+# zugeschnappt).
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/probe-cloudflare-access.mjs'
+      - '.github/workflows/cloudflare-probe.yml'
+      - 'worker/wrangler.toml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    name: Welcher Zugang ist da, und taugt er?
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[cf-probe]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Schritt 1: welche Namen sind ueberhaupt gesetzt, und laesst sich
+      # die Account-ID aus dem bestehenden R2-Endpunkt ableiten, statt sie
+      # anzufordern?
+      - name: Vorhandene Secrets einordnen
+        id: probe
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/probe-cloudflare-access.mjs
+
+      # Schritt 2: der Name sagt nicht, was das Token darf. Ein Zugang, der
+      # fuer R2 angelegt wurde, hat keine Rechte an Workers oder Durable
+      # Objects. Das beantwortet wrangler aus der Sache heraus.
+      - name: Rechte des vorhandenen Tokens feststellen
+        id: rechte
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+          ACCOUNT_ID: ${{ steps.probe.outputs.account_id }}
+        run: |
+          set +e
+          # Der erste gesetzte Name gewinnt. Umgehaengt wird hier, nicht im
+          # Cloudflare-Konto - ein Secret umzubenennen waere eine Aenderung
+          # am Bestand, und die ist ausdruecklich nicht gewuenscht.
+          TOKEN="${CLOUDFLARE_API_TOKEN:-}"
+          QUELLE="CLOUDFLARE_API_TOKEN"
+          if [ -z "$TOKEN" ]; then TOKEN="${CLOUDFLARE_TOKEN:-}"; QUELLE="CLOUDFLARE_TOKEN"; fi
+          if [ -z "$TOKEN" ]; then TOKEN="${CF_API_TOKEN:-}"; QUELLE="CF_API_TOKEN"; fi
+          if [ -z "$TOKEN" ]; then TOKEN="${CLOUDFLARE_API:-}"; QUELLE="CLOUDFLARE_API"; fi
+          if [ -z "$TOKEN" ] && [ -n "${CLOUDFLARE_API_KEY:-}" ]; then
+            QUELLE="CLOUDFLARE_API_KEY (Global Key)"
+          fi
+          if [ -z "$TOKEN" ] && [ -z "${CLOUDFLARE_API_KEY:-}" ]; then
+            echo "Kein Cloudflare-Zugang gesetzt - nichts zu pruefen."
+            echo "gefunden=nein" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Zugang gefunden unter: $QUELLE"
+          export CLOUDFLARE_API_TOKEN="$TOKEN"
+          [ -n "$ACCOUNT_ID" ] && export CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID"
+
+          # Jede 32-stellige Hexfolge raus: Account-IDs stehen in der
+          # Ausgabe von whoami, und sie gehen niemanden an, der das Log
+          # liest.
+          npx --yes wrangler@4 whoami 2>&1 \
+            | sed -E 's/[0-9a-f]{32}/<maskiert>/g' \
+            | tee /tmp/whoami.txt
+          echo "gefunden=ja" >> "$GITHUB_OUTPUT"
+          echo "quelle=$QUELLE" >> "$GITHUB_OUTPUT"
+
+          # Aus der Rechteliste die beiden, auf die es ankommt.
+          for RECHT in "Workers Scripts" "Workers Tail" "Account Settings" "Memberships" "User Details"; do
+            if grep -qi "$RECHT" /tmp/whoami.txt; then echo "  hat: $RECHT"; fi
+          done
+          node -e '
+            const fs = require("fs");
+            const t = fs.readFileSync("/tmp/whoami.txt", "utf8");
+            const hat = (s) => new RegExp(s, "i").test(t);
+            const out = {
+              schemaVersion: "cloudflare-token-permissions-1.0.0",
+              checkedAt: new Date().toISOString(),
+              note: "Keine Werte, keine Account-IDs. Nur, was das vorhandene Token darf.",
+              authenticated: /You are logged in|Account Name|authenticated/i.test(t),
+              permissions: {
+                workersScriptsEdit: hat("Workers Scripts.*Edit|workers_scripts.*edit"),
+                workersScriptsRead: hat("Workers Scripts.*Read|workers_scripts.*read"),
+                accountSettingsRead: hat("Account Settings.*Read"),
+                anyWorkers: hat("Workers")
+              },
+              raw: t.split("\n").filter((z) => z.trim()).slice(0, 40)
+            };
+            fs.mkdirSync("quant/data/market/commercial", { recursive: true });
+            fs.writeFileSync("quant/data/market/commercial/cloudflare-token-permissions.json",
+                             JSON.stringify(out, null, 2) + "\n");
+            console.log("");
+            console.log("angemeldet:            " + out.authenticated);
+            console.log("Workers Scripts:Edit:  " + out.permissions.workersScriptsEdit);
+            console.log("Workers (irgendetwas): " + out.permissions.anyWorkers);
+          '
+
+      # Schritt 3: baut das Buendel ueberhaupt mit dem echten Bundler? Das
+      # braucht keinen Zugang und aendert nichts - aber es ist die Antwort
+      # auf die Frage, ob ein Deployment am Code scheitern wuerde.
+      - name: Buendel bauen, nicht ausrollen (--dry-run)
+        working-directory: worker
+        run: |
+          set +e
+          npx --yes wrangler@4 deploy --dry-run --outdir /tmp/vu-live-bundle 2>&1 \
+            | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tail -40
+          echo ""
+          if [ -f /tmp/vu-live-bundle/index.js ]; then
+            echo "Buendel gebaut: $(wc -c < /tmp/vu-live-bundle/index.js) Bytes"
+            echo "Enthaelt VuLive: $(grep -c 'VuLive' /tmp/vu-live-bundle/index.js)"
+          else
+            echo "Kein Buendel entstanden."
+          fi
+
+      - name: Kein Schluessel im Bericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all
+
+      - name: Bericht committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Cloudflare-Zugang: was vorhanden ist (Lauf ${{ github.run_id }})"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Cloudflare — welcher Zugang ist da?'
+            echo ''
+            if [ -f quant/data/market/commercial/cloudflare-access-probe.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/cloudflare-access-probe.json");
+                console.log("| Secret | vorhanden | Form | Rolle |");
+                console.log("|---|---|---|---|");
+                for (const s of r.secrets) {
+                  console.log("| `" + s.name + "` | " + (s.present ? "**ja**" : "nein") + " | " +
+                              (s.form || "—") + " | " + s.role + " |");
+                }
+                console.log("");
+                console.log("Account-ID ableitbar: **" + r.accountId.derivable + "**" +
+                            (r.accountId.source ? " (aus `" + r.accountId.source + "`)" : "") +
+                            (r.accountId.reason ? " — " + r.accountId.reason : ""));
+                console.log("");
+                console.log("Token gefunden als: **" + (r.token.foundAs || "—") + "**");
+                console.log("");
+                console.log(r.token.note);
+                console.log("");
+                console.log("**" + r.verdict + "** — " + r.consequence);
+              '
+            else
+              echo 'Keine Einordnung entstanden.'
+            fi
+            echo ''
+            echo '### Was darf das vorhandene Token?'
+            echo ''
+            if [ -f quant/data/market/commercial/cloudflare-token-permissions.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/cloudflare-token-permissions.json");
+                console.log("| Prüfung | Ergebnis |");
+                console.log("|---|---|");
+                console.log("| angemeldet | " + (r.authenticated ? "ja" : "**nein**") + " |");
+                for (const k of Object.keys(r.permissions)) {
+                  console.log("| " + k + " | " + (r.permissions[k] ? "ja" : "nein") + " |");
+                }
+              '
+            else
+              echo 'Kein Zugang gesetzt oder wrangler hat nicht geantwortet.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
