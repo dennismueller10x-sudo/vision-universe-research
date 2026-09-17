@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T18:35:00Z",
+  "generatedAt": "2026-09-17T18:45:00Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -353,6 +353,19 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Selbsttaetig erfasst aus der Agent-Meldung (STARTED, pull_request/opened). Nicht von Hand nachgetragen."
+    },
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:8a1367e93f136ac5c60c27c68f6509b287a010fe:1.0",
+      "state": "REQUESTED",
+      "at": "2026-09-17T18:45:00Z",
+      "contentId": "vu-xom-20260911",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "8a1367e93f136ac5c60c27c68f6509b287a010fe",
+      "pullRequest": null,
+      "deliveryId": null,
+      "observed": true,
+      "timestampProvenance": "observed",
+      "note": "Anlauf 2, loest Anlauf 1 ab. Anlauf 1 blieb ohne Ergebnis. Neue Owner-Beobachtung: die verbundene GitHub-App verlangte in ChatGPT Work eine Genehmigung; nach 'Immer zulassen' lief Auftrag vu-diag-size-20260917 vollstaendig durch. Dieser Anlauf prueft, ob die Genehmigung ohne erneute manuelle Bestaetigung traegt. Der PR wird NICHT von diesem Skript geoeffnet."
     }
   ],
   "latencyObservations": []

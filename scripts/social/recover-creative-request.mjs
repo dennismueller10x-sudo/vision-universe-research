@@ -69,9 +69,16 @@ export function ledgerLaden() {
            pfad };
 }
 
-/** Der abgelegte Brief eines Anlaufs samt seiner Kennungen. */
-export function briefLesen(contentId) {
-  const pfad = join(ROOT, ChatGptWork.requestDir(contentId), "authoring-brief.json");
+/**
+ * Der abgelegte Brief eines Anlaufs samt seiner Kennungen.
+ *
+ * `root` ist ueberschreibbar, weil sonst jede Pruefung am Zustand des
+ * Produktionsverzeichnisses haengt - und ein Test, der den echten Brief
+ * liest, faellt um, sobald der echte Brief sich aendert. Genau das ist
+ * beim Wiederanlauf 2 passiert.
+ */
+export function briefLesen(contentId, root) {
+  const pfad = join(root || ROOT, ChatGptWork.requestDir(contentId), "authoring-brief.json");
   if (!existsSync(pfad)) return null;
   const roh = readFileSync(pfad);
   const brief = JSON.parse(String(roh));
@@ -91,7 +98,8 @@ export function pruefeWiederanlauf(contentId, options) {
   options = options || {};
   const jetzt = options.now || new Date().toISOString();
 
-  const abgelegt = briefLesen(contentId);
+  const wurzel = options.root || ROOT;
+  const abgelegt = briefLesen(contentId, wurzel);
   if (!abgelegt) {
     return { ok: false, reason: "noBrief",
       explanation: "Zu " + contentId + " liegt kein Brief. Es gibt nichts zu " +
@@ -103,7 +111,7 @@ export function pruefeWiederanlauf(contentId, options) {
     e.processingKey === abgelegt.processingKey && e.observed === true);
   const zeiten = beobachtet.map((e) => e.at).filter(Boolean).sort();
 
-  const ergebnisPfad = join(ROOT, ChatGptWork.requestDir(contentId),
+  const ergebnisPfad = join(wurzel, ChatGptWork.requestDir(contentId),
     "authoring-result.json");
 
   const zustand = Lifecycle.classify({
@@ -114,6 +122,27 @@ export function pruefeWiederanlauf(contentId, options) {
   }, { now: jetzt, observations: ledger.latencies() });
 
   const anlauf = Number(abgelegt.brief.attempt) || 1;
+
+  /* -------------------------------------------------------------------
+     WARTEN IST KEIN GRUND FUER EINEN NEUEN ANLAUF — IM GEGENTEIL
+
+     Steht der Vorgang auf WAITING_FOR_EXTERNAL_APPROVAL, dann liegt
+     moeglicherweise eine Genehmigungsabfrage offen, die niemand
+     bestaetigt hat. Ein zweiter Anlauf erzeugt dann eine ZWEITE
+     wartende Anfrage — und verdoppelt das Problem, statt es zu loesen.
+
+     Der richtige naechste Schritt ist in diesem Fall kein technischer,
+     sondern ein Blick in die Work-Oberflaeche.
+     ------------------------------------------------------------------- */
+  if (zustand.state === "WAITING_FOR_EXTERNAL_APPROVAL") {
+    return { ok: false, reason: "awaitingExternalApproval", state: zustand.state,
+      attempt: anlauf, lifecycle: zustand,
+      explanation: "Der Vorgang hat " + zustand.startedCount + "x begonnen, ohne " +
+        "zu Ende zu kommen. Dieses Muster passt auf eine offene Genehmigung der " +
+        "verbundenen GitHub-App in ChatGPT Work. Ein weiterer Anlauf wuerde eine " +
+        "ZWEITE wartende Anfrage erzeugen und das Problem verdoppeln. " +
+        (zustand.ownerActionHint || "") };
+  }
 
   if (zustand.state !== "STALE_NO_RESULT") {
     return { ok: false, reason: "notStale", state: zustand.state, attempt: anlauf,

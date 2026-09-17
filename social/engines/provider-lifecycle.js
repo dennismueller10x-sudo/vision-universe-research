@@ -74,7 +74,44 @@
     "VERIFIED"           /* Kennungen und Asset bestaetigt */
   ];
 
+  /* -------------------------------------------------------------------
+     DER ZUSTAND, DER DIE FRUEHERE DEUTUNG KORRIGIERT
+
+     Ich hatte aus vier gleichfoermigen Wiederholungsfolgen geschlossen:
+     der Fehler sei eingabeunabhaengig und liege beim Anbieter. Der
+     erste Teil stimmt. Der zweite war falsch.
+
+     Der Owner hat beobachtet, dass die verbundene GitHub-App in
+     ChatGPT Work eine GENEHMIGUNG verlangt. Nach "Immer zulassen" lief
+     der Auftrag D2 vollstaendig durch — und zwar 3,5 Minuten nach
+     seiner sechsten STARTED-Meldung, also in der normalen Laufzeit.
+
+     Damit faellt die Deutung "Ausfall" in sich zusammen. Der Agent ist
+     nicht gescheitert, er hat GEWARTET. Und die Gleichfoermigkeit der
+     Wiederholungsfolgen ueber voellig verschiedene Nutzlasten hinweg —
+     die ich als Beweis fuer einen Anbieterfehler gelesen habe — ist
+     genau das, was ein Warten auf eine Genehmigung erzeugt: die
+     Nutzlast spielt keine Rolle, weil der Lauf sie nie erreicht.
+
+     -------------------------------------------------------------------
+     WARUM DER ZUSTAND SO HEISST, WIE ER HEISST
+     -------------------------------------------------------------------
+
+     Nicht "genehmigung ausstehend" als Tatsache. GitHub kann diese
+     Genehmigung NICHT SEHEN — sie lebt in der Work-Oberflaeche des
+     Owners. Was wir sehen, ist ein Muster: wiederholte STARTED ohne
+     Ergebnis und ohne Fehlermeldung.
+
+     Der Zustand behauptet deshalb nur, was er weiss: dieses Muster
+     passt auf eine ausstehende Genehmigung, und der Genehmigungsstand
+     ist von hier aus nicht beobachtbar. `approvalStateObservable:
+     false` steht als Feld dabei, damit niemand den Zustand fuer eine
+     Messung haelt.
+     ------------------------------------------------------------------- */
   var ABBRUCH = [
+    /* Wiederholte Anlaeufe ohne Ergebnis und ohne Fehler. Kein
+       Content-, Evidenz- oder Leistungsfehler — und kein Ausfall. */
+    "WAITING_FOR_EXTERNAL_APPROVAL",
     /* Kein Ergebnis im Fenster. Eine Aussage ueber unsere Beobachtung. */
     "STALE_NO_RESULT",
     /* Etwas liegt da, aber nicht vollstaendig. */
@@ -102,7 +139,29 @@
      Anbieter zu warten. Ein externer Agent darf den Orchestrator
      niemals unbegrenzt blockieren. */
   var NICHT_BLOCKIEREND = ["STALE_NO_RESULT", "PROVIDER_FAILED",
-    "RESULT_INVALID", "RECOVERY_REQUIRED", "VERIFIED"];
+    "RESULT_INVALID", "RECOVERY_REQUIRED", "VERIFIED",
+    /* Warten auf eine Genehmigung, die wir nicht sehen koennen, ist
+       kein Grund, den Graphen anzuhalten. Der deterministische Autor
+       schreibt weiter. */
+    "WAITING_FOR_EXTERNAL_APPROVAL"];
+
+  /* -------------------------------------------------------------------
+     WAS NIE GELERNT WERDEN DARF
+
+     Diese Zustaende sagen etwas ueber den TRANSPORT und nichts ueber
+     den INHALT. Sie als Misserfolg eines Beitrags zu verbuchen hiesse,
+     einer Hook oder einem Beleg anzulasten, dass ein Mensch eine
+     Genehmigungsabfrage nicht gesehen hat.
+     ------------------------------------------------------------------- */
+  var KEIN_INHALTSURTEIL = ["WAITING_FOR_EXTERNAL_APPROVAL", "STALE_NO_RESULT",
+    "PROVIDER_FAILED", "RECOVERY_REQUIRED"];
+
+  /* Ab wann ist die Wiederholung selbst das Signal?
+
+     Ein einzelner Lauf dauert gemessen 345 s. Meldet der Agent ein
+     ZWEITES Mal STARTED, hat der erste nicht zu Ende gefuehrt — und
+     genau dann passt das Muster auf eine ausstehende Genehmigung. */
+  var WIEDERHOLUNG_ALS_SIGNAL = 2;
 
   /* -------------------------------------------------------------------
      DIE EINZIGE ECHTE MESSUNG
@@ -309,6 +368,30 @@
           startedCount: beobachtung.startedCount, window: "total" });
     }
 
+    /* Die Wiederholung IST das Signal. Sie steht vor den Fristen: ein
+       Lauf, der zum zweiten Mal anfaengt, hat beim ersten Mal nicht
+       zu Ende gefuehrt, und das ist eine Information, die nicht erst
+       nach 58 Minuten gelten soll. */
+    if (beobachtung.startedCount >= WIEDERHOLUNG_ALS_SIGNAL &&
+        !beobachtung.providerError &&
+        (gesamt === null || gesamt <= frist.totalSeconds)) {
+      return fertig("WAITING_FOR_EXTERNAL_APPROVAL",
+        "Der Agent hat " + beobachtung.startedCount + "x STARTED gemeldet, ohne " +
+        "je ein Ergebnis oder einen Fehler zu melden. Ein einzelner Lauf dauert " +
+        "gemessen " + (REFERENZMESSUNGEN[0] ? REFERENZMESSUNGEN[0].seconds : "?") +
+        " s; wer wieder anfaengt, ist beim ersten Mal nicht fertig geworden. " +
+        "Dieses Muster passt auf eine ausstehende Genehmigung der verbundenen " +
+        "GitHub-App in ChatGPT Work. OB eine aussteht, ist von hier aus NICHT " +
+        "feststellbar - GitHub sieht diese Genehmigung nicht. " +
+        "Kein Content-, Evidenz- oder Leistungsfehler und kein Anbieterausfall.",
+        { ageSeconds: Math.round(alter),
+          totalSeconds: (gesamt !== null && gesamt >= 0) ? Math.round(gesamt) : null,
+          startedCount: beobachtung.startedCount,
+          approvalStateObservable: false,
+          ownerActionHint: "In ChatGPT Work pruefen, ob eine Genehmigungsabfrage " +
+            "der verbundenen GitHub-App offen ist." });
+    }
+
     if (beobachtung.startedCount > 0 && alter > frist.seconds) {
       return fertig("STALE_NO_RESULT",
         "Seit der letzten beobachtbaren Aktivitaet sind " + Math.round(alter) +
@@ -352,6 +435,11 @@
     return NICHT_BLOCKIEREND.indexOf(String(state || "")) !== -1;
   }
 
+  /** Darf dieser Zustand als Misserfolg eines INHALTS gelernt werden? */
+  function isContentJudgement(state) {
+    return KEIN_INHALTSURTEIL.indexOf(String(state || "")) === -1;
+  }
+
   var api = {
     STATES: STATES,
     VERLAUF: VERLAUF,
@@ -365,6 +453,9 @@
     lease: lease,
     classify: classify,
     mayProceedWithout: mayProceedWithout,
+    isContentJudgement: isContentJudgement,
+    KEIN_INHALTSURTEIL: KEIN_INHALTSURTEIL,
+    WIEDERHOLUNG_ALS_SIGNAL: WIEDERHOLUNG_ALS_SIGNAL,
     sekundenZwischen: sekundenZwischen
   };
 

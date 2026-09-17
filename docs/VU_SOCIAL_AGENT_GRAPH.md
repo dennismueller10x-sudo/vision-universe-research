@@ -1054,7 +1054,7 @@ echtes PNG erzeugt.
 heute nichts — und zwar mit exakt derselben Signatur wie die
 Produktionsanfrage.
 
-Der Fehler ist **eingabeunabhängig**. Er liegt beim Anbieter.
+Der Fehler ist **eingabeunabhängig**. *(Der ursprüngliche zweite Satz dieses Absatzes lautete „Er liegt beim Anbieter.“ Das war falsch — siehe Abschnitt 32.)*
 
 ### Was damit *nicht* bewiesen ist
 
@@ -1091,3 +1091,86 @@ Der Faktor 3 steht im Quelltext mit seiner Begründung: die beobachtete
 Folge läuft über 86 Minuten, drei Fristen sind mit 173 Minuten
 komfortabel darüber. Ein Experiment, das nur den Prüfling misst und
 nicht das Messgerät, hätte diesen Fehler stehen lassen.
+
+---
+
+## 32. Korrektur: der Agent ist nicht gescheitert, er hat gewartet
+
+Abschnitt 30 schloss: *„Der Fehler ist eingabeunabhängig. Er liegt beim
+Anbieter."* Der erste Satz stimmt. **Der zweite war falsch.**
+
+Der Owner hat in der ChatGPT-Work-Oberfläche beobachtet, dass die
+verbundene GitHub-App eine **Genehmigung** verlangt. Nach *Immer
+zulassen* lief der Auftrag `vu-diag-size-20260917` (PR #103)
+vollständig durch: Hooks, Caption, Visual Brief, integrierte
+Bildgenerierung, Result- und Asset-Commit, `processing.status =
+completed`.
+
+### Die Zeit sagt es am deutlichsten
+
+```
+6. STARTED   18:28:51Z
+Result       18:32:24Z     =  3 min 33 s
+Referenz PR #98                5 min 45 s
+```
+
+Der sechste Anlauf lief in **normaler Zeit** durch. Es gab keinen
+Ausfall, der plötzlich endete — es gab ein Warten, das plötzlich
+aufhörte.
+
+### Meine eigenen Daten sprachen für die Genehmigungs-Hypothese
+
+Das ist der unangenehme Teil. Die Gleichförmigkeit der
+Wiederholungsfolgen über Nutzlasten von 2 891 B bis 11 984 B — mit
+höchstens 1,4 Minuten Abweichung auf einem 36-Minuten-Abstand — habe
+ich als Beweis für einen Anbieterfehler gelesen.
+
+Sie ist genau das, was ein **Warten** erzeugt: die Nutzlast spielt
+keine Rolle, weil der Lauf sie nie erreicht. Dieselbe Beobachtung, die
+bessere Erklärung.
+
+### Was jetzt zusätzlich positiv belegt ist
+
+PR #103 hat **11 984 Bytes** verarbeitet — den größten Brief von allen,
+größer als die Produktionsanfrage mit 11 910 B. Die Größenhypothese ist
+damit nicht nur ausgeschlossen, sondern **positiv widerlegt**.
+
+### Der Zustand, der daraus folgt
+
+`WAITING_FOR_EXTERNAL_APPROVAL`, und der Name ist mit Bedacht gewählt:
+
+| | |
+|---|---|
+| **Signal** | ≥ 2 × `STARTED` ohne Ergebnis und ohne Fehler. Ein einzelner Lauf dauert gemessen 345 s — wer wieder anfängt, ist beim ersten Mal nicht fertig geworden |
+| **Behauptung** | nur, dass dieses Muster auf eine offene Genehmigung **passt** |
+| `approvalStateObservable` | `false` — GitHub sieht diese Genehmigung nicht |
+| **blockiert den Graphen** | nein |
+| **lernbar als Inhaltsurteil** | **nein** |
+
+Der letzte Punkt ist der wichtigste. Es einer Hook oder einem Beleg
+anzulasten, dass ein Mensch eine Genehmigungsabfrage nicht gesehen hat,
+wäre die schlimmste Art von gelerntem Unsinn: künftige Inhalte würden
+nach einem Kriterium aussortiert, das mit Inhalt nichts zu tun hat.
+`isContentJudgement()` schließt `WAITING_FOR_EXTERNAL_APPROVAL`,
+`STALE_NO_RESULT`, `PROVIDER_FAILED` und `RECOVERY_REQUIRED`
+ausdrücklich aus.
+
+### Und eine Folge für den Wiederanlauf
+
+Steht ein Vorgang auf `WAITING_FOR_EXTERNAL_APPROVAL`, **verweigert**
+`recover-creative-request.mjs` den nächsten Anlauf. Ein zweiter Versuch
+erzeugte sonst eine **zweite wartende Anfrage** und verdoppelte das
+Problem. Der nächste Schritt ist dort kein technischer, sondern ein
+Blick in die Work-Oberfläche.
+
+### Was weiterhin offen ist
+
+Warum D1 und D3 nicht ebenfalls durchliefen, obwohl sie im selben
+Zeitfenster liefen und *Immer zulassen* gewählt war. Denkbar ist, dass
+die Genehmigung pro Lauf und nicht global greift. Das ist **nicht
+geprüft** und wird hier nicht behauptet.
+
+`STALE_NO_RESULT` gilt deshalb erst, wenn auch das **Gesamtfenster**
+abgelaufen ist. „Stale" heißt „es kommt nichts mehr" — und PR #103 hat
+gezeigt, dass nach sechs stillen Anläufen sehr wohl noch etwas kommen
+kann.

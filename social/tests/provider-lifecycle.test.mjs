@@ -90,9 +90,14 @@ test("PL8 · STALE_NO_RESULT ist NICHT endgueltig", () => {
   assert.equal(z.terminal, false);
 });
 
-test("PL9 · Innerhalb der Frist bleibt es IN_FLIGHT", () => {
+test("PL9 · Ein EINZELNER Lauf bleibt innerhalb der Frist IN_FLIGHT", () => {
+  /* Dieser Test forderte frueher IN_FLIGHT bei SECHS Anlaeufen. Das war
+     die Lesart vor der Owner-Beobachtung: Wiederholung galt als
+     normales Warten. Seit PR 103 ist klar, dass die Wiederholung selbst
+     das Signal ist - der Test prueft jetzt den Fall, fuer den er
+     gedacht war: einen einzelnen laufenden Anlauf. */
   const z = L.classify(
-    { lastActivityAt: "2026-09-17T13:11:37Z", startedCount: 6 },
+    { lastActivityAt: "2026-09-17T13:11:37Z", startedCount: 1 },
     { now: "2026-09-17T13:30:00Z" });
   assert.equal(z.state, "IN_FLIGHT");
   assert.equal(z.blocking, true);
@@ -263,26 +268,126 @@ test("PL22 · Das Gesamtfenster ist weiter als eine beobachtete Backoff-Folge", 
   assert.equal(f.totalFactor, 3);
 });
 
-test("PL23 · Innerhalb beider Fenster bleibt es IN_FLIGHT", () => {
-  /* Der reale Stand von D3 kurz nach dem vierten STARTED. */
+test("PL23 · Der reale Stand von D3 ist Warten, nicht Laufen", () => {
+  /* Vier STARTED ohne Ergebnis. Frueher las dieser Test IN_FLIGHT -
+     genau die Lesart, die PR 103 widerlegt hat. */
   const z = L.classify({
     firstActivityAt: "2026-09-17T17:16:36Z",
     lastActivityAt: "2026-09-17T17:45:03Z",
     startedCount: 4
   }, { now: "2026-09-17T18:00:00Z" });
-  assert.equal(z.state, "IN_FLIGHT");
-  assert.equal(z.window, "quiet");
+  assert.equal(z.state, "WAITING_FOR_EXTERNAL_APPROVAL");
+  assert.equal(z.blocking, false);
 });
 
-test("PL24 · Das Ruhefenster wirkt weiterhin fuer sich", () => {
-  /* PR 101: Wiederholungen hoerten auf, seither Stille. Das
-     Gesamtfenster war da noch nicht ausgeschoepft - das Ruhefenster
-     muss allein greifen. */
-  const z = L.classify({
+test("PL24 · STALE erst, wenn auch das Gesamtfenster durch ist", () => {
+  /* Frueher stand hier: nach der Ruhefrist ist es STALE. PR 103 hat
+     gezeigt, dass nach sechs stillen Anlaeufen sehr wohl noch ein
+     Ergebnis kommen kann - sobald die Genehmigung erteilt ist.
+
+     "STALE" heisst "es kommt nichts mehr". Diese Behauptung ist erst
+     zulaessig, wenn auch das Gesamtfenster abgelaufen ist. */
+  const nochWartend = L.classify({
     firstActivityAt: "2026-09-17T11:45:48Z",
     lastActivityAt: "2026-09-17T13:11:37Z",
     startedCount: 6
   }, { now: "2026-09-17T14:30:00Z" });
-  assert.equal(z.state, "STALE_NO_RESULT");
-  assert.equal(z.window, "quiet");
+  assert.equal(nochWartend.state, "WAITING_FOR_EXTERNAL_APPROVAL");
+
+  const wirklichStale = L.classify({
+    firstActivityAt: "2026-09-17T11:45:48Z",
+    lastActivityAt: "2026-09-17T13:11:37Z",
+    startedCount: 6
+  }, { now: "2026-09-17T18:45:00Z" });
+  assert.equal(wirklichStale.state, "STALE_NO_RESULT");
+});
+
+/* ------------------------------------------------------------------ */
+/* DIE KORREKTUR: WARTEN IST KEIN AUSFALL                              */
+/* ------------------------------------------------------------------ */
+
+test("PL25 · Wiederholte Anlaeufe heissen Warten, nicht Ausfall", () => {
+  /* Ich hatte aus vier gleichfoermigen Wiederholungsfolgen auf einen
+     Anbieterausfall geschlossen. Der Owner hat beobachtet, dass die
+     verbundene GitHub-App in ChatGPT Work eine Genehmigung verlangt —
+     und nach "Immer zulassen" lief D2 durch, 3,5 min nach seiner
+     sechsten STARTED-Meldung. Also in normaler Laufzeit.
+
+     Die Gleichfoermigkeit ueber voellig verschiedene Nutzlasten hinweg
+     ist genau das, was ein Warten erzeugt: die Nutzlast spielt keine
+     Rolle, weil der Lauf sie nie erreicht. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T17:04:19Z",
+    lastActivityAt: "2026-09-17T18:30:06Z",
+    startedCount: 6
+  }, { now: "2026-09-17T18:45:00Z" });
+
+  assert.equal(z.state, "WAITING_FOR_EXTERNAL_APPROVAL");
+  assert.notEqual(z.state, "PROVIDER_FAILED");
+});
+
+test("PL26 · Die Wiederholung ist das Signal, nicht die Frist", () => {
+  /* Ein einzelner Lauf dauert gemessen 345 s. Wer ein zweites Mal
+     anfaengt, ist beim ersten Mal nicht fertig geworden - und das gilt
+     sofort und nicht erst nach 58 Minuten. */
+  const frueh = L.classify({
+    firstActivityAt: "2026-09-17T18:00:00Z",
+    lastActivityAt: "2026-09-17T18:06:00Z",
+    startedCount: 2
+  }, { now: "2026-09-17T18:08:00Z" });
+  assert.equal(frueh.state, "WAITING_FOR_EXTERNAL_APPROVAL");
+
+  /* Ein einzelner frischer Lauf bleibt IN_FLIGHT. */
+  const einzeln = L.classify({
+    firstActivityAt: "2026-09-17T18:00:00Z",
+    lastActivityAt: "2026-09-17T18:00:00Z",
+    startedCount: 1
+  }, { now: "2026-09-17T18:03:00Z" });
+  assert.equal(einzeln.state, "IN_FLIGHT");
+});
+
+test("PL27 · Der Zustand behauptet nicht, was er nicht sehen kann", () => {
+  /* GitHub sieht diese Genehmigung nicht. Ein Zustand, der eine
+     ausstehende Genehmigung als Tatsache meldet, waere eine Behauptung
+     ueber eine fremde Oberflaeche. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T18:00:00Z",
+    lastActivityAt: "2026-09-17T18:10:00Z",
+    startedCount: 3
+  }, { now: "2026-09-17T18:12:00Z" });
+
+  assert.equal(z.approvalStateObservable, false);
+  assert.match(z.explanation, /NICHT feststellbar/);
+  assert.ok(z.ownerActionHint);
+});
+
+test("PL28 · Warten blockiert den Graphen nicht", () => {
+  assert.equal(L.mayProceedWithout("WAITING_FOR_EXTERNAL_APPROVAL"), true);
+});
+
+test("PL29 · Warten wird NIE als Inhaltsurteil gelernt", () => {
+  /* Der Kern der Owner-Vorgabe. Es einer Hook oder einem Beleg
+     anzulasten, dass ein Mensch eine Genehmigungsabfrage nicht gesehen
+     hat, waere die schlimmste Art von gelerntem Unsinn: sie wuerde
+     kuenftige Inhalte nach einem Kriterium aussortieren, das mit
+     Inhalt nichts zu tun hat. */
+  assert.equal(L.isContentJudgement("WAITING_FOR_EXTERNAL_APPROVAL"), false);
+  assert.equal(L.isContentJudgement("STALE_NO_RESULT"), false);
+  assert.equal(L.isContentJudgement("PROVIDER_FAILED"), false);
+  assert.equal(L.isContentJudgement("RECOVERY_REQUIRED"), false);
+
+  /* Was der Inhalt zu verantworten hat, bleibt lernbar. */
+  assert.equal(L.isContentJudgement("RESULT_INVALID"), true);
+  assert.equal(L.isContentJudgement("VERIFIED"), true);
+});
+
+test("PL30 · Ein gemeldeter Fehler bleibt ein Fehler", () => {
+  /* Die Wiederholung darf einen echten Fehlerbericht nicht ueberdecken. */
+  const z = L.classify({
+    firstActivityAt: "2026-09-17T18:00:00Z",
+    lastActivityAt: "2026-09-17T18:10:00Z",
+    startedCount: 4,
+    providerError: "quota exceeded"
+  }, { now: "2026-09-17T18:12:00Z" });
+  assert.equal(z.state, "PROVIDER_FAILED");
 });
