@@ -68,6 +68,8 @@ const B = String(arg("--b", "NVDA")).toUpperCase();
    im Stromnachweis. */
 const MIN_EVENTS = 3;
 
+/* Messfenster: 17.09.2026, regulaere US-Sitzung ab 09:30 New York. */
+
 function jetzt() { return Date.now(); }
 function schlafen(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
