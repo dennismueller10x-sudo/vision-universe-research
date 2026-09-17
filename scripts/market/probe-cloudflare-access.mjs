@@ -90,6 +90,15 @@ const bericht = {
   auftrag: "Owner-Update 17.09.2026: vorhandene Secrets nutzen, keine neuen erzeugen",
   checkedAt: new Date().toISOString(),
   note: "Dieser Bericht enthaelt keine Werte. Nur Namen, Formen und Rechte.",
+  /* Wo gemessen wurde. Ausserhalb von Actions gibt es keine Secrets -
+     ein Bericht von dort sagt "alles fehlt" und meint "hier konnte
+     nichts stehen". Ohne diese Zeile waere er spaeter als Befund zu
+     lesen, und das waere er nicht. */
+  environment: process.env.GITHUB_ACTIONS === "true" ? "github-actions" : "local",
+  environmentNote: process.env.GITHUB_ACTIONS === "true"
+    ? "In Actions - hier liegen die Secrets, der Befund gilt."
+    : "AUSSERHALB VON ACTIONS gelaufen. Secrets gibt es dort nicht; " +
+      "'fehlt' heisst hier nur 'nicht sichtbar', nicht 'nicht vorhanden'.",
   secrets: [],
   accountId: { derivable: false, source: null, reason: null, form: null },
   verdict: null,
