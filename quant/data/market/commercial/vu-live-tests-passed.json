@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "vu-live-tests-1.0.0",
+  "checkedAt": "2026-09-17T13:29:43.088Z",
+  "allPassed": true,
+  "total": 218,
+  "failed": 0,
+  "suites": [
+    {
+      "suite": "subscription-manager",
+      "pattern": "quant/tests/subscription-manager.test.mjs",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "free-budget",
+      "pattern": "quant/tests/free-budget.test.mjs",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "worker/vu-live",
+      "pattern": "worker/tests/vu-live.test.mjs",
+      "tests": 32,
+      "pass": 32,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "discover/live-stream",
+      "pattern": "discover/tests/live-stream.test.mjs",
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "discover/live-hub",
+      "pattern": "discover/tests/live-hub.test.mjs",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "realtime-engine",
+      "pattern": "quant/tests/realtime-engine.test.mjs",
+      "tests": 34,
+      "pass": 34,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "realtime-integration",
+      "pattern": "quant/tests/realtime-integration.test.mjs",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "realtime-sessions",
+      "pattern": "quant/tests/realtime-sessions.test.mjs",
+      "tests": 29,
+      "pass": 29,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "realtime-capability",
+      "pattern": "quant/tests/realtime-capability.test.mjs",
+      "tests": 25,
+      "pass": 25,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "realtime-matrix",
+      "pattern": "quant/tests/realtime-matrix.test.mjs",
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "suite": "tiingo-wiring",
+      "pattern": "quant/tests/verify-tiingo-realtime-wiring.test.mjs",
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "exitCode": 0,
+      "ok": true
+    }
+  ],
+  "covers": [
+    "Abriss der Anbieterverbindung (VL-13, LS-8)",
+    "Ablehnung durch den Budgetwaechter (VL-20, LS-9)",
+    "erschoepftes Kontingent mit Rueckfall (VL-21, LS-10)",
+    "geschlossene Boerse: Wochenende, Feiertag, Nacht (VL-15, VL-16, LS-5)",
+    "unerreichbarer Worker: Client verhaelt sich wie ohne Strom (LS-1, LS-8)",
+    "Referenzzaehlung: 100 Zuschauer = 1 Abonnement (VL-3)",
+    "Nachlauf und Rueckkehr ohne neuen Verbindungsaufbau (VL-8, VL-9)",
+    "kein Schluessel in Nachricht, Zustandsbericht oder Protokoll (VL-27, VL-31)"
+  ]
+}

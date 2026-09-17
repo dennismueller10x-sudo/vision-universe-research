@@ -174,3 +174,20 @@ test("FB-15 ein leeres Restfenster verlangt keine Vorausschau", () => {
   assert.equal(f.projectedMessages, 0);
   assert.equal(b.mayAdd("X", 49).allow, true, "bei geschlossener Boerse wird grundlos abgelehnt");
 });
+
+test("FB-16 die Annahme hinter der Reserve steht im Bericht, nicht in einem Kommentar", () => {
+  /* Owner-Entscheidung vom 17.09.2026: der andere Worker im selben
+     Konto wird durch die Reserve abgedeckt, sein Verbrauch wird nicht
+     gemessen. Eine Annahme, die nur im Quelltext steht, ist beim
+     naechsten Zwischenfall nicht auffindbar - deshalb faehrt jeder
+     Schnappschuss sie mit. */
+  const { b } = baue();
+  const r = b.snapshot().reserveRationale;
+  assert.equal(r.accountWideLimits, true, "die Freigrenzen gelten je Konto, nicht je Worker");
+  assert.equal(r.otherWorkersMeasured, false, "es waere gemessen oder es ist es nicht");
+  assert.equal(r.covers.some((x) => /anderen Workers/.test(x)), true);
+  assert.match(r.risk, /Rueckfall auf den\s+Snapshot-Pfad|Snapshot-Pfad/);
+  assert.match(r.risk, /keine Rechnung/,
+    "der Ausgang ist ein Ausfall, kein Kostenfall - und das muss dastehen");
+  assert.equal(b.snapshot().limits.reserveRequests, FB.DEFAULT_RESERVE_REQUESTS);
+});

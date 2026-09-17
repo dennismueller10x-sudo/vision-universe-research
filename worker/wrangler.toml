@@ -29,6 +29,13 @@ name = "vu-live"
 main = "src/index.mjs"
 compatibility_date = "2026-09-17"
 
+# Der Endpunkt fuer den Smoke-Test: <name>.<subdomain>.workers.dev.
+# Kostenlos, und er beruehrt keine Domain. Der bevorzugte Endpunkt
+# live.visionuniverse.de kommt danach als eigener Schritt dazu (siehe
+# unten) - erst wird bewiesen, dass die Laufzeit steht, dann bekommt sie
+# einen Namen.
+workers_dev = true
+
 # Kein nodejs_compat: die geliehenen Engines sind reines ES5 ohne
 # Node-Bausteine. Jede Kompatibilitaetsfahne mehr ist Startzeit, die
 # jeder Verbindungsaufbau bezahlt.

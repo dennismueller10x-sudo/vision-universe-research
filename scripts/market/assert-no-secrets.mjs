@@ -17,7 +17,7 @@
 
    Beendet sich mit Code 1, sobald etwas gefunden wird.
    ========================================================================= */
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -132,3 +132,22 @@ if (findings.length) {
 }
 
 console.log("  Keine Zugangsdaten gefunden.");
+
+/* --record hinterlaesst eine Marke mit Zeitstempel. Das Deployment-Tor
+   beruft sich darauf; ein Schritt, der einmal gruen war, hinterlaesst
+   sonst nichts, was ein spaeterer Lauf pruefen koennte. */
+if (process.argv.includes("--record")) {
+  const zielDir = join(root, "quant", "data", "market", "commercial");
+  mkdirSync(zielDir, { recursive: true });
+  writeFileSync(join(zielDir, "secret-scan-passed.json"), JSON.stringify({
+    schemaVersion: "secret-scan-1.0.0",
+    checkedAt: new Date().toISOString(),
+    clean: true,
+    files: files.length,
+    targets: TARGETS.map((t2) => t2.slice(root.length + 1)),
+    envValuesCompared: secrets.length,
+    note: "Kein Fund heisst: weder ein Wert aus der Umgebung noch ein schluesselartiges Muster. " +
+          "Der Fund selbst wuerde nie ausgegeben - nur Datei und Musterart."
+  }, null, 2) + "\n");
+  console.log("  Marke geschrieben: quant/data/market/commercial/secret-scan-passed.json");
+}

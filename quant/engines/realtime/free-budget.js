@@ -62,10 +62,62 @@
             "abgerufen 2026-09-17"
   };
 
-  /* Was NICHT fuer Anbieternachrichten verplant wird: Clientverbindungen,
-     Abonnementwechsel, Wecker. Eine Reserve, kein Schaetzwert - sie wird
-     mitgezaehlt und nur dann angetastet, wenn sie wirklich anfaellt. */
+  /* DIE RESERVE - UND WAS SIE SEIT DEM 17.09.2026 AUSSERDEM TRAGEN MUSS
+
+     Urspruenglich deckte sie, was neben den Anbieternachrichten anfaellt:
+     Clientverbindungen, Abonnementwechsel, Wecker. Das tut sie weiter.
+
+     Dazu kommt eine Annahme, die ausdruecklich benannt gehoert, weil sie
+     der einzige verbliebene Vorbehalt gegen die Nullkostenzusage ist:
+
+       DIE FREIGRENZEN GELTEN JE KONTO, NICHT JE WORKER.
+
+     Im Cloudflare-Konto von Vision Universe liegt bereits ein weiteres
+     Worker-Skript (gemessen am 17.09.2026,
+     quant/data/market/commercial/cloudflare-scope-probe.json). Es
+     verbraucht aus denselben 100.000 Anfragen je Tag. Dieser Waechter
+     SIEHT DIESEN VERBRAUCH NICHT - er zaehlt nur den eigenen.
+
+     Owner-Entscheidung vom 17.09.2026: fuer V1 wird der andere Worker
+     durch die verbleibende Sicherheitsreserve abgedeckt. Kein
+     zusaetzliches Account Analytics:Read, kein Messen seines
+     Verbrauchs.
+
+     Was das praktisch heisst, ohne Beschoenigung:
+
+       - 10.000 Anfragen am Tag sind fuer vu-live nicht verplant.
+       - Verbraucht der andere Worker weniger als das, haelt die Zusage
+         mit Sicherheitsabstand.
+       - Verbraucht er mehr, kann die Kontogrenze fallen, BEVOR dieser
+         Waechter PROTECT meldet - denn er sieht ja nur seine eigenen
+         85 Prozent.
+       - Der Ausgang ist auch dann kein Kostenfall, sondern ein
+         Ausfall: der kostenlose Tarif schickt keine Rechnung, er
+         schaltet ab, und der Browser faellt auf den Snapshot-Pfad
+         zurueck.
+
+     Die Annahme ist also kostenseitig sicher und verfuegbarkeitsseitig
+     eine Wette. Sie steht hier, damit sie beim naechsten Zwischenfall
+     nicht gesucht werden muss. */
   var DEFAULT_RESERVE_REQUESTS = 10000;
+
+  /* Was die Reserve laut Owner-Entscheidung mitdeckt. Steht im
+     Schnappschuss, damit jeder Bericht die Annahme mitfuehrt statt sie
+     in einer Kommentarzeile zu verstecken. */
+  var RESERVE_RATIONALE = {
+    decidedBy: "Owner",
+    decidedAt: "2026-09-17",
+    covers: ["Clientverbindungen", "Abonnementwechsel", "Wecker",
+             "den Verbrauch des anderen Workers im selben Konto"],
+    accountWideLimits: true,
+    otherWorkersMeasured: false,
+    note: "Die Freigrenzen gelten je Konto, nicht je Worker. Dieser Waechter zaehlt nur den " +
+          "eigenen Verbrauch; der andere Worker im Konto wird durch die Reserve abgedeckt, " +
+          "sein tatsaechlicher Verbrauch ist nicht gemessen (kein Account Analytics:Read).",
+    risk: "Verbraucht der andere Worker mehr als die Reserve, kann die Kontogrenze fallen, bevor " +
+          "dieser Waechter PROTECT meldet. Der Ausgang ist dann ein Ausfall mit Rueckfall auf den " +
+          "Snapshot-Pfad, keine Rechnung - der kostenlose Tarif schaltet ab, statt abzurechnen."
+  };
 
   /* Gemessen am 16.09.2026: der lebhafteste Titel des Bandes. */
   var MEASURED_MAX_EVENTS_PER_SECOND = 1.7;
@@ -245,6 +297,7 @@
           duration: Math.round(a.duration * 1000) / 1000
         },
         assumedEventsPerSecondPerSymbol: annahme,
+        reserveRationale: RESERVE_RATIONALE,
         source: limits.quelle
       };
     }
@@ -272,6 +325,7 @@
   var api = {
     VERSION: VERSION, FREE_TIER: FREE_TIER, VERDICTS: VERDICTS,
     DEFAULT_RESERVE_REQUESTS: DEFAULT_RESERVE_REQUESTS,
+    RESERVE_RATIONALE: RESERVE_RATIONALE,
     MEASURED_MAX_EVENTS_PER_SECOND: MEASURED_MAX_EVENTS_PER_SECOND,
     create: create
   };

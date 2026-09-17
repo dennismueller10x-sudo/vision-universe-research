@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "deploy-preconditions-1.0.0",
+  "auftrag": "Owner-Freigabe 17.09.2026: Deployment nur bei gruenen Nachweisen",
+  "checkedAt": "2026-09-17T13:30:39.833Z",
+  "maxAgeHours": 24,
+  "conditions": [
+    {
+      "name": "ZERO_COST",
+      "status": "FAIL",
+      "reason": "Keine Laststufen im Bericht.",
+      "evidence": null
+    },
+    {
+      "name": "TIINGO_DYNAMIC_SUBSCRIPTION",
+      "status": "FAIL",
+      "reason": "Nicht beantwortet (UNKNOWN, marketClosed:PRE). Der Betriebsmodus stuende auf einer Vermutung.",
+      "evidence": {
+        "result": "UNKNOWN",
+        "session": "PRE",
+        "evidence": null
+      }
+    },
+    {
+      "name": "50_ACTIVE_SYMBOL_LOAD",
+      "status": "FAIL",
+      "reason": "Die Stufe mit 50 Titeln fehlt.",
+      "evidence": null
+    },
+    {
+      "name": "REALTIME_FALLBACK",
+      "status": "PASS",
+      "reason": "218 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
+      "evidence": {
+        "total": 218,
+        "suites": [
+          {
+            "suite": "subscription-manager",
+            "pattern": "quant/tests/subscription-manager.test.mjs",
+            "tests": 21,
+            "pass": 21,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "free-budget",
+            "pattern": "quant/tests/free-budget.test.mjs",
+            "tests": 16,
+            "pass": 16,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "worker/vu-live",
+            "pattern": "worker/tests/vu-live.test.mjs",
+            "tests": 32,
+            "pass": 32,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "discover/live-stream",
+            "pattern": "discover/tests/live-stream.test.mjs",
+            "tests": 14,
+            "pass": 14,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "discover/live-hub",
+            "pattern": "discover/tests/live-hub.test.mjs",
+            "tests": 9,
+            "pass": 9,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "realtime-engine",
+            "pattern": "quant/tests/realtime-engine.test.mjs",
+            "tests": 34,
+            "pass": 34,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "realtime-integration",
+            "pattern": "quant/tests/realtime-integration.test.mjs",
+            "tests": 21,
+            "pass": 21,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "realtime-sessions",
+            "pattern": "quant/tests/realtime-sessions.test.mjs",
+            "tests": 29,
+            "pass": 29,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "realtime-capability",
+            "pattern": "quant/tests/realtime-capability.test.mjs",
+            "tests": 25,
+            "pass": 25,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "realtime-matrix",
+            "pattern": "quant/tests/realtime-matrix.test.mjs",
+            "tests": 15,
+            "pass": 15,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          },
+          {
+            "suite": "tiingo-wiring",
+            "pattern": "quant/tests/verify-tiingo-realtime-wiring.test.mjs",
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "exitCode": 0,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "SECRET_SCAN",
+      "status": "PASS",
+      "reason": "24758 Dateien geprueft, keine Zugangsdaten.",
+      "evidence": {
+        "files": 24758
+      }
+    },
+    {
+      "name": "PAID_SERVICES_ENABLED",
+      "status": "PASS",
+      "reason": "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt.",
+      "evidence": {
+        "found": [],
+        "sqliteBacked": true
+      }
+    }
+  ],
+  "access": {
+    "ok": true,
+    "tokenFoundAs": "CLOUDFLARE_API_TOKEN",
+    "accountIdDerivable": true,
+    "scopeVerdict": "WORKERS_READABLE"
+  },
+  "verdict": "NO_GO",
+  "note": "PASS bei TIINGO_DYNAMIC_SUBSCRIPTION heisst: die Frage wurde beantwortet. Ein Nein ist der Fall, fuer den der Modus reconnect gebaut ist; UNKNOWN und INCONCLUSIVE gehen nicht durch."
+}
