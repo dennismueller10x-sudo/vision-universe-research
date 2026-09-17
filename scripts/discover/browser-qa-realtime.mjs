@@ -72,6 +72,7 @@ const OUT = arg("out", join(root, "quant", "data", "market", "commercial"));
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 
 const sitzung = MarketHours.sessionAt(Date.now(), { calendar: kalender, exchange: "XNYS" });
+/* Messfenster 17.09.2026 */
 
 const bericht = {
   schemaVersion: "vu-realtime-browser-qa-1.0.0",
