@@ -385,6 +385,16 @@
      Titel, die gerade offen sind - in der Regel einen.
      ======================================================================= */
 
+  /* Die Ortszeit der Boerse zu einem Zeitstempel, in der Form, in der
+     der Freshness-Vertrag sie erwartet ("13:42"). */
+  function ortszeit(ms, zone) {
+    try {
+      return new Intl.DateTimeFormat("de-DE", { timeZone: zone || "America/New_York",
+                                                hour: "2-digit", minute: "2-digit", hour12: false })
+        .format(new Date(ms));
+    } catch (err) { return null; }
+  }
+
   function stromKonfig() { return lv.cfg || {}; }
   function frischMs() { return stromKonfig().freshSeconds ? stromKonfig().freshSeconds * 1000 : LIVE_FRESH_MS; }
   function stromFabrik() { return lv.factory || global.WebSocket || null; }
@@ -616,6 +626,20 @@
       Object.keys(p.snapshot).forEach(function (k) { sicht[k] = p.snapshot[k]; });
       sicht.asOf = p.live.at;
       sicht.lastBarTimestamp = p.live.at;
+      /* Die Ortszeit des Ticks, nicht die des Snapshots. Ohne diese
+         Zeile stand am Chart die Uhrzeit des letzten Snapshots, waehrend
+         fortlaufend Kurse hereinkamen - gemessen am 17.09.2026: "Heute ·
+         Stand 13:20" bei 38 Ticks in sechzig Sekunden. */
+      sicht.asOfLocal = ortszeit(w.at, p.snapshot.timezone);
+      /* UND DAS IST DIE ZUSAGE: es laeuft wirklich ein Strom.
+
+         Der Ingest schreibt in jeden Snapshot isLive: false, weil ein
+         Snapshot kein Strom ist. Hier steht true, und nur hier - nach
+         der Pruefung oben, dass die Boerse offen und der juengste Tick
+         juenger als frischMs ist. Der Freshness-Vertrag macht daraus
+         "Markt geoeffnet · Live". */
+      sicht.isLive = true;
+      sicht.isDelayed = false;
       var fr = freshness(sicht, p.resolution);
       if (fr) {
         p.snapshotFreshness = p.freshness;

@@ -258,7 +258,25 @@
       else label = "Stand " + tagWort(sd, r.localDate, true) + " · nicht aktuell";
     } else if (state === "LIVE") {
       tone = "live";
-      label = "Heute · " + (s && s.isLive === true ? "live" : "Stand " + (stand || r.localTime.slice(0, 5)));
+      /* ZWEI ARTEN VON "LIVE", UND SIE HEISSEN VERSCHIEDEN
+
+         Der Snapshot-Pfad liefert eine Reihe, die im Sitzungstakt
+         nachgezogen wird: aktuell, aber nicht fortlaufend. Sie sagt
+         "Heute · Stand 13:20" und nennt damit die Uhrzeit, auf die sie
+         sich berufen kann.
+
+         Ein fortlaufender Strom ist etwas anderes. isLive === true setzt
+         nur, wer wirklich einen hat - der Ingest schreibt in jeden
+         Snapshot isLive: false. Dann, und nur dann, steht hier das Wort,
+         das der Nutzer als Zusage liest.
+
+         Owner-Vorgabe vom 17.09.2026: "Die UI darf nur dann anzeigen
+         'Markt geoeffnet · Live', wenn tatsaechlich ein frischer
+         Realtime-State vorliegt." Die Bedingung dafuer steht in dieser
+         Zeile und nirgends sonst. */
+      label = (s && s.isLive === true)
+        ? "Markt geöffnet · Live"
+        : "Heute · Stand " + (stand || r.localTime.slice(0, 5));
     } else if (kind === "daily") {
       tone = out.partial ? "pending" : "complete";
       var naechster = out.expectedSessionDate ? TS.WOCHENTAGE[weekdayOf(out.expectedSessionDate)] : null;

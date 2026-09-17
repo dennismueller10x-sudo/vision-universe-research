@@ -172,6 +172,8 @@ test("LS-4 ein alter Tick bestimmt die Beschriftung nicht", async () => {
   h.sockets[0].oeffnen();
   h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
   const vorher = a.letzte().label.label;
+  assert.equal(vorher, "Markt geöffnet · Live",
+    "bei frischem Strom ist das die Zusage, die der Nutzer liest");
 
   /* Fuenf Minuten ohne Tick. Das Etikett widerruft sich selbst - dafuer
      gibt es den Verfall-Zeitgeber; ohne ihn bliebe "Live" stehen, bis der
@@ -182,8 +184,9 @@ test("LS-4 ein alter Tick bestimmt die Beschriftung nicht", async () => {
   assert.equal(p.live.fresh, false, "ein Titel, der nicht handelt, ist kein Ausfall - aber auch nicht live");
   assert.equal(p.live.price, 123.45, "die letzte bekannte Zahl bleibt sichtbar, mit ihrem Alter");
   assert.equal(p.live.ageMs, 300000);
-  assert.equal(p.label.label, vorher.replace("10:00", "10:00"), "es gilt weiter die Beschriftung des Snapshots");
-  assert.equal(p.label.label.indexOf("Stand") !== -1, true);
+  assert.equal(p.label.label, "Heute · Stand 10:00",
+    "das Etikett faellt auf die Beschriftung des Snapshots zurueck - mit dessen Uhrzeit");
+  assert.notEqual(p.label.label, vorher, "und es widerruft sich wirklich");
 });
 
 test("LS-5 bei geschlossener Boerse wird gar nicht erst verbunden", async () => {
@@ -239,10 +242,21 @@ test("LS-8 ein Abriss faellt auf den Snapshot zurueck und versucht es erneut", a
   assert.equal(p.live.state, "RECONNECTING");
   assert.equal(p.live.reason, "disconnected");
   assert.equal(p.snapshot.points.length, 7, "der Snapshot-Pfad ist unberuehrt");
-  assert.equal(p.label.label.indexOf("Stand") !== -1, true, "und seine Beschriftung gilt wieder");
 
+  /* Unmittelbar nach dem Abriss ist die letzte Zahl null Sekunden alt.
+     Sie als veraltet zu beschriften waere genauso falsch wie sie ewig
+     als live zu fuehren - das Etikett haengt am ALTER des Kurses, nicht
+     am Zustand der Leitung. Der Widerruf kommt mit dem Verfall. */
+  assert.equal(p.label.label, "Markt geöffnet · Live", "null Sekunden alt ist frisch");
+
+  h.vor(95000);
   h.feuere("timeout");
-  assert.equal(h.protokoll.opens, 2, "es wird erneut versucht");
+  const spaeter = a.letzte();
+  assert.equal(spaeter.live.fresh, false);
+  assert.equal(spaeter.label.label.indexOf("Stand") !== -1, true,
+    "nach dem Verfall gilt wieder die Beschriftung des Snapshots");
+
+  assert.equal(h.protokoll.opens >= 2, true, "und es wird erneut versucht");
 });
 
 test("LS-9 eine Ablehnung wird benannt, nicht verschwiegen", async () => {
