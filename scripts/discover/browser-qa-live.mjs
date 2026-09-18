@@ -133,7 +133,17 @@ const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index()
 await d.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" }); await warten(d, 1500);
 ok("Aktienseite: 1T ist Standard", (await d.locator('.dx-tf button[aria-pressed="true"]').first().textContent()) === "1T");
 ok("Aktienseite: Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-chart .dx-micro-axis").count()) >= 3);
-ok("Aktienseite: Beschriftung mit Stand und Quelle", /Stand|Schluss|Letzter Handelstag/.test(await d.locator(".dx-intraday-note").textContent()));
+/* Der Zustand des Tagesverlaufs muss auf der Seite stehen - aber nicht
+   zwingend in der Fussnote. Seit V4.1 traegt ihn die Statuszeile ueber
+   dem Chart ("Markt geoeffnet · Live", "Letzter Handelstag · Donnerstag",
+   "Heute · Stand 13:20 · nicht aktuell"), und die Fussnote sagt nur dann
+   etwas dazu, wenn es ueber den Zustand hinaus etwas zu sagen gibt.
+   Geprueft wird deshalb der Block, den ein Leser sieht, nicht ein
+   einzelner Knoten darin. */
+const zustandstext = (await d.locator(".dx-chart-hero-meta").textContent()) + " " +
+                     (await d.locator(".dx-intraday-note").textContent());
+ok("Aktienseite: Beschriftung mit Stand und Quelle",
+   /Stand|schluss|Schluss|Letzter Handelstag|Live/.test(zustandstext), zustandstext.trim().slice(0, 120));
 /* V4 §13: 1W aus der Tagesreihe (sieben Kalendertage), 5T gibt es nicht. */
 ok("Aktienseite: 1W vorhanden, 5T entfaellt", (await d.locator('.dx-tf button', { hasText: /^1W$/ }).count()) === 1 && (await d.locator('.dx-tf button', { hasText: /^5T$/ }).count()) === 0);
 ok("Aktienseite: Zeitraeume 1T 1W 1M 6M 1J 5J Max", (await d.evaluate(() => [...document.querySelectorAll(".dx-tf button")].map((b) => b.textContent).join(" "))) === "1T 1W 1M 6M 1J 5J Max");
