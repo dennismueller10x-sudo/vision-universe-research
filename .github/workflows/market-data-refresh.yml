@@ -155,11 +155,11 @@ jobs:
           key: discover-market-cache-${{ github.run_id }}
 
       - name: Commit und Push
-        # --autostash: die Regressionssuite (issuer-master.test.mjs) baut den
-        # Emittentenstand in die echte Ablage und laesst zwei Dateien mit neuem
-        # Zeitstempel ungestaged zurueck; ohne Autostash verweigert git das
-        # Rebase ("You have unstaged changes") und der Lauf verliert seinen
-        # Commit (Lauf 34987245529).
+        # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
+        # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
+        # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um
+        # main (Lauf 35351616026). Siebzig Minuten Abruf duerfen nicht an
+        # einer Sekunde scheitern.
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -173,8 +173,7 @@ jobs:
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else
             git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
-            git pull --rebase --autostash
-            git push
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung

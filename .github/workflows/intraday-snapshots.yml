@@ -135,8 +135,7 @@ jobs:
             echo "Keine neuen Snapshots."
           else
             git commit -m "Intraday-Snapshots: ${{ steps.scope.outputs.scope }} ($(node -e 'const s=require("./quant/data/market/intraday/status.json");console.log(s.session.sessionDate+" "+s.marketStateAtRun+", "+s.summary.written+" geschrieben, "+s.summary.requests+" Anfragen")'))"
-            git pull --rebase
-            git push
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung
