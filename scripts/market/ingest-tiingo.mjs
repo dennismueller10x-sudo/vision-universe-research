@@ -386,7 +386,22 @@ for (const security of SECURITIES) {
    * grosszuegiger: jetzt wird die Fortsetzung wirklich geprueft. */
   const gespeichert = store.readBars(id);
   const anschluss = (gespeichert && Array.isArray(gespeichert.bars)) ? gespeichert.bars.slice(-1) : [];
-  const validationInput = [...anschluss, ...bars];
+  /* Liefert der Anbieter die Anschluss-Bar mit (manche tun das bei
+     inklusivem startDate), waere sie nach dem Voranstellen doppelt - und
+     `duplicate_bar` wuerde den Titel ablehnen. Dieselbe Bar zweimal ist
+     kein Befund, sondern eine Ueberschneidung; sie wird verworfen. */
+  const anschlussDatumRoh = anschluss.length ? String(anschluss[0].date).slice(0, 10) : null;
+  const neueBars = anschlussDatumRoh
+    ? bars.filter((bar) => String(bar.date).slice(0, 10) > anschlussDatumRoh)
+    : bars;
+  if (!neueBars.length) {
+    ok++;
+    perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "keineNeuenTage" };
+    console.log(`${label} keine neuen Handelstage (nur der bekannte Stand)`);
+    store.saveCheckpoint(checkpoint);
+    continue;
+  }
+  const validationInput = [...anschluss, ...neueBars];
   const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus
