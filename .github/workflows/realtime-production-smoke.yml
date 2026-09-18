@@ -64,6 +64,22 @@ jobs:
             --watch-seconds '${{ inputs.watchSeconds }}' \
             --shots production-shots | tee production-smoke.txt
 
+      - name: Cloudflare-Zustand nach dem Lauf (Budget-Waechter, keine Schluessel)
+        if: always()
+        run: |
+          echo "### live.visionuniverse.de"
+          curl -sS --max-time 20 https://live.visionuniverse.de/version || true
+          echo ""
+          curl -sS --max-time 20 https://live.visionuniverse.de/health || true
+          echo ""
+
+      - name: Zero-Cost und Consumer-Scans auf dem ausgelieferten Stand
+        if: always()
+        run: |
+          node scripts/market/assert-zero-cost-mode.mjs
+          node scripts/discover/assert-consumer-clean.mjs
+          node scripts/market/assert-no-secrets.mjs --all
+
       - name: Aufnahmen und Protokoll
         if: always()
         uses: actions/upload-artifact@v4
