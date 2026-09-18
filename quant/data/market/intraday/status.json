@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T13:15:32.751Z",
+  "generatedAt": "2026-09-18T13:36:03.091Z",
   "provider": "tiingo",
   "interval": "5min",
   "extendedHours": true,
@@ -7,14 +7,14 @@
   "scopeArg": "auto",
   "universeId": "US_REAL",
   "session": {
-    "sessionDate": "2026-09-17",
-    "kind": "last",
-    "isRunning": false,
-    "isComplete": true,
+    "sessionDate": "2026-09-18",
+    "kind": "current",
+    "isRunning": true,
+    "isComplete": false,
     "earlyClose": false
   },
-  "marketStateAtRun": "PRE_MARKET",
-  "localTimeAtRun": "2026-09-18 09:10:30",
+  "marketStateAtRun": "OPEN",
+  "localTimeAtRun": "2026-09-18 09:31:01",
   "gates": {
     "ENABLE_LIVE_MARKET_DATA": true,
     "ENABLE_PUBLIC_LIVE_MARKET_DATA": true
@@ -27,18 +27,18 @@
   "summary": {
     "requested": 524,
     "fetched": 524,
-    "written": 4,
+    "written": 37,
     "grown": 0,
-    "unchanged": 516,
+    "unchanged": 0,
     "skippedImmutable": 0,
-    "notPublishable": 4,
+    "notPublishable": 487,
     "failed": 0,
     "requests": 524,
     "reasons": {
-      "noRegularBars": 4
+      "noRegularBars": 487
     },
     "stopped": null,
-    "runtimeMs": 301627,
+    "runtimeMs": 301883,
     "providerRequests": 524,
     "retries": 0
   },
@@ -51,378 +51,453 @@
   "perSymbol": {
     "ABBV": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AAPL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
     },
     "ABCL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ABNB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ABX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ACMR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ACIC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "ACN": {
+    "ACMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ABT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ACT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "ABT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ACN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 12,
+      "discarded": 0
     },
     "ACTG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "ADBE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ADI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ADC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ADBE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 8,
+      "discarded": 0
+    },
+    "ADI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ADMA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ADP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ADSK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ADPT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AEP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "AFRM": {
+    "ADSK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AFG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "AGEN": {
+    "AFRM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AGL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "AGEN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AIR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 75
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "AIRT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ALAB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ALHC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ALL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AMAT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ALNY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "AMAT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 12,
+      "discarded": 0
     },
     "AMD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
     },
     "AME": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "AMLX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AMGN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "AMLX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AMPL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AMT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AMZN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ANAB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "ANGO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
     },
     "ANET": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ANAB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ANGO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ANIP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "APA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "API": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "APLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "APO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "APPN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "APP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "APPN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "APP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 8,
+      "discarded": 0
     },
     "ARCT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ARDX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ARES": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ARWR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "ASML": {
+    "ARES": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ASTE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "ASML": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ATHS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 72
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ATAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ATKR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "ATLC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "AVAH": {
+    "ATKR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AVGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "AVAH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AXP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "AXSM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BABA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
     },
     "BA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 11,
+      "discarded": 0
     },
     "BAC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 8,
+      "discarded": 0
     },
     "BBY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BCRX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BETR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "BCRX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BKKT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BKNG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BMY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BNS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BORR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BOW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "BRK-A": {
       "ok": true,
@@ -430,1772 +505,2119 @@
       "bars": 0,
       "discarded": 0
     },
-    "BROS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
     "BSM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BULL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "BTMD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "BVS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BWIN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BWLP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BWMN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "BXP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BXSL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BZ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "BYD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "C": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CAR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CARG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CAT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CBOE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CCC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CCI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CDE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CCS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "CDNA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CDNS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CHCO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CFFI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "CF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CGNX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CHRD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CHT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "CHCT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "CLMB": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 77,
-      "asOfLocal": "15:55"
-    },
-    "CLSK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CMPR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "CMI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CMRE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CMBT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CNC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CNO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "COHR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "COIN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "COP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CPSS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "COST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRDO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRWD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CRNC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "CSTL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CSCO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CSX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CVBF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CVS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CVNA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "CVX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "D": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DAC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 73
-    },
-    "DAVE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DDOG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DBRG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DELL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DGX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DINO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DIS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DJCO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DKNG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DOV": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DRTS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DUK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DUOL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DXCM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "DVN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ECO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EDRY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EGP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EMR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ENS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ENR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ENVA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EOG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EQIX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EPAM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EQNR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EQPT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EQT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ESNT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "ESEA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ETN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ETON": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "EVGO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EVLV": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EXC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FANG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "EXPD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "F": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FAST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FDX": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "15:55"
-    },
-    "FCF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FDMT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FIGS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FIVN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FIVE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FIX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FND": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FRO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FOA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 71
-    },
-    "FRSH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FTAI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FTNT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GABC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "FTH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GCT": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "15:55"
-    },
-    "GE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GEO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GGG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GILD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GLBE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GIS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GNK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "GMED": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GOTU": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GOOGL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GRBK": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GRDN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GSL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GPC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GTLB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HAE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "GTY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HAS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HASI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HCM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 70
-    },
-    "HELP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HIMS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HLNE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HIPO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HMC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HON": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HOG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HOMB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HPE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HPQ": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HOOD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HRTG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HSAI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HZO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "HTLM": {
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BROS": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 1,
       "discarded": 0
     },
+    "BULL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 4,
+      "discarded": 0
+    },
+    "BVS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "BWIN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BWLP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "BWMN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BXP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BZ": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "BYD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "BXSL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "C": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CARG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CAT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "CB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CAR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CCC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CBOE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CCS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CCI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CDE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CDNA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CDNS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CFFI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CF": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CHCO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CGNX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CHCT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CHT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CHRD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CLSK": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CMBT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CMI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CLMB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CMRE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CMPR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CNC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CNO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "COHR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 15,
+      "discarded": 0
+    },
+    "COIN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 11,
+      "discarded": 0
+    },
+    "COP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 7,
+      "discarded": 0
+    },
+    "COST": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
+    },
+    "CPSS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CRL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CRDO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
+    },
+    "CRM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 10,
+      "discarded": 0
+    },
+    "CRNC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CRWD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CSCO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CSTL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CVBF": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CSX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CVNA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 5,
+      "discarded": 0
+    },
+    "DAC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "CVS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "D": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "CVX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DAVE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "DBRG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DDOG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DELL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 16,
+      "discarded": 0
+    },
+    "DGX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DINO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DIS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DJCO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "DK": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DKNG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DRTS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "DOV": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DUOL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DUK": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "DXCM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "DVN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ECO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EDRY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EGP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EMR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ENR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ENS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "ENVA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EOG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
+    },
+    "EQIX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EPAM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EQNR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "EQPT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ESEA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "ESNT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "EQT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ETN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ETON": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "EVGO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EVLV": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "EXC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "EXPD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FANG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "F": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FAST": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FCF": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FDMT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FIGS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FDX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FIVE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FIVN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FIX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FND": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FOA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "FRO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FRSH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FTAI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "FTH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GABC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "FTNT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GCT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "GE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GGG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "GEO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GIS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GILD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GLBE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GNK": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GMED": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GOTU": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "GOOGL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
+    },
+    "GPC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GRDN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GRBK": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GTY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GTLB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "GSL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HASI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HAE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HCM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HAS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 4,
+      "discarded": 0
+    },
+    "HELP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HIPO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HIMS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 16,
+      "discarded": 0
+    },
+    "HMC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HLNE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HOG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HOMB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HPQ": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HON": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HOOD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "HPE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 14,
+      "discarded": 0
+    },
+    "HRTG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HTLM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
     "HURC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "HSAI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "HZO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "IBEX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "IDCC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "IBM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IEX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ILMN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IMPP": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "IMMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "IEX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "IMPP": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "INCY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "INOD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
     },
     "INSP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "INOD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "INSW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "INTC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
     },
     "INTU": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 13,
+      "discarded": 0
     },
     "INVA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "IONQ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "IOVA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 8,
+      "discarded": 0
     },
     "IPSC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "IQV": {
+    "IOVA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "IREN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 14,
+      "discarded": 0
+    },
+    "IQV": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ITW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JCI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "JFIN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 52
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "JCI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "JNJ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "JPM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 10,
+      "discarded": 0
     },
     "JRSH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "JPM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 5,
+      "discarded": 0
     },
     "KDP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "KNSA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "KKR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "KNSL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "KPLT": {
+    "KNSA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 72
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "KNX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "KPLT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "KO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 14,
+      "discarded": 0
     },
     "KRG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "KRT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "KRP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LCII": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LFST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LHX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "LHX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LILAK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LITE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LLY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LMT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "LLY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LOT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 64
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LOW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "LTC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LPG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "LQDA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "LVS": {
+    "LTC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "LX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "MAN": {
+    "LVS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MCD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MDT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MELI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MEOH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "LYFT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "META": {
+    "MAN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MCD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 9,
+      "discarded": 0
+    },
+    "MDT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MELI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MEOH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MFC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "MLCO": {
+    "META": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 16,
+      "discarded": 0
     },
     "MGNI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "MMM": {
+    "MLCO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MNST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MNKD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MMM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MNST": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "MO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MPC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
     },
     "MPWR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MRVI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MRNA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MRDN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 73
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
     },
     "MRK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MRDN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "MRVI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MSC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 62
-    },
-    "MSFT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "MRVL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
     },
-    "MTG": {
+    "MSFT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
     },
     "MTRN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "MTW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "MUX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "MU": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "MTG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "MUX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "MVST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NBIS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NBIS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 15,
+      "discarded": 0
     },
     "NCNO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NEM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NEO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NEE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NEM": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NEO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NFG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NFLX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NKE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 16,
+      "discarded": 0
     },
     "NMIH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "NOG": {
+    "NFLX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
     },
     "NRP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NOW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "NTAP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NOG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NOW": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 7,
+      "discarded": 0
     },
     "NTNX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NTRA": {
-      "ok": true,
-      "reason": "refreshed",
-      "points": 78,
-      "asOfLocal": "15:55"
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NUE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "NVDA": {
+    "NTRA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NVAX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NVDA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
     },
     "NVGS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "NVMI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "NXST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "NVMI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "O": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ODD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "OHI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "OKTA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 9,
+      "discarded": 0
     },
     "OMER": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ONC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "OPRX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 75
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ONC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "ORCL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 18,
+      "discarded": 0
     },
     "ORGO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "OXY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PAA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "OXY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PAGP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PARR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PANW": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PAYC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PAYS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "PARR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PAYC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PAYX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PBF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PCAR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "PD": {
+    "PBF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PCLA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 67
+      "reason": "noRegularBars",
+      "bars": 7,
+      "discarded": 0
     },
     "PDD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "PD": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PEBO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PESI": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "PEN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PESI": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "PEP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PFE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 10,
+      "discarded": 0
     },
     "PGY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PHR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "PLD": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PII": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "PLMR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "PM": {
+    "PLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PLSE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PNC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PMI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 72
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "PRCH": {
+    "PM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PNC": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "PSNL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PSA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PRCH": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "PSNL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PSTL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "QCOM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "PSX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "QFIN": {
+    "QCOM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "QTWO": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 15,
+      "discarded": 0
     },
     "QNST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "QFIN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "QTWO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RBA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RBLX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RDDT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RDW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "REGN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RDIB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "RELY": {
+    "RDDT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 3,
+      "discarded": 0
+    },
+    "RBLX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RFAI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 22
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
-    "RKLB": {
+    "RELY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "RDW": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "REGN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RILY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "RNG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "ROST": {
+    "RKLB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "ROOT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
     },
     "ROK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ROOT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "ROST": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RPD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RRX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RSG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RVTY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "RUSHB": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RTX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "SAFT": {
+    "RSG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "RUSHB": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "RVTY": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SABR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SAN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SBUX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SDGR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SCHW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "RYTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "SAFT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "SAN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "SCHW": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "SDGR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SEZL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SHEL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SHW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SLDE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SLF": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SLB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "SHEL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "SHW": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "SLN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "SLF": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "SLDE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SMP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SMCI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SOHU": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 73
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "SO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "SOHU": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "SON": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SONY": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "SBUX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SOPH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
-    },
-    "SRCE": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SPG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "SRCE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "SSNC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "STG": {
+    "STRF": {
       "ok": true,
       "reason": "noRegularBars",
       "bars": 0,
@@ -2203,213 +2625,279 @@
     },
     "STOK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "STRF": {
+    "STG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
-    },
-    "STT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SU": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "SUN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "STT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
+    },
+    "SU": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "SWKS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "T": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "SWVL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TAK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TAL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TARS": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TALO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "SWVL": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "TARS": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TATT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "TCOM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TEM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TEN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TFC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "THG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "TGT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "THG": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "THO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "TKR": {
+    "TEM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 17,
+      "discarded": 0
     },
     "TIGR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "TJX": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "TKR": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TMDX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TOWN": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TNK": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "TPR": {
+    "TOWN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TPG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TPR": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "TMDX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TREE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TRIP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TRS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TRMD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TRST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 77
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TRV": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TSLA": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TSSI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "TTAN": {
+    "TSLA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "TT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
     },
-    "TTE": {
+    "TRST": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TTAN": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "TTD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TTE": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 19,
+      "discarded": 0
+    },
+    "TUYA": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
+    },
+    "TW": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TWST": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "TXG": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "TVA": {
       "ok": true,
@@ -2417,265 +2905,293 @@
       "bars": 0,
       "discarded": 0
     },
-    "TUYA": {
+    "TXNM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 75
-    },
-    "TWST": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TW": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "TXG": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "TXN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "UFG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 76
-    },
-    "TXNM": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "UL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "UNH": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "UNP": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "UPS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "USB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "V": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "UTZ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "VEEV": {
+    "V": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "VFF": {
+    "UNH": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "VICI": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "VEEV": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "VFF": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "VICR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VIOT": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 64
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "VISN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "VLO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "VNO": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "VOD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "VRTX": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "VRSN": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "VIOT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "VSTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "VRTX": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 2,
+      "discarded": 0
     },
     "VTS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "VZ": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WAY": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "WABC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "WAT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "WAY": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WB": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WELL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WFC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "WDC": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WBD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
-    "WGO": {
+    "WELL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "WIX": {
+    "WDC": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "WFC": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WING": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "WIX": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WMT": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WSE": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "WGO": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "WTM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 74
+      "reason": "noRegularBars",
+      "bars": 0,
+      "discarded": 0
     },
     "WTRG": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "WULF": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "XERS": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "XEL": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "XHLD": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
-    },
-    "XNCR": {
-      "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
     "XOM": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
-    "YEXT": {
+    "XNCR": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     },
-    "ZCSH": {
+    "XEL": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
     },
     "ZVRA": {
       "ok": true,
-      "reason": "unchanged",
-      "points": 78
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
+    },
+    "ZCSH": {
+      "ok": true,
+      "reason": "first",
+      "points": 2,
+      "asOfLocal": "09:35"
+    },
+    "YEXT": {
+      "ok": true,
+      "reason": "noRegularBars",
+      "bars": 1,
+      "discarded": 0
     }
   },
   "note": "Bilanz des Intraday-Laufs. Keine Kurse - nur Zaehlungen und Gruende."
