@@ -34,7 +34,7 @@
    Artefakte anlegt, ist im Zweifel der Lauf, der die Produktionsdaten
    ueberschreibt (MASTER §31.10).
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -390,6 +390,36 @@ const CREATIVE_TRANSPORT = {
    aendert am Lauf nichts: STALE_NO_RESULT blockiert ausdruecklich
    nicht. Er macht nur sichtbar, woran man sonst vorbeiliest.
    ------------------------------------------------------------------- */
+/**
+ * Die juengste Fassung eines Content Objects.
+ *
+ * Fassungen heissen <content_id>-rev1, -rev2, ... Eine hoehere Nummer
+ * ist juenger; gezaehlt wird numerisch und nicht als Text, sonst laege
+ * rev10 vor rev2.
+ *
+ * Genommen wird nur eine Fassung mit ERGEBNIS. Eine ausgeloeste, aber
+ * noch nicht gelieferte Revision darf die Vorfassung nicht verdraengen -
+ * sonst faellt der Inhalt waehrend eines laufenden Auftrags auf den
+ * Vorlagen-Autor zurueck und das Ergebnis der Vorfassung waere
+ * unerreichbar.
+ */
+export function juengsteFassung(basis, wurzel) {
+  if (!basis) return basis;
+  const ordner = join(wurzel || ROOT, "authoring/requests");
+  if (!existsSync(ordner)) return basis;
+
+  let beste = basis, besteNr = 0;
+  for (const name of readdirSync(ordner)) {
+    const t = new RegExp("^" + basis.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+      "-rev(\\d+)$").exec(name);
+    if (!t) continue;
+    if (!existsSync(join(ordner, name, "authoring-result.json"))) continue;
+    const nr = parseInt(t[1], 10);
+    if (nr > besteNr) { besteNr = nr; beste = name; }
+  }
+  return beste;
+}
+
 function creativeZustand(contentId, nowIso) {
   if (!contentId) return null;
 
@@ -869,9 +899,24 @@ async function main() {
        laege. Sie wird hier genauso gerechnet wie beim Stellen der
        Anfrage — aus derselben Funktion, damit die beiden Seiten nicht
        driften koennen. */
-    const creativeContentId = (evidenzPaket && evidenzPaket.ok)
+    const basisContentId = (evidenzPaket && evidenzPaket.ok)
       ? EvidencePackage.contentIdFor(evidenzPaket.entity, evidenzPaket.asOf)
       : null;
+
+    /* -----------------------------------------------------------------
+       DIE JUENGSTE FASSUNG GEWINNT
+
+       Eine redaktionelle Ueberarbeitung bekommt eine eigene Kennung
+       (<content_id>-rev1), damit sie den Brief der Vorfassung nicht
+       ueberschreibt - sonst waere die Kennung weg, unter der das
+       verifizierte Bild wiedergefunden wird.
+
+       Der Preis dafuer ist, dass der Zyklus sie nicht mehr ueber die
+       gerechnete Kennung findet. Er sieht deshalb nach, ob zu diesem
+       Inhalt eine juengere Fassung vorliegt, und nimmt die. Keine
+       Ratephase: es gibt sie oder nicht.
+       ----------------------------------------------------------------- */
+    const creativeContentId = juengsteFassung(basisContentId);
 
     const creativeLage = creativeZustand(creativeContentId, NOW);
     if (creativeLage) creativeZustaende.push(creativeLage);
