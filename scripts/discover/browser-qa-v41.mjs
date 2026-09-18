@@ -204,10 +204,35 @@ await check("Feed: Stuecke nachladen, > 10 Titel, keine Doppelten, Zaehler, Leis
   assert(start.fnav === "none", "die schwebende Leiste liegt ueber dem Feed");
   await shot(m, "03-feed-1");
   for (let i = 0; i < 16; i++) { await m.evaluate(() => { const s = document.querySelector(".dx-feed-spur"); s.scrollTop += s.clientHeight; }); await warten(m, 320); }
-  const w = await m.evaluate(() => { const syms = [...document.querySelectorAll(".dx-feed-screen[data-index]")].map((n) => n.dataset.symbol); return { n: syms.length, doppelt: syms.length - new Set(syms).size, z: document.querySelector(".dx-feed-zaehler").innerText.trim(), stand: document.querySelector(".dx-feed").__stand(), kauf: /jetzt kaufen|jetzt verkaufen|nicht verpassen|nur heute|\bbuy now\b|\bsell now\b/i.test(document.body.innerText) }; });
+  const w = await m.evaluate(() => {
+    const spur = document.querySelector(".dx-feed-spur");
+    const screens = [...document.querySelectorAll(".dx-feed-screen[data-index]")];
+    const syms = screens.map((n) => n.dataset.symbol);
+    /* Welcher Bildschirm gerade gilt: der erste, dessen untere Haelfte noch
+       im Fenster liegt. Damit ist die Pruefung unabhaengig davon, wie viele
+       der programmierten Wischer die Spur wirklich erwischt hat. */
+    const sichtbar = screens.find((n) => n.getBoundingClientRect().bottom > spur.clientHeight * 0.5);
+    return { n: syms.length, doppelt: syms.length - new Set(syms).size,
+             z: document.querySelector(".dx-feed-zaehler").innerText.trim(),
+             sichtbarIndex: sichtbar ? Number(sichtbar.dataset.index) : null,
+             stand: document.querySelector(".dx-feed").__stand(),
+             kauf: /jetzt kaufen|jetzt verkaufen|nicht verpassen|nur heute|\bbuy now\b|\bsell now\b/i.test(document.body.innerText) };
+  });
   assert(w.n > 12 && w.stand.gezeigt >= 24, "nach 16 Wischern nur " + w.n + " Titel geladen");
   assert(w.doppelt === 0, w.doppelt + " Titel doppelt");
-  assert(/^(1[5-9]|2\d) von/i.test(w.z), "der Zaehler zaehlt nicht mit: " + w.z);
+  /* Der Zaehler soll sagen, wo man ist - nicht, wie oft das Skript
+     gescrollt hat. Frueher stand hier eine feste Spanne (15 bis 29); ueber
+     das Netz gegen die veroeffentlichte Seite landete ein Wischer
+     gelegentlich mitten in der Bewegung, und die Pruefung fiel bei 14 um,
+     obwohl der Zaehler genau richtig stand. Jetzt wird die Zusage selbst
+     geprueft: die Zahl im Zaehler ist der sichtbare Bildschirm, und sie ist
+     weitergelaufen. */
+  const zahl = parseInt(String(w.z).replace(/[^0-9].*$/, ""), 10);
+  assert(zahl > 1, "der Zaehler zaehlt nicht mit: " + w.z);
+  if (w.sichtbarIndex !== null) {
+    assert(zahl === w.sichtbarIndex + 1,
+           "der Zaehler passt nicht zum sichtbaren Bildschirm: " + w.z + " bei Index " + w.sichtbarIndex);
+  }
   assert(!w.kauf, "Kauf-/Dringlichkeitssprache im Feed");
   await shot(m, "04-feed-nach-16");
 });
