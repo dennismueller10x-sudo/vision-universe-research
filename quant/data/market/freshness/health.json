@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-18T16:59:03.145Z",
+  "checkedAt": "2026-09-18T17:12:18.040Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-18",
-    "localTime": "12:59:03",
+    "localTime": "13:12:18",
     "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-18",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-18T16:58:58.999Z",
+    "indexGeneratedAt": "2026-09-18T17:12:13.770Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-18",
@@ -22,30 +22,31 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-18",
-      "asOf": "2026-09-18T16:55:00.000Z",
-      "asOfLocal": "12:55",
+      "asOf": "2026-09-18T17:10:00.000Z",
+      "asOfLocal": "13:10",
       "regularComplete": false,
       "snapshots": 513,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 12:55",
+    "dataLabel": "Heute · Stand 13:10",
     "entries": 520,
     "byState": {
-      "LIVE": 504,
+      "LIVE": 503,
       "LAST_SESSION": 0,
-      "STALE": 16,
+      "STALE": 17,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 504,
-      "runningSessionStaleAsOf": 9,
+      "runningSession": 503,
+      "runningSessionStaleAsOf": 10,
       "currentSessionMissing": 7
     },
     "staleSample": [
       "AIRT",
       "ATHS",
+      "BTMD",
       "CFFI",
       "CPSS",
       "FOA",
