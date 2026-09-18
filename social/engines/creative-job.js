@@ -112,10 +112,34 @@
        welches gewinnt, entschiede der Zufall der Ankunft. */
     concurrentJobsPerContentId: 1,
 
-    /* Die Obergrenze der Anlaeufe stammt aus recover-creative-request.mjs
-       (MAX_ANLAEUFE = 3) und ist dort bereits begruendet. Sie hier
-       zweitzuschreiben hiesse, zwei Wahrheiten zu haben. */
+    /* -----------------------------------------------------------------
+       ANLAUF IST NICHT REVISION
+
+       Die Obergrenze der ANLAEUFE stammt aus recover-creative-request.mjs
+       (MAX_ANLAEUFE = 3) und ist dort begruendet: ein Anlauf ist die
+       Wiederholung von etwas, das GESCHEITERT ist, und unbegrenzt zu
+       wiederholen hiesse, auf ein anderes Ergebnis derselben Sache zu
+       hoffen.
+
+       Eine REVISION ist das Gegenteil: der Lauf ist gelungen, das
+       Ergebnis liegt vor, und ein Mensch hat entschieden, dass es
+       redaktionell besser werden soll. Sie unter dieselbe Grenze zu
+       stellen hiesse, eine Owner-Entscheidung als Fehlschlag zu zaehlen.
+
+       Gefunden wurde das beim ersten echten Versuch: Anlauf 3 war
+       erfolgreich, die Ueberarbeitung waere "Anlauf 4" gewesen, und das
+       Gatter verweigerte sie mit der Begruendung, drei Versuche seien
+       genug. Die Begruendung stimmte - fuer die falsche Sache.
+       ----------------------------------------------------------------- */
     maxAttemptsPerContentId: 3,
+
+    /* Revisionen sind begrenzt, aber anders begruendet: jede kostet
+       einen Lauf, und eine Runde, die dieselbe Anweisung wiederholt,
+       ist keine Ueberarbeitung. Drei Runden auf demselben Text sind
+       das Zeichen, dass die ANWEISUNG das Problem ist und nicht der
+       Text - dann gehoert es vor den Owner und nicht in eine vierte
+       Runde. */
+    maxRevisionsPerContentId: 3,
 
     /* Diagnostische Jobs haben im Produktionspfad nichts verloren. Sie
        sind der Grund, warum am 17.09. drei zusaetzliche Jobs liefen. */
@@ -194,13 +218,34 @@
             "dieselbe Kennung; welches gewaenne, entschiede die Ankunft." };
       }
 
-      /* Die Anlaufgrenze. */
-      var anlauf = Number(spec.attempt) || 1;
-      if (anlauf > BUDGET.maxAttemptsPerContentId) {
+      /* -----------------------------------------------------------------
+         DIE BEIDEN GRENZEN, GETRENNT GEZAEHLT
+
+         Gezaehlt werden nicht die Nummern, sondern die JOBS: wieviele
+         gescheiterte Wiederholungen gab es, und wieviele
+         Ueberarbeitungen. Die `attempt`-Nummer laeuft ueber beides
+         hinweg weiter, weil sie die Identitaet des Briefs traegt - sie
+         als Zaehler zu missbrauchen war der Fehler.
+         ----------------------------------------------------------------- */
+      var eigene = byContent(spec.contentId);
+      var istRevision = !!spec.revision;
+
+      var revisionen = eigene.filter(function (j) { return !!j.revision; }).length;
+      var anlaeufe = eigene.length - revisionen;
+
+      if (!istRevision && anlaeufe >= BUDGET.maxAttemptsPerContentId) {
         return { ok: false, reason: "attemptBudget",
-          message: "Anlauf " + anlauf + " ueberschreitet die Grenze von " +
-            BUDGET.maxAttemptsPerContentId + ". Ein weiterer Versuch ist " +
-            "eine Entscheidung und kein Automatismus." };
+          message: "Zu " + spec.contentId + " gab es bereits " + anlaeufe +
+            " Anlaeufe (Grenze " + BUDGET.maxAttemptsPerContentId + "). Ein " +
+            "weiterer Versuch ist eine Entscheidung und kein Automatismus." };
+      }
+
+      if (istRevision && revisionen >= BUDGET.maxRevisionsPerContentId) {
+        return { ok: false, reason: "revisionBudget",
+          message: "Zu " + spec.contentId + " gab es bereits " + revisionen +
+            " Ueberarbeitungen (Grenze " + BUDGET.maxRevisionsPerContentId +
+            "). Wenn drei Runden denselben Text nicht tragen, ist die " +
+            "ANWEISUNG das Problem - und das gehoert vor den Owner." };
       }
 
       /* Diagnostische Jobs im Produktionspfad. */

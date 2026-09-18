@@ -82,11 +82,25 @@ test("CJ3 · Nach Abschluss darf der naechste Anlauf starten", () => {
   assert.equal(r.mayDispatch(zweiter).ok, true);
 });
 
-test("CJ4 · Die Anlaufgrenze ist eine Entscheidung, kein Automatismus", () => {
-  const r = J.createRegistry([]);
-  const zuViel = Object.assign({}, SPEC, { attempt: 4,
+test("CJ4 · Gezaehlt werden Jobs, nicht Nummern", () => {
+  /* Die erste Fassung wies `attempt: 4` allein wegen der NUMMER ab —
+     auch auf einem leeren Register. Das traute einem Etikett mehr als
+     dem Protokoll: die Nummer ist ein Identitaetsfeld des Briefs, kein
+     Zaehler. Wer sie hochsetzt, hat noch nichts ausgeloest.
+
+     Gezaehlt wird jetzt, was wirklich dispatcht wurde. */
+  const leer = J.createRegistry([]);
+  const vierte = Object.assign({}, SPEC, { attempt: 4,
     processingKey: "brief_test:vu-test-20260918:" + "d".repeat(40) + ":1.0" });
-  const darf = r.mayDispatch(zuViel);
+  assert.equal(leer.mayDispatch(vierte).ok, true,
+    "ohne einen einzigen Dispatch gibt es nichts zu begrenzen");
+
+  /* Mit drei protokollierten Anlaeufen greift die Grenze. */
+  const drei = J.createRegistry([1, 2, 3].map((n) => ({
+    creativeJobId: "job_t" + n, contentId: SPEC.contentId,
+    processingKey: "brief_test:vu-test-20260918:" + String(n).repeat(40) + ":1.0",
+    attempt: n, revision: null, state: "CREATIVE_JOB_FAILED" })));
+  const darf = drei.mayDispatch(vierte);
   assert.equal(darf.ok, false);
   assert.equal(darf.reason, "attemptBudget");
   assert.equal(J.BUDGET.maxAttemptsPerContentId, 3);
@@ -169,7 +183,13 @@ test("CJ10 · VU hat nie eine doppelte Delivery erzeugt", () => {
      Faellt dieser Test spaeter, hat VU angefangen, mehrfach
      auszuloesen — und das waere unsere Schuld und nicht die des
      Anbieters. */
-  ECHT.forEach((j) => {
+  /* Nur AUSGELOESTE Jobs koennen eine Delivery haben. Ein frisch
+     angelegter Job steht in CREATIVE_JOB_REQUESTED und hat noch keine -
+     ihm eine zu unterstellen waere eine Behauptung ueber etwas, das
+     noch nicht stattgefunden hat. */
+  const ausgeloest = ECHT.filter((j) => j.prNumber);
+  assert.ok(ausgeloest.length >= 8, "zu wenige ausgeloeste Jobs zum Pruefen");
+  ausgeloest.forEach((j) => {
     assert.equal(j.deliveryCount, 1,
       "PR " + j.prNumber + " traegt " + j.deliveryCount + " Deliveries");
   });
@@ -191,7 +211,7 @@ test("CJ11 · Die Vervielfachung haengt am Scheitern, nicht am Ausloesen", () =>
      Waere die Vervielfachung eine Frage der Trigger-Konfiguration,
      muesste sie auch die erfolgreichen Jobs treffen. Sie tut es nicht. */
   const erfolgreichSchnell = ECHT.filter((j) =>
-    j.state === "CREATIVE_JOB_VERIFIED" && j.durationSeconds !== null);
+    j.state === "CREATIVE_JOB_VERIFIED" && j.durationSeconds);
   erfolgreichSchnell.forEach((j) =>
     assert.equal(j.observedStarts, 1,
       "PR " + j.prNumber + " lieferte und zeigt trotzdem " + j.observedStarts + " Starts"));
@@ -208,8 +228,61 @@ test("CJ12 · Der Ergebnis-Commit des Agenten loest keinen neuen Lauf aus", () =
      Sorge vor einer Rekursion ueber Result-Commits war unbegruendet.
      PRs 103, 106 und 108 haben einen Ergebnis-Commit (ein
      synchronize-Ereignis) und trotzdem nur ihre eine delivery_id. */
-  const mitErgebnis = ECHT.filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+  const mitErgebnis = ECHT.filter((j) =>
+    j.state === "CREATIVE_JOB_VERIFIED" && j.prNumber);
   assert.ok(mitErgebnis.length >= 3);
   mitErgebnis.forEach((j) => assert.equal(j.deliveryCount, 1,
     "PR " + j.prNumber + ": der Ergebnis-Commit hat eine zweite Delivery erzeugt"));
+});
+
+test("CJ13 · Anlauf ist nicht Revision", () => {
+  /* Ein ANLAUF wiederholt etwas Gescheitertes; unbegrenzt zu wiederholen
+     hiesse, auf ein anderes Ergebnis derselben Sache zu hoffen. Eine
+     REVISION ueberarbeitet etwas Gelungenes, weil ein Mensch es
+     entschieden hat. Sie unter dieselbe Grenze zu stellen hiesse, eine
+     Owner-Entscheidung als Fehlschlag zu zaehlen.
+
+     Gefunden beim ersten echten Versuch: Anlauf 3 war erfolgreich, die
+     Ueberarbeitung waere "Anlauf 4" gewesen, und das Gatter verweigerte
+     sie mit der Begruendung, drei Versuche seien genug. Die Begruendung
+     stimmte — fuer die falsche Sache. */
+  const drei = [1, 2, 3].map((n) => ({
+    creativeJobId: "job_c:sha" + n + ":attempt" + n,
+    contentId: "vu-c-20260918", processingKey: "b:vu-c-20260918:sha" + n + ":1.0",
+    attempt: n, revision: null, state: "CREATIVE_JOB_FAILED"
+  }));
+  const r = J.createRegistry(drei);
+
+  /* Ein vierter ANLAUF ist zu viel. */
+  const anlauf4 = { contentId: "vu-c-20260918", attempt: 4,
+    processingKey: "b:vu-c-20260918:sha4:1.0" };
+  assert.equal(r.mayDispatch(anlauf4).reason, "attemptBudget");
+
+  /* Eine REVISION derselben Nummer ist es nicht. */
+  const revision = Object.assign({}, anlauf4, { revision: "text-only" });
+  assert.equal(r.mayDispatch(revision).ok, true,
+    r.mayDispatch(revision).message);
+});
+
+test("CJ14 · Auch Revisionen sind begrenzt — aber eigenstaendig", () => {
+  /* Wenn drei Runden denselben Text nicht tragen, ist die ANWEISUNG das
+     Problem und nicht der Text. Dann gehoert es vor den Owner und nicht
+     in eine vierte Runde. */
+  const drei = [1, 2, 3].map((n) => ({
+    creativeJobId: "job_d:r" + n, contentId: "vu-d-20260918",
+    processingKey: "b:vu-d-20260918:r" + n + ":1.0",
+    attempt: n + 1, revision: "text-only", state: "CREATIVE_JOB_VERIFIED"
+  }));
+  const r = J.createRegistry(drei);
+  const vierte = { contentId: "vu-d-20260918", attempt: 5, revision: "text-only",
+    processingKey: "b:vu-d-20260918:r4:1.0" };
+  const darf = r.mayDispatch(vierte);
+  assert.equal(darf.ok, false);
+  assert.equal(darf.reason, "revisionBudget");
+  assert.match(darf.message, /gehoert vor den Owner/);
+
+  /* Ein echter Anlauf bleibt daneben moeglich — die Zaehler sind
+     getrennt, nicht nur verschieden benannt. */
+  assert.equal(r.mayDispatch({ contentId: "vu-d-20260918", attempt: 5,
+    processingKey: "b:vu-d-20260918:a1:1.0" }).ok, true);
 });
