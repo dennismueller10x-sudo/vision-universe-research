@@ -148,6 +148,44 @@ wurde, war Sorgfalt und keine Eigenschaft des Systems.
 
 ---
 
+## 5a. Nachtrag: PR #110 löste gar nicht aus
+
+Die Analyse oben beruht auf acht Jobs, die **alle** ausgelöst haben —
+8 Deliveries auf 8 Dispatches. Der neunte tat es nicht.
+
+| PR | vom Öffnen bis zum ersten Start |
+|---|---|
+| 104 | 0:58 |
+| 105 | 1:04 |
+| 101 | 1:07 |
+| 108 | 2:04 |
+| 98 | 2:09 |
+| **110** | **40+ Minuten, kein Start** |
+
+PR #110 erfüllt alle drei bekannten Bedingungen: Branch
+`authoring/request/vu-xom-20260911-rev1`, Titel
+`VU-AUTHORING-REQUEST: …`, Draft. Kein einziger
+`VU_CREATIVE_AGENT_INVOCATION`-Kommentar, kein Ergebnis-Commit, keine
+Check-Runs außer Vercel.
+
+Das ändert den Befund aus Abschnitt 2 nicht — VU hat weiterhin keine
+Delivery dupliziert — aber es ergänzt ihn um die andere Richtung:
+
+> Die Zustellung ist **nicht nur unbeschränkt nach oben** (32 Starts auf
+> 8 Deliveries), sondern **auch nicht verlässlich nach unten**.
+
+Beides liegt hinter der Delivery und ist von VU aus nicht steuerbar. Der
+Job steht auf `CREATIVE_JOB_STALE` — „wir haben nichts gesehen", nicht
+„es kommt nichts mehr". Kein zweiter Dispatch: ein Request-PR, der nicht
+auslöst, wird nicht durch einen zweiten Request-PR beantwortet.
+
+**Was von hier aus nicht beobachtbar ist:** der Zustand der
+ChatGPT-Work-Automation selbst. Ob sie aktiv ist, steht auf der
+Owner-Seite. Eine Vermutung darüber wäre genau die Sorte Behauptung, die
+dieser Bericht sonst vermeidet.
+
+---
+
 ## 6. Die Owner-Entscheidung
 
 Die kreative Fähigkeit ist bewiesen und bleibt erhalten. Zu entscheiden ist
