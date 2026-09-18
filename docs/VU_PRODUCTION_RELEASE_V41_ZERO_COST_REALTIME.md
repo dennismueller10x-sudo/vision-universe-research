@@ -194,12 +194,31 @@ setzen schaltet Realtime ab, ohne die Oberfläche anzufassen — die Aktienseite
 fällt auf den Snapshot-Pfad zurück, der ohnehin zuerst lädt. Zwei Hebel, die
 sich nicht gegenseitig brauchen.
 
-## 9. Daten-Freshness (Recovery-Loop)
+## 9. Daten-Freshness (Recovery-Loop) — abgeschlossen
 
-Der EOD-Freshness-Defekt vom 16.09. wird als eigener Loop geführt; Ursache,
-Klassifikation, Retry-Semantik, Wächter und Zahlen stehen in
+Der EOD-Freshness-Defekt vom 16.09. lief als eigener Loop; Ursache,
+Klassifikation, Retry-Semantik, Wächter und alle Zahlen stehen in
 `VU_EOD_REJECTION_RECOVERY_2026-09-18.md`. Der V4.1-Release ist davon nicht
-verändert worden.
+verändert worden — keine Zeile an der Oberfläche, nichts an Intraday,
+Realtime oder Fundamentals.
+
+Ergebnis, mit `18ea58f7c0` veröffentlicht:
+
+| | vorher | nachher |
+|---|---|---|
+| Tageskurse `asOf` | 2026-09-15 | **2026-09-17** (letzte abgeschlossene Sitzung) |
+| Rückstand | 2 Sitzungen | **0** |
+| geprüfte Titel | 45 von 6.876 (1 %) | **6.456 von 6.876 (93,9 %)** |
+| Urteil des Wächters | **FAIL** | **PASS** |
+| offene Ablehnungen | 6.831 (alle `too_few_bars`) | **423**, davon 420 ein anderer, vorbestehender Qualitätsbefund |
+| permanent ausgeschlossen | — | **0** |
+
+Erfolgreich aktualisiert 6.454 Titel, 0 Provider-Fehler, 6.456 Anfragen
+(Tageskontingent 6.456/50.000).
+
+Der Wächter aus diesem Loop läuft seither in jedem Refresh mit `--strict`:
+ein Lauf, der den überwiegenden Teil des Universums nicht einmal gefragt
+hat, kann nicht mehr grün melden — auch wenn kein Schritt rot war.
 
 ## 10. Was nicht getan wurde
 
