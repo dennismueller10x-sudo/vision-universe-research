@@ -295,9 +295,12 @@ for (const security of SECURITIES) {
   const label = `  ${security.ticker.padEnd(6)}`;
 
   if (checkpoint.done.includes(id)) { skipped++; console.log(`${label} uebersprungen (erledigt)`); continue; }
-  /* Eine abgelehnte Reihe (Qualitaetspruefung) wird nicht jeden Tag erneut
-     angefragt: sieben Tage Ruhe, dann ein neuer Versuch. Der Grund steht
-     im Checkpoint - und im Statusbericht. */
+  /* Ob eine abgelehnte Reihe heute wieder gefragt wird, entscheidet die
+     Ursache, nicht der Kalender: ein Fensterartefakt sofort, ein
+     Qualitaetszustand nach knapp einem Tag (laenger, wenn er sich
+     wiederholt), ein strukturelles Problem nach dreissig Tagen. Kein
+     Titel bleibt dauerhaft draussen. Klasse und Grund stehen im
+     Checkpoint und im Statusbericht. */
   const zuletztAbgelehnt = checkpoint.rejected && checkpoint.rejected[id];
   const urteil = INITIAL
     ? { allowed: true, class: "RECOVERED", reason: "Erstimport fragt immer" }
