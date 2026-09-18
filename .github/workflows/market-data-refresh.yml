@@ -169,12 +169,31 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/golden-preview quant/data/market/discover-series \
-                  quant/data/market/factors quant/data/market/tiingo-status.json \
-                  quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
-                  quant/data/market/capabilities quant/data/market/freshness \
-                  quant/data/market/commercial/rejection-ledger.json \
-                  quant/data/market/commercial/daily-lifecycle-health.json
+          # Jeden Pfad einzeln und nur, wenn es ihn gibt. `git add` bricht
+          # bei einem unbekannten Pfad mit exit 128 ab und reisst den
+          # ganzen Schritt mit: Lauf 35366297664 war vollstaendig gruen -
+          # Abruf, Folgeketten, Waechter, Hygiene, Regressionssuite - und
+          # hat trotzdem nichts veroeffentlicht, weil eine der genannten
+          # Dateien in diesem Lauf nicht entstanden war. Ein fehlendes
+          # Berichtsartefakt ist kein Grund, siebzig Minuten Kursdaten
+          # wegzuwerfen.
+          for pfad in quant/data/market/golden-preview \
+                      quant/data/market/discover-series \
+                      quant/data/market/factors \
+                      quant/data/market/tiingo-status.json \
+                      quant/data/technical \
+                      quant/data/sec/quant-factor-inputs.json \
+                      discover/data \
+                      quant/data/market/capabilities \
+                      quant/data/market/freshness \
+                      quant/data/market/commercial/rejection-ledger.json \
+                      quant/data/market/commercial/daily-lifecycle-health.json; do
+            if [ -e "$pfad" ]; then
+              git add "$pfad"
+            else
+              echo "Nicht vorhanden, wird uebersprungen: $pfad"
+            fi
+          done
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else

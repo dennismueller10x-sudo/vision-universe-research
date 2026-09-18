@@ -51,11 +51,6 @@ function checkpointDateien() {
 }
 
 const dateien = checkpointDateien();
-if (!dateien.length) {
-  console.log("Kein Checkpoint gefunden unter " + join(CACHE, "tiingo") + ".");
-  console.log("Ohne Arbeitsablage gibt es kein Register - und nichts zu klassifizieren.");
-  process.exit(0);
-}
 
 const bericht = {
   schemaVersion: "rejection-ledger-1.0.0",
@@ -63,6 +58,13 @@ const bericht = {
   checkedAt: new Date().toISOString(),
   applied: APPLY,
   staleAfterDays: STALE_MS / 86400000,
+  /* Ohne Arbeitsablage gibt es kein Register. Das ist ein Zustand und
+     kein Fehler - aber er gehoert in den Bericht, nicht in ein
+     Schweigen. Vorher stieg das Skript hier aus, ohne die Datei zu
+     schreiben; der Lauf 35366297664 war danach vollstaendig gruen und
+     scheiterte trotzdem, weil `git add` die nie erzeugte Datei
+     einsammeln sollte. Ein leeres Register ist eine Aussage. */
+  checkpointsFound: dateien.length,
   files: []
 };
 
@@ -126,6 +128,10 @@ mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(bericht, null, 2) + "\n");
 
 console.log("");
-console.log("Insgesamt: " + gesamtVorher + " Eintraege, " + gesamtFaellig + " wieder faellig, " +
-            gesamtBleibt + " bleiben zurueckgestellt" + (APPLY ? " - faellige entfernt." : " (Probelauf)."));
+if (!dateien.length) {
+  console.log("Kein Checkpoint unter " + join(CACHE, "tiingo") + " - kein Register, nichts zurueckgestellt.");
+} else {
+  console.log("Insgesamt: " + gesamtVorher + " Eintraege, " + gesamtFaellig + " wieder faellig, " +
+              gesamtBleibt + " bleiben zurueckgestellt" + (APPLY ? " - faellige entfernt." : " (Probelauf)."));
+}
 console.log("Bericht: " + OUT.replace(root + "/", ""));
