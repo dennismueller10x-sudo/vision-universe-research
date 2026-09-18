@@ -34,6 +34,7 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await assert.rejects(buildRelease({root,output:join(root,'site')}),/OUTPUT_MUST_BE_OUTSIDE_SOURCE/);
   const report=await buildRelease({root,output});assert.equal(report.status,'PASS');
   assert.match(await readFile(join(output,'quant/index.html'),'utf8'),/location\.replace\("\/vu2\/"/);
+  assert.equal(await readFile(join(output,'Quant/index.html'),'utf8'),await readFile(join(output,'quant/index.html'),'utf8'));
   assert.equal(await readFile(join(root,'index.html'),'utf8'),'existing home');
   for(const name of ['coverage_matrix.json','pit_gates.json'])assert.deepEqual(JSON.parse(await readFile(join(output,'quant/data/sec/'+name),'utf8')),JSON.parse(await readFile(join(root,'quant/data/sec/'+name),'utf8')));
   assert.equal(await readFile(join(root,'quant/data/sec/canonical/private.json'),'utf8'),'[1,2,3]');
