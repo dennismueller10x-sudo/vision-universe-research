@@ -33,9 +33,31 @@
    bearbeiten. Freigegeben wird deshalb der nachgerechnete Abdruck und
    nicht der, der in der Datei steht.
 
+   -------------------------------------------------------------------------
+   VIER ENTSCHEIDUNGEN, NICHT ZWEI
+   -------------------------------------------------------------------------
+
+   APPROVE, REJECT — und zweimal "noch nicht", aus zwei verschiedenen
+   Gruenden:
+
+     --hold     die EVIDENZ reicht nicht.     HELD_FOR_ENRICHMENT
+     --refine   die Evidenz reicht, die
+                AUSWAHL daraus noch nicht.    HELD_FOR_CREATIVE_REFINEMENT
+
+   Die beiden zu verwechseln waere keine Formsache: sie schicken
+   verschiedene Stufen zurueck an die Arbeit. `--hold` sagt der
+   Recherche, sie moege mehr liefern; `--refine` sagt der Redaktion,
+   sie moege aus dem Vorhandenen etwas anderes machen. Wer beim
+   zweiten Fall "zu wenig Belege" protokolliert, laesst die falsche
+   Stufe suchen — und behauptet ausserdem etwas Unwahres ueber die
+   Recherche.
+
    Ausfuehren:
      node scripts/social/decide-candidate.mjs --candidate cand_... --approve --by owner
      node scripts/social/decide-candidate.mjs --candidate cand_... --reject --reason "..."
+     node scripts/social/decide-candidate.mjs --candidate cand_... --hold --reason "..."
+     node scripts/social/decide-candidate.mjs --candidate cand_... --refine --reason "..." \
+       [--assessment pfad/zur/bewertung.json]
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
@@ -170,12 +192,24 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      ------------------------------------------------------------------- */
   const HOLD = flag("hold");
 
+  /* -------------------------------------------------------------------
+     DIE VIERTE ENTSCHEIDUNG
+
+     Derselbe Befund ein zweites Mal: cand_20260918_ca4ea408 war
+     technisch einwandfrei, evidenzgebunden, faktengeprueft — und
+     redaktionell noch nicht gut genug. Weder Freigabe noch Ablehnung
+     noch "zu wenig Belege": die Belege reichten, die Auswahl daraus
+     nicht.
+     ------------------------------------------------------------------- */
+  const REFINE = flag("refine");
+  const ASSESSMENT = arg("assessment", null);
+
   if (!ID) { console.error("Kein --candidate."); process.exit(2); }
 
-  const gewaehlt = [APPROVE, REJECT, HOLD].filter(Boolean).length;
+  const gewaehlt = [APPROVE, REJECT, HOLD, REFINE].filter(Boolean).length;
   if (gewaehlt !== 1) {
-    console.error("Genau eines von --approve, --reject oder --hold. Mehreres oder " +
-      "nichts ist keine Entscheidung.");
+    console.error("Genau eines von --approve, --reject, --hold oder --refine. " +
+      "Mehreres oder nichts ist keine Entscheidung.");
     process.exit(2);
   }
 
@@ -185,6 +219,67 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("VISION UNIVERSE SOCIAL — Entscheidung ueber " + ID);
   console.log("Zustand:   " + kandidat.state);
+
+  /* ------------------------------------------------------- REFINE */
+  if (REFINE) {
+    if (!REASON) {
+      console.error("\n--refine ohne --reason. Eine redaktionelle Rueckgabe ohne " +
+        "Richtung ist keine Rueckmeldung, sondern nur ein Nein.");
+      process.exit(2);
+    }
+
+    const erlaubtR = OwnerDecision.mayTransition(kandidat.state,
+      "HELD_FOR_CREATIVE_REFINEMENT", { actor: "owner" });
+    if (!erlaubtR.ok) { console.error("\n" + erlaubtR.explanation); process.exit(3); }
+
+    /* Strukturiertes Feedback, nicht nur ein Satz. Die maschinelle
+       Bewertung kommt aus creative-quality.js und ist damit
+       nachvollziehbar und wiederholbar; der Owner-Satz steht
+       daneben, nicht darin. */
+    let bewertung = null;
+    if (ASSESSMENT) {
+      const ap = join(ROOT, ASSESSMENT);
+      if (!existsSync(ap)) {
+        console.error("\n--assessment zeigt auf nichts: " + ap);
+        process.exit(2);
+      }
+      bewertung = JSON.parse(readFileSync(ap, "utf8"));
+    }
+
+    kandidat.state = "HELD_FOR_CREATIVE_REFINEMENT";
+    kandidat.hold = {
+      reason: REASON, decidedBy: BY, decidedAt: NOW,
+      stage: "CREATIVE",
+      /* Woertlich, weil die Verwechslung teuer waere. */
+      evidenceFailure: false,
+      creativeFailure: true,
+      performanceJudgement: false,
+      topicRejected: false,
+      note: "Zurueckgehalten zur redaktionellen Ueberarbeitung. Die Evidenz " +
+        "reicht und ist gebunden; die Auswahl daraus traegt noch keine " +
+        "Geschichte. Dies ist KEINE Aussage ueber die zu erwartende " +
+        "Leistung, kein Evidence Failure und keine Ablehnung des Themas.",
+      assessment: bewertung
+    };
+    writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
+
+    const fbr = join(ROOT, FEEDBACK_REL);
+    const bestandR = existsSync(fbr) ? JSON.parse(readFileSync(fbr, "utf8")) : { entries: [] };
+    bestandR.entries = (bestandR.entries || []).concat([
+      feedbackEintrag(kandidat, "REFINE", { reason: REASON, by: BY, now: NOW })]);
+    bestandR.generatedAt = NOW;
+    mkdirSync(dirname(fbr), { recursive: true });
+    writeFileSync(fbr, JSON.stringify(bestandR, null, 2) + "\n");
+
+    console.log("\nZURUECKGEHALTEN ZUR REDAKTIONELLEN UEBERARBEITUNG.");
+    console.log("Die Evidenz reicht und bleibt gebunden. Nachzuarbeiten ist die");
+    console.log("Auswahl daraus - nicht die Recherche, nicht das Thema.");
+    console.log("\nDies ist keine Aussage ueber die erwartete Leistung. Der Beitrag");
+    console.log("geht in keinen Leistungsvergleich ein.");
+    console.log("\nKein Lauf, keine Recovery und kein Test aendert diesen Zustand.");
+    console.log("\nGeschrieben: " + FEEDBACK_REL);
+    process.exit(0);
+  }
 
   /* --------------------------------------------------------- HOLD */
   if (HOLD) {

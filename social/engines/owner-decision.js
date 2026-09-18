@@ -37,7 +37,8 @@
 
    Zwei Arten von Zustaenden, und dazwischen laeuft die Linie:
 
-     ENTSCHIEDEN   APPROVED, REJECTED, HELD_FOR_ENRICHMENT
+     ENTSCHIEDEN   APPROVED, REJECTED, HELD_FOR_ENRICHMENT,
+                   HELD_FOR_CREATIVE_REFINEMENT
                    Ein Mensch hat entschieden. Nur ein Mensch aendert
                    das wieder.
 
@@ -53,6 +54,35 @@
    wurde nie veroeffentlicht, hat deshalb keine Leistung, und er darf in
    keinen Leistungsvergleich eingehen — genau wie REJECTED, und aus
    demselben Grund.
+
+   -------------------------------------------------------------------------
+   DER ZWEITE ZUSTAND, DER GEFEHLT HAT
+   -------------------------------------------------------------------------
+
+   Derselbe Befund ein zweites Mal, an anderer Stelle:
+   cand_20260918_ca4ea408 war technisch einwandfrei, evidenzgebunden,
+   faktengeprueft — und redaktionell noch nicht gut genug. Der Owner
+   wollte ihn weder freigeben noch ablehnen noch wegen fehlender
+   Evidenz zurueckhalten. Die Evidenz REICHTE; die Auswahl daraus war
+   das Problem.
+
+   HELD_FOR_ENRICHMENT haette das Gegenteil behauptet ("zu wenig
+   Belege"), REJECTED haette das Thema verworfen, AWAITING_APPROVAL
+   haette die Entscheidung geleugnet. Wieder war die Lage real und der
+   Zustandsraum zu klein.
+
+   HELD_FOR_CREATIVE_REFINEMENT sagt genau das, was zutrifft:
+
+     * kein Leistungsurteil  — der Beitrag ist nie erschienen
+     * kein Evidence Failure — die Belege reichen, sie sind gebunden
+     * kein Themen-Reject    — das Thema bleibt richtig
+     * kein Transportfehler, kein Compliance-Befund
+
+   Erwogen und verworfen wurde REVISION_REQUESTED: ein Zustand sagt,
+   WORIN der Kandidat sich befindet, nicht welche Nachricht jemand
+   verschickt hat. "Zurueckgehalten fuer redaktionelle Ueberarbeitung"
+   bleibt wahr, auch wenn niemand mehr eine Revision anfordert. Das
+   strukturierte Feedback haengt am Zustand, es IST nicht der Zustand.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -60,7 +90,8 @@
   var isNode = (typeof module !== "undefined" && module.exports);
 
   /* Zustaende, hinter denen ein Mensch steht. */
-  var ENTSCHIEDEN = ["APPROVED", "REJECTED", "HELD_FOR_ENRICHMENT"];
+  var ENTSCHIEDEN = ["APPROVED", "REJECTED", "HELD_FOR_ENRICHMENT",
+    "HELD_FOR_CREATIVE_REFINEMENT"];
 
   /* Zustaende, die der Lauf setzt und der Lauf aendern darf. */
   var MASCHINELL = ["AWAITING_APPROVAL", "SUPERSEDED"];
@@ -70,7 +101,32 @@
   /* Entschiedene Zustaende, die keine Aussage ueber die LEISTUNG des
      Beitrags treffen. Ein Beitrag, der nie erschienen ist, hat keine
      Leistung — weder eine gute noch eine schlechte. */
-  var OHNE_LEISTUNGSAUSSAGE = ["REJECTED", "HELD_FOR_ENRICHMENT"];
+  var OHNE_LEISTUNGSAUSSAGE = ["REJECTED", "HELD_FOR_ENRICHMENT",
+    "HELD_FOR_CREATIVE_REFINEMENT"];
+
+  /* Woran ein zurueckgehaltener Kandidat haengt. Die Unterscheidung
+     ist keine Formsache: sie sagt, WELCHE Stufe nacharbeiten muss, und
+     sie darf nicht verwechselt werden. */
+  var HALTEGRUND = {
+    HELD_FOR_ENRICHMENT: {
+      stage: "EVIDENCE",
+      summary: "Die Belege hinter dem Beitrag reichen nicht.",
+      evidenceFailure: true,
+      creativeFailure: false
+    },
+    HELD_FOR_CREATIVE_REFINEMENT: {
+      stage: "CREATIVE",
+      summary: "Die Belege reichen; die redaktionelle Auswahl daraus " +
+        "noch nicht.",
+      evidenceFailure: false,
+      creativeFailure: true
+    }
+  };
+
+  /** Der Haltegrund zu einem Zustand, oder null. */
+  function haltegrund(state) {
+    return HALTEGRUND[String(state || "")] || null;
+  }
 
   function istEntschieden(state) {
     return ENTSCHIEDEN.indexOf(String(state || "")) !== -1;
@@ -166,6 +222,8 @@
     ENTSCHIEDEN: ENTSCHIEDEN,
     MASCHINELL: MASCHINELL,
     OHNE_LEISTUNGSAUSSAGE: OHNE_LEISTUNGSAUSSAGE,
+    HALTEGRUND: HALTEGRUND,
+    haltegrund: haltegrund,
     istEntschieden: istEntschieden,
     istMaschinell: istMaschinell,
     traegtLeistungsaussage: traegtLeistungsaussage,

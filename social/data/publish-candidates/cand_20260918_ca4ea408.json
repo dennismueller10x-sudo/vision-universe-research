@@ -4,7 +4,7 @@
   "supersedes": null,
   "supersedesAll": [],
   "createdAt": "2026-09-18T04:48:53.212Z",
-  "state": "AWAITING_APPROVAL",
+  "state": "HELD_FOR_CREATIVE_REFINEMENT",
   "content": {
     "contentId": "pkg_6b9c82e945d881c5",
     "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_6b9c82e945d881c5.jpg",
@@ -94,5 +94,351 @@
     "stundenSeither": null,
     "in7Tagen": 0,
     "in30Tagen": 0
+  },
+  "hold": {
+    "reason": "Technischer End-to-End-Nachweis akzeptiert; Evidenz ausreichend und gebunden; Creative Provider funktioniert. Offen ist ausschliesslich die redaktionelle, social-native Qualitaet: der Hook ist korrekt, aber nicht aufmerksamkeitsstark, und die Caption uebernimmt zu viel interne Research- und Score-Struktur in den oeffentlichen Text. Story-Richtung (Owner-Feedback, ausdruecklich KEINE kanonische Hook-Auswahl): der Spannungsbogen aus 47,6 % ueber 12M, starkem Momentum und bullishem Trend gegen einen Score von nur 76 von 100 - also die Frage, warum trotz dieser Staerke nicht hoeher. Die endgueltige Auswahl trifft Vision Universe selbst.",
+    "decidedBy": "owner",
+    "decidedAt": "2026-09-18T05:10:51.760Z",
+    "stage": "CREATIVE",
+    "evidenceFailure": false,
+    "creativeFailure": true,
+    "performanceJudgement": false,
+    "topicRejected": false,
+    "note": "Zurueckgehalten zur redaktionellen Ueberarbeitung. Die Evidenz reicht und ist gebunden; die Auswahl daraus traegt noch keine Geschichte. Dies ist KEINE Aussage ueber die zu erwartende Leistung, kein Evidence Failure und keine Ablehnung des Themas.",
+    "assessment": {
+      "generatedAt": "2026-09-18T05:10:42.559Z",
+      "contentId": "vu-xom-20260911",
+      "predictsPerformance": false,
+      "note": "Rubrik, keine Messung. Sie prueft nachvollziehbare Eigenschaften eines Textes und sagt keine Reichweite voraus; dafuer gibt es im Bestand n=0.",
+      "story": {
+        "hasTension": true,
+        "question": "Warum trotz TREND_STRUCTURE 91 % nur 76 von 100?",
+        "strength": {
+          "component": "TREND_STRUCTURE",
+          "value": 27.35,
+          "max": 30
+        },
+        "drag": {
+          "component": "VOLATILITY",
+          "value": 5,
+          "max": 10
+        },
+        "support": "momentum-12m",
+        "selectedIds": [
+          "score",
+          "score-contribution-trend_structure",
+          "score-contribution-volatility",
+          "momentum-12m",
+          "score-meaning"
+        ],
+        "unusedCount": 18,
+        "explanation": "Von 23 Belegen tragen 5 den Bogen: TREND_STRUCTURE bei 91 % gegen VOLATILITY bei 50 %, gemessen am Leitwert 76 %. Die uebrigen 18 bleiben gebunden."
+      },
+      "variants": [
+        {
+          "index": 1,
+          "hookVariantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:01",
+          "hook": "76 von 100 – was der XOM-Score zeigt und was ausdrücklich nicht.",
+          "passed": false,
+          "hookMet": 4,
+          "hookTotal": 6,
+          "met": 5,
+          "total": 9,
+          "criteria": [
+            {
+              "id": "scrollStop",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "curiosityGap",
+              "surface": "both",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "plainLanguageHook",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "plainLanguageCaption",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache in der Caption: \"TREND_STRUCTURE\", \"PROJECTION_AUXILIARY\", \"STRONG_POSITIVE\", \"MOMENTUM\", \"methodischer Setup-Rang\", \"Perzentil\", \"ATR\", \"Trendwert\", \"Handelstage\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "informationDensity",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Zahlendichte 12.7 je 100 Woerter (Band 1.5-12). Das ist ein Auszug aus dem Report, keine Auswahl daraus."
+            },
+            {
+              "id": "concreteTension",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Der Hook traegt den gemessenen Bogen nicht (TREND_STRUCTURE gegen VOLATILITY). Er nennt nur die Bremse. Belegt heisst nicht erzaehlt."
+            },
+            {
+              "id": "storyValue",
+              "surface": "caption",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "complementarity",
+              "surface": "both",
+              "kind": "policy",
+              "passed": false,
+              "finding": "Der erste Satz der Caption wiederholt die Zahlen des Hooks. Zwei Gelegenheiten, eine Aussage."
+            },
+            {
+              "id": "evidenceBinding",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "hookVariantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:02",
+          "hook": "27,35 von 30 Punkten aus der Trendstruktur: So setzt sich der XOM-Score zusammen.",
+          "passed": false,
+          "hookMet": 4,
+          "hookTotal": 6,
+          "met": 5,
+          "total": 9,
+          "criteria": [
+            {
+              "id": "scrollStop",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "curiosityGap",
+              "surface": "both",
+              "kind": "policy",
+              "passed": false,
+              "finding": "Der Hook stellt nichts in Frage und stellt nichts gegeneinander - er kuendigt an. Eine Ankuendigung erzeugt keine Neugier."
+            },
+            {
+              "id": "plainLanguageHook",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "plainLanguageCaption",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache in der Caption: \"TREND_STRUCTURE\", \"PROJECTION_AUXILIARY\", \"STRONG_POSITIVE\", \"MOMENTUM\", \"methodischer Setup-Rang\", \"Perzentil\", \"ATR\", \"Trendwert\", \"Handelstage\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "informationDensity",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Zahlendichte 12.7 je 100 Woerter (Band 1.5-12). Das ist ein Auszug aus dem Report, keine Auswahl daraus."
+            },
+            {
+              "id": "concreteTension",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Der Hook traegt den gemessenen Bogen nicht (TREND_STRUCTURE gegen VOLATILITY). Er nennt nur die Staerke. Belegt heisst nicht erzaehlt."
+            },
+            {
+              "id": "storyValue",
+              "surface": "caption",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "complementarity",
+              "surface": "both",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "evidenceBinding",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "hookVariantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:03",
+          "hook": "47,6 % in 12 Monaten – bei XOM ein Momentum-Messwert, keine Prognose.",
+          "passed": false,
+          "hookMet": 3,
+          "hookTotal": 6,
+          "met": 4,
+          "total": 9,
+          "criteria": [
+            {
+              "id": "scrollStop",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "curiosityGap",
+              "surface": "both",
+              "kind": "policy",
+              "passed": false,
+              "finding": "Der Hook stellt nichts in Frage und stellt nichts gegeneinander - er kuendigt an. Eine Ankuendigung erzeugt keine Neugier."
+            },
+            {
+              "id": "plainLanguageHook",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache im Hook: \"Momentum-Messwert\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "plainLanguageCaption",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache in der Caption: \"TREND_STRUCTURE\", \"PROJECTION_AUXILIARY\", \"STRONG_POSITIVE\", \"MOMENTUM\", \"methodischer Setup-Rang\", \"Perzentil\", \"ATR\", \"Trendwert\", \"Handelstage\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "informationDensity",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Zahlendichte 12.7 je 100 Woerter (Band 1.5-12). Das ist ein Auszug aus dem Report, keine Auswahl daraus."
+            },
+            {
+              "id": "concreteTension",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Der Hook traegt den gemessenen Bogen nicht (TREND_STRUCTURE gegen VOLATILITY). Er nennt nur die Staerke. Belegt heisst nicht erzaehlt."
+            },
+            {
+              "id": "storyValue",
+              "surface": "caption",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "complementarity",
+              "surface": "both",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "evidenceBinding",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "hookVariantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:04",
+          "hook": "165,99 USD Schlusskurs und ein Trendwert von 82,3: Wie ordnet man das technische Bild ein?",
+          "passed": false,
+          "hookMet": 4,
+          "hookTotal": 6,
+          "met": 5,
+          "total": 9,
+          "criteria": [
+            {
+              "id": "scrollStop",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "curiosityGap",
+              "surface": "both",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "plainLanguageHook",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache im Hook: \"Trendwert\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "plainLanguageCaption",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Innensprache in der Caption: \"TREND_STRUCTURE\", \"PROJECTION_AUXILIARY\", \"STRONG_POSITIVE\", \"MOMENTUM\", \"methodischer Setup-Rang\", \"Perzentil\", \"ATR\", \"Trendwert\", \"Handelstage\". Das ist die Ansicht unseres Rechenwegs, nicht die des Lesers."
+            },
+            {
+              "id": "informationDensity",
+              "surface": "caption",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Zahlendichte 12.7 je 100 Woerter (Band 1.5-12). Das ist ein Auszug aus dem Report, keine Auswahl daraus."
+            },
+            {
+              "id": "concreteTension",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": false,
+              "finding": "Der Hook traegt den gemessenen Bogen nicht (TREND_STRUCTURE gegen VOLATILITY). Er nennt keine der beiden Seiten. Belegt heisst nicht erzaehlt."
+            },
+            {
+              "id": "storyValue",
+              "surface": "caption",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "complementarity",
+              "surface": "both",
+              "kind": "policy",
+              "passed": true,
+              "finding": null
+            },
+            {
+              "id": "evidenceBinding",
+              "surface": "hook",
+              "kind": "measurable",
+              "passed": true,
+              "finding": null
+            }
+          ]
+        }
+      ],
+      "chosen": null,
+      "closest": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:01",
+      "explanation": "Keine der 4 Varianten besteht die Rubrik. Eine \"am wenigsten schlechte\" zu waehlen hiesse, die Grenze an das anzupassen, was gerade vorliegt."
+    }
   }
 }

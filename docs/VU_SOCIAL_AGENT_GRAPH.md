@@ -1373,3 +1373,132 @@ eine falsche Größe auffällt. `CG13` hält fest, dass das echte Ergebnis
 aus PR 98 — entstanden **vor** diesem Vertrag — ihn nicht erfüllt. Die
 Datei auf der Platte bleibt unangetastet: sie ist der Beweis und wird
 nicht nachträglich passend gemacht.
+
+---
+
+## 37. Evidence ist nicht Copy
+
+Der technische Nachweis stand: verifizierter Transport, gebundene
+Evidenz, bestandener Fact Check, Brand Gate grün. Und der Beitrag war
+trotzdem keiner.
+
+Die Caption nannte alle sechs Score-Beiträge, drei Renditehorizonte,
+ATR samt Perzentil, relatives Volumen und die Zahl der Handelstage.
+Jede Zahl belegt, keine erfunden — und zusammen ein Auszug aus dem
+Research-Report.
+
+### Die Stufe, die gefehlt hat
+
+Die Pipeline kannte zwei Zustände: „Beleg vorhanden" und „Beleg im
+Text". Dazwischen fehlte die Frage, die jede Redaktion zuerst stellt:
+**welche der belegten Zahlen erzählen zusammen etwas?**
+
+    FULL EVIDENCE   →   STORY SELECTION   →   PUBLIC COPY
+    23 Belege           5 Belege              der Text
+    bleiben gebunden    tragen den Bogen      erscheint
+
+Nicht verwendete Evidenz ist nicht verlorene Evidenz. Sie wandert nach
+`unused` und bleibt gebunden; der Fact Check prüft weiter gegen alles.
+Die Copy zieht nur aus der Auswahl.
+
+### Der Bogen wird gefunden, nicht erfunden
+
+Die Schwierigkeit war, das ohne ausgedachte Schwelle zu tun. Ab wann ist
+ein Unterschied „interessant"? Jede Konstante dort wäre geraten gewesen.
+
+Die Daten beantworten es selbst. Ein Score aus Teilbeiträgen hat einen
+eigenen Maßstab: den Score. Was über der Gesamtausschöpfung liegt, zieht
+nach oben; was darunter liegt, bremst. Die Schwelle ist der Wert selbst.
+
+    Score 76 von 100 — Ausschöpfung 76 %
+    darüber:  TREND_STRUCTURE 91 %, PROJECTION 88 %, MOMENTUM 78 %
+    darunter: SETUP 67 %, VOLUME 59 %, VOLATILITY 50 %
+
+Daraus folgt eine Frage, die belegt beantwortbar ist: warum trotz dieser
+Trendstärke nur 76? Weil Volatilität und Volumen die Hälfte beitragen.
+
+Liegen alle Teile auf derselben Seite, gibt es keinen Bogen. Dann sagt
+`story-selection.js` das — und reduziert ausdrücklich nicht: eine
+willkürliche Auswahl wäre schlechter als der vollständige Bestand.
+
+## 38. Eine Rubrik ist keine Messung
+
+`creative-quality.js` prüft acht Eigenschaften eines Textes. Sie sagt
+nicht voraus, welcher Hook besser läuft — dafür gibt es im Bestand n=0.
+Eine Zahl, die Leistung verspricht, wäre dieselbe erfundene Prognose,
+die der Publish Candidate im Feld „Zielmetrik" ausdrücklich verweigert.
+`predictsPerformance: false` steht deshalb im Ergebnis, und wo ein
+Kriterium eine Setzung ist statt einer Messung, steht das an ihm dran.
+
+### Der erste Entwurf verglich nichts
+
+Er prüfte Hook und Caption als einen Text. Alle vier Varianten fielen an
+denselben zwei Kriterien durch — beide trafen die **gemeinsame**
+Caption. Eine Rubrik, die vier verschiedene Dinge gleich bewertet,
+vergleicht nicht; sie misst etwas anderes.
+
+Seitdem trägt jedes Kriterium die Fläche, zu der es gehört (`hook`,
+`caption`, `both`). Erst damit sagt ein Befund, WO nachgearbeitet werden
+muss — und die Rangfolge der vier Hooks wurde 5 / 4 / 3 / 4 statt
+viermal derselbe Wert.
+
+### Zwei Messfehler, die die Rubrik selbst gefunden hat
+
+**Datumsangaben zählten als Informationsdichte.** „Quelle: Tiingo, Stand
+11.09.2026" ergab drei Zahlen und trieb kurze, saubere Captions über das
+Band. Die Messung bestrafte genau die Sorgfalt, die sie belohnen soll.
+
+**„76 von 100" zählte als zwei Angaben.** Die Skala gehört zum Wert; sie
+getrennt zu zählen bestrafte die Schreibweise, die dem Leser hilft.
+
+Beide Korrekturen senkten die Messung der beanstandeten Caption von 17,1
+auf 12,7 — und damit stimmte die Herleitung der Obergrenze nicht mehr,
+die aus genau dieser Caption stammt. Die Konstante ist kein Willkürwert,
+sondern ein abgeleiteter, und wer die Zählung ändert, muss die Ableitung
+nachziehen. CQ11 misst sie jetzt mit der Zählweise der Engine statt mit
+einer zweiten im Test: zwei Zählweisen wären zwei Wahrheiten, und die
+Ableitung liefe still auseinander.
+
+## 39. Der vierte Zustand — und die Grenze, die fast überall stand
+
+`cand_20260918_ca4ea408` war technisch einwandfrei, evidenzgebunden,
+faktengeprüft und redaktionell noch nicht gut genug. Der Owner wollte
+ihn weder freigeben noch ablehnen noch wegen fehlender Evidenz
+zurückhalten. Die Evidenz **reichte**; die Auswahl daraus war das
+Problem.
+
+Jeder vorhandene Zustand hätte etwas Unwahres behauptet:
+`HELD_FOR_ENRICHMENT` „zu wenig Belege", `REJECTED` „falsches Thema",
+`AWAITING_APPROVAL` „noch nicht entschieden".
+
+`HELD_FOR_CREATIVE_REFINEMENT` sagt, was zutrifft. Die Unterscheidung zu
+`HELD_FOR_ENRICHMENT` ist keine Formsache: die beiden schicken
+verschiedene Stufen zurück an die Arbeit — die Recherche oder die
+Redaktion.
+
+Erwogen und verworfen wurde `REVISION_REQUESTED`: ein Zustand sagt,
+worin der Kandidat sich befindet, nicht welche Nachricht jemand
+verschickt hat. Das strukturierte Feedback hängt am Zustand; es ist
+nicht der Zustand.
+
+### Die Grenze stand vor den Vorgängern, nicht vor der eigenen Datei
+
+Das Sperrgatter in `make-publish-candidate.mjs` schützte die Kandidaten,
+die ersetzt werden — nicht die Datei, die der Lauf selbst schreibt. Das
+reichte, solange ein neuer Kandidat eine neue Kennung bekam. Die Kennung
+kommt aber aus dem Inhalt: **derselbe Datenstand ergibt dieselbe
+Kennung.**
+
+Ein zweiter Lauf über unveränderte Daten hätte die frische
+Owner-Entscheidung glatt überschrieben und den Kandidaten wieder auf
+`AWAITING_APPROVAL` gesetzt — derselbe Fehler wie bei
+`cand_20260917_0363e680`, eine Zeile weiter.
+
+Gefunden wurde er nicht durch Nachdenken, sondern durch Ausprobieren:
+nach der Entscheidung lief `make-publish-candidate.mjs` noch einmal, und
+er tat es. `PC22` hält das fest.
+
+Der Lauf stürzt dabei nicht ab. Auf einen entschiedenen Kandidaten zu
+treffen ist der Normalfall — der Zustand ist erreicht, es gibt nichts zu
+tun. Ein Stacktrace würde eine Störung behaupten, wo eine Entscheidung
+steht.

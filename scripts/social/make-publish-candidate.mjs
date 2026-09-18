@@ -470,7 +470,46 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const dir = join(ROOT, KAND_REL);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, candidateId + ".json"), JSON.stringify(kandidat, null, 2) + "\n");
+
+  /* -------------------------------------------------------------------
+     DAS SPERRGATTER STAND AN DER FALSCHEN STELLE
+
+     Es schuetzte die VORGAENGER und nicht die Datei, die hier
+     geschrieben wird. Das reichte, solange ein neuer Kandidat eine
+     neue Kennung hatte — die Kennung kommt aber aus dem Inhalt, und
+     derselbe Inhalt ergibt dieselbe Kennung. Nach der Entscheidung
+     des Owners ueber cand_20260918_ca4ea408 haette ein zweiter Lauf
+     ueber unveraenderte Daten genau diese Entscheidung ueberschrieben
+     und den Kandidaten wieder auf AWAITING_APPROVAL gesetzt.
+
+     Das ist derselbe Fehler wie bei cand_20260917_0363e680, nur eine
+     Zeile weiter: eine Grenze, die fast ueberall steht. Jetzt steht
+     sie auch vor dem eigenen Schreibvorgang.
+     ------------------------------------------------------------------- */
+  const eigenerPfad = join(dir, candidateId + ".json");
+  if (existsSync(eigenerPfad)) {
+    const vorhanden = JSON.parse(readFileSync(eigenerPfad, "utf8"));
+    if (OwnerDecision.istEntschieden(vorhanden.state)) {
+      /* Kein Absturz. Ein erneuter Lauf ueber unveraenderte Daten auf
+         einen entschiedenen Kandidaten zu treffen ist der NORMALFALL,
+         nicht der Ausnahmefall - der Zustand ist erreicht, es gibt
+         nichts zu tun. Ein Stacktrace wuerde eine Stoerung behaupten,
+         wo eine Entscheidung steht. */
+      const grund = OwnerDecision.haltegrund(vorhanden.state);
+      console.log("\nNICHT GESCHRIEBEN: ueber " + candidateId + " ist bereits");
+      console.log("entschieden (" + vorhanden.state + ").");
+      if (grund) console.log(grund.summary);
+      console.log("\nDerselbe Inhalt ergibt dieselbe Kennung - dieser Lauf haette");
+      console.log("die Entscheidung ueberschrieben. Wer einen neuen Kandidaten");
+      console.log("will, braucht neuen Inhalt; wer den Zustand aendern will,");
+      console.log("entscheidet neu.");
+      process.exit(0);
+    }
+    /* Alles andere bleibt ein Wurf: ein unerwarteter Zustand ist ein
+       Irrtum ueber die Welt und soll auffallen. */
+    OwnerDecision.guardWrite(vorhanden, kandidat, { actor: "machine" });
+  }
+  writeFileSync(eigenerPfad, JSON.stringify(kandidat, null, 2) + "\n");
 
   /* ALLE offenen, nicht nur den juengsten.
 

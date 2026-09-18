@@ -234,3 +234,43 @@ test("OD15 · Kein Testlauf schreibt in den Produktionsbestand", () => {
     assert.deepEqual(fb.entries.map((e) => e.decision).sort(), ["HOLD", "REJECT"]);
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });
+
+test("OD16 · Der vierte Zustand: zurueckgehalten, aber nicht wegen Evidenz", () => {
+  /* Derselbe Befund ein zweites Mal. cand_20260918_ca4ea408 war
+     technisch einwandfrei, evidenzgebunden, faktengeprueft — und
+     redaktionell noch nicht gut genug.
+
+     Ohne eigenen Zustand haette diese Entscheidung als eine der drei
+     vorhandenen protokolliert werden muessen, und jede davon haette
+     etwas Unwahres behauptet: HELD_FOR_ENRICHMENT "zu wenig Belege",
+     REJECTED "falsches Thema", AWAITING_APPROVAL "noch nicht
+     entschieden". */
+  assert.ok(O.ENTSCHIEDEN.includes("HELD_FOR_CREATIVE_REFINEMENT"));
+  assert.equal(O.istEntschieden("HELD_FOR_CREATIVE_REFINEMENT"), true);
+  assert.equal(O.istMaschinell("HELD_FOR_CREATIVE_REFINEMENT"), false);
+
+  /* Kein Leistungsurteil — genau wie REJECTED und HELD_FOR_ENRICHMENT,
+     und aus demselben Grund: der Beitrag ist nie erschienen. */
+  assert.equal(O.traegtLeistungsaussage("HELD_FOR_CREATIVE_REFINEMENT"),
+    false);
+
+  /* Und keine Maschine kommt daran vorbei. */
+  const versuch = O.mayTransition(
+    "HELD_FOR_CREATIVE_REFINEMENT", "AWAITING_APPROVAL", { actor: "machine" });
+  assert.equal(versuch.ok, false);
+  assert.equal(versuch.reason, "ownerDecided");
+
+  /* Der Owner schon — das IST das Owner-Gate. */
+  assert.equal(O.mayTransition(
+    "HELD_FOR_CREATIVE_REFINEMENT", "APPROVED", { actor: "owner" }).ok, true);
+});
+
+test("OD17 · Eine Maschine erfindet diesen Zustand nicht", () => {
+  /* Er ist eine Entscheidung. "Das ist redaktionell zu schwach" ist
+     ein Urteil ueber Qualitaet, und das faellt ein Mensch. Die Rubrik
+     in creative-quality.js BERAET dabei; sie entscheidet nicht. */
+  const versuch = O.mayTransition(
+    "AWAITING_APPROVAL", "HELD_FOR_CREATIVE_REFINEMENT", { actor: "machine" });
+  assert.equal(versuch.ok, false);
+  assert.equal(versuch.reason, "machineCannotDecide");
+});

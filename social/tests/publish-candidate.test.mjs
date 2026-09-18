@@ -326,3 +326,74 @@ test("PC21 · Ein Lauf ersetzt keinen zurueckgehaltenen Kandidaten", () => {
       "AWAITING_APPROVAL");
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });
+
+test("PC22 · Ein zweiter Lauf ueberschreibt die eigene Owner-Entscheidung nicht", () => {
+  /* Die Luecke, die PC21 offen liess.
+
+     PC21 schuetzt die VORGAENGER. Die Datei, die der Lauf selbst
+     schreibt, war ungeschuetzt — und das reichte nur so lange, wie ein
+     neuer Kandidat eine neue Kennung bekam. Die Kennung kommt aber aus
+     dem Inhalt: derselbe Datenstand ergibt dieselbe Kennung. Nach einer
+     Owner-Entscheidung haette ein zweiter Lauf ueber unveraenderte
+     Daten sie glatt ueberschrieben und den Kandidaten wieder auf
+     AWAITING_APPROVAL gesetzt.
+
+     Genau derselbe Fehler wie bei cand_20260917_0363e680, eine Zeile
+     weiter. */
+  const p = platz("eigener-schutz");
+  try {
+    stand(p.abs, [entscheidung({ packageId: "pkg_x", topic: "Thema X" })],
+      [{ opportunityId: "opp_a", score: 90, proposable: true, explanation: "stark" }]);
+
+    /* Erster Lauf: der Kandidat entsteht. */
+    lauf(p.rel, ["--write"]);
+    const kdir = join(p.abs, "publish-candidates");
+    const datei = readdirSync(kdir)[0];
+    const pfad = join(kdir, datei);
+    assert.equal(JSON.parse(readFileSync(pfad, "utf8")).state, "AWAITING_APPROVAL");
+
+    /* Der Owner entscheidet: redaktionell zurueckgehalten. */
+    const entschieden = JSON.parse(readFileSync(pfad, "utf8"));
+    entschieden.state = "HELD_FOR_CREATIVE_REFINEMENT";
+    entschieden.hold = { reason: "Hook nicht stark genug.", decidedBy: "owner",
+      decidedAt: NOW, stage: "CREATIVE", evidenceFailure: false, creativeFailure: true };
+    writeFileSync(pfad, JSON.stringify(entschieden, null, 2) + "\n");
+
+    /* Zweiter Lauf ueber DENSELBEN Datenstand - also dieselbe Kennung. */
+    const aus = lauf(p.rel, ["--write"]);
+
+    const nachher = JSON.parse(readFileSync(pfad, "utf8"));
+    assert.equal(nachher.state, "HELD_FOR_CREATIVE_REFINEMENT",
+      "der Lauf hat seine eigene Owner-Entscheidung ueberschrieben");
+    assert.equal(nachher.hold.reason, "Hook nicht stark genug.");
+
+    /* Und er sagt das, statt abzustuerzen: eine erreichte Entscheidung
+       ist der Normalfall, keine Stoerung. */
+    assert.match(aus, /NICHT GESCHRIEBEN/);
+    assert.match(aus, /HELD_FOR_CREATIVE_REFINEMENT/);
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+test("PC23 · Die beiden Halte-Gruende werden nicht verwechselt", () => {
+  /* "Zu wenig Belege" und "die Auswahl aus den Belegen traegt nicht"
+     schicken verschiedene Stufen zurueck an die Arbeit. Wer sie
+     gleich protokolliert, laesst die falsche Stelle suchen. */
+  const OD = require("../engines/owner-decision.js");
+
+  const evidenz = OD.haltegrund("HELD_FOR_ENRICHMENT");
+  const kreativ = OD.haltegrund("HELD_FOR_CREATIVE_REFINEMENT");
+
+  assert.equal(evidenz.stage, "EVIDENCE");
+  assert.equal(evidenz.evidenceFailure, true);
+  assert.equal(kreativ.stage, "CREATIVE");
+  assert.equal(kreativ.evidenceFailure, false);
+  assert.equal(kreativ.creativeFailure, true);
+
+  /* Beide sind entschieden, beide ohne Leistungsaussage. */
+  ["HELD_FOR_ENRICHMENT", "HELD_FOR_CREATIVE_REFINEMENT"].forEach((z) => {
+    assert.equal(OD.istEntschieden(z), true, z);
+    assert.equal(OD.traegtLeistungsaussage(z), false, z);
+    assert.equal(OD.mayTransition(z, "AWAITING_APPROVAL", { actor: "machine" }).ok,
+      false, z + " ist maschinell aenderbar");
+  });
+});
