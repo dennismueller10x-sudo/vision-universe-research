@@ -91,11 +91,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  }
  await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();
  await page.getByRole('button',{name:'Suche',exact:true}).click();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('TSLA');
+ await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).waitFor();await page.screenshot({path:out+'/canonical-search-'+width+'.png',fullPage:true});
  await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).click();await page.locator('main footer').waitFor();
  await page.getByRole('heading',{name:'Unternehmen im Produktuniversum',exact:true}).waitFor();
- if(await page.locator('.q-chart,.quote').count())throw Error('identity-only stock fabricated market data');
+ if(await page.locator('.q-chart,.quote').count()||/Kursstand:/.test(await page.locator('main footer').innerText()))throw Error('identity-only stock fabricated market data or inherited another stock date');
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('canonical stock identity overflow');
  await page.screenshot({path:out+'/canonical-stock-'+width+'.png',fullPage:true});checks.push({view:'canonical-search-identity',width,pass:true});
+ await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
+ await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
+ await page.getByRole('heading',{name:'NVIDIA Corporation',exact:true}).waitFor();await page.getByText(/Die Daten können derzeit nicht geladen werden/).waitFor();
+ if(await page.locator('.q-chart,.quote').count())throw Error('panel outage fabricated values');
+ await page.unroute('**/quant/data/sec/quant-factor-inputs.json');checks.push({view:'canonical-identity-panel-outage',width,pass:true});
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});
  const serviceRoute=/\/(?:quant\/api\/product-services|vu2\/release-bundle)\.js$/;
  // Install the same rejection before service initialization, independent of
