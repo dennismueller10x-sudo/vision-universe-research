@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-18T19:55:44.173Z",
+  "generatedAt": "2026-09-18T21:10:41.672Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5622,
     "historicalQualityAccepted": 6508,
-    "intradayAvailable": 516,
-    "liveCapable": 467,
+    "intradayAvailable": 5199,
+    "liveCapable": 515,
     "factorEligible": 6401,
     "fundamentals": 5376,
     "fundamentals10y": 2154,
@@ -36,7 +36,8 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 6351,
+    "NOT_IN_LIVE_SCOPE": 4684,
+    "NO_IEX_BARS": 1676,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 924,
     "INSUFFICIENT_HISTORY": 819,
@@ -49,9 +50,7 @@
     "NO_FACTOR_ROW:FAIL": 102,
     "NOT_TRADING:STALE_SERIES": 88,
     "NO_COMPACT_SERIES": 67,
-    "NOT_IN_LIVE_SCOPE": 49,
     "NAME_MISSING": 20,
-    "NO_IEX_BARS": 8,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
     "NO_FACTOR_ROW": 3,
@@ -246,8 +245,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -257,9 +256,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_INTRADAY_SNAPSHOT"
-      ]
+      "gaps": []
     },
     {
       "name": "Broadcom",
