@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T22:39:02.073Z",
+  "generatedAt": "2026-09-18T05:14:30.615Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -12,9 +12,9 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "35282962953",
-    "commit": "3c9ad300f99ff4a8aece102882b30ad36ac02d34",
-    "runtimeMs": 17953,
+    "runId": "35309933203",
+    "commit": "ca6a3639f72213e49d7fae1d15527e06468d42f1",
+    "runtimeMs": 17839,
     "msPerSymbol": 3
   },
   "redistribution": {
@@ -22,8 +22,8 @@
     "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
   },
   "universeSize": 6875,
-  "evaluable": 6397,
-  "notEvaluable": 478,
+  "evaluable": 6396,
+  "notEvaluable": 479,
   "note": "Jede Frage traegt drei Zahlen: Treffer, Nichttreffer und nicht entscheidbar. Die dritte ist die wichtigste - ohne sie liest sich eine Luecke wie ein Befund.",
   "questions": [
     {
@@ -31,9 +31,9 @@
       "label": "Alle Aktien ueber SMA20",
       "kind": "boolean",
       "matched": 1930,
-      "notMatched": 4467,
+      "notMatched": 4466,
       "notEvaluable": 0,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "AAAC",
         "AAAP",
@@ -95,9 +95,9 @@
       "label": "Alle Aktien ueber SMA50",
       "kind": "boolean",
       "matched": 2433,
-      "notMatched": 3924,
+      "notMatched": 3923,
       "notEvaluable": 40,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "A",
         "AAAC",
@@ -169,10 +169,10 @@
       "id": "aboveSMA100",
       "label": "Alle Aktien ueber SMA100",
       "kind": "boolean",
-      "matched": 2679,
+      "matched": 2678,
       "notMatched": 3344,
       "notEvaluable": 374,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "A",
         "AAAC",
@@ -244,10 +244,10 @@
       "id": "aboveSMA200",
       "label": "Alle Aktien ueber SMA200",
       "kind": "boolean",
-      "matched": 2788,
+      "matched": 2787,
       "notMatched": 2898,
       "notEvaluable": 711,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "A",
         "AACB",
@@ -320,9 +320,9 @@
       "label": "Ueber SMA20 und SMA50 und SMA200",
       "kind": "boolean",
       "matched": 1157,
-      "notMatched": 4529,
+      "notMatched": 4528,
       "notEvaluable": 711,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "AACB",
         "AAPL",
@@ -395,9 +395,9 @@
       "label": "Ueber allen vier Durchschnitten",
       "kind": "boolean",
       "matched": 1122,
-      "notMatched": 4564,
+      "notMatched": 4563,
       "notEvaluable": 711,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "AACB",
         "AAPL",
@@ -470,9 +470,9 @@
       "label": "Neue 52-Wochen-Hochs",
       "kind": "boolean",
       "matched": 223,
-      "notMatched": 5354,
+      "notMatched": 5353,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "ACLO",
         "ADAMH",
@@ -544,10 +544,10 @@
       "id": "within5PctOf52wHigh",
       "label": "Innerhalb 5 % vom 52-Wochen-Hoch",
       "kind": "boolean",
-      "matched": 959,
+      "matched": 958,
       "notMatched": 4618,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "AACB",
         "AAPL",
@@ -620,9 +620,9 @@
       "label": "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
       "kind": "boolean",
       "matched": 495,
-      "notMatched": 5479,
+      "notMatched": 5478,
       "notEvaluable": 423,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "tickers": [
         "AACI",
         "AAMI",
@@ -695,9 +695,9 @@
       "label": "Staerkstes Momentum (12 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5577,
+      "evaluated": 5576,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "MINE",
@@ -918,9 +918,9 @@
       "label": "Staerkstes Momentum (6 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5923,
+      "evaluated": 5922,
       "notEvaluable": 474,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "VIVKD",
@@ -1141,9 +1141,9 @@
       "label": "Staerkstes Momentum (12 Monate ohne den letzten)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5577,
+      "evaluated": 5576,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "MINE",
@@ -1364,9 +1364,9 @@
       "label": "Staerkste relative Staerke gegen SPY (12 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5577,
+      "evaluated": 5576,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "MINE",
@@ -1587,9 +1587,9 @@
       "label": "Trendbeschleunigung (1M gegen 3M)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 6289,
+      "evaluated": 6288,
       "notEvaluable": 108,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "INDP",
@@ -1810,9 +1810,9 @@
       "label": "Hoechste Volatilitaet (60 Tage, annualisiert)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 6302,
+      "evaluated": 6301,
       "notEvaluable": 95,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "CPTAF",
@@ -2033,9 +2033,9 @@
       "label": "Niedrigste Volatilitaet (60 Tage, annualisiert)",
       "kind": "ranked",
       "direction": "asc",
-      "evaluated": 6302,
+      "evaluated": 6301,
       "notEvaluable": 95,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "AACT",
@@ -2256,9 +2256,9 @@
       "label": "Geringster Abstand zum 52-Wochen-Hoch",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5577,
+      "evaluated": 5576,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "ADEX",
@@ -2479,9 +2479,9 @@
       "label": "Groesster Rueckgang im letzten Jahr",
       "kind": "ranked",
       "direction": "asc",
-      "evaluated": 5577,
+      "evaluated": 5576,
       "notEvaluable": 820,
-      "evaluatedOf": 6397,
+      "evaluatedOf": 6396,
       "top": [
         {
           "ticker": "LBGJ",
