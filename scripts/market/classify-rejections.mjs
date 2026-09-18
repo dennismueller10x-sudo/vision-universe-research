@@ -41,13 +41,32 @@ const OUT = arg("json", join(root, "quant", "data", "market", "commercial", "rej
 const STALE_MS = Number(arg("stale-days", "7")) * 86400000;
 
 /* Die Checkpoints liegen je Lauf-Kennung in der Arbeitsablage des
-   Anbieters. Gesucht wird jede Datei, die ein Register traegt. */
+   Anbieters - und zwar in einem eigenen Unterverzeichnis:
+   quant/engines/market-store.js schreibt sie nach
+   <ablage>/<anbieter>/checkpoints/<runId>.json.
+ *
+ * Bis zum 18.09.2026 hat dieses Skript eine Ebene zu hoch gesucht
+ * (<ablage>/<anbieter>/checkpoint*.json) und deshalb in JEDEM Lauf
+ * "kein Checkpoint" gemeldet - auch dann, wenn der Ingest im selben
+ * Lauf ein Register mit 423 Eintraegen fuehrte. Der Bericht war leer,
+ * und der Schritt "faellige Ablehnungen freigeben" hat nie eine
+ * einzige freigegeben. Gruen gemeldet, nichts getan.
+ *
+ * Gesucht wird jetzt dort, wo der Erzeuger schreibt. Der alte Pfad
+ * bleibt als zweiter Ort stehen, damit eine aeltere Arbeitsablage
+ * nicht stillschweigend uebergangen wird. */
 function checkpointDateien() {
-  const dir = join(CACHE, "tiingo");
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir)
-    .filter((f) => /^checkpoint/.test(f) && f.endsWith(".json"))
-    .map((f) => join(dir, f));
+  const orte = [join(CACHE, "tiingo", "checkpoints"), join(CACHE, "tiingo")];
+  const gefunden = [];
+  for (const dir of orte) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (!f.endsWith(".json")) continue;
+      const voll = join(dir, f);
+      if (!gefunden.includes(voll)) gefunden.push(voll);
+    }
+  }
+  return gefunden;
 }
 
 const dateien = checkpointDateien();
