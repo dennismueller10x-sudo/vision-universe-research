@@ -24,6 +24,28 @@ function create(options){
   if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId)||!/^\d{10}$/.test(i.cik))return null;
   return i;
  }
+ function canonicalIdentity(i){return !!i&&Master.inProductUniverse(i)&&/^vu_[a-f0-9]+$/.test(i.instrumentId)&&!!i.masterMemberId&&(i.legacyIds||[]).includes(i.masterMemberId);}
+ function identityModel(i){return {securityId:i.instrumentId,instrumentId:i.instrumentId,masterMemberId:i.masterMemberId,issuerId:i.issuerId||null,ticker:i.symbol,name:i.companyName||i.symbol,productEligibility:i.productEligibility};}
+ async function searchInstruments(query,{limit=12}={}){
+  const q=String(query||'').trim();if(!q)return {state:'AVAILABLE',entries:[],scope:'CANONICAL_PRODUCT_UNIVERSE'};
+  const boundedLimit=Math.max(1,Math.min(30,Number.isInteger(limit)?limit:12));let failed=false;
+  // Directory owns indexing, ranking and identity resolution. Isolate failures
+  // per request because its optional-shard API otherwise treats I/O as no hits.
+  const searchDirectory=Directory.create({loadJSON:async path=>{try{return await load(path);}catch(e){failed=true;throw e;}}});
+  try{const result=await searchDirectory.search(q,{limit:boundedLimit*3});
+   const resolved=await Promise.all(result.entries.map(e=>searchDirectory.getInstrument({symbol:e.s,instrumentId:e.i})));
+   if(failed)return {state:'SOURCE_MISSING',reason:'DIRECTORY_SOURCE_UNAVAILABLE',entries:[]};
+   const seen=new Set(),entries=[];
+   for(let index=0;index<resolved.length;index++){const i=resolved[index].instrument,e=result.entries[index];if(resolved[index].status!=='OK'||!canonicalIdentity(i)||i.instrumentId!==e.i||seen.has(i.masterMemberId))continue;seen.add(i.masterMemberId);entries.push(identityModel(i));}
+   return {state:'AVAILABLE',entries:entries.slice(0,boundedLimit),scope:'CANONICAL_PRODUCT_UNIVERSE',limited:result.entries.length===boundedLimit*3||entries.length>boundedLimit};
+  }catch{return {state:'SOURCE_MISSING',reason:'DIRECTORY_SOURCE_UNAVAILABLE',entries:[]};}
+ }
+ async function identityOnlyStock(ticker){
+  try{const result=await directory.getInstrument(ticker),i=result.instrument;if(result.status!=='OK'||i?.symbol!==ticker||!canonicalIdentity(i))return unavailable('INVALID_IDENTITY');
+   const missing={state:'UNAVAILABLE',reason:'PRODUCT_DATA_NOT_CONNECTED'};
+   return {...identityModel(i),state:'UNAVAILABLE',identityState:'AVAILABLE',reason:'PRODUCT_DATA_NOT_CONNECTED',availability:{fundamentals:{...missing},history:{...missing},technical:{...missing},quant:{...missing},intraday:{...missing},realtime:{...missing}},workspaces:workspaces(ticker)};
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  function init(){if(!ready)ready=Promise.all([
   load('/quant/config/development-preview.json'),load('/quant/config/feature-gates.json'),
   load('/quant/data/sec/quant-factor-inputs.json')
@@ -89,7 +111,7 @@ function create(options){
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)||!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
+  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return identityOnlyStock(ticker);if(!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
    const stock=await row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
    try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
@@ -166,7 +188,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

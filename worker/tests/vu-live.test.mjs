@@ -588,3 +588,98 @@ test("VL-35 der ganze Weg: 70 Prozent warnen, 85 Prozent beenden, Snapshot ueber
     assert.equal(bericht.indexOf(wort), -1, "im Zustandsbericht steht " + wort);
   }
 });
+
+/* Additive event semantics for consumers that require verified trades. */
+function typedEvent(h, kind, price) {
+  h.prov.aktuell.zustellen(JSON.stringify({ messageType: "A", service: "iex",
+    data: [kind, new Date(h.uhr.now()).toISOString(), "nvda", price, 10] }));
+}
+
+test("VL-S1 reference event metadata survives wire and cached replay without a trade claim", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  const at = h.uhr.now();
+  h.prov.kurs("NVDA", 177, at);
+  h.uhr.vor(1000);
+  const frame = ws.letzte("u");
+  assert.equal(frame.schemaVersion, "vu-live-update-1.1.0");
+  assert.deepEqual(frame.v[0].slice(0, 8), ["NVDA", 177, at, 177, 177, 177, 177, at]);
+  assert.deepEqual(frame.semantics[0], { priceType: "UNSPECIFIED", messageForm: "iexNoTypeField",
+    candlePriceType: "REALTIME_REFERENCE" });
+  const replay = await verbinde(h);
+  await abonniere(h, replay, ["NVDA"]);
+  assert.deepEqual(replay.letzte("u").v, frame.v);
+  assert.deepEqual(replay.letzte("u").semantics, frame.semantics);
+  assert.equal(replay.letzte("u").schemaVersion, frame.schemaVersion);
+});
+
+test("VL-S2 typed trade survives parser and relay but does not certify mixed OHLC", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  h.prov.kurs("NVDA", 170, h.uhr.now());
+  typedEvent(h, "T", 180);
+  h.uhr.vor(1000);
+  const row = ws.letzte("u").v[0];
+  assert.equal(row[1], 180);
+  assert.equal(row[3], 170, "legacy reference candle remains unchanged");
+  assert.deepEqual(ws.letzte("u").semantics[0], { priceType: "TRADE", messageForm: "iexTyped",
+    candlePriceType: "REALTIME_REFERENCE" });
+});
+
+test("VL-S3 coalescing never carries trade semantics into a later untyped event", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  typedEvent(h, "T", 180);
+  h.prov.kurs("NVDA", 181, h.uhr.now());
+  h.uhr.vor(1000);
+  assert.equal(ws.letzte("u").v[0][1], 181);
+  assert.equal(ws.letzte("u").semantics[0].priceType, "UNSPECIFIED");
+});
+
+test("VL-S4 typed quotes never produce relay price or candle updates", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  typedEvent(h, "Q", 999);
+  h.uhr.vor(1000);
+  assert.equal(ws.letzte("u"), null);
+  assert.equal(h.obj.serien.size, 0);
+  typedEvent(h, "T", 180);
+  h.uhr.vor(1000);
+  const before = ws.mit("u").length;
+  typedEvent(h, "Q", 999);
+  h.uhr.vor(1000);
+  assert.equal(ws.mit("u").length, before);
+  assert.equal(h.obj.werte.get("NVDA").last, 180);
+});
+
+test("VL-S5 missing or contradictory event classification remains unconfirmed", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["NVDA"]);
+  for (const classification of [{}, { priceType: "TRADE" },
+    { priceType: "TRADE", messageForm: "iexNoTypeField" },
+    { priceType: "UNSPECIFIED", messageForm: "iexTyped" }]) {
+    h.obj.tick({ symbol: "NVDA", price: 180, timestamp: new Date(h.uhr.now()).toISOString(),
+      ...classification });
+    h.uhr.vor(1000);
+    assert.equal(ws.letzte("u").semantics[0].priceType, "UNSPECIFIED");
+  }
+});
+
+test("VL-S6 coalesced metadata stays aligned per subscribed security", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["AAPL", "NVDA"]);
+  typedEvent(h, "T", 180);
+  h.prov.kurs("AAPL", 230, h.uhr.now());
+  h.uhr.vor(1000);
+  const frame = ws.letzte("u");
+  assert.equal(frame.v.length, frame.semantics.length);
+  assert.deepEqual(frame.v.map(row => row[0]), ["AAPL", "NVDA"]);
+  assert.deepEqual(frame.semantics.map(meta => meta.priceType), ["UNSPECIFIED", "TRADE"]);
+  assert.ok(frame.v.every(row => row.length === 8), "legacy tuple length is unchanged");
+});
