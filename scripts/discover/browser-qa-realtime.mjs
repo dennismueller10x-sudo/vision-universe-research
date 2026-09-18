@@ -312,9 +312,34 @@ const mitTicks = bericht.symbols.filter((s) => s.ticks > 0);
 const mitChart = bericht.symbols.filter((s) => s.chartUpdatesAfterLoad > 0);
 const fehlerfrei = bericht.symbols.every((s) => s.consoleErrors.length === 0);
 
-alleOk = pruefung("connected", "jede Aktienseite verbindet sich mit dem Strom",
-                  mitStrom.length === SYMBOLE.length,
-                  { verbunden: mitStrom.length, von: SYMBOLE.length }) && alleOk;
+/* Bei geschlossener Boerse gibt es keinen Strom, zu dem sich eine Seite
+   verbinden koennte - und das ist die richtige Antwort, kein Fehler. Der
+   Lauf vom 18.09. um 09:21 New York (Phase PRE, neun Minuten vor der
+   Eroeffnungsglocke) meldete genau deshalb rot, obwohl das Produkt sich
+   korrekt verhielt: kein Strom, "Letzter Handelstag · Donnerstag", Chart
+   da, keine Konsolenfehler. Also wird die Zusage jetzt nach Sitzung
+   getrennt gefragt. Offen: es MUSS eine Verbindung geben. Geschlossen:
+   es darf KEINE geben, und der Snapshot muss traegt. */
+if (sitzung.isOpen) {
+  alleOk = pruefung("connected", "jede Aktienseite verbindet sich mit dem Strom",
+                    mitStrom.length === SYMBOLE.length,
+                    { verbunden: mitStrom.length, von: SYMBOLE.length }) && alleOk;
+} else {
+  alleOk = pruefung("keinStromBeiGeschlossenerBoerse",
+                    "bei geschlossener Boerse baut keine Seite eine Verbindung auf",
+                    mitStrom.length === 0,
+                    { verbunden: mitStrom.map((s) => s.symbol), phase: sitzung.phase }) && alleOk;
+  const ohneChart = bericht.symbols.filter((s) => s.prices.chart === null);
+  alleOk = pruefung("snapshotBeiGeschlossenerBoerse",
+                    "der Snapshot traegt die Seite auch ohne Strom (Chart mit Kurs)",
+                    ohneChart.length === 0,
+                    { ohneChart: ohneChart.map((s) => s.symbol) }) && alleOk;
+  const falschLive = bericht.symbols.filter((s) => s.labels.some((l) => /Live/i.test(l)));
+  alleOk = pruefung("keinLiveBeiGeschlossenerBoerse",
+                    "kein Titel behauptet 'Live', wenn die Boerse zu ist",
+                    falschLive.length === 0,
+                    bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.labels))) && alleOk;
+}
 if (sitzung.phase === "REGULAR") {
   alleOk = pruefung("ticksAAPLNVDA", "AAPL und NVDA liefern Kurse ohne Neuladen",
                     ["AAPL", "NVDA"].every((s) => (bericht.symbols.find((x) => x.symbol === s) || {}).ticks > 0),
@@ -503,8 +528,18 @@ if (sitzung.phase === "REGULAR") {
 
 await browser.close();
 
-bericht.result = alleOk ? "PASS" : "FAIL";
-bericht.reason = alleOk ? null : bericht.checks.filter((c) => !c.ok).map((c) => c.id).join(",");
+/* Ein Lauf bei geschlossener Boerse hat die Realtime-Zusage nicht
+   geprueft, sondern nur die Zusagen fuer den geschlossenen Markt. Das ist
+   kein PASS - aber auch kein FAIL. Es ist "nicht geprueft", und der
+   Bericht sagt es mit der Phase, damit niemand ihn als Abnahme liest.
+   Der Ausstiegscode bleibt dann 0: ein geschlossener Markt ist kein
+   Fehler des Produkts. Rot wird der Lauf nur, wenn eine Zusage, die
+   geprueft WURDE, gebrochen ist. */
+bericht.result = alleOk ? (sitzung.isOpen ? "PASS" : "UNKNOWN") : "FAIL";
+bericht.reason = alleOk
+  ? (sitzung.isOpen ? null : "marketClosed:" + sitzung.phase)
+  : bericht.checks.filter((c) => !c.ok).map((c) => c.id).join(",");
+bericht.realtimeVerified = alleOk && sitzung.isOpen;
 mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, LIVE ? "vu-realtime-production-smoke.json" : "vu-realtime-browser-qa.json"),
               JSON.stringify(bericht, null, 2) + "\n");
