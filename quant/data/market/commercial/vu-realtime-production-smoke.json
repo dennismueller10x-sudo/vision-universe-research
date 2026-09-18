@@ -1,0 +1,199 @@
+{
+  "schemaVersion": "vu-realtime-browser-qa-1.1.0",
+  "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
+  "checkedAt": "2026-09-18T13:21:27.496Z",
+  "origin": "https://research.visionuniverse.de",
+  "session": {
+    "phase": "PRE",
+    "localTime": "09:21:27",
+    "isOpen": false
+  },
+  "mode": "PRODUCTION",
+  "note": "Gegen die veroeffentlichte Seite. Keine Abbildung, kein lokaler Server - der Browser sieht genau das, was ein Besucher sieht.",
+  "honesty": "Ein Titel ohne Marktereignis liefert keinen Kurs. Das ist kein Systemfehler und wird hier auch nicht als Latenz gezaehlt.",
+  "symbols": [
+    {
+      "symbol": "AAPL",
+      "prices": {
+        "kopf": 331.34,
+        "chart": 337.05,
+        "kopfText": "331,34 $−0,52 % zum Vortag",
+        "deviation": 0.016941106660732938
+      },
+      "connected": false,
+      "streamState": "IDLE",
+      "subscribed": [],
+      "ticks": 0,
+      "firstTickMs": null,
+      "chartUpdatesAfterLoad": 0,
+      "labels": [
+        "Letzter Handelstag · Donnerstag"
+      ],
+      "latencyMs": null,
+      "consoleErrors": [],
+      "verdict": "NO_STREAM"
+    },
+    {
+      "symbol": "NVDA",
+      "prices": {
+        "kopf": 212.17,
+        "chart": 219.4,
+        "kopfText": "212,17 $+0,57 % zum Vortag",
+        "deviation": 0.032953509571558876
+      },
+      "connected": false,
+      "streamState": "IDLE",
+      "subscribed": [],
+      "ticks": 0,
+      "firstTickMs": null,
+      "chartUpdatesAfterLoad": 0,
+      "labels": [
+        "Letzter Handelstag · Donnerstag"
+      ],
+      "latencyMs": null,
+      "consoleErrors": [],
+      "verdict": "NO_STREAM"
+    },
+    {
+      "symbol": "MSFT",
+      "prices": {
+        "kopf": 497.12,
+        "chart": 497.67,
+        "kopfText": "497,12 $−1,64 % zum Vortag",
+        "deviation": 0.001105149998995341
+      },
+      "connected": false,
+      "streamState": "IDLE",
+      "subscribed": [],
+      "ticks": 0,
+      "firstTickMs": null,
+      "chartUpdatesAfterLoad": 0,
+      "labels": [
+        "Letzter Handelstag · Donnerstag"
+      ],
+      "latencyMs": null,
+      "consoleErrors": [],
+      "verdict": "NO_STREAM"
+    },
+    {
+      "symbol": "PANW",
+      "prices": {
+        "kopf": 375.09,
+        "chart": 375,
+        "kopfText": "375,09 $+0,31 % zum Vortag",
+        "deviation": 0.0002399999999999333
+      },
+      "connected": false,
+      "streamState": "IDLE",
+      "subscribed": [],
+      "ticks": 0,
+      "firstTickMs": null,
+      "chartUpdatesAfterLoad": 0,
+      "labels": [
+        "Letzter Handelstag · Donnerstag"
+      ],
+      "latencyMs": null,
+      "consoleErrors": [],
+      "verdict": "NO_STREAM"
+    },
+    {
+      "symbol": "VLO",
+      "prices": {
+        "kopf": 397.04,
+        "chart": 412.47,
+        "kopfText": "397,04 $+3,68 % zum Vortag",
+        "deviation": 0.0374087812446966
+      },
+      "connected": false,
+      "streamState": "IDLE",
+      "subscribed": [],
+      "ticks": 0,
+      "firstTickMs": null,
+      "chartUpdatesAfterLoad": 0,
+      "labels": [
+        "Letzter Handelstag · Donnerstag"
+      ],
+      "latencyMs": null,
+      "consoleErrors": [],
+      "verdict": "NO_STREAM"
+    }
+  ],
+  "reconnect": {
+    "vorher": {
+      "state": "IDLE",
+      "connected": false,
+      "label": "Letzter Handelstag · Donnerstag"
+    },
+    "nachAbriss": {
+      "state": "IDLE",
+      "connected": false,
+      "label": "Letzter Handelstag · Donnerstag",
+      "chartDa": true
+    },
+    "nachWiederanlauf": {
+      "state": "IDLE",
+      "connected": false,
+      "label": "Letzter Handelstag · Donnerstag",
+      "stats": {
+        "opens": 0,
+        "closes": 0,
+        "errors": 0,
+        "messages": 0,
+        "ticks": 0,
+        "denied": 0,
+        "retries": 0,
+        "subscribes": 1,
+        "unsubscribes": 0,
+        "notifications": 1,
+        "lastMessageAt": null,
+        "lastTickAt": null,
+        "state": "IDLE",
+        "reason": "testAbriss",
+        "symbols": 1,
+        "connected": false
+      }
+    }
+  },
+  "expiry": null,
+  "checks": [
+    {
+      "id": "connected",
+      "question": "jede Aktienseite verbindet sich mit dem Strom",
+      "ok": false,
+      "detail": {
+        "verbunden": 0,
+        "von": 5
+      }
+    },
+    {
+      "id": "keineFehler",
+      "question": "keine Konsolenfehler auf den Aktienseiten",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "abrissGemeldet",
+      "question": "nach dem Abriss ist der Strom nicht mehr verbunden",
+      "ok": true,
+      "detail": {
+        "state": "IDLE",
+        "connected": false,
+        "label": "Letzter Handelstag · Donnerstag",
+        "chartDa": true
+      }
+    },
+    {
+      "id": "chartBleibt",
+      "question": "der Chart bleibt nach dem Abriss stehen (kein leerer Chart)",
+      "ok": true,
+      "detail": {
+        "state": "IDLE",
+        "connected": false,
+        "label": "Letzter Handelstag · Donnerstag",
+        "chartDa": true
+      }
+    }
+  ],
+  "result": "FAIL",
+  "reason": "connected"
+}
