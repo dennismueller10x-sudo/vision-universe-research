@@ -478,3 +478,38 @@ test("CG31 · Der Zaehler steigt nicht von selbst", () => {
   assert.equal(a.attempt, 1);
   assert.equal(b.attempt, 1);
 });
+
+test("CG30 · Eine Textrevision erbt das verifizierte Visual", () => {
+  /* Eine redaktionelle Ueberarbeitung erzeugt kein Bild. Ohne
+     Vererbung faende der Zyklus kein Asset, zeichnete stattdessen eine
+     eigene Karte — und das Visual, um dessen Erhalt es ging, waere
+     still ersetzt worden. Genau das ist in der Simulation passiert,
+     bevor diese Zeilen existierten.
+
+     Geerbt heisst NICHT ungeprueft: gelesen wird frisch, und derselbe
+     Transportvertrag laeuft darueber. */
+  const S = require("../engines/asset-store.js");
+  const Integrity = require("../engines/asset-integrity.js");
+
+  const brief = JSON.parse(JSON.stringify(ERGEBNIS_ROH));
+  brief.reuse_visual = {
+    from_content_id: "vu-quelle",
+    visual_variant_id: "vu-quelle:sha:visual:FUTURE_TECH:01",
+    asset_path: "a.png",
+    asset_sha256: Integrity.sha256(ASSET),
+    asset_byte_size: ASSET.length,
+    mime_type: "image/png", width: 1254, height: 1254
+  };
+
+  const geerbt = S.inherit(brief, () => ASSET, { freshReadback: true });
+  assert.equal(geerbt.ok, true, geerbt.explanation);
+  assert.equal(geerbt.transport, "ASSET_VERIFIED");
+  assert.equal(geerbt.fromContentId, "vu-quelle");
+
+  /* Und ein beschaedigtes Erbe wird nicht stillschweigend uebernommen. */
+  const kaputt = S.inherit(brief, () => ASSET.subarray(0, 3000),
+    { freshReadback: true });
+  assert.equal(kaputt.ok, false);
+  assert.equal(kaputt.regenerate, false,
+    "ein Transportfehler darf keine neue Erzeugung ausloesen");
+});

@@ -138,3 +138,42 @@ test("GT12 · Derselbe Satz in deutscher Schreibung besteht", () => {
   const ids = res.blocking.map((b) => b.id);
   assert.ok(!ids.includes("transliterated-umlauts"));
 });
+
+test("GT20 · Produktive Staemme decken jede Beugung ab", () => {
+  /* Das Woerterbuch aus exakten Wortformen war zu klein. Aufgefallen
+     ist es an einem simulierten Ergebnis mit "moeglichen",
+     "ausschoepft" und "zwoelf" — Alltagswoertern, die residue()
+     pflichtgemaess meldete und die damit jede Variante blockierten.
+     Eine Liste aller Beugungen waere nie fertig geworden. */
+  const t = "Der Trend schoepft 27,35 von 30 moeglichen Punkten aus. " +
+    "In zwoelf Monaten hoeher, die Pruefung bestaetigt das.";
+  const n = G.normalize(t);
+  assert.match(n, /schöpft/);
+  assert.match(n, /möglichen/);
+  assert.match(n, /zwölf/);
+  assert.match(n, /höher/);
+  assert.match(n, /Prüfung/);
+  assert.deepEqual(G.residue(n), []);
+});
+
+test("GT21 · Ein Stamm greift nur, wo er in echtem Deutsch nie steht", () => {
+  /* Aufgenommen wird ein Stamm nur, wenn die ASCII-Folge in echtem
+     Deutsch NIE vorkommt — sonst raet er, und Raten ist genau das, was
+     diese Datei nicht tut. */
+  const echt = ["Die neue Steuer dauert an.", "Frauen und Feuer, genauer betrachtet.",
+    "Ein aktuelles Duett im Kontinuum.", "Die Frequenz ist konsequent.",
+    "Silhouette und Poesie.", "Koexistenz und Aerodynamik.", "Michael und Israel."];
+  echt.forEach((t) => assert.equal(G.normalize(t), t,
+    "echtes Deutsch veraendert: " + t));
+});
+
+test("GT22 · Bezeichner bleiben unberuehrt", () => {
+  /* Staemme ersetzen INNERHALB eines Worts. Genau deshalb duerfen sie
+     Bezeichner nicht sehen: aus "vu-pruef-test" wuerde sonst
+     "vu-pr<ue>f-test", und eine Kennung, die sich beim Durchreichen
+     aendert, ist keine mehr. */
+  ["https://research.visionuniverse.de/assets/social/pkg.jpg",
+   "vu-xom-20260911-rev1", "authoring/requests/vu-pruef-test",
+   "brief_00b861f_pruef"].forEach((id) =>
+    assert.equal(G.normalize(id), id, "Bezeichner veraendert: " + id));
+});

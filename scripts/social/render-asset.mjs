@@ -661,7 +661,13 @@ export function planUebernahme(pkg, asset) {
     return { ok: false, reason: "noAsset",
       message: "Kein Asset zum Uebernehmen." };
   }
-  if (asset.state !== "READBACK_VERIFIED" && asset.state !== "COMPLETED") {
+  /* ASSET_VERIFIED kommt aus asset-store.js und bedeutet dasselbe wie
+     READBACK_VERIFIED: frisch zurueckgelesen und gegen die Ankuendigung
+     geprueft. Die beiden Namen stammen aus zwei Schichten, die
+     unabhaengig gewachsen sind - hier stehen sie nebeneinander, statt
+     dass eine Schicht die andere umbenennt und dabei Daten umdeutet. */
+  var VERIFIZIERT = ["READBACK_VERIFIED", "COMPLETED", "ASSET_VERIFIED"];
+  if (VERIFIZIERT.indexOf(asset.state) === -1) {
     return { ok: false, reason: "assetNotVerified", visualType: "GENERATIVE",
       message: "Das Asset steht auf " + asset.state + ". Nur ein frisch " +
         "zurueckgelesenes Asset darf uebernommen werden." };

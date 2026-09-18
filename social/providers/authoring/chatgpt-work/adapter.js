@@ -62,6 +62,8 @@
   var German = isNode ? require("../../../engines/german-text.js") : global.VUSocialGermanText;
   var AssetTransport = isNode ? require("../../../engines/asset-transport.js")
     : global.VUSocialAssetTransport;
+  var AssetStore = isNode ? require("../../../engines/asset-store.js")
+    : global.VUSocialAssetStore;
   var AssetIntegrity = isNode ? require("../../../engines/asset-integrity.js")
                               : global.VUSocialAssetIntegrity;
   var nodeCrypto = isNode ? require("crypto") : null;
@@ -567,6 +569,38 @@
         var bild = (ergebnis.visual_variants || [])[0] || null;
 
         /* ---------------------------------------------------------------
+           DAS GEERBTE BILD EINER TEXTREVISION
+
+           Eine redaktionelle Ueberarbeitung erzeugt kein Bild - sie
+           uebernimmt das bereits verifizierte des Quell-Objekts. Ohne
+           diese Zeilen faende der Zyklus kein Asset, zeichnete
+           stattdessen eine eigene Karte, und das Visual, um dessen
+           Erhalt es ging, waere still ersetzt worden. Genau das ist in
+           der Simulation passiert.
+
+           Geerbt heisst NICHT ungeprueft: asset-store.inherit() liest
+           frisch und laesst denselben Transportvertrag darueber
+           laufen.
+           --------------------------------------------------------------- */
+        var geerbt = null;
+        if (!bild && agentBrief && agentBrief.reuse_visual && transport &&
+            typeof transport.readAsset === "function") {
+          geerbt = AssetStore.inherit(agentBrief, transport.readAsset,
+            { freshReadback: true, contentId: contentId,
+              generator: "chatgpt-work" });
+          if (geerbt.ok) {
+            var q = agentBrief.reuse_visual;
+            bild = { visual_variant_id: q.visual_variant_id,
+              visual_strategy: q.visual_strategy || "GENERATIVE",
+              brief_revision: q.brief_revision || null,
+              asset_path: q.asset_path, asset_sha256: q.asset_sha256,
+              asset_byte_size: q.asset_byte_size,
+              mime_type: q.mime_type, width: q.width, height: q.height,
+              inherited_from: q.from_content_id || null };
+          }
+        }
+
+        /* ---------------------------------------------------------------
            DIE SCHREIBUNG DES AGENTENTEXTES
 
            Der Brief liefert dem Agenten Belegsaetze. Kommen sie aus den
@@ -672,7 +706,11 @@
             asset_sha256: bild.asset_sha256,
             mime_type: bild.mime_type,
             width: bild.width, height: bild.height,
-            state: assets.state
+            state: geerbt ? geerbt.transport : assets.state,
+            /* Woher es kommt - ein geerbtes Asset soll nicht aussehen
+               wie ein frisch geliefertes. */
+            inherited: !!geerbt,
+            inheritedFrom: geerbt ? geerbt.fromContentId : null
           } : null,
           processing: ergebnis.processing || null,
           /* Beide Aussagen nebeneinander, nie die eine statt der

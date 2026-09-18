@@ -186,6 +186,57 @@
   ];
 
   /* -------------------------------------------------------------------
+     PRODUKTIVE STAEMME
+
+     Das Woerterbuch aus exakten Wortformen war zu klein. Aufgefallen
+     ist es an einem simulierten Ergebnis, das "moeglichen",
+     "ausschoepft" und "zwoelf" enthielt - Alltagswoerter, die residue()
+     pflichtgemaess meldete und die damit jede Variante blockierten.
+     Eine Liste aller Beugungen waere nie fertig geworden.
+
+     Ein Stamm deckt sie alle ab. Aufgenommen wird er nur, wenn die
+     ASCII-Folge in echtem Deutsch NIE vorkommt - sonst raet er, und
+     Raten ist genau das, was diese Datei nicht tut. "moegl" erfuellt
+     das, "haus" nicht. Jede Zeile nennt deshalb Beispiele, die sie
+     tragen soll.
+     ------------------------------------------------------------------- */
+  var STAEMME = [
+    { von: /moegl/gi,    zu: "m" + oe + "gl" },   /* moeglich, Moeglichkeit, ermoeglicht */
+    { von: /unmoegl/gi,  zu: "unm" + oe + "gl" },
+    { von: /schoepf/gi,  zu: "sch" + oe + "pf" }, /* schoepft, ausschoepfen, erschoepft */
+    { von: /zwoelf/gi,   zu: "zw" + oe + "lf" },
+    { von: /hoeh/gi,     zu: "h" + oe + "h" },    /* hoeher, Hoehe, erhoeht, Hoehepunkt */
+    { von: /groess/gi,   zu: "gr" + oe + "ss" },  /* groesser, Groesse, vergroessert */
+    { von: /schwaech/gi, zu: "schw" + ae + "ch" },/* Schwaeche, abgeschwaecht */
+    { von: /staerk/gi,   zu: "st" + ae + "rk" },  /* Staerke, verstaerkt, staerkste */
+    { von: /erklaer/gi,  zu: "erkl" + ae + "r" }, /* erklaert, Erklaerung */
+    { von: /waehr/gi,    zu: "w" + ae + "hr" },   /* waehrend, Waehrung, gewaehrt */
+    { von: /naeher/gi,   zu: "n" + ae + "her" },
+    { von: /spaet/gi,    zu: "sp" + ae + "t" },   /* spaeter, verspaetet */
+    { von: /faell/gi,    zu: "f" + ae + "ll" },   /* faellt, auffaellig, Faelle */
+    { von: /haelt/gi,    zu: "h" + ae + "lt" },
+    { von: /zaehl/gi,    zu: "z" + ae + "hl" },   /* zaehlt, Zaehler, gezaehlt */
+    { von: /waehl/gi,    zu: "w" + ae + "hl" },   /* waehlt, Auswahl-Formen */
+    { von: /erhoeh/gi,   zu: "erh" + oe + "h" },
+    { von: /gehoer/gi,   zu: "geh" + oe + "r" },  /* gehoert, zugehoerig */
+    { von: /stuetz/gi,   zu: "st" + ue + "tz" },  /* stuetzt, Unterstuetzung */
+    { von: /fuehr/gi,    zu: "f" + ue + "hr" },   /* fuehrt, Ausfuehrung, gefuehrt */
+    { von: /pruef/gi,    zu: "pr" + ue + "f" },   /* prueft, Pruefung, geprueft */
+    { von: /begruend/gi, zu: "begr" + ue + "nd" },
+    { von: /beruecksicht/gi, zu: "ber" + ue + "cksicht" },
+    { von: /zurueck/gi,  zu: "zur" + ue + "ck" },
+    { von: /ueblich/gi,  zu: ue + "blich" },
+    { von: /muess/gi,    zu: "m" + ue + "ss" },   /* muessen, muesste */
+    { von: /duerf/gi,    zu: "d" + ue + "rf" },   /* duerfen, duerfte */
+    { von: /kuerz/gi,    zu: "k" + ue + "rz" },   /* kuerzer, verkuerzt */
+    { von: /laeuf/gi,    zu: "l" + ae + "uf" },   /* laeuft, Ablaeufe */
+    { von: /verhaeltnis/gi, zu: "Verh" + ae + "ltnis" },
+    { von: /taegl/gi,    zu: "t" + ae + "gl" },   /* taeglich */
+    { von: /jaehrl/gi,   zu: "j" + ae + "hrl" },
+    { von: /monatl/gi,   zu: "monatl" }           /* unveraendert: kein Umlaut */
+  ];
+
+  /* -------------------------------------------------------------------
      ECHTES DEUTSCH
 
      Muster, in denen "ae", "oe" oder "ue" legitim vorkommen. Sie
@@ -226,6 +277,28 @@
   function normalize(text) {
     if (text === null || text === undefined) return text;
     var s = String(text);
+
+    /* -----------------------------------------------------------------
+       STAEMME GREIFEN NUR IN FLIESSTEXT
+
+       Sie ersetzen INNERHALB eines Worts und decken damit jede Beugung
+       ab. Genau deshalb duerfen sie Bezeichner nicht sehen: aus
+       "vu-pruef-test" wuerde sonst "vu-prüf-test", und eine Kennung,
+       die sich beim Durchreichen aendert, ist keine mehr.
+
+       Ein Zeichen, das in deutschem Fliesstext nicht vorkommt - Schraegstrich,
+       Unterstrich, Doppelpunkt, Ziffer - macht aus einem Wort einen
+       Bezeichner. Der bleibt unberuehrt.
+       ----------------------------------------------------------------- */
+    s = s.split(/(\s+)/).map(function (stueck) {
+      if (/[\/_:0-9]/.test(stueck)) return stueck;
+      STAEMME.forEach(function (r) {
+        stueck = stueck.replace(r.von, function (treffer) {
+          return grossWie(treffer, r.zu);
+        });
+      });
+      return stueck;
+    }).join("");
 
     s = s.replace(/[A-Za-zÀ-ɏ]+/g, function (wort) {
       var treffer = WOERTER[wort.toLowerCase()];
@@ -278,6 +351,7 @@
   }
 
   var api = {
+    STAEMME: STAEMME,
     normalize: normalize,
     residue: residue,
     clean: clean,
