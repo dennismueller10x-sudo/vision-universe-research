@@ -231,3 +231,63 @@ test("AT8 · Eine fehlende Groessenangabe besteht nicht stillschweigend", wenn, 
   }, { freshReadback: true });
   assert.equal(befund.checks.byteSizeValid, null);
 });
+
+/* ------------------------------------------------------------------ */
+/* DIE WIEDERHERSTELLUNG OHNE GESCHICHTSFAELSCHUNG                     */
+/* ------------------------------------------------------------------ */
+
+const R = await import("../../scripts/social/recover-asset-transfer.mjs");
+
+test("AT9 · Das beschaedigte Asset behaelt einen Platz", wenn, () => {
+  /* Der erste Bildproof brauchte einen Force-Update. Als einmalige
+     Rettung in Ordnung, als Produktionspfad das Gegenteil von
+     Provenance: der Beweis, DASS etwas schiefging, verschwaende mit dem
+     Schaden. */
+  assert.equal(R.quarantaenePfad("a/b/visual-01.png", 1),
+    "a/b/visual-01.failed-01.png");
+  assert.equal(R.quarantaenePfad("a/b/visual-01.png", 2),
+    "a/b/visual-01.failed-02.png");
+  assert.equal(R.quarantaenePfad("ohne-endung", 1), "ohne-endung.failed-01");
+});
+
+test("AT10 · Eine Quelle mit falschem Hash wird abgewiesen", wenn, () => {
+  /* Ein Recovery, das sich seine Wahrheit selbst ausdenkt, ist keines.
+     Die Quelle muss den Hash tragen, den der Agent angekuendigt hat -
+     sonst waere sie ein anderes Bild, und das Ergebnis behauptete etwas
+     Falsches. */
+  const bild = bekanntGut();
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-recover-src-"));
+  try {
+    const p = join(wurzel, "fremd.png");
+    writeFileSync(p, bild);
+
+    const befund = R.pruefeQuelle(p, {
+      asset_path: "a.png",
+      asset_sha256: "0".repeat(64),      /* ein anderer Hash */
+      mime_type: "image/png", width: 1254, height: 1254
+    });
+    assert.equal(befund.ok, false);
+    assert.equal(befund.reason, "sourceInvalid");
+  } finally { rmSync(wurzel, { recursive: true, force: true }); }
+});
+
+test("AT11 · Eine geprueft korrekte Quelle wird angenommen", wenn, () => {
+  const bild = bekanntGut();
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-recover-src-"));
+  try {
+    const p = join(wurzel, "gut.png");
+    writeFileSync(p, bild);
+    const befund = R.pruefeQuelle(p, {
+      asset_path: "a.png", asset_sha256: I.sha256(bild),
+      mime_type: "image/png", width: 1254, height: 1254, byte_size: bild.length
+    });
+    assert.equal(befund.ok, true, befund.explanation);
+    assert.equal(befund.sha256, I.sha256(bild));
+  } finally { rmSync(wurzel, { recursive: true, force: true }); }
+});
+
+test("AT12 · Eine fehlende Quelle erfindet nichts", wenn, () => {
+  const befund = R.pruefeQuelle("/gibt/es/nicht.png", { asset_path: "a.png" });
+  assert.equal(befund.ok, false);
+  assert.equal(befund.reason, "sourceMissing");
+});

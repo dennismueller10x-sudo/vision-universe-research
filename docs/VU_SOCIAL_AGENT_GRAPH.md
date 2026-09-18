@@ -1174,3 +1174,132 @@ geprüft** und wird hier nicht behauptet.
 abgelaufen ist. „Stale" heißt „es kommt nichts mehr" — und PR #103 hat
 gezeigt, dass nach sechs stillen Anläufen sehr wohl noch etwas kommen
 kann.
+
+---
+
+## 33. Erzeugt und nicht zugestellt
+
+PR #106 hat zwei Dinge zugleich gezeigt, die nichts miteinander zu tun
+haben:
+
+| | |
+|---|---|
+| Der Agent hat ein Bild **erzeugt** | Text, Caption, Visual Brief, Ergebnisdokument — einwandfrei, in 146 s, unbeaufsichtigt |
+| Das Bild ist nicht **angekommen** | Chunk-Kette bricht bei Offset 416 983 |
+
+Wer das zusammenwirft, lernt Unsinn: dass diese Hook schlecht sei, dass
+diese Visual Strategy nicht funktioniere, dass die Evidenz schwach war.
+Nichts davon hat mit einem abgerissenen Dateitransfer zu tun.
+
+### Die Forensik, ohne einen einzigen Work-Aufruf
+
+Alle drei realen Assets stammen erkennbar aus demselben Erzeuger:
+`IHDR`, `caBX`, dann `IDAT`-Chunks zu **exakt 65 536 Bytes**, ein
+kurzer Schluss-`IDAT`, `IEND`.
+
+| | Bytes | IDATs | Kette |
+|---|---|---|---|
+| PR #98 | 1 794 521 | 28 (27 voll + 1 039) | vollständig |
+| PR #103 | 1 262 586 | 19 (18 voll + 59 036) | vollständig |
+| **PR #106** | **786 444** | **6, alle voll** | **Bruch @ 416 983** |
+
+Der Unterschied ist nicht der Inhalt, sondern der Weg.
+
+### Maximal belegbarer Befund
+
+Das beschädigte Asset hat einen **einwandfreien Anfang**: Signatur,
+`IHDR`, `caBX` und sechs vollständige `IDAT`-Chunks. Ab Offset 416 983
+steht kein Chunk-Header mehr. Die Gesamtlänge ist 786 444 Bytes =
+**exakt 768 KiB plus zwölf**. Diese zwölf Bytes sehen aus wie ein
+`IEND`-Chunk und sind keiner:
+
+```
+ist     000000049454e44ae4260820
+korrekt 0000000049454e44ae426082
+```
+
+Dieselben Ziffern, um **ein Nibble** verschoben. Die Gegenprobe — ob
+der ganze Rest ab der Bruchstelle gleichmäßig verschoben ist — fällt
+**negativ** aus. Es ist also keine simple Bitverschiebung des Stroms.
+
+**Was daraus nicht folgt: der Mechanismus.** Der Work-interne Transport
+ist von hier aus nicht beobachtbar. Die Grenze auf exakt 768 KiB und
+der angehängte Pseudo-Terminator sind Beobachtungen, keine Ursache.
+
+### Die Endeprüfung war eine Stichprobe
+
+Sie hat PR #106 gefangen — aber nur, weil die Verschiebung zufällig
+genau die vier Bytes traf, auf die sie schaut. Ein Bild mit intaktem
+`IEND` und zerstörter Mitte wäre durchgegangen. `AT3` stellt das nach:
+die Endeprüfung meldet „vollständig", die Kettenprüfung nicht.
+
+Gelaufen wird jetzt die **ganze Kette**, Chunk für Chunk bis `IEND`,
+plus die Prüfung, dass dahinter nichts mehr steht.
+
+---
+
+## 34. `completed` ist nicht `completed`
+
+PR #106 trug `processing.status = "completed"` im selben Commit wie ein
+beschädigtes Asset. **Der Agent hat nicht gelogen** — er hat berichtet,
+was er von seiner Seite sehen konnte. Nur ist das eine andere Frage als
+die, was im Repository liegt.
+
+| | |
+|---|---|
+| `AGENT_REPORTED_COMPLETED` | der Agent sagt, er sei fertig |
+| `VU_VERIFIED_COMPLETED` | wir haben nachgesehen und es stimmt |
+
+Beide stehen nebeneinander im Ergebnis, nie das eine **statt** des
+anderen. `VU_VERIFIED_COMPLETED` verlangt alle neun Prüfungen — eine
+einzige fehlende genügt:
+
+```
+RESULT JSON VALID · IDENTITIES VALID · ASSET EXISTS · MIME VALID
+IMAGE STRUCTURE VALID · DIMENSIONS VALID · BYTE SIZE VALID
+SHA256 MATCH · FRESH GITHUB READBACK VALID
+```
+
+Der eigene Fehlertyp heißt `ASSET_TRANSPORT_INTEGRITY_FAILED` und trägt
+`contentJudgement: false`.
+
+---
+
+## 35. Wiederherstellung ohne Geschichtsfälschung
+
+Der erste Bildproof brauchte einen **Force-Update**. Als einmalige
+Rettung in Ordnung; als Produktionspfad das Gegenteil von Provenance —
+der Beweis, *dass* etwas schiefging, verschwände zusammen mit dem
+Schaden.
+
+```
+ASSET_TRANSFER_FAILED
+  → das beschädigte Asset bleibt liegen: visual-01.failed-01.png
+  → ein neuer, unveränderlicher Commit legt die korrekte Fassung daneben
+  → frisches Rücklesen vom finalen Commit
+  → VU_VERIFIED_COMPLETED
+```
+
+Kein History-Rewrite. Wer später fragt, was passiert ist, findet **beide
+Fassungen** und den Grund dazwischen.
+
+Und die Quelle muss den Hash tragen, den der Agent angekündigt hat.
+Fehlt eine geprüft korrekte Quelle, endet der Weg mit einem Nein
+(`AT10`, `AT12`): ein Recovery, das sich seine Wahrheit selbst ausdenkt,
+ist keines.
+
+**Der Creative Agent wird dafür nicht erneut aufgerufen.** Er hat seine
+Arbeit geleistet; es ist der Transport, der scheiterte. Ihn wegen eines
+Dateitransfers noch einmal laufen zu lassen, würfe eine erbrachte
+Leistung weg, kostete einen Work-Aufruf und erzeugte ein *anderes* Bild.
+
+### Getestet mit einem bekannt guten Binär
+
+`AT1` schreibt das verifizierte Asset aus dem Bildproof in ein echtes
+Wegwerf-Repository, committet, liest **frisch vom Commit** zurück und
+vergleicht Typ, Struktur, Abmessungen, Größe und Hash. Byteidentisch.
+
+Damit ist der Transportweg unabhängig von der Bilderzeugung geprüft —
+ohne einen einzigen Work-Aufruf. `AT6` hält fest, dass eine Prüfung
+gegen den Schreibpuffer nicht zählt: sie prüft nur, dass wir richtig
+abgeschrieben haben.
