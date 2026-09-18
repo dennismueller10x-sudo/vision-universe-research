@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-18T13:58:26.747Z",
+  "checkedAt": "2026-09-18T14:11:08.390Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-18",
-    "localTime": "09:58:26",
+    "localTime": "10:11:08",
     "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-18",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-18T13:58:22.640Z",
+    "indexGeneratedAt": "2026-09-18T14:11:04.287Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-18",
@@ -22,27 +22,49 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-18",
-      "asOf": "2026-09-18T13:55:00.000Z",
-      "asOfLocal": "09:55",
+      "asOf": "2026-09-18T14:10:00.000Z",
+      "asOfLocal": "10:10",
       "regularComplete": false,
-      "snapshots": 495,
+      "snapshots": 502,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 09:55",
+    "dataLabel": "Heute · Stand 10:10",
     "entries": 520,
     "byState": {
-      "LIVE": 495,
-      "LAST_SESSION": 25,
-      "STALE": 0,
+      "LIVE": 500,
+      "LAST_SESSION": 0,
+      "STALE": 20,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSession": 495,
-      "previousSessionWithinOpenGrace": 25
+      "runningSession": 500,
+      "currentSessionMissing": 18,
+      "runningSessionStaleAsOf": 2
     },
-    "staleSample": [],
+    "staleSample": [
+      "ATHS",
+      "CHCO",
+      "CLMB",
+      "CPSS",
+      "FOA",
+      "GABC",
+      "HCM",
+      "HURC",
+      "JFIN",
+      "JRSH",
+      "MRDN",
+      "MSC",
+      "NRP",
+      "PCLA",
+      "PMI",
+      "RFAI",
+      "SMP",
+      "SWVL",
+      "TUYA",
+      "UFG"
+    ],
     "universeSessions": [
       "2026-09-17"
     ],
