@@ -829,7 +829,13 @@ await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
   assert(dunkel, "auf /discover/ fehlt die Navigation");
   assert(/rgba?\(8, 8, 10/.test(dunkel.bg), "der Discover-Header ist nicht dunkel: " + dunkel.bg);
   assert(!dunkel.badge, "die Plakette 'Development Preview' steht noch im Discover-Kopf");
-  for (const pfad of ["/quant/", "/dashboard/", "/news/", "/macro/", "/academy/"]) {
+  /* /quant/ leitet seit dem Quant-2.0-Release (17.09.2026) auf /vu2/ um und
+     traegt die gemeinsame Navigation nicht mehr. Das ist eine Entscheidung
+     des anderen Arbeitsstrangs, keine Regression dieser Fassung - geprueft
+     wird der Header deshalb auf den Seiten, die ihn weiterhin einbinden.
+     Dass Discover als einzige Flaeche ein eigenes Schema hat, ist der Punkt
+     dieser Pruefung, und der bleibt. */
+  for (const pfad of ["/dashboard/", "/news/", "/macro/", "/academy/"]) {
     const hell = await lese(pfad);
     assert(hell, "auf " + pfad + " fehlt die Navigation");
     assert(/rgba?\(255, 255, 255/.test(hell.bg),
@@ -892,19 +898,26 @@ await check("Geschaeftszahlen erscheinen nur, wo es welche gibt", async () => {
      Welcher das ist, sagen die Daten (kein CIK im Consumer-Index), nicht
      eine feste Liste - seit die SEC-Bundles das Produktuniversum abdecken,
      hat fast jeder bekannte Name Geschaeftszahlen. */
+  /* Gefragt wird die AUSLIEFERUNG, nicht die Quelle dahinter: ob ein Titel
+     Geschaeftszahlen hat, steht in seiner eigenen Detaildatei. Frueher las
+     diese Pruefung den Consumer-Index der SEC-Schicht - den liefert die
+     Produktion seit dem Quant-2.0-Release nicht mehr aus (die
+     Release-Projektion laesst quant/data/sec/ bewusst weg), und ein Abruf
+     ins Leere erzeugte hier einen 404 samt Konsolenfehler, den niemand
+     ausser dieser Pruefung verursacht hat. Die Detaildateien sagen
+     dasselbe, und sie sind das, was der Browser wirklich liest. */
   const ohneSymbol = await desktop.evaluate(async () => {
-    const idx = await (await fetch("/quant/data/sec/consumer/index.json")).json();
+    const hatKeine = (d) => !!(d && d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED");
     const leaders = await (await fetch("/discover/data/rows/US_REAL/market-leaders.json")).json();
-    const kandidaten = (leaders.cards || []).map((c) => c.symbol).filter((s) => !idx.byTicker[s]);
-    for (const s of kandidaten) {
-      const d = await (await fetch("/discover/data/stocks/US_REAL/" + s + ".json")).json();
-      if (d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED") return s;
+    for (const c of (leaders.cards || [])) {
+      const d = await (await fetch("/discover/data/stocks/US_REAL/" + c.symbol + ".json")).json().catch(() => null);
+      if (hatKeine(d)) return c.symbol;
     }
     const alle = await (await fetch("/discover/data/search/US_REAL.json")).json();
     for (const e of (alle.entries || []).slice(0, 400)) {
-      const s = e.symbol || e.s; if (!s || idx.byTicker[s]) continue;
+      const s = e.symbol || e.s; if (!s) continue;
       const d = await (await fetch("/discover/data/stocks/US_REAL/" + s + ".json")).json().catch(() => null);
-      if (d && d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED") return s;
+      if (hatKeine(d)) return s;
     }
     return null;
   });
