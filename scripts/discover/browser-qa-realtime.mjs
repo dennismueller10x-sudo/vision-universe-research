@@ -52,6 +52,17 @@ function arg(name, fallback) {
   return i !== -1 && process.argv[i + 1] && !process.argv[i + 1].startsWith("--") ? process.argv[i + 1] : fallback;
 }
 const PORT = arg("port", "8443");
+/* Zwei Betriebsarten, eine Pruefung:
+ *
+ *   ohne --live  der Arbeitsbaum wird ueber TLS ausgeliefert und der Name
+ *                research.visionuniverse.de im Testbrowser darauf
+ *                abgebildet. So laeuft die Abnahme vor dem Merge.
+ *
+ *   mit --live   der Browser geht an die VEROEFFENTLICHTE Seite. Keine
+ *                Abbildung, kein lokaler Server, kein selbstsigniertes
+ *                Zertifikat - genau das, was ein Besucher bekommt. So
+ *                laeuft der Production Smoke nach dem Merge. */
+const LIVE = process.argv.includes("--live");
 /* Der Ursprung muss EXAKT stimmen - mit Port waere er ein anderer.
 
    Beim ersten Lauf lief der Server auf 8443, und der Browser schickte
@@ -86,8 +97,12 @@ const bericht = {
   checkedAt: new Date().toISOString(),
   origin: URSPRUNG,
   session: { phase: sitzung.phase, localTime: sitzung.localTime, isOpen: sitzung.isOpen },
-  note: "Die Seite laeuft unter ihrem echten Ursprung; nur der Name ist im Testbrowser auf 127.0.0.1 " +
-        "abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
+  mode: LIVE ? "PRODUCTION" : "WORKTREE",
+  note: LIVE
+    ? "Gegen die veroeffentlichte Seite. Keine Abbildung, kein lokaler Server - der Browser sieht " +
+      "genau das, was ein Besucher sieht."
+    : "Die Seite laeuft unter ihrem echten Ursprung; nur der Name ist im Testbrowser auf 127.0.0.1 " +
+      "abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
   honesty: "Ein Titel ohne Marktereignis liefert keinen Kurs. Das ist kein Systemfehler und wird hier " +
            "auch nicht als Latenz gezaehlt.",
   symbols: [], reconnect: null, expiry: null, checks: [], result: "UNKNOWN", reason: null
@@ -101,7 +116,7 @@ function pruefung(id, frage, ok, detail) {
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || undefined,
-  args: [
+  args: LIVE ? [] : [
     /* Der Name zeigt im Testbrowser auf den lokalen Server. Sonst
        nichts - kein Abschalten von Sicherheitsmerkmalen ausser dem
        selbstsignierten Zertifikat. */
@@ -491,7 +506,8 @@ await browser.close();
 bericht.result = alleOk ? "PASS" : "FAIL";
 bericht.reason = alleOk ? null : bericht.checks.filter((c) => !c.ok).map((c) => c.id).join(",");
 mkdirSync(OUT, { recursive: true });
-writeFileSync(join(OUT, "vu-realtime-browser-qa.json"), JSON.stringify(bericht, null, 2) + "\n");
+writeFileSync(join(OUT, LIVE ? "vu-realtime-production-smoke.json" : "vu-realtime-browser-qa.json"),
+              JSON.stringify(bericht, null, 2) + "\n");
 console.log("");
 console.log("ERGEBNIS: " + bericht.result + (bericht.reason ? " (" + bericht.reason + ")" : ""));
 if (!alleOk) process.exit(1);

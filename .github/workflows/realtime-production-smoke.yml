@@ -1,0 +1,98 @@
+# REALTIME PRODUCTION SMOKE
+#
+# Owner-Freigabe vom 18.09.2026 (GO-LIVE): nach dem Merge muss der
+# laufende Kurs an der VEROEFFENTLICHTEN Seite nachgewiesen werden, nicht
+# mehr am Arbeitsbaum. Dieser Lauf oeffnet research.visionuniverse.de in
+# einem echten Browser, sieht fuenf Titeln je eine Minute zu und prueft
+# die Zusagen aus §19/§20 - Snapshot zuerst, dann Strom, Chart ohne
+# Neuladen, Kopf und Chart derselbe Kurs, Abriss, Wiederanlauf, Widerruf
+# des Etiketts.
+#
+# Nur bei offener US-Sitzung sinnvoll. Der Lauf sagt selbst, wenn die
+# Boerse zu ist, und endet dann ohne Urteil.
+name: Realtime Production Smoke (veroeffentlichte Seite)
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: 'Titel, mit Komma getrennt'
+        type: string
+        default: 'AAPL,NVDA,MSFT,PANW,VLO'
+      watchSeconds:
+        description: 'Beobachtungsdauer je Titel in Sekunden'
+        type: string
+        default: '60'
+
+permissions:
+  contents: write
+
+jobs:
+  smoke:
+    name: Aktienseite in Produktion, mit echtem Strom
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const kal = require("./quant/config/market-calendar.json");
+            const s = MH.sessionAt(Date.now(), { calendar: kal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " " + s.localTime + " New York, offen: " + s.isOpen);
+          '
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Aktienseiten in Produktion beobachten
+        id: smoke
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-realtime.mjs --live \
+            --symbols '${{ inputs.symbols }}' \
+            --watch-seconds '${{ inputs.watchSeconds }}' \
+            --shots production-shots | tee production-smoke.txt
+
+      - name: Aufnahmen und Protokoll
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: realtime-production-smoke
+          path: |
+            production-shots
+            production-smoke.txt
+          if-no-files-found: ignore
+
+      - name: Kein Schluessel im Bericht
+        if: always()
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Bericht committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial/vu-realtime-production-smoke.json || true
+          git diff --cached --quiet || git commit -m "Realtime Production Smoke aus Lauf ${{ github.run_id }}"
+          git pull --rebase --autostash origin main || true
+          git push origin HEAD:main || true
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime Production Smoke'
+            echo ''
+            echo '```'; tail -40 production-smoke.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
