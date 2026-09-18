@@ -1,54 +1,77 @@
 {
-  "generatedAt": "2026-09-17T16:00:00Z",
-  "provider": "mock",
+  "generatedAt": "2026-09-18T04:48:47.633Z",
+  "provider": null,
+  "creativeProvider": [
+    {
+      "contentId": "vu-xom-20260911",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "deliveryIds": [],
+      "state": "RESULT_AVAILABLE",
+      "explanation": "Ergebnisdatei liegt auf dem Request-Branch.",
+      "lease": {
+        "seconds": 3450,
+        "regime": "BOOTSTRAP",
+        "factor": 10,
+        "sampleSize": 1,
+        "longestObserved": 345,
+        "clamped": false,
+        "totalSeconds": 10350,
+        "totalFactor": 3,
+        "explanation": "Laengster beobachteter Lauf 345 s, Regime BOOTSTRAP (n=1), Faktor 10 ergibt 3450 s. Eine oder zwei Messungen sind keine Verteilung. Der Faktor ist Schutz gegen das eigene Nichtwissen, kein Quantil."
+      },
+      "blocking": true,
+      "terminal": false,
+      "observedAt": "2026-09-18T04:48:47.633Z"
+    }
+  ],
   "health": {
-    "generatedAt": "2026-09-17T16:00:00Z",
-    "overall": "WARNING",
+    "generatedAt": "2026-09-18T04:48:47.633Z",
+    "overall": "UNAVAILABLE",
     "counts": {
-      "PASS": 10,
+      "PASS": 6,
       "WARNING": 1,
       "FAIL": 0,
-      "UNAVAILABLE": 6
+      "UNAVAILABLE": 10
     },
     "rows": [
       {
         "component": "providers.auth",
         "label": "Provider-Authentifizierung",
-        "state": "PASS",
-        "dataSource": "mock",
+        "state": "UNAVAILABLE",
+        "dataSource": null,
         "lastSuccessAt": null,
-        "failureMode": null,
-        "nextAction": null,
+        "failureMode": "Kein Zustandsbericht vorhanden.",
+        "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
         "detail": null
       },
       {
         "component": "providers.publishing",
         "label": "Veroeffentlichung",
-        "state": "PASS",
-        "dataSource": "mock",
+        "state": "UNAVAILABLE",
+        "dataSource": null,
         "lastSuccessAt": null,
-        "failureMode": null,
-        "nextAction": null,
+        "failureMode": "Kein Zustandsbericht vorhanden.",
+        "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
         "detail": null
       },
       {
         "component": "providers.analytics",
         "label": "Kennzahlenabruf",
-        "state": "PASS",
-        "dataSource": "mock",
+        "state": "UNAVAILABLE",
+        "dataSource": null,
         "lastSuccessAt": null,
-        "failureMode": null,
-        "nextAction": null,
+        "failureMode": "Kein Zustandsbericht vorhanden.",
+        "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
         "detail": null
       },
       {
         "component": "providers.audience",
         "label": "Publikumssignale",
-        "state": "PASS",
-        "dataSource": "mock",
+        "state": "UNAVAILABLE",
+        "dataSource": null,
         "lastSuccessAt": null,
-        "failureMode": null,
-        "nextAction": null,
+        "failureMode": "Kein Zustandsbericht vorhanden.",
+        "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
         "detail": null
       },
       {
@@ -57,9 +80,9 @@
         "state": "WARNING",
         "dataSource": "social/data/signals.json",
         "lastSuccessAt": "2026-09-15T12:00:00Z",
-        "failureMode": "Letzter Erfolg vor 52 h (Frist 48 h).",
+        "failureMode": "Letzter Erfolg vor 65 h (Frist 48 h).",
         "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-        "detail": "Letzter Erfolg vor 52 h (Frist 48 h)."
+        "detail": "Letzter Erfolg vor 65 h (Frist 48 h)."
       },
       {
         "component": "signals.market",
@@ -106,7 +129,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -116,7 +139,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -126,7 +149,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -136,7 +159,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -146,7 +169,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -176,13 +199,13 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-17T16:00:00Z",
+        "lastSuccessAt": "2026-09-18T04:48:47.633Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
       }
     ],
-    "explanation": "Gesamtzustand WARNING: 10 PASS, 1 WARNING, 0 FAIL, 6 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (6): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente."
+    "explanation": "Gesamtzustand UNAVAILABLE: 6 PASS, 1 WARNING, 0 FAIL, 10 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (10): Provider-Authentifizierung, Veroeffentlichung, Kennzahlenabruf, Publikumssignale, Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente."
   },
   "autonomy": {
     "desired": 0,
@@ -200,41 +223,41 @@
   "signals": 4,
   "opportunities": [
     {
-      "opportunityId": "opp_aapl_2026-09-17",
+      "opportunityId": "opp_aapl_2026-09-18",
       "topic": "Technisches Setup — AAPL",
-      "score": 63,
+      "score": 58,
       "proposable": true,
-      "explanation": "Opportunity Score 63 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "explanation": "Opportunity Score 58 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , .",
       "signalIds": [
         "sig_8f4ebf5dbb1869f9"
       ]
     },
     {
-      "opportunityId": "opp_jpm_2026-09-17",
+      "opportunityId": "opp_jpm_2026-09-18",
       "topic": "Technisches Setup — JPM",
-      "score": 62,
+      "score": 57,
       "proposable": true,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "explanation": "Opportunity Score 57 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , .",
       "signalIds": [
         "sig_62bbe8d8d1ae222c"
       ]
     },
     {
-      "opportunityId": "opp_msft_2026-09-17",
+      "opportunityId": "opp_msft_2026-09-18",
       "topic": "Technisches Setup — MSFT",
-      "score": 62,
+      "score": 56,
       "proposable": true,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "explanation": "Opportunity Score 56 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , .",
       "signalIds": [
         "sig_6dde03ed207a3699"
       ]
     },
     {
-      "opportunityId": "opp_xom_2026-09-17",
+      "opportunityId": "opp_xom_2026-09-18",
       "topic": "Technisches Setup — XOM",
-      "score": 67,
+      "score": 62,
       "proposable": true,
-      "explanation": "Opportunity Score 67 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , .",
+      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , .",
       "signalIds": [
         "sig_092494d1c4e827dd"
       ]
@@ -242,29 +265,24 @@
   ],
   "packages": [
     {
-      "packageId": "pkg_211d4c6ed3b103aa",
+      "packageId": "pkg_6b9c82e945d881c5",
       "topic": "Technisches Setup — XOM",
-      "opportunityId": "opp_xom_2026-09-17",
+      "opportunityId": "opp_xom_2026-09-18",
       "archetype": "STOCK_STORY",
-      "visualType": "DATA_CARD",
-      "hook": "76 — XOM, Technical Opportunity Score.",
+      "visualType": "GENERATIVE",
+      "hook": "76 von 100 – was der XOM-Score zeigt und was ausdrücklich nicht.",
       "authoring": {
-        "briefId": "brief_7fa62b6c6130f8c0",
-        "authorId": "template",
-        "pattern": "value-first/state-limit-reason",
-        "variantId": "var_55fb7978e38d65cc",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "briefId": "brief_51d4362c758befa0",
+        "authorId": "chatgpt-work",
+        "pattern": "chatgpt-work/value_first",
+        "variantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:01",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (89 gegen 87).",
         "considered": 4,
         "passed": 4,
         "rejected": [],
         "attempts": [
           {
-            "authorId": "model",
-            "ok": false,
-            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
-          },
-          {
-            "authorId": "template",
+            "authorId": "chatgpt-work",
             "ok": true,
             "variants": 4
           }
@@ -272,22 +290,37 @@
       }
     },
     {
-      "packageId": "pkg_02e34a1468a44ca0",
+      "packageId": "pkg_4473d3234e3a3f77",
       "topic": "Technisches Setup — AAPL",
-      "opportunityId": "opp_aapl_2026-09-17",
+      "opportunityId": "opp_aapl_2026-09-18",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
       "hook": "65.3 — AAPL, Technical Opportunity Score.",
       "authoring": {
-        "briefId": "brief_f6f8233989822af5",
+        "briefId": "brief_8c1ed3695509c6ed",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_f2f0eebc1bbb3080",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -302,22 +335,37 @@
       }
     },
     {
-      "packageId": "pkg_2174b411bf9d52d5",
+      "packageId": "pkg_e7d434d6cf640ac2",
       "topic": "Technisches Setup — JPM",
-      "opportunityId": "opp_jpm_2026-09-17",
+      "opportunityId": "opp_jpm_2026-09-18",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
       "hook": "63.3 — JPM, Technical Opportunity Score.",
       "authoring": {
-        "briefId": "brief_041215ba7ce017f6",
+        "briefId": "brief_cd7a5d2e22aab6ea",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_925d7ff2840314f6",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -332,22 +380,37 @@
       }
     },
     {
-      "packageId": "pkg_8cf6b7dc6567a158",
+      "packageId": "pkg_1cbd3a9be7af66bf",
       "topic": "Technisches Setup — MSFT",
-      "opportunityId": "opp_msft_2026-09-17",
+      "opportunityId": "opp_msft_2026-09-18",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
       "hook": "60.6 — MSFT, Technical Opportunity Score.",
       "authoring": {
-        "briefId": "brief_d470f911cd4e53fd",
+        "briefId": "brief_68f5578b516e191f",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_cace36f84a0bccfc",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -374,7 +437,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-17T16:00:00Z",
+      "assessedAt": "2026-09-18T04:48:47.633Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -599,50 +662,54 @@
     }
   },
   "experiments": {
-    "running": 0,
+    "running": 1,
     "recorded": 0,
     "decided": [],
-    "open": []
+    "open": [
+      {
+        "experimentId": "exp_49f5a4f072feb19c",
+        "variable": "archetype",
+        "hypothesis": "Der Archetyp STOCK_STORY erreicht eine hoehere Leistung als DATA_STORY bei vergleichbaren Anlaessen.",
+        "control": "DATA_STORY",
+        "variant": "STOCK_STORY",
+        "counts": {
+          "control": 0,
+          "variant": 0
+        },
+        "needed": 8
+      }
+    ]
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-17T16:00:00Z",
-      "packageId": "pkg_211d4c6ed3b103aa",
+      "decidedAt": "2026-09-18T04:48:47.633Z",
+      "packageId": "pkg_6b9c82e945d881c5",
       "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
-      "visualType": "DATA_CARD",
-      "hook": "76 — XOM, Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet XOM derzeit mit 76 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
-      "hashtags": [
-        "VisionUniverse",
-        "Investment",
-        "Daten"
-      ],
-      "authoringPattern": "value-first/state-limit-reason",
-      "authoringAuthorId": "template",
+      "visualType": "GENERATIVE",
+      "hook": "76 von 100 – was der XOM-Score zeigt und was ausdrücklich nicht.",
+      "caption": "XOM erreichte am 11.09.2026 einen Technical Opportunity Score von 76 von 100. Das Band „Konstruktiv“ beginnt bei 60. Wichtig: Der Wert ist ein methodischer Setup-Rang – keine Wahrscheinlichkeit und keine Renditeerwartung.\n\nDie Beiträge zum Score: TREND_STRUCTURE 27,35 von 30 Punkten, MOMENTUM 15,54 von 20, VOLUME 5,86 von 10, VOLATILITY 5 von 10, SETUP 13,44 von 20 und PROJECTION_AUXILIARY 8,8 von 10.\n\nDie Messung weist die Trendrichtung BULLISH mit einem Trendwert von 82,3 aus. Das Momentum lautet STRONG_POSITIVE mit einem Wert von 77,7. Die Entwicklungen betragen 3,9 % über 1M, 13,2 % über 3M und 47,6 % über 12M.\n\nDie Volatilität ist NORMAL; der ATR beträgt 2,14 % des Kurses bei Perzentil 43. Das Volumen ist NORMAL und liegt relativ bei 0,83× zum Median. Grundlage sind 2940 Handelstage seit 2015-01-02. Relative Stärke ist nicht verfügbar, weil der Benchmark fehlt.\n\nQuelle der Messwerte: Tiingo, beobachtet am 11.09.2026. Die Angaben beschreiben eine technische Lage, keine Ursache, Prognose oder Kauf- beziehungsweise Verkaufsempfehlung. Keine Anlageberatung.",
+      "hashtags": [],
+      "authoringPattern": "chatgpt-work/value_first",
+      "authoringAuthorId": "chatgpt-work",
       "authoring": {
-        "briefId": "brief_7fa62b6c6130f8c0",
-        "authorId": "template",
-        "pattern": "value-first/state-limit-reason",
-        "variantId": "var_55fb7978e38d65cc",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "briefId": "brief_51d4362c758befa0",
+        "authorId": "chatgpt-work",
+        "pattern": "chatgpt-work/value_first",
+        "variantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:value_first:01",
+        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (89 gegen 87).",
         "considered": 4,
         "passed": 4,
         "rejected": [],
         "attempts": [
           {
-            "authorId": "model",
-            "ok": false,
-            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
-          },
-          {
-            "authorId": "template",
+            "authorId": "chatgpt-work",
             "ok": true,
             "variants": 4
           }
         ]
       },
-      "opportunityId": "opp_xom_2026-09-17",
+      "opportunityId": "opp_xom_2026-09-18",
       "signalIds": [
         "sig_092494d1c4e827dd"
       ],
@@ -650,31 +717,36 @@
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 97 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 94 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "asset": {
         "plannable": true,
-        "visualType": "DATA_CARD",
+        "visualType": "GENERATIVE",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_211d4c6ed3b103aa.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_6b9c82e945d881c5.jpg",
         "quality": {
-          "passed": true,
-          "score": 100,
-          "blocking": [],
-          "warnings": [],
-          "explanation": "Bildwert 100."
+          "applicable": false,
+          "explanation": "Generatives Bild ohne Textebene. Die Kartenpruefung misst Redundanz, Vollstaendigkeit und Lesbarkeit von Text und trifft hier auf nichts."
+        },
+        "origin": "generative",
+        "sourceAsset": {
+          "path": "authoring/requests/vu-xom-20260911/assets/visual-01.png",
+          "sha256": "a378d07895c481cbdb2b60ea21d42512ed844b9ce0216ca262efcc8fcc9e0b40",
+          "mimeType": "image/png",
+          "variantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:visual:FUTURE_TECH:01",
+          "strategy": "FUTURE_TECH"
         },
         "rendered": true,
-        "bytes": 42678
+        "bytes": 199336
       }
     },
     {
-      "decidedAt": "2026-09-17T16:00:00Z",
-      "packageId": "pkg_02e34a1468a44ca0",
+      "decidedAt": "2026-09-18T04:48:47.633Z",
+      "packageId": "pkg_4473d3234e3a3f77",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
@@ -688,15 +760,30 @@
       "authoringPattern": "value-first/state-limit-reason",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_f6f8233989822af5",
+        "briefId": "brief_8c1ed3695509c6ed",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_f2f0eebc1bbb3080",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -709,7 +796,7 @@
           }
         ]
       },
-      "opportunityId": "opp_aapl_2026-09-17",
+      "opportunityId": "opp_aapl_2026-09-18",
       "signalIds": [
         "sig_8f4ebf5dbb1869f9"
       ],
@@ -717,7 +804,7 @@
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 36 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 59 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -727,7 +814,7 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_02e34a1468a44ca0.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4473d3234e3a3f77.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -735,13 +822,15 @@
           "warnings": [],
           "explanation": "Bildwert 100."
         },
+        "origin": "rendered",
+        "sourceAsset": null,
         "rendered": true,
         "bytes": 45495
       }
     },
     {
-      "decidedAt": "2026-09-17T16:00:00Z",
-      "packageId": "pkg_2174b411bf9d52d5",
+      "decidedAt": "2026-09-18T04:48:47.633Z",
+      "packageId": "pkg_e7d434d6cf640ac2",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
@@ -755,15 +844,30 @@
       "authoringPattern": "value-first/state-limit-reason",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_041215ba7ce017f6",
+        "briefId": "brief_cd7a5d2e22aab6ea",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_925d7ff2840314f6",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -776,15 +880,15 @@
           }
         ]
       },
-      "opportunityId": "opp_jpm_2026-09-17",
+      "opportunityId": "opp_jpm_2026-09-18",
       "signalIds": [
         "sig_62bbe8d8d1ae222c"
       ],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
-      "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 31 >= Rate 25 %).",
+      "mode": "EXPLORE",
+      "modeReason": "Erkundung (Ziehung 23 < Rate 25 %). Ein Teil der Beitraege muss bewusst anders sein, sonst lernt das System nur noch, was es ohnehin glaubt.",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -794,7 +898,7 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_2174b411bf9d52d5.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_e7d434d6cf640ac2.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -802,13 +906,15 @@
           "warnings": [],
           "explanation": "Bildwert 100."
         },
+        "origin": "rendered",
+        "sourceAsset": null,
         "rendered": true,
         "bytes": 45371
       }
     },
     {
-      "decidedAt": "2026-09-17T16:00:00Z",
-      "packageId": "pkg_8cf6b7dc6567a158",
+      "decidedAt": "2026-09-18T04:48:47.633Z",
+      "packageId": "pkg_1cbd3a9be7af66bf",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
       "visualType": "DATA_CARD",
@@ -822,15 +928,30 @@
       "authoringPattern": "value-first/state-limit-reason",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_d470f911cd4e53fd",
+        "briefId": "brief_68f5578b516e191f",
         "authorId": "template",
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_cace36f84a0bccfc",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
           {
             "authorId": "model",
             "ok": false,
@@ -843,15 +964,15 @@
           }
         ]
       },
-      "opportunityId": "opp_msft_2026-09-17",
+      "opportunityId": "opp_msft_2026-09-18",
       "signalIds": [
         "sig_6dde03ed207a3699"
       ],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
-      "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 45 >= Rate 25 %).",
+      "mode": "EXPLORE",
+      "modeReason": "Erkundung (Ziehung 11 < Rate 25 %). Ein Teil der Beitraege muss bewusst anders sein, sonst lernt das System nur noch, was es ohnehin glaubt.",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -861,7 +982,7 @@
         "visualType": "DATA_CARD",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_8cf6b7dc6567a158.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_1cbd3a9be7af66bf.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -869,6 +990,8 @@
           "warnings": [],
           "explanation": "Bildwert 100."
         },
+        "origin": "rendered",
+        "sourceAsset": null,
         "rendered": true,
         "bytes": 45598
       }

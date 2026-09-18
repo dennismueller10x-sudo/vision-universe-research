@@ -1303,3 +1303,73 @@ Damit ist der Transportweg unabhängig von der Bilderzeugung geprüft —
 ohne einen einzigen Work-Aufruf. `AT6` hält fest, dass eine Prüfung
 gegen den Schreibpuffer nicht zählt: sie prüft nur, dass wir richtig
 abgeschrieben haben.
+
+---
+
+## 36. Attempt 3 kam an — und die Größenprüfung hatte nie gelaufen
+
+Attempt 3 (PR 108) lieferte das Bild vollständig: 1 954 408 Bytes,
+1122×1402, 30 IDAT-Chunks, Kette geschlossen bis IEND, SHA-256
+identisch, frisch vom finalen Commit zurückgelesen. Der gehärtete
+Transportvertrag hat den Fall aus §33 nicht wiederholt.
+
+Beim abschließenden Nachprüfen fiel jedoch ein zweiter Befund an, der
+nichts mit diesem Transfer zu tun hat und den Vertrag selbst betrifft.
+
+### Der Befund
+
+Das Ergebnisschema nennt das Feld `asset_byte_size`. Die Prüfung las
+`byte_size`. Die Schreibweisen trafen sich nie — und das fiel nicht auf,
+weil eine fehlende Ankündigung bei `mimeValid`, `dimensionsValid` und
+`sha256Match` **still als bestanden** galt (`!a.feld || vergleich`).
+Nur die Größenprüfung war von Anfang an ehrlich gebaut: sie setzte
+`null`, wenn nichts angekündigt war.
+
+Ergebnis: von neun Pflichtprüfungen liefen acht. Die neunte hat bei
+**keinem einzigen realen Ergebnis** je einen Vergleich ausgeführt.
+
+Das korrigiert eine frühere Aussage in diesem Lauf: „Attempt 3 hat alle
+neun Transportprüfungen bestanden" war falsch. Acht bestanden; die
+neunte fand nicht statt. Nach der Korrektur besteht sie — gegen dieselbe
+Datei, mit derselben Antwort.
+
+### Warum das mehr ist als ein Tippfehler
+
+Der Vertrag existiert, damit `AGENT_REPORTED_COMPLETED` nicht genügt.
+Eine Prüfung, die ohne Ankündigung auf `true` springt, dreht genau das
+um: sie bescheinigt, was niemand behauptet hat. Ein Ergebnis ganz ohne
+Ankündigungen hätte mit sechs grünen Haken als verifiziert gegolten.
+
+Beide Hälften sind repariert:
+
+1. **Die Schreibweise.** Die Ankündigung wird einmal normalisiert
+   (`asset_byte_size`/`byte_size`, `asset_sha256`/`sha256`, …), statt
+   dass jede Aufrufstelle sie abschreibt. Der Adapter übergibt die
+   Variante jetzt, statt sie abzuschreiben — eine Abschrift lässt genau
+   ein Feld aus, und die ausgelassene Prüfung fällt nicht auf.
+2. **Die fehlende Ankündigung.** Sie ist ein Befund über den Vertrag,
+   kein bestandener Vergleich. `null` statt `true`, und
+   `verifyCompletion` verlangt für alle neun ausdrücklich `true`.
+
+### Die Anforderung steht jetzt im Brief
+
+Eine Pflicht, die nur im Prüferkopf existiert, erreicht den Agenten
+nicht. `asset_requirements.announced_fields_required` nennt sie im
+Brief: Pfad, Typ, Abmessungen, Größe, SHA-256. Attempt 3 hatte sie
+freiwillig geliefert; darauf ist kein Vertrag zu bauen.
+
+### Was das über die Fehlerklasse sagt
+
+Das ist zum vierten Mal dasselbe Muster: **ein Feldname, der an einer
+Stelle anders heißt als an der anderen, und eine Schicht dazwischen, die
+das Fehlen still verzeiht.** Vorher: der Whitelist-Filter im Ledger, der
+`observed` verschluckte; die Abschrift, die `byte_size` verlor. Die
+Lehre ist jedes Mal dieselbe und steht jetzt an drei Stellen im Code:
+*was fehlt, wird gemeldet — nicht durchgewunken.*
+
+`AT13` hält fest, dass ohne Ankündigung nichts stillschweigend besteht.
+`AT14` prüft, dass die Schreibweise des Ergebnisschemas gelesen wird und
+eine falsche Größe auffällt. `CG13` hält fest, dass das echte Ergebnis
+aus PR 98 — entstanden **vor** diesem Vertrag — ihn nicht erfüllt. Die
+Datei auf der Platte bleibt unangetastet: sie ist der Beweis und wird
+nicht nachträglich passend gemacht.

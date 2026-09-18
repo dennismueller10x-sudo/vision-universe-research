@@ -87,19 +87,51 @@
      Werte — und wies damit eine Angabe zurueck, die direkt aus dem
      Beobachtungszeitpunkt eines Belegs stammt. */
   var ISO_DATE_SOURCE = "\\d{4}-\\d{2}-\\d{2}";
+  /* Deutsche Schreibweise: 11.09.2026 oder 1.9.2026. */
+  var DE_DATE_SOURCE = "\\d{1,2}\\.\\d{1,2}\\.\\d{4}";
+  var DATE_SOURCE = "(?:" + ISO_DATE_SOURCE + "|" + DE_DATE_SOURCE + ")";
+
+  /* -------------------------------------------------------------------
+     DASSELBE DATUM, ZWEI SCHREIBWEISEN
+
+     Der Creative Agent schrieb "11.09.2026". Die Belege tragen
+     "2026-09-11". Das ist dasselbe Datum - und die erste Fassung der
+     Pruefung verglich Zeichenketten, fand keine Uebereinstimmung und
+     meldete ein unbelegtes Datum.
+
+     Das waere ein Vorwurf ueber eine Tatsache gewesen, die stimmt. Ein
+     deutscher Text schreibt deutsche Daten; die Belege kommen aus
+     Maschinen und schreiben ISO. Beides ist richtig, und die Pruefung
+     hat das zu wissen.
+
+     Normalisiert wird auf ISO. Erfunden wird dabei nichts: eine
+     Schreibweise, die sich nicht eindeutig aufloesen laesst, bleibt
+     unveraendert und damit unbelegt.
+     ------------------------------------------------------------------- */
+  function normaliseDate(roh) {
+    var s = String(roh || "").trim();
+    if (new RegExp("^" + ISO_DATE_SOURCE + "$").test(s)) return s;
+    var m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (!m) return s;
+    var tag = m[1].length === 1 ? "0" + m[1] : m[1];
+    var monat = m[2].length === 1 ? "0" + m[2] : m[2];
+    return m[3] + "-" + monat + "-" + tag;
+  }
 
   function dateTokens(text) {
     var out = [];
-    var re = new RegExp(ISO_DATE_SOURCE, "g");
+    var re = new RegExp(DATE_SOURCE, "g");
     var m;
-    while ((m = re.exec(String(text))) !== null) out.push({ raw: m[0], index: m.index });
+    while ((m = re.exec(String(text))) !== null) {
+      out.push({ raw: m[0], iso: normaliseDate(m[0]), index: m.index });
+    }
     return out;
   }
 
   function numberTokens(text) {
     /* Datumsangaben zuerst ausblenden, damit ihre Bestandteile nicht als
        einzelne Zahlen auftauchen. */
-    var s = String(text).replace(new RegExp(ISO_DATE_SOURCE, "g"), function (d) {
+    var s = String(text).replace(new RegExp(DATE_SOURCE, "g"), function (d) {
       return new Array(d.length + 1).join(" ");
     });
     var out = [];
@@ -250,14 +282,14 @@
     var belegDaten = [];
     (evidence || []).forEach(function (e) {
       var d = String(e.observedAt || "").slice(0, 10);
-      if (new RegExp("^" + ISO_DATE_SOURCE + "$").test(d)) belegDaten.push(d);
+      if (new RegExp("^" + ISO_DATE_SOURCE + "$").test(d)) belegDaten.push(normaliseDate(d));
       /* Und Datumsangaben, die in einem Belegsatz stehen. */
       if (e.statement) {
-        dateTokens(String(e.statement)).forEach(function (t) { belegDaten.push(t.raw); });
+        dateTokens(String(e.statement)).forEach(function (t) { belegDaten.push(t.iso); });
       }
     });
     dateTokens(pruefbar).forEach(function (t) {
-      if (belegDaten.indexOf(t.raw) !== -1) { bound.push({ kind: "date", raw: t.raw }); return; }
+      if (belegDaten.indexOf(t.iso) !== -1) { bound.push({ kind: "date", raw: t.raw }); return; }
       unbound.push({ kind: "date", raw: t.raw,
         message: "Das Datum " + t.raw + " steht in keinem Beleg." });
     });
@@ -301,13 +333,37 @@
        ----------------------------------------------------------------- */
     var VERNEINUNG = /\b(?:kein|keine|keinen|keiner|keinem|nicht|weder|ohne)\s+(?:\w+\s+){0,2}$/i;
 
+    /* -----------------------------------------------------------------
+       VERNEINUNG UEBER EINE AUFZAEHLUNG HINWEG
+
+       Der Creative Agent schrieb in Anlauf 3:
+
+         "Die Angaben beschreiben eine technische Lage, keine Ursache,
+          Prognose oder Kauf- beziehungsweise Verkaufsempfehlung."
+
+       Das ist die Verneinung von drei Dingen auf einmal - und die
+       Pruefung sah nur "Prognose" und verbot den Satz, mit dem der Text
+       ausdruecklich sagt, KEINE Prognose zu sein.
+
+       Der Grund: das obige Muster laeuft an Wortgrenzen entlang und
+       bleibt am Komma haengen. "keine Ursache, " ist fuer `\w+\s+`
+       kein Wort mit Leerzeichen dahinter.
+
+       Zum dritten Mal dieselbe Fehlerart in diesem Projekt: ein Pruefer,
+       der korrekten Text verbietet. Sie kostet jedes Mal einen ganzen
+       Lauf, weil sie erst am fertigen Text auffaellt.
+       ----------------------------------------------------------------- */
+    var VERNEINUNG_LISTE =
+      /\b(?:kein|keine|keinen|keiner|keinem|weder|ohne)\s+(?:[\wAE-\u00FF]+[,;]?\s+(?:oder\s+|und\s+|beziehungsweise\s+|bzw\.?\s+)?){0,5}$/i;
+
     FORBIDDEN_ACTS.forEach(function (a) {
       var re = new RegExp(a.re.source, a.re.flags.indexOf("g") === -1
         ? a.re.flags + "g" : a.re.flags);
       var m;
       while ((m = re.exec(pruefbar)) !== null) {
         var davor = pruefbar.slice(Math.max(0, m.index - 40), m.index);
-        if (VERNEINUNG.test(davor)) continue;   /* verneint, also keine Behauptung */
+        if (VERNEINUNG.test(davor)) continue;          /* verneint */
+        if (VERNEINUNG_LISTE.test(davor)) continue;    /* in einer verneinten Aufzaehlung */
         forbidden.push({ id: a.id, message: a.message });
         break;
       }

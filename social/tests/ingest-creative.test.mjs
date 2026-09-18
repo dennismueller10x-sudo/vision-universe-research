@@ -108,7 +108,10 @@ function baueRepo(anpassung) {
       visual_strategy: "FUTURE_TECH", brief_revision: sha,
       asset_path: assetPfad,
       asset_sha256: require("node:crypto").createHash("sha256").update(bild).digest("hex"),
-      mime_type: "image/png", width: BREITE, height: HOEHE
+      mime_type: "image/png", width: BREITE, height: HOEHE,
+      /* Der gehaertete Transportvertrag verlangt die Ankuendigung der
+         Groesse: eine Pruefung ohne Vergleichswert ist keine bestandene. */
+      asset_byte_size: bild.length
     }],
     publishing_allowed: false
   };

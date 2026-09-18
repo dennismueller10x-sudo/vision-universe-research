@@ -198,7 +198,26 @@
         preferred_mime_type: "image/png",
         preferred_width: options.width || 1080,
         preferred_height: options.height || 1350,
-        deterministic_path: requestDir(contentId) + "/assets/visual-01.png"
+        deterministic_path: requestDir(contentId) + "/assets/visual-01.png",
+
+        /* -------------------------------------------------------------
+           DIE ANKUENDIGUNG IST TEIL DER LIEFERUNG
+
+           Geprueft wird nicht die Datei gegen sich selbst, sondern die
+           Datei gegen das, was der Agent ueber sie BEHAUPTET. Fehlt die
+           Behauptung, gibt es nichts zu vergleichen, und der Vertrag
+           wertet das als Mangel des Ergebnisses - nicht als bestandene
+           Pruefung. Deshalb steht hier, was jede Bildvariante nennen
+           muss, statt dass es nur im Prueferkopf existiert.
+           ------------------------------------------------------------- */
+        announced_fields_required: [
+          "asset_path", "mime_type", "width", "height",
+          "asset_byte_size", "asset_sha256"
+        ],
+        announcement_note:
+          "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, " +
+          "asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird " +
+          "nach dem finalen Commit frisch zurueckgelesen und verglichen."
       },
 
       authoring_requirements: {
@@ -361,11 +380,11 @@
          Struktur dazugehoert: dort war das Dateiende fast richtig und
          die Mitte zerstoert.
          ----------------------------------------------------------- */
-      var transport = AssetTransport.verifyTransfer(bytes, {
-        asset_path: v.asset_path, asset_sha256: v.asset_sha256,
-        mime_type: v.mime_type, width: v.width, height: v.height,
-        byte_size: v.byte_size
-      }, { freshReadback: true });
+      /* Die Variante WIRD uebergeben, nicht abgeschrieben. Eine
+         Abschrift laesst genau ein Feld aus, und die ausgelassene
+         Pruefung faellt nicht auf. */
+      var transport = AssetTransport.verifyTransfer(bytes, v,
+        { freshReadback: true });
 
       geprueft.push({ visual_variant_id: v.visual_variant_id,
         asset_path: v.asset_path, verification: transport });
@@ -566,6 +585,30 @@
            --------------------------------------------------------------- */
         var captionSauber = German.clean(ergebnis.caption);
 
+        /* -------------------------------------------------------------
+           DER PFLICHTHINWEIS GEHOERT VISION UNIVERSE
+
+           Anlauf 3 scheiterte an allen vier Varianten, weil der Caption
+           der Satz "Keine Anlageberatung." fehlte. Der Agent hat nichts
+           falsch gemacht: der Brief hat den Hinweis nie verlangt, und
+           der Agent hat ihn sinngemaess sogar formuliert ("keine Kauf-
+           beziehungsweise Verkaufsempfehlung").
+
+           Nur ist das nicht dasselbe. Der Hinweis ist eine Marken- und
+           Rechtsanforderung mit festem Wortlaut - er gehoert uns, nicht
+           dem Autor. Der Vorlagen-Autor haengt ihn seit jeher an; der
+           generative Autor tat es nicht. Zwei Autoren, zwei Ergebnisse
+           aus demselben Brief: das ist der Fehler, nicht der fehlende
+           Satz.
+
+           Angehaengt wird nur, was noch nicht dasteht - sonst stuende er
+           zweimal. */
+        var hinweis = brief.constraints && brief.constraints.disclaimer;
+        if (hinweis && captionSauber.text.indexOf(hinweis) === -1) {
+          captionSauber = { text: captionSauber.text + " " + hinweis,
+            residue: captionSauber.residue };
+        }
+
         return {
           variants: (ergebnis.hook_variants || []).map(function (v) {
             var hookSauber = German.clean(v.text);
@@ -587,14 +630,33 @@
               visualLine: null,
               hashtags: options.hashtags || [],
               pattern: "chatgpt-work/" + (v.hook_type || "unbenannt"),
-              claims: e ? [
-                { text: String(e.value) + (e.unit ? " " + e.unit : ""), numeric: e.value,
-                  source: { source: e.source, entity: e.entity, metric: e.metric,
-                            observedAt: e.observedAt, state: e.state || "VERIFIED" } },
-                { text: String(e.metric), numeric: null,
-                  source: { source: e.source, entity: e.entity, metric: e.metric,
-                            observedAt: e.observedAt, state: e.state || "VERIFIED" } }
-              ] : [],
+              /* -------------------------------------------------------
+                 JEDER BELEG, NICHT NUR DER ERSTE
+
+                 Hier standen zwei Claims, gebildet aus evidence[0].
+                 Das genuegte, solange die Caption eine Zahl trug.
+
+                 Anlauf 3 brachte eine Caption mit dreissig Zahlen aus
+                 dreiundzwanzig Belegen - und die Faktenpruefung meldete
+                 fuenf unbelegte Prozentangaben, weil zu ihnen kein
+                 Claim erklaert war. Nicht weil die Zahlen erfunden
+                 waren, sondern weil wir sie nicht angemeldet hatten.
+
+                 Angemeldet wird jetzt jeder Beleg: sein Wert, seine
+                 Kennzahl und sein Satz. Der Satz gehoert dazu, weil die
+                 Quant-Engines ihre Zahlen darin mitliefern.
+                 ------------------------------------------------------- */
+              claims: (brief.evidence || []).reduce(function (acc, b) {
+                var quelle = { source: b.source, entity: b.entity, metric: b.metric,
+                  observedAt: b.observedAt, state: b.state || "VERIFIED" };
+                if (b.value !== null && b.value !== undefined) {
+                  acc.push({ text: String(b.value) + (b.unit ? " " + b.unit : ""),
+                    numeric: b.value, source: quelle });
+                }
+                if (b.metric) acc.push({ text: String(b.metric), numeric: null, source: quelle });
+                if (b.statement) acc.push({ text: String(b.statement), numeric: null, source: quelle });
+                return acc;
+              }, []),
               notes: "generativ ueber ChatGPT Work, Brief-Revision " + sha.slice(0, 12)
             });
           }),

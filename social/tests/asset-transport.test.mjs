@@ -291,3 +291,55 @@ test("AT12 · Eine fehlende Quelle erfindet nichts", wenn, () => {
   assert.equal(befund.ok, false);
   assert.equal(befund.reason, "sourceMissing");
 });
+
+/* ------------------------------------------------------------------ */
+/* EINE PRUEFUNG, DIE NICHT LIEF, IST KEINE BESTANDENE PRUEFUNG        */
+/* ------------------------------------------------------------------ */
+
+test("AT13 · Ohne Ankuendigung besteht nichts stillschweigend", wenn, () => {
+  /* Der Vertrag existiert, damit AGENT_REPORTED_COMPLETED nicht
+     ausreicht. Eine Pruefung, die ohne Ankuendigung auf true springt,
+     dreht genau das um: sie bescheinigt, was niemand behauptet hat. */
+  const bild = bekanntGut();
+  const befund = T.verifyTransfer(bild, { asset_path: "a.png" },
+    { freshReadback: true });
+
+  assert.equal(befund.ok, false);
+  assert.equal(befund.checks.mimeValid, null);
+  assert.equal(befund.checks.dimensionsValid, null);
+  assert.equal(befund.checks.byteSizeValid, null);
+  assert.equal(befund.checks.sha256Match, null);
+  /* Was die Datei selbst hergibt, wird trotzdem geprueft. */
+  assert.equal(befund.checks.assetExists, true);
+  assert.equal(befund.checks.imageStructureValid, true);
+
+  const ab = T.verifyCompletion({ transfer: befund, resultJsonValid: true,
+    identitiesValid: true, agentStatus: "completed" });
+  assert.equal(ab.agentReportedCompleted, true);
+  assert.equal(ab.vuVerifiedCompleted, false);
+  assert.ok(ab.missing.includes("byteSizeValid"));
+});
+
+test("AT14 · Die Groessenpruefung liest die Schreibweise des Ergebnisschemas", wenn, () => {
+  /* Das Ergebnisschema schreibt `asset_byte_size`; die Pruefung erwartete
+     `byte_size`. Der Unterschied blieb unsichtbar, solange eine fehlende
+     Ankuendigung still bestand - die Groessenpruefung lief deshalb bei
+     keinem einzigen realen Ergebnis. Beide Schreibweisen zaehlen jetzt,
+     und eine falsche Groesse faellt auf. */
+  const bild = bekanntGut();
+  const schema = {
+    asset_path: "a.png", asset_sha256: I.sha256(bild),
+    mime_type: "image/png", width: 1254, height: 1254,
+    asset_byte_size: bild.length
+  };
+  const gut = T.verifyTransfer(bild, schema, { freshReadback: true });
+  assert.equal(gut.checks.byteSizeValid, true, gut.explanation);
+  assert.equal(gut.ok, true, gut.explanation);
+
+  const falsch = T.verifyTransfer(bild,
+    Object.assign({}, schema, { asset_byte_size: bild.length - 1 }),
+    { freshReadback: true });
+  assert.equal(falsch.checks.byteSizeValid, false);
+  assert.equal(falsch.failureType, T.TRANSPORT_FEHLER);
+  assert.equal(falsch.contentJudgement, false);
+});

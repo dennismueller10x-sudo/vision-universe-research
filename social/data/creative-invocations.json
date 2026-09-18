@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T04:33:28.228Z",
+  "generatedAt": "2026-09-18T04:40:00Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -444,7 +444,30 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Anlauf 3, loest Anlauf 2 ab. Owner hat Anlauf 3 freigegeben. Neue Bedingungen seit Anlauf 2: GitHub-Permission auf 'Alle Aktionen zulassen' umgestellt (PR 106 lief unbeaufsichtigt in 146 s durch), und der gehaertete Asset-Transport-Contract ist aktiv - AGENT_REPORTED_COMPLETED genuegt nicht mehr. Der PR wird NICHT von diesem Skript geoeffnet."
+    },
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "state": "COMPLETED",
+      "at": "2026-09-18T04:40:00Z",
+      "contentId": "vu-xom-20260911",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3",
+      "pullRequest": 108,
+      "deliveryId": null,
+      "observed": true,
+      "timestampProvenance": "observed",
+      "note": "Ergebnis und Asset bestaetigt."
     }
   ],
-  "latencyObservations": []
+  "latencyObservations": [
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "contentId": "vu-xom-20260911",
+      "seconds": 313,
+      "startedAt": "2026-09-18T04:33:28.228Z",
+      "resultAt": "2026-09-18T06:38:41+02:00",
+      "source": "ingest",
+      "note": "Von der letzten beobachteten Aktivitaet bis zum bestaetigten Ergebnis."
+    }
+  ]
 }

@@ -878,9 +878,29 @@ async function main() {
 
     const gewaehlteVariante = geschrieben.selection.chosen.variant;
 
+    /* -----------------------------------------------------------------
+       EINE EVIDENZ, NICHT ZWEI
+
+       Der Brief entstand aus `evidenzSaetze` - 23 belegte Aussagen aus
+       dem kanonischen Evidenzpaket, Quelle `tiingo`. Die Content-Pipeline
+       bekam dagegen `sources`: EINEN Eintrag, Quelle `vu.technical`.
+
+       Solange die Caption eine Zahl trug, fiel das nicht auf. Sobald der
+       Creative Agent aus allen 23 Belegen schrieb, meldete die
+       Faktenpruefung "eine spaetere Stufe hat Zahlen eingefuehrt, die die
+       Recherche nicht kennt" - und hatte vollkommen recht. Zwei
+       Evidenzmengen im selben Lauf sind genau der Zustand, den §39
+       verhindern soll.
+
+       Der Autor und die Faktenpruefung sehen jetzt dieselben Belege.
+       Ohne Evidenzpaket bleibt es bei `sources` wie bisher.
+       ----------------------------------------------------------------- */
+    const rechercheBelege = (evidenzPaket && evidenzPaket.ok) ? evidenzSaetze : sources;
+
     const result = Content.run({
-      opportunity, sources, strategyDecision,
-      visualAvailability: { timeSeries: false, keyNumber: sources.some((s) => s.value !== null) },
+      opportunity, sources: rechercheBelege, strategyDecision,
+      visualAvailability: { timeSeries: false,
+        keyNumber: rechercheBelege.some((s) => s.value !== null) },
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
       writer: schreiberAus(gewaehlteVariante)
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });

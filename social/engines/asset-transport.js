@@ -86,9 +86,37 @@
    * der Sinn: zwischen dem, was wir schicken wollten, und dem, was
    * ankommt, liegt der Transport.
    */
+  /**
+   * Die Ankuendigung in EINER Schreibweise.
+   *
+   * Das Ergebnisschema nennt die Felder `asset_byte_size` und
+   * `asset_sha256`; frueher erwartete diese Pruefung `byte_size`. Der
+   * Unterschied war unsichtbar, weil eine fehlende Ankuendigung damals
+   * still als bestanden galt - die Groessenpruefung lief deshalb nie.
+   * Beide Schreibweisen werden jetzt gelesen, und was fehlt, bleibt ein
+   * Befund.
+   */
+  function ankuendigung(a) {
+    a = a || {};
+    function ersteVon() {
+      for (var i = 0; i < arguments.length; i++) {
+        var w = arguments[i];
+        if (w !== undefined && w !== null && w !== "") return w;
+      }
+      return null;
+    }
+    return {
+      asset_path: ersteVon(a.asset_path, a.assetPath),
+      mime_type: ersteVon(a.mime_type, a.mimeType),
+      byte_size: ersteVon(a.byte_size, a.asset_byte_size, a.byteSize, a.bytes),
+      asset_sha256: ersteVon(a.asset_sha256, a.sha256),
+      width: ersteVon(a.width), height: ersteVon(a.height)
+    };
+  }
+
   function verifyTransfer(gelesen, angekuendigt, options) {
     options = options || {};
-    var a = angekuendigt || {};
+    var a = ankuendigung(angekuendigt);
     var befunde = [];
     var bestanden = {};
 
@@ -98,13 +126,35 @@
       return ok === true;
     }
 
+    /* Eine Pruefung, die ohne Ankuendigung stillschweigend besteht, ist
+       keine Pruefung - sie ist eine Annahme mit einem Haken daneben.
+       Genau das soll dieser Vertrag verhindern. Fehlt die Ankuendigung,
+       ist der Befund ueber den Vertrag zu fuehren und nicht ueber die
+       Datei: der Haken bleibt aus (null), und verifyCompletion verlangt
+       fuer alle neun Pflichtpruefungen ausdruecklich true. */
+    function pruefeFallsAngekuendigt(name, angekuendigterWert, ok, meldung) {
+      if (angekuendigterWert === undefined || angekuendigterWert === null ||
+          angekuendigterWert === "") {
+        bestanden[name] = null;
+        befunde.push({
+          check: name,
+          contract: true,
+          message: "Der Agent hat dazu nichts angekuendigt. Ohne Ankuendigung " +
+            "gibt es nichts zu vergleichen - das ist ein Mangel des " +
+            "Ergebnisses, kein bestandener Vergleich."
+        });
+        return false;
+      }
+      return pruefe(name, ok, meldung);
+    }
+
     if (!pruefe("assetExists", !!(gelesen && gelesen.length),
         "Unter " + (a.asset_path || "dem angegebenen Pfad") + " liegt nichts.")) {
       return abschluss(bestanden, befunde, null);
     }
 
     var mime = Integrity.detectMime(gelesen);
-    pruefe("mimeValid", !a.mime_type || mime === a.mime_type,
+    pruefeFallsAngekuendigt("mimeValid", a.mime_type, mime === a.mime_type,
       "Der Inhalt ist " + mime + ", angekuendigt war " + a.mime_type + ".");
 
     var struktur = Integrity.structure(gelesen, mime);
@@ -112,24 +162,23 @@
       "Die innere Struktur bricht: " + struktur.reason + ".");
 
     var masse = Integrity.dimensions(gelesen, mime) || {};
-    pruefe("dimensionsValid",
-      (!a.width || masse.width === a.width) && (!a.height || masse.height === a.height),
+    pruefeFallsAngekuendigt("dimensionsValid",
+      (a.width === undefined || a.width === null) ? a.height : a.width,
+      masse.width === a.width && masse.height === a.height,
       "Abmessungen " + masse.width + "x" + masse.height + ", angekuendigt " +
       a.width + "x" + a.height + ".");
 
     /* Die Groesse ist nur pruefbar, wenn sie angekuendigt wurde. Fehlt
        die Angabe, ist das ein Befund ueber den Vertrag und keiner ueber
        die Datei - deshalb kein stilles Bestehen. */
-    if (a.byte_size === undefined || a.byte_size === null) {
-      bestanden.byteSizeValid = null;
-    } else {
-      pruefe("byteSizeValid", gelesen.length === a.byte_size,
-        "Die Datei hat " + gelesen.length + " Bytes, angekuendigt waren " +
-        a.byte_size + " (Differenz " + (gelesen.length - a.byte_size) + ").");
-    }
+    pruefeFallsAngekuendigt("byteSizeValid", a.byte_size,
+      gelesen.length === a.byte_size,
+      "Die Datei hat " + gelesen.length + " Bytes, angekuendigt waren " +
+      a.byte_size + " (Differenz " + (gelesen.length - a.byte_size) + ").");
 
     var hash = Integrity.sha256(gelesen);
-    pruefe("sha256Match", !a.asset_sha256 || hash === a.asset_sha256,
+    pruefeFallsAngekuendigt("sha256Match", a.asset_sha256,
+      hash === a.asset_sha256,
       "SHA-256 ist " + hash + ", angekuendigt war " + a.asset_sha256 + ".");
 
     pruefe("freshReadbackValid", options.freshReadback === true,

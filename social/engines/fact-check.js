@@ -174,10 +174,35 @@
     /* Abgleich: welche gefundene Stelle ist durch einen erklaerten Claim
        gedeckt? Der Abgleich laeuft ueber den Textausschnitt, nicht ueber
        eine Position — Positionen verschieben sich beim Umformulieren. */
-    var declaredTexts = declared.map(function (c) { return String(c.text || ""); });
+    /* -----------------------------------------------------------------
+       DIESELBE ZAHL, ZWEI SCHREIBWEISEN
+
+       Der Creative Agent schrieb "3,9 %". Der Beleg sagt "3.9 %". Das
+       ist dieselbe Zahl - deutsche Texte setzen ein Komma, die
+       Quant-Engines einen Punkt.
+
+       Die erste Fassung verglich Zeichenketten und meldete fuenf
+       unbelegte Prozentangaben in einem Text, dessen Zahlen samt und
+       sonders aus den Belegen stammten. Wieder ein Pruefer, der
+       korrekten Text verbietet - und wieder faellt es erst am fertigen
+       Beitrag auf.
+
+       Die Claim Binding hat dieselbe Lektion schon gelernt. Dass sie
+       hier ein zweites Mal gelernt werden musste, ist der eigentliche
+       Befund: zwei Pruefer, zwei Zahlenverstaendnisse.
+
+       Normalisiert wird nur INNERHALB von Ziffernfolgen. Ein Komma
+       zwischen Woertern bleibt ein Komma.
+       ----------------------------------------------------------------- */
+    function zahlenNormal(x) {
+      return String(x || "").replace(/(\d),(\d)/g, "$1.$2");
+    }
+
+    var declaredTexts = declared.map(function (c) { return zahlenNormal(c.text); });
     var unsourced = textClaims.filter(function (claim) {
+      var n = zahlenNormal(claim.text);
       return !declaredTexts.some(function (d) {
-        return d.indexOf(claim.text) !== -1 || claim.text.indexOf(d) !== -1;
+        return d.indexOf(n) !== -1 || n.indexOf(d) !== -1;
       });
     });
 

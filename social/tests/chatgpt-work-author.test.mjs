@@ -42,8 +42,24 @@ const HIER = dirname(fileURLToPath(import.meta.url));
 const F = (p) => join(HIER, "fixtures", p);
 
 const BRIEF_ROH = readFileSync(F("pr98/authoring-brief.json"));
-const ERGEBNIS = JSON.parse(readFileSync(F("pr98/authoring-result.json"), "utf8"));
+const ERGEBNIS_ROH = JSON.parse(readFileSync(F("pr98/authoring-result.json"), "utf8"));
 const ASSET = readFileSync(F("creative-visual-proof.png"));
+
+/* -------------------------------------------------------------------
+   DAS ECHTE ERGEBNIS, AUF DEN HEUTIGEN VERTRAG GEHOBEN
+
+   PR 98 entstand VOR dem gehaerteten Transportvertrag und kuendigt
+   keine Dateigroesse an. Die Datei auf der Platte bleibt unangetastet -
+   sie ist der Beweis und wird nicht nachtraeglich passend gemacht.
+
+   Die Tests, die von Hooks, Text und Kennungen handeln, brauchen aber
+   ein Ergebnis, das den heutigen Vertrag erfuellt; sonst pruefen sie
+   nur noch, dass ein altes Ergebnis alt ist. Sie bekommen deshalb eine
+   Kopie MIT der Ankuendigung. Dass das Original sie nicht traegt,
+   prueft CG13 ausdruecklich.
+   ------------------------------------------------------------------- */
+const ERGEBNIS = JSON.parse(JSON.stringify(ERGEBNIS_ROH));
+ERGEBNIS.visual_variants.forEach((v) => { v.asset_byte_size = ASSET.length; });
 const TEXT_PROOF = JSON.parse(readFileSync(F("pr97-text-result.json"), "utf8"));
 
 /* Der Blob-SHA des echten Briefs — die Wurzel aller Kennungen. */
@@ -158,7 +174,21 @@ test("CG12 · Ein Ergebnis zu einem fremden Brief wird zurueckgewiesen", () => {
 /* DAS ASSET                                                           */
 /* ------------------------------------------------------------------ */
 
-test("CG13 · Das echte Asset wird zurueckgelesen und bestaetigt", () => {
+test("CG13 · Ein Ergebnis ohne angekuendigte Groesse besteht nicht", () => {
+  /* Neun Pflichtpruefungen heisst neun. PR 98 kuendigt keine
+     Dateigroesse an, also gibt es dazu nichts zu vergleichen - und ein
+     Vergleich, der nicht stattgefunden hat, ist kein bestandener. Frueher
+     sprang diese Pruefung still auf "bestanden", und weil das Schema
+     `asset_byte_size` schreibt und die Pruefung `byte_size` las, lief sie
+     bei KEINEM realen Ergebnis. */
+  const roh = CW.verifyAssets(ERGEBNIS_ROH, leseAsset);
+  assert.equal(roh.ok, false);
+  assert.equal(roh.checked[0].verification.checks.byteSizeValid, null);
+  /* Und es ist ausdruecklich kein Urteil ueber das Bild. */
+  assert.equal(roh.checked[0].verification.contentJudgement, false);
+});
+
+test("CG13a · Das echte Asset wird zurueckgelesen und bestaetigt", () => {
   const a = CW.verifyAssets(ERGEBNIS, leseAsset);
   assert.equal(a.ok, true, a.explanation);
   assert.equal(a.state, "READBACK_VERIFIED");
@@ -320,14 +350,51 @@ test("CG25 · Der unveraenderte Agententext bleibt als Provenance erhalten", () 
   assert.equal(nochmal.variants[0].caption, r.variants[0].caption);
 });
 
-test("CG26 · Wo nichts zu reparieren war, entsteht kein zweiter Text", () => {
+test("CG26 · textVerbatim haelt JEDE Aenderung an fremdem Text fest", () => {
+  /* Frueher forderte dieser Test textVerbatim === null, wenn
+     orthografisch nichts zu reparieren war. Seit der Pflichthinweis
+     angehaengt wird, ist das zu eng gedacht: auch das Anhaengen ist
+     eine Aenderung an Text, den ein anderer geschrieben hat.
+
+     textVerbatim heisst deshalb nicht mehr "hier wurde die Schreibung
+     korrigiert", sondern "so stand es beim Autor". Das ist die Angabe,
+     auf die es fuer die Provenance ankommt. */
+  const brief = vuBrief();
+  const hinweis = brief.constraints && brief.constraints.disclaimer;
   const a = autorMit({ readResult: () => ERGEBNIS, readAsset: leseAsset });
-  const r = a.write(vuBrief(), {
+  const r = a.write(brief, {
     contentId: ERGEBNIS.content_id, briefBlobSha: BRIEF_SHA,
     agentBrief: JSON.parse(BRIEF_ROH.toString())
   });
-  assert.equal(r.variants[0].textVerbatim, null);
+
   assert.equal(r.variants[0].textResidue, null);
+
+  if (hinweis) {
+    assert.ok(r.variants[0].caption.endsWith(hinweis),
+      "der Pflichthinweis fehlt am Ende der Caption");
+    assert.equal(r.variants[0].textVerbatim.caption, ERGEBNIS.caption,
+      "der unveraenderte Agententext ist nicht festgehalten");
+  } else {
+    assert.equal(r.variants[0].textVerbatim, null);
+  }
+});
+
+test("CG26b · Der Pflichthinweis steht nicht zweimal da", () => {
+  /* Steht er schon im Agententext, wird er nicht angehaengt. */
+  const brief = vuBrief();
+  const hinweis = (brief.constraints && brief.constraints.disclaimer) || null;
+  if (!hinweis) return;
+
+  const mitHinweis = JSON.parse(JSON.stringify(ERGEBNIS));
+  mitHinweis.caption = "Eine Aussage. " + hinweis;
+
+  const a = autorMit({ readResult: () => mitHinweis, readAsset: leseAsset });
+  const r = a.write(brief, {
+    contentId: ERGEBNIS.content_id, briefBlobSha: BRIEF_SHA,
+    agentBrief: JSON.parse(BRIEF_ROH.toString())
+  });
+  const treffer = r.variants[0].caption.split(hinweis).length - 1;
+  assert.equal(treffer, 1, "der Hinweis steht " + treffer + "-mal da");
 });
 
 test("CG27 · Unbekannte Umschrift wird gemeldet und blockiert die Variante", () => {
