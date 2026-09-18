@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-18T14:55:24.046Z",
+  "checkedAt": "2026-09-18T15:06:06.055Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-18",
-    "localTime": "10:55:24",
+    "localTime": "11:06:06",
     "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-18",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-18T14:55:19.876Z",
+    "indexGeneratedAt": "2026-09-18T15:06:01.867Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-18",
@@ -22,15 +22,15 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-18",
-      "asOf": "2026-09-18T14:55:00.000Z",
-      "asOfLocal": "10:55",
+      "asOf": "2026-09-18T15:05:00.000Z",
+      "asOfLocal": "11:05",
       "regularComplete": false,
-      "snapshots": 509,
+      "snapshots": 510,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 10:55",
+    "dataLabel": "Heute · Stand 11:05",
     "entries": 520,
     "byState": {
       "LIVE": 504,
@@ -40,8 +40,8 @@
     },
     "byReason": {
       "runningSession": 504,
-      "currentSessionMissing": 11,
-      "runningSessionStaleAsOf": 5
+      "currentSessionMissing": 10,
+      "runningSessionStaleAsOf": 6
     },
     "staleSample": [
       "ATHS",
@@ -58,8 +58,8 @@
       "RDIB",
       "RFAI",
       "SWVL",
-      "TUYA",
-      "UFG"
+      "UFG",
+      "VIOT"
     ],
     "universeSessions": [
       "2026-09-17"
