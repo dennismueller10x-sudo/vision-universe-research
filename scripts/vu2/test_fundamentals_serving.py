@@ -125,6 +125,26 @@ class ServingTests(unittest.TestCase):
         self.assertNotEqual(values(before), [987654321.0])
         self.assertEqual(values(after), [987654321.0])
 
+    def test_same_day_future_acceptance_is_not_served(self):
+        doc = copy.deepcopy(self.document)
+        cell = next(t for t in doc["factbook"]["timelines"] if t["metric"] == "revenue" and t["fiscal_period"] == "FY")
+        revision = copy.deepcopy(cell["observations"][-1])
+        revision.update(value=987654321.0, available_from="2026-09-18T18:00:00Z", filed="2026-09-18")
+        revision["provenance"].update(accession="4100000001-26-000001", form="10-K/A",
+                                     available_from="2026-09-18T18:00:00Z", filed="2026-09-18")
+        cell["observations"].append(revision)
+        with self.assertRaisesRegex(serving.ServingError, "FUTURE_FACT"):
+            self.project(doc, policy="latest_known", as_of="2026-09-18T12:00:00Z")
+        # A proper historical cutoff still resolves the previous observation.
+        result = self.project(doc, usage="backtest", as_of="2026-09-18T12:00:00Z")
+        self.assertFalse(any(r.get("value") == 987654321.0 for r in result["history"]["rows"]))
+
+    def test_backtest_today_date_requires_completed_day(self):
+        with self.assertRaisesRegex(serving.ServingError, "BACKTEST_CUTOFF_NOT_COMPLETE"):
+            self.project(usage="backtest", as_of="2026-09-18")
+        self.assertTrue(self.project(usage="backtest", as_of="2026-09-17")["pitPolicyApplied"])
+        self.assertTrue(self.project(usage="backtest", as_of="2026-09-18T12:00:00Z")["pitPolicyApplied"])
+
     def test_backtest_rejects_retrospective_policy(self):
         for policy in ("latest_known", "original"):
             with self.subTest(policy=policy), self.assertRaisesRegex(serving.ServingError, "UNSAFE_BACKTEST_POLICY"):

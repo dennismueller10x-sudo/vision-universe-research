@@ -40,11 +40,11 @@ def _require(condition, code):
         raise ServingError(code)
 
 
-def _instant(value):
+def _instant(value, *, date_end=True):
     _require(isinstance(value, str), "INVALID_AS_OF")
     try:
         if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
-            return datetime.fromisoformat(value).replace(tzinfo=timezone.utc, hour=23, minute=59, second=59)
+            return datetime.fromisoformat(value).replace(tzinfo=timezone.utc, hour=23 if date_end else 0, minute=59 if date_end else 0, second=59 if date_end else 0)
         result = datetime.fromisoformat(value.replace("Z", "+00:00"))
         _require(result.tzinfo is not None, "INVALID_AS_OF")
         return result.astimezone(timezone.utc)
@@ -82,9 +82,11 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
     cutoff = _instant(as_of)
     clock = now or datetime.now(timezone.utc)
     _require(isinstance(clock, datetime) and clock.tzinfo is not None, "INVALID_CLOCK")
+    clock = clock.astimezone(timezone.utc)
     # Date-only queries mean the end of that calendar day, as in SEC's resolver.
     _require(cutoff.date() <= clock.astimezone(timezone.utc).date()
              if len(as_of) == 10 else cutoff <= clock, "FUTURE_AS_OF")
+    _require(usage != "backtest" or cutoff <= clock, "BACKTEST_CUTOFF_NOT_COMPLETE")
     _require(all(type(v) is int and 1 <= v <= 100 for v in (annual_years, quarterly_years)), "INVALID_SCOPE")
     _require(isinstance(compressed, bytes) and 0 < len(compressed) <= MAX_COMPRESSED_BYTES, "INVALID_OBJECT_SIZE")
     _require(isinstance(expected_sha256, str) and re.fullmatch(r"[0-9a-f]{64}", expected_sha256)
@@ -124,8 +126,8 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
                 _require(type(row.get("value")) in (int, float) and math.isfinite(row["value"])
                          and bool(row.get("unit")) and bool(row.get("accession"))
                          and bool(row.get("filed")) and bool(row.get("available_from")), "INVALID_FACT_EVIDENCE")
-                _require(_instant(row["filed"]).date() <= clock.date()
-                         and _instant(row["available_from"]).date() <= clock.date(), "FUTURE_FACT")
+                _require(_instant(row["filed"], date_end=False).date() <= clock.date()
+                         and _instant(row["available_from"], date_end=False) <= clock, "FUTURE_FACT")
         available = sum(row.get("available") is True for row in all_rows)
     except ServingError:
         raise

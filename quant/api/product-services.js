@@ -17,7 +17,7 @@ const History=typeof module!=='undefined'&&module.exports?require('./fundamental
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
- const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready;
+ const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
  async function identity(ticker){
   const result=await directory.getInstrument(ticker),i=result.instrument;
@@ -40,16 +40,17 @@ function create(options){
    return {state:'AVAILABLE',entries:entries.slice(0,boundedLimit),scope:'CANONICAL_PRODUCT_UNIVERSE',limited:result.entries.length===boundedLimit*3||entries.length>boundedLimit};
   }catch{return {state:'SOURCE_MISSING',reason:'DIRECTORY_SOURCE_UNAVAILABLE',entries:[]};}
  }
- async function identityOnlyStock(ticker){
+ async function identityOnlyStock(ticker,reason='PRODUCT_DATA_NOT_CONNECTED'){
   try{const result=await directory.getInstrument(ticker),i=result.instrument;if(result.status!=='OK'||i?.symbol!==ticker||!canonicalIdentity(i))return unavailable('INVALID_IDENTITY');
-   const missing={state:'UNAVAILABLE',reason:'PRODUCT_DATA_NOT_CONNECTED'};
-   return {...identityModel(i),state:'UNAVAILABLE',identityState:'AVAILABLE',reason:'PRODUCT_DATA_NOT_CONNECTED',availability:{fundamentals:{...missing},history:{...missing},technical:{...missing},quant:{...missing},intraday:{...missing},realtime:{...missing}},workspaces:workspaces(ticker)};
+   const missing={state:'UNAVAILABLE',reason};
+   return {...identityModel(i),state:'UNAVAILABLE',identityState:'AVAILABLE',reason,availability:{fundamentals:{...missing},history:{...missing},technical:{...missing},quant:{...missing},intraday:{...missing},realtime:{...missing}},workspaces:workspaces(ticker)};
   }catch{return unavailable('SOURCE_MISSING');}
  }
- function init(){if(!ready)ready=Promise.all([
-  load('/quant/config/development-preview.json'),load('/quant/config/feature-gates.json'),
-  load('/quant/data/sec/quant-factor-inputs.json')
- ]).then(([preview,gates,panel])=>{policy.declareFromConfig(preview);return {preview,gates:policy.gatesFromConfig(gates),panel};}).catch(e=>{ready=null;throw e;});return ready;}
+ function config(){if(!configReady)configReady=Promise.all([
+  load('/quant/config/development-preview.json'),load('/quant/config/feature-gates.json')
+ ]).then(([preview,gates])=>{policy.declareFromConfig(preview);return {preview,gates:policy.gatesFromConfig(gates)};}).catch(e=>{configReady=null;throw e;});return configReady;}
+ function init(){if(!ready)ready=Promise.all([config(),load('/quant/data/sec/quant-factor-inputs.json')])
+ .then(([c,panel])=>({...c,panel})).catch(e=>{ready=null;throw e;});return ready;}
  function permission(c,ticker,form){return policy.check({providerId:'tiingo',dataClass:'marketData',audience:'development_preview',form:form||'derived',ticker,gates:c.gates});}
  function unavailable(reason){return {state:'UNAVAILABLE',reason,stocks:[]};}
  function metric(value,unit){return {value:Number.isFinite(value)?value:null,unit,state:Number.isFinite(value)?'AVAILABLE':'SOURCE_MISSING'};}
@@ -111,14 +112,14 @@ function create(options){
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return identityOnlyStock(ticker);if(!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
-   const stock=await row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
+  try{const settings=await config();if(!(settings.preview.scope||[]).includes(ticker))return identityOnlyStock(ticker);if(!permission(settings,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
+   const c=await init(),stock=await row(c,ticker);if(!stock)return unavailable('SOURCE_MISSING');
    try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
     stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
    }catch{stock.chart={state:'SOURCE_MISSING',bars:[]};}stock.quant=await getQuantWorkspace(ticker);stock.health=await marketHealth([stock]);return stock;
-  }catch{return unavailable('SOURCE_MISSING');}}
+  }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){
   try{const c=await init(),calendar=await load('/quant/config/market-calendar.json'),results=await Promise.all((c.preview.scope||[]).map(async ticker=>{
    if(!permission(c,ticker,'raw').allowed||!permission(c,ticker).allowed)return {ticker,state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED',events:[]};

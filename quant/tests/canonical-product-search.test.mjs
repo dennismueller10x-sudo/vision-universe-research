@@ -33,3 +33,16 @@ test('search UI ignores stale asynchronous results and displays loading, empty a
  input.value='none';const third=input.listeners.input();pending[2].resolve({state:'AVAILABLE',entries:[]});await third;assert.match(status.textContent,/Keine passenden/);
  input.value='failed';const fourth=input.listeners.input();pending[3].resolve({state:'SOURCE_MISSING',entries:[]});await fourth;assert.match(status.textContent,/derzeit nicht verfügbar/);
 });
+
+test('identity-only stock does not request the unrelated five-company financial panel',async()=>{
+ const reads=[],service=api(p=>{if(p.endsWith('quant-factor-inputs.json'))throw Error('panel offline');},reads);
+ const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.ticker,'TSLA');assert.equal(stock.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.ok(!reads.some(p=>p.endsWith('quant-factor-inputs.json')));
+});
+test('config and connected-panel failures preserve independent canonical identity with typed availability',async()=>{
+ for(const failed of ['/quant/config/development-preview.json','/quant/config/feature-gates.json','/quant/data/sec/quant-factor-inputs.json']){
+  const ticker=failed.endsWith('quant-factor-inputs.json')?'NVDA':'TSLA',service=api(p=>{if(p===failed)throw Error('offline');});
+  const stock=await service.getStockIntelligence(ticker);assert.equal(stock.identityState,'AVAILABLE',failed);assert.equal(stock.ticker,ticker);assert.match(stock.securityId,/^vu_/);assert.equal(stock.state,'UNAVAILABLE');assert.equal(stock.reason,'SOURCE_MISSING');
+  for(const status of Object.values(stock.availability)){assert.equal(status.state,'UNAVAILABLE');assert.equal(status.reason,'SOURCE_MISSING');}
+  assert.equal(stock.price,undefined);assert.equal(stock.chart,undefined);
+ }
+});
