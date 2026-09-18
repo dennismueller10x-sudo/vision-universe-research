@@ -1,25 +1,29 @@
 {
   "schemaVersion": "daily-lifecycle-health-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: ein Tageslauf, der den ueberwiegenden Teil des Universums nicht einmal fragt, darf nicht gruen sein",
-  "checkedAt": "2026-09-18T08:26:26.591Z",
-  "verdict": "FAIL",
-  "reasons": [
-    "nur 45 von 6876 Titeln geprueft (1 %), 6831 zurueckgestellt",
-    "Tageskurse 2 Sitzungen zurueck (Stand 2026-09-15, erwartet 2026-09-17)"
-  ],
+  "checkedAt": "2026-09-18T19:55:45.383Z",
+  "verdict": "PASS",
+  "reasons": [],
   "universe": 6876,
-  "checked": 45,
-  "checkedShare": 0.007,
-  "deferred": 6831,
-  "deferredByClass": null,
-  "retriedAfterRejection": 0,
+  "checked": 6456,
+  "checkedShare": 0.939,
+  "deferred": 420,
+  "deferredByClass": {
+    "TEMPORARY_REJECT": 420
+  },
+  "retriedAfterRejection": 3,
   "recoveredAfterRejection": 0,
-  "requests": 45,
-  "rejectionLedger": null,
-  "dailyAsOf": "2026-09-15",
-  "dailyState": "STALE",
+  "requests": 6456,
+  "rejectionLedger": {
+    "offen": 423,
+    "PERMANENT_REJECT": 0,
+    "TEMPORARY_REJECT": 423,
+    "STALE_REJECT": 0
+  },
+  "dailyAsOf": "2026-09-17",
+  "dailyState": "LAST_SESSION",
   "expectedSession": "2026-09-17",
-  "sessionsBehind": 2,
+  "sessionsBehind": 0,
   "thresholds": {
     "geprueftMin": 0.6,
     "geprueftWarn": 0.9,
