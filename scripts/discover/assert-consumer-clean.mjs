@@ -32,12 +32,17 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const OUT_DIR = join(root, "quant", "data", "market", "commercial");
 
-/* Die ausgelieferten Seiten: alles, was ein Browser oeffnen kann. */
-const SEITEN_WURZELN = ["discover", "morning", "etf", "assets", "quant/ui"];
+/* Die ausgelieferten Seiten: alles, was ein Browser oeffnen kann - seit
+   der Freigabe vom 18.09.2026 der ganze Baum, nicht mehr eine Auswahl.
+   Die Plakette darf nirgends mehr stehen, also muss auch ueberall
+   gesucht werden. */
+const SEITEN_WURZELN = ["."];
 const SEITEN = /\.html$/i;
 
-/* Die Oberflaechenmodule, die Text fuer den Nutzer erzeugen. */
-const UI_DATEIEN = ["discover/app.js", "discover/ui", "discover/engines", "assets/site-navigation.js"];
+/* Die Oberflaechenmodule, die Text fuer den Nutzer erzeugen. Fuer §18
+   zaehlt jedes davon; fuer §14 nur die von Discover (siehe unten). */
+const UI_DATEIEN = ["discover/app.js", "discover/ui", "discover/engines",
+                    "assets/site-navigation.js", "quant/ui"];
 
 /* §18: die Plakette. */
 const PLAKETTE = /Development\s+Preview/i;
@@ -47,13 +52,18 @@ const PLAKETTE = /Development\s+Preview/i;
    Discover ist das Produkt, das abgenommen wird. Die Plakette darf dort
    nicht stehen, und das ist eine harte Bedingung.
 
-   Der Rest der Seite - Quant-Werkzeuge, Dashboards, Magazin, Academy -
-   traegt sie bis heute. Ob sie auch dort verschwinden soll, ist eine
-   Produktentscheidung und keine, die ein Nachweisskript treffen darf.
-   Sie wird deshalb GEZAEHLT und BENANNT, nicht stillschweigend
-   durchgewunken und nicht stillschweigend geaendert. */
-const CONSUMER = [/^discover\//];
-function istConsumer(rel) { return CONSUMER.some((re) => re.test(rel)); }
+   Bis zum 17.09.2026 galt das nur fuer Discover; der Rest der Seite -
+   Quant-Werkzeuge, Dashboards, Magazin, Academy - trug die Plakette
+   weiter, und dieses Skript hat den Unterschied gezaehlt und benannt,
+   statt ihn stillschweigend zu entscheiden.
+
+   Am 18.09.2026 hat der Owner entschieden: die Kennzeichnung
+   verschwindet aus der GESAMTEN sichtbaren Consumer-Erfahrung. Damit ist
+   §18 keine Frage der Flaeche mehr - jeder Fund ist ein Befund. Interne
+   Entwicklungs- und QA-Metadaten (quant/config/development-preview.json,
+   Berichte, Kommentare) bleiben ausdruecklich erlaubt: sie stehen in
+   Daten und im Quelltext, nicht auf dem Bildschirm. */
+function istConsumer() { return true; }
 
 /* §14: Anbieter- und Methodiknamen. Auf der Quellenseite erlaubt, im
    uebrigen Consumer-Text nicht. */
@@ -98,6 +108,10 @@ function istKennung(t) {
 const funde = { developmentPreview: [], developmentPreviewAusserhalbConsumer: [],
                 anbieterImConsumerText: [] };
 
+/* §14 gilt weiter nur fuer die Consumer-Flaeche: in den Quant-Werkzeugen
+   ist ein Anbietername eine Fachangabe, kein Bruch im Erlebnis. */
+function istDiscover(rel) { return /^discover\//.test(rel); }
+
 /* ---- §18: die Plakette, in jeder ausgelieferten Seite -------------- */
 for (const datei of seiten) {
   const text = readFileSync(datei, "utf8");
@@ -132,11 +146,13 @@ for (const datei of uiDateien) {
     if (PLAKETTE.test(s.text)) {
       const eintrag = { file: rel, line: text.slice(0, s.index).split("\n").length,
                         context: s.text.slice(0, 80) };
-      /* Die gemeinsame Navigation gehoert keiner einzelnen Seite; sie
-         zeigt die Plakette nur dort, wo eine Seite nicht no-preview
-         setzt. Discover setzt es - deshalb zaehlt sie hier ausserhalb. */
+      /* Seit dem 18.09.2026 gibt es keine Flaeche mehr, auf der die
+         Plakette erlaubt waere - auch die gemeinsame Navigation baut sie
+         nicht mehr. Jeder Fund in einem Modul, das Text erzeugt, ist ein
+         Befund. */
       (istConsumer(rel) ? funde.developmentPreview : funde.developmentPreviewAusserhalbConsumer).push(eintrag);
     }
+    if (!istDiscover(rel)) continue;
     if (QUELLEN_AUSNAHMEN.some((a) => rel.startsWith(a))) continue;
     if (istKennung(s.text)) continue;
     if (ANBIETER.test(s.text)) {
@@ -147,26 +163,25 @@ for (const datei of uiDateien) {
 }
 
 const bericht = {
-  schemaVersion: "consumer-clean-1.0.0",
-  auftrag: "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview)",
+  schemaVersion: "consumer-clean-1.1.0",
+  auftrag: "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview); Owner 18.09.2026 Entscheidung 1: §18 gilt site-wide fuer die gesamte sichtbare Consumer-Erfahrung",
   checkedAt: new Date().toISOString(),
   scanned: { pages: seiten.length, uiModules: uiDateien.length },
   scope: "Ausgelieferte Seiten und die Module, die Consumer-Text erzeugen. Kommentare und " +
          "Dokumentation sind ausgenommen - sie sprechen ueber die Sache, sie zeigen sie nicht.",
   sourcesPage: QUELLEN_AUSNAHMEN,
   findings: funde,
-  ownerDecision: funde.developmentPreviewAusserhalbConsumer.length
-    ? {
-        frage: "Soll die Plakette 'Development Preview' auch ausserhalb von Discover verschwinden?",
-        betroffen: funde.developmentPreviewAusserhalbConsumer.length,
-        note: "Discover ist die einzige Seite, die no-preview setzt. Alle uebrigen Seiten - " +
-              "Quant-Werkzeuge, Dashboards, Magazin, Academy, Startseite - tragen die Plakette " +
-              "weiter. Das ist kein Versehen dieses Passes, sondern der Stand vor ihm; ob es so " +
-              "bleibt, entscheidet der Owner.",
-        machbar: "Ein Attribut je Seite, oder die Vorgabe in assets/site-navigation.js umdrehen."
-      }
-    : null,
-  verdict: (funde.developmentPreview.length === 0 && funde.anbieterImConsumerText.length === 0)
+  ownerDecision: {
+    entschieden: "18.09.2026",
+    frage: "Soll die Plakette 'Development Preview' auch ausserhalb von Discover verschwinden?",
+    antwort: "Ja - site-wide aus der sichtbaren Consumer-Erfahrung. Interne Entwicklungs- und " +
+             "QA-Metadaten bleiben bestehen.",
+    umgesetzt: "assets/site-navigation.js baut die Plakette nicht mehr; das Attribut no-preview " +
+               "bleibt zulaessig und wirkungslos. Diese Pruefung sucht seitdem im ganzen Baum."
+  },
+  verdict: (funde.developmentPreview.length === 0 &&
+            funde.developmentPreviewAusserhalbConsumer.length === 0 &&
+            funde.anbieterImConsumerText.length === 0)
     ? "PASS" : "FAIL"
 };
 
@@ -177,13 +192,8 @@ console.log("Consumer-Oberflaeche, zwei Pruefungen:");
 console.log("");
 console.log("  " + seiten.length + " ausgelieferte Seiten, " + uiDateien.length + " Oberflaechenmodule");
 console.log("");
-console.log("  §18 'Development Preview' in Discover: " + (funde.developmentPreview.length || "nirgends"));
+console.log("  §18 'Development Preview' site-wide: " + (funde.developmentPreview.length || "nirgends"));
 for (const f of funde.developmentPreview) console.log("      " + f.file + ":" + f.line + "  " + f.context);
-console.log("  §18 dieselbe Plakette ausserhalb:      " + funde.developmentPreviewAusserhalbConsumer.length +
-            " (Owner-Entscheidung, kein Befund gegen diesen Pass)");
-for (const f of funde.developmentPreviewAusserhalbConsumer.slice(0, 3)) {
-  console.log("      " + f.file + ":" + f.line);
-}
 console.log("  §14 Anbieternamen im Consumer-Text: " + (funde.anbieterImConsumerText.length || "keiner"));
 for (const f of funde.anbieterImConsumerText) console.log("      " + f.file + ":" + f.line + "  " + f.context);
 console.log("");

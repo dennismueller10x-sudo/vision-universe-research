@@ -174,19 +174,27 @@ function baueKopfMitStil(attribute) {
   return { el, klasse, style, html: () => html, attribute };
 }
 
-test("V4.1: ohne no-preview steht die Plakette 'Development Preview' im Kopf", () => {
+/* Owner-Entscheidung 1 vom 18.09.2026: die Plakette verschwindet aus der
+   GESAMTEN sichtbaren Consumer-Erfahrung. Bis dahin verlangte diese
+   Stelle das Gegenteil - der Kopf trug sie ueberall, ausser wo eine
+   Seite no-preview setzte. Beide Tests sind deshalb umgedreht: der Kopf
+   darf sie nirgends mehr bauen, mit Attribut wie ohne. */
+test("GO: der Kopf baut die Plakette nicht mehr - ohne Attribut", () => {
   const k = baueKopfMitStil({ theme: "dark" });
-  assert.match(k.html(), /class="preview"/);
-  assert.match(k.html(), /Development Preview/);
-});
-
-test("V4.1: no-preview nimmt die Plakette aus dem Kopf - auch aus dem Vorlesetext", () => {
-  const k = baueKopfMitStil({ theme: "dark", "no-preview": "" });
   assert.ok(!k.html().includes('class="preview"'), "die Plakette steht noch im Markup");
   assert.ok(!k.html().includes("Development Preview"), "der Vorlesetext nennt die Plakette noch");
   assert.match(k.html(), /aria-label="Vision Universe Startseite"/);
+});
+
+test("GO: auch mit no-preview - das Attribut bleibt zulaessig und wirkungslos", () => {
+  const k = baueKopfMitStil({ theme: "dark", "no-preview": "" });
+  assert.ok(!k.html().includes('class="preview"'));
+  assert.ok(!k.html().includes("Development Preview"));
+  assert.match(k.html(), /aria-label="Vision Universe Startseite"/);
+  /* Discover traegt das Attribut weiter; eine Seite, die es setzt, muss
+     unveraendert gueltig bleiben. */
   const seite = readFileSync(join(root, "discover", "index.html"), "utf8");
-  assert.match(seite, /<vu-navigation[^>]*\sno-preview[\s>]/, "Discover setzt no-preview nicht");
+  assert.match(seite, /<vu-navigation[^>]*\sno-preview[\s>]/);
 });
 
 test("V4.1: das Attribut theme wird beobachtet und schaltet die Farben zur Laufzeit um", () => {

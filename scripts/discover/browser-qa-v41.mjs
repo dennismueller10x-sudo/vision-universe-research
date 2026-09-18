@@ -22,6 +22,7 @@ import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 
 function arg(name, fallback) {
   const i = process.argv.indexOf("--" + name);
@@ -67,6 +68,16 @@ const STROM_UNERREICHBAR = STROM_URL
                "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
   : /$^/;
 const IGNORIERT = /fonts\.googleapis|fonts\.gstatic|ERR_CERT_AUTHORITY_INVALID/;
+
+/* Ob die Boerse gerade offen ist, entscheidet, was der Strom TUN MUSS:
+   bei offener Sitzung genau eine Verbindung zur ausgelieferten Adresse,
+   bei geschlossener gar keine. Beides ist eine Zusage (§1: "Markt
+   geschlossen - kein unnoetiger Strom"), und beide werden unten
+   geprueft. Gerechnet wird mit demselben Kalender wie im Produkt. */
+const nodeRequire = createRequire(import.meta.url);
+const MarketHours = nodeRequire(join(process.cwd(), "quant", "engines", "realtime", "market-hours.js"));
+const kalender = JSON.parse(readFileSync(join(process.cwd(), "quant", "config", "market-calendar.json"), "utf8"));
+const sitzung = MarketHours.sessionAt(Date.now(), { calendar: kalender, exchange: "XNYS" });
 async function openPage(opts) {
   const ctx = await browser.newContext(Object.assign({ colorScheme: "dark" }, opts));
   const p = await ctx.newPage();
@@ -360,7 +371,7 @@ await check("Schreibtisch: kein Ueberlauf, keine eigenen 4xx, keine Konsolenfehl
    der Riegel dagegen, dass eine nicht ausgerollte Adresse trotzdem
    angewaehlt wird - das waere auf jeder Aktienseite ein
    Verbindungsversuch ins Leere und ein "Live", das keines ist. */
-await check("Strom: eingeschaltet, genau eine Adresse, und der Browser waehlt sie", async () => {
+await check("Strom: eingeschaltet, genau eine Adresse, und nur bei offener Boerse", async () => {
   /* Seit dem 17.09.2026 ist der Strom an (Owner-Freigabe). Diese Pruefung
      ist damit keine Riegelpruefung mehr, sondern eine Verdrahtungspruefung:
      steht die Adresse in der Auslieferung, ruft der Browser genau sie auf,
@@ -401,11 +412,19 @@ await check("Strom: eingeschaltet, genau eine Adresse, und der Browser waehlt si
   assert(befund.scope === "stockPage", "der Strom gilt nur der Aktienseite, nicht " + befund.scope);
   assert(befund.hubAvailable === true, "der Hub haelt den Strom fuer nicht verfuegbar");
 
-  /* Genau eine Adresse, und zwar die aus der Auslieferung. Ein Tippfehler
-     im Schalter faellt hier auf, auch ohne erreichbaren Worker. */
+  /* Genau eine Adresse, und zwar die aus der Auslieferung - ein
+     Tippfehler im Schalter faellt hier auf, auch ohne erreichbaren
+     Worker. Und ausserhalb der Sitzung darf gar nichts aufgebaut werden:
+     ein Strom bei geschlossener Boerse waere Verbrauch ohne Kurse. */
   const fremde = befund.sockets.filter((u) => u !== STROM_URL);
-  assert(befund.sockets.length > 0, "es wurde gar nicht verbunden");
   assert(fremde.length === 0, "es wurde eine fremde Adresse gewaehlt: " + fremde.join(", "));
+  if (sitzung.isOpen) {
+    assert(befund.sockets.length > 0, "Boerse offen (" + sitzung.localTime + "), aber nicht verbunden");
+  } else {
+    assert(befund.sockets.length === 0,
+           "Boerse zu (" + sitzung.phase + " " + sitzung.localTime + "), trotzdem verbunden: " +
+           befund.sockets.join(", "));
+  }
 
   /* Und die Aktienseite steht trotzdem: Chart da, keine Ausnahmen. */
   const chart = await p.$(".dx-intraday-chart, .dx-chart svg, .dx-chart-hero, svg.dx-line");

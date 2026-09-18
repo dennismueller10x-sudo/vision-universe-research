@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "consumer-clean-1.0.0",
-  "auftrag": "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview)",
-  "checkedAt": "2026-09-17T19:15:42.691Z",
+  "schemaVersion": "consumer-clean-1.1.0",
+  "auftrag": "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview); Owner 18.09.2026 Entscheidung 1: §18 gilt site-wide fuer die gesamte sichtbare Consumer-Erfahrung",
+  "checkedAt": "2026-09-18T04:31:49.548Z",
   "scanned": {
-    "pages": 7,
-    "uiModules": 31
+    "pages": 41,
+    "uiModules": 37
   },
   "scope": "Ausgelieferte Seiten und die Module, die Consumer-Text erzeugen. Kommentare und Dokumentation sind ausgenommen - sie sprechen ueber die Sache, sie zeigen sie nicht.",
   "sourcesPage": [
@@ -14,25 +14,14 @@
   ],
   "findings": {
     "developmentPreview": [],
-    "developmentPreviewAusserhalbConsumer": [
-      {
-        "file": "assets/site-navigation.js",
-        "line": 53,
-        "context": "Vision Universe Startseite${preview ? ' — Development Preview' : ''}"
-      },
-      {
-        "file": "assets/site-navigation.js",
-        "line": 55,
-        "context": "<span class=\"preview\" aria-label=\"Vision Universe — Development Preview\">Develop"
-      }
-    ],
+    "developmentPreviewAusserhalbConsumer": [],
     "anbieterImConsumerText": []
   },
   "ownerDecision": {
+    "entschieden": "18.09.2026",
     "frage": "Soll die Plakette 'Development Preview' auch ausserhalb von Discover verschwinden?",
-    "betroffen": 2,
-    "note": "Discover ist die einzige Seite, die no-preview setzt. Alle uebrigen Seiten - Quant-Werkzeuge, Dashboards, Magazin, Academy, Startseite - tragen die Plakette weiter. Das ist kein Versehen dieses Passes, sondern der Stand vor ihm; ob es so bleibt, entscheidet der Owner.",
-    "machbar": "Ein Attribut je Seite, oder die Vorgabe in assets/site-navigation.js umdrehen."
+    "antwort": "Ja - site-wide aus der sichtbaren Consumer-Erfahrung. Interne Entwicklungs- und QA-Metadaten bleiben bestehen.",
+    "umgesetzt": "assets/site-navigation.js baut die Plakette nicht mehr; das Attribut no-preview bleibt zulaessig und wirkungslos. Diese Pruefung sucht seitdem im ganzen Baum."
   },
   "verdict": "PASS"
 }
