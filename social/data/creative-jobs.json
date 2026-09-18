@@ -173,7 +173,7 @@
       "revision": "text-only",
       "state": "CREATIVE_JOB_STALE",
       "createdAt": "2026-09-18T14:24:02.027Z",
-      "updatedAt": "2026-09-18T14:40:55.163Z",
+      "updatedAt": "2026-09-18T15:59:14.827Z",
       "prNumber": 110,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -195,9 +195,10 @@
         }
       ],
       "prState": "open",
-      "outcome": "Kein beobachteter Start. PR 110 seit 14 Minuten offen; der langsamste bisher beobachtete Start lag bei 2:09.",
+      "outcome": "Kein beobachteter Start nach 92 Minuten. Drei Beobachtungsfenster zu je 30 Minuten, kein Ergebnis-Commit, kein VU_CREATIVE_AGENT_INVOCATION, PR-Kommentarzahl unveraendert 1 (Vercel). Der langsamste von fuenf gemessenen Starts lag bei 2:09.",
       "source": "dispatch-creative-job Pfad, PR 110",
-      "deliveryCount": 1
+      "deliveryCount": 0,
+      "note": "deliveryCount steht auf 0, weil keine Zustellung BEOBACHTET wurde. Ob GitHub zugestellt hat, ist von hier aus nicht sichtbar - die Beobachtungsgrenze gehoert in die Daten und nicht in eine Annahme."
     }
   ],
   "budget": {
