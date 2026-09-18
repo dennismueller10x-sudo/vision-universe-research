@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.1.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-09-18T14:00:06.948Z",
+  "checkedAt": "2026-09-18T14:10:37.410Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "10:00:06",
+    "localTime": "10:10:37",
     "isOpen": true
   },
   "mode": "PRODUCTION",
@@ -15,18 +15,18 @@
     {
       "symbol": "AAPL",
       "prices": {
-        "kopf": 334.98,
+        "kopf": 334.49,
         "chart": 337.05,
-        "kopfText": "334,98 $+1,10 % heute",
-        "deviation": 0.006141522029372477
+        "kopfText": "334,49 $+0,95 % heute",
+        "deviation": 0.007595312268209471
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "AAPL"
       ],
-      "ticks": 33,
-      "firstTickMs": 244,
+      "ticks": 35,
+      "firstTickMs": 249,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "intradayChart": true,
@@ -38,11 +38,11 @@
         "Stand Do., 17.09. · nicht aktuell"
       ],
       "latencyMs": {
-        "samples": 33,
-        "providerToCloudflare": 36,
-        "cloudflareToClient": 606,
-        "endToEnd": 642,
-        "max": 1121
+        "samples": 35,
+        "providerToCloudflare": 41,
+        "cloudflareToClient": 755,
+        "endToEnd": 795,
+        "max": 1125
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -50,18 +50,18 @@
     {
       "symbol": "NVDA",
       "prices": {
-        "kopf": 219.41,
+        "kopf": 220.3,
         "chart": 219.4,
-        "kopfText": "219,41 $+3,41 % heute",
-        "deviation": 0.00004557885141290294
+        "kopfText": "220,30 $+3,83 % heute",
+        "deviation": 0.004102096627165021
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "NVDA"
       ],
-      "ticks": 42,
-      "firstTickMs": 249,
+      "ticks": 47,
+      "firstTickMs": 250,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "intradayChart": true,
@@ -73,11 +73,11 @@
         "Stand Do., 17.09. · nicht aktuell"
       ],
       "latencyMs": {
-        "samples": 42,
-        "providerToCloudflare": 59,
-        "cloudflareToClient": 474,
-        "endToEnd": 533,
-        "max": 1133
+        "samples": 47,
+        "providerToCloudflare": 43,
+        "cloudflareToClient": 484,
+        "endToEnd": 527,
+        "max": 1129
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -85,18 +85,18 @@
     {
       "symbol": "MSFT",
       "prices": {
-        "kopf": 493.64,
+        "kopf": 492.62,
         "chart": 497.67,
-        "kopfText": "493,64 $−0,70 % heute",
-        "deviation": 0.008097735447183936
+        "kopfText": "492,62 $−0,91 % heute",
+        "deviation": 0.01014728635441158
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "MSFT"
       ],
-      "ticks": 32,
-      "firstTickMs": 249,
+      "ticks": 21,
+      "firstTickMs": 250,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "intradayChart": true,
@@ -108,11 +108,11 @@
         "Stand Do., 17.09. · nicht aktuell"
       ],
       "latencyMs": {
-        "samples": 32,
+        "samples": 21,
         "providerToCloudflare": 49,
-        "cloudflareToClient": 687,
-        "endToEnd": 736,
-        "max": 1184
+        "cloudflareToClient": 765,
+        "endToEnd": 814,
+        "max": 1149
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -120,18 +120,18 @@
     {
       "symbol": "PANW",
       "prices": {
-        "kopf": 359.19,
+        "kopf": 356.52,
         "chart": 375,
-        "kopfText": "359,19 $−4,24 % heute",
-        "deviation": 0.04216
+        "kopfText": "356,52 $−4,95 % heute",
+        "deviation": 0.049280000000000046
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "PANW"
       ],
-      "ticks": 13,
-      "firstTickMs": 2756,
+      "ticks": 14,
+      "firstTickMs": 3499,
       "chartUpdatesAfterLoad": 1,
       "surface": {
         "intradayChart": true,
@@ -143,11 +143,11 @@
         "Stand Do., 17.09. · nicht aktuell"
       ],
       "latencyMs": {
-        "samples": 13,
-        "providerToCloudflare": 42,
-        "cloudflareToClient": 737,
-        "endToEnd": 778,
-        "max": 1089
+        "samples": 14,
+        "providerToCloudflare": 53,
+        "cloudflareToClient": 688,
+        "endToEnd": 741,
+        "max": 1142
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -155,9 +155,9 @@
     {
       "symbol": "VLO",
       "prices": {
-        "kopf": 415.72,
-        "chart": 415.72,
-        "kopfText": "415,72 $+4,70 % heute",
+        "kopf": 414.26,
+        "chart": 414.26,
+        "kopfText": "414,26 $+4,34 % heute",
         "deviation": 0
       },
       "connected": true,
@@ -165,9 +165,9 @@
       "subscribed": [
         "VLO"
       ],
-      "ticks": 5,
-      "firstTickMs": 5249,
-      "chartUpdatesAfterLoad": 5,
+      "ticks": 7,
+      "firstTickMs": 4249,
+      "chartUpdatesAfterLoad": 7,
       "surface": {
         "intradayChart": true,
         "aktiverZeitraum": "1T",
@@ -175,15 +175,15 @@
         "eintagGrund": null
       },
       "labels": [
-        "Heute · Stand 09:35",
+        "Heute · Stand 09:35 · nicht aktuell",
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 5,
-        "providerToCloudflare": 55,
-        "cloudflareToClient": 1032,
-        "endToEnd": 1087,
-        "max": 1153
+        "samples": 7,
+        "providerToCloudflare": 76,
+        "cloudflareToClient": 1038,
+        "endToEnd": 1114,
+        "max": 1269
       },
       "consoleErrors": [],
       "verdict": "TICKS"
@@ -209,15 +209,15 @@
         "opens": 2,
         "closes": 1,
         "errors": 0,
-        "messages": 14,
-        "ticks": 10,
+        "messages": 15,
+        "ticks": 11,
         "denied": 0,
         "retries": 1,
         "subscribes": 1,
         "unsubscribes": 0,
-        "notifications": 15,
-        "lastMessageAt": "2026-09-18T14:06:14.871Z",
-        "lastTickAt": "2026-09-18T14:06:14.871Z",
+        "notifications": 16,
+        "lastMessageAt": "2026-09-18T14:16:46.521Z",
+        "lastTickAt": "2026-09-18T14:16:46.521Z",
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -256,8 +256,8 @@
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
       "ok": true,
       "detail": [
-        "AAPL:33",
-        "NVDA:42"
+        "AAPL:35",
+        "NVDA:47"
       ]
     },
     {
@@ -283,11 +283,11 @@
       "question": "Kopf und Chart zeigen denselben Kurs",
       "ok": false,
       "detail": [
-        "AAPL: {\"kopf\":334.98,\"chart\":337.05,\"kopfText\":\"334,98 $+1,10 % heute\",\"deviation\":0.006141522029372477}",
-        "NVDA: {\"kopf\":219.41,\"chart\":219.4,\"kopfText\":\"219,41 $+3,41 % heute\",\"deviation\":0.00004557885141290294}",
-        "MSFT: {\"kopf\":493.64,\"chart\":497.67,\"kopfText\":\"493,64 $−0,70 % heute\",\"deviation\":0.008097735447183936}",
-        "PANW: {\"kopf\":359.19,\"chart\":375,\"kopfText\":\"359,19 $−4,24 % heute\",\"deviation\":0.04216}",
-        "VLO: {\"kopf\":415.72,\"chart\":415.72,\"kopfText\":\"415,72 $+4,70 % heute\",\"deviation\":0}"
+        "AAPL: {\"kopf\":334.49,\"chart\":337.05,\"kopfText\":\"334,49 $+0,95 % heute\",\"deviation\":0.007595312268209471}",
+        "NVDA: {\"kopf\":220.3,\"chart\":219.4,\"kopfText\":\"220,30 $+3,83 % heute\",\"deviation\":0.004102096627165021}",
+        "MSFT: {\"kopf\":492.62,\"chart\":497.67,\"kopfText\":\"492,62 $−0,91 % heute\",\"deviation\":0.01014728635441158}",
+        "PANW: {\"kopf\":356.52,\"chart\":375,\"kopfText\":\"356,52 $−4,95 % heute\",\"deviation\":0.049280000000000046}",
+        "VLO: {\"kopf\":414.26,\"chart\":414.26,\"kopfText\":\"414,26 $+4,34 % heute\",\"deviation\":0}"
       ]
     },
     {
@@ -305,7 +305,7 @@
         "NVDA: [\"Stand Do., 17.09. · nicht aktuell\"]",
         "MSFT: [\"Stand Do., 17.09. · nicht aktuell\"]",
         "PANW: [\"Stand Do., 17.09. · nicht aktuell\"]",
-        "VLO: [\"Heute · Stand 09:35\",\"Markt geöffnet · Live\"]"
+        "VLO: [\"Heute · Stand 09:35 · nicht aktuell\",\"Markt geöffnet · Live\"]"
       ]
     },
     {
@@ -348,15 +348,15 @@
           "opens": 2,
           "closes": 1,
           "errors": 0,
-          "messages": 14,
-          "ticks": 10,
+          "messages": 15,
+          "ticks": 11,
           "denied": 0,
           "retries": 1,
           "subscribes": 1,
           "unsubscribes": 0,
-          "notifications": 15,
-          "lastMessageAt": "2026-09-18T14:06:14.871Z",
-          "lastTickAt": "2026-09-18T14:06:14.871Z",
+          "notifications": 16,
+          "lastMessageAt": "2026-09-18T14:16:46.521Z",
+          "lastTickAt": "2026-09-18T14:16:46.521Z",
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
