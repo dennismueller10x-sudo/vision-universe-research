@@ -128,6 +128,17 @@ Nicht als Ratschlag, sondern fail closed.
 | Verweigerter Anstoß | **`exit 0`** | `exit 4` |
 | Dispatch am Gatter vorbei | möglich (und real: 8 von 8) | CI-Guard, `exit 5` |
 
+### Eine Einschränkung, beobachtet statt vermutet
+
+Der CI-Guard lief auf PR #110 **nicht**. Er liegt bisher nur auf dem
+Arbeitsbranch; ein Request-PR gegen `main` bringt den Workflow nicht mit,
+und was nicht im Repository des PRs steht, läuft auch nicht. Beobachtet an
+den Check-Runs von PR #110: nur Vercel.
+
+Er wird also erst wirksam, wenn er auf `main` steht. Bis dahin ist er
+geschriebener, geprüfter, aber nicht laufender Schutz — und das gehört so
+gesagt, statt ihn als aktiv zu führen.
+
 Die beiden letzten Zeilen waren echte Löcher. `request-creative.mjs` endete
 nach einer Verweigerung mit Rückgabewert 0 — jede Automation, die den
 Rückgabewert prüft, las das als „in Ordnung, weiter". Und das Gatter saß vor
