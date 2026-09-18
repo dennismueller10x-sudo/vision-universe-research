@@ -339,6 +339,161 @@ body{font-family:${familie};color:${FARBEN.weiss};
 </body></html>`;
 }
 
+/**
+ * Der Plan fuer eine gezeichnete Komposition.
+ *
+ * Unterschied zu `plan()`: dort entsteht eine Karte aus Zahl und
+ * Aussage, hier eine Grafik aus den Daten des Objekts. Gemeinsam ist
+ * beiden, dass ein Plan ohne tragfaehige Daten NICHT entsteht - das
+ * Urteil faellt vor dem ersten Pixel.
+ */
+export function planKomposition(pkg, komposition, ebenen) {
+  if (!komposition || !komposition.ok) {
+    return { ok: false, reason: "noComposition",
+      visualType: (pkg && pkg.visualType) || null,
+      message: "Keine zeichenbare Komposition: " +
+        ((komposition && komposition.explanation) || "keine uebergeben.") };
+  }
+  const e = ebenen || {};
+  if (!e.aussage) {
+    return { ok: false, reason: "noStatement",
+      visualType: (pkg && pkg.visualType) || null,
+      message: "Eine Grafik ohne Aussage laesst den Betrachter raten, was " +
+        "er sieht. Die Zahlen sagen WAS, nicht WARUM es hier steht." };
+  }
+  return {
+    ok: true,
+    visualType: (pkg && pkg.visualType) || komposition.kind,
+    modus: "komposition",
+    breite: 1080, hoehe: 1350,
+    komposition,
+    ebenen: { entitaet: e.entitaet || null, aussage: e.aussage,
+      quelle: e.quelle || null },
+    explanation: komposition.kind + ": " + komposition.explanation
+  };
+}
+
+/* =====================================================================
+   DIE GEZEICHNETEN KOMPOSITIONEN
+
+   CHART, SCORE, PERFORMANCE und COMPARISON entstehen aus den Daten
+   GENAU DIESES Content Objects — visual-composition.js rechnet das
+   Layout, hier wird es gezeichnet. Kein externer Lauf, kein
+   Binaertransport, und fuer jedes Objekt ein anderes Bild.
+   ===================================================================== */
+
+/** Die Achsenbeschriftung eines Werts, deutsch. */
+function zahlDe(x, stellen = 1) {
+  return Number(x).toFixed(stellen).replace(".", ",");
+}
+
+function svgChart(k) {
+  const farbe = k.direction === "up" ? FARBEN.rot : FARBEN.gedeckt;
+  return `<svg width="${k.width}" height="${k.height}" viewBox="0 0 ${k.width} ${k.height}"
+    xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${farbe}" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="${farbe}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${k.area}" fill="url(#fl)"/>
+    <path d="${k.path}" fill="none" stroke="${farbe}" stroke-width="5"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${k.points[k.points.length - 1].x.toFixed(2)}"
+      cy="${k.points[k.points.length - 1].y.toFixed(2)}" r="11" fill="${farbe}"/>
+  </svg>`;
+}
+
+function svgBalken(k, opts = {}) {
+  const zeile = 74;
+  const hoehe = k.bars.length * zeile;
+  const balken = k.bars.map((b, i) => {
+    const y = i * zeile;
+    /* Gefuellt, was ueber dem Leitwert liegt oder hervorgehoben ist —
+       die Farbe sagt dasselbe wie die Laenge, nur schneller. */
+    const stark = opts.highlightAbove ? b.above : b.highlight;
+    const farbe = stark ? FARBEN.rot : FARBEN.gedeckt;
+    const x = b.from !== undefined ? b.from : 0;
+    const breite = b.pixels;
+    const wert = opts.prozent
+      ? (b.value >= 0 ? "+" : "") + zahlDe(b.value) + " %"
+      : zahlDe(b.value, opts.stellen ?? 2) + (b.max ? " / " + b.max : "");
+    return `
+      <text x="0" y="${y + 24}" fill="${FARBEN.weiss}" font-size="27"
+        font-weight="600">${escape(b.label)}</text>
+      <text x="${k.width}" y="${y + 24}" fill="${FARBEN.gedeckt}" font-size="25"
+        text-anchor="end" font-weight="500">${escape(wert)}</text>
+      <rect x="0" y="${y + 38}" width="${k.width}" height="10" rx="5"
+        fill="#ffffff" fill-opacity="0.08"/>
+      <rect x="${x.toFixed(2)}" y="${y + 38}" width="${Math.max(breite, 3).toFixed(2)}"
+        height="10" rx="5" fill="${farbe}"/>`;
+  }).join("");
+
+  const nulllinie = k.zeroX !== undefined
+    ? `<line x1="${k.zeroX.toFixed(2)}" y1="0" x2="${k.zeroX.toFixed(2)}" y2="${hoehe}"
+         stroke="#ffffff" stroke-opacity="0.22" stroke-width="2"/>` : "";
+
+  return `<svg width="${k.width}" height="${hoehe}" viewBox="0 0 ${k.width} ${hoehe}"
+    xmlns="http://www.w3.org/2000/svg" style="display:block">${nulllinie}${balken}</svg>`;
+}
+
+/** Die Seite zu einer Komposition. */
+export function seiteKomposition(p, schriftDaten) {
+  const k = p.komposition;
+  const font = schriftDaten
+    ? `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${schriftDaten.toString("base64")}) format("woff2");font-weight:100 900;font-display:block}`
+    : "";
+  const familie = schriftDaten ? "Inter, system-ui, sans-serif"
+    : "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
+
+  let grafik = "", achsen = "";
+  if (k.kind === "CHART") {
+    grafik = svgChart(k);
+    achsen = `<div class="achsen"><span>${escape(k.labels.start)}</span>
+      <span>${escape(k.labels.end)}</span></div>`;
+  } else if (k.kind === "SCORE") {
+    grafik = svgBalken(k, { highlightAbove: true, stellen: 2 });
+  } else if (k.kind === "PERFORMANCE") {
+    grafik = svgBalken(k, { prozent: true });
+  } else if (k.kind === "COMPARISON") {
+    grafik = svgBalken(k, { stellen: 0 });
+  }
+
+  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
+${font}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};overflow:hidden}
+body{font-family:${familie};color:${FARBEN.weiss};
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:96px 88px;-webkit-font-smoothing:antialiased}
+.marke{font-size:26px;letter-spacing:.20em;text-transform:uppercase;color:${FARBEN.gedeckt};font-weight:600}
+.marke b{color:${FARBEN.weiss};font-weight:700}
+.kopf{margin-bottom:30px}
+.entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
+  text-transform:uppercase;margin-bottom:14px}
+.titel{font-size:52px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:20ch}
+.mitte{display:flex;flex-direction:column;gap:22px}
+.achsen{display:flex;justify-content:space-between;font-size:23px;color:${FARBEN.gedeckt};
+  font-weight:500;margin-top:14px}
+.fuss{display:flex;flex-direction:column;gap:18px}
+.strich{height:3px;width:120px;background:${FARBEN.rot}}
+.quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
+</style></head><body>
+  <div class="marke"><b>VISION UNIVERSE</b>®</div>
+  <div class="mitte">
+    <div class="kopf">
+      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
+      <div class="titel">${escape(p.ebenen.aussage || "")}</div>
+    </div>
+    ${grafik}
+    ${achsen}
+  </div>
+  <div class="fuss">
+    <div class="strich"></div>
+    ${p.ebenen.quelle ? `<div class="quelle">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+  </div>
+</body></html>`;
+}
+
 export function chromiumPfad() {
   const kandidaten = [
     process.env.CHROMIUM_PATH,
@@ -380,7 +535,9 @@ export function render(p, zielPfad, options = {}) {
   if (!p.ok) throw new Error("Kein zeichenbarer Plan: " + p.message);
 
   const arbeit = join(tmpdir(), `vu-asset-${process.pid}-${Date.now()}.html`);
-  writeFileSync(arbeit, seite(p, options.schrift || null));
+  writeFileSync(arbeit, p.komposition
+    ? seiteKomposition(p, options.schrift || null)
+    : seite(p, options.schrift || null));
   mkdirSync(dirname(zielPfad), { recursive: true });
 
   execFileSync(chromiumPfad(), [

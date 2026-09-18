@@ -35,6 +35,22 @@
     CHART:              { needs: ["timeSeries"],      strength: "Entwicklung ueber Zeit" },
     NUMBER_VISUAL:      { needs: ["keyNumber"],       strength: "eine einzelne, harte Zahl" },
     DATA_CARD:          { needs: ["keyNumber"],       strength: "Zahl mit Kontext" },
+    /* -----------------------------------------------------------------
+       DIE DATENGETRIEBENEN FORMEN
+
+       Sie standen bisher nicht zur Wahl, weil der Renderer sie nicht
+       zeichnen konnte - CHART war ausdruecklich als "braucht eine
+       Datenreihe" abgewiesen. Die Reihe liegt vor (270 Tagespunkte je
+       Instrument), und visual-composition.js rechnet das Layout
+       daraus. Jedes dieser Bilder entsteht aus den Daten SEINES
+       Objekts und kostet keinen externen Lauf.
+       ----------------------------------------------------------------- */
+    SCORE:              { needs: ["scoreContributions"],
+                          strength: "Woraus sich ein Wert zusammensetzt" },
+    PERFORMANCE:        { needs: ["returns"],
+                          strength: "Entwicklung ueber mehrere Horizonte" },
+    COMPARISON:         { needs: ["peerValues"],
+                          strength: "Dieses Objekt gegen seine Gruppe" },
     ATLAS:              { needs: ["atlasAsset"],      strength: "Markenpraesenz, Wiedererkennung" },
     COMPANY_VISUAL:     { needs: ["companyAsset"],    strength: "konkretes Unternehmen oder Produkt" },
     CAROUSEL:           { needs: ["multiplePoints"],  strength: "mehrere Schritte oder Vergleiche" },
@@ -50,12 +66,13 @@
     BREAKING_MARKET_INSIGHT: ["NUMBER_VISUAL", "DATA_CARD", "MINIMAL_TYPOGRAPHY"],
     EXPLAIN_THE_MOVE:        ["CHART", "DATA_CARD", "MIXED"],
     FUTURE_TECHNOLOGY:       ["ATLAS", "COMPANY_VISUAL", "MINIMAL_TYPOGRAPHY"],
-    STOCK_STORY:             ["CHART", "CAROUSEL", "DATA_CARD"],
-    DATA_STORY:              ["CHART", "MIXED", "DATA_CARD"],
+    STOCK_STORY:             ["CHART", "SCORE", "PERFORMANCE", "COMPARISON",
+                              "CAROUSEL", "DATA_CARD"],
+    DATA_STORY:              ["CHART", "SCORE", "MIXED", "DATA_CARD"],
     MYTH_VS_REALITY:         ["CAROUSEL", "MINIMAL_TYPOGRAPHY", "DATA_CARD"],
-    OPPORTUNITY_RISK:        ["CAROUSEL", "CHART", "DATA_CARD"],
+    OPPORTUNITY_RISK:        ["SCORE", "CAROUSEL", "CHART", "DATA_CARD"],
     EDUCATIONAL:             ["CAROUSEL", "ATLAS", "MINIMAL_TYPOGRAPHY"],
-    MARKET_CONTEXT:          ["CHART", "MIXED", "DATA_CARD"],
+    MARKET_CONTEXT:          ["CHART", "COMPARISON", "MIXED", "DATA_CARD"],
     CONTRARIAN_INSIGHT:      ["MINIMAL_TYPOGRAPHY", "CHART", "CAROUSEL"],
     VISUAL_DATA_STORY:       ["CHART", "MOTION_GRAPHIC", "MIXED"],
     COMPANY_DEEP_DIVE:       ["CAROUSEL", "COMPANY_VISUAL", "CHART"],

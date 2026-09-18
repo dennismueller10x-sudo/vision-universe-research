@@ -49,6 +49,7 @@ const TrendScore   = require(join(ROOT, "social/engines/trend-score.js"));
 const Opportunity  = require(join(ROOT, "social/engines/opportunity.js"));
 const Strategy     = require(join(ROOT, "social/engines/strategy.js"));
 const Content      = require(join(ROOT, "social/engines/content.js"));
+const VisualComposition = require(join(ROOT, "social/engines/visual-composition.js"));
 const Memory       = require(join(ROOT, "social/engines/memory.js"));
 const Fatigue      = require(join(ROOT, "social/engines/fatigue.js"));
 const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
@@ -79,6 +80,7 @@ const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js
    Chromium und gehoert deshalb nicht in die Browser-Ladbarkeit der
    Engines. */
 import * as AssetRenderer from "./render-asset.mjs";
+import * as VisualDaten from "./visual-data.mjs";
 
 
 /* ---------------------------------------------------------------- CLI */
@@ -737,6 +739,22 @@ async function main() {
   /* --------------------------------------- 4. Strategie und Content */
   const packages = [];
   const rejections = [];
+  /* Die Datenlage je Thema - fuer den Zeichenschritt weiter unten. */
+  const bildDatenlage = {};
+
+  /* -------------------------------------------------------------------
+     DIE VERGLEICHSGRUPPE DES LAUFS
+
+     Ein Vergleich braucht etwas zu vergleichen, und im Lauf stehen die
+     anderen Gelegenheiten ohnehin nebeneinander. Sie sind die ehrliche
+     Gruppe: dieselbe Messung, derselbe Stichtag, dieselbe Methode.
+     Eine von woanders zusammengesuchte Gruppe waere ein Vergleich
+     ueber Aepfel und Birnen mit einer Achse.
+     ------------------------------------------------------------------- */
+  const vergleichsgruppe = proposable.map((x) => ({
+    label: VisualDaten.symbolAus(x.opportunity.topic) || x.opportunity.topic,
+    value: Math.round(x.score && x.score.score || 0)
+  })).filter((x) => x.label && x.value > 0);
 
   for (const candidate of Opportunity.prioritize(
       proposable.map((c) => Object.assign({}, c.score, { topic: c.opportunity.topic, ref: c })),
@@ -897,10 +915,32 @@ async function main() {
        ----------------------------------------------------------------- */
     const rechercheBelege = (evidenzPaket && evidenzPaket.ok) ? evidenzSaetze : sources;
 
+    /* -----------------------------------------------------------------
+       DIE DATENLAGE ENTSCHEIDET MIT
+
+       Hier stand `timeSeries: false` — eine feste Zusage, dass es
+       keine Kursreihe gibt. Sie stimmte einmal und war seitdem falsch:
+       270 Tagespunkte je Instrument liegen im Repository. Weil die
+       Zusage fest war, konnte CHART nie gewaehlt werden, und mit ihm
+       keine der datengetriebenen Formen.
+
+       Jetzt wird nachgesehen statt behauptet. Was wirklich vorliegt,
+       eroeffnet Bildformen, die aus den Daten DIESES Objekts entstehen
+       und keinen externen Lauf kosten.
+       ----------------------------------------------------------------- */
+    const lage = VisualDaten.datenlage({
+      topic: opportunity.topic,
+      evidence: (evidenzPaket && evidenzPaket.ok) ? (evidenzPaket.evidence || []) : [],
+      peers: vergleichsgruppe.map((v) => Object.assign({}, v, {
+        highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
+    }, ROOT);
+    bildDatenlage[opportunity.topic] = lage;
+
     const result = Content.run({
       opportunity, sources: rechercheBelege, strategyDecision,
-      visualAvailability: { timeSeries: false,
-        keyNumber: rechercheBelege.some((s) => s.value !== null) },
+      visualAvailability: Object.assign({}, lage.availability, {
+        keyNumber: lage.availability.keyNumber ||
+          rechercheBelege.some((s) => s.value !== null) }),
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
       writer: schreiberAus(gewaehlteVariante)
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
@@ -1560,6 +1600,17 @@ async function main() {
      Moment der Veroeffentlichung auf, dass die Fracht fehlt — und dann
      ist der Anspruch schon angemeldet.
      ================================================================ */
+  /* Die Quellenzeile unter dem Bild. Aus der Datenreihe selbst, nicht
+     erfunden und nicht aus einem Objekt zusammengestueckelt - der erste
+     Versuch schrieb "Quelle: [object Object]" unter ein sonst fertiges
+     Bild. */
+  function quelleAus(lage) {
+    if (!lage || !lage.series || !lage.series.source) return null;
+    return lage.series.asOf
+      ? lage.series.source + ", Stand " + VisualComposition.datumDe(lage.series.asOf)
+      : lage.series.source;
+  }
+
   log("\n--- FRACHT ---");
   let sendbar = 0;
   for (const d of shadowDecisions) {
@@ -1576,9 +1627,36 @@ async function main() {
        Sonst zeichnet der Zyklus seine Karte wie bisher.
        ----------------------------------------------------------------- */
     const mitgebracht = eintrag.production && eintrag.production.asset;
+
+    /* -----------------------------------------------------------------
+       DREI WEGE ZU EINEM BILD, UND NUR EINER KOSTET ETWAS
+
+         uebernahme    der Agent hat eines geliefert und es ist geprueft
+         komposition   aus den Daten DIESES Objekts gerechnet
+         karte         die bisherige Zahl-mit-Aussage-Karte
+
+       Die Komposition ist der Regelfall, sobald die Daten sie tragen:
+       kein externer Lauf, kein Binaertransport, und fuer jedes Objekt
+       ein anderes Bild.
+       ----------------------------------------------------------------- */
+    const lage = bildDatenlage[pkg.topic] || null;
+    const kompo = (!mitgebracht && lage)
+      ? VisualComposition.compose(pkg.visualType, lage.composition) : null;
+
     const bildplan = mitgebracht
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
-      : AssetRenderer.plan(pkg, {});
+      : (kompo && kompo.ok
+        ? AssetRenderer.planKomposition(pkg, kompo, {
+            entitaet: lage.symbol || null,
+            /* Die Grafik sagt etwas ueber SICH, nicht ueber den Hook.
+               Der erste Versuch setzte den Hook darueber - und dann
+               stand "65,3 Technical Opportunity Score" ueber einer
+               Kurskurve. Zwei Aussagen, eine Flaeche, und der
+               Betrachter muss raten, welche gilt. Genau dagegen gibt es
+               visual-quality.js. */
+            aussage: VisualComposition.aussage(kompo, lage.symbol),
+            quelle: quelleAus(lage) })
+        : AssetRenderer.plan(pkg, {}));
 
     d.asset = {
       plannable: bildplan.ok,
