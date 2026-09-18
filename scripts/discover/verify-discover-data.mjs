@@ -363,7 +363,27 @@ for (const universe of meta.universes) {
          werden nicht gekuerzt und zaehlen deshalb auch nicht als
          Anfuehren. Dieselbe Ausnahme wie in relevance.js. */
       const kurz = s.type !== "featured-card" && cards.length <= 6 && (!isNum(s.total) || s.total <= 6);
-      if (i < 2 && s.type !== "hero" && !kurz) fuehrt[c.symbol] = (fuehrt[c.symbol] || 0) + 1;
+      /* Nummerierte Ranglisten zaehlen nicht als "Anfuehren".
+       *
+       * Die Diversity-Regel darf nur ENTFERNEN, und an einer Rangliste
+       * darf sie gar nichts: "TOP 10 zeigt die echte Rangliste,
+       * ungefiltert" ist eine eigene Zusage. Wer an drei Ranglisten oben
+       * steht, steht dort, weil die Zahlen es sagen - das ist die
+       * Aussage des Tages und kein Gestaltungsfehler.
+       *
+       * Am 18.09.2026 fiel der Verifier deshalb ueber VLO: nach dem
+       * EOD-Nachlauf stand der Titel im 99,97. Perzentil und fuehrte drei
+       * Ranglisten an. Die Engine konnte das nicht verhindern, ohne eine
+       * andere Zusage zu brechen - eine Pruefung, die etwas verlangt, das
+       * der Vertrag verbietet, ist keine Pruefung.
+       *
+       * Was bleibt: redaktionelle Reihen (row, theme, featured-card)
+       * duerfen hoechstens zweimal von demselben Titel angefuehrt werden,
+       * und die Gesamtpraesenz bleibt gedeckelt. */
+      const rangliste = s.type === "ranking";
+      if (i < 2 && s.type !== "hero" && !kurz && !rangliste) {
+        fuehrt[c.symbol] = (fuehrt[c.symbol] || 0) + 1;
+      }
       if (universe.kind === "real" && c.priceSeries && c.priceSeries.status === "CALCULATED") {
         check(seriesScope.has(c.symbol), `home ${s.id}: ${c.symbol} zeichnet ohne Freigabe`);
       }
@@ -374,7 +394,7 @@ for (const universe of meta.universes) {
       const karte = surfaces.flatMap((s) => s.cards || []).find((c) => c.symbol === sym);
       const p = karte && karte.metrics && karte.metrics.leadershipPercentile;
       check(fuehrt[sym] <= 2 && isNum(p) && p >= 99,
-        `home: ${sym} fuehrt ${fuehrt[sym]} Surfaces an (Perzentil ${p})`);
+        `home: ${sym} fuehrt ${fuehrt[sym]} redaktionelle Reihen an (Perzentil ${p})`);
     }
   });
   Object.keys(auftritte).forEach((sym) => {

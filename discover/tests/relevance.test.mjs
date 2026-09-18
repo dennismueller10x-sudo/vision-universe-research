@@ -100,3 +100,33 @@ test("Diversity: hoechstens zwei Auftritte je Titel auf der ganzen Seite", () =>
   out.forEach((s) => s.cards.forEach((c) => { auftritte[c.symbol] = (auftritte[c.symbol] || 0) + 1; }));
   assert.ok(Object.values(auftritte).every((n) => n <= 2), JSON.stringify(auftritte));
 });
+
+/* Der Befund vom 18.09.2026: nach dem EOD-Nachlauf stand VLO im 99,97.
+   Perzentil und fuehrte drei Ranglisten an. Der Verifier schlug an, die
+   Engine konnte nichts tun - eine Rangliste darf sie nicht anfassen.
+   Diese beiden Tests halten fest, was die Engine wirklich zusagt. */
+
+test("Diversity: eine Rangliste bleibt unveraendert - auch wenn derselbe Titel schon fuehrt", () => {
+  const spitze = karte("VLO", 99.97);
+  const reihe = { id: "row1", cards: [spitze, ...liste(["A", "B", "C", "D", "E", "F", "G"])], show: 6 };
+  const rang1 = { id: "top-momentum", pure: true, cards: [spitze, ...liste(["H", "I", "J", "K", "L", "M"])], show: 10 };
+  const rang2 = { id: "top-staerke", pure: true, cards: [spitze, ...liste(["N", "O", "P", "Q", "R", "S"])], show: 10 };
+  const out = R.diversify([reihe, rang1, rang2]);
+  assert.equal(out[1].cards[0].symbol, "VLO", "die Rangliste wurde veraendert");
+  assert.equal(out[2].cards[0].symbol, "VLO", "die zweite Rangliste wurde veraendert");
+  assert.equal(out[1].hidden, 0);
+  assert.equal(out[2].hidden, 0);
+});
+
+test("Diversity: in redaktionellen Reihen fuehrt kein Titel ein drittes Mal", () => {
+  const spitze = karte("VLO", 99.97);
+  const reihe = (id, rest) => ({ id, cards: [spitze, ...liste(rest)], show: 6 });
+  const out = R.diversify([
+    reihe("row1", ["A", "B", "C", "D", "E", "F", "G"]),
+    reihe("row2", ["H", "I", "J", "K", "L", "M", "N"]),
+    reihe("row3", ["O", "P", "Q", "R", "S", "T", "U"])
+  ]);
+  let fuehrt = 0;
+  out.forEach((s) => s.cards.forEach((c, i) => { if (i < 2 && c.symbol === "VLO") fuehrt++; }));
+  assert.ok(fuehrt <= 2, "VLO fuehrt " + fuehrt + " redaktionelle Reihen an");
+});
