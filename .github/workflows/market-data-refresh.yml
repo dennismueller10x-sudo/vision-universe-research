@@ -118,9 +118,6 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/assert-no-secrets.mjs
 
-      - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
-        run: node scripts/market/assert-public-data-hygiene.mjs
-
       - name: Freshness-Check (Health-Bericht, kein Abbruch)
         run: node scripts/market/check-freshness.mjs
 
@@ -129,6 +126,15 @@ jobs:
       # nicht gruen - auch wenn kein Schritt rot war.
       - name: Taeglicher Lebenszyklus - Gesundheitsurteil
         run: node scripts/market/assert-daily-lifecycle-health.mjs --strict
+
+      # NACH dem Waechter, nicht davor: er schreibt selbst ein
+      # ausgeliefertes Artefakt (daily-lifecycle-health.json). Stand die
+      # Hygienepruefung davor, sah sie es nie - gefunden hat den Verstoss
+      # dann erst die Regressionssuite, nach 66 Minuten Abruf (Lauf
+      # 35349647216). Eine Pruefung, die die juengsten Artefakte des
+      # eigenen Laufs auslaesst, prueft die Haelfte.
+      - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
+        run: node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Regressionssuite
         run: |

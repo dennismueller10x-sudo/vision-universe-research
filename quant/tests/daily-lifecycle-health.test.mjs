@@ -64,3 +64,59 @@ test("DLH-8 · zurueckgestellte Titel zaehlen NICHT als geprueft", () => {
   assert.equal(r.verdict, "FAIL");
   assert.ok(r.checkedShare < 0.01);
 });
+
+/* =========================================================================
+   EIN FELDNAME IST EINE BEHAUPTUNG
+
+   Der Recovery-Lauf 35349647216 holte 66 Minuten lang Kurse, bestand
+   jede Pruefung - und scheiterte an der Regressionssuite, weil das
+   Gesundheitsurteil ein Feld `rejectionLedger.open` trug. In einem
+   ausgelieferten Artefakt ist `open` der Eroeffnungskurs; die
+   Hygienepruefung liest es genau so und kann einer Zahl nicht ansehen,
+   ob sie ein Kurs oder eine Anzahl offener Ablehnungen ist. Der
+   Feldname war der Fehler, nicht die Pruefung.
+
+   Dieser Test haelt die Regel fest, nicht den einen Namen: kein Feld in
+   diesem Artefakt darf so heissen wie ein Kursniveau. Die Liste ist
+   dieselbe wie in scripts/market/assert-public-data-hygiene.mjs.
+   ========================================================================= */
+const KURSNIVEAU_NAMEN = new Set([
+  "close", "open", "high", "low",
+  "adjustedClose", "adjustedOpen", "adjustedHigh", "adjustedLow",
+  "adjClose", "adjOpen", "adjHigh", "adjLow",
+  "sma20", "sma50", "sma100", "sma200",
+  "high52w", "low52w", "price", "last", "previousClose", "referencePrice"
+]);
+
+function kursnamen(wert, pfad, gefunden) {
+  if (!wert || typeof wert !== "object") return gefunden;
+  if (Array.isArray(wert)) {
+    wert.forEach((x, i) => kursnamen(x, pfad + "[" + i + "]", gefunden));
+    return gefunden;
+  }
+  for (const [name, kind] of Object.entries(wert)) {
+    if (KURSNIVEAU_NAMEN.has(name) && typeof kind === "number") gefunden.push(pfad + "." + name);
+    else kursnamen(kind, pfad + "." + name, gefunden);
+  }
+  return gefunden;
+}
+
+test("DLH-9 · das Gesundheitsurteil traegt kein Feld, das wie ein Kursniveau heisst", () => {
+  /* Das vollstaendig gefuellte Register, so wie es der Ingest liefert -
+     der Fall, in dem der Verstoss ueberhaupt erst entstehen kann. */
+  const artefakt = Object.assign({}, H.beurteile(lage({ checked: 45, deferred: 6831, requests: 45,
+                                                        openRejections: 6831, sessionsBehind: 2,
+                                                        asOf: "2026-09-15" })), {
+    rejectionLedger: { offen: 6831, PERMANENT_REJECT: 3, TEMPORARY_REJECT: 6828, STALE_REJECT: 0 },
+    openRejections: 6831
+  });
+  const treffer = kursnamen(artefakt, "", []);
+  assert.deepEqual(treffer, [], "Kursniveau-Namen im Gesundheitsurteil: " + treffer.join(", "));
+});
+
+test("DLH-10 · ein Register mit `open` wuerde auffallen - der Waechter selbst ist scharf", () => {
+  /* Die Gegenprobe: waere der alte Name noch da, meldete der Test ihn.
+     Ohne sie waere DLH-9 auch dann gruen, wenn die Suche nichts kann. */
+  const treffer = kursnamen({ rejectionLedger: { open: 6831 } }, "", []);
+  assert.deepEqual(treffer, [".rejectionLedger.open"]);
+});

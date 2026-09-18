@@ -678,7 +678,13 @@ writeStatus({
                 Versuch bekamen und wie viele sich dabei erholt haben. */
              deferredByClass, retriedAfterRejection: retriedAfterRejection.length,
              recoveredAfterRejection },
-  rejectionLedger: { open: Object.keys(checkpoint.rejected || {}).length,
+  /* `offen`, nicht `open`: "open" ist in einem ausgelieferten Artefakt
+     der Eroeffnungskurs, und die Hygienepruefung liest es genau so - sie
+     kann einer Zahl nicht ansehen, ob sie ein Kurs oder eine Anzahl ist.
+     Der Lauf 35349647216 ist daran gescheitert, nachdem 66 Minuten
+     Abruf schon getan waren. Ein Feldname, der etwas anderes behauptet
+     als er ist, ist der Fehler - nicht die Pruefung. */
+  rejectionLedger: { offen: Object.keys(checkpoint.rejected || {}).length,
                      ...RejectionLifecycle.pruefeRegister(checkpoint.rejected || {},
                        { staleAfterMs: REJECT_RETRY_DAYS * 86400000 }).byClass },
   securities: perSecurity,

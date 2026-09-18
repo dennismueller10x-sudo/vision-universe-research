@@ -103,7 +103,7 @@ const lage = {
   checked: geprueft,
   deferred: zurueckgestellt,
   requests: gefragt,
-  openRejections: (status && status.rejectionLedger) ? status.rejectionLedger.open : null,
+  openRejections: (status && status.rejectionLedger) ? status.rejectionLedger.offen : null,
   sessionsBehind: rueckstand,
   asOf: asOf,
   expectedSession: erwartet
