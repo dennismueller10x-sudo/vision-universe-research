@@ -174,6 +174,63 @@
   }
 
   /**
+   * Das geerbte Asset einer Revision.
+   *
+   * Eine redaktionelle Ueberarbeitung erzeugt kein Bild - sie
+   * uebernimmt das bereits verifizierte des Quell-Objekts. Geerbt
+   * heisst aber NICHT ungeprueft: dasselbe Asset kann zwischen zwei
+   * Laeufen im Repository beschaedigt werden, und ein Vertrauen, das
+   * sich auf eine frueher bestandene Pruefung beruft, prueft nichts.
+   *
+   * `brief.reuse_visual` traegt die volle Identitaet, damit die
+   * Herkunft nicht an einem Dateipfad haengt.
+   */
+  function inherit(brief, leseAsset, options) {
+    options = options || {};
+    var angekuendigt = brief && brief.reuse_visual;
+    if (!angekuendigt) {
+      return { ok: false, reason: "noReuseDeclared",
+        explanation: "Der Brief nennt kein wiederzuverwendendes Visual. Eine " +
+          "Revision ohne Bild und ohne Verweis haette keines - und das " +
+          "faellt hier auf statt erst am Owner-Gate." };
+    }
+
+    var bytes = null;
+    try { bytes = leseAsset(angekuendigt.asset_path); }
+    catch (err) {
+      return { ok: false, reason: "sourceUnreadable",
+        explanation: "Das Quell-Asset ist nicht lesbar: " +
+          String((err && err.message) || err).slice(0, 120) };
+    }
+    if (!bytes || !bytes.length) {
+      return { ok: false, reason: "sourceGone",
+        sourceAvailable: false,
+        explanation: "Unter " + angekuendigt.asset_path + " liegt nichts mehr. " +
+          "Damit gibt es nichts zu erben - und erst DAS ist ein Grund fuer " +
+          "eine neue Erzeugung." };
+    }
+
+    var ein = ingest(bytes, angekuendigt, {
+      freshReadback: options.freshReadback === true,
+      readback: options.readback,
+      contentId: options.contentId,
+      visualVariantId: angekuendigt.visual_variant_id,
+      briefRevision: angekuendigt.brief_revision || null,
+      generator: options.generator || "chatgpt-work",
+      generatedAt: options.generatedAt
+    });
+
+    return Object.assign({}, ein, {
+      inherited: true,
+      fromContentId: angekuendigt.from_content_id || null,
+      explanation: ein.ok
+        ? "Geerbt aus " + (angekuendigt.from_content_id || "dem Quell-Objekt") +
+          " und erneut vollstaendig geprueft."
+        : ein.explanation
+    });
+  }
+
+  /**
    * Darf ein neuer Creative-Lauf entstehen?
    *
    * Die Antwort ist fast immer nein. Nur wenn die QUELLE selbst weg ist,
@@ -203,7 +260,7 @@
 
   var api = {
     ERZEUGUNG: ERZEUGUNG, TRANSPORT: TRANSPORT, NIEMALS: NIEMALS,
-    key: key, reference: reference, ingest: ingest,
+    key: key, reference: reference, ingest: ingest, inherit: inherit,
     needsRegeneration: needsRegeneration
   };
 

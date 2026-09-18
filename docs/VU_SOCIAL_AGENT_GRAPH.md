@@ -1581,3 +1581,121 @@ Das beweist nichts: die letzte Meldung kam um 05:55, zwei Stunden zehn
 vor dem Schließen. Es wäre bequem, die Stille dem Schließen zuzuschreiben,
 und es wäre unredlich. Der Hebel bleibt plausibel und unbelegt — und er
 steht so im Bericht, damit ihn niemand später als erwiesen zitiert.
+
+---
+
+## 41. Visual Strategy ist nicht Visual Provider
+
+Der Binärtransport eines generativen Bildes war unsicher. Der
+naheliegende Ausweg wäre gewesen, generative Bilder abzuschalten oder
+dasselbe Bild wiederzuverwenden — und damit eine **Transportfrage mit
+einem inhaltlichen Verzicht** zu beantworten. Der Owner hat genau das
+ausgeschlossen.
+
+Die Trennung löst es anders.
+
+    "Was soll das Bild ZEIGEN?"   inhaltlich   →  Visual Strategy
+    "Wer soll es ZEICHNEN?"       technisch    →  Visual Provider
+
+Solange beide `visualType` hießen, fielen sie zusammen. Getrennt
+betrachtet zeigt sich: **die meisten Strategien sind aus VU-eigenen
+Daten zeichenbar.** Ein Score, eine Entwicklung, ein Vergleich, eine
+Kursreihe — dafür braucht es keinen externen Agenten und keinen
+Binärtransport.
+
+### Der feste Satz, der einmal stimmte
+
+Im Zyklus stand `timeSeries: false` — eine feste Zusage, dass es keine
+Kursreihe gibt. Sie stimmte einmal und war seitdem falsch: 270
+Tagespunkte je Instrument liegen im Repository. Weil die Zusage fest
+war, konnte CHART nie gewählt werden, und mit ihm keine der
+datengetriebenen Formen. Der Renderer wies CHART ausdrücklich ab
+(„braucht eine Datenreihe") — und niemand hatte nachgesehen, ob es sie
+gibt.
+
+Jetzt wird nachgesehen statt behauptet. Realer Lauf, vier Content
+Objects: drei CHART, eines GENERATIVE. **Work-Ausführungen: 1 statt 4.**
+
+### Was „individuell" heißt
+
+Keine Bibliothek, keine Vorlage mit ausgetauschter Zahl. Eine Kursreihe
+von 270 Punkten ergibt einen Pfad, den genau dieses Instrument in genau
+diesem Zeitraum hat. Drei gezeichnete Charts, drei verschiedene Hashes.
+
+Und eine Strategie ohne Daten wird **nicht** gewählt: ein leeres Chart
+mit beschrifteten Achsen ist schlimmer als keines — es sieht nach
+Information aus.
+
+### Drei Befunde aus dem Ansehen der Bilder
+
+Nichts davon hätte ein Test gefunden; alle drei standen auf dem Bild.
+
+**`Quelle: [object Object]`** unter einem sonst fertigen Chart. Die
+Quelle steht jetzt in der Datenreihe selbst.
+
+**„65,3 — AAPL, Technical Opportunity Score"** über einer Kurskurve. Der
+Hook, nicht die Grafik. Zwei Aussagen auf einer Fläche, und der
+Betrachter muss raten, welche gilt — derselbe Befund, für den es
+`visual-quality.js` gibt. Die Grafik bekommt ihren Satz jetzt aus der
+eigenen Komposition **gerechnet**, nicht getextet.
+
+**Das Budget zählte die teure Zeile nicht.** Der Zyklus nennt ein
+übernommenes Agentenbild `GENERATIVE`; das Vokabular kannte den Namen
+nicht, und `budget()` meldete für einen Lauf mit einem generativen
+Paket „Work-Ausführungen: 0". Gefunden durch Nachrechnen an einem echten
+Lauf, nicht durch Nachdenken.
+
+## 42. Erzeugung und Transport sind zwei Lebensläufe
+
+    IMAGE_GENERATION_SUCCESS    das Bild existiert und ist gültig
+    IMAGE_TRANSPORT_SUCCESS     es liegt unversehrt bei uns
+
+Fällt das zweite aus, wird das **erste nicht wiederholt**. Ein Agent,
+der ein gültiges Bild erzeugt hat, hat seine Arbeit getan — auch wenn
+die Datei unterwegs zerbricht. Ein neuer Lauf kostete eine begrenzte
+Ressource, erzeugte ein *anderes* Bild und würfe eine erbrachte Leistung
+weg. Nur eine technisch verlorene Quelle rechtfertigt einen neuen, und
+dann als neuer versionierter Vorgang statt als stiller Retry.
+
+Der Speicher ist nicht neu: `scripts/market/storage/s3-driver.mjs`
+spricht S3 in reinem Node und läuft in der Quant-Historie produktiv
+gegen dieselben Zugangsdaten (`VU_HISTORY_S3_*`), die als
+Repository-Secrets bereits gesetzt sind. Kein neuer Dienst, keine neuen
+Kosten. Der Verweis trägt ausdrücklich **keine erfundene URL** — ob und
+wo ein Asset öffentlich erreichbar ist, entscheidet die Infrastruktur.
+
+    GitHub      Verträge, Briefs, Result JSON, Provenance, Code
+    VU Storage  das Binärasset selbst
+    Content     ein stabiler Verweis samt SHA-256, Größe, Maße, MIME
+
+## 43. Anlauf ist nicht Revision
+
+Das Gatter verweigerte die XOM-Überarbeitung: „Anlauf 4 überschreitet
+die Grenze von 3." Die Begründung stimmte — für die falsche Sache.
+
+Ein **Anlauf** wiederholt etwas Gescheitertes; unbegrenzt zu wiederholen
+hieße, auf ein anderes Ergebnis derselben Sache zu hoffen. Eine
+**Revision** überarbeitet etwas Gelungenes, weil ein Mensch es
+entschieden hat. Anlauf 3 war erfolgreich. Beide unter dieselbe Grenze
+zu stellen hieße, eine Owner-Entscheidung als Fehlschlag zu zählen.
+
+Getrennte Zähler, getrennt begründet — und gezählt werden **Jobs statt
+Nummern**: die erste Fassung wies `attempt: 4` allein wegen der Nummer
+ab, auch auf einem leeren Register. Das traute einem Etikett mehr als
+dem Protokoll. Die Nummer ist ein Identitätsfeld des Briefs, kein
+Zähler.
+
+### Die Revision hätte ihr eigenes Bild verwaist
+
+Der erste Entwurf schrieb den überarbeiteten Brief an dieselbe Stelle.
+Das hätte den Brief von Anlauf 3 ersetzt — und mit ihm seinen Blob-SHA,
+seinen Processing Key und damit die Kennung, unter der der Zyklus das
+verifizierte Ergebnis wiederfindet. Ausgerechnet das Bild, das diese
+Revision weiterverwenden soll, wäre verwaist gewesen, und das XOM-Paket
+wäre still auf den Vorlagen-Autor zurückgefallen.
+
+Gefunden **vor** dem Schreiben. Die Revision ist jetzt ein eigenes
+Content Object (`vu-xom-20260911-rev1`), das auf das alte zeigt und sein
+Asset mit voller Identität mitführt — dieselbe Regel wie bei den
+Kandidaten: eine neue Fassung bekommt eine eigene Identität und
+überschreibt die alte nicht.

@@ -106,3 +106,46 @@ test("AS8 · Die beiden Lebenslaeufe teilen kein Vokabular", () => {
   assert.ok(S.ERZEUGUNG.includes("IMAGE_GENERATION_SUCCESS"));
   assert.ok(S.TRANSPORT.includes("ASSET_TRANSPORT_INTEGRITY_FAILED"));
 });
+
+test("AS9 · Ein geerbtes Asset wird erneut vollstaendig geprueft", () => {
+  /* Eine redaktionelle Ueberarbeitung erzeugt kein Bild — sie
+     uebernimmt das verifizierte des Quell-Objekts. Geerbt heisst aber
+     NICHT ungeprueft: dasselbe Asset kann zwischen zwei Laeufen im
+     Repository beschaedigt werden, und ein Vertrauen, das sich auf eine
+     frueher bestandene Pruefung beruft, prueft nichts. */
+  const brief = JSON.parse(readFileSync(
+    join(ROOT, "authoring/requests/vu-xom-20260911-rev1/authoring-brief.json"), "utf8"));
+  const lese = (p) => readFileSync(join(ROOT, p));
+
+  const g = S.inherit(brief, lese, { freshReadback: true,
+    contentId: brief.content_id });
+  assert.equal(g.ok, true, g.explanation);
+  assert.equal(g.inherited, true);
+  assert.equal(g.fromContentId, "vu-xom-20260911");
+  assert.equal(g.transport, "ASSET_VERIFIED");
+  assert.equal(g.reference.sha256, brief.reuse_visual.asset_sha256);
+
+  /* Und ein beschaedigtes Erbe faellt auf. */
+  const kaputt = S.inherit(brief, (p) => lese(p).subarray(0, 4000),
+    { freshReadback: true });
+  assert.equal(kaputt.ok, false);
+  assert.equal(kaputt.transport, "ASSET_TRANSPORT_INTEGRITY_FAILED");
+  assert.equal(kaputt.regenerate, false);
+});
+
+test("AS10 · Erst eine verlorene Quelle rechtfertigt neue Erzeugung", () => {
+  const brief = JSON.parse(readFileSync(
+    join(ROOT, "authoring/requests/vu-xom-20260911-rev1/authoring-brief.json"), "utf8"));
+  const weg = S.inherit(brief, () => null, { freshReadback: true });
+  assert.equal(weg.ok, false);
+  assert.equal(weg.reason, "sourceGone");
+  assert.equal(weg.sourceAvailable, false);
+  assert.match(weg.explanation, /erst DAS ist ein Grund/);
+});
+
+test("AS11 · Eine Revision ohne Verweis faellt frueh auf", () => {
+  /* Sonst stuende am Owner-Gate ein Kandidat ohne Bild. */
+  const ohne = S.inherit({ content_id: "x" }, () => null, {});
+  assert.equal(ohne.ok, false);
+  assert.equal(ohne.reason, "noReuseDeclared");
+});
