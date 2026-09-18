@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T23:56:00Z",
+  "generatedAt": "2026-09-18T03:50:00Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -418,6 +418,19 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Selbsttaetig erfasst aus der Agent-Meldung (STARTED, pull_request/opened). Nicht von Hand nachgetragen."
+    },
+    {
+      "processingKey": "vu-permcheck-brief-20260918:vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:1.0",
+      "state": "RECOVERY_REQUIRED",
+      "at": "2026-09-18T03:50:00Z",
+      "contentId": "vu-permcheck-20260918",
+      "briefId": "vu-permcheck-brief-20260918",
+      "briefBlobSha": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+      "pullRequest": 106,
+      "deliveryId": null,
+      "observed": true,
+      "timestampProvenance": "observed",
+      "note": "Asset: authoring/requests/vu-permcheck-20260918/assets/visual-01.png: 2 Abweichung(en): truncated, hashMismatch."
     }
   ],
   "latencyObservations": []
