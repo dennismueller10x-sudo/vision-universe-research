@@ -171,9 +171,9 @@
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:1.0",
       "attempt": 4,
       "revision": "text-only",
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_STALE",
       "createdAt": "2026-09-18T14:24:02.027Z",
-      "updatedAt": "2026-09-18T14:27:22.040Z",
+      "updatedAt": "2026-09-18T14:40:55.163Z",
       "prNumber": 110,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -187,10 +187,15 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-18T14:27:22.040Z",
           "note": "PR 110 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-18T14:40:55.163Z",
+          "note": "Kein VU_CREATIVE_AGENT_INVOCATION auf PR 110 — deutlich ausserhalb jeder gemessenen Anlaufzeit."
         }
       ],
       "prState": "open",
-      "outcome": "ausgeloest, wartet",
+      "outcome": "Kein beobachteter Start. PR 110 seit 14 Minuten offen; der langsamste bisher beobachtete Start lag bei 2:09.",
       "source": "dispatch-creative-job Pfad, PR 110",
       "deliveryCount": 1
     }
