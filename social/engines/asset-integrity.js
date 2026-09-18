@@ -88,6 +88,110 @@
    * Die Frage, die der Proof aufgeworfen hat. Ein abgeschnittener
    * Transfer hat einen intakten Anfang; nur das Ende fehlt.
    */
+  /* =====================================================================
+     DIE STRUKTUR, NICHT NUR DAS ENDE
+
+     -------------------------------------------------------------------
+     DER BEFUND AUS PR 106
+     -------------------------------------------------------------------
+
+     Ein Bild kam an, dessen Ende fast richtig aussah. Die letzten zwoelf
+     Bytes waren:
+
+       00000004 9454e44a e4260820
+
+     Ein IEND-Chunk lautet:
+
+       00000000 49454e44 ae426082
+
+     Dieselben Ziffern, um ein Nibble verschoben. Die Endepruefung hat
+     das gefangen - aber nur, weil die Verschiebung zufaellig auch die
+     vier Bytes traf, auf die sie schaut.
+
+     Der eigentliche Schaden lag woanders: die Chunk-Kette brach bei
+     Offset 416.983 mitten im Bild ab. IHDR, caBX und sechs vollstaendige
+     IDAT-Chunks zu je 65.536 Bytes waren einwandfrei, danach Muell.
+
+     Eine Endepruefung ist eine Stichprobe an einer Stelle. Sie kann
+     nicht sehen, dass die Mitte fehlt. Die beiden erfolgreichen Assets
+     zeigen dieselbe Bauweise - IHDR, caBX, 64-KiB-IDATs, kurzer
+     Schluss-IDAT, IEND - und sind durchgehend lesbar.
+
+     Deshalb wird die Kette jetzt GELAUFEN: Chunk fuer Chunk von vorn bis
+     zum Ende. Wer die Kette durchlaeuft, findet jeden Bruch, egal wo er
+     liegt.
+     ===================================================================== */
+
+  function pngStruktur(buf) {
+    if (buf.length < 8) return { ok: false, reason: "zu kurz fuer eine PNG-Signatur" };
+
+    var off = 8, chunks = [], idat = 0, sahIEND = false;
+    while (off + 8 <= buf.length) {
+      var laenge = (buf[off] << 24 >>> 0) + (buf[off + 1] << 16) +
+        (buf[off + 2] << 8) + buf[off + 3];
+      var typ = String.fromCharCode(buf[off + 4], buf[off + 5],
+        buf[off + 6], buf[off + 7]);
+
+      /* Ein Chunk-Typ besteht aus vier Buchstaben. Alles andere heisst:
+         hier stehen keine Chunk-Daten mehr. */
+      if (!/^[A-Za-z]{4}$/.test(typ)) {
+        return { ok: false, reason: "ungueltiger Chunk-Typ bei Offset " + off,
+          brokeAt: off, chunks: chunks, idatCount: idat };
+      }
+      var ende = off + 12 + laenge;
+      if (ende > buf.length) {
+        return { ok: false,
+          reason: "Chunk " + typ + " bei Offset " + off + " deklariert " + laenge +
+            " Bytes, die Datei endet " + (ende - buf.length) + " Bytes zu frueh",
+          brokeAt: off, chunks: chunks, idatCount: idat };
+      }
+      chunks.push({ type: typ, length: laenge, offset: off });
+      if (typ === "IDAT") idat += 1;
+      if (typ === "IEND") { sahIEND = true; off = ende; break; }
+      off = ende;
+    }
+
+    if (!sahIEND) {
+      return { ok: false, reason: "kein IEND-Chunk in der Kette",
+        brokeAt: off, chunks: chunks, idatCount: idat };
+    }
+    if (off !== buf.length) {
+      return { ok: false,
+        reason: (buf.length - off) + " Bytes stehen hinter dem IEND-Chunk",
+        brokeAt: off, chunks: chunks, idatCount: idat };
+    }
+    return { ok: true, reason: null, chunks: chunks, idatCount: idat };
+  }
+
+  function jpegStruktur(buf) {
+    if (buf.length < 4) return { ok: false, reason: "zu kurz" };
+    if (!(buf[0] === 0xFF && buf[1] === 0xD8)) {
+      return { ok: false, reason: "kein SOI (FF D8) am Dateianfang" };
+    }
+    if (!(buf[buf.length - 2] === 0xFF && buf[buf.length - 1] === 0xD9)) {
+      return { ok: false, reason: "kein EOI (FF D9) am Dateiende" };
+    }
+    return { ok: true, reason: null };
+  }
+
+  /**
+   * Laeuft die innere Struktur ab und meldet, WO sie bricht.
+   *
+   * Fuer Formate ohne Kettenpruefung faellt sie auf die Endepruefung
+   * zurueck - und sagt das, statt ein ungeprueftes "ok" zu liefern.
+   */
+  function structure(buf, mime) {
+    if (!buf || !buf.length) return { ok: false, reason: "leer", checked: "nichts" };
+    if (mime === "image/png") {
+      return Object.assign({ checked: "png-chunk-chain" }, pngStruktur(buf));
+    }
+    if (mime === "image/jpeg") {
+      return Object.assign({ checked: "jpeg-marker" }, jpegStruktur(buf));
+    }
+    var e = isComplete(buf, mime);
+    return { ok: e.ok, reason: e.reason, checked: "nur-dateiende" };
+  }
+
   function isComplete(buf, mime) {
     if (!buf || !buf.length) return { ok: false, reason: "leer" };
 
@@ -193,6 +297,14 @@
         message: "Die Datei ist unvollstaendig: " + vollstaendig.reason + "." });
     }
 
+    /* Und die Kette selbst. Ein intaktes Ende beweist nichts ueber die
+       Mitte - PR 106 hatte sechs saubere IDAT-Chunks und danach Muell. */
+    var struktur = structure(buf, mime);
+    if (!struktur.ok) {
+      befunde.push({ id: "structureBroken",
+        message: "Die innere Struktur bricht: " + struktur.reason + "." });
+    }
+
     var masse = dimensions(buf, mime);
     var hash = sha256(buf);
 
@@ -268,6 +380,7 @@
     STATES: STATES,
     detectMime: detectMime,
     isComplete: isComplete,
+    structure: structure,
     dimensions: dimensions,
     sha256: sha256,
     verify: verify,

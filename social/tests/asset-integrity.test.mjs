@@ -93,8 +93,15 @@ test("AI5 · Auch wenn der Hash zum abgeschnittenen Stueck passt", () => {
   });
 
   assert.equal(r.ok, false, "eine in sich stimmige, kaputte Datei ging durch");
-  assert.deepEqual(r.findings.map((f) => f.id), ["truncated"]);
-  assert.match(r.findings[0].message, /IEND/);
+
+  /* Frueher stand hier nur ["truncated"] - die Endepruefung war die
+     einzige, die etwas merkte. Seit PR 106 laeuft zusaetzlich die
+     Chunk-Kette, und die faellt bei derselben Datei ebenfalls auf. Zwei
+     unabhaengige Befunde ueber denselben Schaden sind besser als einer:
+     die Endepruefung kann eine kaputte Mitte nicht sehen. */
+  const ids = r.findings.map((f) => f.id).sort();
+  assert.deepEqual(ids, ["structureBroken", "truncated"]);
+  assert.match(r.findings.find((f) => f.id === "truncated").message, /IEND/);
 });
 
 test("AI6 · Der Kopf allein reicht nicht", () => {

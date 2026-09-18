@@ -60,6 +60,8 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
   var German = isNode ? require("../../../engines/german-text.js") : global.VUSocialGermanText;
+  var AssetTransport = isNode ? require("../../../engines/asset-transport.js")
+    : global.VUSocialAssetTransport;
   var AssetIntegrity = isNode ? require("../../../engines/asset-integrity.js")
                               : global.VUSocialAssetIntegrity;
   var nodeCrypto = isNode ? require("crypto") : null;
@@ -347,16 +349,34 @@
         return;
       }
 
-      var pruefung = AssetIntegrity.verify(bytes, {
-        asset_sha256: v.asset_sha256, mime_type: v.mime_type,
-        width: v.width, height: v.height
-      });
-      geprueft.push({ visual_variant_id: v.visual_variant_id,
-        asset_path: v.asset_path, verification: pruefung });
+      /* -----------------------------------------------------------
+         DER TRANSPORTVERTRAG, NICHT NUR DIE DATEI
 
-      if (!pruefung.ok) {
+         `bytes` kommt aus einem FRISCHEN Lesen vom finalen Commit -
+         das ist die einzige Lesart, die den Transport prueft statt
+         den Puffer, aus dem geschrieben wurde.
+
+         Geprueft wird die ganze Kette: Typ, innere Struktur,
+         Abmessungen, Groesse, Hash. PR 106 hat gezeigt, warum die
+         Struktur dazugehoert: dort war das Dateiende fast richtig und
+         die Mitte zerstoert.
+         ----------------------------------------------------------- */
+      var transport = AssetTransport.verifyTransfer(bytes, {
+        asset_path: v.asset_path, asset_sha256: v.asset_sha256,
+        mime_type: v.mime_type, width: v.width, height: v.height,
+        byte_size: v.byte_size
+      }, { freshReadback: true });
+
+      geprueft.push({ visual_variant_id: v.visual_variant_id,
+        asset_path: v.asset_path, verification: transport });
+
+      if (!transport.ok) {
         befunde.push({ id: "assetVerification",
-          message: v.asset_path + ": " + pruefung.explanation });
+          /* Der Fehlertyp reist mit: ein abgerissener Transfer ist kein
+             Inhaltsurteil und darf nie als eines gelernt werden. */
+          failureType: transport.failureType,
+          contentJudgement: false,
+          message: v.asset_path + ": " + transport.explanation });
       }
     });
 
@@ -500,9 +520,28 @@
         var assets = verifyAssets(ergebnis, function (pfad) {
           return transport.readAsset ? transport.readAsset(pfad) : null;
         });
+
+        /* -------------------------------------------------------------
+           WAS DER AGENT MELDET UND WAS WIR NACHGESEHEN HABEN
+
+           PR 106 trug processing.status = "completed" im selben Commit
+           wie ein beschaedigtes Asset. Der Agent hat nicht gelogen - er
+           hat berichtet, was er von seiner Seite sehen konnte. Das ist
+           nur nicht dieselbe Frage.
+           ------------------------------------------------------------- */
+        var abschluss = AssetTransport.verifyCompletion({
+          agentStatus: (ergebnis.processing || {}).status,
+          resultJsonValid: true,
+          identitiesValid: geprueft.ok,
+          transfer: (assets.checked[0] || {}).verification || null
+        });
+
         if (!assets.ok) {
-          return { variants: [], reason: "Bildasset zurueckgewiesen: " + assets.explanation,
-            assets: assets };
+          return { variants: [],
+            reason: "Bildasset zurueckgewiesen: " + assets.explanation,
+            assets: assets, completion: abschluss,
+            failureType: AssetTransport.TRANSPORT_FEHLER,
+            contentJudgement: false };
         }
 
         var e = (brief.evidence || [])[0] || null;
@@ -574,6 +613,9 @@
             state: assets.state
           } : null,
           processing: ergebnis.processing || null,
+          /* Beide Aussagen nebeneinander, nie die eine statt der
+             anderen. */
+          completion: abschluss,
           verification: geprueft,
           assets: assets,
           reason: null

@@ -162,7 +162,24 @@ test("CG13 · Das echte Asset wird zurueckgelesen und bestaetigt", () => {
   const a = CW.verifyAssets(ERGEBNIS, leseAsset);
   assert.equal(a.ok, true, a.explanation);
   assert.equal(a.state, "READBACK_VERIFIED");
-  assert.equal(a.checked[0].verification.actual.width, 1254);
+
+  /* Der Befund traegt jetzt die ganze Transportpruefung statt nur der
+     Dateimerkmale: gemessen wird unter `measured`, und die
+     Chunk-Kette gehoert dazu. */
+  assert.equal(a.checked[0].verification.measured.width, 1254);
+  assert.equal(a.checked[0].verification.measured.structure.ok, true);
+  assert.equal(a.checked[0].verification.state, "TRANSFER_VERIFIED");
+});
+
+test("CG13b · Ein Transportfehler ist kein Inhaltsurteil", () => {
+  /* PR 106: der Agent meldete completed, das Asset war beschaedigt. Es
+     der Hook oder der Visual Strategy anzulasten, dass eine Datei
+     unterwegs zerbrochen ist, waere gelernter Unsinn. */
+  const a = CW.verifyAssets(ERGEBNIS, () => ASSET.subarray(0, 5000));
+  assert.equal(a.ok, false);
+  const f = a.findings.find((x) => x.id === "assetVerification");
+  assert.equal(f.failureType, "ASSET_TRANSPORT_INTEGRITY_FAILED");
+  assert.equal(f.contentJudgement, false);
 });
 
 test("CG14 · Ein abgeschnittenes Asset fuehrt zu RECOVERY_REQUIRED", () => {
