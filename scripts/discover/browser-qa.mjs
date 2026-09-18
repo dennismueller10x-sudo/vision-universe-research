@@ -20,7 +20,7 @@
    Einen lokalen Server startet man vorher mit:
                    python3 -m http.server 8765
    ========================================================================= */
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const args = process.argv.slice(2);
@@ -63,6 +63,36 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
    Fehler verschlucken. */
 const IGNORE = /fonts\.googleapis|fonts\.gstatic|favicon\.ico/;
 
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist.
+ *
+ * Seit V2 steht in der Auslieferung eine Realtime-Adresse bei
+ * Cloudflare. Diese Entwicklungsumgebung erreicht sie nicht (der
+ * Egress-Filter lehnt den Tunnel ab), und ein fehlgeschlagener
+ * WebSocket-Aufbau schreibt eine Zeile in die Konsole, die kein
+ * Skript verhindern kann - auch nicht der Hub, der den Fehler selbst
+ * korrekt behandelt und auf den Snapshot zurueckfaellt.
+ *
+ * Die Ausnahme ist eng gefasst: sie greift nur fuer GENAU die Adresse
+ * aus der Auslieferung und nur fuer Meldungen ueber den
+ * Verbindungsaufbau. Ein Fehler im Hub, eine falsche Adresse oder eine
+ * Ausnahme im Chart faellt weiterhin auf. Gezaehlt wird trotzdem, und
+ * am Ende steht die Zahl im Protokoll.
+ *
+ * Dass der Strom laeuft, weist diese Suite ohnehin nicht nach; das tut
+ * scripts/discover/browser-qa-realtime.mjs in GitHub Actions, wo der
+ * Weg offen ist - dort gilt "keine Konsolenfehler" ohne Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync(join(process.cwd(), "discover/data/meta.json"), "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
+
 async function openPage(options) {
   const page = await browser.newPage(options);
   const errors = [];
@@ -71,6 +101,7 @@ async function openPage(options) {
     if (m.type() !== "error") return;
     const herkunft = (m.location && m.location().url) || "";
     if (IGNORE.test(herkunft) || IGNORE.test(m.text())) return;
+    if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; }
     errors.push("CONSOLE " + m.text() + " (" + herkunft + ")");
   });
   page.on("requestfailed", (r) => {
@@ -760,9 +791,44 @@ await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
     await seite.close();
     return wert;
   };
-  const dunkel = await lese("/discover/");
+  /* V4.1 §12: Discover hat ein Farbschema (System, Hell, Dunkel). Der
+     Header folgt ihm - dunkel, wenn Discover dunkel ist, hell, wenn hell.
+     Gemessen wird beides: die Kopplung (Attribut = Schema der Seite) und
+     der dunkle Fall mit gespeicherter Wahl. */
+  const gekoppelt = await (async () => {
+    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
+    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
+    await seite.waitForTimeout(700);
+    const w = await seite.evaluate(() => ({
+      schema: document.documentElement.getAttribute("data-theme"),
+      nav: document.querySelector("vu-navigation").getAttribute("theme"),
+      bg: getComputedStyle(document.querySelector("vu-navigation").shadowRoot.querySelector("header")).backgroundColor }));
+    await seite.close();
+    return w;
+  })();
+  assert(gekoppelt.schema === "light" || gekoppelt.schema === "dark", "Discover traegt kein Farbschema: " + gekoppelt.schema);
+  assert(gekoppelt.nav === gekoppelt.schema, "der Header folgt dem Schema nicht: " + JSON.stringify(gekoppelt));
+  assert(gekoppelt.schema === "dark" ? /rgba?\(8, 8, 10/.test(gekoppelt.bg) : /rgba?\(255, 255, 255/.test(gekoppelt.bg),
+    "Header und Schema passen nicht zusammen: " + JSON.stringify(gekoppelt));
+  const dunkel = await (async () => {
+    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
+    await seite.addInitScript(() => { try { localStorage.setItem("vu-discover-theme-v1", "dark"); } catch (e) {} });
+    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
+    await seite.waitForTimeout(700);
+    const w = await seite.evaluate(() => {
+      const nav = document.querySelector("vu-navigation");
+      return { bg: getComputedStyle(nav.shadowRoot.querySelector("header")).backgroundColor,
+               badge: !!nav.shadowRoot.querySelector(".preview"),
+               ink: getComputedStyle(nav.shadowRoot.querySelector("nav a")).color,
+               ziele: [...nav.shadowRoot.querySelectorAll("nav a")]
+                 .map((x) => x.getAttribute("href")).join(",") };
+    });
+    await seite.close();
+    return w;
+  })();
   assert(dunkel, "auf /discover/ fehlt die Navigation");
   assert(/rgba?\(8, 8, 10/.test(dunkel.bg), "der Discover-Header ist nicht dunkel: " + dunkel.bg);
+  assert(!dunkel.badge, "die Plakette 'Development Preview' steht noch im Discover-Kopf");
   for (const pfad of ["/quant/", "/dashboard/", "/news/", "/macro/", "/academy/"]) {
     const hell = await lese(pfad);
     assert(hell, "auf " + pfad + " fehlt die Navigation");
@@ -953,7 +1019,7 @@ await check("Einzeln entdecken bleibt ein Angebot, kein Zwang", async () => {
   await mobilVorschau.waitForTimeout(2500);
   const feed = await mobilVorschau.$$(".dx-feed");
   assert(feed.length === 0, "der Einzelmodus draengt sich auf der Startseite auf");
-  const einstieg = await mobilVorschau.$(".dx-einzeln");
+  const einstieg = await mobilVorschau.$(".dx-fnav-entdecken, .dx-entdecken");
   assert(einstieg, "es gibt keinen Einstieg in den Einzelmodus");
   const text = await mobilVorschau.evaluate(() => document.body.innerText);
   assert(!/jetzt kaufen|nicht verpassen|nur heute/i.test(text),
@@ -1069,7 +1135,11 @@ await check("mobil: die Karte liest sich Name, Zahl, Aussage, Bild (V4 §26)", a
 });
 
 await check("mobil: Suche als Vollbild mit Farbwelt je Treffer", async () => {
-  await mobil.click(".dx-searchbtn");
+  /* V4.1 §14: auf dem Telefon oeffnet die schwebende Leiste die Suche;
+     der Knopf im Kopf ist dort nicht mehr sichtbar. */
+  await mobil.evaluate(() => window.scrollTo(0, 0));
+  await mobil.waitForTimeout(300);
+  await mobil.click(".dx-fnav-suchen");
   await mobil.waitForTimeout(600);
   const box = await mobil.$eval(".dx-search", (n) => n.getBoundingClientRect().toJSON());
   assert(box.width >= 380 && box.height >= 700, "das Overlay füllt den Bildschirm nicht");
@@ -1138,5 +1208,11 @@ await browser.close();
 
 console.log("\nVision Universe DISCOVER — Browser-QA\n");
 for (const [status, name] of results) console.log(`  ${status}  ${name}`);
-console.log(`\n  ${results.length - failures}/${results.length} bestanden\n`);
+console.log(`\n  ${results.length - failures}/${results.length} bestanden`);
+if (stromUnerreichbar) {
+  console.log(`  Hinweis: ${stromUnerreichbar} Konsolenzeile(n) ueber den nicht erreichbaren Strom ` +
+              `(${STROM_URL}) - diese Umgebung kommt nicht bis Cloudflare. Der Nachweis, dass der ` +
+              `Strom laeuft, steht in scripts/discover/browser-qa-realtime.mjs.`);
+}
+console.log("");
 process.exit(failures ? 1 : 0);

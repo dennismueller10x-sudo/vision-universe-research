@@ -276,7 +276,7 @@
       ]),
       el("div", { class: "dx-story-media" }, [
         tabelle,
-        el("p", { class: "dx-story-caption", text: "Aus den Jahresabschlüssen bei der SEC (Geschäftsjahre" + (jahre ? " " + jahre : "") +
+        el("p", { class: "dx-story-caption", text: "Aus den Jahresabschlüssen (Geschäftsjahre" + (jahre ? " " + jahre : "") +
           "), Stand " + (surface.story.asOf || "") + ". Jeder Satz ist rechnerisch belegt; die Aktienseite zeigt die Belege." })
       ])
     ]);

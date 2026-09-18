@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cloudflare-token-permissions-1.1.0",
+  "checkedAt": "2026-09-17T11:48:34.495Z",
+  "note": "Keine Werte, keine Account-IDs.",
+  "authenticated": true,
+  "accountsResolved": 1,
+  "permissionsListed": false,
+  "permissionsNote": "wrangler hat die Rechte NICHT ausgegeben, sondern auf das Dashboard verwiesen - dem Token fehlt dafuer User Details:Read. Aus dieser Ausgabe folgt deshalb NICHTS ueber Workers-Rechte. Die Antwort gibt der Umfangsnachweis (probe-cloudflare-scope.mjs).",
+  "permissions": null,
+  "raw": [
+    " ⛅️ wrangler 4.133.0",
+    "────────────────────",
+    "Getting User settings...",
+    "👋 You are logged in with an Account API Token, associated with the account Info@visionuniverse.de's Account.",
+    "ℹ️  The API Token is read from the CLOUDFLARE_API_TOKEN environment variable.",
+    "┌──────────────────────────────────┬──────────────────────────────────┐",
+    "│ Account Name                     │ Account ID                       │",
+    "├──────────────────────────────────┼──────────────────────────────────┤",
+    "│ Info@visionuniverse.de's Account │ <maskiert> │",
+    "└──────────────────────────────────┴──────────────────────────────────┘",
+    "🔓 To see token permissions visit https://dash.cloudflare.com/<maskiert>/api-tokens"
+  ]
+}

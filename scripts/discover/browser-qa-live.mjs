@@ -15,18 +15,36 @@
      node scripts/discover/browser-qa-live.mjs http://127.0.0.1:8121 [shots-dir] [--clock=ISO]
    ========================================================================= */
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const BASE = args[0] || "http://127.0.0.1:8121";
 const SHOTS = args[1]; if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const CLOCK = (process.argv.find((a) => a.startsWith("--clock=")) || "").slice(8) || null;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist: ein
+   fehlgeschlagener WebSocket-Aufbau schreibt eine Konsolenzeile, die
+   kein Skript verhindern kann. Die Ausnahme gilt nur fuer GENAU die
+   Adresse aus der Auslieferung und nur fuer den Verbindungsaufbau; sie
+   wird gezaehlt und am Ende ausgewiesen. Dass der Strom laeuft, weist
+   scripts/discover/browser-qa-realtime.mjs in Actions nach - dort ohne
+   jede Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync("discover/data/meta.json", "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
 const punkte = []; let fehler = 0;
 const ok = (n, c, d) => { punkte.push([c ? "ok  " : "FAIL", n, d || ""]); if (!c) fehler++; };
 async function seite(ctx) {
   const p = await ctx.newPage(); p.__m = []; p.__bad = []; p.__req = [];
   if (CLOCK) { await p.clock.install({ time: new Date(CLOCK) }); }
-  p.on("console", (m) => { if (m.type() === "error") { const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
+  p.on("console", (m) => { if (m.type() === "error") { if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; } const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
   p.on("pageerror", (e) => p.__m.push("pageerror: " + e.message));
   p.on("request", (r) => { if (r.url().startsWith(BASE)) p.__req.push(r.url().replace(BASE, "")); });
   p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE) && !r.url().includes("favicon")) p.__bad.push(r.status() + " " + r.url().replace(BASE, "")); });
@@ -57,6 +75,7 @@ if (eintraege === 0) {
   await browser.close();
   console.log("\nDiscover Live-QA (ohne Snapshots) — " + punkte.length + " Pruefpunkte, " + fehler + " Fehler\n");
   for (const [s, n, dd] of punkte) console.log(`  ${s} ${n}${dd ? "  — " + dd : ""}`);
+if (stromUnerreichbar) console.log("\n  Hinweis: " + stromUnerreichbar + " Konsolenzeile(n) ueber den nicht erreichbaren Strom (" + STROM_URL + ").");
   process.exit(fehler ? 1 : 0);
 }
 /* Die Eingangsflaeche fuellt den ersten Bildschirm; die Karten beginnen
@@ -114,7 +133,17 @@ const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index()
 await d.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" }); await warten(d, 1500);
 ok("Aktienseite: 1T ist Standard", (await d.locator('.dx-tf button[aria-pressed="true"]').first().textContent()) === "1T");
 ok("Aktienseite: Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-chart .dx-micro-axis").count()) >= 3);
-ok("Aktienseite: Beschriftung mit Stand und Quelle", /Stand|Schluss|Letzter Handelstag/.test(await d.locator(".dx-intraday-note").textContent()));
+/* Der Zustand des Tagesverlaufs muss auf der Seite stehen - aber nicht
+   zwingend in der Fussnote. Seit V4.1 traegt ihn die Statuszeile ueber
+   dem Chart ("Markt geoeffnet · Live", "Letzter Handelstag · Donnerstag",
+   "Heute · Stand 13:20 · nicht aktuell"), und die Fussnote sagt nur dann
+   etwas dazu, wenn es ueber den Zustand hinaus etwas zu sagen gibt.
+   Geprueft wird deshalb der Block, den ein Leser sieht, nicht ein
+   einzelner Knoten darin. */
+const zustandstext = (await d.locator(".dx-chart-hero-meta").textContent()) + " " +
+                     (await d.locator(".dx-intraday-note").textContent());
+ok("Aktienseite: Beschriftung mit Stand und Quelle",
+   /Stand|schluss|Schluss|Letzter Handelstag|Live/.test(zustandstext), zustandstext.trim().slice(0, 120));
 /* V4 §13: 1W aus der Tagesreihe (sieben Kalendertage), 5T gibt es nicht. */
 ok("Aktienseite: 1W vorhanden, 5T entfaellt", (await d.locator('.dx-tf button', { hasText: /^1W$/ }).count()) === 1 && (await d.locator('.dx-tf button', { hasText: /^5T$/ }).count()) === 0);
 ok("Aktienseite: Zeitraeume 1T 1W 1M 6M 1J 5J Max", (await d.evaluate(() => [...document.querySelectorAll(".dx-tf button")].map((b) => b.textContent).join(" "))) === "1T 1W 1M 6M 1J 5J Max");

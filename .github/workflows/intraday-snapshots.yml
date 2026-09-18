@@ -4,8 +4,16 @@ name: Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach S
 # (intraday). Holt 5-Minuten-Bars ueber den bestehenden Tiingo-Adapter und
 # legt je Titel und Sitzung einen Snapshot ab (quant/data/market/intraday/).
 #
-#   waehrend der Sitzung  alle 10 Minuten: die Titel auf den Discover-Flaechen
-#                         (discover/data/live-scope/US_REAL.json)
+#   waehrend der Sitzung  Zeitplan alle 5 Minuten (V4.1 §4): die Titel auf den
+#                         Discover-Flaechen (discover/data/live-scope/US_REAL.json).
+#                         Ein Lauf braucht rund 6 Minuten (524 Abrufe bei
+#                         hoechstens 100 je Minute - Sicherheitsgrenze des
+#                         Adapters, kein Anbieterlimit); die Gruppe laesst nur
+#                         einen Lauf zugleich zu und haelt einen wartend - so
+#                         folgt Lauf auf Lauf, statt dass der 10-Minuten-Takt
+#                         plus GitHub-Verzoegerung 16 Minuten wurde. Ein Lauf
+#                         kurz vor 09:30 New York wartet auf die Eroeffnung
+#                         (ingest-intraday.mjs, openWaitMs).
 #   nach Handelsschluss   einmal: das ganze Produktuniversum, damit jede
 #                         Aktienseite ein 1T hat
 #
@@ -15,9 +23,10 @@ name: Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach S
 # Sommerzeit - das Fenster ist deshalb breit (13-21 UTC) und der Resolver
 # haelt die Laeufe ausserhalb der Sitzung kurz (kein Abruf, kein Commit).
 #
-# Grenzen, die dieser Weg hat und die die Seite nennt: GitHub Pages baut
-# hoechstens ~10-mal je Stunde; ein Snapshot ist deshalb bis zu ~10 Minuten
-# alt, und die Karte schreibt "Heute · Stand 15:42" statt "live".
+# Grenzen, die dieser Weg hat und die die Seite nennt: Lauf (~6 min) plus
+# Pages-Auslieferung (~1-2 min); ein Stand ist deshalb bis zu ~8 Minuten alt.
+# Die Statuszeile sagt "Markt geoeffnet · Live" nur im Zustand LIVE des
+# Freshness-Vertrags; die Uhrzeit des Stands steht am Chart ("Stand 15:42").
 #
 # Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
 # dient ein Push mit der Marke `[intraday-snapshot]` als Ausloeser (ohne
@@ -31,7 +40,7 @@ on:
         type: string
         default: 'discover'
   schedule:
-    - cron: '*/10 13-21 * * 1-5'
+    - cron: '*/5 13-21 * * 1-5'
     - cron: '35 21 * * 1-5'
   push:
     branches:
@@ -69,11 +78,23 @@ jobs:
 
       - name: Umfang bestimmen
         id: scope
+        # Die Commit-Nachricht kommt ueber die Umgebung, nicht ueber eine
+        # Textersetzung in der Kommandozeile.
+        #
+        # Vorher stand hier ${{ github.event.head_commit.message }} mitten
+        # in einem Shell-Aufruf. Am 17.09.2026 hat das eine Nachricht mit
+        # einem Anfuehrungszeichen darin zerlegt - der Schritt brach ab,
+        # und der Lauf sah aus wie ein Datenfehler. Eine Commit-Nachricht
+        # ist Text von aussen; sie gehoert nie unquotiert in ein Skript.
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}
         run: |
-          SCOPE='${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}'
+          SCOPE="$DISPATCH_SCOPE"
           # Auf Entwicklungsbranches darf die Marke den Umfang nennen: [intraday-snapshot:universe]
-          if [ -z "$SCOPE" ] && [ "${{ github.event_name }}" = "push" ]; then
-            SCOPE=$(printf '%s' "${{ github.event.head_commit.message }}" | grep -o '\[intraday-snapshot:[a-z,A-Z]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
+          if [ -z "$SCOPE" ] && [ "$EVENT_NAME" = "push" ]; then
+            SCOPE=$(printf '%s' "$COMMIT_MESSAGE" | grep -o '\[intraday-snapshot:[a-zA-Z,]*\]' | head -1 | sed 's/\[intraday-snapshot:\(.*\)\]/\1/')
           fi
           if [ -z "$SCOPE" ]; then
             # Der Lauf um 21:35 UTC ist der Universumslauf nach Schluss. Alle anderen

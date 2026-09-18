@@ -64,6 +64,24 @@ const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "commercial")
 const WS_URL = process.env.TIINGO_WS_URL || TiingoRealtime.DEFAULT_WS_URL;
 const REST_BASE = process.env.TIINGO_BASE_URL || "https://api.tiingo.com";
 const SECONDS = Math.max(15, parseInt(arg("--seconds", "90"), 10) || 90);
+/* ------------------------------------------------------------------
+   FIREHOSE-NACHWEIS (Owner-Auftrag 2026-09-16)
+
+   Derselbe Client, dieselbe Messung - nur eine andere Anmeldung: der
+   IEX-Strom nimmt in der Anmeldung entweder eine Tickerliste ODER gar
+   keine. Ohne Liste liefert er, was die Stufe hergibt. Ob dieses Konto
+   das darf, ist eine Messung und keine Annahme; die Stufen 5 und 0
+   wurden am 09.09.2026 abgelehnt, der Tarif hat sich seither geaendert.
+
+   --firehose        Anmeldung OHNE Tickerliste, Stufen der Reihe nach
+   --levels 0,5,6    welche Stufen geprueft werden
+   --probe-seconds   Dauer je Stufenprobe (die lange Messung nimmt
+                     --seconds)
+   ------------------------------------------------------------------ */
+const FIREHOSE = argv.includes("--firehose");
+const LEVELS = String(arg("--levels", "0,5,6")).split(",")
+  .map((v) => parseInt(v.trim(), 10)).filter((v) => Number.isFinite(v));
+const PROBE_SECONDS = Math.max(10, parseInt(arg("--probe-seconds", "25"), 10) || 25);
 /* Ab wie vielen Ereignissen gilt ein Strom als "liefert laufend"? Drei
    ist die kleinste Zahl, aus der sich ein Abstand und dessen Streuung
    ueberhaupt bilden lassen. Zwei Ereignisse ergeben einen Abstand ohne
@@ -99,9 +117,22 @@ function pct(list, p) {
  */
 function measureStream(opts) {
   return new Promise((resolve) => {
-    const symbols = opts.symbols;
+    const symbols = opts.symbols || [];
     const thresholdLevel = opts.thresholdLevel;
     const durationMs = opts.durationMs;
+    /* Anmeldung ohne Tickerliste. */
+    const firehose = !!opts.firehose;
+    /* Fuer welche Titel eine Kerze gebaut wird. Bei einem Firehose ueber
+       tausende Titel waere eine Reihe je Titel Arbeitsspeicher ohne
+       Erkenntnis - die Kerzenfrage ist an einem Titel beantwortet. null
+       heisst: fuer alle (bisheriges Verhalten). */
+    const candleFor = opts.candleSymbols === undefined ? null
+      : new Set((opts.candleSymbols || []).map((x) => String(x).toUpperCase()));
+    /* Empfangene Nutzlast. Gezaehlt werden die Zeichen der
+       JSON-Nachrichten; bei ASCII-Nutzlast ist das die Byteanzahl ohne
+       Rahmen- und TLS-Aufschlag. Der Aufschlag wird NICHT geschaetzt -
+       gemessen ist, was gemessen ist. */
+    let payloadBytes = 0;
 
     if (typeof globalThis.WebSocket !== "function") {
       resolve({ result: "ERROR", reason: "noWebSocketRuntime",
@@ -255,15 +286,27 @@ function measureStream(opts) {
       /* Die Anmeldenachricht traegt den Schluessel. Sie wird hier gebaut,
          nirgends protokolliert und nicht in den Bericht aufgenommen. */
       onOpenSend: function () {
+        /* Ohne Tickerliste ist die Anmeldung ein Firehose-Abonnement:
+           der Anbieter entscheidet, was kommt. Mit Liste bleibt es die
+           bisherige Einzelanmeldung. Der Unterschied ist genau ein
+           fehlendes Feld - deshalb steht er hier und nicht in einem
+           zweiten Client. */
+        const eventData = firehose
+          ? { thresholdLevel: thresholdLevel }
+          : { thresholdLevel: thresholdLevel, tickers: symbols.map((s) => s.toLowerCase()) };
         return JSON.stringify({
           eventName: "subscribe",
           authorization: apiKey || "",
-          eventData: { thresholdLevel: thresholdLevel,
-                       tickers: symbols.map((s) => s.toLowerCase()) }
+          eventData: eventData
         });
       },
       parse: function (ev) {
         messages++;
+        try {
+          const rohNachricht = ev && ev.data !== undefined ? ev.data : ev;
+          if (typeof rohNachricht === "string") payloadBytes += rohNachricht.length;
+          else if (rohNachricht && typeof rohNachricht.byteLength === "number") payloadBytes += rohNachricht.byteLength;
+        } catch (err) { /* eine Nachricht ohne messbare Laenge */ }
         /* Verwaltungsnachrichten zaehlen mit, aber getrennt: die
            Bestaetigung der Anmeldung ist ein eigener Befund (§5). */
         try {
@@ -343,6 +386,7 @@ function measureStream(opts) {
       resolve(Object.assign({
         result,
         thresholdLevel,
+        firehose,
         symbols,
         durationSeconds: Math.round(durationMs / 1000),
         sessionPhaseAtStart: phaseAtStart,
@@ -366,6 +410,9 @@ function measureStream(opts) {
           rejectedSubscription,
           socketError,
           closeCode, closeReason,
+          subscriptionForm: firehose ? "firehose (ohne Tickerliste)" : "tickers",
+          payloadBytes,
+          payloadBytesPerSecond: durationMs ? Math.round(payloadBytes / (durationMs / 1000)) : null,
           /* Stabilitaet ist nicht "keine Fehlermeldung", sondern: die
              Verbindung stand ueber die ganze Messdauer. */
           stableForFullDuration: opened && closeCode === null && socketError === null
@@ -503,7 +550,8 @@ function measureStream(opts) {
         if (typeof tick.price === "number") letzterStromkurs.set(key, { price: tick.price, atMs: at });
 
         /* Die Kerze: genau so, wie das Chart sie bauen wuerde - und je
-           Titel getrennt. */
+           Titel getrennt. Im Firehose nur fuer die benannten Titel. */
+        if (candleFor && !candleFor.has(key)) return;
         const s2 = seriesFor(tick.symbol);
         const r = s2.applyTick({
           price: tick.price, size: tick.size,
@@ -965,4 +1013,228 @@ async function main() {
   console.log(`\n  Bericht: ${file.replace(root + "/", "")}`);
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+/* =========================================================================
+   FIREHOSE-NACHWEIS (Owner-Auftrag 2026-09-16)
+
+   Eine Frage, in drei Messungen zerlegt:
+
+     1  Welche thresholdLevel nimmt dieses Konto OHNE Tickerliste an?
+     2  Liefert eine angenommene Stufe dann mehr als die angemeldeten
+        Titel - also einen Strom ueber das Universum?
+     3  Was kommt in einem kontrollierten Fenster wirklich an: wie viele
+        verschiedene Titel, welche Nachrichtenarten, wie viele Bytes?
+
+   Die Abdeckung wird AUSSCHLIESSLICH positiv festgestellt. Ein Titel
+   ohne Ereignis im Messfenster ist NICHT "nicht abgedeckt" - er ist
+   "nicht beobachtet". Ein illiquider Titel kann in zwei Minuten
+   schlicht keinen Abschluss haben, und aus Schweigen ein Nein zu machen
+   waere derselbe Fehler, den dieses Repository sonst vermeidet.
+   ========================================================================= */
+function ladeUniversen() {
+  const lies = (rel) => {
+    try { return JSON.parse(readFileSync(join(root, rel), "utf8")); }
+    catch (err) { return null; }
+  };
+  const master = lies("quant/data/market/security-master/eligibility.json");
+  const consumer = lies("discover/data/stock-index/US_REAL.json");
+  const liveScope = lies("discover/data/live-scope/US_REAL.json");
+  const masterTicker = new Set();
+  const masterEligible = new Set();
+  for (const d of (master && master.decisions) || []) {
+    if (!d || !d.ticker) continue;
+    const t = String(d.ticker).toUpperCase();
+    masterTicker.add(t);
+    if (d.product_eligibility === "ELIGIBLE") masterEligible.add(t);
+  }
+  const consumerSet = new Set(((consumer && consumer.symbols) || [])
+    .map((x) => String(typeof x === "string" ? x : (x && x.s) || "").toUpperCase()).filter(Boolean));
+  const liveSet = new Set(((liveScope && liveScope.symbols) || [])
+    .map((x) => String(x).toUpperCase()));
+  return {
+    companyMaster: { file: "quant/data/market/security-master/eligibility.json",
+                     all: masterTicker, eligible: masterEligible },
+    consumerUniverse: { file: "discover/data/stock-index/US_REAL.json", all: consumerSet },
+    discoverLiveScope: { file: "discover/data/live-scope/US_REAL.json", all: liveSet }
+  };
+}
+
+function deckung(beobachtet, menge) {
+  let getroffen = 0;
+  for (const sym of menge) if (beobachtet.has(sym)) getroffen++;
+  return {
+    universeSize: menge.size,
+    streamCovered: getroffen,
+    streamCoveredShare: menge.size ? Math.round(getroffen / menge.size * 10000) / 10000 : null,
+    notObserved: menge.size - getroffen,
+    notObservedMeaning: "Im Messfenster kein Ereignis gesehen. Das ist KEIN Nachweis " +
+      "fehlender Abdeckung: ein Titel ohne Abschluss im Fenster sendet nichts."
+  };
+}
+
+async function firehoseProof() {
+  const session = MarketHours.sessionAt(Date.now(), { calendar, exchange: "XNYS" });
+  console.log("Vision Universe — Tiingo Firehose-Faehigkeitsnachweis\n");
+  console.log(`  Sitzung: ${session.phase}  ${session.localDate} ${session.localTime} ET`);
+  console.log(`  Stufen:  ${LEVELS.join(", ")} (Probe ${PROBE_SECONDS} s, Hauptmessung ${SECONDS} s)\n`);
+
+  const probes = [];
+  let haupt = null;
+
+  if (!apiKey) {
+    console.log("  Kein TIINGO_API_KEY gesetzt. Es wird keine Verbindung aufgebaut.");
+  } else {
+    /* Schritt 1: jede Stufe ohne Tickerliste. */
+    for (const level of LEVELS) {
+      console.log(`  Probe: Firehose, thresholdLevel ${level}, ${PROBE_SECONDS} s ...`);
+      const r = await measureStream({ symbols: [], firehose: true, thresholdLevel: level,
+                                      durationMs: PROBE_SECONDS * 1000,
+                                      candleSymbols: [], probeSemantics: false });
+      probes.push(Object.assign({ scope: "firehoseProbe" }, r));
+      const syms = Object.keys((r.events && r.events.bySymbol) || {}).length;
+      console.log(`    ${r.result}  Verbindung ${r.connection && r.connection.opened ? "offen" : "nicht zustande"}` +
+                  `, ${r.events ? r.events.count : 0} Ereignisse, ${syms} verschiedene Titel` +
+                  (r.connection && r.connection.rejectedSubscription
+                    ? `, ABGELEHNT: ${r.connection.rejectedSubscription.message}` : ""));
+      await new Promise((w) => setTimeout(w, 3000));
+    }
+
+    /* Schritt 2: die bekannte Einzelanmeldung als Gegenprobe. Ohne sie
+       laesst sich ein stummer Firehose nicht von einem stummen Konto
+       unterscheiden. */
+    console.log(`  Gegenprobe: ${PRIMARY} mit Tickerliste, thresholdLevel 6, ${PROBE_SECONDS} s ...`);
+    const control = await measureStream({ symbols: [PRIMARY], firehose: false, thresholdLevel: 6,
+                                          durationMs: PROBE_SECONDS * 1000,
+                                          candleSymbols: [PRIMARY], probeSemantics: false });
+    probes.push(Object.assign({ scope: "tickerControl" }, control));
+    console.log(`    ${control.result}  ${control.events ? control.events.count : 0} Ereignisse`);
+    await new Promise((w) => setTimeout(w, 3000));
+
+    /* Schritt 3: die beste angenommene Firehose-Stufe lange messen.
+       "Beste" heisst: die meisten verschiedenen Titel. */
+    const angenommen = probes.filter((r) => r.firehose && r.connection && r.connection.opened &&
+                                            !r.connection.rejectedSubscription &&
+                                            r.events && r.events.count > 0);
+    const beste = angenommen.reduce((a, b) => {
+      const na = a ? Object.keys(a.events.bySymbol || {}).length : -1;
+      const nb = Object.keys(b.events.bySymbol || {}).length;
+      return nb > na ? b : a;
+    }, null);
+    if (beste) {
+      console.log(`  Hauptmessung: Firehose, thresholdLevel ${beste.thresholdLevel}, ${SECONDS} s ...`);
+      haupt = await measureStream({ symbols: [], firehose: true, thresholdLevel: beste.thresholdLevel,
+                                    durationMs: SECONDS * 1000,
+                                    /* Die Kerze nur am Leittitel: die Frage "entsteht eine
+                                       laufende Kerze" ist an einem Titel beantwortet, und
+                                       tausend Reihen waeren Speicher ohne Erkenntnis. */
+                                    candleSymbols: [PRIMARY], probeSemantics: true });
+      haupt = Object.assign({ scope: "firehoseMain" }, haupt);
+      console.log(`    ${haupt.result}  ${haupt.events.count} Ereignisse, ` +
+                  `${Object.keys(haupt.events.bySymbol || {}).length} verschiedene Titel, ` +
+                  `${haupt.connection.payloadBytes} Bytes`);
+    } else {
+      console.log("  Keine Firehose-Stufe hat geliefert. Keine Hauptmessung.");
+    }
+  }
+
+  /* ------------------------------------------------------- Auswertung */
+  const alle = probes.concat(haupt ? [haupt] : []);
+  const gemessen = alle.filter((r) => r.result && r.result !== "SKIPPED");
+  const beobachtet = new Set();
+  for (const r of gemessen) {
+    for (const sym of Object.keys((r.events && r.events.bySymbol) || {})) {
+      if (sym && sym !== "?") beobachtet.add(sym.toUpperCase());
+    }
+  }
+  const universen = ladeUniversen();
+  const abdeckung = {
+    distinctSymbolsObserved: beobachtet.size,
+    companyMaster: deckung(beobachtet, universen.companyMaster.all),
+    companyMasterEligible: deckung(beobachtet, universen.companyMaster.eligible),
+    consumerUniverse: deckung(beobachtet, universen.consumerUniverse.all),
+    discoverLiveScope: deckung(beobachtet, universen.discoverLiveScope.all),
+    outsideCompanyMaster: [...beobachtet].filter((x) => !universen.companyMaster.all.has(x)).length,
+    sources: { companyMaster: universen.companyMaster.file,
+               consumerUniverse: universen.consumerUniverse.file,
+               discoverLiveScope: universen.discoverLiveScope.file }
+  };
+
+  const firehoseAkzeptiert = gemessen.filter((r) => r.firehose && r.connection &&
+    r.connection.opened && !r.connection.rejectedSubscription).map((r) => r.thresholdLevel);
+  const firehoseAbgelehnt = gemessen.filter((r) => r.firehose && r.connection &&
+    r.connection.rejectedSubscription).map((r) => r.thresholdLevel);
+  const lieferndeStufen = gemessen.filter((r) => r.firehose && r.events && r.events.count > 0)
+    .map((r) => r.thresholdLevel);
+
+  let ergebnis, begruendung;
+  if (!apiKey) {
+    ergebnis = "UNKNOWN";
+    begruendung = "Kein Zugang konfiguriert. Es wurde nichts gemessen.";
+  } else if (session.phase !== "REGULAR") {
+    ergebnis = "UNKNOWN";
+    begruendung = `Gemessen in der Phase ${session.phase}. Ausserhalb der regulaeren Sitzung ` +
+                  "misst ein stummer Strom die Handelspause und nicht den Tarif.";
+  } else if (lieferndeStufen.length) {
+    const n = abdeckung.distinctSymbolsObserved;
+    ergebnis = n > 25 ? "FIREHOSE_AVAILABLE" : "STREAM_WITHOUT_TICKERS_ACCEPTED_BUT_NARROW";
+    begruendung = `Die Anmeldung ohne Tickerliste wurde auf Stufe(n) ${[...new Set(lieferndeStufen)].join(", ")} ` +
+      `angenommen und lieferte ${n} verschiedene Titel im Messfenster.`;
+  } else if (firehoseAkzeptiert.length) {
+    ergebnis = "ACCEPTED_BUT_SILENT";
+    begruendung = "Die Anmeldung ohne Tickerliste wurde angenommen, lieferte aber kein " +
+                  "Kursereignis. Die Gegenprobe zeigt, ob das Konto ueberhaupt Strom bekommt.";
+  } else {
+    ergebnis = "FIREHOSE_NOT_AVAILABLE";
+    begruendung = "Keine Stufe hat die Anmeldung ohne Tickerliste angenommen. " +
+      (firehoseAbgelehnt.length ? "Abgelehnt: Stufe(n) " + [...new Set(firehoseAbgelehnt)].join(", ") + "." : "");
+  }
+
+  const bericht = {
+    generatedAt: new Date().toISOString(),
+    provider: "tiingo",
+    scope: "iexFirehoseCapability",
+    note: "Der Bericht enthaelt keine Kurse. Ausgewiesen sind Anzahlen, Abstaende, " +
+          "Nachrichtenarten, Bytes und Titelmengen.",
+    run: {
+      source: process.env.GITHUB_ACTIONS ? "github-actions" : "local",
+      repository: process.env.GITHUB_REPOSITORY || null,
+      runId: process.env.GITHUB_RUN_ID || null,
+      commit: process.env.GITHUB_SHA || null,
+      ref: process.env.GITHUB_REF_NAME || null,
+      wsUrl: WS_URL,
+      probeSeconds: PROBE_SECONDS,
+      mainSeconds: SECONDS,
+      levelsTested: LEVELS
+    },
+    sessionAtRun: { phase: session.phase, localDate: session.localDate,
+                    localTime: session.localTime, closedReason: session.closedReason || null },
+    FIREHOSE_RESULT: ergebnis,
+    firehoseReason: begruendung,
+    thresholdLevels: {
+      testedWithoutTickers: LEVELS,
+      acceptedWithoutTickers: [...new Set(firehoseAkzeptiert)],
+      rejectedWithoutTickers: [...new Set(firehoseAbgelehnt)],
+      deliveringWithoutTickers: [...new Set(lieferndeStufen)],
+      rejectionMessages: [...new Set(gemessen
+        .filter((r) => r.connection && r.connection.rejectedSubscription)
+        .map((r) => r.connection.rejectedSubscription.message))]
+    },
+    coverage: abdeckung,
+    coverageRule: "STREAM_COVERED wird nur positiv vergeben: ein Titel gilt als abgedeckt, " +
+      "wenn im Messfenster mindestens ein Ereignis mit seinem Symbol ankam. Titel ohne " +
+      "Ereignis sind NOT_OBSERVED, nicht NOT_COVERED - ein kurzes Fenster beweist kein " +
+      "Fehlen. Eine belastbare Aussage ueber die Gesamtabdeckung braucht ein Fenster ueber " +
+      "eine ganze Sitzung.",
+    measurements: alle
+  };
+
+  mkdirSync(OUT_DIR, { recursive: true });
+  const file = join(OUT_DIR, "firehose-capability.json");
+  writeFileSync(file, JSON.stringify(bericht, null, 2) + "\n");
+  console.log(`\n  FIREHOSE_RESULT = ${ergebnis}`);
+  console.log(`  ${begruendung}`);
+  console.log(`  Verschiedene Titel beobachtet: ${abdeckung.distinctSymbolsObserved}`);
+  console.log(`\n  Bericht: ${file.replace(root + "/", "")}`);
+}
+
+const lauf = FIREHOSE ? firehoseProof : main;
+lauf().catch((err) => { console.error(err); process.exit(1); });

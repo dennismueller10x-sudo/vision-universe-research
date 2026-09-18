@@ -44,9 +44,11 @@ if (typeof window !== "undefined" && typeof window.document !== "undefined") {
                   "der Zugangsschluessel veroeffentlicht.");
 }
 
-const path = require("path");
-const engines = path.join(__dirname, "..", "..", "quant", "engines");
-const Transport = require(path.join(engines, "realtime", "transport.js"));
+/* Fester Pfad statt zusammengesetztem: ein Bundler kann ein require mit
+   berechnetem Argument nicht aufloesen, und dieselbe Datei soll auch in
+   einer Cloudflare-Laufzeit gebuendelt werden koennen. In Node aendert
+   sich dadurch nichts - es ist derselbe Pfad, nur vorher lesbar. */
+const Transport = require("../../quant/engines/realtime/transport.js");
 
 const PROVIDER_ID = "tiingo";
 const DEFAULT_WS_URL = "wss://api.tiingo.com/iex";

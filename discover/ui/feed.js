@@ -45,28 +45,54 @@
   /**
    * Baut den Modus.
    *
+   * V4.1 §17-18: der Feed hat keine harte Grenze nach zehn Titeln mehr.
+   * Er bekommt eine deterministische Reihenfolge (discover/data/feed/
+   * <Universum>.json, gebaut aus den ausgelieferten Reihen) und zeigt sie
+   * in Stuecken: die ersten Karten liegen bei, die naechsten werden von
+   * den Aktienseiten nachgeladen, bevor das Ende des gezeigten Stuecks
+   * erreicht ist. Nie das ganze Universum im Browser, nie ein Titel
+   * zweimal. Das Ende bleibt ein Ende: wer alle Titel der Reihenfolge
+   * gesehen hat, kommt zu den Ausgaengen - nicht zu Nachschub aus dem
+   * Nichts.
+   *
    * @param {HTMLElement} root
-   * @param {Array} karten   Kartenliste (Contract.toCard-Form) mit Herkunft
-   * @param {object} options {universeId, zurueck}
+   * @param {Array} karten   erste Karten (Contract.toCard-Form) mit Herkunft
+   * @param {object} options {universeId, zurueck, weiter, order, batchSize, laden(symbol) -> Promise<card>, affinity}
    */
   function render(root, karten, options) {
     options = options || {};
+    var universeId = options.universeId || "US_REAL";
+    var order = options.order || karten.map(function (k) { return { s: k.symbol, herkunft: k.herkunft || null, sec: k.sector || null }; });
+    var gesamt = order.length;
+    var batch = options.batchSize || 12;
     var host = el("div", { class: "dx-feed", role: "region",
                            "aria-label": "Aktien einzeln entdecken" });
 
     /* Die Kopfzeile bleibt oben stehen: sie ist der Ausweg. Ein Modus
        ohne sichtbaren Ausgang waere eine Falle. */
+    var zaehler = el("span", { class: "dx-feed-zaehler", text: "1 von " + gesamt });
     host.appendChild(el("div", { class: "dx-feed-bar" }, [
       el("a", { class: "dx-feed-zurueck", href: options.zurueck || "#/u/US_REAL" }, [
         document.createTextNode("← Übersicht")
       ]),
-      el("span", { class: "dx-feed-zaehler", text: "1 von " + karten.length })
+      zaehler
     ]));
 
     var spur = el("div", { class: "dx-feed-spur" });
-    karten.forEach(function (karte, i) {
-      spur.appendChild(bildschirm(karte, i, karten.length, options));
-    });
+    var gezeigt = 0, gesehen = Object.create(null), laedt = false, fertig = false;
+    var beobachter = null;
+
+    function anhaengen(karte, index) {
+      if (!karte || gesehen[karte.symbol]) return false;
+      gesehen[karte.symbol] = true;
+      var eintrag = order[index] || {};
+      if (!karte.herkunft && eintrag.herkunft) karte = Object.assign({}, karte, { herkunft: eintrag.herkunft });
+      var screen = bildschirm(karte, index, gesamt, options);
+      spur.insertBefore(screen, ende);
+      if (beobachter) beobachter.observe(screen);
+      gezeigt = index + 1;
+      return true;
+    }
 
     /* Das Ende ist ein Ende - mit Ausgaengen, nicht mit Nachschub. */
     var ausgaenge = (options.weiter || []).map(function (w, i) {
@@ -74,55 +100,119 @@
     });
     ausgaenge.push(el("a", { class: "dx-btn dx-btn--ghost", href: options.zurueck || "#/u/US_REAL",
                              text: "Zurück zu Discover" }));
-    var ende = el("section", { class: "dx-feed-screen dx-feed-screen--ende", "data-index": "ende" }, [
+    var ende = el("section", { class: "dx-feed-screen dx-feed-screen--ende", "data-index": "ende", hidden: true }, [
       el("div", { class: "dx-feed-inner" }, [
         el("p", { class: "dx-kicker", text: "Das war die Auswahl" }),
         el("h2", { text: "Fertig durchgesehen." }),
         el("p", { class: "dx-feed-satz",
-                  text: "Diese Auswahl umfasst " + karten.length + " Titel und lädt nicht " +
-                        "endlos nach. Wohin als Nächstes?" }),
+                  text: "Diese Auswahl umfasst " + gesamt + " Titel aus den Sammlungen von Discover. Wohin als Nächstes?" }),
         el("div", { class: "dx-cta dx-cta--stapel" }, ausgaenge)
       ])
     ]);
     spur.appendChild(ende);
-    if (D.Analytics) D.Analytics.track("immersive_start", { universeId: options.universeId || "US_REAL",
-                                                            count: karten.length });
 
-    host.appendChild(spur);
-    root.appendChild(host);
+    /* Die naechsten Karten - von den Aktienseiten, deterministisch nach
+       der Reihenfolge; eine Neigung des Nutzers (V4.1 §20, lokal, ohne
+       Server) hebt innerhalb EINES Stuecks Titel seiner zuletzt
+       angesehenen Sektoren nach vorn - nie ueber Stueckgrenzen hinweg. */
+    function naechstesStueck() {
+      if (laedt || fertig) return Promise.resolve(false);
+      var von = gezeigt, bis = Math.min(gesamt, von + batch);
+      if (von >= gesamt) { fertig = true; ende.hidden = false; return Promise.resolve(false); }
+      laedt = true;
+      var eintraege = order.slice(von, bis);
+      var aff = options.affinity || [];
+      if (aff.length) {
+        var vorne = eintraege.filter(function (e) { return e.sec && aff.indexOf(e.sec) !== -1; }).slice(0, 4);
+        var hinten = eintraege.filter(function (e) { return vorne.indexOf(e) === -1; });
+        eintraege = vorne.concat(hinten);
+      }
+      var lader = options.laden || function (symbol) {
+        return S.loadJSON("/discover/data/stocks/" + universeId + "/" + symbol + ".json");
+      };
+      return Promise.all(eintraege.map(function (e) {
+        return lader(e.s).then(function (k) { return k ? Object.assign({}, k, { herkunft: e.herkunft || k.herkunft || null }) : null; })
+                         .catch(function () { return null; });
+      })).then(function (geladen) {
+        var index = von;
+        geladen.forEach(function (k) { if (k) { if (anhaengen(k, index)) index++; else gezeigt = index; } });
+        /* Titel ohne Seite werden uebersprungen; der Zaehler bleibt ehrlich. */
+        gezeigt = bis;
+        laedt = false;
+        if (bis >= gesamt) { fertig = true; ende.hidden = false; }
+        return true;
+      }).catch(function () { laedt = false; return false; });
+    }
 
-    /* Der Zaehler oben zeigt, wo man ist - das ist die einzige
-       Rueckmeldung, die dieser Modus gibt. */
-    var zaehler = host.querySelector(".dx-feed-zaehler");
     if (global.IntersectionObserver) {
-      var beobachter = new global.IntersectionObserver(function (eintraege) {
+      beobachter = new global.IntersectionObserver(function (eintraege) {
         eintraege.forEach(function (e) {
           if (!e.isIntersecting) return;
           if (e.target.dataset.index === "ende") {
             zaehler.textContent = "Ende";
             if (D.Analytics && !host.__fertig) {
               host.__fertig = true;
-              D.Analytics.track("immersive_complete", { universeId: options.universeId || "US_REAL",
-                                                        count: karten.length });
+              D.Analytics.track("immersive_complete", { universeId: universeId, count: gesamt });
             }
             return;
           }
           var i = Number(e.target.dataset.index);
           if (!isNum(i)) return;
-          zaehler.textContent = (i + 1) + " von " + karten.length;
+          zaehler.textContent = (i + 1) + " von " + gesamt;
+          if (options.merken) options.merken(i);
           if (D.Swipe) D.Swipe.melden("feed:karte", { index: i, symbol: e.target.dataset.symbol });
-          /* Vorbereiten, was als Naechstes kommt. */
-          var naechste = karten[i + 1];
-          if (naechste && D.Swipe) {
-            D.Swipe.vorladen("/discover/data/stocks/" +
-                             (options.universeId || "US_REAL") + "/" + naechste.symbol + ".json");
-          }
+          /* Vorbereiten, was als Naechstes kommt - und das naechste Stueck
+             holen, bevor das Ende des gezeigten erreicht ist. */
+          var naechste = order[i + 1];
+          if (naechste && D.Swipe) D.Swipe.vorladen("/discover/data/stocks/" + universeId + "/" + naechste.s + ".json");
+          if (i >= gezeigt - 5) naechstesStueck();
         });
-      }, { threshold: 0.55 });
-      Array.prototype.forEach.call(spur.querySelectorAll("[data-index]"), function (n) {
-        beobachter.observe(n);
+      }, { root: spur, threshold: 0.55 });
+      beobachter.observe(ende);
+    }
+
+    /* Die ersten Karten liegen bei. */
+    karten.forEach(function (k, i) { anhaengen(k, i); });
+    gezeigt = Math.max(gezeigt, Math.min(karten.length, gesamt));
+    if (gezeigt >= gesamt) { fertig = true; ende.hidden = false; }
+    if (!global.IntersectionObserver) { /* ohne Beobachter: alles in Stuecken nachladen, wenn gescrollt wird */
+      spur.addEventListener("scroll", function () {
+        if (spur.scrollTop + spur.clientHeight * 3 > spur.scrollHeight) naechstesStueck();
       });
     }
+    if (D.Analytics) D.Analytics.track("immersive_start", { universeId: universeId, count: gesamt });
+
+    host.appendChild(spur);
+    root.appendChild(host);
+    /* Die Spur faengt oben an - auch wenn die Seite davor weit unten
+       stand; sonst uebernimmt der Browser den alten Versatz und die
+       Zaehlung beginnt bei drei. */
+    spur.scrollTop = 0;
+    /* Der Wisch-Hinweis liegt unter dem Inhalt des ersten Bildschirms.
+       Reicht der Inhalt bis dorthin (kleines Telefon, langer Satz), faellt
+       der Hinweis weg - ein Knopf unter einem Pfeil ist keiner. */
+    if (global.requestAnimationFrame) global.requestAnimationFrame(function () {
+      var wink = spur.querySelector(".dx-feed-weiter");
+      var inhalt = wink && wink.parentNode ? wink.parentNode.querySelector(".dx-feed-inner") : null;
+      if (wink && inhalt && inhalt.getBoundingClientRect().bottom > wink.getBoundingClientRect().top - 4) wink.hidden = true;
+    });
+
+    /* Zurueck an die Stelle, an der man war (Sitzung, nicht Konto). */
+    var resume = isNum(options.resumeIndex) ? options.resumeIndex : -1;
+    if (resume > 0 && resume < gesamt) {
+      var schritte = 0;
+      (function weiter() {
+        if (gezeigt > resume || schritte >= 6) {
+          var ziel = spur.querySelector('[data-index="' + Math.min(resume, gezeigt - 1) + '"]');
+          if (ziel) ziel.scrollIntoView({ block: "start", behavior: "auto" });
+          return;
+        }
+        schritte++;
+        naechstesStueck().then(function (ok) { if (ok) weiter(); });
+      })();
+    }
+    host.__naechstesStueck = naechstesStueck;
+    host.__stand = function () { return { gezeigt: gezeigt, gesamt: gesamt, fertig: fertig }; };
     return host;
   }
 

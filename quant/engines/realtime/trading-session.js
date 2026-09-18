@@ -253,9 +253,28 @@
              sessionDate: sessionDate, isToday: heute, timezoneNote: "Uhrzeiten in New Yorker Zeit" };
   }
 
+  /**
+   * Wie lange ein Lauf, der kurz vor der Eroeffnung startet, warten soll,
+   * damit er die LAUFENDE Sitzung holt statt der letzten (V4.1 §4).
+   *
+   * Der Zeitplan trifft die Eroeffnung nie genau: ein Lauf um 09:27 New
+   * York sah bisher PRE_MARKET, holte den Vortag und blockierte den
+   * naechsten Lauf bis 09:33. Liegt die Eroeffnung hoechstens
+   * maxWaitMinutes voraus, lohnt das Warten bis eine Minute nach 09:30
+   * (die erste 5-Minuten-Bar). Sonst 0: nicht warten.
+   */
+  function openWaitMs(resolution, nowMs, maxWaitMinutes) {
+    if (!resolution || !resolution.nextOpen) return 0;
+    if (resolution.marketState !== "PRE_MARKET" && resolution.marketState !== "CLOSED") return 0;
+    var bis = Date.parse(resolution.nextOpen) - nowMs;
+    var max = (maxWaitMinutes || 7) * 60000;
+    if (bis <= 0 || bis > max) return 0;
+    return bis + 60000;
+  }
+
   var api = {
     ENGINE_VERSION: ENGINE_VERSION, STATES: STATES, WOCHENTAGE: WOCHENTAGE,
-    resolve: resolve, describe: describe, sessionFor: function (isoDate, opts) {
+    resolve: resolve, describe: describe, openWaitMs: openWaitMs, sessionFor: function (isoDate, opts) {
       opts = opts || {}; return sessionFor(isoDate, exchangeOf(opts.calendar, opts.exchange));
     },
     isTradingDay: function (isoDate, opts) { opts = opts || {}; return isTradingDay(isoDate, exchangeOf(opts.calendar, opts.exchange)); },

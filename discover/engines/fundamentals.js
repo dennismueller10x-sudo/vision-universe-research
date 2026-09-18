@@ -237,7 +237,7 @@
       if (ratio >= SHARE_JUMP_FACTOR || ratio <= 1 / SHARE_JUMP_FACTOR) {
         return { fromFy: y0, toFy: y1, ratio: ratio,
                  note: "Gewinn je Aktie und Aktienanzahl sind über diesen Zeitraum nicht vergleichbar: zwischen den berichteten Werten für Geschäftsjahr " + y0 + " und " + y1 +
-                       " springt die Aktienanzahl um den Faktor " + ratio.toFixed(1).replace(".", ",") + " — ein Aktiensplit oder eine Kapitalmaßnahme, die die SEC-Zeitreihe nicht rückwirkend bereinigt." };
+                       " springt die Aktienanzahl um den Faktor " + ratio.toFixed(1).replace(".", ",") + " — ein Aktiensplit oder eine Kapitalmaßnahme, die in der berichteten Zeitreihe nicht rückwirkend bereinigt ist." };
       }
     }
     return null;

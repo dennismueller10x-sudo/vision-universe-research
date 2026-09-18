@@ -68,7 +68,7 @@
       });
       zustand.recent.unshift({ symbol: symbol, universeId: info.universeId || "US_REAL",
                                companyName: info.companyName || null, world: info.world || null,
-                               at: Date.now() });
+                               sector: info.sector || null, at: Date.now() });
       if (zustand.recent.length > MAX_RECENT) zustand.recent.length = MAX_RECENT;
       if (zustand.opened.indexOf(symbol) === -1) {
         zustand.opened.push(symbol);

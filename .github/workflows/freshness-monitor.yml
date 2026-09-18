@@ -28,6 +28,7 @@ on:
         default: 'https://research.visionuniverse.de'
   schedule:
     - cron: '30 6 * * 2-6'
+    - cron: '5 14 * * 1-5'
     - cron: '15 15 * * 1-5'
     - cron: '15 23 * * 1-5'
   push:

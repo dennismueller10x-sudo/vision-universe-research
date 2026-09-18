@@ -33,6 +33,14 @@ name: Tiingo Commercial — Scale Gates
 #   [tiingo-capability] Faehigkeitsnachweis des Commercial-Zugangs
 #   [tiingo-realtime]   Strom- und Live-Kerzen-Nachweis
 #
+# ACHTUNG, zweite Falle (17.09.2026): die Bedingung prueft die GANZE
+# Commit-Nachricht, nicht nur ihre erste Zeile. Wer eine Marke im
+# Fliesstext erwaehnt - "ausgeloest wird das mit [tiingo-realtime]" -
+# loest sie damit aus. Genau das ist passiert: ein Commit, der die
+# Werkzeuge nur beschrieb, startete um 04:54 New Yorker Zeit einen Lauf.
+# Teuer war er nicht, weil beide Skripte ausserhalb der Sitzung UNKNOWN
+# melden statt zu raten - aber die Marke gehoert nicht in die Prosa.
+#
 # ACHTUNG bei allen drei Marken: der Push muss eine Datei aus der
 # paths-Liste unten AENDERN. Ein leerer Commit traegt die Marke zwar in
 # der Nachricht, aendert aber keinen Pfad - GitHub legt dann gar keinen
@@ -70,6 +78,9 @@ on:
       - 'scripts/market/build-health-report.mjs'
       - 'scripts/market/verify-tiingo-commercial.mjs'
       - 'scripts/market/verify-live-candle.mjs'
+      - 'scripts/market/verify-dynamic-subscribe.mjs'
+      - 'scripts/market/verify-vu-live-e2e.mjs'
+      - 'worker/src/vu-live.mjs'
       - 'scripts/technical/run-technical-scale.mjs'
       - 'quant/config/tiingo-scale.json'
       - 'quant/config/gate-100-seed.json'
@@ -185,6 +196,48 @@ jobs:
             else
               echo 'Kein Bericht entstanden.'
             fi
+            echo ''
+            echo '### Tiingo — Firehose-Faehigkeit'
+            echo ''
+            if [ -f quant/data/market/commercial/firehose-capability.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/firehose-capability.json");
+                console.log("**FIREHOSE_RESULT = " + r.FIREHOSE_RESULT + "**");
+                console.log("");
+                console.log(r.firehoseReason);
+                console.log("");
+                console.log("| Stufe ohne Tickerliste | angenommen | liefert |");
+                console.log("|---|---|---|");
+                for (const l of r.thresholdLevels.testedWithoutTickers) {
+                  console.log("| " + l + " | " +
+                    (r.thresholdLevels.acceptedWithoutTickers.includes(l) ? "ja" : "nein") + " | " +
+                    (r.thresholdLevels.deliveringWithoutTickers.includes(l) ? "ja" : "nein") + " |");
+                }
+                console.log("");
+                const c = r.coverage;
+                console.log("Verschiedene Titel beobachtet: **" + c.distinctSymbolsObserved + "**");
+                console.log("");
+                console.log("| Menge | Groesse | STREAM_COVERED | Anteil |");
+                console.log("|---|---|---|---|");
+                for (const [k, v] of Object.entries(c)) {
+                  if (!v || typeof v !== "object" || v.universeSize === undefined) continue;
+                  console.log("| " + k + " | " + v.universeSize + " | " + v.streamCovered + " | " +
+                    (v.streamCoveredShare === null ? "-" : (v.streamCoveredShare * 100).toFixed(1) + " %") + " |");
+                }
+                console.log("");
+                console.log("| Messung | Stufe | Form | Ereignisse | Titel | Bytes | Bytes/s |");
+                console.log("|---|---|---|---|---|---|---|");
+                for (const m of r.measurements) {
+                  if (!m.connection) continue;
+                  console.log("| " + m.scope + " | " + m.thresholdLevel + " | " +
+                    m.connection.subscriptionForm + " | " + (m.events ? m.events.count : 0) + " | " +
+                    Object.keys((m.events && m.events.bySymbol) || {}).length + " | " +
+                    m.connection.payloadBytes + " | " + m.connection.payloadBytesPerSecond + " |");
+                }
+              '
+            else
+              echo 'Kein Firehose-Bericht entstanden.'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   realtime:
@@ -195,7 +248,7 @@ jobs:
       cancel-in-progress: false
     if: >-
       (github.event_name == 'workflow_dispatch' && inputs.realtime) ||
-      contains(github.event.head_commit.message, '[tiingo-realtime]')
+      contains(github.event.head_commit.message, '[tiingo-realtime')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -220,23 +273,72 @@ jobs:
           echo "Regulaerer US-Handel: 13:30-20:00 UTC (Sommerzeit), 14:30-21:00 UTC (Winterzeit)."
           echo "Ausserhalb dieser Zeit kann der Nachweis nur UNKNOWN ergeben."
 
+      # Die beiden Messungen von vorletzter Woche laufen nicht jedes Mal
+      # mit. Sie dauern zusammen fuenf Minuten und beantworten Fragen,
+      # die beantwortet sind; die Marke [tiingo-realtime:v1] laesst sie
+      # aus und misst nur die drei Nachweise von Zero-Cost Realtime V1.
       - name: Strom messen (NVDA zuerst, thresholdLevel 6 und 5)
+        if: >-
+          !contains(github.event.head_commit.message, '[tiingo-realtime:v1]')
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: |
           node scripts/market/verify-live-candle.mjs \
             --seconds "${{ github.event_name == 'workflow_dispatch' && inputs.realtimeSeconds || '90' }}"
 
+      # Owner-Auftrag 2026-09-16: klaeren, was der Commercial-Tarif
+      # tatsaechlich freischaltet. Dieselbe Messung, andere Anmeldung -
+      # ohne Tickerliste. Stufen 0, 5 und 6, danach die beste angenommene
+      # Stufe lang genug fuer Titelzahl, Ereignisrate und Bandbreite.
+      # Kein zweiter Client, keine neue Architektur.
+      - name: Firehose messen (Stufen ohne Tickerliste)
+        if: >-
+          !contains(github.event.head_commit.message, '[tiingo-realtime:v1]')
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-live-candle.mjs \
+            --firehose --levels 0,5,6 --probe-seconds 25 --seconds 120
+
+      # Zero-Cost Realtime V1 §1: die eine Frage, von der der Betriebsmodus
+      # des Subscription Managers abhaengt. Laesst sich die Tickerliste
+      # eines BESTEHENDEN Sockets aendern, spart jeder Titelwechsel einen
+      # Verbindungsaufbau; laesst sie sich nicht aendern, wird sauber neu
+      # aufgebaut. Auf Verdacht nachzumelden waere der Weg in einen
+      # Zustand, in dem ein Titel zu sehen ist, den niemand abonniert hat.
+      - name: Nachmeldung auf offener Verbindung pruefen (§1)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-dynamic-subscribe.mjs \
+            --phase-seconds "${{ github.event_name == 'workflow_dispatch' && inputs.realtimeSeconds || '45' }}"
+
+      # §17 und §18: die ganze Kette einmal durch, mit echtem Anbieter -
+      # Laststufen 1/5/10/25/50 und ein E2E-Lauf auf den fuenf genannten
+      # Titeln. Der Sprung ueber Cloudflares Kante fehlt darin, weil der
+      # Worker nicht ausgerollt ist; der Bericht sagt das ausdruecklich,
+      # statt eine ungemessene Zahl auszuweisen.
+      - name: vu-live Last und E2E (§17, §18)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/verify-vu-live-e2e.mjs \
+            --phases 1,5,10,25,50 --phase-seconds 30 --e2e-seconds 60 --clients 20
+
       - name: Kein Schluessel im Bericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/market/assert-no-secrets.mjs
+        run: node scripts/market/assert-no-secrets.mjs --all
 
       - name: Bericht sichern
         uses: actions/upload-artifact@v4
         with:
           name: tiingo-live-candle
-          path: quant/data/market/commercial/live-candle-verification.json
+          path: |
+            quant/data/market/commercial/live-candle-verification.json
+            quant/data/market/commercial/firehose-capability.json
+            quant/data/market/commercial/dynamic-subscribe-verification.json
+            quant/data/market/commercial/vu-live-e2e.json
           if-no-files-found: warn
 
       # Der Bericht wird committet, wie der Faehigkeitsnachweis auch: der
@@ -292,6 +394,57 @@ jobs:
                     (m.events.perSecond === null ? "-" : m.events.perSecond) + " | " +
                     (m.events.gapMs.median === null ? "-" : m.events.gapMs.median) + " | " +
                     m.candle.maxTicksInAnyBucket + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+            echo ''
+            echo '### Zero-Cost Realtime V1 — Nachmeldung auf offener Verbindung (§1)'
+            echo ''
+            if [ -f quant/data/market/commercial/dynamic-subscribe-verification.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/dynamic-subscribe-verification.json");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                console.log("");
+                console.log(r.consequence || "");
+                if (r.phases && r.phases.length) {
+                  console.log("");
+                  console.log("| Phase | " + r.symbols.a + " | " + r.symbols.b + " |");
+                  console.log("|---|---|---|");
+                  for (const p of r.phases) console.log("| " + p.phase + " | " + p.a + " | " + p.b + " |");
+                }
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+            echo ''
+            echo '### Zero-Cost Realtime V1 — Last und E2E (§17, §18)'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-e2e.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-e2e.json");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                console.log("");
+                console.log("Nicht enthalten: " + r.scope.excluded);
+                if (r.load && r.load.length) {
+                  console.log("");
+                  console.log("| Titel | Ereignisse/s | Nachrichten an Browser | CPU % | Kontingent % | Urteil |");
+                  console.log("|---|---|---|---|---|---|");
+                  for (const l of r.load) {
+                    console.log("| " + l.symbols + " | " + l.providerEventsPerSecond + " | " +
+                      l.client.clientMessages + " | " + l.cpu.sharePercent + " | " +
+                      Math.round(l.budget.requestShare * 1000) / 10 + " | " + l.budget.verdict + " |");
+                  }
+                }
+                if (r.e2e) {
+                  console.log("");
+                  console.log("| Titel | erster Kurs (ms) | Aktualisierungen |");
+                  console.log("|---|---|---|");
+                  for (const s of r.e2e.symbols) {
+                    console.log("| " + s + " | " + (r.e2e.firstTickMs[s] === null ? "keiner" : r.e2e.firstTickMs[s]) +
+                      " | " + r.e2e.delivered[s] + " |");
+                  }
                 }
               '
             else

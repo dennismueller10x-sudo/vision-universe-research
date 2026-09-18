@@ -1,0 +1,148 @@
+name: Cloudflare — vu-live nachweisen (nur messen)
+
+# DER PRODUCTION-PROOF
+#
+# Owner-Auftrag 17.09.2026: "Anschliessend STOP und Production-Proof mit
+# tatsaechlicher E2E-Latenz und Cloudflare-Status liefern."
+#
+# Dieser Workflow rollt NICHTS aus. Er misst den laufenden Worker an
+# beiden Endpunkten - der workers.dev-Adresse und dem bevorzugten Namen
+# live.visionuniverse.de - und legt beide Berichte ab.
+#
+# Er ist auch das Werkzeug fuer spaeter: wer wissen will, ob die Sache
+# noch laeuft, loest ihn aus. Waehrend der regulaeren US-Sitzung sagt er
+# es mit Kursen, ausserhalb mit einem ehrlichen "die Boerse ist zu".
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/cloudflare-proof.yml'
+      - 'scripts/market/smoke-vu-live.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  proof:
+    name: Beide Endpunkte messen
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[cf-proof]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          echo "Jetzt (UTC): $(date -u '+%H:%M')"
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const cal = JSON.parse(require("fs").readFileSync("./quant/config/market-calendar.json", "utf8"));
+            const s = MH.sessionAt(Date.now(), { calendar: cal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " (" + s.localTime + " New York)");
+            if (s.phase !== "REGULAR") {
+              console.log("Ausserhalb der regulaeren Sitzung gibt es keine Kurse zu messen.");
+            }
+          '
+
+      - name: Endpunkt live.visionuniverse.de
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/smoke-vu-live.mjs \
+            --url "https://live.visionuniverse.de" --seconds 60 \
+            --report-name vu-live-proof-domain.json
+
+      - name: Endpunkt workers.dev
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: |
+          set -e
+          ACC=$(node -e '
+            const m = /^https:\/\/([0-9a-f]{32})\./i.exec(process.env.VU_HISTORY_S3_ENDPOINT || "");
+            if (!m) { console.error("Account-ID nicht ableitbar."); process.exit(1); }
+            console.log("::add-mask::" + m[1]); console.log(m[1]);
+          ' | tail -1)
+          echo "::add-mask::$ACC"
+          export CLOUDFLARE_ACCOUNT_ID="$ACC"
+          SUB=$(cd worker && npx --yes wrangler@4 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
+          if [ -z "$SUB" ]; then echo "Keine workers.dev-Adresse ermittelbar."; exit 0; fi
+          node scripts/market/smoke-vu-live.mjs \
+            --url "https://vu-live.$SUB" --seconds 45 \
+            --report-name vu-live-proof-workersdev.json
+
+      - name: Kein Schluessel in den Berichten
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "vu-live: Production-Proof aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### vu-live — Production-Proof'
+            echo ''
+            for F in vu-live-proof-domain vu-live-proof-workersdev; do
+              if [ -f "quant/data/market/commercial/$F.json" ]; then
+                node -e '
+                  const name = process.argv[1];
+                  const r = require("./quant/data/market/commercial/" + name + ".json");
+                  console.log("#### `" + (r.endpoint || "—") + "`");
+                  console.log("");
+                  console.log("Sitzung: **" + (r.session ? r.session.phase : "?") + "** · Ergebnis: **" +
+                              r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                  console.log("");
+                  console.log("| Prüfung | Ergebnis |");
+                  console.log("|---|---|");
+                  for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                  if (r.latency && r.latency.firstTickMs) {
+                    console.log("");
+                    console.log("| Titel | erster Kurs (ms) |");
+                    console.log("|---|---|");
+                    for (const k of Object.keys(r.latency.firstTickMs)) {
+                      const v = r.latency.firstTickMs[k];
+                      console.log("| " + k + " | " + (v === null ? "keiner" : v) + " |");
+                    }
+                    console.log("");
+                    console.log("Median **" + r.latency.median + " ms**, längster **" + r.latency.max + " ms**.");
+                    console.log("");
+                    console.log("_" + r.latency.note + "_");
+                  }
+                  if (r.healthAfter && r.healthAfter.budget) {
+                    const b = r.healthAfter.budget;
+                    console.log("");
+                    console.log("Kontingent: **" + b.verdict + "** · " + b.used.requests +
+                                " Anfragen · " + b.used.providerMessages + " Anbieternachrichten · " +
+                                b.used.peakSymbols + " Titel gleichzeitig.");
+                  }
+                  console.log("");
+                ' "$F"
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

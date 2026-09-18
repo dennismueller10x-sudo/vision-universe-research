@@ -12,15 +12,33 @@
      node scripts/discover/browser-qa-v3.mjs http://127.0.0.1:8120 [shots-dir]
    ========================================================================= */
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 const BASE = process.argv[2] || "http://127.0.0.1:8120";
 const SHOTS = process.argv[3]; if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist: ein
+   fehlgeschlagener WebSocket-Aufbau schreibt eine Konsolenzeile, die
+   kein Skript verhindern kann. Die Ausnahme gilt nur fuer GENAU die
+   Adresse aus der Auslieferung und nur fuer den Verbindungsaufbau; sie
+   wird gezaehlt und am Ende ausgewiesen. Dass der Strom laeuft, weist
+   scripts/discover/browser-qa-realtime.mjs in Actions nach - dort ohne
+   jede Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync("discover/data/meta.json", "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
 const punkte = []; let fehler = 0;
 const ok = (n, c, d) => { punkte.push([c ? "ok  " : "FAIL", n, d || ""]); if (!c) fehler++; };
 async function seite(ctx, marke) {
   const p = await ctx.newPage(); p.__m = []; p.__bad = [];
-  p.on("console", (m) => { if (m.type() === "error") { const u = (m.location() && m.location().url) || ""; if (!u || u.startsWith(BASE)) if (!u.includes("favicon")) p.__m.push(m.text()); } });
+  p.on("console", (m) => { if (m.type() === "error") { if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; } const u = (m.location() && m.location().url) || ""; if (!u || u.startsWith(BASE)) if (!u.includes("favicon")) p.__m.push(m.text()); } });
   p.on("pageerror", (e) => p.__m.push("pageerror: " + e.message));
   p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE) && !r.url().includes("favicon")) p.__bad.push(r.status() + " " + r.url().replace(BASE, "")); });
   return p;
@@ -155,8 +173,14 @@ const nachT = await m.evaluate(() => document.querySelectorAll(".dx-rail")[1].sc
 ok("Mobil: Reihe ist horizontal scrollbar", nachT > vorT, vorT + " -> " + nachT);
 /* Einzelmodus */
 await m.goto(BASE + "/discover/#/einzeln/US_REAL", { waitUntil: "networkidle" }); await warten(m, 1200);
-const feed = await m.evaluate(() => ({ screens: document.querySelectorAll(".dx-feed-screen").length, ende: !!document.querySelector(".dx-feed-screen--ende .dx-btn"), ausgaenge: document.querySelectorAll(".dx-feed-screen--ende .dx-btn").length }));
-ok("Einzeln: 20 Titel + Ende mit Ausgaengen", feed.screens === 21 && feed.ausgaenge >= 3, JSON.stringify(feed));
+/* V4.1 §17: der Feed ist kein Stapel von 20 Karten mehr, sondern eine
+   lange, deterministische Reihe in Stuecken (12 je Stueck), die
+   nachlaedt, bevor das Ende des Geladenen erreicht ist - ohne Doppelte. */
+const feed = await m.evaluate(() => ({ screens: document.querySelectorAll(".dx-feed-screen[data-index]").length, ende: !!document.querySelector(".dx-feed-screen--ende .dx-btn"), ausgaenge: document.querySelectorAll(".dx-feed-screen--ende .dx-btn").length, gesamt: Number((document.querySelector(".dx-feed-zaehler").textContent.match(/von (\d+)/) || [])[1]), stand: document.querySelector(".dx-feed").__stand() }));
+ok("Einzeln: erstes Stueck (>= 10 Titel), Ende mit Ausgaengen, weit mehr als 10 Titel insgesamt", feed.screens >= 10 && feed.screens <= 14 && feed.ausgaenge >= 3 && feed.gesamt > 100 && feed.stand.gesamt === feed.gesamt, JSON.stringify(feed));
+for (let i = 0; i < 16; i++) { await m.evaluate(() => { const s = document.querySelector(".dx-feed-spur"); s.scrollTop += s.clientHeight; }); await warten(m, 320); }
+const feed2 = await m.evaluate(() => { const syms = [...document.querySelectorAll(".dx-feed-screen[data-index]")].map((n) => n.dataset.symbol); return { screens: syms.length, doppelt: syms.length - new Set(syms).size, zaehler: document.querySelector(".dx-feed-zaehler").textContent.trim(), stand: document.querySelector(".dx-feed").__stand() }; });
+ok("Einzeln: nach 16 Wischern sind mehr als 12 Titel geladen, keiner doppelt, der Zaehler zaehlt", feed2.screens > 12 && feed2.doppelt === 0 && /^1[5-9] von|^2\d von/.test(feed2.zaehler) && feed2.stand.gezeigt >= 24, JSON.stringify(feed2));
 if (SHOTS) await m.screenshot({ path: SHOTS + "/10-einzeln-iphone.png" });
 /* Aktienseite mobil */
 await m.goto(BASE + "/discover/#/s/US_REAL/AAPL", { waitUntil: "networkidle" }); await warten(m, 1500);
@@ -252,4 +276,5 @@ await browser.close();
 console.log("\n=== DISCOVER V3 QA ===");
 punkte.forEach((p) => console.log(p[0] + "  " + p[1] + (p[2] ? "   [" + p[2] + "]" : "")));
 console.log("\nFehlschlaege: " + fehler);
+if (stromUnerreichbar) console.log("Hinweis: " + stromUnerreichbar + " Konsolenzeile(n) ueber den nicht erreichbaren Strom (" + STROM_URL + ").");
 process.exit(fehler ? 1 : 0);
