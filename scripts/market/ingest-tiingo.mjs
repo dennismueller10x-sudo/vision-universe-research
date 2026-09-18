@@ -42,6 +42,7 @@ const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const Semantics = require(join(engines, "price-semantics.js"));
 const EodGate = require(join(engines, "market-eod-gate.js"));
+const RejectionLifecycle = require(join(engines, "rejection-lifecycle.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
@@ -260,6 +261,9 @@ if (!STRICT_INCREMENTAL && checkpoint.startedAt && checkpoint.startedAt.slice(0,
 }
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
+/* Wie lange eine Ablehnung wirkt, entscheidet nicht mehr eine einzige
+   Zahl, sondern ihre Ursache: quant/engines/rejection-lifecycle.js. Die
+   sieben Tage bleiben als Frist, ab der JEDE Ablehnung ohnehin verfaellt. */
 const REJECT_RETRY_DAYS = 7;
 if (!checkpoint.rejected) checkpoint.rejected = {};
 const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
@@ -279,6 +283,12 @@ function initialFromFor(security) {
 
 const perSecurity = {};
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
+/* Wer wurde wegen welcher Klasse zurueckgestellt, und wer bekam nach einer
+   Ablehnung einen neuen Versuch - beides gehoert in den Statusbericht,
+   sonst ist ein stiller Ausfall wieder moeglich. */
+const deferredByClass = {};
+const retriedAfterRejection = [];
+let recoveredAfterRejection = 0;
 
 for (const security of SECURITIES) {
   const id = security.securityId;
@@ -289,12 +299,22 @@ for (const security of SECURITIES) {
      angefragt: sieben Tage Ruhe, dann ein neuer Versuch. Der Grund steht
      im Checkpoint - und im Statusbericht. */
   const zuletztAbgelehnt = checkpoint.rejected && checkpoint.rejected[id];
-  if (!INITIAL && zuletztAbgelehnt && (Date.now() - Date.parse(zuletztAbgelehnt.at)) < REJECT_RETRY_DAYS * 86400000) {
+  const urteil = INITIAL
+    ? { allowed: true, class: "RECOVERED", reason: "Erstimport fragt immer" }
+    : RejectionLifecycle.darfAbfragen(zuletztAbgelehnt,
+        { now: Date.now(), staleAfterMs: REJECT_RETRY_DAYS * 86400000 });
+  if (!urteil.allowed) {
     skipped++; rejected++;
+    deferredByClass[urteil.class] = (deferredByClass[urteil.class] || 0) + 1;
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed", deferred: true,
+                        rejectionClass: urteil.class, rejectionReason: urteil.reason,
                         message: zuletztAbgelehnt.codes, rejectedAt: zuletztAbgelehnt.at };
-    console.log(`${label} uebersprungen (abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
+    console.log(`${label} uebersprungen (${urteil.class}, abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
     continue;
+  }
+  if (zuletztAbgelehnt) {
+    retriedAfterRejection.push(security.ticker);
+    console.log(`${label} erneuter Versuch (${urteil.class}: ${urteil.reason})`);
   }
 
   const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
@@ -350,9 +370,23 @@ for (const security of SECURITIES) {
     continue;
   }
 
-  // A one-bar daily increment still needs continuity evidence. Include the
-  // previous stored bar in validation, never refetch or rewrite it.
-  const validationInput = STRICT_INCREMENTAL ? [...store.readBars(id).bars.slice(-1), ...bars] : bars;
+  /* DER KONTINUITAETSBELEG - UND DIE URSACHE DES STILLSTANDS VOM 16.09.2026
+   *
+   * Ein Tageslauf holt genau eine neue Bar: den Schluss. Die
+   * Qualitaetspruefung verlangt mindestens zwei, weil sich an einer
+   * einzelnen Bar weder Reihenfolge noch Luecke noch Split pruefen laesst.
+   * Der strikte Pfad loeste das laengst, indem er die letzte GESPEICHERTE
+   * Bar vor das neue Material stellt; der regulaere Pfad tat es nicht -
+   * und lehnte am 16.09.2026 um 22:41 UTC 6.831 von 6.876 Titeln mit
+   * `too_few_bars` ab. Die Ablehnung sperrte sie sieben Tage, und die
+   * Tageskurse standen still, waehrend zwei Sitzungen gehandelt wurden.
+   *
+   * Die gespeicherte Bar wird dabei weder neu geholt noch veraendert; sie
+   * dient nur als Anschluss. Das ist strenger als vorher, nicht
+   * grosszuegiger: jetzt wird die Fortsetzung wirklich geprueft. */
+  const gespeichert = store.readBars(id);
+  const anschluss = (gespeichert && Array.isArray(gespeichert.bars)) ? gespeichert.bars.slice(-1) : [];
+  const validationInput = [...anschluss, ...bars];
   const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus
@@ -363,7 +397,9 @@ for (const security of SECURITIES) {
     const codes = validation.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed",
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
-    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: codes.join(", ") };
+    checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
+      { at: new Date().toISOString(), codes: codes.join(", "),
+        window: INITIAL ? "full" : "incremental" });
     /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
        (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
     console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
@@ -388,13 +424,30 @@ for (const security of SECURITIES) {
       claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
       findings: semantik.findings.slice(0, 8)
     };
-    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", ") };
+    checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
+      { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", "),
+        window: INITIAL ? "full" : "incremental" });
     console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
                 `verhaelt sich wie ${semantik.inferredStatus}`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
 
+  /* Der Titel liefert wieder gueltige Daten: die Ablehnung ist erledigt.
+     Stehen zu lassen waere ein Gedaechtnis an einen Zustand, den es nicht
+     mehr gibt. */
+  if (checkpoint.rejected[id]) {
+    delete checkpoint.rejected[id];
+    recoveredAfterRejection++;
+    console.log(`${label} Ablehnung aufgehoben (liefert wieder gueltige Daten)`);
+  }
+
+  /* Der Anschluss aus dem Bestand gehoert nicht ins neue Material: er ist
+     Beleg, nicht Zulieferung. */
+  if (anschluss.length) {
+    const anschlussDatum = anschluss[0].date;
+    validation.bars = validation.bars.filter((bar) => bar.date > anschlussDatum);
+  }
   if (STRICT_INCREMENTAL) validation.bars = validation.bars.filter(bar => bar.date >= strictPlan.from);
   const strictReconciliation = STRICT_INCREMENTAL ? EodGate.reconcile(validation.bars, strictPlan) : null;
   if (strictReconciliation?.state === "BLOCKED") {
@@ -600,7 +653,16 @@ writeStatus({
   quota: quota,
   summary: { requested: SECURITIES.length, ok, failed, rejected, skipped,
              requests: stats.requests, cacheHits: stats.cacheHits, retries: stats.retries,
-             bytesReceived: stats.bytesReceived },
+             bytesReceived: stats.bytesReceived,
+             /* Ohne diese drei Zahlen ist ein stiller Ausfall wieder
+                moeglich: wie viele Titel wegen welcher Klasse gar nicht
+                gefragt wurden, wie viele nach einer Ablehnung einen neuen
+                Versuch bekamen und wie viele sich dabei erholt haben. */
+             deferredByClass, retriedAfterRejection: retriedAfterRejection.length,
+             recoveredAfterRejection },
+  rejectionLedger: { open: Object.keys(checkpoint.rejected || {}).length,
+                     ...RejectionLifecycle.pruefeRegister(checkpoint.rejected || {},
+                       { staleAfterMs: REJECT_RETRY_DAYS * 86400000 }).byClass },
   securities: perSecurity,
   checkpoint: { runId: checkpoint.runId, done: checkpoint.done.length,
                 failed: checkpoint.failed.length, requests: checkpoint.requests },

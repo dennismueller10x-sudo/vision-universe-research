@@ -78,6 +78,15 @@ jobs:
       - name: Universumsquelle
         run: node scripts/market/universe-source.mjs
 
+      # Vor dem Abruf: wer steht im Ablehnungsregister und warum noch? Der
+      # Bericht laeuft auch dann, wenn nichts zu tun ist - ein leeres
+      # Register ist eine Aussage, kein Schweigen.
+      - name: Ablehnungsregister klassifizieren (Bericht)
+        run: node scripts/market/classify-rejections.mjs
+
+      - name: Faellige Ablehnungen freigeben (nur was die Ordnung erlaubt)
+        run: node scripts/market/classify-rejections.mjs --apply
+
       - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -115,6 +124,12 @@ jobs:
       - name: Freshness-Check (Health-Bericht, kein Abbruch)
         run: node scripts/market/check-freshness.mjs
 
+      # Der Waechter aus dem Vorfall vom 18.09.2026: ein Lauf, der den
+      # ueberwiegenden Teil des Universums nicht einmal gefragt hat, ist
+      # nicht gruen - auch wenn kein Schritt rot war.
+      - name: Taeglicher Lebenszyklus - Gesundheitsurteil
+        run: node scripts/market/assert-daily-lifecycle-health.mjs --strict
+
       - name: Regressionssuite
         run: |
           node --test "quant/tests/*.test.mjs"
@@ -151,7 +166,9 @@ jobs:
           git add quant/data/market/golden-preview quant/data/market/discover-series \
                   quant/data/market/factors quant/data/market/tiingo-status.json \
                   quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
-                  quant/data/market/capabilities quant/data/market/freshness
+                  quant/data/market/capabilities quant/data/market/freshness \
+                  quant/data/market/commercial/rejection-ledger.json \
+                  quant/data/market/commercial/daily-lifecycle-health.json
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else

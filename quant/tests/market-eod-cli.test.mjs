@@ -46,9 +46,41 @@ test('empty provider response keeps strict scoped history incomplete and retryab
  const second=f.run([raw('2026-09-09')]);assert.equal(second.status,0,second.stdout+second.stderr);assert.equal(f.store.lastStoredDate(f.id),'2026-09-09');
 });
 
-test('regular import retains main rejection cooldown across daily checkpoint reset',t=>{
+/* Das Ablehnungsregister ueberlebt den taeglichen Reset des Checkpoints -
+   das war schon immer so und bleibt. Was sich am 18.09.2026 geaendert hat,
+   ist die Frist: eine frische Ablehnung ruht knapp einen Tag (und laenger,
+   wenn sie sich wiederholt), nicht pauschal eine Woche. Beide Haelften
+   werden hier geprueft. */
+test('regular import keeps a fresh rejection on cooldown across the daily checkpoint reset',t=>{
  const f=fixture(t,{strict:false});f.store.mergeBars(f.id,[{date:'2026-09-08',open:100,high:102,low:99,close:101,volume:1000}]);
- const c=f.store.loadCheckpoint('incremental');c.startedAt='2026-09-08T22:00:00Z';c.done=[f.id];c.rejected={[f.id]:{at:'2026-09-08T22:00:00Z',codes:'INVALID_OHLC'}};f.store.saveCheckpoint(c);
- const result=f.run([]);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/abgelehnt am/);assert.equal(existsSync(join(f.root,'requests.txt')),false);
+ /* Vier Stunden alt: innerhalb der Frist von zwanzig Stunden. */
+ const c=f.store.loadCheckpoint('incremental');c.startedAt='2026-09-08T22:00:00Z';c.done=[f.id];c.rejected={[f.id]:{at:'2026-09-09T18:00:00Z',codes:'INVALID_OHLC'}};f.store.saveCheckpoint(c);
+ const result=f.run([]);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/uebersprungen \(TEMPORARY_REJECT/);assert.equal(existsSync(join(f.root,'requests.txt')),false);
  assert.deepEqual(f.store.loadCheckpoint('incremental').rejected,c.rejected);
+});
+
+test('regular import asks again once the cooldown has passed - no title is locked out for a week',t=>{
+ const f=fixture(t,{strict:false});f.store.mergeBars(f.id,[{date:'2026-09-08',open:100,high:102,low:99,close:101,volume:1000}]);
+ /* Vierundzwanzig Stunden alt: die Frist ist abgelaufen, der naechste
+    Tageslauf fragt wieder. Genau das fehlte beim Stillstand vom 16.09. */
+ const c=f.store.loadCheckpoint('incremental');c.startedAt='2026-09-08T22:00:00Z';c.done=[f.id];c.rejected={[f.id]:{at:'2026-09-08T22:00:00Z',codes:'INVALID_OHLC'}};f.store.saveCheckpoint(c);
+ const result=f.run([raw('2026-09-09')]);assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/erneuter Versuch/);
+ assert.equal(existsSync(join(f.root,'requests.txt')),true,'der Titel muss wieder gefragt werden');
+ assert.equal(f.store.loadCheckpoint('incremental').rejected[f.id],undefined,'liefert er gueltige Daten, verschwindet die Ablehnung');
+ assert.equal(f.store.lastStoredDate(f.id),'2026-09-09');
+});
+
+/* Der Vorfall selbst, als Test: ein Tageslauf holt EINE neue Bar. Vor der
+   Korrektur lehnte die Qualitaetspruefung sie mit `too_few_bars` ab, weil
+   sie allein stand - und sperrte den Titel. Jetzt steht die gespeicherte
+   Bar als Anschluss davor, und der Tag wird uebernommen. */
+test('a one-bar daily increment is accepted, not rejected as too_few_bars',t=>{
+ const f=fixture(t,{strict:false});f.store.mergeBars(f.id,[{date:'2026-09-08',open:100,high:102,low:99,close:101,volume:1000,splitFactor:1,dividend:0}]);
+ const result=f.run([raw('2026-09-09')]);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.doesNotMatch(result.stdout,/too_few_bars/);
+ assert.equal(f.store.lastStoredDate(f.id),'2026-09-09');
+ assert.equal(f.store.readBars(f.id).bars.length,2,'die gespeicherte Bar bleibt, die neue kommt dazu');
+ assert.deepEqual(f.store.loadCheckpoint('incremental').rejected,{},'kein Eintrag im Ablehnungsregister');
 });
