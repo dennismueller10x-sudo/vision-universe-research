@@ -178,7 +178,7 @@ const BEOBACHTER = () => {
     if (rev && (!letzteRev || letzteRev.rev !== rev)) {
       window.__vuRealtime.chartRevs.push({ at: Date.now(), rev });
     }
-    const label = document.querySelector(".dx-live-label");
+    const label = document.querySelector(".dx-chart .dx-live-label");
     if (label) {
       const t = label.textContent.trim();
       const l = window.__vuRealtime.labels[window.__vuRealtime.labels.length - 1];
@@ -258,6 +258,26 @@ for (const sym of SYMBOLE) {
   const abweichung = (kurse.kopf && kurse.chart)
     ? Math.abs(kurse.kopf - kurse.chart) / kurse.chart : null;
 
+  /* "Der Chart hat sich nicht bewegt" und "es gibt gar keinen
+     Tagesverlauf" sind zwei verschiedene Befunde, und der Zaehler oben
+     kann sie nicht unterscheiden: beide ergeben null Aenderungen. Also
+     wird hier nachgesehen, was ueberhaupt gezeichnet ist und welcher
+     Zeitraum gewaehlt wurde. Ohne das haette der Lauf vom 18.09. einen
+     UI-Fehler gemeldet, wo in Wahrheit der Tagesverlauf des Tages noch
+     nicht ausgeliefert war. */
+  const flaeche = await p.evaluate(() => {
+    const knopf = Array.prototype.filter.call(
+      document.querySelectorAll(".dx-tf button"), (b) => b.getAttribute("aria-pressed") === "true")[0];
+    const gesperrt = Array.prototype.filter.call(
+      document.querySelectorAll(".dx-tf button"), (b) => b.textContent.trim() === "1T")[0];
+    return {
+      intradayChart: !!document.querySelector(".dx-intraday-chart"),
+      aktiverZeitraum: knopf ? knopf.textContent.trim() : null,
+      eintagVerfuegbar: gesperrt ? !gesperrt.disabled : null,
+      eintagGrund: gesperrt ? (gesperrt.getAttribute("title") || null) : null
+    };
+  });
+
   const eintrag = {
     symbol: sym,
     prices: Object.assign({}, kurse, { deviation: abweichung }),
@@ -267,6 +287,7 @@ for (const sym of SYMBOLE) {
     ticks: ticks.length,
     firstTickMs: ersterTick ? ersterTick.seenAt - start : null,
     chartUpdatesAfterLoad: chartAenderungen,
+    surface: flaeche,
     labels: (r.labels || []).map((l) => l.text).slice(0, 6),
     latencyMs: latenzen.length ? {
       samples: latenzen.length,
@@ -345,8 +366,20 @@ if (sitzung.phase === "REGULAR") {
                     ["AAPL", "NVDA"].every((s) => (bericht.symbols.find((x) => x.symbol === s) || {}).ticks > 0),
                     bericht.symbols.filter((s) => ["AAPL", "NVDA"].includes(s.symbol))
                       .map((s) => s.symbol + ":" + s.ticks)) && alleOk;
+  /* Erst die Vorbedingung, dann die Zusage. Ein Tagesverlauf, der gar
+     nicht ausgeliefert ist, kann sich nicht bewegen - das ist ein
+     Datenbefund und muss als solcher stehen, nicht als Chart-Fehler. */
+  const ohneTagesverlauf = bericht.symbols.filter((s) => !s.surface.intradayChart);
+  alleOk = pruefung("tagesverlaufDa",
+                    "bei offener Boerse liegt fuer jeden Titel ein Tagesverlauf aus",
+                    ohneTagesverlauf.length === 0,
+                    ohneTagesverlauf.map((s) => s.symbol + ": Zeitraum " + s.surface.aktiverZeitraum +
+                                                ", 1T " + (s.surface.eintagVerfuegbar ? "frei" : "gesperrt") +
+                                                (s.surface.eintagGrund ? " (" + s.surface.eintagGrund + ")" : ""))) && alleOk;
   alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen",
-                    mitChart.length >= 2, { charts: mitChart.map((s) => s.symbol) }) && alleOk;
+                    mitChart.length >= 2,
+                    { charts: mitChart.map((s) => s.symbol),
+                      ohneTagesverlauf: ohneTagesverlauf.map((s) => s.symbol) }) && alleOk;
 }
 if (sitzung.phase === "REGULAR") {
   /* Ein Prozent Toleranz: der Kopf zeigt gerundet, der Chart auch, und
@@ -384,7 +417,7 @@ if (sitzung.phase === "REGULAR") {
   await p.waitForTimeout(6000);
   const vorher = await p.evaluate(() => {
     const Hub = window.VUDiscover.LiveHub;
-    const l = document.querySelector(".dx-live-label");
+    const l = document.querySelector(".dx-chart .dx-live-label");
     return { state: Hub.liveState().state, connected: Hub.liveState().connected,
              label: l ? l.textContent.trim() : null };
   });
@@ -404,7 +437,7 @@ if (sitzung.phase === "REGULAR") {
   await p.waitForTimeout(300);
   const nachAbriss = await p.evaluate(() => {
     const Hub = window.VUDiscover.LiveHub;
-    const l = document.querySelector(".dx-live-label");
+    const l = document.querySelector(".dx-chart .dx-live-label");
     const svg = document.querySelector(".dx-intraday-chart, .dx-intraday svg");
     return { state: Hub.liveState().state, connected: Hub.liveState().connected,
              label: l ? l.textContent.trim() : null, chartDa: !!svg };
@@ -421,7 +454,7 @@ if (sitzung.phase === "REGULAR") {
   await p.waitForTimeout(8000);
   const nachWiederanlauf = await p.evaluate(() => {
     const Hub = window.VUDiscover.LiveHub;
-    const l = document.querySelector(".dx-live-label");
+    const l = document.querySelector(".dx-chart .dx-live-label");
     return { state: Hub.liveState().state, connected: Hub.liveState().connected,
              label: l ? l.textContent.trim() : null, stats: Hub.liveStats() };
   });
@@ -461,7 +494,7 @@ if (sitzung.phase === "REGULAR") {
   await p.waitForTimeout(8000);
 
   const vorher = await p.evaluate(() => {
-    const l = document.querySelector(".dx-live-label");
+    const l = document.querySelector(".dx-chart .dx-live-label");
     return { label: l ? l.textContent.trim() : null,
              live: window.VUDiscover.LiveHub.liveValue("AAPL") ? true : false };
   });
@@ -489,7 +522,7 @@ if (sitzung.phase === "REGULAR") {
 
   const nachher = await p.evaluate(() => {
     const Hub = window.VUDiscover.LiveHub;
-    const l = document.querySelector(".dx-live-label");
+    const l = document.querySelector(".dx-chart .dx-live-label");
     const svg = document.querySelector(".dx-intraday-chart, .dx-intraday svg");
     const punkte = svg ? (svg.querySelector("path[d]") || {}).getAttribute : null;
     const fuss = document.querySelector(".dx-intraday-note");
