@@ -35,6 +35,14 @@ const path = require("path");
    Oberflaeche braucht. Alles darueber bleibt in der Arbeitsablage. */
 const PUBLISHED_BAR_LIMIT = 400;
 
+/** Resume within one UTC processing day, never skip a later day's EOD run.
+ * Initial imports retain their existing checkpoint across days. */
+function ingestionRunId(initial, now) {
+  const date = now === undefined ? new Date() : new Date(now);
+  if (!Number.isFinite(date.getTime())) throw new TypeError("Invalid ingestion date");
+  return initial ? "initial" : "incremental-" + date.toISOString().slice(0, 10);
+}
+
 function createMarketStore(options) {
   options = options || {};
   const root = options.root || process.cwd();
@@ -59,8 +67,33 @@ function createMarketStore(options) {
     try {
       return JSON.parse(fs.readFileSync(file, "utf8"));
     } catch (err) {
-      return fallback;
+      if (err.code === "ENOENT") return fallback;
+      // Never turn a damaged existing history/checkpoint into a new backfill.
+      // Do not include file contents or parser messages in logs.
+      const failure = new Error("Market store file could not be read");
+      failure.code = "MARKET_STORE_READ_ERROR";
+      throw failure;
     }
+  }
+
+  function invalidState() {
+    const err = new Error("Market store file has an invalid structure");
+    err.code = "MARKET_STORE_READ_ERROR";
+    throw err;
+  }
+
+  function validateStoredBars(payload) {
+    if (!payload || !Array.isArray(payload.bars)) invalidState();
+    let previous = null;
+    for (const bar of payload.bars) {
+      if (!bar || typeof bar.date !== "string" ||
+          !/^\d{4}-\d{2}-\d{2}$/.test(bar.date)) invalidState();
+      const millis = Date.parse(bar.date + "T00:00:00Z");
+      if (!Number.isFinite(millis) || new Date(millis).toISOString().slice(0, 10) !== bar.date ||
+          (previous !== null && bar.date <= previous)) invalidState();
+      previous = bar.date;
+    }
+    return payload;
   }
 
   function writeJson(file, data) {
@@ -82,7 +115,9 @@ function createMarketStore(options) {
 
     /** Liest die gespeicherte Reihe eines Titels. */
     readBars: function (securityId, scope) {
-      return readJson(barsFile(securityId, scope || "working"), null);
+      const payload = readJson(barsFile(securityId, scope || "working"), undefined);
+      if (payload === undefined) return null;
+      return validateStoredBars(payload);
     },
 
     /**
@@ -232,11 +267,14 @@ function createMarketStore(options) {
      * ist nicht erledigt, nur vorerst gescheitert.
      */
     loadCheckpoint: function (runId) {
-      return readJson(checkpointFile(runId), {
+      const checkpoint = readJson(checkpointFile(runId), {
         runId: runId || "default",
         startedAt: null, updatedAt: null,
         done: [], failed: [], requests: 0
       });
+      if (!checkpoint || checkpoint.runId !== (runId || "default") ||
+          !Array.isArray(checkpoint.done) || !Array.isArray(checkpoint.failed)) invalidState();
+      return checkpoint;
     },
 
     saveCheckpoint: function (checkpoint) {
@@ -268,7 +306,14 @@ function createMarketStore(options) {
       catch (err) { return []; }
 
       return files.map(function (f) {
-        const payload = readJson(path.join(dir, f), null);
+        let payload;
+        try { payload = validateStoredBars(readJson(path.join(dir, f), null)); }
+        catch (err) {
+          if (err.code !== "MARKET_STORE_READ_ERROR") throw err;
+          return { securityId: f.replace(/\.json$/, ""), readable: false,
+                   qualityStatus: "PIPELINE_ERROR", reason: err.code,
+                   bytes: fs.statSync(path.join(dir, f)).size };
+        }
         const size = fs.statSync(path.join(dir, f)).size;
         if (!payload) return { securityId: f.replace(/\.json$/, ""), readable: false, bytes: size };
         const splits = (payload.bars || []).filter((b) => b.splitFactor && b.splitFactor !== 1).length;
@@ -289,4 +334,4 @@ function createMarketStore(options) {
   return api;
 }
 
-module.exports = { createMarketStore, PUBLISHED_BAR_LIMIT };
+module.exports = { createMarketStore, PUBLISHED_BAR_LIMIT, ingestionRunId };

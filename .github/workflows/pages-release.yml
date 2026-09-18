@@ -1,0 +1,69 @@
+name: Quant 2.0 Production Pages
+on:
+  pull_request:
+    paths:
+      - 'vu2/**'
+      - 'quant/**'
+      - 'scripts/vu2/**'
+      - '.github/workflows/pages-release.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned release compiler
+        run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
+      - name: Build static product delivery
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
+      - name: Compact the reviewed browser bundle
+        run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/vu2/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/vu2/release-bundle.js"
+      - name: Enforce delivery contract
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          const report=JSON.parse(await readFile(process.env.SITE_ROOT+'/release-delivery.json','utf8'));
+          if(report.sourceCommit!==process.env.EXPECTED_COMMIT) throw Error('RELEASE_COMMIT_MISMATCH');
+          if(report.status!=='PASS'||report.secBytes>report.secBudget||report.secBudget!==8*1024*1024) throw Error('SEC_DELIVERY_BUDGET_FAILED');
+          if(report.storage!=='EXISTING_R2_UNCHANGED') throw Error('CANONICAL_STORAGE_CHANGED');
+          NODE
+          test ! -d "$SITE_ROOT/quant/data/sec/canonical"
+          test ! -d "$SITE_ROOT/quant/data/sec/consumer"
+          test ! -d "$SITE_ROOT/quant/data/fundamentals"
+          grep -F 'location.replace("/vu2/"' "$SITE_ROOT/quant/index.html"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy reviewed release artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

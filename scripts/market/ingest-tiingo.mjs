@@ -41,6 +41,7 @@ const engines = join(root, "quant", "engines");
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const Semantics = require(join(engines, "price-semantics.js"));
+const EodGate = require(join(engines, "market-eod-gate.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
@@ -51,6 +52,10 @@ const CONFIG = JSON.parse(
 const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has("--dry-run");
 const INITIAL = args.has("--initial");
+// Opt-in only. No production scheduler is enabled until durable restore and
+// provider revision/corporate-action reconciliation have their own evidence.
+const STRICT_INCREMENTAL = args.has("--strict-incremental");
+if (STRICT_INCREMENTAL && INITIAL) throw Error("STRICT_INCREMENTAL_FORBIDS_INITIAL");
 const PUBLISH = args.has("--publish");
 /* Phase 5, Golden Five: eine eigene, eng begrenzte Auslieferung neben
    --publish (das oeffentliche, weiterhin gesperrte Gate). Siehe
@@ -77,7 +82,7 @@ const PREVIEW_SCOPE = (PUBLISH_PREVIEW || SCOPE_FROM_PREVIEW)
   ? resolveScope(root, JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"))) : null;
 const SECURITIES = SCOPE_FROM_PREVIEW
   ? PREVIEW_SCOPE.securities.map((s) => Object.assign({}, s, { mic: s.mic || null }))
-  : SECURITIES;
+  : CONFIG.securities;
 const apiKey = process.env.TIINGO_API_KEY || null;
 /* Die Gates kommen aus derselben Datei, die auch der Browser liest.
    Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
@@ -226,15 +231,30 @@ if (!permitted.allowed) {
   process.exit(1);
 }
 
-const runId = INITIAL ? "initial" : "incremental";
+const eodCalendar = STRICT_INCREMENTAL ? JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8")) : null;
+const closedSession = STRICT_INCREMENTAL ? EodGate.latestClosedSession(new Date(), eodCalendar) : null;
+const strictPlans = {};
+if (STRICT_INCREMENTAL) {
+  if (closedSession.state !== "AVAILABLE") throw Error(closedSession.reason);
+  // Preflight every required history before the first provider request.
+  for (const security of SECURITIES) {
+    const plan = EodGate.plan(store.lastStoredDate(security.securityId), closedSession, eodCalendar);
+    if (plan.state === "BLOCKED") throw Error(plan.reason + ":" + security.securityId);
+    strictPlans[security.securityId] = plan;
+  }
+}
+// Keep main's cross-day rejection ledger for regular imports; strict EOD owns a session-specific checkpoint.
+const runId = STRICT_INCREMENTAL ? "strict-eod-" + closedSession.date : (INITIAL ? "initial" : "incremental");
 const checkpoint = store.loadCheckpoint(runId);
+if (STRICT_INCREMENTAL) checkpoint.done = checkpoint.done.filter(id => strictPlans[id]?.state === "CURRENT");
+
 /* Der Checkpoint ist die Wiederaufnahme EINES Laufs (Budget erschoepft,
    Runner weg) - kein Gedaechtnis ueber Tage. Ein Checkpoint von gestern
    wuerde heute jeden Titel als "erledigt" ueberspringen, und die Kurse
    blieben still stehen. Deshalb: neuer Tag, neue Liste; nur die
    Ablehnungen (rejected) bleiben als Sperre bestehen. */
 const heute = new Date().toISOString().slice(0, 10);
-if (checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
+if (!STRICT_INCREMENTAL && checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
   console.log(`  Checkpoint vom ${checkpoint.startedAt.slice(0, 10)} verworfen (neuer Tag): ${checkpoint.done.length} erledigte Titel werden neu geprueft.`);
   checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
 }
@@ -277,20 +297,21 @@ for (const security of SECURITIES) {
     continue;
   }
 
-  const from = INITIAL
+  const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
+  const from = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
     ? initialFromFor(security)
     : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
-    console.log(`${label} wuerde ab ${from} laden` + (last ? ` (gespeichert bis ${last})` : " (nichts gespeichert)"));
+    console.log(`${label} ${strictPlan?.state === "CURRENT" ? "bereits aktuell" : "wuerde ab " + from + " laden"}` + (last ? ` (gespeichert bis ${last})` : " (nichts gespeichert)"));
     continue;
   }
 
   /* Nichts nachzuladen ist ein Erfolg, kein Ueberspringen: der Titel ist
      aktuell. Eine Anfrage dafuer waere verschwendetes Kontingent. */
   const todayStr = new Date().toISOString().slice(0, 10);
-  if (!INITIAL && from > todayStr) {
+  if (strictPlan?.state === "CURRENT" || (!STRICT_INCREMENTAL && !INITIAL && from > todayStr)) {
     ok++;
     checkpoint.done.push(id);
     perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "aktuell" };
@@ -298,7 +319,7 @@ for (const security of SECURITIES) {
     continue;
   }
 
-  const res = await provider.getDailyBars(id, { from });
+  const res = await provider.getDailyBars(id, { from, ...(STRICT_INCREMENTAL ? { to: strictPlan.through } : {}) });
   checkpoint.requests++;
 
   if (!res.available) {
@@ -321,14 +342,18 @@ for (const security of SECURITIES) {
   const bars = res.data.bars;
   if (!bars.length) {
     ok++;
-    checkpoint.done.push(id);
+    // An empty response does not prove this session's EOD is available.
+    // Keep eligible for a same-day retry (provider lag / pre-close run).
     perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "keineNeuenTage" };
     console.log(`${label} keine neuen Handelstage`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
 
-  const validation = MarketQuality.validateBars(bars, {
+  // A one-bar daily increment still needs continuity evidence. Include the
+  // previous stored bar in validation, never refetch or rewrite it.
+  const validationInput = STRICT_INCREMENTAL ? [...store.readBars(id).bars.slice(-1), ...bars] : bars;
+  const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus
   });
@@ -370,6 +395,17 @@ for (const security of SECURITIES) {
     continue;
   }
 
+  if (STRICT_INCREMENTAL) validation.bars = validation.bars.filter(bar => bar.date >= strictPlan.from);
+  const strictReconciliation = STRICT_INCREMENTAL ? EodGate.reconcile(validation.bars, strictPlan) : null;
+  if (strictReconciliation?.state === "BLOCKED") {
+    rejected++;
+    perSecurity[id] = { ticker: security.ticker, ok: false, reason: strictReconciliation.reason };
+    checkpoint.failed = checkpoint.failed.filter(f => f.securityId !== id);
+    checkpoint.failed.push({securityId:id,reason:strictReconciliation.reason,at:new Date().toISOString()});
+    store.saveCheckpoint(checkpoint);
+    console.log(`${label} GESPERRT — ${strictReconciliation.reason}`);
+    continue;
+  }
   const merged = store.mergeBars(id, validation.bars, {
     ticker: security.ticker,
     name: security.name,
@@ -381,7 +417,8 @@ for (const security of SECURITIES) {
   });
 
   ok++;
-  checkpoint.done.push(id);
+  if (!STRICT_INCREMENTAL || strictReconciliation.complete) checkpoint.done.push(id);
+  checkpoint.failed = checkpoint.failed.filter(f => f.securityId !== id);
   store.saveCheckpoint(checkpoint);
   perSecurity[id] = {
     ticker: security.ticker, ok: true,
@@ -415,7 +452,7 @@ for (const security of SECURITIES) {
    Bei Abbruch bleibt sie stehen - genau dafuer ist sie da. */
 const vollstaendig = !DRY_RUN && SECURITIES.every((s) => checkpoint.done.includes(s.securityId) ||
   (perSecurity[s.securityId] && perSecurity[s.securityId].reason !== "rateLimited" && perSecurity[s.securityId].reason !== "quotaExceeded"));
-if (vollstaendig) {
+if (vollstaendig && !STRICT_INCREMENTAL) {
   checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
   checkpoint.completedAt = new Date().toISOString();
   store.saveCheckpoint(checkpoint);
@@ -436,6 +473,26 @@ console.log(`    erfolgreich ${ok} · fehlgeschlagen ${failed} · abgelehnt ${re
 console.log(`    Anfragen ${stats.requests} · Cache-Treffer ${stats.cacheHits} · Wiederholungen ${stats.retries}`);
 console.log(`    Kontingent: ${quota.hourUsed}/${quota.hourLimit} Stunde, ${quota.dayUsed}/${quota.dayLimit} Tag`);
 console.log(`    Bandbreite: ${(quota.bytesUsed / 1048576).toFixed(1)} MB`);
+
+if (STRICT_INCREMENTAL) {
+  const pendingIds = store.remaining(checkpoint, SECURITIES.map(s=>s.securityId));
+  checkpoint.health = {
+    observedAt: new Date().toISOString(), through: closedSession.date,
+    processingState: pendingIds.length ? "INCOMPLETE" : "COMPLETE",
+    qualityStatus: rejected || failed ? "FAIL" : "WARNING",
+    dataFreshness: pendingIds.length ? "INCOMPLETE" : "LATEST_CLOSED_SESSION_RECEIVED",
+    pending: pendingIds, securities: perSecurity,
+    durability: "NOT_CERTIFIED", providerFinality: "NOT_CERTIFIED"
+  };
+  store.saveCheckpoint(checkpoint);
+  const healthPath = join(store.workingDir, Tiingo.PROVIDER_ID, "strict-eod-health.json");
+  mkdirSync(dirname(healthPath), {recursive:true});
+  writeFileSync(healthPath, JSON.stringify({runId, ...checkpoint.health}, null, 2));
+  if (pendingIds.length) {
+    console.error("STRICT_EOD_INCOMPLETE: no publication; typed health persisted in working state");
+    process.exit(1);
+  }
+}
 
 if (PUBLISH) {
   /* Veroeffentlichen ist der einzige Schritt, der Anbieterdaten aus dem

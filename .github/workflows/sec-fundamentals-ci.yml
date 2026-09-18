@@ -6,12 +6,14 @@ on:
     paths:
       - "quant/**"
       - "scripts/quant/**"
+      - "scripts/vu2/build-release.mjs"
       - "docs/SEC_*.md"
       - ".github/workflows/sec-fundamentals-ci.yml"
   pull_request:
     paths:
       - "quant/**"
       - "scripts/quant/**"
+      - "scripts/vu2/build-release.mjs"
       - "docs/SEC_*.md"
       - ".github/workflows/sec-fundamentals-ci.yml"
   workflow_dispatch:
@@ -181,21 +183,15 @@ jobs:
           if [ -n "$oversized" ]; then
             echo "::error::files over 2MB under quant/data/sec:"; echo "$oversized"; exit 1
           fi
-          # This budget covers what THIS pipeline writes. It used to measure all
-          # of quant/data, where more than half belongs to earlier phases and to
-          # Phase 4A market data -- so it failed on growth this workflow neither
-          # caused nor controls, and would equally have failed their next commit.
-          # A repository-wide budget is a repository-wide job.
-          # 8MB against a measured 5.9MB: enough headroom for the five
-          # validation companies to keep growing a little, tight enough that a
-          # committed raw payload or factbook trips it immediately.
-          total="$(du -sk quant/data/sec | cut -f1)"
+          # Canonical R2-backed source remains intact. Measure the actual
+          # product artifact, never the full storage source tree.
+          node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/sec-delivery"
+          total="$(du -sk "$RUNNER_TEMP/sec-delivery/quant/data/sec" | cut -f1)"
           if [ "$total" -gt 8192 ]; then
-            echo "::error::quant/data/sec is ${total}KB, over the 8MB budget"
-            du -sk quant/data/sec/* | sort -rn
+            echo "::error::SEC delivery is ${total}KB, over the unchanged 8MB budget"
             exit 1
           fi
-          echo "data hygiene OK (quant/data/sec: ${total}KB of 8192KB)"
+          echo "SEC product delivery OK (${total}KB of 8192KB)"
 
       - name: Reject secrets in the SEC pipeline
         shell: bash

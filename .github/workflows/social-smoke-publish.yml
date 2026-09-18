@@ -1,0 +1,174 @@
+# =========================================================================
+# SOCIAL SMOKE PUBLISH — genau EIN oeffentlicher Testbeitrag
+#
+# Dieser Workflow veroeffentlicht einen echten Beitrag im verbundenen
+# Instagram-Konto. Er ist der mobile Ausloeser fuer den bereits im Worker
+# vorhandenen Endpunkt — er baut KEINE zweite Publishing-Implementierung.
+# Alles, was er tut, ist genau ein HTTP-Aufruf.
+#
+# -------------------------------------------------------------------------
+# WARUM DER SCHLUESSEL NIRGENDS AUFTAUCHT
+# -------------------------------------------------------------------------
+#
+# GitHub Actions schreibt jedes `run:`-Skript ins Protokoll, bevor es
+# laeuft. Stuende `${{ secrets.VU_SOCIAL_ADMIN_KEY }}` im Skripttext, waere
+# die Stelle zwar maskiert — aber die Maskierung ist ein Netz, keine
+# Konstruktion. Der Schluessel kommt deshalb ueber `env:` als Variable
+# herein, und das Skript nennt nur ihren Namen.
+#
+# In der Adresse steht er ohnehin nie: die Adresse landet in Protokollen,
+# in Fehlermeldungen und bei Cloudflare. Er reist in der
+# Authorization-Kopfzeile.
+#
+# -------------------------------------------------------------------------
+# GEGEN MEHRFACHAUSFUEHRUNG
+# -------------------------------------------------------------------------
+#
+# Vier Sperren, in dieser Reihenfolge:
+#
+#   1. Eine getippte Bestaetigung — kein Knopf allein genuegt
+#   2. `concurrency`: zwei Laeufe koennen sich nicht ueberholen
+#   3. Eine VORAB-Abfrage: wurde schon veroeffentlicht, bricht der Lauf ab,
+#      ohne den Publishing-Endpunkt auch nur zu beruehren
+#   4. Der Endpunkt selbst lehnt einen zweiten Beitrag ab
+#
+# Nur die vierte ist wirklich verlaesslich — sie sitzt im Worker, beim
+# Zustand. Die ersten drei sparen den Weg dorthin, und der dritte macht
+# den haeufigsten Fall (zweimal geklickt) folgenlos und lesbar.
+# =========================================================================
+name: Social Smoke Publish (EINMALIG)
+
+on:
+  workflow_dispatch:
+    inputs:
+      bestaetigung:
+        description: 'Zum Veroeffentlichen exakt VEROEFFENTLICHEN eintippen'
+        type: string
+        required: true
+        default: ''
+
+# Zwei gleichzeitige Laeufe waeren zwei Beitraege.
+concurrency:
+  group: social-smoke-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      WORKER: https://social.visionuniverse.de
+
+    steps:
+      - name: Bestaetigung pruefen
+        run: |
+          if [ "${{ inputs.bestaetigung }}" != "VEROEFFENTLICHEN" ]; then
+            echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt VEROEFFENTLICHEN steht."
+            exit 1
+          fi
+          echo "Bestaetigung liegt vor."
+
+      - name: Schluessel ist hinterlegt
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Nur pruefen, DASS er da ist — nie, WAS er ist.
+          if [ -z "$KEY" ]; then
+            echo "::error::Das Repository-Secret VU_SOCIAL_ADMIN_KEY fehlt. Settings -> Secrets and variables -> Actions -> New repository secret."
+            exit 1
+          fi
+          echo "Schluessel vorhanden (${#KEY} Zeichen, Wert ungelesen)."
+
+      - name: Wurde schon veroeffentlicht?
+        id: vorher
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Lesend. Beruehrt den Publishing-Endpunkt nicht.
+          # tmp/ liegt im Arbeitsbereich (und in .gitignore): hashFiles
+          # sieht absolute Pfade ausserhalb davon nicht — derselbe Fehler
+          # ist in social-cloudflare.yml schon einmal aufgetreten.
+          mkdir -p tmp/smoke
+          code=$(curl -sS -o tmp/smoke/status.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "$WORKER/social/meta/status" || echo 000)
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Der Status-Endpunkt antwortet mit HTTP $code. Ohne ihn ist nicht feststellbar, ob schon veroeffentlicht wurde — es wird nichts versucht."
+            exit 1
+          fi
+
+          schon=$(node -e '
+            const s = require(process.cwd() + "/tmp/smoke/status.json");
+            const log = s.smokePublish;
+            console.log(log && log.published ? "ja" : "nein");
+          ')
+          konto=$(node -e '
+            const s = require(process.cwd() + "/tmp/smoke/status.json");
+            console.log((s.connection && s.connection.instagramUsername) || "unbekannt");
+          ')
+
+          echo "Verbundenes Konto: @$konto"
+          echo "Bereits veroeffentlicht: $schon"
+          echo "konto=$konto" >> "$GITHUB_OUTPUT"
+
+          if [ "$schon" = "ja" ]; then
+            node -e '
+              const s = require(process.cwd() + "/tmp/smoke/status.json");
+              console.log("Bestehender Beitrag: " + s.smokePublish.permalink);
+            '
+            echo "::error::Der Testbeitrag wurde bereits veroeffentlicht. Ein zweiter Lauf wuerde einen ZWEITEN Beitrag erzeugen — die Graph API kennt kein Idempotenz-Token. Abbruch, ohne den Endpunkt zu beruehren."
+            exit 1
+          fi
+
+      - name: Veroeffentlichen
+        id: publish
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Der Schluessel steht in der Kopfzeile, nicht in der Adresse:
+          # die Adresse landet in Protokollen und bei Cloudflare.
+          code=$(curl -sS -X POST -o tmp/smoke/publish.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "$WORKER/social/meta/smoke-publish?confirm=PUBLISH-ONE-TEST-POST" || echo 000)
+
+          echo "HTTP $code"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+
+          # Die Antwort traegt kein Token — der Worker gibt keines heraus.
+          cat tmp/smoke/publish.json
+          echo ""
+
+          if [ "$code" != "200" ] && [ "$code" != "207" ]; then
+            echo "::error::Der Beitrag wurde nicht (vollstaendig) veroeffentlicht. Die Antwort oben nennt Stufe und Meta-Fehlerdaten."
+            exit 1
+          fi
+
+      - name: Ergebnis zusammenfassen
+        if: always()
+        run: |
+          {
+            echo "## Smoke Publish"
+            echo ""
+            echo "Konto: \`@${{ steps.vorher.outputs.konto }}\`"
+            echo "HTTP: \`${{ steps.publish.outputs.http_code || 'nicht erreicht' }}\`"
+            echo ""
+            if [ -f tmp/smoke/publish.json ]; then
+              echo '```json'
+              cat tmp/smoke/publish.json
+              echo ""
+              echo '```'
+            else
+              echo "Es wurde nichts veroeffentlicht — der Lauf endete vorher."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Antwort als Artefakt sichern
+        if: always() && hashFiles('tmp/smoke/publish.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-publish-antwort
+          path: tmp/smoke/publish.json
+          retention-days: 90
