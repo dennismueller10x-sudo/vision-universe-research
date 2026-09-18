@@ -1,18 +1,18 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-18T13:36:05.651Z",
+  "checkedAt": "2026-09-18T13:58:26.747Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
     "localDate": "2026-09-18",
-    "localTime": "09:36:05",
+    "localTime": "09:58:26",
     "lastCompletedSession": "2026-09-17",
     "currentSession": "2026-09-18",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-18T13:36:03.091Z",
+    "indexGeneratedAt": "2026-09-18T13:58:22.640Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-18",
@@ -22,25 +22,25 @@
     },
     "dataSession": {
       "sessionDate": "2026-09-18",
-      "asOf": "2026-09-18T13:35:00.000Z",
-      "asOfLocal": "09:35",
+      "asOf": "2026-09-18T13:55:00.000Z",
+      "asOfLocal": "09:55",
       "regularComplete": false,
-      "snapshots": 37,
+      "snapshots": 495,
       "universe": false
     },
     "dataState": "LIVE",
     "dataReason": "runningSession",
-    "dataLabel": "Heute · Stand 09:35",
+    "dataLabel": "Heute · Stand 09:55",
     "entries": 520,
     "byState": {
-      "LIVE": 37,
-      "LAST_SESSION": 483,
+      "LIVE": 495,
+      "LAST_SESSION": 25,
       "STALE": 0,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "previousSessionWithinOpenGrace": 483,
-      "runningSession": 37
+      "runningSession": 495,
+      "previousSessionWithinOpenGrace": 25
     },
     "staleSample": [],
     "universeSessions": [

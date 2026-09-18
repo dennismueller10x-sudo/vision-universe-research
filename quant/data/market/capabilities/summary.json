@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-18T13:36:05.590Z",
+  "generatedAt": "2026-09-18T13:58:26.669Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5615,
     "historicalQualityAccepted": 6441,
-    "intradayAvailable": 37,
-    "liveCapable": 37,
+    "intradayAvailable": 495,
+    "liveCapable": 495,
     "factorEligible": 6396,
     "fundamentals": 5376,
     "fundamentals10y": 2154,
@@ -40,7 +40,6 @@
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 929,
     "INSUFFICIENT_HISTORY": 822,
-    "NO_IEX_BARS": 487,
     "NO_DISCOVER_CARD": 473,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 441,
     "NO_FACTOR_ROW:SOURCE_MISSING": 369,
@@ -50,6 +49,7 @@
     "NO_FACTOR_ROW:FAIL": 106,
     "NOT_TRADING:STALE_SERIES": 85,
     "QUALITY_REJECTED:too_few_bars": 69,
+    "NO_IEX_BARS": 29,
     "NAME_MISSING": 20,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
@@ -69,8 +69,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -80,9 +80,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Microsoft",
@@ -93,8 +91,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -104,9 +102,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "NVIDIA",
@@ -117,8 +113,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -128,9 +124,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Amazon",
@@ -141,8 +135,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -152,9 +146,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Alphabet",
@@ -165,8 +157,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -176,9 +168,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Meta",
@@ -189,8 +179,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -200,9 +190,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Tesla",
@@ -235,8 +223,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -246,9 +234,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Palantir",
@@ -283,8 +269,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -294,9 +280,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Eli Lilly",
@@ -307,8 +291,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -318,9 +302,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Walmart",
@@ -353,8 +335,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -364,9 +346,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Visa",
@@ -377,8 +357,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -388,9 +368,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     },
     {
       "name": "Micron",
@@ -401,8 +379,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -412,9 +390,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_IEX_BARS"
-      ]
+      "gaps": []
     }
   ],
   "note": "Gemessen aus den ausgelieferten Artefakten; keine Spalte ist vermutet. HAS_LIVE heisst: Snapshot-Refresh waehrend der Sitzung (Discover-Live-Umfang), kein Strom."
