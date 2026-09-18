@@ -1502,3 +1502,82 @@ Der Lauf stürzt dabei nicht ab. Auf einen entschiedenen Kandidaten zu
 treffen ist der Normalfall — der Zustand ist erreicht, es gibt nichts zu
 tun. Ein Stacktrace würde eine Störung behaupten, wo eine Entscheidung
 steht.
+
+---
+
+## 40. Ein Job, eine Delivery, zweiunddreißig Starts
+
+Der Owner sah seine Chatliste mit leeren „VU Creative Agent Proof"-Works
+volllaufen und verlangte, den Trigger produktionsreif zu machen, bevor
+noch eine Ausführung stattfindet. Die vollständige Analyse steht in
+`docs/VU_CREATIVE_TRIGGER_PRODUCTION_READINESS.md`; hier steht, was sie
+über das System sagt.
+
+### Der Befund in einer Zeile
+
+Acht logische Jobs, acht GitHub-Deliveries, zweiunddreißig sichtbare
+Starts. **Jeder Request-PR trägt genau eine `delivery_id`, und alle Starts
+desselben PRs nennen dieselbe.**
+
+Das trennt die Frage sauber. VU hat nie doppelt ausgelöst — die
+Vervielfachung liegt hinter der Zustellung und ist damit für jeden
+GitHub-seitigen Filter unerreichbar. Ein Filter entscheidet, *ob* eine
+Delivery entsteht, nicht wie oft der Empfänger sie bearbeitet.
+
+### Was wirklich daran hängt
+
+    Starts bei erfolgreichen Jobs:   1, 1, 1   (und 6 bei PR 103)
+    Starts bei gescheiterten Jobs:   6, 6, 6, 5
+
+Die Wiederholung endet, sobald ein Lauf gelingt. Alle gescheiterten
+melden denselben Grund: das Bild wurde erzeugt, der Binärtransfer nach
+GitHub brach ab. Die „leeren Chats" sind anbieterinterne Wiederholungen
+eines **scheiternden** Laufs — nicht Mehrfach-Auslösungen.
+
+### Ein Negativbefund, der festgehalten gehört
+
+Der Ergebnis-Commit des Agenten — ein `synchronize`-Ereignis auf dem
+offenen PR — löst **keinen** neuen Lauf aus. PRs 103, 106 und 108 haben
+einen Ergebnis-Commit und trotzdem nur ihre eine `delivery_id`. Die
+Rekursionsangst war unbegründet, und das ist jetzt gemessen statt
+vermutet.
+
+### Zwei Löcher, die die Analyse nebenbei fand
+
+**Das Gatter endete mit Rückgabewert 0.** `request-creative.mjs` schrieb
+„KEIN ANSTOSS" und beendete sich mit `process.exit(0)`. Jede Automation,
+die den Rückgabewert prüft — und das ist sein einziger Zweck — las die
+Verweigerung als „in Ordnung, weiter". Ein Gatter, das mit 0 endet, ist
+kein Gatter, sondern ein Hinweis.
+
+**Und es saß an der falschen Stelle.** Es prüft, bevor der *Brief*
+geschrieben wird. Ausgelöst wird der Agent aber vom *Öffnen des Pull
+Requests*; dazwischen liegen `git push` und ein PR, beides ungeprüft.
+Alle acht bisherigen Jobs sind daran vorbei entstanden. Dass nie doppelt
+ausgelöst wurde, war Sorgfalt und keine Eigenschaft des Systems.
+
+Beides ist geschlossen: `creative-job.js` führt die Absicht (ein Job je
+Processing Key, fail closed), der Invocation Ledger weiter die
+Beobachtung (sechs Starts bleiben sechs Einträge, weil sechs Starts eine
+Tatsache sind). Ein CI-Guard macht einen Request-PR ohne beschlossenen
+Job rot — verhindern kann er ihn nicht, denn wenn er läuft, ist die
+Delivery raus.
+
+### Die Einstufung, und warum sie nicht A ist
+
+Fall A verlangt einen *bounded* Pfad unter kontrollierbaren Bedingungen.
+Der Dispatch ist beschränkt und jetzt erzwungen. Die Wiederholung ist es
+nicht: keine beobachtbare Obergrenze, kein Abbruchsignal, das VU senden
+könnte — PR 105 meldete nach elf Stunden noch. Ein Pfad, dessen
+teuerster Zweig unbeschränkt ist, ist nicht bounded.
+
+`CHATGPT_WORK_TRIGGER_PROVIDER_LIMITATION`.
+
+### Der eine Hebel, der unbewiesen bleibt
+
+Ein offener Request-PR ist die Fläche, gegen die der Anbieter
+weiterarbeitet. PR 105 wurde um 08:05:15Z geschlossen, seither Stille.
+Das beweist nichts: die letzte Meldung kam um 05:55, zwei Stunden zehn
+vor dem Schließen. Es wäre bequem, die Stille dem Schließen zuzuschreiben,
+und es wäre unredlich. Der Hebel bleibt plausibel und unbelegt — und er
+steht so im Bericht, damit ihn niemand später als erwiesen zitiert.

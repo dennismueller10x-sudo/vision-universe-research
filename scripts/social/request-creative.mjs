@@ -171,8 +171,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const darf = ledger.mayInvoke(key, { now: NOW });
   console.log("\n--- LEDGER ---");
   if (!darf.ok) {
-    console.log("KEIN ANSTOSS: " + darf.message);
-    process.exit(0);
+    /* -----------------------------------------------------------------
+       EIN VERWEIGERTER ANSTOSS IST KEIN ERFOLG
+
+       Hier stand `process.exit(0)`. Damit las jede Automation, die den
+       Rueckgabewert prueft - und das ist der Sinn eines Rueckgabewerts -
+       die Verweigerung als "in Ordnung, weiter". Ein Gatter, das mit 0
+       endet, ist kein Gatter, sondern ein Hinweis.
+       ----------------------------------------------------------------- */
+    console.error("KEIN ANSTOSS: " + darf.message);
+    process.exit(4);
   }
   console.log("Frei. Kein frueherer Lauf zu diesem Schluessel.");
 

@@ -1,0 +1,39 @@
+name: Creative Job Guard
+
+# Ein Request-PR loest einen externen Agenten aus. Das ist eine Handlung
+# mit Aussenwirkung und kostet eine begrenzte Ressource.
+#
+# Diese Pruefung kann den Start NICHT verhindern — wenn sie laeuft, ist die
+# GitHub-Delivery bereits raus. Sie macht ihn SICHTBAR: ein Request-PR ohne
+# passenden Eintrag im Job-Register ist ein Dispatch, den niemand beschlossen
+# hat, und genau der soll rot sein statt still.
+#
+# Warum trotzdem sinnvoll: die acht bisherigen Jobs sind alle von Hand
+# entstanden, am Gatter in dispatch-creative-job.mjs vorbei. Dass dabei nie
+# doppelt ausgeloest wurde, war Sorgfalt und keine Eigenschaft des Systems.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'authoring/requests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Jeder Request-PR gehoert zu genau einem beschlossenen Job
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+        run: node scripts/social/verify-creative-dispatch.mjs --branch "$PR_BRANCH"
