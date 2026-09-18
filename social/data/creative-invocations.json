@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T03:50:00Z",
+  "generatedAt": "2026-09-18T04:33:28.228Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -431,6 +431,19 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Asset: authoring/requests/vu-permcheck-20260918/assets/visual-01.png: 2 Abweichung(en): truncated, hashMismatch."
+    },
+    {
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "state": "REQUESTED",
+      "at": "2026-09-18T04:33:28.228Z",
+      "contentId": "vu-xom-20260911",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3",
+      "pullRequest": null,
+      "deliveryId": null,
+      "observed": true,
+      "timestampProvenance": "observed",
+      "note": "Anlauf 3, loest Anlauf 2 ab. Owner hat Anlauf 3 freigegeben. Neue Bedingungen seit Anlauf 2: GitHub-Permission auf 'Alle Aktionen zulassen' umgestellt (PR 106 lief unbeaufsichtigt in 146 s durch), und der gehaertete Asset-Transport-Contract ist aktiv - AGENT_REPORTED_COMPLETED genuegt nicht mehr. Der PR wird NICHT von diesem Skript geoeffnet."
     }
   ],
   "latencyObservations": []
