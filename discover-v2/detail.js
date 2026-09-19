@@ -78,6 +78,14 @@
     var journey = page.querySelector(".dx-chapter--journey");
     var valuation = page.querySelector(".dx-chapter--bewertung");
     var analysis = page.querySelector(".dx-analyse");
+    var business = Array.from(page.children).find(function (section) {
+      var kicker = section.querySelector && section.querySelector(".dx-kicker");
+      return kicker && kicker.textContent.trim() === "Das Unternehmen";
+    });
+    var riskGrid = page.querySelector(".dx-waage");
+    var risks = riskGrid && riskGrid.closest("section");
+    var overview = page.querySelector(".dx-30");
+    if (overview) disclose(overview.closest("section"), "Die Aktie auf einen Blick");
     page.querySelectorAll(".dx-fade").forEach(function (n) { n.classList.add("in"); });
     var back = page.querySelector(".dx-back");
     if (back) back.textContent = "← Aktien entdecken";
@@ -87,6 +95,7 @@
     if (hero && chart) {
       var context = node("section", "dv2-stock-context");
       context.setAttribute("aria-label", "Was bei dieser Aktie auffällt");
+      context.appendChild(node("p", "dv2-detail-eyebrow", "Der Blick auf die Aktie"));
       [".dx-dhero-story", ".dx-dhero-hook", ".dx-dhero-sigs", ".dx-zeitachse", ".dx-spanne"].forEach(function (selector) {
         var item = hero.querySelector(selector);
         if (item) context.appendChild(item);
@@ -98,7 +107,7 @@
     }
     if (journey) {
       var kicker = journey.querySelector(".dx-kicker");
-      if (kicker) kicker.textContent = "Hinter dem Kurs";
+      if (kicker) kicker.textContent = "02 / Das Geschäft in Bewegung";
       var story = journey.querySelector(".dx-story-list");
       var stage = journey.querySelector(".dx-journey--stage");
       if (story && stage) stage.insertAdjacentElement("afterend", story);
@@ -108,12 +117,18 @@
     disclose(page.querySelector(".dx-chapter--damals"), "Damals und heute im direkten Vergleich");
     if (analysis) analysis.open = false;
 
+    var research = node("section", "dv2-research-entry");
+    research.appendChild(node("p", "dv2-detail-eyebrow", "Vom Kurs zum Unternehmen"));
+    research.appendChild(node("h2", "", (detail.companyName || detail.symbol) + " verstehen."));
     var nav = node("nav", "dv2-stock-nav");
     nav.setAttribute("aria-label", "Auf dieser Aktienseite");
-    [[chart, "Kurs"], [journey, "Unternehmen"], [valuation, "Bewertung"], [analysis, "Analyse"]].forEach(function (entry, index) {
+    [[business, "Geschäft", "Womit verdient es Geld?"], [journey, "Entwicklung", "Wie wächst es?"], [valuation, "Bewertung", "Was kostet die Aktie?"], [risks, "Risiken", "Was sollte ich hinterfragen?"]].forEach(function (entry, index) {
       if (!entry[0]) return;
       entry[0].id = index === 1 ? "journey" : id + "-" + index;
-      var button = node("button", "", entry[1]);
+      var button = node("button", "");
+      button.appendChild(node("span", "dv2-research-number", "0" + (index + 1)));
+      button.appendChild(node("b", "", entry[1]));
+      button.appendChild(node("small", "", entry[2]));
       button.type = "button";
       button.setAttribute("aria-controls", entry[0].id);
       button.addEventListener("click", function () {
@@ -123,7 +138,31 @@
       });
       nav.appendChild(button);
     });
-    if (chart) chart.insertAdjacentElement("afterend", nav);
+    research.appendChild(nav);
+    if (nav.children.length) {
+      var contextEnd = page.querySelector(".dv2-stock-context") || chart;
+      if (contextEnd) contextEnd.insertAdjacentElement("afterend", research);
+    }
+    if (business) business.classList.add("dv2-stock-business");
+    if (risks) risks.classList.add("dv2-stock-risks");
+    if (valuation) valuation.classList.add("dv2-stock-valuation");
+    /* Existing contracts provide the neighbors and collection destinations.
+     * Give them a visible new exploration stage without inventing a rank. */
+    var next = page.querySelector(".dx-chapter--next");
+    Array.from(page.children).forEach(function (section) {
+      if (section.querySelector && section.querySelector(".dx-rail")) section.classList.add("dv2-stock-neighbors");
+    });
+    if (next) next.classList.add("dv2-stock-next");
+    if (!next) {
+      next = node("section", "dv2-stock-next dx-chapter");
+      next.appendChild(node("p", "dv2-detail-eyebrow", "Die nächste Perspektive"));
+      next.appendChild(node("h2", "", "Eine Aktie weiter."));
+      var onward = node("a", "dx-btn", "Weiter swipen →");
+      onward.href = "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
+      next.appendChild(onward);
+      var foot = page.querySelector(".dx-foot");
+      page.insertBefore(next, foot || null);
+    }
 
     /* Shared fundamental renderers supply genuine tab controls. Complete
      * their keyboard interaction without changing a track or calculation. */
