@@ -63,23 +63,66 @@
    * Die Felder sind genau die, nach denen der Owner entscheiden muss.
    * "Wir brauchen eine API" ist keine Entscheidungsgrundlage.
    */
+  /* Felder, ohne die eine Owner-Entscheidung nicht moeglich ist.
+     "Wir brauchen eine API" ist keine Entscheidungsgrundlage. */
+  var ENTSCHEIDUNGSFELDER = ["availableData", "accessMethod", "legalConstraints",
+    "rateLimit", "cost", "historicalDepth", "expectedValue", "official",
+    "operationalRisk"];
+
+  function ersteVon() {
+    for (var i = 0; i < arguments.length; i++) {
+      var v = arguments[i];
+      if (v !== undefined && v !== null && v !== "") return v;
+    }
+    return null;
+  }
+
   function source(spec) {
     spec = spec || {};
-    return {
+    /* -----------------------------------------------------------------
+       ZWEI SCHREIBWEISEN, UND DIE LUECKE MUSS AUFFALLEN
+
+       Die Matrix schreibt `runningCost`, diese Datei las `cost` - und
+       setzte still null. Damit sah jede Quelle unvollstaendig aus,
+       obwohl die Angabe dastand. Der vierte Schluesselname-Fehler
+       derselben Familie in diesem Projekt.
+
+       Gelesen werden beide. Und was danach fehlt, wird GEMELDET statt
+       stillschweigend null zu sein: eine Quelle ohne
+       Entscheidungsgrundlage muss als solche erkennbar sein. */
+    var kosten = ersteVon(spec.cost, spec.runningCost);
+    var gebaut = {
       sourceId: spec.sourceId || null,
       label: spec.label || null,
       state: spec.state || STATE.AWAITING_OWNER_SOURCE,
+      /* OFFIZIELL ODER NICHT ist eine Risikodimension, keine Fussnote.
+         Sie fehlte in dieser Liste - die fuenfte Angabe in diesem
+         Projekt, die eine handgeschriebene Feldliste verschluckt hat.
+         Deshalb steht sie jetzt auch unter den Entscheidungsfeldern:
+         wer sie weglaesst, bekommt es gesagt. */
+      official: spec.official === undefined ? null : spec.official === true,
+      operationalRisk: spec.operationalRisk || null,
+      creatorDiscovery: spec.creatorDiscovery || null,
+      topicDiscovery: spec.topicDiscovery || null,
+      implementationComplexity: spec.implementationComplexity || null,
+      recommendation: spec.recommendation || null,
       availableData: spec.availableData || null,
       accessMethod: spec.accessMethod || null,
       legalConstraints: spec.legalConstraints || null,
       rateLimit: spec.rateLimit || null,
-      cost: spec.cost === undefined ? null : spec.cost,
+      cost: kosten,
       historicalDepth: spec.historicalDepth || null,
       metrics: Array.isArray(spec.metrics) ? spec.metrics.slice() : [],
       expectedValue: spec.expectedValue || null,
       alternatives: Array.isArray(spec.alternatives) ? spec.alternatives.slice() : [],
       requiresOwnerDecision: spec.requiresOwnerDecision !== false
     };
+
+    gebaut.missingDecisionFields = ENTSCHEIDUNGSFELDER.filter(function (f) {
+      return gebaut[f] === null || gebaut[f] === undefined;
+    });
+    gebaut.decisionReady = gebaut.missingDecisionFields.length === 0;
+    return gebaut;
   }
 
   /**
@@ -155,6 +198,12 @@
       describedSources: s.length,
       ownerDecisionRequired: s.filter(function (x) { return x.requiresOwnerDecision; })
         .map(function (x) { return x.sourceId; }),
+    /* Eine Quelle, ueber die nicht entschieden werden KANN, ist keine
+       Option - sie ist eine offene Hausaufgabe. */
+    notDecisionReady: s.filter(function (x) { return x.decisionReady === false; })
+        .map(function (x) {
+          return { sourceId: x.sourceId, missing: x.missingDecisionFields };
+        }),
       explanation: aktiv.length
         ? aktiv.length + " externe Quelle(n) angebunden."
         : "Keine externe Quelle angebunden. Das ist kein Messergebnis " +
@@ -165,6 +214,7 @@
 
   var api = {
     STATE: STATE,
+    ENTSCHEIDUNGSFELDER: ENTSCHEIDUNGSFELDER,
     HOOK_ARCHETYPES: HOOK_ARCHETYPES,
     FORMAT_PATTERNS: FORMAT_PATTERNS,
     VISUAL_PATTERNS: VISUAL_PATTERNS,

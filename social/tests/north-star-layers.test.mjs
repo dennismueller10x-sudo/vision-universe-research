@@ -198,3 +198,63 @@ test("NS17 · Eine Richtung ohne eine Idee ist eine Bestellung", () => {
   assert.equal(r.ok, false);
   assert.match(r.explanation, /bekommt Neonwuerfel/);
 });
+
+/* ------------------------------------------------------------------ */
+/* DIE SOURCE DECISION MATRIX                                          */
+/* ------------------------------------------------------------------ */
+
+import { readFileSync } from "node:fs";
+const MATRIX = JSON.parse(readFileSync(
+  new URL("../config/external-sources.json", import.meta.url), "utf8"));
+
+test("NS18 · Keine externe Quelle ist aktiviert", () => {
+  /* Die Matrix beschreibt Optionen. Sie trifft keine Entscheidung und
+     oeffnet keinen Zugang. */
+  const q = MATRIX.sources.map((s) => EI.source(s));
+  const c = EI.capability(q);
+  assert.equal(c.activeSources, 0);
+  assert.equal(c.state, EI.STATE.AWAITING_OWNER_SOURCE);
+  assert.equal(MATRIX.purpose, "OWNER_DECISION_MATRIX");
+});
+
+test("NS19 · Eine Quelle ohne geprueften Preis ist nicht entscheidungsreif", () => {
+  /* Bei X und beim Scraping habe ich die laufenden Kosten NICHT
+     verifiziert. Sie als Option mit Preis zu praesentieren waere eine
+     erfundene Zahl an genau der Stelle, an der entschieden wird. */
+  const q = MATRIX.sources.map((s) => EI.source(s));
+  const offen = q.filter((s) => !s.decisionReady).map((s) => s.sourceId);
+  assert.ok(offen.includes("x.api"));
+  assert.ok(offen.every((id) => q.find((s) => s.sourceId === id)
+    .missingDecisionFields.includes("cost")));
+});
+
+test("NS20 · Die kostenfreien offiziellen Wege sind entscheidungsreif", () => {
+  const q = MATRIX.sources.map((s) => EI.source(s));
+  for (const id of ["meta.instagram.hashtag_search", "youtube.data_api"]) {
+    const s = q.find((x) => x.sourceId === id);
+    assert.equal(s.decisionReady, true,
+      id + " fehlt: " + s.missingDecisionFields.join(", "));
+    assert.equal(s.cost, 0);
+    assert.equal(s.official, true);
+  }
+});
+
+test("NS21 · Scraping wird benannt und nicht empfohlen", () => {
+  /* Aufgefuehrt, damit die Option bewertet ist - nicht, damit sie
+     gewaehlt wird. Eine Quelle nur deshalb zu waehlen, weil sie
+     technisch erreichbar ist, waere genau der ausgeschlossene Fehler. */
+  const s = MATRIX.sources.find((x) => x.sourceId === "scraping.any");
+  assert.equal(s.state, "NOT_RECOMMENDED");
+  assert.equal(s.official, false);
+  assert.match(s.operationalRisk, /HOCH/);
+  assert.ok(MATRIX.recommendation.notRecommended.includes("scraping.any"));
+});
+
+test("NS22 · Die Empfehlung begruendet sich aus Kosten, Zugang und Risiko", () => {
+  const r = MATRIX.recommendation;
+  assert.equal(r.first, "meta.instagram.hashtag_search");
+  const erste = MATRIX.sources.find((s) => s.sourceId === r.first);
+  assert.equal(erste.runningCost, 0);
+  assert.match(erste.accessMethod, /[Bb]estehend/);
+  assert.ok(r.explicitlyNotChosen.length > 10);
+});
