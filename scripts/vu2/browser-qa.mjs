@@ -1,6 +1,7 @@
 // Explicitly requested static-repository QA. No deployment or provider calls.
 import {assessResourceBudget} from './resource-budget.mjs';
 import {createServer} from 'node:http';
+import {gunzipSync} from 'node:zlib';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {createRequire} from 'node:module';
@@ -12,6 +13,7 @@ await mkdir(out,{recursive:true});
 // Compare the current checked-in canonical outputs; fixed old quotes are not invariants.
 const panel=JSON.parse(await readFile(resolve(root,'quant/data/sec/quant-factor-inputs.json'),'utf8')),nvda=panel.securities.NVDA;
 const technical=JSON.parse(await readFile(resolve(root,'quant/data/technical/instruments/NVDA.json'),'utf8'));
+const quarterlyTSLA=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/sec/quarterly/05.json.gz')))).issuers['0001318605'];
 const pct=value=>value.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
 const trendLabel={BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}[technical.bundle.trend.direction];
 // Explicit stale-data scenario, retaining actual source files and all freshness assertions.
@@ -49,6 +51,13 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(view==='fundamentals'){await page.locator('.q-chart .bar').first().waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('ttm');await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('quarterly');await page.getByText('Berichtszeitraum beachten',{exact:true}).waitFor();await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('free_cash_flow');await page.getByText('Quartalsabgrenzung noch nicht bestätigt',{exact:true}).waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('annual');await page.getByRole('rowheader',{name:'FY 2016',exact:true}).waitFor();await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('revenue');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();
   await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('net_income');await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('ttm');await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();const saved=await page.getByRole('link',{name:'Diese Historie erneut öffnen',exact:true}).getAttribute('href');await page.goto(origin+saved);await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();if(await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).inputValue()!=='net_income'||await page.getByRole('combobox',{name:'Unternehmen',exact:true}).inputValue()!=='NVDA')throw Error('history link lost state');
   await page.goto(origin+'/vu2/?view=fundamentals&ticker=TSLA');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();if(await page.getByRole('combobox',{name:'Unternehmen',exact:true}).inputValue()!=='TSLA'||!await page.locator('.q-chart').count())throw Error('canonical consumer history missing or substituted');await page.getByText('Meldedatum · Tagesgenauigkeit',{exact:true}).waitFor();await page.screenshot({path:out+'/canonical-fundamentals-'+width+'.png',fullPage:true});await auditAccessibility(page,'canonical-fundamentals',width);
+  await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('quarterly');await page.getByText(/Gezeigt werden eigenständige Geschäftsquartale/).waitFor();
+  const expectedQuarter=quarterlyTSLA.quarterly.revenue.at(-1);await page.getByRole('rowheader',{name:expectedQuarter[1]+' '+expectedQuarter[0]+(expectedQuarter[6]?' · abgeleitet':''),exact:true}).waitFor();
+  const quarters=await page.evaluate(async()=>{const api=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});return api.getHistoricalFundamentals('TSLA',{period:'quarterly'});});
+  if(quarters.state!=='AVAILABLE'||quarters.pitEligibility!=='NOT_CERTIFIED'||JSON.stringify(quarters.rows.map(r=>[r.fiscalYear,r.fiscalPeriod,r.end,r.value,r.filed,r.accession,Number(r.derived)]))!==JSON.stringify(quarterlyTSLA.quarterly.revenue))throw Error('quarterly projection changed canonical facts');
+  await page.getByText('Berichtsstand: '+quarters.generatedAt.slice(0,10)+'. Frühere Angaben können nachträglich angepasst sein.',{exact:true}).waitFor();
+  await page.screenshot({path:out+'/canonical-quarterly-'+width+'.png',fullPage:true});await auditAccessibility(page,'canonical-quarterly',width);checks.push({view:'canonical-quarterly',width,pass:true});
+
   await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA&metric=unknown');await page.getByText('Historienauswahl prüfen',{exact:true}).waitFor();if(await page.locator('.q-chart').count())throw Error('invalid metric rendered fallback');await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();}
  if(view==='research'){for(const href of await page.locator('.catalog a').evaluateAll(links=>links.map(a=>a.href))){const response=await page.request.get(href);if(!response.ok())throw Error('workspace link unavailable '+href);}}
  if(view==='markets'){if(await page.locator('.market-observation').count()!==5)throw Error('market observations missing');await page.getByText('Warum?',{exact:true}).first().click();await page.getByText(/Abstand zum 200-Tage-Durchschnitt:/).first().waitFor();}

@@ -323,3 +323,45 @@ with negative test. Footer repaired to distinguish historical EOD from separatel
 labelled intraday/live. Final rerender pending. Worker /health and /version read
 from this execution environment returned HTTP403; no bypass and no production
 trade-delivery claim. This external observation does not invalidate local/CI gates.
+
+### PR117 production gate and quarterly continuation
+PR117 merged as a3f3ebe8e6e8b77a7d196730e0787d4810387336. Pages run35433574764
+PASS. Production /quant/?view=stock&ticker=TSLA redirects correctly, shows actual
+intraday snapshot and disables live on closed session. release-delivery.json confirms
+same release SHA,2,762,729SECbytes. Final CI Quant/SEC/Browser/Pages PASS;
+51browser,36accessibility,8resource gates. Final desktop/390screenshots reviewed.
+Vercel optional preview reports external24hour rate limit; it is not the selected
+production delivery path. Open-session production trade observation remains unproven.
+
+Next existing ledger item: standalone quarterly histories outside inspector five.
+Context PHASE_QUARTERLY_ARTIFACT_INTEGRATION.md; branch integration/quant-quarterly-delivery.
+Extend only existing release projection and Product Service. No new serving lane.
+First measured build:4,735issuer gzip projections; total SEC8,130,415bytes versus
+unchanged8,388,608gate. Browser loads one issuer; no universe download. Per-issuer
+compression changes delivery encoding only; values remain upstream SEC consumer facts.
+Local Quant1202PASS before final added decoder/DQ tests; targeted final53PASS.
+Full artifact validation checked31,360issuer/metric series:31,356valid,4invalid
+shares_outstanding with period end after filing. CIKs0000006201,0000006207,
+0001056943,0001754170. Generic shared validator withholds each affected metric,
+records INVALID_FACT_EVIDENCE, preserves every other metric and original SEC source.
+Regression tests retain real counterexamples. No hand-fixed ticker/date or relaxed gate.
+Final build/remote/browser/visual/production gates PENDING. PIT/TTM not certified.
+
+PR118 initial remote Quant/CompanyMaster/Browser PASS, but SEC-CI FAIL: its existing
+filesystem allocation gate measured21,904KiB for4,735tiny gzip files. Byte accounting
+alone was insufficient. Do not change either8MiB gate. Recovery:100bounded gzip
+shards by last two CIK digits (storage partition only; canonical issuer ID unchanged).
+Product Service selects exact canonical CIK within one shard and checks envelope.
+Actual rebuilt SEC bytes4,846,342; filesystem allocation4,968KiB<8,192KiB;
+maximum compressed shard29,106bytes, decoded318,298bytes. No complete consumer,
+full-universe browser load, normalization, source edits or second delivery service.
+Rerun all changed-head gates; prior successful gates are retained as historical evidence.
+
+Full-history/PIT boundary evidence captured in OWNER_DECISION_FULL_PIT_DELIVERY.md.
+Current R2 report stores639,862,725bytes with revision histories; existing consumer
+snapshots contain default8quarters and no full revision/acceptedAt history. Current
+consumer example stillnormalization1.6/asOf2026-09-14 vs persisted1.9/1.10; do not
+claim latest canonical integration from snapshot availability. UI explicitly shows
+its preparation date. No new serving path or secret activated. Full-PIT serving
+exception requires the Owner decision defined in the artifact-only instruction;
+remaining Quant/screener/current-consumer-refresh work is not marked complete.

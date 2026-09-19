@@ -39,6 +39,19 @@ function create(options){
   Object.entries(params||{}).forEach(([key,value])=>{if(value!==undefined&&value!==null)url.searchParams.set(key,String(value));});
   try{const response=await fetch(url,{headers:{Accept:'application/json'},credentials:'omit'});if(!response.ok)return null;return await response.json();}catch{return null;}
  }
+ async function compressedJSON(path){
+  if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
+  // Only this service constructs the same-origin canonical issuer path.
+  if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
+  const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
+  const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
+  if(input[0]!==31||input[1]!==139){if(response.headers.get('content-encoding')==='gzip')return JSON.parse(new TextDecoder().decode(input));throw Error('INVALID_COMPRESSION');}
+  if(typeof DecompressionStream!=='function')throw Error('DECOMPRESSION_UNSUPPORTED');
+  const reader=new Blob([input]).stream().pipeThrough(new DecompressionStream('gzip')).getReader(),chunks=[];let length=0;
+  try{for(;;){const {value,done}=await reader.read();if(done)break;length+=value.length;if(length>1048576)throw Error('ARTIFACT_TOO_LARGE');chunks.push(value);}}finally{await reader.cancel().catch(()=>{});}
+  const output=new Uint8Array(length);let offset=0;for(const chunk of chunks){output.set(chunk,offset);offset+=chunk.length;}
+  return JSON.parse(new TextDecoder().decode(output));
+ }
  async function identity(ticker){
   const result=await directory.getInstrument(ticker),i=result.instrument;
   if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId))return null;
@@ -193,6 +206,12 @@ function create(options){
    }
    const c=await config();if(!(c.preview.scope||[]).includes(ticker)){
     if(!/^\d{10}$/.test(instrument.cik))return unavailable('FUNDAMENTAL_IDENTITY_UNAVAILABLE');
+    if(selection.period==='quarterly'){
+     const shard=instrument.cik.slice(-2),bucket=await compressedJSON('/quant/data/sec/quarterly/'+shard+'.json.gz');
+     if(bucket?.schema!=='vu-quant-quarterly-shard-1.0.0'||bucket.shard!==shard)return unavailable('INVALID_QUARTERLY_SHARD');
+     const projected=bucket.issuers?.[instrument.cik];if(!projected)return unavailable('SOURCE_MISSING');
+     return History.buildQuarterly(projected,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:'quarterly'});
+    }
     const consumer=await load('/discover/data/stocks/US_REAL/'+ticker+'.json');
     return History.buildConsumer(consumer,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:selection.period});
    }

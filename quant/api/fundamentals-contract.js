@@ -67,5 +67,35 @@ function buildConsumer(payload,options){
  rows.sort((a,b)=>a.fiscalYear-b.fiscalYear);
  return {version:'1.0.0',state:rows.length?'AVAILABLE':'UNAVAILABLE',reason:rows.length?null:'NO_VALIDATED_FACTS',ticker,name:payload.companyName||ticker,metric:{...definition,unit},metrics:METRICS,period,rows,generatedAt:f.asOf,policy:'LATEST_KNOWN',pitEligibility:'NOT_CERTIFIED',missing:0,availabilityPrecision:'FILING_DATE',sourceContract:f.version};
 }
-const api={build,buildConsumer,metrics:METRICS};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUFundamentalsContract=api;
+// Selected standalone quarters from the existing SEC consumer. Reconstructed
+// values are already calculated upstream; this adapter only presents their facts.
+function validateQuarterlyFacts(facts,{asOf,unit}){
+ if(!Array.isArray(facts)||!facts.length)return unavailable('METRIC_NOT_IN_CONSUMER_ARTIFACT');
+ const rows=[],seen=new Set();
+ for(const fact of facts){
+  if(!Array.isArray(fact)||fact.length!==7)return unavailable('INVALID_FACT_EVIDENCE');
+  const [fy,fp,end,value,filed,accession,derived]=fact,key=fy+'-'+fp;
+  if(!Number.isInteger(fy)||!/^Q[1-4]$/.test(fp)||seen.has(key))return unavailable('DUPLICATE_OR_INVALID_PERIOD');seen.add(key);
+  if(!Number.isFinite(value)||!date(end)||!date(filed)||end>filed||filed>asOf||!/^\d{10}-\d{2}-\d{6}$/.test(accession)||![0,1].includes(derived))return unavailable('INVALID_FACT_EVIDENCE');
+  rows.push({key,label:fp+' '+fy,fiscalYear:fy,fiscalPeriod:fp,state:'AVAILABLE',value,unit,start:null,end,filed,availableFrom:filed,accession,source:'SEC_CONSUMER',transformation:derived?'PRECOMPUTED_DERIVED_QUARTER':'PRECOMPUTED_STANDALONE_QUARTER',derived:derived===1});
+ }
+ rows.sort((a,b)=>a.fiscalYear-b.fiscalYear||a.fiscalPeriod.localeCompare(b.fiscalPeriod));
+ return {state:'AVAILABLE',rows};
+}
+function buildQuarterly(payload,options){
+ const {ticker,cik,securityId,masterMemberId,metric='revenue'}=options,now=new Date(options.now||Date.now()),definition=METRICS.find(m=>m.id===metric);
+ if(!definition||options.period!=='quarterly')return unavailable('INVALID_SELECTION');
+ if(!Number.isFinite(now.getTime()))return unavailable('INVALID_AS_OF');
+ const today=now.toISOString().slice(0,10);
+ if(!/^vu_[a-f0-9]+$/.test(securityId)||typeof masterMemberId!=='string'||!masterMemberId||!/^\d{10}$/.test(cik)||payload?.cik!==cik||payload.schema!=='vu-quant-quarterly-1.0.0'||payload.sourceSchema!=='vu-consumer-fundamentals-1.0.0'||payload.dataSource?.isMock!==false||payload.dataSource?.provider!=='sec_edgar'||payload.versions?.normalization_schema!=='1.0.0'||payload.policy!=='as_of_latest')return unavailable('INVALID_PROVENANCE');
+ const generated=Date.parse(payload.generatedAtUtc);
+ if(!date(payload.asOf)||payload.asOf>today||!Number.isFinite(generated)||generated>now.getTime()||payload.asOf>payload.generatedAtUtc.slice(0,10))return unavailable('INVALID_SOURCE_TIMESTAMP');
+ if(JSON.stringify(payload.columns)!==JSON.stringify(['fy','fp','end','v','filed','accn','derived'])||payload.semantics?.quarterly!=='standalone quarters (YTD de-accumulated), newest last')return unavailable('UNSUPPORTED_PERIOD_SEMANTICS');
+ const facts=payload.quarterly?.[metric],unit=payload.units?.[metric];
+ if(!Array.isArray(facts)||!facts.length)return unavailable(payload.unavailableMetrics?.[metric]==='INVALID_FACT_EVIDENCE'?'INVALID_FACT_EVIDENCE':'METRIC_NOT_IN_CONSUMER_ARTIFACT');
+ if(typeof unit!=='string'||!(/^[A-Z]{3}(?:\/shares)?$/.test(unit)||unit==='shares'))return unavailable('INVALID_UNIT');
+ const checked=validateQuarterlyFacts(facts,{asOf:payload.asOf,unit});if(checked.state!=='AVAILABLE')return checked;const rows=checked.rows;
+ return {version:'1.0.0',state:'AVAILABLE',ticker,name:options.name||ticker,metric:{...definition,unit},metrics:METRICS,period:'quarterly',rows,generatedAt:payload.generatedAtUtc,policy:'LATEST_KNOWN',pitEligibility:'NOT_CERTIFIED',missing:0,availabilityPrecision:'FILING_DATE',sourceContract:payload.sourceSchema};
+}
+const api={build,buildConsumer,buildQuarterly,validateQuarterlyFacts,metrics:METRICS};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUFundamentalsContract=api;
 })(typeof window!=='undefined'?window:globalThis);
