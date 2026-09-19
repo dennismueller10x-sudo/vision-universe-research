@@ -12,16 +12,27 @@ const base=arg('url','http://127.0.0.1:8765').replace(/\/$/,'');
 const out=arg('out','/tmp/discover-v2-qa');await mkdir(out,{recursive:true});
 const engine=arg('engine','chromium');assert(['chromium','webkit'].includes(engine));
 const browser=await playwright[engine].launch({headless:true,...(engine==='chromium'?{executablePath:process.env.CHROMIUM_PATH||undefined}:{})});
-const checks=[],errors=[],shots=[],performance=[],accessibility=[],firstScreenEvidence=[],interactionEvidence=[];
+const checks=[],errors=[],shots=[],performance=[],accessibility=[],firstScreenEvidence=[],interactionEvidence=[],screenshotEvidence=[];
 let axePath;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
 async function a11y(page,key){if(!axePath)throw Error('axe-core required for accessibility gate');await page.addScriptTag({path:axePath});const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));accessibility.push({key,violations:result.violations,incomplete:result.incomplete});assert.deepEqual(result.violations.filter(v=>['critical','serious'].includes(v.impact)).map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);}
 async function check(name,fn){const started=Date.now();try{await fn();checks.push({name,pass:true,milliseconds:Date.now()-started});}catch(e){checks.push({name,pass:false,milliseconds:Date.now()-started,error:e.message});}}
 async function screenshot(page,name){
- // Lazy artwork is meaningful evidence only after visible requests settle.
- await page.evaluate(()=>document.fonts.ready);
- await page.waitForFunction(()=>!Array.from(document.querySelectorAll('.dx-lazy-media[data-loading]')).some(n=>{const b=n.getBoundingClientRect();return b.bottom>0&&b.top<innerHeight&&b.right>0&&b.left<innerWidth;}),{},{timeout:15000});
- await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
- const path=out+'/'+name+'.png';await page.screenshot({path,fullPage:false});shots.push(path);
+ // Use the same actual clipping semantics as the canonical lazy loader.
+ // Bounding boxes alone count cards hidden above a scroll container as visible.
+ let readinessError=null;
+ try{
+  await page.evaluate(()=>document.fonts.ready);
+  await page.waitForFunction(()=>new Promise(resolve=>{
+   const pending=Array.from(document.querySelectorAll('.dx-lazy-media[data-loading]'));
+   if(!pending.length){resolve(true);return;}
+   const observer=new IntersectionObserver(entries=>{observer.disconnect();resolve(!entries.some(entry=>entry.isIntersecting&&entry.intersectionRect.width>0&&entry.intersectionRect.height>0));});
+   pending.forEach(node=>observer.observe(node));
+  }),{},{timeout:15000});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ }catch(error){readinessError=error.message;checks.push({name:name+' screenshot visible artwork readiness',pass:false,error:readinessError});}
+ const pending=await page.evaluate(()=>Array.from(document.querySelectorAll('.dx-lazy-media[data-loading]')).map(node=>({symbol:node.dataset.symbol,bounds:node.getBoundingClientRect().toJSON(),clippingAncestors:Array.from((function*(n){for(let p=n.parentElement;p;p=p.parentElement)yield p;})(node)).filter(parent=>{const style=getComputedStyle(parent);return style.overflowX!=='visible'||style.overflowY!=='visible';}).map(parent=>({className:parent.className,bounds:parent.getBoundingClientRect().toJSON(),overflow:getComputedStyle(parent).overflow}))})));
+ screenshotEvidence.push({name,readinessError,pending});
+ const path=out+'/'+name+'.png';try{await page.screenshot({path,fullPage:false});shots.push(path);}catch(error){checks.push({name:name+' screenshot capture',pass:false,error:error.message});}
 }
 async function waitCounter(page,index){await page.waitForFunction(i=>new RegExp('^'+i+'\\s+von\\s','i').test(document.querySelector('.dx-feed-zaehler')?.textContent?.trim()||''),index);}
 async function visibleFeedStock(page){return page.locator('.dx-feed-spur').evaluate(n=>{const b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {index:Number(c.dataset.index),symbol:c.dataset.symbol,height:Math.max(0,Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top))};}).sort((a,b)=>b.height-a.height)[0];});}
@@ -135,6 +146,6 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
 await check('no uncaught page errors',async()=>assert.deepEqual(errors,[]));
 }catch(e){checks.push({name:'browser suite completion',pass:false,error:e.stack||e.message});}finally{await browser.close();}
 const report={status:checks.every(x=>x.pass)?'PASS':'FAIL',checks,errors,shots,performance,limitations:['Five-second check is an automated content heuristic, not an independent human usability test.','Screenshots require visual review.','A Saturday run cannot prove receipt of regular-session realtime trades.','Automated structural checks are not a WCAG certification.','Local resource measurements are not a production latency SLA.']};
-report.engine=engine;report.firstScreenEvidence=firstScreenEvidence;report.interactionEvidence=interactionEvidence;
+report.engine=engine;report.firstScreenEvidence=firstScreenEvidence;report.interactionEvidence=interactionEvidence;report.screenshotEvidence=screenshotEvidence;
 await writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,totalChecks:checks.length,passed:checks.filter(c=>c.pass).length,failed:checks.filter(c=>!c.pass),screenshots:shots.length,firstScreenMilliseconds:firstScreenEvidence.map(e=>({key:e.key,milliseconds:e.milliseconds})),totalCheckMilliseconds:checks.reduce((n,c)=>n+(c.milliseconds||0),0)},null,2));if(report.status!=='PASS')process.exitCode=1;
 await writeFile(out+'/accessibility.json',JSON.stringify(accessibility,null,2));

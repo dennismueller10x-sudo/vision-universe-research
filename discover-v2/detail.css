@@ -154,6 +154,12 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-btn--ghost{background:transparent;color:
 /* Neighbor posters keep their own opaque reading surface inside the cyan
    onward world; do not inherit dark text onto the shared dark gradient. */
 body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#d7f3ed;--discover-bg-2:#c6e8e0;--discover-text:#183b38;--discover-muted:#385b56;--discover-dim:#385b56;--discover-up:#14653d;--discover-down:#ab292e}
+/* The global navigation already supplies scroll-padding. A second offset
+   hid the fundamental chart below the previous chapter after a jump. */
+body.dv2 .dv2-stock section[id]{scroll-margin-top:0}
+body.dv2 .dv2-stock .dv2-stock-neighbors .dx-rail-head{padding-left:0;padding-right:0}
+body.dv2 .dv2-stock .dv2-stock-neighbors .dx-rail-head h2{white-space:normal;overflow:visible;text-overflow:clip;text-transform:none;font-size:26px;line-height:1.2;max-width:100%;margin-bottom:12px}
+body.dv2 .dv2-stock .dv2-stock-neighbors .dx-rail-head p{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.5;margin-bottom:18px}
 @media(max-width:860px){
   body.dv2 .dv2-stock .dx-dhero h1{font-size:36px}
   body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:54px}
@@ -162,11 +168,11 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#d7f3ed;--disc
   body.dv2 .dv2-stock-nav button{min-height:135px;padding:17px}
   body.dv2 .dv2-research-number{margin-bottom:16px}
   body.dv2 .dv2-stock-nav b{font-size:18px}
-  body.dv2 .dv2-stock .dx-chapter--journey{margin:20px -20px;padding:30px 20px;border-radius:0;scroll-margin-top:80px}
+  body.dv2 .dv2-stock .dx-chapter--journey{margin:20px -20px;padding:30px 20px;border-radius:0}
   body.dv2 .dv2-stock .dx-chapter--journey h2{font-size:32px}
   body.dv2 .dv2-stock .dx-journey--stage{min-height:54svh}
   body.dv2 .dv2-stock .dx-journey-bild{margin-top:20px}
-  body.dv2 .dv2-stock .dx-journey-nach b{font-size:27px}
+  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(20px,6.5vw,27px)}
   body.dv2 .dv2-stock .dx-journey-delta b{font-size:30px}
   body.dv2 .dv2-stock .dv2-stock-valuation{margin:24px -20px;padding:34px 20px;border-radius:0}
   body.dv2 .dv2-stock .dv2-stock-next{margin:24px -20px 0;padding:34px 20px;border-radius:0}
