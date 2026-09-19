@@ -49,26 +49,39 @@ function schreibeMap(byTicker) {
 }
 
 function baue(cikMapPfad) {
+  /* -------------------------------------------------------------------
+     DER AUSGABEPFAD WAR FEST, DER EINGANG PARAMETRISIERT
+
+     Hier stand ein Kommentar, der den Schreibzugriff auf die echte
+     Ablage fuer unvermeidlich erklaerte: "der Emittentenbau schreibt in
+     die ECHTE Ablage". Das stimmte nicht - der Bau kennt --out seit
+     jeher. Uebergeben hat es nur niemand.
+
+     Ein Kommentar, der einen Defekt zur Eigenschaft erklaert, ist
+     teurer als der Defekt: er beendet die Suche. Gemessen hat es
+     danach niemand mehr, und die Suite hinterliess bei jedem lokalen
+     Lauf zwei geaenderte Produktionsdateien.
+
+     Der temporaere Ordner war ohnehin schon da. Er wurde nur nicht
+     benutzt.
+     ------------------------------------------------------------------- */
   const dir = mkdtempSync(join(tmpdir(), "vu-issuer-out-"));
-  /* ACHTUNG: der Emittentenbau schreibt in die ECHTE Ablage unter
-     quant/data/universe/. Der Kommentar hier behauptete frueher das
-     Gegenteil. Harmlos ist das nur, weil die Tests im Pruefjob laufen,
-     der nichts committet - der Backfill baut den Stand in einem eigenen
-     Job frisch. Wer diese Suite lokal laufen laesst, hat danach
-     geaenderte Artefakte im Arbeitsbaum. */
   execFileSync(process.execPath, [
     join(root, "scripts", "universe", "build-issuer-master.mjs"),
-    "--cik-map", cikMapPfad
+    "--cik-map", cikMapPfad,
+    "--out", dir
   ], { cwd: root, stdio: "pipe", env: Object.assign({}, process.env) });
   return {
-    manifest: readJSON(join(root, "quant", "data", "universe", "issuer-manifest.json")),
-    resolution: readJSON(join(root, "quant", "data", "universe", "cik-resolution.json")),
-    issuers: ladeEmittenten()
+    manifest: readJSON(join(dir, "issuer-manifest.json")),
+    resolution: readJSON(join(dir, "cik-resolution.json")),
+    issuers: ladeEmittenten(dir)
   };
 }
 
-function ladeEmittenten() {
-  const dir = join(root, "quant", "data", "universe", "issuers");
+function ladeEmittenten(ausgabeWurzel) {
+  /* Gelesen wird, wohin geschrieben wurde. Ein Test, der anderswo
+     nachsieht als der Lauf geschrieben hat, prueft den Altbestand. */
+  const dir = join(ausgabeWurzel || join(root, "quant", "data", "universe"), "issuers");
   if (!existsSync(dir)) return [];
   const out = [];
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
