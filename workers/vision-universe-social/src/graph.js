@@ -821,3 +821,48 @@ export async function verifyMedia(ctx, { mediaId, accessToken }) {
     caption: data.caption ? String(data.caption) : null
   });
 }
+
+/* =====================================================================
+   HASHTAG SEARCH — EIN SENSOR, KEIN ARCHIV
+
+   Zwei Aufrufe je Hashtag: erst die ID zum Namen, dann die Medien.
+   Das ist die offizielle Form und nicht zu umgehen.
+
+   DIE KNAPPE RESSOURCE IST DER HASHTAG, NICHT DIE ANFRAGE
+
+   Meta erlaubt 30 EINZIGARTIGE Hashtags je rollierendem 7-Tage-Fenster
+   und Konto. Eine erneute Abfrage desselben Hashtags innerhalb dieser
+   sieben Tage zaehlt NICHT noch einmal. Wer das verwechselt, haelt
+   haeufiges Nachsehen fuer teuer und breites Streuen fuer billig - und
+   es ist genau umgekehrt.
+
+   Zurueckgegeben werden nur oeffentliche Felder. Benutzernamen anderer
+   Konten liefert die Schnittstelle ohnehin nicht.
+   ===================================================================== */
+export async function hashtagId(ctx, { userId, name, token }) {
+  const r = await graph(ctx, "/ig_hashtag_search",
+    { user_id: userId, q: String(name).replace(/^#/, "") }, token);
+  if (!r.ok) return r;
+  const id = r.data && r.data.data && r.data.data[0] && r.data.data[0].id;
+  if (!id) {
+    return { ok: false, reason: "hashtagUnknown",
+      message: "Instagram kennt diesen Hashtag nicht oder gibt ihn nicht heraus." };
+  }
+  return { ok: true, id };
+}
+
+export async function hashtagMedia(ctx, { hashtagId, userId, token, edge, limit }) {
+  /* `top_media` zeigt, was Reichweite hatte; `recent_media` zeigt, was
+     gerade passiert. Zwei verschiedene Fragen - wer nur eine stellt,
+     bekommt nur eine Antwort. */
+  const kante = edge === "recent" ? "recent_media" : "top_media";
+  return await graph(ctx, "/" + hashtagId + "/" + kante, {
+    user_id: userId,
+    /* Ausdruecklich KEINE Felder, die fremde Inhalte als
+       Produktionsmaterial brauchbar machen wuerden. Die Caption wird
+       geholt, weil Muster ohne Text nicht erkennbar sind - sie wird
+       aber nie uebernommen, sondern nur abstrahiert. */
+    fields: "id,media_type,like_count,comments_count,timestamp,permalink,caption",
+    limit: Math.min(Number(limit) || 25, 50)
+  }, token);
+}

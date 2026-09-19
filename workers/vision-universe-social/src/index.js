@@ -54,7 +54,8 @@ import {
   createMediaContainer, mediaContainerStatus, publishMediaContainer, verifyMedia,
   mediaInsights, MEDIA_INSIGHT_CALLS,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
-  REQUIRED_SCOPES, DEFAULT_API_VERSION
+  REQUIRED_SCOPES, DEFAULT_API_VERSION,
+  hashtagId, hashtagMedia
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
@@ -792,6 +793,80 @@ async function handlePublish(request, url, env) {
  * taucht in der Medienliste nicht mehr auf, ueber seine Kennung ist er
  * weiterhin abfragbar.
  */
+/* ---------------------------------------------------------------------
+   EXTERNAL SOCIAL INTELLIGENCE — DER ERSTE SENSOR
+
+   Liest oeffentliche Medien zu einem Hashtag. Kein fremder Inhalt wird
+   gespeichert oder weitergereicht: dieser Endpunkt gibt zurueck, was
+   Meta liefert, und die Abstraktion in Muster geschieht danach in
+   Vision Universe.
+
+   Die 30-Hashtag-Grenze wird NICHT hier verwaltet. Der Worker weiss
+   nichts ueber das Portfolio und duerfte auch nichts darueber wissen -
+   er ist ein Sensor. Wer die knappe Ressource verwaltet, ist der
+   Portfolio-Manager auf VU-Seite. Ein Sensor, der selbst entscheidet,
+   wann er messen darf, ist kein Sensor mehr.
+   --------------------------------------------------------------------- */
+async function handleHashtagSearch(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected",
+      message: "Es besteht keine Verbindung. Es kann nichts beobachtet werden." }, 409);
+  }
+
+  const namen = String(url.searchParams.get("tags") || "")
+    .split(",").map((s) => s.trim().replace(/^#/, "")).filter(Boolean);
+  if (!namen.length) {
+    return json({ error: "noTags",
+      message: "Kein tags-Parameter. Ohne Hashtag gibt es nichts zu beobachten." }, 400);
+  }
+  /* Das Subrequest-Budget: zwei Aufrufe je Hashtag. Bei 50 erlaubten
+     Aufrufen sind das hoechstens 24 - mit Reserve zehn. */
+  if (namen.length > 10) {
+    return json({ error: "tooManyTags",
+      message: "Hoechstens zehn Hashtags je Anfrage: jeder kostet zwei " +
+        "ausgehende Aufrufe, und das Worker-Budget liegt bei 50." }, 400);
+  }
+
+  const ctx = graphContext(env);
+  const token = record.pageAccessToken;
+  const userId = record.instagramAccountId;
+  const edge = url.searchParams.get("edge") === "recent" ? "recent" : "top";
+  const limit = Number(url.searchParams.get("limit")) || 25;
+
+  const ergebnisse = [];
+  for (const name of namen) {
+    const id = await hashtagId(ctx, { userId, name, token });
+    if (!id.ok) {
+      ergebnisse.push({ hashtag: name, ok: false, reason: id.reason,
+        message: id.message });
+      continue;
+    }
+    const medien = await hashtagMedia(ctx,
+      { hashtagId: id.id, userId, token, edge, limit });
+    if (!medien.ok) {
+      ergebnisse.push({ hashtag: name, ok: false, reason: medien.reason,
+        message: medien.message });
+      continue;
+    }
+    ergebnisse.push({ hashtag: name, ok: true, hashtagId: id.id, edge,
+      media: (medien.data && medien.data.data) || [] });
+  }
+
+  return json({
+    ok: ergebnisse.some((r) => r.ok),
+    observedAt: new Date().toISOString(),
+    edge,
+    /* Woertlich mitgeschrieben: was hier zurueckkommt, sind
+       Beobachtungen ueber fremde Beitraege - keine Vorlage. */
+    usage: "PATTERN_OBSERVATION_ONLY",
+    results: ergebnisse
+  });
+}
+
 async function handleInsights(request, url, env) {
   const gate = requireAdmin(request, url, env);
   if (!gate.ok) return gate.response;
@@ -1481,6 +1556,11 @@ export default {
            allem, was einen Beitrag erzeugt. */
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
         return await handleInsights(request, url, env);
+      }
+      if (path === "/social/meta/hashtag-search") {
+        /* Lesend wie Insights: GET genuegt, weil nichts entsteht. */
+        if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
+        return await handleHashtagSearch(request, url, env);
       }
       if (path === "/" || path === "/social" || path === "/social/meta") {
         const publicRecord = env.VU_SOCIAL_KV ? await readPublic(env) : { connected: false };
