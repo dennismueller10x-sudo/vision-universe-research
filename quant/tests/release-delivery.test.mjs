@@ -33,6 +33,11 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   execFileSync('git',['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture'],{cwd:root});
   await assert.rejects(buildRelease({root,output:join(root,'site')}),/OUTPUT_MUST_BE_OUTSIDE_SOURCE/);
   const report=await buildRelease({root,output});assert.equal(report.status,'PASS');
+  const firstHTML=await readFile(join(output,'vu2/index.html'),'utf8');assert.match(firstHTML,/release-bundle\.js\?v=[a-f0-9]{16}/);
+  await writeFile(join(root,'vu2/app.js'),'void 1;');
+  const second=join(tmp,'second');await buildRelease({root,output:second});
+  const secondHTML=await readFile(join(second,'vu2/index.html'),'utf8');
+  assert.notEqual(firstHTML.match(/\?v=([a-f0-9]+)/)[1],secondHTML.match(/\?v=([a-f0-9]+)/)[1],'changed browser code must have a distinct cache key');
   assert.match(await readFile(join(output,'quant/index.html'),'utf8'),/location\.replace\("\/vu2\/"/);
   assert.equal(await readFile(join(output,'Quant/index.html'),'utf8'),await readFile(join(output,'quant/index.html'),'utf8'));
   assert.equal(await readFile(join(root,'index.html'),'utf8'),'existing home');

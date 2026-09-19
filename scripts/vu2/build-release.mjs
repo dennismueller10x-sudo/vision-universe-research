@@ -51,9 +51,10 @@ export async function buildRelease({root,output}){
   if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
   chunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
  }
- await writeFile(resolve(output,'vu2/release-bundle.js'),chunks.join('\n;\n'));
+ const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
+ await writeFile(resolve(output,'vu2/release-bundle.js'),bundle);
  let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
- bundled=bundled.replace('</body>','<script src="/vu2/release-bundle.js"></script></body>');
+ bundled=bundled.replace('</body>','<script src="/vu2/release-bundle.js?v='+bundleVersion+'"></script></body>');
  await writeFile(resolve(output,'vu2/index.html'),bundled);
  // Activate the reviewed Quant 2.0 entry only in the release projection.
  // Source workspaces stay intact, keeping rollback a reversible Git action.

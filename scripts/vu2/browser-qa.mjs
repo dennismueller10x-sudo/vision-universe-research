@@ -110,7 +110,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  await page.unroute('**/quant/data/market/discover-series/**');
  await page.unroute('**/quant/data/sec/quant-factor-inputs.json');checks.push({view:'canonical-identity-panel-outage',width,pass:true});
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});
- const serviceRoute=/\/(?:quant\/api\/product-services|vu2\/release-bundle)\.js$/;
+ const serviceRoute=/\/(?:quant\/api\/product-services|vu2\/release-bundle)\.js(?:\?v=[a-f0-9]+)?$/;
  // Install the same rejection before service initialization, independent of
  // whitespace/minification. Removing this route restores the original service.
  await page.route(serviceRoute,async route=>{const response=await route.fetch();const injected=`
