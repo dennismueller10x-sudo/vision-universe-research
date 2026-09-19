@@ -1,0 +1,38 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "node scripts/vu2/build-vercel-public.mjs",
+  "outputDirectory": ".vercel-public",
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "github": { "silent": true },
+  "functions": {
+    "api/history.js": {
+      "maxDuration": 30,
+      "includeFiles": "{server/*.js,quant/engines/history-store.js,quant/engines/bar-codec.js,quant/engines/zero-cost-guard.js,scripts/market/storage/s3-driver.mjs}"
+    },
+    "api/intraday.js": {
+      "maxDuration": 15,
+      "includeFiles": "{server/*.js}"
+    },
+    "api/status.js": {
+      "maxDuration": 10,
+      "includeFiles": "{server/http.js}"
+    },
+    "api/fundamentals.py": {
+      "maxDuration": 30,
+      "includeFiles": "{server/**,scripts/vu2/fundamentals-serving.py,scripts/quant/sec/**,quant/config/sec-metric-registry.json}"
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
+    }
+  ]
+}

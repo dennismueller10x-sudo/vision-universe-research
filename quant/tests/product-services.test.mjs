@@ -36,9 +36,15 @@ test('Technical summary rejects future, mocked and mismatched bundles',async()=>
  assert.equal((await guarded.getTechnicalIntelligence('NVDA')).reason,'INVALID_TECHNICAL_PROVENANCE');
  }
 });
-test('Historical Fundamentals service preserves actual SEC identity and current scope',async()=>{
+test('Historical Fundamentals preserves SEC identity and keeps canonical out-of-preview members typed',async()=>{
  const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
- const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');assert.equal(reads.length,before);
+ const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'PRODUCT_DATA_NOT_CONNECTED');assert.ok(reads.slice(before).every(path=>path.startsWith('/quant/data/universe/')));
+});
+test('canonical remote market services receive stable IDs and preserve typed semantics',async()=>{
+ const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));const path=new URL(url).pathname;return {ok:true,json:async()=>path.endsWith('/history')?{state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[{date:'2026-09-18',close:1}],adjustmentStatus:'SPLIT_ADJUSTED'}:{state:'INTRADAY_AVAILABLE',identity:{securityId:'vu_d57074b4128184'},points:[['09:30',1]],priceSemantics:'UNSPECIFIED'}};};
+ try{const remote=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query,productServiceBase:'https://vision-universe-research.vercel.app/api'});
+  assert.equal((await remote.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');assert.equal((await remote.getIntraday('NVDA')).priceSemantics,'UNSPECIFIED');assert.equal(remote.getRealtimeCapability().chartMovement,'TRADE_EVENTS_ONLY');assert.ok(calls.every(url=>url.includes('securityId=vu_d57074b4128184')));
+ }finally{globalThis.fetch=original;}
 });
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
  const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);

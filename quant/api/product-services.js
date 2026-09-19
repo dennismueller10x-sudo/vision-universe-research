@@ -18,7 +18,15 @@ const Directory=typeof module!=='undefined'&&module.exports?require('../engines/
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
+ const serviceBase=options.productServiceBase!==undefined?options.productServiceBase:
+  (typeof location!=='undefined'&&location.hostname==='research.visionuniverse.de'?'https://vision-universe-research.vercel.app/api':null);
  const directory=Directory.create({loadJSON:load});
+ async function remote(path,params){
+  if(!serviceBase||typeof fetch!=='function')return null;
+  const url=new URL(serviceBase.replace(/\/$/,'')+'/'+path.replace(/^\//,''));
+  Object.entries(params||{}).forEach(([key,value])=>{if(value!==undefined&&value!==null)url.searchParams.set(key,String(value));});
+  try{const response=await fetch(url,{headers:{Accept:'application/json'},credentials:'omit'});if(!response.ok)return null;return await response.json();}catch{return null;}
+ }
  async function identity(ticker){
   const result=await directory.getInstrument(ticker),i=result.instrument;
   if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId)||!/^\d{10}$/.test(i.cik))return null;
@@ -166,14 +174,33 @@ function create(options){
  }
  async function getHistoricalFundamentals(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
-   const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+   const served=await remote('fundamentals',{ticker,securityId:instrument.instrumentId,policy:'latest_known',usage:'research',asOf:new Date().toISOString().slice(0,10)});
+   if(served?.state==='AVAILABLE'&&served.identity?.securityId===instrument.instrumentId&&served.history){
+    return History.build(served.history,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
+   }
+   const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable(served?.reason||served?.state||'PRODUCT_DATA_NOT_CONNECTED');
    const index=await load('/quant/data/sec/inspector_index.json'),entry=index.companies?.find(s=>s.ticker===ticker);
    if(!entry?.cik||entry.cik!==instrument.cik)return unavailable('INVALID_IDENTITY');
    const source=await load('/quant/data/sec/inspector/'+ticker+'.json');
    return History.build(source,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
   }catch{return unavailable('SOURCE_MISSING');}
  }
+ async function getHistoricalPriceHistory(ticker,selection={}){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+   const result=await remote('history',{ticker,securityId:instrument.instrumentId,columns:selection.columns||'close',from:selection.from,to:selection.to});
+   return result&&result.identity?.securityId===instrument.instrumentId?result:unavailable('PRODUCT_DATA_SERVICE_UNREACHABLE');
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
+ async function getIntraday(ticker){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+   const result=await remote('intraday',{ticker,securityId:instrument.instrumentId});
+   return result&&result.identity?.securityId===instrument.instrumentId?result:unavailable('PRODUCT_DATA_SERVICE_UNREACHABLE');
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
+ function getRealtimeCapability(){return {state:serviceBase?'AVAILABLE':'UNAVAILABLE',transport:'VISION_UNIVERSE_RELAY',url:'wss://live.visionuniverse.de/live',priceSemantics:'UNSPECIFIED',chartMovement:'TRADE_EVENTS_ONLY'};}
  function getRecipes(){return [
   {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit nicht negativer Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},
   {id:'growing-business',title:'Wachsendes Geschäft',explanation:'Unternehmen, deren ausgewiesenes Umsatzwachstum mindestens 20 Prozent beträgt.',field:'revenueGrowth',threshold:20,rule:'Umsatzwachstum ≥ 20 %'},
@@ -189,7 +216,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
