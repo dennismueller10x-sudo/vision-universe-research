@@ -59,3 +59,9 @@ CI run 35428042586: WebKit 24/24 passed; Chromium 128/131 passed. First-screen h
 - Fundamental visual critique: wrapping metric tabs consumed the viewport. Replaced with a single horizontal tab rail and compact side-by-side period values; the actual chart must now appear in the chapter screenshot.
 - Feed screenshot revealed missing bounded viewport in the new shell: IntersectionObserver could treat many cards as visible. The shared feed now has its required fixed viewport height and native scrolling. Added a bounded-initial-load and visible-next-stock check, beyond mere DOM pagination.
 - Full home-chunk completion test added once on mobile dark, comparing actual rendered surfaces to the canonical three-chunk manifest.
+
+## Iteration 3 — final visual recovery
+
+CI run 35428372759: all product assertions passed, including contrast, 320px chart controls, visible feed movement, pagination, and all 34 canonical home surfaces. The remaining test failure was a case-sensitive counter assertion against CSS-uppercase innerText ("2 VON 400"); corrected without changing the product or its semantic assertions.
+
+Reviewed mobile chart, fundamentals, immersive feed, light search and desktop home screenshots. Fundamental tabs now leave room for the large chart; the feed presents one stock per viewport with readable actions. Five-second entry gate is a browser/heuristic review, not an independent human study. Realtime integration reuses the canonical client; a new regular-session tick cannot be demonstrated on Saturday.

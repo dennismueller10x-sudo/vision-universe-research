@@ -56,7 +56,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const counterBefore=await page.locator('.dx-feed-zaehler').innerText();
   await track.evaluate(n=>{n.scrollTop=n.clientHeight;});await page.waitForTimeout(700);
   const after=await visible(),counterAfter=await page.locator('.dx-feed-zaehler').innerText();
-  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','One screen scroll did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
+  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','One screen scroll did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /i.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
   interactionEvidence.push({key,type:'feed-single-screen',initialCards:count,before,after,counterBefore,counterAfter});
   await screenshot(page,key+'-feed-second-stock');
  });
