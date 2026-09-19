@@ -266,12 +266,12 @@
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:1.0",
       "attempt": 5,
       "revision": "text-only",
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-19T08:10:16.224Z",
-      "updatedAt": "2026-09-19T08:20:00.000Z",
+      "updatedAt": "2026-09-19T08:18:00.000Z",
       "prNumber": 116,
       "deliveryIds": [],
-      "observedStarts": 0,
+      "observedStarts": 1,
       "history": [
         {
           "state": "CREATIVE_JOB_REQUESTED",
@@ -282,11 +282,22 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-19T08:20:00.000Z",
           "note": "PR 116 direkt als ready geoeffnet - ein Ereignis statt Draft und Umschalten."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-19T08:16:00.000Z",
+          "note": "Eine Datei, kein Asset."
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-19T08:18:00.000Z",
+          "note": "Vierzehn Pflichtpruefungen bestanden, geerbtes Asset unveraendert. Rubrik: Variante 2 erfuellt 9 von 9. Kandidat cand_20260919_f6cbd0f9."
         }
       ],
       "prState": "open",
       "triggerEvent": "pull_request/opened",
-      "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt."
+      "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt.",
+      "deliveryCount": 1
     }
   ],
   "budget": {
