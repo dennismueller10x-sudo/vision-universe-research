@@ -87,7 +87,40 @@
 
     var asOf = lastTs === null ? null : new Date(lastTs).toISOString();
     var asOfLocal = lastTs === null ? null : MarketHours.localParts(lastTs, tz).clock.slice(0, 5);
-    var regularComplete = nowMs >= closeMs;
+    /* WAS "KOMPLETT" HEISST - UND WAS NICHT
+     *
+     * Bis zum 19.09.2026 stand hier `nowMs >= closeMs`: eine Aussage
+     * ueber die UHR, nicht ueber die Reihe. Nach 16:00 galt jeder
+     * Snapshot als komplett, auch einer, der um 15:50 endete - und das
+     * Etikett behauptete dann "Heute - Schluss 16:00". Owner-Regel vom
+     * 19.09.2026: verboten.
+     *
+     * Getrennt wird jetzt, was zwei verschiedene Dinge sind:
+     *
+     *   fetchedAfterClose  Die Abfrage lief NACH dem Schluss. Damit kann
+     *                      keine regulaere Bar mehr nachkommen. Das ist
+     *                      eine Tatsache ueber den Abruf.
+     *
+     *   coversFinalSlot    Die Reihe enthaelt den LETZTEN Slot der
+     *                      Sitzung. Bei Bars auf den Bar-ANFANG
+     *                      gestempelt ist das close minus ein Intervall:
+     *                      bei 16:00 Schluss und 5 Minuten also 15:55.
+     *                      Das ist eine Tatsache ueber die Daten.
+     *
+     *   regularComplete    Beides zusammen. Nur dann darf irgendwo ein
+     *                      Schluss behauptet werden.
+     *
+     * Ein illiquider Titel, der um 15:40 zum letzten Mal gehandelt hat,
+     * bekommt damit kein falsches "Schluss 16:00" - aber auch kein
+     * ewiges STALE: fetchedAfterClose sagt, dass nichts mehr kommt, und
+     * lastRegularLocal sagt, woran das liegt. */
+    var intervalMs = (parseInt(input.interval || "5min", 10) || 5) * 60000;
+    var fetchedAfterClose = nowMs >= closeMs;
+    var letzteRegular = regular.length ? regular[regular.length - 1][0] : null;
+    var letzterSlot = MarketHours.localParts(closeMs - intervalMs, tz);
+    var letzterSlotLocal = letzterSlot ? letzterSlot.clock.slice(0, 5) : null;
+    var coversFinalSlot = !!(letzteRegular && letzterSlotLocal && letzteRegular >= letzterSlotLocal);
+    var regularComplete = fetchedAfterClose && coversFinalSlot;
     return {
       schemaVersion: SCHEMA,
       instrumentId: input.security.ticker, symbol: input.security.ticker,
@@ -106,6 +139,10 @@
       isLive: false,
       isDelayed: true, delayMinutes: isNum(input.delayMinutes) ? input.delayMinutes : null,
       regularComplete: regularComplete,
+      fetchedAfterClose: fetchedAfterClose,
+      coversFinalSlot: coversFinalSlot,
+      lastRegularLocal: letzteRegular,
+      finalSlotLocal: letzterSlotLocal,
       isComplete: nowMs >= afterMs,
       previousClose: isNum(input.previousClose) ? round2(input.previousClose) : null,
       points: regular,
@@ -164,7 +201,13 @@
     if (!prev) return { chosen: next, reason: "first" };
     if (!next) return { chosen: prev, reason: "noNext" };
     if (prev.sessionDate !== next.sessionDate) return { chosen: next, reason: "newSession" };
-    if (prev.regularComplete && prev.isComplete) return { chosen: prev, reason: "immutable" };
+    /* Unveraenderlich heisst: es kann nichts mehr kommen. Das haengt am
+       ABRUF (nach Schluss und nach den erweiterten Zeiten), nicht daran,
+       ob die Reihe den letzten Slot trifft - ein illiquider Titel ohne
+       Handel um 15:55 wuerde sonst ewig neu geholt. Aeltere Snapshots
+       ohne das Feld fallen auf regularComplete zurueck. */
+    var prevZu = prev.fetchedAfterClose !== undefined ? prev.fetchedAfterClose : prev.regularComplete;
+    if (prevZu && prev.isComplete) return { chosen: prev, reason: "immutable" };
     var np = (next.points || []).length, pp = (prev.points || []).length;
     if (np < pp) return { chosen: prev, reason: "fewerPoints" };
     return { chosen: next, reason: np > pp ? "grown" : "refreshed" };

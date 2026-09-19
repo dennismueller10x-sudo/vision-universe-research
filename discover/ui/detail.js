@@ -1126,15 +1126,35 @@
     var letzterKurs = punkte.length ? punkte[punkte.length - 1][1] : null;
     var basis = isNum(snap.previousClose) ? snap.previousClose : (punkte.length ? punkte[0][1] : null);
     var tagesDelta = isNum(letzterKurs) && isNum(basis) && basis > 0 ? (letzterKurs / basis - 1) * 100 : null;
+    /* EINE ABLEITUNG, VIER ZUSTAENDE (Owner-Entscheidung 19.09.2026)
+     *
+     * Etikett, Quellenbezeichnung und Fussnote kommen ab hier aus
+     * quant/engines/realtime/source-state.js und nirgendwo sonst. Vorher
+     * setzte jede Stelle sie aus freshnessState, isLive, partial,
+     * streaming und regularComplete selbst zusammen - und "5-Minuten-
+     * Kurse" stand fest verdrahtet da, auch wenn der laufende Kurs den
+     * letzten Punkt gesetzt hatte. */
+    var SS = global.VURealtime && global.VURealtime.SourceState;
+    var quelle = SS ? SS.bestimme({
+      resolution: D.LiveHub && D.LiveHub.resolution ? D.LiveHub.resolution() : null,
+      snapshot: p.snapshot, live: p.live, now: new Date()
+    }) : null;
+    var etikett = quelle
+      ? { label: quelle.label, tone: quelle.tone, state: quelle.state,
+          timezoneNote: "Uhrzeiten in New Yorker Zeit" }
+      : p.label;
+    var quellenText = quelle && quelle.sourceText ? quelle.sourceText : "5-Minuten-Kurse";
+    var eingefroren = !!(quelle && quelle.isFrozen);
+
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: isNum(letzterKurs) ? C().money(letzterKurs) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
-        el("span", { class: "dx-chart-hero-wort", text: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute" })
+        el("span", { class: "dx-chart-hero-wort", text: eingefroren ? "am " + C().dateShort(snap.sessionDate) : "heute" })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
-        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + C().money(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · 5-Minuten-Kurse" }),
-        C().liveLabel(p.label, snap)
+        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + C().money(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
+        C().liveLabel(etikett, snap)
       ])
     ]);
     chartBox.appendChild(kopf);
@@ -1148,7 +1168,11 @@
     }
     svgNode.classList.add("dx-intraday-chart");
     var rahmen = el("div", { class: "dx-intraday",
-                             "data-live": snap.regularComplete ? "complete" : (snap.streaming ? "streaming" : "running"),
+                             /* Der Quellzustand steht im Markup: so kann die QA ihn lesen,
+                                statt ihn aus Texten zu erraten. */
+                             "data-source-state": quelle ? quelle.state : "",
+                             "data-source-reason": quelle ? quelle.reason : "",
+                             "data-live": eingefroren ? "complete" : (snap.streaming ? "streaming" : "running"),
                              "data-freshness": (p.freshness && p.freshness.freshnessState) || "",
                              "data-direction": svgNode.getAttribute("data-direction") });
     rahmen.appendChild(svgNode);
@@ -1159,14 +1183,18 @@
       wann: function (pt) { return pt.time + " New York"; },
       wort: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute"
     });
-    var text = " · 5-Minuten-Kurse · Uhrzeiten New York" +
+    /* Die Fussnote folgt dem Zustand, nicht mehr einer Kette von Flags. */
+    var zustandsSatz = {
+      REALTIME: " · der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss",
+      SNAPSHOT: " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand",
+      FINAL_SESSION: " · die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen",
+      STALE: ""
+    };
+    var text = " · " + quellenText + " · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
-      (p.freshness && p.freshness.freshnessState === "STALE"
-        ? staleSatz(p.freshness, snap)
-        : snap.regularComplete ? ""
-          : snap.streaming
-            ? " · der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss"
-            : " · die Sitzung läuft, der Verlauf wächst mit dem nächsten Stand");
+      (quelle && quelle.state === "STALE"
+        ? staleSatzAusZustand(quelle)
+        : (quelle && zustandsSatz[quelle.state]) || "");
     chartBox.appendChild(el("p", { class: "dx-intraday-note" }, [el("span", { text: text.replace(/^ · /, "") })]));
   }
 
@@ -1183,6 +1211,20 @@
    * der Stand sei nicht vom heutigen Tag, und im selben Atemzug den
    * heutigen Tag als erwartet nannte. Die Beschriftung war richtig, die
    * Fussnote nicht. */
+  /* Ein STALE hat verschiedene Gruende, und sie brauchen verschiedene
+     Saetze. Der Grund kommt jetzt aus dem Quellzustand. */
+  function staleSatzAusZustand(q) {
+    if (q.reason === "closeMissing") {
+      return " · der Schluss dieser Sitzung liegt noch nicht vor; er wird mit dem nächsten Datenlauf nachgetragen";
+    }
+    if (q.reason === "runningSessionStaleAsOf") {
+      return " · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben" +
+             (q.asOfLocal ? " (Stand " + String(q.asOfLocal).slice(0, 5) + ")" : "") +
+             "; neuere Kurse folgen mit dem nächsten Datenlauf";
+    }
+    return " · dieser Stand ist nicht der letzte Handelstag; neuere Kurse folgen mit dem nächsten Datenlauf";
+  }
+
   function staleSatz(f, snap) {
     if (f.reason === "runningSessionStaleAsOf") {
       var stand = snap && snap.asOfLocal ? " (Stand " + snap.asOfLocal + ")" : "";

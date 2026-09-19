@@ -68,6 +68,7 @@ const DisplayPolicy = require(join(engines, "display-policy.js"));
 const TradingSession = require(join(engines, "realtime", "trading-session.js"));
 const Snapshot = require(join(engines, "realtime", "intraday-snapshot.js"));
 const Freshness = require(join(engines, "realtime", "freshness.js"));
+const IntradayScope = require(join(engines, "realtime", "intraday-scope.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
 
 const CALENDAR = JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8"));
@@ -154,15 +155,64 @@ function sessionCoverage(date) {
   if (!existsSync(dir)) return 0;
   return readdirSync(dir).filter((n) => n.endsWith(".json")).length / Math.max(1, resolvedScope.securities.length);
 }
-if (SCOPE === "auto") {
-  if (lage.marketState === "OPEN") {
-    SCOPE = "discover";
-    console.log("  Umfang auto: Boerse offen -> discover");
-  } else {
-    const deckung = sessionCoverage(session.sessionDate);
-    SCOPE = deckung < UNIVERSE_COVERAGE ? "universe" : "discover";
-    console.log(`  Umfang auto: letzte Sitzung ${session.sessionDate} liegt fuer ${(deckung * 100).toFixed(0)} % des Universums vor -> ${SCOPE}`);
+/* Wer zuerst bedient wird, wenn die Glocke laeutet.
+ *
+ * Der Vorfall vom 18.09.2026: um 16:02 New York - zwei Minuten nach
+ * Schluss - entschied dieser Block "universe", weil erst 519 von 6.876
+ * Dateien der Sitzung vorlagen (7,5 %). Der Lauf brauchte siebzig
+ * Minuten, und die Concurrency-Gruppe stellte jeden Fuenf-Minuten-Lauf
+ * dahinter in die Warteschlange. Ergebnis: die 519 Titel, die auf
+ * Discover ueberhaupt sichtbar sind, bekamen ihren Schlussstand als
+ * LETZTE - bis etwa 17:15. Der Eigentuemer sah um 16:08 auf der
+ * Nebius-Seite "Stand 15:50 - Schluss folgt" und hatte recht.
+ *
+ * Eine Prioritaetsumkehr: Wartungsarbeit am Gesamtuniversum ging vor
+ * der Frische dessen, was ein Mensch anschauen kann.
+ *
+ * Die Reihenfolge ist jetzt festgelegt: erst den sichtbaren Umfang bis
+ * zum Sitzungsabschluss bringen (fuenf Minuten), dann das Universum.
+ * Erst wenn der Discover-Umfang versiegelt ist, darf ein Lauf die
+ * grosse Runde drehen. Owner-Entscheidung vom 19.09.2026:
+ * "User-facing freshness hat Vorrang vor Universe Maintenance." */
+function discoverTicker() {
+  /* Dieselbe Liste, die der Discover-Zweig unten nimmt - eine Quelle,
+     nicht zwei. Fehlt sie, gibt es nichts zu versiegeln. */
+  const file = join(root, "discover", "data", "live-scope", UNIVERSE_ID + ".json");
+  if (!existsSync(file)) return [];
+  try {
+    const ls = JSON.parse(readFileSync(file, "utf8"));
+    return (ls.symbols || []).filter((t) => byTicker.has(t));
+  } catch (e) { return []; }
+}
+function sichereDatei(pfad) {
+  if (!existsSync(pfad)) return null;
+  try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (e) { return null; }
+}
+function discoverVersiegelt(date) {
+  const dir = join(OUT_DIR, date);
+  if (!existsSync(dir)) return { versiegelt: false, fertig: 0, gesamt: 0 };
+  let fertig = 0, gesamt = 0;
+  for (const ticker of discoverTicker()) {
+    const s = sichereDatei(join(dir, "ref_" + ticker + ".json"));
+    gesamt++;
+    if (s && s.regularComplete) fertig++;
   }
+  return { versiegelt: gesamt > 0 && fertig === gesamt, fertig, gesamt };
+}
+if (SCOPE === "auto") {
+  const siegel = lage.marketState === "OPEN" ? { versiegelt: true, fertig: 0, gesamt: 0 }
+                                             : discoverVersiegelt(session.sessionDate);
+  const deckung = sessionCoverage(session.sessionDate);
+  /* Die Regel steht in quant/engines/realtime/intraday-scope.js, damit
+     sie geprueft werden kann und nicht als Kommentar verdunstet. */
+  const wahl = IntradayScope.waehleUmfang({
+    marketState: lage.marketState, discoverSealed: siegel.versiegelt,
+    universeCoverage: deckung, universeThreshold: UNIVERSE_COVERAGE
+  });
+  SCOPE = wahl.scope;
+  console.log(`  Umfang auto: ${wahl.reason} -> ${SCOPE}` +
+              (lage.marketState === "OPEN" ? ""
+                : ` (Discover-Siegel ${siegel.fertig}/${siegel.gesamt}, Universum ${(deckung * 100).toFixed(0)} %)`));
 }
 let symbole;
 let scopeLabel = SCOPE;
@@ -174,8 +224,7 @@ if (SCOPE === "universe") {
     console.error(`  ABBRUCH: ${file.replace(root + "/", "")} fehlt. Der Discover-Build schreibt die Titel der Flaechen dorthin.`);
     process.exit(1);
   }
-  const ls = JSON.parse(readFileSync(file, "utf8"));
-  symbole = (ls.symbols || []).filter((t) => byTicker.has(t));
+  symbole = discoverTicker();
   scopeLabel = "discover (" + file.replace(root + "/", "") + ")";
 } else {
   symbole = SCOPE.split(",").map((t) => t.trim().toUpperCase()).filter(Boolean);
