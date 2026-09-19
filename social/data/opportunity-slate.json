@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T15:24:09.667Z",
+  "generatedAt": "2026-09-19T15:51:26.355Z",
   "purpose": "BREADTH_PROOF_ONLY",
   "topics": [
     {
@@ -26,8 +26,165 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/bekannte-namen.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)",
+          "source": "discover.row.bekannte-namen",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "37 von 5947 geprueften Titeln erfuellen das; bei 184 fehlt die noetige Kennzahl.",
+          "source": "discover.row.bekannte-namen",
+          "temporal": false
+        },
+        {
+          "id": "price-VLO",
+          "entity": "Valero Energy",
+          "metric": "Kurs",
+          "value": 390.42,
+          "unit": "USD",
+          "statement": "Valero Energy: Kurs 390.42 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-VLO",
+          "entity": "Valero Energy",
+          "metric": "in 12 Monaten",
+          "value": 1.516872,
+          "statement": "Valero Energy: in 12 Monaten 1.516872.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-VLO",
+          "entity": "Valero Energy",
+          "statement": "Valero Energy: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CRM",
+          "entity": "Salesforce",
+          "metric": "Kurs",
+          "value": 247.72,
+          "unit": "USD",
+          "statement": "Salesforce: Kurs 247.72 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CRM",
+          "entity": "Salesforce",
+          "metric": "in 3 Monaten",
+          "value": 0.488255,
+          "statement": "Salesforce: in 3 Monaten 0.488255.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CRM",
+          "entity": "Salesforce",
+          "statement": "Salesforce: Nach schwachen Monaten wieder im Aufwind.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-HPQ",
+          "entity": "HP Inc",
+          "metric": "Kurs",
+          "value": 35.48,
+          "unit": "USD",
+          "statement": "HP Inc: Kurs 35.48 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HPQ",
+          "entity": "HP Inc",
+          "metric": "in 12 Monaten",
+          "value": 0.313627,
+          "statement": "HP Inc: in 12 Monaten 0.313627.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HPQ",
+          "entity": "HP Inc",
+          "statement": "HP Inc: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NEM",
+          "entity": "Newmont",
+          "metric": "Kurs",
+          "value": 126.81,
+          "unit": "USD",
+          "statement": "Newmont: Kurs 126.81 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NEM",
+          "entity": "Newmont",
+          "metric": "in 12 Monaten",
+          "value": 0.632065,
+          "statement": "Newmont: in 12 Monaten 0.632065.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NEM",
+          "entity": "Newmont",
+          "statement": "Newmont: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MSFT",
+          "entity": "Microsoft",
+          "metric": "Kurs",
+          "value": 495.63,
+          "unit": "USD",
+          "statement": "Microsoft: Kurs 495.63 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-MSFT",
+          "entity": "Microsoft",
+          "metric": "in 12 Monaten",
+          "value": -0.001277,
+          "statement": "Microsoft: in 12 Monaten -0.001277.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-MSFT",
+          "entity": "Microsoft",
+          "statement": "Microsoft: Etwas unter dem Stand vor einem Jahr.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 0,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -55,8 +212,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/breakout-watch.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "41 von 5947 geprueften Titeln erfuellen das; bei 1042 fehlt die noetige Kennzahl.",
+          "source": "discover.row.breakout-watch",
+          "temporal": false
+        },
+        {
+          "id": "price-ALDF",
+          "entity": "Aldel Financial II",
+          "metric": "Kurs",
+          "value": 10.82,
+          "unit": "USD",
+          "statement": "Aldel Financial II: Kurs 10.82 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ALDF",
+          "entity": "Aldel Financial II",
+          "metric": "in 3 Monaten",
+          "value": 0.013109,
+          "statement": "Aldel Financial II: in 3 Monaten 0.013109.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ALDF",
+          "entity": "Aldel Financial II",
+          "statement": "Aldel Financial II: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "metric": "Kurs",
+          "value": 25.06,
+          "unit": "USD",
+          "statement": "Reckoner Leveraged AAA CLO ETF: Kurs 25.06 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "metric": "in 3 Monaten",
+          "value": 0.016402,
+          "statement": "Reckoner Leveraged AAA CLO ETF: in 3 Monaten 0.016402.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "statement": "Reckoner Leveraged AAA CLO ETF: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SOCA",
+          "entity": "Solarius Capital Acquisition Class A",
+          "metric": "Kurs",
+          "value": 10.35,
+          "unit": "USD",
+          "statement": "Solarius Capital Acquisition Class A: Kurs 10.35 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SOCA",
+          "entity": "Solarius Capital Acquisition Class A",
+          "metric": "in 3 Monaten",
+          "value": 0.010254,
+          "statement": "Solarius Capital Acquisition Class A: in 3 Monaten 0.010254.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SOCA",
+          "entity": "Solarius Capital Acquisition Class A",
+          "statement": "Solarius Capital Acquisition Class A: Fast wieder am Jahreshoch.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CPSR",
+          "entity": "Gelesis Holdings Class A",
+          "metric": "Kurs",
+          "value": 26.14,
+          "unit": "USD",
+          "statement": "Gelesis Holdings Class A: Kurs 26.14 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CPSR",
+          "entity": "Gelesis Holdings Class A",
+          "metric": "in 3 Monaten",
+          "value": 0.014077,
+          "statement": "Gelesis Holdings Class A: in 3 Monaten 0.014077.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CPSR",
+          "entity": "Gelesis Holdings Class A",
+          "statement": "Gelesis Holdings Class A: Fast wieder am Jahreshoch.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-GREEL",
+          "entity": "Vulcan Infrastructure & Power",
+          "metric": "Kurs",
+          "value": 25.01,
+          "unit": "USD",
+          "statement": "Vulcan Infrastructure & Power: Kurs 25.01 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-GREEL",
+          "entity": "Vulcan Infrastructure & Power",
+          "metric": "in 3 Monaten",
+          "value": 0.194715,
+          "statement": "Vulcan Infrastructure & Power: in 3 Monaten 0.194715.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-GREEL",
+          "entity": "Vulcan Infrastructure & Power",
+          "statement": "Vulcan Infrastructure & Power: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -84,8 +392,115 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/cashflow-maschinen.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.cashflow-maschinen",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "596 von 5947 geprueften Titeln erfuellen das; bei 2849 fehlt die noetige Kennzahl.",
+          "source": "discover.row.cashflow-maschinen",
+          "temporal": false
+        },
+        {
+          "id": "price-CCI",
+          "entity": "Crown Castle",
+          "metric": "Kurs",
+          "value": 75.62,
+          "unit": "USD",
+          "statement": "Crown Castle: Kurs 75.62 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-CCI",
+          "entity": "Crown Castle",
+          "statement": "Crown Castle: Verdient aus jedem Umsatz-Dollar viel freien Cashflow.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-EXR",
+          "entity": "Extra Space Storage",
+          "metric": "Kurs",
+          "value": 137.64,
+          "unit": "USD",
+          "statement": "Extra Space Storage: Kurs 137.64 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-EXR",
+          "entity": "Extra Space Storage",
+          "statement": "Extra Space Storage: Verdient aus jedem Umsatz-Dollar viel freien Cashflow.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CHTR",
+          "entity": "Charter Communications Class A",
+          "metric": "Kurs",
+          "value": 145.77,
+          "unit": "USD",
+          "statement": "Charter Communications Class A: Kurs 145.77 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-CHTR",
+          "entity": "Charter Communications Class A",
+          "statement": "Charter Communications Class A: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SBAC",
+          "entity": "SBA Communications Class A",
+          "metric": "Kurs",
+          "value": 185.47,
+          "unit": "USD",
+          "statement": "SBA Communications Class A: Kurs 185.47 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-SBAC",
+          "entity": "SBA Communications Class A",
+          "statement": "SBA Communications Class A: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-AMT",
+          "entity": "American Tower",
+          "metric": "Kurs",
+          "value": 177.85,
+          "unit": "USD",
+          "statement": "American Tower: Kurs 177.85 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-AMT",
+          "entity": "American Tower",
+          "statement": "American Tower: Schreibt schwarze Zahlen.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 5,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -113,8 +528,165 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/comeback.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch",
+          "source": "discover.row.comeback",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "816 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.comeback",
+          "temporal": false
+        },
+        {
+          "id": "price-PMI",
+          "entity": "Picard Medical",
+          "metric": "Kurs",
+          "value": 5.33,
+          "unit": "USD",
+          "statement": "Picard Medical: Kurs 5.33 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PMI",
+          "entity": "Picard Medical",
+          "metric": "in 12 Monaten",
+          "value": -0.177469,
+          "statement": "Picard Medical: in 12 Monaten -0.177469.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PMI",
+          "entity": "Picard Medical",
+          "statement": "Picard Medical: Deutlich unter dem Stand vor einem Jahr.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-GIBO",
+          "entity": "GIBO Holdings",
+          "metric": "Kurs",
+          "value": 33.54,
+          "unit": "USD",
+          "statement": "GIBO Holdings: Kurs 33.54 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-GIBO",
+          "entity": "GIBO Holdings",
+          "metric": "in 12 Monaten",
+          "value": 10.978571,
+          "statement": "GIBO Holdings: in 12 Monaten 10.978571.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-GIBO",
+          "entity": "GIBO Holdings",
+          "statement": "GIBO Holdings: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SRXH",
+          "entity": "SRX Global",
+          "metric": "Kurs",
+          "value": 1.59,
+          "unit": "USD",
+          "statement": "SRX Global: Kurs 1.59 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SRXH",
+          "entity": "SRX Global",
+          "metric": "in 12 Monaten",
+          "value": 4.40748,
+          "statement": "SRX Global: in 12 Monaten 4.40748.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SRXH",
+          "entity": "SRX Global",
+          "statement": "SRX Global: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-XHLD",
+          "entity": "TEN Holdings",
+          "metric": "Kurs",
+          "value": 12.53,
+          "unit": "USD",
+          "statement": "TEN Holdings: Kurs 12.53 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-XHLD",
+          "entity": "TEN Holdings",
+          "metric": "in 12 Monaten",
+          "value": 1.447505,
+          "statement": "TEN Holdings: in 12 Monaten 1.447505.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-XHLD",
+          "entity": "TEN Holdings",
+          "statement": "TEN Holdings: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SWVL",
+          "entity": "Swvl Holdings Class A",
+          "metric": "Kurs",
+          "value": 7.12,
+          "unit": "USD",
+          "statement": "Swvl Holdings Class A: Kurs 7.12 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SWVL",
+          "entity": "Swvl Holdings Class A",
+          "metric": "in 12 Monaten",
+          "value": 0.848052,
+          "statement": "Swvl Holdings Class A: in 12 Monaten 0.848052.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SWVL",
+          "entity": "Swvl Holdings Class A",
+          "statement": "Swvl Holdings Class A: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 0,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -142,8 +714,125 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/fundamentale-turnarounds.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Nettogewinn FY(t−2) < 0 und FY(t) > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.fundamentale-turnarounds",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "288 von 5947 geprueften Titeln erfuellen das; bei 2381 fehlt die noetige Kennzahl.",
+          "source": "discover.row.fundamentale-turnarounds",
+          "temporal": false
+        },
+        {
+          "id": "price-UTZ",
+          "entity": "Utz Brands Class A",
+          "metric": "Kurs",
+          "value": 14.28,
+          "unit": "USD",
+          "statement": "Utz Brands Class A: Kurs 14.28 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-UTZ",
+          "entity": "Utz Brands Class A",
+          "statement": "Utz Brands Class A: Aus dem Verlust in den Gewinn gedreht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-AVAH",
+          "entity": "Aveanna Healthcare Holdings",
+          "metric": "Kurs",
+          "value": 14.08,
+          "unit": "USD",
+          "statement": "Aveanna Healthcare Holdings: Kurs 14.08 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-AVAH",
+          "entity": "Aveanna Healthcare Holdings",
+          "statement": "Aveanna Healthcare Holdings: Aus dem Verlust in den Gewinn gedreht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-RNG",
+          "entity": "RingCentral Class A",
+          "metric": "Kurs",
+          "value": 68.92,
+          "unit": "USD",
+          "statement": "RingCentral Class A: Kurs 68.92 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-RNG",
+          "entity": "RingCentral Class A",
+          "statement": "RingCentral Class A: Schreibt schwarze Zahlen.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-VISN",
+          "entity": "Vistance Networks",
+          "metric": "Kurs",
+          "value": 6.48,
+          "unit": "USD",
+          "statement": "Vistance Networks: Kurs 6.48 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-VISN",
+          "entity": "Vistance Networks",
+          "statement": "Vistance Networks: Schreibt schwarze Zahlen.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-INSP",
+          "entity": "Inspire Medical Systems",
+          "metric": "Kurs",
+          "value": 73,
+          "unit": "USD",
+          "statement": "Inspire Medical Systems: Kurs 73 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-INSP",
+          "entity": "Inspire Medical Systems",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 0.307654,
+          "statement": "Inspire Medical Systems: Umsatz p. a. · 3 Jahre 0.307654.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-INSP",
+          "entity": "Inspire Medical Systems",
+          "statement": "Inspire Medical Systems: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 4,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -171,8 +860,135 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/gewinne-beschleunigen.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.gewinne-beschleunigen",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "580 von 5947 geprueften Titeln erfuellen das; bei 4286 fehlt die noetige Kennzahl.",
+          "source": "discover.row.gewinne-beschleunigen",
+          "temporal": false
+        },
+        {
+          "id": "price-XNET",
+          "entity": "Xunlei",
+          "metric": "Kurs",
+          "value": 4.9,
+          "unit": "USD",
+          "statement": "Xunlei: Kurs 4.9 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-XNET",
+          "entity": "Xunlei",
+          "statement": "Xunlei: Gewinn wächst schneller als im Jahr davor.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-KRG",
+          "entity": "Kite Realty Group Trust",
+          "metric": "Kurs",
+          "value": 25.89,
+          "unit": "USD",
+          "statement": "Kite Realty Group Trust: Kurs 25.89 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-KRG",
+          "entity": "Kite Realty Group Trust",
+          "statement": "Kite Realty Group Trust: Gewinn wächst schneller als im Jahr davor.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-FTAI",
+          "entity": "FTAI Aviation Class A",
+          "metric": "Kurs",
+          "value": 186.06,
+          "unit": "USD",
+          "statement": "FTAI Aviation Class A: Kurs 186.06 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-FTAI",
+          "entity": "FTAI Aviation Class A",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 0.523982,
+          "statement": "FTAI Aviation Class A: Umsatz p. a. · 3 Jahre 0.523982.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-FTAI",
+          "entity": "FTAI Aviation Class A",
+          "statement": "FTAI Aviation Class A: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ORGO",
+          "entity": "Organogenesis Holdings Class A",
+          "metric": "Kurs",
+          "value": 1.49,
+          "unit": "USD",
+          "statement": "Organogenesis Holdings Class A: Kurs 1.49 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-ORGO",
+          "entity": "Organogenesis Holdings Class A",
+          "statement": "Organogenesis Holdings Class A: Operative Marge in drei Jahren ausgeweitet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-INCY",
+          "entity": "Incyte",
+          "metric": "Kurs",
+          "value": 121.47,
+          "unit": "USD",
+          "statement": "Incyte: Kurs 121.47 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-INCY",
+          "entity": "Incyte",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 0.148396,
+          "statement": "Incyte: Umsatz p. a. · 3 Jahre 0.148396.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-INCY",
+          "entity": "Incyte",
+          "statement": "Incyte: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 3,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -200,8 +1016,155 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/langfristige-compounder.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.langfristige-compounder",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "163 von 5947 geprueften Titeln erfuellen das; bei 3941 fehlt die noetige Kennzahl.",
+          "source": "discover.row.langfristige-compounder",
+          "temporal": false
+        },
+        {
+          "id": "price-TKR",
+          "entity": "Timken",
+          "metric": "Kurs",
+          "value": 119.4,
+          "unit": "USD",
+          "statement": "Timken: Kurs 119.4 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-TKR",
+          "entity": "Timken",
+          "metric": "Umsatz p. a. · 10 Jahre",
+          "value": 0.716789,
+          "statement": "Timken: Umsatz p. a. · 10 Jahre 0.716789.",
+          "source": "discover.card.f_revenueGrowth10y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-TKR",
+          "entity": "Timken",
+          "statement": "Timken: Zehn Jahre gewachsen und in jedem Jahr profitabel.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Kurs",
+          "value": 218.29,
+          "unit": "USD",
+          "statement": "NVIDIA: Kurs 218.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Umsatz p. a. · 10 Jahre",
+          "value": 0.456965,
+          "statement": "NVIDIA: Umsatz p. a. · 10 Jahre 0.456965.",
+          "source": "discover.card.f_revenueGrowth10y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NVDA",
+          "entity": "NVIDIA",
+          "statement": "NVIDIA: Zehn Jahre gewachsen und in jedem Jahr profitabel.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ENS",
+          "entity": "Enersys",
+          "metric": "Kurs",
+          "value": 179.45,
+          "unit": "USD",
+          "statement": "Enersys: Kurs 179.45 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ENS",
+          "entity": "Enersys",
+          "metric": "Umsatz p. a. · 10 Jahre",
+          "value": 0.393997,
+          "statement": "Enersys: Umsatz p. a. · 10 Jahre 0.393997.",
+          "source": "discover.card.f_revenueGrowth10y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ENS",
+          "entity": "Enersys",
+          "statement": "Enersys: Umsatz in zehn Jahren mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-TTD",
+          "entity": "Trade Desk Class A",
+          "metric": "Kurs",
+          "value": 14.34,
+          "unit": "USD",
+          "statement": "Trade Desk Class A: Kurs 14.34 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-TTD",
+          "entity": "Trade Desk Class A",
+          "metric": "Umsatz p. a. · 10 Jahre",
+          "value": 0.382153,
+          "statement": "Trade Desk Class A: Umsatz p. a. · 10 Jahre 0.382153.",
+          "source": "discover.card.f_revenueGrowth10y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-TTD",
+          "entity": "Trade Desk Class A",
+          "statement": "Trade Desk Class A: Umsatz in zehn Jahren mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-KNSL",
+          "entity": "Kinsale Capital Group",
+          "metric": "Kurs",
+          "value": 360.01,
+          "unit": "USD",
+          "statement": "Kinsale Capital Group: Kurs 360.01 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-KNSL",
+          "entity": "Kinsale Capital Group",
+          "statement": "Kinsale Capital Group: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -229,8 +1192,115 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/margen-werden-staerker.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte. Nettomarge ≥ −25 % (eine Marge von −400 % wird nicht „stärker\"). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.margen-werden-staerker",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "849 von 5947 geprueften Titeln erfuellen das; bei 3261 fehlt die noetige Kennzahl.",
+          "source": "discover.row.margen-werden-staerker",
+          "temporal": false
+        },
+        {
+          "id": "price-BKKT",
+          "entity": "Bakkt Holdings Class A",
+          "metric": "Kurs",
+          "value": 8.18,
+          "unit": "USD",
+          "statement": "Bakkt Holdings Class A: Kurs 8.18 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-BKKT",
+          "entity": "Bakkt Holdings Class A",
+          "statement": "Bakkt Holdings Class A: Operative Marge in drei Jahren ausgeweitet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-IPSC",
+          "entity": "Century Therapeutics",
+          "metric": "Kurs",
+          "value": 1.94,
+          "unit": "USD",
+          "statement": "Century Therapeutics: Kurs 1.94 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-IPSC",
+          "entity": "Century Therapeutics",
+          "statement": "Century Therapeutics: Operative Marge in drei Jahren ausgeweitet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MSC",
+          "entity": "Studio City International Holdings",
+          "metric": "Kurs",
+          "value": 1.77,
+          "unit": "USD",
+          "statement": "Studio City International Holdings: Kurs 1.77 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-MSC",
+          "entity": "Studio City International Holdings",
+          "statement": "Studio City International Holdings: Noch nicht profitabel.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ANAB",
+          "entity": "AnaptysBio",
+          "metric": "Kurs",
+          "value": 53.87,
+          "unit": "USD",
+          "statement": "AnaptysBio: Kurs 53.87 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-ANAB",
+          "entity": "AnaptysBio",
+          "statement": "AnaptysBio: Noch nicht profitabel.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NBIS",
+          "entity": "Nebius Group Class A",
+          "metric": "Kurs",
+          "value": 224.55,
+          "unit": "USD",
+          "statement": "Nebius Group Class A: Kurs 224.55 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-NBIS",
+          "entity": "Nebius Group Class A",
+          "statement": "Nebius Group Class A: Schreibt schwarze Zahlen.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 5,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -258,8 +1328,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/market-leaders.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "5106 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.market-leaders",
+          "temporal": false
+        },
+        {
+          "id": "price-HZO",
+          "entity": "Marinemax",
+          "metric": "Kurs",
+          "value": 52.21,
+          "unit": "USD",
+          "statement": "Marinemax: Kurs 52.21 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HZO",
+          "entity": "Marinemax",
+          "metric": "in 12 Monaten",
+          "value": 1.056321,
+          "statement": "Marinemax: in 12 Monaten 1.056321.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HZO",
+          "entity": "Marinemax",
+          "statement": "Marinemax: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "Kurs",
+          "value": 6.88,
+          "unit": "USD",
+          "statement": "Pyxis Tankers: Kurs 6.88 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "in 12 Monaten",
+          "value": 1.492754,
+          "statement": "Pyxis Tankers: in 12 Monaten 1.492754.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PXS",
+          "entity": "Pyxis Tankers",
+          "statement": "Pyxis Tankers: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "Kurs",
+          "value": 76.15,
+          "unit": "USD",
+          "statement": "Okeanis Eco Tankers: Kurs 76.15 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "in 12 Monaten",
+          "value": 2.221251,
+          "statement": "Okeanis Eco Tankers: in 12 Monaten 2.221251.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "statement": "Okeanis Eco Tankers: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-DELL",
+          "entity": "Dell Technologies Class C",
+          "metric": "Kurs",
+          "value": 567.29,
+          "unit": "USD",
+          "statement": "Dell Technologies Class C: Kurs 567.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-DELL",
+          "entity": "Dell Technologies Class C",
+          "metric": "in 12 Monaten",
+          "value": 3.616834,
+          "statement": "Dell Technologies Class C: in 12 Monaten 3.616834.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-DELL",
+          "entity": "Dell Technologies Class C",
+          "statement": "Dell Technologies Class C: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NAT",
+          "entity": "Nordic American Tankers",
+          "metric": "Kurs",
+          "value": 7.46,
+          "unit": "USD",
+          "statement": "Nordic American Tankers: Kurs 7.46 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NAT",
+          "entity": "Nordic American Tankers",
+          "metric": "in 12 Monaten",
+          "value": 1.789832,
+          "statement": "Nordic American Tankers: in 12 Monaten 1.789832.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NAT",
+          "entity": "Nordic American Tankers",
+          "statement": "Nordic American Tankers: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -287,8 +1508,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/momentum-leaders.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "5412 von 5947 geprueften Titeln erfuellen das; bei 535 fehlt die noetige Kennzahl.",
+          "source": "discover.row.momentum-leaders",
+          "temporal": false
+        },
+        {
+          "id": "price-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "Kurs",
+          "value": 6.88,
+          "unit": "USD",
+          "statement": "Pyxis Tankers: Kurs 6.88 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "in 6 Monaten",
+          "value": 0.773196,
+          "statement": "Pyxis Tankers: in 6 Monaten 0.773196.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PXS",
+          "entity": "Pyxis Tankers",
+          "statement": "Pyxis Tankers: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ZCSH",
+          "entity": "Grayscale Investments",
+          "metric": "Kurs",
+          "value": 94.4,
+          "unit": "USD",
+          "statement": "Grayscale Investments: Kurs 94.4 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ZCSH",
+          "entity": "Grayscale Investments",
+          "metric": "in 6 Monaten",
+          "value": 5.31016,
+          "statement": "Grayscale Investments: in 6 Monaten 5.31016.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ZCSH",
+          "entity": "Grayscale Investments",
+          "statement": "Grayscale Investments: Hat sich in sechs Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MRNA",
+          "entity": "Moderna",
+          "metric": "Kurs",
+          "value": 143.97,
+          "unit": "USD",
+          "statement": "Moderna: Kurs 143.97 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-MRNA",
+          "entity": "Moderna",
+          "metric": "in 6 Monaten",
+          "value": 1.696572,
+          "statement": "Moderna: in 6 Monaten 1.696572.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-MRNA",
+          "entity": "Moderna",
+          "statement": "Moderna: Hat sich in sechs Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "metric": "Kurs",
+          "value": 2.27,
+          "unit": "USD",
+          "statement": "Cypherpunk Technologies: Kurs 2.27 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "metric": "in 6 Monaten",
+          "value": 2.756219,
+          "statement": "Cypherpunk Technologies: in 6 Monaten 2.756219.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "statement": "Cypherpunk Technologies: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "metric": "Kurs",
+          "value": 57.08,
+          "unit": "USD",
+          "statement": "Eton Pharmaceuticals: Kurs 57.08 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "metric": "in 6 Monaten",
+          "value": 2.001052,
+          "statement": "Eton Pharmaceuticals: in 6 Monaten 2.001052.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "statement": "Eton Pharmaceuticals: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -316,8 +1688,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/new-52-week-highs.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "701 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.new-52-week-highs",
+          "temporal": false
+        },
+        {
+          "id": "price-FFNW",
+          "entity": "First Financial Northwest",
+          "metric": "Kurs",
+          "value": 22.56,
+          "unit": "USD",
+          "statement": "First Financial Northwest: Kurs 22.56 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-FFNW",
+          "entity": "First Financial Northwest",
+          "metric": "in 12 Monaten",
+          "value": 0.971681,
+          "statement": "First Financial Northwest: in 12 Monaten 0.971681.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-FFNW",
+          "entity": "First Financial Northwest",
+          "statement": "First Financial Northwest: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-BIO-B",
+          "entity": "Bio-Rad Laboratories Class B",
+          "metric": "Kurs",
+          "value": 365.08,
+          "unit": "USD",
+          "statement": "Bio-Rad Laboratories Class B: Kurs 365.08 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-BIO-B",
+          "entity": "Bio-Rad Laboratories Class B",
+          "metric": "in 12 Monaten",
+          "value": 0.477758,
+          "statement": "Bio-Rad Laboratories Class B: in 12 Monaten 0.477758.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-BIO-B",
+          "entity": "Bio-Rad Laboratories Class B",
+          "statement": "Bio-Rad Laboratories Class B: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-FUSB",
+          "entity": "First US Bancshares",
+          "metric": "Kurs",
+          "value": 16.99,
+          "unit": "USD",
+          "statement": "First US Bancshares: Kurs 16.99 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-FUSB",
+          "entity": "First US Bancshares",
+          "metric": "in 6 Monaten",
+          "value": 0.147598,
+          "statement": "First US Bancshares: in 6 Monaten 0.147598.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-FUSB",
+          "entity": "First US Bancshares",
+          "statement": "First US Bancshares: Seit Monaten durchgehend im Aufwärtstrend.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-UTZ",
+          "entity": "Utz Brands Class A",
+          "metric": "Kurs",
+          "value": 14.28,
+          "unit": "USD",
+          "statement": "Utz Brands Class A: Kurs 14.28 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-UTZ",
+          "entity": "Utz Brands Class A",
+          "metric": "in 3 Monaten",
+          "value": 1.024064,
+          "statement": "Utz Brands Class A: in 3 Monaten 1.024064.",
+          "source": "discover.card.return3M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-UTZ",
+          "entity": "Utz Brands Class A",
+          "statement": "Utz Brands Class A: Nach schwachen Monaten wieder im Aufwind.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SBT",
+          "entity": "Sterling Bancorp",
+          "metric": "Kurs",
+          "value": 4.84,
+          "unit": "USD",
+          "statement": "Sterling Bancorp: Kurs 4.84 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SBT",
+          "entity": "Sterling Bancorp",
+          "metric": "in 12 Monaten",
+          "value": 1.010373,
+          "statement": "Sterling Bancorp: in 12 Monaten 1.010373.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SBT",
+          "entity": "Sterling Bancorp",
+          "statement": "Sterling Bancorp: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -345,8 +1868,155 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/profitables-wachstum.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.profitables-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "338 von 5947 geprueften Titeln erfuellen das; bei 3131 fehlt die noetige Kennzahl.",
+          "source": "discover.row.profitables-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "price-SEZL",
+          "entity": "Sezzle",
+          "metric": "Kurs",
+          "value": 118.87,
+          "unit": "USD",
+          "statement": "Sezzle: Kurs 118.87 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SEZL",
+          "entity": "Sezzle",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.701865,
+          "statement": "Sezzle: Umsatz p. a. · 3 Jahre 1.701865.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SEZL",
+          "entity": "Sezzle",
+          "statement": "Sezzle: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ALAB",
+          "entity": "Astera Labs",
+          "metric": "Kurs",
+          "value": 291.22,
+          "unit": "USD",
+          "statement": "Astera Labs: Kurs 291.22 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ALAB",
+          "entity": "Astera Labs",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.201764,
+          "statement": "Astera Labs: Umsatz p. a. · 3 Jahre 1.201764.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ALAB",
+          "entity": "Astera Labs",
+          "statement": "Astera Labs: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-TSSI",
+          "entity": "TSS Inc",
+          "metric": "Kurs",
+          "value": 8.93,
+          "unit": "USD",
+          "statement": "TSS Inc: Kurs 8.93 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-TSSI",
+          "entity": "TSS Inc",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.001693,
+          "statement": "TSS Inc: Umsatz p. a. · 3 Jahre 1.001693.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-TSSI",
+          "entity": "TSS Inc",
+          "statement": "TSS Inc: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Kurs",
+          "value": 218.29,
+          "unit": "USD",
+          "statement": "NVIDIA: Kurs 218.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.000451,
+          "statement": "NVIDIA: Umsatz p. a. · 3 Jahre 1.000451.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NVDA",
+          "entity": "NVIDIA",
+          "statement": "NVIDIA: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CRDO",
+          "entity": "Credo Technology Group Holding",
+          "metric": "Kurs",
+          "value": 162.95,
+          "unit": "USD",
+          "statement": "Credo Technology Group Holding: Kurs 162.95 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-CRDO",
+          "entity": "Credo Technology Group Holding",
+          "statement": "Credo Technology Group Holding: Verdient aus jedem Umsatz-Dollar viel freien Cashflow.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -374,8 +2044,145 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/qualitaet-wachstum.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.qualitaet-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "322 von 5947 geprueften Titeln erfuellen das; bei 2737 fehlt die noetige Kennzahl.",
+          "source": "discover.row.qualitaet-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "price-NBIS",
+          "entity": "Nebius Group Class A",
+          "metric": "Kurs",
+          "value": 224.55,
+          "unit": "USD",
+          "statement": "Nebius Group Class A: Kurs 224.55 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NBIS",
+          "entity": "Nebius Group Class A",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 2.398282,
+          "statement": "Nebius Group Class A: Umsatz p. a. · 3 Jahre 2.398282.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NBIS",
+          "entity": "Nebius Group Class A",
+          "statement": "Nebius Group Class A: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SEZL",
+          "entity": "Sezzle",
+          "metric": "Kurs",
+          "value": 118.87,
+          "unit": "USD",
+          "statement": "Sezzle: Kurs 118.87 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SEZL",
+          "entity": "Sezzle",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.701865,
+          "statement": "Sezzle: Umsatz p. a. · 3 Jahre 1.701865.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SEZL",
+          "entity": "Sezzle",
+          "statement": "Sezzle: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ALAB",
+          "entity": "Astera Labs",
+          "metric": "Kurs",
+          "value": 291.22,
+          "unit": "USD",
+          "statement": "Astera Labs: Kurs 291.22 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-ALAB",
+          "entity": "Astera Labs",
+          "statement": "Astera Labs: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ZVRA",
+          "entity": "Zevra Therapeutics",
+          "metric": "Kurs",
+          "value": 12.01,
+          "unit": "USD",
+          "statement": "Zevra Therapeutics: Kurs 12.01 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-ZVRA",
+          "entity": "Zevra Therapeutics",
+          "statement": "Zevra Therapeutics: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Kurs",
+          "value": 218.29,
+          "unit": "USD",
+          "statement": "NVIDIA: Kurs 218.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.000451,
+          "statement": "NVIDIA: Umsatz p. a. · 3 Jahre 1.000451.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NVDA",
+          "entity": "NVIDIA",
+          "statement": "NVIDIA: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 2,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -403,8 +2210,115 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/qualitaet-zum-preis.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.qualitaet-zum-preis",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "469 von 5947 geprueften Titeln erfuellen das; bei 3832 fehlt die noetige Kennzahl.",
+          "source": "discover.row.qualitaet-zum-preis",
+          "temporal": false
+        },
+        {
+          "id": "price-ATHS",
+          "entity": "Athene Holding",
+          "metric": "Kurs",
+          "value": 24.64,
+          "unit": "USD",
+          "statement": "Athene Holding: Kurs 24.64 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-ATHS",
+          "entity": "Athene Holding",
+          "statement": "Athene Holding: Profitabel und moderat bewertet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-WSE",
+          "entity": "Wise Group",
+          "metric": "Kurs",
+          "value": 12.02,
+          "unit": "USD",
+          "statement": "Wise Group: Kurs 12.02 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-WSE",
+          "entity": "Wise Group",
+          "statement": "Wise Group: Profitabel und moderat bewertet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-VISN",
+          "entity": "Vistance Networks",
+          "metric": "Kurs",
+          "value": 6.48,
+          "unit": "USD",
+          "statement": "Vistance Networks: Kurs 6.48 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-VISN",
+          "entity": "Vistance Networks",
+          "statement": "Vistance Networks: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-DDI",
+          "entity": "DoubleDown Interactive Co",
+          "metric": "Kurs",
+          "value": 12.68,
+          "unit": "USD",
+          "statement": "DoubleDown Interactive Co: Kurs 12.68 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-DDI",
+          "entity": "DoubleDown Interactive Co",
+          "statement": "DoubleDown Interactive Co: Sehr hohe Gewinnmarge.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-STG",
+          "entity": "Sunlands Technology Group",
+          "metric": "Kurs",
+          "value": 2.96,
+          "unit": "USD",
+          "statement": "Sunlands Technology Group: Kurs 2.96 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-STG",
+          "entity": "Sunlands Technology Group",
+          "statement": "Sunlands Technology Group: Mehr Kasse als Schulden.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 5,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -432,8 +2346,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/relative-strength.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "5412 von 5947 geprueften Titeln erfuellen das; bei 535 fehlt die noetige Kennzahl.",
+          "source": "discover.row.relative-strength",
+          "temporal": false
+        },
+        {
+          "id": "price-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "metric": "Kurs",
+          "value": 2.27,
+          "unit": "USD",
+          "statement": "Cypherpunk Technologies: Kurs 2.27 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "metric": "in 12 Monaten",
+          "value": 7.003534,
+          "statement": "Cypherpunk Technologies: in 12 Monaten 7.003534.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CYPH",
+          "entity": "Cypherpunk Technologies",
+          "statement": "Cypherpunk Technologies: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MRNA",
+          "entity": "Moderna",
+          "metric": "Kurs",
+          "value": 143.97,
+          "unit": "USD",
+          "statement": "Moderna: Kurs 143.97 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-MRNA",
+          "entity": "Moderna",
+          "metric": "in 12 Monaten",
+          "value": 4.922254,
+          "statement": "Moderna: in 12 Monaten 4.922254.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-MRNA",
+          "entity": "Moderna",
+          "statement": "Moderna: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "Kurs",
+          "value": 6.88,
+          "unit": "USD",
+          "statement": "Pyxis Tankers: Kurs 6.88 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "in 12 Monaten",
+          "value": 1.492754,
+          "statement": "Pyxis Tankers: in 12 Monaten 1.492754.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PXS",
+          "entity": "Pyxis Tankers",
+          "statement": "Pyxis Tankers: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ZCSH",
+          "entity": "Grayscale Investments",
+          "metric": "Kurs",
+          "value": 94.4,
+          "unit": "USD",
+          "statement": "Grayscale Investments: Kurs 94.4 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ZCSH",
+          "entity": "Grayscale Investments",
+          "metric": "in 12 Monaten",
+          "value": 18.032258,
+          "statement": "Grayscale Investments: in 12 Monaten 18.032258.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ZCSH",
+          "entity": "Grayscale Investments",
+          "statement": "Grayscale Investments: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "metric": "Kurs",
+          "value": 57.08,
+          "unit": "USD",
+          "statement": "Eton Pharmaceuticals: Kurs 57.08 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "metric": "in 12 Monaten",
+          "value": 2.276693,
+          "statement": "Eton Pharmaceuticals: in 12 Monaten 2.276693.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ETON",
+          "entity": "Eton Pharmaceuticals",
+          "statement": "Eton Pharmaceuticals: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -461,8 +2526,165 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/starke-bilanz-wachstum.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.starke-bilanz-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "84 von 5947 geprueften Titeln erfuellen das; bei 2736 fehlt die noetige Kennzahl.",
+          "source": "discover.row.starke-bilanz-wachstum",
+          "temporal": false
+        },
+        {
+          "id": "price-IMMR",
+          "entity": "Immersion",
+          "metric": "Kurs",
+          "value": 7.4,
+          "unit": "USD",
+          "statement": "Immersion: Kurs 7.4 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-IMMR",
+          "entity": "Immersion",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 2.709019,
+          "statement": "Immersion: Umsatz p. a. · 3 Jahre 2.709019.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-IMMR",
+          "entity": "Immersion",
+          "statement": "Immersion: Mehr Kasse als Schulden.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-AXSM",
+          "entity": "Axsome Therapeutics",
+          "metric": "Kurs",
+          "value": 220.75,
+          "unit": "USD",
+          "statement": "Axsome Therapeutics: Kurs 220.75 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-AXSM",
+          "entity": "Axsome Therapeutics",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.336804,
+          "statement": "Axsome Therapeutics: Umsatz p. a. · 3 Jahre 1.336804.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-AXSM",
+          "entity": "Axsome Therapeutics",
+          "statement": "Axsome Therapeutics: Mehr Kasse als Schulden.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-WULF",
+          "entity": "TeraWulf",
+          "metric": "Kurs",
+          "value": 16.74,
+          "unit": "USD",
+          "statement": "TeraWulf: Kurs 16.74 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-WULF",
+          "entity": "TeraWulf",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.160276,
+          "statement": "TeraWulf: Umsatz p. a. · 3 Jahre 1.160276.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-WULF",
+          "entity": "TeraWulf",
+          "statement": "TeraWulf: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-TSSI",
+          "entity": "TSS Inc",
+          "metric": "Kurs",
+          "value": 8.93,
+          "unit": "USD",
+          "statement": "TSS Inc: Kurs 8.93 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-TSSI",
+          "entity": "TSS Inc",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.001693,
+          "statement": "TSS Inc: Umsatz p. a. · 3 Jahre 1.001693.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-TSSI",
+          "entity": "TSS Inc",
+          "statement": "TSS Inc: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Kurs",
+          "value": 218.29,
+          "unit": "USD",
+          "statement": "NVIDIA: Kurs 218.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NVDA",
+          "entity": "NVIDIA",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 1.000451,
+          "statement": "NVIDIA: Umsatz p. a. · 3 Jahre 1.000451.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NVDA",
+          "entity": "NVIDIA",
+          "statement": "NVIDIA: Wächst und verdient dabei Geld.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 0,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -490,8 +2712,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/thema-ki.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "24 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.thema-ki",
+          "temporal": false
+        },
+        {
+          "id": "price-AMD",
+          "entity": "Advanced Micro Devices",
+          "metric": "Kurs",
+          "value": 516.13,
+          "unit": "USD",
+          "statement": "Advanced Micro Devices: Kurs 516.13 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-AMD",
+          "entity": "Advanced Micro Devices",
+          "metric": "in 12 Monaten",
+          "value": 2.235113,
+          "statement": "Advanced Micro Devices: in 12 Monaten 2.235113.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-AMD",
+          "entity": "Advanced Micro Devices",
+          "statement": "Advanced Micro Devices: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-AAPL",
+          "entity": "Apple",
+          "metric": "Kurs",
+          "value": 332.27,
+          "unit": "USD",
+          "statement": "Apple: Kurs 332.27 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-AAPL",
+          "entity": "Apple",
+          "metric": "in 12 Monaten",
+          "value": 0.470543,
+          "statement": "Apple: in 12 Monaten 0.470543.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-AAPL",
+          "entity": "Apple",
+          "statement": "Apple: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-SWKS",
+          "entity": "Skyworks Solutions",
+          "metric": "Kurs",
+          "value": 88.35,
+          "unit": "USD",
+          "statement": "Skyworks Solutions: Kurs 88.35 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-SWKS",
+          "entity": "Skyworks Solutions",
+          "metric": "in 12 Monaten",
+          "value": 0.23893,
+          "statement": "Skyworks Solutions: in 12 Monaten 0.23893.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-SWKS",
+          "entity": "Skyworks Solutions",
+          "statement": "Skyworks Solutions: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MU",
+          "entity": "Micron Technology",
+          "metric": "Kurs",
+          "value": 975.26,
+          "unit": "USD",
+          "statement": "Micron Technology: Kurs 975.26 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-MU",
+          "entity": "Micron Technology",
+          "metric": "in 12 Monaten",
+          "value": 5.977444,
+          "statement": "Micron Technology: in 12 Monaten 5.977444.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-MU",
+          "entity": "Micron Technology",
+          "statement": "Micron Technology: Hat sich in zwölf Monaten mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CSCO",
+          "entity": "Cisco Systems",
+          "metric": "Kurs",
+          "value": 112.13,
+          "unit": "USD",
+          "statement": "Cisco Systems: Kurs 112.13 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CSCO",
+          "entity": "Cisco Systems",
+          "metric": "in 6 Monaten",
+          "value": 0.455382,
+          "statement": "Cisco Systems: in 6 Monaten 0.455382.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CSCO",
+          "entity": "Cisco Systems",
+          "statement": "Cisco Systems: Seit Monaten im Aufwärtstrend.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 24 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"ki\" -> MEGATREND."
     },
@@ -519,8 +2892,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/thema-mobilitaet.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "16 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.thema-mobilitaet",
+          "temporal": false
+        },
+        {
+          "id": "price-GM",
+          "entity": "General Motors",
+          "metric": "Kurs",
+          "value": 85.62,
+          "unit": "USD",
+          "statement": "General Motors: Kurs 85.62 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-GM",
+          "entity": "General Motors",
+          "metric": "in 12 Monaten",
+          "value": 0.506095,
+          "statement": "General Motors: in 12 Monaten 0.506095.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-GM",
+          "entity": "General Motors",
+          "statement": "General Motors: Seit einem Jahr deutlich im Plus.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-HMC",
+          "entity": "Honda Motor",
+          "metric": "Kurs",
+          "value": 32.52,
+          "unit": "USD",
+          "statement": "Honda Motor: Kurs 32.52 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HMC",
+          "entity": "Honda Motor",
+          "metric": "in 12 Monaten",
+          "value": -0.023598,
+          "statement": "Honda Motor: in 12 Monaten -0.023598.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HMC",
+          "entity": "Honda Motor",
+          "statement": "Honda Motor: Fast wieder am Jahreshoch.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-GPC",
+          "entity": "Genuine Parts",
+          "metric": "Kurs",
+          "value": 133.68,
+          "unit": "USD",
+          "statement": "Genuine Parts: Kurs 133.68 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-GPC",
+          "entity": "Genuine Parts",
+          "metric": "in 12 Monaten",
+          "value": -0.007054,
+          "statement": "Genuine Parts: in 12 Monaten -0.007054.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-GPC",
+          "entity": "Genuine Parts",
+          "statement": "Genuine Parts: Etwas unter dem Stand vor einem Jahr.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-HOG",
+          "entity": "Harley-Davidson",
+          "metric": "Kurs",
+          "value": 27.87,
+          "unit": "USD",
+          "statement": "Harley-Davidson: Kurs 27.87 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HOG",
+          "entity": "Harley-Davidson",
+          "metric": "in 12 Monaten",
+          "value": -0.047299,
+          "statement": "Harley-Davidson: in 12 Monaten -0.047299.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HOG",
+          "entity": "Harley-Davidson",
+          "statement": "Harley-Davidson: Etwas unter dem Stand vor einem Jahr.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-PCAR",
+          "entity": "Paccar",
+          "metric": "Kurs",
+          "value": 122.73,
+          "unit": "USD",
+          "statement": "Paccar: Kurs 122.73 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PCAR",
+          "entity": "Paccar",
+          "metric": "in 12 Monaten",
+          "value": 0.274382,
+          "statement": "Paccar: in 12 Monaten 0.274382.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PCAR",
+          "entity": "Paccar",
+          "statement": "Paccar: Seit einem Jahr deutlich im Plus.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 16 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"mobilitaet\" -> MEGATREND."
     },
@@ -548,8 +3072,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/thema-robotik.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "17 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.thema-robotik",
+          "temporal": false
+        },
+        {
+          "id": "price-DE",
+          "entity": "Deere & Company",
+          "metric": "Kurs",
+          "value": 675.74,
+          "unit": "USD",
+          "statement": "Deere & Company: Kurs 675.74 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-DE",
+          "entity": "Deere & Company",
+          "metric": "in 12 Monaten",
+          "value": 0.451562,
+          "statement": "Deere & Company: in 12 Monaten 0.451562.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-DE",
+          "entity": "Deere & Company",
+          "statement": "Deere & Company: Gehört zu den Marktführern.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-AME",
+          "entity": "Ametek",
+          "metric": "Kurs",
+          "value": 241.87,
+          "unit": "USD",
+          "statement": "Ametek: Kurs 241.87 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-AME",
+          "entity": "Ametek",
+          "metric": "in 6 Monaten",
+          "value": 0.125439,
+          "statement": "Ametek: in 6 Monaten 0.125439.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-AME",
+          "entity": "Ametek",
+          "statement": "Ametek: Seit Monaten durchgehend im Aufwärtstrend.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-JCI",
+          "entity": "Johnson Controls International",
+          "metric": "Kurs",
+          "value": 146.01,
+          "unit": "USD",
+          "statement": "Johnson Controls International: Kurs 146.01 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-JCI",
+          "entity": "Johnson Controls International",
+          "metric": "in 6 Monaten",
+          "value": 0.121541,
+          "statement": "Johnson Controls International: in 6 Monaten 0.121541.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-JCI",
+          "entity": "Johnson Controls International",
+          "statement": "Johnson Controls International: Seit Monaten durchgehend im Aufwärtstrend.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CGNX",
+          "entity": "Cognex",
+          "metric": "Kurs",
+          "value": 64.22,
+          "unit": "USD",
+          "statement": "Cognex: Kurs 64.22 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CGNX",
+          "entity": "Cognex",
+          "metric": "in 12 Monaten",
+          "value": 0.45593,
+          "statement": "Cognex: in 12 Monaten 0.45593.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CGNX",
+          "entity": "Cognex",
+          "statement": "Cognex: Seit einem Jahr deutlich im Plus.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-IEX",
+          "entity": "Idex",
+          "metric": "Kurs",
+          "value": 224.21,
+          "unit": "USD",
+          "statement": "Idex: Kurs 224.21 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-IEX",
+          "entity": "Idex",
+          "metric": "in 12 Monaten",
+          "value": 0.4206,
+          "statement": "Idex: in 12 Monaten 0.4206.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-IEX",
+          "entity": "Idex",
+          "statement": "Idex: Seit einem Jahr deutlich im Plus.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 17 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"robotik\" -> MEGATREND."
     },
@@ -577,8 +3252,159 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/trend-quality.json"
       ],
+      "evidence": [
+        {
+          "id": "row-coverage",
+          "statement": "951 von 5947 geprueften Titeln erfuellen das; bei 843 fehlt die noetige Kennzahl.",
+          "source": "discover.row.trend-quality",
+          "temporal": false
+        },
+        {
+          "id": "price-ACLO",
+          "entity": "ACCELIO",
+          "metric": "Kurs",
+          "value": 50.44,
+          "unit": "USD",
+          "statement": "ACCELIO: Kurs 50.44 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ACLO",
+          "entity": "ACCELIO",
+          "metric": "in 6 Monaten",
+          "value": 0.027252,
+          "statement": "ACCELIO: in 6 Monaten 0.027252.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ACLO",
+          "entity": "ACCELIO",
+          "statement": "ACCELIO: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "metric": "Kurs",
+          "value": 25.06,
+          "unit": "USD",
+          "statement": "Reckoner Leveraged AAA CLO ETF: Kurs 25.06 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "metric": "in 6 Monaten",
+          "value": 0.034662,
+          "statement": "Reckoner Leveraged AAA CLO ETF: in 6 Monaten 0.034662.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-RAAA",
+          "entity": "Reckoner Leveraged AAA CLO ETF",
+          "statement": "Reckoner Leveraged AAA CLO ETF: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-WTG",
+          "entity": "Wintergreen Acquisition",
+          "metric": "Kurs",
+          "value": 10.58,
+          "unit": "USD",
+          "statement": "Wintergreen Acquisition: Kurs 10.58 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-WTG",
+          "entity": "Wintergreen Acquisition",
+          "metric": "in 6 Monaten",
+          "value": 0.033203,
+          "statement": "Wintergreen Acquisition: in 6 Monaten 0.033203.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-WTG",
+          "entity": "Wintergreen Acquisition",
+          "statement": "Wintergreen Acquisition: Fast wieder am Jahreshoch.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-CRAQ",
+          "entity": "Cal Redwood Acquisition",
+          "metric": "Kurs",
+          "value": 10.39,
+          "unit": "USD",
+          "statement": "Cal Redwood Acquisition: Kurs 10.39 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-CRAQ",
+          "entity": "Cal Redwood Acquisition",
+          "metric": "in 6 Monaten",
+          "value": 0.01763,
+          "statement": "Cal Redwood Acquisition: in 6 Monaten 0.01763.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-CRAQ",
+          "entity": "Cal Redwood Acquisition",
+          "statement": "Cal Redwood Acquisition: Fast wieder am Jahreshoch.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-RWAYZ",
+          "entity": "Runway Growth Finance",
+          "metric": "Kurs",
+          "value": 24.99,
+          "unit": "USD",
+          "statement": "Runway Growth Finance: Kurs 24.99 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-RWAYZ",
+          "entity": "Runway Growth Finance",
+          "metric": "in 6 Monaten",
+          "value": 0,
+          "statement": "Runway Growth Finance: in 6 Monaten 0.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-RWAYZ",
+          "entity": "Runway Growth Finance",
+          "statement": "Runway Growth Finance: Über zwölf Monate im Plus.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 1,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -606,8 +3432,165 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/ueberraschungen.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85",
+          "source": "discover.row.ueberraschungen",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "727 von 5947 geprueften Titeln erfuellen das; bei 841 fehlt die noetige Kennzahl.",
+          "source": "discover.row.ueberraschungen",
+          "temporal": false
+        },
+        {
+          "id": "price-HZO",
+          "entity": "Marinemax",
+          "metric": "Kurs",
+          "value": 52.21,
+          "unit": "USD",
+          "statement": "Marinemax: Kurs 52.21 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HZO",
+          "entity": "Marinemax",
+          "metric": "in 12 Monaten",
+          "value": 1.056321,
+          "statement": "Marinemax: in 12 Monaten 1.056321.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HZO",
+          "entity": "Marinemax",
+          "statement": "Marinemax: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "Kurs",
+          "value": 6.88,
+          "unit": "USD",
+          "statement": "Pyxis Tankers: Kurs 6.88 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-PXS",
+          "entity": "Pyxis Tankers",
+          "metric": "in 12 Monaten",
+          "value": 1.492754,
+          "statement": "Pyxis Tankers: in 12 Monaten 1.492754.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-PXS",
+          "entity": "Pyxis Tankers",
+          "statement": "Pyxis Tankers: Hat sich in zwölf Monaten mehr als verdoppelt.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "Kurs",
+          "value": 76.15,
+          "unit": "USD",
+          "statement": "Okeanis Eco Tankers: Kurs 76.15 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "in 12 Monaten",
+          "value": 2.221251,
+          "statement": "Okeanis Eco Tankers: in 12 Monaten 2.221251.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "statement": "Okeanis Eco Tankers: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-DELL",
+          "entity": "Dell Technologies Class C",
+          "metric": "Kurs",
+          "value": 567.29,
+          "unit": "USD",
+          "statement": "Dell Technologies Class C: Kurs 567.29 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-DELL",
+          "entity": "Dell Technologies Class C",
+          "metric": "in 12 Monaten",
+          "value": 3.616834,
+          "statement": "Dell Technologies Class C: in 12 Monaten 3.616834.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-DELL",
+          "entity": "Dell Technologies Class C",
+          "statement": "Dell Technologies Class C: Auf dem höchsten Stand des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-NAT",
+          "entity": "Nordic American Tankers",
+          "metric": "Kurs",
+          "value": 7.46,
+          "unit": "USD",
+          "statement": "Nordic American Tankers: Kurs 7.46 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-NAT",
+          "entity": "Nordic American Tankers",
+          "metric": "in 12 Monaten",
+          "value": 1.789832,
+          "statement": "Nordic American Tankers: in 12 Monaten 1.789832.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-NAT",
+          "entity": "Nordic American Tankers",
+          "statement": "Nordic American Tankers: Eine der stärksten Aktien des Jahres.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 0,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -635,8 +3618,145 @@
       "evidenceRefs": [
         "discover/data/rows/US_REAL/umsatz-waechst-stark.json"
       ],
+      "evidence": [
+        {
+          "id": "row-rule",
+          "statement": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+          "source": "discover.row.umsatz-waechst-stark",
+          "temporal": false
+        },
+        {
+          "id": "row-coverage",
+          "statement": "510 von 5947 geprueften Titeln erfuellen das; bei 2736 fehlt die noetige Kennzahl.",
+          "source": "discover.row.umsatz-waechst-stark",
+          "temporal": false
+        },
+        {
+          "id": "price-HTLM",
+          "entity": "HomesToLife",
+          "metric": "Kurs",
+          "value": 1.8,
+          "unit": "USD",
+          "statement": "HomesToLife: Kurs 1.8 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-HTLM",
+          "entity": "HomesToLife",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 2.98459,
+          "statement": "HomesToLife: Umsatz p. a. · 3 Jahre 2.98459.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-HTLM",
+          "entity": "HomesToLife",
+          "statement": "HomesToLife: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-MSC",
+          "entity": "Studio City International Holdings",
+          "metric": "Kurs",
+          "value": 1.77,
+          "unit": "USD",
+          "statement": "Studio City International Holdings: Kurs 1.77 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-MSC",
+          "entity": "Studio City International Holdings",
+          "metric": "Umsatz p. a. · 3 Jahre",
+          "value": 2.91804,
+          "statement": "Studio City International Holdings: Umsatz p. a. · 3 Jahre 2.91804.",
+          "source": "discover.card.f_revenueGrowth3y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-MSC",
+          "entity": "Studio City International Holdings",
+          "statement": "Studio City International Holdings: Umsatz wächst seit drei Jahren sehr schnell.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-LOT",
+          "entity": "Lotus Technology",
+          "metric": "Kurs",
+          "value": 1.09,
+          "unit": "USD",
+          "statement": "Lotus Technology: Kurs 1.09 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-LOT",
+          "entity": "Lotus Technology",
+          "statement": "Lotus Technology: Operative Marge in drei Jahren ausgeweitet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-IMMR",
+          "entity": "Immersion",
+          "metric": "Kurs",
+          "value": 7.4,
+          "unit": "USD",
+          "statement": "Immersion: Kurs 7.4 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "metric-IMMR",
+          "entity": "Immersion",
+          "metric": "Umsatz p. a. · 10 Jahre",
+          "value": 0.406595,
+          "statement": "Immersion: Umsatz p. a. · 10 Jahre 0.406595.",
+          "source": "discover.card.f_revenueGrowth10y",
+          "observedAt": "2026-09-11",
+          "temporal": false
+        },
+        {
+          "id": "story-IMMR",
+          "entity": "Immersion",
+          "statement": "Immersion: Umsatz in zehn Jahren mehr als verdreifacht.",
+          "source": "discover.card.plain",
+          "temporal": false
+        },
+        {
+          "id": "price-BKKT",
+          "entity": "Bakkt Holdings Class A",
+          "metric": "Kurs",
+          "value": 8.18,
+          "unit": "USD",
+          "statement": "Bakkt Holdings Class A: Kurs 8.18 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-11",
+          "temporal": true
+        },
+        {
+          "id": "story-BKKT",
+          "entity": "Bakkt Holdings Class A",
+          "statement": "Bakkt Holdings Class A: Operative Marge in drei Jahren ausgeweitet.",
+          "source": "discover.card.plain",
+          "temporal": false
+        }
+      ],
+      "evidenceSufficient": true,
+      "evidenceRejected": 2,
       "timeSensitivity": "TIMELY",
       "asOf": "2026-09-11",
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
@@ -653,8 +3773,12 @@
       "evidenceRefs": [
         "magazin/01/index.html"
       ],
+      "evidence": [],
+      "evidenceSufficient": false,
+      "evidenceRejected": null,
       "timeSensitivity": "TIMELY",
       "asOf": null,
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Eine Ausgabe kann mehrere Social Stories tragen."
     },
@@ -671,8 +3795,12 @@
       "evidenceRefs": [
         "magazin/02/index.html"
       ],
+      "evidence": [],
+      "evidenceSufficient": false,
+      "evidenceRejected": null,
       "timeSensitivity": "TIMELY",
       "asOf": null,
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Eine Ausgabe kann mehrere Social Stories tragen."
     },
@@ -691,10 +3819,154 @@
       "evidenceRefs": [
         "reports/xpeng/index.html"
       ],
+      "evidence": [],
+      "evidenceSufficient": false,
+      "evidenceRejected": null,
       "timeSensitivity": "EVERGREEN",
       "asOf": null,
+      "signalStrength": null,
       "availability": "AVAILABLE",
       "note": "Kein Klarname zu \"xpeng\" bekannt - das Audience-Tor wird das im Einstieg beanstanden."
+    },
+    {
+      "topicId": "topic_stock_story:stock:apple-inc-:quant-technical_setup-aapl",
+      "family": "STOCK_STORY",
+      "entityType": "STOCK",
+      "entities": [
+        "Apple Inc."
+      ],
+      "sources": [
+        "VU_QUANT"
+      ],
+      "title": "Technische Lage: Apple Inc.",
+      "question": null,
+      "evidenceRefs": [
+        "social/data/signals.json#snap_6df01abdef66bea1"
+      ],
+      "evidence": [
+        {
+          "id": "quant-TECHNICAL_SETUP",
+          "entity": "Apple Inc.",
+          "metric": "Technical Opportunity Score",
+          "value": 65.3,
+          "statement": "Apple Inc.: Technical Opportunity Score 65.3.",
+          "source": "vu.technical",
+          "observedAt": "2026-09-11T00:00:00Z",
+          "temporal": true
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 0,
+      "timeSensitivity": "TIMELY",
+      "asOf": "2026-09-11T00:00:00Z",
+      "signalStrength": 0.653,
+      "availability": "AVAILABLE",
+      "note": "Technical Opportunity Score 65.3, Quelle vu.technical."
+    },
+    {
+      "topicId": "topic_stock_story:stock:jpmorgan-chase-co-:quant-technical_setup-jpm",
+      "family": "STOCK_STORY",
+      "entityType": "STOCK",
+      "entities": [
+        "JPMorgan Chase & Co."
+      ],
+      "sources": [
+        "VU_QUANT"
+      ],
+      "title": "Technische Lage: JPMorgan Chase & Co.",
+      "question": null,
+      "evidenceRefs": [
+        "social/data/signals.json#snap_d1308f5ba7316677"
+      ],
+      "evidence": [
+        {
+          "id": "quant-TECHNICAL_SETUP",
+          "entity": "JPMorgan Chase & Co.",
+          "metric": "Technical Opportunity Score",
+          "value": 63.3,
+          "statement": "JPMorgan Chase & Co.: Technical Opportunity Score 63.3.",
+          "source": "vu.technical",
+          "observedAt": "2026-09-11T00:00:00Z",
+          "temporal": true
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 0,
+      "timeSensitivity": "TIMELY",
+      "asOf": "2026-09-11T00:00:00Z",
+      "signalStrength": 0.633,
+      "availability": "AVAILABLE",
+      "note": "Technical Opportunity Score 63.3, Quelle vu.technical."
+    },
+    {
+      "topicId": "topic_stock_story:stock:microsoft-corporation:quant-technical_setup-msft",
+      "family": "STOCK_STORY",
+      "entityType": "STOCK",
+      "entities": [
+        "Microsoft Corporation"
+      ],
+      "sources": [
+        "VU_QUANT"
+      ],
+      "title": "Technische Lage: Microsoft Corporation",
+      "question": null,
+      "evidenceRefs": [
+        "social/data/signals.json#snap_8c44a54b4fd2fdef"
+      ],
+      "evidence": [
+        {
+          "id": "quant-TECHNICAL_SETUP",
+          "entity": "Microsoft Corporation",
+          "metric": "Technical Opportunity Score",
+          "value": 60.6,
+          "statement": "Microsoft Corporation: Technical Opportunity Score 60.6.",
+          "source": "vu.technical",
+          "observedAt": "2026-09-11T00:00:00Z",
+          "temporal": true
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 0,
+      "timeSensitivity": "TIMELY",
+      "asOf": "2026-09-11T00:00:00Z",
+      "signalStrength": 0.606,
+      "availability": "AVAILABLE",
+      "note": "Technical Opportunity Score 60.6, Quelle vu.technical."
+    },
+    {
+      "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
+      "family": "STOCK_STORY",
+      "entityType": "STOCK",
+      "entities": [
+        "Exxon Mobil Corporation"
+      ],
+      "sources": [
+        "VU_QUANT"
+      ],
+      "title": "Technische Lage: Exxon Mobil Corporation",
+      "question": null,
+      "evidenceRefs": [
+        "social/data/signals.json#snap_67138a4aeacd370e"
+      ],
+      "evidence": [
+        {
+          "id": "quant-TECHNICAL_SETUP",
+          "entity": "Exxon Mobil Corporation",
+          "metric": "Technical Opportunity Score",
+          "value": 76,
+          "statement": "Exxon Mobil Corporation: Technical Opportunity Score 76.",
+          "source": "vu.technical",
+          "observedAt": "2026-09-11T00:00:00Z",
+          "temporal": true
+        }
+      ],
+      "evidenceSufficient": false,
+      "evidenceRejected": 0,
+      "timeSensitivity": "TIMELY",
+      "asOf": "2026-09-11T00:00:00Z",
+      "signalStrength": 0.76,
+      "availability": "AVAILABLE",
+      "note": "Technical Opportunity Score 76, Quelle vu.technical."
     }
   ],
   "rejected": [],
@@ -703,11 +3975,6 @@
       "family": "NEWS_NOW",
       "availability": "UNAVAILABLE",
       "reason": "Keine angebundene Quelle liefert derzeit reale Daten fuer diese Familie. Belegbare Quellen waeren: MARKET_DATA, NEWS_FEED"
-    },
-    {
-      "family": "STOCK_STORY",
-      "availability": "UNAVAILABLE",
-      "reason": "Keine angebundene Quelle liefert derzeit reale Daten fuer diese Familie. Belegbare Quellen waeren: VU_QUANT, VU_STOCK_REPORT, COMPANY_FILING"
     },
     {
       "family": "ETF_PRODUCT",
@@ -755,19 +4022,15 @@
       "reason": "Keine angebundene Quelle liefert derzeit reale Daten fuer diese Familie. Belegbare Quellen waeren: VU_QUANT, VU_RESEARCH"
     }
   ],
-  "emptySources": [
-    {
-      "source": "VU_QUANT",
-      "reason": "Keine aktuellen Quant-Signale in social/data/signals.json."
-    }
-  ],
+  "emptySources": [],
   "summary": {
-    "topics": 25,
+    "topics": 29,
     "families": [
       "MAGAZINE_STORY",
       "MEGATREND",
       "RANKING",
-      "REPORT_STORY"
+      "REPORT_STORY",
+      "STOCK_STORY"
     ],
     "entityTypes": [
       "NONE",
@@ -775,6 +4038,6 @@
     ],
     "entityLess": 2,
     "multiEntity": 22,
-    "unavailableFamilies": 11
+    "unavailableFamilies": 10
   }
 }

@@ -40,6 +40,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Universe = require(join(ROOT, "social/engines/content-universe.js"));
+const DiscoverEvidence = require(join(ROOT, "social/engines/discover-evidence.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -88,6 +89,12 @@ function ausDiscoverReihen() {
        Filter. Gelesen statt entschieden.
        ------------------------------------------------------------------- */
     const istThema = !!(r.theme && String(r.theme).trim());
+
+    /* Die Reihe traegt nicht nur einen Titel, sondern Belege: ihre
+       Auswahlregel, ihre Abdeckung und die Titel selbst. Ohne sie
+       waere ein Slate-Eintrag nur eine Ueberschrift - und aus einer
+       Ueberschrift entsteht kein Brief. */
+    const ev = DiscoverEvidence.fromRow(r, { maxCompanies: 5 });
     themen.push(Universe.topic({
       family: istThema ? "MEGATREND" : "RANKING",
       entityType: "STOCK",
@@ -97,6 +104,9 @@ function ausDiscoverReihen() {
       title: r.title,
       question: r.subtitle || null,
       evidenceRefs: ["discover/data/rows/US_REAL/" + datei],
+      evidence: ev.evidence,
+      evidenceSufficient: ev.sufficient,
+      evidenceRejected: ev.rejectedCount,
       timeSensitivity: "TIMELY",
       asOf: r.asOf || r.generatedAt || null,
       note: "Reihe mit " + karten.length + " Titeln, Stand " + (r.asOf || "unbekannt") +
@@ -182,26 +192,66 @@ function ausReports() {
 function ausQuant() {
   const pfad = join(ROOT, "social/data/signals.json");
   const roh = readJson(pfad, null);
-  const liste = roh && (Array.isArray(roh) ? roh : roh.signals);
+  /* -------------------------------------------------------------------
+     DER SCHLUESSEL HEISST `events`, NICHT `signals`
+
+     Der erste Entwurf las roh.signals - ein Feld, das es in dieser
+     Datei nicht gibt. Ergebnis: "Keine aktuellen Quant-Signale", obwohl
+     vier reale dastanden. Dieselbe Familie wie byte_size gegen
+     asset_byte_size, diesmal in meinem eigenen Code.
+
+     Gelesen werden beide Schreibweisen. Toleriert werden die NAMEN,
+     nie die Werte. */
+  const liste = roh && (Array.isArray(roh) ? roh : (roh.events || roh.signals));
   if (!liste || !liste.length) {
     return { verfuegbar: false,
-      grund: "Keine aktuellen Quant-Signale in social/data/signals.json.",
+      grund: "Keine aktuellen Quant-Ereignisse in social/data/signals.json.",
       themen: [] };
   }
+
   const namen = readJson(join(ROOT, "discover/config/company-names.json"), { names: {} }).names || {};
-  const themen = liste.slice(0, 10).map((s) => {
-    const k = (s.entities && s.entities[0]) || null;
-    return Universe.topic({
-      family: "STOCK_STORY",
-      entityType: "STOCK",
-      entities: [namen[k] || k].filter(Boolean),
-      sources: ["VU_QUANT"],
-      slug: "quant-" + (s.signalId || k || "").toLowerCase(),
-      title: s.topic || null,
-      evidenceRefs: [s.signalId].filter(Boolean),
-      timeSensitivity: s.timeSensitivity || "TIMELY"
+  const LABEL = {
+    TECHNICAL_SETUP: "Technische Lage", NEW_52W_HIGH: "Neues Jahreshoch",
+    NEW_52W_LOW: "Neues Jahrestief", MOMENTUM_SHIFT: "Momentum dreht",
+    EARNINGS_RELEASE: "Geschaeftszahlen", QUANT_SCORE_JUMP: "Sprung im Score"
+  };
+
+  const themen = liste
+    /* Nur veroeffentlichungsfaehige. Synthetische Instrumente sind als
+       solche markiert - ein Beitrag darueber waere eine erfundene
+       Marktaussage. */
+    .filter((e) => e && e.state === "VERIFIED" && e.entity)
+    .slice(0, 10)
+    .map((e) => {
+      const klar = namen[String(e.entity).toUpperCase()] || null;
+      return Universe.topic({
+        family: "STOCK_STORY",
+        entityType: "STOCK",
+        /* Klarname vor Kuerzel - sonst stolpert das Audience-Tor
+           spaeter im Einstieg. */
+        entities: [(klar || e.entity)],
+        sources: ["VU_QUANT"],
+        slug: "quant-" + String(e.type).toLowerCase() + "-" +
+          String(e.entity).toLowerCase(),
+        title: (LABEL[e.type] || e.type) + ": " + (klar || e.entity),
+        question: null,
+        evidenceRefs: ["social/data/signals.json#" +
+          ((e.context && e.context.snapshotId) || e.type)],
+        timeSensitivity: "TIMELY",
+        asOf: e.observedAt || null,
+        /* Die reale Signalstaerke reist mit. Ohne sie bleibt der Anlass
+           eines Quant-Themas unbelegt - und das Thema faellt aus der
+           Bewertung, obwohl der Messwert danebenliegt. */
+        signalStrength: typeof e.strength === "number" ? e.strength : null,
+        evidence: [{ id: "quant-" + e.type, entity: (klar || e.entity),
+          metric: e.metric, value: e.value,
+          statement: (klar || e.entity) + ": " + e.metric + " " + e.value + ".",
+          source: e.source, observedAt: e.observedAt || null, temporal: true }],
+        evidenceSufficient: false,
+        evidenceRejected: 0,
+        note: e.metric + " " + e.value + ", Quelle " + e.source + "."
+      });
     });
-  });
   return { verfuegbar: themen.length > 0, grund: null, themen };
 }
 

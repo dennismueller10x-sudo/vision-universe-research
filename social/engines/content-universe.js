@@ -187,11 +187,18 @@
          Thema existiert - nicht das Signal, aus dem es entstand. */
       question: spec.question || null,
       evidenceRefs: Array.isArray(spec.evidenceRefs) ? spec.evidenceRefs.slice() : [],
+      /* Die Belege selbst, nicht nur ein Zeiger darauf. Ein Thema, das
+         nur auf eine Datei zeigt, laesst die Story-Auswahl im Dunkeln. */
+      evidence: Array.isArray(spec.evidence) ? spec.evidence.slice() : [],
+      evidenceSufficient: spec.evidenceSufficient === true,
+      evidenceRejected: spec.evidenceRejected === undefined ? null : spec.evidenceRejected,
       timeSensitivity: spec.timeSensitivity || "EVERGREEN",
       /* Der Stand der Quelldatei. Ohne ihn ist die Aktualitaet des
          Anlasses nicht messbar - und faellt als Luecke ins Gewicht,
          obwohl das Datum real vorliegt. */
       asOf: spec.asOf || null,
+      /* Die Staerke des Anlasses, wo es einen gemessenen gibt. */
+      signalStrength: spec.signalStrength === undefined ? null : spec.signalStrength,
       availability: spec.availability || "AVAILABLE",
       note: spec.note || null
     };

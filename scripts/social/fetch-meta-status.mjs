@@ -105,13 +105,37 @@ async function main() {
     if (!adminKey) missing.push("VU_SOCIAL_ADMIN_KEY");
     console.log("Nicht konfiguriert. Es fehlen: " + missing.join(", "));
     console.log("Das ist eine Owner-Handlung, kein Fehler des Laufs.");
+    /* -------------------------------------------------------------------
+       DIE FELDER WIDERSPRACHEN DER EIGENEN ERKLAERUNG
+
+       Hier stand `state: "not_configured", connected: false` - neben
+       einem Erklaerungstext, der woertlich sagt: "Ueber die
+       Meta-Verbindung laesst sich damit nichts sagen".
+
+       Beides zugleich kann nicht stimmen. Wer die Felder liest,
+       erfaehrt "nicht verbunden"; wer die Prosa liest, erfaehrt
+       "unbekannt". Gelesen werden die Felder - und daraus ist die
+       falsche Aussage "der Meta-Provider ist nicht konfiguriert" an
+       den Owner gegangen, obwohl der Lauf nur seine eigenen
+       Zugangsdaten nicht hatte.
+
+       NICHT KONFIGURIERT ist eine Aussage ueber die Verbindung.
+       ZUGANGSDATEN FEHLEN ist eine ueber diesen Lauf. Die zweite
+       erlaubt keine erste.
+
+       `connected` ist deshalb hier null und nicht false: dieselbe
+       Unterscheidung wie ueberall - Unbekanntes sieht sonst aus wie
+       Abwesendes. */
     return write(artefact({
-      state: "not_configured",
-      connected: false,
+      state: "credentials_missing_here",
+      connected: null,
+      probeScope: "THIS_RUN_ONLY",
       missingConfiguration: missing,
-      explanation: "Der Worker ist aus diesem Lauf nicht erreichbar, weil " + missing.join(" und ") +
-        " fehlt. Ueber die Meta-Verbindung laesst sich damit nichts sagen — " +
-        "weder dass sie besteht noch dass sie fehlt."
+      explanation: "Diesem Lauf fehlt " + missing.join(" und ") + ". Er kann " +
+        "den Worker nicht erreichen und sagt deshalb NICHTS ueber die " +
+        "Meta-Verbindung - weder dass sie besteht noch dass sie fehlt. " +
+        "Ein frueher erbrachter Nachweis wird dadurch nicht ungueltig; er " +
+        "ist von hier aus nur nicht sichtbar."
     }));
   }
 

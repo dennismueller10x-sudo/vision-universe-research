@@ -64,6 +64,13 @@ function messe(topic, kontext) {
      also null - nicht 0 und nicht 0.5. */
   m.platformFit = kontext.providerConfigured ? kontext.platformFit : null;
 
+  /* Der gemessene Anlass eines Quant-Themas. Kein Trend-Provider
+     angebunden, also bleibt trendScore null - das VU-Signal aber ist
+     real gemessen und steht im Ereignis. */
+  m.vuSignalStrength = typeof topic.signalStrength === "number"
+    ? topic.signalStrength : null;
+  m.trendScore = null;
+
   /* Publikumsinteresse und historische Leistung brauchen Daten, die es
      erst nach dem ersten veroeffentlichten Beitrag gibt. */
   m.audienceInterest = null;
@@ -84,8 +91,29 @@ export function dryRun(options) {
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
     .map((e) => ({ family: e.contentFamily || null, at: e.publishedAt }));
 
+  /* -------------------------------------------------------------------
+     ZWEI VERSCHIEDENE DINGE, DIE BEIDE "platformFit = null" ERGEBEN
+
+     (1) Wir wissen nicht, ob der Worker erreichbar ist - diesem Lauf
+         fehlen die Zugangsdaten. Das sagt NICHTS ueber die
+         Meta-Verbindung.
+     (2) Selbst bei bestehender Verbindung fehlt die
+         PLATTFORM-PASSUNGS-INTELLIGENZ: welches Format bei DIESEM
+         Publikum traegt, weiss man erst aus gemessenen Beitraegen.
+         Im Repository liegen 0 Messungen.
+
+     Frueher habe ich daraus "der Meta-Provider ist nicht konfiguriert"
+     gemacht - eine Aussage ueber die Verbindung, die aus dem Fehlen
+     eigener Zugangsdaten gar nicht folgt. Beides wird jetzt getrennt
+     benannt. */
   const meta = readJson(join(ROOT, "social/data/meta-connection.json"), null);
-  const providerConfigured = !!(meta && meta.connected);
+  const metaVerbindung = (meta && meta.connected === true) ? "CONNECTED"
+    : (meta && meta.connected === null) ? "UNKNOWN_FROM_THIS_RUN"
+    : "NOT_CONNECTED";
+  const perf = readJson(join(ROOT, "social/data/performance.json"), { entries: [] });
+  const messungen = (perf.entries || perf.measurements || []).length;
+  /* Plattformpassung ist gemessenes Wissen, nicht ein Verbindungsstatus. */
+  const providerConfigured = messungen > 0;
 
   const kontext = { now, history, providerConfigured, platformFit: null };
 
@@ -108,12 +136,24 @@ export function dryRun(options) {
   /* Audience Framing gehoert VOR das Authoring - also auch vor jede
      Aussage darueber, was aus einer Gelegenheit werden koennte. */
   const mitRahmen = rang.ranked.map((b) => Object.assign({}, b, {
-    audienceFrame: Audience.frame(b.topic, { names: NAMEN })
+    audienceFrame: Audience.frame(b.topic, { names: NAMEN }),
+    /* Wie belegt ist dieses Thema wirklich? Ein Slate-Eintrag ohne
+       eigene Belege kann keinen Brief tragen. */
+    evidenceCoverage: {
+      statements: (b.topic.evidence || []).length,
+      sufficient: b.topic.evidenceSufficient === true,
+      rejectedValues: b.topic.evidenceRejected,
+      storyPotential: (b.topic.evidence || []).length >= 5 ? "TRAEGT_EIGENE_GESCHICHTE"
+        : (b.topic.evidence || []).length > 0 ? "NUR_MIT_ERGAENZUNG"
+        : "KEINE_EIGENEN_BELEGE"
+    }
   }));
 
   return {
     generatedAt: now,
     purpose: "NORTH_STAR_SHIFT_PROOF",
+    metaConnectionFromThisRun: metaVerbindung,
+    ownPerformanceMeasurements: messungen,
     publishes: false,
     slateSize: slate.topics.length,
     ranked: mitRahmen,
@@ -123,7 +163,13 @@ export function dryRun(options) {
     unavailableDimensions: [
       { dimension: "audienceInterest", reason: "Keine Publikumsdaten - es wurde noch nichts veroeffentlicht." },
       { dimension: "historicalPerformance", reason: "Keine Leistungsdaten - dieselbe Ursache." },
-      { dimension: "platformFit", reason: providerConfigured ? null : "Kein Social-Provider konfiguriert." }
+      { dimension: "platformFit",
+        code: "PLATFORM_FIT_INTELLIGENCE_UNAVAILABLE",
+        reason: providerConfigured ? null
+          : "Keine gemessenen Beitraege (" + messungen + " Messungen im " +
+            "Repository). Welches Format bei diesem Publikum traegt, ist " +
+            "damit ungemessen - das ist KEINE Aussage ueber die " +
+            "Meta-Verbindung (Status von hier aus: " + metaVerbindung + ")." }
     ].filter((d) => d.reason),
     predictsPerformance: false
   };
@@ -153,6 +199,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("    Source         : " + t.sources.join(", "));
     console.log("    Entstand aus   : " + (b.derivedFrom || "keinem Marktsignal"));
     console.log("    Evidence       : " + (t.evidenceRefs.join(", ") || "—"));
+    console.log("    Evidence Cover.: " + b.evidenceCoverage.statements + " Belege, " +
+      (b.evidenceCoverage.sufficient ? "ausreichend" : "nicht ausreichend") +
+      (b.evidenceCoverage.rejectedValues
+        ? ", " + b.evidenceCoverage.rejectedValues + " Werte zurueckgewiesen" : ""));
+    console.log("    Story Potential: " + b.evidenceCoverage.storyPotential);
     console.log("    --- Audience Framing ---");
     console.log("    Fuer wen       : " + a.targetAudience);
     console.log("    Vorwissen      : " + a.assumedKnowledge);
