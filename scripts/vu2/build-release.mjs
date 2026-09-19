@@ -50,16 +50,20 @@ export async function buildRelease({root,output}){
   await json('quant/data/sec/inspector/'+company.ticker+'.json',projectInspector(source));
  }
  // A serving projection of existing consumer facts, not a second SEC pipeline.
- // Compression is per issuer; the browser never downloads the full universe.
+ // Bounded shards avoid thousands of filesystem allocation blocks; no universe download.
  const consumerPaths=paths.filter(p=>/^quant\/data\/sec\/consumer\/CIK[0-9]{10}\.json$/.test(p));
  if(consumerPaths.length){
   const manifest=await load('quant/data/universe/master-manifest.json'),eligible=new Set();
   for(const {shard} of manifest.shards.index){const members=await load('quant/data/universe/instruments/'+shard+'.json');for(const member of members.instruments)if(Master.inProductUniverse(member)&&/^\d{10}$/.test(member.cik))eligible.add(member.cik);}
+  const quarterlyShards=new Map();
   for(const path of consumerPaths){const cik=path.match(/CIK([0-9]{10})/)[1];if(!eligible.has(cik))continue;
    const source=await load(path);if(source.cik!==cik)throw Error('QUARTERLY_IDENTITY_MISMATCH');const projection=projectQuarterly(source);if(!projection)continue;
-   const target='quant/data/sec/quarterly/CIK'+cik+'.json.gz',bytes=gzipSync(Buffer.from(JSON.stringify(projection)),{level:9});
-   await mkdir(dirname(resolve(output,target)),{recursive:true});await writeFile(resolve(output,target),bytes);
-   emitted.push({path:target,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
+   const shard=cik.slice(-2);if(!quarterlyShards.has(shard))quarterlyShards.set(shard,{schema:'vu-quant-quarterly-shard-1.0.0',shard,issuers:{}});quarterlyShards.get(shard).issuers[cik]=projection;
+  }
+  for(const [shard,payload] of quarterlyShards){
+   const raw=Buffer.from(JSON.stringify(payload)),bytes=gzipSync(raw,{level:9}),target='quant/data/sec/quarterly/'+shard+'.json.gz';
+   if(raw.length>1048576||bytes.length>131072)throw Error('QUARTERLY_SHARD_BUDGET_EXCEEDED');
+   await mkdir(dirname(resolve(output,target)),{recursive:true});await writeFile(resolve(output,target),bytes);emitted.push({path:target,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
   }
  }
  // Delivery-only compaction: preserve canonical shard contents and URLs.

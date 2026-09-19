@@ -13,7 +13,7 @@ await mkdir(out,{recursive:true});
 // Compare the current checked-in canonical outputs; fixed old quotes are not invariants.
 const panel=JSON.parse(await readFile(resolve(root,'quant/data/sec/quant-factor-inputs.json'),'utf8')),nvda=panel.securities.NVDA;
 const technical=JSON.parse(await readFile(resolve(root,'quant/data/technical/instruments/NVDA.json'),'utf8'));
-const quarterlyTSLA=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/sec/quarterly/CIK0001318605.json.gz'))));
+const quarterlyTSLA=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/sec/quarterly/05.json.gz')))).issuers['0001318605'];
 const pct=value=>value.toLocaleString('de-DE',{maximumFractionDigits:2})+' %';
 const trendLabel={BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}[technical.bundle.trend.direction];
 // Explicit stale-data scenario, retaining actual source files and all freshness assertions.

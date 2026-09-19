@@ -35,3 +35,10 @@ future period ends, not a serving/parser error. The common history validator now
 also guards release projection: whole invalid metric withheld with explicit
 unavailableMetrics reason. No source fact is altered, no future row delivered, and
 unrelated valid metrics stay intact. Regression tests use all four real CIK cases.
+
+Recovery supersedes per-issuer file layout: unchanged SEC-CI also counts filesystem
+allocation.4,735tiny files used21,904KiB. Bundle into100bounded compressed shards;
+CIK remains canonical identity, final2digits only partition storage. Exact issuer
+lookup and envelope guards prevent substitution. Measured4,968KiB filesystem /
+4,846,342encoded bytes; largest shard29,106encoded /318,298decoded bytes. Existing
+8MiB tests stay unchanged. Decode caps remain128KiB input/1MiB output.

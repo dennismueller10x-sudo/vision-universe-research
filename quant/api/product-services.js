@@ -42,7 +42,7 @@ function create(options){
  async function compressedJSON(path){
   if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
   // Only this service constructs the same-origin canonical issuer path.
-  if(!/^\/quant\/data\/sec\/quarterly\/CIK[0-9]{10}\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
+  if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
   if(input[0]!==31||input[1]!==139){if(response.headers.get('content-encoding')==='gzip')return JSON.parse(new TextDecoder().decode(input));throw Error('INVALID_COMPRESSION');}
@@ -207,7 +207,9 @@ function create(options){
    const c=await config();if(!(c.preview.scope||[]).includes(ticker)){
     if(!/^\d{10}$/.test(instrument.cik))return unavailable('FUNDAMENTAL_IDENTITY_UNAVAILABLE');
     if(selection.period==='quarterly'){
-     const projected=await compressedJSON('/quant/data/sec/quarterly/CIK'+instrument.cik+'.json.gz');
+     const shard=instrument.cik.slice(-2),bucket=await compressedJSON('/quant/data/sec/quarterly/'+shard+'.json.gz');
+     if(bucket?.schema!=='vu-quant-quarterly-shard-1.0.0'||bucket.shard!==shard)return unavailable('INVALID_QUARTERLY_SHARD');
+     const projected=bucket.issuers?.[instrument.cik];if(!projected)return unavailable('SOURCE_MISSING');
      return History.buildQuarterly(projected,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:'quarterly'});
     }
     const consumer=await load('/discover/data/stocks/US_REAL/'+ticker+'.json');

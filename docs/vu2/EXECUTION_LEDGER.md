@@ -346,3 +346,13 @@ shares_outstanding with period end after filing. CIKs0000006201,0000006207,
 records INVALID_FACT_EVIDENCE, preserves every other metric and original SEC source.
 Regression tests retain real counterexamples. No hand-fixed ticker/date or relaxed gate.
 Final build/remote/browser/visual/production gates PENDING. PIT/TTM not certified.
+
+PR118 initial remote Quant/CompanyMaster/Browser PASS, but SEC-CI FAIL: its existing
+filesystem allocation gate measured21,904KiB for4,735tiny gzip files. Byte accounting
+alone was insufficient. Do not change either8MiB gate. Recovery:100bounded gzip
+shards by last two CIK digits (storage partition only; canonical issuer ID unchanged).
+Product Service selects exact canonical CIK within one shard and checks envelope.
+Actual rebuilt SEC bytes4,846,342; filesystem allocation4,968KiB<8,192KiB;
+maximum compressed shard29,106bytes, decoded318,298bytes. No complete consumer,
+full-universe browser load, normalization, source edits or second delivery service.
+Rerun all changed-head gates; prior successful gates are retained as historical evidence.
