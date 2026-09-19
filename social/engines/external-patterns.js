@@ -166,8 +166,72 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     SPRICHT DIESER BEITRAG UNSERE SPRACHE?
+
+     Die Regel "eine Entitaet lohnt einen Platz erst, wenn sie im
+     Programm wiederkehrt" faengt SELTENE Namen ab. Sie faengt
+     MEHRDEUTIGE nicht: #frontline ist eine Reederei und zugleich ein
+     Alltagswort. Ein Platz von dreissig, eine Woche lang, fuer Motive,
+     die mit Boerse nichts zu tun haben.
+
+     Raten hilft hier nicht - es gibt keine Liste von Alltagswoertern,
+     die nicht doch handgepflegt waere. Messbar ist dagegen etwas
+     anderes: ob die Beitraege unter einem Hashtag ANDERE Hashtags
+     unseres eigenen Themenwortschatzes tragen.
+
+     Zurueck kommt eine ZAHL, kein Wort. Die fremden Hashtags bleiben in
+     der Caption, wie alles andere auch.
+
+     Das ist ausdruecklich KEINE Qualitaetsaussage ueber die Beitraege.
+     Es misst, ob wir am richtigen Ort gemessen haben.
+     ------------------------------------------------------------------- */
+  function vokabularTreffer(m, vokabular, ausser) {
+    var text = String((m && m.caption) || "").toLowerCase();
+    if (!text) return 0;
+    var raus = String(ausser || "").toLowerCase();
+    var gefunden = {};
+    (vokabular || []).forEach(function (v) {
+      var w = String(v || "").toLowerCase();
+      if (!w || w === raus) return;
+      /* Als Hashtag, nicht als Teilwort: "#etf" ja, "netflix" nein. */
+      if (text.indexOf("#" + w) !== -1) gefunden[w] = true;
+    });
+    return Object.keys(gefunden).length;
+  }
+
+  /**
+   * Wie viele Medien unter einem Hashtag sprechen unsere Sprache?
+   *
+   * Nur Zaehlungen kommen zurueck - die Medien selbst nicht.
+   */
+  function themennaehe(medien, vokabular, ausser) {
+    var liste = medien || [];
+    if (!liste.length) {
+      return { measured: false, share: null, withVocabulary: 0, observed: 0,
+        explanation: "Keine Medien beobachtet - das ist die Abwesenheit " +
+          "einer Messung." };
+    }
+    var treffer = liste.filter(function (m) {
+      return vokabularTreffer(m, vokabular, ausser) > 0;
+    }).length;
+    return {
+      measured: true,
+      observed: liste.length,
+      withVocabulary: treffer,
+      share: Math.round((treffer / liste.length) * 1000) / 1000,
+      isQualityJudgement: false,
+      explanation: treffer + " von " + liste.length + " Beitraegen tragen " +
+        "mindestens einen weiteren Hashtag aus unserem Themenwortschatz. " +
+        "Das misst, ob wir am richtigen Ort gemessen haben - nicht, ob die " +
+        "Beitraege gut sind."
+    };
+  }
+
   var api = {
     MUSTER: MUSTER,
+    vokabularTreffer: vokabularTreffer,
+    themennaehe: themennaehe,
     STORY_MUSTER: STORY_MUSTER,
     EINSTIEG_ZEICHEN: EINSTIEG_ZEICHEN,
     hookArchetype: hookArchetype,

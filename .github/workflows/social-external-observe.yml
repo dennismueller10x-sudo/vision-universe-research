@@ -32,6 +32,25 @@
 #
 # Der Plan wird vor dem Aufruf ausgegeben und die Grenze geprueft. Ein
 # Plan, der den Rahmen sprengen wuerde, bricht den Lauf ab.
+#
+# -------------------------------------------------------------------------
+# WARUM ES ZWEI AUSLOESER GIBT
+# -------------------------------------------------------------------------
+#
+# Gemessen: ein `workflow_dispatch` auf diesen Zweig antwortet mit
+# HTTP 404. GitHub registriert einen Dispatch-Workflow erst, wenn die
+# Datei im Standardzweig liegt - dort liegt sie nicht, und sie dorthin
+# zu schieben waere eine Owner-Entscheidung, keine von hier.
+#
+# Ein `push`-Ausloeser hat diese Bedingung nicht: er liest den Workflow
+# aus dem gepushten Commit. Er darf aber nicht bei JEDEM Push feuern -
+# jeder Lauf kann Plaetze aus einem Rahmen von dreissig je sieben Tagen
+# verbrauchen, und ein Vorrat, der sich unbemerkt leert, ist keiner.
+#
+# Deshalb haengt der Ausloeser an EINER Datei: `observe-request.json`.
+# Wer sie aendert, will einen Lauf. Wer etwas anderes aendert, nicht.
+# Der Rueckschreibeschritt beruehrt sie nicht, also loest er sich auch
+# nicht selbst wieder aus.
 # =========================================================================
 name: Social External Observe
 
@@ -47,6 +66,9 @@ on:
         description: 'Hoechstens so viele NEUE Hashtags oeffnen'
         type: string
         default: '8'
+  push:
+    paths:
+      - 'social/data/observe-request.json'
 
 concurrency:
   group: social-external-observe
@@ -59,7 +81,12 @@ jobs:
   observe:
     runs-on: ubuntu-latest
     steps:
+      # Bei einem push-Ausloeser checkt die Aktion sonst den Commit aus,
+      # nicht den Zweig - und ein `git push` aus einem losgeloesten HEAD
+      # scheitert. Der Zweig wird deshalb ausdruecklich genannt.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-node@v4
         with:
@@ -70,7 +97,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/social/plan-hashtag-observation.mjs \
-            --max-new "${{ inputs.max_new }}" --out tmp/observe
+            --max-new "${{ inputs.max_new || '8' }}" --out tmp/observe
           echo "tags=$(cat tmp/observe/tags.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Beobachten
@@ -90,7 +117,7 @@ jobs:
           code=$(curl -sS -o tmp/observe/raw.json -w '%{http_code}' \
             -H "Authorization: Bearer $KEY" \
             --get --data-urlencode "tags=${{ steps.plan.outputs.tags }}" \
-            --data-urlencode "edge=${{ inputs.edge }}" \
+            --data-urlencode "edge=${{ inputs.edge || 'top' }}" \
             "$WORKER/social/meta/hashtag-search" || echo 000)
           echo "HTTP $code"
           if [ "$code" != "200" ]; then
@@ -119,5 +146,5 @@ jobs:
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
           git add social/data/external-observations.json social/data/hashtag-portfolio.json
-          git commit -m "External Social Intelligence: Beobachtung ${{ inputs.edge }}"
-          git push
+          git commit -m "External Social Intelligence: Beobachtung ${{ inputs.edge || 'top' }}"
+          git push origin "HEAD:${{ github.ref_name }}"

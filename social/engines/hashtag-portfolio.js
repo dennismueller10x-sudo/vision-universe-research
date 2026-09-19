@@ -356,7 +356,17 @@
       if (typeof a.observedMediaCount === "number") {
         e.observedMediaCount = a.observedMediaCount;
         e.trendObservations.push({ at: nowIso, mediaCount: a.observedMediaCount,
-          edge: a.edge || null });
+          edge: a.edge || null,
+          /* Viele Medien heisst nicht: die richtigen Medien. #frontline
+             ist eine Reederei und ein Alltagswort zugleich, und die
+             Zahl allein unterschiede beides nie. Die Themennaehe reist
+             mit, damit das naechste Fenster mit Daten entscheiden kann
+             statt mit einer Vermutung. */
+          topicalRelevance: a.topicalRelevance && a.topicalRelevance.measured
+            ? a.topicalRelevance.share : null });
+        if (a.topicalRelevance && a.topicalRelevance.measured) {
+          e.topicalRelevance = a.topicalRelevance.share;
+        }
       }
       e.provenance.push({ at: nowIso, role: a.role || null,
         source: a.source || "meta.instagram.hashtag_search" });

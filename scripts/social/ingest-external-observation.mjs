@@ -45,9 +45,25 @@ function readJson(p, f) {
  *
  * Die Rohantwort geht hier hinein und kommt nicht wieder heraus.
  */
+/**
+ * Unser Themenwortschatz - aus den Content Families abgeleitet, nicht
+ * von Hand gepflegt. Er dient genau einer Frage: sprechen die Beitraege
+ * unter einem Hashtag unsere Sprache?
+ */
+export function wortschatz() {
+  const raus = [];
+  Object.keys(Portfolio.FAMILY_TAGS).forEach((f) => {
+    Portfolio.FAMILY_TAGS[f].forEach((t) => {
+      if (raus.indexOf(t) === -1) raus.push(t);
+    });
+  });
+  return raus;
+}
+
 export function abstrahiere(roh, options) {
   options = options || {};
   const now = options.now || (roh && roh.observedAt) || new Date().toISOString();
+  const vokabular = options.vocabulary || wortschatz();
   const beobachtungen = [];
   const jeHashtag = [];
 
@@ -58,8 +74,12 @@ export function abstrahiere(roh, options) {
       continue;
     }
     const medien = r.media || [];
+    /* Gemessen, bevor die Medien verworfen werden - danach ist die
+       Frage nicht mehr zu beantworten. Zurueck kommt eine Zahl, kein
+       fremdes Wort. */
+    const naehe = Patterns.themennaehe(medien, vokabular, r.hashtag);
     jeHashtag.push({ hashtag: r.hashtag, ok: true, edge: r.edge,
-      observedMediaCount: medien.length });
+      observedMediaCount: medien.length, topicalRelevance: naehe });
 
     for (const m of medien) {
       /* Der einzige Ort, an dem eine fremde Caption gelesen wird - und
@@ -109,7 +129,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(erg.observations.length + " Muster aus " +
     erg.perHashtag.length + " Hashtag(s).");
   erg.perHashtag.forEach((h) => console.log("  #" + h.hashtag.padEnd(20) +
-    (h.ok ? h.observedMediaCount + " Medien" : "FEHLER: " + h.reason)));
+    (h.ok
+      ? String(h.observedMediaCount).padStart(3) + " Medien, Themennaehe " +
+        (h.topicalRelevance && h.topicalRelevance.measured
+          ? Math.round(h.topicalRelevance.share * 100) + " %"
+          : "ungemessen")
+      : "FEHLER: " + h.reason)));
 
   const archetypen = {};
   erg.observations.forEach((o) => {
@@ -131,6 +156,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const fort = Portfolio.record(p.hashtags || {},
       erg.perHashtag.map((h) => ({ hashtag: h.hashtag, edge: h.edge,
         observedMediaCount: h.observedMediaCount,
+        topicalRelevance: h.topicalRelevance,
         source: "meta.instagram.hashtag_search" })), erg.observedAt);
     writeFileSync(join(ROOT, PORTFOLIO),
       JSON.stringify({ generatedAt: erg.observedAt, hashtags: fort }, null, 2) + "\n");

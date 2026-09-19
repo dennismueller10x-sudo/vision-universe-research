@@ -110,3 +110,53 @@ test("EP9 · Ein gescheiterter Hashtag zaehlt als null beobachtete Medien", () =
   assert.equal(etf.ok, false);
   assert.equal(etf.observedMediaCount, 0);
 });
+
+/* ============================================================ Themennaehe */
+
+test("EP20 · Die Themennaehe zaehlt, sie zitiert nicht", () => {
+  /* #frontline ist eine Reederei UND ein Alltagswort. Die Zahl der
+     Medien unterscheidet beides nie - ob sie unsere Sprache sprechen,
+     schon. Zurueck kommt eine Zahl, kein fremdes Wort. */
+  const medien = [
+    { caption: "Reederei im Aufwind #frontline #aktien #boerse" },
+    { caption: "Danke an alle #frontline heroes" },
+    { caption: "Ohne jeden Hashtag" }
+  ];
+  const n = P.themennaehe(medien, ["aktien", "boerse", "etf"], "frontline");
+  assert.equal(n.measured, true);
+  assert.equal(n.observed, 3);
+  assert.equal(n.withVocabulary, 1);
+  assert.equal(n.share, 0.333);
+  const raus = JSON.stringify(n);
+  assert.equal(raus.includes("Reederei"), false);
+  assert.equal(raus.includes("heroes"), false);
+});
+
+test("EP21 · Der abgefragte Hashtag zaehlt nicht als eigener Beleg", () => {
+  /* Sonst waere jede Messung 100 % - jeder Beitrag unter #aktien
+     traegt #aktien. Eine Zahl, die immer dasselbe sagt, misst nichts. */
+  const n = P.themennaehe([{ caption: "nur #aktien" }], ["aktien", "boerse"], "aktien");
+  assert.equal(n.withVocabulary, 0);
+});
+
+test("EP22 · Gezaehlt wird als Hashtag, nicht als Teilwort", () => {
+  /* "netflix" enthaelt "etf". Ohne das Rautezeichen waere jede
+     Netflix-Erwaehnung ein ETF-Beleg. */
+  const n = P.themennaehe([{ caption: "neue Serie bei netflix" }], ["etf"], "film");
+  assert.equal(n.withVocabulary, 0);
+  const m = P.themennaehe([{ caption: "mein #etf Sparplan" }], ["etf"], "film");
+  assert.equal(m.withVocabulary, 1);
+});
+
+test("EP23 · Ohne Medien wird nichts behauptet", () => {
+  const n = P.themennaehe([], ["aktien"], "x");
+  assert.equal(n.measured, false);
+  assert.equal(n.share, null);
+  assert.match(n.explanation, /Abwesenheit/);
+});
+
+test("EP24 · Themennaehe ist ausdruecklich kein Qualitaetsurteil", () => {
+  const n = P.themennaehe([{ caption: "#aktien" }], ["aktien", "boerse"], "boerse");
+  assert.equal(n.isQualityJudgement, false);
+  assert.match(n.explanation, /nicht, ob die Beitraege gut sind/);
+});
