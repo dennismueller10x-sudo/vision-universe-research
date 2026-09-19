@@ -3,6 +3,7 @@
   const items = [
     ['News', '/news/'],
     ['Discover', '/discover/'],
+    ['Discover 2.0', '/discover-v2/'],
     ['Quant', '/quant/'],
     ['Dashboard', '/dashboard/'], ['Guide', '/guide/'], ['ETF', '/etf/'],
     ['Hedgefonds', '/hedgefonds/'], ['Analysten', '/analysten/'], ['Macro', '/macro/'],

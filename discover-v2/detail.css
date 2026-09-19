@@ -1,0 +1,112 @@
+/* Strictly scoped presentation overrides. Never style Discover 1.0. */
+body.dv2 .v2-main.dx-detail{padding:0;max-width:1296px}
+body.dv2 .dv2-stock{max-width:1140px;margin:0 auto;padding:24px 32px 96px;--w:var(--discover-text);--w-soft:var(--discover-line);--discover-dim:var(--v2-muted);--discover-muted:var(--v2-muted)}
+html[data-theme="light"] body.dv2 .dv2-stock{--discover-up:#08713c;--discover-down:#b52d30}
+body.dv2 .dv2-stock .dx-journey-von{opacity:1}
+body.dv2 .dv2-stock .dx-kicker{color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-sig{color:var(--discover-text);background:var(--discover-bg-2);border-color:var(--discover-line)}
+body.dv2 .dv2-stock .dx-sig small{opacity:1;color:var(--discover-muted)}
+body.dv2 .dv2-stock a.dx-btn{color:var(--discover-bg)}
+body.dv2 .dv2-stock a.dx-btn--ghost{color:var(--discover-text)}
+body.dv2 .dv2-stock .dx-fade{opacity:1;transform:none}
+body.dv2 .dv2-stock .dx-back{display:inline-block;margin:0 0 20px;padding:10px 0;font-size:13px}
+body.dv2 .dv2-stock .dx-dhero{padding:26px 0 0;margin:0;background:none;border:0;overflow:visible;min-height:0}
+body.dv2 .dv2-stock .dx-dhero-bg{display:none}
+body.dv2 .dv2-stock .dx-dhero-inner{display:block;padding:0;min-height:0}
+body.dv2 .dv2-stock .dx-dhero h1{max-width:100%;font-size:clamp(30px,4vw,58px);line-height:1.08;letter-spacing:-.055em;margin:0 0 12px}
+body.dv2 .dv2-stock .dx-dhero-meta{margin:0;font-size:12px;line-height:1.6;color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-index-badges{margin:10px 0 0}
+body.dv2 .dv2-stock .dx-dhero-right{margin:18px 0 0;text-align:left}
+body.dv2 .dv2-stock:has(.dx-chart-hero) .dx-dhero-right{display:none}
+body.dv2 .dv2-stock .dx-chapter{padding:44px 0;margin:0;border-bottom:1px solid var(--discover-line);border-top:0}
+body.dv2 .dv2-stock .dx-chapter h2{font-size:clamp(24px,3vw,36px);line-height:1.12;letter-spacing:-.045em;max-width:27ch;margin:0 0 24px}
+body.dv2 .dv2-stock .dx-chapter--chart{padding:10px 0 24px;border:0}
+body.dv2 .dv2-stock .dx-chapter--chart>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body.dv2 .dv2-stock .dx-chart{background:transparent;border:0;border-radius:0;padding:0}
+/* Shared intraday wrapper uses height:100% for card slots. Here it belongs
+   in document flow with its price header and note, not in a fixed slot. */
+body.dv2 .dv2-stock .dx-chart .dx-intraday{height:auto;min-height:0}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-chart{height:auto;min-height:0;flex:none;display:flow-root}
+body.dv2 .dv2-stock .dx-chart-head{margin:18px 0}
+body.dv2 .dv2-stock .dx-tf{display:flex;gap:5px;justify-content:flex-start;flex-wrap:nowrap}
+body.dv2 .dv2-stock .dx-tf button{min-width:44px;min-height:44px;font-size:13px;padding:8px 14px;border:0;border-radius:999px;background:transparent;color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-tf button[aria-pressed="true"]{background:var(--discover-text);color:var(--discover-bg)}
+body.dv2 .dv2-stock .dx-tf button:disabled{opacity:.4}
+body.dv2 .dv2-stock .dx-chart-hero{padding:8px 0 12px}
+body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:clamp(40px,5vw,66px);letter-spacing:-.065em;font-weight:650}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.up{color:var(--discover-up)}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.down{color:var(--discover-down)}
+body.dv2 .dv2-stock .dx-chart-hero-meta{font-size:12px;line-height:1.6}
+body.dv2 .dv2-stock .dx-chart-hero-span{color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{color:var(--discover-muted)}
+body.dv2 .dv2-stock [data-direction="up"]{color:var(--discover-up)}
+body.dv2 .dv2-stock [data-direction="down"]{color:var(--discover-down)}
+body.dv2 .dv2-stock [data-direction="neutral"]{color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-range-chart[data-direction] .dx-art-line{stroke:currentColor}
+body.dv2 .dv2-stock .dx-werkzeuge{margin:16px 0 0;border:0;color:var(--discover-muted)}
+body.dv2 .dv2-stock .dx-werkzeuge summary{padding:12px 0;min-height:44px;font-size:13px}
+body.dv2 .dv2-stock-nav{display:flex;overflow:auto;gap:6px;padding:4px 0 12px;border-bottom:1px solid var(--discover-line);scrollbar-width:none}
+body.dv2 .dv2-stock-nav button{font:inherit;font-size:13px;white-space:nowrap;min-height:44px;padding:10px 18px;border-radius:999px;background:transparent;border:1px solid var(--discover-line);color:var(--discover-text);cursor:pointer}
+body.dv2 .dv2-stock-nav button:hover{background:var(--discover-line)}
+body.dv2 .dv2-stock-context{padding:28px 0;border-top:1px solid var(--discover-line);border-bottom:1px solid var(--discover-line)}
+body.dv2 .dv2-stock-context .dx-dhero-story{font-size:clamp(20px,2.5vw,29px);letter-spacing:-.025em;line-height:1.35;margin:0 0 16px;max-width:40ch}
+body.dv2 .dv2-stock-context .dx-dhero-hook{max-width:60ch;font-size:16px;margin:12px 0}
+body.dv2 .dv2-stock-context .dx-zeitachse{margin-top:28px}
+body.dv2 .dv2-stock .dx-chapter--journey{--w:#8a78d6;--w-soft:rgba(138,120,214,.12);padding-top:60px}
+body.dv2 .dv2-detail-intro{font-size:15px;color:var(--discover-muted);line-height:1.6;max-width:55ch;margin:-8px 0 24px}
+body.dv2 .dv2-stock .dx-journey-tab{min-height:44px;padding:10px 18px}
+body.dv2 .dv2-stock .dx-journey-tabs{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:thin;overscroll-behavior-x:contain}
+body.dv2 .dv2-stock .dx-journey-tabs>.dx-journey-tab{flex:0 0 auto;white-space:nowrap}
+body.dv2 .dv2-stock .dx-journey-kopf{margin:22px 0 18px;gap:14px 22px}
+body.dv2 .dv2-stock .dx-journey-satz{font-size:clamp(20px,2.5vw,30px);max-width:40ch;line-height:1.35;margin-top:24px}
+body.dv2 .dv2-stock .dx-journey-satz--caveat{font-size:15px;line-height:1.6}
+body.dv2 .dv2-stock .dx-story-list--detail{margin-top:30px}
+body.dv2 .dv2-stock .dx-zahlen{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+body.dv2 .dv2-stock .dx-zahlen-karte{padding:24px;border:1px solid var(--discover-line);background:transparent;border-radius:20px;min-width:0}
+body.dv2 .dv2-stock .dx-zahlen-zahl{font-size:clamp(26px,3vw,42px);letter-spacing:-.04em}
+body.dv2 .dv2-stock .dx-zahlen-satz{line-height:1.5}
+body.dv2 .dv2-detail-disclosure{padding:22px 0;border-bottom:1px solid var(--discover-line)}
+body.dv2 .dv2-detail-disclosure>summary,body.dv2 .dv2-stock .dx-analyse>summary{font-size:17px;font-weight:600;min-height:44px;padding:10px 0;cursor:pointer}
+body.dv2 .dv2-detail-disclosure .dx-chapter{border:0;padding-bottom:0}
+body.dv2 .dv2-stock .dx-analyse{margin:30px 0}
+body.dv2 .dv2-stock .dx-bewertung-bild{margin:28px 0}
+body.dv2 .dv2-stock .dx-bewertung-zeile{min-height:64px}
+body.dv2 .dv2-stock .dx-bewertung-satz{font-size:20px;line-height:1.5;max-width:48ch}
+body.dv2 .dv2-stock :is(button,a,summary):focus-visible{outline:3px solid var(--discover-text);outline-offset:4px}
+body.dv2 .dv2-stock :is(section,details)[id]{scroll-margin-top:110px}
+body.dv2 .dv2-stock :is(button,a,summary){scroll-margin-top:110px;scroll-margin-bottom:130px}
+@media(max-width:860px){
+  body.dv2:has(.dv2-stock) .v2-bar{display:none}
+  body.dv2 .dv2-stock{padding:0 20px 100px}
+  body.dv2 .dv2-stock .dx-back{margin-bottom:0;min-height:44px;display:inline-flex;align-items:center}
+  body.dv2 .dv2-stock .dx-dhero{padding-top:8px}
+  body.dv2 .dv2-stock .dx-dhero h1{font-size:34px;margin-bottom:6px}
+  body.dv2 .dv2-stock .dx-chapter--chart>div:not(.dx-chart){display:flex;flex-direction:column}
+  body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-chart-head{order:1;margin:10px 0}
+  body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-werkzeuge{order:2}
+  body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-inline-note{order:3}
+  body.dv2 .dv2-stock .dx-tf{gap:2px;justify-content:space-between}
+  body.dv2 .dv2-stock .dx-tf button{min-width:39px;padding:7px 9px}
+  body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:48px}
+  body.dv2 .dv2-stock .dx-chart-hero-preis{gap:6px 12px}
+  body.dv2 .dv2-stock .dx-chapter{padding:36px 0}
+  body.dv2 .dv2-stock .dx-chapter--chart{padding:8px 0 14px}
+  body.dv2 .dv2-stock .dx-chapter h2{font-size:28px}
+  body.dv2 .dv2-stock .dx-chapter--journey{padding-top:20px;scroll-margin-top:80px}
+  body.dv2 .dv2-stock .dx-chapter--journey>h2{font-size:26px;text-transform:none;color:var(--discover-text);margin-bottom:14px;letter-spacing:-.035em}
+  body.dv2 .dv2-stock .dx-chapter--journey>.dx-kicker{margin-bottom:10px}
+  body.dv2 .dv2-detail-intro{font-size:13px;margin:0 0 12px}
+  body.dv2 .dv2-stock .dx-journey--stage{margin-top:12px}
+  body.dv2 .dv2-stock .dx-journey-kopf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:12px 0 8px}
+  body.dv2 .dv2-stock .dx-journey-pfeil{display:none}
+  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(20px,5.5vw,27px);white-space:nowrap}
+  body.dv2 .dv2-stock .dx-journey-delta{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;margin:0;text-align:left}
+  body.dv2 .dv2-stock .dx-journey-delta b{font-size:24px}
+  body.dv2 .dv2-stock .dx-journey-bild{overflow:hidden}
+  body.dv2 .dv2-stock .dx-zahlen{gap:10px}
+  body.dv2 .dv2-stock .dx-zahlen-karte{padding:18px 14px;border-radius:16px}
+  body.dv2 .dv2-stock .dx-zahlen-satz{font-size:12px}
+  body.dv2 .dv2-stock .dx-damals{font-size:12px}
+  body.dv2 .dv2-stock .dx-damals th,body.dv2 .dv2-stock .dx-damals td{padding:10px 5px}
+}
+@media(prefers-reduced-motion:reduce){body.dv2 .dv2-stock *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

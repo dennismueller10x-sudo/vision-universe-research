@@ -274,3 +274,9 @@ contracts, tests, measured coverage, remaining gaps and rollback are recorded in
 State: IMPLEMENTED / LOCAL_CONTRACT_GATES_PASS / REMOTE_BROWSER_GATES_PENDING.
 Quant 1,188 PASS; targeted 43 PASS; SEC release bytes 2,762,729 PASS.
 Discovery unchanged; no new secrets/costs/provider calls; full completion not claimed.
+
+PR #114 at b2298a0: remote Quant/SEC/Company Master/Pages package/Browser PASS.
+Browser evidence: 49 functional, 36 accessibility, 8 resource checks.
+Desktop/390px canonical stock and annual history visually inspected after axis repair.
+Main drift: independent PR #113 merged as 8fde31f; affected Discovery preview and
+shared site-navigation only, no owned-path overlap. Synchronize and rerun gates.

@@ -82,3 +82,9 @@ separately rejecting fabricated charts during combined panel/history outage.
 Artifact download succeeded; desktop annual-history screenshot inspected. Stock
 chart currency suffix clipped y-axis labels, so labels now use compact numbers
 while currency remains explicit beneath the chart. Await rerender and mobile gate.
+
+At b2298a0 all remote gates passed; 49 browser, 36 accessibility, 8 resource
+checks. Rerendered canonical stock at 1440/390 and history at 390 inspected: labels
+readable, table horizontally scrollable, workspace actions preserved. Main advanced
+to 8fde31f through independent PR #113. No owned-file overlap; integrate without
+modifying those Discovery changes, then repeat CI.
