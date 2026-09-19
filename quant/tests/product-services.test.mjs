@@ -5,7 +5,7 @@ const api=Service.create({loadJSON:async p=>{reads.push(p);return JSON.parse(awa
 const canonicalPanel=JSON.parse(await readFile(new URL('quant/data/sec/quant-factor-inputs.json',root),'utf8')),nvda=canonicalPanel.securities.NVDA;
 const technicalSource=JSON.parse(await readFile(new URL('quant/data/technical/instruments/NVDA.json',root),'utf8'));
 test('approved universe and stock use existing real data; chart history is preserved',async()=>{const u=await api.getUniverse();assert.equal(u.stocks.length,5);assert.equal(u.totalMarketState,'UNAVAILABLE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
-test('out-of-scope ticker cannot trigger raw data read',async()=>{const before=reads.length;const s=await api.getStockIntelligence('TSLA');assert.equal(s.reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);});
+test('out-of-scope ticker cannot trigger raw data read',async()=>{const before=reads.length;const s=await api.getStockIntelligence('TSLA');assert.equal(s.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.equal(s.identityState,'AVAILABLE');assert.ok(reads.slice(before).every(p=>p.startsWith('/quant/data/universe/')));});
 test('Discover/screener executes canonical Query AST on the scoped real set',async()=>{const q=Query.createQuery({filters:[{field:'momentum6m',operator:'gte',value:999,scale:'raw'}]});const result=await api.screen(q);assert.equal(result.eligible,5);assert.deepEqual(result.stocks,[]);assert.ok(result.queryHash);});
 test('source failures yield typed unavailability, never synthetic fallback',async()=>{const bad=Service.create({loadJSON:async()=>{throw Error('unreachable')},displayPolicy:Policy,queryEngine:Query});assert.equal((await bad.getUniverse()).state,'UNAVAILABLE');assert.equal((await bad.getStockIntelligence('NVDA')).reason,'SOURCE_MISSING');});
 test('future and mock panel rows are rejected before stock and screener consumption',async()=>{
@@ -36,9 +36,23 @@ test('Technical summary rejects future, mocked and mismatched bundles',async()=>
  assert.equal((await guarded.getTechnicalIntelligence('NVDA')).reason,'INVALID_TECHNICAL_PROVENANCE');
  }
 });
-test('Historical Fundamentals service preserves actual SEC identity and current scope',async()=>{
+test('Historical Fundamentals preserves SEC identity and keeps canonical out-of-preview members typed',async()=>{
  const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
- const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');assert.equal(reads.length,before);
+ const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'PRODUCT_DATA_NOT_CONNECTED');assert.ok(reads.slice(before).every(path=>path.startsWith('/quant/data/universe/')));
+});
+test('canonical remote market services receive stable IDs and preserve typed semantics',async()=>{
+ const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));const path=new URL(url).pathname;return {ok:true,json:async()=>path.endsWith('/history')?{state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[{date:'2026-09-18',close:1}],adjustmentStatus:'SPLIT_ADJUSTED'}:{state:'INTRADAY_AVAILABLE',identity:{securityId:'vu_d57074b4128184'},points:[['09:30',1]],priceSemantics:'UNSPECIFIED'}};};
+ try{const remote=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query,productServiceBase:'https://vision-universe-research.vercel.app/api'});
+  assert.equal((await remote.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');assert.equal((await remote.getIntraday('NVDA')).priceSemantics,'UNSPECIFIED');assert.equal(remote.getRealtimeCapability().chartMovement,'TRADE_EVENTS_ONLY');assert.ok(calls.every(url=>url.includes('securityId=vu_d57074b4128184')));
+ }finally{globalThis.fetch=original;}
+});
+test('production product service is resolved from the same-origin runtime contract',async()=>{
+ const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));return {ok:true,json:async()=>({state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[]})};};
+ try{const configured=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query});
+  assert.equal((await configured.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
+  assert.equal(calls.length,1);assert.match(calls[0],/^https:\/\/vision-universe-research\.vercel\.app\/api\/history\?/);
+  assert.ok(calls[0].includes('securityId=vu_d57074b4128184'));
+ }finally{globalThis.fetch=original;}
 });
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
  const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);

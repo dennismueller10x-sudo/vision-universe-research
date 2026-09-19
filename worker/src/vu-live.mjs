@@ -35,6 +35,17 @@ import MarketHours from "../../quant/engines/realtime/market-hours.js";
 import { createTiingoLink } from "./tiingo-link.mjs";
 import kalender from "../../quant/config/market-calendar.json" with { type: "json" };
 
+/* Additive wire contract: indices 0..7 retain their legacy meaning.
+   The parallel semantics array describes the LAST EVENT, not the OHLC candle.
+   Untyped provider events must never inherit TRADE from an earlier event.
+   The legacy candle can contain reference events; consumers requiring
+   trades must build their own view from explicitly typed trade prices,
+   never interpret these OHLC fields as trade-only candles. */
+const UPDATE_SCHEMA = "vu-live-update-1.1.0";
+function updateRow(symbol, value) {
+  return [symbol, value.last, value.at, value.o, value.h, value.l, value.c, value.pAt];
+}
+
 /* Wie oft der Browser hoert. Nicht jedes Ereignis wird gezeichnet:
    1.022 Nachrichten je Sekunde waeren fuer ein Auge dasselbe Bild wie
    eine, kosteten aber Bandbreite und Rechenzeit auf einem Telefon. */
@@ -263,7 +274,7 @@ export class VuLive {
            Chart bis zum naechsten Ereignis ohne Live-Punkt. */
         const w = this.werte.get(sym);
         if (w) this.sende(ws, { op: "u", t: this.now(),
-                                v: [[sym, w.last, w.at, w.o, w.h, w.l, w.c, w.pAt]] });
+                                schemaVersion: UPDATE_SCHEMA, v: [updateRow(sym, w)], semantics: [w.semantics] });
       }
       /* Gezaehlt wird, was gewuenscht ist - nicht, was in dieser
          Millisekunde schon angemeldet ist. Der Abgleich mit dem
@@ -327,6 +338,13 @@ export class VuLive {
 
     this.werte.set(sym, {
       last: preis, at: at, pAt: isFinite(pAt) ? pAt : null,
+      semantics: {
+        priceType: tick.priceType === "TRADE" && tick.messageForm === "iexTyped"
+          ? "TRADE" : "UNSPECIFIED",
+        messageForm: tick.messageForm === "iexTyped" || tick.messageForm === "iexNoTypeField"
+          ? tick.messageForm : null,
+        candlePriceType: "REALTIME_REFERENCE"
+      },
       o: kerze ? kerze.open : preis, h: kerze ? kerze.high : preis,
       l: kerze ? kerze.low : preis, c: kerze ? kerze.close : preis,
       bucket: kerze ? kerze.bucket : null
@@ -345,12 +363,13 @@ export class VuLive {
     const t = this.now();
     for (const [ws, eintrag] of this.clients) {
       const nutz = [];
+      const semantics = [];
       for (const sym of eintrag.symbols) {
         if (!this.schmutzig.has(sym)) continue;
         const w = this.werte.get(sym);
-        if (w) nutz.push([sym, w.last, w.at, w.o, w.h, w.l, w.c, w.pAt]);
+        if (w) { nutz.push(updateRow(sym, w)); semantics.push(w.semantics); }
       }
-      if (nutz.length) this.sende(ws, { op: "u", t, v: nutz });
+      if (nutz.length) this.sende(ws, { op: "u", t, schemaVersion: UPDATE_SCHEMA, v: nutz, semantics });
     }
     this.schmutzig.clear();
   }

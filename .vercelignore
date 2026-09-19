@@ -1,0 +1,6 @@
+# Vercel hosts only the server-side Product Service. The reviewed product UI
+# and compact public artifacts are deployed by GitHub Pages. Canonical data is
+# read at runtime from R2 or from the Pages delivery; bundling either tree here
+# would duplicate hundreds of MiB and violate the delivery boundary.
+discover/data/
+quant/data/
