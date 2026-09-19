@@ -46,8 +46,10 @@ function create({capability,connect,onChange=()=>{},now=()=>Date.now(),timers=Tr
    }
    return null;
   }});
-  const started=transport.start({onOpen:()=>{if(current()){emit('WAITING_FOR_TRADE');tick();}},onError:()=>{if(current())stop('CONNECTION_ERROR');},onClose:()=>{if(current())stop('CONNECTION_CLOSED');}});
-  if(!started&&current())stop('CONNECTION_ERROR');return started;
+  const started=transport.start({onOpen:()=>{if(current()){if(heartbeat!==null)timers.clearTimeout(heartbeat);heartbeat=null;emit('WAITING_FOR_TRADE');tick();}},onError:()=>{if(current())stop('CONNECTION_ERROR');},onClose:()=>{if(current())stop('CONNECTION_CLOSED');}});
+  if(!started&&current())stop('CONNECTION_ERROR');
+  else if(started&&current()&&state==='CONNECTING')heartbeat=timers.setTimeout(()=>{if(current())stop('CONNECTION_TIMEOUT');},20000);
+  return started;
  }
  return {start,stop,snapshot};
 }

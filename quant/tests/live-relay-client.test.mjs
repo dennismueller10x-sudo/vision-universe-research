@@ -40,3 +40,7 @@ test('late socket open/error after stop cannot subscribe or publish errors',()=>
 test('existing relay OK/WARNING budget verdicts do not stop a subscription',()=>{
  const f=fixture();f.client.start();f.socket.onopen();for(const verdict of ['OK','WARNING'])f.send({op:'budget',verdict});assert.equal(f.closed(),0);f.send(message());assert.equal(f.client.snapshot().isLive,true);
 });
+
+test('a stalled connection times out and releases the socket without retrying',()=>{
+ const f=fixture();f.client.start();f.advance(21000);assert.equal(f.client.snapshot().reason,'CONNECTION_TIMEOUT');assert.equal(f.closed(),1);assert.equal(f.queue.size,0);
+});
