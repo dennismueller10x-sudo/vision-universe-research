@@ -177,4 +177,6 @@ jobs:
           git config user.email "bot@visionuniverse.de"
           git add social/data/external-observations.json social/data/hashtag-portfolio.json
           git commit -m "External Social Intelligence: Beobachtung ${{ inputs.edge || 'top' }}"
+          # Der taegliche Intelligence-Lauf schreibt in denselben Zweig.
+          git pull --rebase origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"

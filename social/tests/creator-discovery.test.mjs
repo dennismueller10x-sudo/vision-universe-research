@@ -80,19 +80,25 @@ test("CE5 · Eine leere oder kaputte Antwort ergibt nichts, nicht einen Fehler",
   assert.deepEqual(ernte({ items: [{ snippet: {} }] }, KONTEXT), []);
 });
 
-test("CE6 · Der Plan nennt die Kosten DIESES Laufs, nicht die des Tages", () => {
-  /* Vier Suchen kosten 400. Daneben "8600 Detailabrufe" zu lesen,
-     waere eine Zahl, die dieser Lauf nicht ausgibt. */
+test("CE6 · Der Plan nennt die Kosten DIESES Laufs — in Aufrufen, nicht in Einheiten", () => {
+  /* Seit dem 2026-06-01 kostet eine Suche einen AUFRUF aus einem Topf
+     von hundert, nicht hundert Einheiten aus einem Topf von 10.000.
+     Dieser Test verlangte frueher das alte Modell und war gruen. */
   const p = planeEntdeckung({ searches: 4 });
-  assert.equal(p.thisRunCost, 4 * YouTube.KONTINGENT.costs["search.list"]);
-  assert.match(p.explanation, /kostet 400 von/);
+  assert.equal(p.thisRunSearchCalls, p.queries.length);
+  assert.ok(p.thisRunSearchCalls <= 4);
+  assert.match(p.explanation, /freien Suchaufrufen/);
+  /* Der allgemeine Topf bleibt unberuehrt - das ist der ganze Punkt. */
+  assert.equal(p.quota.general.free, 10000);
 });
 
-test("CE7 · Der Plan nimmt nicht mehr Suchen, als das Kontingent traegt", () => {
+test("CE7 · Der Plan nimmt nicht mehr Suchen, als der Suchtopf traegt", () => {
   const p = planeEntdeckung({ searches: 200 });
-  assert.ok(p.queries.length <= YouTube.KONTINGENT.dailyUnits /
-    YouTube.KONTINGENT.costs["search.list"]);
-  assert.ok(p.thisRunCost <= p.quota.free);
+  assert.ok(p.queries.length <= YouTube.KONTINGENT.buckets.search.dailyLimit);
+  assert.ok(p.thisRunSearchCalls <= p.quota.search.free);
+  /* Und die Reserve bleibt stehen. */
+  assert.ok(p.thisRunSearchCalls <=
+    p.quota.search.free - p.quota.search.reserve);
 });
 
 test("CE8 · Die Suchphrasen stammen aus dem realen Content Universe", () => {

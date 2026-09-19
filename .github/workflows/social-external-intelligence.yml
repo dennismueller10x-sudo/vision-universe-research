@@ -1,0 +1,186 @@
+# =========================================================================
+# EXTERNAL SOCIAL INTELLIGENCE — DIE GANZE KETTE, TAEGLICH, OHNE OWNER
+#
+#   SCHEDULER
+#     -> QUERY PORTFOLIO        wer bekommt heute einen der 100 Aufrufe
+#     -> YOUTUBE SEARCH         finden, was wir noch nicht kennen
+#     -> CREATOR DISCOVERY      neue Version des Watch Universe
+#     -> PUBLIC METRIC ENRICHMENT  Zahlen zu den bekannten Kanaelen
+#     -> EXTERNAL PATTERN INTELLIGENCE  Muster statt Texte
+#     -> OPPORTUNITY ENGINE     externes Interesse als EIGENE Dimension
+#
+# Der Owner richtet Google Cloud und den Schluessel EINMAL ein. Danach
+# laeuft das hier taeglich von selbst. Kein manueller Start, keine
+# manuelle Suche, keine handgepflegte Creator-Liste.
+#
+# -------------------------------------------------------------------------
+# WARUM DER LAUF OHNE SCHLUESSEL TROTZDEM SINNVOLL IST
+# -------------------------------------------------------------------------
+#
+# Ohne YOUTUBE_API_KEY plant er und sucht nicht - und endet gruen. So
+# ist taeglich sichtbar, WAS gesucht wuerde und was es kostete, lange
+# bevor der erste Aufruf laeuft. Ein "kein Schluessel" darf nicht
+# aussehen wie ein Defekt, sonst sucht jemand den Fehler statt den
+# Schluessel.
+#
+# -------------------------------------------------------------------------
+# DAS KONTINGENT, STAND 2026-06-01
+# -------------------------------------------------------------------------
+#
+#   SUCHE       100 Aufrufe je Tag, eigener Topf, je 1
+#   ALLGEMEIN   10.000 Einheiten je Tag, alles andere, je 1
+#
+# Die beiden sind unabhaengig. Deshalb laeuft die Anreicherung auch
+# dann noch, wenn die Suchen des Tages aufgebraucht sind - sie
+# verbraucht keinen einzigen davon.
+#
+# -------------------------------------------------------------------------
+# EINE GRENZE, DIE HIER EHRLICH DASTEHEN MUSS
+# -------------------------------------------------------------------------
+#
+# GitHub fuehrt `schedule` NUR im Standardzweig aus - genauso wie
+# `workflow_dispatch` nur dort registriert wird. Solange diese Datei
+# allein auf dem Feature-Zweig liegt, feuert der Zeitplan NICHT.
+#
+# Die Autonomie ist also gebaut und geprueft, aber sie wird erst
+# wirksam, wenn der Zweig im Standardzweig landet. Das ist eine
+# Owner-Entscheidung und keine, die von hier aus getroffen wird.
+#
+# Bis dahin gibt es den Datei-Ausloeser unten: wer
+# `social/data/intelligence-request.json` aendert, startet einen Lauf.
+# Das ist ein Nachweisweg, keine Zielarchitektur.
+#
+# Nichts hiervon veroeffentlicht. Keine kostenpflichtige Quelle.
+# =========================================================================
+name: Social External Intelligence
+
+on:
+  schedule:
+    # 05:20 UTC. Nicht zur vollen Stunde: da laufen die Zeitplaene der
+    # halben Welt, und GitHub stellt Laeufe dann in die Warteschlange.
+    - cron: '20 5 * * *'
+  workflow_dispatch:
+    inputs:
+      searches:
+        description: 'Wie viele Suchaufrufe (leer = Tagesplan entscheidet)'
+        type: string
+        default: ''
+  push:
+    # Eigene Ausloeserdatei: `observe-request.json` gehoert dem
+    # Instagram-Beobachter. Zwei Workflows an derselben Datei waeren
+    # zwei Laeufe, die sich gegenseitig ins Commit fahren.
+    paths:
+      - 'social/data/intelligence-request.json'
+
+concurrency:
+  group: social-external-intelligence
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  intelligence:
+    runs-on: ubuntu-latest
+    steps:
+      # Beim push- und schedule-Ausloeser checkt die Aktion sonst den
+      # Commit aus, nicht den Zweig - ein `git push` aus losgeloestem
+      # HEAD scheitert, nachdem die Arbeit schon getan ist.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Liegt ein Schluessel vor?
+        id: key
+        env:
+          KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          # Nur pruefen, DASS er da ist - nie, WAS er ist.
+          if [ -z "${KEY:-}" ]; then
+            echo "vorhanden=nein" >> "$GITHUB_OUTPUT"
+            echo "::notice::Kein YOUTUBE_API_KEY hinterlegt. Der Lauf plant und sucht nicht. Das ist der offene Owner-Schritt, kein Defekt."
+          else
+            echo "vorhanden=ja" >> "$GITHUB_OUTPUT"
+            echo "Schluessel vorhanden (${#KEY} Zeichen, Wert ungelesen)."
+          fi
+
+      - name: Query Portfolio — wer bekommt heute einen Aufruf?
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ -n "${{ inputs.searches }}" ]; then
+            ARGS="--searches ${{ inputs.searches }}"
+          fi
+          node scripts/social/discover-creators.mjs $ARGS | tee tmp-plan.txt
+
+      - name: Suchen und Watch Universe fortschreiben
+        if: steps.key.outputs.vorhanden == 'ja'
+        env:
+          # Der Schluessel kommt als Variable herein; das Skript setzt ihn
+          # in die Kopfzeile X-goog-api-key und nie in eine Adresse.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ -n "${{ inputs.searches }}" ]; then
+            ARGS="--searches ${{ inputs.searches }}"
+          fi
+          node scripts/social/discover-creators.mjs $ARGS --discover
+
+      - name: Oeffentliche Zahlen anreichern (kostet keinen Suchaufruf)
+        if: steps.key.outputs.vorhanden == 'ja'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/enrich-youtube-metrics.mjs --run
+
+      - name: Opportunity Engine — extern als eigene Dimension
+        run: |
+          set -euo pipefail
+          # Laeuft IMMER, auch ohne Schluessel: dann steht dort null
+          # externe Beobachtungen, und das ist eine ehrliche Zahl.
+          node scripts/social/rank-social-opportunities.mjs --top 3 \
+            --out social/data | tee tmp-rank.txt
+
+      - name: Zusammenfassen
+        if: always()
+        run: |
+          {
+            echo "## External Social Intelligence"
+            echo ""
+            echo "### Query Portfolio"
+            echo '```'
+            head -40 tmp-plan.txt 2>/dev/null || echo "kein Plan"
+            echo '```'
+            echo ""
+            echo "### Evidenzklassen"
+            echo '```'
+            sed -n '/ZWEI EVIDENZKLASSEN/,/^$/p' tmp-rank.txt 2>/dev/null || echo "kein Lauf"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          rm -f tmp-plan.txt tmp-rank.txt
+
+      - name: Festschreiben
+        run: |
+          set -euo pipefail
+          # `git diff` sieht neue Dateien nicht - und beim ersten Lauf
+          # sind alle Ergebnisdateien neu. Derselbe Fehler hat im
+          # Hashtag-Pfad schon einmal eine Beobachtung verschluckt.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/
+          git commit -m "External Social Intelligence: taeglicher Lauf"
+          # Der Instagram-Beobachter schreibt in denselben Zweig. Ohne
+          # Rebase verliert der langsamere von beiden seinen Push.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
