@@ -103,14 +103,31 @@ jobs:
       - name: Beobachten
         if: steps.plan.outputs.tags != ''
         env:
-          WORKER: ${{ secrets.VU_SOCIAL_WORKER_URL }}
+          # -----------------------------------------------------------
+          # EINE ADRESSE IST KEIN GEHEIMNIS
+          #
+          # Gemessen im ersten Lauf: KEY war gesetzt, WORKER leer - und
+          # der Lauf brach ab, weil VU_SOCIAL_WORKER_URL als Secret
+          # nicht existiert. Es hat auch nie existiert: die Adresse des
+          # Workers ist oeffentlich, steht im DNS und in
+          # social-smoke-publish.yml woertlich im Klartext.
+          #
+          # Sie zum Geheimnis zu erklaeren, hat einen BEKANNTEN Wert in
+          # einen fehlenden verwandelt. Dieselbe Verwechslung wie
+          # ueberall hier, nur andersherum: nicht Unbekanntes als Null,
+          # sondern Bekanntes als Unbekanntes.
+          #
+          # Das Secret bleibt als Ueberschreibung moeglich - fuer eine
+          # abweichende Umgebung -, aber es ist keine Voraussetzung mehr.
+          WORKER: ${{ secrets.VU_SOCIAL_WORKER_URL || 'https://social.visionuniverse.de' }}
           KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
           set -euo pipefail
-          if [ -z "${WORKER:-}" ] || [ -z "${KEY:-}" ]; then
-            echo "::error::VU_SOCIAL_WORKER_URL oder VU_SOCIAL_ADMIN_KEY fehlt. Ohne sie kann nichts beobachtet werden."
+          if [ -z "${KEY:-}" ]; then
+            echo "::error::VU_SOCIAL_ADMIN_KEY fehlt. Ohne den Schluessel kann nichts beobachtet werden."
             exit 1
           fi
+          echo "Worker: $WORKER"
           mkdir -p tmp/observe
           # Der Schluessel reist in der Kopfzeile, nie in der Adresse:
           # Adressen landen in Protokollen und bei Cloudflare.

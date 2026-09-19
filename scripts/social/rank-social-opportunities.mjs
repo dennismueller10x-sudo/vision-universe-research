@@ -28,6 +28,7 @@ const Opportunity = require(join(ROOT, "social/engines/opportunity.js"));
 const Social = require(join(ROOT, "social/engines/social-opportunity.js"));
 const Brand = require(join(ROOT, "social/engines/brand.js"));
 const Audience = require(join(ROOT, "social/engines/audience-frame.js"));
+const Memory = require(join(ROOT, "social/engines/memory.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -71,11 +72,29 @@ function messe(topic, kontext) {
     ? topic.signalStrength : null;
   m.trendScore = null;
 
-  /* Publikumsinteresse und historische Leistung brauchen Daten, die es
-     erst nach dem ersten veroeffentlichten Beitrag gibt. */
+  /* -------------------------------------------------------------------
+     DIESER KOMMENTAR STIMMTE EINMAL
+
+     Hier stand: "brauchen Daten, die es erst nach dem ersten
+     veroeffentlichten Beitrag gibt". Es GIBT sie inzwischen - 25
+     gemessene Bestandsbeitraege liegen im Gedaechtnis. Die Null war
+     keine Messung mehr, sondern eine veraltete Annahme, die sich als
+     Messung ausgab.
+
+     Gerechnet wird mit derselben Engine wie im Zyklus. Zwei Rechenwege
+     waeren zwei Wahrheiten. */
+  const vergleichbar = kontext.memory
+    ? kontext.memory.comparablePerformance({ archetype: null, platform: "instagram" })
+    : { sampleSize: 0, mean: null };
+  m.historicalPerformance = vergleichbar.mean === null ? null : vergleichbar.mean / 100;
+  m.historicalSampleSize = vergleichbar.sampleSize;
+
+  /* Publikumsinteresse bleibt null, und das ist diesmal kein
+     Versehen: gemessene Reichweite sagt, wie ein BEITRAG lief - nicht,
+     ob das Publikum nach DIESEM THEMA fragt. Aus der einen Groesse die
+     andere zu machen, waere genau die Verwechslung, gegen die
+     `externalInterest` als eigene Dimension steht. */
   m.audienceInterest = null;
-  m.historicalPerformance = null;
-  m.historicalSampleSize = 0;
 
   return m;
 }
@@ -110,12 +129,84 @@ export function dryRun(options) {
   const metaVerbindung = (meta && meta.connected === true) ? "CONNECTED"
     : (meta && meta.connected === null) ? "UNKNOWN_FROM_THIS_RUN"
     : "NOT_CONNECTED";
-  const perf = readJson(join(ROOT, "social/data/performance.json"), { entries: [] });
-  const messungen = (perf.entries || perf.measurements || []).length;
-  /* Plattformpassung ist gemessenes Wissen, nicht ein Verbindungsstatus. */
-  const providerConfigured = messungen > 0;
+  /* -------------------------------------------------------------------
+     DER SECHSTE FALL DERSELBEN SORTE
 
-  const kontext = { now, history, providerConfigured, platformFit: null };
+     Hier stand `perf.entries || perf.measurements`. Die Datei heisst
+     ihre Liste `snapshots`. Beide Namen gehen ins Leere, das `|| []`
+     faengt es auf, und heraus kommt 0.
+
+     Es waren nicht 0. Es waren 25 gemessene Beitraege, eingepflegt vom
+     Workflow-Lauf eine halbe Stunde zuvor. Die Folge war keine
+     Kleinigkeit: `providerConfigured` wurde false, `platformFit` galt
+     als systemisch unmessbar, und der Lauf meldete
+     PLATFORM_FIT_INTELLIGENCE_UNAVAILABLE - waehrend die Daten im
+     Repository lagen.
+
+     Dasselbe Muster wie bei `roh.signals`/`events` und bei
+     `cost`/`runningCost`: ein Schluesselname wird von Hand abgeschrieben,
+     ein Vorgabewert faengt den Fehlgriff auf, und "unbekannt" wird als
+     "null" gespeichert.
+
+     Die Lehre steckt jetzt im Code: eine Datei MIT Inhalt, aus der
+     keine bekannte Liste zu lesen ist, ist ein Befund und keine Null. */
+  const perf = readJson(join(ROOT, "social/data/performance.json"), null);
+  const LISTEN = ["snapshots", "entries", "measurements"];
+  const listenName = perf ? LISTEN.find((k) => Array.isArray(perf[k])) : null;
+  if (perf && !listenName) {
+    throw new Error("social/data/performance.json enthaelt keine der " +
+      "bekannten Listen (" + LISTEN.join(", ") + "), sondern: " +
+      Object.keys(perf).join(", ") + ". Das als 0 Messungen zu lesen " +
+      "waere dieselbe Verwechslung, die diese Pruefung verhindern soll.");
+  }
+  const zeilen = listenName ? perf[listenName] : [];
+  /* Gemessen heisst nicht reif. Der Zyklus unterscheidet das; hier
+     genuegt das mitgelieferte Fenster, das dieselbe Rechnung traegt. */
+  const gemessen = zeilen.filter((z) =>
+    z && z.snapshot ? z.snapshot.state !== "UNAVAILABLE" : true);
+  const reif = gemessen.filter((z) => (z.window || (z.snapshot || {}).window) === "MATURE");
+  const messungen = gemessen.length;
+  /* Plattformpassung ist gemessenes Wissen, nicht ein Verbindungsstatus -
+     und halbgewachsene Zahlen sind noch kein Wissen. */
+  const providerConfigured = reif.length > 0;
+
+  const kontext = { now, history, providerConfigured, platformFit: null,
+    memory: Memory.createMemory(memory.entries || []) };
+
+  /* -------------------------------------------------------------------
+     DIE ZWEITE EVIDENZKLASSE — GETRENNT GEFUEHRT
+
+     Alles oberhalb misst UNS: unsere Belege, unsere Historie, unsere
+     Marke. Was jetzt dazukommt, misst DIE ANDEREN, und es wird nicht
+     vermischt.
+
+     Der Grund ist nicht Ordnungsliebe. Fremde Aufmerksamkeit in
+     `audienceInterest` einzurechnen hiesse behaupten, dass unser
+     Publikum etwas will, weil irgendwer darueber spricht. Das erste
+     ist eine Wirkung, das zweite eine Haeufigkeit.
+
+     Zugeordnet wird ueber die Hashtags, unter denen tatsaechlich
+     beobachtet wurde - das Portfolio fuehrt zu jedem Hashtag, zu
+     welchen Themen er gehoert. Eine Zuordnung ueber Textaehnlichkeit
+     waere eine Erfindung, und eine Erfindung ist hier schlimmer als
+     eine Luecke.
+     ------------------------------------------------------------------- */
+  const extBestand = readJson(join(ROOT, "social/data/external-observations.json"),
+    { observations: [] });
+  const beobachtungen = extBestand.observations || [];
+  const portfolio = readJson(join(ROOT, "social/data/hashtag-portfolio.json"),
+    { hashtags: {} }).hashtags || {};
+
+  const hashtagsJeThema = {};
+  Object.keys(portfolio).forEach((h) => {
+    (portfolio[h].topicMapping || []).forEach((tid) => {
+      hashtagsJeThema[tid] = hashtagsJeThema[tid] || [];
+      if (hashtagsJeThema[tid].indexOf(h) === -1) hashtagsJeThema[tid].push(h);
+    });
+  });
+  slate.topics.forEach((t) => {
+    t.observedHashtags = hashtagsJeThema[t.topicId] || [];
+  });
 
   const signale = {};
   for (const t of slate.topics) signale[t.topicId] = messe(t, kontext);
@@ -124,13 +215,31 @@ export function dryRun(options) {
      schlecht waere. Ohne diese Unterscheidung entstuende ein
      Stillstand: bewerten erst mit Publikumsdaten, Publikumsdaten erst
      durchs Veroeffentlichen. */
-  const systemisch = ["audienceInterest", "historicalPerformance"]
+  /* Systemisch fehlt nur noch, was das System wirklich nicht wissen
+     kann. `historicalPerformance` gehoert seit den ersten gemessenen
+     Beitraegen nicht mehr pauschal dazu - wer sie weiter als
+     systemisch fehlend fuehrte, verschenkte 0.12 Gewicht an eine
+     Luecke, die keine mehr ist. */
+  const historieMessbar = kontext.memory.comparablePerformance(
+    { archetype: null, platform: "instagram" }).sampleSize >= 5;
+  const systemisch = ["audienceInterest"]
+    .concat(historieMessbar ? [] : ["historicalPerformance"])
     .concat(providerConfigured ? [] : ["platformFit"]);
 
   const rang = Social.rank(slate.topics, {
     scorer: (eingang, opts) => Opportunity.score(eingang,
-      Object.assign({}, opts, { systemicallyUnavailable: systemisch })),
-    history, signals: signale
+      /* Die systemischen Luecken beider Klassen treffen sich hier -
+         und `rank()` bringt `externalInterest` selbst mit, wenn es
+         nichts zu messen gab. Zusammengefuehrt statt ueberschrieben:
+         ein `Object.assign` haette die eine Liste durch die andere
+         ersetzt und die Luecke stillschweigend zur Themenluecke
+         gemacht. */
+      Object.assign({}, opts, {
+        systemicallyUnavailable: systemisch
+          .concat(opts.systemicallyUnavailable || [])
+      })),
+    history, signals: signale,
+    externalObservations: beobachtungen
   });
 
   /* Audience Framing gehoert VOR das Authoring - also auch vor jede
@@ -154,6 +263,38 @@ export function dryRun(options) {
     purpose: "NORTH_STAR_SHIFT_PROOF",
     metaConnectionFromThisRun: metaVerbindung,
     ownPerformanceMeasurements: messungen,
+    /* -----------------------------------------------------------------
+       ZWEI KLASSEN, GETRENNT AUSGEWIESEN
+
+       Sie stehen nebeneinander und nicht in einer Summe. Wer sie
+       addieren wollte, muesste erst sagen, wie viele fremde Beitraege
+       eine eigene Messung wert sind - und diese Zahl gibt es nicht. */
+    evidenceClasses: {
+      own: {
+        label: "OWN PERFORMANCE",
+        measurements: messungen,
+        mature: reif.length,
+        source: listenName,
+        dimensions: ["audienceInterest", "historicalPerformance", "platformFit"],
+        measurable: ["historicalPerformance", "platformFit"]
+          .filter((d) => systemisch.indexOf(d) === -1),
+        note: "Gemessen an eigenen Beitraegen. Was davon systemisch leer " +
+          "bleibt, ist keine Aussage ueber ein Thema."
+      },
+      external: {
+        label: "EXTERNAL SOCIAL INTELLIGENCE",
+        observations: beobachtungen.length,
+        hashtagsObserved: Object.keys(portfolio).length,
+        topicsWithObservedHashtags: slate.topics
+          .filter((t) => (t.observedHashtags || []).length).length,
+        dimensions: ["externalInterest"],
+        note: "Abstrahierte Muster fremder Beitraege. Traegt keinen " +
+          "fremden Text und kein fremdes Bild, und ist ein Faktor - " +
+          "kein Veroeffentlichungsrecht."
+      },
+      combinedButNotMerged: true,
+      weights: { audienceInterest: 0.14, externalInterest: 0.08 }
+    },
     publishes: false,
     slateSize: slate.topics.length,
     ranked: mitRahmen,
@@ -161,13 +302,18 @@ export function dryRun(options) {
     families: rang.families,
     familyCount: rang.familyCount,
     unavailableDimensions: [
-      { dimension: "audienceInterest", reason: "Keine Publikumsdaten - es wurde noch nichts veroeffentlicht." },
-      { dimension: "historicalPerformance", reason: "Keine Leistungsdaten - dieselbe Ursache." },
+      { dimension: "audienceInterest",
+        reason: "Gemessen ist, wie BEITRAEGE liefen - nicht, ob das " +
+          "Publikum nach einem THEMA fragt. Diese Frage beantwortet " +
+          "keine Reichweitenzahl." },
+      { dimension: "historicalPerformance",
+        reason: historieMessbar ? null
+          : "Weniger als 5 vergleichbare Beitraege mit Ergebnis." },
       { dimension: "platformFit",
         code: "PLATFORM_FIT_INTELLIGENCE_UNAVAILABLE",
         reason: providerConfigured ? null
-          : "Keine gemessenen Beitraege (" + messungen + " Messungen im " +
-            "Repository). Welches Format bei diesem Publikum traegt, ist " +
+          : "Keine REIFEN Messungen (" + messungen + " gemessen, " +
+            reif.length + " reif). Welches Format bei diesem Publikum traegt, ist " +
             "damit ungemessen - das ist KEINE Aussage ueber die " +
             "Meta-Verbindung (Status von hier aus: " + metaVerbindung + ")." }
     ].filter((d) => d.reason),
@@ -225,17 +371,52 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("    --- Faktoren ---");
     b.drivers.slice(0, 3).forEach((d) => console.log("      + " + (d.label || d.dimension) +
       ": " + (d.explanation || "")));
+    console.log("    Extern         : " + (b.externalInterest
+      ? (b.externalInterest.available
+          ? Math.round(b.externalInterest.value * 100) + " % Anteil (" +
+            b.externalInterest.sample + " Beobachtungen) — Haeufigkeit, keine Wirkung"
+          : b.externalInterest.explanation)
+      : "—"));
     console.log("    Saettigung     : " + b.saturation.explanation);
     console.log("    Nicht anwendbar: " + b.notApplicable.join(", "));
     console.log("    Ungemessen     : " + b.missing.map((x) => x.dimension).join(", "));
   });
 
   console.log("=".repeat(70));
+
+  console.log("\n--- ZWEI EVIDENZKLASSEN, GETRENNT GEFUEHRT ---");
+  const ec = r.evidenceClasses;
+  console.log("  " + ec.own.label.padEnd(30) + ec.own.measurements +
+    " eigene Messungen (" + ec.own.mature + " reif), Gewicht " +
+    ec.weights.audienceInterest + " (audienceInterest)");
+  console.log("  " + ec.external.label.padEnd(30) + ec.external.observations +
+    " externe Beobachtungen aus " + ec.external.hashtagsObserved +
+    " Hashtags, Gewicht " + ec.weights.externalInterest);
+  console.log("  Themen mit beobachteten Hashtags: " +
+    ec.external.topicsWithObservedHashtags + " von " + r.slateSize);
+  console.log("  Sie stehen NEBENEINANDER, nicht in einer Summe: wer sie " +
+    "addieren wollte,");
+  console.log("  muesste sagen, wie viele fremde Beitraege eine eigene " +
+    "Messung wert sind.");
+  const mitExtern = r.ranked.filter((b) => b.externalInterest &&
+    b.externalInterest.available);
+  console.log("  Themen, bei denen externes Interesse MESSBAR war: " +
+    mitExtern.length);
+  if (!mitExtern.length && r.ranked.length) {
+    console.log("  " + (r.ranked[0].externalInterest || {}).explanation);
+  }
+
   console.log("\n--- WAS NICHT GEMESSEN WERDEN KANN ---");
   r.unavailableDimensions.forEach((d) =>
     console.log("  " + d.dimension + ": " + d.reason));
-  console.log("\nKeine dieser Zahlen ist eine Leistungsprognose. predictsPerformance = " +
-    r.predictsPerformance + ". Bei n=0 sagt eine Rangfolge, worueber zu sprechen");
+  /* "Bei n=0" stand hier fest verdrahtet und stimmte, solange nichts
+     gemessen war. Inzwischen gibt es Messungen, und ein Satz, der das
+     Gegenteil behauptet, ist schlimmer als keiner. */
+  console.log("\nKeine dieser Zahlen ist eine Leistungsprognose. " +
+    "predictsPerformance = " + r.predictsPerformance + ".");
+  console.log("Stichprobe: " + r.evidenceClasses.own.mature +
+    " reife eigene Messungen, " + r.evidenceClasses.external.observations +
+    " externe Beobachtungen. Eine Rangfolge sagt, worueber zu sprechen");
   console.log("sich lohnen KOENNTE - nicht, was funktionieren wird.");
 
   if (r.rejected.length) {
