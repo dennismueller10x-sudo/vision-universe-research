@@ -1793,3 +1793,93 @@ und die zweite fällt erst auf, wenn ein Lauf daran scheitert.
 **Und ein Kommentar, der log.** Ich hatte geschrieben, die Schwelle werde
 „von dort gelesen" — und sie danebengeschrieben. Repariert wurde der
 Code, nicht der Kommentar.
+
+## 47. Bei einer Revision ist die Frage umgekehrt
+
+PR 112 kam zurück: **eine Datei, kein Asset.** `request_type:
+TEXT_REVISION`, `visual_resolution: INHERITED`, alle vierzehn
+Pflichtprüfungen bestanden, das geerbte Bild byteweise unverändert. Der
+erweiterte Vertrag trägt real — und die Quittung nannte die Auftragsart
+schon beim Start, 1 Minute 54 nach dem Ereignis. Derselbe Auftrag hatte
+als Draft 84 Minuten unberührt gelegen.
+
+Auf dem Weg dorthin fanden sich drei Dinge, und alle drei gehören zur
+selben Familie.
+
+**Der Transportvertrag hätte durchgewunken.** `verifyAssets` läuft über
+`visual_variants`. Bei einer TEXT_REVISION ist diese Liste leer — der
+Vertrag meldete also `ok`, weil es nichts zu prüfen gab. Ein Bestehen
+aus Mangel an Gegenstand ist kein Nachweis. Die andere Richtung war
+teurer: hätte der Agent entgegen dem Auftrag ein Bild geliefert, hätte
+`verifyAssets` es bereitwillig geprüft und `legeAb` es auf die Platte
+geschrieben. Der Vertragsbruch wäre nicht unbemerkt geblieben, sondern
+**belohnt**.
+
+Bei FULL_CREATIVE fragt der Transportvertrag: *ist das Bild heil
+angekommen?* Bei TEXT_REVISION lautet die Frage fast umgekehrt: *ist es
+unverändert geblieben?* Ein fehlendes Bild fällt auf. Ein vertauschtes
+nicht — der Kandidat sähe fertig aus, und erst die Leistungsmessung wäre
+hinterher auf ein anderes Bild bezogen als der Text, den sie erklären
+soll.
+
+**Der Prüfer hätte das richtige Ergebnis zurückgewiesen.** Das echte
+Ergebnis gab den Erbblock in der Schreibweise des Auftrags zurück
+(`source_asset_sha256` statt `asset_sha256`) — redlich gemeint, es
+wiederholt den Block wörtlich. Mein Prüfer kannte nur die flache Form,
+hätte `undefined` gelesen und einen korrekten Lauf verworfen. Dieselbe
+Defektklasse wie `byte_size` gegen `asset_byte_size`: **das Muster war
+enger als die Sache.** Toleriert werden jetzt die Namen, nie die Werte:
+stehen beide da und widersprechen sich, ist das ein Befund und keine
+Auswahl.
+
+**Und ein vergessener Leser wäre ein stilles Bestanden gewesen.** Der
+Leser für das geerbte Asset ist jetzt Pflicht und hat keinen
+Vorgabewert. Wer ihn wegläßt, bekommt `checked: false, ok: false` —
+ungeprüft, nicht in Ordnung. Genau die Defektklasse, gegen die die
+vierzehn Prüfungen überhaupt antreten.
+
+## 48. Eine Anweisung aus der Messung statt aus der Erinnerung
+
+Das Ergebnis war vertragstreu und wurde trotzdem nicht freigegeben: die
+Rubrik wies **alle vier Varianten** zurück. Sie hatte recht. Die Caption
+enthält kein einziges Wort, das eine Beziehung stiftet — sie zählt die
+Bausteine auf und überläßt dem Leser den Schluß, den der Hook ihm
+verspricht.
+
+Kein Kandidat also. Und beim Formulieren des nächsten Auftrags fiel auf,
+daß die Anweisung ihre Diagnose als **festen Satz** trug: „die Hooks
+stellten eine belegte Zahl voran, ohne ihr etwas entgegenzusetzen". Für
+Anlauf 1 stimmte das. Jetzt bestehen die Hooks 5 von 6, und der Befund
+liegt ganz auf der Caption. Dieselbe Anweisung noch einmal zu schicken
+hieße, Nacharbeit an etwas zu verlangen, das bereits funktioniert — und
+die eigentliche Schwäche zu verschweigen.
+
+Ein Satz, der einmal wahr war, ist keine Messung. Die Diagnose kommt
+jetzt aus derselben Rubrik, die hinterher wieder prüft, und sie schickt
+**beides** mit: was scheiterte und was trägt. Ohne den zweiten Teil ist
+die nächste Fassung eine Neuschreibung, und eine Neuschreibung verliert,
+was schon stimmte. Dabei zählt `passed === null` — *nicht geprüft* —
+weder als bestanden noch als gescheitert; es als Erfolg zu melden wäre
+die teuerste Art zu lügen.
+
+**Innensprache ist die Formel, nicht das Verb.** Der Brief verbot „trägt
+X von Y Punkten bei". Zurück kam „steuert 27,35 von 30 Punkten bei" —
+dasselbe Muster, anderes Verb, glatt durchgelaufen. Das Partikel zählt
+jetzt nur am Satzglied-Ende: sonst finge sich „im Vergleich zu 30
+Punkten bei XOM" mit ein, wo „bei" eine Präposition ist, und korrekter
+Text würde zurückgewiesen. Beide Richtungen stehen als Test.
+
+**Die Forderung war richtig und nicht prüfbar formuliert.** „Die Caption
+beginnt bei der Auflösung" stand bereits da. Die Rubrik mißt etwas
+Schärferes: ob mindestens eines von neunzehn Wörtern vorkommt, das eine
+Beziehung stiftet. Der Agent konnte das nicht wissen, weil es nirgends
+stand. Jetzt steht es da — und die Wortliste wird aus derselben
+Konstante **gelesen**, die hinterher prüft.
+
+**Die Kette verlängert sich, die Quelle nicht.** Eine Revision einer
+Revision hat keine `visual_variants`; ihr Ergebnis trägt
+`inherited_visual`. Der Erbe-Leser kannte nur die erste Form und hielt
+eine gültige Kette für „kein Bild vorhanden". Geerbt wird jetzt immer
+der **Ursprung**: zeigte rev3 auf rev2 und rev4 auf rev3, könnte am Ende
+niemand mehr das eine verifizierte Asset benennen — die Identität wäre
+eine Behauptung über eine Behauptung.
