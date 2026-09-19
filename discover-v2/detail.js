@@ -26,8 +26,40 @@
     root.replaceChildren();
     var page = node("article", "dv2-stock");
     root.appendChild(page);
-    global.VUDiscover.Detail.render(page, detail, ctx || {});
-    compose(page, detail);
+    var hub = global.VUDiscover.LiveHub;
+    var method = hub && (hub.live ? "live" : "subscribe");
+    var original = method && hub[method];
+    var unsubscribers = [], observer = null, disposed = false;
+    cleanup = function () {
+      if (disposed) return;
+      disposed = true;
+      if (observer) observer.disconnect();
+      unsubscribers.forEach(function (unsubscribe) { unsubscribe(); });
+    };
+    /* The shared renderer subscribes synchronously but exposes no dispose.
+     * Capture its existing subscription's disposer, never create another
+     * subscription or leave the shared method replaced after render. Both
+     * our route and the renderer may dispose; the returned guard is once-only. */
+    if (original) hub[method] = function () {
+      var unsubscribe = original.apply(hub, arguments), finished = false;
+      var once = function () {
+        if (finished) return;
+        finished = true;
+        if (typeof unsubscribe === "function") unsubscribe();
+      };
+      unsubscribers.push(once);
+      return once;
+    };
+    try {
+      global.VUDiscover.Detail.render(page, detail, ctx || {});
+      compose(page, detail);
+      observer = neutralCharts(page);
+    } catch (error) {
+      dispose();
+      throw error;
+    } finally {
+      if (original) hub[method] = original;
+    }
     return page;
   }
   function renderInstrument(root, detail, ctx) {
@@ -91,7 +123,7 @@
       });
       nav.appendChild(button);
     });
-    if (hero) hero.insertAdjacentElement("beforebegin", nav);
+    if (chart) chart.insertAdjacentElement("afterend", nav);
 
     /* Shared fundamental renderers supply genuine tab controls. Complete
      * their keyboard interaction without changing a track or calculation. */
@@ -125,7 +157,30 @@
       });
       sync();
     });
-    cleanup = function () { /* Listeners are owned by detached page nodes. */ };
+  }
+  function neutralCharts(page) {
+    var chart = page.querySelector(".dx-chapter--chart");
+    if (!chart) return null;
+    function update() {
+      chart.querySelectorAll("svg.dx-range-chart,svg.dx-micro--intraday").forEach(function (svg) {
+        /* These are the canonical renderer's exact, unrounded scrub values.
+         * Intraday __basis.close already uses previousClose when supplied,
+         * so a session returning to yesterday's close is neutral even when
+         * it differs from today's first point. Missing never means zero. */
+        var points = svg.__punkte, basis = svg.__basis;
+        if (!Array.isArray(points) || !points.length || !basis) return;
+        var first = basis.close, last = points[points.length - 1].close;
+        if (typeof first !== "number" || !Number.isFinite(first) || first <= 0 ||
+            typeof last !== "number" || !Number.isFinite(last) || last !== first) return;
+        svg.setAttribute("data-direction", "neutral");
+        var wrap = svg.closest(".dx-range-chart-wrap,.dx-intraday");
+        if (wrap) wrap.setAttribute("data-direction", "neutral");
+      });
+    }
+    var observer = new MutationObserver(update);
+    observer.observe(chart, { childList: true, subtree: true });
+    update();
+    return observer;
   }
   function dispose() { if (cleanup) cleanup(); cleanup = null; }
   V.Detail = { render: render, renderInstrument: renderInstrument, dispose: dispose };

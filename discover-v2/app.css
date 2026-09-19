@@ -8,3 +8,12 @@ html[data-theme=light] body.dv2{--v2-bg:#f7f7f2;--v2-ink:#161b23;--v2-muted:#586
 .dv2 .dx-fade{opacity:1;transform:none}.dv2.dx-suche-offen .v2-dock{visibility:hidden}.dv2.v2-feed-active .v2-dock,.dv2.v2-feed-active .v2-footer,.dv2.v2-feed-active .v2-bar{display:none}.dv2.v2-feed-active .v2-main{padding:0;max-width:none}.dv2 .dx-search{z-index:1000001}
 @media(max-width:760px){body.dv2{padding-top:70px}.dv2 .v2-bar{padding:16px 20px;gap:8px}.dv2 .v2-wordmark{font-size:15px}.dv2 .v2-compare{display:none}.dv2 .v2-theme{margin-left:auto}.dv2 .v2-main{padding:12px 20px 60px}.dv2 .v2-footer{margin:0 20px;padding-bottom:130px}.dv2 .v2-dock{bottom:calc(12px + env(safe-area-inset-bottom))}.dv2 .v2-dock a,.dv2 .v2-dock button{padding:12px 17px}.dv2 .dx-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}}
 @media(prefers-reduced-motion:reduce){.dv2 *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+/* A closed shared search dialog must also leave the accessibility/focus tree. */
+body.dv2 .dx-search:not(.on){visibility:hidden}
+/* Shared consumer components use the same readable presentation palette. */
+body.dv2{--discover-dim:var(--v2-muted);--discover-muted:var(--v2-muted)}
+body.dv2 .dx-btn{color:var(--discover-on-text)}
+body.dv2 .dx-search-field input{min-width:0;flex:1}
+body.dv2 .dx-search-close{flex-shrink:0;min-height:44px}
+body.dv2 .dx-feed-screen .dx-feed-herkunft{color:var(--v2-muted)}
+html[data-theme=light] body.dv2{--discover-up:#087942;--discover-down:#b33129;--discover-warm:#825300}

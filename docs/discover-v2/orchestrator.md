@@ -39,3 +39,15 @@ Five-second test is explicitly a heuristic expert review unless an independent h
 Only new discover-v2 view/assets, its QA/docs and one shared-navigation link may affect the product. Data, freshness, rankings, eligibility, sources, index membership, SEC/market pipelines, Worker and zero-cost configuration remain unchanged. A new view may rearrange DOM and restyle shared components; it may not reinterpret source state.
 
 Local browser installation was unavailable. The cloud browser cannot access the local server (ERR_BLOCKED_BY_CLIENT). Browser QA runs in GitHub Actions; screenshot artifacts are reviewed before release. No browser gate is waived.
+
+## Iteration 1 — observed failures and recovery
+
+CI run 35427743051 / PR #113 preserved screenshot and JSON evidence.
+- All canonical/navigation tests, source preservation, release packaging, feed continuation, back navigation, stock identity, width and resource gates passed.
+- Accessibility found insufficient rank and shared-detail text contrast in both themes; scoped v2 colors corrected.
+- Closed search retained CSS visibility despite opacity zero; v2 now removes the closed dialog from visibility/focus navigation.
+- Visual review found a clipped desktop hero chart and mobile detail chart below the fold; new hero grid and compact detail hierarchy correct these.
+- Independent contract review found fallback-caption, zero-change color and repeated LiveHub lifecycle-binding issues. V2 adapters now follow rendered data, show zero changes neutrally, and own subscription cleanup with one shared Hub initialization.
+- Heuristic mobile entry review: purpose, search, company identity, performance, reason and stock action were visible; no claim of an independent human usability study.
+
+Second browser/visual gate remains required after these changes.

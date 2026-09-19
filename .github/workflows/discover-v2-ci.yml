@@ -33,7 +33,7 @@ jobs:
       - name: Browser quality dependencies
         run: |
           npm install --prefix /tmp/discover-v2-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          node /tmp/discover-v2-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+          node /tmp/discover-v2-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-v2-release"
       - name: Browser, accessibility, performance and screenshot gates
@@ -46,7 +46,11 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover-v2/ > /dev/null && break; sleep 1; done
-          node scripts/discover-v2/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-v2-evidence
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover-v2/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-v2-evidence || chromium_status=$?
+          node scripts/discover-v2/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-v2-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       - name: Preserve screenshot and test evidence
         if: always()
         uses: actions/upload-artifact@v4

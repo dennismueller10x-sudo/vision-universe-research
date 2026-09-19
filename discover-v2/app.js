@@ -72,7 +72,6 @@
     const id=++generation,active=()=>generation===id;
     if(homeDispose){homeDispose();homeDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
-    D.LiveHub.reset();D.LiveHub.init({realtime:meta.realtime,calendar});
     const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
@@ -119,6 +118,10 @@
     try {
       [meta,calendar]=await Promise.all([S.loadJSON(BASE+'meta.json'),S.loadJSON('/quant/config/market-calendar.json').catch(()=>null)]);
       ctx.meta=meta;ctx.calendar=calendar;global.VUDiscoverMeta=meta;
+      const universe=meta.universes.find(u=>u.universeId===ctx.universeId);
+      Object.assign(ctx,{universeLabel:universe.label,universeSize:universe.securities,asOf:universe.asOf,sectorWorlds:(meta.visualLanguage||{}).sectorWorlds||{}});
+      D.LiveHub.init({realtime:meta.realtime,calendar});
+      document.querySelector('.v2-skip').onclick=event=>{event.preventDefault();const main=document.getElementById('v2-main');if(main){main.focus();main.scrollIntoView();}};
       let storage;try{storage=global.localStorage;}catch(_){}
       theme=D.Theme.create({storage,document,matchMedia:q=>global.matchMedia(q)});D.theme=theme;D.memory=D.Memory.create();
       setupSearch();global.addEventListener('hashchange',route);await route();

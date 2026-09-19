@@ -77,3 +77,8 @@ html[data-theme=light] body.dv2 .v2-world-theme[data-world=consumer]{background:
 html[data-theme=light] body.dv2 .v2-finish{background:radial-gradient(ellipse at bottom,#dce7ce,transparent 70%);border-color:var(--v2-line)}
 html[data-theme=light] body.dv2 .v2-home a:focus-visible,html[data-theme=light] body.dv2 .v2-home button:focus-visible{outline-color:#275293}
 @media(max-width:700px){body.dv2 .v2-intro{margin-bottom:20px}body.dv2 .v2-intro h1{font-size:28px}body.dv2 .v2-search-prompt{margin-top:17px}body.dv2 .v2-stock-hero{padding:20px 20px 17px}body.dv2 .v2-stock-hero .v2-stock-name{margin-bottom:12px}body.dv2 .v2-stock-hero .dx-lazy-media{height:126px}body.dv2 .v2-stock-hero .v2-stock-cta{padding-top:11px;font-size:12px}}
+/* Screenshot review: readable ranks and an uncropped desktop chart stage. */
+body.dv2 .v2-stock-rank{position:static;align-self:flex-start;color:var(--v2-muted);font-size:32px;line-height:1;margin-bottom:17px}
+html[data-theme=light] body.dv2 .v2-stock-rank{color:var(--v2-muted)}
+body.dv2 .v2-stock .dx-lazy-media{width:auto}
+@media(min-width:701px){body.dv2 .v2-stock-hero{display:grid;grid-template-columns:minmax(0,45fr) minmax(0,55fr);align-items:center;column-gap:18px;row-gap:12px}body.dv2 .v2-stock-hero .v2-stock-copy{grid-column:1;grid-row:1}body.dv2 .v2-stock-hero .dx-lazy-media{grid-column:2;grid-row:1;width:100%;height:230px;margin:0}body.dv2 .v2-stock-hero .v2-stock-caption{grid-column:2;grid-row:2;align-self:start;margin:0}body.dv2 .v2-stock-hero .v2-stock-hook{grid-column:1;grid-row:2;margin:0}body.dv2 .v2-stock-hero .v2-stock-why{min-height:0}body.dv2 .v2-stock-hero .v2-stock-cta{padding-top:18px}}
