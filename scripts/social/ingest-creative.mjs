@@ -46,6 +46,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const AssetIntegrity = require(join(ROOT, "social/engines/asset-integrity.js"));
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
+const Contract = require(join(ROOT, "social/engines/creative-contract.js"));
+import { verify as pruefeRevision } from "./verify-revision-result.mjs";
 
 export const LEDGER_DATEI = "social/data/creative-invocations.json";
 
@@ -146,15 +148,50 @@ export function pruefeErgebnis(ref, contentId, options) {
      Agent ueber sie behauptet. */
   const assets = ChatGptWork.verifyAssets(ergebnis, (pfad) => zeigeDatei(ref, pfad, repoRoot));
 
-  const ok = geprueft.ok && assets.ok;
+  /* -----------------------------------------------------------------
+     TEXT_REVISION: DIE UMGEKEHRTE FRAGE
+
+     `verifyAssets` laeuft ueber `visual_variants`. Bei einer
+     TEXT_REVISION ist diese Liste LEER - und damit meldet der
+     Transportvertrag `ok`, weil es nichts zu pruefen gab. Das ist ein
+     Bestehen aus Mangel an Gegenstand, kein Nachweis.
+
+     Schlimmer ist die andere Richtung: liefert der Agent entgegen dem
+     Auftrag doch ein Bild, prueft `verifyAssets` es bereitwillig,
+     `legeAb` schriebe es auf die Platte, und der Vertragsbruch waere
+     nicht nur unbemerkt, sondern BELOHNT.
+
+     Deshalb entscheidet bei einer TEXT_REVISION der Revisionsvertrag
+     mit - und er faellt zu, wo der Transportvertrag durchwinkt. */
+  const istRevision = brief.request_type === Contract.TEXT_REVISION;
+  const revision = istRevision
+    ? pruefeRevision(brief, ergebnis, {
+        expectedProcessingKey: ChatGptWork.processingKey(
+          brief.brief_id, contentId, shaGerechnet, ergebnis.schema_version),
+        /* Das geerbte Asset liegt nicht im Request-Ref, sondern dort,
+           wo der urspruengliche Lauf es abgelegt hat. Gelesen wird es
+           vom Datentraeger. */
+        readInheritedAsset: (pfad) => readFileSync(join(ROOT, pfad))
+      })
+    : null;
+
+  const ok = geprueft.ok && assets.ok && (!istRevision || revision.ok);
   return {
     ok: ok,
     pending: false,
-    state: ok ? "COMPLETED" : (assets.state === "RECOVERY_REQUIRED" ? "RECOVERY_REQUIRED" : "REJECTED"),
+    state: ok ? "COMPLETED"
+      : (istRevision && !revision.ok) ? "CONTRACT_MISMATCH"
+      : (assets.state === "RECOVERY_REQUIRED" ? "RECOVERY_REQUIRED" : "REJECTED"),
     explanation: ok
-      ? "Ergebnis und Asset bestaetigt."
+      ? (istRevision
+          ? "Ergebnis bestaetigt, Bild unveraendert geerbt."
+          : "Ergebnis und Asset bestaetigt.")
       : [geprueft.ok ? null : "Ergebnis: " + geprueft.explanation,
-         assets.ok ? null : "Asset: " + assets.explanation].filter(Boolean).join(" | "),
+         assets.ok ? null : "Asset: " + assets.explanation,
+         (!istRevision || revision.ok) ? null : "Revision: " + revision.explanation
+        ].filter(Boolean).join(" | "),
+    requestType: brief.request_type || Contract.FULL_CREATIVE,
+    revision: revision,
     briefBlobSha: shaGerechnet,
     briefId: brief.brief_id,
     processingKey: ChatGptWork.processingKey(brief.brief_id, contentId, shaGerechnet,
@@ -184,6 +221,16 @@ export function legeAb(ref, contentId, bericht) {
   const ziel = join(verzeichnis, "authoring-result.json");
   writeFileSync(ziel, bericht.resultRaw);
   geschrieben.push(ziel);
+
+  /* Ein nicht bestaetigtes Ergebnis kommt hier ohnehin nicht an. Diese
+     zweite Schranke steht trotzdem: der teuerste Fehler waere, ein
+     vertragswidriges Bild auf die Platte zu schreiben, und eine
+     Schranke, die nur mittelbar haelt, haelt bei der naechsten
+     Umstellung vielleicht nicht mehr. */
+  if (bericht.requestType === Contract.TEXT_REVISION &&
+      (bericht.result.visual_variants || []).length) {
+    throw new Error("legeAb: eine TEXT_REVISION legt keine Bilder ab.");
+  }
 
   for (const v of (bericht.result.visual_variants || [])) {
     if (!v || !v.asset_path) continue;
@@ -317,7 +364,26 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   if (bericht.assets) {
     console.log("\n--- ASSET ---");
-    console.log(bericht.assets.state + " — " + bericht.assets.explanation);
+    /* Bei einer TEXT_REVISION meldet der Transportvertrag PENDING, weil
+       es keine Bildvariante zu pruefen gab. Das ohne Einordnung
+       hinzuschreiben liest sich wie eine offene Aufgabe - dabei ist
+       genau das der erfuellte Auftrag. */
+    console.log(bericht.assets.state + " — " + bericht.assets.explanation +
+      (bericht.revision
+        ? " Bei einer TEXT_REVISION ist das die Erfuellung, nicht ein Mangel."
+        : ""));
+  }
+  if (bericht.revision) {
+    const rv = bericht.revision;
+    console.log("\n--- REVISIONSVERTRAG ---");
+    console.log((rv.ok ? "Alle Pflichtpruefungen bestanden." : "CONTRACT_MISMATCH.") +
+      " Geerbtes Asset: " +
+      (rv.inheritedAsset.ok ? "unveraendert zurueckgelesen."
+                            : rv.inheritedAsset.explanation));
+    if (!rv.ok) {
+      (rv.findings || []).forEach((f) =>
+        console.error("  " + f.check + ": " + f.message));
+    }
   }
 
   /* --------------------------------------------------------- Das Ledger */

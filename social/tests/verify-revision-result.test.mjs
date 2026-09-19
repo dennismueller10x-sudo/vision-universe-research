@@ -48,7 +48,18 @@ function ergebnis(aenderung) {
   return Object.assign(r, aenderung || {});
 }
 
-const OPT = { expectedProcessingKey: KEY };
+/* Das geerbte Asset wird von verify() wirklich gelesen. Hier kommt es
+   aus einem eingereichten Leser statt vom Datentraeger - dieselbe
+   Schnittstelle, die das Skript mit readFileSync bedient. */
+import { readFileSync } from "node:fs";
+const ECHT = "authoring/requests/vu-xom-20260911/assets/visual-01.png";
+const BYTES = readFileSync(new URL("../../" + ECHT, import.meta.url));
+const leser = (pfad) => {
+  if (pfad !== PFAD) throw new Error("Unerwarteter Pfad: " + pfad);
+  return BYTES;
+};
+
+const OPT = { expectedProcessingKey: KEY, readInheritedAsset: leser };
 
 /* ------------------------------------------------------------------ */
 /* DER ERWARTETE FALL                                                  */
@@ -180,7 +191,7 @@ test("RV13 · Ein fremder Processing Key gehoert zu einem fremden Auftrag", () =
 test("RV14 · Ohne erwarteten Key wird der Key nicht erfunden", () => {
   /* Ohne Vergleichswert darf die Pruefung nicht scheinbar bestehen
      UND nicht scheinbar scheitern — sie prueft dann schlicht nichts. */
-  const b = verify(BRIEF, ergebnis(), {});
+  const b = verify(BRIEF, ergebnis(), { readInheritedAsset: leser });
   assert.equal(b.checks.processingKeyCorrect, true);
   assert.equal(b.ok, true);
 });
@@ -206,4 +217,100 @@ test("RV16 · Ein leeres Ergebnis besteht nichts und wirft nicht", () => {
   assert.equal(b.checks.mimeUnchanged, true);
   assert.equal(b.checks.visualVariantIdUnchanged, false);
   assert.equal(b.checks.assetHashUnchanged, false);
+});
+
+/* ------------------------------------------------------------------ */
+/* DAS GEERBTE ASSET SELBST                                            */
+/* ------------------------------------------------------------------ */
+
+test("RV17 · Ohne Leser gilt das Erbe als UNGEPRUEFT, nicht als in Ordnung", () => {
+  /* Ein Aufrufer, der den Leser vergisst, bekaeme sonst ein
+     stillschweigendes Bestanden - und das waere genau die
+     Defektklasse, gegen die diese Datei ueberhaupt antritt. */
+  const b = verify(BRIEF, ergebnis(), { expectedProcessingKey: KEY });
+  assert.equal(b.ok, false);
+  assert.equal(b.inheritedAsset.checked, false);
+  assert.equal(b.inheritedAsset.ok, false);
+  /* Die vierzehn bestehen trotzdem - der Befund liegt woanders. */
+  assert.equal(b.missing.length, 0);
+});
+
+test("RV18 · Ein beschaedigtes Erbe faellt auf, auch wenn das Ergebnis stimmt", () => {
+  const halb = BYTES.subarray(0, Math.floor(BYTES.length / 2));
+  const b = verify(BRIEF, ergebnis(), {
+    expectedProcessingKey: KEY, readInheritedAsset: () => halb
+  });
+  assert.equal(b.ok, false);
+  assert.equal(b.missing.length, 0, "Alle vierzehn bestehen - die Datei nicht.");
+  assert.equal(b.inheritedAsset.checked, true);
+  assert.equal(b.inheritedAsset.ok, false);
+});
+
+test("RV19 · Ein unlesbares Erbe wirft nicht, es ist ein Befund", () => {
+  const b = verify(BRIEF, ergebnis(), {
+    expectedProcessingKey: KEY,
+    readInheritedAsset: () => { throw new Error("ENOENT"); }
+  });
+  assert.equal(b.ok, false);
+  assert.equal(b.inheritedAsset.checked, true);
+  assert.match(b.inheritedAsset.explanation, /nicht lesbar/);
+});
+
+/* ------------------------------------------------------------------ */
+/* ZWEI SCHREIBWEISEN                                                  */
+/* ------------------------------------------------------------------ */
+
+test("RV20 · Die source_*-Schreibweise des Auftrags wird gelesen", () => {
+  /* So kam das erste echte Ergebnis zurueck: das Ergebnis gibt den
+     Block des Auftrags woertlich wieder. Ein Pruefer, der nur die
+     flache Schreibweise kennt, laege undefined vor und wiese das
+     RICHTIGE Ergebnis zurueck. */
+  const b = verify(BRIEF, ergebnis({
+    inherited_visual: {
+      source_visual_variant_id: VARIANTE, source_asset_sha256: SHA,
+      source_mime_type: "image/png", source_width: 1122, source_height: 1402
+    }
+  }), OPT);
+  assert.equal(b.ok, true, b.explanation);
+});
+
+test("RV21 · Toleriert werden die Namen, nie die Werte", () => {
+  const b = verify(BRIEF, ergebnis({
+    inherited_visual: {
+      visual_variant_id: VARIANTE,
+      asset_sha256: SHA, source_asset_sha256: "c".repeat(64)
+    }
+  }), OPT);
+  assert.equal(b.ok, false);
+  assert.ok(b.missing.includes("assetHashUnchanged"),
+    "Ein Widerspruch ist ein Befund, keine Auswahl zwischen zwei Werten.");
+  assert.ok(b.findings.some((f) => f.check === "inheritedFieldConflict"));
+});
+
+/* ------------------------------------------------------------------ */
+/* DIE AUSWAHL BLEIBT BEI VISION UNIVERSE                              */
+/* ------------------------------------------------------------------ */
+
+test("RV22 · Eine Empfehlung ist erlaubt, eine Auswahl nicht", () => {
+  const empfehlung = {
+    recommended_hook_variant_id: "…:value_first:02",
+    recommendation_scope: "creative_agent_editorial_only",
+    is_canonical_selection: false
+  };
+  assert.equal(verify(BRIEF, ergebnis({ recommended_hook: empfehlung }), OPT).ok, true);
+
+  const b = verify(BRIEF, ergebnis({
+    recommended_hook: Object.assign({}, empfehlung, { is_canonical_selection: true })
+  }), OPT);
+  assert.equal(b.ok, false, "selected_hook leer zu finden genuegt nicht - " +
+    "die Auswahl koennte unter einem anderen Namen dastehen.");
+  assert.ok(b.missing.includes("noCanonicalSelection"));
+});
+
+test("RV23 · Auch processing.canonical_hook_selected zaehlt als Auswahl", () => {
+  const b = verify(BRIEF, ergebnis({
+    processing: { status: "completed", processing_key: KEY, canonical_hook_selected: true }
+  }), OPT);
+  assert.equal(b.ok, false);
+  assert.ok(b.missing.includes("noCanonicalSelection"));
 });

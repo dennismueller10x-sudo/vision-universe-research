@@ -51,8 +51,14 @@ export const PRUEFUNGEN = [
 ];
 
 /**
- * `brief` und `result` als Daten hinein, Befund heraus. Kein Dateizugriff
- * in dieser Funktion - so laesst sie sich gegen erfundene Faelle pruefen.
+ * `brief` und `result` als Daten hinein, Befund heraus. Gelesen wird nur
+ * ueber `options.readInheritedAsset` - so laesst sich diese Funktion
+ * gegen erfundene Faelle pruefen und liest trotzdem echte Bytes.
+ *
+ * Dieser Leser ist PFLICHT und hat keinen Vorgabewert. Ohne ihn waere
+ * das geerbte Asset ungeprueft, und ein Aufrufer, der ihn schlicht
+ * vergisst, bekaeme ein stillschweigendes Bestanden - dieselbe
+ * Defektklasse, gegen die die vierzehn Pruefungen ueberhaupt antreten.
  */
 export function verify(brief, result, options = {}) {
   const b = brief || {};
@@ -60,6 +66,32 @@ export function verify(brief, result, options = {}) {
   const v = b.visual || {};
   const geerbt = r.inherited_visual || {};
   const varianten = Array.isArray(r.visual_variants) ? r.visual_variants : [];
+
+  /* -----------------------------------------------------------------
+     ZWEI SCHREIBWEISEN FUER DIESELBE SACHE
+
+     Der Auftrag nennt die Felder `source_*`, weil er aus der Sicht der
+     Quelle geschrieben ist. Das Ergebnis darf den Block genauso
+     zurueckgeben oder flach benennen - beides ist redlich gemeint.
+
+     Nur: ein Pruefer, der eine Schreibweise nicht kennt, liest
+     `undefined` und WIRFT DAS RICHTIGE ERGEBNIS ZURUECK. Genau so ist
+     schon einmal eine Pruefung lautlos an `asset_byte_size` vs.
+     `byte_size` vorbeigelaufen. Also werden beide gelesen.
+
+     Toleriert werden die NAMEN, nie die WERTE: stehen beide da und
+     widersprechen sich, ist das ein Befund und keine Auswahl. */
+  const gelesen = {};
+  const feld = (flach) => {
+    const a = geerbt[flach];
+    const b = geerbt["source_" + flach];
+    const leer = (x) => x === undefined || x === null || x === "";
+    if (!leer(a) && !leer(b) && a !== b) {
+      gelesen[flach] = { konflikt: true, a: a, b: b };
+      return Symbol("widersprochen");
+    }
+    return leer(a) ? b : a;
+  };
 
   const checks = {};
   const befunde = [];
@@ -76,8 +108,14 @@ export function verify(brief, result, options = {}) {
     "Keine Hook-Varianten - das war der ganze Auftrag.");
   pruefe("captionPresent", !!(r.caption && String(r.caption).trim()),
     "Keine Caption.");
+  /* Eine EMPFEHLUNG darf der Agent aussprechen - sie ist redaktioneller
+     Rat. Sie darf sich nur nicht zur Auswahl erklaeren. Deshalb reicht
+     es nicht, `selected_hook` leer zu finden: die Auswahl koennte
+     ebenso gut unter einem anderen Namen dastehen. */
   pruefe("noCanonicalSelection",
-    r.selected_hook === undefined || r.selected_hook === null,
+    (r.selected_hook === undefined || r.selected_hook === null) &&
+    !(r.recommended_hook && r.recommended_hook.is_canonical_selection === true) &&
+    !(r.processing && r.processing.canonical_hook_selected === true),
     "Die kanonische Auswahl trifft Vision Universe, nicht der Agent.");
   pruefe("publishingDenied", r.publishing_allowed === false,
     "publishing_allowed muss false sein.");
@@ -94,20 +132,20 @@ export function verify(brief, result, options = {}) {
   pruefe("visualResolutionInherited", r.visual_resolution === "INHERITED",
     "visual_resolution ist " + r.visual_resolution + ", erwartet INHERITED.");
   pruefe("visualVariantIdUnchanged",
-    geerbt.visual_variant_id === v.source_visual_variant_id,
-    "Andere Bildvariante als im Auftrag: " + geerbt.visual_variant_id + ".");
+    feld("visual_variant_id") === v.source_visual_variant_id,
+    "Andere Bildvariante als im Auftrag: " + String(feld("visual_variant_id")) + ".");
   pruefe("assetHashUnchanged",
-    geerbt.asset_sha256 === v.source_asset_sha256,
+    feld("asset_sha256") === v.source_asset_sha256,
     "Anderer Asset-Hash als im Auftrag.");
   /* MIME und Masse duerfen fehlen - dann gelten die des Auftrags. Was
      dasteht, muss aber stimmen: eine ANDERE Angabe ist ein Austausch. */
   pruefe("mimeUnchanged",
-    geerbt.mime_type === undefined || geerbt.mime_type === v.source_mime_type,
-    "Anderer MIME-Typ: " + geerbt.mime_type + ".");
+    feld("mime_type") === undefined || feld("mime_type") === v.source_mime_type,
+    "Anderer MIME-Typ: " + String(feld("mime_type")) + ".");
   pruefe("dimensionsUnchanged",
-    (geerbt.width === undefined || geerbt.width === v.source_width) &&
-    (geerbt.height === undefined || geerbt.height === v.source_height),
-    "Andere Abmessungen: " + geerbt.width + "x" + geerbt.height + ".");
+    (feld("width") === undefined || feld("width") === v.source_width) &&
+    (feld("height") === undefined || feld("height") === v.source_height),
+    "Andere Abmessungen: " + String(feld("width")) + "x" + String(feld("height")) + ".");
 
   pruefe("noNewVisualVariant", varianten.length === 0,
     varianten.length + " neue visual_variants, obwohl regeneration_allowed " +
@@ -117,16 +155,57 @@ export function verify(brief, result, options = {}) {
       x.asset_path !== v.source_asset_reference),
     "Ein neuer Asset-Pfad wurde geschrieben.");
 
+  /* --------------------------------------------------------------- */
+  /* DAS GEERBTE ASSET SELBST                                          */
+  /* --------------------------------------------------------------- */
+  /* Die vierzehn Pruefungen vergleichen, was das ERGEBNIS ueber das
+     Bild BEHAUPTET, mit dem, was der AUFTRAG verlangt hat. Beide
+     koennen uebereinstimmen, waehrend die Datei danebenliegt: sie
+     gehoert keiner von beiden Seiten, sie liegt im Repository. Also
+     wird sie zusaetzlich gelesen. */
+  const erbe = (() => {
+    if (typeof options.readInheritedAsset !== "function") {
+      return { checked: false, ok: false,
+        explanation: "Kein Leser fuer das geerbte Asset uebergeben - " +
+          "es ist damit UNGEPRUEFT, nicht in Ordnung." };
+    }
+    let bytes = null;
+    try { bytes = options.readInheritedAsset(v.source_asset_reference); }
+    catch (err) {
+      return { checked: true, ok: false,
+        explanation: "Das geerbte Asset ist nicht lesbar: " +
+          String((err && err.message) || err).slice(0, 160) };
+    }
+    const ein = Store.ingest(bytes, {
+      asset_sha256: v.source_asset_sha256, byte_size: v.source_byte_size,
+      mime_type: v.source_mime_type, width: v.source_width,
+      height: v.source_height
+    }, { freshReadback: true });
+    return { checked: true, ok: ein.ok === true, explanation: ein.explanation,
+      verification: ein.verification };
+  })();
+  if (!erbe.ok) befunde.push({ check: "inheritedAssetIntact", message: erbe.explanation });
+
+  Object.keys(gelesen).forEach((k) => {
+    befunde.push({ check: "inheritedFieldConflict",
+      message: "Das Ergebnis nennt " + k + " zweimal und verschieden: " +
+        String(gelesen[k].a) + " vs. " + String(gelesen[k].b) + "." });
+  });
+
   const offen = PRUEFUNGEN.filter((p) => checks[p] !== true);
   return {
-    ok: offen.length === 0,
+    ok: offen.length === 0 && erbe.ok === true,
+    inheritedAsset: erbe,
     checks, missing: offen, findings: befunde,
     failureType: offen.length === 0 ? null : "CONTRACT_MISMATCH",
     /* Ein Vertragsverstoss sagt ueber Hook, Evidenz oder Bildstrategie
        nichts. Ihn als Inhaltsfehler zu lernen waere gelernter Unsinn. */
     contentJudgement: false,
     explanation: offen.length === 0
-      ? "Alle " + PRUEFUNGEN.length + " Pflichtpruefungen bestanden."
+      ? (erbe.ok ? "Alle " + PRUEFUNGEN.length + " Pflichtpruefungen bestanden, " +
+                   "das geerbte Asset liegt unveraendert da."
+                 : "Die " + PRUEFUNGEN.length + " Pflichtpruefungen bestehen, aber " +
+                   "das geerbte Asset selbst nicht: " + erbe.explanation)
       : "Offen: " + offen.join(", ") + "."
   };
 }
@@ -151,29 +230,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const sha = ChatGptWork.blobSha(roh);
   const key = ChatGptWork.processingKey(brief.brief_id, CID, sha, "1.0");
 
-  const befund = verify(brief, ergebnis, { expectedProcessingKey: key });
+  const befund = verify(brief, ergebnis, {
+    expectedProcessingKey: key,
+    /* Vom Datentraeger, nicht aus dem Puffer, aus dem geschrieben wurde. */
+    readInheritedAsset: (pfad) => readFileSync(join(ROOT, pfad))
+  });
 
   console.log("VISION UNIVERSE SOCIAL — TEXT_REVISION Contract");
   console.log("Inhalt: " + CID + "\n");
   PRUEFUNGEN.forEach((p) =>
     console.log((befund.checks[p] ? "  ok   " : "  FAIL ") + p));
-
-  /* Und das geerbte Asset selbst: liegt es unveraendert da? */
-  const v = brief.visual || {};
-  const bytes = (() => {
-    try { return readFileSync(join(ROOT, v.source_asset_reference)); }
-    catch { return null; }
-  })();
-  const ein = Store.ingest(bytes, {
-    asset_sha256: v.source_asset_sha256, byte_size: v.source_byte_size,
-    mime_type: v.source_mime_type, width: v.source_width, height: v.source_height
-  }, { freshReadback: true });
-  console.log((ein.ok ? "  ok   " : "  FAIL ") + "geerbtes Asset unveraendert");
+  console.log((befund.inheritedAsset.ok ? "  ok   " : "  FAIL ") +
+    "geerbtes Asset unveraendert");
 
   console.log("\n" + befund.explanation);
   if (!befund.ok) {
     befund.findings.forEach((f) => console.error("  " + f.check + ": " + f.message));
     console.error("\nCONTRACT_MISMATCH. Kein Kandidat auf einem vertragswidrigen Ergebnis.");
   }
-  process.exit(befund.ok && ein.ok ? 0 : 8);
+  process.exit(befund.ok ? 0 : 8);
 }

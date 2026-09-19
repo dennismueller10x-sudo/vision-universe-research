@@ -113,7 +113,17 @@
     { muster: /\bz\s*=\s*-?\d/i, id: "z-score" },
     { muster: /\bATR\b/, id: "atr" },
     { muster: /\bSMA\d+\b/i, id: "sma" },
-    { muster: /\btraegt\s+[\d.,]+\s+von\s+[\d.,]+\s+Punkten\s+bei\b/i, id: "contribution-formula" },
+    /* Innensprache ist hier die FORMEL, nicht das Verb. Der Brief
+       verbot "traegt X von Y Punkten bei"; zurueck kam "steuert 27,35
+       von 30 Punkten bei" - und lief glatt durch. Dieselbe
+       Defektklasse wie ein Pruefer, der `byte_size` liest, waehrend
+       `asset_byte_size` dasteht: das Muster war enger als die Sache.
+
+       Das Partikel muss am Satzglied-ENDE stehen. Sonst faengt sich
+       "im Vergleich zu 30 Punkten bei XOM" mit ein, wo "bei" eine
+       Praeposition ist und keine Verbklammer schliesst. */
+    { muster: /\b\w+\s+[\d.,]+\s+von\s+[\d.,]+\s+Punkten\s+(?:bei|hinzu)(?=\s*[,.;:!?]|$)/i,
+      id: "contribution-formula" },
     { muster: /\bTrendwert\b/i, id: "trend-value" },
     { muster: /\bMomentum-Messwert\b/i, id: "momentum-measure" },
     { muster: /\bHandelstage?\b/i, id: "trading-days" }

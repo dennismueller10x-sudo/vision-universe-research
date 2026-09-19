@@ -168,3 +168,36 @@ test("CQ11 · Die Obergrenze passt zu dem Befund, aus dem sie stammt", () => {
   assert.match(k.finding, /Zahlendichte/);
   assert.ok(Q.DICHTE.zuDuenn < Q.DICHTE.zuDicht);
 });
+
+/* ------------------------------------------------------------------ */
+/* INNENSPRACHE IST DIE FORMEL, NICHT DAS VERB                         */
+/* ------------------------------------------------------------------ */
+
+test("CQ21 · Ein Synonym laeuft nicht an der Beitragsformel vorbei", () => {
+  /* Der Brief verbot "traegt X von Y Punkten bei". Zurueck kam
+     "steuert 27,35 von 30 Punkten bei" - und bestand, weil das Muster
+     am Verb hing statt an der Sache. Dieselbe Defektklasse wie ein
+     Pruefer, der `byte_size` liest, waehrend `asset_byte_size`
+     dasteht: das Muster war enger als der Sachverhalt. */
+  const treffer = Q.innensprache(
+    "Die Trendstruktur steuert 27,35 von 30 Punkten bei, die " +
+    "Schwankungsbreite 5 von 10.");
+  assert.equal(treffer.length, 1);
+  assert.equal(treffer[0].id, "contribution-formula");
+
+  /* Und mit dem urspruenglichen Verb weiterhin. */
+  assert.equal(Q.innensprache("Die Trendstruktur traegt 27,35 von 30 Punkten bei.")
+    .length, 1);
+  assert.equal(Q.innensprache("Der Faktor fuegt 5 von 10 Punkten hinzu.").length, 1);
+});
+
+test("CQ22 · \"Punkten bei\" als Praeposition ist keine Innensprache", () => {
+  /* Die Gegenrichtung, und die teurere: ein Muster, das jedes
+     "Punkten bei" faengt, wiese korrekten Text zurueck. Das Partikel
+     zaehlt nur am Satzglied-Ende, wo es eine Verbklammer schliesst. */
+  assert.deepEqual(
+    Q.innensprache("Im Vergleich zu 30 Punkten bei XOM liegt der Wert darunter."), []);
+  assert.deepEqual(
+    Q.innensprache("Der Gesamtwert 76 von 100 liegt im Band Konstruktiv, das ab 60 beginnt."), []);
+  assert.deepEqual(Q.innensprache("XOM erreicht 76 von 100 Punkten."), []);
+});
