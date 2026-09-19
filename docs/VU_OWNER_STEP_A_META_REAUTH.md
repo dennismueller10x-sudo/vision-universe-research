@@ -1,83 +1,73 @@
-# OWNER-SCHRITT A — META: EINMALIGE REAUTORISIERUNG
+# OWNER-SCHRITT A — META: GEMESSENER BEFUND UND ZWEI SCHRITTE
 
-Stand: 2026-09-19
+Stand: 2026-09-19, nach der Probe
 
 ---
 
-## ZUERST: NICHT SOFORT KLICKEN
+## DER BEFUND — GEMESSEN, NICHT GESCHLOSSEN
 
-Dieses Dokument hat einen Vorlauf von zwei Minuten, und der ist wichtig.
+Actions-Lauf **35463098608**, 19:03:18 UTC, genau ein lesender Versuch
+gegen `#aktien` (ein bereits geöffneter Kern-Hashtag, kein zusätzlicher
+Platz verbraucht):
 
-Nach dem ersten echten Lauf kamen alle acht Hashtag-Abfragen mit
-`permissionRevoked` zurück. Die naheliegende Erklärung war: ein Recht
-fehlt, also neu autorisieren. **Diese Erklärung kann falsch sein**, und
-dann wäre die Reautorisierung verbraucht, ohne dass sich etwas ändert.
+| | |
+|---|---|
+| Konto | `@visionuniverse.aktienreports` |
+| Verbunden | `true` |
+| Auf Allowlist | `true` |
+| **Veröffentlichen** | **`true`** — unverändert intakt |
+| Rechte gelesen über | `GRANULAR_SCOPES` (5) |
+| Erteilt | `pages_show_list`, `instagram_basic`, `instagram_manage_insights`, `instagram_content_publish`, `public_profile` |
+| **Fehlt** | **`pages_read_engagement`** |
+| Versuch | abgewiesen |
+| `GRAPH_API_REASON` | `permissionRevoked` |
 
-Die Hashtag-Suche braucht **zweierlei** von Meta:
+Und die Meldung der Plattform, wörtlich:
 
-| | Was | Kommt aus | Reautorisierung hilft? |
+> `(#10) To use 'Instagram Public Content Access', your use of this
+> endpoint must be reviewed and approved by Facebook. To submit this
+> 'Instagram Public Content Access' feature for review please read our
+> documentation on reviewable features.`
+
+---
+
+## ZWEI URSACHEN, ZWEI SCHRITTE
+
+Beides liegt gleichzeitig vor. Wer nur einen Schritt geht, steht danach
+wieder hier.
+
+| | Was fehlt | Woher | Schritt |
 |---|---|---|---|
-| **Recht** | `instagram_basic`, `pages_read_engagement`, `instagram_manage_insights` | der Autorisierung | **ja** |
-| **Freischaltung** | „Instagram Public Content Access" | der App-Überprüfung | **nein** |
+| **1** | Freischaltung „Instagram Public Content Access" | App-Überprüfung | **Teil 2** |
+| **2** | Recht `pages_read_engagement` | Autorisierung | **Teil 1** |
 
-Meta antwortet in beiden Fällen mit derselben Fehlerklasse. Der
-Unterschied lässt sich nur am Abgleich mit den tatsächlich erteilten
-Rechten erkennen.
+**Reihenfolge:** erst Teil 2 beantragen (er dauert), dann Teil 1 — oder
+Teil 1 sofort, wenn die Freigabe da ist. Die Reautorisierung ist billig
+und schnell; der Antrag nicht.
 
-> **Alle drei Rechte stehen bereits in `REQUIRED_SCOPES`** des Workers —
-> seit dem ersten Bau. Der klassische OAuth-Pfad fragt sie an. Die
-> Verbindung läuft aber über die **Business-Anmeldung**, und dort steht
-> die Rechtemenge in einer Konfiguration bei Meta, die der Worker nicht
-> lesen kann. Deshalb ist `scopes` dort `null` — und `null` ist nicht
-> „keine".
+> **Was sich gegenüber dem letzten Stand geändert hat:**
+> `instagram_manage_insights` ist **erteilt**. Meine erste Vermutung,
+> genau dieses Recht fehle, war falsch. Gefehlt hat ein anderes — und
+> vor allem die Freischaltung, die kein Recht ist.
 
 ---
 
-## SCHRITT 0 — MESSEN STATT RATEN (kostet nichts, keinen Hashtag-Platz)
+## SCHRITT 0 — BEREITS GELAUFEN
 
-> **Voraussetzung, und sie ist kein neuer Prozess:** Der Endpunkt unten
-> existiert im Quelltext, draußen läuft der Worker aber erst nach einem
-> Deploy. Dafür gibt es den bestehenden Pfad `social-cloudflare.yml`:
-> die Datei `workers/vision-universe-social/DEPLOY_REQUEST` anlegen und
-> pushen — sie ist im Diff sichtbar, hat Autor und Datum und lässt sich
-> durch Löschen zurückziehen. Ohne sie läuft nur der lesende Preflight.
->
-> Das Prüfskript unten meldet diesen Zustand ausdrücklich als
-> `ENDPOINT_NOT_DEPLOYED` und **nicht** als Fehlschlag — nicht
-> vorhanden ist nicht dasselbe wie abgewiesen.
-
-Der Endpunkt, der die Frage beantwortet:
-
-```
-GET https://social.visionuniverse.de/social/meta/hashtag-capability?probe=aktien
-Authorization: Bearer <VU_SOCIAL_ADMIN_KEY>
-```
-
-`#aktien` ist einer der acht Hashtags, deren Sieben-Tage-Fenster am
-19.09. geöffnet wurde. Eine **erneute** Abfrage innerhalb des Fensters
-zählt nicht noch einmal — dieser Test kostet **keinen** der 30 Plätze.
-
-Bequemer, mit derselben Messung und fertiger Diagnose:
+Die Messung oben stammt aus diesem Schritt. Wiederholen lässt er sich
+jederzeit, er kostet nichts und keinen Hashtag-Platz:
 
 ```
 VU_SOCIAL_ADMIN_KEY=... node scripts/social/verify-hashtag-access.mjs
 ```
 
-Das Skript wählt den Probe-Hashtag selbst aus dem Portfolio — und
-probiert **gar nicht**, wenn kein Fenster mehr offen ist.
-
-Es meldet einen von vier Zuständen:
-
-| Zustand | Bedeutung | Owner-Schritt |
-|---|---|---|
-| `MISSING_SCOPE` | Rechte lesbar, eines fehlt | **Teil 1 unten** — Reautorisierung |
-| `MISSING_APP_REVIEW_FEATURE` | alle Rechte da, trotzdem abgewiesen | **Teil 2 unten** — App-Überprüfung. **Keine Reautorisierung.** |
-| `HASHTAG_ACCESS_UNKNOWN` | Rechte nicht lesbar | beide Teile lesen, mit Teil 2 beginnen |
-| `HASHTAG_ACCESS_OK` | funktioniert | nichts zu tun |
+Oder über Actions: `social/data/capability-probe-request.json` ändern
+und pushen. Der Endpunkt dahinter ist seit 18:39 UTC produktiv, über den
+bestehenden Deploy-Pfad.
 
 ---
 
-## TEIL 1 — REAUTORISIERUNG (nur bei `MISSING_SCOPE`)
+## TEIL 1 — REAUTORISIERUNG (gemessen erforderlich: `pages_read_engagement`)
 
 Genau **ein** Durchlauf. Der bestehende Pfad, keine zweite Integration,
 keine neue Token-Architektur.
@@ -104,18 +94,17 @@ keine neue Token-Architektur.
 
 ---
 
-## TEIL 2 — APP-ÜBERPRÜFUNG (bei `MISSING_APP_REVIEW_FEATURE` oder `UNKNOWN`)
+## TEIL 2 — APP-ÜBERPRÜFUNG (gemessen erforderlich)
 
-Hier hilft kein Klick am Login, sondern nur ein Antrag.
+Meta hat diesen Schritt selbst benannt. Hier hilft kein Klick am Login,
+sondern nur ein Antrag.
 
 1. <https://developers.facebook.com/apps> → die Vision-Universe-App.
 2. Links **App-Überprüfung** → **Berechtigungen und Funktionen**.
 3. Im Suchfeld `Instagram Public Content Access` eingeben.
-4. Status ansehen:
-   - **Erweiterter Zugriff** → vorhanden, dann ist die Ursache eine
-     andere; Teil 1 prüfen.
-   - **Standardzugriff** oder **Nicht angefordert** → **Erweiterten
-     Zugriff anfordern**.
+4. Status ansehen. Nach dem gemessenen Befund steht er auf
+   **Nicht angefordert** oder **Standardzugriff** → **Erweiterten
+   Zugriff anfordern**.
 5. Meta verlangt dafür in der Regel:
    - eine **verifizierte Unternehmensidentität** (Business Manager →
      Unternehmensinfo → Verifizierung),

@@ -86,6 +86,37 @@
 
      Die Rohcodes werden trotzdem akzeptiert: ein Aufrufer, der die
      Antwort direkt von Meta hat, soll nicht erst uebersetzen muessen. */
+  /* -------------------------------------------------------------------
+     WENN DIE PLATTFORM ES SELBST SAGT, IST ES KEINE VERMUTUNG MEHR
+
+     Diese Datei war darauf ausgelegt, aus dem ABGLEICH zu schliessen:
+     Rechte lesbar und vollstaendig plus Abweisung = Feature fehlt. Ein
+     Schluss, und ein vorsichtiger.
+
+     Die echte Antwort von Meta war deutlicher:
+
+       (#10) To use 'Instagram Public Content Access', your use of this
+       endpoint must be reviewed and approved by Facebook.
+
+     Das ist keine Grundlage fuer einen Schluss, das ist die Auskunft.
+     Und die erste Fassung hat sie ignoriert: weil GLEICHZEITIG ein
+     Recht fehlte, meldete sie MISSING_SCOPE und
+     APP_REVIEW_REQUIRED = unknown - waehrend im selben Datensatz der
+     Satz stand, der die Frage beantwortet.
+
+     Der Fehler ist eine Rangfolge: ein Schluss aus Listen wurde ueber
+     eine ausdrueckliche Aussage gestellt. Genannt schlaegt geschlossen.
+
+     Und die beiden schliessen sich nicht aus. Ein fehlendes Recht UND
+     eine fehlende Freischaltung koennen zugleich vorliegen - dann sind
+     zwei Owner-Schritte noetig, und wer nur einen meldet, schickt den
+     Owner zweimal los. */
+  var FEATURE_GENANNT = /Public Content Access|reviewed and approved|reviewable features/i;
+
+  function featureGenannt(text) {
+    return FEATURE_GENANNT.test(String(text || ""));
+  }
+
   var ZUGRIFFSGRUENDE = ["permissionRevoked"];
   var ZUGRIFFSCODES = [10, 200, 3];
   var ZUGRIFFSSUBCODES = [458, 459];
@@ -166,15 +197,56 @@
       istZugriffsfehler(probe.error));
 
     /* --------------------------------------------------------------
+       DIE PLATTFORM HAT DAS FEATURE AUSDRUECKLICH GENANNT
+
+       Das steht VOR allen Schluessen aus Listen. Es ist beobachtet und
+       nicht abgeleitet - und es gilt auch dann, wenn gleichzeitig ein
+       Recht fehlt. */
+    var genannt = probe && featureGenannt(probe.message);
+    if (genannt) {
+      var auchRecht = Array.isArray(rechte) && fehlend.length > 0;
+      return {
+        state: DIAGNOSE.MISSING_APP_REVIEW_FEATURE,
+        missingScopes: Array.isArray(rechte) ? fehlend : null,
+        featureLikelyMissing: true,
+        featureNamedByPlatform: true,
+        reauthorizationHelps: auchRecht,
+        ownerActionRequired: {
+          kind: auchRecht ? "APP_REVIEW_AND_REAUTHORIZE" : "APP_REVIEW",
+          feature: BENOETIGTES_FEATURE.name,
+          what: "Meta nennt die Ursache woertlich: die Freischaltung \"" +
+            BENOETIGTES_FEATURE.name + "\" fehlt und muss in der " +
+            "App-Ueberpruefung beantragt werden." +
+            (auchRecht
+              ? " ZUSAETZLICH fehlt das Recht " + fehlend.join(", ") +
+                " - das holt ein einmaliger erneuter OAuth-Lauf nach. " +
+                "Beides ist noetig; eines allein genuegt nicht."
+              : ""),
+          doNot: auchRecht ? null
+            : "Keine erneute Autorisierung ausloesen. Sie kann ein " +
+              "Feature nicht nachholen.",
+          oneTime: true
+        },
+        explanation: "Die Plattform hat die Ursache selbst benannt - das " +
+          "ist keine Ableitung aus Rechtelisten, sondern die Auskunft." +
+          (auchRecht
+            ? " Daneben fehlt " + fehlend.join(", ") + ". Zwei Ursachen, " +
+              "zwei Schritte - wer nur einen geht, steht wieder hier."
+            : "")
+      };
+    }
+
+    /* --------------------------------------------------------------
        EIN FEHLENDES RECHT IST BEHEBBAR - DURCH DEN OWNER, EINMAL.
 
        Wenn die Rechteliste LESBAR ist und etwas fehlt, ist das der
-       einfache Fall. */
+       einfache Fall - und die Plattform hat nichts anderes gesagt. */
     if (Array.isArray(rechte) && fehlend.length) {
       return {
         state: DIAGNOSE.MISSING_SCOPE,
         missingScopes: fehlend,
         featureLikelyMissing: null,
+        featureNamedByPlatform: false,
         reauthorizationHelps: true,
         ownerActionRequired: {
           kind: "REAUTHORIZE",
@@ -267,6 +339,7 @@
     BENOETIGTE_RECHTE: BENOETIGTE_RECHTE,
     ZUGRIFFSGRUENDE: ZUGRIFFSGRUENDE,
     BENOETIGTES_FEATURE: BENOETIGTES_FEATURE,
+    featureGenannt: featureGenannt,
     DIAGNOSE: DIAGNOSE,
     istZugriffsfehler: istZugriffsfehler,
     diagnose: diagnose

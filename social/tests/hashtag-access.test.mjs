@@ -212,3 +212,75 @@ test("HA15 · Ohne Kern-Hashtag wird der mit dem meisten Fenster genommen", asyn
     observedMediaCount: 4 }], "2026-09-19T10:00:00Z");
   assert.equal(offenerHashtag(bestand, "2026-09-20T10:00:00Z"), "neu");
 });
+
+/* ============================ Genannt schlaegt geschlossen (HA16-HA20) */
+
+/* Die WOERTLICHE Antwort aus Actions-Lauf 35463098608, 19:03:18 UTC. */
+const ECHTE_MELDUNG = "Die noetige Berechtigung fehlt oder wurde entzogen. " +
+  "(#10) To use 'Instagram Public Content Access', your use of this endpoint " +
+  "must be reviewed and approved by Facebook. To submit this 'Instagram " +
+  "Public Content Access' feature for review please read our documentation " +
+  "on reviewable features: https://developers.facebook.com/docs/apps/review.";
+
+const ECHTE_RECHTE = ["pages_show_list", "instagram_basic",
+  "instagram_manage_insights", "instagram_content_publish", "public_profile"];
+
+test("HA16 · Der reale Befund wird vollstaendig wiedergegeben", () => {
+  /* Kein Fixture-Erfinden: Rechte und Meldung stammen woertlich aus dem
+     Lauf gegen die Produktion. */
+  const d = H.diagnose({ grantedScopes: ECHTE_RECHTE,
+    probe: { ok: false, reason: "permissionRevoked", message: ECHTE_MELDUNG } });
+
+  assert.equal(d.state, H.DIAGNOSE.MISSING_APP_REVIEW_FEATURE);
+  assert.equal(d.featureNamedByPlatform, true);
+  assert.equal(d.featureLikelyMissing, true);
+  /* Und das Recht fehlt DANEBEN - beides, nicht eines. */
+  assert.deepEqual(d.missingScopes, ["pages_read_engagement"]);
+  assert.equal(d.reauthorizationHelps, true);
+  assert.equal(d.ownerActionRequired.kind, "APP_REVIEW_AND_REAUTHORIZE");
+});
+
+test("HA17 · Genannt schlaegt geschlossen", () => {
+  /* Die erste Fassung meldete hier MISSING_SCOPE und APP_REVIEW
+     "unknown" - waehrend im selben Datensatz der Satz stand, der die
+     Frage beantwortet. Ein Schluss aus Listen stand ueber einer
+     ausdruecklichen Aussage. */
+  const mitMeldung = H.diagnose({ grantedScopes: ECHTE_RECHTE,
+    probe: { ok: false, reason: "permissionRevoked", message: ECHTE_MELDUNG } });
+  const ohneMeldung = H.diagnose({ grantedScopes: ECHTE_RECHTE,
+    probe: { ok: false, reason: "permissionRevoked", message: "Zugriff verweigert." } });
+
+  assert.equal(mitMeldung.state, H.DIAGNOSE.MISSING_APP_REVIEW_FEATURE);
+  assert.equal(ohneMeldung.state, H.DIAGNOSE.MISSING_SCOPE,
+    "Ohne ausdrueckliche Nennung bleibt es beim Schluss aus den Listen");
+  assert.equal(ohneMeldung.featureNamedByPlatform, false);
+});
+
+test("HA18 · Zwei Ursachen heissen zwei Schritte", () => {
+  /* Wer nur einen meldet, schickt den Owner zweimal los. */
+  const d = H.diagnose({ grantedScopes: ECHTE_RECHTE,
+    probe: { ok: false, reason: "permissionRevoked", message: ECHTE_MELDUNG } });
+  assert.match(d.ownerActionRequired.what, /ZUSAETZLICH/);
+  assert.match(d.ownerActionRequired.what, /pages_read_engagement/);
+  assert.match(d.explanation, /Zwei Ursachen, zwei Schritte/);
+  /* Und hier wird NICHT vor der Reautorisierung gewarnt - sie ist
+     diesmal noetig. */
+  assert.equal(d.ownerActionRequired.doNot, null);
+});
+
+test("HA19 · Genanntes Feature ohne fehlendes Recht warnt weiter vor dem OAuth-Lauf", () => {
+  const voll = ECHTE_RECHTE.concat(["pages_read_engagement"]);
+  const d = H.diagnose({ grantedScopes: voll,
+    probe: { ok: false, reason: "permissionRevoked", message: ECHTE_MELDUNG } });
+  assert.equal(d.ownerActionRequired.kind, "APP_REVIEW");
+  assert.equal(d.reauthorizationHelps, false);
+  assert.match(d.ownerActionRequired.doNot, /Keine erneute Autorisierung/);
+});
+
+test("HA20 · Die Erkennung haengt am Text der Plattform, nicht an unserem", () => {
+  assert.equal(H.featureGenannt(ECHTE_MELDUNG), true);
+  assert.equal(H.featureGenannt("must be reviewed and approved by Facebook"), true);
+  assert.equal(H.featureGenannt("reviewable features"), true);
+  assert.equal(H.featureGenannt("Zugriff verweigert"), false);
+  assert.equal(H.featureGenannt(null), false);
+});
