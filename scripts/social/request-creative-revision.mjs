@@ -65,18 +65,117 @@ export const REGISTER = "social/data/creative-jobs.json";
    ein Lauf daran scheitert - und der kostet eine Work-Ausfuehrung. */
 export const MAX_UEBERSCHNEIDUNG = Authoring.MAX_UEBERSCHNEIDUNG;
 
-export function anweisung(story, dichteGrenze) {
+/**
+ * WORAN ES LAG - gemessen, nicht erinnert.
+ *
+ * Der erste Entwurf dieser Datei trug die Diagnose als festen Satz:
+ * "die Hooks stellten eine belegte Zahl voran, ohne ihr etwas
+ * entgegenzusetzen". Fuer Anlauf 1 stimmte das. Fuer den naechsten
+ * nicht mehr - dort bestanden die Hooks 5 von 6, und der Befund lag
+ * ganz auf der Caption. Dieselbe Anweisung noch einmal zu schicken
+ * hiesse, eine Nacharbeit an etwas zu verlangen, das bereits
+ * funktioniert, und die eigentliche Schwaeche zu verschweigen.
+ *
+ * Also wird die Diagnose aus der Rubrik gelesen, die hinterher auch
+ * entscheidet. Mitgeschickt wird beides: was scheiterte UND was
+ * traegt. Ohne den zweiten Teil ist die naechste Fassung eine
+ * Neuschreibung, und eine Neuschreibung verliert, was schon stimmte.
+ */
+export function befundBlock(assessed) {
+  if (!Array.isArray(assessed) || !assessed.length) return null;
+  const n = assessed.length;
+  const zaehlung = new Map();
+
+  assessed.forEach((b) => {
+    (b.assessment.criteria || []).forEach((k) => {
+      const e = zaehlung.get(k.id) ||
+        { id: k.id, surface: k.surface, gescheitert: 0, geprueft: 0, befund: null };
+      /* `passed === null` heisst NICHT GEPRUEFT und zaehlt weder als
+         bestanden noch als gescheitert. */
+      if (k.passed === true || k.passed === false) e.geprueft += 1;
+      if (k.passed === false) { e.gescheitert += 1; e.befund = e.befund || k.finding; }
+      zaehlung.set(k.id, e);
+    });
+  });
+
+  const alle = [...zaehlung.values()].filter((e) => e.geprueft > 0);
+  const offen = alle.filter((e) => e.gescheitert > 0);
+  const traegt = alle.filter((e) => e.gescheitert === 0);
+  if (!offen.length) return null;
+
+  const wieViele = (e) => e.gescheitert === n
+    ? "in allen " + n + " Varianten"
+    : "in " + e.gescheitert + " von " + n + " Varianten";
+
+  return [
+    "WORAN ES GEMESSEN LAG. Die folgenden Befunde stammen aus derselben " +
+    "Rubrik, die die naechste Fassung wieder prueft - sie sind keine " +
+    "Geschmacksfrage:",
+    ...offen.map((e) => "  - " + e.id + " (" + e.surface + ", " +
+      wieViele(e) + "): " + e.befund),
+    "",
+    "WAS TRAEGT UND NICHT ANZUFASSEN IST: " +
+    (traegt.length ? traegt.map((e) => e.id).join(", ") : "nichts davon") +
+    ". Eine Neuschreibung verliert, was bereits stimmte."
+  ].join("\n");
+}
+
+/**
+ * Das zu erbende Bild - gleich, ob die Quelle es selbst erzeugt oder
+ * ihrerseits geerbt hat.
+ *
+ * Eine Revision einer Revision hat keine `visual_variants`: ihr
+ * Ergebnis traegt `inherited_visual`. Wer nur die erste Form kennt,
+ * haelt eine gueltige Kette faelschlich fuer "kein Bild vorhanden".
+ *
+ * Verlaengert wird dabei die KETTE, nie die Quelle: zurueckgegeben
+ * wird immer der Ursprung des Assets. Zeigte rev3 auf rev2 und rev4
+ * auf rev3, koennte am Ende niemand mehr das eine verifizierte Asset
+ * benennen - und die Identitaet waere eine Behauptung ueber eine
+ * Behauptung.
+ */
+export function erbeAus(ergebnis, contentId) {
+  const e = ergebnis || {};
+  const eigen = (e.visual_variants || [])[0];
+  if (eigen && eigen.asset_path) {
+    return {
+      geerbt: false, originContentId: contentId, candidateId: null,
+      visual_variant_id: eigen.visual_variant_id,
+      asset_path: eigen.asset_path, asset_sha256: eigen.asset_sha256,
+      asset_byte_size: eigen.asset_byte_size, mime_type: eigen.mime_type,
+      width: eigen.width, height: eigen.height,
+      visual_strategy: eigen.visual_strategy, brief_revision: eigen.brief_revision
+    };
+  }
+  const g = e.inherited_visual;
+  if (!g || !g.source_asset_path || !g.source_asset_sha256) return null;
+  return {
+    geerbt: true,
+    originContentId: g.source_content_id || contentId,
+    candidateId: g.source_candidate_id || null,
+    visual_variant_id: g.source_visual_variant_id,
+    asset_path: g.source_asset_path, asset_sha256: g.source_asset_sha256,
+    asset_byte_size: g.source_byte_size, mime_type: g.source_mime_type,
+    width: g.source_width, height: g.source_height,
+    visual_strategy: g.source_visual_strategy, brief_revision: g.source_brief_revision
+  };
+}
+
+export function anweisung(story, dichteGrenze, assessed) {
   const t = story.tension;
   const staerke = t.strength.value + " von " + t.strength.max;
   const bremse = t.drag.value + " von " + t.drag.max;
   const leit = story.lead.value;
 
+  const gemessen = befundBlock(assessed);
+
   return [
-    "UEBERARBEITUNG. Der vorherige Text war faktisch richtig und " +
-    "redaktionell zu schwach: die Hooks stellten eine belegte Zahl voran, " +
-    "ohne ihr etwas entgegenzusetzen, und die Caption uebernahm die " +
-    "Struktur des Research-Reports.",
+    "UEBERARBEITUNG. Der vorherige Text war faktisch richtig, " +
+    "evidenzgebunden und redaktionell zu schwach.",
     "",
+    /* Leere Zeilen filtert der Abschluss unten ohnehin weg; faellt der
+       Block aus, faellt er also spurlos aus. */
+    gemessen || "",
     "JEDER Hook muss ZWEI gemessene Werte GEGENEINANDER stellen: eine " +
     "Staerke und den Wert, der trotz dieser Staerke nicht hoeher " +
     "ausfaellt. Beide Zahlen stehen IM HOOK, verbunden durch ein Wort, " +
@@ -182,6 +281,31 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Ausgewaehlt: " + story.selectedIds.join(", "));
   console.log("Gebunden, nicht in der Copy: " + story.unused.length + " Belege");
 
+  /* ----------------------------------------------- Der gemessene Befund
+
+     Nicht "was wir noch verbessern koennten", sondern was DIE RUBRIK an
+     der vorliegenden Fassung gefunden hat - dieselbe Rubrik, die die
+     naechste Fassung wieder prueft. Liegt kein Ergebnis vor, faellt der
+     Block weg; eine erfundene Diagnose waere schlimmer als keine.
+     ------------------------------------------------------------------- */
+  const quellErgebnisPfad = join(quelleVerzeichnis, "authoring-result.json");
+  let vorbefund = null;
+  if (existsSync(quellErgebnisPfad)) {
+    const vorheriges = JSON.parse(readFileSync(quellErgebnisPfad, "utf8"));
+    const varianten = (vorheriges.hook_variants || []).map((h) => ({
+      hook: h.hook_text || h.text,
+      evidenceRefs: h.evidence_refs || [],
+      id: h.hook_variant_id
+    }));
+    if (varianten.length && vorheriges.caption) {
+      vorbefund = Creative.best(varianten, { caption: vorheriges.caption, story }).assessed;
+    }
+  }
+  const gemessen = befundBlock(vorbefund);
+  console.log("\n--- WORAN ES GEMESSEN LAG ---");
+  console.log(gemessen || "Kein vorheriges Ergebnis zu dieser Kennung - " +
+    "die Anweisung traegt keine Diagnose.");
+
   /* ------------------------------------------------------- Der Brief */
   const anlauf = Number(alt.attempt || 1) + 1;
   const neu = JSON.parse(JSON.stringify(alt));
@@ -222,12 +346,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(3);
   }
   const altErgebnis = JSON.parse(readFileSync(altErgebnisPfad, "utf8"));
-  const bild = (altErgebnis.visual_variants || [])[0];
+  const bild = erbeAus(altErgebnis, CID);
   if (!bild) {
-    console.error("Das Quell-Ergebnis traegt kein Visual. Eine TEXT_REVISION " +
-      "ohne Erbe waere ein Auftrag ohne Bild - und genau das ist nicht " +
-      "zulaessig.");
+    console.error("Das Quell-Ergebnis traegt kein Visual - weder eine eigene " +
+      "Bildvariante noch ein geerbtes. Eine TEXT_REVISION ohne Erbe waere " +
+      "ein Auftrag ohne Bild, und genau das ist nicht zulaessig.");
     process.exit(3);
+  }
+  if (bild.geerbt) {
+    console.log("\nDas Quell-Ergebnis ist selbst eine Revision. Geerbt wird " +
+      "weiterhin das Asset aus " + bild.originContentId +
+      " - die Kette verlaengert sich, die Quelle nicht.");
   }
 
   const gelesen = (() => {
@@ -245,8 +374,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   neu.visual = Contract.inheritanceFrom({
-    contentId: CID,
-    candidateId: arg("source-candidate", "cand_20260918_ca4ea408"),
+    /* Die Quelle ist der URSPRUNG des Bildes, nicht die Fassung, ueber
+       die wir es gerade gefunden haben. Sonst zeigte rev3 auf rev2 und
+       rev4 auf rev3 - eine Kette von Behauptungen, an deren Ende
+       niemand mehr das eine verifizierte Asset benennen kann. */
+    contentId: bild.originContentId,
+    candidateId: bild.candidateId ||
+      arg("source-candidate", "cand_20260918_ca4ea408"),
     visualVariantId: bild.visual_variant_id,
     assetReference: bild.asset_path,
     sha256: bild.asset_sha256,
@@ -259,7 +393,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   neu.visual.source_visual_strategy = bild.visual_strategy || "GENERATIVE";
   neu.visual.source_brief_revision = bild.brief_revision || null;
 
-  neu.hook_strategy.instruction = anweisung(story, Creative.DICHTE.zuDicht);
+  neu.hook_strategy.instruction = anweisung(story, Creative.DICHTE.zuDicht, vorbefund);
 
   /* Die AUSGEWAEHLTEN Belege fuer die Copy — der Rest bleibt im
      Paket und wird vom Fact Check weiter geprueft. */
