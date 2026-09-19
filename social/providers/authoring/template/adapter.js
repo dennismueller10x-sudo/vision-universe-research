@@ -103,8 +103,31 @@
     }).join(" ");
   }
 
+  /* -------------------------------------------------------------------
+     WER DA GEMEINT IST — IN LESERSPRACHE
+
+     Hier stand `e.entity`, also das Kuerzel: "XOM", "AAPL". Fuer den
+     internen Research-Fall war das richtig; fuer ein breites Publikum
+     ist es der Grund, nicht weiterzulesen. Wer "XOM" nicht kennt,
+     erfaehrt aus dem Einstieg nicht einmal, wovon die Rede ist.
+
+     Die Klarnamen werden HINEINGEREICHT (brief.entityNames). Diese
+     Datei fuehrt keine eigene Tickerliste: eine zweite ginge gegen die
+     kuratierte auseinander. Fehlt der Name, bleibt das Kuerzel stehen
+     - erfunden wird keiner.
+     ------------------------------------------------------------------- */
   function wer(e, brief) {
-    return e.entity || brief.topic || "der Titel";
+    var k = e && e.entity;
+    if (!k) return (brief && brief.topic) || "der Titel";
+    var namen = (brief && brief.entityNames) || {};
+    var klar = namen[k];
+    if (!klar) return k;
+    /* Der Rechtsformzusatz gehoert nicht in einen Social-Einstieg:
+       "Exxon Mobil" liest sich, "Exxon Mobil Corporation" klingt nach
+       Handelsregister. */
+    return String(klar)
+      .replace(/,?\s+(?:Corporation|Corp\.?|Incorporated|Inc\.?|Company|Co\.?|Ltd\.?|PLC|N\.V\.|S\.A\.|AG|SE)$/i, "")
+      .trim();
   }
 
   /* -------------------------------------------------------------------

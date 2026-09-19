@@ -110,3 +110,43 @@ test("AF10 · Verstaendlich heisst nicht erfolgreich", () => {
   const r = A.check({ hook: "Exxon Mobil legt zu.", names: NAMEN });
   assert.equal(r.predictsPerformance, false);
 });
+
+/* ------------------------------------------------------------------ */
+/* DAS TOR HAENGT IN DER PIPELINE, NICHT DANEBEN                       */
+/* ------------------------------------------------------------------ */
+
+const Authoring = require("../engines/authoring.js");
+
+test("AF11 · Ein uebersprungenes Tor ist kein bestandenes", () => {
+  /* Dieselbe Regel wie fuer Marke und Fakten. Wer das Tor nicht
+     uebergibt, bekommt es in gatesSkipped zu sehen - ein Gate, das
+     niemand aufruft, waere Dekoration. */
+  const v = Authoring.variant({ variantId: "v1", hook: "XOMs Stärke.",
+    caption: "Text.", claims: [] });
+  const ohne = Authoring.evaluate([v], {}, {});
+  assert.ok(ohne[0].gatesSkipped.includes("audience-fit"));
+  assert.ok(!ohne[0].gatesRun.includes("audience-fit"));
+});
+
+test("AF12 · Ein durchgefallener Einstieg laesst die Variante durchfallen", () => {
+  const v = Authoring.variant({ variantId: "v1",
+    hook: "47,6 % in 12 Monaten, aber nur 76 von 100: XOMs Stärke.",
+    caption: "Text.", claims: [] });
+  const mit = Authoring.evaluate([v], {},
+    { audience: (x) => A.check({ hook: x.hook, caption: x.caption, names: NAMEN }) });
+  assert.equal(mit[0].passed, false);
+  assert.ok(mit[0].reasons.some((r) => r.gate === "audience-fit"));
+  assert.ok(mit[0].gatesRun.includes("audience-fit"));
+});
+
+test("AF13 · Der Befund reist mit, nicht nur das Urteil", () => {
+  /* Eine Variante, die nur "durchgefallen" meldet, zwingt zum Raten.
+     Der Zaehler sagt, wie weit sie war. */
+  const v = Authoring.variant({ variantId: "v1",
+    hook: "Exxon Mobil legt in zwölf Monaten um 47,6 % zu.",
+    caption: "Text.", claims: [] });
+  const mit = Authoring.evaluate([v], {},
+    { audience: (x) => A.check({ hook: x.hook, caption: x.caption, names: NAMEN }) });
+  assert.equal(mit[0].audience.passed, true);
+  assert.equal(mit[0].audience.met, mit[0].audience.total);
+});

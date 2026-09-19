@@ -75,6 +75,22 @@ const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapte
 const AutorChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const Lifecycle    = require(join(ROOT, "social/engines/provider-lifecycle.js"));
 const CreativeContract = require(join(ROOT, "social/engines/creative-contract.js"));
+const AudienceFit  = require(join(ROOT, "social/engines/audience-fit.js"));
+
+/* -------------------------------------------------------------------
+   KLARNAMEN — EINE QUELLE, NICHT ZWEI
+
+   discover/config/company-names.json ist kuratierte redaktionelle
+   Metadata und liegt ohnehin im Repository. Eine zweite Liste hier
+   ginge irgendwann dagegen auseinander, und das Tor meldete Namen,
+   die es nicht gibt.
+   ------------------------------------------------------------------- */
+const FIRMENNAMEN = (() => {
+  const pfad = join(ROOT, "discover/config/company-names.json");
+  if (!existsSync(pfad)) return {};
+  try { return JSON.parse(readFileSync(pfad, "utf8")).names || {}; }
+  catch { return {}; }
+})();
 const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 
 /* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
@@ -957,6 +973,11 @@ async function main() {
         strategyVersion: activeStrategy.versionId
       },
       visual: { visualType: null },
+      /* Die Klarnamen reisen mit dem Brief: der Autor soll "Exxon
+         Mobil" schreiben koennen, ohne selbst eine Tickerliste zu
+         fuehren. Fehlt ein Name, bleibt das Kuerzel stehen - erfunden
+         wird keiner. */
+      entityNames: FIRMENNAMEN,
       evidence: evidenzSaetze,
       learned: musterWissen.brief,
       platform: "instagram",
@@ -997,7 +1018,12 @@ async function main() {
       patternUsage: musterWissen.usage,
       gates: {
         brand: (v) => Brand.check({ hook: v.hook, caption: v.caption, cta: v.cta,
-          hashtags: v.hashtags })
+          hashtags: v.hashtags }),
+        /* Die Klarnamen kommen aus der kuratierten Liste des
+           Repositories. Ohne sie kann das Tor kein Kuerzel beanstanden
+           - und tut es dann auch nicht, statt zu raten. */
+        audience: (v) => AudienceFit.check({ hook: v.hook, caption: v.caption,
+          names: FIRMENNAMEN })
       }
     });
 

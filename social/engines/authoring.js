@@ -292,6 +292,30 @@
         }
       }
 
+      /* -----------------------------------------------------------
+         DAS TOR, DAS DIE ANDEREN NICHT STELLEN KONNTEN
+
+         Marke, Fakten und Bindung pruefen, ob der Text zur EVIDENZ
+         passt und ob er handwerklich taugt. Ein Hook kann das alles
+         bestehen und trotzdem Vorwissen voraussetzen, das ein breites
+         Publikum nicht hat - genau so ist ein Kandidat bis ans
+         Owner-Gate gekommen.
+
+         Wie die uebrigen Tore: uebergeben wird es, nicht gebaut. Ein
+         uebersprungenes Tor ist kein bestandenes und steht in
+         gatesSkipped. */
+      var publikum = null;
+      if (typeof gates.audience === "function") {
+        var aud = gates.audience(v);
+        publikum = aud ? { passed: aud.passed, met: aud.met, total: aud.total } : null;
+        if (aud && aud.passed === false) {
+          bestanden = false;
+          (aud.findings || []).forEach(function (f) {
+            gruende.push({ gate: "audience-fit", message: f.message || f.id });
+          });
+        }
+      }
+
       var faktenZustand = null;
       if (typeof gates.factCheck === "function") {
         var fakt = gates.factCheck(v);
@@ -329,14 +353,17 @@
         binding: bindung,
         composition: komposition,
         brandScore: markenwert,
+        audience: publikum,
         factState: faktenZustand,
         similarity: duplikat,
         gatesRun: ["claim-binding"]
           .concat(typeof gates.brand === "function" ? ["brand"] : [])
+          .concat(typeof gates.audience === "function" ? ["audience-fit"] : [])
           .concat(typeof gates.factCheck === "function" ? ["fact-check"] : [])
           .concat(typeof gates.duplicate === "function" ? ["duplicate"] : []),
         gatesSkipped: []
           .concat(typeof gates.brand === "function" ? [] : ["brand"])
+          .concat(typeof gates.audience === "function" ? [] : ["audience-fit"])
           .concat(typeof gates.factCheck === "function" ? [] : ["fact-check"])
           .concat(typeof gates.duplicate === "function" ? [] : ["duplicate"])
       };

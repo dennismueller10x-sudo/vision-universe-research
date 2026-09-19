@@ -159,6 +159,17 @@
 
       /* ------------------------------------------------ Was zu sagen ist */
       topic: opportunity.topic || null,
+      /* -----------------------------------------------------------
+         KLARNAMEN REISEN MIT
+
+         Ohne diese Zeile schreibt jeder Autor das Kuerzel: "XOM",
+         "AAPL". Fuer den internen Research-Fall war das richtig, fuer
+         ein breites Publikum ist es der Grund, nicht weiterzulesen.
+
+         Der Brief traegt die Zuordnung, nicht der Autor: sonst
+         fuehrte jeder Autor seine eigene Liste, und drei Listen
+         gehen schneller auseinander als eine. */
+      entityNames: spec.entityNames || {},
       archetype: entscheidung.archetype || null,
       premise: opportunity.premise || null,
       timeSensitivity: opportunity.timeSensitivity || null,
