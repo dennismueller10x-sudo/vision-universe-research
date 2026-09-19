@@ -37,3 +37,11 @@ Product-led opening: compact purpose above a swipeable chart/performance hero; h
 Owner escalation only for irreversible/strategic change, paid infrastructure, licensing, canonical data/research rule change, or replacement of v1. Ordinary UX/CSS/engineering recovery remains autonomous.
 
 DONE requires deployed parallel `/discover-v2/`, all gates above, retained `noindex`, unchanged canonical architecture, and explicit limitations in final evidence.
+
+## Executed critique loop
+
+The first integrated screenshot run exposed narrow-screen fundamental value clipping, a doubled chapter scroll offset, truncated onward headings, and index rank overlap/nested vertical scrolling. These were corrected and reviewed in the next image set. German title casing uses explicit presentation mappings, preserving unknown canonical titles.
+
+Run `35449799501` passed 227 existing tests, the 39,223-file preservation gate, the Pages release compiler, 163 Chromium checks across 320/390/1440 light/dark, and 29 mobile WebKit checks. It produced 77 screenshots. Root and specialist visual review covered home, distinct worlds, feed/resume, stock, fundamentals and onward discovery. The initial screenshot timeout was traced to bounding boxes counting artwork clipped outside its scroll container; readiness now uses actual intersection and retains a failing diagnostic gate for genuinely visible unloaded artwork.
+
+Final commit verification, release and live smoke evidence are recorded in pull request #119. The five-second gate is an automated first-screen heuristic, not an independent participant test; WebKit is not a physical iPhone. A Saturday run cannot establish receipt of a regular-session realtime trade. Retention and return frequency require subsequent usage evidence.

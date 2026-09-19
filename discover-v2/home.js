@@ -4,7 +4,43 @@
   var D = global.VUDiscover, S = global.QuantShell, el = S.el;
   function node(tag, cls, text) { return el(tag, { class: cls, text: text }); }
   function link(text, href, cls) { return el('a', { class: cls, href: href, text: text }); }
-  function title(text) { return text ? text.charAt(0).toLocaleUpperCase('de-DE') + text.slice(1).toLocaleLowerCase('de-DE').replace(/s&p 500/g, 'S&P 500').replace(/nasdaq/g, 'Nasdaq').replace(/dow jones/g, 'Dow Jones').replace(/ki\b/g, 'KI') : 'Aktien entdecken'; }
+  // Presentation-only typography: German nouns retain their capital letters.
+  // Unknown future contract titles are preserved exactly, never guessed.
+  var titles = {
+    'BEKANNTE NAMEN IN BEWEGUNG': 'Bekannte Namen in Bewegung',
+    'DIE STÄRKSTEN AKTIEN': 'Die stärksten Aktien',
+    'TOP 10 · S&P 500': 'Top 10 · S&P 500',
+    'TOP 10 · NASDAQ-100': 'Top 10 · Nasdaq-100',
+    'TOP 10 · DOW JONES': 'Top 10 · Dow Jones',
+    'NEUE JAHRESHOCHS': 'Neue Jahreshochs',
+    'DIE ENTWICKLUNG': 'Die Entwicklung',
+    'UMSATZ WÄCHST STARK': 'Umsatz wächst stark',
+    'GEWINNE BESCHLEUNIGEN': 'Gewinne beschleunigen',
+    'TOP 10 · CASHFLOW-MASCHINEN': 'Top 10 · Cashflow-Maschinen',
+    'QUALITÄT + WACHSTUM': 'Qualität + Wachstum',
+    'MARGEN WERDEN STÄRKER': 'Margen werden stärker',
+    'KÜNSTLICHE INTELLIGENZ': 'Künstliche Intelligenz',
+    'GERADE IN BEWEGUNG': 'Gerade in Bewegung',
+    'SEIT MONATEN IM AUFWIND': 'Seit Monaten im Aufwind',
+    'LANGFRISTIGE COMPOUNDER': 'Langfristige Compounder',
+    'DEM MARKT VORAUS': 'Dem Markt voraus',
+    'DIE STÄRKSTEN JE BRANCHE': 'Die stärksten je Branche',
+    'TECHNOLOGIE': 'Technologie',
+    'GESUNDHEIT': 'Gesundheit',
+    'QUALITÄT ZUM VERNÜNFTIGEN PREIS': 'Qualität zum vernünftigen Preis',
+    'ROBOTIK & AUTOMATION': 'Robotik & Automation',
+    'COMEBACK?': 'Comeback?',
+    'FUNDAMENTALE TURNAROUNDS': 'Fundamentale Turnarounds',
+    'AUTOS & MOBILITÄT': 'Autos & Mobilität',
+    'ENERGIE': 'Energie',
+    'FINANZEN': 'Finanzen',
+    'KONSUM': 'Konsum',
+    'STARKE BILANZ + WACHSTUM': 'Starke Bilanz + Wachstum',
+    'STABILE AUFWÄRTSTRENDS': 'Stabile Aufwärtstrends',
+    'UNTER DEM RADAR': 'Unter dem Radar',
+    'PROFITABLES WACHSTUM': 'Profitables Wachstum'
+  };
+  function title(text) { return text ? (Object.prototype.hasOwnProperty.call(titles, text) ? titles[text] : text) : 'Aktien entdecken'; }
   function bindArtworkCaption(media, caption, card, ctx) {
     var observer;
     function update() {
