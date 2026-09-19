@@ -68,29 +68,27 @@ export function verify(brief, result, options = {}) {
   const varianten = Array.isArray(r.visual_variants) ? r.visual_variants : [];
 
   /* -----------------------------------------------------------------
-     ZWEI SCHREIBWEISEN FUER DIESELBE SACHE
+     ZWEI SCHREIBWEISEN - EIN LESER
 
-     Der Auftrag nennt die Felder `source_*`, weil er aus der Sicht der
-     Quelle geschrieben ist. Das Ergebnis darf den Block genauso
-     zurueckgeben oder flach benennen - beides ist redlich gemeint.
+     Auftrag und Ergebnis duerfen die Erbfelder flach (`asset_sha256`)
+     oder in der Quellsicht (`source_asset_sha256`) benennen. Gelesen
+     wird das mit DEMSELBEN Helfer, den auch creative-contract.js
+     benutzt.
 
-     Nur: ein Pruefer, der eine Schreibweise nicht kennt, liest
-     `undefined` und WIRFT DAS RICHTIGE ERGEBNIS ZURUECK. Genau so ist
-     schon einmal eine Pruefung lautlos an `asset_byte_size` vs.
-     `byte_size` vorbeigelaufen. Also werden beide gelesen.
-
-     Toleriert werden die NAMEN, nie die WERTE: stehen beide da und
-     widersprechen sich, ist das ein Befund und keine Auswahl. */
+     Eine zweite, eigene Normalisierung waere hier naheliegend und
+     falsch: zwei Leser gehen irgendwann auseinander, und dann sagt
+     der eine Pruefer "in Ordnung", waehrend der andere denselben Lauf
+     zurueckweist. Genau dieser Widerspruch ist schon einmal
+     aufgetreten - er kostete einen Kandidaten, der still auf den
+     alten Report-Text zurueckfiel. */
   const gelesen = {};
   const feld = (flach) => {
-    const a = geerbt[flach];
-    const b = geerbt["source_" + flach];
-    const leer = (x) => x === undefined || x === null || x === "";
-    if (!leer(a) && !leer(b) && a !== b) {
-      gelesen[flach] = { konflikt: true, a: a, b: b };
-      return Symbol("widersprochen");
+    const wert = Contract.geerbtesFeld(geerbt, flach);
+    if (wert === Contract.WIDERSPRUCH) {
+      gelesen[flach] = { a: geerbt[flach], b: geerbt["source_" + flach] };
+      return Contract.WIDERSPRUCH;
     }
-    return leer(a) ? b : a;
+    return wert;
   };
 
   const checks = {};

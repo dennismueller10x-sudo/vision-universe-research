@@ -314,3 +314,34 @@ test("RV23 · Auch processing.canonical_hook_selected zaehlt als Auswahl", () =>
   assert.equal(b.ok, false);
   assert.ok(b.missing.includes("noCanonicalSelection"));
 });
+
+/* ------------------------------------------------------------------ */
+/* ZWEI PRUEFER DUERFEN SICH NICHT WIDERSPRECHEN                       */
+/* ------------------------------------------------------------------ */
+
+test("RV24 · Vertrag und Pflichtpruefungen urteilen ueber dasselbe gleich", () => {
+  /* Genau dieser Widerspruch ist aufgetreten: verify() sagte "alle
+     vierzehn bestanden", waehrend Contract.validateResult einen
+     stillen Austausch meldete - weil der eine beide Schreibweisen las
+     und der andere nur die flache. Der Zyklus fiel daraufhin auf den
+     Vorlagen-Autor zurueck, und der Kandidat trug wieder den alten
+     Report-Text. Ein Pruefer, der korrektes Material ablehnt, richtet
+     mehr an als gar keiner: er begruendet den Rueckfall auch noch. */
+  const faelle = [
+    ["flach", { visual_variant_id: VARIANTE, asset_sha256: SHA }],
+    ["Quellsicht", { source_visual_variant_id: VARIANTE, source_asset_sha256: SHA }],
+    ["gemischt", { visual_variant_id: VARIANTE, source_asset_sha256: SHA }],
+    ["falscher Hash", { visual_variant_id: VARIANTE, asset_sha256: "d".repeat(64) }],
+    ["falsche Variante", { visual_variant_id: "fremd:01", asset_sha256: SHA }],
+    ["widersprechend", { asset_sha256: SHA, source_asset_sha256: "e".repeat(64),
+                         visual_variant_id: VARIANTE }]
+  ];
+  for (const [name, erbe] of faelle) {
+    const r = ergebnis({ inherited_visual: erbe });
+    const meiner = verify(BRIEF, r, OPT);
+    const vertrag = C.validateResult(r, BRIEF);
+    assert.equal(meiner.ok, vertrag.ok,
+      "Uneinigkeit im Fall \"" + name + "\": verify=" + meiner.ok +
+      ", validateResult=" + vertrag.ok);
+  }
+});

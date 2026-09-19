@@ -254,13 +254,21 @@
             "Ohne diese Angabe steht im Ergebnis nicht, WELCHES Bild gilt." });
       }
       var geerbt = r.inherited_visual || {};
-      if (geerbt.visual_variant_id !== vertrag.inheritance.source_visual_variant_id) {
+      var variante = geerbtesFeld(geerbt, "visual_variant_id");
+      var hash = geerbtesFeld(geerbt, "asset_sha256");
+      if (variante === WIDERSPRUCH || hash === WIDERSPRUCH) {
+        befunde.push({ id: "inheritedFieldConflict",
+          message: "Das Ergebnis nennt dasselbe Feld zweimal und " +
+            "verschieden. Toleriert werden die NAMEN, nie die WERTE: ein " +
+            "Widerspruch ist ein Befund und keine Auswahl." });
+      }
+      if (variante !== vertrag.inheritance.source_visual_variant_id) {
         befunde.push({ id: "wrongInheritedVariant",
           message: "Das Ergebnis nennt eine andere Bildvariante als der " +
             "Auftrag. Ein stiller Austausch ist schlimmer als ein " +
             "fehlendes Bild - er sieht richtig aus." });
       }
-      if (geerbt.asset_sha256 !== vertrag.inheritance.source_asset_sha256) {
+      if (hash !== vertrag.inheritance.source_asset_sha256) {
         befunde.push({ id: "wrongInheritedAsset",
           message: "Der Hash im Ergebnis ist nicht der aus dem Auftrag." });
       }
@@ -297,6 +305,38 @@
    * An einer Stelle gebaut, damit Auftrag und Pruefung dieselben Felder
    * meinen - zwei Abschriften waeren zwei Wahrheiten.
    */
+  /* -------------------------------------------------------------------
+     ZWEI SCHREIBWEISEN FUER DIESELBE SACHE
+
+     Der Auftrag nennt die Erbfelder `source_*`, weil er aus der Sicht
+     der Quelle geschrieben ist. Ein Ergebnis darf den Block genauso
+     zurueckgeben oder flach benennen - beides ist redlich gemeint, und
+     das erste echte Ergebnis kam in der `source_*`-Form zurueck.
+
+     Wer nur eine Form kennt, liest `undefined` und weist das RICHTIGE
+     Ergebnis zurueck. Genau das ist hier passiert: der Vertrag meldete
+     einen stillen Austausch, wo keiner war, der Zyklus fiel auf den
+     Vorlagen-Autor zurueck - und der Kandidat trug wieder den alten
+     Report-Text. Ein Pruefer, der korrektes Material ablehnt, richtet
+     mehr an als gar keiner: er begruendet den Rueckfall auch noch.
+
+     Toleriert werden die NAMEN, nie die WERTE. Stehen beide da und
+     widersprechen sich, kommt WIDERSPRUCH zurueck - ein Wert, der
+     keinem Vergleich standhaelt, damit der Fall zufaellt statt sich
+     fuer eine der beiden Angaben zu entscheiden.
+     ------------------------------------------------------------------- */
+  var WIDERSPRUCH = { widerspruch: true };
+
+  function geerbtesFeld(geerbt, flach) {
+    geerbt = geerbt || {};
+    var a = geerbt[flach];
+    var b = geerbt["source_" + flach];
+    var leerA = a === undefined || a === null || a === "";
+    var leerB = b === undefined || b === null || b === "";
+    if (!leerA && !leerB && a !== b) return WIDERSPRUCH;
+    return leerA ? b : a;
+  }
+
   function inheritanceFrom(spec) {
     spec = spec || {};
     return {
@@ -319,6 +359,8 @@
     FULL_CREATIVE: VOLL, TEXT_REVISION: TEXT, TYPEN: TYPEN,
     INHERIT_VERIFIED_ASSET: ERBEN, GENERATE_NEW_ASSET: ERZEUGEN,
     ERBFELDER: ERBFELDER,
+    WIDERSPRUCH: WIDERSPRUCH,
+    geerbtesFeld: geerbtesFeld,
     validateRequest: validateRequest,
     validateResult: validateResult,
     inheritanceFrom: inheritanceFrom
