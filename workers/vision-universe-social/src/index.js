@@ -867,6 +867,106 @@ async function handleHashtagSearch(request, url, env) {
   });
 }
 
+/**
+ * WARUM WIRD DIE HASHTAG-SUCHE ABGEWIESEN?
+ *
+ * ---------------------------------------------------------------------
+ * ZWEI URSACHEN, EIN FEHLERCODE
+ * ---------------------------------------------------------------------
+ *
+ * Meta antwortet auf eine abgewiesene Hashtag-Abfrage mit derselben
+ * Fehlerklasse, ob ein RECHT fehlt (`instagram_manage_insights`) oder
+ * eine FREISCHALTUNG ("Instagram Public Content Access", ein Feature
+ * aus der App-Ueberpruefung).
+ *
+ * Der Unterschied ist teuer: ein fehlendes Recht behebt ein erneuter
+ * OAuth-Lauf, ein fehlendes Feature nicht. Wer bei fehlendem Feature
+ * neu autorisiert, hat eine einmalige Owner-Aktion fuer nichts
+ * ausgegeben und steht danach vor derselben Meldung.
+ *
+ * Dieser Endpunkt misst beides und ueberlaesst die Unterscheidung
+ * `hashtag-access.js` auf VU-Seite. Er selbst urteilt nicht.
+ *
+ * ---------------------------------------------------------------------
+ * DER VERSUCH KOSTET KEINEN PLATZ
+ * ---------------------------------------------------------------------
+ *
+ * Dreissig einzigartige Hashtags je sieben Tage - aber eine ERNEUTE
+ * Abfrage innerhalb des Fensters zaehlt nicht noch einmal. Der Aufrufer
+ * uebergibt deshalb einen BEREITS GEOEFFNETEN Hashtag. Ohne Angabe wird
+ * nichts probiert: einen neuen Platz auszugeben, nur um eine
+ * Fehlermeldung zu lesen, waere der teuerste aller Tests.
+ */
+async function handleHashtagCapability(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected",
+      message: "Es besteht keine Verbindung." }, 409);
+  }
+
+  const ctx = graphContext(env);
+
+  /* Welche Rechte traegt das gespeicherte Token WIRKLICH?
+     `null` heisst unbekannt und nicht "keine" - bei der
+     Business-Anmeldung steht die Rechtemenge in einer Konfiguration
+     bei Meta, die dieser Worker nicht lesen kann. */
+  let grantedScopes = null;
+  let scopeSource = "UNREADABLE";
+  if (env.VU_META_APP_ID && env.VU_META_APP_SECRET) {
+    const dbg = await debugToken(ctx, {
+      appId: env.VU_META_APP_ID,
+      appSecret: env.VU_META_APP_SECRET,
+      inputToken: record.pageAccessToken
+    });
+    if (dbg.ok) {
+      const ausGranular = (dbg.data.granular || []).map((g) => g.scope).filter(Boolean);
+      const ausScopes = dbg.data.scopes || [];
+      const zusammen = ausScopes.concat(
+        ausGranular.filter((g) => ausScopes.indexOf(g) === -1));
+      if (zusammen.length) {
+        grantedScopes = zusammen;
+        scopeSource = ausGranular.length ? "GRANULAR_SCOPES" : "SCOPES";
+      }
+    }
+  }
+
+  /* Der Versuch - nur gegen einen bereits geoeffneten Hashtag. */
+  const probeTag = String(url.searchParams.get("probe") || "").trim().replace(/^#/, "");
+  let probe = null;
+  if (probeTag) {
+    const r = await hashtagId(ctx, {
+      userId: record.instagramAccountId, name: probeTag,
+      token: record.pageAccessToken
+    });
+    probe = { ok: r.ok === true, reason: r.ok ? null : r.reason,
+      message: r.ok ? null : redactText(String(r.message || "")),
+      hashtag: probeTag,
+      /* Woertlich, damit niemand spaeter einen Platz dafuer verbucht. */
+      costsNewSlot: false };
+  }
+
+  return json({
+    ok: true,
+    observedAt: new Date().toISOString(),
+    grantedScopes,
+    scopeSource,
+    probe,
+    /* Dieser Endpunkt stellt fest, er schliesst nicht. Die
+       Unterscheidung zwischen fehlendem Recht und fehlendem Feature
+       trifft hashtag-access.js - dort ist sie pruefbar. */
+    diagnosisBy: "social/engines/hashtag-access.js",
+    note: probeTag
+      ? "Der Versuch lief gegen einen bereits geoeffneten Hashtag und " +
+        "hat keinen neuen Platz verbraucht."
+      : "Kein Versuch ausgefuehrt: ohne ?probe=<bereits geoeffneter " +
+        "Hashtag> wird nichts abgefragt. Einen neuen Platz auszugeben, " +
+        "nur um eine Fehlermeldung zu lesen, waere der teuerste Test."
+  });
+}
+
 async function handleInsights(request, url, env) {
   const gate = requireAdmin(request, url, env);
   if (!gate.ok) return gate.response;
@@ -1561,6 +1661,10 @@ export default {
         /* Lesend wie Insights: GET genuegt, weil nichts entsteht. */
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
         return await handleHashtagSearch(request, url, env);
+      }
+      if (path === "/social/meta/hashtag-capability") {
+        if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
+        return await handleHashtagCapability(request, url, env);
       }
       if (path === "/" || path === "/social" || path === "/social/meta") {
         const publicRecord = env.VU_SOCIAL_KV ? await readPublic(env) : { connected: false };
