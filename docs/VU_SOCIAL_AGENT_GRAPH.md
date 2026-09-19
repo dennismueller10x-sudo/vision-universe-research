@@ -1883,3 +1883,49 @@ eine gültige Kette für „kein Bild vorhanden". Geerbt wird jetzt immer
 der **Ursprung**: zeigte rev3 auf rev2 und rev4 auf rev3, könnte am Ende
 niemand mehr das eine verifizierte Asset benennen — die Identität wäre
 eine Behauptung über eine Behauptung.
+
+## 49. Drei Auskünfte, die falsch waren — und was sie angerichtet hätten
+
+Der Auftrag rev3 kam vertragstreu zurück und bestand die Rubrik:
+Variante 2 mit 9 von 9. Der Kandidat, der daraus entstand, trug
+trotzdem den **alten Report-Text** — erkennbar am identischen
+Abdruck-Suffix des gehaltenen Kandidaten. Dahinter lagen drei falsche
+Auskünfte, und alle drei sind lehrreicher als ein Absturz.
+
+**Zwei Prüfer, zwei Wahrheiten.** `verify()` meldete alle vierzehn
+Pflichtprüfungen bestanden. `Contract.validateResult` meldete am selben
+Ergebnis einen stillen Austausch des Bildes. Beide konnten nicht recht
+haben. Recht hatte `verify()`: `validateResult` las nur die flache
+Schreibweise `inherited_visual.asset_sha256`, während das echte Ergebnis
+den Block des Auftrags wörtlich zurückgibt. Dieselbe Defektklasse wie
+`byte_size` gegen `asset_byte_size` — und hier zum **zweiten Mal**,
+nachdem sie im Revisionsprüfer schon behoben war.
+
+Genau das ist das Teure daran: ein fehlender Prüfer läßt etwas durch,
+ein **falscher weist Richtiges zurück und liefert dem Rückfall auch noch
+eine Begründung.** Der Zyklus tat, was er tun sollte — auf Grundlage
+einer falschen Auskunft. Die Normalisierung steht jetzt einmal in
+`creative-contract.js`, und RV24 läuft sechs Erbschaftsformen durch
+beide Prüfer und besteht darauf, daß sie dasselbe sagen.
+
+**Ein Bericht, der „wartet" sagt.** `creativeZustand` füllte nur
+`resultPresent`; der Zustand blieb bei `RESULT_AVAILABLE` stehen, und
+der Bericht meldete „wartet", während der Autor dasselbe Ergebnis im
+selben Lauf längst angenommen hatte. `classify` kennt `verified` und
+`resultInvalid` seit jeher — gefragt hat sie niemand. **Ein Zustandsraum,
+der den Fall ausdrücken kann und nicht gefüllt wird, ist so gut wie
+keiner.**
+
+**Und mein eigener Fehler als Urteil über den Agenten.** Beim Beheben
+des zweiten Punkts fehlte eine Abhängigkeit. Der Aufruf warf einen
+`ReferenceError`, der Catch fing ihn, und heraus kam `RESULT_INVALID` —
+eine Aussage über das Ergebnis *des Agenten*. Meine kaputte Zeile
+erschien als „der Agent hat schlecht geliefert". Ein defektes JSON ist
+ein Befund über das Ergebnis; ein `ReferenceError` ist einer über uns.
+Wer beides in denselben Zustand wirft, bekommt eine falsche Erklärung
+und sucht beim nächsten Mal an der falschen Stelle.
+
+Der Kandidat `cand_20260919_f6cbd0f9` steht jetzt am Owner Publishing
+Gate — mit dem Text, für den die Revision da war, und dem verifizierten
+Bild aus Anlauf 3 bei 1122 × 1402. Vier Inhalte in diesem Lauf, **eine**
+Work-Ausführung: die drei übrigen sind deterministische CHARTs.
