@@ -42,12 +42,38 @@ function openSearch(){if(dialog.open){dialog.querySelector('input').focus();retu
  }
  input.addEventListener('input',update);dialog.append(el('h2',{text:'Was möchtest du untersuchen?'}),input,status,results,el('button',{class:'button secondary',text:'Schließen',onclick:()=>dialog.close()}));update();dialog.showModal();input.focus();}
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}});
+async function liveStockSection(ticker){
+ const root=el('section',{class:'section','aria-label':'Intraday und Live'}),status=el('p',{class:'muted',role:'status'}),plot=el('div'),quote=el('p',{class:'number'}),button=el('button',{class:'button secondary',text:'Live-Verbindung starten'});
+ root.append(el('h2',{text:'Im Handelsverlauf'}),status,plot,quote,button);main.append(root);
+ const [snapshot,capability]=await Promise.all([api.getIntraday(ticker),api.getRealtimeCapability(ticker)]);
+ const axisTime=value=>String(value).slice(11,19)||String(value);
+ if(snapshot.state==='INTRADAY_AVAILABLE'){
+  plot.append(QuantCharts.lineChart({title:ticker+' · veröffentlichter Intraday-Verlauf',width:Math.min(900,innerWidth-40),height:240,dates:snapshot.points.map(p=>p[0]),series:[{values:snapshot.points.map(p=>p[1])}],xFormat:v=>v,yFormat:v=>v.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})}));
+  root.append(el('p',{class:'muted',text:'Veröffentlichter Snapshot · Sitzung '+snapshot.sessionDate+' · Stand '+snapshot.asOf+'. Kursart nicht spezifiziert; keine Trade- oder Echtzeitbestätigung.'}));
+ }else plot.append(notice('Tagesverlauf nicht verfügbar','Für diesen Titel liegt derzeit kein validierter Intraday-Snapshot vor. Die Kurshistorie bleibt unabhängig verfügbar.'));
+ const livePlot=el('div');root.append(livePlot,el('p',{class:'muted',text:'Live wird nur auf Wunsch verbunden. Nur bestätigte Trades verändern den beobachteten Live-Verlauf; Quotes und untypisierte Ereignisse nicht. Die Ansicht zeigt empfangene Updates, kein vollständiges Handelsband. Historische Schlusskurse bleiben unverändert.'}));
+ let disposed=false,sessionBusy=false,session,client;
+ function show(model){
+  const labels={NOT_CONNECTED:'Live-Verbindung beendet. Veröffentlichten Snapshot weiter verwenden.',CONNECTING:'Live-Verbindung wird aufgebaut.',WAITING_FOR_TRADE:'Verbunden · wartet auf einen bestätigten Trade.',LIVE:'Bestätigtes Trade-Update empfangen.',STALE:'Kein frischer bestätigter Trade · letzter beobachteter Stand.',UNAVAILABLE:'Live-Verbindung derzeit nicht verfügbar.'};
+  status.textContent=labels[model.state]||labels.UNAVAILABLE;button.textContent=['CONNECTING','WAITING_FOR_TRADE','LIVE','STALE'].includes(model.state)?'Live-Verbindung beenden':'Live-Verbindung starten';
+  if(model.reason)status.textContent+=' '+({HIDDEN:'Bei verborgenem Tab pausiert.',SESSION_CLOSED:'Außerhalb des regulären Handels.',BUDGET_LIMIT:'Relay-Kontingent erreicht.',CONNECTION_ERROR:'Verbindung fehlgeschlagen; erneuter Start ist möglich.',CONNECTION_CLOSED:'Verbindung unterbrochen; erneuter Start ist möglich.'}[model.reason]||'');
+  quote.textContent=model.last?'Zuletzt beobachtet: '+model.last.price.toLocaleString('de-DE',{maximumFractionDigits:4})+' · '+new Date(model.last.timestamp).toISOString()+' (UTC)':'';
+  S.clear(livePlot);if(model.points.length>1)livePlot.append(QuantCharts.lineChart({title:ticker+' · bestätigte Trades seit Verbindungsstart',width:Math.min(900,innerWidth-40),height:200,dates:model.points.map(p=>new Date(p.timestamp).toISOString()),series:[{values:model.points.map(p=>p.price)}],xFormat:axisTime,yFormat:v=>v.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})}));
+ }
+ if(capability.state==='AVAILABLE'&&typeof WebSocket==='function')client=VULiveRelayClient.create({capability,connect:url=>new WebSocket(url),onChange:show});
+ async function checkSession(){if(disposed||sessionBusy)return;sessionBusy=true;try{session=await api.getMarketSession();if(disposed)return;button.disabled=!client||session.state!=='AVAILABLE'||session.phase!=='REGULAR';if(button.disabled){if(client?.snapshot().state!=='NOT_CONNECTED')client?.stop('SESSION_CLOSED');status.textContent=!client?'Live-Verbindung für diesen Titel derzeit nicht verfügbar.':session.state==='AVAILABLE'?session.label+' · Live ist nur im regulären Handel verfügbar.':'Handelsphase nicht bestätigt · Live bleibt pausiert.';}else if(client.snapshot().state==='NOT_CONNECTED')status.textContent='Regulärer Handel · Live auf Wunsch verbinden.';}finally{sessionBusy=false;}}
+ button.onclick=async()=>{if(!client)return;if(client.snapshot().state!=='NOT_CONNECTED'){client.stop();return;}await checkSession();if(!disposed&&!document.hidden&&!button.disabled)client.start();};
+ const hide=()=>{if(document.hidden)client?.stop('HIDDEN');};document.addEventListener('visibilitychange',hide);
+ const timer=setInterval(checkSession,30000);addEventListener('pagehide',()=>{disposed=true;clearInterval(timer);document.removeEventListener('visibilitychange',hide);client?.stop('PAGE_HIDDEN');},{once:true});
+ await checkSession();
+}
 async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
   if(history.state==='AVAILABLE')main.append(el('section',{class:'section'},[el('h2',{text:'Kursentwicklung'}),QuantCharts.lineChart({title:ticker+' · tägliche Schlusskurse',width:Math.min(900,innerWidth-40),height:290,dates:history.bars.map(b=>b.date),series:[{values:history.bars.map(b=>b.close)}],yFormat:v=>v.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})}),el('p',{class:'muted',text:'Splitbereinigte Schlusskurse · '+history.currency+' · Stand '+history.asOf+'. Verfügbarer Tageszeitraum: '+history.availableFrom+' bis '+history.availableTo+'.'})]));
   else main.append(notice('Kurshistorie derzeit nicht verfügbar','Die gemeinsame Kursreihe konnte für diesen Titel nicht validiert oder geladen werden.'));
   main.append(el('p',{class:'muted',text:fundamentals.state==='AVAILABLE'?'Geschäftsjahresdaten sind verfügbar. Die Historienansicht zeigt Werte und Meldedaten.':'Fundamentaldaten sind für diesen Titel derzeit nicht darstellbar.'}),actions(s.workspaces));
+  await liveStockSection(ticker);
  }
  return;}
  const left=el('section',{class:'focus'},[el('span',{class:'pill',text:s.above200.value>0&&s.above50.value>0?'Über wichtigen Trendbereichen':'Kursstruktur prüfen'}),el('div',{class:'quote',text:n(s.price,2)}),el('p',{class:'muted',text:'Letzter verfügbarer Schlusskurs · '+(s.asOf||'Datum nicht verfügbar')})]);
@@ -71,6 +97,7 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
   section.append(el('div',{class:'technical-summary'},[['Trend',technical.trend],['Momentum',technical.momentum],['Volatilität',technical.volatility]].map(([label,state])=>el('div',{},[el('span',{class:'muted',text:label}),el('h3',{text:state.label})]))),el('p',{class:'muted',text:'Analyse bis '+technical.asOf+' · '+technical.methodology}),el('p',{text:'Elliott Wave: '+technical.elliott.label+'. Die Szenarien sind keine Wahrscheinlichkeitsprognose.'}),actions([{label:'Vollständige Technical-Analyse',href:technical.workspace},{label:'Elliott: Szenarien & Invalidation',href:technical.elliottWorkspace}]));
  }else section.append(notice('Technische Analyse derzeit nicht verfügbar','Der vollständige Workspace bleibt über die Analysezugänge erreichbar.'));
  main.append(section);
+ await liveStockSection(ticker);
 }
 async function technicalWorkspacePage(ticker,elliottMode){
  const data=await api.getTechnicalWorkspace(ticker);
@@ -315,7 +342,7 @@ async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','te
  else if(view==='stocks'){main.append(heading('Unternehmen untersuchen','Fünf Unternehmen im aktuell verfügbaren Analysebereich.'),stockRows(universe.stocks));}
  else {main.append(heading(view==='markets'?'Märkte verstehen':'Das Wichtigste im Blick','Daten einordnen. Zusammenhänge erkennen. Weiterforschen.'));const focus=universe.stocks.find(s=>s.ticker==='NVDA');const left=el('section',{},[notice('Gesamtmarkt noch nicht eingeordnet','Die aktuelle Ansicht deckt '+universe.stocks.length+' Unternehmen ab. Daraus lässt sich keine belastbare Marktbreite ableiten.'),el('div',{class:'section'},[el('h2',{text:'Unternehmen im Blick'}),stockRows(universe.stocks)])]);const right=el('aside',{},[el('span',{class:'eyebrow',text:'Analyse vertiefen'}),el('h2',{text:focus?'NVIDIA':'Research'}),el('p',{class:'muted',text:'Wie entwickeln sich Geschäft und Kurs? Die Aktienanalyse verbindet Kennzahlen mit ihren Quellen.'}),focus?evidence(focus):null,link('Aktie untersuchen',href('stock','NVDA'),'button'),el('div',{class:'section links'},[link('Ideen entdecken',href('discover')),link('Makro-Zusammenhänge','/macro/'),link('Morning Briefing','/morning/'),link('News im Kontext','/news/'),link('Ask Atlas',href('atlas'))])]);main.append(el('div',{class:'layout'},[left,right]));}
  const footerQuote=view==='stock'?universe.stocks.find(s=>s.ticker===(params.get('ticker')||'NVDA').toUpperCase()):universe.stocks[0];
- main.append(el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau · Bestehender freigegebener Analysebereich. Kurse: letzter verfügbarer EOD-Stand, nicht realtime. '+(footerQuote?.asOf?'Kursstand: '+footerQuote.asOf+'. ':'')+'Keine Anlageempfehlung.'}));
+ main.append(el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau · Bestehender freigegebener Analysebereich. '+(view==='stock'?'Historische Kennzahlen: EOD. Intraday und Live nennen ihren Stand separat. ':'Kurse: letzter verfügbarer EOD-Stand, nicht realtime. ')+(footerQuote?.asOf?'Kursstand: '+footerQuote.asOf+'. ':'')+'Keine Anlageempfehlung.'}));
 }
 render().catch(()=>recover('Ansicht derzeit nicht verfügbar','Die Ansicht konnte nicht vollständig geladen werden. Versuche es erneut oder öffne einen anderen Workspace.',true));
 })();

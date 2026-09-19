@@ -254,6 +254,7 @@
         }
 
         socket.onopen = function (ev) {
+          if (!running) return;
           stats.openedAt = timers.now();
           if (typeof spec.onOpenSend === "function" && typeof socket.send === "function") {
             /* Die Anmeldenachricht baut der Aufrufer. Sie enthaelt bei
@@ -283,6 +284,7 @@
         };
 
         socket.onerror = function (ev) {
+          if (!running) return;
           stats.errors++;
           hs.onError({ reason: "transportFailed",
                        message: (ev && ev.message) || "Socketfehler.", fatal: false });
