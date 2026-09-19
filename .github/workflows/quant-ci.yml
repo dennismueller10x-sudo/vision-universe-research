@@ -7,12 +7,12 @@ name: Quant CI
 on:
   push:
     branches: [main]
-    paths: ['api/fundamentals.py', 'api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
-    paths: ['api/fundamentals.py', 'api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
@@ -33,7 +33,7 @@ jobs:
       - name: Engine- und Acceptance-Tests
         run: node --test "quant/tests/*.test.mjs"
 
-      - name: Existing SEC exporter and Product API serving guards
+      - name: Existing SEC exporter and internal PIT projection guards
         run: python3 -m unittest discover -s scripts/vu2 -p 'test*.py'
 
       - name: Shared relay and unchanged Discovery consumers

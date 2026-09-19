@@ -1,75 +1,71 @@
-# Retained R2 Fundamentals adapter — bounded continuation
+# Internal R2/PIT adapter — materialized product delivery
 
-Current base: `3345715ab045cf5977ef9d3f177051be581f312a` (`main`, including
-independent Discover 2.0 PR #119). The Owner permits reuse of the existing PR #111
-adapter only for complete Fundamentals revisions and PIT queries that static
-artifacts cannot answer.
+Current baseline: `0bac3fe3240c6f00dac402710e0675bfffe96570` (`main`, PR #120).
+The Owner clarification of 2026-09-19 makes the retained adapter internal Vision
+Universe infrastructure. A freely accessible PIT/R2 endpoint is not required for
+normal Quant 2.0 product operation.
+
+## Architecture decision
+
+```text
+canonical SEC/R2/PIT
+  -> internal Vision Universe processing
+  -> materialized Product Data
+  -> existing static Product Services
+  -> Quant 2.0
+```
+
+This is the existing artifact path, not a new pipeline. `scripts/quant/sec/consumer.py`
+and the existing SEC workflows already materialize compact consumer data; the
+release builder publishes bounded projections. Ordinary annual and quarterly views
+already consume those artifacts through `quant/api/product-services.js`.
+
+Decision matrix:
+
+- `PIT_PUBLIC_API_REQUIRED = false`
+- `VERCEL_REQUIRED_FOR_STANDARD_PIT_PRODUCT_PATH = false`
+- `PIT_INTERNAL_PROCESSING = true`
+- `PRECOMPUTED_PRODUCT_DATA_PATH = PASS`
 
 ## Locked scope
 
-- Reuse `api/fundamentals.py`, `scripts/vu2/fundamentals-serving.py`, Company
-  Master identity, SEC `PeriodResolver`/`FactTimeline`, and the existing R2 index.
-- Require `scope=full_history` and an explicit `asOf` cutoff.
-- Include every stored fiscal year and every canonical observation visible at
-  that cutoff. Period scope must itself be cutoff-visible; visible-only
-  `restated` evidence must never reveal later filings.
-- Preserve exact R2 object namespace and compressed-byte SHA-256 verification.
-- Keep normal annual/quarterly product views on existing static artifacts.
-- Keep market History, Intraday, Realtime, Discovery, ingestion and normalization
-  outside this activation.
+- Keep the canonical R2 factbooks, existing SEC normalization, Company Master,
+  `PeriodResolver`/`FactTimeline`, and existing materializers as the only sources.
+- Retain `scripts/vu2/fundamentals-serving.py` and
+  `scripts/vu2/fundamentals-r2-adapter.py` for internal jobs and validation.
+- Include only observations visible at the requested `asOf`; period scope itself
+  must be cutoff-visible and later restatements must remain excluded.
+- Preserve the exact R2 object namespace, compressed-byte digest verification and
+  existing server-side GitHub/SEC secret scope.
+- Keep standard Product Services on committed/materialized artifacts.
+- Do not alter Market History, Intraday, Cloudflare Realtime or Discovery.
 
-`full_history` means the complete canonical history currently stored for one
-issuer. It does not claim every filing ever published by the SEC. Backtest calls
-must use `as_of_latest`; timestamp cutoffs reject filing-date-only evidence.
-Backtest payloads expose `revisionHistory` as their sole certified PIT fundamental
-source. Current SIC/profile metadata can alter resolved sector rows, so resolved
-`history` and industry rows are omitted for `usage=backtest`; historical issuer
-classification remains an explicit limitation rather than a retroactive input.
-Professional backtest readiness still depends on universe, corporate actions,
-execution, costs and slippage.
+For `usage=backtest`, raw canonical `revisionHistory` is the only PIT-certified
+fundamental source. Resolved current-SIC/industry rows remain excluded because
+historical issuer classification is not available. Professional backtest readiness
+still depends on historical universe, prices, corporate actions, costs, slippage
+and execution gates.
 
-## Fail-closed bounds
+## Public delivery boundary
 
-- one canonical issuer per request;
-- explicit scope and cutoff before identity or R2 reads;
-- compressed factbook <= 16 MiB and decoded factbook <= 64 MiB;
-- decoded index <= 32 MiB;
-- response <= 4 MiB, otherwise `RESPONSE_BUDGET_EXCEEDED` with no truncation;
-- exact index key/digest and supported schema versions;
-- no secret values in URL, response, client assets or logs.
+`api/fundamentals.py` is removed and `vercel.json` declares no Fundamentals
+function. `/api/status` describes Fundamentals as `PRECOMPUTED_PRODUCT_DATA`.
+Consequently, the standard product path requires neither Vercel R2 secrets nor a
+public PIT rate/concurrency budget. The former Production-secret/public-endpoint
+blocker is removed for normal Quant 2.0 operation.
 
-Activation is additionally gated by non-secret `VU_PIT_FUNDAMENTALS_ENABLED=true`.
-The parked market-history endpoint has a separate
-`VU_MARKET_HISTORY_API_ENABLED=true` gate and remains disabled. Thus adding the
-shared existing R2 binding cannot silently activate the alternative market-history
-API. `/api/status` reports both capabilities independently.
+The existing Vercel History and Intraday capabilities are separate. The parked
+market-history endpoint remains behind `VU_MARKET_HISTORY_API_ENABLED`; this
+decision neither activates nor changes it.
 
-## Production dependency
+## Future on-demand boundary
 
-The Vercel Production project currently has none of the `VU_HISTORY_S3_*`
-variables. GitHub Actions demonstrably has the existing R2 binding, but GitHub
-secret values are not exportable and the repository contains no Vercel management
-token or secure transfer workflow. No value was read, logged or requested.
+Atlas Deep Dive, a targeted PIT query, or an individual Strategy/Backtest job may
+later justify server-side on-demand execution. That is a separate activation
+decision. Before such a feature is exposed, its authenticated caller, request and
+concurrency limits, cache/materialization behavior, cost ceiling, production secret
+scope and smoke tests must be approved. No such endpoint or credential is activated
+by this phase.
 
-Manual Production-only binding is therefore the external Owner gate. Required
-existing names are `VU_HISTORY_S3_ENDPOINT`, `VU_HISTORY_S3_BUCKET`,
-`VU_HISTORY_S3_ACCESS_KEY_ID`, and `VU_HISTORY_S3_SECRET_ACCESS_KEY`;
-`VU_HISTORY_S3_REGION` is needed only when the existing value is not `auto`.
-Set the non-secret `VU_PIT_FUNDAMENTALS_ENABLED=true`; do not set
-`VU_MARKET_HISTORY_API_ENABLED` for this workstream.
-
-After a Production redeploy, verify `/api/status`, representative current and
-historical NVDA/TSLA full-history responses, exact amendment acceptance cutoffs,
-unsafe-policy/future-cutoff failures, response budgets, and unchanged static Pages.
-Until that evidence exists, R2 Production access and Production PIT smoke remain
-blocked rather than inferred from synthetic tests.
-
-The activation decision also still requires an existing-platform operational
-budget (rate/concurrency/request control). Per-request size limits are not a
-global cost ceiling, and the public endpoint is not being represented as
-cost-bounded merely because it is feature-gated. Keep the flag disabled until
-that production control and its no-overage behavior are evidenced or explicitly
-approved by the Owner.
-
-Rollback is the branch revert plus removal of the PIT enable flag. Static product
-delivery remains available; no data migration or deletion is involved.
+Rollback is the branch revert. No data migration, deletion, second normalization or
+second source of truth is involved.

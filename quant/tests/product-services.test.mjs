@@ -115,11 +115,11 @@ test('Stock retains typed independent failures when both factor contract and cha
 test('EOD health describes approved observations without loading price histories or expanding scope',async()=>{const before=reads.length,health=await api.getMarketDataHealth();assert.equal(health.members.length,5);assert.equal(health.isLive,false);assert.equal(health.scope,'EOD_COVERAGE_ONLY');assert.deepEqual(reads.slice(before),['/quant/config/market-calendar.json']);assert.equal((await api.getMarketDataHealth('TSLA')).state,'UNAVAILABLE');assert.equal((await api.getMarketDataHealth('NVDA')).members[0].observedThrough,nvda.marketData.asOf);});
 test('health refresh preserves the canonical company for lowercase stock links',async()=>{assert.deepEqual((await api.getMarketDataHealth('nvda')).members,(await api.getMarketDataHealth('NVDA')).members);assert.equal((await api.getMarketDataHealth('nvda')).members[0].ticker,'NVDA');});
 
-test('ordinary fundamental views remain static even when the retained API is configured',async()=>{
+test('ordinary fundamental views remain materialized and never require a PIT API',async()=>{
  const original=globalThis.fetch,calls=[];
  globalThis.fetch=async url=>{calls.push(String(url));throw Error('ordinary view must stay static');};
  try{
-  const service=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query,productServiceBase:'https://vision-universe-research.vercel.app/api'});
+  const service=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query});
   assert.equal((await service.getHistoricalFundamentals('TSLA',{period:'annual'})).state,'AVAILABLE');
   assert.equal((await service.getHistoricalFundamentals('NVDA',{period:'annual'})).state,'AVAILABLE');
   assert.deepEqual(calls,[]);
