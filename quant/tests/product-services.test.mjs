@@ -38,7 +38,7 @@ test('Technical summary rejects future, mocked and mismatched bundles',async()=>
 });
 test('Historical Fundamentals preserves SEC identity and keeps canonical out-of-preview members typed',async()=>{
  const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
- const before=reads.length,consumer=await api.getHistoricalFundamentals('TSLA');assert.equal(consumer.state,'AVAILABLE');assert.equal(consumer.pitEligibility,'NOT_CERTIFIED');assert.equal(consumer.availabilityPrecision,'FILING_DATE');assert.ok(reads.slice(before).includes('/discover/data/stocks/US_REAL/TSLA.json'));assert.equal((await api.getHistoricalFundamentals('TSLA',{period:'quarterly'})).reason,'PERIOD_NOT_IN_CONSUMER_ARTIFACT');
+ const before=reads.length,consumer=await api.getHistoricalFundamentals('TSLA');assert.equal(consumer.state,'AVAILABLE');assert.equal(consumer.pitEligibility,'NOT_CERTIFIED');assert.equal(consumer.availabilityPrecision,'FILING_DATE');assert.ok(reads.slice(before).includes('/discover/data/stocks/US_REAL/TSLA.json'));assert.equal((await api.getHistoricalFundamentals('TSLA',{period:'quarterly'})).reason,'SOURCE_MISSING','source checkout has no release-only compressed artifact; never fall back to annual');
 });
 test('production reuses canonical artifacts without any Vercel fetch',async()=>{
  const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));throw Error('no remote service permitted');};

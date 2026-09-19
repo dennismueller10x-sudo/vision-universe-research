@@ -4,6 +4,9 @@ import {resolve,dirname,sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {gzipSync} from 'node:zlib';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js');
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -11,6 +14,15 @@ export function projectInspector(source){
  return {...fields(source,['cik','generated_at_utc','versions','policy','as_of','scope','quality_summary','quality_errors']),
   profile:fields(source.profile,['cik','name','tickers','sic']),
   rows:source.rows.map(row=>fields(row,['metric','fiscal_year','fiscal_period','value','unit','period_start','period_end','available','available_from','filed','form','accession','concept','source','transformation','quality','flags','reason']))};
+}
+export function projectQuarterly(source){
+ if(source?.schema!=='vu-consumer-fundamentals-1.0.0'||source.dataSource?.isMock!==false||source.dataSource?.provider!=='sec_edgar'||source.policy!=='as_of_latest'||!/^\d{10}$/.test(source.cik)||source.versions?.normalization_schema!=='1.0.0'||JSON.stringify(source.columns)!==JSON.stringify(['fy','fp','end','v','filed','accn','derived']))throw Error('INVALID_QUARTERLY_SOURCE');
+ const ids=new Set(History.metrics.map(m=>m.id)),quarterly=Object.fromEntries(Object.entries(source.quarterly||{}).filter(([id,rows])=>ids.has(id)&&Array.isArray(rows)&&rows.length));
+ if(!Object.keys(quarterly).length)return null;
+ const unavailableMetrics={};
+ for(const [metric,rows] of Object.entries(quarterly)){const checked=History.validateQuarterlyFacts(rows,{asOf:source.asOf,unit:source.units?.[metric]});if(checked.state!=='AVAILABLE'){unavailableMetrics[metric]='INVALID_FACT_EVIDENCE';delete quarterly[metric];}}
+ return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
+  semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
@@ -36,6 +48,19 @@ export async function buildRelease({root,output}){
   const source=await load('quant/data/sec/inspector/'+company.ticker+'.json');
   if(source.cik!==company.cik)throw Error('INSPECTOR_IDENTITY_MISMATCH');
   await json('quant/data/sec/inspector/'+company.ticker+'.json',projectInspector(source));
+ }
+ // A serving projection of existing consumer facts, not a second SEC pipeline.
+ // Compression is per issuer; the browser never downloads the full universe.
+ const consumerPaths=paths.filter(p=>/^quant\/data\/sec\/consumer\/CIK[0-9]{10}\.json$/.test(p));
+ if(consumerPaths.length){
+  const manifest=await load('quant/data/universe/master-manifest.json'),eligible=new Set();
+  for(const {shard} of manifest.shards.index){const members=await load('quant/data/universe/instruments/'+shard+'.json');for(const member of members.instruments)if(Master.inProductUniverse(member)&&/^\d{10}$/.test(member.cik))eligible.add(member.cik);}
+  for(const path of consumerPaths){const cik=path.match(/CIK([0-9]{10})/)[1];if(!eligible.has(cik))continue;
+   const source=await load(path);if(source.cik!==cik)throw Error('QUARTERLY_IDENTITY_MISMATCH');const projection=projectQuarterly(source);if(!projection)continue;
+   const target='quant/data/sec/quarterly/CIK'+cik+'.json.gz',bytes=gzipSync(Buffer.from(JSON.stringify(projection)),{level:9});
+   await mkdir(dirname(resolve(output,target)),{recursive:true});await writeFile(resolve(output,target),bytes);
+   emitted.push({path:target,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
+  }
  }
  // Delivery-only compaction: preserve canonical shard contents and URLs.
  for(const p of paths.filter(p=>/^quant\/data\/universe\/instruments\/[^/]+\.json$/.test(p))){
