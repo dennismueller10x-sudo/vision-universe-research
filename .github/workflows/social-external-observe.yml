@@ -156,7 +156,20 @@ jobs:
         if: steps.plan.outputs.tags != ''
         run: |
           set -euo pipefail
-          if git diff --quiet -- social/data/; then
+          # ---------------------------------------------------------
+          # `git diff` SIEHT NEUE DATEIEN NICHT
+          #
+          # Gemessen im zweiten Lauf: der Ingest meldete "Geschrieben:
+          # external-observations.json, hashtag-portfolio.json", und
+          # direkt darunter stand "Keine Aenderung." Beides stimmte.
+          # Die Dateien waren NEU, und `git diff` vergleicht nur, was
+          # schon verfolgt wird.
+          #
+          # Diesmal war nichts zu sichern. Bei der ersten erfolgreichen
+          # Beobachtung waere es die Beobachtung selbst gewesen - und
+          # der Lauf haette gruen gemeldet, dass es nichts zu tun gab.
+          # `git status --porcelain` sieht auch das Unverfolgte.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
             echo "Keine Aenderung."
             exit 0
           fi

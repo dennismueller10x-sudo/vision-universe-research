@@ -99,6 +99,35 @@ function messe(topic, kontext) {
   return m;
 }
 
+/**
+ * Die Messzeilen aus einer performance.json.
+ *
+ * Exportiert, weil die eine Eigenschaft, auf die es ankommt, pruefbar
+ * sein muss: eine Datei MIT Inhalt, aus der keine bekannte Liste zu
+ * lesen ist, ist ein BEFUND und keine Null. Genau das ist hier einmal
+ * schiefgegangen - und ein `|| []` hat es zugedeckt.
+ */
+export const LEISTUNGSLISTEN = ["snapshots", "entries", "measurements"];
+
+export function leseLeistung(perf) {
+  const source = perf
+    ? LEISTUNGSLISTEN.find((k) => Array.isArray(perf[k])) || null : null;
+  if (perf && !source) {
+    throw new Error("performance.json enthaelt keine der bekannten Listen (" +
+      LEISTUNGSLISTEN.join(", ") + "), sondern: " + Object.keys(perf).join(", ") +
+      ". Das als 0 Messungen zu lesen waere dieselbe Verwechslung, die " +
+      "diese Pruefung verhindern soll.");
+  }
+  const zeilen = source ? perf[source] : [];
+  /* Gemessen heisst nicht reif. Der Zyklus unterscheidet das; hier
+     genuegt das mitgelieferte Fenster, das dieselbe Rechnung traegt. */
+  const measured = zeilen.filter((z) =>
+    z && z.snapshot ? z.snapshot.state !== "UNAVAILABLE" : true);
+  const mature = measured.filter((z) =>
+    (z.window || (z.snapshot || {}).window) === "MATURE");
+  return { source, measured, mature };
+}
+
 export function dryRun(options) {
   options = options || {};
   const now = options.now || new Date().toISOString();
@@ -151,20 +180,10 @@ export function dryRun(options) {
      Die Lehre steckt jetzt im Code: eine Datei MIT Inhalt, aus der
      keine bekannte Liste zu lesen ist, ist ein Befund und keine Null. */
   const perf = readJson(join(ROOT, "social/data/performance.json"), null);
-  const LISTEN = ["snapshots", "entries", "measurements"];
-  const listenName = perf ? LISTEN.find((k) => Array.isArray(perf[k])) : null;
-  if (perf && !listenName) {
-    throw new Error("social/data/performance.json enthaelt keine der " +
-      "bekannten Listen (" + LISTEN.join(", ") + "), sondern: " +
-      Object.keys(perf).join(", ") + ". Das als 0 Messungen zu lesen " +
-      "waere dieselbe Verwechslung, die diese Pruefung verhindern soll.");
-  }
-  const zeilen = listenName ? perf[listenName] : [];
-  /* Gemessen heisst nicht reif. Der Zyklus unterscheidet das; hier
-     genuegt das mitgelieferte Fenster, das dieselbe Rechnung traegt. */
-  const gemessen = zeilen.filter((z) =>
-    z && z.snapshot ? z.snapshot.state !== "UNAVAILABLE" : true);
-  const reif = gemessen.filter((z) => (z.window || (z.snapshot || {}).window) === "MATURE");
+  const gelesen = leseLeistung(perf);
+  const listenName = gelesen.source;
+  const gemessen = gelesen.measured;
+  const reif = gelesen.mature;
   const messungen = gemessen.length;
   /* Plattformpassung ist gemessenes Wissen, nicht ein Verbindungsstatus -
      und halbgewachsene Zahlen sind noch kein Wissen. */

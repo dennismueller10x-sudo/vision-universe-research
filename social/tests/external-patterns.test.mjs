@@ -102,13 +102,30 @@ test("EP8 · Keine Beobachtung ist keine Aussage ueber fremde Muster", () => {
   assert.match(a.explanation, /Abwesenheit einer Messung/);
 });
 
-test("EP9 · Ein gescheiterter Hashtag zaehlt als null beobachtete Medien", () => {
-  /* Damit der Portfolio-Manager ihn ausmustern kann, statt den Platz
-     im naechsten Fenster noch einmal auszugeben. */
+test("EP9 · Ein gescheiterter Hashtag zaehlt NICHT als null beobachtete Medien", () => {
+  /* -----------------------------------------------------------------
+     DIESER TEST HAT FRUEHER DAS GEGENTEIL VERLANGT
+
+     Er hiess "zaehlt als null beobachtete Medien" und begruendete das
+     damit, dass der Portfolio-Manager den Hashtag dann ausmustern
+     koenne. Die Begruendung war der Fehler: ausgemustert wird, was
+     LEER beobachtet wurde - und ein gescheiterter Aufruf hat gar
+     nichts beobachtet.
+
+     Sichtbar wurde es erst im ersten echten Lauf: acht Hashtags kamen
+     mit `permissionRevoked` zurueck. Als acht Nullen eingetragen
+     haetten sie im naechsten Fenster als "leer" gegolten, mit der
+     Begruendung "beim letzten Versuch nur 0 Medien beobachtet" - ein
+     Befund aus einer Messung, die nie stattgefunden hat.
+
+     Unbekannt bleibt jetzt unbekannt. Die Meldung der Plattform reist
+     mit, denn sie nennt, WAS fehlt. */
   const e = abstrahiere(ROH);
   const etf = e.perHashtag.find((h) => h.hashtag === "etf");
   assert.equal(etf.ok, false);
-  assert.equal(etf.observedMediaCount, 0);
+  assert.equal(etf.observedMediaCount, undefined,
+    "Null Medien hiesse: nichts gefunden. Hier wurde nicht gesucht.");
+  assert.equal(etf.reason, "hashtagUnknown");
 });
 
 /* ============================================================ Themennaehe */

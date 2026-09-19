@@ -69,8 +69,12 @@ export function abstrahiere(roh, options) {
 
   for (const r of (roh && roh.results) || []) {
     if (!r.ok) {
+      /* KEIN observedMediaCount. Null Medien hiesse "nichts gefunden";
+         hier wurde nicht gesucht. Die Meldung der Plattform reist mit -
+         sie nennt, WELCHE Berechtigung fehlt, und ohne sie bliebe von
+         einem Betriebsnachweis nur ein Wort uebrig. */
       jeHashtag.push({ hashtag: r.hashtag, ok: false, reason: r.reason,
-        observedMediaCount: 0 });
+        message: r.message || null });
       continue;
     }
     const medien = r.media || [];
@@ -134,7 +138,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         (h.topicalRelevance && h.topicalRelevance.measured
           ? Math.round(h.topicalRelevance.share * 100) + " %"
           : "ungemessen")
-      : "FEHLER: " + h.reason)));
+      : "FEHLER: " + h.reason + (h.message ? " — " + h.message : ""))));
 
   const archetypen = {};
   erg.observations.forEach((o) => {
@@ -155,6 +159,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const p = readJson(join(ROOT, PORTFOLIO), { hashtags: {} });
     const fort = Portfolio.record(p.hashtags || {},
       erg.perHashtag.map((h) => ({ hashtag: h.hashtag, edge: h.edge,
+        ok: h.ok, reason: h.reason || null, message: h.message || null,
         observedMediaCount: h.observedMediaCount,
         topicalRelevance: h.topicalRelevance,
         source: "meta.instagram.hashtag_search" })), erg.observedAt);

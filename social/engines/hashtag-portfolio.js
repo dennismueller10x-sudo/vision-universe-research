@@ -212,6 +212,37 @@
     var frei = Math.max(0, Math.min(maxProLauf, freiGesamt - reserve));
 
     /* -----------------------------------------------------------------
+       NICHT IN DIESELBE WAND HINEIN
+
+       Der erste echte Lauf bekam acht Mal `permissionRevoked`. Der
+       naechste Plan wollte prompt acht WEITERE Hashtags oeffnen - gegen
+       dieselbe fehlende Berechtigung, aus demselben Rahmen von
+       dreissig je sieben Tagen. Zwei Laeufe, sechzehn moeglicherweise
+       verbrauchte Plaetze, null Beobachtungen.
+
+       Ein Budget auszugeben, wenn feststeht, dass nichts zurueckkommt,
+       ist keine Erkundung. Terminale Gruende - fehlende Berechtigung,
+       abgelaufenes Token - werden nicht besser, wenn man es noch
+       einmal versucht; sie brauchen einen Menschen.
+
+       Auffrischungen laufen weiter: sie kosten keinen Platz, und
+       sobald die Berechtigung da ist, liefern sie sofort. Nur NEUE
+       Plaetze werden nicht mehr ausgegeben. */
+    var TERMINAL = ["permissionRevoked", "tokenExpired", "notConnected"];
+    var blockierend = [];
+    Object.keys(bestand).forEach(function (h) {
+      var e = bestand[h];
+      if (!e.lastAttemptFailed) return;
+      var letzter = (e.attempts || [])[(e.attempts || []).length - 1];
+      if (!letzter || TERMINAL.indexOf(letzter.reason) === -1) return;
+      if (fensterZustand(e, now).state !== "OPEN") return;
+      blockierend.push({ hashtag: h, reason: letzter.reason,
+        at: letzter.at, message: letzter.message || null });
+    });
+    var gesperrt = blockierend.length > 0;
+    if (gesperrt) frei = 0;
+
+    /* -----------------------------------------------------------------
        AUSGEBEN, MESSEN, NICHT WIEDERHOLEN
 
        Ein Erkundungsplatz kauft einen Versuch. Ob #okeanisecotankers
@@ -229,6 +260,10 @@
     var minMedien = spec.minObservedMedia === undefined ? 3 : spec.minObservedMedia;
     var leer = Object.keys(bestand).filter(function (h) {
       var e = bestand[h];
+      /* Wer beim letzten Mal gar nicht gefragt werden konnte, ist nicht
+         leer. Er ist ungefragt - und das ist kein Grund, ihn
+         zurueckzustellen. */
+      if (e.lastAttemptFailed) return false;
       return typeof e.observedMediaCount === "number" &&
         e.observedMediaCount < minMedien;
     });
@@ -317,7 +352,24 @@
          Plaetze, wie frei sind. Nie still mehr. */
       slotsRequested: neue.length,
       withinLimit: neue.length <= frei,
-      explanation: neue.length + " neue Hashtag(s) (" + neuKern.length + " Kern, " +
+      /* Ein gesperrter Plan ist kein Fehler - er ist ein Befund, der
+         einen Menschen braucht. */
+      blockedByTerminalFailure: gesperrt,
+      blockingFailures: blockierend,
+      ownerActionRequired: gesperrt ? {
+        reason: blockierend[0].reason,
+        affected: blockierend.length,
+        what: "Die letzten Abfragen scheiterten mit \"" + blockierend[0].reason +
+          "\". Ein weiterer Versuch gibt Plaetze aus, ohne etwas zu " +
+          "beobachten. Es werden keine NEUEN Hashtags geoeffnet, bis " +
+          "die Ursache behoben ist."
+      } : null,
+      explanation: (gesperrt
+        ? "GESPERRT: " + blockierend.length + " Hashtag(s) scheiterten zuletzt " +
+          "mit \"" + blockierend[0].reason + "\". Es werden keine neuen " +
+          "Plaetze ausgegeben, solange die Ursache besteht. "
+        : "") +
+        neue.length + " neue Hashtag(s) (" + neuKern.length + " Kern, " +
         neuErkundung.length + " Erkundung), " + gratis.length + " kostenlose " +
         "Auffrischung(en), " + zurueckgestellt.length + " zurueckgestellt. " +
         verbraucht + " von " + grenze + " Plaetzen im Fenster belegt; dieser " +
@@ -346,6 +398,45 @@
       if (zustand.state === "FREE") e.firstQueriedAt = nowIso;
       e.lastQueriedAt = nowIso;
       e.queryCount = (e.queryCount || 0) + 1;
+
+      /* -----------------------------------------------------------------
+         EIN VERSUCH IST KEINE BEOBACHTUNG
+
+         Der erste echte Lauf kam mit acht Hashtags zurueck, alle
+         `permissionRevoked`. Eingetragen worden waeren sie trotzdem wie
+         normale Abfragen: `observedMediaCount: 0`.
+
+         Das haette zwei Dinge gleichzeitig behauptet, die beide falsch
+         sind. Erstens, dass diese Hashtags leer seien - sie wurden nie
+         gefragt. Zweitens, und schlimmer: die Ausmusterungsregel haette
+         sie im naechsten Fenster zurueckgestellt, mit der Begruendung
+         "beim letzten Versuch nur 0 Medien beobachtet". Ein Befund aus
+         einer Messung, die nicht stattgefunden hat.
+
+         Genau die Verwechslung, die dieses Projekt immer wieder trifft:
+         UNBEKANNT wird als NULL eingetragen, und die Null erklaert
+         hinterher die Welt.
+
+         Ein gescheiterter Versuch wird deshalb als Versuch
+         festgehalten - mit Grund und Meldung - und beruehrt
+         `observedMediaCount` nicht.
+
+         Gegen das Budget zaehlt er trotzdem. Ob Meta einen Platz
+         verbraucht, wenn `ig_hashtag_search` scheitert, wissen wir von
+         hier aus nicht, und bei einem Rahmen von dreissig je sieben
+         Tagen ist die teurere Annahme die richtige. */
+      if (a.ok === false) {
+        e.attempts = (e.attempts || []).concat([{ at: nowIso,
+          ok: false, reason: a.reason || null, message: a.message || null,
+          countedAgainstWindow: true }]);
+        e.lastAttemptFailed = true;
+        e.provenance.push({ at: nowIso, role: a.role || null,
+          outcome: "ATTEMPT_FAILED", reason: a.reason || null,
+          source: a.source || "meta.instagram.hashtag_search" });
+        neu[h] = e;
+        return;
+      }
+      e.lastAttemptFailed = false;
 
       (a.topicIds || []).forEach(function (t) {
         if (e.topicMapping.indexOf(t) === -1) e.topicMapping.push(t);

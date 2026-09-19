@@ -53,6 +53,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("VISION UNIVERSE SOCIAL — Hashtag-Beobachtungsplan\n");
   console.log(p.explanation + "\n");
+
+  /* Ein gesperrter Plan darf nicht zwischen Listen verschwinden: er
+     ist der Grund, warum dieser Lauf nichts Neues kauft. */
+  if (p.ownerActionRequired) {
+    console.log("!!! OWNER-SCHRITT NOETIG !!!");
+    console.log("    " + p.ownerActionRequired.what);
+    p.blockingFailures.slice(0, 3).forEach((f) =>
+      console.log("    #" + f.hashtag + " (" + f.at + ")" +
+        (f.message ? ": " + f.message : "")));
+    console.log("");
+  }
   console.log("Neu zu oeffnen (kostet je einen Platz):");
   p.newQueries.forEach((q) => console.log("  " + q.role.padEnd(12) + "#" + q.hashtag));
   console.log("\nKostenlose Auffrischung (Fenster offen): " +

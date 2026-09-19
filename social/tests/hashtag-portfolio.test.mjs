@@ -150,3 +150,125 @@ test("HP12 · Auffrischung und Neuoeffnung werden getrennt ausgewiesen", () => {
   assert.ok(!p.newQueries.some((q) => q.hashtag === "aktien"));
   assert.match(p.refresh[0].reason, /kostet keinen Platz/);
 });
+
+/* ================================ Ein Versuch ist keine Beobachtung (HP20+) */
+
+test("HP20 · Ein gescheiterter Versuch setzt observedMediaCount nicht auf 0", () => {
+  /* Der erste echte Lauf kam mit acht `permissionRevoked` zurueck.
+     Als 0 Medien eingetragen haette das behauptet, die Hashtags seien
+     leer - gefragt wurden sie nie. */
+  const nach = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked",
+      message: "Die noetige Berechtigung fehlt oder wurde entzogen." }
+  ], "2026-09-19T18:00:00Z");
+  assert.equal(nach.aktien.observedMediaCount, null);
+  assert.equal(nach.aktien.lastAttemptFailed, true);
+  assert.equal(nach.aktien.attempts.length, 1);
+  assert.equal(nach.aktien.attempts[0].reason, "permissionRevoked");
+  /* Die Meldung der Plattform reist mit - sie nennt, WAS fehlt. */
+  assert.match(nach.aktien.attempts[0].message, /Berechtigung/);
+});
+
+test("HP21 · Gegen das Budget zaehlt der Versuch trotzdem", () => {
+  /* Ob Meta einen Platz verbraucht, wenn die Suche scheitert, wissen
+     wir von hier aus nicht. Bei dreissig je sieben Tagen ist die
+     teurere Annahme die richtige. */
+  const nach = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-19T18:00:00Z");
+  assert.equal(nach.aktien.firstQueriedAt, "2026-09-19T18:00:00Z");
+  assert.equal(nach.aktien.queryCount, 1);
+  assert.equal(nach.aktien.attempts[0].countedAgainstWindow, true);
+});
+
+test("HP22 · Ein ungefragter Hashtag wird nicht als leer ausgemustert", () => {
+  /* Ohne diese Unterscheidung haette ein gescheiterter Lauf acht
+     Hashtags fuer das naechste Fenster gesperrt - mit der Begruendung
+     "nur 0 Medien beobachtet", aus einer Messung, die nie stattfand. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-19T18:00:00Z");
+  const p = H.plan({
+    topics: [{ topicId: "t1", family: "RANKING", entities: [] }],
+    coreHashtags: ["aktien"], state: bestand,
+    now: "2026-09-27T18:00:00Z"
+  });
+  const zurueck = (p.deferredAsEmpty || p.retiredAsEmpty || []).map((x) => x.hashtag);
+  assert.equal(zurueck.includes("aktien"), false,
+    "Ungefragt ist nicht leer");
+});
+
+test("HP23 · Ein echter Leerbefund mustert weiterhin aus", () => {
+  /* Die Gegenprobe: die Regel darf nicht verschwinden, nur weil sie
+     jetzt genauer hinsieht. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: true, observedMediaCount: 0 }
+  ], "2026-09-19T18:00:00Z");
+  assert.equal(bestand.aktien.observedMediaCount, 0);
+  assert.equal(bestand.aktien.lastAttemptFailed, false);
+  const p = H.plan({
+    topics: [{ topicId: "t1", family: "RANKING", entities: [] }],
+    coreHashtags: ["aktien"], state: bestand,
+    now: "2026-09-27T18:00:00Z"
+  });
+  const zurueck = (p.deferredAsEmpty || p.retiredAsEmpty || []).map((x) => x.hashtag);
+  assert.equal(zurueck.includes("aktien"), true);
+});
+
+test("HP24 · Nach einem terminalen Fehler werden keine neuen Plaetze ausgegeben", () => {
+  /* Zwei Laeufe gegen dieselbe fehlende Berechtigung waeren sechzehn
+     moeglicherweise verbrauchte Plaetze und null Beobachtungen. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-19T18:00:00Z");
+  const p = H.plan({
+    topics: THEMEN, coreHashtags: ["boerse", "etf"], state: bestand,
+    now: "2026-09-20T09:00:00Z"
+  });
+  assert.equal(p.blockedByTerminalFailure, true);
+  assert.equal(p.newQueries.length, 0);
+  assert.ok(p.ownerActionRequired);
+  assert.equal(p.ownerActionRequired.reason, "permissionRevoked");
+  assert.match(p.explanation, /GESPERRT/);
+});
+
+test("HP25 · Die kostenlose Auffrischung laeuft weiter — sie kostet keinen Platz", () => {
+  /* Sobald die Berechtigung da ist, liefert der naechste Lauf sofort,
+     ohne einen weiteren Platz auszugeben. Die Sperre darf das nicht
+     mitnehmen. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-19T18:00:00Z");
+  const p = H.plan({
+    topics: THEMEN, coreHashtags: ["aktien"], state: bestand,
+    now: "2026-09-20T09:00:00Z"
+  });
+  assert.ok(p.refresh.some((r) => r.hashtag === "aktien"));
+});
+
+test("HP26 · Ein nicht-terminaler Fehler sperrt nicht", () => {
+  /* Eine Ratenbegrenzung geht vorbei; eine fehlende Berechtigung nicht.
+     Die Sperre gilt nur dem, was ein Mensch beheben muss. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "rateLimited" }
+  ], "2026-09-19T18:00:00Z");
+  const p = H.plan({
+    topics: THEMEN, coreHashtags: ["boerse"], state: bestand,
+    now: "2026-09-20T09:00:00Z"
+  });
+  assert.equal(p.blockedByTerminalFailure, false);
+  assert.ok(p.newQueries.length > 0);
+});
+
+test("HP27 · Nach dem Fenster sperrt ein alter Fehler nicht mehr", () => {
+  /* Ein Befund von vor acht Tagen ist kein Befund ueber heute. Sonst
+     bliebe das Portfolio fuer immer stehen. */
+  const bestand = H.record({}, [
+    { hashtag: "aktien", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-01T18:00:00Z");
+  const p = H.plan({
+    topics: THEMEN, coreHashtags: ["boerse"], state: bestand,
+    now: "2026-09-20T09:00:00Z"
+  });
+  assert.equal(p.blockedByTerminalFailure, false);
+});
