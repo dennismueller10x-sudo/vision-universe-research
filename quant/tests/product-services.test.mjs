@@ -46,6 +46,14 @@ test('canonical remote market services receive stable IDs and preserve typed sem
   assert.equal((await remote.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');assert.equal((await remote.getIntraday('NVDA')).priceSemantics,'UNSPECIFIED');assert.equal(remote.getRealtimeCapability().chartMovement,'TRADE_EVENTS_ONLY');assert.ok(calls.every(url=>url.includes('securityId=vu_d57074b4128184')));
  }finally{globalThis.fetch=original;}
 });
+test('production product service is resolved from the same-origin runtime contract',async()=>{
+ const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));return {ok:true,json:async()=>({state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[]})};};
+ try{const configured=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query});
+  assert.equal((await configured.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
+  assert.equal(calls.length,1);assert.match(calls[0],/^https:\/\/vision-universe-research\.vercel\.app\/api\/history\?/);
+  assert.ok(calls[0].includes('securityId=vu_d57074b4128184'));
+ }finally{globalThis.fetch=original;}
+});
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
  const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
 });
