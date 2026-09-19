@@ -680,7 +680,30 @@
            in textResidue, und das Marken-Tor blockiert die betroffene
            Variante — die uebrigen laufen weiter.
            --------------------------------------------------------------- */
-        var captionSauber = German.clean(ergebnis.caption);
+        /* -------------------------------------------------------------
+           EINE REDAKTIONELLE KORREKTUR VON VISION UNIVERSE
+
+           Das Ergebnis des Agenten bleibt unberuehrt auf dem
+           Request-Branch - so wie PR 110 als Provenance stehen blieb.
+           Was VU daran aendert, steht in einer EIGENEN Datei und wird
+           hier darauebergelegt.
+
+           Der Anlass: eine Caption behauptete "die Schwankungsbreite
+           begrenzt damit den Gesamtwert auf 76 von 100". Jede Zahl
+           belegt, und der Satz trotzdem falsch - VOLATILITY traegt ein
+           Fuenftel der fehlenden Punkte, SETUP mehr.
+
+           Zwei Dateien statt einer ueberschriebenen: sonst stuende
+           spaeter da, der Agent habe etwas geliefert, was er nie
+           geschrieben hat. Wer die Korrektur uebernimmt, uebernimmt
+           auch die Verantwortung dafuer - deshalb reist sie mit. */
+        var korrektur = (typeof transport.readCorrection === "function")
+          ? transport.readCorrection(contentId) : null;
+        var korrigiert = !!(korrektur && korrektur.caption &&
+          korrektur.caption !== ergebnis.caption);
+
+        var captionSauber = German.clean(
+          korrigiert ? korrektur.caption : ergebnis.caption);
 
         /* -------------------------------------------------------------
            DER PFLICHTHINWEIS GEHOERT VISION UNIVERSE
@@ -720,6 +743,15 @@
               textVerbatim: (hookSauber.text !== v.text ||
                 captionSauber.text !== ergebnis.caption)
                 ? { hook: v.text, caption: ergebnis.caption } : null,
+              /* Reist mit, damit der Kandidat nicht behauptet, der
+                 Agent habe geschrieben, was VU korrigiert hat. */
+              editorialCorrection: korrigiert
+                ? { by: korrektur.by || "vision-universe",
+                    reason: korrektur.reason || null,
+                    criterion: korrektur.criterion || null,
+                    supersededCaption: ergebnis.caption,
+                    correctedAt: korrektur.correctedAt || null }
+                : null,
               textResidue: rest,
               /* Der Agent liefert keine Bildzeile — das Bild IST die
                  Aussage. Die Karte des deterministischen Autors braucht

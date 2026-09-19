@@ -119,6 +119,20 @@
          anderer sein — auch dann nicht, wenn nur Umlaute gesetzt
          wurden. */
       textVerbatim: spec.textVerbatim || null,
+      /* -----------------------------------------------------------
+         WER DEN TEXT GESCHRIEBEN HAT, DEN DER KANDIDAT TRAEGT
+
+         textVerbatim haelt fest, wo die SCHREIBUNG repariert wurde.
+         Hier geht es um mehr: um einen Satz, den Vision Universe
+         redaktionell ERSETZT hat, weil er eine Ursache behauptete,
+         die die Evidenz nicht traegt.
+
+         Diese Liste hat das Feld zuerst verschluckt - der Kandidat
+         wies den Text danach als den des Agenten aus, obwohl VU ihn
+         geschrieben hatte. Dieselbe Defektklasse wie jede andere
+         Whitelist, die ein Feld stillschweigend fallen laesst, nur
+         mit einer Falschaussage ueber die Urheberschaft am Ende. */
+      editorialCorrection: spec.editorialCorrection || null,
       textResidue: Array.isArray(spec.textResidue) && spec.textResidue.length
         ? spec.textResidue.slice() : null,
       notes: spec.notes || null

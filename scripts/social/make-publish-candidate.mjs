@@ -350,6 +350,31 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       (vorhanden.version || 1) + ", erstellt " + vorhanden.createdAt + ").");
     console.log("Es wurde kein zweiter angelegt. Der Abdruck ist derselbe:");
     console.log("  " + abdruck);
+
+    /* -----------------------------------------------------------------
+       GLEICHER INHALT IST NICHT GLEICHE HERKUNFT
+
+       Der Abdruck deckt Hook, Caption und Bild. Er deckt NICHT, wer den
+       Text geschrieben hat. Als die Urheberschaft der Caption
+       nachgetragen wurde, blieb der Abdruck gleich - und der Kandidat
+       behielt eine Herkunftsangabe, die den Text dem Agenten zuschrieb,
+       obwohl Vision Universe ihn ersetzt hatte.
+
+       Ein zweiter Kandidat waere hier falsch: der Inhalt ist derselbe.
+       Also wird die Herkunft am vorhandenen nachgezogen - und das steht
+       da, statt still zu geschehen. Inhalt, Abdruck, Kennung und Fassung
+       bleiben unberuehrt; entschiedene Zustaende werden nicht angefasst.
+       ------------------------------------------------------------------- */
+    const neueHerkunft = JSON.stringify(d.authoring || null);
+    if (WRITE && !OwnerDecision.istEntschieden(vorhanden.state) &&
+        JSON.stringify(vorhanden.presentation.authoring) !== neueHerkunft) {
+      vorhanden.presentation.authoring = JSON.parse(neueHerkunft);
+      vorhanden.provenanceUpdatedAt = NOW;
+      writeFileSync(join(ROOT, KAND_REL, vorhanden.candidateId + ".json"),
+        JSON.stringify(vorhanden, null, 2) + "\n");
+      console.log("\nHerkunft nachgezogen (Inhalt unveraendert): " +
+        vorhanden.candidateId);
+    }
     process.exit(0);
   }
 

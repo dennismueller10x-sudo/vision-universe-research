@@ -324,6 +324,45 @@
       "Die Caption stellt keine Beziehung her - sie zaehlt auf. " +
       "Eine Liste belegter Zahlen ist noch keine Aussage.");
 
+    /* --- causalAttribution ----------------------------------------- */
+    /* storyValue verlangt eine BEZIEHUNG. Dieses Kriterium fragt, ob
+       die behauptete Beziehung auch stimmt.
+
+       Der Anlass: "die Schwankungsbreite traegt nur 5 von 10 bei und
+       BEGRENZT DAMIT den Gesamtwert auf 76 von 100." Jede Zahl belegt,
+       die Faktenpruefung zufrieden - und der Satz trotzdem falsch, an
+       der Stelle ohne Zahl. VOLATILITY verliert rund ein Fuenftel der
+       fehlenden Punkte; SETUP verliert mehr.
+
+       Ein Kriterium, das eine Beziehung FORDERT, ohne sie zu pruefen,
+       belohnt die gut klingende Ursachenbehauptung. Die Zerlegung wird
+       hineingereicht wie `story`: diese Datei rechnet nicht selbst und
+       bekommt keine zweite Wahrheit. */
+    var zerlegung = spec.decomposition || null;
+    var zuPruefer = typeof spec.attributionCheck === "function"
+      ? spec.attributionCheck : null;
+    /* NICHT ANWENDBAR IST ETWAS ANDERES ALS FLAECHE FEHLT
+
+       Eine fehlende Flaeche laesst die Rubrik durchfallen (CQ9), und
+       das ist richtig: Hook und Caption MUESSEN da sein. Eine
+       Score-Zerlegung muss es nicht - die meisten Inhalte haben gar
+       keinen zusammengesetzten Kennwert. Ein blockierendes Kriterium
+       machte die Rubrik ueberall dort unerfuellbar, wo die Frage sich
+       nicht stellt.
+
+       Also entsteht das Kriterium nur, wo die Frage beantwortbar ist.
+       Damit das nicht STILL geschieht - der eigentliche Vorwurf an
+       ein uebersprungenes Tor - traegt jeder Befund `attributionChecked`
+       und sagt, ob gefragt wurde. */
+    var zuGeprueft = false;
+    if (zerlegung && zuPruefer) {
+      var zu = zuPruefer(caption, zerlegung);
+      zuGeprueft = true;
+      pruefe("causalAttribution", "caption", "measurable",
+        !!zu && zu.ok === true, true,
+        (zu && zu.explanation) || "Die Zuschreibung konnte nicht geprueft werden.");
+    }
+
     /* --- complementarity ------------------------------------------- */
     var hookZahlen = zahlen(hook);
     var capAnfang = caption.split(/(?<=[.!?])\s/)[0] || "";
@@ -358,6 +397,7 @@
       warnings: hinweise,
       /* Wieviele Kriterien bestanden - als ZAEHLUNG, nicht als Note.
          Eine Note suggeriert eine Skala, die es nicht gibt. */
+      attributionChecked: zuGeprueft,
       met: kriterien.filter(function (k) { return k.passed === true; }).length,
       total: kriterien.length,
       explanation: blockierend.length === 0
@@ -408,8 +448,19 @@
     spec = spec || {};
     var bewertet = (varianten || []).map(function (v, i) {
       return { index: i, variant: v,
-        assessment: assess({ hook: v.hook, caption: spec.caption,
-          story: spec.story, evidenceRefs: v.evidenceRefs }) };
+        /* DURCHREICHEN, NICHT ABSCHREIBEN
+
+           Hier standen vier von Hand kopierte Felder. Als die Rubrik
+           ein fuenftes bekam - die Score-Zerlegung - blieb es
+           lautlos liegen: `assess` sah keine Zerlegung, meldete "nicht
+           geprueft", und der gespeicherte Befund trug neun Kriterien
+           statt zehn. Der Aufrufer hatte alles richtig uebergeben.
+
+           Eine Abschrift laesst irgendwann genau das Feld aus, das
+           neu ist. Was diese Funktion selbst bestimmt, steht danach -
+           alles andere reist durch. */
+        assessment: assess(Object.assign({}, spec, {
+          hook: v.hook, evidenceRefs: v.evidenceRefs })) };
     });
 
     /* Verglichen wird an dem, was die Varianten UNTERSCHEIDET. Die

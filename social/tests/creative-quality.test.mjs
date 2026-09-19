@@ -201,3 +201,65 @@ test("CQ22 · \"Punkten bei\" als Praeposition ist keine Innensprache", () => {
     Q.innensprache("Der Gesamtwert 76 von 100 liegt im Band Konstruktiv, das ab 60 beginnt."), []);
   assert.deepEqual(Q.innensprache("XOM erreicht 76 von 100 Punkten."), []);
 });
+
+/* ------------------------------------------------------------------ */
+/* DIE BEHAUPTETE BEZIEHUNG MUSS AUCH STIMMEN                          */
+/* ------------------------------------------------------------------ */
+
+const Zerlegung = require("../engines/score-decomposition.js");
+const ZERLEGUNG = Zerlegung.zerlege([
+  { id: "c-trend", statement: "TREND_STRUCTURE traegt 27.35 von 30 Punkten bei." },
+  { id: "c-mom", statement: "MOMENTUM traegt 15.54 von 20 Punkten bei." },
+  { id: "c-vol", statement: "VOLUME traegt 5.86 von 10 Punkten bei." },
+  { id: "c-vola", statement: "VOLATILITY traegt 5 von 10 Punkten bei." },
+  { id: "c-setup", statement: "SETUP traegt 13.44 von 20 Punkten bei." },
+  { id: "c-proj", statement: "PROJECTION_AUXILIARY traegt 8.8 von 10 Punkten bei." }
+]);
+const MIT_ZERLEGUNG = {
+  decomposition: ZERLEGUNG, attributionCheck: Zerlegung.pruefeZuschreibung
+};
+
+test("CQ23 · storyValue fordert eine Beziehung, causalAttribution prueft sie", () => {
+  /* Ein Kriterium, das eine Beziehung FORDERT, ohne sie zu pruefen,
+     belohnt die gut klingende Ursachenbehauptung. Genau die war im
+     ausgelieferten Text: jede Zahl belegt, der Satz trotzdem falsch -
+     an der Stelle ohne Zahl. */
+  const a = Q.assess(Object.assign({
+    hook: "47,6 % in zwoelf Monaten – und trotzdem nur 76 von 100.",
+    caption: "Die Trendstruktur erreicht 27,35 von 30, doch die " +
+      "Schwankungsbreite traegt nur 5 von 10 bei und begrenzt damit den " +
+      "Gesamtwert auf 76 von 100. Keine Anlageberatung.",
+    story: STORY, evidenceRefs: ["momentum-12m", "score"] }, MIT_ZERLEGUNG));
+  const k = a.criteria.find((x) => x.id === "causalAttribution");
+  assert.equal(k.passed, false, "Ein Fuenftel der Luecke, als Ursache erzaehlt.");
+  assert.equal(a.attributionChecked, true);
+  assert.equal(a.passed, false);
+  /* storyValue besteht - die Beziehung IST da, sie stimmt nur nicht. */
+  assert.equal(a.criteria.find((x) => x.id === "storyValue").passed, true);
+});
+
+test("CQ24 · Wo die Frage sich nicht stellt, gibt es kein Kriterium", () => {
+  /* Die meisten Inhalte haben keinen zusammengesetzten Kennwert. Ein
+     blockierendes Kriterium machte die Rubrik dort unerfuellbar. Still
+     darf das Ueberspringen trotzdem nicht sein. */
+  const a = Q.assess({
+    hook: "47,6 % in zwoelf Monaten – und trotzdem nur 76 von 100.",
+    caption: "Der Kurs liegt 47,6 % ueber dem Stand vor zwoelf Monaten, der " +
+      "Score bleibt dennoch bei 76 von 100. Keine Anlageberatung.",
+    story: STORY, evidenceRefs: ["momentum-12m", "score"] });
+  assert.equal(a.attributionChecked, false, "Der Befund sagt, dass nicht gefragt wurde.");
+  assert.equal(a.criteria.find((x) => x.id === "causalAttribution"), undefined);
+});
+
+test("CQ25 · Eine Zuschreibung, die traegt, besteht", () => {
+  /* Die Gegenprobe: ein Tor, das jede Ursachenbehauptung zurueckweist,
+     verboete den Spannungsbogen, um den es geht. */
+  const a = Q.assess(Object.assign({
+    hook: "47,6 % in zwoelf Monaten – und trotzdem nur 76 von 100.",
+    caption: "Setup, Schwankungsbreite und Momentum erreichen ihre Maxima " +
+      "nicht und begrenzen damit den Gesamtwert auf 76 von 100. " +
+      "Keine Anlageberatung.",
+    story: STORY, evidenceRefs: ["momentum-12m", "score"] }, MIT_ZERLEGUNG));
+  const k = a.criteria.find((x) => x.id === "causalAttribution");
+  assert.equal(k.passed, true, k.finding);
+});

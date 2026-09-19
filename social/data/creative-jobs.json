@@ -268,10 +268,10 @@
       "revision": "text-only",
       "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-19T08:10:16.224Z",
-      "updatedAt": "2026-09-19T08:18:00.000Z",
+      "updatedAt": "2026-09-19T08:13:47Z",
       "prNumber": 116,
       "deliveryIds": [],
-      "observedStarts": 1,
+      "observedStarts": null,
       "history": [
         {
           "state": "CREATIVE_JOB_REQUESTED",
@@ -280,24 +280,31 @@
         },
         {
           "state": "CREATIVE_JOB_DISPATCHED",
-          "at": "2026-09-19T08:20:00.000Z",
-          "note": "PR 116 direkt als ready geoeffnet - ein Ereignis statt Draft und Umschalten."
+          "at": "2026-09-19T08:11:39Z",
+          "note": "PR 116 direkt als ready geoeffnet. Zeitpunkt: created_at des PR (GitHub).",
+          "timestampSource": "github:pull_request.created_at"
         },
         {
           "state": "CREATIVE_JOB_RESULT_AVAILABLE",
-          "at": "2026-09-19T08:16:00.000Z",
-          "note": "Eine Datei, kein Asset."
+          "at": "2026-09-19T08:13:47Z",
+          "note": "Ergebnis-Commit auf dem Request-Branch, eine Datei ohne Asset.",
+          "timestampSource": "git:committer-date 5feb543/88e99187"
         },
         {
           "state": "CREATIVE_JOB_VERIFIED",
-          "at": "2026-09-19T08:18:00.000Z",
-          "note": "Vierzehn Pflichtpruefungen bestanden, geerbtes Asset unveraendert. Rubrik: Variante 2 erfuellt 9 von 9. Kandidat cand_20260919_f6cbd0f9."
+          "at": null,
+          "note": "Vierzehn Pflichtpruefungen bestanden, geerbtes Asset unveraendert. Der Zeitpunkt der Pruefung wurde nicht mitgeschrieben.",
+          "timestampSource": "unobserved"
         }
       ],
       "prState": "open",
       "triggerEvent": "pull_request/opened",
       "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt.",
-      "deliveryCount": 1
+      "deliveryCount": 1,
+      "requestType": "TEXT_REVISION",
+      "visualMode": "INHERIT_VERIFIED_ASSET",
+      "registerNote": "Die Zeitpunkte fuer DISPATCHED und RESULT_AVAILABLE stammen aus beobachtbaren Quellen (GitHub bzw. git) und ersetzen zwei geschaetzte Werte, von denen einer VOR dem Ereignis lag, das er quittieren sollte. Fuer VERIFIED und die Zahl der beobachteten Starts gibt es keine Quelle - sie stehen als unobserved statt als plausible Zahl. Ein erfundener Zeitpunkt ist schlimmer als eine Luecke: die Luecke sieht man.",
+      "observedStartsSource": "unobserved"
     }
   ],
   "budget": {

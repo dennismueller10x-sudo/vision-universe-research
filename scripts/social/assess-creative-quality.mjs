@@ -8,7 +8,7 @@
    Ausfuehren:
      node scripts/social/assess-creative-quality.mjs --content-id vu-xom-20260911
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -18,6 +18,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const Story = require(join(ROOT, "social/engines/story-selection.js"));
 const Creative = require(join(ROOT, "social/engines/creative-quality.js"));
+const Zerlegung = require(join(ROOT, "social/engines/score-decomposition.js"));
+const { createHash } = await import("node:crypto");
 
 const args = process.argv.slice(2);
 const arg = (n, d) => { const i = args.indexOf("--" + n); return i === -1 ? d : args[i + 1]; };
@@ -25,10 +27,35 @@ const CID = arg("content-id", "vu-xom-20260911");
 const JSON_OUT = arg("json", null);
 
 const dir = join(ROOT, "authoring/requests", CID);
-const brief = JSON.parse(readFileSync(join(dir, "authoring-brief.json"), "utf8"));
-const result = JSON.parse(readFileSync(join(dir, "authoring-result.json"), "utf8"));
+const briefRoh = readFileSync(join(dir, "authoring-brief.json"));
+const brief = JSON.parse(String(briefRoh));
+const resultRoh = readFileSync(join(dir, "authoring-result.json"));
+const result = JSON.parse(String(resultRoh));
+
+/* -------------------------------------------------------------------
+   GEPRUEFT WIRD DER TEXT, DER VERSCHICKT WUERDE
+
+   Liegt eine redaktionelle Korrektur von Vision Universe daneben, ist
+   SIE der oeffentliche Text - nicht mehr die Fassung des Agenten. Eine
+   Rubrik, die weiter das Original bewertet, bescheinigt einem Text
+   etwas, den niemand zu sehen bekommt.
+   ------------------------------------------------------------------- */
+const korrPfad = join(dir, "vu-editorial-correction.json");
+const korrRoh = existsSync(korrPfad) ? readFileSync(korrPfad) : null;
+const korrektur = korrRoh ? JSON.parse(String(korrRoh)) : null;
+const CAPTION = (korrektur && korrektur.caption) || result.caption;
 
 const story = Story.select(brief.evidence, {});
+
+/* Die Zerlegung stammt aus dem URSPRUNGSBRIEF: nur dort stehen alle
+   sechs Beitraege. Der rev3-Brief traegt die fuenf Belege der Copy -
+   eine Aussage ueber "die Luecke" braucht aber das Ganze. */
+const wurzelBrief = join(ROOT, "authoring/requests",
+  String(brief.supersedes_content_id || CID).replace(/-rev\d+$/, ""),
+  "authoring-brief.json");
+const zerlegung = existsSync(wurzelBrief)
+  ? Zerlegung.zerlege(JSON.parse(readFileSync(wurzelBrief, "utf8")).evidence)
+  : Zerlegung.zerlege(brief.evidence);
 
 console.log("VISION UNIVERSE SOCIAL — Creative Quality");
 console.log("Inhalt: " + CID + "\n");
@@ -48,7 +75,9 @@ const varianten = (result.hook_variants || []).map((h) => ({
   id: h.hook_variant_id
 }));
 
-const auswahl = Creative.best(varianten, { caption: result.caption, story });
+const auswahl = Creative.best(varianten, { caption: CAPTION, story,
+  decomposition: zerlegung.complete ? zerlegung : null,
+  attributionCheck: Zerlegung.pruefeZuschreibung });
 
 console.log("--- DIE VIER VORHANDENEN VARIANTEN ---\n");
 auswahl.assessed.forEach((b) => {
@@ -131,6 +160,34 @@ if (JSON_OUT) {
         id: k.id, surface: k.surface, kind: k.kind,
         passed: k.passed, finding: k.finding }))
     })),
+    /* -----------------------------------------------------------------
+       PROVENANCE: WORAUF SICH DIESER BEFUND BEZIEHT
+
+       Ein Gate, das fuer die kanonische Auswahl zaehlt, darf nicht nur
+       als Sitzungsausgabe existieren - und ein gespeicherter Befund
+       ohne Bezug waere kaum besser. Steht nicht dabei, WELCHER Text
+       bewertet wurde, laesst sich spaeter nicht sagen, ob er noch gilt.
+       ------------------------------------------------------------------- */
+    provenance: {
+      contentId: CID,
+      briefBlobSha: createHash("sha1")
+        .update("blob " + briefRoh.length + "\0").update(briefRoh).digest("hex"),
+      resultSha256: createHash("sha256").update(resultRoh).digest("hex"),
+      captionSource: korrektur ? "vu-editorial-correction.json" : "authoring-result.json",
+      captionSha256: createHash("sha256").update(Buffer.from(CAPTION, "utf8")).digest("hex"),
+      editorialCorrection: korrektur
+        ? { by: korrektur.by, criterion: korrektur.criterion,
+            correctedAt: korrektur.correctedAt }
+        : null,
+      decompositionComplete: zerlegung.complete,
+      attributionChecked: auswahl.assessed.every((b) => b.assessment.attributionChecked),
+      /* Ausdruecklich: diese Rubrik sagt keine Leistung voraus. Ein
+         Kompositionsunterschied von einem Punkt ist eine Regel zur
+         Aufloesung von Gleichstaenden, keine Prognose. n=0. */
+      predictsPerformance: false,
+      rubricVersion: Creative.RUBRIK_VERSION || null,
+      generatedBy: "scripts/social/assess-creative-quality.mjs"
+    },
     chosen: auswahl.ok ? auswahl.chosen.variant.id : null,
     closest: auswahl.closest ? auswahl.closest.variant.id : null,
     explanation: auswahl.explanation

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T08:20:03.552Z",
+  "generatedAt": "2026-09-19T14:16:55.380Z",
   "provider": null,
   "creativeProvider": [
     {
@@ -21,11 +21,11 @@
       },
       "blocking": false,
       "terminal": true,
-      "observedAt": "2026-09-19T08:20:03.552Z"
+      "observedAt": "2026-09-19T14:16:55.380Z"
     }
   ],
   "health": {
-    "generatedAt": "2026-09-19T08:20:03.552Z",
+    "generatedAt": "2026-09-19T14:16:55.380Z",
     "overall": "UNAVAILABLE",
     "counts": {
       "PASS": 6,
@@ -80,9 +80,9 @@
         "state": "WARNING",
         "dataSource": "social/data/signals.json",
         "lastSuccessAt": "2026-09-15T12:00:00Z",
-        "failureMode": "Letzter Erfolg vor 92 h (Frist 48 h).",
+        "failureMode": "Letzter Erfolg vor 98 h (Frist 48 h).",
         "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-        "detail": "Letzter Erfolg vor 92 h (Frist 48 h)."
+        "detail": "Letzter Erfolg vor 98 h (Frist 48 h)."
       },
       {
         "component": "signals.market",
@@ -129,7 +129,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -139,7 +139,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -149,7 +149,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -159,7 +159,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -169,7 +169,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -199,7 +199,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
+        "lastSuccessAt": "2026-09-19T14:16:55.380Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -265,7 +265,7 @@
   ],
   "packages": [
     {
-      "packageId": "pkg_eb2926ecbf807420",
+      "packageId": "pkg_073d896891b9f4f4",
       "topic": "Technisches Setup — XOM",
       "opportunityId": "opp_xom_2026-09-19",
       "archetype": "STOCK_STORY",
@@ -274,12 +274,61 @@
       "authoring": {
         "briefId": "brief_e444dc5b0939ca4f",
         "authorId": "chatgpt-work",
+        "editorialCorrection": {
+          "by": "vision-universe",
+          "reason": "Der ausgelieferte Satz machte VOLATILITY zur Ursache des Gesamtwerts (\"begrenzt damit\"). Gemessen traegt VOLATILITY 5,00 der 24,01 fehlenden Punkte - 20,8 %. Den groessten Einzelverlust traegt SETUP mit 6,56. Jede Zahl im Satz war belegt; falsch war das Wort ohne Zahl. Das ist eine Ursachenbehauptung, die die Evidenz nicht traegt - und die der Brief seit dem ersten Auftrag verbietet.",
+          "criterion": "causalAttribution",
+          "supersededCaption": "Die Auflösung liegt im Gegengewicht: Die Trendstruktur erreicht 27,35 von 30, doch die Schwankungsbreite trägt nur 5 von 10 bei und begrenzt damit den Gesamtwert auf 76 von 100. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf; sie ist keine Prognose. Auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
+          "correctedAt": "2026-09-19T08:30:00.000Z"
+        },
+        "textAuthor": {
+          "hook": "chatgpt-work",
+          "caption": "vision-universe"
+        },
         "pattern": "chatgpt-work/value_first",
         "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:02",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (88 gegen 87).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (96 gegen 93).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 96,
+          "alternatives": [
+            {
+              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:01",
+              "pattern": "chatgpt-work/value_first",
+              "brandScore": 100,
+              "compositionScore": 93,
+              "recentUses": 0
+            },
+            {
+              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:04",
+              "pattern": "chatgpt-work/value_first",
+              "brandScore": 100,
+              "compositionScore": 90,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 60 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
           {
             "authorId": "chatgpt-work",
@@ -299,9 +348,39 @@
       "authoring": {
         "briefId": "brief_f99aa582c146d186",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_f2f0eebc1bbb3080",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_09f4202d0d453dc9",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_f79f05070e3000eb",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [
@@ -344,9 +423,39 @@
       "authoring": {
         "briefId": "brief_609deed5b66c1951",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_925d7ff2840314f6",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_2ffee760c9e647d4",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_c64605a54c78a4d9",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [
@@ -389,9 +498,39 @@
       "authoring": {
         "briefId": "brief_d684b15cbe5e0f30",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_cace36f84a0bccfc",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_9332736eed24f37a",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_96f2218fab304db3",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [
@@ -437,7 +576,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-19T08:20:03.552Z",
+      "assessedAt": "2026-09-19T14:16:55.380Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -682,25 +821,74 @@
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-19T08:20:03.552Z",
-      "packageId": "pkg_eb2926ecbf807420",
+      "decidedAt": "2026-09-19T14:16:55.380Z",
+      "packageId": "pkg_073d896891b9f4f4",
       "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
       "visualType": "GENERATIVE",
       "hook": "47,6 % in 12 Monaten, aber nur 76 von 100: XOMs Stärke hat ein Gegengewicht.",
-      "caption": "Die Auflösung liegt im Gegengewicht: Die Trendstruktur erreicht 27,35 von 30, doch die Schwankungsbreite trägt nur 5 von 10 bei und begrenzt damit den Gesamtwert auf 76 von 100. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf; sie ist keine Prognose. Auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
+      "caption": "Der Gesamtwert ist eine Summe aus sechs Bausteinen, und keiner erreicht sein Maximum. Die Trendstruktur ist mit 27,35 von 30 der stärkste. Die Schwankungsbreite bleibt als einzige bei der Hälfte, 5 von 10, doch den größten Einzelabzug trägt der Aufbau. Ein einzelner Baustein erklärt den Abstand zu 100 also nicht. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf und ist keine Prognose; auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
       "hashtags": [],
       "authoringPattern": "chatgpt-work/value_first",
       "authoringAuthorId": "chatgpt-work",
       "authoring": {
         "briefId": "brief_e444dc5b0939ca4f",
         "authorId": "chatgpt-work",
+        "editorialCorrection": {
+          "by": "vision-universe",
+          "reason": "Der ausgelieferte Satz machte VOLATILITY zur Ursache des Gesamtwerts (\"begrenzt damit\"). Gemessen traegt VOLATILITY 5,00 der 24,01 fehlenden Punkte - 20,8 %. Den groessten Einzelverlust traegt SETUP mit 6,56. Jede Zahl im Satz war belegt; falsch war das Wort ohne Zahl. Das ist eine Ursachenbehauptung, die die Evidenz nicht traegt - und die der Brief seit dem ersten Auftrag verbietet.",
+          "criterion": "causalAttribution",
+          "supersededCaption": "Die Auflösung liegt im Gegengewicht: Die Trendstruktur erreicht 27,35 von 30, doch die Schwankungsbreite trägt nur 5 von 10 bei und begrenzt damit den Gesamtwert auf 76 von 100. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf; sie ist keine Prognose. Auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
+          "correctedAt": "2026-09-19T08:30:00.000Z"
+        },
+        "textAuthor": {
+          "hook": "chatgpt-work",
+          "caption": "vision-universe"
+        },
         "pattern": "chatgpt-work/value_first",
         "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:02",
-        "reason": "Markenwert 100 unter 4 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (88 gegen 87).",
+        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (96 gegen 93).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 96,
+          "alternatives": [
+            {
+              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:01",
+              "pattern": "chatgpt-work/value_first",
+              "brandScore": 100,
+              "compositionScore": 93,
+              "recentUses": 0
+            },
+            {
+              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:04",
+              "pattern": "chatgpt-work/value_first",
+              "brandScore": 100,
+              "compositionScore": 90,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
-        "passed": 4,
-        "rejected": [],
+        "passed": 3,
+        "rejected": [
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 60 %."
+              }
+            ]
+          }
+        ],
         "attempts": [
           {
             "authorId": "chatgpt-work",
@@ -727,7 +915,7 @@
         "visualType": "GENERATIVE",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_eb2926ecbf807420.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_073d896891b9f4f4.jpg",
         "quality": {
           "applicable": false,
           "explanation": "Generatives Bild ohne Textebene. Die Kartenpruefung misst Redundanz, Vollstaendigkeit und Lesbarkeit von Text und trifft hier auf nichts."
@@ -745,7 +933,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:20:03.552Z",
+      "decidedAt": "2026-09-19T14:16:55.380Z",
       "packageId": "pkg_58ddd3be0771daa2",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
@@ -762,9 +950,39 @@
       "authoring": {
         "briefId": "brief_f99aa582c146d186",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_f2f0eebc1bbb3080",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_09f4202d0d453dc9",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_f79f05070e3000eb",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [
@@ -823,7 +1041,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:20:03.552Z",
+      "decidedAt": "2026-09-19T14:16:55.380Z",
       "packageId": "pkg_4e7b2f5b580ba617",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
@@ -840,9 +1058,39 @@
       "authoring": {
         "briefId": "brief_609deed5b66c1951",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_925d7ff2840314f6",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_2ffee760c9e647d4",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_c64605a54c78a4d9",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [
@@ -901,7 +1149,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:20:03.552Z",
+      "decidedAt": "2026-09-19T14:16:55.380Z",
       "packageId": "pkg_f1a3b11682ad94aa",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
@@ -918,9 +1166,39 @@
       "authoring": {
         "briefId": "brief_d684b15cbe5e0f30",
         "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
         "pattern": "value-first/state-limit-reason",
         "variantId": "var_cace36f84a0bccfc",
         "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_9332736eed24f37a",
+              "pattern": "metric-frame/evidence-led",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_96f2218fab304db3",
+              "pattern": "subject-first/method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
         "considered": 4,
         "passed": 3,
         "rejected": [

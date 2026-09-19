@@ -372,6 +372,14 @@ const CREATIVE_TRANSPORT = {
      Objekt neu serialisiert, bekommt einen anderen Hash und damit
      andere Varianten-Kennungen als die, die der Agent vorgerechnet
      bekommen hat. */
+  /* Die redaktionelle Korrektur liegt NEBEN dem Ergebnis, nicht darin.
+     Das Ergebnis des Agenten bleibt damit das, was er geliefert hat. */
+  readCorrection: function (contentId) {
+    const pfad = join(ROOT, "authoring/requests", String(contentId),
+      "vu-editorial-correction.json");
+    if (!existsSync(pfad)) return null;
+    return JSON.parse(readFileSync(pfad, "utf8"));
+  },
   readBriefRaw: function (contentId) {
     const pfad = join(ROOT, "authoring/requests", String(contentId), "authoring-brief.json");
     if (!existsSync(pfad)) return null;
@@ -1106,9 +1114,49 @@ async function main() {
       authoring: {
         briefId: brief.briefId,
         authorId: gewaehlteVariante.authorId,
+        /* Der Autor hat die Hooks geschrieben. Hat Vision Universe die
+           Caption redaktionell ersetzt, steht das HIER und nicht nur in
+           einer Datei nebenan - sonst weist der Kandidat einen Text als
+           den des Agenten aus, den der Agent nie geschrieben hat. */
+        editorialCorrection: gewaehlteVariante.editorialCorrection || null,
+        textAuthor: gewaehlteVariante.editorialCorrection
+          ? { hook: gewaehlteVariante.authorId,
+              caption: gewaehlteVariante.editorialCorrection.by }
+          : null,
         pattern: gewaehlteVariante.pattern,
         variantId: gewaehlteVariante.variantId,
         reason: geschrieben.selection.reason,
+        /* -------------------------------------------------------------
+           WELCHES KRITERIUM HAT TATSAECHLICH ENTSCHIEDEN
+
+           Die Prosa-Begruendung nennt einen Kompositionswert. Ein
+           Unterschied von wenigen Punkten darin ist eine Regel zur
+           Aufloesung von GLEICHSTAENDEN - keine Leistungsprognose.
+           Das laesst sich missverstehen, solange nur der Satz dasteht
+           und nicht, welche Tore ueberhaupt unterschieden haben.
+
+           Reale Performance-Learnings gibt es hier nicht: n=0. Was
+           spaeter aus Messung dazukommt, gehoert an eine andere
+           Stelle und nicht in diese Begruendung. */
+        selectionCriteria: {
+          brandScoreChosen: (geschrieben.selection.chosen || {}).brandScore ?? null,
+          compositionScoreChosen: ((geschrieben.selection.chosen || {}).composition
+            || {}).score ?? null,
+          alternatives: geschrieben.selection.alternatives || [],
+          discriminatedBy: (() => {
+            const alt = geschrieben.selection.alternatives || [];
+            const ch = geschrieben.selection.chosen || {};
+            if (!alt.length) return ["einzige bestandene Variante"];
+            const gleiche = alt.filter((a) => a.brandScore === ch.brandScore);
+            return gleiche.length === alt.length
+              ? ["composition (Gleichstand beim Markenwert)"]
+              : ["brand", "composition"];
+          })(),
+          predictsPerformance: false,
+          performanceLearnings: { sampleSize: 0,
+            note: "Keine gemessene Leistung vorhanden. Die Auswahl beruht " +
+              "ausschliesslich auf Toren, nicht auf Wirkung." }
+        },
         considered: geschrieben.variants.length,
         passed: geschrieben.evaluated.filter((e) => e.passed).length,
         rejected: geschrieben.selection.rejected.map((r) => ({
