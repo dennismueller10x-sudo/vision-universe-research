@@ -52,7 +52,8 @@
         freshMsPerIntervalFactor: 2, degradedMsPerIntervalFactor: 4,
         fallbackMsPerIntervalFactor: 8, minFreshMs: 120000
       },
-      EOD: { freshMsAfterCloseHours: 30, degradedMsAfterCloseHours: 96 }
+      EOD: { freshTradingDays: 1, degradedTradingDays: 3,
+             freshMsAfterCloseHours: 30, degradedMsAfterCloseHours: 96 }
     },
     sessions: {
       REGULAR: { applies: true, factor: 1 },
@@ -180,11 +181,10 @@
       /* EOD ist die Ausnahme: ein Tagesschluss veraltet auch bei
          geschlossener Boerse, nur eben in Tagen statt Sekunden. Sonst
          waere ein drei Wochen alter Schlusskurs am Sonntag "in Ordnung". */
-      if (dataClass === "EOD" && th && ageMs > th.degradedMs) {
-        return assign(base, { level: "STALE", reason: "eodTooOld" });
-      }
-      if (dataClass === "EOD" && th && ageMs > th.freshMs) {
-        return assign(base, { level: "DEGRADED", reason: "eodAging" });
+      var eod = eodAlter(input, dataClass, ts, now);
+      if (eod) {
+        base = assign(base, { tradingDaysBehind: eod.tradingDays });
+        if (eod.level !== "FRESH") return assign(base, { level: eod.level, reason: eod.reason });
       }
       return assign(base, {
         level: "MARKET_CLOSED",
@@ -220,6 +220,55 @@
     var limit = evaluation.thresholds.fallbackMs;
     if (limit === undefined || limit === null || limit === Infinity) return false;
     return typeof evaluation.ageMs === "number" && evaluation.ageMs > limit;
+  }
+
+  /**
+   * Wie alt ist ein Tagesschluss?
+   *
+   * In Handelstagen, wenn ein Kalender vorliegt - sonst in Stunden.
+   *
+   * Der Unterschied ist im Betrieb aufgefallen und nicht theoretisch: ein
+   * Schluss vom Freitag ist am Dienstag nach Wochenende und Labor Day 108
+   * Kalenderstunden alt und lag damit ueber jeder Stundenschwelle. Es
+   * fehlte aber kein einziger Handelstag. Eine Warnung, die nach jedem
+   * langen Wochenende erscheint, ist keine Warnung mehr.
+   *
+   * `tradingDay` ist der Handelstag als Datum. Er wird bevorzugt, weil
+   * ein Tagesschluss ein Tag ist und kein Zeitpunkt: als UTC-Mitternacht
+   * gelesen und in Boersenzeit zurueckgerechnet wird aus dem 4. der 3.
+   */
+  function eodAlter(input, dataClass, ts, now) {
+    if (dataClass !== "EOD") return null;
+    var cfg = (input.thresholds || BUILTIN);
+    var spec = (cfg.classes && cfg.classes.EOD) || BUILTIN.classes.EOD;
+
+    var kalender = input.calendar;
+    var bezug = input.tradingDay || ts;
+    if (kalender && spec.degradedTradingDays !== undefined) {
+      var tage = MarketHours.tradingDaysBetween(bezug, now, {
+        calendar: kalender, exchange: input.exchange
+      });
+      if (tage !== null) {
+        if (tage > spec.degradedTradingDays) {
+          return { level: "STALE", reason: "eodTooOld", tradingDays: tage };
+        }
+        if (tage > (spec.freshTradingDays === undefined ? 1 : spec.freshTradingDays)) {
+          return { level: "DEGRADED", reason: "eodAging", tradingDays: tage };
+        }
+        return { level: "FRESH", reason: null, tradingDays: tage };
+      }
+    }
+
+    /* Ohne Kalender bleibt die Stundenrechnung. Sie ist gröber, aber sie
+       ist besser als gar keine Alterung. */
+    var ageMs = now - ts;
+    if (ageMs > (spec.degradedMsAfterCloseHours || 96) * HOUR_MS) {
+      return { level: "STALE", reason: "eodTooOld", tradingDays: null };
+    }
+    if (ageMs > (spec.freshMsAfterCloseHours || 30) * HOUR_MS) {
+      return { level: "DEGRADED", reason: "eodAging", tradingDays: null };
+    }
+    return { level: "FRESH", reason: null, tradingDays: null };
   }
 
   function toMs(v, fallback) {

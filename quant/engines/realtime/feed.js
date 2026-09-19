@@ -149,9 +149,18 @@
         /* Den bereits ermittelten Sitzungsbefund weiterreichen, statt ihn
            dort ein zweites Mal berechnen zu lassen. */
         session: currentSession(),
+        /* Der Handelstag der juengsten Bar. Fuer EOD ist er der
+           massgebliche Bezug - nicht der Zeitstempel, den eine Tagesbar
+           gar nicht hat. */
+        tradingDay: lastTradingDay(),
         thresholds: thresholds,
         includeExtended: expectsExtendedUpdates()
       });
+    }
+
+    function lastTradingDay() {
+      var b = series.last();
+      return b && b.date ? b.date : null;
     }
 
     /* Die laufende Sitzung, in Produktschreibweise.
@@ -504,6 +513,7 @@
         sessionAllowsLive: SessionPolicy.allowsLiveLabel(
           session.session, negotiation.capabilities || opts.capabilities || null),
         lastTimestamp: series.lastTimestamp(),
+        lastTradingDay: lastTradingDay(),
         timezone: opts.displayTimezone
       });
     }

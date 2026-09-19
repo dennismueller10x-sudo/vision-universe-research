@@ -70,6 +70,13 @@
       : lp.clock;
   }
 
+  /* Ein Datum, das schon eines ist. Keine Umrechnung, keine Zeitzone. */
+  function fmtDateOnly(iso) {
+    var p = String(iso).slice(0, 10).split("-");
+    if (p.length !== 3) return null;
+    return p[2] + "." + MONTHS_DE[parseInt(p[1], 10) - 1] + "." + p[0];
+  }
+
   function fmtDate(ms, timezone) {
     var lp = MarketHours.localParts(ms, timezone);
     if (!lp) return null;
@@ -117,12 +124,24 @@
     });
 
     var spec = STATUS[code] || STATUS.UNAVAILABLE;
+    /* Ein Handelstag ist ein Datum, kein Zeitpunkt. Liegt er vor, wird er
+       genommen - und NICHT durch eine Zeitzone gerechnet.
+
+       Ohne diese Zeile wird aus dem Schlusskurs vom 4. September der vom
+       3.: eine Tagesbar traegt keine Uhrzeit, landet als Mitternacht UTC
+       im Zeitstempel, und Mitternacht UTC ist in New York der Vorabend.
+       Der Fehler ist beim Anbinden an die echte Marktdatenseite
+       aufgefallen, wo die Anzeige verlaesslich einen Tag zurueck lag. */
+    var tradingDay = input.lastTradingDay || null;
+
     var detail = null;
     if (spec.detail === "time" && ts !== null) detail = fmtTime(ts, tz, true);
     else if (spec.detail === "asOfTime" && ts !== null) detail = "Stand " + fmtTime(ts, tz, false);
-    else if (spec.detail === "asOfDate" && ts !== null) detail = fmtDate(ts, tz);
-    else if (spec.detail === "asOfDateTime" && ts !== null) {
-      detail = "Stand " + fmtDate(ts, tz) + " " + fmtTime(ts, tz, false);
+    else if (spec.detail === "asOfDate") {
+      detail = tradingDay ? fmtDateOnly(tradingDay) : (ts !== null ? fmtDate(ts, tz) : null);
+    } else if (spec.detail === "asOfDateTime" && ts !== null) {
+      detail = "Stand " + (tradingDay ? fmtDateOnly(tradingDay) : fmtDate(ts, tz)) +
+               " " + fmtTime(ts, tz, false);
     }
 
     /* Die Sitzung gehoert ins Etikett, sobald sie nicht die regulaere
@@ -308,7 +327,8 @@
     internalProvenance: internalProvenance,
     publicProvenance: publicProvenance,
     fmtTime: fmtTime,
-    fmtDate: fmtDate
+    fmtDate: fmtDate,
+    fmtDateOnly: fmtDateOnly
   };
 
   if (isNode) module.exports = api;

@@ -21,6 +21,7 @@ const MarketHours = require("../engines/realtime/market-hours.js");
 const BarMerge = require("../engines/realtime/bar-merge.js");
 const DataStatus = require("../engines/realtime/data-status.js");
 const Bridge = require("../engines/realtime/technical-bridge.js");
+const Staleness = require("../engines/realtime/staleness.js");
 const Capabilities = require("../engines/capabilities.js");
 const Negotiation = require("../engines/realtime/capability-negotiation.js");
 const Transport = require("../engines/realtime/transport.js");
@@ -417,6 +418,78 @@ test("T4 · Eine Abweichung ist möglich, aber niemals stillschweigend", () => {
   assert.equal(bewusst.bars.length, 1);
   assert.equal(bewusst.contract.includeExtended, true,
     "Der abweichende Vertrag steht im Ergebnis - er lässt sich nicht verschweigen.");
+});
+
+/* ================== Befunde aus der Anbindung an echte Daten === */
+
+test("V1 · Ein Tagesschluss wird als Handelstag angezeigt, nicht durch eine Zeitzone gerechnet", () => {
+  /* Der Befund aus der Anbindung an die Marktdatenseite: eine Tagesbar
+     traegt keine Uhrzeit, landet als Mitternacht UTC im Zeitstempel -
+     und Mitternacht UTC ist in New York der Vorabend. Die Anzeige lag
+     verlaesslich einen Tag zurueck. */
+  const ohneHandelstag = DataStatus.derive({
+    connection: { state: "FALLBACK_EOD" },
+    selection: { selected: "EOD" },
+    negotiation: neg(OHNE_EXT),
+    staleness: { level: "MARKET_CLOSED" },
+    session: sess(CLOSED),
+    lastTimestamp: Date.parse("2026-09-04")
+  });
+  const mitHandelstag = DataStatus.derive({
+    connection: { state: "FALLBACK_EOD" },
+    selection: { selected: "EOD" },
+    negotiation: neg(OHNE_EXT),
+    staleness: { level: "MARKET_CLOSED" },
+    session: sess(CLOSED),
+    lastTimestamp: Date.parse("2026-09-04"),
+    lastTradingDay: "2026-09-04"
+  });
+  assert.equal(mitHandelstag.detail, "04.09.2026",
+    "Der Handelstag steht so da, wie er heisst.");
+  assert.notEqual(ohneHandelstag.detail, mitHandelstag.detail,
+    "Ohne Handelstag verschiebt die Zeitzone das Datum - deshalb wird er gereicht.");
+  assert.equal(DataStatus.fmtDateOnly("2026-01-02"), "02.01.2026");
+});
+
+test("V2 · Ein Tagesschluss altert in Handelstagen, nicht in Kalenderstunden", () => {
+  /* Freitag 04.09. geschlossen, Dienstag 08.09. nachgesehen. Dazwischen
+     Wochenende und Labor Day - 108 Kalenderstunden, aber genau ein
+     fehlender Handelstag. Eine Warnung nach jedem langen Wochenende
+     waere keine Warnung mehr. */
+  const jetzt = Date.parse("2026-09-08T12:00:00Z");
+  const frisch = Staleness.evaluate({
+    dataClass: "EOD", timestamp: Date.parse("2026-09-04"), tradingDay: "2026-09-04",
+    now: jetzt, calendar: CALENDAR, thresholds: THRESHOLDS
+  });
+  assert.equal(frisch.tradingDaysBehind, 1);
+  assert.notEqual(frisch.level, "STALE",
+    "108 Kalenderstunden ueber ein langes Wochenende sind kein Ausfall.");
+
+  const alt = Staleness.evaluate({
+    dataClass: "EOD", timestamp: Date.parse("2026-08-09"), tradingDay: "2026-08-09",
+    now: jetzt, calendar: CALENDAR, thresholds: THRESHOLDS
+  });
+  assert.equal(alt.level, "STALE");
+  assert.ok(alt.tradingDaysBehind > 3);
+});
+
+test("V3 · Handelstage zaehlen Wochenenden und Feiertage nicht mit", () => {
+  const z = (a, b) => MarketHours.tradingDaysBetween(a, b,
+    { calendar: CALENDAR, exchange: "XNYS" });
+  assert.equal(z("2026-09-04", "2026-09-08T12:00:00Z"), 1, "Sa, So und Labor Day zaehlen nicht.");
+  assert.equal(z("2026-09-08", "2026-09-08T12:00:00Z"), 0, "Derselbe Tag ist kein Abstand.");
+  assert.equal(z("2026-09-08T20:00:00Z", "2026-09-04T12:00:00Z"), 0, "Rueckwaerts ist null.");
+  /* Ein Datum bleibt ein Datum - es wird nicht durch eine Zeitzone gerechnet. */
+  assert.equal(z("2026-09-07", "2026-09-08T12:00:00Z"), 1, "Labor Day raus, Dienstag rein.");
+});
+
+test("V4 · Ohne Kalender bleibt die Stundenrechnung als Rueckfall", () => {
+  const jetzt = Date.parse("2026-09-08T12:00:00Z");
+  const r = Staleness.evaluate({
+    dataClass: "EOD", timestamp: jetzt - 200 * 3600000, now: jetzt, thresholds: THRESHOLDS
+  });
+  assert.equal(r.level, "STALE", "Groeber, aber besser als gar keine Alterung.");
+  assert.equal(r.tradingDaysBehind, null);
 });
 
 /* ================================ Sitzungszeiten als Bericht === */

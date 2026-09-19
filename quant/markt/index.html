@@ -32,8 +32,25 @@
 <script src="/quant/engines/data-mode.js"></script>
 <script src="/quant/engines/display-policy.js"></script>
 <script src="/quant/engines/chart-ranges.js"></script>
+
+<!-- Realtime-Engine (PR #51). Reihenfolge zaehlt: data-class vor allem,
+     was sie liest; session-policy vor staleness und bar-merge. -->
+<script src="/quant/engines/realtime/data-class.js"></script>
+<script src="/quant/engines/realtime/capability-negotiation.js"></script>
+<script src="/quant/engines/realtime/market-hours.js"></script>
+<script src="/quant/engines/realtime/session-policy.js"></script>
+<script src="/quant/engines/realtime/staleness.js"></script>
+<script src="/quant/engines/realtime/connection-state.js"></script>
+<script src="/quant/engines/realtime/bar-merge.js"></script>
+<script src="/quant/engines/realtime/fallback-engine.js"></script>
+<script src="/quant/engines/realtime/data-status.js"></script>
+<script src="/quant/engines/realtime/chart-adapter.js"></script>
+<script src="/quant/engines/realtime/transport.js"></script>
+<script src="/quant/engines/realtime/feed.js"></script>
+
 <script src="/quant/ui/shell.js"></script>
 <script src="/quant/ui/charts.js"></script>
+<script src="/quant/ui/live-chart.js"></script>
 <script src="/quant/ui/components.js"></script>
 <script src="/quant/markt/app.js"></script>
 </body>
