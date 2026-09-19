@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_00b861f522ad2209",
+  "content_id": "vu-xom-20260911-rev2",
+  "request_type": "TEXT_REVISION",
+  "fixture_type": "production_authoring_request",
+  "supersedes_content_id": "vu-xom-20260911",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-stock-story-value-first-v1",
+    "hook_type": "value_first",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:value_first:01",
+      "hook_type": "value_first",
+      "text": "27,35 von 30 Punkten für die Trendstruktur – und trotzdem 76 von 100 für XOM.",
+      "brief_revision": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "evidence_refs": [
+        "score",
+        "score-contribution-trend_structure"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:value_first:02",
+      "hook_type": "value_first",
+      "text": "47,6 % über 12 Monate, aber nur 76 von 100: Wie ordnet sich XOM ein?",
+      "brief_revision": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "evidence_refs": [
+        "momentum-12m",
+        "score"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:value_first:03",
+      "hook_type": "value_first",
+      "text": "XOM erreicht 76 von 100, obwohl die Trendstruktur 27,35 von 30 Punkten beisteuert.",
+      "brief_revision": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "evidence_refs": [
+        "score",
+        "score-contribution-trend_structure"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:value_first:04",
+      "hook_type": "value_first",
+      "text": "27,35 von 30 für die Trendstruktur, dennoch 5 von 10 für die Schwankungsbreite.",
+      "brief_revision": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "evidence_refs": [
+        "score-contribution-trend_structure",
+        "score-contribution-volatility"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:value_first:02",
+    "recommendation_reason": "Die Variante verbindet die beobachtete 12M-Entwicklung mit der nüchternen Einordnung des Gesamtwerts und öffnet die im Brief verlangte Erklärung, ohne Prognose oder Empfehlung.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Die Messung zeigt unterschiedlich starke Bausteine: Die Trendstruktur steuert 27,35 von 30 Punkten bei, die Schwankungsbreite 5 von 10. Der Gesamtwert 76 von 100 liegt im Band „Konstruktiv“, das ab 60 beginnt. Die 12M-Entwicklung von 47,6 % ist ein beobachteter Wert, keine Aussage über die Zukunft. Auch der Gesamtwert steht weder für eine Wahrscheinlichkeit noch für eine Renditeerwartung. Stand der Daten: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
+  "visual_brief": {
+    "purpose": "Das bestehende verifizierte Visual unverändert mit der überarbeiteten Textfassung kombinieren.",
+    "visual_strategy": "FUTURE_TECH",
+    "visual_resolution": "INHERITED",
+    "inheritance_instruction": "Keine Bildgenerierung, keine Bearbeitung und keine neue visuelle Identität.",
+    "source_content_id": "vu-xom-20260911",
+    "source_candidate_id": "cand_20260918_ca4ea408",
+    "composition": "Geerbtes Hochformat 1122 × 1402 mit zentriertem technischen Messapparat und großzügigem Negativraum.",
+    "restrictions": [
+      "Geerbtes Asset nicht verändern",
+      "Kein neues Bild erzeugen",
+      "Keinen neuen Asset-Pfad anlegen",
+      "Keine neue Visual-ID vergeben"
+    ]
+  },
+  "visual_resolution": "INHERITED",
+  "inherited_visual": {
+    "source_content_id": "vu-xom-20260911",
+    "source_candidate_id": "cand_20260918_ca4ea408",
+    "source_visual_variant_id": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:visual:FUTURE_TECH:01",
+    "source_asset_path": "authoring/requests/vu-xom-20260911/assets/visual-01.png",
+    "source_asset_sha256": "a378d07895c481cbdb2b60ea21d42512ed844b9ce0216ca262efcc8fcc9e0b40",
+    "source_asset_git_blob_sha": "06785f7c2ad67a7a1ab7315163ac197dca7f6305",
+    "source_byte_size": 1954408,
+    "source_mime_type": "image/png",
+    "source_width": 1122,
+    "source_height": 1402,
+    "source_verification": "VU_VERIFIED_COMPLETED",
+    "source_visual_strategy": "FUTURE_TECH",
+    "source_brief_revision": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3"
+  },
+  "evidence_refs": [
+    {
+      "ref_id": "score",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Gesamtwert und Bandgrenze"
+    },
+    {
+      "ref_id": "score-meaning",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Einordnung als Skalenwert, nicht Wahrscheinlichkeit oder Renditeerwartung"
+    },
+    {
+      "ref_id": "score-contribution-trend_structure",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/2",
+      "supports": "Beitrag der Trendstruktur"
+    },
+    {
+      "ref_id": "score-contribution-volatility",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/3",
+      "supports": "Beitrag der Schwankungsbreite"
+    },
+    {
+      "ref_id": "momentum-12m",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/4",
+      "supports": "12M-Entwicklung"
+    },
+    {
+      "ref_id": "inherited-visual",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual",
+      "supports": "Unveränderte geerbte Visual-Identität"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_text_revision",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "hook_variant_count_met": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "hook_and_caption_complementary": true,
+      "composition_overlap_within_60_percent": true,
+      "numeric_density_within_12_per_100_words": true,
+      "public_copy_uses_only_permitted_evidence": true,
+      "public_copy_excludes_internal_terms": true,
+      "no_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "visual_resolution_inherited": true,
+      "inherited_asset_identity_complete": true,
+      "inherited_asset_binary_verified": true,
+      "no_image_generated": true,
+      "no_visual_variants_present": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "da72a18296c3658ef59907df74acc2dffaee9841",
+    "brief_revision": "da72a18296c3658ef59907df74acc2dffaee9841",
+    "processing_key": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "TEXT_REVISION"
+  },
+  "publishing_allowed": false
+}
