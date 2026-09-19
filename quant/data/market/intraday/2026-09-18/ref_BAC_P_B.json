@@ -1,1 +1,229 @@
-{"schemaVersion":"intraday-snapshot-1.0.0","instrumentId":"BAC-P-B","symbol":"BAC-P-B","securityId":"ref_BAC_P_B","provider":"tiingo","venue":"IEX","dataMode":"real","seriesType":"INTRADAY_BARS","interval":"5min","sessionDate":"2026-09-18","timezone":"America/New_York","sessionOpen":"2026-09-18T13:30:00.000Z","sessionClose":"2026-09-18T20:00:00.000Z","sessionOpenLocal":"09:30","sessionCloseLocal":"16:00","closeLocal":"16:00","earlyClose":false,"extendedHours":{"preOpenLocal":"04:00","afterCloseLocal":"20:00"},"asOf":"2026-09-18T19:05:00.000Z","asOfLocal":"15:05","fetchedAt":"2026-09-18T20:02:31.250Z","marketStateAtFetch":"AFTER_HOURS","isLive":false,"isDelayed":true,"delayMinutes":5,"regularComplete":true,"isComplete":false,"previousClose":23.26,"points":[["11:25",23.29],["11:30",23.29],["11:35",23.29],["11:40",23.29],["11:45",23.29],["11:50",23.29],["11:55",23.29],["12:00",23.29],["12:05",23.29],["12:10",23.29],["12:15",23.29],["12:20",23.3],["12:25",23.3],["12:30",23.3],["12:35",23.3],["12:40",23.3],["12:45",23.3],["12:50",23.3],["12:55",23.3],["13:00",23.3],["13:05",23.3],["13:10",23.3],["13:15",23.3],["13:20",23.3],["13:25",23.3],["13:30",23.3],["13:35",23.3],["13:40",23.3],["13:45",23.3],["13:50",23.3],["13:55",23.3],["14:00",23.3],["14:05",23.3],["14:10",23.3],["14:15",23.3],["14:20",23.3],["14:25",23.3],["14:30",23.3],["14:35",23.3],["14:40",23.3],["14:45",23.3],["14:50",23.3],["14:55",23.3],["15:00",23.3],["15:05",23.21]],"extended":{"pre":[],"after":[]},"pointCount":45,"discardedBars":0,"publishable":true,"publishBasis":"Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.","publishCheckedAt":"2026-09-13","note":"Tagesverlauf aus Anbieter-Bars (5min, IEX). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes."}
+{
+  "schemaVersion": "intraday-snapshot-1.0.0",
+  "instrumentId": "BAC-P-B",
+  "symbol": "BAC-P-B",
+  "securityId": "ref_BAC_P_B",
+  "provider": "tiingo",
+  "venue": "IEX",
+  "dataMode": "real",
+  "seriesType": "INTRADAY_BARS",
+  "interval": "5min",
+  "sessionDate": "2026-09-18",
+  "timezone": "America/New_York",
+  "sessionOpen": "2026-09-18T13:30:00.000Z",
+  "sessionClose": "2026-09-18T20:00:00.000Z",
+  "sessionOpenLocal": "09:30",
+  "sessionCloseLocal": "16:00",
+  "closeLocal": "16:00",
+  "earlyClose": false,
+  "extendedHours": {
+    "preOpenLocal": "04:00",
+    "afterCloseLocal": "20:00"
+  },
+  "asOf": "2026-09-18T19:05:00.000Z",
+  "asOfLocal": "15:05",
+  "fetchedAt": "2026-09-18T20:02:31.250Z",
+  "marketStateAtFetch": "AFTER_HOURS",
+  "isLive": false,
+  "isDelayed": true,
+  "delayMinutes": 5,
+  "regularComplete": false,
+  "isComplete": false,
+  "previousClose": 23.26,
+  "points": [
+    [
+      "11:25",
+      23.29
+    ],
+    [
+      "11:30",
+      23.29
+    ],
+    [
+      "11:35",
+      23.29
+    ],
+    [
+      "11:40",
+      23.29
+    ],
+    [
+      "11:45",
+      23.29
+    ],
+    [
+      "11:50",
+      23.29
+    ],
+    [
+      "11:55",
+      23.29
+    ],
+    [
+      "12:00",
+      23.29
+    ],
+    [
+      "12:05",
+      23.29
+    ],
+    [
+      "12:10",
+      23.29
+    ],
+    [
+      "12:15",
+      23.29
+    ],
+    [
+      "12:20",
+      23.3
+    ],
+    [
+      "12:25",
+      23.3
+    ],
+    [
+      "12:30",
+      23.3
+    ],
+    [
+      "12:35",
+      23.3
+    ],
+    [
+      "12:40",
+      23.3
+    ],
+    [
+      "12:45",
+      23.3
+    ],
+    [
+      "12:50",
+      23.3
+    ],
+    [
+      "12:55",
+      23.3
+    ],
+    [
+      "13:00",
+      23.3
+    ],
+    [
+      "13:05",
+      23.3
+    ],
+    [
+      "13:10",
+      23.3
+    ],
+    [
+      "13:15",
+      23.3
+    ],
+    [
+      "13:20",
+      23.3
+    ],
+    [
+      "13:25",
+      23.3
+    ],
+    [
+      "13:30",
+      23.3
+    ],
+    [
+      "13:35",
+      23.3
+    ],
+    [
+      "13:40",
+      23.3
+    ],
+    [
+      "13:45",
+      23.3
+    ],
+    [
+      "13:50",
+      23.3
+    ],
+    [
+      "13:55",
+      23.3
+    ],
+    [
+      "14:00",
+      23.3
+    ],
+    [
+      "14:05",
+      23.3
+    ],
+    [
+      "14:10",
+      23.3
+    ],
+    [
+      "14:15",
+      23.3
+    ],
+    [
+      "14:20",
+      23.3
+    ],
+    [
+      "14:25",
+      23.3
+    ],
+    [
+      "14:30",
+      23.3
+    ],
+    [
+      "14:35",
+      23.3
+    ],
+    [
+      "14:40",
+      23.3
+    ],
+    [
+      "14:45",
+      23.3
+    ],
+    [
+      "14:50",
+      23.3
+    ],
+    [
+      "14:55",
+      23.3
+    ],
+    [
+      "15:00",
+      23.3
+    ],
+    [
+      "15:05",
+      23.21
+    ]
+  ],
+  "extended": {
+    "pre": [],
+    "after": []
+  },
+  "pointCount": 45,
+  "discardedBars": 0,
+  "publishable": true,
+  "publishBasis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.",
+  "publishCheckedAt": "2026-09-13",
+  "note": "Tagesverlauf aus Anbieter-Bars (5min, IEX). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes.",
+  "fetchedAfterClose": true,
+  "coversFinalSlot": false,
+  "lastRegularLocal": "15:05",
+  "finalSlotLocal": "15:55"
+}

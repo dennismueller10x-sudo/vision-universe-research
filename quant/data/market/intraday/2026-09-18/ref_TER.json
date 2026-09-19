@@ -1,1 +1,361 @@
-{"schemaVersion":"intraday-snapshot-1.0.0","instrumentId":"TER","symbol":"TER","securityId":"ref_TER","provider":"tiingo","venue":"IEX","dataMode":"real","seriesType":"INTRADAY_BARS","interval":"5min","sessionDate":"2026-09-18","timezone":"America/New_York","sessionOpen":"2026-09-18T13:30:00.000Z","sessionClose":"2026-09-18T20:00:00.000Z","sessionOpenLocal":"09:30","sessionCloseLocal":"16:00","closeLocal":"16:00","earlyClose":false,"extendedHours":{"preOpenLocal":"04:00","afterCloseLocal":"20:00"},"asOf":"2026-09-18T19:55:00.000Z","asOfLocal":"15:55","fetchedAt":"2026-09-18T20:02:31.250Z","marketStateAtFetch":"AFTER_HOURS","isLive":false,"isDelayed":true,"delayMinutes":5,"regularComplete":true,"isComplete":false,"previousClose":null,"points":[["09:30",359.03],["09:35",362.06],["09:40",361.44],["09:45",360.25],["09:50",359.12],["09:55",360],["10:00",357.9],["10:05",358.66],["10:10",359.79],["10:15",361.45],["10:20",363.45],["10:25",362.92],["10:30",363.15],["10:35",362.75],["10:40",362.38],["10:45",362.88],["10:50",362.79],["10:55",362.9],["11:00",362.4],["11:05",362.62],["11:10",362.2],["11:15",361.89],["11:20",362.06],["11:25",362.24],["11:30",362.49],["11:35",361.31],["11:40",360.53],["11:45",361.41],["11:50",360.65],["11:55",361.19],["12:00",361.08],["12:05",361.03],["12:10",360.57],["12:15",361.96],["12:20",360.89],["12:25",360.59],["12:30",360.88],["12:35",361.02],["12:40",360.75],["12:45",360.62],["12:50",360.3],["12:55",359.7],["13:00",359.9],["13:05",360.21],["13:10",359.81],["13:15",359.46],["13:20",359.39],["13:25",359.58],["13:30",359.43],["13:35",359.44],["13:40",359.63],["13:45",359.77],["13:50",359.47],["13:55",359.84],["14:00",359.44],["14:05",359.33],["14:10",358.76],["14:15",359.13],["14:20",359.29],["14:25",359.3],["14:30",359.09],["14:35",359.09],["14:40",359.37],["14:45",359.51],["14:50",359.71],["14:55",359.67],["15:00",360.47],["15:05",360.51],["15:10",361.05],["15:15",361.24],["15:20",361.21],["15:25",361.17],["15:30",361.35],["15:35",362.12],["15:40",362.46],["15:45",362.52],["15:50",366.37],["15:55",371.48]],"extended":{"pre":[],"after":[]},"pointCount":78,"discardedBars":0,"publishable":true,"publishBasis":"Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.","publishCheckedAt":"2026-09-13","note":"Tagesverlauf aus Anbieter-Bars (5min, IEX). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes."}
+{
+  "schemaVersion": "intraday-snapshot-1.0.0",
+  "instrumentId": "TER",
+  "symbol": "TER",
+  "securityId": "ref_TER",
+  "provider": "tiingo",
+  "venue": "IEX",
+  "dataMode": "real",
+  "seriesType": "INTRADAY_BARS",
+  "interval": "5min",
+  "sessionDate": "2026-09-18",
+  "timezone": "America/New_York",
+  "sessionOpen": "2026-09-18T13:30:00.000Z",
+  "sessionClose": "2026-09-18T20:00:00.000Z",
+  "sessionOpenLocal": "09:30",
+  "sessionCloseLocal": "16:00",
+  "closeLocal": "16:00",
+  "earlyClose": false,
+  "extendedHours": {
+    "preOpenLocal": "04:00",
+    "afterCloseLocal": "20:00"
+  },
+  "asOf": "2026-09-18T19:55:00.000Z",
+  "asOfLocal": "15:55",
+  "fetchedAt": "2026-09-18T20:02:31.250Z",
+  "marketStateAtFetch": "AFTER_HOURS",
+  "isLive": false,
+  "isDelayed": true,
+  "delayMinutes": 5,
+  "regularComplete": true,
+  "isComplete": false,
+  "previousClose": null,
+  "points": [
+    [
+      "09:30",
+      359.03
+    ],
+    [
+      "09:35",
+      362.06
+    ],
+    [
+      "09:40",
+      361.44
+    ],
+    [
+      "09:45",
+      360.25
+    ],
+    [
+      "09:50",
+      359.12
+    ],
+    [
+      "09:55",
+      360
+    ],
+    [
+      "10:00",
+      357.9
+    ],
+    [
+      "10:05",
+      358.66
+    ],
+    [
+      "10:10",
+      359.79
+    ],
+    [
+      "10:15",
+      361.45
+    ],
+    [
+      "10:20",
+      363.45
+    ],
+    [
+      "10:25",
+      362.92
+    ],
+    [
+      "10:30",
+      363.15
+    ],
+    [
+      "10:35",
+      362.75
+    ],
+    [
+      "10:40",
+      362.38
+    ],
+    [
+      "10:45",
+      362.88
+    ],
+    [
+      "10:50",
+      362.79
+    ],
+    [
+      "10:55",
+      362.9
+    ],
+    [
+      "11:00",
+      362.4
+    ],
+    [
+      "11:05",
+      362.62
+    ],
+    [
+      "11:10",
+      362.2
+    ],
+    [
+      "11:15",
+      361.89
+    ],
+    [
+      "11:20",
+      362.06
+    ],
+    [
+      "11:25",
+      362.24
+    ],
+    [
+      "11:30",
+      362.49
+    ],
+    [
+      "11:35",
+      361.31
+    ],
+    [
+      "11:40",
+      360.53
+    ],
+    [
+      "11:45",
+      361.41
+    ],
+    [
+      "11:50",
+      360.65
+    ],
+    [
+      "11:55",
+      361.19
+    ],
+    [
+      "12:00",
+      361.08
+    ],
+    [
+      "12:05",
+      361.03
+    ],
+    [
+      "12:10",
+      360.57
+    ],
+    [
+      "12:15",
+      361.96
+    ],
+    [
+      "12:20",
+      360.89
+    ],
+    [
+      "12:25",
+      360.59
+    ],
+    [
+      "12:30",
+      360.88
+    ],
+    [
+      "12:35",
+      361.02
+    ],
+    [
+      "12:40",
+      360.75
+    ],
+    [
+      "12:45",
+      360.62
+    ],
+    [
+      "12:50",
+      360.3
+    ],
+    [
+      "12:55",
+      359.7
+    ],
+    [
+      "13:00",
+      359.9
+    ],
+    [
+      "13:05",
+      360.21
+    ],
+    [
+      "13:10",
+      359.81
+    ],
+    [
+      "13:15",
+      359.46
+    ],
+    [
+      "13:20",
+      359.39
+    ],
+    [
+      "13:25",
+      359.58
+    ],
+    [
+      "13:30",
+      359.43
+    ],
+    [
+      "13:35",
+      359.44
+    ],
+    [
+      "13:40",
+      359.63
+    ],
+    [
+      "13:45",
+      359.77
+    ],
+    [
+      "13:50",
+      359.47
+    ],
+    [
+      "13:55",
+      359.84
+    ],
+    [
+      "14:00",
+      359.44
+    ],
+    [
+      "14:05",
+      359.33
+    ],
+    [
+      "14:10",
+      358.76
+    ],
+    [
+      "14:15",
+      359.13
+    ],
+    [
+      "14:20",
+      359.29
+    ],
+    [
+      "14:25",
+      359.3
+    ],
+    [
+      "14:30",
+      359.09
+    ],
+    [
+      "14:35",
+      359.09
+    ],
+    [
+      "14:40",
+      359.37
+    ],
+    [
+      "14:45",
+      359.51
+    ],
+    [
+      "14:50",
+      359.71
+    ],
+    [
+      "14:55",
+      359.67
+    ],
+    [
+      "15:00",
+      360.47
+    ],
+    [
+      "15:05",
+      360.51
+    ],
+    [
+      "15:10",
+      361.05
+    ],
+    [
+      "15:15",
+      361.24
+    ],
+    [
+      "15:20",
+      361.21
+    ],
+    [
+      "15:25",
+      361.17
+    ],
+    [
+      "15:30",
+      361.35
+    ],
+    [
+      "15:35",
+      362.12
+    ],
+    [
+      "15:40",
+      362.46
+    ],
+    [
+      "15:45",
+      362.52
+    ],
+    [
+      "15:50",
+      366.37
+    ],
+    [
+      "15:55",
+      371.48
+    ]
+  ],
+  "extended": {
+    "pre": [],
+    "after": []
+  },
+  "pointCount": 78,
+  "discardedBars": 0,
+  "publishable": true,
+  "publishBasis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.",
+  "publishCheckedAt": "2026-09-13",
+  "note": "Tagesverlauf aus Anbieter-Bars (5min, IEX). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes.",
+  "fetchedAfterClose": true,
+  "coversFinalSlot": true,
+  "lastRegularLocal": "15:55",
+  "finalSlotLocal": "15:55"
+}

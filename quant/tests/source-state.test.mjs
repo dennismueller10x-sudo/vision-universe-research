@@ -202,3 +202,49 @@ test("SS-15 · '5-Minuten-Kurse' allein steht NUR, wenn der Strom nichts beigetr
                             now: "2026-09-18T19:52:00Z" });
   assert.equal(ohne.sourceText, "5-Minuten-Kurse");
 });
+
+/* =========================================================================
+   DIE RIEGEL GEGEN DEN RUECKFALL
+
+   Zwei Formulierungen sind ab dem 19.09.2026 verboten, und zwar im Code,
+   nicht nur in der Absicht. Ohne diese Tests kaeme die naechste
+   Aenderung ungehindert daran vorbei.
+   ========================================================================= */
+import { readFileSync as leseDatei } from "node:fs";
+
+test("SS-16 · `now >= close` als Vollstaendigkeit steht nirgends mehr", () => {
+  const quelle = leseDatei(join(root, "quant", "engines", "realtime", "intraday-snapshot.js"), "utf8");
+  const zeile = /var\s+regularComplete\s*=\s*nowMs\s*>=\s*closeMs\s*;/.exec(quelle);
+  assert.equal(zeile, null,
+    "regularComplete darf nicht aus der Uhr kommen - Owner-Regel 4 vom 19.09.2026");
+  assert.match(quelle, /fetchedAfterClose\s*&&\s*coversFinalSlot/,
+    "es muss die Tatsache ueber den Abruf UND die ueber die Daten sein");
+});
+
+/* Kommentare zaehlen nicht - dort MUSS der Satz stehen duerfen, weil der
+   Vorfall dort erklaert wird. Gesucht wird, was ein Nutzer sehen kann.
+   Die erste Fassung dieses Tests erkannte nur Zeilen, die mit `*`
+   beginnen, und schlug an den Fortsetzungszeilen der Blockkommentare an.
+   Jetzt werden Kommentare wirklich entfernt. */
+function ohneKommentare(quelle) {
+  return quelle.replace(/\/\*[\s\S]*?\*\//g, " ").replace(/^\s*\/\/.*$/gm, " ");
+}
+
+test("SS-17 · 'Schluss folgt' ist aus der Consumer-Oberflaeche verschwunden", () => {
+  /* Owner-Regel 5: "Kein Schluss folgt." Der Satz war die Vertroestung,
+     die der Eigentuemer acht Minuten nach der Glocke gelesen hat. */
+  for (const datei of [["quant", "engines", "realtime", "source-state.js"],
+                       ["discover", "ui", "detail.js"]]) {
+    const code = ohneKommentare(leseDatei(join(root, ...datei), "utf8"));
+    assert.equal(/Schluss folgt/.test(code), false,
+      datei.join("/") + " enthaelt die abgeschaffte Vertroestung im Code");
+  }
+});
+
+test("SS-18 · Gegenprobe: die Kommentarentfernung funktioniert wirklich", () => {
+  /* Ohne sie waere SS-17 auch dann gruen, wenn ohneKommentare() alles
+     wegwirft - und der Riegel waere eine Attrappe. */
+  assert.equal(/Schluss folgt/.test(ohneKommentare("/* Schluss folgt */")), false);
+  assert.equal(/Schluss folgt/.test(ohneKommentare("var t = 'Schluss folgt';")), true);
+  assert.equal(/Schluss folgt/.test(ohneKommentare("// Schluss folgt")), false);
+});
