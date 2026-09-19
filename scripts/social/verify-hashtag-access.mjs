@@ -202,6 +202,12 @@ export async function pruefe(options) {
       ? cap.data.canPublish : ausRechten(verbindung),
     probeHashtag: probeTag,
     probeCostsNewSlot: false,
+    /* Der Grund, den die Plattform genannt hat - woertlich und nicht
+       abgeleitet. Er fehlte in der ersten Fassung der Ausgabe, und
+       damit war der Bericht an dieser Stelle eine Vermutung. */
+    probeOk: cap.data && cap.data.probe ? cap.data.probe.ok : null,
+    graphApiReason: cap.data && cap.data.probe ? cap.data.probe.reason : null,
+    graphApiMessage: cap.data && cap.data.probe ? cap.data.probe.message : null,
     grantedScopes: (cap.data && cap.data.grantedScopes) || null,
     scopeSource: (cap.data && cap.data.scopeSource) || null,
     /* Eine Unlesbarkeit ohne Grund ist keine Messung. */
@@ -247,7 +253,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     (r.scopeReadError ? "   Grund: " + r.scopeReadError : ""));
   console.log("Probe-Hashtag   : " + (r.probeHashtag ? "#" + r.probeHashtag : "—") +
     "  (kostet keinen Platz)");
+  console.log("Versuch         : " + (r.probeOk === null ? "nicht ausgefuehrt"
+    : r.probeOk ? "erfolgreich" : "abgewiesen"));
+  console.log("Graph-Grund     : " + (r.graphApiReason || "—"));
+  if (r.graphApiMessage) console.log("Graph-Meldung   : " + r.graphApiMessage);
+
   console.log("\nDiagnose        : " + r.diagnosis.state);
+  console.log("Fehlende Rechte : " + (r.diagnosis.missingScopes === null
+    ? "unbekannt" : (r.diagnosis.missingScopes.join(", ") || "keine")));
+  console.log("REAUTH_REQUIRED     = " + (r.diagnosis.reauthorizationHelps === null
+    ? "unknown" : r.diagnosis.reauthorizationHelps));
+  console.log("APP_REVIEW_REQUIRED = " + (r.diagnosis.featureLikelyMissing === null
+    ? "unknown" : r.diagnosis.featureLikelyMissing));
+  console.log("");
   console.log(r.explanation);
 
   if (r.diagnosis.ownerActionRequired) {

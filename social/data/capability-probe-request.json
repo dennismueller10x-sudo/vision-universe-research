@@ -1,16 +1,18 @@
 {
   "_zweck": "Ausloeser fuer Social Hashtag Capability. Nur lesend: genau eine Probe gegen einen bereits geoeffneten KERN-Hashtag, kein Publishing, keine Autorisierung, keine Anforderung an Meta.",
-  "requestedAt": "2026-09-19T19:02:00Z",
+  "requestedAt": "2026-09-19T19:08:00Z",
   "requestedBy": "vision-universe-social-os",
-  "reason": "Dritter Anlauf, und der erste gegen den korrigierten Worker. Lauf 2 lief um 18:57:01, das Deployment um 18:57:50 - die Probe war 49 Sekunden zu frueh und hat die alte Fassung gemessen.",
+  "reason": "Vierte Probe. Die dritte hat gemessen, aber der Bericht liess den Grund der Plattform weg - und ein Bericht ohne den genannten Grund ist an dieser Stelle eine Vermutung. Derselbe Hashtag, also kein weiterer Platz.",
   "publishes": false,
   "consumesNewHashtagSlot": false,
   "_warumKeinNeuerPlatz": "Gewaehlt wird ein KERN-Hashtag. Fenster offen: gratis. Fenster doch zu: ein Platz, den das Portfolio fuer genau diesen Hashtag ohnehin ausgegeben haette. Ist kein Fenster offen, wird nicht probiert.",
   "previousRun": {
-    "runId": 35462775922,
-    "probedAt": "2026-09-19T18:57:01Z",
-    "deployedAt": "2026-09-19T18:57:50Z",
-    "result": "gegen die ALTE Fassung gelaufen, nicht auswertbar"
+    "runId": 35462921310,
+    "diagnosis": "MISSING_SCOPE",
+    "missing": [
+      "pages_read_engagement"
+    ],
+    "gap": "GRAPH_API_REASON nicht ausgegeben"
   },
   "_lehre": "Zwei Workflows auf denselben Push starten gleichzeitig. Wer die Reihenfolge braucht, muss sie herstellen - eine Vermutung ueber Laufzeiten ist keine Reihenfolge."
 }
