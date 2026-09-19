@@ -110,3 +110,65 @@ body.dv2 .dv2-stock :is(button,a,summary){scroll-margin-top:110px;scroll-margin-
   body.dv2 .dv2-stock .dx-damals th,body.dv2 .dv2-stock .dx-damals td{padding:10px 5px}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .dv2-stock *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Generation two: a quiet market stage, followed by tactile research worlds.
+   Color belongs to the world; canonical price direction remains untouched. */
+body.dv2 .dv2-stock{--discover-bg:var(--v2-bg);--discover-bg-2:var(--v2-panel);--discover-text:var(--v2-ink);--discover-line:var(--v2-line)}
+body.dv2 .dv2-stock .dx-dhero h1{font-weight:780;font-size:clamp(36px,5.6vw,74px);letter-spacing:-.065em}
+body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-weight:750;font-size:clamp(48px,7vw,84px)}
+body.dv2 .dv2-detail-eyebrow{font-size:11px;line-height:1.5;letter-spacing:.13em;text-transform:uppercase;font-weight:750;color:var(--discover-muted);margin:0 0 18px}
+body.dv2 .dv2-stock-context{padding:38px 0;border-bottom:0}
+body.dv2 .dv2-stock-context .dx-dhero-story{font-size:clamp(25px,3.2vw,40px);font-weight:650;max-width:35ch}
+body.dv2 .dv2-stock .dx-why{padding:22px 0 34px;border:0}
+body.dv2 .dv2-stock .dx-why h2{font-size:15px;letter-spacing:0;text-transform:none}
+body.dv2 .dv2-stock .dx-why-lead{font-size:18px;max-width:65ch}
+body.dv2 .dv2-research-entry{padding:38px 0 20px;border-top:1px solid var(--discover-line)}
+body.dv2 .dv2-research-entry>h2{font-size:clamp(32px,4.5vw,56px);font-weight:750;line-height:1.05;letter-spacing:-.055em;margin:0 0 26px}
+body.dv2 .dv2-stock-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;overflow:visible;border:0;padding:0}
+body.dv2 .dv2-stock-nav button{display:flex;align-items:flex-start;flex-direction:column;white-space:normal;text-align:left;padding:20px;border-radius:4px;min-height:155px;background:var(--v2-panel);border:1px solid var(--v2-line)}
+body.dv2 .dv2-stock-nav button:hover{border-color:var(--v2-ink);background:var(--v2-panel)}
+body.dv2 .dv2-research-number{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--v2-muted);margin-bottom:24px}
+body.dv2 .dv2-stock-nav b{font-size:19px;letter-spacing:-.02em}
+body.dv2 .dv2-stock-nav small{font-size:12px;line-height:1.5;color:var(--v2-muted);margin-top:7px}
+body.dv2 .dv2-stock .dv2-stock-business{padding:45px 0 55px}
+body.dv2 .dv2-stock .dv2-stock-business .dx-chapter-lead{font-size:clamp(20px,2.3vw,28px);line-height:1.5;max-width:60ch}
+body.dv2 .dv2-stock .dx-chapter--journey{--discover-bg:#efe3bb;--discover-surface:#efe3bb;--discover-bg-2:#e7d7a5;--discover-text:#29251c;--discover-muted:#655a42;--discover-dim:#655a42;--discover-line:#bdb088;--discover-up:#14653d;--discover-down:#ab292e;--w:#716038;--w-soft:#e5d5a1;background:var(--discover-bg);color:var(--discover-text);padding:46px 36px;margin:22px -36px;border-radius:6px;border:0}
+body.dv2 .dv2-stock .dx-chapter--journey h2{font-size:clamp(30px,4.5vw,52px);letter-spacing:-.05em;max-width:24ch}
+body.dv2 .dv2-stock .dx-journey--stage .dx-journey-tab{border-radius:3px;font-size:13px;font-weight:750}
+body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(30px,4vw,50px)}
+body.dv2 .dv2-stock .dx-journey-bild{margin-top:20px}
+body.dv2 .dv2-stock .dx-chapter--zahlen{padding-top:42px}
+body.dv2 .dv2-stock .dx-zahlen-karte{border-radius:4px;border-width:0 0 1px;padding:26px 0}
+body.dv2 .dv2-stock .dv2-stock-valuation{padding:45px 28px;background:var(--v2-panel);margin:30px -28px;border:0;border-radius:6px}
+body.dv2 .dv2-stock .dv2-stock-risks{padding:48px 0}
+body.dv2 .dv2-stock .dx-waage-spalte{border-radius:4px;padding:24px;background:var(--v2-panel)}
+body.dv2 .dv2-stock .dx-waage-spalte--pro{border-top:3px solid var(--discover-up)}
+body.dv2 .dv2-stock .dx-waage-spalte--contra{border-top:3px solid var(--discover-down)}
+body.dv2 .dv2-stock .dv2-stock-neighbors{padding-top:56px;border:0}
+body.dv2 .dv2-stock .dv2-stock-neighbors .dx-rail{gap:18px;scroll-snap-type:x mandatory}
+body.dv2 .dv2-stock .dv2-stock-neighbors .dx-poster{border-radius:6px}
+body.dv2 .dv2-stock .dv2-stock-next{padding:42px 30px;margin:28px -30px 0;background:#bcebe4;color:#183b38;--discover-text:#183b38;--discover-muted:#385b56;--discover-dim:#385b56;--discover-bg:#bcebe4;--discover-line:#81b7ae;border:0;border-radius:6px}
+body.dv2 .dv2-stock .dv2-stock-next h2{font-size:clamp(32px,4vw,50px)}
+body.dv2 .dv2-stock .dv2-stock-next .dx-btn{background:#183b38;color:#f4faf8;border-color:#183b38;min-height:48px}
+body.dv2 .dv2-stock .dv2-stock-next .dx-btn--ghost{background:transparent;color:#183b38}
+/* Neighbor posters keep their own opaque reading surface inside the cyan
+   onward world; do not inherit dark text onto the shared dark gradient. */
+body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#d7f3ed;--discover-bg-2:#c6e8e0;--discover-text:#183b38;--discover-muted:#385b56;--discover-dim:#385b56;--discover-up:#14653d;--discover-down:#ab292e}
+@media(max-width:860px){
+  body.dv2 .dv2-stock .dx-dhero h1{font-size:36px}
+  body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:54px}
+  body.dv2 .dv2-stock-context{padding:28px 0}
+  body.dv2 .dv2-stock-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.dv2 .dv2-stock-nav button{min-height:135px;padding:17px}
+  body.dv2 .dv2-research-number{margin-bottom:16px}
+  body.dv2 .dv2-stock-nav b{font-size:18px}
+  body.dv2 .dv2-stock .dx-chapter--journey{margin:20px -20px;padding:30px 20px;border-radius:0;scroll-margin-top:80px}
+  body.dv2 .dv2-stock .dx-chapter--journey h2{font-size:32px}
+  body.dv2 .dv2-stock .dx-journey--stage{min-height:54svh}
+  body.dv2 .dv2-stock .dx-journey-bild{margin-top:20px}
+  body.dv2 .dv2-stock .dx-journey-nach b{font-size:27px}
+  body.dv2 .dv2-stock .dx-journey-delta b{font-size:30px}
+  body.dv2 .dv2-stock .dv2-stock-valuation{margin:24px -20px;padding:34px 20px;border-radius:0}
+  body.dv2 .dv2-stock .dv2-stock-next{margin:24px -20px 0;padding:34px 20px;border-radius:0}
+  body.dv2 .dv2-stock .dx-waage-spalte{padding:20px}
+}

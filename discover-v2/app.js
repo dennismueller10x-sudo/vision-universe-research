@@ -19,6 +19,18 @@
       el('a',{href:'/discover/',text:'Discover 1.0 öffnen'})
     ]);
   }
+  function navigation() {
+    const current=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
+    const nav=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'});
+    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
+      const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button'}),...(current===key?{'aria-current':'page'}:{})},[
+        el('span',{class:'v2-nav-icon v2-icon-'+icon,'aria-hidden':'true'}),el('span',{text:label})
+      ]);
+      if(!href)item.onclick=()=>search.open();
+      nav.appendChild(item);
+    });
+    return nav;
+  }
   function shell() {
     const host=document.getElementById('v2-shell'); S.clear(host);
     const themeButton=el('button',{type:'button',class:'v2-theme',text:'Darstellung'});
@@ -29,10 +41,7 @@
       el('a',{href:'/discover/',class:'v2-compare',text:'Discover 1.0 ↗'}),themeButton
     ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
-    const find=el('button',{type:'button',text:'Suchen',class:'v2-dock-search'});find.onclick=()=>search.open();
-    const dock=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'},[
-      el('a',{href:'#/',text:'Übersicht'}),find,el('a',{href:'#/einzeln/'+ctx.universeId,text:'Entdecken'})
-    ]);
+    const dock=navigation();
     host.append(bar,main,footer(),dock); return main;
   }
   function setupSearch() {
@@ -90,19 +99,52 @@
           document.title=(detail.companyName||symbol)+' — Discover 2.0';
           if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
         }else await instrument(root,symbol,active);
+      } else if(parts[0]==='welten'){
+        root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Welche Aktienwelt reizt dich?'}),el('p',{class:'v2-lead',text:'Neue Hochs, große Namen, wachsende Unternehmen. Wähle eine Perspektive und entdecke die Aktien dahinter.'}));
+        const rows=(meta.rows||[]).find(entry=>entry.universeId===ctx.universeId);
+        const worlds=el('div',{class:'v2-world-directory'});
+        ((rows&&rows.rows)||[]).filter(row=>row.returned>0).forEach((row,index)=>{
+          worlds.append(el('a',{href:'#/c/'+ctx.universeId+'/'+row.rowId,class:'v2-world-door','data-tone':String(index%4)},[
+            el('span',{class:'v2-world-door-count',text:row.returned+' Aktien'}),el('h2',{text:row.title}),el('p',{text:row.subtitle||''}),el('span',{class:'v2-world-door-arrow',text:'Entdecken ↗'})
+          ]));
+        });
+        root.append(worlds);
       } else if(parts[0]==='c'&&parts[2]){
         if(!/^[a-zA-Z0-9_-]+$/.test(parts[2]))throw Error('Ungültige Sammlung');
         const row=await S.loadJSON(BASE+'rows/'+ctx.universeId+'/'+parts[2]+'.json');if(!active())return;
         root.append(el('a',{class:'v2-back',href:'#/',text:'← Übersicht'}));
         root.append(el('h1',{text:row.title}),el('p',{class:'v2-lead',text:row.subtitle||''}));
+        if(row.index&&row.index.asOf)root.append(el('p',{class:'v2-collection-source',text:'Mitglieder laut '+(row.index.proxy&&row.index.proxy.etf?'ETF-Bestand '+row.index.proxy.etf:'Indexeigentümer')+' · '+D.Cards.dateShort(row.index.asOf)}));
         if(row.editorial)root.append(el('p',{text:'Redaktionelle Themenzuordnung. Die Reihenfolge folgt der bestehenden Methodik.'}));
         if(row.rule){const rule=el('details',{class:'v2-rule'},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]);root.append(rule);}
+        if(D.memory)D.memory.recordCollection(row.rowId||parts[2]);
         if(row.sectors)root.append(D.Surfaces.sectors({title:row.title,sectors:row.sectors},ctx));
         else root.append(D.Cards.grid(row.cards||[],{rowId:row.rowId,universeId:ctx.universeId,world:row.world}));
       } else if(parts[0]==='einzeln'){
         const feed=await S.loadJSON(BASE+'feed/'+ctx.universeId+'.json');if(!active())return;
-        D.Feed.render(root,feed.cards||[],{universeId:ctx.universeId,zurueck:'#/',order:feed.order,batchSize:feed.batchSize||12,
-          weiter:[{label:'Zur Übersicht',href:'#/'}]});
+        const feedKey='feed:'+ctx.universeId;
+        const resume=D.memory?D.memory.position(feedKey):0;
+        const fullOrder=feed.order||[],batch=feed.batchSize||12;
+        const start=Number.isInteger(resume)&&resume>0&&resume<fullOrder.length?resume:0;
+        // A continuation is the untouched suffix of the canonical order.
+        // Only its first batch is loaded; earlier viewed stocks need no DOM
+        // or additional requests, even after a very deep session.
+        const order=fullOrder.slice(start);
+        const cards=start?await Promise.all(order.slice(0,batch).map(async entry=>{
+          const card=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+entry.s+'.json');
+          return Object.assign({},card,{herkunft:entry.herkunft||card.herkunft||null});
+        })):feed.cards||[];
+        if(!active())return;
+        const feedHost=D.Feed.render(root,cards,{universeId:ctx.universeId,zurueck:'#/',order,batchSize:batch,
+          merken:index=>{if(active()&&D.memory)D.memory.setPosition(feedKey,start+index);},
+          weiter:[{label:'Andere Aktienwelten',href:'#/welten'}]});
+        if(start){
+          const restart=el('button',{type:'button',class:'v2-feed-restart',text:'Von vorn'});
+          restart.onclick=()=>{if(D.memory)D.memory.setPosition(feedKey,0);route();};
+          const continuation=el('div',{class:'v2-feed-resume'},[el('span',{text:'Fortgesetzt'}),restart]);
+          feedHost.querySelector('.dx-feed-bar').insertBefore(continuation,feedHost.querySelector('.dx-feed-zaehler'));
+          feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
+        }
       } else if(parts[0]==='daten'){
         root.append(D.Daten.render({meta,universe:meta.universes.find(u=>u.universeId===ctx.universeId),calendar}));
       } else {

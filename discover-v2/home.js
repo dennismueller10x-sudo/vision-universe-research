@@ -46,19 +46,21 @@
       number.appendChild(node('span', '', plain.zahl.label)); copy.appendChild(number);
     }
     if (plain.story) copy.appendChild(node('p', 'v2-stock-why', plain.story));
-    if (options.hero) copy.appendChild(node('span', 'v2-stock-cta', 'Unternehmen verstehen ↗'));
+    if (options.hero) copy.appendChild(node('span', 'v2-stock-cta', 'Aktie entdecken ↗'));
     a.appendChild(copy);
     // The existing renderer owns series selection and semantic chart colors.
     var media = D.Cards.lazyArtwork(card, { width: options.hero ? 800 : 380, height: options.hero ? 260 : 150, range: '1J', live: false, ticker: false, scale: 'hero' });
     a.appendChild(media);
     var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
     bindArtworkCaption(media, caption, card, ctx);
-    if (options.hero && card.hook && card.hook.text) a.appendChild(node('p', 'v2-stock-hook', card.hook.text));
+    if (card.hook && card.hook.text) a.appendChild(node('p', 'v2-stock-hook', card.hook.text));
     if (!options.hero) a.appendChild(node('span', 'v2-stock-cta', 'Entdecken ↗'));
     return a;
   }
   function rail(surface, ctx, index) {
-    var section = node('section', 'v2-world' + (surface.type === 'theme' ? ' v2-world-theme' : '') + (surface.index ? ' v2-world-index' : ''));
+    var archetype = surface.index ? 'index' : surface.type === 'theme' ? 'theme' : surface.type === 'ranking' ? 'ranking' : ['growth','cashflow','compounder'].indexOf(surface.world) >= 0 ? 'fundamental' : index % 3 === 0 ? 'wide' : 'performance';
+    var section = node('section', 'v2-world v2-world-' + archetype);
+    section.dataset.archetype = archetype;
     section.dataset.surface = surface.id; section.dataset.surfaceType = surface.type;
     section.dataset.world = surface.world || 'default';
     var header = node('div', 'v2-world-head'), intro = node('div', '');
@@ -75,12 +77,38 @@
     section.appendChild(D.Cards.withRailNav(track, { label: surface.title, universeId: ctx.universeId }));
     return section;
   }
+  function story(surface, ctx) {
+    var card = surface.cards[0], rows = (surface.compare && surface.compare.rows || []).filter(function (r) { return r.then && r.now && Number.isFinite(r.then.value) && Number.isFinite(r.now.value); });
+    // Signed comparisons stay with the canonical renderer and its zero baseline.
+    if (rows.some(function (r) { return r.then.value < 0 || r.now.value < 0; })) return D.Surfaces.render(surface, ctx);
+    if (!rows.length) return D.Surfaces.render(surface, ctx);
+    var section = node('section', 'v2-business-story'); section.dataset.archetype = 'business-story';
+    section.appendChild(node('p', 'v2-eyebrow', 'Hinter dem Kurs · Die Unternehmensentwicklung'));
+    section.appendChild(node('h2', '', card.companyName || card.symbol));
+    var tabs = el('div', { class: 'v2-story-tabs', role: 'tablist', 'aria-label': 'Unternehmenskennzahl' });
+    var panel = el('div', { class: 'v2-story-panel', role: 'tabpanel', id: 'v2-story-' + surface.id });
+    function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleString('de-DE', { notation: 'compact', maximumFractionDigits: 1 }) + (row.unit === 'USD' ? ' $' : row.unit === 'USD/shares' ? ' $ je Aktie' : ''); }
+    function select(index) {
+      var row = rows[index]; panel.replaceChildren();
+      Array.from(tabs.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
+      panel.setAttribute('aria-labelledby', 'v2-story-tab-' + surface.id + '-' + index);
+      var statements = surface.story && surface.story.statements || [], statement = statements.find(function (s) { var e = s.evidence; return e && e.metric === row.id && e.periodStart && e.periodEnd && e.periodStart.fy === row.then.fy && e.periodEnd.fy === row.now.fy && e.valueStart === row.then.value && e.valueEnd === row.now.value; });
+      if (statement) panel.appendChild(node('p', 'v2-story-statement', statement.text));
+      var bars = node('div', 'v2-story-bars'), scale = Math.max(Math.abs(row.then.value), Math.abs(row.now.value), 1);
+      ['then', 'now'].forEach(function (key) { var datum = row[key], column = node('div', 'v2-story-column'); column.appendChild(node('strong', '', fmt(row, datum.value))); var bar = node('div', 'v2-story-bar'); bar.style.height = Math.max(3, Math.abs(datum.value) / scale * 190) + 'px'; bar.setAttribute('aria-hidden', 'true'); if (datum.value < 0) bar.classList.add('is-negative'); column.appendChild(bar); column.appendChild(node('span', '', String(datum.fy))); bars.appendChild(column); });
+      panel.appendChild(bars);
+      panel.appendChild(node('p', 'v2-story-evidence', 'Vergleich zweier Geschäftsjahre · ' + row.label + ' · ' + (row.unit || '') + ' · SEC · Stand ' + D.Cards.dateShort(row.evidence && row.evidence.asOf || surface.story && surface.story.asOf)));
+    }
+    rows.forEach(function (row, index) { var button = el('button', { class: 'v2-story-tab', type: 'button', role: 'tab', id: 'v2-story-tab-' + surface.id + '-' + index, 'aria-controls': panel.id, text: row.label }); button.addEventListener('click', function () { select(index); }); button.addEventListener('keydown', function (event) { var next = event.key === 'ArrowRight' ? (index + 1) % rows.length : event.key === 'ArrowLeft' ? (index + rows.length - 1) % rows.length : event.key === 'Home' ? 0 : event.key === 'End' ? rows.length - 1 : null; if (next !== null) { event.preventDefault(); select(next); tabs.children[next].focus(); } }); tabs.appendChild(button); });
+    section.appendChild(tabs); section.appendChild(panel); select(0);
+    section.appendChild(link('Das Unternehmen entdecken ↗', '#/s/' + ctx.universeId + '/' + encodeURIComponent(card.symbol), 'v2-story-link'));
+    return section;
+  }
   async function render(root, ctx) {
     ctx = Object.assign({}, ctx, { artworkDisposers: [] });
     var page = node('div', 'v2-home'); root.appendChild(page);
     var intro = node('header', 'v2-intro');
-    intro.appendChild(node('p', 'v2-eyebrow', 'VISION UNIVERSE / DISCOVER 2.0'));
-    intro.appendChild(el('h1', {}, [document.createTextNode('Aktien entdecken.'), el('br'), node('span', '', 'Unternehmen verstehen.')]));
+    intro.appendChild(el('h1', {}, [document.createTextNode('Aktien entdecken.'), node('span', '', 'Mehr sehen. Mehr verstehen.')]));
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
     search.addEventListener('click', ctx.openSearch); intro.appendChild(search); page.appendChild(intro);
     var body = node('div', 'v2-journey'); page.appendChild(body);
@@ -92,17 +120,18 @@
     function draw(surface) {
       var view;
       if (surface.type === 'hero') {
-        view = node('section', 'v2-spotlight');
-        view.appendChild(node('p', 'v2-eyebrow', 'Im Blick · Aus dem aktuellen Discover-Ranking'));
+        view = node('section', 'v2-spotlight'); view.dataset.archetype = 'cinematic';
+        view.appendChild(node('p', 'v2-eyebrow', 'Im Blick · Discover-Auswahl' + ((surface.cards || [])[0] && surface.cards[0].asOf ? ' · ' + D.Cards.dateShort(surface.cards[0].asOf) : '')));
         var track = el('div', { class: 'v2-hero-track', role: 'list', 'aria-label': 'Aktien im Blick' });
         (surface.cards || []).forEach(function (card) { var item = node('div', 'v2-hero-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { hero: true })); track.appendChild(item); });
         view.appendChild(D.Cards.withRailNav(track, { label: 'Aktien im Blick', universeId: ctx.universeId }));
-        view.appendChild(node('p', 'v2-swipe-hint', 'Weiterwischen. Neues entdecken. →'));
+        var flow = node('div', 'v2-discovery-flow'); flow.appendChild(node('p', 'v2-swipe-hint', '← Wischen. Nächste Aktie. →')); flow.appendChild(link('Vollbild entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-feed-entry')); view.appendChild(flow);
       } else if (['row', 'ranking', 'theme'].indexOf(surface.type) >= 0 && (surface.cards || []).length) view = rail(surface, ctx, count++);
       else if (surface.type === 'featured-card' && (surface.cards || []).length) {
         view = node('section', 'v2-feature'); view.appendChild(node('p', 'v2-eyebrow', title(surface.kicker || surface.title))); view.appendChild(stock(surface.cards[0], ctx, { hero: true, rowId: surface.rowId }));
-      } else view = D.Surfaces.render(surface, ctx);
-      if (view) { view.classList.add('in'); body.appendChild(view); }
+      } else if (surface.type === 'story' && (surface.cards || []).length) view = story(surface, ctx);
+      else view = D.Surfaces.render(surface, ctx);
+      if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); }
     }
     function finish() {
       var end = node('section', 'v2-finish'); end.appendChild(node('p', 'v2-eyebrow', 'Die nächste Perspektive wartet'));
