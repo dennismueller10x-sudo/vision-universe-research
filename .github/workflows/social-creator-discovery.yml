@@ -1,0 +1,112 @@
+# =========================================================================
+# CREATOR DISCOVERY — ENTDECKEN, NICHT BEWERTEN
+#
+# Leitet Suchphrasen aus dem Content Universe ab, sucht damit auf
+# YouTube und schreibt eine neue Version des Creator Watch Universe.
+#
+# Er veroeffentlicht NICHTS und er uebernimmt NICHTS: aus der Antwort
+# kommen genau zwei Felder herueber, Kanal-ID und Handle. Titel,
+# Beschreibungen und Vorschaubilder sind fremde Werke (§5) und bleiben,
+# wo sie sind.
+#
+# -------------------------------------------------------------------------
+# DER LAUF OHNE SCHLUESSEL IST KEIN FEHLLAUF
+# -------------------------------------------------------------------------
+#
+# Fehlt YOUTUBE_API_KEY, plant der Lauf trotzdem und zeigt, WAS gesucht
+# wuerde und was es kostete. Er endet gruen. Das ist die Zusage aus §2:
+# der offene Owner-Schritt ist EIN Schluessel und nicht ein Stapel
+# Arbeit - alles, was ohne ihn machbar ist, ist gemacht.
+#
+# -------------------------------------------------------------------------
+# DAS KONTINGENT
+# -------------------------------------------------------------------------
+#
+# 10.000 Einheiten je Tag und Google-Cloud-Projekt. Eine Suche kostet
+# 100, ein Detailabruf 1. Vier Suchen kosten 400 - der Rest des Tages
+# bleibt fuer das billige Nachsehen.
+#
+# Keine kostenpflichtige Quota-Erweiterung: sie ist nicht kaufbar, nur
+# in einem manuellen Verfahren beantragbar, und das waere ein neues
+# Owner-Gate.
+# =========================================================================
+name: Social Creator Discovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      searches:
+        description: 'Wie viele Suchen (je 100 Einheiten)'
+        type: string
+        default: '4'
+
+concurrency:
+  group: social-creator-discovery
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Liegt ein Schluessel vor?
+        id: key
+        env:
+          KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          # Nur pruefen, DASS er da ist - nie, WAS er ist.
+          if [ -z "${KEY:-}" ]; then
+            echo "vorhanden=nein" >> "$GITHUB_OUTPUT"
+            echo "::notice::Kein YOUTUBE_API_KEY hinterlegt. Der Lauf plant und sucht nicht. Das ist der offene Owner-Schritt, kein Defekt."
+          else
+            echo "vorhanden=ja" >> "$GITHUB_OUTPUT"
+            echo "Schluessel vorhanden (${#KEY} Zeichen, Wert ungelesen)."
+          fi
+
+      - name: Planen
+        run: |
+          set -euo pipefail
+          node scripts/social/discover-creators.mjs --searches "${{ inputs.searches }}" \
+            | tee tmp-plan.txt
+          {
+            echo "## Creator Discovery — Plan"
+            echo ""
+            echo '```'
+            cat tmp-plan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          rm -f tmp-plan.txt
+
+      - name: Entdecken
+        if: steps.key.outputs.vorhanden == 'ja'
+        env:
+          # Der Schluessel kommt als Variable herein; das Skript setzt ihn
+          # in die Kopfzeile X-goog-api-key und nie in eine Adresse.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/discover-creators.mjs \
+            --searches "${{ inputs.searches }}" --discover
+
+      - name: Universum festschreiben
+        if: steps.key.outputs.vorhanden == 'ja'
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- social/data/; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/creator-universe.json
+          git commit -m "Creator Watch Universe: neue Version aus YouTube-Entdeckung"
+          git push
