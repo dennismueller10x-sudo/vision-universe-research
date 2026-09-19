@@ -1929,3 +1929,93 @@ Der Kandidat `cand_20260919_f6cbd0f9` steht jetzt am Owner Publishing
 Gate — mit dem Text, für den die Revision da war, und dem verifizierten
 Bild aus Anlauf 3 bei 1122 × 1402. Vier Inhalte in diesem Lauf, **eine**
 Work-Ausführung: die drei übrigen sind deterministische CHARTs.
+
+## 50. Der North Star: die Frage war die falsche
+
+Das System beantwortete hervorragend **„Ist dieser Text korrekt und
+handwerklich gut?"** und hat nie gefragt **„Sollte Vision Universe
+hierüber überhaupt sprechen — und versteht das jemand?"**
+
+Ein System, das nur seine eigene Fragestellung optimiert, wird darin
+immer besser. Dass die Frage selbst die falsche war, kann es aus sich
+heraus nicht bemerken.
+
+**Die Annahme steckte an vier Stellen, nicht an einer.** In der
+Signalquelle (`topic = label + " — " + entity`, 10 von 12 Signaltypen
+instrumentgebunden). In der Bewertung (`requiresAnyOf: [trend,
+vuSignal]` — ein Erklärstück hat beides nie). In der Abdeckung (jede
+unverfügbare Dimension als Lücke des *Themas*, obwohl drei davon nur
+sagen, daß das System jung ist). Und im deterministischen Autor
+(`wer()` gab das Kürzel zurück).
+
+Jede einzelne davon hätte die anderen drei überlebt.
+
+**Der Stillstand, den niemand gesehen hatte.** Bewerten kann man erst
+mit Publikumsdaten; Publikumsdaten bekommt man erst durchs
+Veröffentlichen; veröffentlicht wird nur, was bewertet wurde. Für
+Signalthemen war er schon einmal aufgelöst worden — die
+Mindestabdeckung von 0,55 ist genau das, und der Kommentar dort sagt
+es. Für redaktionelle Themen traf er härter, weil Trend und VU-Signal
+0,40 der Gewichtung nicht mehr tragen. Die Schwelle wurde nicht
+gesenkt: sie wurde auf das **Erreichbare** bezogen — dieselbe
+Überlegung, nur konsequent. Vorher 0 von 25 Themen bewertbar, nachher
+25 aus 4 Familien.
+
+**Der Beweis.** Ein deterministischer Dry Run aus vorhandenen,
+kostenfreien Daten: die drei obersten Gelegenheiten sind zwei
+Magazingeschichten **ohne Entität** und eine Reportgeschichte. **Null
+von fünfundzwanzig** stammen aus einem Marktsignal — nicht, weil
+Signale abgewertet würden, sondern weil `signals.json` leer ist und
+keine erfunden wurden.
+
+## 51. Drei eigene Fehler, alle derselben Familie
+
+**Die Quelle bestimmte wieder die Form.** Der erste Slate gab *allen*
+Discover-Reihen hart `RANKING` — genau die Kopplung, die der Node
+abschaffen sollte. „KÜNSTLICHE INTELLIGENZ" ist Megatrend-Material.
+Die Unterscheidung mußte nicht erfunden werden: die Reihen tragen sie
+selbst im Feld `theme`.
+
+**Unbekannt sah aus wie null.** Die Sättigungsrechnung meldete „0 von
+25 Beiträgen waren MAGAZINE_STORY" — und keiner der 25 trug ein
+Familienfeld. Gezählt wurde nicht „keine Magazingeschichten", sondern
+„wir wissen es bei keinem". Daraus folgte die Erweiterung des
+Gedächtnisses um zehn Dimensionen; für die Altbeiträge bleiben sie
+`null`, statt nachträglich erfunden zu werden.
+
+**Vorbestehend sah aus wie verursacht.** Mein eigener Isolationstest
+las `git status` und nannte Änderungen, die ein *Produktionsskript vor*
+dem Lauf gemacht hatte, „von einem Testlauf verändert". Ein Test kann
+nicht messen, was vor ihm passiert ist. Der Vergleich vorher/nachher
+gehört nach außen; in der Suite bleibt die strukturelle Prüfung.
+
+Dieselbe Familie wie `byte_size` gegen `asset_byte_size`, wie die
+drei Whitelists an einem Tag, wie „begrenzt damit": **etwas, das nicht
+gemessen wurde, als Messung behandelt.**
+
+## 52. Technisch heil ist nicht kreativ gut
+
+Neun Prüfungen beantworten „ist die Datei heil angekommen?". Keine
+fragt „trägt das Bild die Geschichte?". Zwei verschiedene Fragen
+brauchen zwei Tore — sie zusammenzulegen hieße, aus „die Bytes
+stimmen" ein Qualitätsurteil zu machen.
+
+`VISUAL_CREATIVE_QUALITY_FAILED` ist deshalb nie ein Transportbefund
+und umgekehrt. Ohne kreative Signale gilt ein Bild als **ungeprüft,
+nicht als bestanden**. Generische Motive sind nicht verboten, sondern
+begründungspflichtig: wenn eine Glaskugel die Geschichte trägt, ist
+sie richtig — die Story entscheidet, nicht eine Motivliste. (Der Test
+dazu fiel beim ersten Versuch durch, weil „Neon-Datenstrom" *zwei*
+generische Motive enthält und ich nur eines begründet hatte. Die
+Prüfung hatte recht.)
+
+## 53. Muster lernen, Inhalte nicht kopieren
+
+Die Beobachtungsstruktur für externe Intelligenz hat **kein Feld** für
+fremden Text, kein Bild, kein Zitat — nicht, weil man es nicht füllen
+dürfte, sondern damit niemand es füllen *kann*. Eingeschmuggelte
+Felder werden beanstandet, `causalClaim` ist fest `false`.
+
+Zustand: `AWAITING_OWNER_SOURCE`. Das ist kein Messergebnis über fremde
+Muster, sondern die Abwesenheit einer Messung — und es steht so da,
+statt als „keine Muster gefunden".
