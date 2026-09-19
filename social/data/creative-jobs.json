@@ -214,9 +214,9 @@
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
       "attempt": 4,
       "revision": "text-only",
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_STALE",
       "createdAt": "2026-09-19T06:25:47.285Z",
-      "updatedAt": "2026-09-19T06:29:48.569Z",
+      "updatedAt": "2026-09-19T07:01:00.945Z",
       "prNumber": 112,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -230,14 +230,20 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-19T06:29:48.569Z",
           "note": "PR 112 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-19T07:01:00.945Z",
+          "note": "kein Start; Bildanforderung als einziges Trennmerkmal"
         }
       ],
       "prState": "open",
       "requestType": "TEXT_REVISION",
       "visualMode": "INHERIT_VERIFIED_ASSET",
-      "outcome": "ausgeloest, wartet",
+      "outcome": "Kein beobachteter Start nach 30+ Minuten. VU-seitig vertragskonform (TEXT_REVISION, vollstaendige Vererbung, vor dem Stellen geprueft). Damit liegt der verbleibende Unterschied auf der Seite der Work-Automation, die den Auftragstyp noch nicht kennt.",
       "source": "dispatch ueber request-creative-revision, PR 112",
-      "deliveryCount": 0
+      "deliveryCount": 0,
+      "note": "Beobachtung ueber elf Request-PRs: 9 von 9 mit Bildanforderung sind gestartet, 0 von 2 ohne. Das ist das einzige Merkmal, das die beiden Gruppen trennt. Es stuetzt den Owner-Befund CONTRACT_MISMATCH und zeigt zugleich, dass die VU-seitige Erweiterung allein nicht genuegt. Die Regeln der Automation selbst sind von hier aus nicht beobachtbar - das bleibt eine starke Folgerung und kein Beweis."
     }
   ],
   "budget": {

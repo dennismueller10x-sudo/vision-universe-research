@@ -186,6 +186,54 @@ dieser Bericht sonst vermeidet.
 
 ---
 
+## 5b. Korrektur und Nachtrag: die Bildanforderung trennt
+
+Abschnitt 5a stufte PR #110 als Nicht-Auslösen ein und suchte den Grund
+in der Zustellung. Der Owner hat die Ursache benannt: der Request war
+**contract-invalid** — er wollte Text neu und Bild geerbt, während der
+Contract nur „Text UND neues Bild" kannte.
+
+Nach der Erweiterung des Contracts ging PR #112 als `TEXT_REVISION`
+hinaus: vollständige Vererbung, vor dem Stellen geprüft, VU-seitig
+gültig. **Auch PR #112 löste nicht aus.**
+
+Damit liegt ein Merkmal vor, das die Fälle sauber trennt:
+
+| Bildanforderung | Requests | gestartet |
+|---|---|---|
+| neues Bild verlangt | 9 (PR 97, 98, 101–106, 108) | **9** |
+| kein neues Bild | 2 (PR 110, 112) | **0** |
+
+Es ist das einzige Merkmal, in dem sich die beiden Gruppen
+unterscheiden — Branch-Konvention, Titel, Draft-Zustand und Autor sind
+bei allen elf gleich.
+
+### Was das heißt
+
+Der Owner-Befund `CONTRACT_MISMATCH` wird gestützt. Zugleich zeigt PR
+#112: **die VU-seitige Erweiterung allein genügt nicht.** Der Vertrag hat
+zwei Hälften, und die zweite — die Regeln, nach denen die
+ChatGPT-Work-Automation einen Auftrag annimmt — liegt nicht in diesem
+Repository. Solange sie „ein Request ohne neues Bild ist kein gültiger
+Request" sagt, ist ein `TEXT_REVISION` für sie weiterhin ungültig, so
+sauber er von hier aus auch aussieht.
+
+### Was daran unsicher bleibt
+
+Die Regeln der Automation sind von hier aus **nicht beobachtbar**. Das
+oben ist eine Folgerung aus elf Beobachtungen mit perfekter Trennung,
+kein Beweis — und auf der Seite ohne Bildanforderung stehen nur zwei
+Fälle. Nach dem Fehlschluss bei PR #110 wird das hier ausdrücklich
+dazugesagt, statt aus einem sauberen Muster eine Gewissheit zu machen.
+
+Was ausdrücklich **nicht** getan wurde: `actual_image_asset_required`
+künstlich auf `true` zu setzen oder eine Bildgenerierung zu bestellen,
+nur damit der alte Contract erfüllt ist. Beides hat der Owner
+ausgeschlossen, und beides würde die Textwirkung wieder unmessbar
+machen.
+
+---
+
 ## 6. Die Owner-Entscheidung
 
 Die kreative Fähigkeit ist bewiesen und bleibt erhalten. Zu entscheiden ist
