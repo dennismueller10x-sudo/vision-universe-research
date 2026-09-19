@@ -311,3 +311,15 @@ Local Quant 1196 PASS; worker + unchanged Discovery regression 267 PASS.
 Remote CI / visual / production gates PENDING. No Discovery changes, secrets,
 new recurring cost, serving architecture, or provider backfill. Whole-project
 completion not claimed; remaining factor/universe/quarterly/PIT work stays open.
+
+PR117 review: first Browser failure was a global chart-count assumption. Historical
+MAX still must render exactly one historical chart; scope assertion to .focus.
+Combined-source outage now also blocks independent intraday, retaining zero-chart
+and zero-quote assertions. At 0795c012 all remote gates passed: 51 browser checks,
+36 accessibility pages, 8 resource budgets. Actual canonical stock and separately
+labelled live test-fixture screenshots inspected at desktop1440/mobile390.
+Home709362bytes /750000, Stock2509541 /3000000. Added bounded20s connect timeout
+with negative test. Footer repaired to distinguish historical EOD from separately
+labelled intraday/live. Final rerender pending. Worker /health and /version read
+from this execution environment returned HTTP403; no bypass and no production
+trade-delivery claim. This external observation does not invalidate local/CI gates.
