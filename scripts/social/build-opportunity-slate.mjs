@@ -98,6 +98,7 @@ function ausDiscoverReihen() {
       question: r.subtitle || null,
       evidenceRefs: ["discover/data/rows/US_REAL/" + datei],
       timeSensitivity: "TIMELY",
+      asOf: r.asOf || r.generatedAt || null,
       note: "Reihe mit " + karten.length + " Titeln, Stand " + (r.asOf || "unbekannt") +
         ". Form aus den Daten: " + (istThema
           ? "theme=\"" + r.theme + "\" -> MEGATREND"

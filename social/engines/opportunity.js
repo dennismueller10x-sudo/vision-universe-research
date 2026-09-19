@@ -33,13 +33,14 @@
   var isNode = (typeof module !== "undefined" && module.exports);
 
   var DIMENSIONS = [
-    "trend", "vuSignal", "audienceInterest", "historicalPerformance",
-    "platformFit", "freshness", "contentGap", "brandFit"
+    "trend", "vuSignal", "editorialBasis", "audienceInterest",
+    "historicalPerformance", "platformFit", "freshness", "contentGap", "brandFit"
   ];
 
   var DIMENSION_LABELS = {
     trend:                 "externer Trend",
     vuSignal:              "eigenes Vision-Universe-Signal",
+    editorialBasis:        "vorhandene redaktionelle Grundlage",
     audienceInterest:      "Interesse des eigenen Publikums",
     historicalPerformance: "Leistung vergleichbarer Beitraege",
     platformFit:           "Passung zur Plattform",
@@ -51,7 +52,7 @@
   var DEFAULT_METHODOLOGY = {
     version: "1.0.0",
     weights: {
-      trend: 0.18, vuSignal: 0.22, audienceInterest: 0.14,
+      trend: 0.18, vuSignal: 0.22, editorialBasis: 0.12, audienceInterest: 0.14,
       historicalPerformance: 0.12, platformFit: 0.10,
       freshness: 0.10, contentGap: 0.08, brandFit: 0.06
     },
@@ -80,7 +81,29 @@
        "trend" allein waere Nachplappern, "vuSignal" allein waere ein
        Beitrag ohne Anlass. Verlangt ist MINDESTENS eine von beiden — und
        das ist eine ODER-Bedingung, kein UND. */
-    requiresAnyOf: ["trend", "vuSignal"],
+    /* -----------------------------------------------------------------
+       DREI MOEGLICHE ANLAESSE, NICHT ZWEI
+
+       Hier standen nur `trend` und `vuSignal`. Fuer ein MARKTSIGNAL ist
+       das richtig: ohne Anlass von aussen und ohne eigenen Messwert
+       gibt es keinen Grund, ueber einen Kurs zu sprechen.
+
+       Fuer ein INHALTLICHES Thema ist es falsch. "Was bedeutet eine
+       Zinssenkung fuer Aktien?" hat keinen Trend Score und kein
+       VU-Signal - und ist trotzdem ein vollwertiges Thema. Eine
+       Magazingeschichte auch, ein Erklaerstueck auch.
+
+       Die Folge war messbar: jedes Thema ohne Kursbezug wurde mit
+       "Ohne Anlass und ohne eigenen Beitrag entsteht keine Gelegenheit"
+       abgewiesen. Die ticker-zentrierte Annahme steckte nicht nur in
+       der Signalquelle, sondern auch in der BEWERTUNG.
+
+       `editorialBasis` ist der dritte Anlass: es existiert bereits ein
+       kuratiertes Vision-Universe-Artefakt dazu - ein Magazinstueck,
+       ein Report, eine redaktionelle Reihe. Das ist ein Anlass mit
+       eigenem Beitrag, nur eben kein kursgetriebener.
+       ------------------------------------------------------------------- */
+    requiresAnyOf: ["trend", "vuSignal", "editorialBasis"],
     /* Unterhalb dieser Schwelle wird nicht vorgeschlagen. Die Schwelle ist
        Konfiguration, damit die Learning Engine sie bewegen darf (§21). */
     proposalThreshold: 55,
@@ -130,6 +153,8 @@
       : measured(Number(input.trendScore) / 100, "Trend Score " + Math.round(Number(input.trendScore)) + ".");
 
     components.vuSignal = fromInput(input, "vuSignalStrength", "internes VU-Signal");
+    components.editorialBasis = fromInput(input, "editorialBasis",
+      "vorhandene redaktionelle Grundlage");
     components.audienceInterest = fromInput(input, "audienceInterest", "Publikumsinteresse");
 
     /* Historische Leistung OHNE Stichprobengroesse ist eine Anekdote.
@@ -167,27 +192,99 @@
 
     /* Gewichtete Abdeckung. */
     var totalWeight = 0, availableWeight = 0, weighted = 0;
+    /* -------------------------------------------------------------------
+       NICHT ANWENDBAR IST NICHT FEHLEND
+
+       Die Abdeckung zaehlte jede unverfuegbare Dimension als Luecke.
+       Fuer ein Marktsignal stimmt das: wer keinen Trend Score hat,
+       weiss etwas nicht.
+
+       Fuer ein inhaltliches Thema ist es falsch. Ein Erklaerstueck HAT
+       keinen Trend Score - nicht, weil die Messung fehlt, sondern weil
+       die Frage sich nicht stellt. Beides gleich zu behandeln druecke
+       die Abdeckung unter die Mindestgrenze, und das Thema waere
+       UNAVAILABLE aus einem Grund, der keiner ist.
+
+       Dieselbe Verwechslung wie ueberall hier: Abwesenheit als Mangel
+       gewertet. Wer eine Dimension als nicht anwendbar erklaert, nimmt
+       sie ganz aus der Rechnung - und das steht im Ergebnis, damit
+       niemand sie spaeter fuer beantwortet haelt.
+       ------------------------------------------------------------------- */
+    var nichtAnwendbar = (options.notApplicable || []).filter(function (d) {
+      return DIMENSIONS.indexOf(d) !== -1;
+    });
+    /* Die Anlassdimensionen darf niemand wegerklaeren: sonst entstuende
+       eine Gelegenheit voellig ohne Anlass. */
+    nichtAnwendbar = nichtAnwendbar.filter(function (d) {
+      return (methodology.requiresAnyOf || []).indexOf(d) === -1 ||
+        (methodology.requiresAnyOf || []).some(function (r) {
+          return r !== d && components[r] && components[r].available;
+        });
+    });
+
+    /* -------------------------------------------------------------------
+       ZWEI GRUENDE, WARUM ETWAS FEHLT — UND NUR EINER GEHOERT DEM THEMA
+
+       "Wir wissen nichts ueber das Publikumsinteresse" ist keine
+       Aussage ueber DIESES Thema. Es ist eine Aussage darueber, dass
+       das System noch nie etwas veroeffentlicht hat. Dasselbe gilt fuer
+       die Leistung vergleichbarer Beitraege und fuer die
+       Plattformpassung ohne angebundenen Provider.
+
+       Diese drei als Luecke des Themas zu zaehlen erzeugt einen
+       Stillstand: bewerten kann man erst mit Publikumsdaten,
+       Publikumsdaten bekommt man erst durchs Veroeffentlichen, und
+       veroeffentlicht wird nur, was bewertet wurde.
+
+       Genau diesen Stillstand hat die Mindestabdeckung von 0,55 schon
+       einmal aufgeloest - fuer Signalthemen, bei denen Trend und
+       VU-Signal 0,40 der Gewichtung tragen. Bei einem redaktionellen
+       Thema fehlen diese beiden, und derselbe Stillstand trifft
+       haerter: erreichbar sind dort hoechstens 50 %.
+
+       Die Schwelle wird deshalb nicht gesenkt. Sie wird auf das
+       bezogen, was ERREICHBAR ist - dieselbe Ueberlegung, die schon
+       in der 0,55 steckt, nur konsequent angewendet. Beide Zahlen
+       stehen im Ergebnis, damit niemand die eine fuer die andere haelt.
+       ------------------------------------------------------------------- */
+    var systemischFehlend = (options.systemicallyUnavailable || []).filter(function (d) {
+      return DIMENSIONS.indexOf(d) !== -1 && nichtAnwendbar.indexOf(d) === -1 &&
+        components[d] && !components[d].available;
+    });
+    var erreichbaresGewicht = 0;
+
     DIMENSIONS.forEach(function (dim) {
+      if (nichtAnwendbar.indexOf(dim) !== -1) return;
       var w = methodology.weights[dim] || 0;
       totalWeight += w;
+      if (systemischFehlend.indexOf(dim) === -1) erreichbaresGewicht += w;
       if (!components[dim].available) return;
       availableWeight += w;
       weighted += w * components[dim].value;
     });
     var coverage = totalWeight === 0 ? 0 : availableWeight / totalWeight;
+    /* Die Abdeckung des Themas bleibt unveraendert berichtet. Geprueft
+       wird gegen das Erreichbare. */
+    var reachableCoverage = erreichbaresGewicht === 0 ? 0
+      : Math.min(1, availableWeight / erreichbaresGewicht);
 
     var anyOf = (methodology.requiresAnyOf || []).some(function (dim) {
       return components[dim].available;
     });
     if (!anyOf) {
       return refuse(components, coverage, methodology,
-        "Weder ein externer Trend noch ein internes VU-Signal liegt vor. Ohne Anlass und ohne " +
+        "Weder ein externer Trend noch ein internes VU-Signal noch eine " +
+        "vorhandene redaktionelle Grundlage liegt vor. Ohne Anlass und ohne " +
         "eigenen Beitrag entsteht keine Gelegenheit.");
     }
-    if (coverage < methodology.minimumCoverage) {
+    if (reachableCoverage < methodology.minimumCoverage) {
       return refuse(components, coverage, methodology,
-        "Nur " + Math.round(coverage * 100) + " % der Gewichtung sind belegt; verlangt sind " +
-        Math.round(methodology.minimumCoverage * 100) + " %.");
+        "Nur " + Math.round(reachableCoverage * 100) + " % der ERREICHBAREN Gewichtung " +
+        "sind belegt; verlangt sind " + Math.round(methodology.minimumCoverage * 100) +
+        " %." + (systemischFehlend.length
+          ? " (Systemisch nicht messbar und daher nicht eingerechnet: " +
+            systemischFehlend.join(", ") + ".)"
+          : ""));
     }
 
     var value = Math.round((weighted / availableWeight) * 100);
@@ -206,6 +303,10 @@
     return {
       available: true,
       state: "VERIFIED",
+      notApplicable: nichtAnwendbar,
+      /* Beide Zahlen, damit niemand die eine fuer die andere haelt. */
+      reachableCoverage: reachableCoverage,
+      systemicallyUnavailable: systemischFehlend,
       score: value,
       coverage: Math.round(coverage * 1000) / 1000,
       methodologyVersion: methodology.version,

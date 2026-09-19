@@ -302,7 +302,32 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     DIE MARKENPASSUNG EINES THEMAS — OHNE TEXT
+
+     Diese Funktion stand im Zyklus-Skript. Dort war sie nicht
+     erreichbar: wer das Skript importiert, fuehrt den ganzen Lauf aus.
+     Die Gelegenheitsbewertung haette sie also nachbauen muessen - und
+     zwei Rechenwege fuer dieselbe Frage sind zwei Wahrheiten, von
+     denen eine irgendwann falsch wird.
+
+     Geprueft wird ein Thema, nicht ein fertiger Beitrag: Befunde, die
+     nur fehlenden Text beanstanden, zaehlen deshalb nicht. Der Wert
+     ist gedeckelt, weil ein Thema ohne Text nicht voll belegen kann,
+     dass es im Markenregister liegt.
+     ------------------------------------------------------------------- */
+  function topicFit(topic, entities) {
+    var probe = [topic].concat(entities || []).join(" ");
+    var befund = check({ hook: "", caption: probe, thesis: "" });
+    var blockierend = (befund.blocking || []).filter(function (b) {
+      return b.id.indexOf("unfulfilled") !== 0 && b.id !== "hook-without-body";
+    });
+    if (blockierend.length > 0) return 0;
+    return Math.min(0.9, befund.score / 100);
+  }
+
   var api = {
+    topicFit: topicFit,
     LIMITS: LIMITS,
     BLOCKING_TERMS: BLOCKING_TERMS.map(function (t) { return t.id; }),
     WARNING_TERMS: WARNING_TERMS.map(function (t) { return t.id; }),

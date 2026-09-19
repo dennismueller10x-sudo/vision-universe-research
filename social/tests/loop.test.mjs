@@ -90,6 +90,13 @@ test("E2 · Der vollstaendige Kreislauf laeuft und schliesst sich", async () => 
     hoursSinceTrigger: 1,
     contentGap: 1,
     brandFit: 0.9
+  }, {
+    /* Hinter einem Quant-Signal steht kein Magazinstueck und kein
+       Report: `editorialBasis` ist hier nicht ungemessen, sondern nicht
+       anwendbar. Dieselbe Aussage trifft der Zyklus - haette der Test
+       sie nicht getroffen, pruefte er einen anderen Fall als den
+       produktiven. */
+    notApplicable: ["editorialBasis"]
   });
   assert.equal(opportunityScore.available, true, opportunityScore.explanation);
   assert.equal(opportunityScore.proposable, true);

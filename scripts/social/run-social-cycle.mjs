@@ -260,15 +260,12 @@ function measurePlatformFit(registry, providerId) {
  * existiert. Ein Thema, das sich nur im Casino-Register erzaehlen laesst,
  * soll gar nicht erst in die Content-Pipeline.
  */
+/* Delegiert an brand.js. Hier stand die Rechnung selbst - und war fuer
+   die Gelegenheitsbewertung unerreichbar, weil ein Import dieses
+   Skripts den ganzen Lauf ausfuehrt. Zwei Rechenwege fuer dieselbe
+   Frage waeren zwei Wahrheiten. */
 function measureBrandFit(topic, entities) {
-  const probe = [topic].concat(entities || []).join(" ");
-  const check = Brand.check({ hook: "", caption: probe, thesis: "" });
-  /* Der Brand-Score ist 0..100 und hier nur so weit belastbar, wie ein
-     Thema ohne Text es zulaesst — deshalb gedeckelt, nicht durchgereicht. */
-  const blocking = check.blocking.filter((b) => !b.id.startsWith("unfulfilled") &&
-                                                b.id !== "hook-without-body");
-  if (blocking.length > 0) return 0;
-  return Math.min(0.9, check.score / 100);
+  return Brand.topicFit(topic, entities);
 }
 
 /**
@@ -708,6 +705,13 @@ function buildOpportunities(signals, internal, memory, registry, providerId) {
         ? (Date.parse(NOW) - Date.parse(primary.observedAt)) / 3600000 : null,
       contentGap: daysSince === null ? 1 : Math.min(1, daysSince / 30),
       brandFit: measureBrandFit(cluster.topic, cluster.entities)
+    }, {
+      /* Hinter einem 52-Wochen-Hoch steht kein Magazinstueck und kein
+         Report. `editorialBasis` ist hier nicht UNGEMESSEN, sondern
+         NICHT ANWENDBAR - und als Luecke gezaehlt wuerde es die
+         Abdeckung druecken und Signalgelegenheiten schlechter stellen,
+         ohne dass sich an ihnen etwas geaendert haette. */
+      notApplicable: ["editorialBasis"]
     });
 
     out.push({

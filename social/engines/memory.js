@@ -89,6 +89,40 @@
       topic: spec.topic || null,
       entities: Array.isArray(spec.entities) ? spec.entities.slice() : [],
       archetype: spec.archetype || null,
+
+      /* ---------------------------------------------------------------
+         DIE BREITEREN DIMENSIONEN DES NORTH STAR
+
+         Bisher konnte das Gedaechtnis nur ueber Hook, Muster und Format
+         lernen. Das genuegte, solange jeder Beitrag dieselbe Sorte
+         Beitrag war: "Technisches Setup — <TICKER>".
+
+         Sobald mehrere Content Families gegeneinander antreten, ist die
+         Frage eine andere: funktionieren Rankings besser als
+         Erklaerstuecke? Tragen Themen ohne Einzelaktie? Der Unterschied
+         laesst sich nicht messen, wenn er nicht mitgeschrieben wird.
+
+         Aufgefallen ist die Luecke an einer Messung, die keine war: die
+         Saettigungsrechnung meldete "0 von 25 Beitraegen waren
+         MAGAZINE_STORY" - und in Wahrheit trug KEINER der 25 ein
+         Familienfeld. Unbekannt sah aus wie null.
+
+         Alle Felder duerfen null sein. Fuer die 25 Altbeitraege sind sie
+         es auch, und das bleibt sichtbar: nachtraeglich eine Familie zu
+         erfinden waere eine Aussage ueber Beitraege, die niemand unter
+         diesem Gesichtspunkt geschrieben hat. */
+      topicId: spec.topicId || null,
+      contentFamily: spec.contentFamily || null,
+      entityType: spec.entityType || null,
+      storyStructure: spec.storyStructure || null,
+      hookStrategy: spec.hookStrategy || null,
+      hookVariantId: spec.hookVariantId || null,
+      visualStrategy: spec.visualStrategy || null,
+      visualVariantId: spec.visualVariantId || null,
+      creativeProvider: spec.creativeProvider || null,
+      audienceFrameBasis: spec.audienceFrameBasis || null,
+      marketContext: spec.marketContext || null,
+
       visualType: spec.visualType || null,
 
       /* Das PLATTFORMFORMAT — REEL, CAROUSEL, IMAGE. Es steht bewusst
@@ -295,6 +329,15 @@
         return {
           publicationId: e.publicationId, publishedAt: e.publishedAt,
           topic: e.topic, hook: e.hook, archetype: e.archetype, visualType: e.visualType,
+          /* Dieselbe Falle wie bei performanceRegime und der Freigabe:
+             eine Whitelist ist eine gute Verteidigung und ein
+             schlechtes Gedaechtnis. Wer hier ein Feld vergisst, kann
+             spaeter nicht darueber lernen - und merkt es nicht. */
+          topicId: e.topicId, contentFamily: e.contentFamily,
+          entityType: e.entityType, storyStructure: e.storyStructure,
+          hookStrategy: e.hookStrategy, hookVariantId: e.hookVariantId,
+          visualStrategy: e.visualStrategy, visualVariantId: e.visualVariantId,
+          creativeProvider: e.creativeProvider, marketContext: e.marketContext,
           hookSimilarity: Math.round(hookSim * 1000) / 1000,
           textSimilarity: Math.round(textSim * 1000) / 1000,
           sameTopic: !!topicSame, sharedEntity: entityOverlap,

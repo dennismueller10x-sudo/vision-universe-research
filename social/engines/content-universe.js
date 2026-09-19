@@ -188,6 +188,10 @@
       question: spec.question || null,
       evidenceRefs: Array.isArray(spec.evidenceRefs) ? spec.evidenceRefs.slice() : [],
       timeSensitivity: spec.timeSensitivity || "EVERGREEN",
+      /* Der Stand der Quelldatei. Ohne ihn ist die Aktualitaet des
+         Anlasses nicht messbar - und faellt als Luecke ins Gewicht,
+         obwohl das Datum real vorliegt. */
+      asOf: spec.asOf || null,
       availability: spec.availability || "AVAILABLE",
       note: spec.note || null
     };

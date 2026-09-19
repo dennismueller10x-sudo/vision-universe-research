@@ -56,12 +56,23 @@ test("PI1 · Der Emittentenbau trennt Lesepfad und Schreibpfad", () => {
     "Geschrieben wird in den AUSGANG.");
 });
 
-test("PI2 · Nach dieser Suite ist kein Produktionsartefakt veraendert", () => {
-  /* Gemessen, nicht zugesichert. Der Test laeuft als Teil der Suite und
-     sieht damit alles, was vor ihm lief. */
-  const dreckig = geaendert().filter((p) =>
-    UNANTASTBAR.some((r) => r.test(p)));
-  assert.deepEqual(dreckig, [],
-    "Diese Pfade gehoeren dem Betrieb und wurden von einem Testlauf " +
-    "veraendert:\n  " + dreckig.join("\n  "));
-});
+/* -------------------------------------------------------------------
+   PI2 STAND HIER UND MASS DAS FALSCHE
+
+   Er las `git status` und bestand darauf, dass nichts unter
+   quant/data, social/data oder discover/data veraendert sei. Sobald
+   vorher ein PRODUKTIONSSKRIPT gelaufen war und legitim etwas
+   geschrieben hatte, meldete er das als "von einem Testlauf
+   veraendert" - eine Falschbeschuldigung mit demselben Muster wie
+   ueberall hier: vorbestehend sah aus wie verursacht.
+
+   Ein Test kann nicht messen, was VOR ihm passiert ist. Die Frage
+   lautet nicht "ist der Baum sauber?", sondern "hat DIESER LAUF etwas
+   veraendert?" - und die beantwortet man, indem man vorher und
+   nachher vergleicht. Das geht von aussen:
+
+     node scripts/quality/check-test-isolation.mjs
+
+   Hier bleibt die strukturelle Pruefung (PI1), die ohne Vergleich
+   auskommt.
+   ------------------------------------------------------------------- */
