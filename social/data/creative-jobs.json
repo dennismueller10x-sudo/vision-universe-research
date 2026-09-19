@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T06:25:47.285Z",
+  "generatedAt": "2026-09-19T08:10:16.224Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -257,6 +257,36 @@
       "deliveryCount": 0,
       "note": "Beobachtung ueber elf Request-PRs: 9 von 9 mit Bildanforderung sind gestartet, 0 von 2 ohne. Das ist das einzige Merkmal, das die beiden Gruppen trennt. Es stuetzt den Owner-Befund CONTRACT_MISMATCH und zeigt zugleich, dass die VU-seitige Erweiterung allein nicht genuegt. Die Regeln der Automation selbst sind von hier aus nicht beobachtbar - das bleibt eine starke Folgerung und kein Beweis.",
       "triggerEvent": "pull_request/ready_for_review"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:attempt5:revtext-only",
+      "contentId": "vu-xom-20260911-rev3",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "ec19138deda55931fe18410a9d6b0af3f2893758",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:1.0",
+      "attempt": 5,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-09-19T08:10:16.224Z",
+      "updatedAt": "2026-09-19T08:20:00.000Z",
+      "prNumber": 116,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T08:10:16.224Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T08:20:00.000Z",
+          "note": "PR 116 direkt als ready geoeffnet - ein Ereignis statt Draft und Umschalten."
+        }
+      ],
+      "prState": "open",
+      "triggerEvent": "pull_request/opened",
+      "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt."
     }
   ],
   "budget": {
