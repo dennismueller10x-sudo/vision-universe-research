@@ -88,6 +88,26 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const i = args.indexOf("--suite");
   const suite = i === -1 ? "quant/tests/*.test.mjs" : args[i + 1];
 
+  /* Ein Muster ohne --suite wurde stillschweigend verworfen, und der
+     Lauf pruefte weiter die Standardsuite - mit einer Ausgabe, die
+     ehrlich "Suite: quant/..." sagte und trotzdem gelesen wurde, als
+     haette sie die gewuenschte geprueft. Lieber abbrechen: ein
+     Pruefwerkzeug, das etwas anderes prueft als verlangt, ist
+     schlimmer als keines. */
+  /* `k !== i + 1` allein war falsch: ohne --suite ist i === -1, und
+     i + 1 ist dann 0 - genau der Index des positionalen Arguments, das
+     die Pruefung finden sollte. Die Wache verschluckte den Fall, gegen
+     den sie geschrieben war. */
+  const uebrig = args.filter(function (a, k) {
+    if (a === "--suite") return false;
+    return i === -1 || k !== i + 1;
+  });
+  if (uebrig.length) {
+    console.error("Unbekanntes Argument: " + uebrig.join(" ") +
+      "\nGemeint war vermutlich: --suite \"" + uebrig[0] + "\"");
+    process.exit(2);
+  }
+
   console.log("VISION UNIVERSE — Test-/Produktionsisolation");
   console.log("Suite: " + suite + "\n");
   const r = pruefe(suite);

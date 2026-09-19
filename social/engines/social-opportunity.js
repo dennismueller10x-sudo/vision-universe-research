@@ -123,6 +123,60 @@
    * keine zweite Rechnung fuehrt und in Tests gegen einen Doppelgaenger
    * laufen kann.
    */
+  /* -------------------------------------------------------------------
+     EXTERNES INTERESSE IST EIN FAKTOR, KEIN VEROEFFENTLICHUNGSRECHT
+
+     Die Versuchung ist gross, externe Haeufigkeit direkt in die
+     Rangfolge zu geben: was draussen laeuft, muss doch auch bei uns
+     laufen. Zwei Gruende dagegen, und beide sind keine Vorsicht,
+     sondern Logik.
+
+     ERSTENS ist fremde Wirkung nicht unsere. Ein Archetyp, der auf
+     einem Kanal mit anderer Zielgruppe traegt, sagt ueber unsere
+     nichts - dafuer gibt es die EIGENE Performance, und die ist eine
+     andere Evidenzklasse.
+
+     ZWEITENS ist Haeufigkeit nicht Wirkung. Dass ein Thema oft
+     vorkommt, kann auch heissen, dass es uebersaettigt ist.
+
+     Deshalb: externes Interesse geht als eigene, klar benannte
+     Dimension ein - und wird nie mit `audienceInterest` vermischt,
+     das die EIGENE Zielgruppe meint.
+     ------------------------------------------------------------------- */
+  function externesInteresse(topic, beobachtungen, options) {
+    options = options || {};
+    var min = options.minimumSample === undefined ? 10 : options.minimumSample;
+    var b = beobachtungen || [];
+    if (!b.length) {
+      return { available: false, value: null,
+        explanation: "Keine externen Beobachtungen - das ist die Abwesenheit " +
+          "einer Messung, kein Befund ueber externes Interesse." };
+    }
+    /* Zugeordnet wird ueber die Hashtags, die zu diesem Thema gehoeren -
+       nicht ueber Textaehnlichkeit. Eine erfundene Zuordnung waere
+       schlimmer als keine. */
+    var tags = (topic && topic.observedHashtags) || [];
+    if (!tags.length) {
+      return { available: false, value: null,
+        explanation: "Zu diesem Thema wurde extern nichts beobachtet." };
+    }
+    var treffer = b.filter(function (o) {
+      return tags.indexOf(o.topicCategory) !== -1;
+    });
+    if (treffer.length < min) {
+      return { available: false, value: null, sample: treffer.length,
+        explanation: "Nur " + treffer.length + " externe Beobachtungen; ab " +
+          min + " wird daraus eine Aussage." };
+    }
+    /* Der Anteil an allen Beobachtungen - eine RELATIVE Groesse. Eine
+       absolute Zahl fremder Kanaele sagt ueber unseren nichts. */
+    return { available: true, value: Math.min(1, treffer.length / b.length),
+      sample: treffer.length,
+      explanation: treffer.length + " von " + b.length + " externen " +
+        "Beobachtungen betreffen dieses Thema. Haeufigkeit ist keine " +
+        "Wirkung und keine Prognose." };
+  }
+
   function rank(topics, spec) {
     spec = spec || {};
     var scorer = spec.scorer;
@@ -143,7 +197,28 @@
       if (eingang.editorialBasis === undefined) {
         eingang.editorialBasis = (t.evidenceRefs || []).length ? 0.8 : null;
       }
-      var befund = scorer(eingang, { notApplicable: nichtAnwendbar(t) });
+      /* Externes Interesse als eigene Dimension - nie in
+         audienceInterest hineingerechnet. */
+      var extern = externesInteresse(t, spec.externalObservations, spec);
+      if (extern.available) eingang.externalInterest = extern.value;
+
+      var raus = nichtAnwendbar(t);
+      /* -------------------------------------------------------------
+         NICHT GEMESSEN IST NICHT UNANWENDBAR
+
+         Erst stand `externalInterest` hier bei `notApplicable`. Das
+         haette behauptet, die Frage nach fremder Aufmerksamkeit stelle
+         sich fuer dieses Thema nicht. Sie stellt sich sehr wohl - wir
+         koennen sie nur noch nicht beantworten, weil keine externe
+         Quelle angebunden ist, weil zu diesem Thema nichts beobachtet
+         wurde oder weil die Stichprobe zu klein ist.
+
+         Das ist genau der Unterschied, fuer den es
+         `systemicallyUnavailable` gibt: die Luecke bleibt in der
+         berichteten Abdeckung sichtbar, druckt aber nicht das Thema. */
+      var systemisch = extern.available ? [] : ["externalInterest"];
+      var befund = scorer(eingang, {
+        notApplicable: raus, systemicallyUnavailable: systemisch });
       var sat = saettigung(t.family, historie);
 
       /* Saettigung bestraft, sie belohnt nicht: ein Thema wird nicht
@@ -169,6 +244,7 @@
         missing: befund.missing || [],
         drivers: befund.drivers || [],
         saturation: sat,
+        externalInterest: extern,
         saturationPenalty: abschlag,
         explanation: befund.explanation,
         /* Woertlich, weil die Verwechslung teuer waere. */
@@ -207,6 +283,7 @@
     KIND: KIND,
     nichtAnwendbar: nichtAnwendbar,
     saettigung: saettigung,
+    externesInteresse: externesInteresse,
     rank: rank
   };
 

@@ -96,7 +96,11 @@ test("E2 · Der vollstaendige Kreislauf laeuft und schliesst sich", async () => 
        anwendbar. Dieselbe Aussage trifft der Zyklus - haette der Test
        sie nicht getroffen, pruefte er einen anderen Fall als den
        produktiven. */
-    notApplicable: ["editorialBasis"]
+    notApplicable: ["editorialBasis"],
+    /* Aus demselben Grund steht hier auch `externalInterest`: der
+       Zyklus erklaert es als systemisch unmessbar, solange keine
+       externe Quelle angebunden ist. Nicht unanwendbar - unbeantwortet. */
+    systemicallyUnavailable: ["externalInterest"]
   });
   assert.equal(opportunityScore.available, true, opportunityScore.explanation);
   assert.equal(opportunityScore.proposable, true);

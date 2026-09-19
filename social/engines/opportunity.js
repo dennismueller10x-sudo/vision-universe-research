@@ -33,7 +33,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
 
   var DIMENSIONS = [
-    "trend", "vuSignal", "editorialBasis", "audienceInterest",
+    "trend", "vuSignal", "editorialBasis", "audienceInterest", "externalInterest",
     "historicalPerformance", "platformFit", "freshness", "contentGap", "brandFit"
   ];
 
@@ -42,6 +42,7 @@
     vuSignal:              "eigenes Vision-Universe-Signal",
     editorialBasis:        "vorhandene redaktionelle Grundlage",
     audienceInterest:      "Interesse des eigenen Publikums",
+    externalInterest:      "externe Aufmerksamkeit fuer das Thema",
     historicalPerformance: "Leistung vergleichbarer Beitraege",
     platformFit:           "Passung zur Plattform",
     freshness:             "Aktualitaet des Anlasses",
@@ -52,7 +53,11 @@
   var DEFAULT_METHODOLOGY = {
     version: "1.0.0",
     weights: {
-      trend: 0.18, vuSignal: 0.22, editorialBasis: 0.12, audienceInterest: 0.14,
+        trend: 0.18, vuSignal: 0.22, editorialBasis: 0.12, audienceInterest: 0.14,
+      /* EXTERN ist nicht EIGEN. Zwei Dimensionen, zwei Evidenzklassen -
+         und die externe wiegt bewusst leichter: fremde Wirkung ist
+         nicht unsere, und Haeufigkeit ist keine Wirkung. */
+      externalInterest: 0.08,
       historicalPerformance: 0.12, platformFit: 0.10,
       freshness: 0.10, contentGap: 0.08, brandFit: 0.06
     },
@@ -156,6 +161,8 @@
     components.editorialBasis = fromInput(input, "editorialBasis",
       "vorhandene redaktionelle Grundlage");
     components.audienceInterest = fromInput(input, "audienceInterest", "Publikumsinteresse");
+    components.externalInterest = fromInput(input, "externalInterest",
+      "externe Aufmerksamkeit");
 
     /* Historische Leistung OHNE Stichprobengroesse ist eine Anekdote.
        §19: Korrelation ist nicht Kausalitaet, und n=2 ist nicht einmal
@@ -267,6 +274,22 @@
        wird gegen das Erreichbare. */
     var reachableCoverage = erreichbaresGewicht === 0 ? 0
       : Math.min(1, availableWeight / erreichbaresGewicht);
+    /* -------------------------------------------------------------------
+       DIE ZAHL, DIE ENTSCHEIDET, IST DIE ZAHL, DIE DASTEHT
+
+       Die Ablehnung lautete woertlich: "Nur 55 % der ERREICHBAREN
+       Gewichtung sind belegt; verlangt sind 55 %." Eine Ablehnung, deren
+       eigener Text die Bedingung als erfuellt ausweist.
+
+       Der Grund ist Binaerarithmetik: 0.66 / 1.20 ergibt
+       0.5499999999999999. Berichtet wurde gerundet, verglichen wurde
+       ungerundet — und damit entschieden Stellen, die niemand sieht.
+
+       Gerundet wird jetzt VOR dem Vergleich, auf dieselbe Genauigkeit,
+       die auch im Ergebnis steht. Das ist keine Aufweichung der
+       Schwelle: 0.549 wird weiterhin abgelehnt. Es ist die Zusage, dass
+       Anzeige und Entscheidung dieselbe Zahl benutzen. */
+    reachableCoverage = Math.round(reachableCoverage * 1000) / 1000;
 
     var anyOf = (methodology.requiresAnyOf || []).some(function (dim) {
       return components[dim].available;
@@ -275,7 +298,8 @@
       return refuse(components, coverage, methodology,
         "Weder ein externer Trend noch ein internes VU-Signal noch eine " +
         "vorhandene redaktionelle Grundlage liegt vor. Ohne Anlass und ohne " +
-        "eigenen Beitrag entsteht keine Gelegenheit.");
+        "eigenen Beitrag entsteht keine Gelegenheit.", { reachableCoverage: reachableCoverage,
+          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend });
     }
     if (reachableCoverage < methodology.minimumCoverage) {
       return refuse(components, coverage, methodology,
@@ -284,7 +308,8 @@
         " %." + (systemischFehlend.length
           ? " (Systemisch nicht messbar und daher nicht eingerechnet: " +
             systemischFehlend.join(", ") + ".)"
-          : ""));
+          : ""), { reachableCoverage: reachableCoverage,
+          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend });
     }
 
     var value = Math.round((weighted / availableWeight) * 100);
@@ -344,12 +369,21 @@
     return parts.join(" ");
   }
 
-  function refuse(components, coverage, methodology, reason) {
+  function refuse(components, coverage, methodology, reason, diagnose) {
+    diagnose = diagnose || {};
     return {
       available: false,
       state: "UNAVAILABLE",
       score: null,
       coverage: Math.round(coverage * 1000) / 1000,
+      /* Eine Ablehnung braucht dieselbe Diagnose wie eine Annahme.
+         Ohne sie liest sich "zu wenig Abdeckung" wie ein Urteil ueber
+         das Thema, obwohl daneben stehen koennte, dass die Haelfte der
+         Dimensionen systemisch gar nicht messbar ist. */
+      reachableCoverage: diagnose.reachableCoverage === undefined
+        ? null : diagnose.reachableCoverage,
+      notApplicable: diagnose.notApplicable || [],
+      systemicallyUnavailable: diagnose.systemicallyUnavailable || [],
       methodologyVersion: methodology.version,
       components: components,
       drivers: [],

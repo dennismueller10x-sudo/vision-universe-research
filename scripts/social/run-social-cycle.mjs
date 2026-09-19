@@ -711,7 +711,15 @@ function buildOpportunities(signals, internal, memory, registry, providerId) {
          NICHT ANWENDBAR - und als Luecke gezaehlt wuerde es die
          Abdeckung druecken und Signalgelegenheiten schlechter stellen,
          ohne dass sich an ihnen etwas geaendert haette. */
-      notApplicable: ["editorialBasis"]
+      notApplicable: ["editorialBasis"],
+      /* `externalInterest` ist hier NICHT unanwendbar - ob ausserhalb
+         ueber dieses Thema gesprochen wird, ist eine sinnvolle Frage
+         auch fuer ein Kurssignal. Sie ist unbeantwortbar, solange keine
+         externe Quelle angebunden ist. Als Luecke des THEMAS gezaehlt
+         haette die neue Dimension jede bestehende Gelegenheit unter die
+         Mindestabdeckung gedrueckt - ohne dass sich an einer von ihnen
+         etwas geaendert haette. */
+      systemicallyUnavailable: ["externalInterest"]
     });
 
     out.push({
