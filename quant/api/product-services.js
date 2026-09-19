@@ -18,12 +18,22 @@ const Directory=typeof module!=='undefined'&&module.exports?require('../engines/
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
- const serviceBase=options.productServiceBase!==undefined?options.productServiceBase:
-  (typeof location!=='undefined'&&location.hostname==='research.visionuniverse.de'?'https://vision-universe-research.vercel.app/api':null);
+ let serviceBase=options.productServiceBase!==undefined?options.productServiceBase:null,serviceConfigReady;
+ async function resolveServiceBase(){
+  if(serviceBase)return serviceBase;
+  if(options.productServiceBase===null)return null;
+  if(!serviceConfigReady)serviceConfigReady=load('/quant/config/product-services.json').then(config=>{
+   const value=config&&config.production&&config.production.baseUrl;
+   if(typeof value!=='string'||!/^https:\/\/[a-z0-9.-]+\/api$/i.test(value))return null;
+   serviceBase=value;return serviceBase;
+  }).catch(()=>null);
+  return serviceConfigReady;
+ }
  const directory=Directory.create({loadJSON:load});
  async function remote(path,params){
-  if(!serviceBase||typeof fetch!=='function')return null;
-  const url=new URL(serviceBase.replace(/\/$/,'')+'/'+path.replace(/^\//,''));
+  const base=await resolveServiceBase();
+  if(!base||typeof fetch!=='function')return null;
+  const url=new URL(base.replace(/\/$/,'')+'/'+path.replace(/^\//,''));
   Object.entries(params||{}).forEach(([key,value])=>{if(value!==undefined&&value!==null)url.searchParams.set(key,String(value));});
   try{const response=await fetch(url,{headers:{Accept:'application/json'},credentials:'omit'});if(!response.ok)return null;return await response.json();}catch{return null;}
  }
