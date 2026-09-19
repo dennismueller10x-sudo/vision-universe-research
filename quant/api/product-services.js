@@ -13,6 +13,7 @@ const Methodology=typeof module!=='undefined'&&module.exports?require('../engine
 const Strategy=typeof module!=='undefined'&&module.exports?require('../engines/strategy.js'):g.VUStrategy;
 const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
+const IntradaySnapshot=typeof module!=='undefined'&&module.exports?require('../engines/realtime/intraday-snapshot.js'):g.VURealtime?.IntradaySnapshot;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
@@ -23,7 +24,8 @@ function create(options){
   if(serviceBase)return serviceBase;
   if(options.productServiceBase===null)return null;
   if(!serviceConfigReady)serviceConfigReady=load('/quant/config/product-services.json').then(config=>{
-   const value=config&&config.production&&config.production.baseUrl;
+   if(config?.production?.enabled!==true)return null;
+   const value=config.production.baseUrl;
    if(typeof value!=='string'||!/^https:\/\/[a-z0-9.-]+\/api$/i.test(value))return null;
    serviceBase=value;return serviceBase;
   }).catch(()=>null);
@@ -39,7 +41,7 @@ function create(options){
  }
  async function identity(ticker){
   const result=await directory.getInstrument(ticker),i=result.instrument;
-  if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId)||!/^\d{10}$/.test(i.cik))return null;
+  if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId))return null;
   return i;
  }
  function canonicalIdentity(i){return !!i&&Master.inProductUniverse(i)&&/^vu_[a-f0-9]+$/.test(i.instrumentId)&&!!i.masterMemberId&&(i.legacyIds||[]).includes(i.masterMemberId);}
@@ -189,28 +191,62 @@ function create(options){
    if(served?.state==='AVAILABLE'&&served.identity?.securityId===instrument.instrumentId&&served.history){
     return History.build(served.history,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
    }
-   const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable(served?.reason||served?.state||'PRODUCT_DATA_NOT_CONNECTED');
+   const c=await config();if(!(c.preview.scope||[]).includes(ticker)){
+    if(!/^\d{10}$/.test(instrument.cik))return unavailable('FUNDAMENTAL_IDENTITY_UNAVAILABLE');
+    const consumer=await load('/discover/data/stocks/US_REAL/'+ticker+'.json');
+    return History.buildConsumer(consumer,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:selection.period});
+   }
    const index=await load('/quant/data/sec/inspector_index.json'),entry=index.companies?.find(s=>s.ticker===ticker);
    if(!entry?.cik||entry.cik!==instrument.cik)return unavailable('INVALID_IDENTITY');
    const source=await load('/quant/data/sec/inspector/'+ticker+'.json');
    return History.build(source,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
   }catch{return unavailable('SOURCE_MISSING');}
  }
+ // Artifact paths are resolved from canonical identity, never a free-form URL.
+ async function publicPermission(ticker,dataClass='marketData',form='raw'){
+  const c=await config();return policy.check({providerId:'tiingo',dataClass,audience:'public',form,ticker,gates:c.gates}).allowed;
+ }
  async function getHistoricalPriceHistory(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  if(selection.columns&&selection.columns!=='close')return unavailable('OHLCV_NOT_IN_SERIES_ARTIFACT');
+  if((selection.from&&!validDate(selection.from))||(selection.to&&!validDate(selection.to))||(selection.from&&selection.to&&selection.from>selection.to))return unavailable('INVALID_SELECTION');
   try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const result=await remote('history',{ticker,securityId:instrument.instrumentId,columns:selection.columns||'close',from:selection.from,to:selection.to});
-   return result&&result.identity?.securityId===instrument.instrumentId?result:unavailable('PRODUCT_DATA_SERVICE_UNREACHABLE');
+   if(!await publicPermission(ticker))return unavailable('DISPLAY_NOT_PERMITTED');
+   if(!/^[A-Za-z0-9_-]+$/.test(instrument.masterMemberId))return unavailable('INVALID_IDENTITY');
+   const long=selection.range==='MAX'||selection.grain==='weekly';
+   const path='/quant/data/market/discover-series'+(long?'-long':'')+'/'+instrument.masterMemberId+'.json';
+   const source=await load(path),today=new Date().toISOString().slice(0,10);
+   if(source.schemaVersion!==(long?'discover-series-long-1.0.0':'discover-series-1.1.0')||source.securityId!==instrument.masterMemberId||source.ticker!==ticker||source.dataMode!=='real'||source.source!=='tiingo'||source.provider!=='tiingo'||source.status!=='CALCULATED'||source.priceSeriesType!=='SPLIT_ADJUSTED'||source.grain!==(long?'weekly':'daily')||!source.publishBasis||!validDate(source.asOf)||source.asOf>today||!source.currency||!Array.isArray(source.points))return unavailable('INVALID_HISTORY_CONTRACT');
+   let previous='';
+   for(const point of source.points){if(!Array.isArray(point)||point.length!==2||!validDate(point[0])||point[0]<=previous||point[0]>source.asOf||!Number.isFinite(point[1])||point[1]<=0)return unavailable('INVALID_HISTORY_POINTS');previous=point[0];}
+   const bars=source.points.filter(([date])=>(!selection.from||date>=selection.from)&&(!selection.to||date<=selection.to)).map(([date,close])=>({date,close}));
+   return {state:bars.length?'AVAILABLE':'INSUFFICIENT_HISTORY',identity:identityModel(instrument),bars,grain:source.grain,currency:source.currency,asOf:source.asOf,adjustmentStatus:source.priceSeriesType,sourcePath:path,availableFrom:source.from,availableTo:source.to,columns:['close'],pitEligibility:'NOT_CERTIFIED',fullDailyHistory:false};
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getIntraday(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const result=await remote('intraday',{ticker,securityId:instrument.instrumentId});
-   return result&&result.identity?.securityId===instrument.instrumentId?result:unavailable('PRODUCT_DATA_SERVICE_UNREACHABLE');
+   if(!await publicPermission(ticker,'intraday'))return unavailable('DISPLAY_NOT_PERMITTED');
+   const index=await load('/quant/data/market/intraday/index.json');
+   if(index.schemaVersion!=='intraday-index-1.1.0')return unavailable('INVALID_INTRADAY_INDEX');
+   const today=new Date().toISOString().slice(0,10);
+   const session=Object.keys(index.available||{}).filter(date=>validDate(date)&&date<=today&&Array.isArray(index.available[date])&&index.available[date].includes(ticker)).sort().at(-1);
+   if(!session)return {state:'INTRADAY_UNAVAILABLE',identity:identityModel(instrument),reason:'NO_PUBLISHED_SNAPSHOT'};
+   if(!/^[A-Za-z0-9_-]+$/.test(instrument.masterMemberId))return unavailable('INVALID_IDENTITY');
+   const path='/quant/data/market/intraday/'+session+'/'+instrument.masterMemberId+'.json',snapshot=await load(path);
+   if(snapshot.securityId!==instrument.masterMemberId||snapshot.symbol!==ticker||snapshot.sessionDate!==session||snapshot.publishable!==true||!IntradaySnapshot?.validate(snapshot).ok||!Number.isFinite(Date.parse(snapshot.asOf))||Date.parse(snapshot.asOf)>Date.now())return unavailable('INVALID_INTRADAY_CONTRACT');
+   return {state:'INTRADAY_AVAILABLE',identity:identityModel(instrument),snapshot,points:snapshot.points,asOf:snapshot.asOf,sessionDate:session,isLive:false,isDelayed:snapshot.isDelayed,priceSemantics:'UNSPECIFIED',sourcePath:path};
   }catch{return unavailable('SOURCE_MISSING');}
  }
- function getRealtimeCapability(){return {state:serviceBase?'AVAILABLE':'UNAVAILABLE',transport:'VISION_UNIVERSE_RELAY',url:'wss://live.visionuniverse.de/live',priceSemantics:'UNSPECIFIED',chartMovement:'TRADE_EVENTS_ONLY'};}
+ async function getRealtimeCapability(ticker){
+  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
+   const c=await config(),stream=c.preview.stream;
+   if(!stream?.enabled||!await publicPermission(ticker,'realtime','realtime'))return unavailable('DISPLAY_NOT_PERMITTED');
+   if(stream.url!=='wss://live.visionuniverse.de/live')return unavailable('UNSUPPORTED_RELAY');
+   return {state:'AVAILABLE',identity:identityModel(instrument),transport:'VISION_UNIVERSE_RELAY',url:stream.url,onDemand:true,connectionState:'NOT_CONNECTED',priceSemantics:'UNSPECIFIED',chartMovement:'TRADE_EVENTS_ONLY'};
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  function getRecipes(){return [
   {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit nicht negativer Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},
   {id:'growing-business',title:'Wachsendes Geschäft',explanation:'Unternehmen, deren ausgewiesenes Umsatzwachstum mindestens 20 Prozent beträgt.',field:'revenueGrowth',threshold:20,rule:'Umsatzwachstum ≥ 20 %'},
