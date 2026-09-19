@@ -39,6 +39,7 @@
     search=D.Search.create({universeId:()=>ctx.universeId});document.body.append(search.node);
     const open=search.open;
     search.open=()=>{previousFocus=document.activeElement;open();};
+    document.addEventListener('keydown',event=>{if(event.key==='/'&&!search.node.classList.contains('on'))previousFocus=document.activeElement;},true);
     let wasOpen=false;
     new MutationObserver(()=>{
       const isOpen=search.node.classList.contains('on');
@@ -61,11 +62,11 @@
     const result=await dir.getInstrument(symbol);
     if(!active())return;
     if(result.status!=='OK'){message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
-    const [manifest,hits]=await Promise.all([dir.manifest(),dir.search(symbol,{limit:1})]);
+    const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
     if(!active())return;
     root.classList.add('dx-detail');
     V.Detail.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
-      capabilities:dir.capabilities((hits.entries||[])[0]),masterVersion:manifest.version,asOf:manifest.asOf},ctx);
+      capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
   }
   async function route() {
     if(!meta)return;

@@ -51,3 +51,11 @@ CI run 35427743051 / PR #113 preserved screenshot and JSON evidence.
 - Heuristic mobile entry review: purpose, search, company identity, performance, reason and stock action were visible; no claim of an independent human usability study.
 
 Second browser/visual gate remains required after these changes.
+
+## Iteration 2 — interaction and visual critique
+
+CI run 35428042586: WebKit 24/24 passed; Chromium 128/131 passed. First-screen heuristic completed in 1.46–1.90 seconds locally (not a production latency claim).
+- Remaining failures: 320px chart controls overlapped by intraday note, and light search surface contrast. Natural chart flow and an opaque themed search surface correct these.
+- Fundamental visual critique: wrapping metric tabs consumed the viewport. Replaced with a single horizontal tab rail and compact side-by-side period values; the actual chart must now appear in the chapter screenshot.
+- Feed screenshot revealed missing bounded viewport in the new shell: IntersectionObserver could treat many cards as visible. The shared feed now has its required fixed viewport height and native scrolling. Added a bounded-initial-load and visible-next-stock check, beyond mere DOM pagination.
+- Full home-chunk completion test added once on mobile dark, comparing actual rendered surfaces to the canonical three-chunk manifest.

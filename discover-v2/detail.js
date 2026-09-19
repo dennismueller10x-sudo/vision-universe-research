@@ -102,7 +102,7 @@
       var story = journey.querySelector(".dx-story-list");
       var stage = journey.querySelector(".dx-journey--stage");
       if (story && stage) stage.insertAdjacentElement("afterend", story);
-      var instruction = node("p", "dv2-detail-intro", "Umsatz, Gewinn oder Cashflow? Wähle eine Kennzahl und entdecke die Entwicklung.");
+      var instruction = node("p", "dv2-detail-intro", "Kennzahl wählen. Entwicklung verstehen.");
       if (stage) journey.insertBefore(instruction, stage);
     }
     disclose(page.querySelector(".dx-chapter--damals"), "Damals und heute im direkten Vergleich");

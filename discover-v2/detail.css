@@ -23,6 +23,10 @@ body.dv2 .dv2-stock .dx-chapter h2{font-size:clamp(24px,3vw,36px);line-height:1.
 body.dv2 .dv2-stock .dx-chapter--chart{padding:10px 0 24px;border:0}
 body.dv2 .dv2-stock .dx-chapter--chart>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 body.dv2 .dv2-stock .dx-chart{background:transparent;border:0;border-radius:0;padding:0}
+/* Shared intraday wrapper uses height:100% for card slots. Here it belongs
+   in document flow with its price header and note, not in a fixed slot. */
+body.dv2 .dv2-stock .dx-chart .dx-intraday{height:auto;min-height:0}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-chart{height:auto;min-height:0;flex:none;display:flow-root}
 body.dv2 .dv2-stock .dx-chart-head{margin:18px 0}
 body.dv2 .dv2-stock .dx-tf{display:flex;gap:5px;justify-content:flex-start;flex-wrap:nowrap}
 body.dv2 .dv2-stock .dx-tf button{min-width:44px;min-height:44px;font-size:13px;padding:8px 14px;border:0;border-radius:999px;background:transparent;color:var(--discover-muted)}
@@ -51,6 +55,8 @@ body.dv2 .dv2-stock-context .dx-zeitachse{margin-top:28px}
 body.dv2 .dv2-stock .dx-chapter--journey{--w:#8a78d6;--w-soft:rgba(138,120,214,.12);padding-top:60px}
 body.dv2 .dv2-detail-intro{font-size:15px;color:var(--discover-muted);line-height:1.6;max-width:55ch;margin:-8px 0 24px}
 body.dv2 .dv2-stock .dx-journey-tab{min-height:44px;padding:10px 18px}
+body.dv2 .dv2-stock .dx-journey-tabs{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:thin;overscroll-behavior-x:contain}
+body.dv2 .dv2-stock .dx-journey-tabs>.dx-journey-tab{flex:0 0 auto;white-space:nowrap}
 body.dv2 .dv2-stock .dx-journey-kopf{margin:22px 0 18px;gap:14px 22px}
 body.dv2 .dv2-stock .dx-journey-satz{font-size:clamp(20px,2.5vw,30px);max-width:40ch;line-height:1.35;margin-top:24px}
 body.dv2 .dv2-stock .dx-journey-satz--caveat{font-size:15px;line-height:1.6}
@@ -68,6 +74,7 @@ body.dv2 .dv2-stock .dx-bewertung-zeile{min-height:64px}
 body.dv2 .dv2-stock .dx-bewertung-satz{font-size:20px;line-height:1.5;max-width:48ch}
 body.dv2 .dv2-stock :is(button,a,summary):focus-visible{outline:3px solid var(--discover-text);outline-offset:4px}
 body.dv2 .dv2-stock :is(section,details)[id]{scroll-margin-top:110px}
+body.dv2 .dv2-stock :is(button,a,summary){scroll-margin-top:110px;scroll-margin-bottom:130px}
 @media(max-width:860px){
   body.dv2:has(.dv2-stock) .v2-bar{display:none}
   body.dv2 .dv2-stock{padding:0 20px 100px}
@@ -85,7 +92,16 @@ body.dv2 .dv2-stock :is(section,details)[id]{scroll-margin-top:110px}
   body.dv2 .dv2-stock .dx-chapter{padding:36px 0}
   body.dv2 .dv2-stock .dx-chapter--chart{padding:8px 0 14px}
   body.dv2 .dv2-stock .dx-chapter h2{font-size:28px}
-  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:27px}
+  body.dv2 .dv2-stock .dx-chapter--journey{padding-top:20px;scroll-margin-top:80px}
+  body.dv2 .dv2-stock .dx-chapter--journey>h2{font-size:26px;text-transform:none;color:var(--discover-text);margin-bottom:14px;letter-spacing:-.035em}
+  body.dv2 .dv2-stock .dx-chapter--journey>.dx-kicker{margin-bottom:10px}
+  body.dv2 .dv2-detail-intro{font-size:13px;margin:0 0 12px}
+  body.dv2 .dv2-stock .dx-journey--stage{margin-top:12px}
+  body.dv2 .dv2-stock .dx-journey-kopf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:12px 0 8px}
+  body.dv2 .dv2-stock .dx-journey-pfeil{display:none}
+  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(20px,5.5vw,27px);white-space:nowrap}
+  body.dv2 .dv2-stock .dx-journey-delta{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;margin:0;text-align:left}
+  body.dv2 .dv2-stock .dx-journey-delta b{font-size:24px}
   body.dv2 .dv2-stock .dx-journey-bild{overflow:hidden}
   body.dv2 .dv2-stock .dx-zahlen{gap:10px}
   body.dv2 .dv2-stock .dx-zahlen-karte{padding:18px 14px;border-radius:16px}

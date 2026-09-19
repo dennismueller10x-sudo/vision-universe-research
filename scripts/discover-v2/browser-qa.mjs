@@ -48,10 +48,40 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' stock accessibility',()=>a11y(page,key+'-stock'));
  await check(key+' fundamental metric changes visual evidence',async()=>{const journey=page.locator('#journey');await journey.scrollIntoViewIfNeeded();const tabs=journey.getByRole('tab');assert(await tabs.count()>=2,'AAPL needs multiple canonical metrics');const first=await journey.locator('.dx-journey-kopf').innerText();const svgBefore=await journey.locator('.dx-journey-bild').innerHTML();await tabs.nth(1).click();assert.equal(await tabs.nth(1).getAttribute('aria-selected'),'true');assert.equal(await tabs.nth(0).getAttribute('aria-selected'),'false');const second=await journey.locator('.dx-journey-kopf').innerText();assert(first!==second&&svgBefore!==await journey.locator('.dx-journey-bild').innerHTML(),'Fundamental visual did not change');interactionEvidence.push({key,type:'fundamental-metric',metric:await tabs.nth(1).innerText(),before:first,after:second});await journey.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-fundamentals');});
  await page.goto(base+'/discover-v2/#/einzeln/US_REAL',{waitUntil:'networkidle'});
+ await check(key+' feed is bounded and swipes one screen',async()=>{
+  const track=page.locator('.dx-feed-spur');await track.waitFor();
+  const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
+  const visible=()=>track.evaluate(n=>{const bounds=n.getBoundingClientRect();const cards=Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(card=>{const box=card.getBoundingClientRect();return {symbol:card.dataset.symbol,index:card.dataset.index,visibleHeight:Math.max(0,Math.min(box.bottom,bounds.bottom)-Math.max(box.top,bounds.top))};}).sort((a,b)=>b.visibleHeight-a.visibleHeight);return {height:n.clientHeight,viewport:innerHeight,scrollTop:n.scrollTop,card:cards[0]};});
+  const before=await visible();assert(before.height>100&&before.height<=before.viewport,'Feed track is not viewport-bounded');
+  const counterBefore=await page.locator('.dx-feed-zaehler').innerText();
+  await track.evaluate(n=>{n.scrollTop=n.clientHeight;});await page.waitForTimeout(700);
+  const after=await visible(),counterAfter=await page.locator('.dx-feed-zaehler').innerText();
+  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','One screen scroll did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
+  interactionEvidence.push({key,type:'feed-single-screen',initialCards:count,before,after,counterBefore,counterAfter});
+  await screenshot(page,key+'-feed-second-stock');
+ });
  await check(key+' feed continues beyond first batch',async()=>{await page.locator('.dx-feed-spur').waitFor();for(let i=0;i<3&&await page.locator('.dx-feed-screen[data-symbol]').count()<=12;i++){await page.locator('.dx-feed-spur').evaluate(n=>{n.scrollTop=n.scrollHeight;});await page.waitForTimeout(700);}const symbols=await page.locator('.dx-feed-screen[data-symbol]').evaluateAll(nodes=>nodes.map(n=>n.dataset.symbol));assert(symbols.length>12,'Feed stopped after first batch');assert.equal(symbols.length,new Set(symbols).size,'Feed contains duplicate symbols');});
  await screenshot(page,key+'-feed');
  if(width===390)await check(key+' feed accessibility',()=>a11y(page,key+'-feed'));
  await check(key+' feed exit cleanup',async()=>{await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});assert(!await page.locator('body').evaluate(n=>n.classList.contains('dx-feed-aktiv')||n.classList.contains('v2-feed-active')));assert.equal(await page.locator('.dx-feed').count(),0);});
+ if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' complete canonical home journey',async()=>{
+  const meta=await (await page.request.get(base+'/discover/data/meta.json')).json();
+  const contract=meta.home.find(h=>h.universeId==='US_REAL');
+  const chunks=await Promise.all(contract.chunks.map(async path=>(await (await page.request.get(base+path)).json())));
+  const expected=chunks.reduce((n,chunk)=>n+chunk.surfaces.length,0);
+  for(let attempt=0;attempt<6&&await page.locator('.v2-finish').count()===0;attempt++){
+   await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+   await page.waitForTimeout(700);
+  }
+  assert.equal(await page.locator('.v2-finish').count(),1,'Journey must end once');
+  assert.equal(await page.locator('.v2-load-more').count(),0,'Unloaded chunk remains');
+  const surfaces=await page.locator('.v2-journey > :not(.v2-finish)').evaluateAll(nodes=>nodes.map(n=>({id:n.getAttribute('data-surface'),className:n.className,title:n.querySelector('h2')?.textContent||''})));
+  assert(surfaces.length>=30,'Discovery journey is prematurely short');assert.equal(surfaces.length,expected,'Not every canonical surface was rendered');
+  const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
+  interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
+  await page.locator('.v2-journey > :not(.v2-finish)').nth(Math.max(0,surfaces.length-4)).scrollIntoViewIfNeeded();await screenshot(page,key+'-late-discovery');
+  await page.locator('.v2-finish').scrollIntoViewIfNeeded();await screenshot(page,key+'-journey-finish');
+ });
  await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
  await ctx.close();
 }

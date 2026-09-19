@@ -3,6 +3,7 @@ on:
   pull_request:
     paths: ['discover-v2/**', 'scripts/discover-v2/**', 'assets/site-navigation.js', '.github/workflows/discover-v2-ci.yml']
   push:
+    branches: [main]
     paths: ['discover-v2/**', 'scripts/discover-v2/**', 'assets/site-navigation.js', '.github/workflows/discover-v2-ci.yml']
   workflow_dispatch:
     inputs:
