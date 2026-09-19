@@ -74,6 +74,7 @@ const AutorVorlage = require(join(ROOT, "social/providers/authoring/template/ada
 const AutorModell  = require(join(ROOT, "social/providers/authoring/model/adapter.js"));
 const AutorChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const Lifecycle    = require(join(ROOT, "social/engines/provider-lifecycle.js"));
+const CreativeContract = require(join(ROOT, "social/engines/creative-contract.js"));
 const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 
 /* Der Bild-Renderer ist ein ES-Modul und kein UMD-Engine — er ruft
@@ -428,9 +429,10 @@ function creativeZustand(contentId, nowIso) {
   if (!existsSync(briefPfad)) return null;
 
   let schluessel = null;
+  let brief = null;
   try {
     const roh = readFileSync(briefPfad);
-    const brief = JSON.parse(String(roh));
+    brief = JSON.parse(String(roh));
     schluessel = AutorChatGptWork.processingKey(brief.brief_id, contentId,
       AutorChatGptWork.blobSha(roh), brief.schema_version || "1.0");
   } catch (err) { return null; }
@@ -443,11 +445,69 @@ function creativeZustand(contentId, nowIso) {
   const ergebnisPfad = join(ROOT, "authoring/requests", String(contentId),
     "authoring-result.json");
 
+  /* -------------------------------------------------------------------
+     "WARTET" UEBER ETWAS, DAS FERTIG IST
+
+     Hier stand nur `resultPresent`. Der Zustand blieb damit bei
+     RESULT_AVAILABLE stehen - der Bericht meldete "wartet", waehrend
+     der Autor dasselbe Ergebnis im selben Lauf bereits geprueft,
+     angenommen und verarbeitet hatte.
+
+     `classify` kennt `verified` und `resultInvalid` laengst; gefuellt
+     hat sie niemand. Ein Zustandsraum, der den Fall ausdruecken kann
+     und nicht gefragt wird, ist so gut wie keiner.
+
+     Geprueft wird mit DENSELBEN Funktionen, die auch der Autor
+     benutzt. Eine zweite, eigene Pruefung koennte zu einem anderen
+     Schluss kommen als die, die tatsaechlich entscheidet - und dann
+     wuesste der Bericht etwas, das nicht stimmt.
+     ------------------------------------------------------------------- */
+  let geprueft = null;
+  if (existsSync(ergebnisPfad)) {
+    try {
+      const ergebnis = JSON.parse(readFileSync(ergebnisPfad, "utf8"));
+      const vertrag = CreativeContract.validateResult(ergebnis, brief);
+      if (!vertrag.ok) {
+        geprueft = { ok: false, reason: vertrag.explanation };
+      } else if (vertrag.requestType === CreativeContract.TEXT_REVISION) {
+        /* Bei einer Revision ist das fehlende Bild die Erfuellung. Das
+           geerbte wurde beim Ingest gegen seine Identitaet geprueft. */
+        geprueft = { ok: true, reason: null };
+      } else {
+        const assets = AutorChatGptWork.verifyAssets(ergebnis, (pfad) => {
+          const voll = join(ROOT, String(pfad));
+          return existsSync(voll) ? readFileSync(voll) : null;
+        });
+        geprueft = { ok: assets.ok, reason: assets.ok ? null : assets.explanation };
+      }
+    } catch (err) {
+      /* WESSEN FEHLER IST DAS?
+
+         Hier stand `ok: false` - und damit meldete der Bericht
+         RESULT_INVALID, ein Urteil UEBER DAS ERGEBNIS DES AGENTEN. Der
+         erste Lauf tat genau das, weil eine Abhaengigkeit fehlte:
+         meine eigene kaputte Zeile erschien als "der Agent hat
+         schlecht geliefert".
+
+         Ein defektes JSON ist ein Befund ueber das Ergebnis. Ein
+         ReferenceError ist einer ueber uns. Wer beides in denselben
+         Zustand wirft, bekommt eine falsche Erklaerung - und sucht
+         beim naechsten Mal an der falschen Stelle. */
+      const ueberUns = err instanceof ReferenceError ||
+        err instanceof TypeError;
+      if (ueberUns) throw err;
+      geprueft = { ok: false, reason: "Ergebnis nicht lesbar: " + err.message };
+    }
+  }
+
   const z = Lifecycle.classify({
     startedCount: alle.filter((e) => e.state === "IN_FLIGHT").length,
     firstActivityAt: zeiten.length ? zeiten[0] : null,
     lastActivityAt: zeiten.length ? zeiten[zeiten.length - 1] : null,
-    resultPresent: existsSync(ergebnisPfad)
+    resultPresent: existsSync(ergebnisPfad),
+    verified: geprueft ? geprueft.ok === true : undefined,
+    resultInvalid: geprueft ? geprueft.ok === false : undefined,
+    reason: geprueft ? geprueft.reason : undefined
   }, { now: nowIso });
 
   return Object.assign({ contentId, processingKey: schluessel,

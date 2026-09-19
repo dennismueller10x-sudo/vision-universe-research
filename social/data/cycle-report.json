@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-19T08:17:21.779Z",
+  "generatedAt": "2026-09-19T08:20:03.552Z",
   "provider": null,
   "creativeProvider": [
     {
       "contentId": "vu-xom-20260911-rev3",
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:1.0",
       "deliveryIds": [],
-      "state": "RESULT_AVAILABLE",
-      "explanation": "Ergebnisdatei liegt auf dem Request-Branch.",
+      "state": "VERIFIED",
+      "explanation": "Ergebnis und Asset bestaetigt.",
       "lease": {
         "seconds": 3450,
         "regime": "BOOTSTRAP",
@@ -19,13 +19,13 @@
         "totalFactor": 3,
         "explanation": "Laengster beobachteter Lauf 345 s, Regime BOOTSTRAP (n=1), Faktor 10 ergibt 3450 s. Eine oder zwei Messungen sind keine Verteilung. Der Faktor ist Schutz gegen das eigene Nichtwissen, kein Quantil."
       },
-      "blocking": true,
-      "terminal": false,
-      "observedAt": "2026-09-19T08:17:21.779Z"
+      "blocking": false,
+      "terminal": true,
+      "observedAt": "2026-09-19T08:20:03.552Z"
     }
   ],
   "health": {
-    "generatedAt": "2026-09-19T08:17:21.779Z",
+    "generatedAt": "2026-09-19T08:20:03.552Z",
     "overall": "UNAVAILABLE",
     "counts": {
       "PASS": 6,
@@ -129,7 +129,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -139,7 +139,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -149,7 +149,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -159,7 +159,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -169,7 +169,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -199,7 +199,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-19T08:17:21.779Z",
+        "lastSuccessAt": "2026-09-19T08:20:03.552Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -437,7 +437,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-19T08:17:21.779Z",
+      "assessedAt": "2026-09-19T08:20:03.552Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -682,7 +682,7 @@
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-19T08:17:21.779Z",
+      "decidedAt": "2026-09-19T08:20:03.552Z",
       "packageId": "pkg_eb2926ecbf807420",
       "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
@@ -745,7 +745,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:17:21.779Z",
+      "decidedAt": "2026-09-19T08:20:03.552Z",
       "packageId": "pkg_58ddd3be0771daa2",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
@@ -823,7 +823,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:17:21.779Z",
+      "decidedAt": "2026-09-19T08:20:03.552Z",
       "packageId": "pkg_4e7b2f5b580ba617",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
@@ -901,7 +901,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-19T08:17:21.779Z",
+      "decidedAt": "2026-09-19T08:20:03.552Z",
       "packageId": "pkg_f1a3b11682ad94aa",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
