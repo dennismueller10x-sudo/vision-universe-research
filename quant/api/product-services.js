@@ -200,10 +200,6 @@ function create(options){
  async function getHistoricalFundamentals(ticker,selection={}){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const served=await remote('fundamentals',{ticker,securityId:instrument.instrumentId,policy:'latest_known',usage:'research',asOf:new Date().toISOString().slice(0,10)});
-   if(served?.state==='AVAILABLE'&&served.identity?.securityId===instrument.instrumentId&&served.history){
-    return History.build(served.history,{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
-   }
    const c=await config();if(!(c.preview.scope||[]).includes(ticker)){
     if(!/^\d{10}$/.test(instrument.cik))return unavailable('FUNDAMENTAL_IDENTITY_UNAVAILABLE');
     if(selection.period==='quarterly'){

@@ -365,3 +365,36 @@ claim latest canonical integration from snapshot availability. UI explicitly sho
 its preparation date. No new serving path or secret activated. Full-PIT serving
 exception requires the Owner decision defined in the artifact-only instruction;
 remaining Quant/screener/current-consumer-refresh work is not marked complete.
+
+## 2026-09-19 — Quant PIT continuation rehydrated on current main
+
+Rehydrated from GitHub after PR #118 and independent Discover 2.0 PR #119.
+Current base is `3345715ab045cf5977ef9d3f177051be581f312a`; the PR #118 Pages,
+SEC and Quant Production evidence remains the static baseline. Scope is limited to
+the retained PR #111 Fundamentals adapter. `PHASE_PIT_ADAPTER_SCOPE.md` is the
+active contract.
+
+Implemented locally: complete stored fiscal scope; visible-at-`asOf` revision
+chains with visible-only restatement evidence; exact R2 index namespace/digest;
+explicit full-history scope; index/object/response bounds; and separate PIT versus
+parked market-history activation flags. Ordinary Product Services no longer call
+the remote Fundamentals endpoint and remain static. No Discovery path is edited.
+Historical period shape is now itself cutoff-visible. Backtest responses designate
+raw `revisionHistory` as the only PIT-certified fundamentals source and omit
+resolved/current-classification rows; historical issuer classification remains a
+declared limitation.
+
+Production observation before this change: Vercel `/api/status/` and
+`/api/fundamentals/` report `NOT_CONFIGURED`; GitHub Actions has a successful
+existing R2 restore/verification path, but its secret values cannot be transferred
+through the available integration. Production binding and real canonical smoke
+remain an explicit external Owner gate; no live PASS is inferred from local tests.
+The feature flag must also remain disabled until an existing-platform global
+request/concurrency/cost control is evidenced or the residual operating exposure
+is explicitly accepted; per-request byte limits alone do not satisfy that gate.
+
+Local current-main gate: 1,208/1,208 Quant tests, 471/471 SEC Python tests,
+35/35 PIT serving/API tests and 66/66 shared Worker/Discovery consumer tests PASS.
+Focused Product Services contributes 36 PASS within that Quant suite. Exact release
+build PASS: 4,846,342/8,388,608 SEC bytes and `EXISTING_R2_UNCHANGED`.
+Secret hygiene PASS. Diff contains no `discover/**` or `discover-v2/**` path.

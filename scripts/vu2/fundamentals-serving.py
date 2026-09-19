@@ -53,7 +53,7 @@ def _instant(value, *, date_end=True):
 
 
 def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
-                     as_of, usage="research", now=None, annual_years=30, quarterly_years=15):
+                     as_of, usage="research", now=None, annual_years=30, quarterly_years=15, full_history=False):
     """Project trusted persisted bytes, preserving units, evidence and industry rows.
 
     AS_OF_LATEST is mandatory for backtest input. LATEST_KNOWN is retrospective
@@ -79,6 +79,7 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
     _require(usage in ("research", "backtest"), "INVALID_USAGE")
     _require(policy in (POLICY_AS_OF_LATEST, POLICY_ORIGINAL, POLICY_LATEST_KNOWN), "INVALID_POLICY")
     _require(usage != "backtest" or policy == POLICY_AS_OF_LATEST, "UNSAFE_BACKTEST_POLICY")
+    _require(not full_history or policy != POLICY_LATEST_KNOWN, "UNSAFE_FULL_HISTORY_POLICY")
     cutoff = _instant(as_of)
     clock = now or datetime.now(timezone.utc)
     _require(isinstance(clock, datetime) and clock.tzinfo is not None, "INVALID_CLOCK")
@@ -107,9 +108,30 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
     _require(versions.get("normalization_schema") == NORMALIZATION_SCHEMA_VERSION
              and (versions.get("metric_registry") or {}).get("mapping_version") == registry.mapping_version
              and bool(versions.get("normalization_logic")) and bool(versions.get("formula")), "UNSUPPORTED_FACTBOOK_VERSION")
+    _require(type(full_history) is bool, "INVALID_SCOPE")
     try:
+        book = _rehydrate(document)
+        if full_history:
+            # Existing exporter accepts a count, not a calendar horizon. Include
+            # every stored fiscal year for projection, then remove years whose
+            # existence was not yet visible at the requested cutoff.
+            annual_years = quarterly_years = max(1, len(book.fiscal_years()))
         history = export_inspector_view(document, registry, as_of=as_of,
             annual_years=annual_years, quarterly_years=quarterly_years, policy=policy)
+        if full_history:
+            visible_years = sorted({timeline.fiscal_year for timeline in book.timelines.values()
+                                    if timeline.fiscal_year is not None and timeline.visible(as_of)})
+            visible_year_set = set(visible_years)
+            history["scope"] = {"annual_years": visible_years, "quarterly_years": visible_years}
+            history["rows"] = [row for row in history["rows"]
+                               if row.get("fiscal_year") in visible_year_set]
+            # The exporter is also used by a current-state inspector and carries
+            # current profile/calendar/quality metadata. Those fields are not
+            # historical issuer metadata, so do not expose them on the PIT path.
+            for name in ("generated_at_utc", "versions", "profile", "calendar",
+                         "quality_summary", "quality_errors"):
+                history.pop(name, None)
+            history["metadata_scope"] = "AS_OF_ROWS_ONLY"
         industry, names = registry.industry_metrics_for(document["profile"].get("sic"))
         industry_rows = []
         if industry:
@@ -126,20 +148,63 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
                 _require(type(row.get("value")) in (int, float) and math.isfinite(row["value"])
                          and bool(row.get("unit")) and bool(row.get("accession"))
                          and bool(row.get("filed")) and bool(row.get("available_from")), "INVALID_FACT_EVIDENCE")
+                if policy != POLICY_LATEST_KNOWN:
+                    _require(_instant(row["available_from"], date_end=False) <= cutoff,
+                             "FACT_AFTER_CUTOFF")
                 _require(_instant(row["filed"], date_end=False).date() <= clock.date()
                          and _instant(row["available_from"], date_end=False) <= clock, "FUTURE_FACT")
         available = sum(row.get("available") is True for row in all_rows)
+        if usage == "backtest" and len(as_of) > 10:
+            _require(all(len(str(row.get("available_from", ""))) > 10
+                         for row in all_rows if row.get("available") is True),
+                     "INSUFFICIENT_AVAILABILITY_PRECISION")
+        revisions = []
+        if full_history:
+            # Reuse canonical timeline visibility; never leak later revisions,
+            # or a full-timeline RESTATED flag into a historical as-of request.
+            for key in sorted(book.timelines, key=lambda item: (str(item[0]), -1 if item[1] is None else int(item[1]), str(item[2]))):
+                timeline = book.timelines[key]
+                observations = timeline.visible(as_of)
+                if not observations:
+                    continue
+                for observation in observations:
+                    _require(type(observation.value) in (int, float)
+                             and math.isfinite(observation.value)
+                             and observation.unit and observation.accession
+                             and observation.filed and observation.available_from,
+                             "INVALID_FACT_EVIDENCE")
+                    _require(observation.available_instant <= cutoff
+                             and observation.available_instant <= clock,
+                             "FUTURE_FACT")
+                    if usage == "backtest" and len(as_of) > 10:
+                        _require(len(str(observation.available_from)) > 10,
+                                 "INSUFFICIENT_AVAILABILITY_PRECISION")
+                revisions.append({"metric": timeline.metric,
+                    "fiscal_year": timeline.fiscal_year,
+                    "fiscal_period": timeline.fiscal_period,
+                    "restated": timeline._values_differ(observations),
+                    "observations": [observation.to_dict() for observation in observations]})
     except ServingError:
         raise
     except (KeyError, TypeError, ValueError, AttributeError):
         raise ServingError("INVALID_FACTBOOK") from None
     source_absent = document.get("companyfacts_status") == "NOT_AVAILABLE_404"
     _require(not source_absent or available == 0, "INCONSISTENT_SOURCE_AVAILABILITY")
+    backtest_revision_source = full_history and usage == "backtest"
     return {"schema": SCHEMA, "state": "AVAILABLE" if available else "UNAVAILABLE" if source_absent else "MISSING",
             "reason": None if available else "SEC_COMPANYFACTS_NOT_AVAILABLE" if source_absent else "NO_RESOLVABLE_FACTS",
             "identity": {k: identity[k] for k in ("securityId", "instrumentId", "masterMemberId", "issuerId", "cik")},
-            "history": history,
-            "industrySpecificMetrics": {"industry": industry.industry_id, "rows": industry_rows} if industry else None,
+            # Current SIC drives PeriodResolver's sector applicability. Until
+            # historical issuer classifications exist, only the raw canonical
+            # observation timelines are certified for a backtest request.
+            "history": None if backtest_revision_source else history,
+            "revisionHistory": revisions if full_history else None,
+            "historyScope": "FULL_STORED_HISTORY" if full_history else "BOUNDED_PERIODS",
+            "revisionScope": "VISIBLE_AT_AS_OF" if full_history else None,
+            "pitBacktestSource": "revisionHistory" if backtest_revision_source else None,
+            "resolvedHistoryPITSafety": "RAW_REVISIONS_ONLY" if full_history else "NOT_CERTIFIED",
+            "industrySpecificMetrics": None if backtest_revision_source else
+                ({"industry": industry.industry_id, "rows": industry_rows} if industry else None),
             "source": {"objectKey": "v1/sec/fundamentals/facts/" + cik + ".json.gz",
                        "sha256": expected_sha256, "versions": versions,
                        "generatedAt": document.get("generated_at_utc")},
@@ -147,4 +212,5 @@ def project_factbook(compressed, *, expected_sha256, identity, eligible, policy,
             "usage": usage, "policy": policy, "asOf": as_of,
             "pitPolicyApplied": policy == POLICY_AS_OF_LATEST,
             "backtestReady": False,
-            "backtestLimitations": ["EXECUTION_AND_UNIVERSE_GATES_REQUIRED", "SURVIVORSHIP_NOT_RESOLVED"]}
+            "backtestLimitations": ["EXECUTION_AND_UNIVERSE_GATES_REQUIRED", "SURVIVORSHIP_NOT_RESOLVED",
+                                    "HISTORICAL_ISSUER_CLASSIFICATION_NOT_AVAILABLE"]}
