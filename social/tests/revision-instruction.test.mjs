@@ -11,7 +11,11 @@
    ========================================================================= */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { befundBlock, anweisung, erbeAus } from "../../scripts/social/request-creative-revision.mjs";
+import { befundBlock, anweisung, erbeAus, beziehungsWoerter }
+  from "../../scripts/social/request-creative-revision.mjs";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const Creative = require("../engines/creative-quality.js");
 
 function variante(kriterien) {
   return { assessment: { criteria: kriterien } };
@@ -152,4 +156,44 @@ test("RI10 · Ohne Bild und ohne Erbe gibt es nichts zu erben", () => {
      nicht pruefbar, und ungeprueft geerbt wird nicht. */
   assert.equal(erbeAus({ inherited_visual: { source_asset_path: "a.png" } }, "x"), null);
   assert.equal(erbeAus(null, "x"), null);
+});
+
+/* ------------------------------------------------------------------ */
+/* ANWEISUNG UND PRUEFUNG MEINEN DIESELBE LISTE                        */
+/* ------------------------------------------------------------------ */
+
+test("RI11 · Jedes genannte Wort wird von der Rubrik auch anerkannt", () => {
+  /* Eine abgeschriebene zweite Liste geht irgendwann auseinander, und
+     der Unterschied faellt erst auf, wenn ein Lauf daran scheitert -
+     und der kostet eine Work-Ausfuehrung. Also wird sie gelesen, und
+     dieser Test haelt fest, dass das Lesen auch stimmt. */
+  const woerter = beziehungsWoerter();
+  assert.ok(woerter.length >= 10, "Die Liste sieht abgeschnitten aus.");
+  for (const w of woerter) {
+    assert.ok(Creative.BEZIEHUNG.test("Der Wert faellt " + w + " niedriger aus."),
+      "Die Anweisung nennt \"" + w + "\", die Rubrik erkennt es nicht.");
+  }
+});
+
+test("RI12 · Ein Wort ausserhalb der Liste stiftet keine Beziehung", () => {
+  /* Die Gegenprobe: waere die Erkennung so weit, dass jeder Text
+     besteht, sagte das Kriterium nichts mehr aus. */
+  assert.equal(Creative.BEZIEHUNG.test(
+    "Die Trendstruktur erreicht 27,35 von 30 Punkten. Der Gesamtwert " +
+    "liegt bei 76 von 100."), false);
+});
+
+test("RI13 · Die Anweisung nennt die messbare Forderung an die Caption", () => {
+  const story = {
+    lead: { value: 76, statement: "76 von 100" },
+    tension: {
+      strength: { value: 27.35, max: 30, component: "TREND_STRUCTURE", evidence: { id: "a" } },
+      drag: { value: 5, max: 10, component: "VOLATILITY", evidence: { id: "b" } },
+      support: null, question: "Warum nur 76?"
+    }
+  };
+  const text = anweisung(story, 12);
+  assert.match(text, /mindestens eines dieser Woerter vorkommt/);
+  beziehungsWoerter().slice(0, 5).forEach((w) =>
+    assert.ok(text.includes(w), "Wort fehlt in der Anweisung: " + w));
 });

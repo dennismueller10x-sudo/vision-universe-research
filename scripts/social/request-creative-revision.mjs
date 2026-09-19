@@ -161,6 +161,15 @@ export function erbeAus(ergebnis, contentId) {
   };
 }
 
+/** Die Woerter, an denen die Rubrik eine Beziehung erkennt - aus ihrer
+ *  eigenen Konstante gelesen, damit Anweisung und Pruefung nicht
+ *  auseinanderlaufen koennen. */
+export function beziehungsWoerter() {
+  const quelle = Creative.BEZIEHUNG.source;
+  const kern = quelle.replace(/^\\b\(\?:/, "").replace(/\)\\b$/, "");
+  return kern.split("|");
+}
+
 export function anweisung(story, dichteGrenze, assessed) {
   const t = story.tension;
   const staerke = t.strength.value + " von " + t.strength.max;
@@ -211,6 +220,18 @@ export function anweisung(story, dichteGrenze, assessed) {
     "Praktisch heisst das: der Hook stellt die Spannung auf, die Caption " +
     "beginnt bei ihrer AUFLOESUNG. Ein erster Caption-Satz, der den Hook " +
     "mit anderen Worten nacherzaehlt, reisst diese Grenze zuverlaessig.",
+    "",
+    /* "Beginne bei der Aufloesung" stand schon da - und zurueck kam
+       eine Aufzaehlung. Die Forderung war richtig und nicht pruefbar
+       formuliert. Hier steht sie als das, was die Rubrik misst, und
+       die Wortliste wird aus derselben Konstante GELESEN. */
+    "Die Caption muss eine BEZIEHUNG behaupten, nicht Bausteine " +
+    "aufzaehlen. Gemessen wird das daran, dass mindestens eines dieser " +
+    "Woerter vorkommt: " + beziehungsWoerter().join(", ") + ". " +
+    "Konkret: bringe die Bremse und den Leitwert in EINEN Satz, der " +
+    "sagt, wie das eine das andere begrenzt - das ist die Antwort auf " +
+    "die Frage, die der Hook aufmacht. Eine Liste belegter Zahlen ist " +
+    "noch keine Aussage, auch wenn jede Zahl stimmt.",
     "",
     "Unveraendert: keine Prognose, keine Empfehlung, keine " +
     "Ursachenbehauptung. Der Pflichthinweis \"Keine Anlageberatung.\" " +

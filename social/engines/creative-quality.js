@@ -465,6 +465,12 @@
 
   var api = {
     INNENSPRACHE: INNENSPRACHE,
+    /* Hinausgereicht, damit die ANWEISUNG an den Agenten und die
+       PRUEFUNG danach dieselbe Liste meinen. Eine abgeschriebene
+       zweite Liste geht irgendwann auseinander, und der Unterschied
+       faellt erst auf, wenn ein Lauf daran scheitert - und der kostet
+       eine Work-Ausfuehrung. */
+    BEZIEHUNG: BEZIEHUNG,
     DICHTE: DICHTE,
     VORNE_ZEICHEN: VORNE_ZEICHEN,
     innensprache: innensprache,
