@@ -1,0 +1,86 @@
+# =========================================================================
+# HASHTAG CAPABILITY PROBE — NUR LESEN, GENAU EINMAL
+#
+# Dieser Workflow beantwortet EINE Frage: warum weist Meta die
+# Hashtag-Suche ab?
+#
+# Er veroeffentlicht nichts, aendert nichts, autorisiert nichts und
+# fordert nichts an. Er liest den Zustand der bestehenden Verbindung und
+# fuehrt GENAU EINEN Versuch gegen einen bereits geoeffneten Hashtag aus.
+#
+# -------------------------------------------------------------------------
+# WARUM DER VERSUCH KEINEN PLATZ KOSTET
+# -------------------------------------------------------------------------
+#
+# Dreissig einzigartige Hashtags je rollierendem Sieben-Tage-Fenster -
+# eine ERNEUTE Abfrage innerhalb des Fensters zaehlt nicht noch einmal.
+#
+# Ob das Fenster wirklich offen ist, wissen wir allerdings nicht sicher:
+# die acht Hashtags vom 19.09. gelten als verbraucht, weil das bei
+# dreissig Plaetzen die teurere und damit richtige Annahme war. Ob Meta
+# sie gezaehlt hat, als `ig_hashtag_search` scheiterte, ist von hier aus
+# nicht feststellbar.
+#
+# Deshalb waehlt das Skript einen KERN-Hashtag. Damit gilt in beiden
+# Faellen dasselbe:
+#
+#   Fenster offen   -> die Abfrage ist gratis.
+#   Fenster doch zu -> sie kostet einen Platz, den das Portfolio fuer
+#                      genau diesen Hashtag ohnehin ausgegeben haette.
+#
+# Ist gar kein Fenster mehr offen, wird NICHT probiert.
+#
+# -------------------------------------------------------------------------
+# WARUM UEBER ACTIONS
+# -------------------------------------------------------------------------
+#
+# Gemessen: die Entwicklungsumgebung erreicht social.visionuniverse.de
+# nicht (Egress-Proxy, CONNECT 403). Der Admin-Schluessel liegt ohnehin
+# hier als Repository-Secret und nicht dort.
+# =========================================================================
+name: Social Hashtag Capability
+
+on:
+  workflow_dispatch:
+  push:
+    # Eigene Ausloeserdatei. Der Instagram-Beobachter und der taegliche
+    # Intelligence-Lauf haben ihre eigenen - drei Workflows an derselben
+    # Datei waeren drei Laeufe, die sich ins Gehege kommen.
+    paths:
+      - 'social/data/capability-probe-request.json'
+
+concurrency:
+  group: social-hashtag-capability
+  cancel-in-progress: false
+
+# Dieser Lauf schreibt nichts zurueck. `read` ist keine Vorsichtsmassnahme,
+# sondern die Beschreibung dessen, was er tut.
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Genau eine Probe, nur lesend
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/verify-hashtag-access.mjs | tee /tmp/probe.txt
+
+      - name: Befund als Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "## Hashtag Capability Probe"
+            echo ""
+            echo '```'
+            cat /tmp/probe.txt 2>/dev/null || echo "kein Ergebnis"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

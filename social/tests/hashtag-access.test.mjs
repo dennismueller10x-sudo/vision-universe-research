@@ -182,3 +182,33 @@ test("HA13 · Gewaehlt wird der mit dem meisten Fenster", async () => {
     "2026-09-19T10:00:00Z");
   assert.equal(offenerHashtag(bestand, "2026-09-20T10:00:00Z"), "neu");
 });
+
+test("HA14 · Probiert wird ein KERN-Hashtag, damit kein Platz verloren gehen kann", async () => {
+  /* Ob das Fenster wirklich offen ist, wissen wir nicht sicher - die
+     acht vom 19.09. gelten als verbraucht, weil das die teurere und
+     damit richtige Annahme war.
+
+     Ein Kern-Hashtag loest das: ist das Fenster offen, ist die Abfrage
+     gratis; ist es doch zu, kostet sie einen Platz, den wir fuer genau
+     diesen Hashtag ohnehin ausgegeben haetten. Bei einem
+     Erkundungs-Hashtag waere der zweite Fall ein verlorener Platz. */
+  const { offenerHashtag } = await import("../../scripts/social/verify-hashtag-access.mjs");
+  const P = require("../engines/hashtag-portfolio.js");
+
+  const bestand = P.record({}, [
+    { hashtag: "nvidia", role: "EXPLORATION", ok: false, reason: "permissionRevoked" },
+    { hashtag: "aktien", role: "CORE", ok: false, reason: "permissionRevoked" }
+  ], "2026-09-19T17:57:26Z");
+
+  assert.equal(offenerHashtag(bestand, "2026-09-20T10:00:00Z"), "aktien");
+});
+
+test("HA15 · Ohne Kern-Hashtag wird der mit dem meisten Fenster genommen", async () => {
+  const { offenerHashtag } = await import("../../scripts/social/verify-hashtag-access.mjs");
+  const P = require("../engines/hashtag-portfolio.js");
+  let bestand = P.record({}, [{ hashtag: "alt", role: "EXPLORATION", ok: true,
+    observedMediaCount: 4 }], "2026-09-15T10:00:00Z");
+  bestand = P.record(bestand, [{ hashtag: "neu", role: "EXPLORATION", ok: true,
+    observedMediaCount: 4 }], "2026-09-19T10:00:00Z");
+  assert.equal(offenerHashtag(bestand, "2026-09-20T10:00:00Z"), "neu");
+});

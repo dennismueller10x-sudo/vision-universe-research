@@ -47,6 +47,24 @@ DEPLOY
 #
 # Sie loest keinen Meta-Login aus.
 #
+# NACHTRAG 2026-09-19 — WAS DIESE DATEI STILL GETAN HAT
+#
+# Beim Vorbereiten der Owner-Schritte habe ich behauptet, ein Push auf
+# workers/** loese "nur den Preflight" aus und der neue Diagnose-
+# Endpunkt sei deshalb noch nicht draussen. Das war falsch: diese Datei
+# lag da, ihre erste Zeile lautete DEPLOY, und damit deployt jeder
+# solche Push - genau wie oben beschrieben.
+#
+# Der Fehler ist lehrreich, weil er die Sorte ist, gegen die dieses
+# Projekt sonst anschreibt: ich habe den MECHANISMUS gelesen (die
+# Bedingung im Workflow) und den ZUSTAND nicht (ob die Datei da ist).
+# Eine Bedingung zu kennen, ersetzt nicht, sie auszuwerten.
+#
+# Inhaltlich aendert der Nachtrag nichts: der Owner hat das Deployment
+# des read-only Endpunkts anschliessend ausdruecklich angeordnet. Der
+# Vermerk steht hier, weil eine Datei, die ueber ihre eigene Wirkung
+# aufklaert, auch ueber deren Missdeutung aufklaeren soll.
+#
 # -------------------------------------------------------------------------
 # STAND BEIM ANLEGEN
 # -------------------------------------------------------------------------

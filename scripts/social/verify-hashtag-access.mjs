@@ -56,19 +56,47 @@ function readJson(p, f) {
 /**
  * Ein Hashtag, dessen Fenster NOCH OFFEN ist.
  *
- * Exportiert, weil die Eigenschaft pruefbar sein muss: dieser Lauf darf
- * keinen neuen Platz ausgeben. Gibt null zurueck, wenn keiner offen ist -
- * dann wird nicht probiert, statt einen Platz dafuer zu verbrennen.
+ * ---------------------------------------------------------------------
+ * WARUM AUSGERECHNET EIN KERN-HASHTAG
+ * ---------------------------------------------------------------------
+ *
+ * Der Vorsatz lautet: der Versuch darf keinen zusaetzlichen Platz
+ * kosten. Innerhalb des Sieben-Tage-Fensters ist eine erneute Abfrage
+ * gratis - so weit, so einfach.
+ *
+ * Nur wissen wir nicht sicher, ob das Fenster wirklich offen IST. Die
+ * acht Hashtags vom 19.09. sind als verbraucht eingetragen, weil das
+ * bei einem Rahmen von dreissig die teurere und damit richtige Annahme
+ * war. Ob Meta sie tatsaechlich gezaehlt hat, als `ig_hashtag_search`
+ * scheiterte, ist von hier aus nicht feststellbar.
+ *
+ * Daraus folgt die Wahl. Ein KERN-Hashtag ist einer, den das Portfolio
+ * ohnehin jede Woche abfragt. Damit gilt in beiden Faellen dasselbe:
+ *
+ *   Fenster offen      -> die Abfrage ist gratis.
+ *   Fenster doch zu    -> sie kostet einen Platz, den wir fuer genau
+ *                         diesen Hashtag ohnehin ausgegeben haetten.
+ *
+ * Ein Erkundungs-Hashtag haette diese Eigenschaft nicht: bei ihm waere
+ * der zweite Fall ein verlorener Platz.
  */
 export function offenerHashtag(bestand, nowIso) {
   const eintraege = bestand || {};
   const offen = Object.keys(eintraege).filter((h) =>
     Portfolio.fensterZustand(eintraege[h], nowIso).state === "OPEN");
   if (!offen.length) return null;
-  /* Der zuletzt geoeffnete hat das meiste Fenster uebrig. */
-  offen.sort((a, b) =>
-    Date.parse(eintraege[b].firstQueriedAt || 0) -
-    Date.parse(eintraege[a].firstQueriedAt || 0));
+
+  function istKern(h) {
+    return (eintraege[h].provenance || []).some((p) => p.role === "CORE");
+  }
+
+  offen.sort((a, b) => {
+    /* Kern zuerst - siehe oben. */
+    if (istKern(a) !== istKern(b)) return istKern(a) ? -1 : 1;
+    /* Danach: der zuletzt geoeffnete hat das meiste Fenster uebrig. */
+    return Date.parse(eintraege[b].firstQueriedAt || 0) -
+      Date.parse(eintraege[a].firstQueriedAt || 0);
+  });
   return offen[0];
 }
 
