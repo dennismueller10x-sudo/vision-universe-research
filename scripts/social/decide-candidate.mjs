@@ -202,13 +202,22 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      nicht.
      ------------------------------------------------------------------- */
   const REFINE = flag("refine");
+  /* -------------------------------------------------------------------
+     DER VIERTE WEG LIEGT EINE EBENE HOEHER
+
+     --refine sagt: schreib es besser. --audience-fit sagt: waehle etwas
+     anderes aus. Die beiden zu verwechseln kostet Revisionen, die nichts
+     aendern koennen, weil die Nacharbeit an der falschen Stufe ansetzt.
+     ------------------------------------------------------------------- */
+  const AUDIENCE = flag("audience-fit");
   const ASSESSMENT = arg("assessment", null);
 
   if (!ID) { console.error("Kein --candidate."); process.exit(2); }
 
-  const gewaehlt = [APPROVE, REJECT, HOLD, REFINE].filter(Boolean).length;
+  const gewaehlt = [APPROVE, REJECT, HOLD, REFINE, AUDIENCE].filter(Boolean).length;
   if (gewaehlt !== 1) {
-    console.error("Genau eines von --approve, --reject, --hold oder --refine. " +
+    console.error("Genau eines von --approve, --reject, --hold, --refine " +
+      "oder --audience-fit. " +
       "Mehreres oder nichts ist keine Entscheidung.");
     process.exit(2);
   }
@@ -221,6 +230,53 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Zustand:   " + kandidat.state);
 
   /* ------------------------------------------------------- REFINE */
+  if (AUDIENCE) {
+    if (!REASON) {
+      console.error("\n--audience-fit braucht --reason. Ein Haltegrund ohne " +
+        "Begruendung ist fuer die naechste Auswahl wertlos.");
+      process.exit(2);
+    }
+    const erlaubtA = OwnerDecision.mayTransition(kandidat.state,
+      "HELD_FOR_AUDIENCE_FIT", { actor: "owner" });
+    if (!erlaubtA.ok) { console.error("\n" + erlaubtA.explanation); process.exit(3); }
+
+    kandidat.state = "HELD_FOR_AUDIENCE_FIT";
+    kandidat.hold = Object.assign({ reason: REASON, decidedBy: BY, decidedAt: NOW },
+      OwnerDecision.haltegrund("HELD_FOR_AUDIENCE_FIT"),
+      {
+        /* Woertlich, weil jede dieser Verwechslungen etwas anderes
+           nacharbeiten liesse - und drei davon das Falsche. */
+        performanceJudgement: false,
+        topicRejected: false,
+        factFailure: false,
+        providerFailure: false,
+        note: "Zurueckgehalten, weil das Content-Konzept Vorwissen " +
+          "voraussetzt. Belege und Umsetzung tragen. Die Nacharbeit gehoert " +
+          "in die Auswahl der Social Opportunity, nicht in den Text: eine " +
+          "weitere Textrevision koennte den Befund gar nicht beheben. Der " +
+          "Beitrag ist nie erschienen - ueber seine Wirkung ist damit nichts " +
+          "bekannt und nichts zu lernen."
+      });
+    writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
+
+    const fba = join(ROOT, FEEDBACK_REL);
+    const bestandA = existsSync(fba) ? JSON.parse(readFileSync(fba, "utf8")) : { entries: [] };
+    bestandA.entries = (bestandA.entries || []).concat([
+      feedbackEintrag(kandidat, "AUDIENCE_FIT", { reason: REASON, by: BY, now: NOW })]);
+    bestandA.generatedAt = NOW;
+    mkdirSync(dirname(fba), { recursive: true });
+    writeFileSync(fba, JSON.stringify(bestandA, null, 2) + "\n");
+
+    console.log("\nZURUECKGEHALTEN WEGEN AUDIENCE FIT.");
+    console.log("Belege und Umsetzung tragen. Das Content-Konzept setzt Vorwissen");
+    console.log("voraus, das ein breites Publikum nicht hat.");
+    console.log("\nNachzuarbeiten ist die AUSWAHL der Social Opportunity, nicht der");
+    console.log("Text: eine weitere Textrevision koennte den Befund nicht beheben.");
+    console.log("\nDer Beitrag ist nie erschienen. Ueber seine Wirkung ist damit");
+    console.log("nichts bekannt - und nichts zu lernen.");
+    process.exit(0);
+  }
+
   if (REFINE) {
     if (!REASON) {
       console.error("\n--refine ohne --reason. Eine redaktionelle Rueckgabe ohne " +

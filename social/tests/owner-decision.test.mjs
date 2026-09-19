@@ -274,3 +274,44 @@ test("OD17 · Eine Maschine erfindet diesen Zustand nicht", () => {
   assert.equal(versuch.ok, false);
   assert.equal(versuch.reason, "machineCannotDecide");
 });
+
+/* ------------------------------------------------------------------ */
+/* DER DRITTE HALTEGRUND LIEGT EINE EBENE HOEHER                       */
+/* ------------------------------------------------------------------ */
+
+test("OD18 · Audience Fit ist weder Evidenz- noch Creative-Fehler", () => {
+  /* Beides kann mit Ja beantwortet sein und der Beitrag trotzdem nicht
+     veroeffentlichungsfaehig, weil das Content-KONZEPT ein Publikum
+     voraussetzt, das es nicht gibt. Ein Zustandsraum, der das nicht
+     ausdruecken kann, zwingt zu einer falschen Einordnung. */
+  const g = O.haltegrund("HELD_FOR_AUDIENCE_FIT");
+  assert.equal(g.evidenceFailure, false);
+  assert.equal(g.creativeFailure, false);
+  assert.equal(g.audienceFailure, true);
+  assert.equal(g.stage, "OPPORTUNITY");
+});
+
+test("OD19 · Die Nacharbeit setzt frueher an als der Text", () => {
+  /* "Creative Refinement" hiesse: schreib es besser. Der Befund lautet
+     aber: waehle etwas anderes aus. Eine weitere Textrevision waere die
+     falsche Nacharbeit - und genau die hat der Owner untersagt. */
+  assert.equal(O.haltegrund("HELD_FOR_AUDIENCE_FIT").reworkStage,
+    "SOCIAL_OPPORTUNITY");
+  assert.equal(O.haltegrund("HELD_FOR_CREATIVE_REFINEMENT").reworkStage,
+    undefined);
+});
+
+test("OD20 · Ein nie erschienener Beitrag hat keine Leistung", () => {
+  /* Der Post wurde nicht veroeffentlicht. Daraus darf KEINE Aussage
+     ueber reale Social Performance gelernt werden - sonst lernt das
+     System aus n=0 eine Regel. */
+  assert.ok(O.OHNE_LEISTUNGSAUSSAGE.includes("HELD_FOR_AUDIENCE_FIT"));
+});
+
+test("OD21 · Der Zustand ist entschieden und maschinell unantastbar", () => {
+  assert.equal(O.istEntschieden("HELD_FOR_AUDIENCE_FIT"), true);
+  const alt = { candidateId: "c1", state: "HELD_FOR_AUDIENCE_FIT", version: 1 };
+  assert.throws(() => O.guardWrite(alt,
+    { candidateId: "c1", state: "AWAITING_APPROVAL", version: 1 },
+    { actor: "machine" }));
+});

@@ -91,7 +91,7 @@
 
   /* Zustaende, hinter denen ein Mensch steht. */
   var ENTSCHIEDEN = ["APPROVED", "REJECTED", "HELD_FOR_ENRICHMENT",
-    "HELD_FOR_CREATIVE_REFINEMENT"];
+    "HELD_FOR_CREATIVE_REFINEMENT", "HELD_FOR_AUDIENCE_FIT"];
 
   /* Zustaende, die der Lauf setzt und der Lauf aendern darf. */
   var MASCHINELL = ["AWAITING_APPROVAL", "SUPERSEDED"];
@@ -102,7 +102,7 @@
      Beitrags treffen. Ein Beitrag, der nie erschienen ist, hat keine
      Leistung — weder eine gute noch eine schlechte. */
   var OHNE_LEISTUNGSAUSSAGE = ["REJECTED", "HELD_FOR_ENRICHMENT",
-    "HELD_FOR_CREATIVE_REFINEMENT"];
+    "HELD_FOR_CREATIVE_REFINEMENT", "HELD_FOR_AUDIENCE_FIT"];
 
   /* Woran ein zurueckgehaltener Kandidat haengt. Die Unterscheidung
      ist keine Formsache: sie sagt, WELCHE Stufe nacharbeiten muss, und
@@ -120,6 +120,35 @@
         "noch nicht.",
       evidenceFailure: false,
       creativeFailure: true
+    },
+    /* -----------------------------------------------------------------
+       DER DRITTE HALTEGRUND LIEGT EINE EBENE HOEHER
+
+       Die beiden anderen fragen: reichen die Belege? taugt die
+       redaktionelle Umsetzung? Beides kann mit Ja beantwortet sein -
+       und der Beitrag trotzdem nicht veroeffentlichungsfaehig, weil
+       das CONTENT-KONZEPT selbst ein Publikum voraussetzt, das es
+       nicht gibt.
+
+       Genau dieser Fall ist eingetreten: ein Hook mit gebundener
+       Evidenz, Markenwert 100, Rubrik 10 von 10 - und drei
+       Voraussetzungen, die ein breites Publikum nicht mitbringt.
+
+       Ein Zustandsraum, der das nicht ausdruecken kann, zwingt zu
+       einer falschen Einordnung. "Creative Refinement" hiesse: schreib
+       es besser. Der Befund lautet aber: waehle etwas anderes aus.
+       ------------------------------------------------------------------- */
+    HELD_FOR_AUDIENCE_FIT: {
+      stage: "OPPORTUNITY",
+      summary: "Belege und Umsetzung tragen; das Content-Konzept setzt " +
+        "Vorwissen voraus, das ein breites Publikum nicht hat.",
+      evidenceFailure: false,
+      creativeFailure: false,
+      /* Ausdruecklich: dieser Zustand ist KEIN Urteil ueber die
+         Wortwahl. Eine weitere Textrevision waere die falsche
+         Nacharbeit - die Auswahl muss frueher ansetzen. */
+      audienceFailure: true,
+      reworkStage: "SOCIAL_OPPORTUNITY"
     }
   };
 
