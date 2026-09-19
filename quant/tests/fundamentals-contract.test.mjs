@@ -10,3 +10,16 @@ test('acceptance before official filing date remains valid and retains its full 
 test('all five validated index identities work, including XOM empty ticker metadata',()=>{for(const ticker of ['AAPL','MSFT','NVDA','JPM','XOM']){const data=JSON.parse(readFileSync(new URL('../data/sec/inspector/'+ticker+'.json',import.meta.url)));assert.equal(Contract.build(data,{...opts,ticker,cik:data.cik}).state,'AVAILABLE',ticker);}});
 
 test('future source timestamp is rejected even when its facts are otherwise valid',()=>{const data=source();data.generated_at_utc='2099-01-01T00:00:00Z';assert.equal(Contract.build(data,opts).reason,'INVALID_SOURCE_TIMESTAMP');});
+
+test('existing SEC consumer keeps facts, currency and filing-date precision without PIT claims',()=>{
+ const payload=JSON.parse(readFileSync(new URL('../../discover/data/stocks/US_REAL/TSLA.json',import.meta.url),'utf8'));
+ const options={ticker:payload.symbol,cik:payload.fundamentals.cik,securityId:payload.instrumentId,masterMemberId:payload.securityId,metric:'revenue',period:'annual'};
+ const actual=Contract.buildConsumer(payload,options);
+ assert.equal(actual.state,'AVAILABLE');assert.equal(actual.pitEligibility,'NOT_CERTIFIED');assert.equal(actual.availabilityPrecision,'FILING_DATE');
+ assert.equal(actual.rows.at(-1).value,payload.fundamentals.journey.tracks.revenue.at(-1).v);
+ payload.fundamentals.units.revenue='EUR';assert.equal(Contract.buildConsumer(payload,options).metric.unit,'EUR');
+ for(const period of ['quarterly','ttm'])assert.equal(Contract.buildConsumer(payload,{...options,period}).reason,'PERIOD_NOT_IN_CONSUMER_ARTIFACT');
+ for(const mutate of [p=>p.instrumentId='vu_wrong',p=>p.fundamentals.cik='0000000000',p=>p.dataMode='mock',p=>p.fundamentals.asOf='2099-01-01',p=>p.fundamentals.journey.tracks.revenue[0].filed='2099-01-01',p=>p.fundamentals.journey.tracks.revenue[0].v=null]){
+  const broken=structuredClone(payload);mutate(broken);assert.equal(Contract.buildConsumer(broken,options).state,'UNAVAILABLE');
+ }
+});

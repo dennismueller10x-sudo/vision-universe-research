@@ -38,21 +38,34 @@ test('Technical summary rejects future, mocked and mismatched bundles',async()=>
 });
 test('Historical Fundamentals preserves SEC identity and keeps canonical out-of-preview members typed',async()=>{
  const history=await api.getHistoricalFundamentals('NVDA',{metric:'revenue',period:'annual'});assert.equal(history.state,'AVAILABLE');assert.equal(history.pitEligibility,'NOT_CERTIFIED');
- const before=reads.length;assert.equal((await api.getHistoricalFundamentals('TSLA')).reason,'PRODUCT_DATA_NOT_CONNECTED');assert.ok(reads.slice(before).every(path=>path.startsWith('/quant/data/universe/')));
+ const before=reads.length,consumer=await api.getHistoricalFundamentals('TSLA');assert.equal(consumer.state,'AVAILABLE');assert.equal(consumer.pitEligibility,'NOT_CERTIFIED');assert.equal(consumer.availabilityPrecision,'FILING_DATE');assert.ok(reads.slice(before).includes('/discover/data/stocks/US_REAL/TSLA.json'));assert.equal((await api.getHistoricalFundamentals('TSLA',{period:'quarterly'})).reason,'PERIOD_NOT_IN_CONSUMER_ARTIFACT');
 });
-test('canonical remote market services receive stable IDs and preserve typed semantics',async()=>{
- const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));const path=new URL(url).pathname;return {ok:true,json:async()=>path.endsWith('/history')?{state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[{date:'2026-09-18',close:1}],adjustmentStatus:'SPLIT_ADJUSTED'}:{state:'INTRADAY_AVAILABLE',identity:{securityId:'vu_d57074b4128184'},points:[['09:30',1]],priceSemantics:'UNSPECIFIED'}};};
- try{const remote=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query,productServiceBase:'https://vision-universe-research.vercel.app/api'});
-  assert.equal((await remote.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');assert.equal((await remote.getIntraday('NVDA')).priceSemantics,'UNSPECIFIED');assert.equal(remote.getRealtimeCapability().chartMovement,'TRADE_EVENTS_ONLY');assert.ok(calls.every(url=>url.includes('securityId=vu_d57074b4128184')));
+test('production reuses canonical artifacts without any Vercel fetch',async()=>{
+ const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));throw Error('no remote service permitted');};
+ try{const history=await api.getHistoricalPriceHistory('NVDA');assert.equal(history.state,'AVAILABLE');assert.equal(history.identity.securityId,'vu_d57074b4128184');assert.equal(history.grain,'daily');assert.equal(history.fullDailyHistory,false);
+  const long=await api.getHistoricalPriceHistory('NVDA',{range:'MAX'});assert.equal(long.state,'AVAILABLE');assert.equal(long.grain,'weekly');assert.ok(long.bars[0].date<'2000-01-01');
+  const snapshot=await api.getIntraday('NVDA');assert.equal(snapshot.state,'INTRADAY_AVAILABLE');assert.equal(snapshot.priceSemantics,'UNSPECIFIED');assert.equal(snapshot.isLive,false);
+  const relay=await api.getRealtimeCapability('NVDA');assert.equal(relay.state,'AVAILABLE');assert.equal(relay.chartMovement,'TRADE_EVENTS_ONLY');assert.equal(relay.connectionState,'NOT_CONNECTED');
+  assert.equal((await api.getHistoricalPriceHistory('NVDA',{columns:'ohlcv'})).reason,'OHLCV_NOT_IN_SERIES_ARTIFACT');assert.deepEqual(calls,[]);
  }finally{globalThis.fetch=original;}
 });
-test('production product service is resolved from the same-origin runtime contract',async()=>{
- const original=globalThis.fetch,calls=[];globalThis.fetch=async url=>{calls.push(String(url));return {ok:true,json:async()=>({state:'AVAILABLE',identity:{securityId:'vu_d57074b4128184'},bars:[]})};};
- try{const configured=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:Policy,queryEngine:Query});
-  assert.equal((await configured.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
-  assert.equal(calls.length,1);assert.match(calls[0],/^https:\/\/vision-universe-research\.vercel\.app\/api\/history\?/);
-  assert.ok(calls[0].includes('securityId=vu_d57074b4128184'));
- }finally{globalThis.fetch=original;}
+test('canonical artifact services reject mismatched identities, mocks, future and duplicate points',async()=>{
+ for(const change of [s=>{s.securityId='ref_AAPL'},s=>{s.dataMode='mock'},s=>{s.asOf='2099-01-01'},s=>{s.points[1]=s.points[0]},s=>{s.points[0][1]=null}]){
+  const guarded=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.includes('/discover-series/'))change(x);return x;},displayPolicy:Policy,queryEngine:Query});
+  assert.equal((await guarded.getHistoricalPriceHistory('NVDA')).state,'UNAVAILABLE');
+ }
+});
+test('public display denial prevents artifact reads and relay capability',async()=>{
+ const paths=[],denied=Service.create({loadJSON:async p=>{paths.push(p);return JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));},displayPolicy:{...Policy,check:()=>({allowed:false})},queryEngine:Query});
+ for(const method of ['getHistoricalPriceHistory','getIntraday','getRealtimeCapability'])assert.equal((await denied[method]('NVDA')).reason,'DISPLAY_NOT_PERMITTED');
+ assert.ok(paths.every(p=>!p.includes('/discover-series/')&&!p.includes('/intraday/')));
+});
+test('intraday rejects snapshot substitution and invalid time points',async()=>{
+ for(const change of [s=>{s.securityId='ref_AAPL'},s=>{s.symbol='AAPL'},s=>{s.sessionDate='2099-01-01'},s=>{s.points[1]=s.points[0]},s=>{s.asOf='2099-01-01T00:00:00Z'}]){
+ const guarded=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.includes('/intraday/')&&!p.endsWith('index.json'))change(x);return x;},displayPolicy:Policy,queryEngine:Query});assert.equal((await guarded.getIntraday('NVDA')).reason,'INVALID_INTRADAY_CONTRACT');}
+});
+test('market services do not require a CIK when canonical security identity is valid',async()=>{
+ const noCik=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.includes('/universe/')){const clear=v=>{if(v&&typeof v==='object'){if(v.symbol==='NVDA')v.cik=null;Object.values(v).forEach(clear);}};clear(x);}return x;},displayPolicy:Policy,queryEngine:Query});assert.equal((await noCik.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
 });
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
  const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);

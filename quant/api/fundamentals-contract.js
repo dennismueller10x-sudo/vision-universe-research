@@ -41,5 +41,31 @@ function build(payload,options){
  rows.sort((a,b)=>a.fiscalYear-b.fiscalYear||a.fiscalPeriod.localeCompare(b.fiscalPeriod));
  return {version:'1.0.0',state:rows.some(r=>r.state==='AVAILABLE')?'AVAILABLE':'UNAVAILABLE',ticker,name:payload.profile.name,metric:definition,metrics:METRICS,period,rows,reason:rows.some(r=>r.state==='AVAILABLE')?null:rows.some(r=>r.reason==='PERIOD_SEMANTICS_NOT_VALIDATED')?'PERIOD_SEMANTICS_NOT_VALIDATED':'NO_VALIDATED_FACTS',generatedAt:payload.generated_at_utc,policy:'LATEST_KNOWN',pitEligibility:'NOT_CERTIFIED',missing:rows.filter(r=>r.state!=='AVAILABLE').length};
 }
-const api={build,metrics:METRICS};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUFundamentalsContract=api;
+// Existing SEC consumer facts only. No Discovery scores, story or calculations.
+// These retrospective annual tracks do not carry acceptedAt/PIT revisions.
+function buildConsumer(payload,options){
+ const {ticker,cik,securityId,masterMemberId,metric='revenue',period='annual'}=options;
+ const now=new Date(options.now||Date.now()),today=Number.isFinite(now.getTime())?now.toISOString().slice(0,10):null;
+ const f=payload?.fundamentals,definition=METRICS.find(m=>m.id===metric);
+ if(!definition||!['annual','quarterly','ttm'].includes(period))return unavailable('INVALID_SELECTION');
+ if(!today)return unavailable('INVALID_AS_OF');
+ if(!payload||payload.symbol!==ticker||payload.instrumentId!==securityId||payload.securityId!==masterMemberId||payload.dataMode!=='real'||f?.cik!==cik||!/^\d{10}$/.test(cik)||f?.source!=='sec_edgar:companyfacts'||f.version!=='fundamentals-1.2.0')return unavailable('INVALID_PROVENANCE');
+ if(f.available!==true)return unavailable('NO_VALIDATED_FACTS');
+ if(!date(f.asOf)||f.asOf>today)return unavailable('INVALID_SOURCE_TIMESTAMP');
+ if(period!=='annual')return unavailable('PERIOD_NOT_IN_CONSUMER_ARTIFACT');
+ const aliases={cash_and_equivalents:'cash',total_debt:'debt',shares_outstanding:'shares'};
+ const track=f.journey?.tracks?.[aliases[metric]||metric];
+ if(!Array.isArray(track))return unavailable('METRIC_NOT_IN_CONSUMER_ARTIFACT');
+ const unit=f.units?.[metric];
+ if(typeof unit!=='string'||!unit||!(/^[A-Z]{3}(?:\/shares)?$/.test(unit)||unit==='shares'))return unavailable('INVALID_UNIT');
+ const seen=new Set(),rows=[];
+ for(const fact of track){
+  if(!Number.isInteger(fact.fy)||seen.has(fact.fy))return unavailable('DUPLICATE_OR_INVALID_PERIOD');seen.add(fact.fy);
+  if(!Number.isFinite(fact.v)||!date(fact.end)||!date(fact.filed)||fact.end>fact.filed||fact.filed>f.asOf||!/^\d{10}-\d{2}-\d{6}$/.test(fact.accn))return unavailable('INVALID_FACT_EVIDENCE');
+  rows.push({key:fact.fy+'-FY',label:'FY '+fact.fy,fiscalYear:fact.fy,fiscalPeriod:'FY',state:'AVAILABLE',value:fact.v,unit,start:null,end:fact.end,filed:fact.filed,availableFrom:fact.filed,accession:fact.accn,source:'SEC_CONSUMER',transformation:'PRECOMPUTED_CONSUMER'});
+ }
+ rows.sort((a,b)=>a.fiscalYear-b.fiscalYear);
+ return {version:'1.0.0',state:rows.length?'AVAILABLE':'UNAVAILABLE',reason:rows.length?null:'NO_VALIDATED_FACTS',ticker,name:payload.companyName||ticker,metric:{...definition,unit},metrics:METRICS,period,rows,generatedAt:f.asOf,policy:'LATEST_KNOWN',pitEligibility:'NOT_CERTIFIED',missing:0,availabilityPrecision:'FILING_DATE',sourceContract:f.version};
+}
+const api={build,buildConsumer,metrics:METRICS};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUFundamentalsContract=api;
 })(typeof window!=='undefined'?window:globalThis);

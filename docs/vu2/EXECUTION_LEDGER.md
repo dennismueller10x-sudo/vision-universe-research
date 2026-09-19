@@ -263,3 +263,14 @@ PR109 initial remote530351df44543a07f703adf82adc618d4d44b66c/local tree673ecf4fe
 Adversarial review caught and repaired two handoff defects: distinct instrumentId/masterMemberId were incorrectly treated as equal; same-day future acceptance timestamps passed date-only comparisons. Real checked-in Company Master identity and explicit future-acceptance/backtest-cutoff regressions now enforce both. Panel/config-outage identity repair also completed: stable identity remains visible with six per-data SOURCE_MISSING states; identity-only companies do not read the financial panel.
 Local full Quant1126/1126PASS; adapter17/17PASS; shared Worker+unchanged Discovery66/66PASS (provider wiring included in agent68/68PASS). Initial remote CompanyMaster/Pages packaging PASS; remaining initial remote gates pending and all final-head gates must be repeated after repairs. Browser QA includes canonical TSLA identity at1440/390; visual gate not yet claimed.
 BLOCKED_OWNER_SERVING_RUNTIME: Pages has no server runtime; current JavaScript relay has no R2 binding or Fundamentals HTTP route. Canonical Python projection cannot execute in that JavaScript Worker. Older protected Vercel branch exposes history handler only, not a validated public Fundamentals endpoint. Identify/authorize existing Python serving runtime and server-only R2 binding before production data integration; no new host/cost/security configuration assumed. Independent search/contract QA continues. Realtime trade confirmation remains a bounded semantic limitation. Full integration/production PASS not claimed.
+
+### Existing artifact integration — 2026-09-19
+
+Owner selected existing artifact delivery; no automatic Vercel/R2 serving activation.
+Base/observed main `e4bcd8e1a89687078cea4dd77c89d5c1ebbcaf93`, branch
+`integration/quant-existing-artifacts`. Scope, PR111 KEEP/ADAPT/PARK disposition,
+contracts, tests, measured coverage, remaining gaps and rollback are recorded in
+`PHASE_EXISTING_ARTIFACT_INTEGRATION.md`.
+State: IMPLEMENTED / LOCAL_CONTRACT_GATES_PASS / REMOTE_BROWSER_GATES_PENDING.
+Quant 1,188 PASS; targeted 43 PASS; SEC release bytes 2,762,729 PASS.
+Discovery unchanged; no new secrets/costs/provider calls; full completion not claimed.
