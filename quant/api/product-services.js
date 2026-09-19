@@ -19,26 +19,7 @@ const Directory=typeof module!=='undefined'&&module.exports?require('../engines/
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
- let serviceBase=options.productServiceBase!==undefined?options.productServiceBase:null,serviceConfigReady;
- async function resolveServiceBase(){
-  if(serviceBase)return serviceBase;
-  if(options.productServiceBase===null)return null;
-  if(!serviceConfigReady)serviceConfigReady=load('/quant/config/product-services.json').then(config=>{
-   if(config?.production?.enabled!==true)return null;
-   const value=config.production.baseUrl;
-   if(typeof value!=='string'||!/^https:\/\/[a-z0-9.-]+\/api$/i.test(value))return null;
-   serviceBase=value;return serviceBase;
-  }).catch(()=>null);
-  return serviceConfigReady;
- }
  const directory=Directory.create({loadJSON:load});
- async function remote(path,params){
-  const base=await resolveServiceBase();
-  if(!base||typeof fetch!=='function')return null;
-  const url=new URL(base.replace(/\/$/,'')+'/'+path.replace(/^\//,''));
-  Object.entries(params||{}).forEach(([key,value])=>{if(value!==undefined&&value!==null)url.searchParams.set(key,String(value));});
-  try{const response=await fetch(url,{headers:{Accept:'application/json'},credentials:'omit'});if(!response.ok)return null;return await response.json();}catch{return null;}
- }
  async function compressedJSON(path){
   if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
   // Only this service constructs the same-origin canonical issuer path.

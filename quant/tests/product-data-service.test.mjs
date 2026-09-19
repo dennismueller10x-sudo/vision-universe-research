@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 const require = createRequire(import.meta.url);
 const Identity = require("../../server/product-identity.js");
@@ -57,16 +58,15 @@ test("history contract rejects calendar-invalid ranges and exposes no configurat
 
 test("R2 credentials cannot activate the parked market-history API without its own gate", async () => {
   const names = ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
-  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED", "VU_PIT_FUNDAMENTALS_ENABLED"].map(name => [name, process.env[name]]));
+  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED"].map(name => [name, process.env[name]]));
   for (const name of names) process.env[name] = "configured-for-test";
   delete process.env.VU_MARKET_HISTORY_API_ENABLED;
-  process.env.VU_PIT_FUNDAMENTALS_ENABLED = "true";
   try {
     const result = await call(history, "/api/history?ticker=NVDA");
     assert.equal(result.body.state, "NOT_CONFIGURED");
     const service = await call(status, "/api/status");
     assert.equal(service.body.capabilities.historical, "NOT_CONFIGURED");
-    assert.equal(service.body.capabilities.fundamentals, "AVAILABLE");
+    assert.equal(service.body.capabilities.fundamentals, "PRECOMPUTED_PRODUCT_DATA");
   } finally {
     for (const [name, value] of Object.entries(prior)) value === undefined ? delete process.env[name] : process.env[name] = value;
   }
@@ -74,17 +74,22 @@ test("R2 credentials cannot activate the parked market-history API without its o
 
 test("capability flags use the same normalized boolean semantics", async () => {
   const names = ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
-  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED", "VU_PIT_FUNDAMENTALS_ENABLED"].map(name => [name, process.env[name]]));
+  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED"].map(name => [name, process.env[name]]));
   for (const name of names) process.env[name] = "configured-for-test";
   process.env.VU_MARKET_HISTORY_API_ENABLED = " TRUE ";
-  process.env.VU_PIT_FUNDAMENTALS_ENABLED = " TRUE ";
   try {
     const service = await call(status, "/api/status");
     assert.equal(service.body.capabilities.historical, "AVAILABLE");
-    assert.equal(service.body.capabilities.fundamentals, "AVAILABLE");
+    assert.equal(service.body.capabilities.fundamentals, "PRECOMPUTED_PRODUCT_DATA");
   } finally {
     for (const [name, value] of Object.entries(prior)) value === undefined ? delete process.env[name] : process.env[name] = value;
   }
+});
+
+test("public Vercel deployment has no PIT fundamentals route", async () => {
+  const vercel = JSON.parse(await readFile(new URL("../../vercel.json", import.meta.url), "utf8"));
+  assert.equal(vercel.functions["api/fundamentals.py"], undefined);
+  assert.equal(existsSync(new URL("../../api/fundamentals.py", import.meta.url)), false);
 });
 
 test("history projection is minimal and preserves requested OHLCV only", () => {

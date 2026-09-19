@@ -398,3 +398,34 @@ Local current-main gate: 1,208/1,208 Quant tests, 471/471 SEC Python tests,
 Focused Product Services contributes 36 PASS within that Quant suite. Exact release
 build PASS: 4,846,342/8,388,608 SEC bytes and `EXISTING_R2_UNCHANGED`.
 Secret hygiene PASS. Diff contains no `discover/**` or `discover-v2/**` path.
+
+## 2026-09-19 — Owner clarification: PIT is internal, product delivery is materialized
+
+PR #120 merged at `0bac3fe3240c6f00dac402710e0675bfffe96570` with all PR and
+main gates green. The Owner then clarified the delivery boundary: end customers do
+not execute arbitrary PIT/R2 queries. Complete revisions and restatements are
+internal infrastructure; ordinary Quant 2.0 views consume precomputed/materialized
+Product Data through the existing static Product Services.
+
+Re-evaluation result: `PIT_PUBLIC_API_REQUIRED=false`,
+`VERCEL_REQUIRED_FOR_STANDARD_PIT_PRODUCT_PATH=false`,
+`PIT_INTERNAL_PROCESSING=true`, `PRECOMPUTED_PRODUCT_DATA_PATH=PASS`.
+The HTTP file `api/fundamentals.py` and its Vercel function declaration are removed.
+The hardened canonical projection remains internal at
+`scripts/vu2/fundamentals-serving.py` plus
+`scripts/vu2/fundamentals-r2-adapter.py`. Public status reports
+`PRECOMPUTED_PRODUCT_DATA`; standard Product Services continue to read only existing
+materialized artifacts. No R2 secret is transferred to Vercel, no endpoint is
+activated, no pipeline/source/normalization is duplicated, and Discovery is
+unchanged.
+
+The former Production R2-secret, public rate/concurrency and live PIT-endpoint smoke
+requirements are therefore removed from the standard-product critical path. They
+apply only if a later explicitly approved Atlas Deep Dive, targeted PIT query or
+individual Strategy/Backtest job needs on-demand server execution.
+
+Validation on the decision branch: 1,209/1,209 Quant tests, 471/471 SEC Python
+tests, 32/32 internal PIT projection tests and 66/66 shared Worker/Discovery tests
+PASS. The exact release build remains within budget at 4,846,342/8,388,608 SEC
+bytes with `EXISTING_R2_UNCHANGED`; secret hygiene and the explicit no-Discovery-
+diff gate PASS.

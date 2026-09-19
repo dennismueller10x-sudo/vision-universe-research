@@ -1,8 +1,10 @@
 # Decision boundary: full canonical fundamental history and PIT delivery
 
-Status 2026-09-19: Owner approved the narrow retained-adapter reuse described
-below. The approval does not authorize a new pipeline, credentials or recurring
-costs. Implementation evidence is recorded in `PHASE_PIT_ADAPTER_SCOPE.md`.
+Status 2026-09-19: Owner clarified that PIT, restatements and complete revisions
+are internal Vision Universe infrastructure. Normal product views consume
+materialized Product Data; they do not require a freely accessible PIT/R2 API or
+Vercel R2 credentials. Implementation evidence is recorded in
+`PHASE_PIT_ADAPTER_SCOPE.md`.
 
 This is a bounded remaining requirement, not a claim that the whole build is blocked.
 No additional service or secret is activated by this document or PR118.
@@ -36,36 +38,33 @@ recover removed revisions or acceptance timestamps. Current compact issuer shard
 only describe coverage, not the complete historical facts. Do not infer PIT from
 filing-date granularity or relabel current values as historically available.
 
-## Smallest proposed exception to the artifact-only serving decision
+## Internal retained-adapter decision
 
-Reuse the retained PR111 read-only Python path (`api/fundamentals.py`,
-`scripts/vu2/fundamentals-serving.py`, `server/r2_reader.py`) in the existing project
-ONLY for full fundamental/PIT requests that the small artifact cannot answer.
+Reuse the retained PR111 read-only Python projection
+(`scripts/vu2/fundamentals-serving.py`,
+`scripts/vu2/fundamentals-r2-adapter.py`, `server/r2_reader.py`) only inside
+Vision Universe processing and future explicitly authorized jobs.
 Its projection delegates to the existing SEC PeriodResolver and verifies the
 existing R2 index/object digest. R2 remains the only historical source of truth.
 Do not activate the parked History/Intraday/Realtime API alternatives. Existing
 canonical series, snapshots and Cloudflare live relay stay unchanged. Discovery
-stays unchanged; its future use of the same read-only fundamentals path is possible.
+stays unchanged.
 
-This is an Owner architecture decision under the explicit artifact-only rule:
-additional serving is permitted only after demonstrating a concrete unmet use case.
-It is NOT another request for Tiingo licensing, a request to raise8MiB, or a request
-for secrets now.
+The normal path remains: canonical SEC/R2/PIT -> internal processing -> materialized
+Product Data -> existing frontend delivery. Vercel is not required for that path.
+This is not a request for Tiingo licensing, a request to raise8MiB, or a request
+for new or transferred secrets.
 
-## Conditions before any activation
+## Conditions before any future on-demand activation
 
-Revalidate identity/eligibility parity against current Company Master, full as-of
-semantics and industry/currency evidence. Confirm existing project/environment
-and whether an authorized server-side R2 binding already exists. Do not duplicate
-credentials automatically. Bound requests, caching, decompression, concurrency and
-budget; do not enable unrestricted historical exports. Existing tariff only;
-no cost/overage assumption is made here. If paid capacity is required, stop for
-Owner approval. Preview protection must remain separate from the chosen public
-production API. Production smoke and negative tests required before enablement.
+Atlas Deep Dive, targeted PIT queries or individual Strategy/Backtest jobs require
+a separate product decision. Revalidate identity/as-of semantics, authenticated
+caller scope, caching, decompression, concurrency and budget before activation.
+Do not enable unrestricted historical exports or duplicate credentials. If paid
+capacity is required, stop for Owner approval. Production smoke and negative tests
+remain mandatory for that later on-demand feature.
 
-Rollback: retain production.enabled=false / revert the scoped consumer configuration;
-no data migration or deletion. Public artifact experiences remain available.
-
-Owner options: authorize this narrowly scoped reuse of the retained serving path,
-or keep artifact-only delivery and explicitly defer arbitrary full-history/PIT
-requests. No implementation of a new serving path should precede that decision.
+The current decision is artifact delivery with internal PIT processing. The former
+Production R2-secret/public-endpoint blocker does not apply to the standard product
+path. No implementation of a new serving path should precede a later explicit
+on-demand decision.
