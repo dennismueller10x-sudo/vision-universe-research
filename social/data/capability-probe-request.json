@@ -1,9 +1,14 @@
 {
   "_zweck": "Ausloeser fuer Social Hashtag Capability. Nur lesend: genau eine Probe gegen einen bereits geoeffneten KERN-Hashtag, kein Publishing, keine Autorisierung, keine Anforderung an Meta.",
-  "requestedAt": "2026-09-19T19:10:00Z",
+  "requestedAt": "2026-09-19T19:05:00Z",
   "requestedBy": "vision-universe-social-os",
-  "reason": "Owner-Entscheidung: zuerst den Diagnose-Endpunkt deployen, dann genau einen read-only Probe. Keine Reautorisierung und keine App-Review-Anfrage auf Verdacht.",
+  "reason": "Zweiter Anlauf. Der erste meldete HASHTAG_ACCESS_UNKNOWN - Ursache war ein Tippfehler auf VU-Seite (env.VU_META_APP_ID statt META_APP_ID), nicht die Plattform. debug_token lief nie.",
   "publishes": false,
   "consumesNewHashtagSlot": false,
-  "_warumKeinNeuerPlatz": "Gewaehlt wird ein KERN-Hashtag. Fenster offen: gratis. Fenster doch zu: ein Platz, den das Portfolio fuer genau diesen Hashtag ohnehin ausgegeben haette. Ist kein Fenster offen, wird nicht probiert."
+  "_warumKeinNeuerPlatz": "Gewaehlt wird ein KERN-Hashtag. Fenster offen: gratis. Fenster doch zu: ein Platz, den das Portfolio fuer genau diesen Hashtag ohnehin ausgegeben haette. Ist kein Fenster offen, wird nicht probiert.",
+  "previousRun": {
+    "runId": 35462532963,
+    "result": "HASHTAG_ACCESS_UNKNOWN",
+    "causedBy": "eigener Variablenname, nicht Meta"
+  }
 }

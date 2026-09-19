@@ -915,13 +915,37 @@ async function handleHashtagCapability(request, url, env) {
      bei Meta, die dieser Worker nicht lesen kann. */
   let grantedScopes = null;
   let scopeSource = "UNREADABLE";
-  if (env.VU_META_APP_ID && env.VU_META_APP_SECRET) {
+  let scopeReadError = null;
+
+  /* -----------------------------------------------------------------
+     ZWEI QUELLEN, WEIL EINE AUSFALLEN KANN
+
+     debug_token sagt, was das Token HEUTE traegt - die belastbarere
+     Auskunft. Der gespeicherte Datensatz sagt, was bei der
+     Autorisierung erteilt WURDE; er ist aelter, aber er ist da, auch
+     wenn debug_token scheitert.
+
+     Die erste Fassung fragte `env.VU_META_APP_ID` ab. So heissen die
+     Variablen nicht - sie heissen META_APP_ID und META_APP_SECRET.
+     Die Bedingung war damit immer falsch, debug_token lief nie, und
+     der Endpunkt meldete UNREADABLE.
+
+     Das waere als Befund durchgegangen: "die Rechte sind nicht
+     lesbar" klingt wie eine Eigenschaft der Business-Anmeldung und war
+     ein Tippfehler. Deshalb steht jetzt auch der GRUND dabei, wenn
+     nicht gelesen werden konnte - eine Unlesbarkeit ohne Grund ist
+     keine Messung. */
+  if (!env.META_APP_ID || !env.META_APP_SECRET) {
+    scopeReadError = "missingAppCredentials";
+  } else {
     const dbg = await debugToken(ctx, {
-      appId: env.VU_META_APP_ID,
-      appSecret: env.VU_META_APP_SECRET,
+      appId: env.META_APP_ID,
+      appSecret: env.META_APP_SECRET,
       inputToken: record.pageAccessToken
     });
-    if (dbg.ok) {
+    if (!dbg.ok) {
+      scopeReadError = dbg.reason || "debugTokenFailed";
+    } else {
       const ausGranular = (dbg.data.granular || []).map((g) => g.scope).filter(Boolean);
       const ausScopes = dbg.data.scopes || [];
       const zusammen = ausScopes.concat(
@@ -929,9 +953,39 @@ async function handleHashtagCapability(request, url, env) {
       if (zusammen.length) {
         grantedScopes = zusammen;
         scopeSource = ausGranular.length ? "GRANULAR_SCOPES" : "SCOPES";
+      } else {
+        scopeReadError = "emptyScopeList";
       }
     }
   }
+
+  /* Der gespeicherte Stand aus der Autorisierung - zweite Quelle. */
+  const gespeichert = (record.permissions && record.permissions.granted) || [];
+  if (!grantedScopes && gespeichert.length) {
+    grantedScopes = gespeichert.slice();
+    scopeSource = "STORED_AT_AUTHORIZATION";
+  }
+
+  /* -----------------------------------------------------------------
+     DIE ALLOWLIST WIRD HIER AUSGEWERTET, NICHT NEBENAN
+
+     Sie steht in der Umgebung des Workers und nicht im gespeicherten
+     Datensatz - ein Aufrufer kann sie also gar nicht nachrechnen. Wer
+     sie aus `/status` zu lesen versucht, bekommt `undefined` und haelt
+     es fuer "nicht auf der Liste". */
+  const erlaubt = allowedTargets(env);
+  const allowlist = {
+    configured: erlaubt.configured,
+    matches: erlaubt.configured
+      ? isAllowedTarget(record, erlaubt) : null,
+    description: erlaubt.beschreibung
+  };
+
+  /* Veroeffentlichen ist ein RECHT, keine eigene Faehigkeit: es haengt
+     an instagram_content_publish. Abgeleitet statt geraten - und null,
+     solange die Rechte unbekannt sind. */
+  const canPublish = grantedScopes
+    ? grantedScopes.indexOf("instagram_content_publish") !== -1 : null;
 
   /* Der Versuch - nur gegen einen bereits geoeffneten Hashtag. */
   const probeTag = String(url.searchParams.get("probe") || "").trim().replace(/^#/, "");
@@ -953,6 +1007,10 @@ async function handleHashtagCapability(request, url, env) {
     observedAt: new Date().toISOString(),
     grantedScopes,
     scopeSource,
+    scopeReadError,
+    storedPermissionCount: gespeichert.length,
+    allowlist,
+    canPublish,
     probe,
     /* Dieser Endpunkt stellt fest, er schliesst nicht. Die
        Unterscheidung zwischen fehlendem Recht und fehlendem Feature

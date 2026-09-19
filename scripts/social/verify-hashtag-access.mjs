@@ -100,6 +100,20 @@ export function offenerHashtag(bestand, nowIso) {
   return offen[0];
 }
 
+/**
+ * Veroeffentlichen ist ein RECHT, keine eigene Faehigkeit.
+ *
+ * Der gespeicherte Datensatz fuehrt die erteilten Rechte; ein Feld
+ * `canPublish` gibt es nicht und hat es nie gegeben. Danach zu fragen
+ * ergab `undefined` - und `undefined` sah aus wie "unbekannt".
+ */
+function ausRechten(verbindung) {
+  const granted = (verbindung && verbindung.permissions &&
+    verbindung.permissions.granted) || null;
+  if (!granted || !granted.length) return null;
+  return granted.indexOf("instagram_content_publish") !== -1;
+}
+
 async function hole(pfad, key) {
   const res = await fetch(WORKER + pfad, {
     headers: { Authorization: "Bearer " + key }
@@ -133,7 +147,6 @@ export async function pruefe(options) {
   }
 
   const verbindung = (status.data && status.data.connection) || {};
-  const faehig = verbindung.capabilities || {};
 
   const cap = await hole("/social/meta/hashtag-capability" +
     (probeTag ? "?probe=" + encodeURIComponent(probeTag) : ""), key);
@@ -152,7 +165,7 @@ export async function pruefe(options) {
     return { ok: false, state: "ENDPOINT_NOT_DEPLOYED",
       account: verbindung.instagramUsername || null,
       connected: verbindung.connected === undefined ? null : verbindung.connected,
-      canPublish: faehig.canPublish === undefined ? null : faehig.canPublish,
+      canPublish: ausRechten(verbindung),
       explanation: "Der Worker draussen kennt /social/meta/hashtag-capability " +
         "noch nicht. Das ist kein Befund ueber Rechte - der Endpunkt ist " +
         "nur noch nicht ausgerollt. Der bestehende Deploy-Pfad " +
@@ -172,16 +185,27 @@ export async function pruefe(options) {
     ok: true,
     observedAt: now,
     account: verbindung.instagramUsername || null,
-    /* §7: das Zielkonto gehoert erneut gegen die Allowlist geprueft -
-       eine Reautorisierung kann ein ANDERES Konto verbinden. */
-    allowlisted: verbindung.allowlisted === undefined ? null : verbindung.allowlisted,
+    /* -----------------------------------------------------------------
+       §7: das Zielkonto gehoert erneut gegen die Allowlist geprueft -
+       eine Reautorisierung kann ein ANDERES Konto verbinden.
+
+       Die Auswertung macht der Worker. Hier stand zuerst
+       `verbindung.allowlisted` - ein Feld, das es in der oeffentlichen
+       Darstellung gar nicht gibt. Es kam `undefined` zurueck, wurde zu
+       `null`, und das sah aus wie "unbekannt". Unbekannt war es nur,
+       weil nach dem falschen Feld gefragt wurde. */
+    allowlist: (cap.data && cap.data.allowlist) || null,
     connected: verbindung.connected === undefined ? null : verbindung.connected,
-    /* Darf nicht verloren gehen. */
-    canPublish: faehig.canPublish === undefined ? null : faehig.canPublish,
+    /* Darf nicht verloren gehen. Abgeleitet aus den Rechten, nicht aus
+       einem Feld namens canPublish - ein solches gibt es nicht. */
+    canPublish: (cap.data && cap.data.canPublish !== undefined)
+      ? cap.data.canPublish : ausRechten(verbindung),
     probeHashtag: probeTag,
     probeCostsNewSlot: false,
     grantedScopes: (cap.data && cap.data.grantedScopes) || null,
     scopeSource: (cap.data && cap.data.scopeSource) || null,
+    /* Eine Unlesbarkeit ohne Grund ist keine Messung. */
+    scopeReadError: (cap.data && cap.data.scopeReadError) || null,
     diagnosis: befund,
     explanation: (probeTag
       ? "Versuch gegen #" + probeTag + " - ein bereits geoeffneter " +
@@ -210,11 +234,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("Konto           : @" + (r.account || "unbekannt"));
   console.log("Verbunden       : " + r.connected);
-  console.log("Auf Allowlist   : " + r.allowlisted);
+  console.log("Auf Allowlist   : " + (r.allowlist
+    ? (r.allowlist.configured
+        ? r.allowlist.matches + "  (" + r.allowlist.description + ")"
+        : "keine Einschraenkung konfiguriert")
+    : "—"));
   console.log("Veroeffentlichen: " + r.canPublish +
     (r.canPublish === false ? "   <-- DAS DARF NICHT PASSIEREN" : ""));
   console.log("Rechte gelesen  : " + (r.scopeSource || "—") +
-    (r.grantedScopes ? " (" + r.grantedScopes.length + ")" : " (unbekannt)"));
+    (r.grantedScopes ? " (" + r.grantedScopes.length + "): " +
+      r.grantedScopes.join(", ") : "") +
+    (r.scopeReadError ? "   Grund: " + r.scopeReadError : ""));
   console.log("Probe-Hashtag   : " + (r.probeHashtag ? "#" + r.probeHashtag : "—") +
     "  (kostet keinen Platz)");
   console.log("\nDiagnose        : " + r.diagnosis.state);
