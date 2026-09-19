@@ -35,7 +35,18 @@ Rechten erkennen.
 
 ## SCHRITT 0 — MESSEN STATT RATEN (kostet nichts, keinen Hashtag-Platz)
 
-Es gibt jetzt einen Endpunkt, der die Frage beantwortet:
+> **Voraussetzung, und sie ist kein neuer Prozess:** Der Endpunkt unten
+> existiert im Quelltext, draußen läuft der Worker aber erst nach einem
+> Deploy. Dafür gibt es den bestehenden Pfad `social-cloudflare.yml`:
+> die Datei `workers/vision-universe-social/DEPLOY_REQUEST` anlegen und
+> pushen — sie ist im Diff sichtbar, hat Autor und Datum und lässt sich
+> durch Löschen zurückziehen. Ohne sie läuft nur der lesende Preflight.
+>
+> Das Prüfskript unten meldet diesen Zustand ausdrücklich als
+> `ENDPOINT_NOT_DEPLOYED` und **nicht** als Fehlschlag — nicht
+> vorhanden ist nicht dasselbe wie abgewiesen.
+
+Der Endpunkt, der die Frage beantwortet:
 
 ```
 GET https://social.visionuniverse.de/social/meta/hashtag-capability?probe=aktien

@@ -110,6 +110,31 @@ export async function pruefe(options) {
   const cap = await hole("/social/meta/hashtag-capability" +
     (probeTag ? "?probe=" + encodeURIComponent(probeTag) : ""), key);
 
+  /* -----------------------------------------------------------------
+     404 HEISST HIER NICHT "KAPUTT", SONDERN "NOCH NICHT DRAUSSEN"
+
+     Der Endpunkt existiert im Quelltext, seit diese Pruefung gebaut
+     wurde. Draussen laeuft der Worker aber erst, wenn ihn der
+     bestehende Deploy-Pfad ersetzt hat - und der verlangt seinerseits
+     eine sichtbare Anforderung im Repository.
+
+     Das als Fehlschlag zu melden, waere die alte Verwechslung in neuem
+     Gewand: nicht vorhanden ist nicht dasselbe wie abgewiesen. */
+  if (cap.status === 404) {
+    return { ok: false, state: "ENDPOINT_NOT_DEPLOYED",
+      account: verbindung.instagramUsername || null,
+      connected: verbindung.connected === undefined ? null : verbindung.connected,
+      canPublish: faehig.canPublish === undefined ? null : faehig.canPublish,
+      explanation: "Der Worker draussen kennt /social/meta/hashtag-capability " +
+        "noch nicht. Das ist kein Befund ueber Rechte - der Endpunkt ist " +
+        "nur noch nicht ausgerollt. Der bestehende Deploy-Pfad " +
+        "(social-cloudflare.yml, Anforderung ueber die Datei " +
+        "workers/vision-universe-social/DEPLOY_REQUEST) bringt ihn " +
+        "hinaus. Bis dahin ist die Ursache der abgewiesenen " +
+        "Hashtag-Abfragen NICHT bestimmbar, und ein Owner-Schritt auf " +
+        "Verdacht waere hier am teuersten." };
+  }
+
   const befund = cap.ok && cap.data
     ? Access.diagnose({ grantedScopes: cap.data.grantedScopes,
         probe: cap.data.probe })
@@ -145,7 +170,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (!r.ok) {
     console.log(r.state + ": " + r.explanation);
-    process.exit(r.state === "NO_ADMIN_KEY" ? 0 : 1);
+    if (r.canPublish !== undefined && r.canPublish !== null) {
+      console.log("\nVeroeffentlichen: " + r.canPublish +
+        (r.canPublish === false ? "   <-- DAS DARF NICHT PASSIEREN" : ""));
+    }
+    /* Weder ein fehlender Schluessel noch ein nicht ausgerollter
+       Endpunkt sind Fehler dieses Laufs. */
+    const gutartig = ["NO_ADMIN_KEY", "ENDPOINT_NOT_DEPLOYED"];
+    process.exit(gutartig.includes(r.state) ? 0 : 1);
   }
 
   console.log("Konto           : @" + (r.account || "unbekannt"));
