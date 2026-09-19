@@ -38,17 +38,53 @@ test("product service resolves canonical stable identity and eligibility", async
 
 test("history contract rejects calendar-invalid ranges and exposes no configuration details", async () => {
   globalThis.__VU_IDENTITY_TEST_LOADER = localLoader;
-  const invalid = await call(history, "/api/history?ticker=NVDA&from=2026-02-30");
-  assert.equal(invalid.statusCode, 400);
-  assert.equal(invalid.body.state, "INVALID_DATE_RANGE");
-  const prior = process.env.VU_HISTORY_S3_ENDPOINT;
-  delete process.env.VU_HISTORY_S3_ENDPOINT;
-  const missing = await call(history, "/api/history?ticker=NVDA");
-  delete globalThis.__VU_IDENTITY_TEST_LOADER;
-  if (prior !== undefined) process.env.VU_HISTORY_S3_ENDPOINT = prior;
-  assert.equal(missing.statusCode, 200);
-  assert.equal(missing.body.state, "NOT_CONFIGURED");
-  assert.equal(JSON.stringify(missing.body).includes("SECRET"), false);
+  const prior = Object.fromEntries(["VU_MARKET_HISTORY_API_ENABLED", "VU_HISTORY_S3_ENDPOINT"].map(name => [name, process.env[name]]));
+  try {
+    process.env.VU_MARKET_HISTORY_API_ENABLED = "true";
+    const invalid = await call(history, "/api/history?ticker=NVDA&from=2026-02-30");
+    assert.equal(invalid.statusCode, 400);
+    assert.equal(invalid.body.state, "INVALID_DATE_RANGE");
+    delete process.env.VU_HISTORY_S3_ENDPOINT;
+    const missing = await call(history, "/api/history?ticker=NVDA");
+    assert.equal(missing.statusCode, 200);
+    assert.equal(missing.body.state, "NOT_CONFIGURED");
+    assert.equal(JSON.stringify(missing.body).includes("SECRET"), false);
+  } finally {
+    delete globalThis.__VU_IDENTITY_TEST_LOADER;
+    for (const [name, value] of Object.entries(prior)) value === undefined ? delete process.env[name] : process.env[name] = value;
+  }
+});
+
+test("R2 credentials cannot activate the parked market-history API without its own gate", async () => {
+  const names = ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
+  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED", "VU_PIT_FUNDAMENTALS_ENABLED"].map(name => [name, process.env[name]]));
+  for (const name of names) process.env[name] = "configured-for-test";
+  delete process.env.VU_MARKET_HISTORY_API_ENABLED;
+  process.env.VU_PIT_FUNDAMENTALS_ENABLED = "true";
+  try {
+    const result = await call(history, "/api/history?ticker=NVDA");
+    assert.equal(result.body.state, "NOT_CONFIGURED");
+    const service = await call(status, "/api/status");
+    assert.equal(service.body.capabilities.historical, "NOT_CONFIGURED");
+    assert.equal(service.body.capabilities.fundamentals, "AVAILABLE");
+  } finally {
+    for (const [name, value] of Object.entries(prior)) value === undefined ? delete process.env[name] : process.env[name] = value;
+  }
+});
+
+test("capability flags use the same normalized boolean semantics", async () => {
+  const names = ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
+  const prior = Object.fromEntries([...names, "VU_MARKET_HISTORY_API_ENABLED", "VU_PIT_FUNDAMENTALS_ENABLED"].map(name => [name, process.env[name]]));
+  for (const name of names) process.env[name] = "configured-for-test";
+  process.env.VU_MARKET_HISTORY_API_ENABLED = " TRUE ";
+  process.env.VU_PIT_FUNDAMENTALS_ENABLED = " TRUE ";
+  try {
+    const service = await call(status, "/api/status");
+    assert.equal(service.body.capabilities.historical, "AVAILABLE");
+    assert.equal(service.body.capabilities.fundamentals, "AVAILABLE");
+  } finally {
+    for (const [name, value] of Object.entries(prior)) value === undefined ? delete process.env[name] : process.env[name] = value;
+  }
 });
 
 test("history projection is minimal and preserves requested OHLCV only", () => {

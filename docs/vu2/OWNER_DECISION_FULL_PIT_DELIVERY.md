@@ -1,5 +1,9 @@
 # Decision boundary: full canonical fundamental history and PIT delivery
 
+Status 2026-09-19: Owner approved the narrow retained-adapter reuse described
+below. The approval does not authorize a new pipeline, credentials or recurring
+costs. Implementation evidence is recorded in `PHASE_PIT_ADAPTER_SCOPE.md`.
+
 This is a bounded remaining requirement, not a claim that the whole build is blocked.
 No additional service or secret is activated by this document or PR118.
 

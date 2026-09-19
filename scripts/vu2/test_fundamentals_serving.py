@@ -88,6 +88,92 @@ class ServingTests(unittest.TestCase):
         self.assertTrue(result["pitPolicyApplied"])
         self.assertIsNone(result["industrySpecificMetrics"])
 
+    def test_full_history_ignores_display_window_and_preserves_source_revisions(self):
+        result = self.project(full_history=True, annual_years=1, quarterly_years=1)
+        years = sorted({t["fiscal_year"] for t in self.document["factbook"]["timelines"]})
+        self.assertEqual(result["history"]["scope"]["annual_years"], years)
+        self.assertEqual(result["history"]["scope"]["quarterly_years"], years)
+        self.assertEqual(result["historyScope"], "FULL_STORED_HISTORY")
+        self.assertEqual(result["revisionScope"], "VISIBLE_AT_AS_OF")
+        expected = serving._rehydrate(self.document)
+        expected_keys = {key for key, timeline in expected.timelines.items() if timeline.visible("2026-09-18")}
+        actual_keys = {(timeline["metric"], timeline["fiscal_year"], timeline["fiscal_period"])
+                       for timeline in result["revisionHistory"]}
+        self.assertEqual(actual_keys, expected_keys)
+        self.assertEqual(len(result["revisionHistory"]), len(expected_keys))
+        for timeline in result["revisionHistory"]:
+            original = expected.get(timeline["metric"], timeline["fiscal_year"], timeline["fiscal_period"])
+            self.assertEqual(timeline["observations"], [o.to_dict() for o in original.visible("2026-09-18")])
+        self.assertFalse(result["backtestReady"])
+
+    def test_full_history_scope_cannot_reveal_future_period_existence(self):
+        first_available = min(observation["available_from"]
+                              for timeline in self.document["factbook"]["timelines"]
+                              for observation in timeline["observations"])
+        result = self.project(full_history=True, as_of=first_available)
+        book = serving._rehydrate(self.document)
+        visible_years = sorted({timeline.fiscal_year for timeline in book.timelines.values()
+                                if timeline.visible(first_available)})
+        self.assertEqual(result["history"]["scope"]["annual_years"], visible_years)
+        self.assertEqual(result["history"]["scope"]["quarterly_years"], visible_years)
+        self.assertTrue(all(row["fiscal_year"] in visible_years for row in result["history"]["rows"]))
+        self.assertEqual(result["history"]["metadata_scope"], "AS_OF_ROWS_ONLY")
+        for field in ("profile", "calendar", "versions", "quality_summary", "quality_errors"):
+            self.assertNotIn(field, result["history"])
+
+    def test_backtest_payload_exposes_only_raw_revision_timelines(self):
+        result = self.project(full_history=True, usage="backtest", as_of="2025-01-01")
+        self.assertIsNone(result["history"])
+        self.assertIsNone(result["industrySpecificMetrics"])
+        self.assertEqual(result["pitBacktestSource"], "revisionHistory")
+        self.assertEqual(result["resolvedHistoryPITSafety"], "RAW_REVISIONS_ONLY")
+        self.assertTrue(result["revisionHistory"])
+
+    def test_full_revisions_exclude_later_amendment_until_acceptance(self):
+        doc = copy.deepcopy(self.document)
+        cell = next(t for t in doc["factbook"]["timelines"] if t["metric"] == "revenue" and t["fiscal_period"] == "FY")
+        revised = copy.deepcopy(cell["observations"][-1])
+        revised.update(value=987654321.0, available_from="2025-06-02T16:00:00Z", filed="2025-06-02")
+        revised["provenance"].update(accession="4100000001-25-000001", form="10-K/A", filed="2025-06-02", available_from="2025-06-02T16:00:00Z")
+        cell["observations"].append(revised)
+        before = self.project(doc, full_history=True, as_of="2025-06-02T15:59:59Z")
+        after = self.project(doc, full_history=True, as_of="2025-06-02T16:00:00Z")
+        values = lambda r: [o["value"] for t in r["revisionHistory"] for o in t["observations"]]
+        self.assertNotIn(987654321.0, values(before))
+        self.assertIn(987654321.0, values(after))
+        self.assertTrue(all(timeline["restated"] is False for timeline in before["revisionHistory"]
+                            if timeline["metric"] == "revenue" and timeline["fiscal_year"] == cell["fiscal_year"]
+                            and timeline["fiscal_period"] == "FY"))
+        self.assertTrue(any(timeline["restated"] is True for timeline in after["revisionHistory"]
+                            if timeline["metric"] == "revenue" and timeline["fiscal_year"] == cell["fiscal_year"]
+                            and timeline["fiscal_period"] == "FY"))
+
+    def test_full_history_uses_acceptance_time_even_when_filed_date_is_next_day(self):
+        doc = copy.deepcopy(self.document)
+        cell = next(t for t in doc["factbook"]["timelines"] if t["metric"] == "revenue" and t["fiscal_period"] == "FY")
+        accepted = copy.deepcopy(cell["observations"][-1])
+        accepted.update(value=876543210.0, available_from="2025-06-02T23:59:00Z", filed="2025-06-03")
+        accepted["provenance"].update(accession="4100000001-25-000002", form="10-K/A",
+                                      filed="2025-06-03", available_from="2025-06-02T23:59:00Z")
+        cell["observations"].append(accepted)
+        result = self.project(doc, full_history=True, as_of="2025-06-02T23:59:00Z")
+        self.assertIn(876543210.0, [observation["value"] for timeline in result["revisionHistory"]
+                                    for observation in timeline["observations"]])
+
+    def test_full_history_rejects_latest_known_policy_that_ignores_cutoff(self):
+        with self.assertRaisesRegex(serving.ServingError, "UNSAFE_FULL_HISTORY_POLICY"):
+            self.project(full_history=True, policy="latest_known", as_of="2025-06-01")
+
+    def test_intraday_backtest_rejects_date_only_availability(self):
+        doc = copy.deepcopy(self.document)
+        for timeline in doc["factbook"]["timelines"]:
+            for observation in timeline["observations"]:
+                observation["available_from"] = observation["filed"]
+                observation["provenance"]["available_from"] = observation["filed"]
+        with self.assertRaisesRegex(serving.ServingError, "INSUFFICIENT_AVAILABILITY_PRECISION"):
+            self.project(doc, full_history=True, usage="backtest", as_of="2026-09-17T12:00:00Z")
+        self.assertTrue(self.project(doc, full_history=True, usage="backtest", as_of="2026-09-17")["pitPolicyApplied"])
+
     def test_bank_industry_rows_are_separate(self):
         result = self.project(self.store.read_company("4100000002"))
         self.assertEqual(result["industrySpecificMetrics"]["industry"], "BANK")

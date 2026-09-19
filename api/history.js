@@ -13,8 +13,13 @@ function driver() {
 }
 
 function configured() {
-  return ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID",
+  return enabled("VU_MARKET_HISTORY_API_ENABLED") &&
+    ["VU_HISTORY_S3_ENDPOINT", "VU_HISTORY_S3_BUCKET", "VU_HISTORY_S3_ACCESS_KEY_ID",
     "VU_HISTORY_S3_SECRET_ACCESS_KEY"].every((name) => String(process.env[name] || "").trim());
+}
+
+function enabled(name) {
+  return String(process.env[name] || "").trim().toLowerCase() === "true";
 }
 
 function strictDate(value) {
@@ -37,6 +42,11 @@ module.exports = async function handler(req, res) {
   if (preflight(req, res)) return;
   if (req.method !== "GET") return json(req, res, 405, { state: "METHOD_NOT_ALLOWED" });
   if (!cors(req, res)) return json(req, res, 403, { state: "ORIGIN_NOT_ALLOWED" });
+  // Keep this parked endpoint inert before identity/network work. The shared R2
+  // binding is authorized for PIT Fundamentals only unless this separate flag is set.
+  if (!enabled("VU_MARKET_HISTORY_API_ENABLED")) {
+    return json(req, res, 200, { state: "NOT_CONFIGURED" });
+  }
   const url = new URL(req.url, "http://localhost");
   const identity = await resolveIdentity({ ticker: url.searchParams.get("ticker"), securityId: url.searchParams.get("securityId") });
   if (identity.state !== "AVAILABLE") return json(req, res, 200, identity);
