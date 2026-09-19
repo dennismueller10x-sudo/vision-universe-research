@@ -369,10 +369,10 @@
       "cik": "0001005101",
       "name": "Marygold Companies, Inc.",
       "sic": "6199",
-      "rawFacts": 16158,
-      "mappedFacts": 5285,
-      "unmappedFacts": 11015,
-      "calendarYears": 17,
+      "rawFacts": 16511,
+      "mappedFacts": 5378,
+      "unmappedFacts": 11289,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -380,32 +380,32 @@
         "MGLD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 63,
+      "annualPeriods": 17,
+      "quarterlyPeriods": 64,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-03-31",
-      "historyYears": 15.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 27,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0
         },
         "eps_diluted": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 44,
+          "annualPeriods": 14,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2012-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 13.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 14.0
         },
         "free_cash_flow": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 27,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0,
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -421,25 +421,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 60,
-          "firstAvailablePeriod": "2012-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 13.0
-        },
-        "operating_cash_flow": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 47,
-          "firstAvailablePeriod": "2013-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 12.0
-        },
-        "revenue": {
           "annualPeriods": 15,
           "quarterlyPeriods": 61,
-          "firstAvailablePeriod": "2011-06-30",
-          "lastAvailablePeriod": "2025-06-30",
+          "firstAvailablePeriod": "2012-06-30",
+          "lastAvailablePeriod": "2026-06-30",
           "historyYears": 14.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 14,
+          "quarterlyPeriods": 48,
+          "firstAvailablePeriod": "2013-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 13.0
+        },
+        "revenue": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
+          "firstAvailablePeriod": "2011-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
         },
         "short_term_debt": {
           "annualPeriods": 1,
@@ -449,18 +449,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "annualPeriods": 17,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 15.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 16.0
         },
         "total_assets": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 57,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2011-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -480,37 +480,38 @@
         }
       },
       "quality": {
-        "HIGH": 419,
-        "MEDIUM": 28
+        "HIGH": 431,
+        "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 447,
-        "resolvedValues": 447
+        "datableValues": 461,
+        "resolvedValues": 461
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 11548,
+        "total": 11833,
         "by_severity": {
-          "INFO": 11015,
-          "WARNING": 533
+          "INFO": 11289,
+          "WARNING": 544
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 300,
+          "CONCEPT_DISAGREEMENT": 306,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 231,
-          "UNKNOWN_CONCEPT": 11015
+          "RESTATEMENT_CONFLICT": 236,
+          "UNKNOWN_CONCEPT": 11289
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-021973",
-        "filing_date": "2026-05-08",
-        "form": "10-Q",
-        "periodic_filings": 80
+        "accession": "0001493152-26-043341",
+        "filing_date": "2026-09-18",
+        "form": "10-K",
+        "periodic_filings": 81,
+        "acceptance_datetime": "2026-09-18T20:06:13.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -519,7 +520,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "5650811834253599548615979a2d0a33b4bbe0b170723bea9eb5e7c6fdf2dd84",
+      "sourceDigest": "c393ae336a784df2edc181489b376d91975d2cc150135025b7780a70651a10e3",
       "issuerId": "iss_cik_0001005101"
     },
     {

@@ -634,10 +634,10 @@
       "cik": "0002140030",
       "name": "Thunder Bridge Capital Partners V, Ltd.",
       "sic": "6770",
-      "rawFacts": 0,
-      "mappedFacts": 0,
-      "unmappedFacts": 0,
-      "calendarYears": 0,
+      "rawFacts": 58,
+      "mappedFacts": 34,
+      "unmappedFacts": 28,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -646,11 +646,11 @@
         "TBCVU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -688,7 +688,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -715,17 +715,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -745,22 +745,34 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 15
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 15,
+        "resolvedValues": 15
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 0,
-        "by_severity": {},
-        "by_code": {}
+        "total": 28,
+        "by_severity": {
+          "INFO": 28
+        },
+        "by_code": {
+          "UNKNOWN_CONCEPT": 28
+        }
       },
-      "latestFiling": null,
+      "latestFiling": {
+        "accession": "0001213900-26-101420",
+        "filing_date": "2026-09-18",
+        "form": "10-Q",
+        "periodic_filings": 1,
+        "acceptance_datetime": "2026-09-18T20:15:31.000Z"
+      },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -769,7 +781,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "579e93d5d20ec330bc7138f5309f257403bed9fc82ccd9c112199b8a07d27d1c",
+      "sourceDigest": "e82edffc2d82c3d43a522839683c1075b09405336ef4b7ca32cbaa004b7fb0fc",
       "issuerId": "iss_cik_0002140030"
     }
   ]

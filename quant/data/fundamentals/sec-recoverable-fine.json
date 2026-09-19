@@ -1,15 +1,15 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 153
+    "SEC_RECOVERABLE": 152
   },
-  "accountedFor": 153,
+  "accountedFor": 152,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
       "count": 7,
-      "percent": 4.5752,
+      "percent": 4.6053,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -37,7 +37,7 @@
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
       "count": 56,
-      "percent": 36.6013,
+      "percent": 36.8421,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -65,7 +65,7 @@
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.6536,
+      "percent": 0.6579,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -78,7 +78,7 @@
     {
       "cause": "NO_XBRL_FACTS",
       "count": 39,
-      "percent": 25.4902,
+      "percent": 25.6579,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -106,7 +106,7 @@
     {
       "cause": "NO_XBRL_FINANCIALS",
       "count": 3,
-      "percent": 1.9608,
+      "percent": 1.9737,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -128,8 +128,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 47,
-      "percent": 30.719,
+      "count": 46,
+      "percent": 30.2632,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -156,7 +156,7 @@
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 47,
+    "RESOLVES_WITH_TIME": 46,
     "NOT_APPLICABLE": 63,
     "EXTERNAL_PROVIDER_CANDIDATE": 42,
     "INDUSTRY_LAYER": 1
@@ -288,7 +288,6 @@
       "0001716951",
       "0001732379",
       "0001782265",
-      "0001839970",
       "0001903784",
       "0001912884",
       "0001919776",
@@ -341,5 +340,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-17T06:40:17+00:00"
+  "generatedAtUtc": "2026-09-19T06:38:58+00:00"
 }

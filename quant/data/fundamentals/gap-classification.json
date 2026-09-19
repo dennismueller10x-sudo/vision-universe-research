@@ -13,8 +13,8 @@
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 867,
-      "percent": 12.6109,
+      "count": 868,
+      "percent": 12.6255,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -127,8 +127,8 @@
     },
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-      "count": 125,
-      "percent": 1.8182,
+      "count": 124,
+      "percent": 1.8036,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -156,8 +156,8 @@
           "securityType": "COMMON_STOCK"
         },
         {
-          "symbol": "BLSM",
-          "cik": "0001839970",
+          "symbol": "BMEZ",
+          "cik": "0001785971",
           "form": null,
           "securityType": "COMMON_STOCK"
         }
@@ -260,13 +260,13 @@
   },
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
-    "SEC_RECOVERABLE": 153,
+    "SEC_RECOVERABLE": 152,
     "EXTERNAL_PROVIDER_CANDIDATE": 55,
-    "RESOLVES_WITH_TIME": 867,
+    "RESOLVES_WITH_TIME": 868,
     "BY_DESIGN": 311,
     "REQUIRES_REVIEW": 360
   },
-  "regroupedByFineClassification": 152,
+  "regroupedByFineClassification": 151,
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.10.0",
@@ -314,11 +314,11 @@
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 364
+            "count": 365
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 125
+            "count": 124
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -339,12 +339,12 @@
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 484,
-        "PERCENT": 7.04,
+        "COUNT": 485,
+        "PERCENT": 7.0545,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 429
+            "count": 430
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -357,12 +357,12 @@
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
-        "COUNT": 156,
-        "PERCENT": 2.2691,
+        "COUNT": 155,
+        "PERCENT": 2.2545,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 125
+            "count": 124
           },
           {
             "cause": "FOREIGN_ISSUER",
@@ -408,5 +408,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-09-17T06:40:17+00:00"
+  "generatedAtUtc": "2026-09-19T06:38:58+00:00"
 }
