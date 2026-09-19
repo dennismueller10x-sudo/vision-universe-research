@@ -72,3 +72,13 @@ no additional service may be activated without concrete need and Owner decision.
 
 Rollback: preceding main e4bcd8e. Changes are additive consumer adapters and runtime
 configuration; no storage/data mutation or secret change.
+
+## Visual / recovery review
+
+PR #114 opened at ba5a76a. Initial remote Quant, SEC, Company Master and release
+package gates passed. Browser test caught an obsolete all-or-nothing factor-panel
+outage expectation: repaired by checking exact independent history provenance and
+separately rejecting fabricated charts during combined panel/history outage.
+Artifact download succeeded; desktop annual-history screenshot inspected. Stock
+chart currency suffix clipped y-axis labels, so labels now use compact numbers
+while currency remains explicit beneath the chart. Await rerender and mobile gate.
