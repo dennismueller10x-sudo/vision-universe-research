@@ -83,4 +83,13 @@ body.dv2 .v2-business-story{display:block;padding:27px 22px;border-radius:20px}b
 }
 @media(max-width:350px){body.dv2 .v2-stock-hero .v2-stock-name{font-size:27px}body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:49px}body.dv2 .v2-stock-hero .dx-lazy-media{height:125px}body.dv2 .v2-world-theme h2{font-size:34px}body.dv2 .v2-business-story{padding:25px 17px}body.dv2 .v2-world-index{padding:22px 14px}}
 @media(max-width:700px){body.dv2 .v2-stock-hero{align-items:stretch}}
+/* Index exploration shares the page's vertical scroll. Ranking columns swipe
+   horizontally: leader, then ranks 2–4, 5–7 and 8–10 in canonical order. */
+@media(max-width:700px){
+body.dv2 .v2-world-index .v2-track{grid-auto-flow:column;grid-template-columns:94%;grid-auto-columns:90%;grid-template-rows:repeat(3,auto);gap:0 20px;max-height:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;align-items:start}
+body.dv2 .v2-world-index .v2-track-item:first-child{grid-row:1/span 3}
+body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock{grid-template-columns:82px minmax(0,1fr);gap:0 8px}
+body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-rank{font-size:65px;letter-spacing:-.06em}
+}
+@media(max-width:350px){body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock{grid-template-columns:68px minmax(0,1fr)}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-rank{font-size:54px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-name{font-size:22px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-performance strong{font-size:33px}}
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-stock{transition:none}body.dv2 .v2-track,body.dv2 .v2-hero-track{scroll-behavior:auto}}
