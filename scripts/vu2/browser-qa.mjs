@@ -134,6 +134,30 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
  await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/xpeng/','/academy/','/quant/ranking/','/quant/screener/'])if(!directory.includes(path))throw Error('preserved workspace missing '+path);
  await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.keyboard.press('Escape');if(await page.getByRole('dialog').isVisible())throw Error('command dialog keyboard exit failed');checks.push({view:'guided-professional-journey',width,pass:true});
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
+ // Test-only relay fixture exercises the production UI without contacting a provider.
+ for(const width of [1440,390]){
+  const live=await browser.newPage({viewport:{width,height:1000}});
+  await live.addInitScript(()=>{
+   const NativeDate=Date,fixed=NativeDate.parse('2026-09-18T15:00:00Z');window.Date=class extends NativeDate{constructor(...a){super(...(a.length?a:[fixed]));}static now(){return fixed;}};
+   window.__relayTest={opens:0,sent:[],closed:0};
+   window.WebSocket=class{constructor(url){if(url!=='wss://live.visionuniverse.de/live')throw Error('unexpected relay');window.__relayTest.opens++;window.__relayTest.socket=this;setTimeout(()=>this.onopen?.({}),0);}send(value){window.__relayTest.sent.push(JSON.parse(value));}close(){window.__relayTest.closed++;}};
+  });
+  await live.goto(origin+'/vu2/?view=stock&ticker=TSLA');await live.locator('main footer').waitFor();
+  if(await live.evaluate(()=>__relayTest.opens)!==0)throw Error('automatic realtime subscription');
+  await live.getByRole('button',{name:'Live-Verbindung starten',exact:true}).click();
+  await live.getByText('Verbunden · wartet auf einen bestätigten Trade.',{exact:true}).waitFor();
+  await live.evaluate(()=>{const send=(type,price,at)=>__relayTest.socket.onmessage({data:JSON.stringify({op:'u',schemaVersion:'vu-live-update-1.1.0',v:[['TSLA',price,Date.now(),9999,9999,9999,9999,at]],semantics:[{priceType:type,messageForm:'iexTyped',candlePriceType:'REALTIME_REFERENCE'}]})});window.__relayTest.send=send;send('QUOTE',9999,Date.now()-3000);});
+  if(await live.getByText(/Zuletzt beobachtet:/).count())throw Error('quote moved price');
+  await live.evaluate(()=>{__relayTest.send('TRADE',240,Date.now()-2000);__relayTest.send('TRADE',241,Date.now()-1000);});
+  await live.getByText(/Zuletzt beobachtet: 241/).waitFor();await live.getByRole('img',{name:'TSLA · bestätigte Trades seit Verbindungsstart'}).waitFor();
+  await live.evaluate(()=>__relayTest.send('UNSPECIFIED',9999,Date.now()));
+  if(!/241/.test(await live.getByText(/Zuletzt beobachtet:/).innerText()))throw Error('untyped event moved price');
+  if(await live.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('live stock overflow');
+  await live.screenshot({path:out+'/live-relay-test-fixture-'+width+'.png',fullPage:true});
+  await live.getByRole('button',{name:'Live-Verbindung beenden',exact:true}).click();
+  if(await live.evaluate(()=>__relayTest.closed)!==1)throw Error('subscription not released');
+  checks.push({view:'trade-only-relay-test-fixture',width,pass:true,productionDataClaim:false});await live.close();
+ }
  const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});for(const view of ['home','compare','research']){await tablet.goto(origin+'/vu2/?view='+view);await tablet.locator('main footer').waitFor();if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('tablet overflow '+view);const nav=tablet.locator('.nav');if(!await nav.isVisible()||await nav.locator('a').count()!==6)throw Error('tablet navigation incomplete');await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});}await tablet.close();
  await writeFile(out+'/results.json',JSON.stringify({checks},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
  await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',results:resourceBudgets},null,2));

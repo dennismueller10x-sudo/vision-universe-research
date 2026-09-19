@@ -98,7 +98,7 @@
     });
   }
 
-  function xLabelsFor(dates, xs, count) {
+  function xLabelsFor(dates, xs, count, formatter) {
     if (!dates.length) return [];
     var out = [];
     var stepCount = Math.min(count || 5, dates.length);
@@ -106,7 +106,7 @@
       var idx = Math.round((dates.length - 1) * (i / Math.max(1, stepCount - 1)));
       out.push({
         x: xs(idx),
-        text: shortDate(dates[idx]),
+        text: formatter ? formatter(dates[idx]) : shortDate(dates[idx]),
         anchor: i === 0 ? "start" : (i === stepCount - 1 ? "end" : "middle")
       });
     }
@@ -139,7 +139,7 @@
     var ys = scale(ext, [h - PAD.bottom, PAD.top]);
     var yFormat = opts.yFormat || function (v) { return String(Math.round(v)); };
 
-    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, w < 500 ? 3 : 5));
+    axes(svg, w, h, ticks.map(function (t) { return { y: ys(t), value: t }; }), yFormat, xLabelsFor(dates, xs, w < 500 ? 3 : 5, opts.xFormat));
 
     opts.series.forEach(function (s) {
       var pts = s.values.map(function (v, i) { return [xs(i), isNum(v) ? ys(v) : null]; });
