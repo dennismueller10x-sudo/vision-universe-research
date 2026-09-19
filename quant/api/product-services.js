@@ -216,7 +216,7 @@ function create(options){
    const long=selection.range==='MAX'||selection.grain==='weekly';
    const path='/quant/data/market/discover-series'+(long?'-long':'')+'/'+instrument.masterMemberId+'.json';
    const source=await load(path),today=new Date().toISOString().slice(0,10);
-   if(source.schemaVersion!==(long?'discover-series-long-1.0.0':'discover-series-1.1.0')||source.securityId!==instrument.masterMemberId||source.ticker!==ticker||source.dataMode!=='real'||source.status!=='CALCULATED'||source.priceSeriesType!=='SPLIT_ADJUSTED'||source.grain!==(long?'weekly':'daily')||!source.publishBasis||!validDate(source.asOf)||source.asOf>today||!source.currency||!Array.isArray(source.points))return unavailable('INVALID_HISTORY_CONTRACT');
+   if(source.schemaVersion!==(long?'discover-series-long-1.0.0':'discover-series-1.1.0')||source.securityId!==instrument.masterMemberId||source.ticker!==ticker||source.dataMode!=='real'||source.source!=='tiingo'||source.provider!=='tiingo'||source.status!=='CALCULATED'||source.priceSeriesType!=='SPLIT_ADJUSTED'||source.grain!==(long?'weekly':'daily')||!source.publishBasis||!validDate(source.asOf)||source.asOf>today||!source.currency||!Array.isArray(source.points))return unavailable('INVALID_HISTORY_CONTRACT');
    let previous='';
    for(const point of source.points){if(!Array.isArray(point)||point.length!==2||!validDate(point[0])||point[0]<=previous||point[0]>source.asOf||!Number.isFinite(point[1])||point[1]<=0)return unavailable('INVALID_HISTORY_POINTS');previous=point[0];}
    const bars=source.points.filter(([date])=>(!selection.from||date>=selection.from)&&(!selection.to||date<=selection.to)).map(([date,close])=>({date,close}));

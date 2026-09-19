@@ -100,7 +100,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
  await page.getByRole('heading',{name:'NVIDIA Corporation',exact:true}).waitFor();await page.getByText(/Die Daten können derzeit nicht geladen werden/).waitFor();
- if(await page.locator('.q-chart,.quote').count())throw Error('panel outage fabricated values');
+ if(!await page.locator('.q-chart').count()||await page.locator('.quote').count())throw Error('panel outage lost independent history or fabricated quote');
+ const independent=await page.evaluate(async()=>{const service=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});const model=await service.getHistoricalPriceHistory('NVDA');const raw=await QuantShell.loadJSON(model.sourcePath);return model.identity.ticker==='NVDA'&&JSON.stringify(model.bars)===JSON.stringify(raw.points.map(([date,close])=>({date,close})));});
+ if(!independent)throw Error('panel outage chart differs from canonical source');
+ await page.route('**/quant/data/market/discover-series/**',route=>route.abort());
+ await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
+ if(await page.locator('.q-chart,.quote').count())throw Error('combined source outage fabricated values');
+ await page.getByRole('heading',{name:'Kurshistorie derzeit nicht verfügbar',exact:true}).waitFor();
+ await page.unroute('**/quant/data/market/discover-series/**');
  await page.unroute('**/quant/data/sec/quant-factor-inputs.json');checks.push({view:'canonical-identity-panel-outage',width,pass:true});
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});
  const serviceRoute=/\/(?:quant\/api\/product-services|vu2\/release-bundle)\.js$/;
