@@ -280,3 +280,20 @@ Browser evidence: 49 functional, 36 accessibility, 8 resource checks.
 Desktop/390px canonical stock and annual history visually inspected after axis repair.
 Main drift: independent PR #113 merged as 8fde31f; affected Discovery preview and
 shared site-navigation only, no owned-path overlap. Synchronize and rerun gates.
+
+### Release cache recovery — 2026-09-19
+
+PR #114 merged as `2a561dcb3915ac2990cac9d74ceb35b192befb41`; Pages deployment
+35429038628 PASS. `release-delivery.json` independently confirmed that SHA,
+SEC 2,762,729 / 8,388,608 bytes PASS. All pre-merge remote gates passed after
+sync with PR #113. Discovery regression: 227 tests PASS; no Discovery path diff.
+
+Production smoke identified cached old `release-bundle.js` in the existing browser;
+HTTP response exposes `Cache-Control: max-age=600`. Current origin bytes contain
+the new consumer adapter, but the unchanged bundle URL permits mixed release UI.
+Recovery branch `integration/quant-release-cache`: content hash query for the
+existing bundle, with regression requiring a different URL for changed code.
+No hosting, data, credential or Discovery changes. Browser outage-injection regex
+accepts the versioned bundle URL while preserving the same negative tests.
+Gate: release contract tests 3 PASS; remote Browser/Pages gates pending.
+Rollback: preceding main `2a561dcb`. Full project completion NOT claimed.
