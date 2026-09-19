@@ -356,3 +356,12 @@ Actual rebuilt SEC bytes4,846,342; filesystem allocation4,968KiB<8,192KiB;
 maximum compressed shard29,106bytes, decoded318,298bytes. No complete consumer,
 full-universe browser load, normalization, source edits or second delivery service.
 Rerun all changed-head gates; prior successful gates are retained as historical evidence.
+
+Full-history/PIT boundary evidence captured in OWNER_DECISION_FULL_PIT_DELIVERY.md.
+Current R2 report stores639,862,725bytes with revision histories; existing consumer
+snapshots contain default8quarters and no full revision/acceptedAt history. Current
+consumer example stillnormalization1.6/asOf2026-09-14 vs persisted1.9/1.10; do not
+claim latest canonical integration from snapshot availability. UI explicitly shows
+its preparation date. No new serving path or secret activated. Full-PIT serving
+exception requires the Owner decision defined in the artifact-only instruction;
+remaining Quant/screener/current-consumer-refresh work is not marked complete.

@@ -55,6 +55,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   const expectedQuarter=quarterlyTSLA.quarterly.revenue.at(-1);await page.getByRole('rowheader',{name:expectedQuarter[1]+' '+expectedQuarter[0]+(expectedQuarter[6]?' · abgeleitet':''),exact:true}).waitFor();
   const quarters=await page.evaluate(async()=>{const api=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});return api.getHistoricalFundamentals('TSLA',{period:'quarterly'});});
   if(quarters.state!=='AVAILABLE'||quarters.pitEligibility!=='NOT_CERTIFIED'||JSON.stringify(quarters.rows.map(r=>[r.fiscalYear,r.fiscalPeriod,r.end,r.value,r.filed,r.accession,Number(r.derived)]))!==JSON.stringify(quarterlyTSLA.quarterly.revenue))throw Error('quarterly projection changed canonical facts');
+  await page.getByText('Berichtsstand: '+quarters.generatedAt.slice(0,10)+'. Frühere Angaben können nachträglich angepasst sein.',{exact:true}).waitFor();
   await page.screenshot({path:out+'/canonical-quarterly-'+width+'.png',fullPage:true});await auditAccessibility(page,'canonical-quarterly',width);checks.push({view:'canonical-quarterly',width,pass:true});
 
   await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA&metric=unknown');await page.getByText('Historienauswahl prüfen',{exact:true}).waitFor();if(await page.locator('.q-chart').count())throw Error('invalid metric rendered fallback');await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();}
