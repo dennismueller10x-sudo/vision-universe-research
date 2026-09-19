@@ -205,9 +205,19 @@
     return treffer / Math.min(wa.length, wb.length);
   }
 
+  /* Wieviel Inhaltswortschatz sich Hook und Caption teilen duerfen.
+     Belegwoerter zaehlen nicht mit - dieselbe Zahl darf in beiden
+     stehen; was zaehlt, ist, ob der eine den anderen nacherzaehlt.
+
+     Exportiert, weil die Anweisung an den Creative Agent dieselbe Zahl
+     nennen muss. Zwei Abschriften waeren zwei Wahrheiten, und die
+     zweite faellt erst auf, wenn ein Lauf daran scheitert. */
+  var MAX_UEBERSCHNEIDUNG = 0.6;
+
   function compositionCheck(v, options) {
     options = options || {};
-    var grenze = typeof options.maxOverlap === "number" ? options.maxOverlap : 0.6;
+    var grenze = typeof options.maxOverlap === "number"
+      ? options.maxOverlap : MAX_UEBERSCHNEIDUNG;
     var beleg = belegWortliste(options.evidence);
 
     var paare = [
@@ -522,6 +532,7 @@
   }
 
   var api = {
+    MAX_UEBERSCHNEIDUNG: MAX_UEBERSCHNEIDUNG,
     compositionCheck: compositionCheck,
     belegWortliste: belegWortliste,
     ueberschneidung: ueberschneidung,

@@ -1699,3 +1699,97 @@ Content Object (`vu-xom-20260911-rev1`), das auf das alte zeigt und sein
 Asset mit voller Identität mitführt — dieselbe Regel wie bei den
 Kandidaten: eine neue Fassung bekommt eine eigene Identität und
 überschreibt die alte nicht.
+
+---
+
+## 44. Korrektur: PR 110 war vertragswidrig, nicht unzugestellt
+
+Ich hatte gemessen, wie lange ein Agentenstart üblicherweise dauert —
+0:58 bis 2:09 über fünf Läufe — und aus dem Ausbleiben nach 760 Minuten
+auf einen Fehler im Zustellungsweg geschlossen. Die Messung war richtig,
+der Schluss war falsch.
+
+Der Owner hat die Ursache benannt: **PR 110 war contract-invalid.**
+
+    VU wollte      Text neu, Bild erben, KEINE Bilderzeugung.
+    Der Contract   kannte nur einen Auftragstyp, und der verlangt
+                   zwingend ein neues Bild.
+
+Kein `TRIGGER_FAILURE`, kein `DELIVERY_FAILURE`, kein
+`PROVIDER_FAILURE`, kein `CONTENT_FAILURE`. Der Job steht jetzt auf
+`CREATIVE_JOB_FAILED` mit `failureType: CONTRACT_MISMATCH`, und der
+frühere Befund bleibt als Provenance daneben stehen.
+
+### Was daran lehrreich ist
+
+Zum dritten Mal derselbe Mechanismus: **ein zu kleiner Zustandsraum
+erzeugt keine Lücke, sondern eine falsche Erklärung.** Bei
+`cand_20260917_0363e680` fehlte „zurückgehalten wegen Evidenz", und eine
+Reparatur überschrieb eine Owner-Entscheidung. Bei
+`cand_20260918_ca4ea408` fehlte „redaktionell zurückgehalten". Hier
+fehlte „abgelehnt, weil der Auftrag nicht zum Vertrag passt" — und weil
+es den Zustand nicht gab, bekam das Schweigen die nächstbeste
+Erklärung.
+
+Die Diagnose war sauber gemessen und trotzdem falsch. Gegen diese Sorte
+Fehler hilft kein besseres Messen, sondern nur ein Zustandsraum, der die
+Möglichkeit überhaupt kennt.
+
+## 45. Zwei Auftragsarten
+
+    FULL_CREATIVE   Text UND Bild. Der bisherige Vertrag, unverändert.
+    TEXT_REVISION   Nur Text. Das Bild wird GEERBT.
+
+Der Unterschied ist keine Bequemlichkeit. Eine Textrevision, die ein
+neues Bild erzeugt, ändert **zwei Variablen gleichzeitig**; hinterher
+lässt sich nicht mehr sagen, ob die Verbesserung vom Text kam. Das Erben
+ist die Voraussetzung dafür, überhaupt etwas zu lernen:
+
+    neuer Hook  ×  gleiches Visual  →  Performance
+
+### Die Grenze wird präzisiert, nicht aufgeweicht
+
+„Kein Bild nötig" ist **kein** zulässiger Zustand. Zulässig ist nur:
+„das Bild ist DIESES, es ist bereits `VU_VERIFIED_COMPLETED`, und hier
+steht seine vollständige Identität" — Quelle, Variante, Pfad, SHA-256,
+Format, Maße, `regeneration_allowed: false`. Fehlt ein einziges Feld,
+ist der Request ungültig, auch wenn er `TEXT_REVISION` sagt.
+
+Und die Umkehrung: bei `TEXT_REVISION` ist ein **fehlendes** Bild die
+Erfüllung, ein **neues** der Vertragsbruch.
+
+### Ein alter Brief wird gelesen, nicht vorbelegt
+
+Die naheliegende Antwort auf ein fehlendes `request_type` wäre gewesen,
+still `FULL_CREATIVE` zu setzen. Genau dieses stille Setzen hat PR 110
+zwölf Stunden gekostet. `FULL_CREATIVE` ist trotzdem richtig — aber als
+**historische Tatsache**: als diese Briefe entstanden, gab es keine
+andere Auftragsart. Der Unterschied steht im Ergebnis (`legacy: true`).
+
+`VISUAL_REVISION` ist vorgesehen und **nicht** implementiert. Ein
+Auftragstyp, den niemand stellt, wäre Code ohne Aufrufer — und der erste
+echte Bedarf würde ihn ohnehin anders formen.
+
+## 46. Was der deterministische Test fand
+
+Der Owner verlangte, die Architektur **ohne** Work-Ausführung zu prüfen.
+Das hat sich zweimal ausgezahlt.
+
+**Das Kompositions-Tor.** Alle vier simulierten Hooks fielen durch: Hook
+und Caption überschnitten sich zu 60–86 %. Das Tor hatte recht — die
+Caption wiederholte den Hook und erklärte ihn dann.
+
+Der eigentliche Fund lag aber woanders: **die Anweisung an den Agenten
+nannte die Schwelle nicht, die tatsächlich gemessen wird.** Sie sagte
+„der erste Satz wiederholt nicht die Zahlen des Hooks"; gemessen wird
+der Anteil gemeinsamer Inhaltswörter, höchstens 60 %, Belegwörter
+ausgenommen. Ohne den deterministischen Lauf hätte genau das die eine
+freigegebene Work-Ausführung gekostet.
+
+Die Schwelle steht jetzt in `authoring.js` und wird von der Anweisung
+**gelesen**, nicht abgeschrieben. Zwei Abschriften wären zwei Wahrheiten,
+und die zweite fällt erst auf, wenn ein Lauf daran scheitert.
+
+**Und ein Kommentar, der log.** Ich hatte geschrieben, die Schwelle werde
+„von dort gelesen" — und sie danebengeschrieben. Repariert wurde der
+Code, nicht der Kommentar.

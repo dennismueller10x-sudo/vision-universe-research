@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T14:24:02.027Z",
+  "generatedAt": "2026-09-19T06:25:47.285Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -171,9 +171,9 @@
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:1.0",
       "attempt": 4,
       "revision": "text-only",
-      "state": "CREATIVE_JOB_STALE",
+      "state": "CREATIVE_JOB_FAILED",
       "createdAt": "2026-09-18T14:24:02.027Z",
-      "updatedAt": "2026-09-18T15:59:14.827Z",
+      "updatedAt": "2026-09-19T06:19:55.815Z",
       "prNumber": 110,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -192,13 +192,41 @@
           "state": "CREATIVE_JOB_STALE",
           "at": "2026-09-18T14:40:55.163Z",
           "note": "Kein VU_CREATIVE_AGENT_INVOCATION auf PR 110 — deutlich ausserhalb jeder gemessenen Anlaufzeit."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-19T06:19:55.815Z",
+          "note": "CONTRACT_MISMATCH (Owner-Befund)"
         }
       ],
       "prState": "open",
-      "outcome": "Kein beobachteter Start nach 92 Minuten. Drei Beobachtungsfenster zu je 30 Minuten, kein Ergebnis-Commit, kein VU_CREATIVE_AGENT_INVOCATION, PR-Kommentarzahl unveraendert 1 (Vercel). Der langsamste von fuenf gemessenen Starts lag bei 2:09.",
+      "outcome": "Vertragswidrig, nicht unzugestellt. Der Brief verlangte Text neu und Bild geerbt; der damalige Contract kannte nur FULL_CREATIVE mit Bildpflicht. Vom Owner als Ursache benannt.",
       "source": "dispatch-creative-job Pfad, PR 110",
       "deliveryCount": 0,
-      "note": "deliveryCount steht auf 0, weil keine Zustellung BEOBACHTET wurde. Ob GitHub zugestellt hat, ist von hier aus nicht sichtbar - die Beobachtungsgrenze gehoert in die Daten und nicht in eine Annahme."
+      "note": "Korrektur einer frueheren Einstufung: hier stand CREATIVE_JOB_STALE mit der Lesart Trigger-/Zustellungsfehler. Das war falsch. Kein TRIGGER_FAILURE, kein DELIVERY_FAILURE, kein PROVIDER_FAILURE, kein CONTENT_FAILURE. Der Befund bleibt als Provenance erhalten; PR 110 wird nicht nachtraeglich so veraendert, als waere er erfolgreich verarbeitet worden.",
+      "failureType": "CONTRACT_MISMATCH"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:attempt4:revtext-only",
+      "contentId": "vu-xom-20260911-rev2",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
+      "attempt": 4,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_REQUESTED",
+      "createdAt": "2026-09-19T06:25:47.285Z",
+      "updatedAt": "2026-09-19T06:25:47.285Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T06:25:47.285Z",
+          "note": null
+        }
+      ]
     }
   ],
   "budget": {

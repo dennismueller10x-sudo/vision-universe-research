@@ -62,6 +62,8 @@
   var German = isNode ? require("../../../engines/german-text.js") : global.VUSocialGermanText;
   var AssetTransport = isNode ? require("../../../engines/asset-transport.js")
     : global.VUSocialAssetTransport;
+  var Contract = isNode ? require("../../../engines/creative-contract.js")
+    : global.VUSocialCreativeContract;
   var AssetStore = isNode ? require("../../../engines/asset-store.js")
     : global.VUSocialAssetStore;
   var AssetIntegrity = isNode ? require("../../../engines/asset-integrity.js")
@@ -147,6 +149,20 @@
     return {
       schema_version: "1.0",
       fixture_type: options.fixtureType || "production_authoring_request",
+
+      /* -----------------------------------------------------------------
+         DIE ART DES AUFTRAGS
+
+         Sie fehlte. PR 110 wollte Text neu und Bild geerbt - und wurde
+         nach der einzigen Art beurteilt, die der Empfaenger kannte:
+         "Text UND neues Bild". Der Request war vertragswidrig, und weil
+         niemand das aussprechen konnte, sah es zwoelf Stunden lang wie
+         ein Zustellungsfehler aus.
+         ----------------------------------------------------------------- */
+      request_type: options.requestType || Contract.FULL_CREATIVE,
+      visual: options.inheritance || { mode: Contract.GENERATE_NEW_ASSET,
+        regeneration_allowed: true },
+
       test_fixture: options.testFixture === true,
       brief_id: brief.briefId,
       content_id: contentId,
@@ -196,7 +212,7 @@
       }),
 
       asset_requirements: {
-        count: 1,
+        count: (options.requestType === Contract.TEXT_REVISION) ? 0 : 1,
         preferred_mime_type: "image/png",
         preferred_width: options.width || 1080,
         preferred_height: options.height || 1350,
@@ -232,7 +248,12 @@
         recommended_hook_allowed: true,
         canonical_selected_hook_allowed: false,
         evidence_refs_required: true,
-        actual_image_asset_required: options.requireAsset !== false,
+        /* Bei TEXT_REVISION ist das Bild geerbt, nicht abwesend. Die
+           Pflicht faellt nicht weg - sie wandert in die Vererbung, und
+           die ist strenger: sie nennt Hash, Groesse, Format und Masse. */
+        actual_image_asset_required:
+          options.requestType === Contract.TEXT_REVISION ? false
+            : options.requireAsset !== false,
         publishing_allowed: false
       },
 
@@ -538,9 +559,31 @@
             verification: geprueft };
         }
 
-        var assets = verifyAssets(ergebnis, function (pfad) {
-          return transport.readAsset ? transport.readAsset(pfad) : null;
-        });
+        /* -------------------------------------------------------------
+           ERFUELLT DAS ERGEBNIS DEN AUFTRAG, DER GESTELLT WURDE?
+
+           Nicht "ist ein Bild da", sondern "wurde getan, was vereinbart
+           war". Bei TEXT_REVISION ist ein fehlendes Bild die Erfuellung
+           und ein neues der Bruch.
+           ------------------------------------------------------------- */
+        var vertrag = Contract.validateResult(ergebnis, agentBrief);
+        if (!vertrag.ok) {
+          return { variants: [],
+            reason: "Vertragsverstoss: " + vertrag.explanation,
+            contract: vertrag,
+            /* Ausdruecklich kein Inhaltsurteil - ein Vertragsverstoss
+               sagt ueber Hook, Evidenz oder Bildstrategie nichts. */
+            contentJudgement: false };
+        }
+
+        var istRevision = vertrag.requestType === Contract.TEXT_REVISION;
+
+        var assets = istRevision
+          ? { ok: true, state: "INHERITED", checked: [], findings: [],
+              explanation: "Kein neues Asset erwartet - das Bild wird geerbt." }
+          : verifyAssets(ergebnis, function (pfad) {
+              return transport.readAsset ? transport.readAsset(pfad) : null;
+            });
 
         /* -------------------------------------------------------------
            WAS DER AGENT MELDET UND WAS WIR NACHGESEHEN HABEN
@@ -583,21 +626,41 @@
            laufen.
            --------------------------------------------------------------- */
         var geerbt = null;
-        if (!bild && agentBrief && agentBrief.reuse_visual && transport &&
-            typeof transport.readAsset === "function") {
-          geerbt = AssetStore.inherit(agentBrief, transport.readAsset,
+        if (istRevision && transport && typeof transport.readAsset === "function") {
+          var v = agentBrief.visual || {};
+          /* Uebersetzt in die Form, die asset-store.inherit erwartet.
+             Die Felder heissen dort anders, weil sie aus zwei Schichten
+             stammen - uebersetzt wird an EINER Stelle. */
+          geerbt = AssetStore.inherit({
+            reuse_visual: {
+              from_content_id: v.source_content_id,
+              visual_variant_id: v.source_visual_variant_id,
+              asset_path: v.source_asset_reference,
+              asset_sha256: v.source_asset_sha256,
+              asset_byte_size: v.source_byte_size,
+              mime_type: v.source_mime_type,
+              width: v.source_width, height: v.source_height
+            }
+          }, transport.readAsset,
             { freshReadback: true, contentId: contentId,
               generator: "chatgpt-work" });
-          if (geerbt.ok) {
-            var q = agentBrief.reuse_visual;
-            bild = { visual_variant_id: q.visual_variant_id,
-              visual_strategy: q.visual_strategy || "GENERATIVE",
-              brief_revision: q.brief_revision || null,
-              asset_path: q.asset_path, asset_sha256: q.asset_sha256,
-              asset_byte_size: q.asset_byte_size,
-              mime_type: q.mime_type, width: q.width, height: q.height,
-              inherited_from: q.from_content_id || null };
+
+          if (!geerbt.ok) {
+            return { variants: [],
+              reason: "Geerbtes Asset zurueckgewiesen: " + geerbt.explanation,
+              assets: geerbt,
+              failureType: geerbt.failureType || null,
+              contentJudgement: false };
           }
+          bild = { visual_variant_id: v.source_visual_variant_id,
+            visual_strategy: v.source_visual_strategy || "GENERATIVE",
+            brief_revision: v.source_brief_revision || null,
+            asset_path: v.source_asset_reference,
+            asset_sha256: v.source_asset_sha256,
+            asset_byte_size: v.source_byte_size,
+            mime_type: v.source_mime_type,
+            width: v.source_width, height: v.source_height,
+            inherited_from: v.source_content_id };
         }
 
         /* ---------------------------------------------------------------

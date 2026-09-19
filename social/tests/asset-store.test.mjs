@@ -16,6 +16,26 @@ const require = createRequire(import.meta.url);
 const S = require("../engines/asset-store.js");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+/* Die Form, in der asset-store die Vererbung erwartet. Der Contract
+   fuehrt sie als `visual` mit source_*-Feldern; uebersetzt wird an
+   EINER Stelle im Adapter, und dieser Test prueft die Stelle danach. */
+function revisionBrief() {
+  const e = JSON.parse(readFileSync(
+    join(ROOT, "authoring/requests/vu-xom-20260911/authoring-result.json"),
+    "utf8")).visual_variants[0];
+  return {
+    content_id: "vu-xom-20260911-rev2",
+    reuse_visual: {
+      from_content_id: "vu-xom-20260911",
+      visual_variant_id: e.visual_variant_id,
+      asset_path: e.asset_path,
+      asset_sha256: e.asset_sha256,
+      asset_byte_size: e.asset_byte_size,
+      mime_type: e.mime_type, width: e.width, height: e.height
+    }
+  };
+}
+
 const ERGEBNIS = JSON.parse(readFileSync(
   join(ROOT, "authoring/requests/vu-xom-20260911/authoring-result.json"), "utf8"));
 const VARIANTE = ERGEBNIS.visual_variants[0];
@@ -113,8 +133,7 @@ test("AS9 · Ein geerbtes Asset wird erneut vollstaendig geprueft", () => {
      NICHT ungeprueft: dasselbe Asset kann zwischen zwei Laeufen im
      Repository beschaedigt werden, und ein Vertrauen, das sich auf eine
      frueher bestandene Pruefung beruft, prueft nichts. */
-  const brief = JSON.parse(readFileSync(
-    join(ROOT, "authoring/requests/vu-xom-20260911-rev1/authoring-brief.json"), "utf8"));
+  const brief = revisionBrief();
   const lese = (p) => readFileSync(join(ROOT, p));
 
   const g = S.inherit(brief, lese, { freshReadback: true,
@@ -134,9 +153,7 @@ test("AS9 · Ein geerbtes Asset wird erneut vollstaendig geprueft", () => {
 });
 
 test("AS10 · Erst eine verlorene Quelle rechtfertigt neue Erzeugung", () => {
-  const brief = JSON.parse(readFileSync(
-    join(ROOT, "authoring/requests/vu-xom-20260911-rev1/authoring-brief.json"), "utf8"));
-  const weg = S.inherit(brief, () => null, { freshReadback: true });
+  const weg = S.inherit(revisionBrief(), () => null, { freshReadback: true });
   assert.equal(weg.ok, false);
   assert.equal(weg.reason, "sourceGone");
   assert.equal(weg.sourceAvailable, false);

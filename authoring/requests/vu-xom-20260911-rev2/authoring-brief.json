@@ -3,7 +3,7 @@
   "fixture_type": "production_authoring_request",
   "test_fixture": false,
   "brief_id": "brief_00b861f522ad2209",
-  "content_id": "vu-xom-20260911-rev1",
+  "content_id": "vu-xom-20260911-rev2",
   "brand": "Vision Universe",
   "language": "de",
   "channel": "instagram",
@@ -14,7 +14,7 @@
   "hook_strategy": {
     "strategy_id": "vu-stock-story-value-first-v1",
     "hook_type": "value_first",
-    "instruction": "UEBERARBEITUNG. Der vorherige Text war faktisch richtig und redaktionell zu schwach: die Hooks stellten eine belegte Zahl voran, ohne ihr etwas entgegenzusetzen, und die Caption uebernahm die Struktur des Research-Reports.\nJEDER Hook muss ZWEI gemessene Werte GEGENEINANDER stellen: eine Staerke und den Wert, der trotz dieser Staerke nicht hoeher ausfaellt. Beide Zahlen stehen IM HOOK, verbunden durch ein Wort, das einen Gegensatz stiftet (etwa: und trotzdem, dennoch, obwohl, aber nur).\nDer Bogen steht in der Evidenz und ist nicht zu erfinden:\n  Leitwert 76 von 100\n  Staerke  TREND_STRUCTURE: 27.35 von 30\n  Bremse   VOLATILITY: 5 von 10\n  In Lesersprache: 12M-Entwicklung 47.6 % (z=1.62).\nDie daraus folgende Frage, belegt beantwortbar: Warum trotz TREND_STRUCTURE 91 % nur 76 von 100?\nNICHT im oeffentlichen Text zulaessig sind unsere internen Bezeichner. Die Sachverhalte duerfen vorkommen, die Bezeichner nicht. Unzulaessig: enum-trend-structure, enum-projection, enum-relative-strength, enum-momentum-state, enum-component, methodology-rank, percentile, z-score, atr, sma, contribution-formula, trend-value, momentum-measure, trading-days. \"Die Schwankungsbreite traegt nur die Haelfte bei\" sagt dasselbe wie \"VOLATILITY 5 von 10 Punkten\" und verlangt vom Leser nicht, unser Datenmodell zu lernen.\nDie Caption verwendet AUSSCHLIESSLICH die unten mitgelieferten Belege. Hoechstens 12 Zahlen je 100 Woerter (Datumsangaben und Skalen zaehlen nicht mit).\nDer erste Satz der Caption wiederholt NICHT die Zahlen des Hooks. Zwei Flaechen, zwei Beitraege.\nUnveraendert: keine Prognose, keine Empfehlung, keine Ursachenbehauptung. Der Pflichthinweis \"Keine Anlageberatung.\" steht am Ende der Caption.\nKEIN NEUES BILD. Das bestehende, verifizierte Visual dieses Content Objects wird weiterverwendet. Erzeuge kein Bild und liefere keine visual_variants."
+    "instruction": "UEBERARBEITUNG. Der vorherige Text war faktisch richtig und redaktionell zu schwach: die Hooks stellten eine belegte Zahl voran, ohne ihr etwas entgegenzusetzen, und die Caption uebernahm die Struktur des Research-Reports.\nJEDER Hook muss ZWEI gemessene Werte GEGENEINANDER stellen: eine Staerke und den Wert, der trotz dieser Staerke nicht hoeher ausfaellt. Beide Zahlen stehen IM HOOK, verbunden durch ein Wort, das einen Gegensatz stiftet (etwa: und trotzdem, dennoch, obwohl, aber nur).\nDer Bogen steht in der Evidenz und ist nicht zu erfinden:\n  Leitwert 76 von 100\n  Staerke  TREND_STRUCTURE: 27.35 von 30\n  Bremse   VOLATILITY: 5 von 10\n  In Lesersprache: 12M-Entwicklung 47.6 % (z=1.62).\nDie daraus folgende Frage, belegt beantwortbar: Warum trotz TREND_STRUCTURE 91 % nur 76 von 100?\nNICHT im oeffentlichen Text zulaessig sind unsere internen Bezeichner. Die Sachverhalte duerfen vorkommen, die Bezeichner nicht. Unzulaessig: enum-trend-structure, enum-projection, enum-relative-strength, enum-momentum-state, enum-component, methodology-rank, percentile, z-score, atr, sma, contribution-formula, trend-value, momentum-measure, trading-days. \"Die Schwankungsbreite traegt nur die Haelfte bei\" sagt dasselbe wie \"VOLATILITY 5 von 10 Punkten\" und verlangt vom Leser nicht, unser Datenmodell zu lernen.\nDie Caption verwendet AUSSCHLIESSLICH die unten mitgelieferten Belege. Hoechstens 12 Zahlen je 100 Woerter (Datumsangaben und Skalen zaehlen nicht mit).\nDie Caption WIEDERHOLT den Hook nicht, sie FUEHRT IHN FORT. Das ist messbar und wird gemessen: hoechstens 60 Prozent der Inhaltswoerter des Hooks duerfen in der Caption wiederkehren. Zahlen und Belegwoerter zaehlen dabei NICHT mit - dieselbe Zahl darf in beiden stehen.\nPraktisch heisst das: der Hook stellt die Spannung auf, die Caption beginnt bei ihrer AUFLOESUNG. Ein erster Caption-Satz, der den Hook mit anderen Worten nacherzaehlt, reisst diese Grenze zuverlaessig.\nUnveraendert: keine Prognose, keine Empfehlung, keine Ursachenbehauptung. Der Pflichthinweis \"Keine Anlageberatung.\" steht am Ende der Caption.\nAUFTRAGSART: TEXT_REVISION. Das Visual wird GEERBT - seine vollstaendige Identitaet steht im Feld `visual` (Quelle, Variante, Pfad, SHA-256, Format, Masse). regeneration_allowed ist false.\nErzeuge KEIN Bild und liefere KEINE visual_variants. Das ist hier kein Mangel, sondern die Erfuellung: ein neues Bild wuerde eine begrenzte Ressource kosten UND die Wirkung des neuen Textes unmessbar machen, weil sich zwei Dinge zugleich aenderten.\nSetze im Ergebnis visual_resolution = INHERITED und wiederhole unter inherited_visual die visual_variant_id und den asset_sha256 aus dem Auftrag - unveraendert."
   },
   "visual_strategy": {
     "strategy_id": "FUTURE_TECH",
@@ -166,16 +166,22 @@
   "attempt_reason": "Redaktionelle Ueberarbeitung nach Owner-Entscheidung HELD_FOR_CREATIVE_REFINEMENT. Die Evidenz reicht und bleibt unveraendert; nachzuarbeiten ist die Auswahl daraus.",
   "revision": "text-only",
   "supersedes_content_id": "vu-xom-20260911",
-  "reuse_visual": {
-    "from_content_id": "vu-xom-20260911",
-    "visual_variant_id": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:visual:FUTURE_TECH:01",
-    "asset_path": "authoring/requests/vu-xom-20260911/assets/visual-01.png",
-    "asset_sha256": "a378d07895c481cbdb2b60ea21d42512ed844b9ce0216ca262efcc8fcc9e0b40",
-    "asset_byte_size": 1954408,
-    "mime_type": "image/png",
-    "width": 1122,
-    "height": 1402,
-    "verified": "alle neun Transportpruefungen bestanden"
+  "request_type": "TEXT_REVISION",
+  "visual": {
+    "mode": "INHERIT_VERIFIED_ASSET",
+    "regeneration_allowed": false,
+    "source_content_id": "vu-xom-20260911",
+    "source_candidate_id": "cand_20260918_ca4ea408",
+    "source_visual_variant_id": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:visual:FUTURE_TECH:01",
+    "source_asset_reference": "authoring/requests/vu-xom-20260911/assets/visual-01.png",
+    "source_asset_sha256": "a378d07895c481cbdb2b60ea21d42512ed844b9ce0216ca262efcc8fcc9e0b40",
+    "source_byte_size": 1954408,
+    "source_mime_type": "image/png",
+    "source_width": 1122,
+    "source_height": 1402,
+    "source_verification": "VU_VERIFIED_COMPLETED",
+    "source_visual_strategy": "FUTURE_TECH",
+    "source_brief_revision": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3"
   },
   "evidence_for_copy_only": true,
   "full_evidence_retained": 23

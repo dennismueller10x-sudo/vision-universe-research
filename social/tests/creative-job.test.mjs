@@ -189,10 +189,22 @@ test("CJ10 · VU hat nie eine doppelte Delivery erzeugt", () => {
      noch nicht stattgefunden hat. */
   const ausgeloest = ECHT.filter((j) => j.prNumber);
   assert.ok(ausgeloest.length >= 8, "zu wenige ausgeloeste Jobs zum Pruefen");
+
+  /* Geprueft wird KEINE Verdopplung, nicht "genau eine". Die erste
+     Fassung verlangte exakt 1 - abgeleitet aus acht Jobs, die alle
+     ausgeloest haben. PR 110 ist der neunte und hat gar nicht
+     ausgeloest, weil er vertragswidrig war. Null ist aber kein
+     Duplikat, und die Aussage dieses Tests ist die Abwesenheit von
+     Duplikaten.
+
+     Die Untergrenze an die Obergrenze zu binden hiesse, zwei
+     verschiedene Behauptungen in einer Zusicherung zu fuehren. */
   ausgeloest.forEach((j) => {
-    assert.equal(j.deliveryCount, 1,
+    assert.ok((j.deliveryCount || 0) <= 1,
       "PR " + j.prNumber + " traegt " + j.deliveryCount + " Deliveries");
   });
+  assert.ok(ausgeloest.filter((j) => j.deliveryCount === 1).length >= 8,
+    "mindestens die acht historisch ausgeloesten Jobs muessen je eine tragen");
 
   const keys = {};
   ECHT.forEach((j) => { keys[j.processingKey] = (keys[j.processingKey] || 0) + 1; });
@@ -216,11 +228,25 @@ test("CJ11 · Die Vervielfachung haengt am Scheitern, nicht am Ausloesen", () =>
     assert.equal(j.observedStarts, 1,
       "PR " + j.prNumber + " lieferte und zeigt trotzdem " + j.observedStarts + " Starts"));
 
-  const gescheitert = ECHT.filter((j) => j.state === "CREATIVE_JOB_FAILED");
-  assert.ok(gescheitert.length >= 4);
-  gescheitert.forEach((j) =>
+  /* Gemeint sind Jobs, deren LAUF gescheitert ist. Ein vertragswidriger
+     Auftrag ist nie gelaufen - er wurde abgelehnt, bevor irgendetwas
+     begann, und zeigt deshalb null Starts.
+
+     Die beiden zusammenzuwerfen waere derselbe Fehler, der PR 110
+     zwoelf Stunden gekostet hat: aus dem Ausbleiben eines Starts auf
+     einen Fehler IM Lauf zu schliessen, statt auf einen Fehler VOR
+     ihm. */
+  const gelaufenUndGescheitert = ECHT.filter((j) =>
+    j.state === "CREATIVE_JOB_FAILED" && j.failureType !== "CONTRACT_MISMATCH");
+  assert.ok(gelaufenUndGescheitert.length >= 4);
+  gelaufenUndGescheitert.forEach((j) =>
     assert.ok(j.observedStarts >= 5,
       "PR " + j.prNumber + " scheiterte mit nur " + j.observedStarts + " Starts"));
+
+  /* Und die Gegenprobe: ein abgelehnter Auftrag zeigt keine Starts. */
+  ECHT.filter((j) => j.failureType === "CONTRACT_MISMATCH").forEach((j) =>
+    assert.equal(j.observedStarts, 0,
+      "PR " + j.prNumber + " war vertragswidrig und zeigt trotzdem Starts"));
 });
 
 test("CJ12 · Der Ergebnis-Commit des Agenten loest keinen neuen Lauf aus", () => {

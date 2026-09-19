@@ -46,6 +46,9 @@ const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/
 const Story = require(join(ROOT, "social/engines/story-selection.js"));
 const Creative = require(join(ROOT, "social/engines/creative-quality.js"));
 const Job = require(join(ROOT, "social/engines/creative-job.js"));
+const Contract = require(join(ROOT, "social/engines/creative-contract.js"));
+const Authoring = require(join(ROOT, "social/engines/authoring.js"));
+const AssetStore = require(join(ROOT, "social/engines/asset-store.js"));
 
 export const REGISTER = "social/data/creative-jobs.json";
 
@@ -56,6 +59,12 @@ export const REGISTER = "social/data/creative-jobs.json";
  * einer Meinung darueber, was ein guter Hook ist. Jede Forderung ist
  * pruefbar, und dieselbe Pruefung entscheidet hinterher.
  */
+/* Die Schwelle des Kompositions-Tors. GELESEN, nicht abgeschrieben:
+   die Anweisung an den Agenten und die Pruefung danach muessen
+   dieselbe Zahl meinen, sonst faellt der Unterschied erst auf, wenn
+   ein Lauf daran scheitert - und der kostet eine Work-Ausfuehrung. */
+export const MAX_UEBERSCHNEIDUNG = Authoring.MAX_UEBERSCHNEIDUNG;
+
 export function anweisung(story, dichteGrenze) {
   const t = story.tension;
   const staerke = t.strength.value + " von " + t.strength.max;
@@ -94,16 +103,32 @@ export function anweisung(story, dichteGrenze) {
     "Belege. Hoechstens " + dichteGrenze + " Zahlen je 100 Woerter " +
     "(Datumsangaben und Skalen zaehlen nicht mit).",
     "",
-    "Der erste Satz der Caption wiederholt NICHT die Zahlen des Hooks. " +
-    "Zwei Flaechen, zwei Beitraege.",
+    "Die Caption WIEDERHOLT den Hook nicht, sie FUEHRT IHN FORT. Das ist " +
+    "messbar und wird gemessen: hoechstens " + Math.round(MAX_UEBERSCHNEIDUNG * 100) +
+    " Prozent der Inhaltswoerter des Hooks duerfen in der Caption " +
+    "wiederkehren. Zahlen und Belegwoerter zaehlen dabei NICHT mit - " +
+    "dieselbe Zahl darf in beiden stehen.",
+    "",
+    "Praktisch heisst das: der Hook stellt die Spannung auf, die Caption " +
+    "beginnt bei ihrer AUFLOESUNG. Ein erster Caption-Satz, der den Hook " +
+    "mit anderen Worten nacherzaehlt, reisst diese Grenze zuverlaessig.",
     "",
     "Unveraendert: keine Prognose, keine Empfehlung, keine " +
     "Ursachenbehauptung. Der Pflichthinweis \"Keine Anlageberatung.\" " +
     "steht am Ende der Caption.",
     "",
-    "KEIN NEUES BILD. Das bestehende, verifizierte Visual dieses " +
-    "Content Objects wird weiterverwendet. Erzeuge kein Bild und " +
-    "liefere keine visual_variants."
+    "AUFTRAGSART: TEXT_REVISION. Das Visual wird GEERBT - seine " +
+    "vollstaendige Identitaet steht im Feld `visual` (Quelle, Variante, " +
+    "Pfad, SHA-256, Format, Masse). regeneration_allowed ist false.",
+    "",
+    "Erzeuge KEIN Bild und liefere KEINE visual_variants. Das ist hier " +
+    "kein Mangel, sondern die Erfuellung: ein neues Bild wuerde eine " +
+    "begrenzte Ressource kosten UND die Wirkung des neuen Textes " +
+    "unmessbar machen, weil sich zwei Dinge zugleich aenderten.",
+    "",
+    "Setze im Ergebnis visual_resolution = INHERITED und wiederhole " +
+    "unter inherited_visual die visual_variant_id und den asset_sha256 " +
+    "aus dem Auftrag - unveraendert."
   ].filter((z) => z !== "").join("\n");
 }
 
@@ -171,24 +196,68 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   neu.content_id = REV;
   neu.supersedes_content_id = CID;
 
-  /* Das Bild, das weiterverwendet wird - mit seiner vollen Identitaet,
-     damit die Herkunft nicht an einem Dateipfad haengt. */
+  /* -------------------------------------------------------------------
+     DIE AUFTRAGSART STEHT IM BRIEF
+
+     Sie fehlte, und deshalb wurde PR 110 nach der einzigen Art
+     beurteilt, die der Empfaenger kannte: Text UND neues Bild. Der
+     Request war vertragswidrig, und weil niemand das aussprechen
+     konnte, sah es zwoelf Stunden lang wie ein Zustellungsfehler aus.
+     ------------------------------------------------------------------- */
+  neu.request_type = Contract.TEXT_REVISION;
+
+  /* -------------------------------------------------------------------
+     DIE VERERBUNG WIRD GEPRUEFT, BEVOR SIE BEHAUPTET WIRD
+
+     "Bereits verifiziert" ist eine Aussage ueber die Vergangenheit. Ob
+     das Asset HEUTE noch unversehrt im Repository liegt, ist eine
+     andere Frage - und sie wird hier beantwortet, nicht beim Agenten.
+     Ein Auftrag, der ein beschaedigtes Bild zu erben verspricht, waere
+     der teuerste Weg, das erst am Owner-Gate zu merken.
+     ------------------------------------------------------------------- */
   const altErgebnisPfad = join(quelleVerzeichnis, "authoring-result.json");
-  if (existsSync(altErgebnisPfad)) {
-    const altErgebnis = JSON.parse(readFileSync(altErgebnisPfad, "utf8"));
-    const bild = (altErgebnis.visual_variants || [])[0];
-    if (bild) {
-      neu.reuse_visual = {
-        from_content_id: CID,
-        visual_variant_id: bild.visual_variant_id,
-        asset_path: bild.asset_path,
-        asset_sha256: bild.asset_sha256,
-        asset_byte_size: bild.asset_byte_size,
-        mime_type: bild.mime_type, width: bild.width, height: bild.height,
-        verified: "alle neun Transportpruefungen bestanden"
-      };
-    }
+  if (!existsSync(altErgebnisPfad)) {
+    console.error("Kein Quell-Ergebnis unter " + altErgebnisPfad +
+      ". Ohne verifiziertes Asset gibt es nichts zu erben.");
+    process.exit(3);
   }
+  const altErgebnis = JSON.parse(readFileSync(altErgebnisPfad, "utf8"));
+  const bild = (altErgebnis.visual_variants || [])[0];
+  if (!bild) {
+    console.error("Das Quell-Ergebnis traegt kein Visual. Eine TEXT_REVISION " +
+      "ohne Erbe waere ein Auftrag ohne Bild - und genau das ist nicht " +
+      "zulaessig.");
+    process.exit(3);
+  }
+
+  const gelesen = (() => {
+    try { return readFileSync(join(ROOT, bild.asset_path)); }
+    catch { return null; }
+  })();
+  const erbePruefung = AssetStore.ingest(gelesen, bild, { freshReadback: true,
+    contentId: CID, visualVariantId: bild.visual_variant_id });
+  if (!erbePruefung.ok) {
+    console.error("Das zu erbende Asset haelt der Pruefung nicht stand: " +
+      erbePruefung.explanation +
+      "\nKein Request. Ein Auftrag auf ein beschaedigtes Erbe waere der " +
+      "teuerste Weg, das erst am Owner-Gate zu merken.");
+    process.exit(3);
+  }
+
+  neu.visual = Contract.inheritanceFrom({
+    contentId: CID,
+    candidateId: arg("source-candidate", "cand_20260918_ca4ea408"),
+    visualVariantId: bild.visual_variant_id,
+    assetReference: bild.asset_path,
+    sha256: bild.asset_sha256,
+    byteSize: bild.asset_byte_size,
+    mime: bild.mime_type,
+    width: bild.width, height: bild.height,
+    verification: "VU_VERIFIED_COMPLETED"
+  });
+  /* Fuer den Autor, der die Bildstrategie wiederfinden muss. */
+  neu.visual.source_visual_strategy = bild.visual_strategy || "GENERATIVE";
+  neu.visual.source_brief_revision = bild.brief_revision || null;
 
   neu.hook_strategy.instruction = anweisung(story, Creative.DICHTE.zuDicht);
 
@@ -212,6 +281,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     instruction: "KEIN neues Bild erzeugen. Das bestehende verifizierte " +
       "Visual wird weiterverwendet." });
 
+  /* Der eigene Auftrag wird gegen den eigenen Vertrag geprueft, bevor
+     er die Welt erreicht. Wer das erst den Empfaenger tun laesst,
+     erfaehrt vom Verstoss durch Schweigen. */
+  const vertrag = Contract.validateRequest(neu);
+  if (!vertrag.ok) {
+    console.error("Eigener Auftrag vertragswidrig: " + vertrag.explanation);
+    process.exit(5);
+  }
+
   const inhalt = JSON.stringify(neu, null, 2) + "\n";
   const sha = ChatGptWork.blobSha(inhalt);
   const key = ChatGptWork.processingKey(neu.brief_id, REV, sha, "1.0");
@@ -220,9 +298,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Revision von:    " + CID);
   console.log("Neue Kennung:    " + REV);
   console.log("Anlauf:          " + anlauf + " (ersetzt " + neu.supersedes_attempt + ")");
-  console.log("Bild:            " + (neu.reuse_visual
-    ? "wiederverwendet aus Anlauf 3 (" + neu.reuse_visual.asset_sha256.slice(0, 12) + "...)"
-    : "KEINES GEFUNDEN"));
+  console.log("Auftragsart:     " + neu.request_type);
+  console.log("Bild:            geerbt, " + neu.visual.source_visual_variant_id);
+  console.log("                 " + neu.visual.source_asset_sha256.slice(0, 16) +
+    "... geprueft, " + neu.visual.source_width + "x" + neu.visual.source_height);
   console.log("Belege in Copy:  " + neu.evidence.length + " von " + alt.evidence.length);
   console.log("Bilderzeugung:   nein");
   console.log("brief_blob_sha:  " + sha);
