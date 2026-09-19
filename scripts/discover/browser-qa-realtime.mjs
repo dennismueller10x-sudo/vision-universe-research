@@ -270,11 +270,18 @@ for (const sym of SYMBOLE) {
       document.querySelectorAll(".dx-tf button"), (b) => b.getAttribute("aria-pressed") === "true")[0];
     const gesperrt = Array.prototype.filter.call(
       document.querySelectorAll(".dx-tf button"), (b) => b.textContent.trim() === "1T")[0];
+    /* Der Quellzustand steht seit dem 19.09.2026 im Markup. Ihn zu lesen
+       ist ehrlicher, als ihn aus Texten zu erraten. */
+    const rahmen = document.querySelector(".dx-intraday");
+    const meta = document.querySelector(".dx-chart-hero-span");
     return {
       intradayChart: !!document.querySelector(".dx-intraday-chart"),
       aktiverZeitraum: knopf ? knopf.textContent.trim() : null,
       eintagVerfuegbar: gesperrt ? !gesperrt.disabled : null,
-      eintagGrund: gesperrt ? (gesperrt.getAttribute("title") || null) : null
+      eintagGrund: gesperrt ? (gesperrt.getAttribute("title") || null) : null,
+      sourceState: rahmen ? rahmen.getAttribute("data-source-state") : null,
+      sourceReason: rahmen ? rahmen.getAttribute("data-source-reason") : null,
+      quellenText: meta ? meta.textContent.trim() : null
     };
   });
 
@@ -360,6 +367,24 @@ if (sitzung.isOpen) {
                     "kein Titel behauptet 'Live', wenn die Boerse zu ist",
                     falschLive.length === 0,
                     bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.labels))) && alleOk;
+
+  /* Owner-Regeln 5 und 6 vom 19.09.2026, am ausgelieferten Stand:
+     geschlossener Markt zeigt die vollstaendige letzte Sitzung als
+     FINAL_SESSION - oder er sagt ehrlich STALE. Nie etwas dazwischen. */
+  const zustaende = bericht.symbols.map((s) => s.surface && s.surface.sourceState);
+  alleOk = pruefung("quellzustandGesetzt",
+                    "jede Aktienseite nennt ihren Quellzustand im Markup",
+                    zustaende.every((z) => ["SNAPSHOT", "REALTIME", "FINAL_SESSION", "STALE"].includes(z)),
+                    bericht.symbols.map((s) => s.symbol + ":" + (s.surface && s.surface.sourceState))) && alleOk;
+  alleOk = pruefung("finalOderEhrlichStale",
+                    "geschlossener Markt: FINAL_SESSION oder ehrliches STALE, nichts dazwischen",
+                    zustaende.every((z) => z === "FINAL_SESSION" || z === "STALE"),
+                    bericht.symbols.map((s) => s.symbol + ":" + (s.surface && s.surface.sourceState))) && alleOk;
+  const vertroestet = bericht.symbols.filter((s) => s.labels.some((l) => /Schluss folgt/.test(l)));
+  alleOk = pruefung("keineVertroestung",
+                    "die abgeschaffte Formulierung 'Schluss folgt' erscheint nirgends",
+                    vertroestet.length === 0,
+                    vertroestet.map((s) => s.symbol)) && alleOk;
 }
 if (sitzung.phase === "REGULAR") {
   alleOk = pruefung("ticksAAPLNVDA", "AAPL und NVDA liefern Kurse ohne Neuladen",
