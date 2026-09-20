@@ -111,9 +111,25 @@ test("EP5 · Jede Aussage traegt Quelle, Stand und Zeiger", () => {
 });
 
 test("EP6 · Die Datengrundlage ist selbst eine Aussage", () => {
+  /* Hier stand "/2940 Handelstage/". Die Zahl waechst mit jedem
+     Handelstag, den die Quant-Schicht dazulernt - beim naechsten
+     Datenstand waren es 2944, und der Test war rot, ohne dass sich am
+     Code etwas geaendert haette. Eine eingefrorene Zahl aus einem
+     wachsenden Bestand prueft nicht die Aussage, sondern den
+     Stichtag.
+
+     Geprueft gehoert die FORM der Aussage und dass die Zahl aus dem
+     Bundle stammt - nicht ihr Wert. */
   const basis = PAKET.evidence.find((e) => e.id === "data-basis");
   assert.ok(basis);
-  assert.match(basis.statement, /2940 Handelstage/);
+  const m = /(\d+) Handelstage seit (\d{4}-\d{2}-\d{2})/.exec(basis.statement);
+  assert.ok(m, "Die Datengrundlage nennt Handelstage und Startdatum: " +
+    basis.statement);
+  assert.equal(Number(m[1]), BUNDLE.analysisLookback.bars,
+    "Die genannte Zahl stammt nicht aus dem Bundle");
+  assert.equal(m[2], BUNDLE.analysisLookback.from,
+    "Das genannte Startdatum stammt nicht aus dem Bundle");
+  assert.ok(Number(m[1]) > 0);
 });
 
 /* ------------------------------------------------------------------ */
@@ -146,12 +162,27 @@ test("EP9 · Der Hinweis der Engine dazu reist mit", () => {
 /* ------------------------------------------------------------------ */
 
 test("EP10 · Ein Text aus den Belegen besteht das Claim Binding", () => {
-  const text = "XOM erreicht 76 von 100 im Technical Opportunity Score. " +
-    "TREND_STRUCTURE traegt 27.35 von 30 Punkten bei. " +
-    "Das 12M-Momentum liegt bei 47.6 %. " +
-    "Grundlage sind 2940 Handelstage seit 2015-01-02.";
+  /* -----------------------------------------------------------------
+     KEINE EINGEFRORENE ZAHL AUS EINEM WACHSENDEN BESTAND
+
+     Hier standen 76, 27.35 und 47.6 - die XOM-Werte vom Tag, an dem
+     der Test geschrieben wurde. Mit dem naechsten Datenstand steht
+     dort 52 und 27.26, und der Test war rot, ohne dass sich am Code
+     etwas geaendert haette. Das prueft den Stichtag, nicht das Claim
+     Binding.
+
+     Ein Autor zitiert das, was im Paket steht. Genau das tut dieser
+     Satz jetzt auch. */
+  const satz = (id) => PAKET.evidence.find((e) => e.id === id).statement;
+  const text = [satz("score"), satz("score-contribution-trend_structure"),
+    satz("price-close"), satz("data-basis")].join(" ");
   const r = CB.check(text, PAKET.evidence, {});
   assert.equal(r.ok, true, r.explanation);
+  /* Und die Gegenprobe, damit das nicht zu einem Test wird, der
+     alles besteht: eine Zahl, die NICHT im Paket steht, faellt auf. */
+  const erfunden = CB.check(text + " Die relative Staerke liegt bei 88.",
+    PAKET.evidence, {});
+  assert.equal(erfunden.ok, false);
 });
 
 test("EP11 · Zahlen aus einem Belegsatz gelten als belegt", () => {
@@ -159,13 +190,20 @@ test("EP11 · Zahlen aus einem Belegsatz gelten als belegt", () => {
      ATR)". Nur den `value` zu decken hiesse, einen Autor fuer das
      Zitieren eines Belegs zu bestrafen — und je reicher die Evidenz,
      desto mehr angeblich unbelegte Zahlen. */
-  const r = CB.check("Kurs ueber SMA50 (3.05 ATR).", PAKET.evidence, {});
+  /* Auch hier stammt der Satz aus dem Paket statt aus der
+     Erinnerung: "3.05 ATR" war der Wert von damals. */
+  const sma = PAKET.evidence.find((e) => e.id === "trend-SMA50");
+  assert.ok(sma, "kein SMA50-Beleg im Paket");
+  assert.match(sma.statement, /ATR/, "der Belegsatz nennt keinen ATR-Abstand");
+  const r = CB.check(sma.statement + ".", PAKET.evidence, {});
   assert.equal(r.ok, true, r.explanation);
 });
 
 test("EP12 · Eine erfundene Zahl faellt trotz reicher Evidenz auf", () => {
-  const r = CB.check("XOM erreicht 76 — die relative Staerke liegt bei 88.",
-    PAKET.evidence, {});
+  /* 76 war der Score von damals; der belegte Teil kommt jetzt aus
+     dem Paket, der erfundene bleibt erfunden. */
+  const r = CB.check(PAKET.evidence.find((e) => e.id === "score").statement +
+    " Die relative Staerke liegt bei 88.", PAKET.evidence, {});
   assert.equal(r.ok, false);
   assert.ok(r.unbound.some((u) => u.raw === "88"));
 });

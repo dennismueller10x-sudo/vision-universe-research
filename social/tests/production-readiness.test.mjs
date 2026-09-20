@@ -237,3 +237,32 @@ test("PR21 · Die Kadenz steht im Workflow und ist zweimal taeglich", () => {
   assert.equal(crons.length, 2);
   assert.equal(R.kadenz({ runsPerDay: crons.length }).publishingFrequency, null);
 });
+
+/* ------------------------------------------------------------------ */
+/* EIN TEST, DER DEN STICHTAG PRUEFT, PRUEFT NICHT DIE AUSSAGE         */
+/* ------------------------------------------------------------------ */
+
+test("PR22 · Kein Test friert eine Zahl aus wachsenden Produktionsdaten ein", () => {
+  /* Drei Tests in evidence-package.test.mjs hielten die XOM-Werte vom
+     Tag ihrer Entstehung fest: 2940 Handelstage, Score 76,
+     TREND_STRUCTURE 27.35, SMA50-Abstand 3.05 ATR. Mit dem naechsten
+     Datenstand waren es 2944 und 52 und 27.26 - drei rote Tests, ohne
+     dass sich am Code etwas geaendert hatte.
+
+     Die Wache dagegen ist einfach: wer Produktionsdaten liest, darf
+     die gelesenen Werte nicht daneben noch einmal hinschreiben. Er
+     prueft sonst den Stichtag. */
+  /* Die Kommentare NENNEN die alten Werte - dort gehoeren sie hin,
+     denn sonst weiss niemand mehr, was hier schiefging. Geprueft wird
+     der Code, nicht die Prosa: die erste Fassung dieser Wache las
+     beides und schlug auf ihrer eigenen Begruendung an. */
+  const ohneKommentare = readFileSync(
+    "social/tests/evidence-package.test.mjs", "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+  for (const eingefroren of ["2940 Handelstage", "27.35", "3.05 ATR",
+                             "erreicht 76"]) {
+    assert.equal(ohneKommentare.includes(eingefroren), false,
+      "eingefrorener Produktionswert im Test: " + eingefroren);
+  }
+});

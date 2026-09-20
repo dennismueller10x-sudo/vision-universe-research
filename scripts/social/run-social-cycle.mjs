@@ -35,7 +35,7 @@
    ueberschreibt (MASTER §31.10).
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -124,8 +124,16 @@ const SITE_BASE = "https://" + readFileSync(join(ROOT, "CNAME"), "utf8").trim();
    oeffentlich sind. Eine Verschiebung aendert beides zusammen; zwei
    getrennte Angaben waeren die Gelegenheit, eine Datei unter einer
    Adresse anzukuendigen, an der sie nicht liegt. */
-const ASSET_DIR = arg("--asset-dir", "assets/social").replace(/^\/+|\/+$/g, "");
-if (!ASSET_DIR.startsWith("assets/")) {
+/* `.replace(/^\/+/)` hat einen absoluten Pfad stillschweigend relativ
+   gemacht: aus "--asset-dir /tmp/lauf" wurde "<ROOT>/tmp/lauf". Ein
+   Lauf, der ausserhalb zeichnen sollte, zeichnete ins Repository -
+   dieselbe Kopplung wie bei --out, nur an der Bildablage. Ein
+   absoluter Pfad gilt jetzt, wie er dasteht; der Hinweis darunter
+   sagt dann, was das fuer die oeffentliche Adresse bedeutet. */
+const ASSET_ARG = arg("--asset-dir", "assets/social");
+const ASSET_ABSOLUT = isAbsolute(ASSET_ARG);
+const ASSET_DIR = ASSET_ABSOLUT ? ASSET_ARG : ASSET_ARG.replace(/^\/+|\/+$/g, "");
+if (ASSET_ABSOLUT || !ASSET_DIR.startsWith("assets/")) {
   /* Nur was unter assets/ liegt, wird von GitHub Pages ausgeliefert.
      Ein Bild anderswo bekaeme eine Adresse, unter der nichts liegt —
      und Meta lehnte den Container ab, nachdem der Anspruch angemeldet
@@ -2009,7 +2017,7 @@ async function main() {
 
     if (RENDER) {
       try {
-        const ziel = join(ROOT, ASSET_DIR, pkg.packageId + ".jpg");
+        const ziel = join(ausgabePfad(ROOT, ASSET_DIR), pkg.packageId + ".jpg");
         const befund = bildplan.modus === "uebernahme"
           ? AssetRenderer.uebernimm(bildplan, ziel, { root: ROOT })
           : AssetRenderer.render(bildplan, ziel,
