@@ -20,6 +20,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
   var Query = isNode ? require("./query.js") : global.VUQuery;
+  var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
 
@@ -225,6 +226,11 @@
 
   function definitionHash(def) { return Hash.prefixedHash("sdef", def); }
 
+  function selectionPredicate(def) {
+    assertValid(def);
+    return Rules.create({ universe: def.universe, filters: def.filters });
+  }
+
   // ---------------------------------------------------------------------
   // Versionierung und Lineage
   // ---------------------------------------------------------------------
@@ -386,6 +392,7 @@
     validate: validate,
     assertValid: assertValid,
     definitionHash: definitionHash,
+    selectionPredicate: selectionPredicate,
     createStrategy: createStrategy,
     addVersion: addVersion,
     getVersion: getVersion,
