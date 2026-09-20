@@ -51,6 +51,13 @@ jobs:
         # KV und Graph-API werden eingesetzt (tests/harness.mjs).
         run: node --test "workers/vision-universe-social/tests/*.test.mjs"
 
+      # Der Reifezustand des Approval Centers, gemessen am Repository.
+      # Er schaltet nichts frei; er stellt fest - und was er von hier aus
+      # nicht messen kann (ob der Worker deployt ist), bleibt
+      # ausdruecklich UNGEPRUEFT statt als bestanden zu gelten.
+      - name: APPROVAL_CENTER_PRODUCTION_READY
+        run: node scripts/social/approval-center-readiness.mjs --suites-green ja
+
       - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
         # Sie werden vom Workflow social-cloudflare gerufen, wo ein
         # Syntaxfehler erst nach dem Start auffiele — und dann mit
