@@ -19,6 +19,16 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const O = require("../engines/orchestrator.js");
+const Kadenz = require("../engines/content-cadence.js");
+const KADENZ_CONFIG = require("../config/cadence.json");
+
+/* Eine Kadenzentscheidung, die "ja" sagt. Der Orchestrator rechnet sie
+   seit dem Cadence-Auftrag nicht mehr selbst - er bekommt sie herein.
+   Tests, die einen Kandidaten erwarten, muessen sie deshalb mitgeben;
+   ohne sie entsteht keiner, und das ist Absicht. */
+function darf(now, zustand) {
+  return Kadenz.entscheide(Object.assign({ now: now }, zustand || {}), KADENZ_CONFIG);
+}
 
 const JETZT = "2026-09-20T06:00:00Z";
 
@@ -29,7 +39,8 @@ test("OR1 · Gemessen wird vor dem Vorbereiten", () => {
      gestern - und das faellt nie auf, weil das Ergebnis plausibel
      aussieht. */
   const h = O.naechsteHandlung({ now: JETZT,
-    dueMeasurements: [{ mediaId: "a" }], lastPreparedAt: null }, {});
+    dueMeasurements: [{ mediaId: "a" }], lastPreparedAt: null },
+    { cadence: darf(JETZT) });
   assert.equal(h.stage, O.STAGE.PREPARE_CANDIDATE);
   assert.equal(h.actions[0].stage, O.STAGE.MEASURE,
     "Messen steht vor dem Vorbereiten in der Liste");
@@ -58,25 +69,71 @@ test("OR3 · Gemessen wird trotzdem, waehrend der Owner entscheidet", () => {
   assert.ok(h.actions.some((a) => a.stage === O.STAGE.MEASURE));
 });
 
-test("OR4 · Der Mindestabstand zwischen Kandidaten haelt", () => {
-  const frisch = O.naechsteHandlung({ now: JETZT,
-    lastPreparedAt: "2026-09-20T02:00:00Z",
-    lastMeasuredAt: "2026-09-20T05:30:00Z" }, {});
-  assert.equal(frisch.stage, O.STAGE.IDLE);
+test("OR4 · Der Abstand wird hereingereicht, nicht hier gerechnet", () => {
+  /* Hier stand eine Pruefung auf `minHoursBetweenCandidates` - EINE
+     Zahl im Orchestrator fuer eine Frage, die drei Ebenen hat, und
+     zwar neben einer zweiten Zahl in der Konfiguration. Die
+     Entscheidung liegt jetzt in content-cadence.js.
 
-  const reif = O.naechsteHandlung({ now: JETZT,
-    lastPreparedAt: "2026-09-18T02:00:00Z",
-    lastMeasuredAt: "2026-09-20T05:30:00Z" }, {});
+     Geprueft wird deshalb nicht mehr eine Zahl, sondern dass der
+     Orchestrator der Engine FOLGT - in beide Richtungen. */
+  const z = { now: JETZT, lastMeasuredAt: "2026-09-20T05:30:00Z" };
+
+  const zuFrueh = O.naechsteHandlung(z, { cadence: darf(JETZT, {
+    candidatesToday: ["2026-09-20T05:00:00Z"],
+    lastCandidateAt: "2026-09-20T05:00:00Z" }) });
+  assert.equal(zuFrueh.stage, O.STAGE.IDLE);
+  assert.equal(zuFrueh.reasonCode, Kadenz.GRUND.MINIMUM_SPACING_NOT_REACHED);
+
+  const reif = O.naechsteHandlung(z, { cadence: darf(JETZT, {
+    candidatesToday: ["2026-09-19T20:00:00Z"],
+    lastCandidateAt: "2026-09-19T20:00:00Z" }) });
   assert.equal(reif.stage, O.STAGE.PREPARE_CANDIDATE);
 });
 
-test("OR5 · Der Abstand ist eine Owner-Groesse, keine Naturkonstante", () => {
-  const z = { now: JETZT, lastPreparedAt: "2026-09-20T00:00:00Z",
-    lastMeasuredAt: "2026-09-20T05:30:00Z" };
-  assert.equal(O.naechsteHandlung(z, { minHoursBetweenCandidates: 24 }).stage,
-    O.STAGE.IDLE);
-  assert.equal(O.naechsteHandlung(z, { minHoursBetweenCandidates: 4 }).stage,
-    O.STAGE.PREPARE_CANDIDATE);
+test("OR5 · Ohne Kadenzentscheidung entsteht kein Kandidat", () => {
+  /* Fail closed, und zwar ohne Rueckfallzahl. Eine Vorgabe, die
+     einspringt, wenn die Engine fehlt, waere genau der zweite
+     Rechenweg, den dieser Umbau beseitigt hat - nur unsichtbar. */
+  const z = { now: JETZT, lastMeasuredAt: "2026-09-20T05:30:00Z" };
+  const ohne = O.naechsteHandlung(z, {});
+  assert.equal(ohne.stage, O.STAGE.IDLE);
+  assert.equal(ohne.cadence, null);
+  assert.match(ohne.explanation, /keine Kadenzentscheidung/);
+
+  /* Und die alte Stellschraube wirkt nicht mehr heimlich weiter. */
+  const alt = O.naechsteHandlung(z, { minHoursBetweenCandidates: 1 });
+  assert.equal(alt.stage, O.STAGE.IDLE,
+    "minHoursBetweenCandidates wirkt noch - es gibt also zwei Wege.");
+
+  /* Auch mit faelliger Messung bleibt es beim Nichterzeugen. */
+  const mitMessung = O.naechsteHandlung(
+    { now: JETZT, dueMeasurements: [{ mediaId: "a" }] }, {});
+  assert.equal(mitMessung.stage, O.STAGE.MEASURE);
+  assert.equal(mitMessung.actions.some(
+    (a) => a.stage === O.STAGE.PREPARE_CANDIDATE), false);
+});
+
+test("OR5b · Die drei Frequenzen bleiben getrennt", () => {
+  /* Der Kern des Umbaus: haeufigeres Pruefen ist keine haeufigere
+     Veroeffentlichung. Die Ebenen tragen Namen, damit sie niemand
+     wieder zusammenzieht. */
+  assert.deepEqual(Object.keys(Kadenz.EBENEN).sort(),
+    ["CREATION", "PUBLISHING", "SCHEDULER"]);
+
+  /* Die Content-Ebene kennt die Publishing-Grenzen nicht - sie rechnet
+     sie nicht nach, und das ist Absicht. */
+  const r = Kadenz.regime(KADENZ_CONFIG);
+  assert.equal(r.ebene, Kadenz.EBENEN.CREATION);
+  assert.equal(r.minHoursBetweenPosts, undefined);
+  assert.equal(r.maxPostsPer7Days, undefined);
+
+  /* Und die Konfiguration fuehrt beide getrennt. */
+  assert.ok(KADENZ_CONFIG.contentCreation, "contentCreation fehlt");
+  assert.ok(KADENZ_CONFIG.publishing, "publishing fehlt");
+  assert.notEqual(KADENZ_CONFIG.contentCreation.minHoursBetweenCandidates,
+    KADENZ_CONFIG.publishing.minHoursBetweenPosts,
+    "Wenn beide gleich sind, ist die Trennung nicht pruefbar.");
 });
 
 /* --------------------------------------------------- Halt schlaegt alles */
@@ -94,12 +151,20 @@ test("OR6 · Ein Halt verhindert auch das Messen", () => {
 
 /* -------------------------------------------------- IDLE ist eine Antwort */
 
-test("OR7 · Nichts zu tun heisst nichts tun", () => {
+test("OR7 · Nichts zu tun heisst nichts tun — mit Grund", () => {
+  /* IDLE bleibt die richtige Stufe. Was sich geaendert hat: sie traegt
+     jetzt einen benannten Grund. "Nichts faellig" war als
+     Betriebszustand richtig und als Tagesentscheidung zu wenig - es
+     beantwortet "warum heute keiner" mit "eben nicht". */
   const h = O.naechsteHandlung({ now: JETZT,
-    lastPreparedAt: "2026-09-20T05:00:00Z",
-    lastMeasuredAt: "2026-09-20T05:30:00Z" }, {});
+    lastMeasuredAt: "2026-09-20T05:30:00Z" },
+    { cadence: darf(JETZT, {
+      candidatesToday: ["2026-09-20T05:00:00Z"],
+      lastCandidateAt: "2026-09-20T05:00:00Z" }) });
   assert.equal(h.stage, O.STAGE.IDLE);
-  assert.match(h.explanation, /kein Grund, etwas zu erzeugen/);
+  assert.ok(h.reasonCode, "IDLE ohne Grund ist das alte NO_ACTION.");
+  assert.equal(Kadenz.grundZulaessig(h.reasonCode).zulaessig, true);
+  assert.ok(h.explanation.length > 20);
 });
 
 /* ------------------------------------------- Was niemals automatisch geht */

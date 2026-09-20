@@ -91,11 +91,31 @@
     options = options || {};
     var now = zustand.now || new Date().toISOString();
 
-    /* Mindestabstand zwischen zwei Kandidaten. Eine Owner-Groesse:
-       wie oft ein Kanal senden soll, entscheidet keine Maschine. */
-    var minAbstand = zahl(options.minHoursBetweenCandidates, 24);
+    /* -----------------------------------------------------------------
+       DIE KADENZ WIRD HEREINGEREICHT, NICHT HIER GERECHNET
+
+       Hier stand `zahl(options.minHoursBetweenCandidates, 24)`: EINE
+       Zahl fuer eine Frage, die drei hat. Wie oft geprueft wird, wie
+       oft ein Kandidat entsteht und wie oft veroeffentlicht wird sind
+       verschiedene Groessen - und die 24 stand im Code, waehrend in
+       der Konfiguration eine 20 fuer Beitraege stand. Zwei Zahlen fuer
+       zwei Fragen, von denen nur eine einen Namen hatte.
+
+       Die Entscheidung liegt jetzt in content-cadence.js. Sie kennt
+       den Kalendertag, die Tagesabsicht, den Abstand, die
+       Warteschlange und das Creative-Budget. Diese Engine liest ihr
+       ERGEBNIS und rechnet es nicht nach: zwei Rechnungen fuer
+       dieselbe Frage gehen auseinander, und die erste, die abweicht,
+       gewinnt per Zufall.
+
+       OHNE KADENZ ENTSTEHT NICHTS. Kein Rueckfall auf eine Vorgabe:
+       eine Zahl, die einspringt, wenn die Engine fehlt, ist genau der
+       zweite Rechenweg, den es hier nicht mehr geben soll. */
+    var kadenz = options.cadence || null;
+
     /* Wie oft gemessen wird, wenn nichts faellig ist. Messen ist
-       billig und lesend - der Abstand darf klein sein. */
+       billig und lesend - der Abstand darf klein sein. Das ist KEINE
+       Content-Frequenz und wird bewusst nicht mit ihr vermengt. */
     var messAbstand = zahl(options.minHoursBetweenMeasurements, 6);
 
     var warten = (zustand.awaitingCandidates || []).length;
@@ -158,23 +178,37 @@
     }
 
     /* ---------------------------------------------------------------- */
-    var seitKandidat = zustand.lastPreparedAt
-      ? stunden(zustand.lastPreparedAt, now) : null;
-    var kandidatFaellig = seitKandidat === null || seitKandidat >= minAbstand;
+    if (!kadenz) {
+      /* Fail closed. Eine fehlende Kadenzentscheidung ist etwas anderes
+         als eine verneinende, und sie darf nicht wie eine bejahende
+         wirken. */
+      if (handlungen.length) {
+        return {
+          stage: STAGE.MEASURE, actions: handlungen, awaitingOwner: false,
+          cadence: null,
+          explanation: "Nur messen. Es liegt keine Kadenzentscheidung vor — " +
+            "ohne sie entsteht kein Kandidat."
+        };
+      }
+      return {
+        stage: STAGE.IDLE, actions: [], awaitingOwner: false, cadence: null,
+        explanation: "Es liegt keine Kadenzentscheidung vor. Ohne sie entsteht " +
+          "kein Kandidat — und geraten wird sie nicht."
+      };
+    }
 
-    if (kandidatFaellig) {
+    if (kadenz.darfErzeugen) {
       handlungen.push({
         stage: STAGE.PREPARE_CANDIDATE,
-        reason: seitKandidat === null
-          ? "Noch kein Kandidat entstanden."
-          : "Letzter Kandidat vor " + Math.round(seitKandidat) + " h " +
-            "(Mindestabstand " + minAbstand + " h)."
+        reason: kadenz.erklaerung
       });
       return {
         stage: STAGE.PREPARE_CANDIDATE,
         actions: handlungen,
         awaitingOwner: false,
-        explanation: "Es wird ein Kandidat vorbereitet. Er endet am " +
+        cadence: kadenz,
+        explanation: "Es wird ein Kandidat vorbereitet (" +
+          (kadenz.lage ? kadenz.lage.ordinal : "?") + ". des Tages). Er endet am " +
           "Publishing Gate und wird nicht veroeffentlicht."
       };
     }
@@ -184,18 +218,25 @@
         stage: STAGE.MEASURE,
         actions: handlungen,
         awaitingOwner: false,
-        explanation: "Nur messen. Der Mindestabstand bis zum naechsten " +
-          "Kandidaten ist noch nicht erreicht (" +
-          Math.round(minAbstand - (seitKandidat || 0)) + " h)."
+        cadence: kadenz,
+        explanation: "Nur messen. " + kadenz.erklaerung
       };
     }
 
+    /* -----------------------------------------------------------------
+       KEIN KANDIDAT - UND DER GRUND STEHT DABEI
+
+       Hier stand IDLE mit "nichts faellig". Das war als
+       Betriebszustand richtig und als TAGESENTSCHEIDUNG zu wenig: es
+       beantwortet "warum heute keiner" mit "eben nicht". Der Grund
+       kommt aus der Kadenz und hat einen Namen. */
     return {
       stage: STAGE.IDLE,
       actions: [],
       awaitingOwner: false,
-      explanation: "Nichts faellig. Das ist eine Antwort und kein Grund, " +
-        "etwas zu erzeugen."
+      cadence: kadenz,
+      reasonCode: kadenz.grund,
+      explanation: kadenz.erklaerung
     };
   }
 

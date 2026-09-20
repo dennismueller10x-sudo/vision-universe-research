@@ -27,6 +27,7 @@ const Registry = require(join(ROOT, "social/engines/source-registry.js"));
 const MessFenster = require(join(ROOT, "social/engines/measurement-window.js"));
 const Job = require(join(ROOT, "social/engines/creative-job.js"));
 const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
+const Kadenz = require(join(ROOT, "social/engines/content-cadence.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 import * as VisualDaten from "./visual-data.mjs";
 
@@ -88,6 +89,31 @@ export function letzterKandidat(verzeichnis) {
     if (!neuester || t > neuester) neuester = t;
   }
   return neuester;
+}
+
+/**
+ * Wann heute Kandidaten entstanden sind.
+ *
+ * `letzterKandidat()` beantwortet "wann zuletzt" und genuegte, solange
+ * ein Tag genau einen Kandidaten trug. Die Tagesabsicht fragt etwas
+ * anderes: WIE VIELE heute schon da sind. Aus "zuletzt um 14 Uhr"
+ * laesst sich das nicht erschliessen - es koennte der erste oder der
+ * zweite gewesen sein.
+ *
+ * Gezaehlt wird der Kalendertag in UTC, weil auch die Kadenz-Engine
+ * ihn so zaehlt. Zwei Tagesbegriffe waeren zwei Tage.
+ */
+export function kandidatenHeute(nowIso, verzeichnis) {
+  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  if (!existsSync(d)) return [];
+  const tag = String(nowIso || "").slice(0, 10);
+  const out = [];
+  for (const f of readdirSync(d).filter((x) => x.endsWith(".json"))) {
+    const c = readJson(join(d, f), null);
+    const t = (c && (c.createdAt || c.generatedAt)) || null;
+    if (t && String(t).slice(0, 10) === tag) out.push(t);
+  }
+  return out.sort();
 }
 
 /* =====================================================================
@@ -222,21 +248,43 @@ export function zustand(options) {
   const angehalten = !!(health && health.killSwitch &&
     health.killSwitch.engaged === true);
 
+  const wartend = wartendeKandidaten();
+  /* Dieselbe Zaehlung wie in creativeBedarf(): das rohe Register, nach
+     Job.OFFEN gefiltert. Ein zweiter Weg, offene Jobs zu zaehlen, waere
+     ein zweiter Begriff von "offen". */
+  const register = readJson(join(ROOT, DATA, "creative-jobs.json"), null);
+  const offeneJobs = ((register && register.jobs) || [])
+    .filter((j) => Job.OFFEN.includes(j.state)).length;
+
   return {
     now,
     halted: angehalten,
     haltReason: angehalten ? (health.killSwitch.reason || "Kill Switch aktiv") : null,
-    awaitingCandidates: wartendeKandidaten(),
+    awaitingCandidates: wartend,
     dueMeasurements: faelligeMessungen(perf, now),
     lastPreparedAt: letzterKandidat(),
-    lastMeasuredAt: (perf && perf.generatedAt) || null
+    lastMeasuredAt: (perf && perf.generatedAt) || null,
+
+    /* Was die Kadenz-Engine braucht. Sie zaehlt nicht selbst nach -
+       sie bekommt den Zustand, den dieses Skript ohnehin ermittelt. */
+    candidatesToday: kandidatenHeute(now),
+    lastCandidateAt: letzterKandidat(),
+    activeApprovalQueue: wartend.length,
+    openCreativeJobs: offeneJobs
   };
+}
+
+/** Die Kadenzentscheidung zu einem Zustand. Eine Stelle, ein Weg. */
+export function kadenz(z) {
+  return Kadenz.entscheide(z,
+    readJson(join(ROOT, "social/config/cadence.json"), null));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const z = zustand({});
-  const h = Orchestrator.naechsteHandlung(z, {});
+  const k = kadenz(z);
+  const h = Orchestrator.naechsteHandlung(z, { cadence: k });
   const quellen = Registry.status(
     readJson(join(ROOT, DATA, "external-sources.json"), null));
   const modell = Orchestrator.betriebsmodell(quellen);
@@ -255,6 +303,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const creative = creativeBedarf(z, {
     candidateDue: h.stage === "PREPARE_CANDIDATE" });
+
+  console.log("\n--- CONTENT CADENCE (§8/§17) ---");
+  console.log("Tag              : " + k.lage.tag +
+    "   (Absicht " + k.lage.tagesabsicht.min + "–" + k.lage.tagesabsicht.max +
+    ", Regime " + k.lage.regime + ")");
+  console.log("Heute erzeugt    : " + k.lage.heuteErzeugt +
+    "   naechster waere der " + k.lage.ordinal + ".");
+  console.log("Abstand          : " +
+    (k.lage.abstand.stundenSeitLetztem === null ? "kein Vorgaenger"
+      : k.lage.abstand.stundenSeitLetztem + " h seit dem letzten") +
+    "   (mindestens " + k.lage.abstand.mindestens + " h)");
+  console.log("Darf erzeugen    : " + (k.darfErzeugen ? "ja" : "nein" +
+    (k.grund ? "  — " + k.grund : "")));
+  if (k.naechsteFruehestens) {
+    console.log("Fruehestens      : " + k.naechsteFruehestens);
+  }
+
+  const sp = Kadenz.spannung(
+    readJson(join(ROOT, "social/config/cadence.json"), null));
+  if (sp.gemessen && sp.gespannt) {
+    console.log("Spannung         : " + sp.erzeugungProWoche + " Kandidaten/Woche " +
+      "moeglich, " + sp.publishingDachProWoche + " Beitraege/Woche erlaubt");
+    console.log("                   " + sp.erklaerung);
+  }
 
   console.log("\nStufe            : " + h.stage);
   console.log(h.explanation);

@@ -1,8 +1,30 @@
 {
-  "version": 1,
+  "version": 2,
   "note": "Markengerechte Frequenz. Diese Zahlen sind eine Owner-Entscheidung und keine technische Groesse — sie stehen deshalb in der Konfiguration und nicht im Code.",
+
+  "dreiEbenen": "Scheduler Frequency, Content Creation Frequency und Publishing Frequency sind DREI verschiedene Groessen und werden hier getrennt gefuehrt. Sie wurden frueher verwechselt: eine harte 24 stand als minHoursBetweenCandidates im Code der Orchestrator-Engine, waehrend hier eine 20 fuer Beitraege stand — zwei Zahlen fuer zwei Fragen, von denen nur eine benannt war. Wie oft GEPRUEFT wird, steht im Zeitplan des Workflows. Wie oft ein KANDIDAT entsteht, steht unter contentCreation. Wie oft VEROEFFENTLICHT werden darf, steht unter publishing.",
+
+  "contentCreation": {
+    "purpose": "Wie oft ein neuer publishable Candidate entstehen darf. NICHT wie oft veroeffentlicht wird — dazwischen steht der Owner.",
+    "dailyIntentMin": 1,
+    "dailyIntentMax": 2,
+    "minHoursBetweenCandidates": 5,
+    "intentNote": "dailyIntentMin ist eine ABSICHT und keine Quote. Null Beitraege an einem Tag sind eine begruendete Ausnahme, kein Fehler — und ein schwacher Beitrag, der nur ein Tagesziel erfuellt, ist schlechter als keiner. dailyIntentMax ist eine harte Obergrenze im aktuellen Startregime.",
+    "spacingNote": "5 Stunden, damit zwei Beitraege eines Tages in verschiedene Tagesabschnitte fallen koennen (Vormittag/Abend) und nicht als Doppelschlag erscheinen. Der Wert ist konservativ gewaehlt und ausdruecklich nicht der kuerzest moegliche: Abstand ist eine eigene lernbare Dimension, und der Startwert ist eine Annahme, keine Messung.",
+    "regime": "SAFETY_EXPLORATION",
+    "regimeNote": "Ausdruecklich KEIN Performance-Optimum. Kein automatisches Hochskalieren ueber dailyIntentMax ohne eigene gemessene Evidenz und eine Owner-Entscheidung."
+  },
+
+  "publishing": {
+    "purpose": "Wie oft ein Beitrag tatsaechlich oeffentlich werden darf. Diese Grenzen sind aelter als der Content Intent und bleiben unveraendert.",
+    "minHoursBetweenPosts": 20,
+    "maxPostsPer7Days": 4,
+    "maxPostsPer30Days": 12,
+    "reason": "Der Account hat 26 Beitraege in mehreren Monaten. Eine Pipeline, die taeglich sendet, um schneller Stichproben zu sammeln, wuerde das Profil veraendern, bevor sie etwas darueber gelernt hat. Die Stichprobe waere dann eine ueber ein anderes Konto."
+  },
+
   "minHoursBetweenPosts": 20,
   "maxPostsPer7Days": 4,
   "maxPostsPer30Days": 12,
-  "reason": "Der Account hat 26 Beitraege in mehreren Monaten. Eine Pipeline, die taeglich sendet, um schneller Stichproben zu sammeln, wuerde das Profil veraendern, bevor sie etwas darueber gelernt hat. Die Stichprobe waere dann eine ueber ein anderes Konto."
+  "kompatibilitaetsNote": "Die drei Publishing-Werte stehen zusaetzlich auf oberster Ebene, weil make-publish-candidate.mjs sie dort liest. Sie sind mit publishing.* identisch und werden von einem Test gegeneinander gehalten — zwei Orte fuer denselben Wert laufen sonst auseinander, und der Tag, an dem sie es tun, ist der erste, an dem es auffaellt."
 }
