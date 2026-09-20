@@ -143,6 +143,30 @@ jobs:
           node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
+      # =====================================================================
+      # DIE PLATTE — DAS BREITE CONTENT UNIVERSE, FRISCH
+      #
+      # build-opportunity-slate.mjs lief bis hierher in KEINEM Workflow.
+      # Die Datei auf der Platte stammte vom Vortag, und der
+      # Owner-Bericht zeigte ihre 32 Themen aus fuenf Familien, waehrend
+      # der Zyklus aus vier Quant-Signalen drei STOCK_STORY-Pakete
+      # baute. Wer den Bericht las, schloss auf eine Breite, die im
+      # Lauf keine Rolle spielte.
+      #
+      # Der Schritt ist lesend und netzfrei: er ruft keine externe
+      # Quelle und schon gar keine der beiden vom Owner nicht
+      # aktivierten. Er schreibt genau eine Datei.
+      #
+      # VOR dem Messen, weil die Platte den Datenstand beschreibt, auf
+      # dem dieser Lauf entscheidet - nicht den von gestern.
+      # =====================================================================
+      - name: DIE PLATTE — Content Universe in voller Breite
+        if: inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          node scripts/social/build-opportunity-slate.mjs \
+            --data social/data --out social/data | tail -25
+
       - name: MESSEN — Zahlen holen, lernen, anpassen
         if: steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true
         env:
