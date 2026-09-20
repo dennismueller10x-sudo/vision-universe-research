@@ -1967,6 +1967,25 @@ async function main() {
       basis: rahmen.basis
     } : null;
 
+    /* -----------------------------------------------------------------
+       UND AN DIE ENTSCHEIDUNG, NICHT NUR AN DAS PAKET
+
+       Der Bericht bekommt beide Felder seit dem letzten Auftrag (siehe
+       den Kommentar an der Projektion weiter unten). Die ENTSCHEIDUNG
+       bekam sie nicht - und sie ist es, aus der der Kandidat gebaut
+       wird. Die Bildrichtung endete damit im Bericht, den niemand
+       weiterreicht, statt beim Owner, der vor der Freigabe fragt:
+       warum dieses Bild?
+
+       Dieselbe Whitelist-Falle ein Glied tiefer. Der Kommentar unten
+       zaehlt drei Faelle auf; das hier ist der vierte, und er stand
+       schon da, als der Kommentar geschrieben wurde. Eine Falle, die
+       man benennt, ist nicht dieselbe wie eine, die man zumacht. */
+    d.visualDirection = pkg.visualDirection || null;
+    d.visualDirectionReady = pkg.visualDirectionReady === true;
+    d.visualDirectionFailureType = pkg.visualDirectionFailureType || null;
+    d.audienceFrame = pkg.audienceFrame || null;
+
     const bildplan = mitgebracht
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
       : (kompo && kompo.ok

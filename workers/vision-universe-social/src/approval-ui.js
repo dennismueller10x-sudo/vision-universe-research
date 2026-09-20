@@ -84,6 +84,17 @@ const STYLE = `
     border:1px solid var(--tinte); border-radius:0; cursor:pointer; }
   button.leer { color:var(--tinte); background:var(--papier); }
   .hinweis { border-top:1px solid var(--linie); margin-top:32px; padding-top:16px; }
+  article { border-top:1px solid var(--linie); padding:24px 0 8px; }
+  .zaehler { font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+             font-weight:700; color:var(--grau); margin:0 0 8px; }
+  .thema { font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+           color:var(--grau); margin:0 0 6px; }
+  .hook { font-size:19px; line-height:1.35; font-weight:600; letter-spacing:-.01em;
+          margin:0 0 14px; }
+  a.weiter { display:inline-block; min-height:48px; line-height:48px; padding:0 22px;
+             color:var(--papier); background:var(--tinte); text-decoration:none;
+             font-weight:700; font-size:15px; }
+  .warnung { border-left:3px solid var(--tinte); padding-left:12px; }
 `;
 
 function huelle(titel, inhalt) {
@@ -183,3 +194,112 @@ export function signInPage(grund, headers = {}) {
 }
 
 export { escapeHtml };
+
+/* ------------------------------------------------------------------ */
+
+/** "vor 3 Stunden" statt eines Zeitstempels, den niemand im Kopf umrechnet. */
+export function alterInWorten(millisekunden) {
+  if (typeof millisekunden !== "number" || !isFinite(millisekunden) || millisekunden < 0) {
+    return null;
+  }
+  const minuten = Math.floor(millisekunden / 60000);
+  if (minuten < 1) return "gerade eben";
+  if (minuten < 60) return "vor " + minuten + " Minute" + (minuten === 1 ? "" : "n");
+  const stunden = Math.floor(minuten / 60);
+  if (stunden < 24) return "vor " + stunden + " Stunde" + (stunden === 1 ? "" : "n");
+  const tage = Math.floor(stunden / 24);
+  return "vor " + tage + " Tag" + (tage === 1 ? "" : "en");
+}
+
+/**
+ * Die Startseite hinter der Anmeldung.
+ *
+ * `zustand` traegt alles Entschiedene mit; diese Funktion entscheidet
+ * nichts nach. Insbesondere ist `anzahl` die Zahl aus der kanonischen
+ * Zustandsmaschine und nicht `items.length` - die beiden koennen
+ * auseinanderfallen, und dann ist genau das die Nachricht.
+ */
+export function landingPage(zustand) {
+  const z = zustand || {};
+  const anzahl = typeof z.anzahl === "number" ? z.anzahl : null;
+  const posten = Array.isArray(z.items) ? z.items : [];
+
+  /* --------------------------------------------------------------
+     DREI LAGEN, DIE NICHT ZU ZWEIEN VERSCHMELZEN DUERFEN
+
+       kein Stand    Der Orchestrator hat noch nie uebertragen. Wir
+                     wissen NICHT, ob etwas wartet.
+       null wartet   Wir wissen es, und es wartet nichts.
+       n wartet      Es wartet etwas.
+
+     Die erste als "nichts wartet" anzuzeigen waere die bequemste
+     Luege der ganzen Oberflaeche: sie sieht aus wie Ruhe und ist
+     Blindheit.
+     -------------------------------------------------------------- */
+  if (anzahl === null) {
+    return approvalResponse("Freigabe", `
+<h1>Noch kein Stand</h1>
+<p class="leise">Es liegt noch keine uebertragene Warteschlange vor. Das heisst
+<em>nicht</em>, dass nichts wartet — es heisst, dass wir es hier nicht wissen.</p>
+<p class="leise">Der Orchestrator uebertraegt sie bei seinem naechsten Lauf.</p>
+${abmelden()}`);
+  }
+
+  if (anzahl === 0) {
+    return approvalResponse("Freigabe", `
+<h1>Aktuell wartet kein Beitrag auf deine Freigabe.</h1>
+${standZeile(z)}
+${rest(z)}
+${abmelden()}`);
+  }
+
+  const liste = posten.map((i, n) => `
+<article>
+  <p class="zaehler">${n + 1} von ${escapeHtml(String(anzahl))}</p>
+  <h2 class="thema">${escapeHtml(i.thema || "Ohne Thema")}</h2>
+  <p class="hook">${escapeHtml(i.hook || "")}</p>
+  <p><a class="weiter" href="/approval/${encodeURIComponent(i.candidateId)}">Ansehen und entscheiden</a></p>
+</article>`).join("");
+
+  /* Die Zahl kommt aus der Engine, die Karten aus der Uebertragung.
+     Fallen sie auseinander, steht das da — und wird nicht dadurch
+     aufgeloest, dass eine der beiden gewinnt. */
+  const luecke = posten.length !== anzahl ? `
+<p class="leise warnung">Die Zustandsmaschine meldet ${escapeHtml(String(anzahl))},
+uebertragen wurden ${escapeHtml(String(posten.length))}. Der Unterschied ist echt und
+kein Anzeigefehler: zu den fehlenden liegt hier kein vollstaendiger Datensatz vor.</p>` : "";
+
+  return approvalResponse("Freigabe", `
+<h1>${escapeHtml(String(anzahl))} Beitr${anzahl === 1 ? "ag wartet" : "aege warten"} auf Freigabe.</h1>
+${standZeile(z)}
+${luecke}
+${liste}
+${abmelden()}`);
+}
+
+function standZeile(z) {
+  const alt = z.alter ? escapeHtml(z.alter) : null;
+  if (!alt) return "";
+  /* Ein alter Stand wird benannt und nicht versteckt. Was er bedeutet,
+     entscheidet die Freigabe selbst: dort wird der Abdruck gegen das
+     nachgerechnet, was tatsaechlich gesendet wuerde. */
+  const warnung = z.veraltet
+    ? " Das ist laenger her als ein Orchestratorlauf — moeglicherweise ist der Stand nicht der aktuelle."
+    : "";
+  return `<p class="leise">Stand: ${alt}.${escapeHtml(warnung)}</p>`;
+}
+
+function rest(z) {
+  const gehalten = Array.isArray(z.held) ? z.held.length : 0;
+  const entschieden = Array.isArray(z.decided) ? z.decided.length : 0;
+  if (!gehalten && !entschieden) return "";
+  return `<p class="leise">Im Bestand: ${entschieden} entschieden oder abgeloest,
+${gehalten} auf einem Haltegrund. Beides wartet nicht auf dich.</p>`;
+}
+
+function abmelden() {
+  return `<hr class="linie">
+<form method="POST" action="/approval/logout">
+  <button class="leer" type="submit">Abmelden</button>
+</form>`;
+}

@@ -59,7 +59,9 @@ import {
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
-         readClaim, claimPublish, settleClaim } from "./store.js";
+         readClaim, claimPublish, settleClaim,
+         readQueue, writeQueue
+} from "./store.js";
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 import { routeApproval } from "./approval.js";
@@ -1606,6 +1608,186 @@ async function handleDisconnect(request, url, env) {
   });
 }
 
+/* =====================================================================
+   DIE WARTESCHLANGE ENTGEGENNEHMEN
+
+   ---------------------------------------------------------------------
+   WARUM DIESER ENDPUNKT UNTER /social/ LIEGT UND NICHT UNTER /approval/
+   ---------------------------------------------------------------------
+
+   Weil ihn keine Person aufruft, sondern der Orchestrator. Er gehoert
+   damit zu den maschinellen Endpunkten und hinter deren Tor: den
+   Admin-Schluessel als Bearer-Header, so wie ingest-performance und
+   verify es seit jeher tun.
+
+   Die Owner-Sitzung darf ihn ausdruecklich NICHT oeffnen. Ein Browser,
+   der die Schlange ueberschreiben kann, waere eine Oberflaeche, die
+   ihre eigene Datengrundlage schreibt - und damit die Trennung
+   aufheben, um derentwillen es die Projektion ueberhaupt gibt.
+
+   ---------------------------------------------------------------------
+   WAS GEPRUEFT WIRD - UND WOGEGEN NICHT
+   ---------------------------------------------------------------------
+
+   Die Pruefung hier ist KEINE Sicherheitsschranke. Wer bis hierher
+   kommt, hat den Admin-Schluessel; gegen den ist nichts mehr zu
+   schuetzen.
+
+   Sie ist eine HERKUNFTSSCHRANKE. Sie stellt sicher, dass das, was der
+   Worker zeigt, aus der kanonischen Zustandsmaschine stammt und nicht
+   aus einer zweiten Rechnung, die jemand schnell daneben gestellt hat.
+   Genau dieser zweite Rechenweg hat in diesem Projekt schon einmal
+   "sechs warten" gemeldet, wo null warteten.
+
+   Deshalb sind `version`, `source` und `countedFiles` Pflicht: sie
+   sind die Unterschrift der Engine, und eine handgeschriebene Schlange
+   traegt sie nicht, ohne dass jemand sie bewusst hinschreibt.
+   ===================================================================== */
+
+const QUEUE_VERSION = "approval-projection-v1";
+const QUEUE_SOURCE = "owner-decision.warteschlange";
+/* 512 KiB. Eine Schlange ist eine Handvoll Beitraege; alles darueber
+   ist ein Irrtum und kein Wachstum. KV traegt mehr, aber ein Speicher,
+   der alles annimmt, verdeckt den Tag, an dem etwas hineinlaeuft, das
+   nicht hineingehoert. */
+const QUEUE_MAX_BYTES = 512 * 1024;
+
+/**
+ * Prueft eine Projektion auf ihre Herkunft und ihre Form.
+ *
+ * @returns { ok, reason, message }
+ */
+function pruefeProjektion(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) {
+    return { ok: false, reason: "notAnObject",
+      message: "Eine Projektion ist ein Objekt." };
+  }
+  if (p.version !== QUEUE_VERSION) {
+    return { ok: false, reason: "unknownVersion",
+      message: "Unbekannte Projektionsfassung: " + String(p.version) + ". " +
+        "Erwartet wird " + QUEUE_VERSION + "." };
+  }
+  if (p.source !== QUEUE_SOURCE) {
+    return { ok: false, reason: "wrongSource",
+      message: "Diese Schlange nennt nicht die kanonische Zustandsmaschine als " +
+        "Quelle. Gezeigt wird nur, was aus " + QUEUE_SOURCE + " stammt." };
+  }
+  /* `countedFiles: true` ist genau der Fehler, den die Engine selbst
+     ausschliesst und in ihre Antwort schreibt: ein Ordner ist keine
+     Warteschlange. */
+  if (p.countedFiles !== false) {
+    return { ok: false, reason: "countedFiles",
+      message: "Diese Schlange zaehlt Dateien. Ein Ordner ist keine Warteschlange." };
+  }
+  if (!Number.isInteger(p.activeCount) || p.activeCount < 0) {
+    return { ok: false, reason: "badCount",
+      message: "activeCount muss eine Zahl ab null sein." };
+  }
+  if (!Array.isArray(p.items)) {
+    return { ok: false, reason: "badItems", message: "items muss eine Liste sein." };
+  }
+  if (typeof p.generatedAt !== "string" || Number.isNaN(Date.parse(p.generatedAt))) {
+    return { ok: false, reason: "badTimestamp",
+      message: "generatedAt fehlt oder ist kein Zeitpunkt. Ohne ihn laesst sich " +
+        "nicht sagen, wie alt der Stand ist." };
+  }
+
+  for (const i of p.items) {
+    if (!i || typeof i !== "object") {
+      return { ok: false, reason: "badItem", message: "Ein Eintrag ist kein Objekt." };
+    }
+    if (!i.candidateId || typeof i.candidateId !== "string") {
+      return { ok: false, reason: "itemWithoutId",
+        message: "Ein Eintrag ohne Kandidatenkennung ist nicht freigebbar." };
+    }
+    const nutz = i.payload;
+    if (!nutz || typeof nutz !== "object" || !nutz.contentId || !nutz.imageUrl) {
+      return { ok: false, reason: "itemWithoutPayload",
+        message: "Eintrag " + i.candidateId + " traegt nicht, was veroeffentlicht " +
+          "wuerde. Die Vorschau IST die Sendung - ohne sie gibt es nichts freizugeben." };
+    }
+    /* https und sonst nichts. Ein Bild ueber http waere im Browser
+       blockierter Mischinhalt und bei Meta eine Adresse, die sie nicht
+       abholen. Eine data:-Adresse waere beides nicht und trotzdem
+       falsch: sie kaeme nicht aus dem Assetbestand. */
+    if (!/^https:\/\//.test(String(nutz.imageUrl))) {
+      return { ok: false, reason: "insecureImageUrl",
+        message: "Eintrag " + i.candidateId + " nennt ein Bild, das nicht ueber " +
+          "https erreichbar ist." };
+    }
+    if (typeof i.contentHash !== "string" || !/^[0-9a-f]{64}$/.test(i.contentHash)) {
+      return { ok: false, reason: "itemWithoutHash",
+        message: "Eintrag " + i.candidateId + " traegt keinen Inhaltsabdruck. Ohne " +
+          "ihn bindet eine Freigabe an nichts." };
+    }
+  }
+
+  /* Zwei Kandidaten mit derselben Kennung waeren zwei Karten fuer
+     einen Beitrag - und der Owner entschiede zweimal ueber dasselbe. */
+  const gesehen = new Set();
+  for (const i of p.items) {
+    if (gesehen.has(i.candidateId)) {
+      return { ok: false, reason: "duplicateItem",
+        message: "Kandidat " + i.candidateId + " steht zweimal in der Schlange." };
+    }
+    gesehen.add(i.candidateId);
+  }
+
+  return { ok: true, reason: null, message: null };
+}
+
+/**
+ * Nimmt eine Projektion entgegen.
+ *
+ * Eine UNVOLLSTAENDIGE Projektion wird angenommen und NICHT abgewiesen.
+ * Der Grund: sie ist der frischeste Stand, den es gibt, und ihn
+ * abzulehnen hiesse, einen aelteren zu zeigen, der genauso unvollstaendig
+ * waere - nur ohne es zu sagen. Die Luecke reist mit (`complete`,
+ * `unresolved`) und wird angezeigt.
+ */
+async function handleQueueIngest(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const roh = await request.text();
+  if (roh.length > QUEUE_MAX_BYTES) {
+    return json({ error: "tooLarge", stored: false,
+      message: "Die Projektion ist groesser als " + QUEUE_MAX_BYTES + " Bytes. " +
+        "Eine Warteschlange ist eine Handvoll Beitraege." }, 413);
+  }
+
+  let projektion;
+  try { projektion = JSON.parse(roh); }
+  catch (err) { return json({ error: "badJson", stored: false }, 400); }
+
+  const befund = pruefeProjektion(projektion);
+  if (!befund.ok) {
+    return json({ error: befund.reason, stored: false, message: befund.message }, 400);
+  }
+
+  if (!env.VU_SOCIAL_KV) {
+    return json({ error: "noStorage", stored: false,
+      message: "Ohne KV laesst sich keine Schlange halten." }, 503);
+  }
+
+  await writeQueue(env, Object.assign({}, projektion, {
+    /* Wann SIE ankam - getrennt davon, wann sie GEBAUT wurde. Zwei
+       verschiedene Fragen: die eine misst das Alter der Aussage, die
+       andere den Abstand zum letzten Kontakt. */
+    receivedAt: new Date().toISOString()
+  }));
+
+  return json({
+    stored: true,
+    activeCount: projektion.activeCount,
+    items: projektion.items.length,
+    complete: projektion.complete === true,
+    unresolved: Array.isArray(projektion.unresolved) ? projektion.unresolved.length : 0,
+    generatedAt: projektion.generatedAt,
+    note: "Gespeichert, nicht nachgerechnet. activeCount stammt aus " + QUEUE_SOURCE + "."
+  });
+}
+
 /* Lebendtest. Absichtlich ohne Zustand und ohne Kontodaten: er beantwortet
    "laeuft der Worker", nicht "wer ist verbunden". */
 function handleHealth(env) {
@@ -1678,6 +1860,16 @@ export default {
       const auth = requireAdmin(request, url, env);
       if (!auth.ok) return auth.response;
 
+      if (path === "/social/approval/queue") {
+        /* Nur POST: dieser Endpunkt nimmt entgegen. Gelesen wird die
+           Schlange ueber /approval - mit der Owner-Sitzung, nicht mit
+           dem Admin-Schluessel. */
+        if (request.method !== "POST") {
+          return json({ error: "methodNotAllowed",
+            message: "Die Schlange wird hier abgelegt, nicht gelesen." }, 405);
+        }
+        return await handleQueueIngest(request, url, env);
+      }
       if (path === "/social/meta/connect") {
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
         return await handleConnect(request, url, env);
@@ -1763,6 +1955,7 @@ export default {
 /* Fuer die Tests: die Bausteine einzeln pruefbar halten. */
 export const __internals = {
   configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
+  pruefeProjektion, handleQueueIngest, QUEUE_VERSION, QUEUE_SOURCE, QUEUE_MAX_BYTES,
   handleConnect, handleCallback, handleStatus, handleVerify, handleDisconnect,
   MIN_ADMIN_KEY_LENGTH
 };

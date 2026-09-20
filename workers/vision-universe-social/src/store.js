@@ -288,3 +288,51 @@ export async function settleClaim(env, contentId, patch) {
 }
 
 export { CLAIM_PREFIX, CLAIM_STATES, claimKey };
+
+/* =========================================================================
+   DIE PROJIZIERTE WARTESCHLANGE
+
+   -------------------------------------------------------------------------
+   WARUM DER WORKER SIE NICHT SELBST BERECHNET
+   -------------------------------------------------------------------------
+
+   Weil "wartet auf den Owner" eine Aussage der Zustandsmaschine ist,
+   und die steht im Repository: social/engines/owner-decision.js. Der
+   Worker haette sie nachbauen muessen - und zwei Definitionen desselben
+   Begriffs gehen auseinander, meist genau dann, wenn eine von beiden
+   gerade wichtig ist.
+
+   Dieses Projekt hat den Fall schon gehabt: ein Bericht zaehlte Dateien
+   im Kandidatenordner, die Maschine zaehlte Zustaende. Sechs gegen null,
+   und beide "richtig gerechnet".
+
+   Also haelt der Worker eine PROJEKTION: berechnet im Repository,
+   uebertragen ueber einen admin-geschuetzten Endpunkt, hier nur
+   gespeichert und gezeigt. `activeCount` wird uebernommen, nie
+   ermittelt.
+
+   -------------------------------------------------------------------------
+   EIN SCHLUESSEL, KEINE HISTORIE
+   -------------------------------------------------------------------------
+
+   Die Schlange ist ein Jetzt-Zustand. Alte Staende aufzuheben hiesse,
+   eine zweite Wahrheit aufzubewahren, die niemand pflegt. Die Historie
+   der Kandidaten liegt im Repository, wo sie hingehoert.
+   ========================================================================= */
+
+const QUEUE_KEY = "approval:queue:v1";
+
+export async function readQueue(env) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const raw = await env.VU_SOCIAL_KV.get(QUEUE_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (err) { return null; }
+}
+
+export async function writeQueue(env, projektion) {
+  if (!env.VU_SOCIAL_KV) throw new Error("KV-Bindung VU_SOCIAL_KV fehlt");
+  await env.VU_SOCIAL_KV.put(QUEUE_KEY, JSON.stringify(projektion));
+  return projektion;
+}
+
+export { QUEUE_KEY };

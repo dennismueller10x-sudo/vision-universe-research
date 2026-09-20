@@ -55,6 +55,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
+import { ausgabePfad } from "../quality/out-path.mjs";
 
 /* -------------------------------------------------------------------
    WOHIN DIE KANDIDATEN GEHOEREN
@@ -187,7 +188,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   /* Der Kandidatenordner folgt dem Datenstand — siehe oben. */
   const KAND_REL = kandidatenDir(DATA);
   const NOW = arg("now", new Date().toISOString());
-  const D = (n) => join(ROOT, DATA, n);
+  /* `ausgabePfad` und nicht `join(ROOT, ...)`: ein absolut angegebener
+     Datenstand wurde sonst still unter das Repository geschoben -
+     join(ROOT, "/tmp/probe") ist "<ROOT>/tmp/probe". Das Skript las
+     dann in einem Ordner, den niemand angelegt hatte, und meldete die
+     Dateien als fehlend, die es gab.
+
+     Dieselbe Stelle war in zehn anderen Skripten schon umgestellt.
+     Dieses hier stand nicht auf der Liste, weil niemand es je mit
+     einem absoluten --data aufgerufen hatte - bis jetzt. Ein Fehler,
+     den nur ein ungewoehnlicher Aufruf zeigt, ist trotzdem da. */
+  const DATA_ABS = ausgabePfad(ROOT, DATA);
+  const D = (n) => join(DATA_ABS, n);
 
   console.log("VISION UNIVERSE SOCIAL — Publish Candidate");
   console.log("Datenstand: " + DATA);
@@ -309,7 +321,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      stillschweigend weiter gestimmt und an jeder anderen Stelle
      stillschweigend gefehlt.
      ------------------------------------------------------------------- */
-  const verzeichnis = join(ROOT, KAND_REL);
+  const verzeichnis = ausgabePfad(ROOT, KAND_REL);
   let offene = [];
   let vorgaenger = null;
   let version = 1;
@@ -370,7 +382,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         JSON.stringify(vorhanden.presentation.authoring) !== neueHerkunft) {
       vorhanden.presentation.authoring = JSON.parse(neueHerkunft);
       vorhanden.provenanceUpdatedAt = NOW;
-      writeFileSync(join(ROOT, KAND_REL, vorhanden.candidateId + ".json"),
+      writeFileSync(join(ausgabePfad(ROOT, KAND_REL), vorhanden.candidateId + ".json"),
         JSON.stringify(vorhanden, null, 2) + "\n");
       console.log("\nHerkunft nachgezogen (Inhalt unveraendert): " +
         vorhanden.candidateId);
@@ -438,6 +450,35 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       signalIds: d.signalIds || (gewaehlt.opportunity && gewaehlt.opportunity.signalIds) || [],
       opportunityId: d.opportunityId || null,
       strategyVersion: d.strategyVersion,
+
+      /* -----------------------------------------------------------------
+         WARUM DIESES BILD - UND FUER WEN
+
+         Der Owner soll vor der Freigabe drei Fragen beantwortet
+         bekommen: warum dieses Thema, warum dieser Einstieg, warum
+         dieses Visual. Die ersten beiden standen hier immer:
+         `presentation.reason` und `authoring.reason`.
+
+         Die dritte nicht. Die Bildrichtung wurde im Zyklus abgeleitet,
+         an das Paket geheftet, in den Bericht projiziert - und auf dem
+         Weg in den Kandidaten von dieser Feldliste verschluckt. Es gab
+         sie also, und trotzdem haette die Oberflaeche "warum dieses
+         Visual" nur beantworten koennen, indem sie sich etwas
+         ausdenkt. Genau das ist verboten, und zu Recht.
+
+         Dasselbe gilt fuer die Inhaltsfamilie: sie steht im
+         audienceFrame und nirgends sonst.
+
+         Beides ist keine neue Berechnung. Es ist dieselbe Ableitung,
+         die schon lief, endlich bis dorthin gereicht, wo sie gebraucht
+         wird. `derivation.explanation` und `derivedFrom` sagen
+         ausserdem, WORAUS sie stammt - eine Begruendung, die ihre
+         eigene Herkunft mitbringt.
+         ----------------------------------------------------------------- */
+      visualDirection: d.visualDirection || null,
+      visualDirectionReady: d.visualDirectionReady === true,
+      visualDirectionFailureType: d.visualDirectionFailureType || null,
+      audienceFrame: d.audienceFrame || null,
       archetype: d.archetype,
       hook: d.hook,
       mediaFormat: "IMAGE",
@@ -493,7 +534,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(0);
   }
 
-  const dir = join(ROOT, KAND_REL);
+  const dir = ausgabePfad(ROOT, KAND_REL);
   mkdirSync(dir, { recursive: true });
 
   /* -------------------------------------------------------------------

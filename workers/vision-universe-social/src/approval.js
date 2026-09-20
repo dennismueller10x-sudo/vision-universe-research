@@ -53,7 +53,8 @@
 import {
   createSession, sessionFromRequest, clearSessionCookie, timingSafeEqual
 } from "./session.js";
-import { signInPage, approvalResponse } from "./approval-ui.js";
+import { signInPage, approvalResponse, landingPage, alterInWorten } from "./approval-ui.js";
+import { readQueue } from "./store.js";
 
 const MIN_ADMIN_KEY_LENGTH = 32;
 
@@ -229,23 +230,54 @@ export async function routeApproval(request, url, env, options = {}) {
 
 /* ------------------------------------------------------------------ */
 
+/* -------------------------------------------------------------------------
+   AB WANN EIN STAND ALT IST
+
+   Der Orchestrator laeuft zweimal taeglich. Ein Stand, der aelter ist
+   als das, kann keinen Lauf gesehen haben - dann ist entweder der
+   Scheduler stehengeblieben oder die Uebertragung gescheitert.
+
+   Vierzehn Stunden lassen einem Lauf Luft, ohne einen ausgefallenen zu
+   uebersehen.
+   ------------------------------------------------------------------------- */
+const STAND_ALT_MS = 14 * 60 * 60 * 1000;
+
 /**
  * Die Startseite hinter der Anmeldung.
  *
- * Noch ohne Warteschlange: die kommt aus der kanonischen
- * Zustandsmaschine und wird als Projektion hereingereicht. Bis dahin
- * sagt diese Seite, was sie weiss, und behauptet nichts.
+ * Sie LIEST die Projektion und rechnet nichts nach. `anzahl` ist
+ * `activeCount` aus der kanonischen Zustandsmaschine - nicht die Laenge
+ * der Kartenliste. Die beiden koennen auseinanderfallen, und dann ist
+ * genau das die Nachricht, die der Owner braucht.
  */
 async function handleApprovalIndex(request, url, env, options = {}) {
-  return approvalResponse("Freigabe", `
-<h1>Freigabe</h1>
-<p class="leise">Die Anmeldung steht.</p>
-<hr class="linie">
-<p class="leise">Die Warteschlange wird gerade angebunden. Diese Seite
-zeigt noch keinen Beitrag — und erfindet auch keinen.</p>
-<form method="POST" action="/approval/logout">
-  <button class="leer" type="submit">Abmelden</button>
-</form>`);
+  const schlange = env.VU_SOCIAL_KV ? await readQueue(env) : null;
+
+  if (!schlange) {
+    /* KEINE UEBERTRAGUNG ist nicht KEINE WARTESCHLANGE. Die beiden als
+       dasselbe anzuzeigen waere die bequemste Luege dieser Oberflaeche:
+       sie saehe aus wie Ruhe und waere Blindheit. */
+    return landingPage({ anzahl: null });
+  }
+
+  const jetzt = options.now === undefined ? Date.now() : options.now;
+  const gebaut = Date.parse(schlange.generatedAt);
+  const alterMs = Number.isNaN(gebaut) ? null : jetzt - gebaut;
+
+  return landingPage({
+    anzahl: schlange.activeCount,
+    items: (schlange.items || []).map((i) => ({
+      candidateId: i.candidateId,
+      thema: i.anzeige && i.anzeige.thema ? i.anzeige.thema.value : null,
+      hook: i.anzeige && i.anzeige.hook ? i.anzeige.hook.value : null
+    })),
+    held: schlange.held || [],
+    decided: schlange.decided || [],
+    alter: alterMs === null ? null : alterInWorten(alterMs),
+    veraltet: alterMs !== null && alterMs > STAND_ALT_MS
+  });
 }
+
+export { STAND_ALT_MS };
 
 export { MIN_ADMIN_KEY_LENGTH };

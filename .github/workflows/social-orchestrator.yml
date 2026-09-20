@@ -214,6 +214,42 @@ jobs:
           node scripts/social/make-publish-candidate.mjs --data social/data --write \
             | tail -40
 
+      # =====================================================================
+      # DIE WARTESCHLANGE ZUM OWNER
+      #
+      # Der Worker kann das Repository nicht lesen. Also traegt dieser
+      # Schritt die Schlange hinueber - berechnet von
+      # owner-decision.warteschlange(), geformt von
+      # approval-projection.js, dort nur gespeichert und gezeigt.
+      #
+      # KEINE ZWEITE LOGIK IM WORKER. Er darf nicht wissen, was
+      # "wartet" bedeutet: zwei Definitionen desselben Begriffs gehen
+      # auseinander, und dieses Projekt hatte den Fall schon (sechs
+      # gegen null).
+      #
+      # `if: always()` und nicht an `prepare` gehaengt: auch ein Lauf,
+      # der nichts vorbereitet hat, kann die Schlange veraendert haben -
+      # ein Kandidat wurde abgeloest, einer entschieden. Und eine
+      # Uebertragung, die ausfaellt, ist kein Grund, den Lauf rot zu
+      # machen: der Owner sieht dann einen datierten aelteren Stand,
+      # und das steht auf der Seite.
+      # =====================================================================
+      - name: Die Warteschlange an das Approval Center
+        if: always() && inputs.nur_entscheiden != true
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
+            node scripts/social/publish-approval-queue.mjs | tee /tmp/queue.txt
+            exit 0
+          fi
+          # Exit 4 heisst "kein Schluessel" und ist eine Antwort, kein Ausfall.
+          node scripts/social/publish-approval-queue.mjs --write \
+            | tee /tmp/queue.txt || [ "$?" = "4" ]
+
       # Der Reifezustand nach dem Lauf, gegen den dann aktuellen
       # Datenstand. Er schaltet nichts frei - er stellt fest.
       - name: SOCIAL_ORCHESTRATOR_PRODUCTION_READY
@@ -238,6 +274,11 @@ jobs:
             echo ""
             echo '```'
             cat /tmp/plan.txt 2>/dev/null || echo "kein Plan"
+            echo '```'
+            echo ""
+            echo "### Owner-Warteschlange"
+            echo '```'
+            cat /tmp/queue.txt 2>/dev/null || echo "nicht uebertragen"
             echo '```'
             echo ""
             echo "### Produktionsreife"
