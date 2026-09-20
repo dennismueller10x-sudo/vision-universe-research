@@ -56,6 +56,16 @@ provider integration or deployment configuration is added or changed. No
 Focused Product Service, Screener, Rule Contract, Registry, Technical Scanner and
 Backtest tests: 85/85 PASS. Full Quant 1,224/1,224, SEC Python 471/471, internal
 PIT 32/32, shared Worker/Discovery 66/66 and resource-budget 5/5 PASS locally.
-The exact release remains within budget at 4,846,342/8,388,608 SEC bytes with
-`EXISTING_R2_UNCHANGED`. Remote CI, production and browser gates must pass before
-this phase is recorded as deployed.
+
+PR #124 merged as `127adb34bc8e72b48085c5694d538ee70e2d6f36` and is deployed.
+PR-head Company Master #40, Pages #108, Quant #182, Browser QA #78 and SEC #175
+all passed. Exact-main Pages #109 (including deploy), Quant #183 and SEC #176
+also passed. Production reports bundle `e6d12619aee0967e`, exact source commit
+`127adb34bc8e72b48085c5694d538ee70e2d6f36`, 4,846,342/8,388,608 SEC bytes and
+`EXISTING_R2_UNCHANGED`.
+
+Fresh production smoke reproduced the score and Elliott filters, canonical
+Screener-to-Strategy handoff, explicit nonhistorical warning and the stored
+188-rebalance mock Backtest. The separate Discovery product rendered unchanged;
+no page-origin console error was observed. Evidence is also retained in the
+PR #124 deployment comment. This phase is `DEPLOYED`; `DISCOVERY_CHANGED=false`.

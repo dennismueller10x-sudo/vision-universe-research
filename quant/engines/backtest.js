@@ -35,7 +35,6 @@
   var QuantScore = isNode ? require("./quant-score.js") : global.VUQuantScore;
   var Query = isNode ? require("./query.js") : global.VUQuery;
   var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
-  var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
   var Strategy = isNode ? require("./strategy.js") : global.VUStrategy;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
@@ -55,13 +54,14 @@
   ];
 
   function assertBacktestRuleEligibility(definition) {
-    var blocked = definition.filters.map(function (filter) { return Catalog.field(filter.field); })
-      .filter(function (field) { return field && field.backtestEligibility === "NOT_CERTIFIED"; })
-      .map(function (field) { return field.id; });
-    if (blocked.length) {
-      var error = new Error("RULE_METRIC_NOT_BACKTEST_CERTIFIED: " + blocked.join(", "));
-      error.code = "RULE_METRIC_NOT_BACKTEST_CERTIFIED";
-      error.fields = blocked;
+    var eligibility = Strategy.backtestEligibility(definition);
+    if (!eligibility.eligible) {
+      var detail = eligibility.blockedFields.length
+        ? eligibility.blockedFields.join(", ") : eligibility.errors.join("; ");
+      var error = new Error(eligibility.code + ": " + detail);
+      error.code = eligibility.code;
+      error.fields = eligibility.blockedFields.slice();
+      error.eligibility = eligibility;
       throw error;
     }
     return definition;

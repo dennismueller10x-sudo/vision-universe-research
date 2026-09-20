@@ -203,6 +203,16 @@
       return Promise.resolve({ ok: false, route: ROUTES.runBacktest,
         errors: ["POST /v1/backtests akzeptiert keine natuerliche Sprache, nur ein validiertes Strategy Schema."] });
     }
+    var eligibility = Strategy.backtestEligibility(request.definition);
+    if (!eligibility.eligible) {
+      return Promise.resolve({
+        ok: false,
+        route: ROUTES.runBacktest,
+        code: eligibility.code,
+        blockedFields: eligibility.blockedFields.slice(),
+        errors: [eligibility.code + ": " + eligibility.blockedFields.join(", ")]
+      });
+    }
 
     return new Promise(function (resolve) {
       var worker = new Worker(S.BASE + "ui/backtest-worker.js");

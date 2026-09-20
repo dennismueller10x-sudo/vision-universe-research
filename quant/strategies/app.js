@@ -156,6 +156,7 @@
   function backtestLauncher(record, version, data) {
     var wrap = el("div", { class: "q-card" });
     var meta = data.meta;
+    var eligibility = Strategy.backtestEligibility(version.definition);
     var startInput = el("input", { class: "q-input", type: "date", value: "2011-01-03",
       min: window.VUMethodology.backtest().limits.maxHistoryStart, max: meta.asOf });
     var endInput = el("input", { class: "q-input", type: "date", value: meta.asOf,
@@ -192,19 +193,30 @@
       });
     }
 
-    button = el("button", { class: "q-btn", type: "button", text: "Backtest starten", onclick: run });
+    button = el("button", { class: "q-btn", type: "button", text: "Backtest starten", onclick: run,
+      disabled: !eligibility.eligible });
 
-    S.mount(wrap, [
+    var content = [
       el("div", { class: "q-grid q-grid--3" }, [
         el("div", { class: "q-field" }, [el("label", { text: "Start" }), startInput]),
         el("div", { class: "q-field" }, [el("label", { text: "Ende" }), endInput]),
         el("div", { class: "q-field" }, [el("label", { text: " " }), button])
       ]),
       el("p", { class: "q-note", style: "margin-top:10px", text:
-        "Datenbestand ab " + S.formatDate(window.VUMethodology.backtest().limits.maxHistoryStart) +
-        ". Ein frueheres Startdatum wird abgelehnt statt stillschweigend verschoben." }),
+        eligibility.eligible
+          ? "Datenbestand ab " + S.formatDate(window.VUMethodology.backtest().limits.maxHistoryStart) +
+            ". Ein frueheres Startdatum wird abgelehnt statt stillschweigend verschoben."
+          : "Historischer Start gesperrt (" + eligibility.code + "): " + eligibility.blockedFields.join(", ") +
+            ". Die Regel bleibt fuer aktuelle, materialisierte Product Data speicherbar; eine historische Snapshot-Folge ist nicht zertifiziert." })
+    ];
+    if (!eligibility.eligible) {
+      content.push(S.stateBox("Backtest nicht freigegeben",
+        "Diese Definition enthaelt Current-Snapshot-Metriken ohne zertifizierte Historie. Es wurde kein Worker und kein historischer Datenlauf gestartet.", "error"));
+    }
+    content.push(
       status
-    ]);
+    );
+    S.mount(wrap, content);
     return wrap;
   }
 

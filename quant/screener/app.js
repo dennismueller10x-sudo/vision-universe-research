@@ -74,6 +74,16 @@
         S.mount(vuqlMount, buildVuql());
         S.$("#q-ast").textContent = JSON.stringify(state.query, null, 2);
 
+        var unavailable = unavailableSnapshotFields(state.query.filters, state.query.sort);
+        if (unavailable.length) {
+          S.mount(errorMount, S.stateBox("Kennzahl in diesem Workspace nicht verfuegbar",
+            "Dieser Classic-Screener laedt ausschliesslich das synthetische Modelluniversum. " +
+            "Current-Snapshot-Kennzahlen koennen hier nicht ausgewertet werden: " + unavailable.join(", ") + ".", "error"));
+          S.mount(resultMount, S.stateBox("Nicht ausgefuehrt",
+            "Die Abfrage wurde nicht als leere Trefferliste ausgegeben. Oeffne fuer reale aktuelle Technical-/Elliott-Snapshots den Quant-2.0-Screener.", "empty"));
+          return;
+        }
+
         var validation = Query.validate(state.query);
         if (!validation.valid) {
           S.mount(errorMount, validationBox(validation));
@@ -316,7 +326,9 @@
   function fieldSelect(value, onChange, filterFn) {
     var sel = el("select", { class: "q-select", onchange: function () { onChange(sel.value); } });
     var byCategory = {};
-    Catalog.FIELD_LIST.filter(function (f) { return !filterFn || filterFn(f); }).forEach(function (f) {
+    Catalog.FIELD_LIST.filter(function (f) {
+      return ((!filterFn || filterFn(f)) && f.availability !== "CURRENT_SNAPSHOT_ONLY") || f.id === value;
+    }).forEach(function (f) {
       (byCategory[f.category] || (byCategory[f.category] = [])).push(f);
     });
     var CATEGORY_LABEL = {
@@ -326,11 +338,21 @@
     Object.keys(byCategory).forEach(function (cat) {
       var group = el("optgroup", { label: CATEGORY_LABEL[cat] || cat });
       byCategory[cat].forEach(function (f) {
-        group.appendChild(el("option", { value: f.id, text: f.label, selected: f.id === value ? true : null }));
+        var unavailable = f.availability === "CURRENT_SNAPSHOT_ONLY";
+        group.appendChild(el("option", { value: f.id, text: f.label + (unavailable ? " (hier nicht verfuegbar)" : ""),
+          selected: f.id === value ? true : null, disabled: unavailable ? true : null }));
       });
       sel.appendChild(group);
     });
     return sel;
+  }
+
+  function unavailableSnapshotFields(filters, sort) {
+    var ids = (filters || []).map(function (f) { return f.field; }).concat((sort || []).map(function (s) { return s.field; }));
+    return ids.filter(function (id, index) {
+      var field = Catalog.field(id);
+      return field && field.availability === "CURRENT_SNAPSHOT_ONLY" && ids.indexOf(id) === index;
+    });
   }
 
   function simpleSelect(pairs, value, onChange) {

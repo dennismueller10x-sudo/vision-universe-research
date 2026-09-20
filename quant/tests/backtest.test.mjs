@@ -253,6 +253,7 @@ test("Current-Snapshot Technical- und Elliott-Regeln sind nicht historisch backt
   for (const filter of [
     { field: "technicalOpportunityScore", operator: "gte", value: 60, scale: "raw" },
     { field: "technicalTrend", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "technicalPrimaryDirection", operator: "eq", value: "BULLISH", scale: "raw" },
     { field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS", scale: "raw" }
   ]) {
     const definition = Strategy.createDefinition({ filters: [filter], execution: { timing: "next_close" } });
