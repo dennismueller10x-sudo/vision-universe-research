@@ -28,11 +28,32 @@ const MessFenster = require(join(ROOT, "social/engines/measurement-window.js"));
 const Job = require(join(ROOT, "social/engines/creative-job.js"));
 const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
 const Kadenz = require(join(ROOT, "social/engines/content-cadence.js"));
+const NoPost = require(join(ROOT, "social/engines/no-post.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 import * as VisualDaten from "./visual-data.mjs";
+import { ausgabePfad } from "../quality/out-path.mjs";
 
-const DATA = "social/data";
-const KANDIDATEN = join(DATA, "publish-candidates");
+/* -------------------------------------------------------------------
+   DAS DATENVERZEICHNIS DES LAUFS
+
+   Es war eine Konstante, und damit las dieses Skript immer die
+   Produktionsdaten - auch aus einem Test heraus. Lesen allein ist
+   harmlos; pruefen laesst sich damit aber nichts, denn ein Test kann
+   keinen anderen Zustand herstellen, ohne den echten zu veraendern
+   (§42).
+
+   Der Vorgabewert bleibt `social/data`: im Betrieb aendert sich
+   nichts. */
+const DATA = (() => {
+  const i = process.argv.indexOf("--data");
+  return i >= 0 && process.argv[i + 1] && !process.argv[i + 1].startsWith("--")
+    ? process.argv[i + 1] : "social/data";
+})();
+/* Derselbe absolute-Pfad-Fallstrick wie ueberall: `join(ROOT, "/tmp/x")`
+   klebt an, statt zu befolgen. `ausgabePfad` beantwortet die Frage
+   einmal fuer alle. */
+const DATEN = ausgabePfad(ROOT, DATA);
+const KANDIDATEN = join(DATEN, "publish-candidates");
 
 /* Zustaende, in denen ein Kandidat auf einen MENSCHEN wartet. Alles
    andere ist entschieden oder ueberholt und blockiert nichts. */
@@ -45,7 +66,7 @@ function readJson(p, f) {
 
 /** Kandidaten, die auf die Owner-Entscheidung warten. */
 export function wartendeKandidaten(verzeichnis) {
-  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  const d = verzeichnis || KANDIDATEN;
   if (!existsSync(d)) return [];
   return readdirSync(d)
     .filter((f) => f.endsWith(".json"))
@@ -77,7 +98,7 @@ export function faelligeMessungen(perf, nowIso) {
 
 /** Der letzte Zeitpunkt, an dem ein Kandidat entstand. */
 export function letzterKandidat(verzeichnis) {
-  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  const d = verzeichnis || KANDIDATEN;
   if (!existsSync(d)) return null;
   const dateien = readdirSync(d).filter((f) => f.endsWith(".json"));
   if (!dateien.length) return null;
@@ -104,7 +125,7 @@ export function letzterKandidat(verzeichnis) {
  * ihn so zaehlt. Zwei Tagesbegriffe waeren zwei Tage.
  */
 export function kandidatenHeute(nowIso, verzeichnis) {
-  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  const d = verzeichnis || KANDIDATEN;
   if (!existsSync(d)) return [];
   const tag = String(nowIso || "").slice(0, 10);
   const out = [];
@@ -148,7 +169,7 @@ export function kandidatenHeute(nowIso, verzeichnis) {
  */
 export function bestesThema(root) {
   const r = root || ROOT;
-  const bericht = readJson(join(r, DATA, "cycle-report.json"), null);
+  const bericht = readJson(join(r === ROOT ? DATEN : ausgabePfad(r, DATA), "cycle-report.json"), null);
   const gelegenheiten = (bericht && bericht.opportunities) || [];
 
   const brauchbar = gelegenheiten
@@ -208,7 +229,7 @@ export function creativeBedarf(z, options) {
 
   /* Offene Jobs und die Vorpruefung - beide aus creative-job.js, nicht
      hier nachgebaut. */
-  const register = readJson(join(r, DATA, "creative-jobs.json"), { jobs: [] });
+  const register = readJson(join(r === ROOT ? DATEN : ausgabePfad(r, DATA), "creative-jobs.json"), { jobs: [] });
   const registry = Job.createRegistry(register.jobs || []);
   const offen = registry.byContent(contentId).filter(
     (j) => Job.OFFEN.includes(j.state));
@@ -240,8 +261,8 @@ export function creativeBedarf(z, options) {
 export function zustand(options) {
   options = options || {};
   const now = options.now || new Date().toISOString();
-  const perf = readJson(join(ROOT, DATA, "performance.json"), null);
-  const health = readJson(join(ROOT, DATA, "health.json"), null);
+  const perf = readJson(join(DATEN, "performance.json"), null);
+  const health = readJson(join(DATEN, "health.json"), null);
 
   /* Ein Schalter, den man uebergehen kann, ist keiner - also wird er
      gelesen, bevor irgendetwas anderes entschieden wird. */
@@ -252,7 +273,7 @@ export function zustand(options) {
   /* Dieselbe Zaehlung wie in creativeBedarf(): das rohe Register, nach
      Job.OFFEN gefiltert. Ein zweiter Weg, offene Jobs zu zaehlen, waere
      ein zweiter Begriff von "offen". */
-  const register = readJson(join(ROOT, DATA, "creative-jobs.json"), null);
+  const register = readJson(join(DATEN, "creative-jobs.json"), null);
   const offeneJobs = ((register && register.jobs) || [])
     .filter((j) => Job.OFFEN.includes(j.state)).length;
 
@@ -274,6 +295,40 @@ export function zustand(options) {
   };
 }
 
+/* =====================================================================
+   WARUM HEUTE KEIN BEITRAG ENTSTAND (§13–§16)
+
+   Der Lauf hat zwei Haelften, und beide liegen schon vor: die
+   Kadenzentscheidung dieses Skripts und der Suchnachweis, den der
+   Zyklus in seinen Bericht schreibt. Zusammengelegt ergeben sie die
+   Antwort auf die Frage, die ein Owner wirklich stellt - nicht "hat
+   es gelaufen", sondern "was habt ihr gesucht und warum nichts
+   genommen".
+
+   Hier wird nichts nachgerechnet. Diese Funktion liest zwei
+   vorhandene Nachweise und uebergibt sie der Engine, die beurteilt,
+   ob sie zusammen einen ergeben.
+   ===================================================================== */
+export function keinBeitragNachweis(z, k, root) {
+  const r = root || ROOT;
+  const bericht = readJson(join(r === ROOT ? DATEN : ausgabePfad(r, DATA), "cycle-report.json"), null);
+  return NoPost.beurteile({
+    now: z.now,
+    laufVom: (bericht && bericht.generatedAt) || null,
+    /* Wieviele Pakete der letzte Zyklus gebaut hat. Fehlt der Bericht,
+       steht hier 0 - und der Nachweis wird genau deshalb unvollstaendig
+       ausfallen, statt einen leeren Tag zu behaupten. */
+    erzeugt: ((bericht && bericht.packages) || []).length,
+    kadenz: k,
+    leiter: (bericht && bericht.ladder) || null,
+    ablehnungen: (bericht && bericht.rejections) || [],
+    platte: bericht && bericht.slate
+      ? { ok: bericht.slate.ok, grund: bericht.slate.grund,
+          erklaerung: bericht.slate.erklaerung, themen: bericht.slate.themen }
+      : null
+  });
+}
+
 /** Die Kadenzentscheidung zu einem Zustand. Eine Stelle, ein Weg. */
 export function kadenz(z) {
   return Kadenz.entscheide(z,
@@ -286,7 +341,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const k = kadenz(z);
   const h = Orchestrator.naechsteHandlung(z, { cadence: k });
   const quellen = Registry.status(
-    readJson(join(ROOT, DATA, "external-sources.json"), null));
+    readJson(join(DATEN, "external-sources.json"), null));
   const modell = Orchestrator.betriebsmodell(quellen);
 
   console.log("VISION UNIVERSE SOCIAL — Orchestrator\n");
@@ -319,6 +374,33 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (k.naechsteFruehestens) {
     console.log("Fruehestens      : " + k.naechsteFruehestens);
   }
+
+  /* --------------------------------------------------- §13–§16 */
+  const nachweis = keinBeitragNachweis(z, k);
+  console.log("\n--- WARUM (K)EIN BEITRAG (§13-§16) ---");
+  console.log("Zustand          : " + nachweis.zustand +
+    (nachweis.grund ? "  (" + nachweis.grund + ")" : ""));
+  console.log("Nachweis         : " + (nachweis.vollstaendig === null
+    ? "nicht gefragt — es ist etwas entstanden"
+    : nachweis.vollstaendig ? "vollstaendig"
+      : "UNVOLLSTAENDIG — fehlt: " + nachweis.fehlendeTeile.join(", ")));
+  console.log("Letzter Lauf     : " + (nachweis.nachweis.laufVom || "—"));
+  console.log("Gesucht          : " + (nachweis.nachweis.gesucht ? "ja"
+    : "nein — " + (nachweis.nachweis.warumNichtGesucht || "kein Suchnachweis im Bericht")));
+  if (nachweis.nachweis.suche) {
+    const su = nachweis.nachweis.suche;
+    console.log("Suche            : " + su.familienGefragtAnzahl + " Familien, " +
+      su.themenGeprueft + " Themen geprueft, Stufe " + su.stufeErreicht +
+      ", " + su.gefunden + " belegt");
+    console.log("Nicht gefragt    : " + (su.nichtGefragt.length
+      ? su.nichtGefragt.map((n) => n.stufe + " " + n.id).join(", ")
+      : "keine Stufe — die Leiter wurde ganz durchgefragt"));
+  }
+  if (nachweis.nachweis.tore.abgelehnt) {
+    console.log("An den Toren     : " + Object.entries(nachweis.nachweis.tore.jeStufe)
+      .map(([st, n]) => n + "x " + st).join(", "));
+  }
+  console.log("Fuer den Owner   : " + nachweis.erklaerung);
 
   const sp = Kadenz.spannung(
     readJson(join(ROOT, "social/config/cadence.json"), null));

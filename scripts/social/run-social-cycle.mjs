@@ -153,7 +153,12 @@ const NOW = arg("--now", new Date().toISOString());
    Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
    braucht, ohne die Produktionsdaten anzufassen. */
 const DATA_DIR = arg("--data", "social/data");
-const D = (name) => join(ROOT, DATA_DIR, name);
+/* `join(ROOT, "/tmp/x")` ergibt "<ROOT>/tmp/x" - ein absoluter Pfad im
+   zweiten Argument wird angeklebt, nicht befolgt. Derselbe Fehler wie
+   bei den Ausgabepfaden, nur eine Zeile weiter: ein Lauf mit
+   `--data /tmp/...` las dann ein Verzeichnis IM Repository und meldete
+   "keine Platte". `ausgabePfad` beantwortet diese Frage schon. */
+const D = (name) => join(ausgabePfad(ROOT, DATA_DIR), name);
 const VERBOSE = flag("--verbose");
 
 const log = (...parts) => console.log(...parts);
@@ -2490,6 +2495,38 @@ async function main() {
     health: matrix,
     autonomy,
     signals: signalData.signals.length,
+
+    /* -----------------------------------------------------------------
+       DER SUCHNACHWEIS DER LEITER (§15)
+
+       Er entsteht im Zyklus und wird dort gebraucht - und der
+       Orchestrator braucht ihn ein zweites Mal, um einen leeren Tag zu
+       beurteilen. Ihn NICHT zu berichten hiesse, ihn dort noch einmal
+       zu rechnen: eine zweite Suche fuer eine Frage, die schon eine
+       Antwort hat.
+
+       `gefunden` steht als Zahl und nicht als Themenliste - der
+       Nachweis soll sagen, WIE GESUCHT wurde, nicht die Platte
+       verdoppeln. */
+    ladder: {
+      familiesConsidered: leiter.familiesConsidered,
+      familiesConsideredCount: leiter.familiesConsideredCount,
+      opportunitiesConsidered: leiter.opportunitiesConsidered,
+      fallbackDepthReached: leiter.fallbackDepthReached,
+      rejectionReasons: leiter.rejectionReasons,
+      nichtGefragt: leiter.nichtGefragt,
+      gefunden: (leiter.gefunden || []).length,
+      genug: leiter.genug === true,
+      stufen: leiter.stufen
+    },
+    slate: {
+      ok: platte.ok === true,
+      grund: platte.grund,
+      erklaerung: platte.erklaerung,
+      generatedAt: platte.generatedAt || null,
+      themen: (platte.themen || []).length
+    },
+
     opportunities: candidates.map((c) => ({
       opportunityId: c.opportunity.opportunityId, topic: c.opportunity.topic,
       score: c.score.score, proposable: c.score.proposable, explanation: c.score.explanation,

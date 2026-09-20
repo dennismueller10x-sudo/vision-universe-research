@@ -87,7 +87,19 @@
     PORTFOLIO_SATURATION:            "PORTFOLIO_SATURATION",
     CONTENT_REPETITION:              "CONTENT_REPETITION",
     OWNER_HELD_STATE:                "OWNER_HELD_STATE",
-    OPERATIONAL_BLOCKER:             "OPERATIONAL_BLOCKER"
+    OPERATIONAL_BLOCKER:             "OPERATIONAL_BLOCKER",
+    /* -----------------------------------------------------------------
+       KEINE FAMILIE TRUG HEUTE EIN THEMA
+
+       Nicht dasselbe wie "kein Thema bestand die Qualitaet": dort gab
+       es etwas zu pruefen, hier nicht. Der Unterschied ist der ganze
+       Nachweis - wer beides gleich nennt, kann spaeter nicht mehr
+       sagen, ob gesucht oder aufgegeben wurde.
+
+       Dieser Grund ist nur dann eine ausreichende Tagesentscheidung,
+       wenn die Leiter WIRKLICH jede Stufe gefragt hat. no-post.js
+       prueft das; hier steht nur der Name. */
+    NO_TOPIC_IN_ANY_FAMILY:          "NO_TOPIC_IN_ANY_FAMILY"
   };
 
   /* -------------------------------------------------------------------
