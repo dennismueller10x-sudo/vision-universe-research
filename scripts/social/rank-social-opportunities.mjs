@@ -30,6 +30,8 @@ const Brand = require(join(ROOT, "social/engines/brand.js"));
 const Audience = require(join(ROOT, "social/engines/audience-frame.js"));
 const Memory = require(join(ROOT, "social/engines/memory.js"));
 const Registry = require(join(ROOT, "social/engines/source-registry.js"));
+const OwnPerf = require(join(ROOT, "social/engines/own-performance.js"));
+const Learning = require(join(ROOT, "social/engines/learning.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -241,6 +243,16 @@ export function dryRun(options) {
     t.observedHashtags = hashtagsJeThema[t.topicId] || [];
   });
 
+  /* -----------------------------------------------------------------
+     DIE EIGENE LEISTUNG IST JETZT DIE EINZIGE EVIDENZKLASSE
+
+     Also wird sie je Dimension ausgewiesen, samt Abdeckung. Eine
+     Dimension mit 0 % Abdeckung ist keine schlechte Dimension - sie
+     wurde nicht mitgeschrieben, und das ist ein anderer Satz. */
+  const eigenLeistung = OwnPerf.auswerten(memory.entries || [],
+    { observe: Learning.observe });
+  const modus = OwnPerf.exploreExploit(eigenLeistung, {});
+
   const signale = {};
   for (const t of slate.topics) signale[t.topicId] = messe(t, kontext);
 
@@ -297,6 +309,34 @@ export function dryRun(options) {
     purpose: "NORTH_STAR_SHIFT_PROOF",
     metaConnectionFromThisRun: metaVerbindung,
     ownPerformanceMeasurements: messungen,
+    /* Der Zustand der externen Sensoren - einmal, nicht je Thema. */
+    externalIntelligence: rang.externalIntelligence ||
+      (externZustand.state === "NOT_ACTIVE"
+        ? Registry.NO_ACTIVE_EXTERNAL_SOURCE : "ACTIVE"),
+    externalSources: quellen.sensors.map((x) => ({ id: x.id, state: x.state,
+      dormant: x.dormant, reason: x.reason })),
+    /* Die eigene Leistung je Lerndimension, samt Abdeckung. Die
+       Abdeckung ist Teil des Befunds: eine Dimension, die niemand
+       mitgeschrieben hat, ist nicht schlecht. */
+    ownPerformanceEvidence: {
+      measuredEntries: eigenLeistung.dimensions.length
+        ? eigenLeistung.dimensions[0].measured : 0,
+      /* Warum die uebrigen fehlen - gezaehlt, nicht geraten. */
+      unmeasuredReasons: eigenLeistung.dimensions.length
+        ? eigenLeistung.dimensions[0].unmeasuredReasons : [],
+      evaluableDimensions: eigenLeistung.evaluableCount,
+      dimensionsWithFinding: eigenLeistung.withFindingCount,
+      dimensions: eigenLeistung.dimensions.map((d) => ({
+        dimension: d.dimension, coverage: d.coverage,
+        evaluable: d.evaluable, sufficient: d.sufficient.length })),
+      predictsPerformance: false
+    },
+    exploreExploit: {
+      mode: modus.mode,
+      exploit: modus.exploit,
+      exploreCount: modus.explore.length,
+      explanation: modus.explanation
+    },
     /* -----------------------------------------------------------------
        ZWEI KLASSEN, GETRENNT AUSGEWIESEN
 
@@ -425,7 +465,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       : "—"));
     console.log("    Saettigung     : " + b.saturation.explanation);
     console.log("    Nicht anwendbar: " + b.notApplicable.join(", "));
-    console.log("    Ungemessen     : " + b.missing.map((x) => x.dimension).join(", "));
+    console.log("    Ungemessen     : " + b.missing.map((x) =>
+      x.dimension + (x.cause === "NOT_ACTIVATED" ? " (NOT_ACTIVE)"
+        : x.cause === "SYSTEMICALLY_UNAVAILABLE" ? " (systemisch)" : "")).join(", "));
   });
 
   console.log("=".repeat(70));
@@ -458,6 +500,24 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     "sie addieren");
   console.log("  wollte, muesste sagen, wie viele fremde Beitraege eine " +
     "eigene Messung wert sind.");
+
+  console.log("\n--- OWN PERFORMANCE EVIDENCE (je Lerndimension) ---");
+  const op = r.ownPerformanceEvidence;
+  console.log("  " + op.measuredEntries + " gemessene Beitraege, " +
+    op.evaluableDimensions + " von " + op.dimensions.length +
+    " Dimensionen auswertbar, " + op.dimensionsWithFinding + " mit Befund.");
+  (op.unmeasuredReasons || []).forEach((u) => console.log("    " +
+    String(u.count).padStart(3) + " ohne Messwert: " + u.reason));
+  op.dimensions.forEach((d) => console.log("    " + d.dimension.padEnd(19) +
+    String(Math.round(d.coverage * 100)).padStart(3) + " % Abdeckung   " +
+    (d.evaluable ? (d.sufficient ? d.sufficient + " belastbar" : "kein belastbarer Befund")
+                 : "nicht mitgeschrieben")));
+
+  console.log("\n--- EXPLORE / EXPLOIT ---");
+  console.log("  Modus: " + r.exploreExploit.mode);
+  console.log("  " + r.exploreExploit.explanation);
+  r.exploreExploit.exploit.forEach((e) => console.log("    EXPLOIT " +
+    e.dimension + ": " + e.values.map((v) => v.value).join(", ")));
 
   console.log("\n--- WAS NICHT GEMESSEN WERDEN KANN ---");
   r.unavailableDimensions.forEach((d) =>
