@@ -271,6 +271,29 @@ async function main() {
   const warned = report.checks.filter((c) => c.result === "WARN");
   report.verdict = failed.length ? "FAILED" : (warned.length ? "READY_WITH_NOTES" : "READY");
 
+  finish();
+  if (failed.length) process.exitCode = 1;
+}
+
+/* -------------------------------------------------------------------
+   DAS ERGEBNIS STEHT AUF JEDEM WEG
+
+   Es stand nur am Ende des vollstaendigen Laufs. Die beiden
+   Abkuerzungen - Adresse unbekannt, Worker nicht erreichbar - gingen
+   ueber `return finish()` und druckten gar keinen Schlusssatz. Wer
+   die Ausgabe las, sah einen einzelnen FAIL und danach nichts, und
+   wer sie maschinell auswertete, fand keine Zeile, auf die er sich
+   verlassen konnte.
+
+   Genau daran ist die CI-Pruefung haengengeblieben: sie suchte
+   "Worker-Adresse bekannt" - eine Zeile, die NUR erscheint, wenn die
+   Adresse FEHLT. Seit die Adresse einen Vorgabewert aus wrangler.toml
+   hat, kann dieser Fall nicht mehr eintreten. Die Pruefung verlangte
+   Text von einem Programm, das ihn zu Recht nicht mehr schreibt.
+   ------------------------------------------------------------------- */
+function finish() {
+  const failed = report.checks.filter((c) => c.result === "FAIL");
+
   console.log("");
   console.log("Ergebnis: " + report.verdict);
   if (report.redirectUri) {
@@ -283,11 +306,6 @@ async function main() {
     console.log("Fehlgeschlagen: " + failed.map((c) => c.name).join(", "));
   }
 
-  finish();
-  if (failed.length) process.exitCode = 1;
-}
-
-function finish() {
   if (!OUT_DIR) return;
   const dir = resolveOut(OUT_DIR);
   mkdirSync(dir, { recursive: true });

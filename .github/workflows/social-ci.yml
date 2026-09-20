@@ -66,9 +66,34 @@ jobs:
             echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
             exit 1
           fi
-          # verify meldet eine unbekannte Adresse als FAIL, ohne zu werfen.
-          node scripts/social/verify-worker.mjs | grep -q "Worker-Adresse bekannt" \
-            && echo "verify-worker.mjs meldet fehlende Adresse sauber."
+          # verify meldet ein Ergebnis und wirft nicht — was auch immer das
+          # Netz sagt.
+          #
+          # Hier stand `grep -q "Worker-Adresse bekannt"`. Diese Zeile
+          # erscheint NUR, wenn die Adresse FEHLT. Sie fehlte, solange sie
+          # aus einem Secret kam, das es in der CI nie gab; seit sie einen
+          # Vorgabewert aus wrangler.toml hat, kann der Fall nicht mehr
+          # eintreten. Die Pruefung verlangte damit Text von einem
+          # Programm, das ihn zu Recht nicht mehr schreibt — und war rot,
+          # obwohl alles stimmte.
+          #
+          # Geprueft gehoert der Vertrag, nicht der Wortlaut eines
+          # Sonderfalls: ein Ergebnis steht da, und es gibt keinen
+          # Stacktrace. Ob der Worker gerade erreichbar ist, ist eine
+          # Frage an die Infrastruktur und nicht an diesen Code — ein
+          # roter Lauf deswegen saegte an der falschen Stelle.
+          ausgabe="$(node scripts/social/verify-worker.mjs 2>&1 || true)"
+          echo "$ausgabe" | tail -6
+          if echo "$ausgabe" | grep -q "^Abgebrochen:"; then
+            echo "::error::verify-worker.mjs ist mit einem Stacktrace abgebrochen."
+            exit 1
+          fi
+          if echo "$ausgabe" | grep -q "^Ergebnis: "; then
+            echo "verify-worker.mjs meldet ein Ergebnis, ohne zu werfen."
+          else
+            echo "::error::verify-worker.mjs meldet kein Ergebnis."
+            exit 1
+          fi
 
       - name: Worker-Preflight (lokale Pruefungen)
         # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
