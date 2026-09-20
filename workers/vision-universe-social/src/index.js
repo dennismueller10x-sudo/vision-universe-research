@@ -62,6 +62,7 @@ import { readConnection, writeConnection, deleteConnection, readPublic, updateHe
          readClaim, claimPublish, settleClaim } from "./store.js";
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
+import { routeApproval } from "./approval.js";
 
 /* Ein Admin-Schluessel unter dieser Laenge wird abgelehnt. Der Worker hat
    keinen Zaehler fuer Fehlversuche; die einzige belastbare Verteidigung
@@ -1650,6 +1651,23 @@ export default {
     try {
       if (path === "/health") return handleHealth(env);
 
+      /* ---------------------------------------------------------------
+         DAS APPROVAL CENTER
+
+         Vor `requireAdmin`, weil es ein EIGENES Tor mitbringt: eine
+         Owner-Sitzung im Cookie statt eines Schluessels im Header oder
+         in der Adresszeile. Ein Browser kann das eine nicht und darf
+         das andere nicht (§10).
+
+         `routeApproval` gibt `null` zurueck, wenn der Pfad nicht
+         hierher gehoert — und beantwortet ALLES, was mit /approval
+         beginnt, selbst. Auch das, was es nicht gibt: sonst faellt eine
+         kuenftige Route unter /approval an dieser Stelle durch, bevor
+         sie ihre eigene Pruefung hat.
+         --------------------------------------------------------------- */
+      const freigabe = await routeApproval(request, url, env);
+      if (freigabe) return freigabe;
+
       /* Der Callback traegt keinen Admin-Schluessel — Meta wuerde ihn
          nicht mitschicken. Er ist durch state und Cookie geschuetzt. */
       if (path === "/social/meta/callback") {
@@ -1744,7 +1762,7 @@ export default {
 
 /* Fuer die Tests: die Bausteine einzeln pruefbar halten. */
 export const __internals = {
-  configProblems, redirectUri, requireAdmin, extractAdminKey,
+  configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
   handleConnect, handleCallback, handleStatus, handleVerify, handleDisconnect,
   MIN_ADMIN_KEY_LENGTH
 };

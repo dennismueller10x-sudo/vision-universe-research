@@ -100,7 +100,7 @@ export async function createState(appSecret, options = {}) {
   const nonce = toBase64Url(nonceBytes);
   const payload = {
     n: nonce,
-    t: options.now ? Math.floor(options.now / 1000) : Math.floor(Date.now() / 1000),
+    t: Math.floor((options.now === undefined ? Date.now() : options.now) / 1000),
     v: 1
   };
   const encoded = toBase64Url(new TextEncoder().encode(JSON.stringify(payload)));
@@ -148,7 +148,11 @@ export async function verifyState(appSecret, state, cookieHeader, options = {}) 
     return { valid: false, reason: "malformedPayload" };
   }
 
-  const nowSeconds = Math.floor((options.now || Date.now()) / 1000);
+  /* `=== undefined` und nicht `||`: der Zeitpunkt 0 ist ein Zeitpunkt und
+     kein fehlender Wert. Dieselbe Stelle in session.js hat genau das
+     einmal falsch gemacht, und ein Test mass daraufhin den Abstand zu
+     heute statt der Sitzungsdauer. */
+  const nowSeconds = Math.floor((options.now === undefined ? Date.now() : options.now) / 1000);
   const ageSeconds = nowSeconds - payload.t;
   /* Auch ein Zeitstempel aus der Zukunft ist ein Fund: er bedeutet, dass
      der `state` nicht aus diesem Lauf stammt. */
