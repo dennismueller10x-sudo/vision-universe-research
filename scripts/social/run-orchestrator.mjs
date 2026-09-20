@@ -1,0 +1,155 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — scripts/social/run-orchestrator.mjs
+
+   WAS IST JETZT DRAN?
+
+   Dieses Skript liest den tatsaechlichen Zustand und fragt
+   `orchestrator.js`, was zu tun ist. Es fuehrt selbst nichts aus - die
+   Stufen laufen als eigene Schritte im Workflow, damit jede fuer sich
+   scheitern und wiederholt werden kann.
+
+   Es erzeugt keinen Beitrag, gibt nichts frei und veroeffentlicht
+   nichts. Es sagt, was der naechste Schritt ist.
+
+   Ausfuehren:
+     node scripts/social/run-orchestrator.mjs
+     node scripts/social/run-orchestrator.mjs --github-output
+   ========================================================================= */
+import { readFileSync, existsSync, readdirSync, appendFileSync, statSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Orchestrator = require(join(ROOT, "social/engines/orchestrator.js"));
+const Registry = require(join(ROOT, "social/engines/source-registry.js"));
+const MessFenster = require(join(ROOT, "social/engines/measurement-window.js"));
+
+const DATA = "social/data";
+const KANDIDATEN = join(DATA, "publish-candidates");
+
+/* Zustaende, in denen ein Kandidat auf einen MENSCHEN wartet. Alles
+   andere ist entschieden oder ueberholt und blockiert nichts. */
+const WARTET = ["AWAITING_APPROVAL"];
+
+function readJson(p, f) {
+  try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
+  catch { return f; }
+}
+
+/** Kandidaten, die auf die Owner-Entscheidung warten. */
+export function wartendeKandidaten(verzeichnis) {
+  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  if (!existsSync(d)) return [];
+  return readdirSync(d)
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => {
+      const c = readJson(join(d, f), null);
+      return c ? { candidateId: c.candidateId || f.replace(/\.json$/, ""),
+        state: c.state || c.status || null, file: f } : null;
+    })
+    .filter((c) => c && WARTET.includes(c.state));
+}
+
+/**
+ * Beitraege, deren Messfenster faellig ist.
+ *
+ * Gefragt wird die bestehende Fensterlogik, nicht eine zweite hier.
+ */
+export function faelligeMessungen(perf, nowIso) {
+  const zeilen = (perf && perf.snapshots) || [];
+  return zeilen.filter((z) => {
+    const s = z.snapshot || {};
+    if (s.state === "UNAVAILABLE") return false;
+    try {
+      return MessFenster.dueForRemeasurement(
+        { capturedAt: s.capturedAt, ageHours: s.ageHours, window: s.window },
+        { now: nowIso }) === true;
+    } catch { return false; }
+  }).map((z) => ({ mediaId: z.mediaId, window: z.window }));
+}
+
+/** Der letzte Zeitpunkt, an dem ein Kandidat entstand. */
+export function letzterKandidat(verzeichnis) {
+  const d = verzeichnis || join(ROOT, KANDIDATEN);
+  if (!existsSync(d)) return null;
+  const dateien = readdirSync(d).filter((f) => f.endsWith(".json"));
+  if (!dateien.length) return null;
+  let neuester = null;
+  for (const f of dateien) {
+    const c = readJson(join(d, f), null);
+    const t = (c && (c.createdAt || c.generatedAt)) ||
+      statSync(join(d, f)).mtime.toISOString();
+    if (!neuester || t > neuester) neuester = t;
+  }
+  return neuester;
+}
+
+export function zustand(options) {
+  options = options || {};
+  const now = options.now || new Date().toISOString();
+  const perf = readJson(join(ROOT, DATA, "performance.json"), null);
+  const health = readJson(join(ROOT, DATA, "health.json"), null);
+
+  /* Ein Schalter, den man uebergehen kann, ist keiner - also wird er
+     gelesen, bevor irgendetwas anderes entschieden wird. */
+  const angehalten = !!(health && health.killSwitch &&
+    health.killSwitch.engaged === true);
+
+  return {
+    now,
+    halted: angehalten,
+    haltReason: angehalten ? (health.killSwitch.reason || "Kill Switch aktiv") : null,
+    awaitingCandidates: wartendeKandidaten(),
+    dueMeasurements: faelligeMessungen(perf, now),
+    lastPreparedAt: letzterKandidat(),
+    lastMeasuredAt: (perf && perf.generatedAt) || null
+  };
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+  const z = zustand({});
+  const h = Orchestrator.naechsteHandlung(z, {});
+  const quellen = Registry.status(
+    readJson(join(ROOT, DATA, "external-sources.json"), null));
+  const modell = Orchestrator.betriebsmodell(quellen);
+
+  console.log("VISION UNIVERSE SOCIAL — Orchestrator\n");
+  console.log("Zeitpunkt        : " + z.now);
+  console.log("Angehalten       : " + z.halted + (z.haltReason ? " (" + z.haltReason + ")" : ""));
+  console.log("Wartende Kandidaten: " + z.awaitingCandidates.length +
+    (z.awaitingCandidates.length
+      ? " (" + z.awaitingCandidates.map((c) => c.candidateId).join(", ") + ")" : ""));
+  console.log("Faellige Messungen : " + z.dueMeasurements.length);
+  console.log("Letzter Kandidat   : " + (z.lastPreparedAt || "—"));
+  console.log("Letzte Messung     : " + (z.lastMeasuredAt || "—"));
+  console.log("Externe Sensoren   : " + quellen.externalIntelligence +
+    " (" + quellen.dormantCount + " ruhend, " + quellen.activeCount + " aktiv)");
+
+  console.log("\nStufe            : " + h.stage);
+  console.log(h.explanation);
+  if (h.actions.length) {
+    console.log("\nAuszufuehren:");
+    h.actions.forEach((a) => console.log("  " + a.stage.padEnd(20) + a.reason));
+  }
+
+  console.log("\n--- BETRIEBSMODELL ---");
+  console.log("  Automatisch (" + modell.automatic.length + " Stufen):");
+  modell.automatic.forEach((x) => console.log("    " + x));
+  console.log("  Nur der Owner:");
+  modell.ownerOnly.forEach((x) => console.log("    " + x));
+  console.log("  Niemals automatisch: " + modell.neverAutomatic.join(", "));
+  console.log("  Braucht eine externe Quelle: " + modell.requiresExternalSource);
+
+  if (args.includes("--github-output") && process.env.GITHUB_OUTPUT) {
+    const zeilen = [
+      "stage=" + h.stage,
+      "measure=" + (h.actions.some((a) => a.stage === "MEASURE") ? "ja" : "nein"),
+      "prepare=" + (h.stage === "PREPARE_CANDIDATE" ? "ja" : "nein"),
+      "awaiting=" + (h.awaitingOwner ? "ja" : "nein")
+    ].join("\n") + "\n";
+    appendFileSync(process.env.GITHUB_OUTPUT, zeilen);
+  }
+}
