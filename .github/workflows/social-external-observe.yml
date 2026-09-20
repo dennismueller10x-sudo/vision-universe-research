@@ -1,0 +1,221 @@
+# =========================================================================
+# EXTERNAL SOCIAL INTELLIGENCE — BEOBACHTEN, NICHT VEROEFFENTLICHEN
+#
+# Dieser Workflow ruft den bereits vorhandenen Worker-Endpunkt
+# /social/meta/hashtag-search auf und legt das Ergebnis als
+# Beobachtungsartefakt ab.
+#
+# Er veroeffentlicht NICHTS. Er liest oeffentliche Medien zu Hashtags,
+# die der Hashtag-Portfolio-Manager vorher aus dem Content Universe
+# abgeleitet hat.
+#
+# -------------------------------------------------------------------------
+# WARUM UEBER ACTIONS UND NICHT AUS DER ENTWICKLUNGSUMGEBUNG
+# -------------------------------------------------------------------------
+#
+# Gemessen: die Entwicklungsumgebung erreicht social.visionuniverse.de
+# nicht (der Egress-Proxy lehnt den CONNECT-Tunnel mit 403 ab) und
+# fuehrt weder VU_SOCIAL_WORKER_URL noch VU_SOCIAL_ADMIN_KEY.
+#
+# Die Zugangsdaten liegen dort, wo sie hingehoeren: als Repository-
+# Secrets. Derselbe Weg hat in diesem Projekt schon den Cloudflare-
+# Preflight und den Smoke-Publish getragen.
+#
+# -------------------------------------------------------------------------
+# DIE KNAPPE RESSOURCE
+# -------------------------------------------------------------------------
+#
+# Meta erlaubt 30 EINZIGARTIGE Hashtags je rollierendem 7-Tage-Fenster.
+# WELCHE abgefragt werden, entscheidet der Portfolio-Manager auf
+# VU-Seite - nicht dieser Workflow und nicht der Worker. Ein Sensor, der
+# selbst bestimmt, wann er messen darf, ist kein Sensor mehr.
+#
+# Der Plan wird vor dem Aufruf ausgegeben und die Grenze geprueft. Ein
+# Plan, der den Rahmen sprengen wuerde, bricht den Lauf ab.
+#
+# -------------------------------------------------------------------------
+# WARUM ES ZWEI AUSLOESER GIBT
+# -------------------------------------------------------------------------
+#
+# Gemessen: ein `workflow_dispatch` auf diesen Zweig antwortet mit
+# HTTP 404. GitHub registriert einen Dispatch-Workflow erst, wenn die
+# Datei im Standardzweig liegt - dort liegt sie nicht, und sie dorthin
+# zu schieben waere eine Owner-Entscheidung, keine von hier.
+#
+# Ein `push`-Ausloeser hat diese Bedingung nicht: er liest den Workflow
+# aus dem gepushten Commit. Er darf aber nicht bei JEDEM Push feuern -
+# jeder Lauf kann Plaetze aus einem Rahmen von dreissig je sieben Tagen
+# verbrauchen, und ein Vorrat, der sich unbemerkt leert, ist keiner.
+#
+# Deshalb hing der Ausloeser an EINER Datei: `observe-request.json`.
+#
+# -------------------------------------------------------------------------
+# STILLGELEGT — OWNER-ENTSCHEIDUNG VOM 2026-09-20
+# -------------------------------------------------------------------------
+#
+# Der Datei-Ausloeser ist ENTFERNT. Solange
+# INSTAGRAM_PUBLIC_CONTENT auf NOT_ACTIVATED_BY_OWNER steht, soll eine
+# Aenderung an einer Datei keinen Lauf gegen eine abgeschaltete Quelle
+# starten koennen.
+#
+# Der Workflow bleibt vollstaendig erhalten - er ist der fertige Pfad
+# fuer den Tag, an dem die Quelle wieder eingeschaltet wird. Ein Lauf
+# von Hand bleibt moeglich und bricht sauber und GRUEN ab, weil eine
+# Entscheidung kein Fehler ist.
+# =========================================================================
+name: Social External Observe
+
+on:
+  workflow_dispatch:
+    inputs:
+      edge:
+        description: 'top (was Reichweite hatte) oder recent (was gerade passiert)'
+        type: choice
+        options: [top, recent]
+        default: top
+      max_new:
+        description: 'Hoechstens so viele NEUE Hashtags oeffnen'
+        type: string
+        default: '8'
+
+
+concurrency:
+  group: social-external-observe
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      # Bei einem push-Ausloeser checkt die Aktion sonst den Commit aus,
+      # nicht den Zweig - und ein `git push` aus einem losgeloesten HEAD
+      # scheitert. Der Zweig wird deshalb ausdruecklich genannt.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist die Quelle ueberhaupt eingeschaltet?
+        id: quelle
+        run: |
+          set -euo pipefail
+          node -e '
+            const R = require("./social/engines/source-registry.js");
+            const fs = require("fs");
+            const b = fs.existsSync("social/data/external-sources.json")
+              ? JSON.parse(fs.readFileSync("social/data/external-sources.json", "utf8"))
+              : null;
+            const d = R.darfAnfragen(b, "INSTAGRAM_PUBLIC_CONTENT");
+            console.log(d.explanation);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "aktiv=" + (d.allowed ? "ja" : "nein") + "\n");
+          '
+
+      - name: Stillgelegt — und das ist kein Fehler
+        if: steps.quelle.outputs.aktiv != 'ja'
+        run: |
+          # Kein ::warning::, kein exit 1. Eine Owner-Entscheidung ist
+          # kein Vorfall.
+          echo "INSTAGRAM_PUBLIC_CONTENT steht auf NOT_ACTIVATED_BY_OWNER."
+          echo "Es wird nichts abgefragt, und kein Hashtag-Platz verbraucht."
+          {
+            echo "## Stillgelegt"
+            echo ""
+            echo "Die Quelle ist per Owner-Entscheidung nicht aktiviert."
+            echo "Der Pfad bleibt erhalten und ist ohne Umbau aktivierbar."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Plan aus dem Content Universe ableiten
+        if: steps.quelle.outputs.aktiv == 'ja'
+        id: plan
+        run: |
+          set -euo pipefail
+          node scripts/social/plan-hashtag-observation.mjs \
+            --max-new "${{ inputs.max_new || '8' }}" --out tmp/observe
+          echo "tags=$(cat tmp/observe/tags.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Beobachten
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        env:
+          # -----------------------------------------------------------
+          # EINE ADRESSE IST KEIN GEHEIMNIS
+          #
+          # Gemessen im ersten Lauf: KEY war gesetzt, WORKER leer - und
+          # der Lauf brach ab, weil VU_SOCIAL_WORKER_URL als Secret
+          # nicht existiert. Es hat auch nie existiert: die Adresse des
+          # Workers ist oeffentlich, steht im DNS und in
+          # social-smoke-publish.yml woertlich im Klartext.
+          #
+          # Sie zum Geheimnis zu erklaeren, hat einen BEKANNTEN Wert in
+          # einen fehlenden verwandelt. Dieselbe Verwechslung wie
+          # ueberall hier, nur andersherum: nicht Unbekanntes als Null,
+          # sondern Bekanntes als Unbekanntes.
+          #
+          # Das Secret bleibt als Ueberschreibung moeglich - fuer eine
+          # abweichende Umgebung -, aber es ist keine Voraussetzung mehr.
+          WORKER: ${{ secrets.VU_SOCIAL_WORKER_URL || 'https://social.visionuniverse.de' }}
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${KEY:-}" ]; then
+            echo "::error::VU_SOCIAL_ADMIN_KEY fehlt. Ohne den Schluessel kann nichts beobachtet werden."
+            exit 1
+          fi
+          echo "Worker: $WORKER"
+          mkdir -p tmp/observe
+          # Der Schluessel reist in der Kopfzeile, nie in der Adresse:
+          # Adressen landen in Protokollen und bei Cloudflare.
+          code=$(curl -sS -o tmp/observe/raw.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            --get --data-urlencode "tags=${{ steps.plan.outputs.tags }}" \
+            --data-urlencode "edge=${{ inputs.edge || 'top' }}" \
+            "$WORKER/social/meta/hashtag-search" || echo 000)
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Der Hashtag-Endpunkt antwortet mit HTTP $code."
+            cat tmp/observe/raw.json || true
+            exit 1
+          fi
+
+      - name: Zu Mustern abstrahieren
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        run: |
+          set -euo pipefail
+          # Hier werden fremde Inhalte NICHT gespeichert. Die Rohantwort
+          # wird in Muster uebersetzt und danach verworfen.
+          node scripts/social/ingest-external-observation.mjs \
+            --raw tmp/observe/raw.json --write
+
+      - name: Beobachtung festschreiben
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        run: |
+          set -euo pipefail
+          # ---------------------------------------------------------
+          # `git diff` SIEHT NEUE DATEIEN NICHT
+          #
+          # Gemessen im zweiten Lauf: der Ingest meldete "Geschrieben:
+          # external-observations.json, hashtag-portfolio.json", und
+          # direkt darunter stand "Keine Aenderung." Beides stimmte.
+          # Die Dateien waren NEU, und `git diff` vergleicht nur, was
+          # schon verfolgt wird.
+          #
+          # Diesmal war nichts zu sichern. Bei der ersten erfolgreichen
+          # Beobachtung waere es die Beobachtung selbst gewesen - und
+          # der Lauf haette gruen gemeldet, dass es nichts zu tun gab.
+          # `git status --porcelain` sieht auch das Unverfolgte.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/external-observations.json social/data/hashtag-portfolio.json
+          git commit -m "External Social Intelligence: Beobachtung ${{ inputs.edge || 'top' }}"
+          # Der taegliche Intelligence-Lauf schreibt in denselben Zweig.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"

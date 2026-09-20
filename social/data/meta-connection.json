@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-09-15T11:22:03.767Z",
+  "source": "worker:vision-universe-social",
+  "workerConfigured": false,
+  "state": "credentials_missing_here",
+  "connected": null,
+  "missingConfiguration": [
+    "VU_SOCIAL_WORKER_URL",
+    "VU_SOCIAL_ADMIN_KEY"
+  ],
+  "explanation": "Diesem Lauf fehlt VU_SOCIAL_WORKER_URL und VU_SOCIAL_ADMIN_KEY. Er kann den Worker nicht erreichen und sagt deshalb NICHTS ueber die Meta-Verbindung - weder dass sie besteht noch dass sie fehlt. Ein frueher erbrachter Nachweis wird dadurch nicht ungueltig; er ist von hier aus nur nicht sichtbar.",
+  "probeScope": "THIS_RUN_ONLY",
+  "correctionNote": "Vorher stand hier connected=false, state=not_configured - neben genau diesem Erklaerungstext. Die Felder behaupteten Abwesenheit, die Prosa sagte Unwissen. Aus den Feldern ist die falsche Aussage 'der Meta-Provider ist nicht konfiguriert' entstanden."
+}

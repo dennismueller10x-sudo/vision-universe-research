@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-09-20T10:28:03.662Z",
+  "overall": "WARNING",
+  "counts": {
+    "PASS": 11,
+    "WARNING": 0,
+    "FAIL": 0,
+    "UNAVAILABLE": 6
+  },
+  "rows": [
+    {
+      "component": "providers.auth",
+      "label": "Provider-Authentifizierung",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.publishing",
+      "label": "Veroeffentlichung",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.analytics",
+      "label": "Kennzahlenabruf",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.audience",
+      "label": "Publikumssignale",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "signals.internal",
+      "label": "Interne VU-Signale",
+      "state": "PASS",
+      "dataSource": "social/data/signals.json",
+      "lastSuccessAt": "2026-09-19T15:46:36.650Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 18.7 h."
+    },
+    {
+      "component": "signals.market",
+      "label": "Marktsignale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "signals.news",
+      "label": "Nachrichtensignale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein lizenzierter News-Provider angebunden.",
+      "nextAction": "NewsDataProvider (quant/engines/provider.js) ist bereits definiert.",
+      "detail": null
+    },
+    {
+      "component": "signals.social",
+      "label": "Externe Social-Signale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine Plattform-API mit Trenddaten angebunden; Lizenz- und Plattformregeln sind vorher zu klaeren.",
+      "nextAction": "SocialAudienceProvider liefert Kommentare; oeffentliche Trends brauchen eine eigene Quelle.",
+      "detail": null
+    },
+    {
+      "component": "intelligence.trend",
+      "label": "Trend Intelligence",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine externe Trendquelle angebunden; der Trend Score enthaelt sich (§45).",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": null
+    },
+    {
+      "component": "intelligence.opportunity",
+      "label": "Opportunity Engine",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "content.pipeline",
+      "label": "Content-Pipeline",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "content.validation",
+      "label": "Fakten- und Markenpruefung",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "scheduler",
+      "label": "Terminierung",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "queue",
+      "label": "Warteschlange",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "learning",
+      "label": "Learning Engine",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "experiments",
+      "label": "Experimente",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "killSwitch",
+      "label": "Kill Switch",
+      "state": "PASS",
+      "dataSource": "social/config/kill-switch.json",
+      "lastSuccessAt": "2026-09-20T10:28:03.662Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    }
+  ],
+  "explanation": "Gesamtzustand WARNING: 11 PASS, 0 WARNING, 0 FAIL, 6 UNAVAILABLE. Noch nicht eingerichtet (6): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente. Was fehlt, fehlt weil es noch nicht eingerichtet ist — nicht weil es kaputt ist."
+}

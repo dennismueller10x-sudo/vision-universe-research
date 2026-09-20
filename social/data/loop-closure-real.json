@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-09-16T20:20:00Z",
+  "evidence": "real",
+  "evidenceOrigin": "GEMESSEN — 16 Beitrag/Beitraege von Instagram",
+  "simulated": false,
+  "runA": {
+    "strategyVersion": "strategy_initial",
+    "strategyChanged": false,
+    "evidenceState": "NICHTS_GEMESSEN",
+    "measuredPosts": 0,
+    "dataPoints": 0,
+    "baselineSufficient": false,
+    "observations": 0,
+    "belastbar": 0,
+    "formatwissen": 0,
+    "formate": [
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE"
+    ],
+    "visuals": [
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD"
+    ],
+    "stunden": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "zeitquelle": [
+      "Startwert",
+      "Startwert",
+      "Startwert",
+      "Startwert"
+    ],
+    "zeitwissen": 0,
+    "begruendung": "EXPLAIN_THE_MOVE"
+  },
+  "runB": {
+    "strategyVersion": "strategy_initial",
+    "strategyChanged": false,
+    "evidenceState": "BEWERTBAR",
+    "measuredPosts": 16,
+    "dataPoints": 16,
+    "baselineSufficient": true,
+    "observations": 2,
+    "belastbar": 0,
+    "formatwissen": 0,
+    "formate": [
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE",
+      "EXPLAIN_THE_MOVE"
+    ],
+    "visuals": [
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD",
+      "DATA_CARD"
+    ],
+    "stunden": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "zeitquelle": [
+      "Startwert",
+      "Startwert",
+      "Startwert",
+      "Startwert"
+    ],
+    "zeitwissen": 8,
+    "begruendung": "EXPLAIN_THE_MOVE"
+  },
+  "differences": [
+    "evidenceState",
+    "measuredPosts",
+    "dataPoints",
+    "baselineSufficient",
+    "observations",
+    "zeitwissen"
+  ],
+  "verdict": "CLOSED_STATE",
+  "decisionChanged": false,
+  "closed": true,
+  "note": "Die Zahlen in Lauf B waren gemessen. Bei n=1 ist die richtige Folgerung 'weiter erkunden' — die Schliessung zeigt sich am Evidenzzustand, nicht an einer Formatempfehlung."
+}

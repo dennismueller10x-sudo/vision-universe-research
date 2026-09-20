@@ -1,0 +1,317 @@
+{
+  "generatedAt": "2026-09-19T08:10:16.224Z",
+  "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
+  "jobs": [
+    {
+      "creativeJobId": "job_vu-image-trigger-proof-20260917-001:54cc6851:attempt1",
+      "contentId": "vu-image-trigger-proof-20260917-001",
+      "briefBlobSha": "54cc68516173cd745674ed837e96e5bbec04bdde",
+      "processingKey": "vu-image-trigger-proof-brief-20260917-001:vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 98,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success",
+      "durationSeconds": 345,
+      "source": "invocation-ledger latencyObservations (PR 98)",
+      "createdAt": "2026-09-17T09:48:36Z",
+      "updatedAt": "2026-09-17T09:54:21Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:dabd1359:attempt1",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "dabd135913761bf0f1be526f3362888359f5561a",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:dabd135913761bf0f1be526f3362888359f5561a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 101,
+      "prState": "open",
+      "deliveryIds": [
+        "2c4ca770-b28d-11f1-9dd2-d4cdebdcbfbd"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "no result commit; IMAGE_GENERATION_UNAVAILABLE_IN_EVENT_AGENT",
+      "durationSeconds": null,
+      "source": "PR 101 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T11:45:48Z",
+      "updatedAt": "2026-09-17T19:44:29Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-structure-20260917:c6489f55:attempt1",
+      "contentId": "vu-diag-structure-20260917",
+      "briefBlobSha": "c6489f55a1fcd5897ba5de504ce31d0109cdb20b",
+      "processingKey": "vu-diag-structure-brief-20260917:vu-diag-structure-20260917:c6489f55a1fcd5897ba5de504ce31d0109cdb20b:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 102,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "kein Ergebnis-Commit",
+      "durationSeconds": null,
+      "source": "invocation-ledger, aus PR-102-Kommentaren synchronisiert",
+      "createdAt": "2026-09-17T17:04:19Z",
+      "updatedAt": "2026-09-17T18:30:06Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-size-20260917:1886e2ea:attempt1",
+      "contentId": "vu-diag-size-20260917",
+      "briefBlobSha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "processingKey": "vu-diag-size-brief-20260917:vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 103,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "success, Ergebnis-Commit 2026-09-17T18:32:24Z - rund 3,5 min nach dem letzten beobachteten Start",
+      "durationSeconds": null,
+      "source": "invocation-ledger + git log origin/authoring/request/vu-diag-size-20260917",
+      "createdAt": "2026-09-17T17:02:17Z",
+      "updatedAt": "2026-09-17T18:32:24Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-baseline-20260917:44f45833:attempt1",
+      "contentId": "vu-diag-baseline-20260917",
+      "briefBlobSha": "44f45833921758437311fcecf87c288c22b979f6",
+      "processingKey": "vu-diag-baseline-brief-20260917:vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 104,
+      "prState": "open",
+      "deliveryIds": [
+        "67f3b790-b2bb-11f1-8373-2f2c97430b72"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "kein Ergebnis-Commit; IMAGE_GENERATION_UNAVAILABLE_IN_EVENT_AGENT",
+      "durationSeconds": null,
+      "source": "PR 104 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T17:16:36Z",
+      "updatedAt": "2026-09-17T19:28:42Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:8a1367e9:attempt2",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "8a1367e93f136ac5c60c27c68f6509b287a010fe",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:8a1367e93f136ac5c60c27c68f6509b287a010fe:1.0",
+      "attempt": 2,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 105,
+      "prState": "closed",
+      "prClosedAt": "2026-09-18T08:05:20Z",
+      "deliveryIds": [
+        "611be490-b2c7-11f1-91e5-90833707ce99"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 5,
+      "outcome": "kein Ergebnis-Commit; der Anbieter meldete noch 2026-09-18T05:55Z - 11 h 13 min nach der einen Delivery",
+      "durationSeconds": null,
+      "source": "PR 105 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T18:42:25Z",
+      "updatedAt": "2026-09-18T05:55:00Z"
+    },
+    {
+      "creativeJobId": "job_vu-permcheck-20260918:97b580d4:attempt1",
+      "contentId": "vu-permcheck-20260918",
+      "briefBlobSha": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+      "processingKey": "vu-permcheck-brief-20260918:vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 106,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success, Ergebnis-Commit 2026-09-18T03:46:42Z",
+      "durationSeconds": null,
+      "source": "invocation-ledger + git log origin/authoring/request/vu-permcheck-20260918",
+      "createdAt": "2026-09-18T03:43:03Z",
+      "updatedAt": "2026-09-18T03:46:42Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:bf22582c:attempt3",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "attempt": 3,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 108,
+      "prState": "open",
+      "deliveryIds": [
+        "31d72160-b31a-11f1-9c3a-4e11af80d758"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success, alle neun Transportpruefungen bestanden",
+      "durationSeconds": 148,
+      "source": "PR 108 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-18T04:36:13Z",
+      "updatedAt": "2026-09-18T04:38:41Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:attempt4:revtext-only",
+      "contentId": "vu-xom-20260911-rev1",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "ab5341804d87b71ee9f1b4d662da06f873b54f11",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:1.0",
+      "attempt": 4,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-18T14:24:02.027Z",
+      "updatedAt": "2026-09-19T06:19:55.815Z",
+      "prNumber": 110,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-18T14:24:02.027Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-18T14:27:22.040Z",
+          "note": "PR 110 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-18T14:40:55.163Z",
+          "note": "Kein VU_CREATIVE_AGENT_INVOCATION auf PR 110 — deutlich ausserhalb jeder gemessenen Anlaufzeit."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-19T06:19:55.815Z",
+          "note": "CONTRACT_MISMATCH (Owner-Befund)"
+        }
+      ],
+      "prState": "open",
+      "outcome": "Vertragswidrig, nicht unzugestellt. Der Brief verlangte Text neu und Bild geerbt; der damalige Contract kannte nur FULL_CREATIVE mit Bildpflicht. Vom Owner als Ursache benannt.",
+      "source": "dispatch-creative-job Pfad, PR 110",
+      "deliveryCount": 0,
+      "note": "Korrektur einer frueheren Einstufung: hier stand CREATIVE_JOB_STALE mit der Lesart Trigger-/Zustellungsfehler. Das war falsch. Kein TRIGGER_FAILURE, kein DELIVERY_FAILURE, kein PROVIDER_FAILURE, kein CONTENT_FAILURE. Der Befund bleibt als Provenance erhalten; PR 110 wird nicht nachtraeglich so veraendert, als waere er erfolgreich verarbeitet worden.",
+      "failureType": "CONTRACT_MISMATCH"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:attempt4:revtext-only",
+      "contentId": "vu-xom-20260911-rev2",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
+      "attempt": 4,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_IN_FLIGHT",
+      "createdAt": "2026-09-19T06:25:47.285Z",
+      "updatedAt": "2026-09-19T07:55:19.000Z",
+      "prNumber": 112,
+      "deliveryIds": [
+        "2d1eed70-b3ff-11f1-9185-93442bb605c2"
+      ],
+      "observedStarts": 1,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T06:25:47.285Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T06:29:48.569Z",
+          "note": "PR 112 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-19T07:01:00.945Z",
+          "note": "kein Start; Bildanforderung als einziges Trennmerkmal"
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T07:53:25.364Z",
+          "note": "ready_for_review auf PR 112; 17 Vorbedingungen geprueft"
+        },
+        {
+          "state": "CREATIVE_JOB_IN_FLIGHT",
+          "at": "2026-09-19T07:55:19.000Z",
+          "note": "VU_CREATIVE_AGENT_INVOCATION STARTED, 1m54s nach dem Ereignis. Die Quittung nennt request_type TEXT_REVISION - der erweiterte Contract ist auf Providerseite real."
+        }
+      ],
+      "prState": "open",
+      "requestType": "TEXT_REVISION",
+      "visualMode": "INHERIT_VERIFIED_ASSET",
+      "outcome": "Draft -> Ready for Review. Genau ein zulaessiges Ereignis fuer denselben Request: kein neuer Commit, kein neuer Branch, kein neuer PR, kein neuer processing_key.",
+      "source": "dispatch ueber request-creative-revision, PR 112",
+      "deliveryCount": 0,
+      "note": "Beobachtung ueber elf Request-PRs: 9 von 9 mit Bildanforderung sind gestartet, 0 von 2 ohne. Das ist das einzige Merkmal, das die beiden Gruppen trennt. Es stuetzt den Owner-Befund CONTRACT_MISMATCH und zeigt zugleich, dass die VU-seitige Erweiterung allein nicht genuegt. Die Regeln der Automation selbst sind von hier aus nicht beobachtbar - das bleibt eine starke Folgerung und kein Beweis.",
+      "triggerEvent": "pull_request/ready_for_review"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:attempt5:revtext-only",
+      "contentId": "vu-xom-20260911-rev3",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "ec19138deda55931fe18410a9d6b0af3f2893758",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:1.0",
+      "attempt": 5,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-19T08:10:16.224Z",
+      "updatedAt": "2026-09-19T08:13:47Z",
+      "prNumber": 116,
+      "deliveryIds": [],
+      "observedStarts": null,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T08:10:16.224Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T08:11:39Z",
+          "note": "PR 116 direkt als ready geoeffnet. Zeitpunkt: created_at des PR (GitHub).",
+          "timestampSource": "github:pull_request.created_at"
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-19T08:13:47Z",
+          "note": "Ergebnis-Commit auf dem Request-Branch, eine Datei ohne Asset.",
+          "timestampSource": "git:committer-date 5feb543/88e99187"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": null,
+          "note": "Vierzehn Pflichtpruefungen bestanden, geerbtes Asset unveraendert. Der Zeitpunkt der Pruefung wurde nicht mitgeschrieben.",
+          "timestampSource": "unobserved"
+        }
+      ],
+      "prState": "open",
+      "triggerEvent": "pull_request/opened",
+      "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt.",
+      "deliveryCount": 1,
+      "requestType": "TEXT_REVISION",
+      "visualMode": "INHERIT_VERIFIED_ASSET",
+      "registerNote": "Die Zeitpunkte fuer DISPATCHED und RESULT_AVAILABLE stammen aus beobachtbaren Quellen (GitHub bzw. git) und ersetzen zwei geschaetzte Werte, von denen einer VOR dem Ereignis lag, das er quittieren sollte. Fuer VERIFIED und die Zahl der beobachteten Starts gibt es keine Quelle - sie stehen als unobserved statt als plausible Zahl. Ein erfundener Zeitpunkt ist schlimmer als eine Luecke: die Luecke sieht man.",
+      "observedStartsSource": "unobserved"
+    }
+  ],
+  "budget": {
+    "dispatchesPerProcessingKey": 1,
+    "concurrentJobsPerContentId": 1,
+    "maxAttemptsPerContentId": 3,
+    "maxRevisionsPerContentId": 3,
+    "diagnosticJobsInProduction": 0
+  }
+}

@@ -1,0 +1,207 @@
+# =========================================================================
+# vision-universe-social — Cloudflare-Worker-Konfiguration
+#
+# DIESER WORKER EXISTIERT BEREITS AUSSERHALB DES REPOSITORIES.
+#
+# Diese Datei macht ihn reproduzierbar deploybar — sie erzeugt ihn nicht
+# neu. Vor dem ersten Deployment aus diesem Repository MUSS geprueft
+# werden, ob dabei vorhandene produktive Logik ueberschrieben wuerde:
+#
+#     node scripts/social/preflight-worker.mjs
+#
+# Das Skript liest den aktuell deployten Worker ueber die Cloudflare-API
+# und meldet Groesse, Fingerabdruck und Bindungen. Erst wenn klar ist,
+# was dort liegt, wird deployt.
+#
+# -------------------------------------------------------------------------
+# WAS HIER NIEMALS STEHT
+# -------------------------------------------------------------------------
+#
+# Secret-WERTE. Weder META_APP_ID noch META_APP_SECRET noch der
+# Admin-Schluessel. Sie werden ausschliesslich gesetzt mit:
+#
+#     npx wrangler secret put META_APP_ID
+#     npx wrangler secret put META_APP_SECRET
+#     npx wrangler secret put VU_SOCIAL_ADMIN_KEY
+#
+# META_APP_ID und META_APP_SECRET sind laut Owner bereits gesetzt.
+#
+# -------------------------------------------------------------------------
+# PLATZHALTER SIND ABSICHT
+# -------------------------------------------------------------------------
+#
+# `id` der KV-Bindung und `PUBLIC_BASE_URL` sind kontospezifisch und im
+# Repository nicht bekannt. Sie stehen als erkennbare Platzhalter da,
+# damit ein Deployment mit falscher Konfiguration ABBRICHT statt
+# irgendwohin zu zeigen. Ein stiller Standardwert waere hier gefaehrlich:
+# eine falsche PUBLIC_BASE_URL erzeugt eine redirect_uri, die Meta
+# ablehnt — im besten Fall. Im schlechteren zeigt sie auf einen fremden
+# Host.
+# =========================================================================
+
+name = "vision-universe-social"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# Kein Node-Kompatibilitaetsmodus: der Worker benutzt ausschliesslich
+# Web-Standards (fetch, crypto.subtle, URL, TextEncoder). Das haelt ihn
+# klein und schnell und entspricht derselben Haltung wie im uebrigen
+# Repository — keine Abhaengigkeit, die nicht gebraucht wird.
+compatibility_flags = []
+
+# Die workers.dev-Adresse ist NICHT mehr der Einstiegspunkt fuer OAuth.
+# Meta lehnt sie als App-Domain ab: workers.dev steht auf der Public
+# Suffix List und gehoert Cloudflare, nicht uns (siehe
+# docs/VU_SOCIAL_EIGENE_DOMAIN.md). Die redirect_uri entsteht
+# ausschliesslich aus PUBLIC_BASE_URL weiter unten.
+#
+# Sie bleibt vorerst aktiv, aber nur als Rueckfallweg: die eigene Domain
+# ist erst seit kurzem in Betrieb, und solange sie sich nicht bewaehrt
+# hat, ist ein zweiter erreichbarer Weg zu /health mehr wert als die
+# Aufgeraeumtheit. Abschalten ist eine Zeile — und aendert am OAuth-Flow
+# nichts, weil der diese Adresse nicht mehr benutzt.
+workers_dev = true
+
+# -------------------------------------------------------------------------
+# EIGENE DOMAIN
+# -------------------------------------------------------------------------
+# Cloudflare legt DNS-Eintrag und Zertifikat selbst an. Die Zone muss auf
+# demselben Konto liegen — sonst bricht `wrangler deploy` ab.
+#
+# Diese Zeilen stehen hier, damit die Domain reproduzierbar ist. Im
+# Dashboard angeklickt waere sie zwar auch in Betrieb, aber nirgends
+# aufgeschrieben.
+[[routes]]
+pattern = "social.visionuniverse.de"
+custom_domain = true
+
+# Beobachtbarkeit an, aber ohne Aufzeichnung von Anfragekoerpern.
+# Der Worker schwaerzt jede Ausgabe (src/redact.js); trotzdem gilt:
+# was nicht protokolliert wird, kann nicht durchsickern.
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = false
+
+# -------------------------------------------------------------------------
+# VARIABLEN (keine Geheimnisse)
+# -------------------------------------------------------------------------
+[vars]
+# Die oeffentliche Basis-URL DIESES Workers. Aus ihr wird die redirect_uri
+# gebaut: <PUBLIC_BASE_URL>/social/meta/callback
+#
+# Genau dieser Wert muss in der Meta-App unter
+#   Facebook Login for Business -> Einstellungen -> Gueltige OAuth-Redirect-URIs
+# eingetragen sein. Meta vergleicht zeichengenau.
+PUBLIC_BASE_URL = "https://social.visionuniverse.de"
+
+# Version der Graph API. Wird angehoben, wenn eine Version auslaeuft —
+# als eigener Commit, damit die Aenderung eine Begruendung hat.
+META_API_VERSION = "v21.0"
+
+# Die ID der Facebook-Login-for-Business-Konfiguration.
+#
+# Sie entscheidet, WELCHER Meta-Dialog gilt:
+#
+#   gesetzt  -> Business-Anmeldung. Die Rechte stehen in der
+#               Konfiguration bei Meta; `scope` wird NICHT mitgeschickt.
+#   leer     -> klassische Anmeldung mit `scope` (REQUIRED_SCOPES).
+#
+# Kein Geheimnis: die ID steht im Dialog-Link, den der Nutzer ohnehin
+# sieht. Sie ist eine Kennung, keine Vollmacht — ohne App-Secret ist mit
+# ihr nichts anzufangen. Deshalb Variable und nicht Secret.
+#
+# Ablesbar, welcher Dialog gerade gilt: GET /health -> "loginMode".
+# Konfiguration "Vision Universe Social", vom Owner am 2026-09-15 geliefert.
+# Rechte laut Konfiguration: instagram_basic, instagram_content_publish,
+# instagram_manage_insights, pages_show_list.
+META_LOGIN_CONFIG_ID = "1555849235747979"
+
+# -------------------------------------------------------------------------
+# ZIEL-ALLOWLIST — das einzig zulaessige Publishing-Ziel
+# -------------------------------------------------------------------------
+#
+# Ein Autorisierungsdialog zeigt alles, worauf der angemeldete Mensch
+# Rechte hat: private Konten, Konten anderer Projekte, alte Seiten. Ein
+# Fehlgriff dort ist schnell passiert und faellt erst auf, wenn ein
+# Beitrag am falschen Ort steht — dann ist er veroeffentlicht.
+#
+# Deshalb entscheidet nicht der Dialog, welches Konto zulaessig ist,
+# sondern diese Liste. Ein Konto, das nicht daraufsteht, wird gar nicht
+# erst gespeichert und kann damit nie Publishing-Ziel werden.
+META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
+
+# Dasselbe ueber die numerische Konto-ID. Sie ist erst nach der ersten
+# erfolgreichen Aufloesung bekannt — dafuer laesst sie sich, anders als
+# ein Handle, nicht umbenennen. Sobald sie bekannt ist, gehoert sie hier
+# eingetragen: dann haengt die Sperre nicht mehr an einem Namen.
+#
+# Sind beide gesetzt, muessen BEIDE passen.
+# META_IG_ACCOUNT_ID = ""
+
+# -------------------------------------------------------------------------
+# SMOKE-TEST — genau EIN ausdruecklich ausgeloester Testbeitrag
+# -------------------------------------------------------------------------
+#
+# Der Endpunkt /social/meta/smoke-publish veroeffentlicht einen echten
+# Beitrag. Er laeuft nur per POST, nur mit Admin-Schluessel, nur mit
+# ausdruecklicher Bestaetigung und nur EINMAL — die Graph API kennt kein
+# Idempotenz-Token, ein zweiter Aufruf erzeugt einen zweiten Beitrag.
+#
+# Das Bild muss fuer Meta oeffentlich abrufbar und JPEG sein. Diese
+# Adresse liegt auf der bestehenden Vision-Universe-Seite (GitHub Pages,
+# Default-Branch): 1080x1080, also quadratisch — das Format, das
+# Instagram im Raster und im Feed unbeschnitten zeigt.
+#
+# Es ist ein eigenes Asset, erzeugt von
+# scripts/social/make-test-asset.mjs: dunkler Grund in der Palette der
+# Seite, darauf VISION UNIVERSE® und "Social Publishing Test". Vorher
+# stand hier ein Vorschaubild der Nachrichtenseite. Das war abstrakt,
+# seine Herkunft ist im Repository nicht dokumentiert, und es sagte
+# einem Betrachter nicht, was er sieht — drei Dinge, die bei einem
+# Beitrag aus einem Unternehmenskonto zaehlen.
+#
+# Der Worker prueft die Adresse selbst, BEVOR er Meta bittet sie
+# abzuholen: sonst kaeme ein unerreichbares Bild als Meta-Fehlercode
+# zurueck, der nach einem Problem mit dem Konto aussieht.
+VU_SOCIAL_SMOKE_IMAGE_URL = "https://research.visionuniverse.de/assets/social/vu-social-publishing-test.jpg"
+
+# Die Bildunterschrift sagt, was der Beitrag ist. Wer ihn sieht, soll
+# nicht raten muessen — und wer ihn spaeter loescht, soll ihn
+# wiedererkennen.
+#
+# Wortlaut vom Owner freigegeben. Keine Hashtags, keine Erwaehnungen,
+# keine Verweise. Umlaute stehen hier ausgeschrieben und nicht als ue/ss:
+# diese Zeile wird oeffentlich GELESEN, nicht nur konfiguriert. Sie reist
+# URL-kodiert als UTF-8 zur Graph API (graph.js setzt sie ueber
+# URLSearchParams) — IN-Tests halten den Wortlaut fest, damit eine
+# Umschrift nicht unbemerkt zurueckkommt.
+VU_SOCIAL_SMOKE_CAPTION = "Technischer Test unserer Social-Infrastruktur. Dieser Beitrag dient ausschließlich der Überprüfung des Publishing-Workflows."
+
+# -------------------------------------------------------------------------
+# SPEICHER
+# -------------------------------------------------------------------------
+# Genau EIN Datensatz: die aktuelle Meta-Verbindung (siehe src/store.js).
+# Kein D1 — eine relationale Datenbank fuer eine Zeile waere die
+# Parallelarchitektur, die ausdruecklich nicht entstehen soll.
+#
+# Anlegen mit:
+#     npx wrangler kv namespace create VU_SOCIAL_KV
+# und die zurueckgegebene id hier eintragen.
+[[kv_namespaces]]
+binding = "VU_SOCIAL_KV"
+id = "582accaa66bf471a833b3813a6d2a45b"
+
+# -------------------------------------------------------------------------
+# SECRETS — NUR DIE NAMEN, NIEMALS WERTE
+# -------------------------------------------------------------------------
+#   META_APP_ID            (laut Owner bereits gesetzt)
+#   META_APP_SECRET        (laut Owner bereits gesetzt)
+#   VU_SOCIAL_ADMIN_KEY    schuetzt connect/status/verify/disconnect;
+#                          mindestens 32 Zeichen, sonst lehnt der Worker ab
+#   META_WEBHOOK_SECRET    erst noetig, wenn Webhooks eingerichtet werden
+#
+# Pruefen, welche gesetzt sind (zeigt Namen, keine Werte):
+#     npx wrangler secret list

@@ -1,0 +1,77 @@
+DEPLOY
+
+# =========================================================================
+# DIESE DATEI IST DIE DEPLOYMENT-ANFORDERUNG
+# =========================================================================
+#
+# Solange sie hier liegt und ihre erste Zeile DEPLOY lautet, deployt jeder
+# Push auf diesen Branch den Worker `vision-universe-social` — nachdem der
+# Preflight im selben Lauf geprueft hat, was dort liegt.
+#
+# Entfernen beendet das:
+#
+#     git rm workers/vision-universe-social/DEPLOY_REQUEST
+#
+# -------------------------------------------------------------------------
+# WARUM EINE DATEI UND KEIN KNOPF
+# -------------------------------------------------------------------------
+#
+# Die GitHub-API kennt einen Workflow fuer einen Dispatch erst, wenn er auf
+# dem Default-Branch liegt — davor antwortet sie mit 404. Dieser Workflow
+# liegt noch nicht dort, also gibt es keinen Knopf "Run workflow" und keine
+# Eingabefelder. Er laeuft ueber einen Push.
+#
+# Ein Push traegt aber keine Bestaetigung mit sich. Ein Deployment, das
+# einfach bei jedem Push mitlaeuft, waere die Art Automatik, die spaeter
+# niemand mehr erklaeren kann.
+#
+# Diese Datei ist die Bestaetigung. Sie ist im Diff sichtbar, sie hat einen
+# Autor und ein Datum, und sie laesst sich durch Loeschen zurueckziehen.
+# Das ist mehr Nachweis als ein Auswahlfeld, nicht weniger.
+#
+# -------------------------------------------------------------------------
+# WAS SIE NICHT ERLAUBT
+# -------------------------------------------------------------------------
+#
+# Sie hebt keine Pruefung auf. Findet der Preflight im Worker Code, den er
+# nicht als ersetzbar einordnet, bricht der Lauf ab, bevor irgendetwas
+# deployt wird — mit dieser Datei genauso wie ohne sie.
+#
+# Sie veroeffentlicht nichts. Der Worker HAT seit dem Smoke-Test einen
+# Publishing-Endpunkt — aber ein Deployment ruft ihn nicht auf. Er
+# verlangt POST, den Admin-Schluessel und eine getippte Bestaetigung, und
+# er laeuft genau einmal. (Diese Zeile stand hier frueher als "der Worker
+# hat keinen Publishing-Endpunkt". Das stimmte, als sie geschrieben
+# wurde, und danach nicht mehr — eine ueberholte Zusicherung ist
+# schlimmer als keine, weil sie falsch beruhigt.)
+#
+# Sie loest keinen Meta-Login aus.
+#
+# NACHTRAG 2026-09-19 — WAS DIESE DATEI STILL GETAN HAT
+#
+# Beim Vorbereiten der Owner-Schritte habe ich behauptet, ein Push auf
+# workers/** loese "nur den Preflight" aus und der neue Diagnose-
+# Endpunkt sei deshalb noch nicht draussen. Das war falsch: diese Datei
+# lag da, ihre erste Zeile lautete DEPLOY, und damit deployt jeder
+# solche Push - genau wie oben beschrieben.
+#
+# Der Fehler ist lehrreich, weil er die Sorte ist, gegen die dieses
+# Projekt sonst anschreibt: ich habe den MECHANISMUS gelesen (die
+# Bedingung im Workflow) und den ZUSTAND nicht (ob die Datei da ist).
+# Eine Bedingung zu kennen, ersetzt nicht, sie auszuwerten.
+#
+# Inhaltlich aendert der Nachtrag nichts: der Owner hat das Deployment
+# des read-only Endpunkts anschliessend ausdruecklich angeordnet. Der
+# Vermerk steht hier, weil eine Datei, die ueber ihre eigene Wirkung
+# aufklaert, auch ueber deren Missdeutung aufklaeren soll.
+#
+# -------------------------------------------------------------------------
+# STAND BEIM ANLEGEN
+# -------------------------------------------------------------------------
+#
+# Preflight-Lauf 34974515104 hat den vorhandenen Worker eingeordnet als
+# `cloudflare-default-template`: 752 Bytes, "Hello World", keine
+# ausgehenden Adressen, keine Bindungszugriffe, nichts in
+# Zugangsdatenform. Er stammt aus dem Anlegen des Workers, nicht aus einem
+# Betrieb. Eine Sicherung wird vor jedem Deployment als Artefakt
+# `worker-code-before-deploy` abgelegt.

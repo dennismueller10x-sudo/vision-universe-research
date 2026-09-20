@@ -1,0 +1,192 @@
+# =========================================================================
+# SOCIAL ORCHESTRATOR — DER BETRIEB, DER KEINEN OWNER BRAUCHT
+#
+#   DISCOVER -> SELECT -> AUDIENCE FRAME -> RESEARCH -> STORY -> HOOK
+#   -> VISUAL -> CREATE -> VALIDATE -> CANDIDATE
+#   -> [OWNER PUBLISHING GATE]
+#   -> MEASURE -> LEARN -> ADAPT
+#
+# Der Owner waehlt keine Themen aus, startet keine Signalsammlung,
+# erzeugt kein Slate, stoesst kein Ranking an, verschiebt keine Bilder
+# und ruft keine Insights ab. Er steht an genau einer Stelle: am
+# Publishing Gate.
+#
+# -------------------------------------------------------------------------
+# WAS DIESER WORKFLOW NIEMALS TUT
+# -------------------------------------------------------------------------
+#
+# Veroeffentlichen. Freigeben. Ablehnen. Eine externe Quelle
+# aktivieren. Autopublish einschalten.
+#
+# Das sind keine Vorsichtsmassnahmen, sondern die Definition der Grenze:
+# alles davor ist Maschine, alles danach ist Entscheidung.
+#
+# -------------------------------------------------------------------------
+# ES BRAUCHT KEINE EXTERNE QUELLE
+# -------------------------------------------------------------------------
+#
+# Beide externen Sensoren stehen auf NOT_ACTIVATED_BY_OWNER. Dieser
+# Lauf fragt sie nicht, erwaehnt sie nicht als Mangel und laeuft
+# vollstaendig ohne sie. `externalInterest` erscheint als NOT_ACTIVE -
+# ohne Gewicht und ohne Abzug.
+#
+# -------------------------------------------------------------------------
+# EINE GRENZE, DIE HIER EHRLICH DASTEHEN MUSS
+# -------------------------------------------------------------------------
+#
+# GitHub fuehrt `schedule` NUR im Standardzweig aus. Solange diese
+# Datei allein auf dem Feature-Zweig liegt, feuert der Zeitplan NICHT.
+# Der Betrieb ist gebaut und geprueft; wirksam wird er mit dem Merge.
+# Das ist eine Owner-Entscheidung, keine technische Huerde.
+#
+# Bis dahin laesst sich jeder Lauf von Hand ausloesen - derselbe Pfad,
+# dieselben Schritte.
+# =========================================================================
+name: Social Orchestrator
+
+on:
+  schedule:
+    # Zweimal taeglich. Messen ist billig und lesend; ein Kandidat
+    # entsteht trotzdem hoechstens alle 24 h - das entscheidet der
+    # Orchestrator, nicht der Zeitplan.
+    - cron: '35 6 * * *'
+    - cron: '35 16 * * *'
+  workflow_dispatch:
+    inputs:
+      nur_entscheiden:
+        description: 'Nur sagen, was dran waere (nichts ausfuehren)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: social-orchestrator
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
+      # Produktionsdaten. Die Suite ist schnell; sie laeuft zuerst.
+      - name: Tests, bevor irgendetwas geschieht
+        id: suite
+        run: |
+          set -euo pipefail
+          node --test "social/tests/*.test.mjs" 2>&1 | tail -5
+          # Der Schritt bricht oben ab, wenn die Suite rot ist. Dass er
+          # hier ankommt, IST der Befund - und nur dann wird er
+          # weitergereicht. Ein Reifebericht, der seine eigene Suite
+          # startet und dann "gruen" meldet, bestaetigt sich selbst.
+          echo "gruen=social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
+
+      # Schreibt kein Testlauf in Produktionsdaten? Das laesst sich nur
+      # von aussen beantworten: ein Test kann nicht messen, was vor ihm
+      # geschehen ist.
+      - name: Isolation von Test und Produktion
+        id: isolation
+        run: |
+          set -euo pipefail
+          node scripts/quality/check-test-isolation.mjs --suite "social/tests/*.test.mjs"
+          echo "belegt=check-test-isolation, social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
+
+      - name: Was ist jetzt dran?
+        id: plan
+        run: |
+          set -euo pipefail
+          node scripts/social/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
+
+      - name: MESSEN — Zahlen holen, lernen, anpassen
+        if: steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          # Lesend. Holt die Insights des EIGENEN Kontos - kein fremdes
+          # Konto, keine externe Quelle.
+          if [ -n "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            node scripts/social/ingest-performance.mjs --out social/data || \
+              echo "::notice::Insights nicht abrufbar - der Lauf geht weiter."
+          else
+            echo "Kein Admin-Schluessel: es wird nicht abgerufen."
+          fi
+          # Lernen und Anpassen stecken im Zyklus und brauchen kein Netz.
+          node scripts/social/run-social-cycle.mjs \
+            --provider mock --data social/data --out social/data | tail -30
+
+      - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus
+        if: steps.plan.outputs.prepare == 'ja' && inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
+          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
+
+          node scripts/social/run-social-cycle.mjs \
+            --provider mock --data social/data --out social/data --render
+          node scripts/social/make-publish-candidate.mjs --data social/data --write \
+            | tail -40
+
+      # Der Reifezustand nach dem Lauf, gegen den dann aktuellen
+      # Datenstand. Er schaltet nichts frei - er stellt fest.
+      - name: SOCIAL_ORCHESTRATOR_PRODUCTION_READY
+        id: reife
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node scripts/social/production-readiness.mjs \
+            --suites-green "${{ steps.suite.outputs.gruen }}" \
+            --isolation-proven "${{ steps.isolation.outputs.belegt }}" \
+            | tee /tmp/reife.txt
+
+      - name: Der Stand, den der Owner sieht
+        if: always()
+        run: |
+          set -euo pipefail
+          node scripts/social/rank-social-opportunities.mjs --top 3 \
+            --out social/data > /tmp/rank.txt 2>&1 || true
+          {
+            echo "## Orchestrator"
+            echo ""
+            echo '```'
+            cat /tmp/plan.txt 2>/dev/null || echo "kein Plan"
+            echo '```'
+            echo ""
+            echo "### Produktionsreife"
+            echo '```'
+            cat /tmp/reife.txt 2>/dev/null || echo "kein Reifebericht"
+            echo '```'
+            echo ""
+            echo "### Opportunities"
+            echo '```'
+            sed -n '/ZWEI EVIDENZKLASSEN/,$p' /tmp/rank.txt 2>/dev/null | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Festschreiben
+        if: inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          # `git diff` sieht neue Dateien nicht, und beim ersten Lauf
+          # sind Kandidat und Bild neu.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/
+          git commit -m "Orchestrator: ${{ steps.plan.outputs.stage }}"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"

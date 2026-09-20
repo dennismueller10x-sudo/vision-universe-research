@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Die GEWUENSCHTE Autonomiestufe (§16). Sie ist nicht die wirksame. Die wirksame Stufe ergibt sich aus dieser Angabe UND dem gemessenen Systemzustand (social/engines/health.js -> toAutonomyReadiness -> social/engines/autonomy.js). Wer hier 4 eintraegt, waehrend die Analytics-Kette nichts liefert, bekommt die Stufe, die der Zustand hergibt - und eine Liste, was fehlt.",
+  "desiredLevel": 0,
+  "desiredLevelReason": "Phase A-K sind gebaut, aber kein Provider ist konfiguriert und kein Lauf hat je Produktionsdaten gesehen. Stufe 0 ist die einzige Stufe, die der tatsaechliche Zustand traegt. Eine hoehere Eintragung waere folgenlos, aber irrefuehrend.",
+  "changedAt": "2026-09-15",
+  "escalationPath": [
+    "Stufe 1 sobald mindestens eine Signalquelle taeglich liefert (heute: interne VU-Signale aus quant/data).",
+    "Stufe 2 sobald die Content-Pipeline in der CI und im Betrieb fehlerfrei durchlaeuft.",
+    "Stufe 3 sobald Brand- und Faktenvalidierung im Betrieb nachweislich greifen (nicht nur im Test).",
+    "Stufe 4 erst nach Security Review (§50) und nachgewiesen stabilem Meta-Provider inklusive Analytics.",
+    "Stufe 5 erst nach belastbaren Lernbeobachtungen und mindestens einem entschiedenen Experiment."
+  ]
+}

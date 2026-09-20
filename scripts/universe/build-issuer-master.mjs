@@ -53,8 +53,26 @@ function arg(name, fallback) {
 function pfad(p) { return p.startsWith("/") ? p : join(root, p); }
 
 const CONFIG = readJSON(join(root, "quant", "config", "company-master.json"));
+/* -------------------------------------------------------------------
+   EINE PFADVARIABLE MACHTE ZWEI JOBS
+
+   Hier leitete --out sowohl den LESEPFAD (der Company Master unter
+   instruments/) als auch den SCHREIBPFAD ab. Wer --out setzte, um
+   nicht in die echte Ablage zu schreiben, verlor damit zugleich seinen
+   Eingang - der Lauf brach mit "Kein Company Master" ab.
+
+   Folge: --out war praktisch unbenutzbar, die Tests liessen es weg,
+   und jede lokale Suite hinterliess zwei geaenderte Produktionsdateien.
+   Ein Schalter, dessen Benutzung den Lauf zerstoert, wird nicht
+   benutzt - und der Defekt, den er verhindern sollte, bleibt.
+
+   Gelesen wird jetzt aus --in (Vorgabe: die konfigurierte Ablage),
+   geschrieben nach --out (Vorgabe: dieselbe). Wer nichts angibt,
+   bekommt genau das bisherige Verhalten.
+   ------------------------------------------------------------------- */
+const IN_ROOT  = pfad(arg("--in", CONFIG.storage.root));
 const OUT_ROOT = pfad(arg("--out", CONFIG.storage.root));
-const INSTRUMENT_DIR = join(OUT_ROOT, "instruments");
+const INSTRUMENT_DIR = join(IN_ROOT, "instruments");
 const ISSUER_DIR = join(OUT_ROOT, "issuers");
 
 function readJSON(p) { return JSON.parse(readFileSync(p, "utf8")); }

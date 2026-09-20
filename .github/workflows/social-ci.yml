@@ -1,0 +1,236 @@
+name: Social CI
+
+# Prueft das Social Intelligence OS: Contracts, Provider-Abstraktion,
+# Meta-Authentifizierung, Publishing-Idempotenz, die Intelligence-Engines,
+# Fakten- und Markenvalidierung, die Learning-Sicherheitsgrenze und den
+# geschlossenen Kreislauf.
+#
+# DIESE CI BRAUCHT KEINE PRODUKTIVEN ZUGANGSDATEN (§43).
+#
+# Das ist keine Bequemlichkeit. Ein Test, der gegen die echte Graph API
+# laeuft, veroeffentlicht im Zweifel etwas — und ein Test, der von einem
+# fremden Dienst abhaengt, ist rot, wenn dieser Dienst Wartung hat, und
+# sagt dann nichts ueber unseren Code. Der Mock-Provider erfuellt dieselben
+# vier Interfaces und kann jede Fehlerlage aus §44 ausloesen.
+#
+# Ein Lauf gegen Meta ist ausdruecklich NICHT Teil dieser CI. Er laeuft
+# von Hand (scripts/social/verify-meta-capabilities.mjs), sobald der Owner
+# Zugangsdaten hinterlegt hat.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'social/**'
+      - 'scripts/social/**'
+      - 'workers/**'
+      - '.github/workflows/social-ci.yml'
+  pull_request:
+    paths:
+      - 'social/**'
+      - 'scripts/social/**'
+      - 'workers/**'
+      - '.github/workflows/social-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine-, Provider- und Kreislauftests
+        run: node --test "social/tests/*.test.mjs"
+
+      - name: Worker-Tests (OAuth, CSRF, Token, Schwaerzung)
+        # Der Worker laeuft in der CI OHNE Cloudflare und OHNE Meta: er
+        # benutzt ausschliesslich Web-Standards, die Node 22 mitbringt.
+        # KV und Graph-API werden eingesetzt (tests/harness.mjs).
+        run: node --test "workers/vision-universe-social/tests/*.test.mjs"
+
+      - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
+        # Sie werden vom Workflow social-cloudflare gerufen, wo ein
+        # Syntaxfehler erst nach dem Start auffiele — und dann mit
+        # Cloudflare-Zugang im Ruecken.
+        run: |
+          for file in scripts/social/provision-cloudflare.mjs scripts/social/verify-worker.mjs; do
+            node --check "$file" 2>/dev/null || node -e "import('./$file')" >/dev/null 2>&1 || true
+          done
+          # provision bricht ohne Zugangsdaten ab — mit einer Meldung, nicht mit einem Stacktrace.
+          if node scripts/social/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
+            echo "provision-cloudflare.mjs meldet fehlenden Zugang sauber."
+          else
+            echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
+            exit 1
+          fi
+          # verify meldet ein Ergebnis und wirft nicht — was auch immer das
+          # Netz sagt.
+          #
+          # Hier stand `grep -q "Worker-Adresse bekannt"`. Diese Zeile
+          # erscheint NUR, wenn die Adresse FEHLT. Sie fehlte, solange sie
+          # aus einem Secret kam, das es in der CI nie gab; seit sie einen
+          # Vorgabewert aus wrangler.toml hat, kann der Fall nicht mehr
+          # eintreten. Die Pruefung verlangte damit Text von einem
+          # Programm, das ihn zu Recht nicht mehr schreibt — und war rot,
+          # obwohl alles stimmte.
+          #
+          # Geprueft gehoert der Vertrag, nicht der Wortlaut eines
+          # Sonderfalls: ein Ergebnis steht da, und es gibt keinen
+          # Stacktrace. Ob der Worker gerade erreichbar ist, ist eine
+          # Frage an die Infrastruktur und nicht an diesen Code — ein
+          # roter Lauf deswegen saegte an der falschen Stelle.
+          ausgabe="$(node scripts/social/verify-worker.mjs 2>&1 || true)"
+          echo "$ausgabe" | tail -6
+          if echo "$ausgabe" | grep -q "^Abgebrochen:"; then
+            echo "::error::verify-worker.mjs ist mit einem Stacktrace abgebrochen."
+            exit 1
+          fi
+          if echo "$ausgabe" | grep -q "^Ergebnis: "; then
+            echo "verify-worker.mjs meldet ein Ergebnis, ohne zu werfen."
+          else
+            echo "::error::verify-worker.mjs meldet kein Ergebnis."
+            exit 1
+          fi
+
+      - name: Worker-Preflight (lokale Pruefungen)
+        # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
+        # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.
+        run: node scripts/social/preflight-worker.mjs
+
+      - name: Konfigurations- und Methodikdateien sind gueltiges JSON
+        run: |
+          files=$(find social/config social/methodology -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+
+      - name: Jede Engine laedt in Node und registriert sich nicht global
+        # Die Engines laufen in Browser UND Node (UMD-Muster wie quant/engines).
+        # Ein Ladefehler faellt hier auf und nicht erst im Browser.
+        run: |
+          for file in social/engines/*.js; do
+            node -e "
+              const api = require('./$file');
+              if (!api || typeof api !== 'object') throw new Error('$file exportiert nichts');
+            " || exit 1
+          done
+          echo "$(ls social/engines/*.js | wc -l) Engines geprueft"
+
+      - name: Der Kill Switch ist im ausgelieferten Zustand AUS
+        # Die wichtigste Zeile dieser Datei. Sie faengt den Fall, dass
+        # jemand den Schalter zum Testen umlegt und das Zuruecklegen
+        # vergisst — der einzige Weg, auf dem dieses System versehentlich
+        # etwas veroeffentlichen koennte.
+        run: |
+          node -e '
+            const config = require("./social/config/kill-switch.json");
+            const gate = config.gates.GLOBAL_AUTOPUBLISH;
+            if (gate.enabled !== false) {
+              throw new Error(
+                "GLOBAL_AUTOPUBLISH ist eingeschaltet. Das ist eine Owner-Entscheidung und " +
+                "gehoert in einen eigenen Commit mit Begruendung — nicht in einen Nebeneffekt.");
+            }
+            const meta = config.gates.PROVIDER_META;
+            if (meta.enabled !== false) {
+              throw new Error("PROVIDER_META ist eingeschaltet, obwohl der Provider nie gegen die echte API lief.");
+            }
+            console.log("Kill Switch: global AUS, Meta AUS.");
+          '
+
+      - name: Der Verbindungsabruf laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie ueberall: ein fehlender Zugang ist eine
+        # Konfigurationsfrage, kein Baufehler. Das erzeugte Artefakt sagt
+        # ausdruecklich, dass es ueber die Verbindung nichts aussagen kann.
+        #
+        # Diese Pruefung verlangte frueher `state: "not_configured"` und
+        # `connected: false` — also genau die beiden Werte, die
+        # fetch-meta-status.mjs bewusst NICHT mehr schreibt.
+        #
+        # Der Grund steht im Skript: NICHT KONFIGURIERT ist eine Aussage
+        # ueber die VERBINDUNG, ZUGANGSDATEN FEHLEN eine ueber DIESEN
+        # LAUF. Aus der zweiten folgt die erste nicht — und aus den alten
+        # Feldern ist genau dieser Fehlschluss an den Owner gegangen.
+        # `connected` ist seitdem null und nicht false, weil Unbekanntes
+        # sonst aussieht wie Abwesendes.
+        #
+        # Die Pruefung bestand also darauf, dass das Artefakt die falsche
+        # Aussage wieder macht. Sie prueft jetzt die richtige.
+        run: |
+          node scripts/social/fetch-meta-status.mjs
+          node -e '
+            const { execSync } = require("child_process");
+            execSync("node scripts/social/fetch-meta-status.mjs --out /tmp/social-meta");
+            const report = require("/tmp/social-meta/meta-connection.json");
+            if (report.state !== "credentials_missing_here") {
+              throw new Error("Ohne Zugang muss der Zustand credentials_missing_here sein, war: " + report.state);
+            }
+            if (report.connected !== null) {
+              throw new Error("connected muss null sein - dieser Lauf weiss nichts ueber die Verbindung. War: " + report.connected);
+            }
+            if (report.probeScope !== "THIS_RUN_ONLY") {
+              throw new Error("probeScope muss THIS_RUN_ONLY sein, war: " + report.probeScope);
+            }
+            console.log("Verbindungsbericht korrekt: " + report.state + ", connected=null, Reichweite " + report.probeScope);
+          '
+
+      - name: Die Signalsammlung laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie beim Marktdatenabruf in quant-ci.yml:
+        # ein fehlender Zugang ist eine Konfigurationsfrage, kein Baufehler.
+        run: |
+          node scripts/social/collect-vu-signals.mjs
+
+      - name: Der vollstaendige Zyklus laeuft gegen den Mock durch
+        # Der Nachweis aus §53: der Kreislauf traegt, und ein Provider kann
+        # ihn durchlaufen. Veroeffentlicht wird dabei nichts — der globale
+        # Schalter ist aus, und der Mock verlaesst den Prozess ohnehin nie.
+        run: |
+          node scripts/social/collect-vu-signals.mjs --out /tmp/social-ci
+          cp /tmp/social-ci/signals.json social/data/signals.json
+          node scripts/social/run-social-cycle.mjs --provider mock
+          git checkout -- social/data/signals.json 2>/dev/null || true
+
+      - name: Keine Zugangsdaten und keine Anbieterbindung in ausgelieferten Pfaden
+        run: node scripts/social/assert-no-secrets.mjs
+
+      - name: Die Seiten des Command Center binden Shell und Navigation ein
+        run: |
+          for page in $(find social -name 'index.html'); do
+            grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+            grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          done
+          echo "$(find social -name 'index.html' | wc -l) Seiten geprueft"
+
+      - name: Der bestehende Quant-Bereich bleibt unberuehrt
+        # §48: Social ist eine neue Faehigkeit INNERHALB des bestehenden
+        # Systems. Wenn dieser Schritt rot wird, hat der Social-Build etwas
+        # angefasst, das ihm nicht gehoert.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Hinweis - der Quant-Lauf veraendert zwei committete Artefakte
+        # BESTEHENDER BEFUND, NICHT VOM SOCIAL-BUILD VERURSACHT.
+        #
+        # `node --test "quant/tests/*.test.mjs"` schreibt
+        # quant/data/universe/cik-resolution.json und issuer-manifest.json
+        # neu - es aendert sich nur `generatedAt`, aber es aendert sich.
+        # Das widerspricht MASTER §31.10 ("Tests duerfen Produktionsdaten
+        # nicht veraendern", die Lehre aus technical_scenarios.json).
+        #
+        # Dieser Schritt macht den Befund SICHTBAR, statt ihn wegzuraeumen:
+        # er meldet ihn und laesst den Lauf gruen, weil die Ursache im
+        # Quant-Bereich liegt und dort behoben gehoert. Er bricht bewusst
+        # nicht ab - eine rote Social-CI wegen eines fremden Befunds wuerde
+        # nur dazu fuehren, dass jemand diesen Schritt entfernt.
+        if: always()
+        run: |
+          if ! git diff --quiet -- quant/data; then
+            echo "::warning::Der Quant-Testlauf hat committete Artefakte unter quant/data veraendert."
+            git diff --stat -- quant/data
+            echo "Siehe docs/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
+            git checkout -- quant/data
+          else
+            echo "Keine Veraenderung an quant/data."
+          fi
