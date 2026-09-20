@@ -25,6 +25,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Orchestrator = require(join(ROOT, "social/engines/orchestrator.js"));
 const Registry = require(join(ROOT, "social/engines/source-registry.js"));
 const MessFenster = require(join(ROOT, "social/engines/measurement-window.js"));
+const Job = require(join(ROOT, "social/engines/creative-job.js"));
+const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
+const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
+import * as VisualDaten from "./visual-data.mjs";
 
 const DATA = "social/data";
 const KANDIDATEN = join(DATA, "publish-candidates");
@@ -86,6 +90,127 @@ export function letzterKandidat(verzeichnis) {
   return neuester;
 }
 
+/* =====================================================================
+   DER CREATIVE-JOB-BEDARF — AUS ECHTEN ZUSTAENDEN
+
+   Die Entscheidung selbst trifft orchestrator.js. Hier wird nur
+   zusammengetragen, was sie braucht, und zwar aus dem, was wirklich
+   dasteht: dem Ranking, der Platte, dem Job-Register und dem
+   bestehenden Hinlaenglichkeitstor.
+
+   WARUM DAS THEMA AUS DEM RANKING KOMMT
+
+   Ein fest verdrahtetes Symbol waere eine manuelle Themenauswahl mit
+   zusaetzlichen Schritten - genau die Owner-Handlung, die hier
+   verschwinden soll. Gewaehlt wird, was die Gelegenheitsbewertung
+   oben hat.
+   ===================================================================== */
+
+/**
+ * Das hoechstbewertete Thema, fuer das ein technisches Bundle existiert.
+ *
+ * Gelesen werden die GELEGENHEITEN des letzten Laufs - also das
+ * Ergebnis der Bewertung, die der Graph ohnehin vornimmt. Ein
+ * eigenes Ranking hier waere ein zweiter Rechenweg fuer dieselbe
+ * Frage, und der erste, der vom anderen abweicht, gewinnt per Zufall.
+ *
+ * Der erste Anlauf las stattdessen das Opportunity-Slate und zog
+ * Symbole aus `entities`. Dort stehen aber KLARNAMEN ("Valero
+ * Energy"), keine Kuerzel - die Suche fand null Bundles und meldete
+ * stillschweigend "kein Thema". Ein Fehler, der wie eine Entscheidung
+ * aussah.
+ */
+export function bestesThema(root) {
+  const r = root || ROOT;
+  const bericht = readJson(join(r, DATA, "cycle-report.json"), null);
+  const gelegenheiten = (bericht && bericht.opportunities) || [];
+
+  const brauchbar = gelegenheiten
+    .filter((o) => o && o.proposable !== false)
+    .slice()
+    .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+
+  for (const o of brauchbar) {
+    const symbol = VisualDaten.symbolAus(o.topic);
+    if (!symbol) continue;
+    if (existsSync(join(r, "quant/data/technical/instruments", symbol + ".json"))) {
+      return { symbol, topicId: o.opportunityId || null, score: o.score || null,
+        topic: o.topic };
+    }
+  }
+  return null;
+}
+
+/**
+ * Braucht dieser Lauf einen Creative Job?
+ *
+ * Gibt die Entscheidung von orchestrator.js zurueck, angereichert um
+ * das, was der Dispatch danach braucht (Symbol, content_id).
+ */
+export function creativeBedarf(z, options) {
+  options = options || {};
+  const r = options.root || ROOT;
+  const thema = options.thema !== undefined ? options.thema : bestesThema(r);
+
+  if (!thema) {
+    return Object.assign(Orchestrator.creativeJobDecision({
+      halted: z.halted, candidateDue: options.candidateDue === true,
+      contentId: null }), { symbol: null });
+  }
+
+  /* Die Kennung wird nicht geraten - sie kommt aus derselben Funktion,
+     die der Zyklus benutzt, um das Ergebnis spaeter wiederzufinden. */
+  const bundlePfad = join(r, "quant/data/technical/instruments", thema.symbol + ".json");
+  let paket = null;
+  try {
+    const roh = JSON.parse(readFileSync(bundlePfad, "utf8"));
+    paket = EvidencePackage.fromTechnicalBundle(roh.bundle,
+      { entity: thema.symbol, source: roh.bundle.source, now: z.now });
+  } catch { paket = null; }
+
+  if (!paket) {
+    return Object.assign(Orchestrator.creativeJobDecision({
+      halted: z.halted, candidateDue: options.candidateDue === true,
+      contentId: null }), { symbol: thema.symbol });
+  }
+
+  const contentId = EvidencePackage.contentIdFor(thema.symbol, paket.asOf);
+  const hinreichend = EvidencePackage.assessSufficiency(paket);
+
+  /* Liegt schon ein Ergebnis auf der Platte? */
+  const ergebnis = join(r, ChatGptWork.requestDir(contentId), "authoring-result.json");
+
+  /* Offene Jobs und die Vorpruefung - beide aus creative-job.js, nicht
+     hier nachgebaut. */
+  const register = readJson(join(r, DATA, "creative-jobs.json"), { jobs: [] });
+  const registry = Job.createRegistry(register.jobs || []);
+  const offen = registry.byContent(contentId).filter(
+    (j) => Job.OFFEN.includes(j.state));
+  /* Und alle offenen Jobs ueberhaupt - siehe die Begruendung in
+     orchestrator.js: die anbieterinterne Wiederholung ist von hier aus
+     nicht beschraenkbar, also hoechstens einer gleichzeitig. */
+  const alleOffen = (register.jobs || []).filter(
+    (j) => Job.OFFEN.includes(j.state));
+  const tor = registry.mayDispatchContent({ contentId }, { productionPath: true });
+
+  const e = Orchestrator.creativeJobDecision({
+    halted: z.halted,
+    candidateDue: options.candidateDue === true,
+    contentId,
+    hasAuthoringResult: existsSync(ergebnis),
+    openJobs: offen,
+    allOpenJobs: alleOffen,
+    evidenceSufficient: hinreichend.sufficient === true,
+    dispatchGate: tor
+  });
+
+  return Object.assign(e, {
+    symbol: thema.symbol,
+    asOf: paket.asOf,
+    sufficiency: hinreichend.explanation
+  });
+}
+
 export function zustand(options) {
   options = options || {};
   const now = options.now || new Date().toISOString();
@@ -128,8 +253,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Externe Sensoren   : " + quellen.externalIntelligence +
     " (" + quellen.dormantCount + " ruhend, " + quellen.activeCount + " aktiv)");
 
+  const creative = creativeBedarf(z, {
+    candidateDue: h.stage === "PREPARE_CANDIDATE" });
+
   console.log("\nStufe            : " + h.stage);
   console.log(h.explanation);
+
+  console.log("\n--- CREATIVE JOB (§3) ---");
+  console.log("Thema            : " + (creative.symbol || "—") +
+    (creative.contentId ? "  (" + creative.contentId + ")" : ""));
+  console.log("Entscheidung     : " + creative.decision);
+  console.log(creative.explanation);
   if (h.actions.length) {
     console.log("\nAuszufuehren:");
     h.actions.forEach((a) => console.log("  " + a.stage.padEnd(20) + a.reason));
@@ -148,7 +282,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "stage=" + h.stage,
       "measure=" + (h.actions.some((a) => a.stage === "MEASURE") ? "ja" : "nein"),
       "prepare=" + (h.stage === "PREPARE_CANDIDATE" ? "ja" : "nein"),
-      "awaiting=" + (h.awaitingOwner ? "ja" : "nein")
+      "awaiting=" + (h.awaitingOwner ? "ja" : "nein"),
+      /* Der Dispatch haengt an dieser Zeile - und nur an ihr. Ein
+         Scheduler-Lauf erzeugt keinen Creative Job, nur weil er
+         laeuft. */
+      "creative=" + (creative.required ? "ja" : "nein"),
+      "creative_symbol=" + (creative.symbol || ""),
+      "creative_content_id=" + (creative.contentId || ""),
+      "creative_reason=" + (creative.code || "REQUIRED")
     ].join("\n") + "\n";
     appendFileSync(process.env.GITHUB_OUTPUT, zeilen);
   }

@@ -36,6 +36,7 @@ const CreativeJob = require(join(ROOT, "social/engines/creative-job.js"));
 const OwnPerformance = require(join(ROOT, "social/engines/own-performance.js"));
 const Schema = require(join(ROOT, "social/engines/schema.js"));
 const Learning = require(join(ROOT, "social/engines/learning.js"));
+const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 
 const argv = process.argv.slice(2);
 const JSON_AUS = argv.includes("--json");
@@ -291,12 +292,17 @@ function autonomieBefunde() {
     ok: !!(bericht && bericht.learning),
     evidence: "Lernen laeuft im Zyklus; im letzten Bericht vorhanden." };
 
+  /* -----------------------------------------------------------------
+     Der Beleg war frueher: "der Scheduler ruft den Dispatch-Pfad NICHT
+     auf". Er war wahr und belegte die falsche Sache - naemlich dass
+     der Scheduler es nicht KANN, statt dass kein Mensch es MUSS.
+     Jetzt gilt das Umgekehrte, und zwar mit denselben drei Bedingungen,
+     die auch AUTONOMOUS_CREATIVE_DISPATCH traegt. */
   const budget = CreativeJob.BUDGET;
+  const kann = schedulerKannDispatchen();
   belege.NO_MANUAL_CHATGPT_WORK = {
-    ok: budget.dispatchesPerProcessingKey === 1 &&
-        (workflow ? !/dispatch-creative-job\.mjs/.test(workflow) : false),
-    evidence: "Budget 1 Dispatch je processing_key; der Scheduler ruft " +
-      "dispatch-creative-job.mjs nicht auf." };
+    ok: budget.dispatchesPerProcessingKey === 1 && kann.ok === true,
+    evidence: "Budget 1 Dispatch je processing_key. " + kann.explanation };
 
   const store = text("social/engines/asset-store.js") || "";
   belege.NO_MANUAL_IMAGE_MOVING = {
@@ -524,6 +530,78 @@ function schedulerAufMain() {
   }
 }
 
+/* Die Zustaende der Kandidaten - gelesen, nicht gezaehlt. */
+function kandidatenZustaende() {
+  const d = join(ROOT, "social/data/publish-candidates");
+  if (!existsSync(d)) return [];
+  return readdirSync(d).filter((f) => f.endsWith(".json")).map((f) => {
+    const c = lies("social/data/publish-candidates/" + f, null);
+    return { candidateId: (c && c.candidateId) || f.replace(/\.json$/, ""),
+      state: c ? (c.state || c.status || null) : null };
+  });
+}
+
+/* -------------------------------------------------------------------
+   EIN ORDNER IST KEINE WARTESCHLANGE
+
+   Hier stand `readdirSync(...)` und darunter "N Kandidat(en) warten".
+   Gezaehlt wurden DATEIEN. Von den sechs wartete keine einzige: drei
+   SUPERSEDED, drei auf einem Haltegrund, hinter dem eine
+   Owner-Entscheidung steht.
+
+   Der Orchestrator hat nie etwas anderes behauptet - er filtert auf
+   AWAITING_APPROVAL und meldete korrekt null. Die falsche Zahl
+   entstand HIER, in einem zweiten Rechenweg fuer dieselbe Frage.
+   Jetzt fragen beide dieselbe Engine.
+   ------------------------------------------------------------------- */
+const schlange = OwnerDecision.warteschlange(kandidatenZustaende());
+
+/* -------------------------------------------------------------------
+   KANN DER SCHEDULER EINEN CREATIVE JOB SELBST ERZEUGEN?
+
+   Die Frage ist nicht, ob je einer entstanden ist. Sie ist, ob der
+   Weg dasteht: die drei bestehenden Schritte, die Bindung an die
+   eigene Entscheidung, und das Recht, einen Pull Request zu oeffnen.
+
+   Jede dieser vier Bedingungen ist im Workflow nachlesbar. Fehlt
+   eine, ist die Faehigkeit nicht da - auch dann nicht, wenn im
+   Ledger hundert Jobs staenden.
+   ------------------------------------------------------------------- */
+function schedulerKannDispatchen() {
+  if (!workflow) {
+    return { ok: false, explanation: "Kein Orchestrator-Workflow lesbar." };
+  }
+  const fehlt = [];
+  for (const s of ["request-creative.mjs", "dispatch-creative-job.mjs",
+                   "open-creative-request.mjs"]) {
+    if (!workflow.includes(s)) fehlt.push(s);
+  }
+  if (!/steps\.plan\.outputs\.creative == 'ja'/.test(workflow)) {
+    fehlt.push("Bindung an die Orchestrator-Entscheidung");
+  }
+  if (!/pull-requests:\s*write/.test(workflow)) {
+    fehlt.push("Recht pull-requests: write");
+  }
+  /* Und der Orchestrator muss die Zeile ueberhaupt ausgeben. */
+  const runner = text("scripts/social/run-orchestrator.mjs") || "";
+  if (!/"creative=" \+ \(creative\.required/.test(runner)) {
+    fehlt.push("Der Orchestrator gibt keine Creative-Entscheidung aus");
+  }
+
+  const ledger = lies("social/data/creative-jobs.json", { jobs: [] });
+  const anzahl = (ledger.jobs || []).length;
+
+  return {
+    ok: fehlt.length === 0,
+    explanation: fehlt.length === 0
+      ? "Der Scheduler ruft die drei bestehenden Schritte auf, der Aufruf " +
+        "haengt an seiner eigenen Entscheidung, und er darf den Pull Request " +
+        "oeffnen. (" + anzahl + " Job(s) im Ledger - historisch und hier " +
+        "ausdruecklich KEIN Beleg.)"
+      : "Nicht scheduler-ausgeloest. Es fehlt: " + fehlt.join(", ") + "."
+  };
+}
+
 /* Eine Faehigkeit gilt als aktiv, wenn der letzte reale Lauf eine
    Spur von ihr traegt. `null` heisst: nicht beobachtet - und das ist
    etwas anderes als false. */
@@ -531,8 +609,6 @@ function faehigkeiten() {
   const pakete = (bericht && bericht.packages) || [];
   const gelegenheiten = (bericht && bericht.opportunities) || [];
   const jobs = lies("social/data/creative-jobs.json");
-  const kandidaten = existsSync(join(ROOT, "social/data/publish-candidates"))
-    ? readdirSync(join(ROOT, "social/data/publish-candidates")) : [];
 
   return {
     AUTONOMOUS_DISCOVERY: {
@@ -566,28 +642,32 @@ function faehigkeiten() {
         " von " + pakete.length + " Richtung(en) abgeleitet und vollstaendig" },
     AUTONOMOUS_CREATIVE_DISPATCH: {
       /* -------------------------------------------------------------
-         DER EHRLICHE BEFUND
+         NICHT AUS HISTORISCHEN JOBS
 
-         Der erste Anlauf meldete hier `true`, weil 11 Creative Jobs im
-         Ledger stehen. Die stammen aber aus Laeufen, die ein MENSCH
-         angestossen hat: der Scheduler ruft weder request-creative.mjs
-         noch dispatch-creative-job.mjs auf, und der Zyklus LIEST nur
-         fertige Ergebnisse aus authoring/requests/.
+         Der erste Anlauf meldete hier `true`, weil elf Creative Jobs
+         im Ledger standen. Die stammten aus Laeufen, die ein MENSCH
+         angestossen hat - vorhanden ist nicht dasselbe wie vom
+         Scheduler ausgefuehrt.
 
-         Ein Ledger voller Jobs als Beleg fuer autonomen Dispatch zu
-         nehmen, waere genau die Verwechslung, vor der §16 warnt:
-         vorhanden ist nicht dasselbe wie vom Scheduler ausgefuehrt.
-
-         Das ist kein Mangel am Graphen - der Zyklus schreibt ohne
-         ChatGPT Work weiter, mit Vorlage oder Modell. Es ist eine
-         Grenze, und sie gehoert benannt. */
-      active: false,
-      trace: (jobs && jobs.jobs ? jobs.jobs.length : 0) + " Creative Job(s) im " +
-        "Ledger, alle von Hand angestossen. Der Scheduler ruft keinen " +
-        "Dispatch-Pfad auf; der Zyklus liest fertige Ergebnisse aus " +
-        "authoring/requests/. Die Faehigkeit ist gebaut und " +
-        "budgetbegrenzt (1 processing_key -> 1 Job), aber nicht " +
-        "scheduler-ausgeloest." },
+         Gefragt wird deshalb, ob der Scheduler einen Job SELBST
+         erzeugen KANN: ruft er die drei Schritte auf, haengt der
+         Aufruf an seiner eigenen Entscheidung, und darf er den Pull
+         Request oeffnen? Alles drei steht im Workflow und laesst sich
+         lesen. Ein Ledgereintrag beweist es nicht. */
+      active: schedulerKannDispatchen().ok,
+      trace: schedulerKannDispatchen().explanation },
+    AUTONOMOUS_RESULT_INGEST: {
+      /* Das Ergebnis des Agenten kommt auf dem Request-Branch zurueck.
+         Es aufzunehmen heisst: pruefen, uebersetzen, verifizieren -
+         und das tut der Zyklus, ohne dass jemand etwas verschiebt. */
+      active: (() => {
+        const zyklus = text("scripts/social/run-social-cycle.mjs") || "";
+        return /authoring-result\.json/.test(zyklus) &&
+          /verifyResult|verifyAssets/.test(zyklus);
+      })(),
+      trace: "Der Zyklus liest authoring-result.json aus dem Request-Ordner " +
+        "und laesst den Adapter Ergebnis und Assets verifizieren - kein " +
+        "Verschieben von Hand." },
     AUTONOMOUS_MEASUREMENT: {
       active: !!(bericht && bericht.learning),
       trace: bericht && bericht.learning
@@ -598,8 +678,8 @@ function faehigkeiten() {
         ? "Lernstufe im Lauf durchlaufen" : "keine Lernstufe im Bericht" },
     OWNER_PUBLISHING_GATE: {
       active: true,
-      trace: kandidaten.length + " Kandidat(en) warten; der Scheduler gibt " +
-        "keinen frei und lehnt keinen ab" }
+      trace: schlange.explanation + " Der Scheduler gibt keinen frei und " +
+        "lehnt keinen ab." }
   };
 }
 
@@ -664,6 +744,8 @@ if (argv.includes("--final-report")) {
     quellenStatus
       ? quellenStatus.sensors.map((x) => x.id + "=" + x.state).join(", ")
       : "kein Bestand"]);
+  zeilen.push(["ACTIVE_APPROVAL_QUEUE_COUNT", String(schlange.activeCount),
+    schlange.explanation]);
   zeilen.push(["CRITICAL_BLOCKERS", String(ergebnis.criticalBlockers),
     ergebnis.criticalBlockers
       ? "offen: " + ergebnis.blockedBy.concat(ergebnis.unverified).join(", ")

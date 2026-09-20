@@ -2,14 +2,15 @@
 # SOCIAL ORCHESTRATOR — DER BETRIEB, DER KEINEN OWNER BRAUCHT
 #
 #   DISCOVER -> SELECT -> AUDIENCE FRAME -> RESEARCH -> STORY -> HOOK
-#   -> VISUAL -> CREATE -> VALIDATE -> CANDIDATE
+#   -> VISUAL -> CREATIVE JOB DECISION -> [AUTHORING REQUEST -> CHATGPT
+#   WORK -> RESULT INGEST] -> CREATE -> VALIDATE -> CANDIDATE
 #   -> [OWNER PUBLISHING GATE]
 #   -> MEASURE -> LEARN -> ADAPT
 #
 # Der Owner waehlt keine Themen aus, startet keine Signalsammlung,
-# erzeugt kein Slate, stoesst kein Ranking an, verschiebt keine Bilder
-# und ruft keine Insights ab. Er steht an genau einer Stelle: am
-# Publishing Gate.
+# erzeugt kein Slate, stoesst kein Ranking an, verschiebt keine Bilder,
+# ruft keine Insights ab und oeffnet keinen Creative-Request. Er steht
+# an genau einer Stelle: am Publishing Gate.
 #
 # -------------------------------------------------------------------------
 # WAS DIESER WORKFLOW NIEMALS TUT
@@ -64,6 +65,10 @@ concurrency:
 
 permissions:
   contents: write
+  # Der Orchestrator oeffnet den Request-PR selbst. Ohne dieses Recht
+  # endet der Dispatch an der letzten Stelle, an der er frueher einen
+  # Menschen brauchte.
+  pull-requests: write
 
 jobs:
   orchestrate:
@@ -123,6 +128,78 @@ jobs:
           # Lernen und Anpassen stecken im Zyklus und brauchen kein Netz.
           node scripts/social/run-social-cycle.mjs \
             --provider mock --data social/data --out social/data | tail -30
+
+      # =====================================================================
+      # CREATIVE JOB — DER SCHRITT, DEN BISHER EIN MENSCH GETAN HAT
+      #
+      # Er laeuft NUR, wenn der Orchestrator ihn beschlossen hat. Ein
+      # Scheduler-Lauf erzeugt keinen Creative Job, nur weil er laeuft:
+      # `creative` ist ja genau dann, wenn ein Kandidat faellig ist, zum
+      # Inhalt kein Ergebnis und kein offener Job vorliegt, die Evidenz
+      # eine Geschichte traegt und das Budget den Dispatch zulaesst.
+      #
+      # Die drei Skripte sind die BESTEHENDEN. Hier wird kein zweiter
+      # Ausloesemechanismus gebaut - nur der letzte Schritt getan, den
+      # dispatch-creative-job.mjs seit jeher ankuendigt.
+      #
+      # EIN VERWEIGERTES TOR IST KEIN FEHLER. Jedes der drei Skripte
+      # endet bei einer Verweigerung mit 4. Das ist eine Antwort und
+      # kein Ausfall - der Lauf geht weiter, und der Grund steht im
+      # Protokoll.
+      # =====================================================================
+      - name: CREATIVE JOB — Brief, Register, Request-PR
+        if: steps.plan.outputs.creative == 'ja' && inputs.nur_entscheiden != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SYMBOL: ${{ steps.plan.outputs.creative_symbol }}
+          CONTENT_ID: ${{ steps.plan.outputs.creative_content_id }}
+        run: |
+          set -uo pipefail
+
+          tor() {
+            # 0 = weiter, 4 = begruendete Verweigerung, alles andere = Fehler
+            "$@"
+            rc=$?
+            if [ "$rc" -eq 4 ]; then
+              echo "::notice::Tor verweigert ($*). Das ist eine Antwort, kein Ausfall."
+              return 1
+            fi
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::Unerwarteter Abbruch ($rc) in: $*"
+              exit "$rc"
+            fi
+            return 0
+          }
+
+          tor node scripts/social/request-creative.mjs \
+                --symbol "$SYMBOL" --write || exit 0
+
+          tor node scripts/social/dispatch-creative-job.mjs \
+                --content-id "$CONTENT_ID" --write || exit 0
+
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+
+          tor node scripts/social/open-creative-request.mjs \
+                --content-id "$CONTENT_ID" --write \
+                --reason "Orchestrator: Kandidat faellig, kein Ergebnis und kein offener Job zu diesem Inhalt." \
+            || exit 0
+
+          # -----------------------------------------------------------------
+          # DIE WACHE, DIE SONST STUMM BLIEBE
+          #
+          # creative-job-guard.yml laeuft auf `pull_request`. Ein PR, den
+          # GITHUB_TOKEN oeffnet, loest in diesem Repository KEINE
+          # Workflows aus - GitHub verhindert so Endlosschleifen.
+          #
+          # Die Wache wuerde damit ausgerechnet fuer die automatisch
+          # erzeugten Requests schweigen, also fuer die, bei denen
+          # niemand zusieht. Deshalb laeuft dieselbe Pruefung hier, in
+          # einem Lauf, der stattfindet. Dasselbe Skript, dieselbe
+          # Frage - nur an einem Ort, an dem sie gestellt wird.
+          # -----------------------------------------------------------------
+          node scripts/social/verify-creative-dispatch.mjs \
+            --branch "authoring/request/$CONTENT_ID"
 
       - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus
         if: steps.plan.outputs.prepare == 'ja' && inputs.nur_entscheiden != true

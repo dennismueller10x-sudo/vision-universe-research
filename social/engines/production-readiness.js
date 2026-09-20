@@ -85,8 +85,24 @@
         "und keine Handlung." },
     { id: "NO_MANUAL_CHATGPT_WORK",
       claim: "Keine manuelle ChatGPT-Work-Invocation.",
-      beleg: "Ein Dispatch entsteht nur bei abhaengigkeitsrichtigem Bedarf und " +
-        "unterliegt dem Budget aus creative-job.js." },
+      /* -----------------------------------------------------------------
+         EIN BELEG, DER DURCH UNMOEGLICHKEIT ERFUELLT WAR
+
+         Hier stand sinngemaess: "der Scheduler ruft den Dispatch-Pfad
+         nicht auf". Das war wahr - und es belegte die falsche Sache.
+         Es zeigte, dass der Scheduler NICHT KANN, nicht dass kein
+         Mensch MUSS. Eine Invariante, die von der Abwesenheit einer
+         Faehigkeit lebt, sagt ueber Autonomie nichts aus; sie wird in
+         dem Moment falsch, in dem die Faehigkeit entsteht - und genau
+         dann wird sie gebraucht.
+
+         Der Beleg ist jetzt der umgekehrte: der Scheduler ruft den
+         Pfad SELBST auf, gebunden an seine eigene Entscheidung und an
+         das Budget. Niemand muss den Request-PR oeffnen.
+         ----------------------------------------------------------------- */
+      beleg: "Der Scheduler ruft den bestehenden Dispatch-Pfad selbst auf, " +
+        "gebunden an eine eigene Entscheidung (nicht an jeden Lauf) und an " +
+        "das Budget aus creative-job.js: 1 processing_key -> 1 logischer Job." },
     { id: "NO_MANUAL_IMAGE_MOVING",
       claim: "Kein manuelles Verschieben von Bildern.",
       beleg: "Der Speicherort eines Assets folgt aus seinem SHA-256, nicht aus " +

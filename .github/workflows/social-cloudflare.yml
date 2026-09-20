@@ -33,15 +33,31 @@ name: Social Cloudflare
 # genannt — Cloudflare gibt ihre Werte ohnehin nicht zurueck.
 
 on:
-  # Vor dem Merge auf main kennt die GitHub-API einen Workflow fuer einen
-  # Dispatch nicht (404) — dasselbe Verhalten, das bereits in
-  # sec-fundamentals-daily.yml dokumentiert ist. Ein Push, der diesen
-  # Workflow selbst aendert, loest deshalb einen echten Lauf aus.
+  # -------------------------------------------------------------------
+  # DIE STEHENDE DEPLOY-ANFORDERUNG IST FORT (Owner-Entscheidung)
+  # -------------------------------------------------------------------
   #
-  # Ein solcher Lauf fuehrt NUR den Preflight aus, solange nicht die
-  # Datei workers/vision-universe-social/DEPLOY_REQUEST im Repository
-  # liegt. Sie ist die Anforderung, die ein Push nicht mitbringen kann:
-  # im Diff sichtbar, mit Autor und Datum, durch Loeschen zurueckziehbar.
+  # Es gab hier eine Datei, workers/vision-universe-social/DEPLOY_REQUEST,
+  # und solange sie dalag, deployte JEDER Push auf einen claude/**-Branch,
+  # der einen der Pfade unten beruehrt, den Worker.
+  #
+  # Ihr Grund war echt: die GitHub-API kennt einen Workflow fuer einen
+  # Dispatch nicht, solange er nicht auf dem Default-Branch liegt (404).
+  # Ohne Dispatch gab es keinen Knopf, also musste die Bestaetigung
+  # anders in den Lauf kommen - als Datei, im Diff sichtbar, mit Autor
+  # und Datum.
+  #
+  # Dieser Grund ist mit dem Merge nach main entfallen: der Workflow
+  # liegt dort, workflow_dispatch funktioniert, und es gibt einen Knopf
+  # mit Bestaetigungsfeld.
+  #
+  # Was die Datei zuletzt noch tat, war das Gegenteil ihrer Absicht: am
+  # 20.09. hat ein Push, der eine CI-Pruefung korrigierte, ein
+  # Worker-Deployment ausgeloest. Es war folgenlos - derselbe Code ging
+  # noch einmal hinaus -, aber niemand hatte es beschlossen.
+  #
+  # Ohne die Datei fuehrt ein Push nur noch den Preflight aus. Ein
+  # Deployment ist ab jetzt ein Dispatch mit getippter Bestaetigung.
   #
   # Der Preflight liest ausschliesslich — er kann nichts ueberschreiben,
   # und er laeuft in jedem Fall VOR jedem Deploy-Schritt.
@@ -53,9 +69,8 @@ on:
       - 'scripts/social/preflight-worker.mjs'
       - 'scripts/social/provision-cloudflare.mjs'
       - 'scripts/social/verify-worker.mjs'
-      # Aendert sich der Worker selbst, soll das Deployte ihm folgen —
-      # sonst laeuft draussen etwas anderes als hier steht. Hier liegt
-      # auch DEPLOY_REQUEST.
+      # Aendert sich der Worker selbst, soll der Preflight das sehen —
+      # ein Deployment folgt daraus nicht mehr von allein.
       - 'workers/vision-universe-social/**'
 
   workflow_dispatch:
