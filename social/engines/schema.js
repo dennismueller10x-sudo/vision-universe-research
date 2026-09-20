@@ -82,10 +82,29 @@
      sondern von einem Creative Agent erzeugt und uebernommen. Es als
      DATA_CARD zu fuehren hiesse, dem Lernen eine Bildform beizubringen,
      die nie zu sehen war. */
+  /* -------------------------------------------------------------------
+     DREI FORMEN, DIE ES GAB, ABER NICHT GEBEN DURFTE
+
+     SCORE, PERFORMANCE und COMPARISON standen seit ihrer Einfuehrung
+     in visual.js (mit Datenbedarf), in visual-composition.js (mit
+     Layout) und in render-asset.mjs (mit Zeichenzweig) - nur hier
+     nicht. Eine Bildform, die drei Stufen bauen koennen und die
+     vierte nicht kennt.
+
+     Aufgefallen ist es erst, als der Lauf zum ersten Mal ein Thema
+     ueber MEHRERE Titel baute: dort ist keine Zeitreihe verfuegbar,
+     die Wahl faellt auf COMPARISON - und das Schema brach den Zyklus
+     ab. Solange nur Einzelwerte liefen, gewann immer CHART, und der
+     Widerspruch blieb unsichtbar.
+
+     EINE VOKABEL AN ZWEI STELLEN GEHT AUSEINANDER. Ein Test haelt die
+     beiden Listen jetzt aneinander (VT1), damit die naechste neue
+     Bildform nicht wieder nur an drei von vier Stellen entsteht.
+     ------------------------------------------------------------------- */
   var VISUAL_TYPES = [
     "CHART", "NUMBER_VISUAL", "ATLAS", "COMPANY_VISUAL", "DATA_CARD",
     "CAROUSEL", "MOTION_GRAPHIC", "VIDEO", "MINIMAL_TYPOGRAPHY", "MIXED",
-    "GENERATIVE"
+    "GENERATIVE", "SCORE", "PERFORMANCE", "COMPARISON"
   ];
 
   /* Kanonische Metriken (§17). Jede Plattform meldet eine Teilmenge; was

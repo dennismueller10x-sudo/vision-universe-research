@@ -434,6 +434,11 @@
         evidenceRefs: Array.isArray(thema.evidenceRefs)
           ? thema.evidenceRefs.slice() : [],
         evidenceSufficient: thema.evidenceSufficient === true,
+        /* Wovon der Anlass handelt, und ob es einen gibt. Beides
+           entscheidet weiter unten die Archetyp-Eignung; stuende es
+           hier nicht, muesste der Zyklus es erraten. */
+        premise: thema.premise || null,
+        cause: thema.cause || null,
         asOf: thema.asOf || null,
         /* Die blanken Systemnamen bleiben lesbar - sie sind keine
            Herkunft, aber sie sagen, welche Systeme beteiligt waren. */

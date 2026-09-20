@@ -98,3 +98,49 @@ test("DE9 · Klarnamen statt Kuerzel in den Belegen", () => {
       "Beleg beginnt mit einem Kuerzel: " + k.statement);
   }
 });
+
+/* -------------------------------------------------------------------
+   DAS BRIEF-EVIDENZTOR ALS EIGENE, AUFRUFBARE ENTSCHEIDUNG
+
+   Seit der Owner es zum Tor der Content-Leiter gemacht hat, urteilt
+   es nicht mehr nur ueber Discover-Reihen. Diese Tests pruefen es
+   direkt — nicht ueber `fromRow`, sonst pruefen sie die Reihe und
+   nicht die Schwelle.
+   ------------------------------------------------------------------- */
+
+test("DE10 · Drei Belege OHNE Begruendung genuegen nicht", () => {
+  assert.equal(D.genuegt(3, null), false);
+  assert.equal(D.genuegt(99, null), false);
+  assert.equal(D.genuegt(3, "   "), false,
+    "Leerzeichen sind keine Begruendung");
+  /* `true` ist die bequemste Unwahrheit: ein Aufrufer, der nur weiss
+     DASS es einen Grund gibt, hat keinen Satz zu zeigen. */
+  assert.equal(D.genuegt(3, true), false,
+    "Ein Boolean ist kein Satz, den jemand lesen kann");
+});
+
+test("DE11 · Eine Begruendung mit zu wenig Belegen genuegt nicht", () => {
+  assert.equal(D.genuegt(0, "Weil der Kurs gestiegen ist."), false);
+  assert.equal(D.genuegt(D.MINDEST_BELEGE - 1, "Weil ..."), false);
+  assert.equal(D.genuegt(D.MINDEST_BELEGE, "Weil ..."), true);
+});
+
+test("DE12 · Unbekannt ist nicht 'genuegt'", () => {
+  assert.equal(D.genuegt(undefined, "Weil ..."), false);
+  assert.equal(D.genuegt(null, "Weil ..."), false);
+  assert.equal(D.genuegt(NaN, "Weil ..."), false);
+  assert.equal(D.genuegt("viele", "Weil ..."), false);
+});
+
+test("DE13 · fromRow rechnet die Schwelle nicht selbst nach", () => {
+  /* Eine zweite Rechnung fuer eine Frage, die schon eine hat, geht
+     irgendwann auseinander. Also darf in `fromRow` keine eigene
+     Zahl stehen. */
+  const quelle = readFileSync(
+    new URL("../engines/discover-evidence.js", import.meta.url), "utf8");
+  const fromRow = quelle.slice(quelle.indexOf("function fromRow"));
+  assert.ok(!/belege\.length\s*>=\s*\d/.test(fromRow),
+    "fromRow vergleicht die Belegzahl selbst gegen eine Zahl");
+  assert.ok(/genuegt\(belege\.length, r\.rule\)/.test(fromRow),
+    "fromRow ruft das Tor nicht auf");
+});

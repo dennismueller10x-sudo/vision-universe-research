@@ -240,6 +240,94 @@
       zeigen: function () { return []; }
     },
 
+    /* -----------------------------------------------------------------
+       DREI FORMEN, DIE GEZEICHNET WURDEN, ABER KEINE RICHTUNG HATTEN
+
+       SCORE, PERFORMANCE und COMPARISON haben in visual.js einen
+       Datenbedarf, in visual-composition.js ein Layout und in
+       render-asset.mjs einen Zeichenzweig - und hier stand nichts.
+       Solange nur Einzelwerte liefen, gewann immer CHART, und die
+       Luecke blieb unsichtbar. Der erste Lauf ueber eine Rangliste
+       waehlte COMPARISON, und die Bildrichtung war leer.
+
+       Die Voraussetzungen mussten nicht erfunden werden: `contributions`,
+       `returns` und `peers` gibt es als Pruefung seit jeher.
+       ----------------------------------------------------------------- */
+    SCORE: {
+      braucht: ["subject", "coreQuestion", "contributions"], gezeichnet: true,
+      idee: function (k) {
+        return "Woraus sich der Wert fuer " + k.subject + " ergibt: " +
+          k.contributions.length + " Beitraege nebeneinander" +
+          (k.spannung ? ", und darin " + k.spannung.text : "") +
+          ". Die Zusammensetzung ist das Motiv, nicht die Summe.";
+      },
+      fokus: function (k) {
+        return "Der groesste und der kleinste Beitrag, und der Name " + k.subject +
+          ". Wer eine Sekunde hinsieht, muss sehen, was traegt und was bremst.";
+      },
+      aufbau: function () {
+        return "Die Beitraege als Balken in einer Reihe, gleiche Breite, gleiche " +
+          "Achse. Ungleiche Achsen machen aus einem Vergleich eine Behauptung.";
+      },
+      rangfolge: function (k) {
+        return ["Die Beitraege im Verhaeltnis zueinander", "Der Name " + k.subject,
+          "Die Achse, gegen die gemessen wird"];
+      },
+      zeigen: function () {
+        return ["Die Bezugsgroesse jedes Beitrags - ein Balken ohne Skala " +
+          "ist eine Form ohne Aussage"];
+      }
+    },
+
+    PERFORMANCE: {
+      braucht: ["subject", "coreQuestion", "returns"], gezeichnet: true,
+      idee: function (k) {
+        return "Dieselbe Frage ueber " + k.returns.length + " Zeitraeume fuer " +
+          k.subject + (k.spannung ? ": " + k.spannung.text : "") +
+          ". Nebeneinander, weil ein einzelner Zeitraum jede Geschichte erzaehlt.";
+      },
+      fokus: function (k) {
+        return "Der Unterschied zwischen den Zeitraeumen und der Name " + k.subject +
+          ". Die genauen Prozentwerte sind Nachlesen.";
+      },
+      aufbau: function () {
+        return "Die Zeitraeume in ihrer natuerlichen Reihenfolge, kurz nach lang. " +
+          "Eine andere Reihenfolge waere eine Auswahl, die sich als Messung gibt.";
+      },
+      rangfolge: function (k) {
+        return ["Das Verhaeltnis der Zeitraeume zueinander", "Der Name " + k.subject,
+          "Die einzelnen Werte"];
+      },
+      zeigen: function () {
+        return ["Dass es Vergangenheit ist - ein Verlauf ist keine Prognose"];
+      }
+    },
+
+    COMPARISON: {
+      braucht: ["subject", "coreQuestion", "peers"], gezeichnet: true,
+      idee: function (k) {
+        return k.subject + " in seiner Gruppe: " + k.peers.length +
+          " Werte auf einer Achse" + (k.spannung ? ", und darin " + k.spannung.text : "") +
+          ". Die Gruppe ist der Massstab - ohne sie waere die Zahl nur gross oder klein.";
+      },
+      fokus: function (k) {
+        return "Die Position von " + k.subject + " in der Reihe. Wer eine Sekunde " +
+          "hinsieht, muss sehen, wo dieser Wert steht, nicht welchen er hat.";
+      },
+      aufbau: function () {
+        return "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei " +
+          "Einheiten in einem Vergleich sind kein Vergleich.";
+      },
+      rangfolge: function (k) {
+        return ["Die Position von " + k.subject + " in der Gruppe",
+          "Die Spannweite der Gruppe", "Die einzelnen Werte"];
+      },
+      zeigen: function () {
+        return ["Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine " +
+          "Vergleichsgruppe ohne Regel ist eine Auswahl"];
+      }
+    },
+
     NUMBER_VISUAL: {
       braucht: ["subject", "coreQuestion", "total"], gezeichnet: true,
       idee: function (k) {

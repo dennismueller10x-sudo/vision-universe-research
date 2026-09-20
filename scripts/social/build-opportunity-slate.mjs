@@ -42,6 +42,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Universe = require(join(ROOT, "social/engines/content-universe.js"));
 const DiscoverEvidence = require(join(ROOT, "social/engines/discover-evidence.js"));
+const Signals = require(join(ROOT, "social/engines/signals.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -108,6 +109,14 @@ function ausDiscoverReihen() {
       evidence: ev.evidence,
       evidenceSufficient: ev.sufficient,
       evidenceRejected: ev.rejectedCount,
+      /* Die Reihe filtert ueber Kennzahlen - davon handelt ihr Anlass. */
+      premise: "SECURITY_METRIC",
+      /* AUSDRUECKLICH NULL, obwohl die Reihe eine Auswahlregel hat.
+         Die Regel ist ein Kriterium ("Bekanntheitsstufe 1 UND neues
+         Jahreshoch"), kein Anlass. Sie hier einzutragen hiesse, einer
+         Rangliste den Archetyp EXPLAIN_THE_MOVE zu erlauben - fuer
+         einen Text, der keine Bewegung erklaert. */
+      cause: null,
       timeSensitivity: "TIMELY",
       asOf: r.asOf || r.generatedAt || null,
       note: "Reihe mit " + karten.length + " Titeln, Stand " + (r.asOf || "unbekannt") +
@@ -143,6 +152,10 @@ function ausMagazin() {
       slug: "magazin-" + ausgabe,
       title: titel.trim(),
       evidenceRefs: ["magazin/" + ausgabe + "/index.html"],
+      /* Ein Magazinstueck handelt von einem Gedanken, nicht von einer
+         Kennzahl. */
+      premise: "CONCEPT",
+      cause: null,
       timeSensitivity: "TIMELY",
       note: "Eine Ausgabe kann mehrere Social Stories tragen."
     }));
@@ -176,6 +189,8 @@ function ausReports() {
       slug: "report-" + eintrag,
       title: (titel || eintrag).trim(),
       evidenceRefs: ["reports/" + eintrag + "/index.html"],
+      premise: "SECURITY_METRIC",
+      cause: null,
       timeSensitivity: "EVERGREEN",
       note: klar ? null : "Kein Klarname zu \"" + eintrag + "\" bekannt - " +
         "das Audience-Tor wird das im Einstieg beanstanden."
@@ -225,6 +240,27 @@ function ausQuant() {
     .slice(0, 10)
     .map((e) => {
       const klar = namen[String(e.entity).toUpperCase()] || null;
+
+      /* -----------------------------------------------------------------
+         DER ANLASS DES EREIGNISSES — GELESEN, NICHT GESETZT
+
+         Bis eben stand hier `evidenceSufficient: false` als feste
+         Zahl. Die Antwort war zufaellig richtig (ein Beleg), aber sie
+         war keine Messung: haette ein Quant-Thema je drei Belege und
+         einen Anlass getragen, haette die Zeile weiter "nein" gesagt.
+
+         Jetzt fragt sie dasselbe Tor wie jede andere Quelle. Und den
+         Anlass kennt signals.js seit jeher: ein Momentumwechsel ist
+         einer, ein technischer Score ist keiner - eine Lage ist nicht
+         ihr eigener Grund. */
+      const anlass = Signals.providesCause(e.type)
+        ? (LABEL[e.type] || e.type) + " bei " + (klar || e.entity) + "."
+        : null;
+      const belege = [{ id: "quant-" + e.type, entity: (klar || e.entity),
+        metric: e.metric, value: e.value,
+        statement: (klar || e.entity) + ": " + e.metric + " " + e.value + ".",
+        source: e.source, observedAt: e.observedAt || null, temporal: true }];
+
       return Universe.topic({
         family: "STOCK_STORY",
         entityType: "STOCK",
@@ -244,12 +280,11 @@ function ausQuant() {
            eines Quant-Themas unbelegt - und das Thema faellt aus der
            Bewertung, obwohl der Messwert danebenliegt. */
         signalStrength: typeof e.strength === "number" ? e.strength : null,
-        evidence: [{ id: "quant-" + e.type, entity: (klar || e.entity),
-          metric: e.metric, value: e.value,
-          statement: (klar || e.entity) + ": " + e.metric + " " + e.value + ".",
-          source: e.source, observedAt: e.observedAt || null, temporal: true }],
-        evidenceSufficient: false,
+        evidence: belege,
+        evidenceSufficient: DiscoverEvidence.genuegt(belege.length, anlass),
         evidenceRejected: 0,
+        premise: Signals.premiseOf(e.type),
+        cause: anlass,
         note: e.metric + " " + e.value + ", Quelle " + e.source + "."
       });
     });
@@ -274,7 +309,8 @@ const QUELLEN = [
   { id: "VU_QUANT", fn: ausQuant }
 ];
 
-export function baueSlate() {
+export function baueSlate(optionen) {
+  const o = optionen || {};
   const themen = [];
   const leer = [];
   for (const q of QUELLEN) {
@@ -297,7 +333,10 @@ export function baueSlate() {
       explanation: Universe.validate(t).explanation }));
 
   return {
-    generatedAt: new Date().toISOString(),
+    /* Der Stand darf gesetzt werden: ein deterministischer Lauf
+       (Test, Nachweis) braucht eine Platte mit SEINEM Zeitpunkt,
+       sonst misst der Zyklus ihr Alter gegen eine andere Uhr. */
+    generatedAt: o.now || new Date().toISOString(),
     /* Ausdruecklich: kein Publishing, kein Kandidat. */
     purpose: "BREADTH_PROOF_ONLY",
     topics: gueltig,
@@ -319,7 +358,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const i = args.indexOf("--out");
   const OUT = i === -1 ? null : args[i + 1];
-  const s = baueSlate();
+  const j = args.indexOf("--now");
+  const s = baueSlate({ now: j === -1 ? null : args[j + 1] });
 
   console.log("VISION UNIVERSE SOCIAL — Opportunity Slate");
   console.log("Zweck: " + s.purpose + " (kein Publishing, kein Kandidat)\n");

@@ -35,6 +35,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
   var Schema = isNode ? require("./schema.js") : global.VUSocialSchema;
+  var Universe = isNode ? require("./content-universe.js") : global.VUSocialContentUniverse;
 
   /* Welcher Archetyp zu welcher Art Anlass passt. Das ist Startwissen,
      keine Wahrheit: die Learning Engine darf die Gewichte bewegen (§21),
@@ -156,6 +157,28 @@
          ohne bekannte Praemisse passt dann NICHT. Die vorsichtige
          Lesart: lieber kein Beitrag als ein falsch etikettierter. */
       if (fit.premises && fit.premises.indexOf(opportunity.premise) === -1) return false;
+      /* -----------------------------------------------------------------
+         EIN ARCHETYP FUER EINEN TITEL PASST NICHT AUF ZEHN
+
+         Der erste Lauf ueber die Content Ladder baute aus der Reihe
+         "BEKANNTE NAMEN IN BEWEGUNG" - zehn Unternehmen - einen
+         Beitrag mit dem Archetyp STOCK_STORY und dem Einstieg
+         "412,53 USD - Valero Energy, Kurs." Der Text war belegt; das
+         ETIKETT war falsch. Gemessen worden waere spaeter
+         "STOCK_STORY erreicht n Reichweite" - fuer eine Rangliste.
+
+         Dieselbe Verwechslung wie bei EXPLAIN_THE_MOVE ohne Anlass,
+         nur eine Ebene tiefer: nicht WOVON der Beitrag handelt,
+         sondern UEBER WIE VIELE.
+
+         `null` heisst hier "nicht entscheidbar" - dann wird nicht
+         gefiltert, weil eine Ablehnung ohne Wissen keine Pruefung
+         waere. `false` heisst "passt nachweislich nicht". */
+      if (Number.isFinite(Number(opportunity.entityCount))) {
+        if (Universe.archetypePassesEntityShape(a, opportunity.entityCount) === false) {
+          return false;
+        }
+      }
       return true;
     });
 

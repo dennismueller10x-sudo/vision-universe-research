@@ -38,6 +38,20 @@ function platz(name) {
   const rel = join("tmp", "lc-" + name + "-" + process.pid);
   mkdirSync(join(ROOT, rel), { recursive: true });
   copyFileSync(join(ROOT, "social/data/signals.json"), join(ROOT, rel, "signals.json"));
+  /* -----------------------------------------------------------------
+     DIE PLATTE GEHOERT IN DEN ARBEITSPLATZ
+
+     Seit der Zyklus seine Gelegenheiten ueber die Content Ladder aus
+     der Platte nimmt, ist ein Arbeitsplatz ohne Platte ein Zyklus
+     ohne Themen - und diese Tests messen dann nicht, was sie messen
+     wollen, sondern nur das Fehlen einer Datei.
+
+     Gebaut wird sie mit demselben Skript wie im Scheduler und mit
+     DEM ZEITPUNKT DIESES LAUFS: sonst prueft der Zyklus ihr Alter
+     gegen eine andere Uhr. Geschrieben wird nur in den
+     Arbeitsplatz - social/data bleibt unberuehrt (§42). */
+  execFileSync(process.execPath, [join(ROOT, "scripts/social/build-opportunity-slate.mjs"),
+    "--now", NOW, "--out", rel], { cwd: ROOT, stdio: ["ignore", "ignore", "pipe"] });
   return rel;
 }
 

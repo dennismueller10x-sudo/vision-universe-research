@@ -48,6 +48,42 @@
   /* Kennzahlen, bei denen ein Wert ueber dieser Grenze unmoeglich ist. */
   var OBERGRENZE = { marge: 100, anteil: 100, quote: 100 };
 
+  /* -------------------------------------------------------------------
+     DAS BRIEF-EVIDENZTOR — EINE DEFINITION, ZWEI AUFRUFER
+
+     Diese Schwelle entschied bisher nur ueber Discover-Reihen, und sie
+     stand mitten in `fromRow`. Seit der Owner sie zum Tor der
+     Content-Leiter gemacht hat, urteilt sie auch ueber Gelegenheiten
+     aus Signalen — und eine Schwelle, die an zwei Stellen NEU
+     geschrieben wird, ist zwei Schwellen mit einem Namen.
+
+     Also steht sie hier, einmal, und `fromRow` ruft sie auf wie jeder
+     andere auch.
+
+     ZWEI BEDINGUNGEN, NICHT EINE:
+
+       genug Belege     Drei Saetze, die etwas behaupten, das
+                        nachpruefbar ist.
+       eine Begruendung Der Satz, der sagt, WARUM dieses Thema
+                        zusammengehoert. Bei einer Discover-Reihe ist
+                        das ihre Auswahlregel; bei einem Signal der
+                        Anlass, den es mitbringt.
+
+     Die zweite ist die wichtigere. Drei Zahlen ohne Grund sind eine
+     Aufzaehlung, kein Thema — und genau diese Verwechslung ist der
+     Ticker-first-Rueckfall, den §12 verbietet.
+     ------------------------------------------------------------------- */
+  var MINDEST_BELEGE = 3;
+
+  function genuegt(belegAnzahl, begruendung) {
+    var n = Number(belegAnzahl);
+    if (!isFinite(n) || n < MINDEST_BELEGE) return false;
+    /* Eine leere Zeichenkette ist keine Begruendung, `true` auch nicht:
+       verlangt ist ein Satz, den jemand lesen kann. Unbekannt faellt
+       hier auf `false` und nicht auf "wird schon". */
+    return typeof begruendung === "string" && begruendung.trim().length > 0;
+  }
+
   function istMarge(label) {
     return /marge|quote|anteil|rendite/i.test(String(label || ""));
   }
@@ -208,8 +244,8 @@
          die uebrigen Belege stimmen. */
       evidenceCount: belege.length,
       rejectedCount: befunde.length,
-      sufficient: belege.length >= 3 && !!r.rule,
-      explanation: belege.length >= 3 && r.rule
+      sufficient: genuegt(belege.length, r.rule),
+      explanation: genuegt(belege.length, r.rule)
         ? belege.length + " Belege aus der Reihe, Auswahlregel vorhanden."
         : "Zu wenig Evidenz fuer eine eigene Geschichte: " + belege.length +
           " Belege" + (r.rule ? "" : ", keine Auswahlregel") + "."
@@ -220,6 +256,8 @@
     NICHT_VERBREITBAR: NICHT_VERBREITBAR,
     BELASTBAR: BELASTBAR,
     OBERGRENZE: OBERGRENZE,
+    MINDEST_BELEGE: MINDEST_BELEGE,
+    genuegt: genuegt,
     wertAus: wertAus,
     fromRow: fromRow
   };

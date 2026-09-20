@@ -104,6 +104,20 @@
          ein Stand vorliegt. Liegen Horizonte vor, waere dasselbe Verbot
          ein Widerspruch zum mitgelieferten Beleg. */
       temporal: spec.temporal === true,
+      /* -----------------------------------------------------------------
+         TRAEGT DIESER SATZ DIE EINORDNUNG?
+
+         Das Sufficiency-Tor verlangt, dass die Leitaussage eines
+         Pakets erklaert wird - "eine Zahl ohne ihre Bedeutung ist der
+         Anfang jeder Fehlinterpretation". Es erkannte diese Saetze
+         bisher an ZWEI festen Kennungen aus dem Quant-Bundle. Damit
+         konnte nur ein Paket dieser einen Bauart das Tor je bestehen;
+         jedes andere scheiterte daran, dass es anders heisst - nicht
+         daran, dass ihm die Einordnung fehlt.
+
+         Also sagt der Satz es jetzt selbst. Die Bedingung bleibt
+         dieselbe, sie fragt nur nicht mehr nach dem Namen. */
+      interpretation: spec.interpretation === true,
       entity: spec.entity || null,
       metric: spec.metric || null,
       source: spec.source || null,
@@ -152,6 +166,7 @@
       if (os.disclaimer) {
         evidence.push(ev({
           id: "score-meaning", dimension: "SCORE", entity: entity,
+          interpretation: true,
           metric: "Bedeutung des Scores", value: null,
           source: source, observedAt: asOf, pointer: "/opportunityScore/disclaimer",
           statement: os.disclaimer
@@ -160,6 +175,7 @@
       if (os.isProbability === false) {
         evidence.push(ev({
           id: "score-not-probability", dimension: "SCORE", entity: entity,
+          interpretation: true,
           metric: "Interpretation", value: null,
           source: source, observedAt: asOf, pointer: "/opportunityScore/interpretation",
           statement: "Der Wert ist ein methodischer Rang (" +
@@ -393,7 +409,11 @@
 
     if (regeln.requireInterpretation) {
       var hatBedeutung = saetze.some(function (e) {
-        return e.id === "score-meaning" || e.id === "score-not-probability"; });
+        /* Die beiden Kennungen bleiben stehen: Pakete, die vor diesem
+           Feld gebaut wurden, sollen weiter gelten. Neue sagen es
+           ueber das Feld. */
+        return e.interpretation === true ||
+          e.id === "score-meaning" || e.id === "score-not-probability"; });
       if (!hatBedeutung) {
         gruende.push("Die Leitzahl hat keine Einordnung. Eine Zahl ohne ihre " +
           "Bedeutung ist der Anfang jeder Fehlinterpretation.");
@@ -426,6 +446,91 @@
     };
   }
 
+  /* =====================================================================
+     DAS PAKET AUS EINEM THEMA DER PLATTE
+
+     `fromTechnicalBundle` war lange der einzige Weg zu einem Paket -
+     und er fuehrt ueber genau eine Datei je EINZELWERT. Damit konnte
+     nur ein Inhalt ueber einen einzelnen Titel je belegt werden.
+
+     Eine Rangliste aus einer Discover-Reihe traegt ihre Belege
+     laengst mit: die Auswahlregel, die Abdeckung, die Kurse der
+     Titel, ihre Kennzahlen. Siebzehn Saetze, jeder mit Quelle. Sie
+     mussten nur in die kanonische Form gebracht werden, statt eine
+     zweite Evidenzarchitektur danebenzustellen.
+
+     ES WIRD NICHTS ERFUNDEN. Diese Funktion rechnet nicht, sie
+     uebersetzt: jeder Satz, den sie ausgibt, stand so im Thema. Was
+     dort fehlt, fehlt auch hier - und das Sufficiency-Tor sieht es.
+
+     DIE DIMENSION KOMMT AUS DEM BELEG, NICHT AUS SEINEM NAMEN. Ein
+     Beleg mit Kennzahl traegt die Kennzahl als Dimension. Ein Beleg
+     OHNE Entitaet spricht ueber das Thema als Ganzes - das ist die
+     Einordnung. Einer MIT Entitaet und ohne Zahl erzaehlt von einem
+     Titel. Diese drei Faelle stehen in den Daten; eine Liste von
+     Kennungen haette dagegen beim naechsten neuen Beleg geschwiegen.
+     ===================================================================== */
+  function fromTopicEvidence(thema, options) {
+    options = options || {};
+    var t = thema || {};
+    var roh = Array.isArray(t.evidence) ? t.evidence : [];
+
+    if (!roh.length) {
+      return { ok: false, reason: "NO_EVIDENCE",
+        message: "Das Thema \"" + (t.title || t.topicId || "ohne Titel") +
+          "\" traegt keine Belege." };
+    }
+
+    var asOf = t.asOf || options.asOf || null;
+    var evidence = roh.map(function (e, i) {
+      var ueberDasGanze = !e.entity;
+      var hatZahl = e.value !== null && e.value !== undefined;
+      return ev({
+        id: e.id || ("topic-" + i),
+        dimension: e.metric ? String(e.metric).toUpperCase()
+          : (ueberDasGanze ? "EINORDNUNG" : "ERZAEHLUNG"),
+        /* Die Einordnung ist der Satz UEBER das Thema, nicht der ueber
+           einen einzelnen Titel. Eine Firmenbeschreibung erklaert die
+           Leitaussage einer Rangliste nicht. */
+        interpretation: ueberDasGanze && !hatZahl,
+        entity: e.entity || null,
+        metric: e.metric || null,
+        value: hatZahl ? e.value : null,
+        unit: e.unit || null,
+        temporal: e.temporal === true,
+        source: e.source || null,
+        observedAt: e.observedAt || asOf || null,
+        pointer: e.pointer || null,
+        statement: e.statement || ""
+      });
+    }).filter(function (e) { return e.statement && e.statement.trim(); });
+
+    var paket = {
+      packageVersion: "evidence-package-1.0.0",
+      entity: options.entity || t.title || t.topicId || null,
+      asOf: asOf,
+      source: options.source || (Array.isArray(t.sources) ? t.sources[0] : null) || null,
+      sourceRevision: options.sourceRevision || null,
+      methodologyVersion: null,
+      dataVersion: null,
+      evidence: evidence,
+      /* Was dem Thema fehlt, wird nicht verschwiegen - aber auch nicht
+         erfunden. Die Platte fuehrt ihre Zurueckweisungen als Zahl;
+         eine Dimensionsliste hat sie nicht. */
+      unavailable: [],
+      dimensionsAvailable: Array.from(new Set(evidence.map(function (e) {
+        return e.dimension; }))),
+      generatedAt: options.now || null
+    };
+
+    paket.packageId = Hash.prefixedHash("evp", {
+      entity: paket.entity, asOf: asOf, dataVersion: null,
+      ids: evidence.map(function (e) { return e.id + ":" + e.value; })
+    });
+
+    return Object.assign({ ok: true, reason: null }, paket);
+  }
+
   /* -------------------------------------------------------------------
      DIE INHALTSKENNUNG
 
@@ -447,6 +552,7 @@
     DIMENSIONS: DIMENSIONS,
     SUFFICIENCY_DEFAULTS: SUFFICIENCY_DEFAULTS,
     fromTechnicalBundle: fromTechnicalBundle,
+    fromTopicEvidence: fromTopicEvidence,
     assessSufficiency: assessSufficiency,
     contentIdFor: contentIdFor
   };
