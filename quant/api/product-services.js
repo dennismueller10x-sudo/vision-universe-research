@@ -19,7 +19,7 @@ const History=typeof module!=='undefined'&&module.exports?require('./fundamental
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 function create(options){
- const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
+ const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady,technicalReady;
  const directory=Directory.create({loadJSON:load});
  async function compressedJSON(path){
   if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
@@ -66,10 +66,37 @@ function create(options){
  ]).then(([preview,gates])=>{policy.declareFromConfig(preview);return {preview,gates:policy.gatesFromConfig(gates)};}).catch(e=>{configReady=null;throw e;});return configReady;}
  function init(){if(!ready)ready=Promise.all([config(),load('/quant/data/sec/quant-factor-inputs.json')])
  .then(([c,panel])=>({...c,panel})).catch(e=>{ready=null;throw e;});return ready;}
+ function technicalSnapshots(){if(!technicalReady)technicalReady=Promise.all([
+  load('/quant/data/technical/index.json'),load('/quant/data/technical/meta.json'),
+  load('/quant/methodology/technical-v1.json'),load('/quant/methodology/elliott-v1.json')
+ ]).then(([index,meta,technical,elliott])=>{
+  const now=Date.now(),generated=Date.parse(index.generatedAt),metaGenerated=Date.parse(meta.generatedAt);
+  if(!Array.isArray(index.instruments)||!Number.isFinite(generated)||generated>now||!Number.isFinite(metaGenerated)||metaGenerated>now||
+    meta.bundleVersion!=='technical-bundle-1.0.0'||meta.methodologyVersions?.technical!==technical.methodologyVersion||
+    meta.methodologyVersions?.elliott!==elliott.methodologyVersion||meta.goldenFive?.symbols!==5)throw Error('INVALID_TECHNICAL_INDEX');
+  return {index,meta};
+ }).catch(e=>{technicalReady=null;throw e;});return technicalReady;}
  function permission(c,ticker,form){return policy.check({providerId:'tiingo',dataClass:'marketData',audience:'development_preview',form:form||'derived',ticker,gates:c.gates});}
  function unavailable(reason){return {state:'UNAVAILABLE',reason,stocks:[]};}
  function metric(value,unit){return {value:Number.isFinite(value)?value:null,unit,state:Number.isFinite(value)?'AVAILABLE':'SOURCE_MISSING'};}
  function validDate(d){return typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d;}
+ const TECHNICAL_RULE_FIELDS=new Set(['technicalOpportunityScore','technicalTrend','technicalPrimaryDirection','elliottCountStatus']);
+ async function technicalRuleRows(stocks){
+  const {index,meta}=await technicalSnapshots(),today=new Date().toISOString().slice(0,10),rows={};
+  for(const stock of stocks){
+   const matches=index.instruments.filter(r=>r.instrumentId===stock.ticker&&!r.isMock&&r.dataMode==='real');
+   if(matches.length!==1)throw Error('INVALID_TECHNICAL_INDEX');
+   const r=matches[0];
+   if(r.name!==stock.ticker||!validDate(r.asOf)||r.asOf>today||!Number.isFinite(r.opportunityScore)||r.opportunityScore<0||r.opportunityScore>100||
+    !['BULLISH','BEARISH','NEUTRAL'].includes(r.trend)||!['BULLISH','BEARISH','NEUTRAL'].includes(r.primaryDirection)||
+    !['OK','AMBIGUOUS','LOW_CONFIDENCE'].includes(r.elliottStatus)||!/^snap_[a-f0-9]{16}$/.test(r.snapshotId))throw Error('INVALID_TECHNICAL_INDEX');
+   rows[stock.ticker]={technicalOpportunityScore:r.opportunityScore,technicalTrend:r.trend,
+    technicalPrimaryDirection:r.primaryDirection,elliottCountStatus:r.elliottStatus,
+    technicalAsOf:r.asOf,technicalMethodology:meta.methodologyVersions.technical,
+    elliottMethodology:meta.methodologyVersions.elliott};
+  }
+  return rows;
+ }
  async function row(c,ticker){
   const s=c.panel.securities[ticker];
   if(!s||!s.available||s.ticker!==ticker||s.securityId!=='sec_'+ticker)return null;
@@ -254,11 +281,18 @@ function create(options){
   if(!queryEngine.validate(query).valid)return unavailable('INVALID_SCREEN_RULES');
   const usesPrice=query.filters.some(f=>f.field==='price')||query.sort.some(s=>s.field==='price');
   if(usesPrice&&universe.stocks.some(s=>!permission(c,s.ticker,'raw').allowed))return unavailable('PRICE_DISPLAY_NOT_PERMITTED');
-  const rows=universe.stocks.map(s=>({...c.panel.securities[s.ticker].fundamentals,price:s.price.value,ticker:s.ticker,securityId:s.securityId,status:'active'}));
+  const usesTechnical=[...query.filters.map(f=>f.field),...query.sort.map(s=>s.field)].some(field=>TECHNICAL_RULE_FIELDS.has(field));
+  const technical=usesTechnical?await technicalRuleRows(universe.stocks):{};
+  const rows=universe.stocks.map(s=>({...c.panel.securities[s.ticker].fundamentals,price:s.price.value,ticker:s.ticker,securityId:s.securityId,status:'active',...(technical[s.ticker]||{})}));
   const result=queryEngine.execute(query,rows);
   const predicate=Rules.fromQuery(result.query);
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,predicate,predicateHash:Rules.predicateHash(predicate),scope:universe.scope,
-   eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
+   eligible:rows.length,stocks:result.rows.map(r=>{const stock=universe.stocks.find(s=>s.ticker===r.ticker);if(!usesTechnical)return stock;
+    const t=technical[r.ticker];return {...stock,
+     technicalOpportunityScore:{value:t.technicalOpportunityScore,unit:'score',state:'AVAILABLE',asOf:t.technicalAsOf},
+     technicalTrend:{value:t.technicalTrend,unit:'state',state:'AVAILABLE',asOf:t.technicalAsOf},
+     technicalPrimaryDirection:{value:t.technicalPrimaryDirection,unit:'state',state:'AVAILABLE',asOf:t.technicalAsOf},
+     elliottCountStatus:{value:t.elliottCountStatus,unit:'method_fit',state:'AVAILABLE',asOf:t.technicalAsOf,isProbability:false}};})};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
  return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }

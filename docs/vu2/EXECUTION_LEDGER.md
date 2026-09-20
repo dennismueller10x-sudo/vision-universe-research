@@ -496,3 +496,39 @@ no-Discovery-diff checks PASS. Remote PR/main gates and production smoke remain
 pending. Real Backtest activation remains false until cutoff-safe PIT fact panels,
 historical universe/delistings, corporate actions and compatible observed execution
 prices are all evidenced.
+
+## 2026-09-20 — Backtest readiness deployed; Technical/Elliott rule integration
+
+PR #123 merged to main as
+`2e7d56166882abada54e8c186562593c40bd2706`. All PR and main-push Quant,
+SEC and Production Pages gates succeeded. Production Backtesting completed a
+188-rebalance mock run and disclosed modeled next-open execution; its Trust Score
+awarded only partial timing credit. Quant 2.0 and the separate Discovery product
+rendered without page-origin console errors. Evidence is recorded on PR #123.
+`DISCOVERY_CHANGED=false`.
+
+The next dependency-correct tranche reuses the existing real Technical/Elliott
+snapshot index and methodology artifacts. Four current-snapshot fields now enter
+the canonical Rule Contract for Screener and current Strategy preview:
+`technicalOpportunityScore`, `technicalTrend`,
+`technicalPrimaryDirection` and `elliottCountStatus`. Product Services validate
+identity, current dates, real/non-mock mode, value domains, snapshot ids, bundle
+version and methodology versions before execution. Ordinary non-Technical screens
+do not load or depend on those artifacts.
+
+The compatible Technical Scanner legacy filters delegate to the same Rule
+Contract and expose its predicate hash. Every new field is explicitly
+`CURRENT_SNAPSHOT_ONLY` and `NOT_CERTIFIED` for historical Backtesting. The
+Backtest engine rejects those rules before provider execution; Elliott method
+status is explicitly not a probability. Enum fields are filter-only and cannot be
+selected for numeric result sorting.
+
+Focused integration tests are 85/85 PASS. Full Quant 1,224/1,224, SEC Python
+471/471, internal PIT 32/32, shared Worker/Discovery 66/66 and resource-budget
+5/5 PASS locally. The exact release remains at 4,846,342/8,388,608 SEC bytes with
+`EXISTING_R2_UNCHANGED`. No historical Technical/Elliott series, full-universe
+ranking, provider, pipeline, endpoint, secret or schedule was added.
+SEC/PIT, Company Master, History, Intraday, Realtime and the materialized standard
+Fundamentals path are unchanged. No Discovery path is modified and no recurring
+cost is introduced. Full local gates, remote PR/main gates and production smoke
+remain required before this tranche is recorded as deployed.
