@@ -1737,6 +1737,35 @@ function pruefeProjektion(p) {
         "nicht sagen, wie alt der Stand ist." };
   }
 
+  /* -------------------------------------------------------------------
+     DER INHALTLICHE STAND — OPTIONAL, ABER NICHT BELIEBIG (§16/§39–§41)
+
+     Er darf fehlen: eine aeltere Uebertragung kennt ihn nicht, und
+     eine Schlange ohne ihn ist immer noch eine gueltige Schlange.
+
+     Ist er DA, muss er die Form haben, die die Oberflaeche zeigen
+     kann. Ein unbekannter Zustand waere ein Wort, zu dem es keinen
+     Satz gibt - und die Seite zeigte dann eine leere Zeile, wo eine
+     Erklaerung stehen sollte. Fail closed: lieber die Uebertragung
+     zurueckweisen als eine halbe Auskunft anzeigen.
+     ------------------------------------------------------------------- */
+  if (p.contentStatus !== undefined && p.contentStatus !== null) {
+    const c = p.contentStatus;
+    if (typeof c !== "object" || Array.isArray(c)) {
+      return { ok: false, reason: "badContentStatus",
+        message: "contentStatus ist kein Objekt." };
+    }
+    const bekannt = ["POST_PREPARED", "NO_POST_JUSTIFIED", "NO_POST_UNEXPLAINED"];
+    if (!bekannt.includes(c.zustand)) {
+      return { ok: false, reason: "unknownContentState",
+        message: "Unbekannter Inhaltszustand: " + String(c.zustand) + "." };
+    }
+    if (typeof c.erklaerung !== "string" || !c.erklaerung.trim()) {
+      return { ok: false, reason: "contentStatusWithoutSentence",
+        message: "Ein Inhaltszustand ohne Satz ist fuer den Owner keine Auskunft." };
+    }
+  }
+
   for (const i of p.items) {
     if (!i || typeof i !== "object") {
       return { ok: false, reason: "badItem", message: "Ein Eintrag ist kein Objekt." };

@@ -426,7 +426,19 @@ async function handleApprovalIndex(request, url, env, options = {}) {
     held: schlange.held || [],
     decided: schlange.decided || [],
     alter: alterMs === null ? null : alterInWorten(alterMs),
-    veraltet: alterMs !== null && alterMs > STAND_ALT_MS
+    veraltet: alterMs !== null && alterMs > STAND_ALT_MS,
+
+    /* -----------------------------------------------------------------
+       DER INHALTLICHE STAND — DURCHGEREICHT, NICHT GEDEUTET (§16/§39–§41)
+
+       Er kommt aus derselben Uebertragung wie die Schlange und wird
+       hier nicht nachgerechnet und nicht geglaettet. Fehlt er, bleibt
+       er null - und die Seite sagt dann "nicht uebertragen" statt
+       "nichts passiert". */
+    contentStatus: schlange.contentStatus || null,
+    /* Die Uhr der Seite, damit "vor einer Stunde" von hier und nicht
+       aus dem Browser kommt. */
+    jetzt: jetzt
   });
 }
 
