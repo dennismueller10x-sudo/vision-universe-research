@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-09-15T05:41:48.596Z",
+ "generatedAt": "2026-09-20T06:10:08.250Z",
  "engine": "coverage-metrics-1.0.0",
  "gate": "FULL_UNIVERSE",
  "provider": "tiingo",
  "market": "US",
- "today": "2026-09-15",
+ "today": "2026-09-20",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "storageSource": {
@@ -67,13 +67,13 @@
  },
  "LONG_HISTORY": {
   "universeSize": 7803,
-  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 6053,
+  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 6059,
   "PASS": 6019,
-  "FAIL": 34,
-  "LONG_HISTORY_COVERAGE_PERCENT": 99.44,
+  "FAIL": 40,
+  "LONG_HISTORY_COVERAGE_PERCENT": 99.34,
   "notEligibleByReason": {
    "NOT_IN_PRODUCT_UNIVERSE": 928,
-   "LISTING_TOO_YOUNG": 822
+   "LISTING_TOO_YOUNG": 816
   },
   "failSymbols": [
    {
@@ -172,6 +172,11 @@
     "startDate": "2025-09-16"
    },
    {
+    "ticker": "CIMP",
+    "bars": 245,
+    "startDate": "2025-09-18"
+   },
+   {
     "ticker": "DIVE",
     "bars": 248,
     "startDate": "2025-09-16"
@@ -207,6 +212,11 @@
     "startDate": "2024-06-18"
    },
    {
+    "ticker": "KOYN",
+    "bars": 245,
+    "startDate": "2025-09-19"
+   },
+   {
     "ticker": "LBDAV",
     "bars": 146,
     "startDate": "2025-07-14"
@@ -227,6 +237,21 @@
     "startDate": "2025-09-17"
    },
    {
+    "ticker": "NTSK",
+    "bars": 246,
+    "startDate": "2025-09-18"
+   },
+   {
+    "ticker": "PLTS",
+    "bars": 245,
+    "startDate": "2025-09-19"
+   },
+   {
+    "ticker": "PTRN",
+    "bars": 245,
+    "startDate": "2025-09-19"
+   },
+   {
     "ticker": "RHLDV",
     "bars": 152,
     "startDate": "2025-02-20"
@@ -245,12 +270,17 @@
     "ticker": "WDCVV",
     "bars": 152,
     "startDate": "2025-02-13"
+   },
+   {
+    "ticker": "YDKG",
+    "bars": 246,
+    "startDate": "2025-09-18"
    }
   ],
   "threshold": 0.9,
   "thresholdSource": "tiingo-scale.json:pass.minHistoryCoverageRate",
   "ok": true,
-  "failSymbolsTotal": 34
+  "failSymbolsTotal": 40
  },
  "legacy": {
   "metric": "historyCoverageRate ueber das gesamte Universum",
