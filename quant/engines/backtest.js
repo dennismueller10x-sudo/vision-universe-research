@@ -34,6 +34,7 @@
   var Factors = isNode ? require("./factors.js") : global.VUFactors;
   var QuantScore = isNode ? require("./quant-score.js") : global.VUQuantScore;
   var Query = isNode ? require("./query.js") : global.VUQuery;
+  var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
   var Strategy = isNode ? require("./strategy.js") : global.VUStrategy;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
@@ -304,6 +305,7 @@
   function selectCandidates(context, asOf) {
     var provider = context.provider;
     var definition = context.definition;
+    var basePredicate = Strategy.selectionPredicate(definition);
 
     var securities = provider.getSecurities({ asOf: asOf }).data;
     for (var si = 0; si < securities.length; si++) {
@@ -334,8 +336,8 @@
     }
 
     var query = Query.createQuery({
-      universe: definition.universe,
-      filters: definition.filters.concat(constraintFilters),
+      universe: basePredicate.universe,
+      filters: basePredicate.filters.concat(constraintFilters),
       sort: [{ field: "quantScore", direction: "desc" }],
       limit: Query.MAX_LIMIT
     });
@@ -363,6 +365,8 @@
 
     return {
       asOf: asOf,
+      predicateHash: Rules.predicateHash(basePredicate),
+      constraintFilters: constraintFilters,
       universeSize: rows.length,
       screenedCount: screened.matchedCount,
       eligibleCount: ranked.length,
@@ -469,6 +473,7 @@
 
         rebalanceLog.push({
           decisionDate: decisionDate, executionDate: day,
+          predicateHash: selection.predicateHash,
           universeSize: selection.universeSize, screenedCount: selection.screenedCount,
           eligibleCount: selection.eligibleCount, selected: selection.candidates.length,
           turnover: round(result.turnover * 100, 2),
@@ -578,6 +583,7 @@
        eine Pruefsumme statt eines Reproduktionsschluessels. */
     var reproductionInput = {
       strategyVersionHash: Strategy.definitionHash(definition),
+      selectionPredicateHash: Rules.predicateHash(Strategy.selectionPredicate(definition)),
       dataSnapshotId: context.dataSnapshotId,
       engineVersion: btCfg.engineVersion,
       methodologyVersion: btCfg.methodologyVersion,
@@ -603,6 +609,7 @@
       methodologyVersion: btCfg.methodologyVersion,
       quantMethodologyVersion: Methodology.quant().methodologyVersion,
       dataSnapshotId: context.dataSnapshotId,
+      selectionPredicateHash: reproductionInput.selectionPredicateHash,
       reproductionHash: reproductionHash,
       reproductionInput: reproductionInput,
       executionAssumptions: executionAssumptions,

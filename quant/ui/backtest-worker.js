@@ -24,6 +24,7 @@ importScripts(
   BASE + "engines/methodology.js",
   BASE + "engines/normalization.js",
   BASE + "engines/query.js",
+  BASE + "engines/rule-contract.js",
   BASE + "engines/strategy.js",
   BASE + "engines/factors.js",
   BASE + "engines/quant-score.js",

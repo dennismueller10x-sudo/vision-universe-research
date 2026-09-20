@@ -429,3 +429,38 @@ tests, 32/32 internal PIT projection tests and 66/66 shared Worker/Discovery tes
 PASS. The exact release build remains within budget at 4,846,342/8,388,608 SEC
 bytes with `EXISTING_R2_UNCHANGED`; secret hygiene and the explicit no-Discovery-
 diff gate PASS.
+
+## 2026-09-20 — Canonical Rule Contract v1
+
+Continuation baseline is accepted PR #121 / main
+`8d0454b287b053c270f186b6c3501a41bea8b5fc`. Read-only product, rule, PIT,
+delivery and PR/CI audits found the next dependency-correct shared-engine gap:
+Screener, Strategy and Backtest reused Query evaluation but did not carry one
+predicate identity into Signals or the future internal Alert lane. Technical
+Scanner, Radar and Watchlist still have distinct domain predicates and are not
+falsely marked unified.
+
+Implemented a data-agnostic, fail-closed Rule Contract over the existing Query
+engine. `universe + filters` now define the stable predicate hash; sort, limit,
+portfolio constraints and delivery do not. Screener exports it, Strategy derives
+it, Backtest records it at each selection and in the reproduction input, and EOD
+Signals use it for transition and event identity. A deterministic internal Alert
+evaluator exists with delivery fixed to `NOT_CONFIGURED`; no API, scheduler,
+subscription store or notification service was added.
+
+Local gates: Quant 1,218/1,218, SEC Python 471/471, internal PIT 32/32,
+Shared Worker/Discovery 66/66, release/resource contract 8/8 PASS. Exact release
+build PASS at 4,846,342/8,388,608 SEC bytes and `EXISTING_R2_UNCHANGED`.
+Secret hygiene, diff hygiene and explicit no-Discovery-diff checks PASS. PR browser,
+CI, merge, deployed-artifact and production smoke evidence remain required before
+deployment is recorded.
+
+No SEC/R2, Company Master, History, Intraday or Realtime architecture changed.
+Standard Fundamentals remain materialized Product Data; there is no public PIT API
+or Vercel dependency. `DISCOVERY_CHANGED=false`; no recurring cost was introduced.
+
+Next dependency boundary: real Backtest activation remains blocked by historical
+universe/delisting evidence, materialized PIT fact panels with exact availability
+timestamps, corporate-action/execution evidence, and provider-derived capability
+flags. Capability/readiness hardening may proceed without claiming those missing
+inputs or enabling real execution.

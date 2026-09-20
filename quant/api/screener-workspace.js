@@ -3,7 +3,7 @@
 (function(g){
 'use strict';
 const node=typeof module!=='undefined'&&module.exports;
-const Query=node?require('../engines/query.js'):g.VUQuery,Catalog=node?require('../engines/catalog.js'):g.VUCatalog;
+const Query=node?require('../engines/query.js'):g.VUQuery,Catalog=node?require('../engines/catalog.js'):g.VUCatalog,Rules=node?require('../engines/rule-contract.js'):g.VURuleContract;
 const fields=Object.freeze([
  ['momentum6m','Kursentwicklung · 6 Monate','momentum6m'],['revenueGrowth','Umsatzwachstum','revenueGrowth'],
  ['priceTo200dma','Abstand zum 200-Tage-Durchschnitt','above200'],['priceTo50dma','Abstand zum 50-Tage-Durchschnitt','above50'],
@@ -15,5 +15,6 @@ function supported(query){return Query.validate(query).valid&&query.filters.ever
 function build(filters,sort){const query=Query.createQuery({filters,sort:sort||[{field:filters[0]?.field||'momentum6m',direction:'desc'}],limit:50});if(!supported(query))throw Error('INVALID_SCREEN_RULES');return query;}
 function decode(value){if(typeof value!=='string'||value.length>24000)throw Error('INVALID_SCREEN_LINK');const query=Query.createQuery(JSON.parse(value));if(!supported(query))throw Error('UNSUPPORTED_SCREEN_LINK');return query;}
 function encode(query){if(!supported(query))throw Error('INVALID_SCREEN_RULES');return JSON.stringify(query);}
-const api={fields,operators,build,decode,encode,maxFilters:Query.MAX_FILTERS};if(node)module.exports=api;else g.VUScreenerWorkspace=api;
+function predicate(query){if(!supported(query))throw Error('INVALID_SCREEN_RULES');return Rules.fromQuery(query);}
+const api={fields,operators,build,decode,encode,predicate,maxFilters:Query.MAX_FILTERS};if(node)module.exports=api;else g.VUScreenerWorkspace=api;
 })(typeof window!=='undefined'?window:globalThis);
