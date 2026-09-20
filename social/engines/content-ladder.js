@@ -167,6 +167,32 @@
       if (u && u.family) unavailable[u.family] = u.reason || "ohne Grund vermerkt";
     });
 
+    /* -----------------------------------------------------------------
+       WELCHES EVIDENZTOR GILT — EINE OWNER-ENTSCHEIDUNG
+
+       Es gibt zwei produktive Tore, und sie urteilten ueber dieselben
+       vier Aktienthemen gegensaetzlich:
+
+         Brief-Evidenztor der Platte   evidenceSufficient: false
+                                       (je ein Beleg)
+         Opportunity-Schwelle          proposable: true
+         des Zyklus                    (Score 61–66)
+
+       Beide sind legitim; sie beantworten verschiedene Fragen. Welches
+       die Leiter anwendet, entscheidet aber ihr ganzes Verhalten: mit
+       dem einen steigt sie bis zu den belegten Ranglisten, mit dem
+       anderen bricht sie bei den Aktienthemen ab.
+
+       DER OWNER HAT DAS BRIEF-EVIDENZTOR GEWAEHLT. Das setzt §12 um -
+       ein internes Signal ist eine Opportunity Source und hat kein
+       automatisches Veroeffentlichungsrecht - und es hat einen Preis,
+       der hier stehen soll: die heute laufende STOCK_STORY-Produktion
+       qualifiziert damit nicht mehr, solange ihre Themen einen Beleg
+       tragen.
+
+       `qualifiziert` bleibt austauschbar, damit ein Aufrufer STRENGER
+       pruefen kann. Milder nicht: ohne eigene Angabe gilt das
+       Evidenztor, nicht "alles zaehlt". */
     var qualifiziert = typeof o.qualifiziert === "function"
       ? o.qualifiziert
       : function (t) { return t && t.evidenceSufficient === true; };
@@ -297,8 +323,129 @@
       "die Evidenz- und Vielfaltsanforderungen.";
   }
 
+  /**
+   * Ein Platte-Thema in der Form, die der Zyklus fuer eine Gelegenheit
+   * benutzt.
+   *
+   * -------------------------------------------------------------------
+   * WAS HIER NICHT PASSIERT
+   * -------------------------------------------------------------------
+   *
+   * Es wird nichts erfunden. Was das Thema nicht traegt, bleibt leer:
+   *
+   *   signalIds   Ein Platte-Thema entsteht NICHT aus einem Signal.
+   *               Eine leere Liste ist hier die Wahrheit und kein
+   *               Mangel - sie unterscheidet die beiden Herkuenfte,
+   *               und genau diese Unterscheidung braucht das Lernen
+   *               spaeter.
+   *
+   *   archetype   Nicht jede Familie hat einen. RANKING zum Beispiel
+   *               kommt in der Archetyp-Zuordnung gar nicht vor. Einen
+   *               zu waehlen, damit das Feld gefuellt ist, hiesse dem
+   *               Lernen eine Erzaehlform beizubringen, die niemand
+   *               benutzt hat.
+   *
+   *   score       Kommt von aussen, wenn es eine Bewertung gibt. Diese
+   *               Funktion bewertet nicht - sie formt um.
+   */
+  /* -------------------------------------------------------------------
+     EINE KENNUNG, DIE IN EINE ZEILE PASST
+
+     Die Themenkennung der Platte ist aus den Entitaetsnamen gebaut und
+     wurde bei einer Rangliste mit zehn Titeln 154 Zeichen lang. Als
+     Gelegenheitskennung waere sie in jedem Protokoll, jedem Dateinamen
+     und jeder Fehlermeldung im Weg.
+
+     Gekuerzt wird nicht: eine abgeschnittene Kennung kollidiert
+     irgendwann mit einer anderen, und die Kollision faellt genau dann
+     auf, wenn zwei Themen verschmelzen. Stattdessen ein kurzer,
+     stabiler Abdruck ueber die VOLLE Kennung - und die volle bleibt
+     unter `ausDerPlatte.topicId` lesbar.
+
+     FNV-1a, weil eine Engine ohne Abhaengigkeiten auskommen muss. Das
+     ist keine kryptographische Aufgabe: gefragt ist Eindeutigkeit bei
+     einer Handvoll Themen, nicht Faelschungssicherheit. */
+  function abdruck(text) {
+    var h = 0x811c9dc5;
+    var s = String(text);
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return ("00000000" + h.toString(16)).slice(-8);
+  }
+
+  function alsGelegenheit(thema, options) {
+    if (!thema || !thema.topicId) return null;
+    var o = options || {};
+
+    return {
+      opportunityId: "opp_" + String(thema.family || "topic").toLowerCase() +
+        "_" + abdruck(thema.topicId),
+      createdAt: o.now || null,
+      topic: thema.title || thema.topicId,
+      entities: Array.isArray(thema.entities) ? thema.entities.slice() : [],
+
+      /* Leer, und das ist die Wahrheit: dieses Thema kam nicht aus
+         einem Signal, sondern aus der Platte. */
+      signalIds: [],
+
+      score: o.score === undefined ? null : o.score,
+      components: {},
+      archetype: null,
+      platform: o.platform || null,
+      timeSensitivity: thema.timeSensitivity || null,
+
+      /* -----------------------------------------------------------------
+         DIE HERKUNFT KOMMT AUS DEN BELEGEN, NICHT AUS `sources`
+
+         `thema.sources` ist eine Liste blanker Namen - ["VU_DISCOVER"].
+         Das Schema verlangt Quellverweise mit einem `source`-Feld, und
+         die Belege tragen genau das: jeder Eintrag in `evidence` nennt
+         seine Quelle.
+
+         Der erste Anlauf reichte `sources` durch, und das Schema wies
+         es zurueck ("sourceRef.source fehlt"). Das war die richtige
+         Zurueckweisung: eine Liste von Namen ist keine Herkunft, sie
+         ist eine Aufzaehlung von Systemen. */
+      provenance: (Array.isArray(thema.evidence) ? thema.evidence : [])
+        .filter(function (e) { return e && e.source; })
+        .map(function (e) {
+          return {
+            source: String(e.source),
+            entity: e.entity || null,
+            metric: e.metric || null,
+            value: e.value === undefined ? null : e.value,
+            unit: e.unit || null,
+            observedAt: e.observedAt || null
+          };
+        }),
+      explanation: thema.question || null,
+
+      /* Was die Platte zusaetzlich weiss und der Zyklus braucht. Es
+         steht unter einem eigenen Schluessel, damit niemand es fuer
+         ein Feld des Opportunity-Schemas haelt. */
+      ausDerPlatte: {
+        topicId: thema.topicId,
+        family: thema.family,
+        entityType: thema.entityType || null,
+        question: thema.question || null,
+        evidence: Array.isArray(thema.evidence) ? thema.evidence.slice() : [],
+        evidenceRefs: Array.isArray(thema.evidenceRefs)
+          ? thema.evidenceRefs.slice() : [],
+        evidenceSufficient: thema.evidenceSufficient === true,
+        asOf: thema.asOf || null,
+        /* Die blanken Systemnamen bleiben lesbar - sie sind keine
+           Herkunft, aber sie sagen, welche Systeme beteiligt waren. */
+        systeme: Array.isArray(thema.sources) ? thema.sources.slice() : [],
+        stufe: stufeVon(thema.family)
+      }
+    };
+  }
+
   var api = {
     LEITER: LEITER,
+    alsGelegenheit: alsGelegenheit,
     ABLEHNUNG: ABLEHNUNG,
     alleFamilien: alleFamilien,
     stufeVon: stufeVon,

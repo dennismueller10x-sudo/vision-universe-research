@@ -276,3 +276,110 @@ test("CL15 · Die Erklaerung traegt keine Innensprache", () => {
   }
   assert.ok(satz.length > 30);
 });
+
+/* =========================================================================
+   DIE UEBERGABE AN DEN ZYKLUS
+
+   Ein gefundenes Thema nuetzt nichts, wenn es die Form nicht hat, die
+   der Zyklus fuer eine Gelegenheit braucht. Diese Tests halten die
+   Abbildung fest - und vor allem, was sie NICHT erfindet.
+   ========================================================================= */
+
+const Schema = require("../engines/schema.js");
+
+test("CL16 · Die Abbildung haelt das Opportunity-Schema", () => {
+  /* Der erste Anlauf reichte `thema.sources` als Herkunft durch - eine
+     Liste blanker Namen wie ["VU_DISCOVER"] - und das Schema wies es
+     zurueck: "sourceRef.source fehlt". Das war die richtige
+     Zurueckweisung. Die Herkunft steht in den Belegen. */
+  const t = thema("RANKING", {
+    topicId: "topic_ranking:stock:a:b:c",
+    title: "Zehn bekannte Namen",
+    entities: ["A", "B"],
+    sources: ["VU_DISCOVER"],
+    timeSensitivity: "TIMELY",
+    evidence: [
+      { id: "e1", source: "discover.row.x", statement: "…" },
+      { id: "e2", source: "quant.factor", statement: "…" },
+      { id: "ohne", statement: "ein Beleg ohne Quelle" }
+    ]
+  });
+  const g = L.alsGelegenheit(t, { now: "2026-09-21T09:00:00Z" });
+
+  /* Das Schema wirft, wenn etwas nicht passt - der Aufruf IST die
+     Pruefung. */
+  const v = Schema.contentOpportunity(g);
+  assert.equal(v.topic, "Zehn bekannte Namen");
+  assert.deepEqual(v.entities, ["A", "B"]);
+  assert.equal(v.timeSensitivity, "TIMELY");
+
+  /* Zwei Belege mit Quelle, einer ohne - der ohne zaehlt nicht als
+     Herkunft. */
+  assert.equal(v.provenance.length, 2);
+  assert.equal(v.provenance[0].source, "discover.row.x");
+});
+
+test("CL17 · Die Kennung passt in eine Zeile und kollidiert nicht", () => {
+  /* Die Themenkennung der Platte wurde bei einer Rangliste mit zehn
+     Titeln 154 Zeichen lang. Gekuerzt wird nicht - eine abgeschnittene
+     Kennung kollidiert irgendwann, und die Kollision faellt genau dann
+     auf, wenn zwei Themen verschmelzen. */
+  const lang = "topic_ranking:stock:" + Array.from({ length: 12 },
+    (_, i) => "eine-ziemlich-lange-firma-" + i).join(":");
+  const g = L.alsGelegenheit(thema("RANKING", { topicId: lang }));
+
+  assert.ok(g.opportunityId.length <= 40,
+    "Die Kennung ist " + g.opportunityId.length + " Zeichen lang.");
+  assert.match(g.opportunityId, /^opp_ranking_[0-9a-f]{8}$/);
+
+  /* Und die volle Kennung bleibt lesbar - sonst waere die Spur weg. */
+  assert.equal(g.ausDerPlatte.topicId, lang);
+
+  /* Verschiedene Themen, verschiedene Kennungen. */
+  const ids = new Set();
+  for (let n = 0; n < 200; n += 1) {
+    ids.add(L.alsGelegenheit(thema("RANKING", { topicId: "t_" + n })).opportunityId);
+  }
+  assert.equal(ids.size, 200, "Zwei Themen teilen sich eine Kennung.");
+
+  /* Dieselbe Kennung ergibt denselben Abdruck - sonst waere sie nicht
+     wiederfindbar. */
+  assert.equal(L.alsGelegenheit(thema("RANKING", { topicId: "stabil" })).opportunityId,
+    L.alsGelegenheit(thema("RANKING", { topicId: "stabil" })).opportunityId);
+});
+
+test("CL18 · Was das Thema nicht traegt, wird nicht erfunden", () => {
+  const g = L.alsGelegenheit(thema("RANKING", {
+    topicId: "t_1", title: "Titel", entities: [], evidence: [] }));
+
+  /* Ein Platte-Thema entsteht NICHT aus einem Signal. Die leere Liste
+     ist die Wahrheit und kein Mangel: sie unterscheidet die beiden
+     Herkuenfte, und das Lernen braucht die Unterscheidung. */
+  assert.deepEqual(g.signalIds, []);
+
+  /* Nicht jede Familie hat einen Archetyp - RANKING kommt in der
+     Zuordnung gar nicht vor. Einen zu waehlen, damit das Feld gefuellt
+     ist, hiesse dem Lernen eine Erzaehlform beizubringen, die niemand
+     benutzt hat. */
+  assert.equal(g.archetype, null);
+
+  /* Und die Bewertung kommt von aussen. Diese Funktion bewertet
+     nicht. */
+  assert.equal(g.score, null);
+  assert.deepEqual(g.provenance, []);
+});
+
+test("CL19 · Die Familie und die Stufe reisen mit", () => {
+  /* Ohne sie liesse sich spaeter nicht sagen, aus welcher Familie ein
+     Beitrag kam - und §22 verlangt content_family als Lerndimension. */
+  const g = L.alsGelegenheit(thema("MEGATREND", { topicId: "t_m" }));
+  assert.equal(g.ausDerPlatte.family, "MEGATREND");
+  assert.equal(g.ausDerPlatte.stufe, 6);
+  assert.equal(g.ausDerPlatte.evidenceSufficient, true);
+});
+
+test("CL20 · Ein Thema ohne Kennung ergibt keine Gelegenheit", () => {
+  assert.equal(L.alsGelegenheit(null), null);
+  assert.equal(L.alsGelegenheit({}), null);
+  assert.equal(L.alsGelegenheit({ family: "RANKING" }), null);
+});
