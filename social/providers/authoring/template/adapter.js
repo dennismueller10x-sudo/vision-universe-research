@@ -163,6 +163,119 @@
   ];
 
   /* -------------------------------------------------------------------
+     DIE CAPTION-MUSTER FUER EINE REIHE
+
+     Dieselbe Lage wie beim Einstieg: die drei Muster oben bewerten
+     EINEN Titel ("bewertet X derzeit mit 76 im Score"). Auf eine
+     Auszaehlung angewandt ergaben sie "bewertet Bekannte Namen in
+     Bewegung derzeit mit 33 von 5951 geprueften Titeln" - und, weil
+     sie denselben einen Beleg nehmen wie der Einstieg, eine
+     Ueberschneidung von 100 %. Das Kompositionstor hat das
+     zurueckgewiesen, zu Recht.
+
+     Diese drei nehmen die Auszaehlung als Rahmen und die uebrigen
+     Belege als Inhalt. Umformuliert wird nichts: `auswahl()` liefert
+     die Saetze, die die Engines fertig gebaut haben.
+     ------------------------------------------------------------------- */
+  var GRUPPEN_CAPTIONS = [
+    { id: "group-rule-evidence",
+      note: "Die Auszaehlung als Rahmen, die Belege als Inhalt.",
+      needs: 3,
+      build: function (e, brief) {
+        return "Diese Auswahl umfasst " + wert(e) + " " + e.metric + ". " +
+          "Was in ihr steht: " + satzreihe(auswahl(brief, e, 3)) + " " +
+          "Die Liste sagt, wer die Regel erf" + UE + "llt " + STRICH +
+          " nicht, was daraus folgt.";
+      } },
+
+    { id: "group-method-first",
+      note: "Erst das Verfahren, dann die Auszaehlung. Fuer ein Publikum, " +
+            "das wissen will, wie eine Liste zustande kommt.",
+      needs: 2,
+      build: function (e, brief) {
+        return "Wir pr" + UE + "fen jeden Titel nach derselben Regel und " +
+          "ver" + OE + "ffentlichen, was sie ergibt " + STRICH +
+          " auch wenn die Liste kurz ausf" + AE + "llt. " +
+          "Hier sind es " + wert(e) + " " + e.metric + ". " +
+          satzreihe(auswahl(brief, e, 2)) + " " +
+          "Was daraus folgt, entscheidet niemand hier f" + UE + "r Sie.";
+      } },
+
+    { id: "group-limit",
+      note: "Die Grenze zuerst. Eine Liste ist eine Auswahl, keine Empfehlung.",
+      needs: 2,
+      build: function (e, brief) {
+        return "Diese Liste sagt nicht, welcher dieser Titel der bessere ist. " +
+          "Sie sagt, wer eine Regel erf" + UE + "llt: " + wert(e) + " " +
+          e.metric + ". " +
+          satzreihe(auswahl(brief, e, 2)) + " " +
+          "Mehr behaupten wir nicht, und weniger auch nicht.";
+      } }
+  ];
+
+  /* -------------------------------------------------------------------
+     DIE MUSTER FUER EIN THEMA UEBER MEHRERE TITEL
+
+     Alle vier Muster oben sind fuer EINEN Titel gebaut: sie nennen ihn
+     und seine Zahl. Auf eine Rangliste ueber zehn Unternehmen
+     angewandt ergaben sie den Einstieg "412,53 USD - Valero Energy,
+     Kurs." Der Satz war belegt und trotzdem falsch am Platz: er las
+     sich wie ein Beitrag ueber Valero, und der Rest des Textes handelt
+     von der Reihe.
+
+     Diese drei nennen die REIHE. Sie bauen auf demselben Weg aus
+     demselben Beleg - nur ist der Beleg hier der, der ueber das Ganze
+     spricht, und "im " + Kennzahl faellt weg, weil die Kennzahl einer
+     Reihe schon ein Satzteil ist ("von 5951 geprueften Titeln").
+     ------------------------------------------------------------------- */
+  var GRUPPEN_HOOKS = [
+    { id: "group-count",
+      note: "Die Zahl der Reihe zuerst. Sie sagt in einem Blick, wie eng " +
+            "die Auswahl ist.",
+      build: function (e, brief) {
+        return wert(e) + " " + e.metric + " " + STRICH + " " + wer(e, brief) + ".";
+      } },
+
+    { id: "group-subject",
+      note: "Die Reihe zuerst. Wer ihren Titel kennt, bleibt haengen.",
+      build: function (e, brief) {
+        return wer(e, brief) + ": " + wert(e) + " " + e.metric + ".";
+      } },
+
+    { id: "group-limit",
+      note: "Die Grenze zuerst. Eine Liste sagt, WER die Regel erfuellt - " +
+            "nicht, was daraus folgt.",
+      build: function (e, brief) {
+        return "Was diese Liste nicht sagt: " + wer(e, brief) + ", " + wert(e) +
+               " " + e.metric + ".";
+      } }
+  ];
+
+  /* -------------------------------------------------------------------
+     WELCHER BELEG DEN EINSTIEG TRAEGT
+
+     `evidence[0]` war richtig, solange ein Brief von genau einem Titel
+     handelte. Traegt er mehrere, ist der erste Beleg der erste TITEL -
+     und der Einstieg spricht ueber ein Mitglied, als waere es das
+     Thema.
+
+     Gefragt wird deshalb nach einem Beleg OHNE Entitaet: er spricht
+     ueber das Ganze. Gibt es keinen, bleibt es beim ersten - dann hat
+     der Brief nichts ueber die Reihe, und einen Satz darueber zu
+     erfinden waere schlimmer als ein enger Einstieg.
+     ------------------------------------------------------------------- */
+  function leitbeleg(brief) {
+    var alle = (brief && brief.evidence) || [];
+    var entitaeten = {};
+    alle.forEach(function (x) { if (x && x.entity) entitaeten[x.entity] = true; });
+    if (Object.keys(entitaeten).length >= 2) {
+      var ueberDasGanze = alle.filter(function (x) { return x && !x.entity; })[0];
+      if (ueberDasGanze) return ueberDasGanze;
+    }
+    return alle[0];
+  }
+
+  /* -------------------------------------------------------------------
      DIE CAPTION-MUSTER
 
      Alle drei sagen dasselbe Belegte in anderer Reihenfolge und mit
@@ -246,13 +359,20 @@
 
       write: function (brief, opts) {
         opts = opts || {};
-        var e = (brief.evidence || [])[0];
+        var e = leitbeleg(brief);
         if (!e) {
           return { variants: [], reason: "Kein Beleg im Brief. Ohne Beleg kein Satz." };
         }
 
+        /* Spricht der Leitbeleg ueber das Ganze, gelten die Muster fuer
+           die Reihe. Sonst die fuer den einzelnen Titel. Nicht beides:
+           ein Einstieg ueber Valero Energy neben einem ueber die Reihe
+           waeren zwei Beitraege in einem Vorschlag. */
+        var muster = e.entity ? HOOK_PATTERNS : GRUPPEN_HOOKS;
+        var captionMuster = e.entity ? CAPTION_PATTERNS : GRUPPEN_CAPTIONS;
+
         var wieViele = Math.min(
-          Number(opts.variants) || HOOK_PATTERNS.length, HOOK_PATTERNS.length);
+          Number(opts.variants) || muster.length, muster.length);
 
         var hinweis = brief.constraints && brief.constraints.disclaimer;
         var varianten = [];
@@ -262,23 +382,49 @@
            Satz mit einer Aufzaehlung aus einem Element. */
         var belegZahl = (brief.evidence || []).filter(function (x) {
           return x && x.statement; }).length;
-        var moeglich = CAPTION_PATTERNS.filter(function (x) {
+        var moeglich = captionMuster.filter(function (x) {
           return !x.needs || belegZahl >= x.needs; });
+        if (!moeglich.length) {
+          return { variants: [], reason: "Kein Caption-Muster passt zu " +
+            belegZahl + " Beleg(en) im Brief." };
+        }
 
         for (var i = 0; i < wieViele; i += 1) {
-          var h = HOOK_PATTERNS[i % HOOK_PATTERNS.length];
+          var h = muster[i % muster.length];
           var c = moeglich[i % moeglich.length];
           var v = VISUAL_PATTERNS[i % VISUAL_PATTERNS.length];
 
           var caption = c.build(e, brief);
           if (hinweis) caption += " " + hinweis;
 
+          var hook = h.build(e, brief);
+          var bildzeile = v.build(e, brief);
+
+          /* -----------------------------------------------------------------
+             JEDER ZITIERTE BELEGSATZ BRAUCHT SEINEN CLAIM
+
+             Die Claims standen fest: zwei, beide aus dem Leitbeleg. Solange
+             die Caption nur ueber diesen einen sprach, stimmte das. Die
+             belegorientierten Muster zitieren aber ZUSAETZLICHE Saetze -
+             "Valero Energy: Kurs 412.53 USD." -, und die Faktenpruefung
+             fand dort Geldbetraege ohne Beleg. Sie hatte recht: der Beleg
+             lag im Brief, war aber nicht deklariert.
+
+             Gesucht wird im fertigen Text, nicht in der Musterabsicht: so
+             stimmt die Liste auch fuer jedes kuenftige Muster, ohne dass
+             es sie selbst pflegen muss. */
+          var ganzerText = hook + " " + caption + " " + bildzeile;
+          var zitiert = (brief.evidence || []).filter(function (x) {
+            return x && x.id !== e.id && x.statement &&
+              ganzerText.indexOf(String(x.statement).trim()) !== -1;
+          });
+
           varianten.push(Authoring.variant({
             authorId: "template",
             kind: "deterministic",
-            hook: h.build(e, brief),
+            hook: hook,
             caption: caption,
-            visualLine: v.build(e, brief),
+            visualLine: bildzeile,
             cta: options.cta || null,
             hashtags: options.hashtags || ["VisionUniverse", "Investment", "Daten"],
             pattern: h.id + "/" + c.id,
@@ -291,7 +437,11 @@
               { text: String(e.metric), numeric: null, source: { source: e.source,
                 entity: e.entity, metric: e.metric, observedAt: e.observedAt,
                 state: e.state || "VERIFIED" } }
-            ],
+            ].concat(zitiert.map(function (x) {
+              return { text: String(x.statement).trim(), numeric: x.value === undefined ? null : x.value,
+                source: { source: x.source, entity: x.entity, metric: x.metric,
+                  observedAt: x.observedAt, state: x.state || "VERIFIED" } };
+            })),
             notes: h.note
           }));
         }
@@ -303,6 +453,8 @@
 
   var api = {
     HOOK_PATTERNS: HOOK_PATTERNS.map(function (p) { return p.id; }),
+    GRUPPEN_HOOKS: GRUPPEN_HOOKS.map(function (p) { return p.id; }),
+    GRUPPEN_CAPTIONS: GRUPPEN_CAPTIONS.map(function (p) { return p.id; }),
     CAPTION_PATTERNS: CAPTION_PATTERNS.map(function (p) { return p.id; }),
     VISUAL_PATTERNS: VISUAL_PATTERNS.map(function (p) { return p.id; }),
     createTemplateAuthor: createTemplateAuthor

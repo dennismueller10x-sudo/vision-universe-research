@@ -29,7 +29,8 @@ const Visual   = require("../engines/visual.js");
 const VI       = require("../engines/visual-intelligence.js");
 const EP       = require("../engines/evidence-package.js");
 const AF       = require("../engines/audience-frame.js");
-const D        = require("../engines/discover-evidence.js");
+const DiscoverEvidence = require("../engines/discover-evidence.js");
+const AudienceFit = require("../engines/audience-fit.js");
 
 const ZYKLUS = readFileSync(new URL("../../scripts/social/run-social-cycle.mjs",
   import.meta.url), "utf8");
@@ -239,4 +240,232 @@ test("LZ13 · Bildformen: visual.js und Schema kennen dieselbe Menge", () => {
 test("LZ14 · Die Familie eines Archetyps steht an genau einer Stelle", () => {
   assert.equal(AF.FAMILIE_AUS_ARCHETYP, Universe.FAMILY_FOR_ARCHETYPE,
     "audience-frame.js fuehrt eine eigene Kopie der Tabelle");
+});
+
+/* =========================================================================
+   DER TEXT EINER REIHE (LZ15–LZ26)
+
+   Der erste Lauf ueber die Content Ladder erzeugte fuenf Pakete - und
+   der Einstieg lautete "412,53 USD - Valero Energy, Kurs." fuer eine
+   Rangliste ueber zehn Unternehmen. Belegt, und trotzdem falsch am
+   Platz.
+
+   Alles hier prueft dieselbe Grundannahme, die an sechs Stellen
+   steckte: dass ein Thema von GENAU EINEM Titel handelt.
+   ========================================================================= */
+
+const Template = require("../providers/authoring/template/adapter.js");
+const German   = require("../engines/german-text.js");
+
+test("LZ15 · Der Einstieg einer Reihe spricht ueber die Reihe", () => {
+  const brief = {
+    topic: "Bekannte Namen in Bewegung", entityNames: {}, evidence: [
+      { id: "row-coverage", entity: null, metric: "von 5951 geprueften Titeln",
+        value: 33, statement: "33 von 5951 geprueften Titeln erfuellen das.",
+        source: "discover.row.x" },
+      { id: "price-A", entity: "Valero Energy", metric: "Kurs", value: 412.53,
+        unit: "USD", statement: "Valero Energy: Kurs 412,53 USD.", source: "discover.card" },
+      { id: "price-B", entity: "Salesforce", metric: "Kurs", value: 242.85,
+        unit: "USD", statement: "Salesforce: Kurs 242,85 USD.", source: "discover.card" },
+      { id: "price-C", entity: "HP Inc", metric: "Kurs", value: 34.66,
+        unit: "USD", statement: "HP Inc: Kurs 34,66 USD.", source: "discover.card" }
+    ], constraints: {}, allowCausality: false
+  };
+  const r = Template.createTemplateAuthor({}).write(brief, {});
+  assert.ok(r.variants.length > 0, r.reason);
+  for (const v of r.variants) {
+    assert.ok(/Bekannte Namen in Bewegung/.test(v.hook),
+      "Der Einstieg nennt die Reihe nicht: " + v.hook);
+    assert.ok(!/^412|^242|^34,66/.test(v.hook),
+      "Der Einstieg beginnt mit dem Kurs EINES Mitglieds: " + v.hook);
+    /* Und zwar mit den Mustern FUER eine Reihe. Ohne diese Zeile
+       waere der Test auch dann gruen, wenn die Muster fuer einen
+       einzelnen Titel zufaellig etwas Brauchbares ergeben - der
+       Einstieg lautete dann "33 - Bekannte Namen in Bewegung, von
+       5951 geprueften Titeln.", was ein Satz ist, aber keiner, den
+       jemand geschrieben haette. */
+    assert.match(v.pattern, /^group-/,
+      "Kein Muster fuer eine Reihe: " + v.pattern);
+  }
+});
+
+test("LZ15b · Der Leitbeleg ist der Satz ueber das Ganze, egal an welcher Stelle", () => {
+  /* Die Reihenfolge der Belege ist nicht zugesichert. Steht ein Kurs
+     vorn, darf der Einstieg trotzdem nicht ueber diesen einen Titel
+     sprechen. */
+  const brief = {
+    topic: "Eine Reihe", entityNames: {}, evidence: [
+      { id: "price-A", entity: "A", metric: "Kurs", value: 1.11, unit: "USD",
+        statement: "A: Kurs 1,11 USD.", source: "s" },
+      { id: "price-B", entity: "B", metric: "Kurs", value: 2.22, unit: "USD",
+        statement: "B: Kurs 2,22 USD.", source: "s" },
+      { id: "price-C", entity: "C", metric: "Kurs", value: 3.33, unit: "USD",
+        statement: "C: Kurs 3,33 USD.", source: "s" },
+      { id: "row-coverage", entity: null, metric: "von 100 geprueften Titeln",
+        value: 7, statement: "7 von 100 geprueften Titeln erfuellen das.", source: "s" }
+    ], constraints: {}, allowCausality: false
+  };
+  for (const v of Template.createTemplateAuthor({}).write(brief, {}).variants) {
+    assert.match(v.pattern, /^group-/, v.pattern);
+    assert.ok(/7 von 100/.test(v.hook), "Der Einstieg nimmt nicht den Satz " +
+      "ueber das Ganze: " + v.hook);
+  }
+});
+
+test("LZ16 · Bei genau einem Titel bleibt es beim Einstieg fuer diesen Titel", () => {
+  /* Die Gegenprobe. Ohne sie koennte LZ15 auch dadurch gruen sein,
+     dass die Muster fuer einen einzelnen Titel gar nicht mehr laufen. */
+  const brief = {
+    topic: "Technische Lage: Apple", entityNames: {}, evidence: [
+      { id: "score", entity: "Apple", metric: "Score", value: 76,
+        statement: "Apple: Score 76.", source: "vu.technical" }
+    ], constraints: {}, allowCausality: false
+  };
+  const r = Template.createTemplateAuthor({}).write(brief, {});
+  assert.ok(r.variants.length > 0, r.reason);
+  assert.ok(r.variants.some((v) => /Apple/.test(v.hook)));
+  assert.ok(Template.createTemplateAuthor({}).write(brief, {}).variants
+    .every((v) => /^(value|subject|metric|limit)-/.test(v.pattern)),
+    "Ein Einzeltitel bekommt die Muster einer Reihe");
+});
+
+test("LZ17 · Jeder zitierte Belegsatz traegt einen Claim", () => {
+  /* Sonst findet die Faktenpruefung Geldbetraege ohne Beleg - obwohl
+     der Beleg im Brief lag und nur nicht deklariert war. */
+  const brief = {
+    topic: "Eine Reihe", entityNames: {}, evidence: [
+      { id: "row-coverage", entity: null, metric: "von 100 geprueften Titeln",
+        value: 7, statement: "7 von 100 geprueften Titeln erfuellen das.", source: "s" },
+      { id: "price-A", entity: "A", metric: "Kurs", value: 1.11, unit: "USD",
+        statement: "A: Kurs 1,11 USD.", source: "s" },
+      { id: "price-B", entity: "B", metric: "Kurs", value: 2.22, unit: "USD",
+        statement: "B: Kurs 2,22 USD.", source: "s" },
+      { id: "price-C", entity: "C", metric: "Kurs", value: 3.33, unit: "USD",
+        statement: "C: Kurs 3,33 USD.", source: "s" }
+    ], constraints: {}, allowCausality: false
+  };
+  for (const v of Template.createTemplateAuthor({}).write(brief, {}).variants) {
+    const text = v.hook + " " + v.caption + " " + v.visualLine;
+    for (const e of brief.evidence) {
+      if (text.indexOf(e.statement) === -1) continue;
+      assert.ok(v.claims.some((c) => String(c.text).indexOf(e.statement) !== -1 ||
+                                     e.statement.indexOf(String(c.text)) !== -1),
+        "Zitiert, aber nicht deklariert: " + e.statement + " (" + v.pattern + ")");
+    }
+  }
+});
+
+/* ------------------------------------------- DIE SCHREIBWEISE */
+
+test("LZ18 · Versalien werden zu lesbaren Titeln", () => {
+  assert.equal(German.titelfall("BEKANNTE NAMEN IN BEWEGUNG"), "Bekannte Namen in Bewegung");
+  assert.equal(German.titelfall("CASHFLOW-MASCHINEN"), "Cashflow-Maschinen");
+});
+
+test("LZ19 · Was keine gewoehnliche Schreibweise ist, bleibt unberuehrt", () => {
+  /* "S&p 500" waere eine Schreibweise, die es nicht gibt. */
+  assert.match(German.titelfall("STÄRKSTE AKTIEN IM S&P 500"), /S&P 500/);
+  assert.match(German.titelfall("3M UND CO"), /^3M /);
+  /* Und ein Titel, der nicht durchgehend gross ist, wird nicht
+     angefasst: dort hat jemand die Schreibweise entschieden. */
+  assert.equal(German.titelfall("Bekannte Namen in Bewegung"), "Bekannte Namen in Bewegung");
+});
+
+test("LZ20 · Umschriebene Umlaute in 'fuellen' werden erkannt", () => {
+  /* "uelle" steht in der Liste echter deutscher Folgen (aktuelle,
+     Quelle) - und liess damit jede Form von "fuellen" durch beide
+     Netze. Das Markentor sah nur den Fehler daneben. */
+  assert.equal(German.clean("erfuellen").text, "erfüllen");
+  assert.equal(German.clean("Fuelle").text, "Fülle");
+  /* Die echten bleiben, wie sie sind. */
+  assert.equal(German.clean("aktuelle").text, "aktuelle");
+  assert.equal(German.clean("Quelle").text, "Quelle");
+  assert.equal(German.clean("individuelle").text, "individuelle");
+});
+
+/* --------------------------------------- DIE SKALA IM EINSTIEG */
+
+test("LZ21 · Eine benannte gezaehlte Menge erklaert ihre Zahl", () => {
+  const k = (hook) => AudienceFit.check({ hook, caption: "x", names: {} })
+    .criteria.find((c) => c.id === "scaleSelfExplaining");
+  assert.equal(k("33 von 5951 geprüften Titeln — Bekannte Namen.").passed, true);
+  assert.equal(k("12 von 30 Unternehmen erfüllen die Regel.").passed, true);
+});
+
+test("LZ22 · Eine blanke Skala bleibt erklaerungsbeduerftig", () => {
+  const k = (hook) => AudienceFit.check({ hook, caption: "x", names: {} })
+    .criteria.find((c) => c.id === "scaleSelfExplaining");
+  assert.equal(k("Apple: 76 von 100.").passed, false);
+  /* "im Vergleich" nennt nicht, WAS gemessen wurde - ein
+     grossgeschriebenes Wort nach der Zahl genuegt also nicht. */
+  assert.equal(k("Apple: 76 von 100 im Vergleich.").passed, false);
+  assert.equal(k("Apple: 76 von 100 und damit stark.").passed, false);
+});
+
+/* ------------------------------------ DIE ZAHL, DIE GELESEN WIRD */
+
+test("LZ23 · Die Anzeige der Quelle erklaert die Einheit", () => {
+  const a = DiscoverEvidence.ausAnzeige("+159 %");
+  assert.equal(a.ok, true);
+  assert.equal(a.value, 159);
+  assert.equal(a.unit, "%");
+  /* Das typografische Minus der Anzeige ist kein Tastaturminus. Wer
+     nur "-" prueft, liest jeden Verlust als Gewinn. */
+  assert.equal(DiscoverEvidence.ausAnzeige("−1,4 %").value, -1.4);
+  assert.equal(DiscoverEvidence.ausAnzeige("1.59171").ok, false);
+  assert.equal(DiscoverEvidence.ausAnzeige("").ok, false);
+});
+
+test("LZ24 · Margen bleiben strikt, auch mit Anzeige", () => {
+  /* Der Kopf von discover-evidence.js hat fuer Margen entschieden:
+     nicht uebernehmen, solange die Quelle die Einheit nicht erklaert.
+     Diese Entscheidung ueber die Anzeige zu umgehen waere genau das,
+     was hier nie passieren soll. */
+  const quelle = readFileSync(new URL("../engines/discover-evidence.js",
+    import.meta.url), "utf8");
+  assert.match(quelle, /istMarge\(z\.label\)\s*\?\s*\{\s*ok:\s*false/);
+  const reihe = JSON.parse(readFileSync(new URL(
+    "../../discover/data/rows/US_REAL/cashflow-maschinen.json", import.meta.url), "utf8"));
+  const e = DiscoverEvidence.fromRow(reihe);
+  assert.equal(e.evidence.filter((x) => /marge/i.test(x.metric || "")).length, 0);
+});
+
+/* ------------------------------------- DIE DRINGLICHKEIT UND DIE GRUPPE */
+
+test("LZ25 · Die Dringlichkeit folgt dem Alter der Daten", () => {
+  const F = require("../engines/fact-check.js");
+  const jetzt = "2026-09-20T12:00:00Z";
+  assert.equal(F.dringlichkeitFuer("2026-09-20T11:00:00Z", jetzt), "BREAKING");
+  assert.equal(F.dringlichkeitFuer("2026-09-19T12:00:00Z", jetzt), "TIMELY");
+  assert.equal(F.dringlichkeitFuer("2026-09-11", jetzt), "EVERGREEN");
+  /* Ohne Stand keine Frische. */
+  assert.equal(F.dringlichkeitFuer(null, jetzt), "EVERGREEN");
+  /* Und die Platte behauptet sie nicht mehr selbst. */
+  const platte = readFileSync(new URL("../../scripts/social/build-opportunity-slate.mjs",
+    import.meta.url), "utf8");
+  assert.ok(!/timeSensitivity:\s*"(TIMELY|BREAKING)"/.test(ohneKommentare(platte)),
+    "Eine Quelle der Platte setzt ihre Dringlichkeit fest");
+});
+
+test("LZ26 · Die Familie entscheidet nur, wo sonst der Zufall entschied", () => {
+  /* Als EIGNUNG war sie zu viel: fuer RANKING gibt es genau ein
+     Format, und damit gaebe es nichts mehr zu erkunden. Gemessene
+     Leistung muss sie schlagen koennen. */
+  const gemessen = {
+    archetypeKnowledge: { OPPORTUNITY_RISK: { mean: 0.8, sampleSize: 8 } },
+    recentArchetypeUsage: {}
+  };
+  /* TIMELY, weil OPPORTUNITY_RISK nur dort zulaessig ist - ein
+     Wettbewerber, der gar nicht antreten darf, beweist nichts. */
+  const thema = {
+    opportunityId: "o1", timeSensitivity: "TIMELY", hasNumbers: true,
+    hasCause: false, premise: "SECURITY_METRIC", entityCount: 10, family: "RANKING"
+  };
+  const ohneWissen = Strategy.decide(thema,
+    { archetypeKnowledge: {}, recentArchetypeUsage: {} }, { currentHour: 12 });
+  assert.equal(ohneWissen.archetype, "RANKING_LIST", ohneWissen.explanation);
+
+  const mitWissen = Strategy.decide(thema, gemessen, { currentHour: 12 });
+  assert.equal(mitWissen.archetype, "OPPORTUNITY_RISK",
+    "Gemessene Leistung wird von der Familientabelle ueberstimmt");
 });

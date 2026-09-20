@@ -78,6 +78,44 @@
     EVERGREEN: 30 * 24 * 3600
   };
 
+  /* -------------------------------------------------------------------
+     WELCHE DRINGLICHKEIT DIESE DATEN NOCH TRAGEN
+
+     Die Platte setzte fuer jede Discover-Reihe `timeSensitivity:
+     "TIMELY"` - eine Konstante, keine Messung. Ihre Kurse sind neun
+     Tage alt; die Faktenpruefung wies jeden Beitrag daraus mit
+     "Mindestens ein Beleg ist zu alt fuer die Dringlichkeit 'TIMELY'"
+     zurueck. Beide Seiten hatten recht, und keine wusste von der
+     anderen.
+
+     Die Schwellen stehen schon hier. Also wird die Frage hier
+     beantwortet: welche Dringlichkeit tragen Daten dieses Alters
+     noch? Eine zweite Tabelle anderswo wuerde irgendwann von dieser
+     abweichen, und dann behauptete ein Beitrag eine Aktualitaet, die
+     seine Pruefung ihm nicht zugesteht.
+
+     OHNE STAND GIBT ES KEINE DRINGLICHKEIT. `null` heisst hier
+     EVERGREEN und nicht TIMELY: was kein Datum hat, ist nicht frisch.
+     ------------------------------------------------------------------- */
+  var DRINGLICHKEIT_ABSTEIGEND = ["BREAKING", "TIMELY", "EVERGREEN"];
+
+  function dringlichkeitFuer(observedAt, nowIso) {
+    if (!observedAt) return "EVERGREEN";
+    var nowMs = nowIso ? Date.parse(nowIso) : Date.now();
+    var dann = Date.parse(observedAt);
+    if (!isFinite(dann) || !isFinite(nowMs)) return "EVERGREEN";
+    var alter = Math.max(0, (nowMs - dann) / 1000);
+    for (var i = 0; i < DRINGLICHKEIT_ABSTEIGEND.length; i += 1) {
+      var d = DRINGLICHKEIT_ABSTEIGEND[i];
+      if (alter <= MAX_AGE_SECONDS[d]) return d;
+    }
+    /* Aelter als jede Stufe: dann ist EVERGREEN die einzige
+       ehrliche Angabe - und die Faktenpruefung wird sie trotzdem als
+       veraltet melden. Das ist richtig so: hier wird die Aussage
+       ueber die Aktualitaet gemacht, nicht die Pruefung ersetzt. */
+    return "EVERGREEN";
+  }
+
   function textOf(pkg) {
     return [pkg.hook, pkg.caption, pkg.thesis, pkg.cta]
       .filter(function (s) { return typeof s === "string" && s; })
@@ -256,6 +294,8 @@
     CLAIM_PATTERNS: CLAIM_PATTERNS.map(function (p) { return p.id; }),
     FORBIDDEN_PATTERNS: FORBIDDEN_PATTERNS.map(function (p) { return p.id; }),
     MAX_AGE_SECONDS: MAX_AGE_SECONDS,
+    DRINGLICHKEIT_ABSTEIGEND: DRINGLICHKEIT_ABSTEIGEND,
+    dringlichkeitFuer: dringlichkeitFuer,
     findClaims: findClaims,
     findForbidden: findForbidden,
     assessSource: assessSource,

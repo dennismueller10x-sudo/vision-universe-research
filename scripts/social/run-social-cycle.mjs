@@ -823,6 +823,35 @@ function systemischUnmessbar(signals, registry, providerId, memory) {
    `vu-<entity>-<datum>` unbrauchbar. Gekuerzt wuerde er kollidieren,
    also wird er abgedruckt: dieselbe Kennung, die auch die
    Gelegenheitskennung der Leiter traegt. */
+/* -------------------------------------------------------------------
+   DIE TITEL EINES THEMAS AUF EINER ACHSE
+
+   Aus den Belegen des Themas, nicht aus einer zweiten Rechnung: jeder
+   Eintrag traegt Entitaet, Kennzahl und Wert. Gewaehlt wird die
+   Kennzahl mit den meisten Werten - und NUR sie, damit alle Balken
+   dieselbe Einheit haben.
+
+   Weniger als zwei Werte sind keine Gruppe. Dann gibt diese Funktion
+   nichts zurueck, und der Aufrufer bleibt bei dem, was er sonst
+   haette.
+   ------------------------------------------------------------------- */
+function peersAusThema(thema) {
+  const nachKennzahl = new Map();
+  for (const e of (thema && thema.evidence) || []) {
+    if (!e || !e.entity || !e.metric) continue;
+    if (e.value === null || e.value === undefined) continue;
+    const wert = Number(e.value);
+    if (!Number.isFinite(wert)) continue;
+    if (!nachKennzahl.has(e.metric)) nachKennzahl.set(e.metric, []);
+    nachKennzahl.get(e.metric).push({ label: e.entity, value: wert, highlight: false });
+  }
+  let beste = [];
+  for (const liste of nachKennzahl.values()) {
+    if (liste.length > beste.length) beste = liste;
+  }
+  return beste.length >= 2 ? beste : [];
+}
+
 function kurzname(thema) {
   const g = ContentLadder.alsGelegenheit(thema, {});
   return g ? String(g.opportunityId).replace(/^opp_/, "") : null;
@@ -1235,6 +1264,10 @@ async function main() {
          zehn Unternehmen. Die Zahl stand in der Gelegenheit; sie
          musste nur gefragt werden. */
       entityCount: Array.isArray(opportunity.entities) ? opportunity.entities.length : null,
+      /* Und WELCHE oeffentliche Form das Thema ist, wenn es das weiss.
+         Eine Gelegenheit aus einem Signal weiss es nicht und bekommt
+         hier `null` - dann entscheidet die Eignung wie bisher. */
+      family: (c.thema && c.thema.family) || null,
       platform: "instagram"
     }, {
       /* DER RUECKKANAL. Hier stand eine leere Menge — deshalb konnte
@@ -1434,11 +1467,33 @@ async function main() {
        eroeffnet Bildformen, die aus den Daten DIESES Objekts entstehen
        und keinen externen Lauf kosten.
        ----------------------------------------------------------------- */
+    /* -----------------------------------------------------------------
+       DIE VERGLEICHSGRUPPE EINER RANGLISTE SIND IHRE EIGENEN TITEL
+
+       `vergleichsgruppe` sind die ANDEREN GELEGENHEITEN des Laufs mit
+       ihrem Opportunity Score. Fuer ein Thema ueber einen Einzelwert
+       ist das eine ehrliche Gruppe - dieselbe Messung, derselbe
+       Stichtag.
+
+       Fuer eine Rangliste ist es Unsinn. Die Bildrichtung lautete
+       woertlich: "Valero Energy in seiner Gruppe: 22 Werte auf einer
+       Achse, und darin Bekannte Namen in Bewegung steht bei 71, Neue
+       Jahreshochs bei 62" - ein Balkendiagramm, das Themen-Scores
+       gegeneinander stellt und "Valero Energy" darueber schreibt.
+
+       Die richtige Gruppe steht im Thema selbst: seine Titel, alle mit
+       derselben Kennzahl und derselben Einheit. Genommen wird die
+       Kennzahl, zu der die MEISTEN Werte vorliegen - eine Achse,
+       eine Einheit. Zwei Einheiten in einem Vergleich sind keiner.
+       ----------------------------------------------------------------- */
+    const eigeneGruppe = c.thema ? peersAusThema(c.thema) : null;
     const lage = VisualDaten.datenlage({
       topic: opportunity.topic,
       evidence: (evidenzPaket && evidenzPaket.ok) ? (evidenzPaket.evidence || []) : [],
-      peers: vergleichsgruppe.map((v) => Object.assign({}, v, {
-        highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
+      peers: (eigeneGruppe && eigeneGruppe.length)
+        ? eigeneGruppe
+        : vergleichsgruppe.map((v) => Object.assign({}, v, {
+            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
     }, ROOT);
     bildDatenlage[opportunity.topic] = lage;
 

@@ -132,7 +132,8 @@
     VISUAL_DATA_STORY:       "DATA_STORY",
     COMPANY_DEEP_DIVE:       "REPORT_STORY",
     WEEKLY_THEME:            "MAGAZINE_STORY",
-    TREND_EXPLAINER:         "MEGATREND"
+    TREND_EXPLAINER:         "MEGATREND",
+    RANKING_LIST:            "RANKING"
   };
 
   /* Wie viele Entitaeten eine Familie ueblicherweise traegt. Das ist

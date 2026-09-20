@@ -305,12 +305,26 @@
 
     COMPARISON: {
       braucht: ["subject", "coreQuestion", "peers"], gezeichnet: true,
+      /* Zwei Lesarten derselben Form: EIN Titel gegen seine Gruppe -
+         oder eine Gruppe, die selbst der Gegenstand ist. Ohne die
+         Unterscheidung stand woertlich "Bekannte Namen in Bewegung in
+         seiner Gruppe" auf einer Rangliste. */
       idee: function (k) {
+        if (k.mehrereTitel) {
+          return k.subject + ": " + k.peers.length + " Titel auf einer Achse" +
+            (k.spannung ? ", und darin " + k.spannung.text : "") +
+            ". Die Spannweite ist das Motiv - nicht der einzelne Wert.";
+        }
         return k.subject + " in seiner Gruppe: " + k.peers.length +
           " Werte auf einer Achse" + (k.spannung ? ", und darin " + k.spannung.text : "") +
           ". Die Gruppe ist der Massstab - ohne sie waere die Zahl nur gross oder klein.";
       },
       fokus: function (k) {
+        if (k.mehrereTitel) {
+          return "Die Spannweite der Reihe und ihr Titel " + k.subject + ". Wer eine " +
+            "Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, " +
+            "nicht welchen jeder hat.";
+        }
         return "Die Position von " + k.subject + " in der Reihe. Wer eine Sekunde " +
           "hinsieht, muss sehen, wo dieser Wert steht, nicht welchen er hat.";
       },
@@ -319,6 +333,10 @@
           "Einheiten in einem Vergleich sind kein Vergleich.";
       },
       rangfolge: function (k) {
+        if (k.mehrereTitel) {
+          return ["Die Spannweite der Reihe", "Der Titel " + k.subject,
+            "Die einzelnen Werte"];
+        }
         return ["Die Position von " + k.subject + " in der Gruppe",
           "Die Spannweite der Gruppe", "Die einzelnen Werte"];
       },
@@ -733,8 +751,24 @@
        oft nur das Kuerzel. "XOM" auf einer Bildflaeche sagt einem
        breiten Publikum nichts. */
     var namen = Array.isArray(frame.publicEntityNames) ? frame.publicEntityNames : [];
-    var subject = namen[0] || (Array.isArray(opp.entities) ? opp.entities[0] : null) ||
-      opp.topic || null;
+
+    /* -----------------------------------------------------------------
+       BEI MEHREREN TITELN IST DER ERSTE NICHT DER GEGENSTAND
+
+       `namen[0]` war richtig, solange ein Thema von genau einem Titel
+       handelte. Bei einer Rangliste ueber zehn Unternehmen ergab es
+       die Bildrichtung "Valero Energy in seiner Gruppe: 5 Werte auf
+       einer Achse" - fuer ein Bild, das die Reihe zeigt und nicht
+       Valero.
+
+       Traegt das Thema mehrere Titel, ist das THEMA der Gegenstand.
+       Einer davon ist es dann ausdruecklich nicht. */
+    var mehrere = (namen.length > 1) ||
+      (Array.isArray(opp.entities) && opp.entities.length > 1);
+    var subject = (mehrere && opp.topic)
+      ? opp.topic
+      : (namen[0] || (Array.isArray(opp.entities) ? opp.entities[0] : null) ||
+         opp.topic || null);
 
     /* Die belegten Zahlen der Story - nur die mit Beleg. Eine Zahl
        ohne sourceRef darf nicht auf eine Bildflaeche. */
@@ -746,6 +780,10 @@
 
     var k = {
       subject: subject,
+      /* Ob der Gegenstand EIN Titel ist oder eine Menge. Die
+         Vergleichsform spricht sonst von "diesem Objekt in seiner
+         Gruppe", obwohl der Gegenstand die Gruppe IST. */
+      mehrereTitel: mehrere === true,
       topic: opp.topic || null,
       family: opp.family || null,
       coreQuestion: frame.coreQuestion || null,

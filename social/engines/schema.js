@@ -73,7 +73,27 @@
     "BREAKING_MARKET_INSIGHT", "EXPLAIN_THE_MOVE", "FUTURE_TECHNOLOGY",
     "STOCK_STORY", "DATA_STORY", "MYTH_VS_REALITY", "OPPORTUNITY_RISK",
     "EDUCATIONAL", "MARKET_CONTEXT", "CONTRARIAN_INSIGHT",
-    "VISUAL_DATA_STORY", "COMPANY_DEEP_DIVE", "WEEKLY_THEME", "TREND_EXPLAINER"
+    "VISUAL_DATA_STORY", "COMPANY_DEEP_DIVE", "WEEKLY_THEME", "TREND_EXPLAINER",
+    /* -----------------------------------------------------------------
+       DER ARCHETYP, DEN ES FUER DIE GROESSTE FAMILIE NICHT GAB
+
+       Die Content Family RANKING steht seit langem in
+       content-universe.js, der Einstiegsvorschlag "list_tension" in
+       audience-frame.js, die Bildform COMPARISON in visual.js. Nur ein
+       ARCHETYP fehlte - die Liste hier war fuer Formate ueber EINEN
+       Titel gebaut.
+
+       Die Folge war im ersten Lauf ueber die Content Ladder zu sehen:
+       eine Rangliste ueber zehn Unternehmen bekam erst STOCK_STORY
+       (ein Format fuer einen Titel), nach der Formpruefung dann
+       DATA_STORY und schliesslich EDUCATIONAL - jedes Mal das erste,
+       was uebrig blieb. Gemessen worden waere spaeter "EDUCATIONAL
+       erreicht n Reichweite" fuer eine Rangliste.
+
+       Die Zuordnung ist eine redaktionelle Entscheidung (§21). Sie
+       steht hier, weil die Daten sie verlangen, und sie ist
+       ausdruecklich als solche benannt. */
+    "RANKING_LIST"
   ];
 
   /* Visuelle Strategien (§13). */

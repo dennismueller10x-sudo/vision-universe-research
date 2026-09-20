@@ -71,7 +71,11 @@
     VISUAL_DATA_STORY:       { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true, premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "shallow" },
     COMPANY_DEEP_DIVE:       { timeSensitivity: ["EVERGREEN"], needsNumber: true,  premises: ["SECURITY_METRIC", "EVENT"], depth: "deep" },
     WEEKLY_THEME:            { timeSensitivity: ["EVERGREEN"], needsNumber: false, depth: "medium" },
-    TREND_EXPLAINER:         { timeSensitivity: ["TIMELY"], needsNumber: false, premises: ["MARKET_STATE", "CONCEPT"], depth: "medium" }
+    TREND_EXPLAINER:         { timeSensitivity: ["TIMELY"], needsNumber: false, premises: ["MARKET_STATE", "CONCEPT"], depth: "medium" },
+    /* Eine Rangliste. Sie braucht Zahlen (sonst ist sie eine Meinung),
+       handelt von Kennzahlen, und ihre Aktualitaet haengt am Stand der
+       Reihe - deshalb beide Dringlichkeiten. */
+    RANKING_LIST:            { timeSensitivity: ["TIMELY", "EVERGREEN"], needsNumber: true, premises: ["SECURITY_METRIC", "MARKET_STATE"], depth: "medium" }
   };
 
   var DEFAULT_PARAMETERS = {
@@ -201,7 +205,24 @@
         mean: proven ? Number(k.mean) : null,
         sampleSize: n,
         proven: proven,
-        recentUses: recentUsage[a] || 0
+        recentUses: recentUsage[a] || 0,
+        /* -----------------------------------------------------------------
+           IST DIESES FORMAT OEFFENTLICH DAS, WAS DAS THEMA IST?
+
+           Der erste Anlauf machte daraus eine EIGNUNG - nur Formate der
+           Themenfamilie waren zulaessig. Das war zu viel: fuer RANKING
+           gibt es genau ein Format, und damit gab es nichts mehr zu
+           erkunden. Der Nachweis der Kreislauf-Schliessung sagte es
+           sofort ("zulaessig waren: RANKING_LIST"), und er hatte recht:
+           ein System, das nur eine Wahl hat, lernt ueber diese Wahl
+           nichts.
+
+           Die Familie entscheidet deshalb nur dort, wo bisher der
+           ZUFALL entschied: unter Formaten ohne gemessene Leistung.
+           Gemessene Leistung schlaegt sie weiterhin - sonst waere das
+           Lernen unter einer redaktionellen Tabelle begraben. */
+        ausDerFamilie: !!(opportunity.family && Universe.FAMILY_FOR_ARCHETYPE &&
+          Universe.FAMILY_FOR_ARCHETYPE[a] === opportunity.family)
       };
     });
 
@@ -220,9 +241,18 @@
       if (proven.length === 0) {
         /* Nichts ist bewaehrt. Dann ist auch die "bewaehrte" Wahl eine
            Erkundung — und das wird gesagt, nicht kaschiert. */
-        chosen = candidates.slice().sort(function (a, b) { return a.recentUses - b.recentUses; })[0];
+        chosen = candidates.slice().sort(function (a, b) {
+          /* Erst die Familie des Themas, dann die Seltenheit. Vorher
+             gewann hier das zuletzt am seltensten genutzte Format -
+             eine Reihenfolge ohne Bezug zum Thema. */
+          if (a.ausDerFamilie !== b.ausDerFamilie) return a.ausDerFamilie ? -1 : 1;
+          return a.recentUses - b.recentUses;
+        })[0];
         chosen.selectionReason = "Kein passendes Format hat bislang genug Daten (ab n=" +
-          parameters.minimumSampleForExploit + "). Gewaehlt wurde das zuletzt am seltensten genutzte.";
+          parameters.minimumSampleForExploit + "). Gewaehlt wurde " +
+          (chosen.ausDerFamilie
+            ? "das Format, das oeffentlich genau diese Content Family ist."
+            : "das zuletzt am seltensten genutzte.");
       } else {
         chosen = proven.slice().sort(function (a, b) {
           if (b.mean !== a.mean) return b.mean - a.mean;

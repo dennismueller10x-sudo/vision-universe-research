@@ -119,7 +119,17 @@
          dieselbe, sie fragt nur nicht mehr nach dem Namen. */
       interpretation: spec.interpretation === true,
       entity: spec.entity || null,
-      metric: spec.metric || null,
+      /* -----------------------------------------------------------------
+         DIE KENNZAHL IST VEROEFFENTLICHTER TEXT
+
+         `statement` lief seit jeher durch German.clean, `metric` nicht -
+         und das war richtig, solange die Kennzahl ein Wort wie "Kurs"
+         oder "Score" war. Die Abdeckung einer Discover-Reihe heisst
+         "von 5951 geprueften Titeln", und genau dieses Feld baut der
+         Autor in den Einstieg. Das Markentor beanstandete dann
+         "geprueften" - zu Recht, aber an der letzten Stelle, an der es
+         noch auffallen konnte. */
+      metric: spec.metric ? German.clean(spec.metric).text : null,
       source: spec.source || null,
       observedAt: spec.observedAt || null,
       state: spec.state || "VERIFIED",
