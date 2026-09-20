@@ -145,17 +145,36 @@ jobs:
         # Dieselbe Eigenschaft wie ueberall: ein fehlender Zugang ist eine
         # Konfigurationsfrage, kein Baufehler. Das erzeugte Artefakt sagt
         # ausdruecklich, dass es ueber die Verbindung nichts aussagen kann.
+        #
+        # Diese Pruefung verlangte frueher `state: "not_configured"` und
+        # `connected: false` — also genau die beiden Werte, die
+        # fetch-meta-status.mjs bewusst NICHT mehr schreibt.
+        #
+        # Der Grund steht im Skript: NICHT KONFIGURIERT ist eine Aussage
+        # ueber die VERBINDUNG, ZUGANGSDATEN FEHLEN eine ueber DIESEN
+        # LAUF. Aus der zweiten folgt die erste nicht — und aus den alten
+        # Feldern ist genau dieser Fehlschluss an den Owner gegangen.
+        # `connected` ist seitdem null und nicht false, weil Unbekanntes
+        # sonst aussieht wie Abwesendes.
+        #
+        # Die Pruefung bestand also darauf, dass das Artefakt die falsche
+        # Aussage wieder macht. Sie prueft jetzt die richtige.
         run: |
           node scripts/social/fetch-meta-status.mjs
           node -e '
             const { execSync } = require("child_process");
             execSync("node scripts/social/fetch-meta-status.mjs --out /tmp/social-meta");
             const report = require("/tmp/social-meta/meta-connection.json");
-            if (report.state !== "not_configured") {
-              throw new Error("Ohne Zugang muss der Zustand not_configured sein, war: " + report.state);
+            if (report.state !== "credentials_missing_here") {
+              throw new Error("Ohne Zugang muss der Zustand credentials_missing_here sein, war: " + report.state);
             }
-            if (report.connected !== false) throw new Error("connected darf ohne Zugang nicht true sein.");
-            console.log("Verbindungsbericht korrekt: " + report.state);
+            if (report.connected !== null) {
+              throw new Error("connected muss null sein - dieser Lauf weiss nichts ueber die Verbindung. War: " + report.connected);
+            }
+            if (report.probeScope !== "THIS_RUN_ONLY") {
+              throw new Error("probeScope muss THIS_RUN_ONLY sein, war: " + report.probeScope);
+            }
+            console.log("Verbindungsbericht korrekt: " + report.state + ", connected=null, Reichweite " + report.probeScope);
           '
 
       - name: Die Signalsammlung laeuft ohne Zugang fehlerfrei durch
