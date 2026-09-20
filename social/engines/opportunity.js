@@ -258,13 +258,44 @@
       return DIMENSIONS.indexOf(d) !== -1 && nichtAnwendbar.indexOf(d) === -1 &&
         components[d] && !components[d].available;
     });
+
+    /* -------------------------------------------------------------------
+       DREI GRUENDE, WARUM EINE DIMENSION FEHLT — UND SIE SIND VERSCHIEDEN
+
+       Bisher gab es zwei: NICHT ANWENDBAR (die Frage stellt sich nicht)
+       und SYSTEMISCH UNMESSBAR (das System ist zu jung).
+
+       Der dritte ist neu und hat mit Technik nichts zu tun: NICHT
+       AKTIVIERT. Die Quelle ist gebaut, geprueft und bereit - und der
+       Owner hat entschieden, sie nicht einzuschalten.
+
+       Ihn unter "systemisch unmessbar" zu fuehren waere bequem und
+       falsch. Es hiesse, das System koenne nicht, wo es darf nicht.
+       Spaeter liest jemand den Bericht und sucht einen Fehler, den es
+       nicht gibt.
+
+       Fuer die RECHNUNG verhalten sich beide gleich - die Dimension
+       faellt aus dem Erreichbaren und zieht nichts ab. Fuer die
+       ERKLAERUNG nicht, und die Erklaerung ist der Grund, warum es
+       dieses Feld gibt. */
+    var nichtAktiviert = (options.notActivated || []).filter(function (d) {
+      return DIMENSIONS.indexOf(d) !== -1 && nichtAnwendbar.indexOf(d) === -1 &&
+        components[d] && !components[d].available;
+    });
+    /* Was nicht aktiviert ist, wird nicht zusaetzlich als systemisch
+       unmessbar gefuehrt - ein Grund je Dimension, sonst stehen zwei
+       verschiedene Erklaerungen fuer dieselbe Luecke im Bericht. */
+    systemischFehlend = systemischFehlend.filter(function (d) {
+      return nichtAktiviert.indexOf(d) === -1;
+    });
+    var ausDemErreichbaren = systemischFehlend.concat(nichtAktiviert);
     var erreichbaresGewicht = 0;
 
     DIMENSIONS.forEach(function (dim) {
       if (nichtAnwendbar.indexOf(dim) !== -1) return;
       var w = methodology.weights[dim] || 0;
       totalWeight += w;
-      if (systemischFehlend.indexOf(dim) === -1) erreichbaresGewicht += w;
+      if (ausDemErreichbaren.indexOf(dim) === -1) erreichbaresGewicht += w;
       if (!components[dim].available) return;
       availableWeight += w;
       weighted += w * components[dim].value;
@@ -299,7 +330,8 @@
         "Weder ein externer Trend noch ein internes VU-Signal noch eine " +
         "vorhandene redaktionelle Grundlage liegt vor. Ohne Anlass und ohne " +
         "eigenen Beitrag entsteht keine Gelegenheit.", { reachableCoverage: reachableCoverage,
-          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend });
+          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend,
+          notActivated: nichtAktiviert });
     }
     if (reachableCoverage < methodology.minimumCoverage) {
       return refuse(components, coverage, methodology,
@@ -308,8 +340,12 @@
         " %." + (systemischFehlend.length
           ? " (Systemisch nicht messbar und daher nicht eingerechnet: " +
             systemischFehlend.join(", ") + ".)"
+          : "") + (nichtAktiviert.length
+          ? " (Nicht aktiviert und daher nicht eingerechnet: " +
+            nichtAktiviert.join(", ") + ".)"
           : ""), { reachableCoverage: reachableCoverage,
-          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend });
+          notApplicable: nichtAnwendbar, systemicallyUnavailable: systemischFehlend,
+          notActivated: nichtAktiviert });
     }
 
     var value = Math.round((weighted / availableWeight) * 100);
@@ -332,12 +368,22 @@
       /* Beide Zahlen, damit niemand die eine fuer die andere haelt. */
       reachableCoverage: reachableCoverage,
       systemicallyUnavailable: systemischFehlend,
+      /* Abgeschaltet, nicht unvermoegend. */
+      notActivated: nichtAktiviert,
       score: value,
       coverage: Math.round(coverage * 1000) / 1000,
       methodologyVersion: methodology.version,
       components: components,
       drivers: ranked.slice(0, 3),
-      missing: missing.map(function (d) { return { dimension: d, label: DIMENSION_LABELS[d], reason: components[d].reason }; }),
+      missing: missing.map(function (d) {
+        return { dimension: d, label: DIMENSION_LABELS[d],
+          reason: components[d].reason,
+          /* Warum sie fehlt - die Frage, die ein Bericht ohne dieses
+             Feld offen laesst. */
+          cause: nichtAktiviert.indexOf(d) !== -1 ? "NOT_ACTIVATED"
+            : systemischFehlend.indexOf(d) !== -1 ? "SYSTEMICALLY_UNAVAILABLE"
+            : "UNMEASURED" };
+      }),
       /* Die drei Schwellen, an denen sich die Handlung entscheidet. */
       proposable: value >= methodology.proposalThreshold,
       autonomous: value >= methodology.autonomousThreshold,
@@ -384,6 +430,7 @@
         ? null : diagnose.reachableCoverage,
       notApplicable: diagnose.notApplicable || [],
       systemicallyUnavailable: diagnose.systemicallyUnavailable || [],
+      notActivated: diagnose.notActivated || [],
       methodologyVersion: methodology.version,
       components: components,
       drivers: [],

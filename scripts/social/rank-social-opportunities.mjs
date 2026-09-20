@@ -29,6 +29,7 @@ const Social = require(join(ROOT, "social/engines/social-opportunity.js"));
 const Brand = require(join(ROOT, "social/engines/brand.js"));
 const Audience = require(join(ROOT, "social/engines/audience-frame.js"));
 const Memory = require(join(ROOT, "social/engines/memory.js"));
+const Registry = require(join(ROOT, "social/engines/source-registry.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -210,9 +211,22 @@ export function dryRun(options) {
      waere eine Erfindung, und eine Erfindung ist hier schlimmer als
      eine Luecke.
      ------------------------------------------------------------------- */
+  /* -----------------------------------------------------------------
+     ERST FRAGEN, OB EINE QUELLE UEBERHAUPT AN IST
+
+     Ohne diese Frage liest der Lauf eine leere Beobachtungsdatei und
+     meldet "keine Beobachtungen" - richtig und irrefuehrend zugleich.
+     Niemand hat gesucht. */
+  const quellen = Registry.status(
+    readJson(join(ROOT, "social/data/external-sources.json"), null));
+  const externZustand = Registry.dimensionZustand(
+    readJson(join(ROOT, "social/data/external-sources.json"), null),
+    "externalInterest");
+
   const extBestand = readJson(join(ROOT, "social/data/external-observations.json"),
     { observations: [] });
-  const beobachtungen = extBestand.observations || [];
+  const beobachtungen = externZustand.state === "NOT_ACTIVE"
+    ? [] : (extBestand.observations || []);
   const portfolio = readJson(join(ROOT, "social/data/hashtag-portfolio.json"),
     { hashtags: {} }).hashtags || {};
 
@@ -258,7 +272,8 @@ export function dryRun(options) {
           .concat(opts.systemicallyUnavailable || [])
       })),
     history, signals: signale,
-    externalObservations: beobachtungen
+    externalObservations: beobachtungen,
+    sourceState: externZustand
   });
 
   /* Audience Framing gehoert VOR das Authoring - also auch vor jede
@@ -302,6 +317,13 @@ export function dryRun(options) {
       },
       external: {
         label: "EXTERNAL SOCIAL INTELLIGENCE",
+        /* Der Zustand steht VOR der Zahl. Eine 0 neben einem
+           eingeschalteten Sensor heisst etwas voellig anderes als
+           neben einem abgeschalteten. */
+        state: externZustand.state === "NOT_ACTIVE"
+          ? Registry.NO_ACTIVE_EXTERNAL_SOURCE : "ACTIVE",
+        carriesWeight: externZustand.carriesWeight !== false,
+        sensors: quellen.sensors.map((x) => ({ id: x.id, state: x.state })),
         observations: beobachtungen.length,
         hashtagsObserved: Object.keys(portfolio).length,
         topicsWithObservedHashtags: slate.topics
@@ -312,7 +334,12 @@ export function dryRun(options) {
           "kein Veroeffentlichungsrecht."
       },
       combinedButNotMerged: true,
-      weights: { audienceInterest: 0.14, externalInterest: 0.08 }
+      /* Das Gewicht der externen Dimension ist nur dann eines, wenn
+         eine Quelle laeuft. Sonst waere es ein Abzug fuer eine
+         Entscheidung. */
+      weights: externZustand.state === "NOT_ACTIVE"
+        ? { audienceInterest: 0.14, externalInterest: "NOT_APPLIED" }
+        : { audienceInterest: 0.14, externalInterest: 0.08 }
     },
     publishes: false,
     slateSize: slate.topics.length,
@@ -408,22 +435,29 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("  " + ec.own.label.padEnd(30) + ec.own.measurements +
     " eigene Messungen (" + ec.own.mature + " reif), Gewicht " +
     ec.weights.audienceInterest + " (audienceInterest)");
-  console.log("  " + ec.external.label.padEnd(30) + ec.external.observations +
-    " externe Beobachtungen aus " + ec.external.hashtagsObserved +
-    " Hashtags, Gewicht " + ec.weights.externalInterest);
-  console.log("  Themen mit beobachteten Hashtags: " +
-    ec.external.topicsWithObservedHashtags + " von " + r.slateSize);
-  console.log("  Sie stehen NEBENEINANDER, nicht in einer Summe: wer sie " +
-    "addieren wollte,");
-  console.log("  muesste sagen, wie viele fremde Beitraege eine eigene " +
-    "Messung wert sind.");
-  const mitExtern = r.ranked.filter((b) => b.externalInterest &&
-    b.externalInterest.available);
-  console.log("  Themen, bei denen externes Interesse MESSBAR war: " +
-    mitExtern.length);
-  if (!mitExtern.length && r.ranked.length) {
-    console.log("  " + (r.ranked[0].externalInterest || {}).explanation);
+  if (ec.external.state === "NO_ACTIVE_EXTERNAL_SOURCE") {
+    console.log("  " + ec.external.label.padEnd(30) + "NOT_ACTIVE");
+    ec.external.sensors.forEach((x) =>
+      console.log("      " + x.id.padEnd(32) + x.state));
+    console.log("      Kein Gewicht, kein Abzug. Eine abgeschaltete Quelle " +
+      "ist keine Messung mit dem Ergebnis null.");
+  } else {
+    console.log("  " + ec.external.label.padEnd(30) + ec.external.observations +
+      " externe Beobachtungen aus " + ec.external.hashtagsObserved +
+      " Hashtags, Gewicht " + ec.weights.externalInterest);
   }
+  if (ec.external.state !== "NO_ACTIVE_EXTERNAL_SOURCE") {
+    console.log("  Themen mit beobachteten Hashtags: " +
+      ec.external.topicsWithObservedHashtags + " von " + r.slateSize);
+    const mitExtern = r.ranked.filter((b) => b.externalInterest &&
+      b.externalInterest.available);
+    console.log("  Themen, bei denen externes Interesse MESSBAR war: " +
+      mitExtern.length);
+  }
+  console.log("  Beide Klassen stehen NEBENEINANDER, nie in einer Summe: wer " +
+    "sie addieren");
+  console.log("  wollte, muesste sagen, wie viele fremde Beitraege eine " +
+    "eigene Messung wert sind.");
 
   console.log("\n--- WAS NICHT GEMESSEN WERDEN KANN ---");
   r.unavailableDimensions.forEach((d) =>

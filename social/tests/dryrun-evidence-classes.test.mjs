@@ -34,10 +34,39 @@ test("DR1 · Der Lauf weist beide Evidenzklassen getrennt aus", () => {
   assert.equal(ec.combinedButNotMerged, true);
 });
 
-test("DR2 · Fremde Aufmerksamkeit wiegt leichter als eigene Messung", () => {
+test("DR2 · Ohne aktive Quelle traegt die externe Dimension gar kein Gewicht", () => {
+  /* -----------------------------------------------------------------
+     DIESER TEST VERLANGTE FRUEHER EIN KLEINERES GEWICHT
+
+     Er hiess "fremde Aufmerksamkeit wiegt leichter als eigene Messung"
+     und verglich 0.08 gegen 0.14. Richtig, solange eine Quelle laeuft.
+
+     Seit der Owner-Entscheidung laeuft keine. Ein Gewicht - auch ein
+     kleines - waere dann ein Abzug fuer eine Entscheidung: das Thema
+     saehe schlechter aus, weil jemand einen Schalter nicht umgelegt
+     hat. Deshalb NOT_APPLIED und nicht 0.08 und erst recht nicht 0. */
   const w = R.evidenceClasses.weights;
-  assert.ok(w.externalInterest < w.audienceInterest,
-    "Fremde Wirkung ist nicht unsere");
+  if (R.evidenceClasses.external.state === "NO_ACTIVE_EXTERNAL_SOURCE") {
+    assert.equal(w.externalInterest, "NOT_APPLIED");
+    assert.equal(R.evidenceClasses.external.carriesWeight, false);
+  } else {
+    /* Laeuft wieder eine Quelle, gilt die alte Aussage unveraendert. */
+    assert.ok(w.externalInterest < w.audienceInterest,
+      "Fremde Wirkung ist nicht unsere");
+  }
+});
+
+test("DR2b · Eine abgeschaltete Quelle verschlechtert kein Ranking", () => {
+  /* Der Auftrag woertlich: External darf weder Score noch Ranking
+     kuenstlich verschlechtern. Geprueft am Grund, den jedes Thema
+     mitfuehrt - NOT_ACTIVATED steht fuer "faellt aus der Rechnung",
+     nicht fuer "fehlt dem Thema". */
+  if (R.evidenceClasses.external.state !== "NO_ACTIVE_EXTERNAL_SOURCE") return;
+  for (const b of R.ranked.slice(0, 5)) {
+    const m = (b.missing || []).find((x) => x.dimension === "externalInterest");
+    if (m) assert.equal(m.cause, "NOT_ACTIVATED", b.topic.topicId);
+    assert.equal(b.externalIntelligenceState, "NOT_ACTIVE");
+  }
 });
 
 test("DR3 · Die Dimensionen gehoeren je genau einer Klasse", () => {

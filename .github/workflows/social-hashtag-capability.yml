@@ -41,13 +41,20 @@
 name: Social Hashtag Capability
 
 on:
+# -------------------------------------------------------------------------
+# STILLGELEGT — OWNER-ENTSCHEIDUNG VOM 2026-09-20
+# -------------------------------------------------------------------------
+#
+# Der Datei-Ausloeser ist entfernt. Die Diagnose hat ihre Frage
+# beantwortet (Lauf 35463098608): es fehlen die Freischaltung
+# "Instagram Public Content Access" und das Recht
+# pages_read_engagement. Der Owner hat entschieden, beides nicht zu
+# beantragen.
+#
+# Damit gibt es nichts mehr zu messen, und jede weitere Probe waere ein
+# Aufruf gegen eine abgeschaltete Quelle. Von Hand bleibt sie moeglich -
+# fuer den Tag, an dem sich die Entscheidung aendert.
   workflow_dispatch:
-  push:
-    # Eigene Ausloeserdatei. Der Instagram-Beobachter und der taegliche
-    # Intelligence-Lauf haben ihre eigenen - drei Workflows an derselben
-    # Datei waeren drei Laeufe, die sich ins Gehege kommen.
-    paths:
-      - 'social/data/capability-probe-request.json'
 
 concurrency:
   group: social-hashtag-capability

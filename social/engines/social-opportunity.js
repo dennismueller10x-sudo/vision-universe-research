@@ -147,8 +147,27 @@
     options = options || {};
     var min = options.minimumSample === undefined ? 10 : options.minimumSample;
     var b = beobachtungen || [];
+
+    /* -----------------------------------------------------------------
+       ABGESCHALTET IST NICHT UNBEOBACHTET
+
+       Ohne Sensor gibt es keine Beobachtungen - aber der Grund ist ein
+       anderer als "noch nichts gefunden". Wer beides gleich meldet,
+       laesst den Bericht aussehen, als haette jemand gesucht.
+
+       Der Zustand kommt aus der Registry und wird hier nicht noch
+       einmal hergeleitet. */
+    if (options.sourceState && options.sourceState.state === "NOT_ACTIVE") {
+      return { available: false, value: null,
+        state: "NOT_ACTIVE",
+        activationRequired: true,
+        carriesWeight: false,
+        explanation: options.sourceState.explanation };
+    }
+
     if (!b.length) {
       return { available: false, value: null,
+        state: "NO_OBSERVATIONS",
         explanation: "Keine externen Beobachtungen - das ist die Abwesenheit " +
           "einer Messung, kein Befund ueber externes Interesse." };
     }
@@ -200,6 +219,7 @@
       /* Externes Interesse als eigene Dimension - nie in
          audienceInterest hineingerechnet. */
       var extern = externesInteresse(t, spec.externalObservations, spec);
+      var externAbgeschaltet = extern.state === "NOT_ACTIVE";
       if (extern.available) eingang.externalInterest = extern.value;
 
       var raus = nichtAnwendbar(t);
@@ -216,9 +236,13 @@
          Das ist genau der Unterschied, fuer den es
          `systemicallyUnavailable` gibt: die Luecke bleibt in der
          berichteten Abdeckung sichtbar, druckt aber nicht das Thema. */
-      var systemisch = extern.available ? [] : ["externalInterest"];
+      /* Drei Gruende, drei Listen. Abgeschaltet gehoert nicht unter
+         "systemisch unmessbar": das System KANN, es DARF nur nicht. */
+      var systemisch = (extern.available || externAbgeschaltet) ? [] : ["externalInterest"];
+      var abgeschaltet = externAbgeschaltet ? ["externalInterest"] : [];
       var befund = scorer(eingang, {
-        notApplicable: raus, systemicallyUnavailable: systemisch });
+        notApplicable: raus, systemicallyUnavailable: systemisch,
+        notActivated: abgeschaltet });
       var sat = saettigung(t.family, historie);
 
       /* Saettigung bestraft, sie belohnt nicht: ein Thema wird nicht
@@ -245,6 +269,8 @@
         drivers: befund.drivers || [],
         saturation: sat,
         externalInterest: extern,
+        externalIntelligenceState: externAbgeschaltet ? "NOT_ACTIVE"
+          : extern.available ? "ACTIVE" : "NO_OBSERVATIONS",
         saturationPenalty: abschlag,
         explanation: befund.explanation,
         /* Woertlich, weil die Verwechslung teuer waere. */
@@ -272,6 +298,11 @@
       families: familien,
       familyCount: Object.keys(familien).length,
       predictsPerformance: false,
+      /* Der Zustand des Ganzen, einmal und nicht je Thema. */
+      externalIntelligence: spec.sourceState
+        ? (spec.sourceState.state === "NOT_ACTIVE"
+            ? "NO_ACTIVE_EXTERNAL_SOURCE" : "ACTIVE")
+        : null,
       explanation: brauchbar.length === 0
         ? "Keine bewertbare Gelegenheit unter " + bewertet.length + " Themen."
         : brauchbar.length + " Gelegenheiten aus " + Object.keys(familien).length +
