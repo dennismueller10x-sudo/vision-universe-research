@@ -33,6 +33,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ausgabePfad } from "../quality/out-path.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -114,7 +115,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (!ID || !RESP) { console.error("Erwartet: --candidate und --response."); process.exit(2); }
 
-  const kPfad = join(ROOT, DIR, ID + ".json");
+  const kPfad = join(ausgabePfad(ROOT, DIR), ID + ".json");
   if (!existsSync(kPfad)) { console.error("Kandidat nicht gefunden: " + kPfad); process.exit(2); }
   if (!existsSync(RESP)) { console.error("Antwort nicht gefunden: " + RESP); process.exit(2); }
 
@@ -174,7 +175,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   writeFileSync(kPfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-  const memPfad = join(ROOT, DATA, "content-memory.json");
+  const memPfad = join(ausgabePfad(ROOT, DATA), "content-memory.json");
   const mem = existsSync(memPfad)
     ? JSON.parse(readFileSync(memPfad, "utf8")) : { entries: [] };
 

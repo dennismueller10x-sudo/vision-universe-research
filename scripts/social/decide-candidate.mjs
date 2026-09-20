@@ -63,6 +63,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { ausgabePfad } from "../quality/out-path.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -222,7 +223,22 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(2);
   }
 
-  const pfad = join(ROOT, DIR, ID + ".json");
+  /* -------------------------------------------------------------------
+     ABSOLUTE PFADE GELTEN, WIE SIE DASTEHEN
+
+     `join(ROOT, "/tmp/probe")` ist "<ROOT>/tmp/probe". Ein Skript, das
+     seinen Ordner aus einem Parameter nimmt und ihn dann unter das
+     Repository schiebt, liest woanders als gesagt - und meldet, die
+     Datei fehle, die es gibt.
+
+     Das ist der zwoelfte Fund derselben Art in diesem Projekt. Zehn
+     Skripte waren bereits umgestellt; dieses stand nicht auf der Liste,
+     weil es nie mit einem absoluten --dir aufgerufen worden war. Ein
+     Fehler, den nur ein ungewoehnlicher Aufruf zeigt, ist trotzdem da -
+     und der Aufruf kam, als der Rueckweg aus dem Approval Center ihn
+     brauchte.
+     ------------------------------------------------------------------- */
+  const pfad = join(ausgabePfad(ROOT, DIR), ID + ".json");
   if (!existsSync(pfad)) { console.error("Kandidat nicht gefunden: " + pfad); process.exit(2); }
   const kandidat = JSON.parse(readFileSync(pfad, "utf8"));
 
@@ -259,7 +275,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       });
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fba = join(ROOT, FEEDBACK_REL);
+    const fba = ausgabePfad(ROOT, FEEDBACK_REL);
     const bestandA = existsSync(fba) ? JSON.parse(readFileSync(fba, "utf8")) : { entries: [] };
     bestandA.entries = (bestandA.entries || []).concat([
       feedbackEintrag(kandidat, "AUDIENCE_FIT", { reason: REASON, by: BY, now: NOW })]);
@@ -319,7 +335,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     };
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fbr = join(ROOT, FEEDBACK_REL);
+    const fbr = ausgabePfad(ROOT, FEEDBACK_REL);
     const bestandR = existsSync(fbr) ? JSON.parse(readFileSync(fbr, "utf8")) : { entries: [] };
     bestandR.entries = (bestandR.entries || []).concat([
       feedbackEintrag(kandidat, "REFINE", { reason: REASON, by: BY, now: NOW })]);
@@ -358,7 +374,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         "zu erwartende Leistung des Beitrags." };
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fbh = join(ROOT, FEEDBACK_REL);
+    const fbh = ausgabePfad(ROOT, FEEDBACK_REL);
     const bestandH = existsSync(fbh) ? JSON.parse(readFileSync(fbh, "utf8")) : { entries: [] };
     bestandH.entries = (bestandH.entries || []).concat([
       feedbackEintrag(kandidat, "HOLD", { reason: REASON, by: BY, now: NOW })]);
@@ -394,7 +410,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     kandidat.rejection = { reason: REASON, decidedBy: BY, decidedAt: NOW };
     writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
-    const fb = join(ROOT, FEEDBACK_REL);
+    const fb = ausgabePfad(ROOT, FEEDBACK_REL);
     const bestand = existsSync(fb) ? JSON.parse(readFileSync(fb, "utf8")) : { entries: [] };
     bestand.entries = (bestand.entries || []).concat([
       feedbackEintrag(kandidat, "REJECT", { reason: REASON, by: BY, now: NOW })]);
@@ -430,7 +446,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   writeFileSync(pfad, JSON.stringify(kandidat, null, 2) + "\n");
 
   const anfrage = anfrageAusKandidat(kandidat);
-  writeFileSync(join(ROOT, DIR, ID + ".request.json"), JSON.stringify(anfrage, null, 2) + "\n");
+  writeFileSync(join(ausgabePfad(ROOT, DIR), ID + ".request.json"), JSON.stringify(anfrage, null, 2) + "\n");
 
   console.log("\nFREIGEGEBEN von " + BY + " um " + NOW);
   console.log("Abdruck:  " + nachgerechnet);

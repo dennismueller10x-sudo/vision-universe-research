@@ -114,6 +114,8 @@ const STYLE = `
   textarea:focus { outline:2px solid var(--tinte); outline-offset:2px; }
   a.zurueck { color:var(--tinte); font-size:14px; }
   form + form { margin-top:28px; }
+  blockquote.grund { margin:16px 0; padding:12px 0 12px 16px;
+                     border-left:3px solid var(--tinte); font-size:17px; }
 `;
 
 function huelle(titel, inhalt) {
@@ -268,6 +270,7 @@ ${abmelden()}`);
     return approvalResponse("Freigabe", `
 <h1>Aktuell wartet kein Beitrag auf deine Freigabe.</h1>
 ${standZeile(z)}
+${soeben(z)}
 ${rest(z)}
 ${abmelden()}`);
   }
@@ -283,6 +286,9 @@ ${abmelden()}`);
   /* Die Zahl kommt aus der Engine, die Karten aus der Uebertragung.
      Fallen sie auseinander, steht das da — und wird nicht dadurch
      aufgeloest, dass eine der beiden gewinnt. */
+  /* Gegen `anzahl` und nicht gegen activeCount: die soeben
+     Entschiedenen sind aus beiden Zahlen heraus, und sie als Luecke zu
+     melden waere eine Warnung ueber etwas, das gerade richtig lief. */
   const luecke = posten.length !== anzahl ? `
 <p class="leise warnung">Die Zustandsmaschine meldet ${escapeHtml(String(anzahl))},
 uebertragen wurden ${escapeHtml(String(posten.length))}. Der Unterschied ist echt und
@@ -291,6 +297,7 @@ kein Anzeigefehler: zu den fehlenden liegt hier kein vollstaendiger Datensatz vo
   return approvalResponse("Freigabe", `
 <h1>${escapeHtml(String(anzahl))} Beitr${anzahl === 1 ? "ag wartet" : "aege warten"} auf Freigabe.</h1>
 ${standZeile(z)}
+${soeben(z)}
 ${luecke}
 ${liste}
 ${abmelden()}`);
@@ -306,6 +313,27 @@ function standZeile(z) {
     ? " Das ist laenger her als ein Orchestratorlauf — moeglicherweise ist der Stand nicht der aktuelle."
     : "";
   return `<p class="leise">Stand: ${alt}.${escapeHtml(warnung)}</p>`;
+}
+
+/**
+ * Was der Owner soeben entschieden hat, das Repository aber noch nicht
+ * weiss.
+ *
+ * Die Zahl der Maschine ist "Stand generatedAt". Der Worker weiss seit
+ * dem Uebertragen mehr: die Entscheidungen, die inzwischen hier
+ * gefallen sind. Sie abzuziehen ist KEINE zweite Definition von
+ * "wartet" - es ist dieselbe Definition auf neuere Tatsachen
+ * angewandt.
+ *
+ * Gesagt wird es trotzdem. Eine Zahl, die kleiner ist als die der
+ * Maschine, ohne dass jemand erfaehrt warum, waere genau die Art
+ * stiller Arithmetik, gegen die diese Oberflaeche gebaut ist.
+ */
+function soeben(z) {
+  const n = typeof z.soebenEntschieden === "number" ? z.soebenEntschieden : 0;
+  if (!n) return "";
+  return `<p class="leise">${n} Beitr${n === 1 ? "ag" : "aege"} soeben entschieden —
+noch nicht im Repository. Der naechste Orchestratorlauf holt die Entscheidung ab.</p>`;
 }
 
 function rest(z) {

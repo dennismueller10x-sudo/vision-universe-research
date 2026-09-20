@@ -60,7 +60,8 @@ import {
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
          readClaim, claimPublish, settleClaim,
-         readQueue, writeQueue
+         readQueue, writeQueue,
+         listDecisions, markDecisionConsumed
 } from "./store.js";
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
@@ -546,10 +547,53 @@ async function handlePublish(request, url, env) {
 
   let body = {};
   try { body = await request.json(); } catch (err) { body = {}; }
+  if (!body.contentId && url.searchParams.get("contentId")) {
+    body = Object.assign({}, body, { contentId: url.searchParams.get("contentId") });
+  }
+  return await publishCore(body, env);
+}
 
-  const contentId = String(body.contentId || url.searchParams.get("contentId") || "").trim();
-  const imageUrl = String(body.imageUrl || "").trim();
-  const caption = String(body.caption === undefined ? "" : body.caption);
+/* =====================================================================
+   DER VEROEFFENTLICHUNGSPFAD — EINE IMPLEMENTIERUNG, ZWEI EINGAENGE
+
+   ---------------------------------------------------------------------
+   WARUM HIER GETRENNT WURDE
+   ---------------------------------------------------------------------
+
+   Es gibt jetzt zwei Stellen, an denen ein Beitrag hinausgehen kann:
+
+     POST /social/meta/publish        Skripte und Workflows,
+                                      Admin-Schluessel.
+
+     POST /approval/<id>/publish      der Owner am Telefon,
+                                      Sitzungscookie.
+
+   Sie unterscheiden sich in EINEM Punkt: wer fragt. In allem anderen -
+   den zwei Erlaubnissen, dem nachgerechneten Abdruck, dem Anspruch,
+   der Bildpruefung, den Graph-Aufrufen, der Idempotenz - muessen sie
+   identisch sein.
+
+   Die naheliegende Loesung waere gewesen, den einen Weg den anderen
+   aufrufen zu lassen, mit untergeschobenem Admin-Schluessel. Das haette
+   den Schluessel an eine Stelle gebracht, an der er nichts zu suchen
+   hat, und eine Sitzung faktisch zu einem Admin-Zugang gemacht.
+
+   Die zweite naheliegende Loesung waere gewesen, den Pfad noch einmal
+   zu schreiben. Dann gaebe es zwei Veroeffentlichungen, und das ist
+   genau das, was der Auftrag ausschliesst: "KEINE zweite
+   Meta-Publishing-Implementierung."
+
+   Also: das Tor bleibt bei den Eingaengen, der Weg liegt hier. Dasselbe
+   Muster wie bei mayDispatch/mayDispatchContent in creative-job.js, und
+   aus demselben Grund.
+
+   Diese Funktion prueft KEINE Berechtigung. Wer sie aufruft, hat das
+   getan - und das steht hier, damit es niemand fuer vergessen haelt.
+   ===================================================================== */
+async function publishCore(body, env) {
+  const contentId = String((body && body.contentId) || "").trim();
+  const imageUrl = String((body && body.imageUrl) || "").trim();
+  const caption = String(body && body.caption === undefined ? "" : body.caption);
 
   /* ---------------------------------------------------------------------
      DIE ZWEI ERLAUBNISSE
@@ -572,7 +616,8 @@ async function handlePublish(request, url, env) {
      getrennt protokolliert.
      --------------------------------------------------------------------- */
   const autopublish = String(env.VU_SOCIAL_AUTOPUBLISH || "").toLowerCase() === "on";
-  const approval = (body.approval && typeof body.approval === "object") ? body.approval : null;
+  const approval = (body && body.approval && typeof body.approval === "object")
+    ? body.approval : null;
 
   let genehmigung = null;
   if (approval) {
@@ -1788,6 +1833,80 @@ async function handleQueueIngest(request, url, env) {
   });
 }
 
+/* =====================================================================
+   DER RUECKWEG: ENTSCHEIDUNGEN ABHOLEN
+
+   ---------------------------------------------------------------------
+   WARUM ABHOLEN UND NICHT ZUSTELLEN
+   ---------------------------------------------------------------------
+
+   Weil der Worker nicht ins Repository schreiben kann und nicht sollen
+   darf. Eine Owner-Entscheidung gehoert dorthin, wo die Kandidaten
+   liegen und wo decide-candidate.mjs sie auswertet - mit allem, was
+   dort schon steht: der Ablehnungsgrund als Rueckmeldung ueber die
+   AUSWAHL, der Zustandsuebergang durch die kanonische Maschine, die
+   Herkunft des abgelehnten Kandidaten fuers Lernen.
+
+   Der Worker haelt sie so lange fest. Der Orchestrator holt sie beim
+   naechsten Lauf ab und quittiert. Das Journal ist ein Briefkasten und
+   kein zweiter Datenbestand - und es leert sich nicht von selbst:
+   abgeholt heisst quittiert, und quittiert heisst im Repository.
+
+   ---------------------------------------------------------------------
+   GELESEN MIT DEM ADMIN-SCHLUESSEL
+   ---------------------------------------------------------------------
+
+   Wie jeder maschinelle Endpunkt. Die Owner-Sitzung kommt hier nicht
+   durch: sie darf entscheiden, nicht abraeumen.
+   ===================================================================== */
+
+async function handleDecisions(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  if (request.method === "GET") {
+    /* Standardmaessig nur die offenen. `?all=1` zeigt auch die schon
+       uebernommenen - fuer den Fall, dass jemand nachsehen will, was
+       wann hinausging. */
+    const alleZeigen = url.searchParams.get("all") === "1";
+    const eintraege = await listDecisions(env, { onlyOpen: !alleZeigen });
+    return json({
+      decisions: eintraege,
+      open: eintraege.filter((d) => !d.consumedAt).length,
+      note: "Abgeholt ist nicht quittiert. Erst der ACK nimmt eine Entscheidung " +
+        "aus dem Briefkasten — und zwar dann, wenn sie im Repository steht."
+    });
+  }
+
+  if (request.method !== "POST") {
+    return json({ error: "methodNotAllowed" }, 405);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch (err) { body = {}; }
+  const ids = Array.isArray(body.acknowledge) ? body.acknowledge : [];
+  if (!ids.length) {
+    return json({ error: "nothingToAcknowledge",
+      message: "Ohne Kennungen gibt es nichts zu quittieren." }, 400);
+  }
+
+  const quittiert = [];
+  const unbekannt = [];
+  const jetzt = new Date().toISOString();
+  for (const id of ids) {
+    const d = await markDecisionConsumed(env, String(id), jetzt);
+    if (d) quittiert.push(d.candidateId); else unbekannt.push(String(id));
+  }
+
+  return json({
+    acknowledged: quittiert,
+    /* Eine Kennung, die es nicht gibt, ist kein Fehler des Aufrufers -
+       aber sie stillschweigend als quittiert zu melden waere einer. */
+    unknown: unbekannt,
+    open: (await listDecisions(env, { onlyOpen: true })).length
+  });
+}
+
 /* Lebendtest. Absichtlich ohne Zustand und ohne Kontodaten: er beantwortet
    "laeuft der Worker", nicht "wer ist verbunden". */
 function handleHealth(env) {
@@ -1847,7 +1966,16 @@ export default {
          kuenftige Route unter /approval an dieser Stelle durch, bevor
          sie ihre eigene Pruefung hat.
          --------------------------------------------------------------- */
-      const freigabe = await routeApproval(request, url, env);
+      /* `publishCore` wird HEREINGEREICHT und nicht importiert: sonst
+         haenge index.js an approval.js und approval.js an index.js,
+         und ein Zyklus an der Stelle, an der veroeffentlicht wird, ist
+         die falsche Stelle fuer eine Feinheit der Modulreihenfolge.
+
+         Ausserdem macht es sichtbar, was sonst versteckt waere: das
+         Approval Center kann veroeffentlichen, WEIL der Router ihm
+         diesen Weg gibt - und nur dann. Ohne ihn sendet es nicht und
+         baut sich keinen eigenen. */
+      const freigabe = await routeApproval(request, url, env, { publish: publishCore });
       if (freigabe) return freigabe;
 
       /* Der Callback traegt keinen Admin-Schluessel — Meta wuerde ihn
@@ -1869,6 +1997,12 @@ export default {
             message: "Die Schlange wird hier abgelegt, nicht gelesen." }, 405);
         }
         return await handleQueueIngest(request, url, env);
+      }
+      if (path === "/social/approval/decisions") {
+        if (request.method !== "GET" && request.method !== "POST") {
+          return json({ error: "methodNotAllowed" }, 405);
+        }
+        return await handleDecisions(request, url, env);
       }
       if (path === "/social/meta/connect") {
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
@@ -1956,6 +2090,7 @@ export default {
 export const __internals = {
   configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
   pruefeProjektion, handleQueueIngest, QUEUE_VERSION, QUEUE_SOURCE, QUEUE_MAX_BYTES,
+  publishCore, handleDecisions,
   handleConnect, handleCallback, handleStatus, handleVerify, handleDisconnect,
   MIN_ADMIN_KEY_LENGTH
 };

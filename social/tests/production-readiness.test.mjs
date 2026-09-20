@@ -16,6 +16,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const R = require("../engines/production-readiness.js");
+const { befehleFuer } = await import("../../scripts/social/ingest-owner-decisions.mjs");
 
 const VOLL = {
   graph: true, visualDirection: true, gates: true, autonomy: true,
@@ -177,13 +178,54 @@ test("PR16 · Suite und Isolation kommen von aussen, nicht aus dem Skript", () =
 /* §7 · DER SCHEDULER, WIE ER WIRKLICH DASTEHT                         */
 /* ------------------------------------------------------------------ */
 
-test("PR17 · Der Orchestrator-Workflow ruft keinen Veroeffentlichungspfad auf", () => {
-  /* Nicht "er soll nicht", sondern: die Datei nennt die Skripte nicht.
-     Ein Verbot im Kommentar ist kein Verbot. */
+test("PR17 · Der Orchestrator-Workflow veroeffentlicht nicht und entscheidet nicht", () => {
+  /* Nicht "er soll nicht", sondern gemessen an der Datei. Ein Verbot im
+     Kommentar ist kein Verbot.
+
+     Was diese Pruefung seit dem Approval Center genauer meint, steht
+     ausfuehrlich bei OR12 in orchestrator.test.mjs: der Scheduler
+     schreibt eine Owner-Entscheidung ab (ueber
+     ingest-owner-decisions.mjs), er trifft keine. Deshalb steht
+     decide-candidate.mjs hier nicht mehr auf der Wortliste, sondern
+     als DIREKTER Aufruf und als Entscheidungsflagge unter Verbot. */
   const w = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
-  for (const verboten of ["dispatch-publications.mjs", "decide-candidate.mjs"]) {
-    assert.equal(w.includes(verboten), false,
-      "Der Scheduler ruft " + verboten + " auf");
+  assert.equal(w.includes("dispatch-publications.mjs"), false,
+    "Der Scheduler ruft dispatch-publications.mjs auf");
+  assert.ok(!/node\s+scripts\/social\/decide-candidate\.mjs/.test(w),
+    "Der Scheduler ruft decide-candidate direkt auf - dann entscheidet er.");
+  for (const flagge of ["--approve", "--reject", "--hold", "--refine"]) {
+    assert.ok(!w.includes(flagge),
+      "Der Scheduler traegt " + flagge + " im Workflow.");
+  }
+});
+
+test("PR17b · Der Abschreiber erfindet keine Entscheidung", () => {
+  /* Die andere Haelfte derselben Invariante, und sie liegt nicht im
+     Workflow: ingest-owner-decisions.mjs darf ausschliesslich
+     uebersetzen, was im Journal steht. Ein Abschreiber, der bei
+     Unklarheit raet, waere ein Scheduler, der entscheidet - nur eine
+     Datei weiter. */
+  const eingaben = [
+    { decision: "REJECTED", erwartet: "--reject" },
+    { decision: "APPROVED", erwartet: "--approve" }
+  ];
+  for (const e of eingaben) {
+    const befehle = befehleFuer({ candidateId: "cand_p", decision: e.decision,
+      reason: "x" });
+    assert.ok(befehle, e.decision);
+    assert.ok(befehle[0].includes(e.erwartet));
+    /* Und ausdruecklich nur die eine Flagge. */
+    for (const andere of ["--approve", "--reject", "--hold", "--refine"]) {
+      if (andere === e.erwartet) continue;
+      assert.ok(!befehle[0].includes(andere),
+        e.decision + " erzeugt zusaetzlich " + andere);
+    }
+  }
+  /* Alles andere ergibt KEINEN Befehl - nicht einen vorsichtigen. */
+  for (const unklar of [null, undefined, "", "HELD_FOR_ENRICHMENT", "VIELLEICHT",
+    "approved", "Approved"]) {
+    assert.equal(befehleFuer({ candidateId: "cand_p", decision: unklar }), null,
+      "Aus " + JSON.stringify(unklar) + " wurde ein Befehl.");
   }
 });
 

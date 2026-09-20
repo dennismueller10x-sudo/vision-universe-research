@@ -336,3 +336,152 @@ export async function writeQueue(env, projektion) {
 }
 
 export { QUEUE_KEY };
+
+/* =========================================================================
+   DAS ENTSCHEIDUNGSJOURNAL
+
+   -------------------------------------------------------------------------
+   WOHIN EINE OWNER-ENTSCHEIDUNG GEHOERT
+   -------------------------------------------------------------------------
+
+   Ins Repository. Dort liegen die Kandidaten, dort steht die
+   Zustandsmaschine, dort wertet decide-candidate.mjs eine Ablehnung als
+   Rueckmeldung ueber die AUSWAHL aus - und ausdruecklich nicht als
+   Leistung.
+
+   Der Worker kann nicht ins Repository schreiben. Also haelt er die
+   Entscheidung so lange fest, bis der Orchestrator sie abholt und durch
+   den bestehenden Weg schickt. Dieses Journal ist ein Briefkasten, kein
+   zweiter Datenbestand.
+
+   -------------------------------------------------------------------------
+   EIN SCHLUESSEL JE ENTSCHEIDUNG
+   -------------------------------------------------------------------------
+
+   Und nicht eine Liste unter einem Schluessel: zwei Entscheidungen
+   kurz hintereinander wuerden sich sonst ueberschreiben, und die
+   verlorene waere die, von der niemand weiss, dass es sie gab.
+
+   -------------------------------------------------------------------------
+   EINMAL ENTSCHIEDEN, BLEIBT ENTSCHIEDEN
+   -------------------------------------------------------------------------
+
+   Eine Entscheidung wird nicht ersetzt. Der zweite Druck auf denselben
+   Knopf findet die erste vor und fuehrt zu nichts Neuem - das ist die
+   Haelfte des Doppelklick-Schutzes, die VOR dem Anspruch greift.
+
+   Angereichert wird sie: eine Freigabe bekommt Medien-ID und Permalink,
+   sobald es sie gibt. Das ist kein Ueberschreiben, sondern das Ergebnis
+   derselben Entscheidung.
+
+   -------------------------------------------------------------------------
+   WAS HIER NIEMALS STEHT
+   -------------------------------------------------------------------------
+
+   Eine Leistungsaussage. Ein abgelehnter Beitrag wurde nie
+   veroeffentlicht; er hat keine Reichweite, weder eine schlechte noch
+   eine gute. Es gibt in diesem Datensatz kein Feld dafuer - nicht als
+   null, sondern gar nicht. Ein Feld, das es nicht gibt, kann auch nicht
+   versehentlich gefuellt werden.
+   ========================================================================= */
+
+const DECISION_PREFIX = "approval:decision:";
+
+function decisionKey(candidateId) {
+  return DECISION_PREFIX + String(candidateId);
+}
+
+export async function readDecision(env, candidateId) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const raw = await env.VU_SOCIAL_KV.get(decisionKey(candidateId));
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (err) { return null; }
+}
+
+/**
+ * Traegt eine Entscheidung ein - aber nur, wenn keine besteht.
+ *
+ * @returns { ok, decision, reason }
+ *
+ * `ok: false` mit `reason: "alreadyDecided"` ist kein Fehler, sondern
+ * die Antwort auf einen zweiten Druck. Der Aufrufer zeigt dann, was
+ * beim ersten Mal herauskam.
+ */
+export async function recordDecision(env, eintrag) {
+  if (!env.VU_SOCIAL_KV) {
+    return { ok: false, decision: null, reason: "noStorage" };
+  }
+  const vorhanden = await readDecision(env, eintrag.candidateId);
+  if (vorhanden) return { ok: false, decision: vorhanden, reason: "alreadyDecided" };
+
+  const datensatz = {
+    version: 1,
+    candidateId: String(eintrag.candidateId),
+    /* Der Abdruck, der zum Zeitpunkt der Entscheidung galt. Ohne ihn
+       liesse sich spaeter nicht sagen, WORUEBER entschieden wurde. */
+    contentHash: eintrag.contentHash || null,
+    decision: eintrag.decision,
+    reason: eintrag.reason || null,
+    decidedBy: eintrag.decidedBy || "owner",
+    decidedAt: eintrag.decidedAt || new Date().toISOString(),
+    decisionSource: "approval_center",
+    published: false,
+    mediaId: null,
+    permalink: null,
+    publishedAt: null,
+    /* Wann der Orchestrator sie ins Repository getragen hat. Solange
+       das nicht geschehen ist, kennt nur der Worker sie. */
+    consumedAt: null
+  };
+  await env.VU_SOCIAL_KV.put(decisionKey(datensatz.candidateId), JSON.stringify(datensatz));
+  return { ok: true, decision: datensatz, reason: null };
+}
+
+/** Haelt das Ergebnis einer Freigabe fest, ohne die Entscheidung zu aendern. */
+export async function settleDecision(env, candidateId, patch) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const vorhanden = await readDecision(env, candidateId);
+  if (!vorhanden) return null;
+  const naechste = Object.assign({}, vorhanden, {
+    published: Boolean(vorhanden.published || patch.published),
+    mediaId: vorhanden.mediaId || patch.mediaId || null,
+    permalink: vorhanden.permalink || patch.permalink || null,
+    publishedAt: vorhanden.publishedAt || patch.publishedAt || null,
+    /* Ein Betriebszustand (§12). Er sagt etwas ueber den Versand und
+       nichts ueber den Beitrag. */
+    lastError: patch.lastError === undefined ? (vorhanden.lastError || null) : patch.lastError
+  });
+  await env.VU_SOCIAL_KV.put(decisionKey(candidateId), JSON.stringify(naechste));
+  return naechste;
+}
+
+/** Alle Entscheidungen. Wenige, und deshalb ohne Seitenlauf-Ehrgeiz. */
+export async function listDecisions(env, options = {}) {
+  if (!env.VU_SOCIAL_KV || typeof env.VU_SOCIAL_KV.list !== "function") return [];
+  const alle = [];
+  let cursor;
+  do {
+    const seite = await env.VU_SOCIAL_KV.list({ prefix: DECISION_PREFIX, cursor });
+    for (const k of seite.keys || []) {
+      const raw = await env.VU_SOCIAL_KV.get(k.name);
+      if (!raw) continue;
+      try { alle.push(JSON.parse(raw)); } catch (err) { /* eine kaputte Zeile
+        darf die anderen nicht verschlucken */ }
+    }
+    cursor = seite.list_complete ? null : seite.cursor;
+  } while (cursor);
+
+  return options.onlyOpen ? alle.filter((d) => !d.consumedAt) : alle;
+}
+
+/** Quittiert die Uebernahme ins Repository. */
+export async function markDecisionConsumed(env, candidateId, at) {
+  const vorhanden = await readDecision(env, candidateId);
+  if (!vorhanden) return null;
+  const naechste = Object.assign({}, vorhanden,
+    { consumedAt: at || new Date().toISOString() });
+  await env.VU_SOCIAL_KV.put(decisionKey(candidateId), JSON.stringify(naechste));
+  return naechste;
+}
+
+export { DECISION_PREFIX, decisionKey };

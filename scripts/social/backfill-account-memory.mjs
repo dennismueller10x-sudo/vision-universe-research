@@ -52,6 +52,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { ausgabePfad } from "../quality/out-path.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -102,7 +103,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const DATA = arg("data", "social/data");
   const NOW = arg("now", new Date().toISOString());
-  const perfPfad = join(ROOT, DATA, "performance.json");
+  const perfPfad = join(ausgabePfad(ROOT, DATA), "performance.json");
 
   if (!existsSync(perfPfad)) {
     console.error("Keine performance.json in " + DATA + ". Ohne gemessene Zahlen gibt es " +
@@ -120,7 +121,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const e of neue) nachFormat[e.mediaFormat] = (nachFormat[e.mediaFormat] || 0) + 1;
   for (const [f, n] of Object.entries(nachFormat)) console.log("  " + f + ": " + n);
 
-  const zielPfad = join(ROOT, DATA, "content-memory.json");
+  const zielPfad = join(ausgabePfad(ROOT, DATA), "content-memory.json");
   const bestand = existsSync(zielPfad)
     ? JSON.parse(readFileSync(zielPfad, "utf8")) : { entries: [] };
   const vorhanden = new Set((bestand.entries || [])
@@ -137,7 +138,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   /* Angehaengt, nicht ersetzt. Ein Gedaechtnis, das ein Lauf neu
      schreibt, ist kein Gedaechtnis. */
-  mkdirSync(join(ROOT, DATA), { recursive: true });
+  mkdirSync(ausgabePfad(ROOT, DATA), { recursive: true });
   writeFileSync(zielPfad, JSON.stringify({
     generatedAt: NOW,
     entries: (bestand.entries || []).concat(hinzu)
