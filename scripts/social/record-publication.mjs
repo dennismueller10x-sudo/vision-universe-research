@@ -55,6 +55,26 @@ export function eintragAusKandidat(kandidat, antwort, meta) {
     entities: [],
     archetype: p.archetype || null,
     visualType: p.visualType || null,
+
+    /* -----------------------------------------------------------------
+       DIE NEUN DIMENSIONEN, DIE NIE ANKAMEN (§22–§25)
+
+       Das Gedaechtnis hat Felder fuer sie, seit es das Gedaechtnis
+       gibt. Gefuellt wurden sie nie: diese Funktion baut den Eintrag
+       aus einer Feldliste, und sie standen nicht darauf. Der Ranker
+       meldete pflichtgemaess "nicht mitgeschrieben" - fuer Werte, die
+       zwei Dateien weiter oben vorlagen.
+
+       Sie kommen aus dem Kandidaten und werden hier weder gerechnet
+       noch ergaenzt. Fehlt der Block (alte Kandidaten), bleiben die
+       Felder null - RUECKWIRKEND WIRD NICHTS ERFUNDEN (§35). */
+    ...(p.learningDimensions && p.learningDimensions.werte
+      ? p.learningDimensions.werte : {}),
+    /* Und die Herkunft daneben: ohne sie ist ein leeres Feld in einem
+       Jahr nicht mehr zu deuten - "nie gefragt" und "gefragt, keine
+       Antwort" sehen beide wie null aus. */
+    learningDimensionOrigin: (p.learningDimensions &&
+      p.learningDimensions.herkunft) || null,
     mediaFormat: p.mediaFormat || null,
     authoringPattern: p.authoringPattern || null,
     authoringAuthorId: p.authoringAuthorId || null,

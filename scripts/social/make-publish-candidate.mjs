@@ -479,6 +479,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       visualDirectionReady: d.visualDirectionReady === true,
       visualDirectionFailureType: d.visualDirectionFailureType || null,
       audienceFrame: d.audienceFrame || null,
+
+      /* -----------------------------------------------------------------
+         DIE LERNDIMENSIONEN REISEN MIT (§22–§25)
+
+         Sie entstehen im Zyklus und werden hier NICHT neu abgeleitet:
+         eine zweite Ableitung waere eine zweite Antwort auf dieselbe
+         Frage. Durchgereicht samt Herkunft - ein leeres Feld soll
+         spaeter noch zu deuten sein.
+
+         Bis hierher endete dieser Weg an einer handgeschriebenen
+         Feldliste, und neun von zwoelf Dimensionen standen ueber 53
+         Beitraege hinweg auf 0 % Abdeckung. */
+      learningDimensions: d.learningDimensions || null,
       archetype: d.archetype,
       hook: d.hook,
       mediaFormat: "IMAGE",

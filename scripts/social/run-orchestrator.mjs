@@ -30,6 +30,7 @@ const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js")
 const Kadenz = require(join(ROOT, "social/engines/content-cadence.js"));
 const NoPost = require(join(ROOT, "social/engines/no-post.js"));
 const RunLease = require(join(ROOT, "social/engines/run-lease.js"));
+const FrequenzLernen = require(join(ROOT, "social/engines/frequency-learning.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 import * as VisualDaten from "./visual-data.mjs";
 import { ausgabePfad } from "../quality/out-path.mjs";
@@ -500,6 +501,28 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       .map(([st, n]) => n + "x " + st).join(", "));
   }
   console.log("Fuer den Owner   : " + nachweis.erklaerung);
+
+  /* --------------------------------------------------- §35–§37 */
+  const gedaechtnis = readJson(join(DATEN, "content-memory.json"), null);
+  const fl = FrequenzLernen.zustand((gedaechtnis && gedaechtnis.entries) || [],
+    { now: z.now });
+  console.log("\n--- FREQUENZ AUS EIGENER LEISTUNG (§35-§37) ---");
+  for (const [name, w] of Object.entries(fl.werte)) {
+    console.log("  " + name.padEnd(26) +
+      (w.value === null ? "—" : String(w.value).slice(0, 9)).padEnd(11) +
+      "n=" + String(w.sampleSize).padEnd(4) +
+      (w.belastbar ? "belastbar" : "unter der Mindeststichprobe"));
+  }
+  for (const b of fl.beobachtungen) {
+    console.log("  Beobachtung: " + b.satz);
+    /* Der zweite Satz reist IMMER mit. Wer die Zahl ohne ihn
+       weitergibt, gibt etwas anderes weiter. */
+    console.log("  Nicht gesagt: " + b.nichtGesagt);
+  }
+  for (const e of fl.entscheidungen) {
+    console.log("  " + e.id.padEnd(20) +
+      (e.empfehlung === null ? "keine Empfehlung" : String(e.empfehlung)));
+  }
 
   const sp = Kadenz.spannung(
     readJson(join(ROOT, "social/config/cadence.json"), null));

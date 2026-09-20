@@ -80,6 +80,7 @@ const CreativeContract = require(join(ROOT, "social/engines/creative-contract.js
 const AudienceFit  = require(join(ROOT, "social/engines/audience-fit.js"));
 const AudienceFrame = require(join(ROOT, "social/engines/audience-frame.js"));
 const ContentLadder = require(join(ROOT, "social/engines/content-ladder.js"));
+const LearnDim = require(join(ROOT, "social/engines/learning-dimensions.js"));
 const Universe     = require(join(ROOT, "social/engines/content-universe.js"));
 
 /* -------------------------------------------------------------------
@@ -2553,6 +2554,29 @@ async function main() {
       archetypeCandidates: ((p.strategyDecision || {}).archetypeCandidates || [])
         .map((k) => ({ archetype: k.archetype, sampleSize: k.sampleSize,
                        proven: k.proven === true })),
+
+      /* -----------------------------------------------------------------
+         DIE LERNDIMENSIONEN (§22–§25)
+
+         own-performance.js nennt zwoelf; neun davon standen ueber 53
+         Beitraege hinweg auf 0 % Abdeckung - "nicht mitgeschrieben".
+         Die Werte waren nicht verloren: sie stehen im Rahmen, im
+         Autorenergebnis und in der Bildwahl, genau hier. Sie wurden auf
+         dem Weg zum Kandidaten von einer handgeschriebenen Feldliste
+         nicht mitgenommen.
+
+         Abgeleitet wird EINMAL, an dieser Stelle, und dann nur noch
+         durchgereicht. Die Herkunft reist mit: ein leeres Feld soll in
+         einem Jahr noch zu deuten sein. */
+      learningDimensions: LearnDim.ausPaket({
+        audienceFrame: publikumsRahmen[p.result.package.topic] || null,
+        authoring: p.authoring || null,
+        visualType: p.result.package.visualType,
+        visual: (p.result.package.visual) ||
+          ((p.production && p.production.asset) ? { origin: "generative",
+            variantId: (p.production.asset.sourceAsset || {}).variantId } : null),
+        thema: (p.candidate && p.candidate.thema) || null
+      }),
       /* Wer geschrieben hat, welches Muster gewann und wogegen. */
       authoring: p.authoring || null,
       /* -----------------------------------------------------------------
