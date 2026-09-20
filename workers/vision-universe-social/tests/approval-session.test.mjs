@@ -81,9 +81,15 @@ test("AS1 · Ohne Sitzung gibt es das Formular und sonst nichts", async () => {
      kann es nicht sein - sie faengt die Formen, in denen ein Leck hier
      tatsaechlich auftreten wuerde: ein Kandidat, eine Caption, eine
      Anzahl, ein Kontoname. */
+  /* Geprueft wird der TEXT, nicht das Dokument. Der Stilblock nennt
+     Klassennamen wie `.caption` - das ist kein Leck, sondern ein
+     Stylesheet. Derselbe Fehler wie in AS4: ein Pruefer, der richtige
+     Ausgabe ablehnt, kostet dasselbe wie einer, der falsche
+     durchlaesst. */
+  const sichtbar = html.replace(/<style[\s\S]*?<\/style>/gi, "");
   for (const verboten of [/candidate/i, /caption/i, /AWAITING_APPROVAL/, /visionuniverse/i,
     /wartet/i, /Beitr(a|ae)g/i]) {
-    assert.ok(!verboten.test(html),
+    assert.ok(!verboten.test(sichtbar),
       `Die Anmeldeseite verraet etwas ueber den Betrieb: ${verboten}`);
   }
 });

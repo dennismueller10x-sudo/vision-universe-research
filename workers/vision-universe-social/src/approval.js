@@ -53,7 +53,9 @@
 import {
   createSession, sessionFromRequest, clearSessionCookie, timingSafeEqual
 } from "./session.js";
-import { signInPage, approvalResponse, landingPage, alterInWorten } from "./approval-ui.js";
+import {
+  signInPage, approvalResponse, landingPage, alterInWorten, candidatePage
+} from "./approval-ui.js";
 import { readQueue } from "./store.js";
 
 const MIN_ADMIN_KEY_LENGTH = 32;
@@ -221,11 +223,78 @@ export async function routeApproval(request, url, env, options = {}) {
     return await handleApprovalIndex(request, url, env, options);
   }
 
+  /* ------------------------------------------------- Ein einzelner Beitrag */
+
+  /* -------------------------------------------------------------------
+     `cand_` und nicht irgendein Wort
+
+     Der erste Anlauf nahm jeden Namen als Kandidatenkennung. Damit war
+     /approval/queue eine Karte - und der Waechter, der dort eine 404
+     erwartete, bekam eine Seite. Zwei Bedeutungen fuer denselben
+     Namensraum, und der Router konnte sie nicht auseinanderhalten.
+
+     Die Kennung hat eine Form: make-publish-candidate.mjs baut sie als
+     "cand_" + Datum + Hash. Daran laesst sich die Unterscheidung
+     festmachen, statt an einer Liste reservierter Woerter, die beim
+     naechsten Endpunkt jemand zu ergaenzen vergisst.
+     ------------------------------------------------------------------- */
+  const karte = path.match(/^\/approval\/(cand_[A-Za-z0-9_.-]+)$/);
+  if (karte) {
+    if (methode !== "GET") {
+      return approvalResponse("Nicht erlaubt", `
+<h1>Nicht erlaubt</h1>
+<p class="leise">Diese Adresse wird gelesen, nicht beschrieben.</p>`, 405);
+    }
+    return await handleApprovalCandidate(karte[1], env, options);
+  }
+
   /* Alles Weitere unter /approval ist noch nicht gebaut — und bleibt
      bis dahin verschlossen statt durchzufallen. */
   return approvalResponse("Nicht gefunden", `
 <h1>Nicht gefunden</h1>
 <p class="leise">Diese Adresse gehoert nicht zum Approval Center.</p>`, 404);
+}
+
+/**
+ * Die Karte eines Kandidaten.
+ *
+ * Sie zeigt NUR, was in der aktiven Schlange steht. Ein Kandidat, der
+ * inzwischen entschieden, abgeloest oder zurueckgehalten wurde, ist
+ * aus der naechsten Projektion verschwunden - und diese Adresse
+ * antwortet dann, dass er nicht mehr wartet. Nicht mit 404: die Seite
+ * gab es, und dem Owner ist mit "gibt es nicht" weniger geholfen als
+ * mit "wartet nicht mehr".
+ */
+async function handleApprovalCandidate(candidateId, env, options = {}) {
+  const schlange = env.VU_SOCIAL_KV ? await readQueue(env) : null;
+  if (!schlange) return landingPage({ anzahl: null });
+
+  const posten = schlange.items || [];
+  const stelle = posten.findIndex((i) => i.candidateId === candidateId);
+
+  if (stelle === -1) {
+    /* Steht er in der Schlange der Maschine, nur ohne Datensatz? Dann
+       ist das eine andere Auskunft als "nicht mehr da". */
+    const offen = (schlange.unresolved || [])
+      .find((u) => u.candidateId === candidateId);
+    if (offen) {
+      return approvalResponse("Nicht lesbar", `
+<h1>Dieser Beitrag laesst sich hier nicht zeigen.</h1>
+<p class="leise">Er steht in der Warteschlange, aber sein Datensatz ist nicht
+vollstaendig uebertragen worden. Eine Freigabe braucht den vollstaendigen
+Beitrag — sonst gaebe sie etwas frei, das niemand gesehen hat.</p>
+<p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`, 409);
+    }
+    return approvalResponse("Nicht mehr in der Warteschlange", `
+<h1>Dieser Beitrag wartet nicht mehr.</h1>
+<p class="leise">Er wurde inzwischen entschieden, abgeloest oder zurueckgehalten.
+Es ist nichts schiefgegangen — der Stand hat sich geaendert.</p>
+<p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`, 409);
+  }
+
+  return candidatePage(posten[stelle],
+    { nummer: stelle + 1, von: schlange.activeCount },
+    null);
 }
 
 /* ------------------------------------------------------------------ */

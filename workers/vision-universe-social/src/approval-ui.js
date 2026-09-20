@@ -95,6 +95,25 @@ const STYLE = `
              color:var(--papier); background:var(--tinte); text-decoration:none;
              font-weight:700; font-size:15px; }
   .warnung { border-left:3px solid var(--tinte); padding-left:12px; }
+  figure { margin:0 0 20px; }
+  figure img { display:block; width:100%; height:auto; background:#f2f2f2; }
+  figcaption { margin-top:8px; }
+  dl { margin:0 0 4px; }
+  dt { font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:700;
+       color:var(--grau); margin:16px 0 2px; }
+  dd { margin:0; font-size:16px; }
+  .luecke { color:var(--grau); font-style:italic; }
+  .caption { white-space:pre-wrap; font-size:16px; }
+  .warum { margin:0 0 12px; }
+  .warum em { font-style:normal; font-weight:700; }
+  .betrieb { border:1px solid var(--tinte); padding:14px 16px; margin:0 0 20px; }
+  textarea { width:100%; padding:14px 16px; font:inherit; font-size:16px;
+             color:var(--tinte); background:var(--papier);
+             border:1px solid var(--tinte); border-radius:0; appearance:none;
+             margin-bottom:4px; }
+  textarea:focus { outline:2px solid var(--tinte); outline-offset:2px; }
+  a.zurueck { color:var(--tinte); font-size:14px; }
+  form + form { margin-top:28px; }
 `;
 
 function huelle(titel, inhalt) {
@@ -302,4 +321,183 @@ function abmelden() {
 <form method="POST" action="/approval/logout">
   <button class="leer" type="submit">Abmelden</button>
 </form>`;
+}
+
+/* =========================================================================
+   DIE KANDIDATENKARTE
+
+   -------------------------------------------------------------------------
+   DIE VORSCHAU IST DIE SENDUNG
+   -------------------------------------------------------------------------
+
+   Das Bild auf dieser Seite ist das Bild, das veroeffentlicht wuerde -
+   unter seiner echten Adresse, nicht neu gerendert und nicht
+   ersatzweise erzeugt. Der Text ist der Text, Zeichen fuer Zeichen,
+   ohne Kuerzung und ohne Aufbereitung.
+
+   Wer hier etwas "schoener" darstellt, laesst den Owner etwas
+   freigeben, das er nicht gesehen hat, und etwas sehen, das er nicht
+   freigibt. Das ist kein Darstellungsdetail, sondern der Unterschied
+   zwischen einer Freigabe und einer Vermutung.
+
+   -------------------------------------------------------------------------
+   EINE LUECKE IST EINE LUECKE
+   -------------------------------------------------------------------------
+
+   Felder ohne Provenance werden ANGEZEIGT - als "nicht in der
+   Provenance", nicht weggelassen und nicht gefuellt. Ein weggelassenes
+   Feld sieht aus wie ein Feld, das es nicht gibt; ein gefuelltes wie
+   eine Antwort. Beides waere falsch, und das zweite gefaehrlich.
+   ========================================================================= */
+
+function wert(f) {
+  if (!f || typeof f !== "object") return { text: null, fehlt: true };
+  if (f.value === null || f.value === undefined || f.value === "") {
+    return { text: null, fehlt: true };
+  }
+  if (Array.isArray(f.value)) {
+    return { text: f.value.length ? f.value.join(" · ") : null, fehlt: !f.value.length };
+  }
+  return { text: String(f.value), fehlt: false };
+}
+
+/** Eine Zeile im Steckbrief. Eine Luecke wird sichtbar und nicht still. */
+function zeile(beschriftung, f) {
+  const w = wert(f);
+  const inhalt = w.fehlt
+    ? `<span class="luecke">nicht in der Provenance</span>`
+    : escapeHtml(w.text);
+  return `<dt>${escapeHtml(beschriftung)}</dt><dd>${inhalt}</dd>`;
+}
+
+/** Ein Warum-Block. Fehlt alles darin, sagt er genau das. */
+function warumBlock(titel, felder) {
+  const zeilen = felder.map(([b, f]) => {
+    const w = wert(f);
+    if (w.fehlt) return null;
+    return `<p class="warum">${escapeHtml(b) ? `<em>${escapeHtml(b)}</em> ` : ""}${escapeHtml(w.text)}</p>`;
+  }).filter(Boolean);
+
+  if (!zeilen.length) {
+    return `<h2>${escapeHtml(titel)}</h2>
+<p class="luecke">Dazu steht nichts in der Provenance. Diese Frage bleibt hier
+unbeantwortet — sie wird nicht nachtraeglich beantwortet.</p>`;
+  }
+  return `<h2>${escapeHtml(titel)}</h2>${zeilen.join("")}`;
+}
+
+const GUETE_TEXT = {
+  BESTANDEN: "bestanden",
+  NICHT_BESTANDEN: "nicht bestanden",
+  NICHT_ANWENDBAR: "nicht anwendbar",
+  NICHT_IN_DER_PROVENANCE: "nicht geprueft"
+};
+
+/**
+ * Die Karte eines Kandidaten.
+ *
+ * @param i        ein Eintrag der Projektion
+ * @param stelle   { nummer, von }  — "1 von 3"
+ * @param hinweis  optionaler Betriebszustand (§12), NIE eine Leistungsaussage
+ */
+export function candidatePage(i, stelle, hinweis) {
+  const a = i.anzeige || {};
+  const w = i.warum || {};
+  const g = i.guete || {};
+
+  const zaehler = stelle && stelle.von
+    ? `<p class="zaehler">${escapeHtml(String(stelle.nummer))} von ${escapeHtml(String(stelle.von))}</p>`
+    : "";
+
+  const meldung = hinweis ? `
+<div class="betrieb">
+  <p><strong>${escapeHtml(hinweis.titel)}</strong></p>
+  <p class="leise">${escapeHtml(hinweis.text)}</p>
+</div>` : "";
+
+  /* Die Stunde als Uhrzeit. Eine nackte Zahl neben "geplante Zeit"
+     laesst offen, ob Stunde, Tag oder Rang gemeint ist. */
+  const stunde = a.geplanteStundeUtc && a.geplanteStundeUtc.value !== null
+    && a.geplanteStundeUtc.value !== undefined
+    ? { value: String(a.geplanteStundeUtc.value).padStart(2, "0") + ":00 UTC",
+        basis: a.geplanteStundeUtc.basis }
+    : a.geplanteStundeUtc;
+
+  const gueteZeile = g.zustand
+    ? `<dt>Qualitaetstor</dt><dd>${escapeHtml(GUETE_TEXT[g.zustand] || g.zustand)}${
+        typeof g.score === "number" ? " · " + escapeHtml(String(g.score)) : ""}${
+        g.erklaerung ? `<br><span class="leise">${escapeHtml(g.erklaerung)}</span>` : ""}</dd>`
+    : "";
+
+  return approvalResponse("Beitrag", `
+${zaehler}
+${meldung}
+
+<figure>
+  <img src="${escapeHtml(i.payload.imageUrl)}" alt="" width="1080" height="1350">
+  <figcaption class="leise">Dieses Bild wuerde veroeffentlicht — unter genau dieser Adresse.</figcaption>
+</figure>
+
+<h1 class="hook">${escapeHtml((a.hook && a.hook.value) || "Ohne Hook")}</h1>
+
+<h2>Text</h2>
+<p class="caption">${escapeHtml(i.payload.caption === null || i.payload.caption === undefined
+  ? "" : i.payload.caption)}</p>
+<p class="leise">Das ist der Text, der veroeffentlicht wuerde. Wort fuer Wort.</p>
+
+<h2>Steckbrief</h2>
+<dl>
+  ${zeile("Thema", a.thema)}
+  ${zeile("Inhaltsfamilie", a.familie)}
+  ${zeile("Kernfrage", a.kernfrage)}
+  ${zeile("Format", a.format)}
+  ${zeile("Erzaehlrichtung", a.storyRichtung)}
+  ${zeile("Hook-Strategie", a.hookStrategie)}
+  ${zeile("Visual-Strategie", a.visualStrategie)}
+  ${zeile("Erkunden oder Ausnutzen", a.modus)}
+  ${zeile("Geplante Zeit", stunde)}
+  ${zeile("Evidenz", (w.thema && w.thema.evidenz) || null)}
+  ${zeile("Gelegenheit", (w.thema && w.thema.gelegenheit) || null)}
+  ${gueteZeile}
+</dl>
+
+${warumBlock("Warum dieses Thema", [
+  ["", w.thema && w.thema.erklaerung],
+  ["Unterlegen:", w.thema && w.thema.alternativen]
+])}
+
+${warumBlock("Warum dieser Einstieg", [
+  ["", w.einstieg && w.einstieg.erklaerung],
+  ["Muster:", w.einstieg && w.einstieg.muster],
+  ["Nachbesserung:", w.einstieg && w.einstieg.korrektur]
+])}
+
+${warumBlock("Warum dieses Visual", [
+  ["", w.visual && w.visual.kernidee],
+  ["Auf dem Telefon:", w.visual && w.visual.blickpunkt],
+  ["Abgeleitet:", w.visual && w.visual.ableitung],
+  ["Muss zeigen:", w.visual && w.visual.mussZeigen],
+  ["Darf nicht zeigen:", w.visual && w.visual.darfNichtZeigen]
+])}
+
+<hr class="linie">
+
+<form method="POST" action="/approval/${escapeHtml(i.candidateId)}/approve">
+  <input type="hidden" name="fingerprint" value="${escapeHtml(i.contentHash)}">
+  <button type="submit">Freigeben</button>
+</form>
+
+<form method="POST" action="/approval/${escapeHtml(i.candidateId)}/reject">
+  <input type="hidden" name="fingerprint" value="${escapeHtml(i.contentHash)}">
+  <label for="grund">Was soll besser werden?</label>
+  <textarea id="grund" name="reason" rows="3" required
+            placeholder="Der Grund geht in die Auswahl zurueck, nicht in die Leistung."></textarea>
+  <button class="leer" type="submit">Ablehnen</button>
+</form>
+
+<p class="leise hinweis">Eine Ablehnung ist keine Leistungsaussage. Dieser Beitrag
+waere nie veroeffentlicht worden und hat deshalb keine Reichweite — weder eine
+schlechte noch eine gute.</p>
+
+<p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`);
 }
