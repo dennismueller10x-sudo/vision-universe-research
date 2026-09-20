@@ -1,0 +1,235 @@
+{
+  "candidateId": "cand_20260920_247c5e70",
+  "version": 1,
+  "supersedes": null,
+  "supersedesAll": [],
+  "createdAt": "2026-09-20T19:03:08.884Z",
+  "state": "AWAITING_APPROVAL",
+  "content": {
+    "contentId": "pkg_ca25cb404ae49dc4",
+    "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_ca25cb404ae49dc4.jpg",
+    "caption": "Unsere technische Auswertung bewertet Exxon Mobil mit 52 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 27.26 von 30 Punkten bei. MOMENTUM trägt 14.54 von 20 Punkten bei. VOLUME trägt 3.88 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung."
+  },
+  "contentHash": "aba9fe6bb2b2a1b7c2458fda2bb3bed1445f2cce6fd8a898b0c5c09406e44c42",
+  "presentation": {
+    "topic": "Technisches Setup — XOM",
+    "hook": "Technical Opportunity Score, Stand heute: Exxon Mobil bei 52.",
+    "caption": "Unsere technische Auswertung bewertet Exxon Mobil mit 52 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 27.26 von 30 Punkten bei. MOMENTUM trägt 14.54 von 20 Punkten bei. VOLUME trägt 3.88 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+    "hashtags": [
+      "VisionUniverse",
+      "Investment",
+      "Daten"
+    ],
+    "visualType": "CHART",
+    "mediaFormat": "IMAGE",
+    "plannedHourUtc": 18,
+    "timingSource": "Startwert",
+    "timingReason": "Zeitfenster 18:00 (Startwert).",
+    "mode": "EXPLOIT",
+    "modeReason": "Bewaehrte Wahl (Ziehung 69 >= Rate 25 %).",
+    "strategyVersion": "strategy_initial",
+    "reason": "Opportunity Score 67 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
+    "opportunityScore": 67,
+    "alternatives": [
+      "Technisches Setup — AAPL (63)",
+      "Technisches Setup — JPM (62)",
+      "Technisches Setup — MSFT (62)"
+    ],
+    "expectedPrimaryMetric": {
+      "metric": "reach",
+      "baseline": null,
+      "expectation": null,
+      "note": "Fuer die Kohorte IMAGE gibt es noch keine gemessene Vergleichsbasis. Die Reichweite wird gemessen, aber es gibt nichts, woran sie sich messen liesse — dieser Beitrag ist der Anfang der Basis."
+    },
+    "authoring": {
+      "briefId": "brief_4d3399b390499c2f",
+      "authorId": "template",
+      "editorialCorrection": null,
+      "textAuthor": null,
+      "pattern": "metric-frame/evidence-led",
+      "variantId": "var_e1d6acdec393ebb2",
+      "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+      "selectionCriteria": {
+        "brandScoreChosen": 100,
+        "compositionScoreChosen": 67,
+        "alternatives": [],
+        "discriminatedBy": [
+          "einzige bestandene Variante"
+        ],
+        "predictsPerformance": false,
+        "performanceLearnings": {
+          "sampleSize": 0,
+          "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+        }
+      },
+      "considered": 4,
+      "passed": 1,
+      "rejected": [
+        {
+          "pattern": "value-first/state-limit-reason",
+          "reasons": [
+            {
+              "gate": "composition",
+              "message": "hook und caption ueberschneiden sich zu 100 %."
+            }
+          ]
+        },
+        {
+          "pattern": "subject-first/method-first",
+          "reasons": [
+            {
+              "gate": "composition",
+              "message": "hook und caption ueberschneiden sich zu 100 %."
+            }
+          ]
+        },
+        {
+          "pattern": "limit-first/limit-first",
+          "reasons": [
+            {
+              "gate": "composition",
+              "message": "hook und caption ueberschneiden sich zu 100 %."
+            }
+          ]
+        }
+      ],
+      "attempts": [
+        {
+          "authorId": "chatgpt-work",
+          "ok": true,
+          "variants": 0
+        },
+        {
+          "authorId": "model",
+          "ok": false,
+          "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+        },
+        {
+          "authorId": "template",
+          "ok": true,
+          "variants": 4
+        }
+      ]
+    },
+    "visualOrigin": "rendered",
+    "visualQuality": {
+      "applicable": true,
+      "score": 100,
+      "warnings": 0
+    }
+  },
+  "provenance": {
+    "signalIds": [
+      "sig_092494d1c4e827dd"
+    ],
+    "opportunityId": "opp_xom_2026-09-20",
+    "strategyVersion": "strategy_initial",
+    "visualDirection": {
+      "topicId": "pkg_ca25cb404ae49dc4",
+      "visualStrategy": "CHART",
+      "story": "XOM: Technical Opportunity Score steht bei 52. Das ist eine Lagebeschreibung, keine Prognose.",
+      "coreIdea": "Eine einzige Kurve: Exxon Mobil Corporation ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 27,26 von 30, Setup nur 3,6 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
+      "oneSecondMessage": "Seit 21.08.2025: +49,5 %.",
+      "mainSubject": "Exxon Mobil Corporation",
+      "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+      "visualHierarchy": [
+        "Der Verlauf",
+        "Der Name Exxon Mobil Corporation",
+        "Der Bezugspunkt der Achse"
+      ],
+      "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+      "mustShow": [
+        "Den Klarnamen \"Exxon Mobil Corporation\" - nicht das Kuerzel",
+        "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+        "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+      ],
+      "mustNotShow": [
+        "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+        "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+      ],
+      "imageLanguage": null,
+      "realism": null,
+      "colourWorld": null,
+      "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Exxon Mobil Corporation. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+      "notApplicable": {},
+      "derivedFrom": {
+        "coreIdea": [
+          "VISUAL_STRATEGY:CHART",
+          "AUDIENCE_FRAME:publicEntityNames",
+          "STORY_DIRECTION/evidence:contributions"
+        ],
+        "mobileFocalPoint": [
+          "VISUAL_STRATEGY:CHART",
+          "AUDIENCE_FRAME:publicEntityNames"
+        ],
+        "compositionIntent": [
+          "VISUAL_STRATEGY:CHART"
+        ],
+        "visualHierarchy": [
+          "VISUAL_STRATEGY:CHART",
+          "AUDIENCE_FRAME:publicEntityNames"
+        ],
+        "brandIntent": [
+          "BRAND:BLOCKING_TERMS"
+        ],
+        "mustShow": [
+          "AUDIENCE_FRAME:publicEntityNames",
+          "VISUAL_STRATEGY:CHART",
+          "AUDIENCE_FRAME:coreQuestion",
+          "STORY_DIRECTION/evidence:source"
+        ],
+        "mustNotShow": [
+          "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+          "STORY_DIRECTION:claims",
+          "VISUAL_STRATEGY:CHART"
+        ]
+      },
+      "justifiedGenericMotifs": [],
+      "derivation": {
+        "derived": true,
+        "strategy": "CHART",
+        "missingInputs": [],
+        "tension": {
+          "kind": "CONTRIBUTION_GAP",
+          "from": "STORY_DIRECTION/evidence:contributions"
+        },
+        "explanation": "Abgeleitet aus CHART auf Exxon Mobil Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+      }
+    },
+    "visualDirectionReady": true,
+    "visualDirectionFailureType": null,
+    "audienceFrame": {
+      "family": "STOCK_STORY",
+      "familyBasis": "ARCHETYPE",
+      "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+      "publicEntityNames": [
+        "Exxon Mobil Corporation"
+      ],
+      "basis": "BOOTSTRAP"
+    },
+    "archetype": "STOCK_STORY",
+    "hook": "Technical Opportunity Score, Stand heute: Exxon Mobil bei 52.",
+    "mediaFormat": "IMAGE",
+    "visualType": "CHART",
+    "visual": {
+      "origin": "rendered",
+      "visualType": "CHART"
+    },
+    "caption": "Unsere technische Auswertung bewertet Exxon Mobil mit 52 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 27.26 von 30 Punkten bei. MOMENTUM trägt 14.54 von 20 Punkten bei. VOLUME trägt 3.88 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+    "plannedHourUtc": 18,
+    "experimentId": null,
+    "decidedMode": "EXPLOIT",
+    "approval": null,
+    "mediaId": null,
+    "measurements": [],
+    "learning": null
+  },
+  "cadence": {
+    "erlaubt": true,
+    "gruende": [],
+    "letzterPipelineBeitrag": null,
+    "stundenSeither": null,
+    "in7Tagen": 0,
+    "in30Tagen": 0
+  }
+}
