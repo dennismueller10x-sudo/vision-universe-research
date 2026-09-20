@@ -237,6 +237,105 @@
   }
 
   /** Trennt eine Liste Kandidaten in die, die eine Maschine anfassen darf, und den Rest. */
+  /* -------------------------------------------------------------------
+     DIE AKTIVE WARTESCHLANGE IST NICHT DER ORDNER
+
+     Der Abschlussbericht meldete "6 Kandidaten warten". Gezaehlt
+     worden waren DATEIEN in social/data/publish-candidates/. Von den
+     sechs wartete keine einzige: drei sind SUPERSEDED, drei liegen auf
+     einem Haltegrund, hinter dem eine Owner-Entscheidung steht.
+
+     Der Orchestrator selbst hat nie etwas anderes behauptet - er
+     filtert seit jeher auf AWAITING_APPROVAL und meldete korrekt
+     "Wartende Kandidaten: 0". Die falsche Zahl entstand in einem
+     ZWEITEN Rechenweg, der dieselbe Frage anders beantwortete. Genau
+     davor warnt dieses Repository an einem Dutzend Stellen, und hier
+     ist es trotzdem passiert.
+
+     Deshalb steht die Antwort jetzt hier, in der Engine, die das
+     Vokabular ohnehin besitzt - und beide Leser fragen sie.
+
+     Ausdruecklich: nichts wird geloescht und nichts geglaettet. Die
+     zurueckgehaltenen und abgeloesten Kandidaten bleiben, wo sie sind,
+     mit ihrer Provenienz. Sie gehoeren nur nicht in eine Schlange, in
+     der auf den Owner gewartet wird - er hat bei ihnen bereits
+     entschieden oder sie sind ueberholt.
+     ------------------------------------------------------------------- */
+
+  /* Der EINZIGE Zustand, in dem tatsaechlich auf den Owner gewartet
+     wird. Eine Liste mit einem Eintrag ist trotzdem eine Liste: sie
+     benennt, was gemeint ist, statt einen String im Code zu verstecken. */
+  var AKTIVE_WARTESCHLANGE = ["AWAITING_APPROVAL"];
+
+  /* Warum ein Kandidat NICHT in der aktiven Schlange steht. Jeder
+     Grund ist eine andere Aussage, und sie duerfen nicht zu
+     "nicht wartend" verschmelzen. */
+  var NICHT_IN_DER_SCHLANGE = {
+    APPROVED: "Freigegeben - der Owner hat entschieden.",
+    REJECTED: "Abgelehnt - der Owner hat entschieden.",
+    HELD_FOR_ENRICHMENT: "Zurueckgehalten: die Evidenz traegt die Geschichte noch nicht.",
+    HELD_FOR_CREATIVE_REFINEMENT: "Zurueckgehalten: das Creative traegt noch nicht.",
+    HELD_FOR_AUDIENCE_FIT: "Zurueckgehalten: der Beitrag passt noch nicht zum Publikum.",
+    SUPERSEDED: "Abgeloest von einer neueren Fassung desselben Inhalts."
+  };
+
+  /**
+   * Die aktive Owner-Warteschlange, getrennt vom Rest.
+   *
+   * `active` enthaelt nur, worauf der Owner wirklich reagieren muss.
+   * Alles andere steht in `held` beziehungsweise `decided` - mit
+   * Grund, nicht als Restmenge.
+   */
+  function warteschlange(kandidaten) {
+    var alle = kandidaten || [];
+    var aktiv = [], gehalten = [], entschieden = [], unbekannt = [];
+
+    alle.forEach(function (k) {
+      var z = (k && (k.state || k.status)) || null;
+      if (AKTIVE_WARTESCHLANGE.indexOf(z) !== -1) { aktiv.push(k); return; }
+      if (!z || ZUSTAENDE.indexOf(z) === -1) {
+        /* Ein unbekannter Zustand ist nicht "nicht wartend" - er ist
+           unbekannt, und das blockiert eine Aussage ueber ihn. */
+        unbekannt.push(k);
+        return;
+      }
+      if (z === "APPROVED" || z === "REJECTED" || z === "SUPERSEDED") {
+        entschieden.push(k);
+      } else {
+        gehalten.push(k);
+      }
+    });
+
+    function zeile(k) {
+      var z = (k && (k.state || k.status)) || null;
+      return {
+        candidateId: (k && (k.candidateId || k.id)) || null,
+        state: z,
+        reason: z ? (NICHT_IN_DER_SCHLANGE[z] || null) : null
+      };
+    }
+
+    return {
+      /* Die Zahl, die der Owner-Bericht meint. */
+      activeCount: aktiv.length,
+      active: aktiv.map(zeile),
+      held: gehalten.map(zeile),
+      decided: entschieden.map(zeile),
+      unknown: unbekannt.map(zeile),
+      total: alle.length,
+      /* Woertlich: ein Ordner ist keine Warteschlange. */
+      countedFiles: false,
+      explanation: aktiv.length === 0
+        ? "Niemand wartet auf den Owner. Von " + alle.length + " Kandidat(en) " +
+          "sind " + entschieden.length + " entschieden oder abgeloest und " +
+          gehalten.length + " auf einem Haltegrund." +
+          (unbekannt.length ? " " + unbekannt.length + " mit unbekanntem Zustand."
+                            : "")
+        : aktiv.length + " von " + alle.length + " Kandidat(en) warten auf die " +
+          "Owner-Freigabe; " + (alle.length - aktiv.length) + " nicht."
+    };
+  }
+
   function partition(kandidaten) {
     var frei = [], geschuetzt = [];
     (kandidaten || []).forEach(function (k) {
@@ -256,6 +355,9 @@
     istEntschieden: istEntschieden,
     istMaschinell: istMaschinell,
     traegtLeistungsaussage: traegtLeistungsaussage,
+    AKTIVE_WARTESCHLANGE: AKTIVE_WARTESCHLANGE,
+    NICHT_IN_DER_SCHLANGE: NICHT_IN_DER_SCHLANGE,
+    warteschlange: warteschlange,
     mayTransition: mayTransition,
     guardWrite: guardWrite,
     partition: partition

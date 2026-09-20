@@ -205,6 +205,149 @@
    * Exportiert, damit die Zusicherung pruefbar ist - und damit man sie
    * lesen kann, ohne den Workflow zu lesen.
    */
+
+  /* -------------------------------------------------------------------
+     DIE CREATIVE-JOB-ENTSCHEIDUNG (§3)
+
+     Bis hierher war der Dispatch das letzte Owner Gate, das keines
+     sein sollte: ein Mensch musste den Request-PR oeffnen. Der Owner
+     stand damit an zwei Stellen statt an einer.
+
+     Diese Funktion beantwortet die Frage, die davor liegt: BRAUCHT
+     dieser Lauf ueberhaupt einen Creative Job? Sie erfindet den Bedarf
+     nicht - sie liest ihn aus Zustaenden, die ohnehin dastehen.
+
+     WARUM SIE HIER STEHT UND NICHT IN EINER NEUEN ENGINE
+
+     Weil "was ist jetzt dran" bereits hier entschieden wird. Eine
+     zweite Entscheidungsstelle waere eine zweite Wahrheit darueber,
+     was der Betrieb als naechstes tut - und die erste, die von der
+     anderen abweicht, gewinnt per Zufall.
+
+     WAS SIE NICHT TUT
+
+     Sie rechnet das Budget nicht selbst. Die Grenzen stehen in
+     creative-job.js und werden dort geprueft; hier wird das ERGEBNIS
+     dieser Pruefung gelesen. Zwei Rechenwege fuer dieselbe Grenze
+     waeren genau der Fehler, den das Budget verhindern soll.
+     ------------------------------------------------------------------- */
+
+  /* Warum KEIN Creative Job noetig ist. Jeder Grund ist eine eigene
+     Aussage - "nicht noetig" ist die Zusammenfassung, nicht der
+     Befund. */
+  var KEIN_JOB = {
+    NO_CANDIDATE_DUE: "Es ist kein Kandidat faellig. Ein Creative Job ohne " +
+      "Kandidatenbedarf verbraucht eine begrenzte Ressource fuer nichts.",
+    RESULT_ALREADY_PRESENT: "Zu diesem Inhalt liegt bereits ein Ergebnis vor. " +
+      "Es zu wiederholen hiesse, dieselbe Arbeit zweimal zu bestellen.",
+    JOB_IN_FLIGHT: "Zu diesem Inhalt laeuft bereits ein Job. Ein neuer " +
+      "Scheduler-Lauf ist kein Grund fuer eine zweite Anfrage.",
+    ANOTHER_JOB_OPEN: "Irgendwo laeuft noch ein Creative Job. ChatGPT Work " +
+      "ist eine begrenzte Ressource, und ihre Wiederholung bei einem " +
+      "scheiternden Lauf ist von hier aus nicht beschraenkbar - also " +
+      "hoechstens einer gleichzeitig.",
+    EVIDENCE_INSUFFICIENT: "Die Evidenz traegt noch keine Geschichte. Ein " +
+      "hoher Score allein ist keine.",
+    NO_CONTENT_OBJECT: "Kein Inhaltsobjekt bestimmt - ohne content_id gibt es " +
+      "nichts zu bestellen.",
+    BUDGET: "Das Budget laesst diesen Dispatch nicht zu.",
+    HALTED: "Angehalten. Es wird nichts bestellt."
+  };
+
+  /**
+   * Braucht dieser Lauf einen Creative Job?
+   *
+   * `spec`:
+   *   halted              der Kill Switch
+   *   candidateDue        entscheidet naechsteHandlung, nicht diese Funktion
+   *   contentId           das Inhaltsobjekt, um das es ginge
+   *   hasAuthoringResult  liegt bereits ein Ergebnis auf der Platte?
+   *   openJobs            offene Jobs zu diesem Inhalt (aus creative-job.js)
+   *   evidenceSufficient  Ergebnis des bestehenden Hinlaenglichkeitstors
+   *   dispatchGate        Ergebnis von registry.mayDispatch(...)
+   *
+   * Die Reihenfolge der Pruefungen ist nicht beliebig: sie geht vom
+   * Billigsten zum Teuersten und vom Allgemeinsten zum Besonderen,
+   * damit der gemeldete Grund der ERSTE zutreffende ist und nicht der
+   * zufaellig zuletzt gepruefte.
+   */
+  function creativeJobDecision(spec) {
+    spec = spec || {};
+
+    function nein(code, detail) {
+      return {
+        required: false,
+        decision: "NO_CREATIVE_JOB",
+        code: code,
+        contentId: spec.contentId || null,
+        explanation: KEIN_JOB[code] + (detail ? " " + detail : "")
+      };
+    }
+
+    if (spec.halted === true) return nein("HALTED");
+    if (spec.candidateDue !== true) return nein("NO_CANDIDATE_DUE");
+    if (!spec.contentId) return nein("NO_CONTENT_OBJECT");
+    if (spec.hasAuthoringResult === true) return nein("RESULT_ALREADY_PRESENT");
+
+    var offen = Array.isArray(spec.openJobs) ? spec.openJobs : [];
+    if (offen.length > 0) {
+      return nein("JOB_IN_FLIGHT", "Offen: " + offen.map(function (j) {
+        return (j.creativeJobId || "?") + " (" + (j.state || "?") + ")";
+      }).join(", ") + ".");
+    }
+
+    /* -----------------------------------------------------------------
+       HOECHSTENS EIN OFFENER JOB — UEBERHAUPT
+
+       Das Budget in creative-job.js begrenzt je processing_key und je
+       content_id. Das ist richtig und reicht nicht.
+
+       Gemessen (VU_CREATIVE_TRIGGER_PRODUCTION_READINESS.md, 8 Jobs,
+       32 sichtbare Starts): ein SCHEITERNDER Work-Lauf wird
+       anbieterintern wiederholt, ohne beobachtbare Obergrenze - PR 105
+       meldete nach 11 h 13 min noch. Ein Abbruchsignal, das VU senden
+       koennte, gibt es nicht.
+
+       Solange ein Mensch den Request-PR oeffnete, war er in genau dem
+       Moment anwesend, in dem dieser Zweig beginnen kann. Der Scheduler
+       ist es nicht. Die einzige Grenze, die VU dann noch selbst
+       garantieren kann, ist die Anzahl gleichzeitig offener Jobs - und
+       die ist hier eins.
+
+       Das geht ueber die Buchstaben des Auftrags hinaus (er nennt
+       processing_key und content_id) und folgt seinem Satz: autonom
+       bedeutet nicht unbegrenzt.
+       ----------------------------------------------------------------- */
+    var alleOffen = Array.isArray(spec.allOpenJobs) ? spec.allOpenJobs : null;
+    if (alleOffen && alleOffen.length > 0) {
+      return nein("ANOTHER_JOB_OPEN", "Offen: " + alleOffen.map(function (j) {
+        return (j.creativeJobId || "?") + " zu " + (j.contentId || "?");
+      }).join(", ") + ".");
+    }
+
+    /* Fail closed: ohne ausdrueckliche Hinlaenglichkeit wird nicht
+       bestellt. Nicht geprueft ist nicht hinreichend. */
+    if (spec.evidenceSufficient !== true) return nein("EVIDENCE_INSUFFICIENT");
+
+    /* Das Budget hat das letzte Wort, und es rechnet woanders. */
+    var tor = spec.dispatchGate;
+    if (!tor || tor.ok !== true) {
+      return nein("BUDGET", tor && tor.message
+        ? "(" + (tor.reason || "?") + ") " + tor.message
+        : "Kein Ergebnis des Budgettors uebergeben - ungeprueft ist nicht frei.");
+    }
+
+    return {
+      required: true,
+      decision: "CREATIVE_JOB_REQUIRED",
+      code: null,
+      contentId: spec.contentId,
+      explanation: "Ein Kandidat ist faellig, zu " + spec.contentId + " liegt " +
+        "kein Ergebnis und kein offener Job vor, die Evidenz traegt eine " +
+        "Geschichte, und das Budget laesst den Dispatch zu."
+    };
+  }
+
   function betriebsmodell(quellenStatus) {
     var extern = quellenStatus || {};
     return {
@@ -239,7 +382,9 @@
   var api = {
     STAGE: STAGE,
     NIEMALS: NIEMALS,
+    KEIN_JOB: KEIN_JOB,
     naechsteHandlung: naechsteHandlung,
+    creativeJobDecision: creativeJobDecision,
     betriebsmodell: betriebsmodell
   };
 

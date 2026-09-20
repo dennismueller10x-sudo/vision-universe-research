@@ -80,8 +80,26 @@
 
   /* Zustaende, in denen die externe Welt den Job noch bearbeiten kann -
      und in denen ein offener Request-PR weiter Wiederholungen einsammelt. */
-  var OFFEN = ["CREATIVE_JOB_DISPATCHED", "CREATIVE_JOB_IN_FLIGHT",
-    "CREATIVE_JOB_RESULT_AVAILABLE", "CREATIVE_JOB_STALE"];
+  /* -------------------------------------------------------------------
+     OFFEN HEISST: NICHT FERTIG
+
+     CREATIVE_JOB_REQUESTED fehlte hier. Ein Job in diesem Zustand hat
+     einen geschriebenen Brief und einen Registereintrag - aber noch
+     keinen Pull Request. Er zaehlte damit weder als offen noch als
+     abgeschlossen, und die Gleichzeitigkeitsgrenze sah ihn nicht.
+
+     Solange ein Mensch den PR von Hand oeffnete, fiel das nicht auf:
+     zwischen Registereintrag und PR lagen Sekunden, und es sah jemand
+     zu. Sobald der Scheduler das tut, ist genau dieser Zwischenraum
+     der Ort, an dem ein Lauf abbrechen kann - und der naechste Lauf
+     faende einen Job, der nichts blockiert.
+
+     Der Schluessel-Vergleich haette das nur gefangen, wenn der zweite
+     Brief BYTEGLEICH waere. Bei neuem Datenstand ist er das nicht.
+     ------------------------------------------------------------------- */
+  var OFFEN = ["CREATIVE_JOB_REQUESTED", "CREATIVE_JOB_DISPATCHED",
+    "CREATIVE_JOB_IN_FLIGHT", "CREATIVE_JOB_RESULT_AVAILABLE",
+    "CREATIVE_JOB_STALE"];
 
   var UEBERGAENGE = {
     CREATIVE_JOB_REQUESTED: ["CREATIVE_JOB_DISPATCHED", "CREATIVE_JOB_FAILED"],
@@ -181,31 +199,31 @@
      * Ein "vielleicht" gibt es nicht — ein Dispatch ist eine Handlung
      * mit Aussenwirkung und kostet eine begrenzte Ressource.
      */
-    function mayDispatch(spec, options) {
+    /* -----------------------------------------------------------------
+       DIE GRENZEN, DIE SCHON OHNE PROCESSING KEY GELTEN
+
+       Der Processing Key entsteht erst aus dem fertigen Brief - er
+       traegt dessen Blob-SHA. Wer VOR dem Schreiben des Briefs wissen
+       will, ob ein Dispatch ueberhaupt in Frage kaeme, kann ihn also
+       noch nicht haben.
+
+       Diese Grenzen brauchen ihn nicht: sie haengen am Inhaltsobjekt.
+       Sie stehen hier als eigene Funktion, damit der Orchestrator sie
+       fragen kann, OHNE dass irgendwo eine zweite Fassung derselben
+       Regeln entsteht - mayDispatch ruft genau diese Funktion auf.
+
+       Ausdruecklich: das ist die VORPRUEFUNG. Das letzte Wort hat
+       mayDispatch mit dem Schluessel, und zwar unveraendert. Eine
+       bestandene Vorpruefung ist keine Erlaubnis.
+       ----------------------------------------------------------------- */
+    function mayDispatchContent(spec, options) {
       options = options || {};
       spec = spec || {};
 
-      if (!spec.processingKey) {
-        return { ok: false, reason: "noProcessingKey",
-          message: "Ohne Processing Key gibt es keine Identitaet, gegen die " +
-            "entdoppelt werden koennte. Ein Dispatch ohne sie waere " +
-            "unzaehlbar." };
-      }
       if (!spec.contentId) {
         return { ok: false, reason: "noContentId",
           message: "Ohne content_id laesst sich die Gleichzeitigkeitsgrenze " +
             "nicht pruefen." };
-      }
-
-      /* Die harte Grenze: ein Job pro Processing Key. */
-      var vorhanden = byKey(spec.processingKey);
-      if (vorhanden.length >= BUDGET.dispatchesPerProcessingKey) {
-        var j = vorhanden[vorhanden.length - 1];
-        return { ok: false, reason: "alreadyDispatched", existing: j,
-          message: "Fuer diesen Processing Key existiert bereits ein " +
-            "logischer Job (" + j.creativeJobId + ", Zustand " + j.state +
-            "). Ein zweiter Dispatch waere eine zweite Anfrage fuer " +
-            "dieselbe Arbeit." };
       }
 
       /* Keine parallelen Anlaeufe desselben Inhaltsobjekts. */
@@ -257,6 +275,42 @@
       }
 
       return { ok: true, reason: null };
+    }
+
+    /**
+     * Das Tor vor dem Dispatch. Unveraendert in seiner Wirkung: erst
+     * der Schluessel, dann alles, was am Inhaltsobjekt haengt.
+     */
+    function mayDispatch(spec, options) {
+      options = options || {};
+      spec = spec || {};
+
+      if (!spec.processingKey) {
+        return { ok: false, reason: "noProcessingKey",
+          message: "Ohne Processing Key gibt es keine Identitaet, gegen die " +
+            "entdoppelt werden koennte. Ein Dispatch ohne sie waere " +
+            "unzaehlbar." };
+      }
+      if (!spec.contentId) {
+        return { ok: false, reason: "noContentId",
+          message: "Ohne content_id laesst sich die Gleichzeitigkeitsgrenze " +
+            "nicht pruefen." };
+      }
+
+      /* Die harte Grenze: ein Job pro Processing Key. */
+      var vorhanden = byKey(spec.processingKey);
+      if (vorhanden.length >= BUDGET.dispatchesPerProcessingKey) {
+        var j = vorhanden[vorhanden.length - 1];
+        return { ok: false, reason: "alreadyDispatched", existing: j,
+          message: "Fuer diesen Processing Key existiert bereits ein " +
+            "logischer Job (" + j.creativeJobId + ", Zustand " + j.state +
+            "). Ein zweiter Dispatch waere eine zweite Anfrage fuer " +
+            "dieselbe Arbeit." };
+      }
+
+      /* Und alles, was ohne den Schluessel schon gilt. Eine Fassung,
+         nicht zwei. */
+      return mayDispatchContent(spec, options);
     }
 
     /** Legt den Job an. Wirft, wenn er nicht angelegt werden darf. */
@@ -350,7 +404,8 @@
     return {
       all: function () { return bestand.slice(); },
       byKey: byKey, byContent: byContent, openFor: offeneFuer,
-      mayDispatch: mayDispatch, dispatch: dispatch,
+      mayDispatch: mayDispatch,
+      mayDispatchContent: mayDispatchContent, dispatch: dispatch,
       transition: transition, closable: closable, snapshot: snapshot,
       get: function (id) {
         return bestand.filter(function (j) { return j.creativeJobId === id; })[0] || null;
