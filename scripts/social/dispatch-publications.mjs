@@ -136,7 +136,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const NOW = arg("now", new Date().toISOString());
   const SEND = flag("send");
 
-  const D = (n) => join(ROOT, DATA, n);
+  const D = (n) => join(ausgabePfad(ROOT, DATA), n);
 
   console.log("VISION UNIVERSE SOCIAL — Versand der Veroeffentlichungen");
   console.log("Datenstand: " + DATA);

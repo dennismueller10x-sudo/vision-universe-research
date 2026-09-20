@@ -160,15 +160,47 @@ test("OR11 · Der Betrieb braucht keine externe Quelle", () => {
 
 /* ------------------------------------ Der Workflow haelt sich an die Grenze */
 
-test("OR12 · Der Zeitplan veroeffentlicht nicht und gibt nichts frei", () => {
-  /* Gemessen am Workflow selbst: kein Aufruf, der veroeffentlicht,
-     freigibt oder eine externe Quelle anfasst. */
+test("OR12 · Der Zeitplan veroeffentlicht nicht und entscheidet nicht", () => {
+  /* -------------------------------------------------------------------
+     WAS DIESE PRUEFUNG SEIT DEM APPROVAL CENTER MEINT
+
+     Hier stand "decide-candidate" in derselben Liste wie
+     "dispatch-publications": kein Vorkommen im Workflow, Punkt.
+
+     Das war richtig, solange nur ein Mensch entscheiden konnte. Seit
+     der Owner im Browser entscheidet, muss seine Entscheidung ins
+     Repository - und zwar durch decide-candidate.mjs, weil dort der
+     Zustandsuebergang und die Ablehnungssemantik stehen. Der
+     Scheduler ruft es also, eine Ebene tiefer, ueber
+     ingest-owner-decisions.mjs.
+
+     Die Invariante ist deswegen nicht gefallen; sie war nur zu grob
+     formuliert. Sie lautet: DER SCHEDULER TRIFFT KEINE ENTSCHEIDUNG.
+     Er darf eine bereits getroffene abschreiben. Der Unterschied ist
+     pruefbar, und zwar genauer als "das Wort kommt nicht vor":
+
+       - kein direkter Aufruf von decide-candidate.mjs
+       - nirgends --approve oder --reject im Workflow
+       - dispatch-publications.mjs gar nicht
+
+     Eine Liste verbotener Woerter waere jetzt die bequemere Pruefung
+     und die schwaechere: sie liesse sich durch Umbenennen erfuellen.
+     ------------------------------------------------------------------- */
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
   for (const verboten of ["smoke-publish", "dispatch-publications",
-                          "decide-candidate", "discover-creators",
+                          "discover-creators",
                           "enrich-youtube-metrics", "plan-hashtag-observation"]) {
     assert.equal(yml.includes(verboten), false,
       "Der Orchestrator ruft " + verboten + " auf - das gehoert nicht in einen Zeitplan");
+  }
+
+  /* Entschieden wird nicht: weder direkt noch mit einer Flagge. */
+  assert.ok(!/node\s+scripts\/social\/decide-candidate\.mjs/.test(yml),
+    "Der Scheduler ruft decide-candidate direkt auf - dann entscheidet er.");
+  for (const flagge of ["--approve", "--reject", "--hold", "--refine"]) {
+    assert.ok(!yml.includes(flagge),
+      "Der Scheduler traegt " + flagge + " im Workflow - eine Entscheidung, " +
+      "die niemand getroffen hat.");
   }
   /* Und er ruft die Stufen auf, die er soll. */
   for (const noetig of ["run-orchestrator.mjs", "run-social-cycle.mjs",

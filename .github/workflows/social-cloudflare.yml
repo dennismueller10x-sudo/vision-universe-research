@@ -445,6 +445,36 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # =====================================================================
+      # DER READ-ONLY SMOKE DES APPROVAL CENTERS (§20)
+      #
+      # Er meldet sich an und LIEST. Kein /approve, kein /publish, kein
+      # /reject - nicht als Option und nicht hinter einer Flagge. Die
+      # einzige Schreibhandlung ist die Anmeldung, und sie legt nichts
+      # ab: das Sitzungstoken ist selbst-verifizierbar.
+      #
+      # Steht ACTIVE_APPROVAL_QUEUE_COUNT auf null, ist der leere
+      # Zustand der VOLLSTAENDIGE Smoke und kein halber. Die Frage
+      # lautet "verhaelt sich die Oberflaeche richtig", nicht "gibt es
+      # gerade Arbeit" - und einen Kandidaten zu erfinden, damit der
+      # Smoke etwas zu zeigen hat, waere ein Beweis, der nichts beweist.
+      #
+      # KEIN SOCIAL POST IM RAHMEN DES DEPLOYMENT-TESTS.
+      # =====================================================================
+      - name: APPROVAL_CENTER_LIVE — read-only
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/verify-approval-center.mjs | tee /tmp/approval.log
+          {
+            echo "## Approval Center"
+            echo '```'
+            cat /tmp/approval.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         continue-on-error: true

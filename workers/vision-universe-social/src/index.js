@@ -59,9 +59,13 @@ import {
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
-         readClaim, claimPublish, settleClaim } from "./store.js";
+         readClaim, claimPublish, settleClaim,
+         readQueue, writeQueue,
+         listDecisions, markDecisionConsumed
+} from "./store.js";
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
+import { routeApproval } from "./approval.js";
 
 /* Ein Admin-Schluessel unter dieser Laenge wird abgelehnt. Der Worker hat
    keinen Zaehler fuer Fehlversuche; die einzige belastbare Verteidigung
@@ -543,10 +547,53 @@ async function handlePublish(request, url, env) {
 
   let body = {};
   try { body = await request.json(); } catch (err) { body = {}; }
+  if (!body.contentId && url.searchParams.get("contentId")) {
+    body = Object.assign({}, body, { contentId: url.searchParams.get("contentId") });
+  }
+  return await publishCore(body, env);
+}
 
-  const contentId = String(body.contentId || url.searchParams.get("contentId") || "").trim();
-  const imageUrl = String(body.imageUrl || "").trim();
-  const caption = String(body.caption === undefined ? "" : body.caption);
+/* =====================================================================
+   DER VEROEFFENTLICHUNGSPFAD — EINE IMPLEMENTIERUNG, ZWEI EINGAENGE
+
+   ---------------------------------------------------------------------
+   WARUM HIER GETRENNT WURDE
+   ---------------------------------------------------------------------
+
+   Es gibt jetzt zwei Stellen, an denen ein Beitrag hinausgehen kann:
+
+     POST /social/meta/publish        Skripte und Workflows,
+                                      Admin-Schluessel.
+
+     POST /approval/<id>/publish      der Owner am Telefon,
+                                      Sitzungscookie.
+
+   Sie unterscheiden sich in EINEM Punkt: wer fragt. In allem anderen -
+   den zwei Erlaubnissen, dem nachgerechneten Abdruck, dem Anspruch,
+   der Bildpruefung, den Graph-Aufrufen, der Idempotenz - muessen sie
+   identisch sein.
+
+   Die naheliegende Loesung waere gewesen, den einen Weg den anderen
+   aufrufen zu lassen, mit untergeschobenem Admin-Schluessel. Das haette
+   den Schluessel an eine Stelle gebracht, an der er nichts zu suchen
+   hat, und eine Sitzung faktisch zu einem Admin-Zugang gemacht.
+
+   Die zweite naheliegende Loesung waere gewesen, den Pfad noch einmal
+   zu schreiben. Dann gaebe es zwei Veroeffentlichungen, und das ist
+   genau das, was der Auftrag ausschliesst: "KEINE zweite
+   Meta-Publishing-Implementierung."
+
+   Also: das Tor bleibt bei den Eingaengen, der Weg liegt hier. Dasselbe
+   Muster wie bei mayDispatch/mayDispatchContent in creative-job.js, und
+   aus demselben Grund.
+
+   Diese Funktion prueft KEINE Berechtigung. Wer sie aufruft, hat das
+   getan - und das steht hier, damit es niemand fuer vergessen haelt.
+   ===================================================================== */
+async function publishCore(body, env) {
+  const contentId = String((body && body.contentId) || "").trim();
+  const imageUrl = String((body && body.imageUrl) || "").trim();
+  const caption = String(body && body.caption === undefined ? "" : body.caption);
 
   /* ---------------------------------------------------------------------
      DIE ZWEI ERLAUBNISSE
@@ -569,7 +616,8 @@ async function handlePublish(request, url, env) {
      getrennt protokolliert.
      --------------------------------------------------------------------- */
   const autopublish = String(env.VU_SOCIAL_AUTOPUBLISH || "").toLowerCase() === "on";
-  const approval = (body.approval && typeof body.approval === "object") ? body.approval : null;
+  const approval = (body && body.approval && typeof body.approval === "object")
+    ? body.approval : null;
 
   let genehmigung = null;
   if (approval) {
@@ -1605,6 +1653,260 @@ async function handleDisconnect(request, url, env) {
   });
 }
 
+/* =====================================================================
+   DIE WARTESCHLANGE ENTGEGENNEHMEN
+
+   ---------------------------------------------------------------------
+   WARUM DIESER ENDPUNKT UNTER /social/ LIEGT UND NICHT UNTER /approval/
+   ---------------------------------------------------------------------
+
+   Weil ihn keine Person aufruft, sondern der Orchestrator. Er gehoert
+   damit zu den maschinellen Endpunkten und hinter deren Tor: den
+   Admin-Schluessel als Bearer-Header, so wie ingest-performance und
+   verify es seit jeher tun.
+
+   Die Owner-Sitzung darf ihn ausdruecklich NICHT oeffnen. Ein Browser,
+   der die Schlange ueberschreiben kann, waere eine Oberflaeche, die
+   ihre eigene Datengrundlage schreibt - und damit die Trennung
+   aufheben, um derentwillen es die Projektion ueberhaupt gibt.
+
+   ---------------------------------------------------------------------
+   WAS GEPRUEFT WIRD - UND WOGEGEN NICHT
+   ---------------------------------------------------------------------
+
+   Die Pruefung hier ist KEINE Sicherheitsschranke. Wer bis hierher
+   kommt, hat den Admin-Schluessel; gegen den ist nichts mehr zu
+   schuetzen.
+
+   Sie ist eine HERKUNFTSSCHRANKE. Sie stellt sicher, dass das, was der
+   Worker zeigt, aus der kanonischen Zustandsmaschine stammt und nicht
+   aus einer zweiten Rechnung, die jemand schnell daneben gestellt hat.
+   Genau dieser zweite Rechenweg hat in diesem Projekt schon einmal
+   "sechs warten" gemeldet, wo null warteten.
+
+   Deshalb sind `version`, `source` und `countedFiles` Pflicht: sie
+   sind die Unterschrift der Engine, und eine handgeschriebene Schlange
+   traegt sie nicht, ohne dass jemand sie bewusst hinschreibt.
+   ===================================================================== */
+
+const QUEUE_VERSION = "approval-projection-v1";
+const QUEUE_SOURCE = "owner-decision.warteschlange";
+/* 512 KiB. Eine Schlange ist eine Handvoll Beitraege; alles darueber
+   ist ein Irrtum und kein Wachstum. KV traegt mehr, aber ein Speicher,
+   der alles annimmt, verdeckt den Tag, an dem etwas hineinlaeuft, das
+   nicht hineingehoert. */
+const QUEUE_MAX_BYTES = 512 * 1024;
+
+/**
+ * Prueft eine Projektion auf ihre Herkunft und ihre Form.
+ *
+ * @returns { ok, reason, message }
+ */
+function pruefeProjektion(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) {
+    return { ok: false, reason: "notAnObject",
+      message: "Eine Projektion ist ein Objekt." };
+  }
+  if (p.version !== QUEUE_VERSION) {
+    return { ok: false, reason: "unknownVersion",
+      message: "Unbekannte Projektionsfassung: " + String(p.version) + ". " +
+        "Erwartet wird " + QUEUE_VERSION + "." };
+  }
+  if (p.source !== QUEUE_SOURCE) {
+    return { ok: false, reason: "wrongSource",
+      message: "Diese Schlange nennt nicht die kanonische Zustandsmaschine als " +
+        "Quelle. Gezeigt wird nur, was aus " + QUEUE_SOURCE + " stammt." };
+  }
+  /* `countedFiles: true` ist genau der Fehler, den die Engine selbst
+     ausschliesst und in ihre Antwort schreibt: ein Ordner ist keine
+     Warteschlange. */
+  if (p.countedFiles !== false) {
+    return { ok: false, reason: "countedFiles",
+      message: "Diese Schlange zaehlt Dateien. Ein Ordner ist keine Warteschlange." };
+  }
+  if (!Number.isInteger(p.activeCount) || p.activeCount < 0) {
+    return { ok: false, reason: "badCount",
+      message: "activeCount muss eine Zahl ab null sein." };
+  }
+  if (!Array.isArray(p.items)) {
+    return { ok: false, reason: "badItems", message: "items muss eine Liste sein." };
+  }
+  if (typeof p.generatedAt !== "string" || Number.isNaN(Date.parse(p.generatedAt))) {
+    return { ok: false, reason: "badTimestamp",
+      message: "generatedAt fehlt oder ist kein Zeitpunkt. Ohne ihn laesst sich " +
+        "nicht sagen, wie alt der Stand ist." };
+  }
+
+  for (const i of p.items) {
+    if (!i || typeof i !== "object") {
+      return { ok: false, reason: "badItem", message: "Ein Eintrag ist kein Objekt." };
+    }
+    if (!i.candidateId || typeof i.candidateId !== "string") {
+      return { ok: false, reason: "itemWithoutId",
+        message: "Ein Eintrag ohne Kandidatenkennung ist nicht freigebbar." };
+    }
+    const nutz = i.payload;
+    if (!nutz || typeof nutz !== "object" || !nutz.contentId || !nutz.imageUrl) {
+      return { ok: false, reason: "itemWithoutPayload",
+        message: "Eintrag " + i.candidateId + " traegt nicht, was veroeffentlicht " +
+          "wuerde. Die Vorschau IST die Sendung - ohne sie gibt es nichts freizugeben." };
+    }
+    /* https und sonst nichts. Ein Bild ueber http waere im Browser
+       blockierter Mischinhalt und bei Meta eine Adresse, die sie nicht
+       abholen. Eine data:-Adresse waere beides nicht und trotzdem
+       falsch: sie kaeme nicht aus dem Assetbestand. */
+    if (!/^https:\/\//.test(String(nutz.imageUrl))) {
+      return { ok: false, reason: "insecureImageUrl",
+        message: "Eintrag " + i.candidateId + " nennt ein Bild, das nicht ueber " +
+          "https erreichbar ist." };
+    }
+    if (typeof i.contentHash !== "string" || !/^[0-9a-f]{64}$/.test(i.contentHash)) {
+      return { ok: false, reason: "itemWithoutHash",
+        message: "Eintrag " + i.candidateId + " traegt keinen Inhaltsabdruck. Ohne " +
+          "ihn bindet eine Freigabe an nichts." };
+    }
+  }
+
+  /* Zwei Kandidaten mit derselben Kennung waeren zwei Karten fuer
+     einen Beitrag - und der Owner entschiede zweimal ueber dasselbe. */
+  const gesehen = new Set();
+  for (const i of p.items) {
+    if (gesehen.has(i.candidateId)) {
+      return { ok: false, reason: "duplicateItem",
+        message: "Kandidat " + i.candidateId + " steht zweimal in der Schlange." };
+    }
+    gesehen.add(i.candidateId);
+  }
+
+  return { ok: true, reason: null, message: null };
+}
+
+/**
+ * Nimmt eine Projektion entgegen.
+ *
+ * Eine UNVOLLSTAENDIGE Projektion wird angenommen und NICHT abgewiesen.
+ * Der Grund: sie ist der frischeste Stand, den es gibt, und ihn
+ * abzulehnen hiesse, einen aelteren zu zeigen, der genauso unvollstaendig
+ * waere - nur ohne es zu sagen. Die Luecke reist mit (`complete`,
+ * `unresolved`) und wird angezeigt.
+ */
+async function handleQueueIngest(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  const roh = await request.text();
+  if (roh.length > QUEUE_MAX_BYTES) {
+    return json({ error: "tooLarge", stored: false,
+      message: "Die Projektion ist groesser als " + QUEUE_MAX_BYTES + " Bytes. " +
+        "Eine Warteschlange ist eine Handvoll Beitraege." }, 413);
+  }
+
+  let projektion;
+  try { projektion = JSON.parse(roh); }
+  catch (err) { return json({ error: "badJson", stored: false }, 400); }
+
+  const befund = pruefeProjektion(projektion);
+  if (!befund.ok) {
+    return json({ error: befund.reason, stored: false, message: befund.message }, 400);
+  }
+
+  if (!env.VU_SOCIAL_KV) {
+    return json({ error: "noStorage", stored: false,
+      message: "Ohne KV laesst sich keine Schlange halten." }, 503);
+  }
+
+  await writeQueue(env, Object.assign({}, projektion, {
+    /* Wann SIE ankam - getrennt davon, wann sie GEBAUT wurde. Zwei
+       verschiedene Fragen: die eine misst das Alter der Aussage, die
+       andere den Abstand zum letzten Kontakt. */
+    receivedAt: new Date().toISOString()
+  }));
+
+  return json({
+    stored: true,
+    activeCount: projektion.activeCount,
+    items: projektion.items.length,
+    complete: projektion.complete === true,
+    unresolved: Array.isArray(projektion.unresolved) ? projektion.unresolved.length : 0,
+    generatedAt: projektion.generatedAt,
+    note: "Gespeichert, nicht nachgerechnet. activeCount stammt aus " + QUEUE_SOURCE + "."
+  });
+}
+
+/* =====================================================================
+   DER RUECKWEG: ENTSCHEIDUNGEN ABHOLEN
+
+   ---------------------------------------------------------------------
+   WARUM ABHOLEN UND NICHT ZUSTELLEN
+   ---------------------------------------------------------------------
+
+   Weil der Worker nicht ins Repository schreiben kann und nicht sollen
+   darf. Eine Owner-Entscheidung gehoert dorthin, wo die Kandidaten
+   liegen und wo decide-candidate.mjs sie auswertet - mit allem, was
+   dort schon steht: der Ablehnungsgrund als Rueckmeldung ueber die
+   AUSWAHL, der Zustandsuebergang durch die kanonische Maschine, die
+   Herkunft des abgelehnten Kandidaten fuers Lernen.
+
+   Der Worker haelt sie so lange fest. Der Orchestrator holt sie beim
+   naechsten Lauf ab und quittiert. Das Journal ist ein Briefkasten und
+   kein zweiter Datenbestand - und es leert sich nicht von selbst:
+   abgeholt heisst quittiert, und quittiert heisst im Repository.
+
+   ---------------------------------------------------------------------
+   GELESEN MIT DEM ADMIN-SCHLUESSEL
+   ---------------------------------------------------------------------
+
+   Wie jeder maschinelle Endpunkt. Die Owner-Sitzung kommt hier nicht
+   durch: sie darf entscheiden, nicht abraeumen.
+   ===================================================================== */
+
+async function handleDecisions(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  if (request.method === "GET") {
+    /* Standardmaessig nur die offenen. `?all=1` zeigt auch die schon
+       uebernommenen - fuer den Fall, dass jemand nachsehen will, was
+       wann hinausging. */
+    const alleZeigen = url.searchParams.get("all") === "1";
+    const eintraege = await listDecisions(env, { onlyOpen: !alleZeigen });
+    return json({
+      decisions: eintraege,
+      open: eintraege.filter((d) => !d.consumedAt).length,
+      note: "Abgeholt ist nicht quittiert. Erst der ACK nimmt eine Entscheidung " +
+        "aus dem Briefkasten — und zwar dann, wenn sie im Repository steht."
+    });
+  }
+
+  if (request.method !== "POST") {
+    return json({ error: "methodNotAllowed" }, 405);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch (err) { body = {}; }
+  const ids = Array.isArray(body.acknowledge) ? body.acknowledge : [];
+  if (!ids.length) {
+    return json({ error: "nothingToAcknowledge",
+      message: "Ohne Kennungen gibt es nichts zu quittieren." }, 400);
+  }
+
+  const quittiert = [];
+  const unbekannt = [];
+  const jetzt = new Date().toISOString();
+  for (const id of ids) {
+    const d = await markDecisionConsumed(env, String(id), jetzt);
+    if (d) quittiert.push(d.candidateId); else unbekannt.push(String(id));
+  }
+
+  return json({
+    acknowledged: quittiert,
+    /* Eine Kennung, die es nicht gibt, ist kein Fehler des Aufrufers -
+       aber sie stillschweigend als quittiert zu melden waere einer. */
+    unknown: unbekannt,
+    open: (await listDecisions(env, { onlyOpen: true })).length
+  });
+}
+
 /* Lebendtest. Absichtlich ohne Zustand und ohne Kontodaten: er beantwortet
    "laeuft der Worker", nicht "wer ist verbunden". */
 function handleHealth(env) {
@@ -1650,6 +1952,32 @@ export default {
     try {
       if (path === "/health") return handleHealth(env);
 
+      /* ---------------------------------------------------------------
+         DAS APPROVAL CENTER
+
+         Vor `requireAdmin`, weil es ein EIGENES Tor mitbringt: eine
+         Owner-Sitzung im Cookie statt eines Schluessels im Header oder
+         in der Adresszeile. Ein Browser kann das eine nicht und darf
+         das andere nicht (§10).
+
+         `routeApproval` gibt `null` zurueck, wenn der Pfad nicht
+         hierher gehoert — und beantwortet ALLES, was mit /approval
+         beginnt, selbst. Auch das, was es nicht gibt: sonst faellt eine
+         kuenftige Route unter /approval an dieser Stelle durch, bevor
+         sie ihre eigene Pruefung hat.
+         --------------------------------------------------------------- */
+      /* `publishCore` wird HEREINGEREICHT und nicht importiert: sonst
+         haenge index.js an approval.js und approval.js an index.js,
+         und ein Zyklus an der Stelle, an der veroeffentlicht wird, ist
+         die falsche Stelle fuer eine Feinheit der Modulreihenfolge.
+
+         Ausserdem macht es sichtbar, was sonst versteckt waere: das
+         Approval Center kann veroeffentlichen, WEIL der Router ihm
+         diesen Weg gibt - und nur dann. Ohne ihn sendet es nicht und
+         baut sich keinen eigenen. */
+      const freigabe = await routeApproval(request, url, env, { publish: publishCore });
+      if (freigabe) return freigabe;
+
       /* Der Callback traegt keinen Admin-Schluessel — Meta wuerde ihn
          nicht mitschicken. Er ist durch state und Cookie geschuetzt. */
       if (path === "/social/meta/callback") {
@@ -1660,6 +1988,22 @@ export default {
       const auth = requireAdmin(request, url, env);
       if (!auth.ok) return auth.response;
 
+      if (path === "/social/approval/queue") {
+        /* Nur POST: dieser Endpunkt nimmt entgegen. Gelesen wird die
+           Schlange ueber /approval - mit der Owner-Sitzung, nicht mit
+           dem Admin-Schluessel. */
+        if (request.method !== "POST") {
+          return json({ error: "methodNotAllowed",
+            message: "Die Schlange wird hier abgelegt, nicht gelesen." }, 405);
+        }
+        return await handleQueueIngest(request, url, env);
+      }
+      if (path === "/social/approval/decisions") {
+        if (request.method !== "GET" && request.method !== "POST") {
+          return json({ error: "methodNotAllowed" }, 405);
+        }
+        return await handleDecisions(request, url, env);
+      }
       if (path === "/social/meta/connect") {
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
         return await handleConnect(request, url, env);
@@ -1744,7 +2088,9 @@ export default {
 
 /* Fuer die Tests: die Bausteine einzeln pruefbar halten. */
 export const __internals = {
-  configProblems, redirectUri, requireAdmin, extractAdminKey,
+  configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
+  pruefeProjektion, handleQueueIngest, QUEUE_VERSION, QUEUE_SOURCE, QUEUE_MAX_BYTES,
+  publishCore, handleDecisions,
   handleConnect, handleCallback, handleStatus, handleVerify, handleDisconnect,
   MIN_ADMIN_KEY_LENGTH
 };

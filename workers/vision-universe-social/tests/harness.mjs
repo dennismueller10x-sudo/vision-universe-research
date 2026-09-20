@@ -24,6 +24,27 @@ export function createKV(initial = {}) {
     async get(key) { return store.has(key) ? store.get(key) : null; },
     async put(key, value) { store.set(key, String(value)); },
     async delete(key) { store.delete(key); },
+    /* Workers KV kann Schluessel auflisten, und der Entscheidungsjournal
+       braucht das: ein Schluessel je Entscheidung, damit zwei gleichzeitige
+       Eintraege einander nicht ueberschreiben.
+
+       Nachgebildet wird genau die Form, die der echte Aufruf liefert -
+       `{ keys: [{name}], list_complete, cursor }` -, nicht eine bequemere.
+       Eine Attrappe, die mehr kann als das Original, verschiebt den
+       Fehler nur nach hinten. */
+    async list(options = {}) {
+      const prefix = String(options.prefix || "");
+      const grenze = Math.max(1, Number(options.limit) || 1000);
+      const alle = [...store.keys()].filter((k) => k.startsWith(prefix)).sort();
+      const ab = options.cursor ? alle.indexOf(options.cursor) + 1 : 0;
+      const seite = alle.slice(ab, ab + grenze);
+      const fertig = ab + seite.length >= alle.length;
+      return {
+        keys: seite.map((name) => ({ name })),
+        list_complete: fertig,
+        cursor: fertig ? undefined : seite[seite.length - 1]
+      };
+    },
     /* Nur fuer Tests: hineinschauen, ohne den Vertrag zu erweitern. */
     __raw() { return store; },
     __size() { return store.size; }
@@ -202,4 +223,91 @@ export async function completeConnect(worker, env, options = {}) {
     encodeURIComponent(options.state || started.state),
     { headers: { cookie: options.cookie === null ? "" : (options.cookie || started.cookie) } }), env);
   return { started, callback };
+}
+
+/* =========================================================================
+   EIN GRAPH-DOPPELGAENGER FUER DEN VEROEFFENTLICHUNGSWEG
+
+   Der allgemeine Doppelgaenger oben kennt Autorisierung und Abruf. Der
+   Veroeffentlichungsweg braucht vier weitere Antworten - Bildpruefung,
+   Container, Containerstatus, Freigabe - und jede davon muss sich auf
+   Fehler stellen lassen.
+
+   Er steht hier und nicht in einer Testdatei, weil ihn inzwischen zwei
+   Wege brauchen: /social/meta/publish und das Approval Center. Zwei
+   Attrappen fuer denselben Dienst wuerden auseinanderlaufen, und die
+   Tests waeren dann gegen verschiedene Metas gruen.
+   ========================================================================= */
+
+export const PUBLISH_IG_ID = "17841400000000001";
+export const PUBLISH_MEDIA_ID = "media_555";
+export const PUBLISH_PERMALINK = "https://www.instagram.com/p/PU555/";
+
+export function createPublishGraph(options = {}) {
+  const aufrufe = [];
+
+  const fetchImpl = async (rawUrl, init = {}) => {
+    const url = new URL(rawUrl);
+    const pfad = url.pathname.split("/").slice(2).join("/");
+    const methode = (init && init.method) || "GET";
+    aufrufe.push({ pfad, methode, url: rawUrl });
+
+    const json = (body, status = 200) => ({
+      ok: status >= 200 && status < 300, status,
+      text: () => Promise.resolve(JSON.stringify(body)),
+      headers: new Headers({ "content-type": "application/json" })
+    });
+
+    /* Die Bildpruefung. Sie holt den Kopf der Datei und nicht die
+       Datei - das genuegt fuer "gibt es das, und ist es ein Bild". */
+    if (methode === "HEAD") {
+      if (options.bildFehlt) return { ok: false, status: 404, headers: new Headers() };
+      return { ok: true, status: 200,
+        headers: new Headers({ "content-type": options.bildTyp || "image/jpeg",
+          "content-length": "68000" }) };
+    }
+
+    const ig = options.instagramAccountId || PUBLISH_IG_ID;
+
+    if (pfad === ig + "/media" && methode === "POST") {
+      if (options.containerFehler) {
+        return json({ error: { message: "Invalid image", code: 9004,
+          error_subcode: 2207052, type: "OAuthException", fbtrace_id: "Abc123XyZ" } }, 400);
+      }
+      return json({ id: "container_7" });
+    }
+    if (pfad === "container_7") {
+      return json({ status_code: options.containerStatus || "FINISHED" });
+    }
+    if (pfad === ig + "/media_publish" && methode === "POST") {
+      if (options.publishFehler) {
+        return json({ error: Object.assign({ message: "Permission error", code: 200,
+          error_subcode: 1363047, type: "OAuthException", fbtrace_id: "Def456UvW" },
+          options.publishFehler === true ? {} : options.publishFehler) }, 403);
+      }
+      return json({ id: PUBLISH_MEDIA_ID });
+    }
+    if (pfad === PUBLISH_MEDIA_ID) {
+      return json({ id: PUBLISH_MEDIA_ID, permalink: PUBLISH_PERMALINK,
+        timestamp: "2026-09-20T09:00:00+0000", media_type: "IMAGE" });
+    }
+    return json({ error: { message: "unerwartet: " + pfad, code: 100 } }, 404);
+  };
+
+  return { fetchImpl, aufrufe };
+}
+
+/** Legt eine Verbindung an, ohne den OAuth-Weg zu gehen. */
+export async function verbinde(env, overrides = {}) {
+  await env.VU_SOCIAL_KV.put("meta:connection:v1", JSON.stringify(Object.assign({
+    version: 1,
+    instagramAccountId: PUBLISH_IG_ID,
+    instagramUsername: "visionuniverse",
+    pageId: "page_vu",
+    pageName: "Vision Universe",
+    pageAccessToken: PAGE_TOKEN,
+    tokenType: "page",
+    permissions: { granted: [], declined: [], requested: [], missing: [] },
+    capabilities: {}
+  }, overrides)));
 }
