@@ -65,6 +65,16 @@
     }
 
     var api = {
+      backtestEvidence: {
+        schemaVersion: "1.0",
+        source: "quant/engines/mock-provider.js",
+        pointInTimeFundamentals: { status: "VERIFIED", evidence: "MOCK_AVAILABLE_AT_FILTER" },
+        delistedSecurities: { status: "VERIFIED", evidence: "MOCK_DELISTED_FIXTURE" },
+        originalVsRestated: { status: "VERIFIED", evidence: "MOCK_RESTATEMENT_FIXTURE" },
+        corporateActions: { status: "VERIFIED", evidence: "MOCK_CORPORATE_ACTION_FIXTURES" },
+        historicalUniverse: { status: "VERIFIED", evidence: "MOCK_LISTING_INTERVALS" },
+        nextOpenPrice: { status: "MODELED", model: "DETERMINISTIC_INTERPOLATION", evidence: "MOCK_OPEN_INTERPOLATION_35PCT" }
+      },
       /* ---------------- ReferenceDataProvider ---------------- */
       getSecurities: function (filter) {
         filter = filter || {};

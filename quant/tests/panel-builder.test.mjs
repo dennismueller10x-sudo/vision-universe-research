@@ -246,7 +246,8 @@ test("B8 · Ein reiner Kurs-Backtest laeuft auf echten Bars", () => {
     filters: [{ field: "momentum6m", operator: "gt", value: -100 }],
     ranking: { factors: [{ factor: "momentum", weight: 1 }] },
     portfolio: { positions: 13, weighting: "equal", minMarketCapM: 0, minDollarVolumeM: 0 },
-    rebalance: "monthly"
+    rebalance: "monthly",
+    execution: { timing: "next_close" }
   });
 
   const days = res.panel.tradingDays;
@@ -260,6 +261,11 @@ test("B8 · Ein reiner Kurs-Backtest laeuft auf echten Bars", () => {
   assert.equal(result.equity.dates.length, result.equity.values.length);
   assert.equal(result.capabilities.everInvested, true,
     "die Strategie muss investiert gewesen sein - sonst prueft der Test nichts");
+  for (const key of ["pointInTimeFundamentals", "delistedSecurities", "originalVsRestated", "corporateActions", "historicalUniverse"]) {
+    assert.equal(result.capabilities[key], false, key + " darf ohne Provider-Evidenz nicht behauptet werden");
+  }
+  assert.equal(result.capabilities.executionPriceMode, "OBSERVED_ADJUSTED_CLOSE");
+  assert.ok(result.warnings.some((w) => w.code === "unverified_provider_capabilities"));
   assert.ok(Number.isFinite(result.metrics.cagr));
   assert.ok(Number.isFinite(result.metrics.maxDrawdown));
   assert.ok(result.capabilities.timeInvestedPct > 50);
@@ -316,7 +322,8 @@ function kursBacktest(isMockJeTitel) {
   const definition = Strategy.createDefinition({
     ranking: { factors: [{ factor: "momentum", weight: 1 }] },
     portfolio: { positions: 13, weighting: "equal", minMarketCapM: 0, minDollarVolumeM: 0 },
-    rebalance: "monthly"
+    rebalance: "monthly",
+    execution: { timing: "next_close" }
   });
   const days = res.panel.tradingDays;
   return Backtest.runBacktest({

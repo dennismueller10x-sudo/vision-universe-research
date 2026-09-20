@@ -464,3 +464,35 @@ universe/delisting evidence, materialized PIT fact panels with exact availabilit
 timestamps, corporate-action/execution evidence, and provider-derived capability
 flags. Capability/readiness hardening may proceed without claiming those missing
 inputs or enabling real execution.
+
+## 2026-09-20 — Rule Contract deployed; Backtest readiness fail-closed
+
+PR #122 merged to main as
+`1ec3bdaed6859d75cc9b0a2c42186027d6085d9d`. All PR gates and all main-push
+gates succeeded: Quant, SEC, Company Master, Browser QA, Production Pages and
+shared navigation. Production serves the exact validated release bundle
+`8b1aede2a7f84b0c`; live Signals reproduce their rule in Screener. Quant Home,
+Signals and Screener render without page-console errors. The separate Discovery
+product smoke also renders without page-console errors. Evidence is recorded on
+PR #122. `DISCOVERY_CHANGED=false`.
+
+The next bounded tranche removes hardcoded Backtest capability claims. Provider
+PIT, restatement, delisting, corporate-action and historical-universe flags now
+default to false and rise only through a structured, bounded provider-evidence
+contract. Evidence and its hash are part of the reproduction input. Undeclared
+capabilities produce a critical run warning.
+
+The former global next-open interpolation is now mock-only and explicitly labelled
+`MODELED_INTERPOLATION`; Trust Score gives it partial rather than full execution
+credit. A real/undeclared provider cannot run `next_open` without an observed
+adjusted-open series and verified evidence. Observed `next_close` remains available.
+No real provider, job, endpoint, materializer, secret or schedule is activated.
+
+Focused tests 63/63, full Quant 1,219/1,219, SEC Python 471/471, internal PIT
+32/32, Shared Worker/Discovery 66/66 and release/resource contract 8/8 PASS
+locally. Exact release build PASS at 4,846,342/8,388,608 SEC bytes with
+`EXISTING_R2_UNCHANGED`; secret hygiene, diff hygiene and explicit
+no-Discovery-diff checks PASS. Remote PR/main gates and production smoke remain
+pending. Real Backtest activation remains false until cutoff-safe PIT fact panels,
+historical universe/delistings, corporate actions and compatible observed execution
+prices are all evidenced.

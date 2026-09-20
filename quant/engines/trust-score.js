@@ -91,6 +91,9 @@
     var er = cfg.blocks.executionRealism;
     var costBps = isNum(caps.transactionCostsBps) ? caps.transactionCostsBps : 0;
     var slipBps = isNum(caps.slippageBps) ? caps.slippageBps : 0;
+    var timingRatio = !caps.executionAfterSignal ? 0
+      : caps.executionPriceMode === "MODELED_INTERPOLATION" ? 0.5
+      : /^OBSERVED_/.test(caps.executionPriceMode || "") ? 1 : 0;
     blocks.executionRealism = {
       label: er.label, maxPoints: er.points,
       checks: [
@@ -108,9 +111,11 @@
             ? "Mindestliquiditaet als Filter, nicht als nachtraegliche Korrektur."
             : "Ohne Liquiditaetsgrenze koennen beliebig illiquide Titel gekauft werden."),
         check("executionTiming", er.checks.executionTiming.label, er.checks.executionTiming.points,
-          caps.executionAfterSignal ? 1 : 0,
-          caps.executionAfterSignal
-            ? "Signal am Schluss von T, Ausfuehrung fruehestens T+1."
+          timingRatio,
+          caps.executionAfterSignal && caps.executionPriceMode === "MODELED_INTERPOLATION"
+            ? "Signal am Schluss von T, Ausfuehrung T+1; der Eroeffnungskurs ist jedoch modelliert."
+            : caps.executionAfterSignal && /^OBSERVED_/.test(caps.executionPriceMode || "")
+            ? "Signal am Schluss von T, Ausfuehrung fruehestens T+1 mit beobachtetem Ausfuehrungspreis."
             : "Ein Signal auf dem Schlusskurs darf nicht zu diesem Schlusskurs handeln.")
       ]
     };
