@@ -95,6 +95,40 @@
   /* Welche Hook-Strategie zu welcher Familie passt. VORSCHLAG, nicht
      Entscheidung: die kanonische Auswahl trifft Vision Universe
      spaeter anhand der Tore. */
+  /* -------------------------------------------------------------------
+     ARCHETYP IST NICHT FAMILIE — UND DOCH HAENGEN SIE ZUSAMMEN
+
+     Die Gelegenheiten aus dem Slate tragen ihre Familie mit. Die aus
+     den internen Signalen gebauten tragen sie nicht: dort steht ein
+     Archetyp, und der beschreibt die FORM des Stuecks, nicht die ART
+     des Themas. Von 14 Archetypen heissen genau zwei wie eine Familie.
+
+     Den Archetyp einfach als Familie einzusetzen hiesse, fuer zwoelf
+     von ihnen "keine hinterlegte Kernfrage" zu melden - und das waere
+     eine falsche Erklaerung: die Frage fehlt nicht, sie wurde nur
+     unter einem anderen Namen gesucht.
+
+     Diese Tabelle ist eine redaktionelle Zuordnung, keine Messung.
+     Genau deshalb traegt der Rahmen `familyBasis` mit: wer ihn liest,
+     sieht, ob die Familie am Thema stand oder aus dem Archetyp kam.
+     ------------------------------------------------------------------- */
+  var FAMILIE_AUS_ARCHETYP = {
+    BREAKING_MARKET_INSIGHT: "NEWS_NOW",
+    EXPLAIN_THE_MOVE:        "STOCK_STORY",
+    FUTURE_TECHNOLOGY:       "MEGATREND",
+    STOCK_STORY:             "STOCK_STORY",
+    DATA_STORY:              "DATA_STORY",
+    MYTH_VS_REALITY:         "EDUCATION",
+    OPPORTUNITY_RISK:        "MARKET_EXPLAINER",
+    EDUCATIONAL:             "EDUCATION",
+    MARKET_CONTEXT:          "MARKET_EXPLAINER",
+    CONTRARIAN_INSIGHT:      "EDUCATION",
+    VISUAL_DATA_STORY:       "DATA_STORY",
+    COMPANY_DEEP_DIVE:       "REPORT_STORY",
+    WEEKLY_THEME:            "MAGAZINE_STORY",
+    TREND_EXPLAINER:         "MEGATREND"
+  };
+
   var HOOK_VORSCHLAG = {
     RANKING:              "list_tension",
     COMPARISON:           "contrast",
@@ -140,6 +174,14 @@
     var t = topic || {};
     var namen = spec.names || {};
 
+    /* Die Familie zuerst - alles Weitere haengt an ihr. Steht sie am
+       Thema, gilt sie. Sonst wird sie aus dem Archetyp abgeleitet,
+       und der Rahmen sagt, dass sie abgeleitet ist. */
+    var familie = t.family ||
+      (spec.archetype ? FAMILIE_AUS_ARCHETYP[spec.archetype] : null) || null;
+    var familieBasis = t.family ? "TOPIC"
+      : (spec.archetype && FAMILIE_AUS_ARCHETYP[spec.archetype]) ? "ARCHETYPE" : "NONE";
+
     /* Klarnamen fuer den oeffentlichen Gebrauch. Wo ein Kuerzel
        durchgerutscht ist, wird hier der Name danebengestellt - das
        Audience-Tor beanstandet ihn sonst spaeter im Hook. */
@@ -168,13 +210,18 @@
               "die Aktualitaet ist damit nicht belegt."
             : "Kein tagesaktueller Anlass - das Thema traegt auch ohne Ereignis."),
 
-      whyCare: KERNFRAGE[t.family]
+      family: familie,
+      /* TOPIC, ARCHETYPE oder NONE. Ohne diese Angabe waere spaeter
+         nicht mehr zu sehen, wie die Kernfrage zustande kam. */
+      familyBasis: familieBasis,
+
+      whyCare: KERNFRAGE[familie]
         ? "Es beantwortet eine Frage, die sich jemand ohnehin stellt: " +
-          KERNFRAGE[t.family]
-        : "Kein hinterlegter Publikumsnutzen fuer " + t.family +
+          KERNFRAGE[familie]
+        : "Kein hinterlegter Publikumsnutzen fuer " + (familie || "eine unbekannte Familie") +
           " - das ist eine Luecke, keine Aussage.",
 
-      coreQuestion: KERNFRAGE[t.family] || null,
+      coreQuestion: KERNFRAGE[familie] || null,
 
       publicEntityNames: oeffentlich,
       /* Ausdruecklich benannt, damit der Agent nicht raten muss. */
@@ -182,8 +229,9 @@
       internalTermsNotSuitableForHook:
         spec.internalTermsNotSuitableForHook || INTERN_NICHT_IM_HOOK,
 
-      suggestedHookStrategy: HOOK_VORSCHLAG[t.family] || null,
-      suggestedVisualStrategy: visualVorschlag(t),
+      suggestedHookStrategy: HOOK_VORSCHLAG[familie] || null,
+      suggestedVisualStrategy: visualVorschlag(
+        { family: familie, entities: t.entities }),
 
       /* Woertlich: ein Rahmen sagt nichts ueber Wirkung. */
       predictsPerformance: false,
@@ -234,6 +282,7 @@
     VORWISSEN: VORWISSEN,
     KERNFRAGE: KERNFRAGE,
     HOOK_VORSCHLAG: HOOK_VORSCHLAG,
+    FAMILIE_AUS_ARCHETYP: FAMILIE_AUS_ARCHETYP,
     INTERN_NICHT_IM_HOOK: INTERN_NICHT_IM_HOOK,
     visualVorschlag: visualVorschlag,
     frame: frame,

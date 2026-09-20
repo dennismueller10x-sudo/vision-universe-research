@@ -77,6 +77,25 @@
    * @param options.hook der Hook des Beitrags — die Karte soll ihn nicht
    *                     wiederholen, sondern ergaenzen
    */
+  /* -------------------------------------------------------------------
+     EINE UNVOLLSTAENDIGE RICHTUNG IST EIN EIGENER FEHLER
+
+     Sie ist kein Inhaltsfehler: der Text kann tadellos sein. Kein
+     Providerfehler: es wurde noch gar nichts bestellt. Kein
+     Bildfehler: es gibt noch kein Bild.
+
+     Sie ist ein Befund ueber UNSERE Vorarbeit, und sie braucht ihren
+     eigenen Namen. Unter CONTENT_FAILED gebucht wuerde das Lernen
+     irgendwann glauben, ein Archetyp trage nicht - weil einmal eine
+     Bildidee fehlte. Genau diese Verwechslung hat asset-store.js
+     schon fuer den Transport verboten; hier gilt sie fuer die
+     Richtung.
+     ------------------------------------------------------------------- */
+  var RICHTUNG_UNVOLLSTAENDIG = "VISUAL_DIRECTION_INCOMPLETE";
+
+  var NIEMALS = ["CONTENT_FAILED", "PROVIDER_FAILED", "IMAGE_FAILED",
+    "ASSET_TRANSPORT_INTEGRITY_FAILED", "VISUAL_CREATIVE_QUALITY_FAILED"];
+
   function check(plan, options) {
     options = options || {};
     var e = (plan && plan.ebenen) || {};
@@ -84,6 +103,24 @@
 
     var blocking = [];
     var warnings = [];
+
+    /* ------------------------------------------ Richtung vor Flaeche
+       Das Tor bleibt fail-closed: `directionReady` muss ausdruecklich
+       true sein. Fehlt die Angabe, gilt sie als ungeprueft und nicht
+       als bestanden - dieselbe Regel wie ueberall sonst. Wer eine
+       Karte ohne Richtungspruefung bewerten will, sagt das mit
+       `skipDirection: true` und hat es dann gesagt. */
+    var richtungGeprueft = options.skipDirection === true ||
+      options.directionReady === true;
+    if (!richtungGeprueft) {
+      blocking.push({ id: "direction-incomplete",
+        failureType: RICHTUNG_UNVOLLSTAENDIG,
+        message: "Die Creative Direction traegt nicht" +
+          ((options.directionMissing || []).length
+            ? " (fehlt: " + options.directionMissing.join(", ") + ")" : "") +
+          ". Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, " +
+          "Provider- oder Bildfehler." });
+    }
 
     /* ----------------------------------------------- Vollstaendigkeit */
     if (e.zahl && !e.zahlText) {
@@ -165,11 +202,22 @@
     var abzug = blocking.length * 40 + warnings.length * 8;
     var score = Math.max(0, 100 - abzug);
 
+    /* Der Fehlertyp des Laufs. Steht die Richtung nicht, heisst der
+       Befund so und nicht anders - auch wenn die Flaeche zusaetzlich
+       Maengel hat. Die Richtung kommt zuerst, also benennt sie den
+       Fehler. */
+    var richtungOffen = blocking.filter(function (b) {
+      return b.failureType === RICHTUNG_UNVOLLSTAENDIG; }).length > 0;
+
     return {
       passed: blocking.length === 0,
       score: score,
       blocking: blocking,
       warnings: warnings,
+      failureType: richtungOffen ? RICHTUNG_UNVOLLSTAENDIG
+        : (blocking.length ? "VISUAL_LAYOUT_QUALITY_FAILED" : null),
+      /* Woertlich, damit niemand spaeter einen dieser Namen einsetzt. */
+      neverReportedAs: NIEMALS,
       explanation: blocking.length === 0
         ? "Bildwert " + score + (warnings.length ? "; " + warnings.length + " Hinweis(e)." : ".")
         : blocking.length + " blockierende(r) Befund(e): " +
@@ -177,7 +225,8 @@
     };
   }
 
-  var api = { GRENZEN: GRENZEN, overlap: overlap, check: check };
+  var api = { GRENZEN: GRENZEN, overlap: overlap, check: check,
+    VISUAL_DIRECTION_INCOMPLETE: RICHTUNG_UNVOLLSTAENDIG, NIEMALS: NIEMALS };
 
   if (isNode) module.exports = api;
   else global.VUSocialVisualQuality = api;

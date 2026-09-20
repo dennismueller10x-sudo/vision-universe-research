@@ -263,13 +263,30 @@ export function plan(pkg, options = {}) {
      gerenderte Karte war ein gueltiges JPEG in der richtigen Groesse mit
      der richtigen Schrift — und las dreimal dasselbe.
      ------------------------------------------------------------------- */
-  const guete = VisualQuality.check(entwurf, { hook: pkg.hook });
+  /* Die Creative Direction kommt VOR der Erzeugung und reist im Paket
+     mit. Hier wird sie nur noch gemeldet - der Befund heisst dann
+     VISUAL_DIRECTION_INCOMPLETE und nicht "die Karte sagt nichts".
+     Zwei verschiedene Ursachen unter einem Namen waeren genau die
+     Verwechslung, gegen die §4 gebaut ist. */
+  const guete = VisualQuality.check(entwurf, {
+    hook: pkg.hook,
+    directionReady: pkg.visualDirectionReady === true,
+    directionMissing: pkg.visualDirectionMissing || []
+  });
   entwurf.quality = guete;
 
   if (!guete.passed) {
-    return { ok: false, reason: "visualQuality", visualType: typ,
-      quality: guete,
-      message: "Die Karte laesst sich zeichnen, sagt aber nichts: " + guete.explanation };
+    return { ok: false,
+      /* Der Grund traegt den Fehlertyp des Tors, nicht einen
+         Sammelnamen. */
+      reason: guete.failureType === VisualQuality.VISUAL_DIRECTION_INCOMPLETE
+        ? "visualDirection" : "visualQuality",
+      failureType: guete.failureType,
+      visualType: typ, quality: guete,
+      message: guete.failureType === VisualQuality.VISUAL_DIRECTION_INCOMPLETE
+        ? "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie " +
+          "zeigen soll: " + guete.explanation
+        : "Die Karte laesst sich zeichnen, sagt aber nichts: " + guete.explanation };
   }
 
   return entwurf;
@@ -361,7 +378,7 @@ export function planKomposition(pkg, komposition, ebenen) {
       message: "Eine Grafik ohne Aussage laesst den Betrachter raten, was " +
         "er sieht. Die Zahlen sagen WAS, nicht WARUM es hier steht." };
   }
-  return {
+  const entwurf = {
     ok: true,
     visualType: (pkg && pkg.visualType) || komposition.kind,
     modus: "komposition",
@@ -371,6 +388,39 @@ export function planKomposition(pkg, komposition, ebenen) {
       quelle: e.quelle || null },
     explanation: komposition.kind + ": " + komposition.explanation
   };
+
+  /* -------------------------------------------------------------------
+     DERSELBE WEG DURCH DASSELBE TOR
+
+     Dieser Pfad - der, den der reale Zyklus wirklich geht - lief bisher
+     an VisualQuality.check() vorbei. Das Tor stand nur im Kartenpfad.
+     Ein Tor, das der Produktionsweg umgeht, ist keines; genau dieser
+     Befund hat visual-intelligence.js aus dem Abseits geholt, und er
+     galt hier unbemerkt weiter.
+
+     Der Befund ueber die Richtung heisst auch hier
+     VISUAL_DIRECTION_INCOMPLETE und nicht "keine Komposition".
+     ------------------------------------------------------------------- */
+  const guete = VisualQuality.check(entwurf, {
+    hook: (pkg && pkg.hook) || null,
+    directionReady: !!pkg && pkg.visualDirectionReady === true,
+    directionMissing: (pkg && pkg.visualDirectionMissing) || []
+  });
+  entwurf.quality = guete;
+
+  if (!guete.passed) {
+    const richtung = guete.failureType === VisualQuality.VISUAL_DIRECTION_INCOMPLETE;
+    return { ok: false,
+      reason: richtung ? "visualDirection" : "visualQuality",
+      failureType: guete.failureType,
+      visualType: entwurf.visualType, quality: guete,
+      message: richtung
+        ? "Die Grafik laesst sich zeichnen - aber es wurde nie gesagt, was sie " +
+          "zeigen soll: " + guete.explanation
+        : "Die Grafik laesst sich zeichnen, sagt aber nichts: " + guete.explanation };
+  }
+
+  return entwurf;
 }
 
 /* =====================================================================

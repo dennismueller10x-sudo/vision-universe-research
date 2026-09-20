@@ -40,6 +40,13 @@ function paket(overrides = {}) {
   return Object.assign({
     packageId: "pkg_test_1",
     topic: "Small Caps",
+    /* Seit §4 traegt jedes Paket, das aus dem Zyklus kommt, das
+       Ergebnis der Richtungspruefung mit. Das Tor ist fail-closed:
+       ohne diese Angabe gaelte die Richtung als ungeprueft. Die
+       Tests unten pruefen Zeichenregeln, nicht die Richtung - also
+       steht sie hier ausdruecklich auf geprueft. */
+    visualDirectionReady: true,
+    visualDirectionMissing: [],
     hook: "Der Abstand ist so gross wie seit 1999 nicht.",
     visualType: "DATA_CARD",
     /* Die Form, die die Content-Engine wirklich liefert: der Wert und

@@ -23,7 +23,7 @@ const ZYKLUS = readFileSync("scripts/social/run-social-cycle.mjs", "utf8");
 
 test("VD1 · Der Zyklus ruft die Bildintelligenz ueberhaupt auf", () => {
   assert.match(ZYKLUS, /visual-intelligence\.js/);
-  assert.match(ZYKLUS, /VisualIntelligence\.direction\(/);
+  assert.match(ZYKLUS, /VisualIntelligence\.deriveDirection\(/);
   assert.match(ZYKLUS, /VisualIntelligence\.ready\(/);
 });
 
@@ -31,7 +31,7 @@ test("VD2 · Die Richtung entsteht VOR dem Bildplan", () => {
   /* Das ist die ganze These der Engine: generische Bildsprache
      entsteht, weil niemand gesagt hat, was das Bild zeigen soll. Eine
      Richtung nach der Erzeugung waere eine Nachbetrachtung. */
-  const richtung = ZYKLUS.indexOf("VisualIntelligence.direction(");
+  const richtung = ZYKLUS.indexOf("VisualIntelligence.deriveDirection(");
   const plan = ZYKLUS.indexOf("const bildplan =");
   assert.ok(richtung > 0 && plan > 0);
   assert.ok(richtung < plan,
@@ -60,16 +60,41 @@ test("VD4 · Eine unvollstaendige Richtung wird benannt, nicht beschoenigt", () 
 });
 
 test("VD5 · Eine vollstaendige Richtung traegt", () => {
+  /* Die Pflichtliste ist seit §3 laenger: fuenf Dimensionen kamen
+     dazu. Ein Aufruf, der nur die alten fuenf fuellt, IST jetzt
+     unvollstaendig - das ist der Sinn der Erweiterung und kein
+     Testfehler. */
   const voll = VI.ready(VI.direction({
     topicId: "t1", visualStrategy: "CHART",
     coreIdea: "Eine Kurve, die den Bruch zeigt",
     oneSecondMessage: "Seit August plus 43 Prozent",
     mainSubject: "Kursverlauf AAPL",
-    storyCarried: "Der Anstieg begann mit den Quartalszahlen",
-    mobileFocalPoint: "Der Knick in der Mitte"
+    story: "Der Anstieg begann mit den Quartalszahlen",
+    mobileFocalPoint: "Der Knick in der Mitte",
+    compositionIntent: "Die Kurve nimmt die Flaeche, der Knick sitzt in der Mitte",
+    visualHierarchy: ["Der Knick", "Der Verlauf", "Der Name"],
+    brandIntent: "Sachlich und belegt, keine Empfehlung",
+    mustShow: ["Den Klarnamen Apple Inc."],
+    mustNotShow: ["Keine in die Zukunft verlaengerte Linie"]
   }));
   assert.equal(voll.ok, true);
   assert.deepEqual(voll.missing, []);
+});
+
+test("VD5b · Die alten fuenf Felder allein reichen nicht mehr", () => {
+  const alt = VI.ready(VI.direction({
+    topicId: "t1", visualStrategy: "CHART",
+    coreIdea: "Eine Kurve, die den Bruch zeigt",
+    oneSecondMessage: "Seit August plus 43 Prozent",
+    mainSubject: "Kursverlauf AAPL",
+    story: "Der Anstieg begann mit den Quartalszahlen",
+    mobileFocalPoint: "Der Knick in der Mitte"
+  }));
+  assert.equal(alt.ok, false);
+  for (const f of ["compositionIntent", "visualHierarchy", "brandIntent",
+                   "mustShow", "mustNotShow"]) {
+    assert.ok(alt.missing.includes(f), "muesste fehlen: " + f);
+  }
 });
 
 test("VD6 · Die Richtung blockiert den Lauf nicht", () => {

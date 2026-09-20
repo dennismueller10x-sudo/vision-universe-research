@@ -35,7 +35,7 @@
    ueberschreibt (MASTER §31.10).
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -77,6 +77,7 @@ const AutorChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-
 const Lifecycle    = require(join(ROOT, "social/engines/provider-lifecycle.js"));
 const CreativeContract = require(join(ROOT, "social/engines/creative-contract.js"));
 const AudienceFit  = require(join(ROOT, "social/engines/audience-fit.js"));
+const AudienceFrame = require(join(ROOT, "social/engines/audience-frame.js"));
 
 /* -------------------------------------------------------------------
    KLARNAMEN — EINE QUELLE, NICHT ZWEI
@@ -868,6 +869,20 @@ async function main() {
   const rejections = [];
   /* Die Datenlage je Thema - fuer den Zeichenschritt weiter unten. */
   const bildDatenlage = {};
+  /* -------------------------------------------------------------------
+     DER PUBLIKUMSRAHMEN GEHOERT IN DEN ZYKLUS, NICHT NUR IN DIE ANALYSE
+
+     audience-frame.js lief bisher ausschliesslich im Gelegenheits-
+     Trockenlauf. Der Zyklus - der Pfad, der wirklich Inhalte baut -
+     kannte ihn nicht. Das ist dieselbe Lage wie bei
+     visual-intelligence.js: eine gebaute, gepruefte Stufe, die neben
+     dem Graphen steht statt darin.
+
+     Sie wird hier gebraucht, weil die Bildrichtung aus ihr stammt: der
+     Klarname statt des Kuerzels, die Frage, mit der jemand hinsieht,
+     und die Begriffe, die oeffentlich nichts zu suchen haben.
+     ------------------------------------------------------------------- */
+  const publikumsRahmen = {};
 
   /* -------------------------------------------------------------------
      DIE VERGLEICHSGRUPPE DES LAUFS
@@ -1087,6 +1102,20 @@ async function main() {
         highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
     }, ROOT);
     bildDatenlage[opportunity.topic] = lage;
+
+    /* Der Rahmen braucht eine Familie. Die aus Signalen gebauten
+       Gelegenheiten tragen keine - dort steht der Archetyp, und
+       audience-frame.js loest ihn auf. Woher die Familie kam, steht
+       danach in `familyBasis`. */
+    publikumsRahmen[opportunity.topic] = AudienceFrame.frame({
+      topicId: opportunity.opportunityId,
+      entities: opportunity.entities,
+      asOf: (lage.series && lage.series.asOf) || null,
+      timeSensitivity: opportunity.timeSensitivity
+    }, {
+      names: FIRMENNAMEN,
+      archetype: strategyDecision.archetype || null
+    });
 
     const result = Content.run({
       opportunity, sources: rechercheBelege, strategyDecision,
@@ -1865,14 +1894,47 @@ async function main() {
        echtes Risiko - und dann steht sie hier bereits mit Namen. */
     const lage = bildDatenlage[pkg.topic] || null;
 
-    const richtung = VisualIntelligence.direction({
-      topicId: pkg.topicId || pkg.packageId,
+    /* -----------------------------------------------------------------
+       ABGELEITET, NICHT NACHGETRAGEN
+
+       Der erste Anlauf reichte `pkg.visualIdea` und
+       `pkg.visualFocalPoint` hinein - zwei Felder, die es auf einem
+       contentPackage nie gab. Entsprechend meldete der reale Lauf
+       `ready: false` mit genau diesen beiden. Zwei Vorgabesaetze
+       haetten das Tor gruen gemacht und nichts gewusst.
+
+       Jetzt entstehen sie aus den vorgelagerten Zustaenden, die
+       ohnehin dastehen: Gelegenheit, Publikumsrahmen, Story und
+       Bildform. Fehlt der Form, was sie braucht, entsteht keine Idee -
+       und das Tor sagt, welche Voraussetzung fehlte.
+
+       (Im selben Zug verschwinden zwei tote Ausdruecke: `pkg.entities`
+       und `pkg.claim` gibt es auf einem contentPackage ebenso wenig.
+       Der `||`-Zweig danach hat sie jedes Mal stillschweigend
+       aufgefangen - der Wert stimmte, die erste Haelfte war nie
+       erreichbar.) */
+    const rahmen = publikumsRahmen[pkg.topic] || null;
+
+    const richtung = VisualIntelligence.deriveDirection({
+      topicId: pkg.packageId,
       visualStrategy: pkg.visualType || null,
-      coreIdea: pkg.visualIdea || null,
-      oneSecondMessage: lage && kompoAussage(lage, pkg) ? kompoAussage(lage, pkg) : null,
-      mainSubject: (pkg.entities && pkg.entities[0]) || pkg.topic || null,
-      storyCarried: pkg.claim || pkg.hook || null,
-      mobileFocalPoint: pkg.visualFocalPoint || null
+      opportunity: {
+        topicId: pkg.opportunityId, topic: pkg.topic,
+        family: rahmen ? rahmen.family : null,
+        entities: rahmen ? rahmen.publicEntityNames : []
+      },
+      audienceFrame: rahmen,
+      story: { thesis: pkg.thesis, hook: pkg.hook, claims: pkg.claims || [] },
+      visualData: lage ? {
+        points: lage.composition.points,
+        contributions: lage.composition.contributions,
+        peers: lage.composition.peers,
+        returns: lage.composition.returns,
+        total: lage.composition.total,
+        totalMax: lage.composition.totalMax,
+        source: quelleAus(lage)
+      } : {},
+      oneSecondMessage: kompoAussage(lage, pkg)
     });
     const richtungBereit = VisualIntelligence.ready(richtung);
 
@@ -1885,6 +1947,16 @@ async function main() {
     pkg.visualDirection = richtung;
     pkg.visualDirectionReady = richtungBereit.ok;
     pkg.visualDirectionMissing = richtungBereit.missing;
+    pkg.visualDirectionFailureType = richtungBereit.failureType;
+    pkg.visualDirectionNotApplicable = richtungBereit.notApplicable;
+    /* Der Rahmen reist mit, weil das Lernen sonst nie fragen koennte,
+       unter welcher Kernfrage ein Bild getragen hat. */
+    pkg.audienceFrame = rahmen ? {
+      family: rahmen.family, familyBasis: rahmen.familyBasis,
+      coreQuestion: rahmen.coreQuestion,
+      publicEntityNames: rahmen.publicEntityNames,
+      basis: rahmen.basis
+    } : null;
 
     const bildplan = mitgebracht
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
@@ -2020,7 +2092,13 @@ async function main() {
          nur waehrend des Laufs. */
       visualDirection: p.result.package.visualDirection || null,
       visualDirectionReady: p.result.package.visualDirectionReady === true,
-      visualDirectionMissing: p.result.package.visualDirectionMissing || []
+      visualDirectionMissing: p.result.package.visualDirectionMissing || [],
+      /* Der eigene Fehlertyp (§4) reist mit: eine unvollstaendige
+         Richtung darf spaeter nicht als Inhalts- oder Providerfehler
+         gelesen werden. */
+      visualDirectionFailureType: p.result.package.visualDirectionFailureType || null,
+      visualDirectionNotApplicable: p.result.package.visualDirectionNotApplicable || [],
+      audienceFrame: p.result.package.audienceFrame || null
     })),
     rejections,
     published: published.map((p) => ({
@@ -2085,7 +2163,12 @@ async function main() {
   };
 
   if (OUT_DIR) {
-    const dir = join(ROOT, OUT_DIR);
+    /* `join(ROOT, "/tmp/x")` ergibt "<ROOT>/tmp/x" - ein absoluter
+       Pfad wurde also stillschweigend ins Repository umgebogen. Ein
+       Lauf, der ausserhalb schreiben soll, hat damit hineingeschrieben.
+       Genau diese Kopplung von Ausgabepfad und Produktionsbaum soll es
+       nicht geben. */
+    const dir = isAbsolute(OUT_DIR) ? OUT_DIR : join(ROOT, OUT_DIR);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "cycle-report.json"), JSON.stringify(report, null, 2) + "\n");
     writeFileSync(join(dir, "publications.json"),
