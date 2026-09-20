@@ -265,6 +265,11 @@
         state: befund.state,
         coverage: befund.coverage,
         notApplicable: befund.notApplicable || nichtAnwendbar(t),
+        /* Die Einzelwerte, nicht nur die drei Treiber. Ohne sie kann
+           ein Bericht nicht sagen, was die EIGENE Leistung zu diesem
+           Thema beitraegt - und genau die ist gerade die einzige
+           Evidenzklasse. */
+        components: befund.components || null,
         missing: befund.missing || [],
         drivers: befund.drivers || [],
         saturation: sat,

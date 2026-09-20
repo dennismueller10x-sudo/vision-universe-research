@@ -291,6 +291,7 @@ export function dryRun(options) {
   /* Audience Framing gehoert VOR das Authoring - also auch vor jede
      Aussage darueber, was aus einer Gelegenheit werden koennte. */
   const mitRahmen = rang.ranked.map((b) => Object.assign({}, b, {
+    components: b.components || null,
     audienceFrame: Audience.frame(b.topic, { names: NAMEN }),
     /* Wie belegt ist dieses Thema wirklich? Ein Slate-Eintrag ohne
        eigene Belege kann keinen Brief tragen. */
@@ -451,12 +452,35 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("    --- Vorschlaege (keine Prognose) ---");
     console.log("    Hook Strategy  : " + a.suggestedHookStrategy);
     console.log("    Visual Strategy: " + a.suggestedVisualStrategy);
-    console.log("    Explore/Exploit: " + (b.saturation.measured
-      ? (b.saturation.value > 0.4 ? "EXPLORE (Familie gesaettigt)" : "EXPLOIT")
-      : "EXPLORE (keine Historie — nichts zu bestaetigen)"));
+    /* -----------------------------------------------------------------
+       ZWEI ANTWORTEN AUF DIESELBE FRAGE WAEREN EINE ZU VIEL
+
+       Hier stand eine eigene Rechnung aus der Saettigung: "EXPLORE
+       (keine Historie)". Daneben steht seit der Own-Performance-Schicht
+       eine zweite, die 22 gemessene Beitraege kennt - und beide sagten
+       verschiedene Dinge ueber denselben Lauf.
+
+       Die Saettigung beantwortet eine andere Frage (ist diese FAMILIE
+       gerade ueberrepraesentiert?) und bleibt als Zusatz stehen. Der
+       MODUS kommt aus der Leistungsauswertung, weil nur sie weiss, ob
+       ein Muster belastbar ist. */
+    console.log("    Explore/Exploit: " + r.exploreExploit.mode +
+      (b.saturation.measured
+        ? "  (Familie " + Math.round(b.saturation.value * 100) + " % des Programms)"
+        : "  (Saettigung nicht messbar)"));
     console.log("    --- Faktoren ---");
-    b.drivers.slice(0, 3).forEach((d) => console.log("      + " + (d.label || d.dimension) +
-      ": " + (d.explanation || "")));
+    /* Die Treiber tragen `reason`, nicht `explanation`. Abgefragt wurde
+       das falsche Feld, und heraus kam eine Zeile mit Doppelpunkt und
+       nichts dahinter - ein Faktor, der aussieht, als haette er keinen
+       Grund. */
+    /* Nur den Grund - er nennt die Dimension bereits. Beides zu
+       drucken ergab "Luecke im Bestand: Luecke im Bestand: 100 %". */
+    b.drivers.slice(0, 3).forEach((d) => console.log("      + " +
+      (d.reason || d.label || d.dimension)));
+    /* Was die EIGENE Leistung zu diesem Thema sagt - die einzige
+       Evidenzklasse, die gerade laeuft. */
+    const hp = b.components && b.components.historicalPerformance;
+    console.log("    Own Performance: " + (hp ? hp.reason : "—"));
     console.log("    Extern         : " + (b.externalInterest
       ? (b.externalInterest.available
           ? Math.round(b.externalInterest.value * 100) + " % Anteil (" +

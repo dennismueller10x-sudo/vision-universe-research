@@ -1,8 +1,164 @@
 {
-  "generatedAt": "2026-09-19T15:51:26.406Z",
+  "generatedAt": "2026-09-20T09:38:03.505Z",
   "purpose": "NORTH_STAR_SHIFT_PROOF",
   "metaConnectionFromThisRun": "UNKNOWN_FROM_THIS_RUN",
-  "ownPerformanceMeasurements": 0,
+  "ownPerformanceMeasurements": 25,
+  "externalIntelligence": "NO_ACTIVE_EXTERNAL_SOURCE",
+  "externalSources": [
+    {
+      "id": "INSTAGRAM_PUBLIC_CONTENT",
+      "state": "NOT_ACTIVATED_BY_OWNER",
+      "dormant": true,
+      "reason": "Owner-Entscheidung. Der Zugang waere technisch erreichbar - gemessen am 2026-09-19 fehlen die Freischaltung 'Instagram Public Content Access' und das Recht pages_read_engagement. Beides wird bewusst NICHT beantragt."
+    },
+    {
+      "id": "YOUTUBE_EXTERNAL_INTELLIGENCE",
+      "state": "NOT_ACTIVATED_BY_OWNER",
+      "dormant": true,
+      "reason": "Owner-Entscheidung. Es wird kein Google-Cloud-Projekt angelegt und kein YOUTUBE_API_KEY hinterlegt."
+    }
+  ],
+  "ownPerformanceEvidence": {
+    "measuredEntries": 22,
+    "unmeasuredReasons": [
+      {
+        "reason": "Nicht veroeffentlicht.",
+        "count": 25
+      },
+      {
+        "reason": "Kein Performance Score: Nur 3 Beitraege; ab 5 entsteht eine belastbare Basis. Eine Zahl ohne Basis waere eine Behauptung.",
+        "count": 3
+      }
+    ],
+    "evaluableDimensions": 3,
+    "dimensionsWithFinding": 0,
+    "dimensions": [
+      {
+        "dimension": "topic",
+        "coverage": 1,
+        "evaluable": true,
+        "sufficient": 0
+      },
+      {
+        "dimension": "content_family",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "entity_type",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "audience_frame",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "story_structure",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "hook_strategy",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "hook_variant_id",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "format",
+        "coverage": 1,
+        "evaluable": true,
+        "sufficient": 0
+      },
+      {
+        "dimension": "visual_strategy",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "visual_variant_id",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      },
+      {
+        "dimension": "timing",
+        "coverage": 1,
+        "evaluable": true,
+        "sufficient": 0
+      },
+      {
+        "dimension": "market_context",
+        "coverage": 0,
+        "evaluable": false,
+        "sufficient": 0
+      }
+    ],
+    "predictsPerformance": false
+  },
+  "exploreExploit": {
+    "mode": "EXPLORE_ONLY",
+    "exploit": [],
+    "exploreCount": 12,
+    "explanation": "Keine Dimension traegt ein belastbares Muster. Das System erkundet - und das ist bei dieser Stichprobe die richtige Antwort, nicht eine vorlaeufige."
+  },
+  "evidenceClasses": {
+    "own": {
+      "label": "OWN PERFORMANCE",
+      "measurements": 25,
+      "mature": 25,
+      "source": "snapshots",
+      "dimensions": [
+        "audienceInterest",
+        "historicalPerformance",
+        "platformFit"
+      ],
+      "measurable": [
+        "historicalPerformance",
+        "platformFit"
+      ],
+      "note": "Gemessen an eigenen Beitraegen. Was davon systemisch leer bleibt, ist keine Aussage ueber ein Thema."
+    },
+    "external": {
+      "label": "EXTERNAL SOCIAL INTELLIGENCE",
+      "state": "NO_ACTIVE_EXTERNAL_SOURCE",
+      "carriesWeight": false,
+      "sensors": [
+        {
+          "id": "INSTAGRAM_PUBLIC_CONTENT",
+          "state": "NOT_ACTIVATED_BY_OWNER"
+        },
+        {
+          "id": "YOUTUBE_EXTERNAL_INTELLIGENCE",
+          "state": "NOT_ACTIVATED_BY_OWNER"
+        }
+      ],
+      "observations": 0,
+      "hashtagsObserved": 8,
+      "topicsWithObservedHashtags": 0,
+      "dimensions": [
+        "externalInterest"
+      ],
+      "note": "Abstrahierte Muster fremder Beitraege. Traegt keinen fremden Text und kein fremdes Bild, und ist ein Faktor - kein Veroeffentlichungsrecht."
+    },
+    "combinedButNotMerged": true,
+    "weights": {
+      "audienceInterest": 0.14,
+      "externalInterest": "NOT_APPLIED"
+    }
+  },
   "publishes": false,
   "slateSize": 29,
   "ranked": [
@@ -27,49 +183,108 @@
         "asOf": null,
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Eine Ausgabe kann mehrere Social Stories tragen."
+        "note": "Eine Ausgabe kann mehrere Social Stories tragen.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 88,
-      "rawScore": 88,
+      "score": 76,
+      "rawScore": 76,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.361,
+      "coverage": 0.475,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": false,
+          "value": null,
+          "reason": "Zeitpunkt des Anlasses unbekannt."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "freshness",
           "label": "Aktualitaet des Anlasses",
-          "reason": "Zeitpunkt des Anlasses unbekannt."
+          "reason": "Zeitpunkt des Anlasses unbekannt.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -88,11 +303,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -100,8 +315,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 88 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
+      "explanation": "Opportunity Score 76 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_magazine_story:none:magazin-02",
@@ -162,49 +386,108 @@
         "asOf": null,
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Kein Klarname zu \"xpeng\" bekannt - das Audience-Tor wird das im Einstieg beanstanden."
+        "note": "Kein Klarname zu \"xpeng\" bekannt - das Audience-Tor wird das im Einstieg beanstanden.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 88,
-      "rawScore": 88,
+      "score": 76,
+      "rawScore": 76,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.361,
+      "coverage": 0.475,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": false,
+          "value": null,
+          "reason": "Zeitpunkt des Anlasses unbekannt."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "freshness",
           "label": "Aktualitaet des Anlasses",
-          "reason": "Zeitpunkt des Anlasses unbekannt."
+          "reason": "Zeitpunkt des Anlasses unbekannt.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -223,11 +506,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -235,8 +518,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 88 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
+      "explanation": "Opportunity Score 76 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_report_story:stock:xpeng:report-xpeng",
@@ -302,49 +594,108 @@
         "asOf": null,
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Eine Ausgabe kann mehrere Social Stories tragen."
+        "note": "Eine Ausgabe kann mehrere Social Stories tragen.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 87,
-      "rawScore": 87,
+      "score": 75,
+      "rawScore": 75,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.361,
+      "coverage": 0.475,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": false,
+          "value": null,
+          "reason": "Zeitpunkt des Anlasses unbekannt."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.84,
+          "reason": "Markenpassung: 84 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "freshness",
           "label": "Aktualitaet des Anlasses",
-          "reason": "Zeitpunkt des Anlasses unbekannt."
+          "reason": "Zeitpunkt des Anlasses unbekannt.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -363,11 +714,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.05039999999999999,
-          "value": 0.84,
-          "reason": "Markenpassung: 84 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -375,8 +726,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 87 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
+      "explanation": "Opportunity Score 75 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt ueber der Schwelle fuer autonomes Handeln. Ungemessen blieb: , , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_magazine_story:none:magazin-01",
@@ -448,38 +808,95 @@
         "asOf": "2026-09-11T00:00:00Z",
         "signalStrength": 0.76,
         "availability": "AVAILABLE",
-        "note": "Technical Opportunity Score 76, Quelle vu.technical."
+        "note": "Technical Opportunity Score 76, Quelle vu.technical.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": "MARKET_SIGNAL",
-      "score": 66,
-      "rawScore": 66,
+      "score": 62,
+      "rawScore": 62,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.46,
+      "coverage": 0.537,
       "notApplicable": [
         "editorialBasis"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": true,
+          "value": 0.76,
+          "reason": "internes VU-Signal: 76 %"
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -510,8 +927,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 66 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
+      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: internes VU-Signal: 76 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_stock_story:stock:exxon-mobil-corporation:quant-technical_setup-xom",
@@ -736,44 +1162,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -792,11 +1276,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -804,8 +1288,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:adobe:banco-santander:deere-company:hp-inc:honda-motor:merck-co:microsoft:newmont:salesforce:valero-energy:bekannte-namen",
@@ -989,44 +1482,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -1045,11 +1596,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -1057,8 +1608,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:american-tower:capital-one-financial:charter-communications-class-a:crown-castle:extra-space-storage:futu-holdings:glacier-bancorp:hartford-financial-services-group:sba-communications-class-a:wise-group:cashflow-maschinen",
@@ -1252,44 +1812,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -1308,11 +1926,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -1320,8 +1938,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:aveanna-healthcare-holdings:inspire-medical-systems:lifestance-health-group:pagerduty:quinstreet:ringcentral-class-a:utz-brands-class-a:viomi-technology-co:vistance-networks:yext-inc:fundamentale-turnarounds",
@@ -1525,44 +2152,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -1581,11 +2266,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -1593,8 +2278,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:aar-corp:bxp-inc-:equipmentshare-com-class-a:ftai-aviation-class-a:gilead-sciences:incyte:kite-realty-group-trust:organogenesis-holdings-class-a:vicor:xunlei:gewinne-beschleunigen",
@@ -1818,44 +2512,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -1874,11 +2626,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -1886,8 +2638,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:agree-realty:arista-networks:enersys:kinsale-capital-group:l3harris-technologies:meta-platforms-class-a:nvidia:super-micro-computer:timken:trade-desk-class-a:langfristige-compounder",
@@ -2071,44 +2832,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -2127,11 +2946,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -2139,8 +2958,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:anaptysbio:atara-biotherapeutics:bakkt-holdings-class-a:century-therapeutics:charter-communications-class-a:crown-castle:nebius-group-class-a:stoke-therapeutics:studio-city-international-holdings:teladoc-health:margen-werden-staerker",
@@ -2368,44 +3196,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -2424,11 +3310,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -2436,8 +3322,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:delek-us-holdings:dell-technologies-class-c:frontline:international-seaways:lifestance-health-group:marinemax:nordic-american-tankers:okeanis-eco-tankers:pyxis-tankers:teekay-tankers-class-a:market-leaders",
@@ -2665,44 +3560,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -2721,11 +3674,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -2733,8 +3686,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:cypherpunk-technologies:eton-pharmaceuticals:eurodry:frontline:grayscale-investments:hyperliquid-strategies:moderna:okeanis-eco-tankers:omeros:pyxis-tankers:momentum-leaders",
@@ -2962,44 +3924,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -3018,11 +4038,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -3030,8 +4050,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:affinity-bancshares:babcock-wilcox-enterprises:bio-rad-laboratories-class-b:first-financial-northwest:first-us-bancshares:gulf-island-fabrication:oxford-lane-capital:starbox-group-holdings:sterling-bancorp:utz-brands-class-a:new-52-week-highs",
@@ -3255,44 +4284,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -3311,11 +4398,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -3323,8 +4410,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:astera-labs:atour-lifestyle-holdings:beone-medicines:credo-technology-group-holding:hims-hers-health-class-a:hippo-holdings:nvidia:sezzle:tss-inc:transmedics-group:profitables-wachstum",
@@ -3538,44 +4634,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -3594,11 +4748,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -3606,8 +4760,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:astera-labs:atlanticus-holdings:atlanticus-holdings:atlanticus-holdings:credo-technology-group-holding:nvidia:nebius-group-class-a:sezzle:transmedics-group:zevra-therapeutics:qualitaet-wachstum",
@@ -3791,44 +4954,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -3847,11 +5068,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -3859,8 +5080,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:affiliated-managers-group:affiliated-managers-group:affiliated-managers-group:affiliated-managers-group:athene-holding:brc-group-holdings:doubledown-interactive-co:sunlands-technology-group:vistance-networks:wise-group:qualitaet-zum-preis",
@@ -4088,44 +5318,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -4144,11 +5432,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -4156,8 +5444,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:cypherpunk-technologies:eton-pharmaceuticals:eurodry:frontline:grayscale-investments:hyperliquid-strategies:mega-fortune-company:moderna:okeanis-eco-tankers:pyxis-tankers:relative-strength",
@@ -4391,44 +5688,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -4447,11 +5802,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -4459,8 +5814,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:acacia-research:atour-lifestyle-holdings:axsome-therapeutics:beone-medicines:immersion:meridian-holdings:nvidia:super-micro-computer:tss-inc:terawulf:starke-bilanz-wachstum",
@@ -4688,44 +6052,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 24 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"ki\" -> MEGATREND."
+        "note": "Reihe mit 24 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"ki\" -> MEGATREND.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -4744,11 +6166,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -4756,8 +6178,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:advanced-micro-devices:analog-devices:apple:cisco-systems:intel:micron-technology:microsoft:nvidia:salesforce:skyworks-solutions:thema-ki",
@@ -4985,44 +6416,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 16 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"mobilitaet\" -> MEGATREND."
+        "note": "Reihe mit 16 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"mobilitaet\" -> MEGATREND.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -5041,11 +6530,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -5053,8 +6542,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:cummins:ford-motor:general-motors:genuine-parts:harley-davidson:honda-motor:paccar:polaris:standard-motor-products:toyota-motor:thema-mobilitaet",
@@ -5282,44 +6780,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 17 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"robotik\" -> MEGATREND."
+        "note": "Reihe mit 17 Titeln, Stand 2026-09-11. Form aus den Daten: theme=\"robotik\" -> MEGATREND.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -5338,11 +6894,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -5350,8 +6906,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_megatrend:stock:ametek:caterpillar:cognex:deere-company:eaton-corporation:emerson-electric:hurco-companies:idex:johnson-controls-international:parker-hannifin:thema-robotik",
@@ -5579,44 +7144,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -5635,11 +7258,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -5647,8 +7270,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:accelio:cal-redwood-acquisition:gelesis-holdings-class-a:kochav-defense-acquisition-class-a:lakeshore-acquisition-iii:pantages-capital-acquisition-corp-cl-a-ord-shs:reckoner-leveraged-aaa-clo-etf:runway-growth-finance:thayer-ventures-acquisition-corporation-ii:wintergreen-acquisition:trend-quality",
@@ -5882,44 +7514,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -5938,11 +7628,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -5950,8 +7640,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:delek-us-holdings:dell-technologies-class-c:frontline:international-seaways:lifestance-health-group:marinemax:nordic-american-tankers:okeanis-eco-tankers:pyxis-tankers:teekay-tankers-class-a:ueberraschungen",
@@ -6165,44 +7864,102 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
-      "score": 64,
-      "rawScore": 64,
+      "score": 60,
+      "rawScore": 60,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -6221,11 +7978,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "brandFit",
-          "label": "Passung zum Markenregister",
-          "contribution": 0.054,
-          "value": 0.9,
-          "reason": "Markenpassung: 90 %"
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -6233,8 +7990,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 64 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
+      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_ranking:stock:anaptysbio:bakkt-holdings-class-a:century-therapeutics:community-healthcare-trust:homestolife:immersion:lotus-technology:nebius-group-class-a:sezzle:studio-city-international-holdings:umsatz-waechst-stark",
@@ -6317,38 +8083,95 @@
         "asOf": "2026-09-11T00:00:00Z",
         "signalStrength": 0.653,
         "availability": "AVAILABLE",
-        "note": "Technical Opportunity Score 65.3, Quelle vu.technical."
+        "note": "Technical Opportunity Score 65.3, Quelle vu.technical.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": "MARKET_SIGNAL",
-      "score": 60,
-      "rawScore": 60,
+      "score": 58,
+      "rawScore": 58,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.46,
+      "coverage": 0.537,
       "notApplicable": [
         "editorialBasis"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": true,
+          "value": 0.653,
+          "reason": "internes VU-Signal: 65 %"
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -6379,8 +8202,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 60 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
+      "explanation": "Opportunity Score 58 von 100. Wichtigster Grund: internes VU-Signal: 65 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_stock_story:stock:apple-inc-:quant-technical_setup-aapl",
@@ -6454,38 +8286,95 @@
         "asOf": "2026-09-11T00:00:00Z",
         "signalStrength": 0.633,
         "availability": "AVAILABLE",
-        "note": "Technical Opportunity Score 63.3, Quelle vu.technical."
+        "note": "Technical Opportunity Score 63.3, Quelle vu.technical.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": "MARKET_SIGNAL",
-      "score": 59,
-      "rawScore": 59,
+      "score": 57,
+      "rawScore": 57,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.46,
+      "coverage": 0.537,
       "notApplicable": [
         "editorialBasis"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": true,
+          "value": 0.633,
+          "reason": "internes VU-Signal: 63 %"
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -6516,8 +8405,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 59 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
+      "explanation": "Opportunity Score 57 von 100. Wichtigster Grund: internes VU-Signal: 63 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_stock_story:stock:jpmorgan-chase-co-:quant-technical_setup-jpm",
@@ -6591,38 +8489,95 @@
         "asOf": "2026-09-11T00:00:00Z",
         "signalStrength": 0.606,
         "availability": "AVAILABLE",
-        "note": "Technical Opportunity Score 60.6, Quelle vu.technical."
+        "note": "Technical Opportunity Score 60.6, Quelle vu.technical.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": "MARKET_SIGNAL",
-      "score": 58,
-      "rawScore": 58,
+      "score": 56,
+      "rawScore": 56,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.46,
+      "coverage": 0.537,
       "notApplicable": [
         "editorialBasis"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": true,
+          "value": 0.606,
+          "reason": "internes VU-Signal: 61 %"
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0.9,
+          "reason": "Markenpassung: 90 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -6653,8 +8608,17 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
-      "explanation": "Opportunity Score 58 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
+      "explanation": "Opportunity Score 56 von 100. Wichtigster Grund: internes VU-Signal: 61 % Dazu: vorhandene redaktionelle Grundlage: 80 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: , , , .",
       "predictsPerformance": false,
       "audienceFrame": {
         "topicId": "topic_stock_story:stock:microsoft-corporation:quant-technical_setup-msft",
@@ -6873,7 +8837,8 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
@@ -6881,36 +8846,93 @@
       "rawScore": 49,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0,
+          "reason": "Markenpassung: 0 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -6929,11 +8951,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "freshness",
-          "label": "Aktualitaet des Anlasses",
-          "contribution": 0.00024709434490797973,
-          "value": 0.0024709434490797974,
-          "reason": "Der Anlass liegt 208 h zurueck."
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -6941,6 +8963,15 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
       "explanation": "Opportunity Score 49 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
@@ -7176,7 +9207,8 @@
         "asOf": "2026-09-11",
         "signalStrength": null,
         "availability": "AVAILABLE",
-        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
+        "note": "Reihe mit 30 Titeln, Stand 2026-09-11. Form aus den Daten: zahlenmaessiger Filter -> RANKING.",
+        "observedHashtags": []
       },
       "kind": "CONTENT_OPPORTUNITY",
       "derivedFrom": null,
@@ -7184,36 +9216,93 @@
       "rawScore": 49,
       "available": true,
       "state": "VERIFIED",
-      "coverage": 0.5,
+      "coverage": 0.6,
       "notApplicable": [
         "trend",
         "vuSignal"
       ],
+      "components": {
+        "trend": {
+          "available": false,
+          "value": null,
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+        },
+        "vuSignal": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer internes VU-Signal."
+        },
+        "editorialBasis": {
+          "available": true,
+          "value": 0.8,
+          "reason": "vorhandene redaktionelle Grundlage: 80 %"
+        },
+        "audienceInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Publikumsinteresse."
+        },
+        "externalInterest": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer externe Aufmerksamkeit."
+        },
+        "historicalPerformance": {
+          "available": true,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
+        },
+        "platformFit": {
+          "available": false,
+          "value": null,
+          "reason": "Keine Messung fuer Plattformpassung."
+        },
+        "freshness": {
+          "available": true,
+          "value": 0.0014787260769748632,
+          "reason": "Der Anlass liegt 226 h zurueck."
+        },
+        "contentGap": {
+          "available": true,
+          "value": 1,
+          "reason": "Luecke im eigenen Bestand: 100 %"
+        },
+        "brandFit": {
+          "available": true,
+          "value": 0,
+          "reason": "Markenpassung: 0 %"
+        }
+      },
       "missing": [
         {
           "dimension": "trend",
           "label": "externer Trend",
-          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten."
+          "reason": "Kein Trend Score vorhanden — die Trend-Engine hat sich enthalten.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "vuSignal",
           "label": "eigenes Vision-Universe-Signal",
-          "reason": "Keine Messung fuer internes VU-Signal."
+          "reason": "Keine Messung fuer internes VU-Signal.",
+          "cause": "UNMEASURED"
         },
         {
           "dimension": "audienceInterest",
           "label": "Interesse des eigenen Publikums",
-          "reason": "Keine Messung fuer Publikumsinteresse."
+          "reason": "Keine Messung fuer Publikumsinteresse.",
+          "cause": "SYSTEMICALLY_UNAVAILABLE"
         },
         {
-          "dimension": "historicalPerformance",
-          "label": "Leistung vergleichbarer Beitraege",
-          "reason": "Keine Leistungsdaten vergleichbarer Beitraege."
+          "dimension": "externalInterest",
+          "label": "externe Aufmerksamkeit fuer das Thema",
+          "reason": "Keine Messung fuer externe Aufmerksamkeit.",
+          "cause": "NOT_ACTIVATED"
         },
         {
           "dimension": "platformFit",
           "label": "Passung zur Plattform",
-          "reason": "Keine Messung fuer Plattformpassung."
+          "reason": "Keine Messung fuer Plattformpassung.",
+          "cause": "UNMEASURED"
         }
       ],
       "drivers": [
@@ -7232,11 +9321,11 @@
           "reason": "Luecke im eigenen Bestand: 100 %"
         },
         {
-          "dimension": "freshness",
-          "label": "Aktualitaet des Anlasses",
-          "contribution": 0.00024709434490797973,
-          "value": 0.0024709434490797974,
-          "reason": "Der Anlass liegt 208 h zurueck."
+          "dimension": "historicalPerformance",
+          "label": "Leistung vergleichbarer Beitraege",
+          "contribution": 0.05907272727272727,
+          "value": 0.49227272727272725,
+          "reason": "Vergleichbare Beitraege (n=22) liegen bei 49 % der Zielleistung."
         }
       ],
       "saturation": {
@@ -7244,6 +9333,15 @@
         "measured": false,
         "explanation": "Keiner der 25 Eintraege in der Historie traegt eine Content Family - Saettigung ist nicht messbar, nicht null."
       },
+      "externalInterest": {
+        "available": false,
+        "value": null,
+        "state": "NOT_ACTIVE",
+        "activationRequired": true,
+        "carriesWeight": false,
+        "explanation": "externalInterest ist NOT_ACTIVE: 2 zustaendige Quelle(n), keine davon eingeschaltet. Das ist keine Messung mit dem Ergebnis null, sondern die Abwesenheit einer Quelle - und sie zieht nichts ab."
+      },
+      "externalIntelligenceState": "NOT_ACTIVE",
       "saturationPenalty": 0,
       "explanation": "Opportunity Score 49 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 80 % Dazu: Luecke im eigenen Bestand: 100 % Das liegt unter der Vorschlagsschwelle von 55; die Gelegenheit wird nicht vorgeschlagen. Ungemessen blieb: , , , , .",
       "predictsPerformance": false,
@@ -7307,16 +9405,7 @@
   "unavailableDimensions": [
     {
       "dimension": "audienceInterest",
-      "reason": "Keine Publikumsdaten - es wurde noch nichts veroeffentlicht."
-    },
-    {
-      "dimension": "historicalPerformance",
-      "reason": "Keine Leistungsdaten - dieselbe Ursache."
-    },
-    {
-      "dimension": "platformFit",
-      "code": "PLATFORM_FIT_INTELLIGENCE_UNAVAILABLE",
-      "reason": "Keine gemessenen Beitraege (0 Messungen im Repository). Welches Format bei diesem Publikum traegt, ist damit ungemessen - das ist KEINE Aussage ueber die Meta-Verbindung (Status von hier aus: UNKNOWN_FROM_THIS_RUN)."
+      "reason": "Gemessen ist, wie BEITRAEGE liefen - nicht, ob das Publikum nach einem THEMA fragt. Diese Frage beantwortet keine Reichweitenzahl."
     }
   ],
   "predictsPerformance": false

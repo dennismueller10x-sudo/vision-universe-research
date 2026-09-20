@@ -179,3 +179,87 @@ test("DR10 · Externes Interesse fehlt systemisch, nicht als Luecke des Themas",
       b.topic.topicId + ": die Frage stellt sich, sie ist nur unbeantwortet");
   }
 });
+
+/* ============================== §13: der Lauf aus den aktiven Quellen */
+
+test("DR11 · Der Lauf laeuft ohne jede externe Quelle vollstaendig durch", () => {
+  /* Der Kern der Entscheidung: 0..N Sensoren, nicht 1..N
+     Abhaengigkeiten. Kein Sensor aktiv - und trotzdem eine Rangfolge. */
+  assert.equal(R.externalIntelligence, "NO_ACTIVE_EXTERNAL_SOURCE");
+  assert.ok(R.ranked.length > 0, "Ohne externe Quelle entsteht trotzdem eine Rangfolge");
+  assert.ok(R.families && Object.keys(R.families).length >= 3,
+    "Und sie ist breit, nicht auf Quant zurueckgefallen");
+});
+
+test("DR12 · Jede ruhende Quelle wird benannt, nicht verschwiegen", () => {
+  assert.ok(R.externalSources.length >= 2);
+  for (const q of R.externalSources) {
+    assert.equal(q.state, "NOT_ACTIVATED_BY_OWNER", q.id);
+    assert.equal(q.dormant, true, q.id);
+    assert.ok(q.reason && q.reason.length > 10, q.id);
+  }
+});
+
+test("DR13 · Own Performance erscheint je Lerndimension samt Abdeckung", () => {
+  const op = R.ownPerformanceEvidence;
+  assert.equal(op.dimensions.length, 12);
+  for (const d of op.dimensions) {
+    assert.equal(typeof d.coverage, "number");
+    assert.equal(typeof d.evaluable, "boolean");
+  }
+  /* Und die Auswertung ist keine Prognose. */
+  assert.equal(op.predictsPerformance, false);
+});
+
+test("DR14 · Warum Beitraege ohne Messwert sind, steht da", () => {
+  /* "3 ungemessen" ist eine Zahl ohne Aussage. Der Unterschied
+     zwischen "nicht veroeffentlicht" und "keine belastbare Basis"
+     gehoert in den Bericht. */
+  const gruende = R.ownPerformanceEvidence.unmeasuredReasons || [];
+  if (gruende.length) {
+    for (const g of gruende) {
+      assert.ok(g.reason && g.reason.length > 5);
+      assert.ok(g.count > 0);
+    }
+  }
+});
+
+test("DR15 · Explore/Exploit hat genau eine Antwort", () => {
+  /* Zwei Rechnungen fuer dieselbe Frage waeren eine zu viel: die
+     Saettigung beantwortet, ob eine FAMILIE ueberrepraesentiert ist -
+     der Modus, ob ein Muster belastbar ist. */
+  assert.ok(["EXPLORE_ONLY", "MIXED"].includes(R.exploreExploit.mode));
+  if (R.exploreExploit.mode === "EXPLORE_ONLY") {
+    assert.deepEqual(R.exploreExploit.exploit, []);
+  }
+});
+
+test("DR16 · Jede Top-Gelegenheit traegt die verlangten Felder", () => {
+  for (const b of R.ranked.slice(0, 3)) {
+    const t = b.topic;
+    assert.ok(t.title || t.topicId);
+    assert.ok(t.family, "Content Family");
+    assert.ok(t.entityType, "Entity Type");
+    assert.ok(Array.isArray(t.sources) && t.sources.length, "Source");
+    assert.ok(b.audienceFrame && b.audienceFrame.targetAudience, "Audience Framing");
+    assert.ok(b.audienceFrame.suggestedHookStrategy, "Hook Strategy");
+    assert.ok(b.audienceFrame.suggestedVisualStrategy, "Visual Strategy");
+    assert.ok(b.evidenceCoverage, "Evidence Coverage");
+    assert.ok(Array.isArray(b.drivers), "Opportunity Factors");
+    assert.ok(b.components, "Own Performance Evidence je Thema");
+    assert.ok(Array.isArray(b.missing), "UNAVAILABLE Dimensions");
+    assert.equal(b.predictsPerformance, false);
+  }
+});
+
+test("DR17 · Die Treiber nennen ihren Grund", () => {
+  /* Abgefragt wurde einmal `explanation`; die Treiber tragen `reason`.
+     Heraus kam eine Zeile mit Doppelpunkt und nichts dahinter - ein
+     Faktor, der aussieht, als haette er keinen Grund. */
+  for (const b of R.ranked.slice(0, 3)) {
+    for (const d of b.drivers) {
+      assert.ok(d.reason && d.reason.length > 3,
+        b.topic.topicId + "/" + d.dimension + " ohne Grund");
+    }
+  }
+});
