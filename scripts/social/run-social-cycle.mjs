@@ -50,6 +50,7 @@ const Opportunity  = require(join(ROOT, "social/engines/opportunity.js"));
 const Strategy     = require(join(ROOT, "social/engines/strategy.js"));
 const Content      = require(join(ROOT, "social/engines/content.js"));
 const VisualComposition = require(join(ROOT, "social/engines/visual-composition.js"));
+const VisualIntelligence = require(join(ROOT, "social/engines/visual-intelligence.js"));
 const Memory       = require(join(ROOT, "social/engines/memory.js"));
 const Fatigue      = require(join(ROOT, "social/engines/fatigue.js"));
 const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
@@ -1795,6 +1796,16 @@ async function main() {
      erfunden und nicht aus einem Objekt zusammengestueckelt - der erste
      Versuch schrieb "Quelle: [object Object]" unter ein sonst fertiges
      Bild. */
+  /* Die Aussage, die das Bild in einer Sekunde macht. Sie entsteht aus
+     der Komposition, wenn es eine gibt - erfunden wird sie nicht. */
+  function kompoAussage(lage, pkg) {
+    if (!lage || !lage.composition) return null;
+    try {
+      const k = VisualComposition.compose(pkg.visualType, lage.composition);
+      return k && k.ok ? VisualComposition.aussage(k, lage.symbol) : null;
+    } catch { return null; }
+  }
+
   function quelleAus(lage) {
     if (!lage || !lage.series || !lage.series.source) return null;
     return lage.series.asOf
@@ -1830,9 +1841,50 @@ async function main() {
        kein externer Lauf, kein Binaertransport, und fuer jedes Objekt
        ein anderes Bild.
        ----------------------------------------------------------------- */
+    /* -----------------------------------------------------------------
+       CREATIVE DIRECTION VOR DER ERZEUGUNG
+
+       visual-intelligence.js lag bisher neben dem Graphen und nicht
+       darin: die Engine war gebaut, geprueft - und niemand rief sie
+       auf. Ein Tor, das nicht im Weg steht, ist kein Tor.
+
+       Sie gehoert VOR die Erzeugung, weil das ihre ganze These ist:
+       generische Bildsprache entsteht nicht, weil ein Modell schlecht
+       waere, sondern weil niemand gesagt hat, was das Bild zeigen
+       soll. Wer "Technologie" bestellt, bekommt Neonwuerfel.
+
+       Die Richtung wird hier aus dem bestehenden Paket abgeleitet -
+       nicht erfunden. Was das Paket nicht hergibt, bleibt leer, und
+       `ready()` sagt dann, dass es keine Richtung ist, sondern eine
+       Bestellung. Das ist ein Befund ueber unsere Vorarbeit und kein
+       Urteil ueber das Bild.
+
+       Sie blockiert den Lauf NICHT: der Komposition-Weg zeichnet aus
+       echten Daten und braucht keine Bildidee. Erst wenn ein Provider
+       ein Motiv frei erfindet, ist eine unvollstaendige Richtung ein
+       echtes Risiko - und dann steht sie hier bereits mit Namen. */
     const lage = bildDatenlage[pkg.topic] || null;
+
+    const richtung = VisualIntelligence.direction({
+      topicId: pkg.topicId || pkg.packageId,
+      visualStrategy: pkg.visualType || null,
+      coreIdea: pkg.visualIdea || null,
+      oneSecondMessage: lage && kompoAussage(lage, pkg) ? kompoAussage(lage, pkg) : null,
+      mainSubject: (pkg.entities && pkg.entities[0]) || pkg.topic || null,
+      storyCarried: pkg.claim || pkg.hook || null,
+      mobileFocalPoint: pkg.visualFocalPoint || null
+    });
+    const richtungBereit = VisualIntelligence.ready(richtung);
+
     const kompo = (!mitgebracht && lage)
       ? VisualComposition.compose(pkg.visualType, lage.composition) : null;
+
+    /* Die Richtung reist mit dem Paket - sonst waere sie eine
+       Zwischenrechnung, die nur in diesem Lauf existiert, und das
+       Lernen koennte nie fragen, welche Bildidee getragen hat. */
+    pkg.visualDirection = richtung;
+    pkg.visualDirectionReady = richtungBereit.ok;
+    pkg.visualDirectionMissing = richtungBereit.missing;
 
     const bildplan = mitgebracht
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
@@ -1953,7 +2005,22 @@ async function main() {
       archetype: p.result.package.archetype, visualType: p.result.package.visualType,
       hook: p.result.package.hook,
       /* Wer geschrieben hat, welches Muster gewann und wogegen. */
-      authoring: p.authoring || null
+      authoring: p.authoring || null,
+      /* -----------------------------------------------------------------
+         DIE BILDRICHTUNG GEHOERT IN DEN BERICHT
+
+         Sie wurde im Frachtlauf berechnet und an das Paket geheftet -
+         und dann von dieser Projektion verschluckt, weil sie eine
+         Whitelist ist. Dieselbe Falle hat schon `performanceRegime`,
+         `editorialCorrection` und die Freigabefelder erwischt.
+
+         Eine Whitelist ist eine gute Verteidigung und ein schlechtes
+         Gedaechtnis. Ohne diese drei Zeilen laesst sich spaeter nicht
+         fragen, welche Bildidee getragen hat - die Richtung existierte
+         nur waehrend des Laufs. */
+      visualDirection: p.result.package.visualDirection || null,
+      visualDirectionReady: p.result.package.visualDirectionReady === true,
+      visualDirectionMissing: p.result.package.visualDirectionMissing || []
     })),
     rejections,
     published: published.map((p) => ({
