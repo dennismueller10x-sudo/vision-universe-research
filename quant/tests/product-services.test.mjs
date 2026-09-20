@@ -7,6 +7,24 @@ const technicalSource=JSON.parse(await readFile(new URL('quant/data/technical/in
 test('approved universe and stock use existing real data; chart history is preserved',async()=>{const u=await api.getUniverse();assert.equal(u.stocks.length,5);assert.equal(u.totalMarketState,'UNAVAILABLE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
 test('out-of-scope ticker cannot trigger raw data read',async()=>{const before=reads.length;const s=await api.getStockIntelligence('TSLA');assert.equal(s.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.equal(s.identityState,'AVAILABLE');assert.ok(reads.slice(before).every(p=>p.startsWith('/quant/data/universe/')));});
 test('Discover/screener executes canonical Query AST on the scoped real set',async()=>{const q=Query.createQuery({filters:[{field:'momentum6m',operator:'gte',value:999,scale:'raw'}]});const result=await api.screen(q);assert.equal(result.eligible,5);assert.deepEqual(result.stocks,[]);assert.ok(result.queryHash);assert.equal(result.predicateHash,Rules.predicateHash(Rules.fromQuery(q)));});
+test('canonical Screener consumes the existing real Technical and Elliott snapshot index',async()=>{
+ const score=Query.createQuery({filters:[{field:'technicalOpportunityScore',operator:'gte',value:65,scale:'raw'}],sort:[{field:'technicalOpportunityScore',direction:'desc'}]});
+ const scored=await api.screen(score);assert.equal(scored.state,'AVAILABLE');assert.deepEqual(scored.stocks.map(s=>s.ticker),['AAPL','NVDA']);assert.equal(scored.predicateHash,Rules.predicateHash(Rules.fromQuery(score)));assert.ok(scored.stocks.every(s=>s.technicalOpportunityScore.asOf==='2026-09-17'));
+ const elliott=await api.screen(Query.createQuery({filters:[{field:'elliottCountStatus',operator:'eq',value:'LOW_CONFIDENCE',scale:'raw'}],sort:[{field:'technicalOpportunityScore',direction:'desc'}]}));
+ assert.deepEqual(elliott.stocks.map(s=>s.ticker),['MSFT']);assert.equal(elliott.stocks[0].elliottCountStatus.isProbability,false);assert.equal(elliott.stocks[0].elliottCountStatus.unit,'method_fit');
+});
+test('Technical rule rows fail closed on mock, future, identity and methodology drift without breaking ordinary screens',async()=>{
+ for(const mutate of [
+  (p,x)=>{if(p.endsWith('/technical/index.json'))x.instruments.find(r=>r.instrumentId==='NVDA').isMock=true;},
+  (p,x)=>{if(p.endsWith('/technical/index.json'))x.instruments.find(r=>r.instrumentId==='NVDA').asOf='2099-01-01';},
+  (p,x)=>{if(p.endsWith('/technical/index.json'))x.instruments.find(r=>r.instrumentId==='NVDA').name='MSFT';},
+  (p,x)=>{if(p.endsWith('/technical/meta.json'))x.methodologyVersions.technical='unknown';}
+ ]){
+  const guarded=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));mutate(p,x);return x;},displayPolicy:Policy,queryEngine:Query});
+  const technical=await guarded.screen(Query.createQuery({filters:[{field:'technicalOpportunityScore',operator:'gte',value:0,scale:'raw'}],sort:[{field:'technicalOpportunityScore',direction:'desc'}]}));
+  assert.equal(technical.reason,'SOURCE_OR_QUERY_UNAVAILABLE');assert.equal((await guarded.screen(Query.createQuery({}))).state,'AVAILABLE');
+ }
+});
 test('source failures yield typed unavailability, never synthetic fallback',async()=>{const bad=Service.create({loadJSON:async()=>{throw Error('unreachable')},displayPolicy:Policy,queryEngine:Query});assert.equal((await bad.getUniverse()).state,'UNAVAILABLE');assert.equal((await bad.getStockIntelligence('NVDA')).reason,'SOURCE_MISSING');});
 test('future and mock panel rows are rejected before stock and screener consumption',async()=>{
  for(const mutation of [s=>{s.marketData.asOf='2099-01-01';s.fundamentals.price=999;},s=>{s.provenance.isMock=true;}]){

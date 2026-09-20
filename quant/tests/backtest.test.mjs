@@ -249,6 +249,19 @@ test("Provider-Faehigkeiten sind fail-closed und keine Engine-Konstanten", () =>
   }), /NEXT_OPEN_PRICE_EVIDENCE_REQUIRED/);
 });
 
+test("Current-Snapshot Technical- und Elliott-Regeln sind nicht historisch backtestbar", () => {
+  for (const filter of [
+    { field: "technicalOpportunityScore", operator: "gte", value: 60, scale: "raw" },
+    { field: "technicalTrend", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS", scale: "raw" }
+  ]) {
+    const definition = Strategy.createDefinition({ filters: [filter], execution: { timing: "next_close" } });
+    assert.throws(() => Backtest.runBacktest({ definition, startDate: "2025-01-02", endDate: "2026-09-04", provider, dataSnapshotId: dataset.meta.dataSnapshotId }),
+      (error) => error.code === "RULE_METRIC_NOT_BACKTEST_CERTIFIED" && error.fields.includes(filter.field));
+    assert.throws(() => Backtest.currentHoldings({ definition, provider, dataSnapshotId: dataset.meta.dataSnapshotId }), /RULE_METRIC_NOT_BACKTEST_CERTIFIED/);
+  }
+});
+
 test("Ein Startdatum vor dem Datenbestand wird abgelehnt statt verschoben", () => {
   assert.throws(() => Backtest.runBacktest({
     definition: qualityMomentum.versions[0].definition,

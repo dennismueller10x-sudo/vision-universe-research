@@ -35,6 +35,7 @@
   var QuantScore = isNode ? require("./quant-score.js") : global.VUQuantScore;
   var Query = isNode ? require("./query.js") : global.VUQuery;
   var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
+  var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
   var Strategy = isNode ? require("./strategy.js") : global.VUStrategy;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
@@ -52,6 +53,19 @@
     "pointInTimeFundamentals", "delistedSecurities", "originalVsRestated",
     "corporateActions", "historicalUniverse"
   ];
+
+  function assertBacktestRuleEligibility(definition) {
+    var blocked = definition.filters.map(function (filter) { return Catalog.field(filter.field); })
+      .filter(function (field) { return field && field.backtestEligibility === "NOT_CERTIFIED"; })
+      .map(function (field) { return field.id; });
+    if (blocked.length) {
+      var error = new Error("RULE_METRIC_NOT_BACKTEST_CERTIFIED: " + blocked.join(", "));
+      error.code = "RULE_METRIC_NOT_BACKTEST_CERTIFIED";
+      error.fields = blocked;
+      throw error;
+    }
+    return definition;
+  }
 
   function providerBacktestEvidence(provider) {
     var declared = provider && provider.backtestEvidence;
@@ -438,6 +452,7 @@
    */
   function runBacktest(options) {
     var definition = Strategy.assertValid(options.definition);
+    assertBacktestRuleEligibility(definition);
     var btCfg = Methodology.backtest();
     var provider = options.provider;
     var providerEvidence = providerBacktestEvidence(provider);
@@ -830,6 +845,7 @@
    */
   function currentHoldings(options) {
     var definition = Strategy.assertValid(options.definition);
+    assertBacktestRuleEligibility(definition);
     var provider = options.provider;
     var pricePanel = provider.getPricePanel({}).data;
     var asOf = options.asOf || pricePanel.tradingDays[pricePanel.tradingDays.length - 1];
@@ -897,6 +913,7 @@
     INITIAL_CAPITAL: INITIAL_CAPITAL,
     rebalanceIndices: rebalanceIndices,
     executionPrice: executionPrice,
+    assertBacktestRuleEligibility: assertBacktestRuleEligibility,
     providerBacktestEvidence: providerBacktestEvidence,
     targetWeights: targetWeights,
     computeMetrics: computeMetrics,

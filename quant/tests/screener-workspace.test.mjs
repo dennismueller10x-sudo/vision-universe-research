@@ -6,3 +6,12 @@ test('combined growth and momentum rules execute through the existing query engi
 test('saved criteria preserve normalized query hash and results without embedding data',()=>{const query=Editor.build([{field:'price',operator:'lt',value:300,scale:'raw'}]);const saved=Editor.encode(query),restored=Editor.decode(saved);assert.equal(Query.queryHash(restored),Query.queryHash(query));assert.deepEqual(Query.execute(restored,rows).rows,Query.execute(query,rows).rows);assert.equal(JSON.parse(saved).rows,undefined);});
 test('unsupported and oversized saved queries fail rather than widening an intended screen',()=>{assert.throws(()=>Editor.decode('x'.repeat(24001)));assert.throws(()=>Editor.decode('{bad'));assert.throws(()=>Editor.decode(JSON.stringify(Query.createQuery({filters:[{field:'quantScore',operator:'gte',value:90}],sort:[{field:'quantScore',direction:'desc'}]}))));assert.throws(()=>Editor.build([{field:'revenueGrowth',operator:'gte',value:NaN,scale:'raw'}]));});
 test('editable presentation does not change canonical rule identity',()=>{const a=Editor.build([{field:'price',operator:'lt',value:300,scale:'raw'}],[{field:'price',direction:'asc'}]),b=Query.createQuery({...a,sort:[{field:'price',direction:'desc'}],limit:5});assert.notEqual(Query.queryHash(a),Query.queryHash(b));assert.equal(Rules.predicateHash(Editor.predicate(a)),Rules.predicateHash(Editor.predicate(b)));});
+test('current Technical and Elliott fields are canonical but explicitly not backtest certified',()=>{
+ const score=Editor.fields.find(f=>f.id==='technicalOpportunityScore'),elliott=Editor.fields.find(f=>f.id==='elliottCountStatus');
+ assert.equal(score.availability,'CURRENT_SNAPSHOT_ONLY');assert.equal(score.backtestEligibility,'NOT_CERTIFIED');assert.equal(score.type,'number');
+ assert.equal(elliott.type,'enum');assert.deepEqual(elliott.operatorIds,['eq','ne']);assert.equal(elliott.isProbability,false);
+ assert.ok(Editor.sortableFields.every(field=>field.type==='number'));assert.ok(!Editor.sortableFields.some(field=>field.id==='elliottCountStatus'));
+ assert.equal(Editor.build([{field:'elliottCountStatus',operator:'eq',value:'AMBIGUOUS',scale:'raw'}]).sort[0].field,'momentum6m');
+ const query=Editor.build([{field:'elliottCountStatus',operator:'eq',value:'AMBIGUOUS',scale:'raw'}],[{field:'technicalOpportunityScore',direction:'desc'}]);
+ assert.equal(Editor.decode(Editor.encode(query)).filters[0].value,'AMBIGUOUS');assert.equal(Rules.predicateHash(Editor.predicate(query)),Rules.predicateHash(Rules.fromQuery(query)));
+});
