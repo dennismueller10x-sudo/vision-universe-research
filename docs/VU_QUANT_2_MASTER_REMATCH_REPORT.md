@@ -193,6 +193,8 @@ Classic `/quant/ranking/`, `/quant/screener/`, `/quant/radar/`, `/quant/backtest
 
 Discovery-Regression-Smoke: reale Seite gerendert, `33 von 5951`, keine Page-Origin-Errors, keine Mutation.
 
+Der Smoke widerlegt keine bereits vorhandene Datenanomalie: Das aktuelle gemeinsame Full-Universe-Factor-Artefakt erzeugt für `MINE` ein 12M-Momentum von 2.969.999; das daraus gebaute Discovery-Stock-Artefakt zeigt sichtbar `+296999900 %`. Das ist ein Fehler des gemeinsamen Datenproduzenten bzw. der verlorenen Ranking-Hygiene, **kein** Auftrag, Discovery-Code oder -UX zu ändern. Die Reparatur benötigt ein Discovery-Regressionsgate.
+
 ## 9. PR #125 / Deploy Gate Closure
 
 PR #125 ist vollständig abgeschlossen:
@@ -236,7 +238,7 @@ Spätere Daten-/Social-/Orchestrator-Commits bis `1a192f92` ändern dieses begre
 
 1. **Methodik-Lock:** Owner-Entscheidung V1 versus versioniertes Quant V2; Revisionsdaten bleiben bis Zertifizierung inaktiv.
 2. **Capability- und Product-Row-Contract:** einen Quant-eigenen materialisierten, zeitgestempelten Product-Row-Layer aus Company Master, bestehender SEC-Consumer-/PIT-Pipeline und bestehenden Market-Factor-Artefakten definieren. Keine neue Source of Truth.
-3. **Ranking-Hygiene-Gate:** die auf einem alten PR88-Branch verbliebene Quarantäne für unplausible Marktwerte semantisch rekonstruieren und gegen aktuelle Daten testen. Das heutige Full-Universe-Artefakt führt `MINE` mit einem offenkundig unplausiblen 12M-Momentum von 2.969.999; reale Rankings dürfen vorher nicht aktiviert werden.
+3. **Ranking-Hygiene-Gate:** die auf einem alten PR88-Branch verbliebene Quarantäne für unplausible Marktwerte semantisch rekonstruieren und gegen aktuelle Daten testen. Das heutige Full-Universe-Artefakt führt `MINE` mit einem offenkundig unplausiblen 12M-Momentum von 2.969.999 und speist daraus bereits einen sichtbaren Discovery-Wert von `+296999900 %`. Der gemeinsame Producer wird fail-closed repariert; Discovery selbst bleibt unverändert und wird regressionsgeprüft. Reale Rankings dürfen vorher nicht aktiviert werden.
 4. **Breadth Integration:** VU2 Product Services vom expliziten Five-Scope auf Capability-gesteuerte 6.875er Identität und abgestufte Feature-Verfügbarkeit umstellen.
 5. **Realer Quant Panel:** peer-fähige Factor Rows, Coverage und Methodikversion materialisieren; erst dann Score, DNA und Ranking freigeben.
 6. **SetupState Contract + Stock Journey:** gemeinsame Rules, Why Now, Entry, Invalidation, Exit, Risiko und Horizont als Hauptjourney integrieren.
