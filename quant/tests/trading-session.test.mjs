@@ -144,12 +144,37 @@ test("IS3 · Abgeschlossen ist unveraenderlich, laufend waechst nur", () => {
     bars: [bar("2026-09-11T13:30:00Z", 100), bar("2026-09-11T13:35:00Z", 101), bar("2026-09-11T13:40:00Z", 102),
            bar("2026-09-11T13:45:00Z", 103)] });
   assert.equal(Snap.merge(alt, mehr).reason, "grown");
+  /* NACH SCHLUSS GEHOLT IST NICHT DASSELBE WIE VOLLSTAENDIG
+     Owner-Regel vom 19.09.2026: `regularComplete = now >= close` ist
+     verboten. Diese Reihe endet um 09:45 New York - sie wurde nach
+     Schluss geholt, deckt aber den letzten Slot (15:55) nicht ab. Sie
+     ist damit unveraenderlich, aber NICHT vollstaendig; ein Etikett
+     darf hier keinen Schluss um 16:00 behaupten. */
   const fertig = Snap.build({ security: SEC, session: SESSION, now: "2026-09-12T01:00:00Z", permission: PERM,
     bars: mehr.points.map((p, i) => bar("2026-09-11T13:" + (30 + i * 5) + ":00Z", p[1])) });
-  assert.equal(fertig.regularComplete, true);
+  assert.equal(fertig.fetchedAfterClose, true, "nach Schluss geholt");
+  assert.equal(fertig.coversFinalSlot, false, "deckt 15:55 nicht ab");
+  assert.equal(fertig.regularComplete, false, "also nicht vollstaendig");
+  assert.equal(fertig.lastRegularLocal, "09:45");
+  assert.equal(fertig.finalSlotLocal, "15:55");
   assert.equal(fertig.isComplete, true);
+  /* Unveraenderlich bleibt es trotzdem - es kann nichts mehr kommen. */
   assert.equal(Snap.merge(fertig, mehr).reason, "immutable");
   assert.equal(Snap.merge(fertig, mehr).chosen, fertig);
+
+  /* Die Gegenprobe: eine Reihe, die den letzten Slot WIRKLICH erreicht,
+     ist vollstaendig. Ohne sie wuerde der Test nur beweisen, dass
+     regularComplete nie true wird. */
+  const bisSchluss = [];
+  for (let m = 13 * 60 + 30; m <= 19 * 60 + 55; m += 5) {
+    bisSchluss.push(bar("2026-09-11T" + String(Math.floor(m / 60)).padStart(2, "0") + ":" +
+                        String(m % 60).padStart(2, "0") + ":00Z", 100 + (m % 7)));
+  }
+  const voll = Snap.build({ security: SEC, session: SESSION, now: "2026-09-12T01:00:00Z",
+                            permission: PERM, bars: bisSchluss });
+  assert.equal(voll.lastRegularLocal, "15:55");
+  assert.equal(voll.coversFinalSlot, true);
+  assert.equal(voll.regularComplete, true, "bis zum letzten Slot = vollstaendig");
   const naechste = Object.assign({}, mehr, { sessionDate: "2026-09-14" });
   assert.equal(Snap.merge(fertig, naechste).reason, "newSession");
 });
@@ -163,4 +188,20 @@ test("IS4 · validate lehnt Punkte ausserhalb der Sitzung, Unordnung und fehlend
   assert.equal(Snap.validate(Object.assign({}, ok, { publishBasis: null })).ok, false);
   assert.equal(Snap.validate(Object.assign({}, ok, { dataMode: "mock" })).ok, false);
   assert.equal(Snap.cacheKey("ref_AAPL", "2026-09-11", "5min"), "ref_AAPL|2026-09-11|5min");
+});
+
+/* V4.1 §4: ein Zeitplan-Lauf kurz vor der Eroeffnung wartet auf sie. */
+test("TS-W1 · 09:27 NY am Handelstag: der Lauf wartet bis eine Minute nach 09:30", () => {
+  const x = r("2026-09-16T13:27:00Z");
+  assert.equal(x.marketState, "PRE_MARKET");
+  assert.equal(T.openWaitMs(x, Date.parse("2026-09-16T13:27:00Z"), 7), 4 * 60000);
+});
+test("TS-W2 · 09:15 NY: zu frueh, es wird nicht gewartet", () => {
+  const x = r("2026-09-16T13:15:00Z");
+  assert.equal(T.openWaitMs(x, Date.parse("2026-09-16T13:15:00Z"), 7), 0);
+});
+test("TS-W3 · offene Boerse, Nachboerse und Wochenende warten nie", () => {
+  assert.equal(T.openWaitMs(r("2026-09-16T14:00:00Z"), Date.parse("2026-09-16T14:00:00Z"), 7), 0);
+  assert.equal(T.openWaitMs(r("2026-09-16T21:00:00Z"), Date.parse("2026-09-16T21:00:00Z"), 7), 0);
+  assert.equal(T.openWaitMs(r("2026-09-19T13:27:00Z"), Date.parse("2026-09-19T13:27:00Z"), 7), 0);
 });

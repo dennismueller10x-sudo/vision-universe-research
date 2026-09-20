@@ -1,0 +1,17 @@
+{
+ "schemaVersion": "discover-series-long-index-1.0.0",
+ "generatedAt": "2026-09-19T07:53:41.390Z",
+ "note": "Lange Discover-Kursreihen (Wochenschluss, split-bereinigt) aus der Historienablage. Erzeugt von scripts/market/publish-long-series.mjs; geprueft von assert-public-data-hygiene.mjs.",
+ "grain": "weekly",
+ "range": "MAX",
+ "count": 6308,
+ "pathPattern": "/quant/data/market/discover-series-long/<securityId>.json",
+ "summary": {
+  "requested": 6876,
+  "written": 0,
+  "unchanged": 6308,
+  "missing": 2,
+  "tooShort": 566,
+  "failed": 0
+ }
+}

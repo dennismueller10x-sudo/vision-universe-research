@@ -23,7 +23,19 @@
      --scope=discover   die Titel auf den Discover-Flaechen
                         (discover/data/live-scope/<Universum>.json)
      --scope=universe   das ganze Produktuniversum (nach Handelsschluss)
+     --scope=auto       bei offener Boerse: discover; sonst universe, wenn
+                        die letzte abgeschlossene Sitzung noch nicht fuer
+                        das Universum vorliegt (Nachzug nach einem
+                        ausgefallenen Lauf), andernfalls discover
      --scope=AAPL,MSFT  eine Liste, fuer Nachweise
+
+   Der Vorfall vom 15.09.2026 (Seite zeigte Freitag, Montag war gehandelt)
+   hatte seine Ursache vor diesem Skript: der Zeitplan lief nur auf dem
+   Default-Branch, und dort lag der Workflow noch nicht. Was dieses Skript
+   seither garantiert: der Nachzug (--scope=auto), eine Aufbewahrung, die
+   die juengste Universumssitzung nie loescht, und ein Verzeichnis, das
+   die letzte abgeschlossene Sitzung und die Frische seiner Eintraege
+   nennt (freshness.js) - der Health-Check (check-freshness.mjs) liest sie.
 
    Kein Punkt entsteht hier. Kein Abruf ohne Gate (ENABLE_LIVE_MARKET_DATA),
    keine Veroeffentlichung ohne Grundlage in der Anzeigerichtlinie. Der
@@ -55,6 +67,8 @@ const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const TradingSession = require(join(engines, "realtime", "trading-session.js"));
 const Snapshot = require(join(engines, "realtime", "intraday-snapshot.js"));
+const Freshness = require(join(engines, "realtime", "freshness.js"));
+const IntradayScope = require(join(engines, "realtime", "intraday-scope.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
 
 const CALENDAR = JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8"));
@@ -62,7 +76,13 @@ const GATE_CONFIG = JSON.parse(readFileSync(join(root, "quant", "config", "featu
 const config = loadPreviewConfig(root);
 const INTRADAY = config.intraday || {};
 const DRY_RUN = flag("--dry-run");
-const SCOPE = arg("--scope", "discover");
+let SCOPE = arg("--scope", "discover");
+const SCOPE_ARG = SCOPE;
+/* Ab welchem Anteil des Umfangs gilt eine Sitzung als "fuer das Universum
+   geholt"? Rund ein Viertel der Titel liefert keine regulaeren Bars
+   (noRegularBars) und bekommt keinen Snapshot; 50 % ist deshalb die
+   Grenze zwischen "Universumslauf war da" und "nur Discover-Umfang". */
+const UNIVERSE_COVERAGE = 0.5;
 const UNIVERSE_ID = arg("--universe", "US_REAL");
 const SESSION_ARG = arg("--session", "auto");
 const INTERVAL = arg("--interval", INTRADAY.interval || "5min");
@@ -71,7 +91,9 @@ const MAX_REQUESTS = parseInt(arg("--max-requests", String(INTRADAY.maxRequestsP
 const CONCURRENCY = parseInt(arg("--concurrency", "4"), 10);
 const REFRESH_MINUTES = INTRADAY.refreshMinutes || 10;
 const RETENTION = INTRADAY.retentionSessions || 2;
-const NOW = arg("--now", null) ? new Date(arg("--now")) : new Date();
+let NOW = arg("--now", null) ? new Date(arg("--now")) : new Date();
+/* V4.1 §4: ein Zeitplan-Lauf kurz vor 09:30 wartet auf die Eroeffnung. */
+const OPEN_WAIT_MINUTES = 7;
 
 export const INTRADAY_DIR = join("quant", "data", "market", "intraday");
 const OUT_DIR = join(root, INTRADAY_DIR);
@@ -100,7 +122,22 @@ const oeffentlich = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intr
 console.log(`  Veroeffentlichung: ${oeffentlich.allowed ? "freigegeben - " + oeffentlich.basis : "NICHT freigegeben (" + oeffentlich.message + ")"}`);
 
 /* ---------------------------------------------------------- Sitzung */
-const lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+let lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+/* Der Zeitplan trifft die Eroeffnung nie genau. Ein automatischer Lauf,
+   der wenige Minuten vor 09:30 New York startet, holte bisher den Vortag
+   und hielt den naechsten Lauf auf (Vorfall 16.09.2026: Lauf 13:27 UTC ->
+   Dienstag, erster Lauf der laufenden Sitzung erst 13:43 UTC). Jetzt
+   wartet er bis eine Minute nach der Eroeffnung und holt die laufende
+   Sitzung. Mit --now (Tests) wird nie gewartet. */
+if (SCOPE === "auto" && SESSION_ARG === "auto" && !arg("--now", null)) {
+  const warten = TradingSession.openWaitMs(lage, NOW.getTime(), OPEN_WAIT_MINUTES);
+  if (warten > 0) {
+    console.log(`  Eroeffnung in ${Math.round((warten - 60000) / 60000)} min (${lage.nextOpen}) - der Lauf wartet ${Math.round(warten / 1000)} s, um die laufende Sitzung zu holen.`);
+    await new Promise((r) => setTimeout(r, warten));
+    NOW = new Date();
+    lage = TradingSession.resolve(NOW, { calendar: CALENDAR });
+  }
+}
 const session = SESSION_ARG === "auto" ? lage.displaySession : TradingSession.sessionFor(SESSION_ARG, { calendar: CALENDAR });
 if (!session) { console.error("  Keine Sitzung bestimmbar."); process.exit(1); }
 console.log(`  Jetzt: ${lage.now} = ${lage.localDate} ${lage.localTime} New York · ${lage.marketState}`);
@@ -113,6 +150,70 @@ if (session.kind === "current" && !session.hasStarted) {
 
 /* ------------------------------------------------------------ Umfang */
 const byTicker = new Map(resolvedScope.securities.map((s) => [s.ticker, s]));
+function sessionCoverage(date) {
+  const dir = join(OUT_DIR, date);
+  if (!existsSync(dir)) return 0;
+  return readdirSync(dir).filter((n) => n.endsWith(".json")).length / Math.max(1, resolvedScope.securities.length);
+}
+/* Wer zuerst bedient wird, wenn die Glocke laeutet.
+ *
+ * Der Vorfall vom 18.09.2026: um 16:02 New York - zwei Minuten nach
+ * Schluss - entschied dieser Block "universe", weil erst 519 von 6.876
+ * Dateien der Sitzung vorlagen (7,5 %). Der Lauf brauchte siebzig
+ * Minuten, und die Concurrency-Gruppe stellte jeden Fuenf-Minuten-Lauf
+ * dahinter in die Warteschlange. Ergebnis: die 519 Titel, die auf
+ * Discover ueberhaupt sichtbar sind, bekamen ihren Schlussstand als
+ * LETZTE - bis etwa 17:15. Der Eigentuemer sah um 16:08 auf der
+ * Nebius-Seite "Stand 15:50 - Schluss folgt" und hatte recht.
+ *
+ * Eine Prioritaetsumkehr: Wartungsarbeit am Gesamtuniversum ging vor
+ * der Frische dessen, was ein Mensch anschauen kann.
+ *
+ * Die Reihenfolge ist jetzt festgelegt: erst den sichtbaren Umfang bis
+ * zum Sitzungsabschluss bringen (fuenf Minuten), dann das Universum.
+ * Erst wenn der Discover-Umfang versiegelt ist, darf ein Lauf die
+ * grosse Runde drehen. Owner-Entscheidung vom 19.09.2026:
+ * "User-facing freshness hat Vorrang vor Universe Maintenance." */
+function discoverTicker() {
+  /* Dieselbe Liste, die der Discover-Zweig unten nimmt - eine Quelle,
+     nicht zwei. Fehlt sie, gibt es nichts zu versiegeln. */
+  const file = join(root, "discover", "data", "live-scope", UNIVERSE_ID + ".json");
+  if (!existsSync(file)) return [];
+  try {
+    const ls = JSON.parse(readFileSync(file, "utf8"));
+    return (ls.symbols || []).filter((t) => byTicker.has(t));
+  } catch (e) { return []; }
+}
+function sichereDatei(pfad) {
+  if (!existsSync(pfad)) return null;
+  try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (e) { return null; }
+}
+function discoverVersiegelt(date) {
+  const dir = join(OUT_DIR, date);
+  if (!existsSync(dir)) return { versiegelt: false, fertig: 0, gesamt: 0 };
+  let fertig = 0, gesamt = 0;
+  for (const ticker of discoverTicker()) {
+    const s = sichereDatei(join(dir, "ref_" + ticker + ".json"));
+    gesamt++;
+    if (s && s.regularComplete) fertig++;
+  }
+  return { versiegelt: gesamt > 0 && fertig === gesamt, fertig, gesamt };
+}
+if (SCOPE === "auto") {
+  const siegel = lage.marketState === "OPEN" ? { versiegelt: true, fertig: 0, gesamt: 0 }
+                                             : discoverVersiegelt(session.sessionDate);
+  const deckung = sessionCoverage(session.sessionDate);
+  /* Die Regel steht in quant/engines/realtime/intraday-scope.js, damit
+     sie geprueft werden kann und nicht als Kommentar verdunstet. */
+  const wahl = IntradayScope.waehleUmfang({
+    marketState: lage.marketState, discoverSealed: siegel.versiegelt,
+    universeCoverage: deckung, universeThreshold: UNIVERSE_COVERAGE
+  });
+  SCOPE = wahl.scope;
+  console.log(`  Umfang auto: ${wahl.reason} -> ${SCOPE}` +
+              (lage.marketState === "OPEN" ? ""
+                : ` (Discover-Siegel ${siegel.fertig}/${siegel.gesamt}, Universum ${(deckung * 100).toFixed(0)} %)`));
+}
 let symbole;
 let scopeLabel = SCOPE;
 if (SCOPE === "universe") {
@@ -123,8 +224,7 @@ if (SCOPE === "universe") {
     console.error(`  ABBRUCH: ${file.replace(root + "/", "")} fehlt. Der Discover-Build schreibt die Titel der Flaechen dorthin.`);
     process.exit(1);
   }
-  const ls = JSON.parse(readFileSync(file, "utf8"));
-  symbole = (ls.symbols || []).filter((t) => byTicker.has(t));
+  symbole = discoverTicker();
   scopeLabel = "discover (" + file.replace(root + "/", "") + ")";
 } else {
   symbole = SCOPE.split(",").map((t) => t.trim().toUpperCase()).filter(Boolean);
@@ -274,6 +374,13 @@ if (abbruch === "budget") { for (const t of warteschlange) perSymbol[t] = { ok: 
 if (!DRY_RUN && existsSync(OUT_DIR)) {
   const sitzungen = readdirSync(OUT_DIR).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n)).sort();
   const behalten = sitzungen.slice(-RETENTION);
+  /* Die juengste Sitzung, die fuer das ganze Universum vorliegt, bleibt -
+     auch wenn zwei neuere Sitzungen nur den Discover-Umfang tragen. Sonst
+     verloere jede Aktienseite ausserhalb der Flaechen ihr 1T, bis der
+     naechste Universumslauf kommt. */
+  const universumsSitzungen = sitzungen.filter((d) => sessionCoverage(d) >= UNIVERSE_COVERAGE);
+  const juengsteUniversum = universumsSitzungen[universumsSitzungen.length - 1];
+  if (juengsteUniversum && !behalten.includes(juengsteUniversum)) behalten.push(juengsteUniversum);
   for (const alt of sitzungen) {
     if (behalten.includes(alt)) continue;
     rmSync(join(OUT_DIR, alt), { recursive: true, force: true });
@@ -331,8 +438,36 @@ function writeIndex() {
     sessions[date] = { count: dateien.length, regularComplete: complete };
     available[date].sort();
   }
+  /* Frische je Eintrag (Discover-Umfang) und der Datenstand des ganzen
+     Verzeichnisses: die juengste Sitzung mit Snapshots, ihr spaetester
+     Stand, und ob sie fuer das Universum vorliegt. Der Client (Statuszeile)
+     und der Health-Check lesen das, statt es zu erraten. */
+  const befunde = Object.keys(entries).map((sym) => {
+    const e = entries[sym];
+    return Freshness.assess({ resolution: lage, series: { symbol: sym, securityId: e.securityId, sessionDate: e.sessionDate,
+                                                          asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: e.regularComplete },
+                              kind: "intraday", now: NOW, calendar: CALENDAR, options: { refreshMinutes: REFRESH_MINUTES } });
+  });
+  befunde.forEach((b) => { entries[b.symbol].freshnessState = b.freshnessState; });
+  const zusammenfassung = Freshness.summarize(befunde);
+  const universeSessions = sitzungen.filter((d) => sessionCoverage(d) >= UNIVERSE_COVERAGE);
+  const neueste = sitzungen[sitzungen.length - 1] || null;
+  let dataSession = null;
+  if (neueste) {
+    let asOfMax = null, asOfLocalMax = null, komplett = 0, gesamt = 0;
+    for (const name of readdirSync(join(OUT_DIR, neueste)).filter((n) => n.endsWith(".json"))) {
+      let snap; try { snap = JSON.parse(readFileSync(join(OUT_DIR, neueste, name), "utf8")); } catch (e) { continue; }
+      gesamt++;
+      if (snap.regularComplete) komplett++;
+      if (snap.asOf && (!asOfMax || snap.asOf > asOfMax)) { asOfMax = snap.asOf; asOfLocalMax = snap.asOfLocal; }
+    }
+    dataSession = { sessionDate: neueste, asOf: asOfMax, asOfLocal: asOfLocalMax,
+                    regularComplete: gesamt > 0 && komplett === gesamt, snapshots: gesamt,
+                    universe: universeSessions.includes(neueste) };
+  }
+  const last = lage.lastCompletedSession;
   const index = {
-    schemaVersion: "intraday-index-1.0.0",
+    schemaVersion: "intraday-index-1.1.0",
     generatedAt: new Date().toISOString(),
     provider: "tiingo", venue: "IEX", interval: INTERVAL,
     refreshMinutes: REFRESH_MINUTES,
@@ -340,6 +475,13 @@ function writeIndex() {
     localTimeAtRun: lage.localDate + " " + lage.localTime,
     displaySession: { sessionDate: session.sessionDate, kind: session.kind || "explicit",
                       isRunning: !!session.isRunning, isComplete: !!session.isComplete },
+    lastCompletedSession: last ? { sessionDate: last.sessionDate, close: last.close, closeLocal: last.closeLocal } : null,
+    dataSession,
+    universeSessions,
+    universeCoverageThreshold: UNIVERSE_COVERAGE,
+    freshness: { contractVersion: Freshness.CONTRACT_VERSION, checkedAt: new Date(NOW).toISOString(),
+                 byState: zusammenfassung.byState, byReason: zusammenfassung.byReason,
+                 stale: zusammenfassung.stale.slice(0, 50) },
     sessions,
     pathPattern: "/" + INTRADAY_DIR + "/<sessionDate>/<securityId>.json",
     idPattern: "ref_<symbol>",
@@ -347,8 +489,9 @@ function writeIndex() {
     entryCount: Object.keys(entries).length,
     entries,
     available,
-    note: "Verzeichnis der Intraday-Snapshots. entries: Discover-Umfang, je Titel die juengste Sitzung mit Stand. " +
-          "available: alle Kuerzel mit Snapshot je Sitzung; der Pfad folgt pathPattern + idPattern (idExceptions)."
+    note: "Verzeichnis der Intraday-Snapshots. entries: Discover-Umfang, je Titel die juengste Sitzung mit Stand und Frische " +
+          "(freshness.js). available: alle Kuerzel mit Snapshot je Sitzung; der Pfad folgt pathPattern + idPattern (idExceptions). " +
+          "dataSession: die juengste Sitzung mit Snapshots; lastCompletedSession: was zum Zeitpunkt des Laufs gelten muesste."
   };
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(join(OUT_DIR, "index.json"), JSON.stringify(index));
@@ -360,7 +503,7 @@ function writeStatus(extra) {
   const quota = provider ? provider.quota() : null;
   const status = Object.assign({
     generatedAt: new Date().toISOString(), provider: "tiingo", interval: INTERVAL, extendedHours: EXTENDED,
-    scope: scopeLabel, universeId: UNIVERSE_ID,
+    scope: scopeLabel, scopeArg: SCOPE_ARG, universeId: UNIVERSE_ID,
     session: { sessionDate: session.sessionDate, kind: session.kind || "explicit", isRunning: !!session.isRunning,
                isComplete: !!session.isComplete, earlyClose: !!session.earlyClose },
     marketStateAtRun: lage.marketState, localTimeAtRun: lage.localDate + " " + lage.localTime,

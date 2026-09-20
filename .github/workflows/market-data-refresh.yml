@@ -78,6 +78,15 @@ jobs:
       - name: Universumsquelle
         run: node scripts/market/universe-source.mjs
 
+      # Vor dem Abruf: wer steht im Ablehnungsregister und warum noch? Der
+      # Bericht laeuft auch dann, wenn nichts zu tun ist - ein leeres
+      # Register ist eine Aussage, kein Schweigen.
+      - name: Ablehnungsregister klassifizieren (Bericht)
+        run: node scripts/market/classify-rejections.mjs
+
+      - name: Faellige Ablehnungen freigeben (nur was die Ordnung erlaubt)
+        run: node scripts/market/classify-rejections.mjs --apply
+
       - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -109,6 +118,21 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/assert-no-secrets.mjs
 
+      - name: Freshness-Check (Health-Bericht, kein Abbruch)
+        run: node scripts/market/check-freshness.mjs
+
+      # Der Waechter aus dem Vorfall vom 18.09.2026: ein Lauf, der den
+      # ueberwiegenden Teil des Universums nicht einmal gefragt hat, ist
+      # nicht gruen - auch wenn kein Schritt rot war.
+      - name: Taeglicher Lebenszyklus - Gesundheitsurteil
+        run: node scripts/market/assert-daily-lifecycle-health.mjs --strict
+
+      # NACH dem Waechter, nicht davor: er schreibt selbst ein
+      # ausgeliefertes Artefakt (daily-lifecycle-health.json). Stand die
+      # Hygienepruefung davor, sah sie es nie - gefunden hat den Verstoss
+      # dann erst die Regressionssuite, nach 66 Minuten Abruf (Lauf
+      # 35349647216). Eine Pruefung, die die juengsten Artefakte des
+      # eigenen Laufs auslaesst, prueft die Haelfte.
       - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
         run: node scripts/market/assert-public-data-hygiene.mjs
 
@@ -137,19 +161,44 @@ jobs:
           key: discover-market-cache-${{ github.run_id }}
 
       - name: Commit und Push
+        # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
+        # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
+        # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um
+        # main (Lauf 35351616026). Siebzig Minuten Abruf duerfen nicht an
+        # einer Sekunde scheitern.
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/golden-preview quant/data/market/discover-series \
-                  quant/data/market/factors quant/data/market/tiingo-status.json \
-                  quant/data/technical quant/data/sec/quant-factor-inputs.json discover/data \
-                  quant/data/market/capabilities
+          # Jeden Pfad einzeln und nur, wenn es ihn gibt. `git add` bricht
+          # bei einem unbekannten Pfad mit exit 128 ab und reisst den
+          # ganzen Schritt mit: Lauf 35366297664 war vollstaendig gruen -
+          # Abruf, Folgeketten, Waechter, Hygiene, Regressionssuite - und
+          # hat trotzdem nichts veroeffentlicht, weil eine der genannten
+          # Dateien in diesem Lauf nicht entstanden war. Ein fehlendes
+          # Berichtsartefakt ist kein Grund, siebzig Minuten Kursdaten
+          # wegzuwerfen.
+          for pfad in quant/data/market/golden-preview \
+                      quant/data/market/discover-series \
+                      quant/data/market/factors \
+                      quant/data/market/tiingo-status.json \
+                      quant/data/technical \
+                      quant/data/sec/quant-factor-inputs.json \
+                      discover/data \
+                      quant/data/market/capabilities \
+                      quant/data/market/freshness \
+                      quant/data/market/commercial/rejection-ledger.json \
+                      quant/data/market/commercial/daily-lifecycle-health.json; do
+            if [ -e "$pfad" ]; then
+              git add "$pfad"
+            else
+              echo "Nicht vorhanden, wird uebersprungen: $pfad"
+            fi
+          done
           if git diff --cached --quiet; then
             echo "Keine Aenderung an veroeffentlichten Marktdaten."
           else
             git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
-            git pull --rebase
-            git push
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung

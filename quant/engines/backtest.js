@@ -34,6 +34,7 @@
   var Factors = isNode ? require("./factors.js") : global.VUFactors;
   var QuantScore = isNode ? require("./quant-score.js") : global.VUQuantScore;
   var Query = isNode ? require("./query.js") : global.VUQuery;
+  var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
   var Strategy = isNode ? require("./strategy.js") : global.VUStrategy;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
@@ -45,6 +46,64 @@
     if (!isNum(v)) return null;
     var f = Math.pow(10, d === undefined ? 4 : d);
     return Math.round(v * f) / f;
+  }
+
+  var PROVIDER_EVIDENCE_KEYS = [
+    "pointInTimeFundamentals", "delistedSecurities", "originalVsRestated",
+    "corporateActions", "historicalUniverse"
+  ];
+
+  function assertBacktestRuleEligibility(definition) {
+    var eligibility = Strategy.backtestEligibility(definition);
+    if (!eligibility.eligible) {
+      var detail = eligibility.blockedFields.length
+        ? eligibility.blockedFields.join(", ") : eligibility.errors.join("; ");
+      var error = new Error(eligibility.code + ": " + detail);
+      error.code = eligibility.code;
+      error.fields = eligibility.blockedFields.slice();
+      error.eligibility = eligibility;
+      throw error;
+    }
+    return definition;
+  }
+
+  function providerBacktestEvidence(provider) {
+    var declared = provider && provider.backtestEvidence;
+    function evidenceCode(value) {
+      return typeof value === "string" && /^[A-Za-z0-9_./:#-]{1,160}$/.test(value) ? value : null;
+    }
+    var result = {
+      schemaVersion: "1.0",
+      source: declared && evidenceCode(declared.source) ? declared.source : "UNDECLARED",
+      pointInTimeFundamentals: false,
+      delistedSecurities: false,
+      originalVsRestated: false,
+      corporateActions: false,
+      historicalUniverse: false,
+      nextOpenPriceMode: "UNAVAILABLE",
+      evidence: {}
+    };
+    if (!declared || declared.schemaVersion !== "1.0" || !evidenceCode(declared.source)) return result;
+    PROVIDER_EVIDENCE_KEYS.forEach(function (key) {
+      var item = declared[key];
+      var code = item && evidenceCode(item.evidence);
+      var verified = !!(item && item.status === "VERIFIED" && code);
+      result[key] = verified;
+      result.evidence[key] = verified ? code : "NOT_VERIFIED";
+    });
+    var open = declared.nextOpenPrice;
+    if (open && open.status === "VERIFIED" && open.sourceField === "adjustedOpen" &&
+        evidenceCode(open.evidence)) {
+      result.nextOpenPriceMode = "OBSERVED_ADJUSTED_OPEN";
+      result.evidence.nextOpenPrice = evidenceCode(open.evidence);
+    } else if (open && open.status === "MODELED" && open.model === "DETERMINISTIC_INTERPOLATION" &&
+               evidenceCode(open.evidence)) {
+      result.nextOpenPriceMode = "MODELED_INTERPOLATION";
+      result.evidence.nextOpenPrice = evidenceCode(open.evidence);
+    } else {
+      result.evidence.nextOpenPrice = "NOT_VERIFIED";
+    }
+    return result;
   }
 
   // ---------------------------------------------------------------------
@@ -84,11 +143,16 @@
    * des Mock-Datensatzes ist eine deterministische Interpolation zwischen
    * Vortagesschluss und Tagesschluss (im Datenmodell dokumentiert).
    */
-  function executionPrice(series, execIndex, timing) {
+  function executionPrice(series, execIndex, timing, nextOpenPriceMode) {
     var adj = series.adjustedClose;
     if (execIndex < series.startIndex || execIndex > series.endIndex) return null;
     if (!adj[execIndex]) return null;
     if (timing === "next_close") return adj[execIndex];
+    if (nextOpenPriceMode === "OBSERVED_ADJUSTED_OPEN") {
+      return series.adjustedOpen && isNum(series.adjustedOpen[execIndex]) && series.adjustedOpen[execIndex] > 0
+        ? series.adjustedOpen[execIndex] : null;
+    }
+    if (nextOpenPriceMode !== "MODELED_INTERPOLATION") return null;
     var prev = execIndex - 1 >= series.startIndex ? adj[execIndex - 1] : adj[execIndex];
     return prev + (adj[execIndex] - prev) * 0.35;
   }
@@ -304,6 +368,7 @@
   function selectCandidates(context, asOf) {
     var provider = context.provider;
     var definition = context.definition;
+    var basePredicate = Strategy.selectionPredicate(definition);
 
     var securities = provider.getSecurities({ asOf: asOf }).data;
     for (var si = 0; si < securities.length; si++) {
@@ -334,8 +399,8 @@
     }
 
     var query = Query.createQuery({
-      universe: definition.universe,
-      filters: definition.filters.concat(constraintFilters),
+      universe: basePredicate.universe,
+      filters: basePredicate.filters.concat(constraintFilters),
       sort: [{ field: "quantScore", direction: "desc" }],
       limit: Query.MAX_LIMIT
     });
@@ -363,6 +428,8 @@
 
     return {
       asOf: asOf,
+      predicateHash: Rules.predicateHash(basePredicate),
+      constraintFilters: constraintFilters,
       universeSize: rows.length,
       screenedCount: screened.matchedCount,
       eligibleCount: ranked.length,
@@ -385,8 +452,13 @@
    */
   function runBacktest(options) {
     var definition = Strategy.assertValid(options.definition);
+    assertBacktestRuleEligibility(definition);
     var btCfg = Methodology.backtest();
     var provider = options.provider;
+    var providerEvidence = providerBacktestEvidence(provider);
+    if (definition.execution.timing === "next_open" && providerEvidence.nextOpenPriceMode === "UNAVAILABLE") {
+      throw new Error("NEXT_OPEN_PRICE_EVIDENCE_REQUIRED");
+    }
 
     var pricePanelRes = provider.getPricePanel({});
     var pricePanel = pricePanelRes.data;
@@ -408,6 +480,7 @@
     var context = {
       provider: provider, definition: definition, pricePanel: pricePanel,
       dataSnapshotId: options.dataSnapshotId || null,
+      backtestEvidence: providerEvidence,
       percentileFields: percentileFieldsOf(definition),
       /* Herkunft der Titel, gefuellt beim ersten Auswahlschritt. Siehe
          universeIsMock(). */
@@ -461,7 +534,8 @@
         var weights = selection.candidates.length ? targetWeights(selection.candidates, definition.portfolio) : {};
 
         var result = rebalanceTo(holdings, weights, selection.candidates, pricePanel, t,
-                                 portfolioValue, cash, costRate, definition.execution.timing, day);
+                                 portfolioValue, cash, costRate, definition.execution.timing, day,
+                                 providerEvidence.nextOpenPriceMode);
         cash = result.cash;
         trades = trades.concat(result.trades);
         turnoverSum += result.turnover;
@@ -469,6 +543,7 @@
 
         rebalanceLog.push({
           decisionDate: decisionDate, executionDate: day,
+          predicateHash: selection.predicateHash,
           universeSize: selection.universeSize, screenedCount: selection.screenedCount,
           eligibleCount: selection.eligibleCount, selected: selection.candidates.length,
           turnover: round(result.turnover * 100, 2),
@@ -528,6 +603,22 @@
     /* Warnungen gehoeren ins Ergebnis, nicht in die Konsole. Die
        Ergebnisseite und der Trust Score muessen sie auswerten koennen. */
     var warnings = [];
+    var missingProviderEvidence = PROVIDER_EVIDENCE_KEYS.filter(function (key) { return !providerEvidence[key]; });
+    if (missingProviderEvidence.length) {
+      warnings.push({
+        code: "unverified_provider_capabilities",
+        severity: "critical",
+        capabilities: missingProviderEvidence,
+        message: "Nicht belegte Provider-Faehigkeiten bleiben im Ergebnis false: " + missingProviderEvidence.join(", ") + "."
+      });
+    }
+    if (providerEvidence.nextOpenPriceMode === "MODELED_INTERPOLATION") {
+      warnings.push({
+        code: "modeled_next_open",
+        severity: "high",
+        message: "Der naechste Eroeffnungskurs ist modelliert und kein beobachteter Ausfuehrungspreis."
+      });
+    }
     if (investedDays === 0) {
       warnings.push({
         code: "never_invested",
@@ -578,11 +669,14 @@
        eine Pruefsumme statt eines Reproduktionsschluessels. */
     var reproductionInput = {
       strategyVersionHash: Strategy.definitionHash(definition),
+      selectionPredicateHash: Rules.predicateHash(Strategy.selectionPredicate(definition)),
+      providerEvidenceHash: Hash.prefixedHash("bte", providerEvidence),
       dataSnapshotId: context.dataSnapshotId,
       engineVersion: btCfg.engineVersion,
       methodologyVersion: btCfg.methodologyVersion,
       quantMethodologyVersion: Methodology.quant().methodologyVersion,
       executionAssumptions: executionAssumptions,
+      providerBacktestEvidence: providerEvidence,
       period: { startDate: equityDates[0], endDate: equityDates[equityDates.length - 1] },
       rebalance: definition.rebalance
     };
@@ -603,18 +697,21 @@
       methodologyVersion: btCfg.methodologyVersion,
       quantMethodologyVersion: Methodology.quant().methodologyVersion,
       dataSnapshotId: context.dataSnapshotId,
+      selectionPredicateHash: reproductionInput.selectionPredicateHash,
       reproductionHash: reproductionHash,
       reproductionInput: reproductionInput,
       executionAssumptions: executionAssumptions,
+      providerBacktestEvidence: providerEvidence,
       createdAt: new Date().toISOString(),
       /* Die Kapabilitaeten sind die Beweisgrundlage des Trust Score — sie
          werden aus dem tatsaechlichen Lauf abgeleitet, nicht behauptet. */
       capabilities: {
-        pointInTimeFundamentals: true,
-        delistedSecurities: true,
-        originalVsRestated: true,
-        corporateActions: true,
-        historicalUniverse: true,
+        pointInTimeFundamentals: providerEvidence.pointInTimeFundamentals,
+        delistedSecurities: providerEvidence.delistedSecurities,
+        originalVsRestated: providerEvidence.originalVsRestated,
+        corporateActions: providerEvidence.corporateActions,
+        historicalUniverse: providerEvidence.historicalUniverse,
+        executionPriceMode: definition.execution.timing === "next_open" ? providerEvidence.nextOpenPriceMode : "OBSERVED_ADJUSTED_CLOSE",
         transactionCostsBps: definition.execution.transactionCostsBps,
         slippageBps: definition.execution.slippageBps,
         liquidityConstraint: definition.portfolio.minDollarVolumeM > 0,
@@ -664,7 +761,7 @@
     return total;
   }
 
-  function rebalanceTo(holdings, weights, candidates, pricePanel, execIdx, portfolioValue, cash, costRate, timing, day) {
+  function rebalanceTo(holdings, weights, candidates, pricePanel, execIdx, portfolioValue, cash, costRate, timing, day, nextOpenPriceMode) {
     var trades = [];
     var traded = 0, costs = 0;
     var bySecurity = Object.create(null);
@@ -674,7 +771,7 @@
     Object.keys(holdings).forEach(function (id) {
       var target = weights[id] || 0;
       var series = pricePanel.series[id];
-      var price = executionPrice(series, execIdx, timing);
+      var price = executionPrice(series, execIdx, timing, nextOpenPriceMode);
       if (!price) return;
       var currentValue = holdings[id].shares * price;
       var targetValue = portfolioValue * target;
@@ -696,7 +793,7 @@
     Object.keys(weights).forEach(function (id) {
       var candidate = bySecurity[id];
       var series = pricePanel.series[id];
-      var price = executionPrice(series, execIdx, timing);
+      var price = executionPrice(series, execIdx, timing, nextOpenPriceMode);
       if (!price) return;
       var currentShares = holdings[id] ? holdings[id].shares : 0;
       var currentValue = currentShares * price;
@@ -748,6 +845,7 @@
    */
   function currentHoldings(options) {
     var definition = Strategy.assertValid(options.definition);
+    assertBacktestRuleEligibility(definition);
     var provider = options.provider;
     var pricePanel = provider.getPricePanel({}).data;
     var asOf = options.asOf || pricePanel.tradingDays[pricePanel.tradingDays.length - 1];
@@ -815,6 +913,8 @@
     INITIAL_CAPITAL: INITIAL_CAPITAL,
     rebalanceIndices: rebalanceIndices,
     executionPrice: executionPrice,
+    assertBacktestRuleEligibility: assertBacktestRuleEligibility,
+    providerBacktestEvidence: providerBacktestEvidence,
     targetWeights: targetWeights,
     computeMetrics: computeMetrics,
     annualReturns: annualReturns,

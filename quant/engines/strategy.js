@@ -20,6 +20,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
   var Query = isNode ? require("./query.js") : global.VUQuery;
+  var Rules = isNode ? require("./rule-contract.js") : global.VURuleContract;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
 
@@ -223,7 +224,45 @@
     return def;
   }
 
+  /**
+   * Rule-definition eligibility only. This does not certify the historical
+   * provider, PIT panel, corporate actions or execution prices. The result is
+   * the shared preflight before any historical worker is created.
+   */
+  function backtestEligibility(def) {
+    var validation = validate(def);
+    if (!validation.valid) {
+      return {
+        eligible: false,
+        code: "INVALID_STRATEGY_DEFINITION",
+        blockedFields: [],
+        errors: validation.errors.slice(),
+        scope: "RULE_DEFINITION_ONLY"
+      };
+    }
+    var seen = Object.create(null);
+    var blocked = def.filters.map(function (filter) { return Catalog.field(filter.field); })
+      .filter(function (field) {
+        if (!field || field.backtestEligibility !== "NOT_CERTIFIED" || seen[field.id]) return false;
+        seen[field.id] = true;
+        return true;
+      })
+      .map(function (field) { return field.id; });
+    return {
+      eligible: blocked.length === 0,
+      code: blocked.length ? "RULE_METRIC_NOT_BACKTEST_CERTIFIED" : "ELIGIBLE",
+      blockedFields: blocked,
+      errors: [],
+      scope: "RULE_DEFINITION_ONLY"
+    };
+  }
+
   function definitionHash(def) { return Hash.prefixedHash("sdef", def); }
+
+  function selectionPredicate(def) {
+    assertValid(def);
+    return Rules.create({ universe: def.universe, filters: def.filters });
+  }
 
   // ---------------------------------------------------------------------
   // Versionierung und Lineage
@@ -385,7 +424,9 @@
     createDefinition: createDefinition,
     validate: validate,
     assertValid: assertValid,
+    backtestEligibility: backtestEligibility,
     definitionHash: definitionHash,
+    selectionPredicate: selectionPredicate,
     createStrategy: createStrategy,
     addVersion: addVersion,
     getVersion: getVersion,

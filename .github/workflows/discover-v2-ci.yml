@@ -1,0 +1,61 @@
+name: Discover 2.0 Preview Quality Gates
+on:
+  pull_request:
+    paths: ['discover-v2/**', 'scripts/discover-v2/**', 'assets/site-navigation.js', '.github/workflows/discover-v2-ci.yml']
+  push:
+    branches: [main]
+    paths: ['discover-v2/**', 'scripts/discover-v2/**', 'assets/site-navigation.js', '.github/workflows/discover-v2-ci.yml']
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Optional deployed origin for production smoke; empty uses local release'
+        type: string
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: discover-v2-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Canonical and Discover 1.0 preservation
+        run: node scripts/discover-v2/regression-gate.mjs
+      - name: Existing contract and navigation tests
+        run: node --test discover/tests/*.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Browser quality dependencies
+        run: |
+          npm install --prefix /tmp/discover-v2-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          node /tmp/discover-v2-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-v2-release"
+      - name: Browser, accessibility, performance and screenshot gates
+        env:
+          NODE_PATH: /tmp/discover-v2-qa-deps/node_modules
+          SITE: ${{ inputs.site }}
+        run: |
+          mkdir -p /tmp/discover-v2-evidence
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/discover-v2-release" > /tmp/discover-v2-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover-v2/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover-v2/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-v2-evidence || chromium_status=$?
+          node scripts/discover-v2/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-v2-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshot and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-v2-browser-evidence
+          path: /tmp/discover-v2-evidence
+          if-no-files-found: warn

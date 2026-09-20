@@ -92,6 +92,33 @@ if (existsSync(seriesDir)) {
   }
 }
 
+/* Lange Discover-Reihen (Wochenschluss, 5J/Max): derselbe Umfang, dieselbe
+   Grundlage wie die Tagesreihen - und nur Wochenpunkte [Datum, Schluss],
+   keine OHLC, kein Volumen. */
+const longDir = join(root, "quant", "data", "market", "discover-series-long");
+if (existsSync(longDir)) {
+  let longScope = new Set();
+  try {
+    longScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series-long/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(longDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series-long", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !longScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) findings.push(`quant/data/market/discover-series-long/${name}: published without a stated basis`);
+    if (payload.grain !== "weekly") findings.push(`quant/data/market/discover-series-long/${name}: grain ${payload.grain} statt weekly`);
+    if (payload.points.some((p) => !Array.isArray(p) || p.length !== 2)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: points are not [date, close] pairs`);
+    }
+  }
+}
+
 /* Intraday-Snapshots (5-Minuten-Verlaeufe je Sitzung): derselbe Umfang,
    dieselbe Grundlage. Ein Snapshot fuer einen Titel ausserhalb des
    Umfangs oder ohne Grundlage ist ein Leck. Und: kein Punkt ausserhalb

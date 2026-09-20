@@ -40,7 +40,16 @@ test("Ohne Speicher funktioniert alles - nur ohne Gedaechtnis", () => {
   const kaputt = { getItem: () => { throw new Error("gesperrt"); }, setItem: () => { throw new Error("gesperrt"); }, removeItem: () => {} };
   const m = M.create(kaputt);
   assert.doesNotThrow(() => m.recordView("A", {}));
-  assert.deepEqual(m.recent(), [{ symbol: "A", universeId: "US_REAL", companyName: null, world: null, at: m.recent()[0].at }]);
+  assert.deepEqual(m.recent(), [{ symbol: "A", universeId: "US_REAL", companyName: null, world: null, sector: null, at: m.recent()[0].at }]);
+});
+
+test("V4.1: der Sektor einer angesehenen Aktie wird gemerkt - fuer die lokale Neigung im Feed", () => {
+  const m = M.create(fakeStorage());
+  m.recordView("AAPL", { universeId: "US_REAL", companyName: "Apple", world: "tech", sector: "Technology" });
+  m.recordView("XOM", { universeId: "US_REAL" });
+  const r = m.recent("US_REAL");
+  assert.equal(r[1].sector, "Technology");
+  assert.equal(r[0].sector, null);
 });
 
 test("Bevorzugte Sammlungen und Position", () => {

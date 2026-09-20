@@ -1,18 +1,18 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-15T04:55:35.412Z",
+  "generatedAt": "2026-09-18T22:25:21.228Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
-    "generatedAt": "2026-09-14T16:39:33.755Z",
+    "generatedAt": "2026-09-15T05:31:39.019Z",
     "total": 7803,
     "productUniverse": 6875
   },
   "sources": {
-    "ingestStatus": "2026-09-13T21:04:18.454Z",
-    "factors": "2026-09-13T21:04:31.031Z",
-    "intradaySession": "2026-09-11",
-    "discover": "2026-09-15T04:51:47.921Z"
+    "ingestStatus": "2026-09-18T19:52:59.915Z",
+    "factors": "2026-09-18T19:53:18.308Z",
+    "intradaySession": "2026-09-18",
+    "discover": "2026-09-18T19:55:40.568Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -21,38 +21,39 @@
     "tiingoResolved": 6875,
     "tiingoUnresolved": 0,
     "marketDataFetched": 6874,
-    "historicalAvailable": 5613,
-    "historicalQualityAccepted": 6510,
-    "intradayAvailable": 5177,
-    "liveCapable": 446,
-    "factorEligible": 6397,
+    "historicalAvailable": 5622,
+    "historicalQualityAccepted": 6508,
+    "intradayAvailable": 5199,
+    "liveCapable": 515,
+    "factorEligible": 6401,
     "fundamentals": 5376,
     "fundamentals10y": 2154,
     "fundamentals5y": 3170,
     "fundamentalsTtm": 5041,
-    "discoverEligible": 5856,
-    "stockPages": 5947,
+    "discoverEligible": 5863,
+    "stockPages": 5951,
     "namesMissing": 20,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 4731,
-    "NO_IEX_BARS": 1698,
+    "NOT_IN_LIVE_SCOPE": 4684,
+    "NO_INTRADAY_SNAPSHOT": 1672,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
-    "NO_STOCK_PAGE": 928,
-    "INSUFFICIENT_HISTORY": 822,
-    "NO_DISCOVER_CARD": 472,
+    "NO_STOCK_PAGE": 924,
+    "INSUFFICIENT_HISTORY": 819,
+    "NO_DISCOVER_CARD": 468,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 441,
-    "NO_FACTOR_ROW:SOURCE_MISSING": 366,
-    "QUALITY_REJECTED:adjustmentContradicted: adjustment_status_contradicted": 362,
+    "NO_FACTOR_ROW:SOURCE_MISSING": 368,
+    "QUALITY_REJECTED:adjustment_status_contradicted": 364,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 140,
     "INACTIVE": 120,
-    "NO_FACTOR_ROW:FAIL": 108,
-    "NOT_TRADING:STALE_SERIES": 91,
-    "NO_COMPACT_SERIES": 75,
+    "NO_FACTOR_ROW:FAIL": 102,
+    "NOT_TRADING:STALE_SERIES": 88,
+    "NO_COMPACT_SERIES": 67,
     "NAME_MISSING": 20,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
+    "NO_IEX_BARS": 4,
     "NO_FACTOR_ROW": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
@@ -158,7 +159,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -168,9 +169,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Meta",
@@ -248,7 +247,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -258,9 +257,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Broadcom",
@@ -360,7 +357,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -370,9 +367,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Micron",

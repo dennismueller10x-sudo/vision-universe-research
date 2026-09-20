@@ -31,7 +31,78 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var VERSION = "fundamentals-1.1.0";
+  var VERSION = "fundamentals-1.2.0";
+
+  /* ------------------------------------------------ PLAUSIBILITAET (V4 §22)
+
+     Eine Marge von 1 337 % ist eine wahre Division und trotzdem keine
+     Auskunft: Crown Castle meldet unter dem ASC-606-Konzept nur einen
+     Teil des Umsatzes, der freie Cashflow steht gegen den ganzen. Banken
+     und Versicherer haben keinen Umsatz, der zu einem freien Cashflow
+     passt. Und ein Unternehmen mit 36 000 $ Umsatz hat keine Nettomarge,
+     die man einem Leser zeigen sollte. Diese Regeln nehmen solche Zahlen
+     aus Karten, Sammlungen und Health-Zeilen - mit Grund, nie mit einem
+     erfundenen Ersatzwert. */
+  var PLAUSIBILITY = {
+    minRevenueForMargins: 50e6,       /* USD: darunter keine Margen */
+    maxAbsMargin: 1.5,                /* |Marge| > 150 % = Nenner passt nicht zum Zaehler */
+    maxAbsMarginExpansionPp: 100,     /* Prozentpunkte in drei Jahren */
+    revenueFragmentFactor: 1.5,       /* |Gewinn| oder |FCF| > 1,5 x Umsatz: Umsatz ist ein Fragment */
+    maxFiscalYearAgeYears: 2,         /* juengstes Geschaeftsjahr aelter als zwei Jahre: veraltet */
+    financialSectors: ["Financials", "Real Estate"],
+    maxRevenueToAssetsForBalanceSheetBusiness: 0.08   /* Umsatz/Bilanzsumme darunter: Bank, Versicherer, Vermoegensverwalter */
+  };
+
+  function marginCheck(model, fy, opts) {
+    opts = opts || {};
+    var rev = byYear(model.annual.revenue || [])[fy], ni = byYear(model.annual.net_income || [])[fy],
+        fcf = byYear(model.annual.free_cash_flow || [])[fy];
+    var out = { netMargin: null, fcfMargin: null, omitted: {} };
+    var finanz = opts.sector && PLAUSIBILITY.financialSectors.indexOf(opts.sector) !== -1;
+    /* Ohne Sektor (die kuratierte Zuordnung deckt nur einen Teil des
+       Universums) verraet die Bilanz das Geschaeftsmodell: Banken,
+       Versicherer und Vermoegensverwalter setzen weniger als 8 % ihrer
+       Bilanzsumme um. Fuer sie ist "freier Cashflow zu Umsatz" keine
+       Kennzahl - der Cashflow einer Bank sind Einlagen und Kredite. */
+    var assets = byYear(model.annual.total_assets || [])[fy];
+    if (!finanz && rev && assets && typeof assets.v === "number" && assets.v > 0 && typeof rev.v === "number" && rev.v > 0 &&
+        rev.v / assets.v < PLAUSIBILITY.maxRevenueToAssetsForBalanceSheetBusiness) {
+      finanz = true; out.balanceSheetBusiness = { revenueToAssets: rev.v / assets.v, detail: "Umsatz " + Math.round(rev.v) + " zu Bilanzsumme " + Math.round(assets.v) };
+    }
+    if (!rev || typeof rev.v !== "number" || rev.v <= 0) { out.omitted.netMargin = out.omitted.fcfMargin = { reason: "NO_REVENUE" }; return out; }
+    if (rev.v < PLAUSIBILITY.minRevenueForMargins) {
+      out.omitted.netMargin = out.omitted.fcfMargin = { reason: "REVENUE_TOO_SMALL", detail: "Umsatz " + Math.round(rev.v) + " $ unter " + PLAUSIBILITY.minRevenueForMargins + " $" };
+      return out;
+    }
+    if (ni && typeof ni.v === "number") {
+      var nm = ni.v / rev.v;
+      if (Math.abs(ni.v) > rev.v * PLAUSIBILITY.revenueFragmentFactor) out.omitted.netMargin = { reason: "REVENUE_FRAGMENT_SUSPECTED", detail: "|Gewinn| " + Math.round(ni.v) + " > " + PLAUSIBILITY.revenueFragmentFactor + " x Umsatz " + Math.round(rev.v) };
+      else if (Math.abs(nm) > PLAUSIBILITY.maxAbsMargin) out.omitted.netMargin = { reason: "MARGIN_OUT_OF_BAND", detail: "Nettomarge " + (nm * 100).toFixed(0) + " %" };
+      else out.netMargin = nm;
+    }
+    if (fcf && typeof fcf.v === "number") {
+      var fm = fcf.v / rev.v;
+      if (finanz) out.omitted.fcfMargin = { reason: "NOT_APPLICABLE_FINANCIAL", detail: "Free Cashflow zu Umsatz ist fuer " + (opts.sector || "ein Bilanzgeschaeft (Umsatz unter 8 % der Bilanzsumme)") + " keine belastbare Kennzahl" };
+      else if (Math.abs(fcf.v) > rev.v * PLAUSIBILITY.revenueFragmentFactor) out.omitted.fcfMargin = { reason: "REVENUE_FRAGMENT_SUSPECTED", detail: "|FCF| " + Math.round(fcf.v) + " > " + PLAUSIBILITY.revenueFragmentFactor + " x Umsatz " + Math.round(rev.v) };
+      else if (Math.abs(fm) > PLAUSIBILITY.maxAbsMargin) out.omitted.fcfMargin = { reason: "MARGIN_OUT_OF_BAND", detail: "FCF-Marge " + (fm * 100).toFixed(0) + " %" };
+      else out.fcfMargin = fm;
+    }
+    return out;
+  }
+
+  /* Ist das juengste Geschaeftsjahr noch eine Auskunft ueber heute? */
+  function staleness(model) {
+    if (!model || !model.years.length) return { stale: false, fiscalYear: null, ageYears: null };
+    var fy = model.years[model.years.length - 1];
+    var rows = model.annual.revenue || model.annual.net_income || [];
+    var r = byYear(rows)[fy];
+    var ende = r && r.end ? r.end : null;
+    var ref = model.asOf || (model.generatedAt ? String(model.generatedAt).slice(0, 10) : null);
+    if (!ende || !ref) return { stale: false, fiscalYear: fy, ageYears: null, end: ende };
+    var age = (Date.parse(ref) - Date.parse(ende)) / (365.25 * 86400000);
+    return { stale: age > PLAUSIBILITY.maxFiscalYearAgeYears, fiscalYear: fy, ageYears: Math.round(age * 10) / 10, end: ende,
+             reason: age > PLAUSIBILITY.maxFiscalYearAgeYears ? "FISCAL_YEAR_STALE" : null };
+  }
   var SOURCE = "sec_edgar:companyfacts";
 
   /* ------------------------------------------------------------ Lesen */
@@ -166,7 +237,7 @@
       if (ratio >= SHARE_JUMP_FACTOR || ratio <= 1 / SHARE_JUMP_FACTOR) {
         return { fromFy: y0, toFy: y1, ratio: ratio,
                  note: "Gewinn je Aktie und Aktienanzahl sind über diesen Zeitraum nicht vergleichbar: zwischen den berichteten Werten für Geschäftsjahr " + y0 + " und " + y1 +
-                       " springt die Aktienanzahl um den Faktor " + ratio.toFixed(1).replace(".", ",") + " — ein Aktiensplit oder eine Kapitalmaßnahme, die die SEC-Zeitreihe nicht rückwirkend bereinigt." };
+                       " springt die Aktienanzahl um den Faktor " + ratio.toFixed(1).replace(".", ",") + " — ein Aktiensplit oder eine Kapitalmaßnahme, die in der berichteten Zeitreihe nicht rückwirkend bereinigt ist." };
       }
     }
     return null;
@@ -343,7 +414,8 @@
     return table[table.length - 1][1];
   }
 
-  function health(model) {
+  function health(model, opts) {
+    opts = opts || {};
     var h = model && horizon(model);
     if (!model || !model.years.length) return { available: false, categories: [] };
     var latest = model.years[model.years.length - 1];
@@ -355,16 +427,18 @@
       if (c !== null) cats.push({ id: "growth", label: "Wachstum", grade: grade(THRESHOLDS.growth, c), value: c, unit: "cagr",
         detail: "Umsatz " + fmtPct(c) + " pro Jahr über " + h.years + " Jahre", evidence: evidence(rev[h.from], rev[h.to], model, "CAGR revenue FY " + h.from + " -> FY " + h.to), thresholds: THRESHOLDS.growth });
     }
-    if (rev[latest] && ni[latest] && rev[latest].v > 0) {
-      var nm = ni[latest].v / rev[latest].v;
+    var mc = marginCheck(model, latest, opts);
+    var omitted = {};
+    if (mc.netMargin !== null) {
+      var nm = mc.netMargin;
       cats.push({ id: "profitability", label: "Profitabilitaet", grade: grade(THRESHOLDS.profitability, nm), value: nm, unit: "ratio",
         detail: "Nettomarge " + (nm * 100).toFixed(1).replace(".", ",") + " % im Geschaeftsjahr " + latest, evidence: evidence(ni[latest], rev[latest], model, "net_income / revenue FY " + latest), thresholds: THRESHOLDS.profitability });
-    }
-    if (rev[latest] && fcf[latest] && rev[latest].v > 0) {
-      var fm = fcf[latest].v / rev[latest].v;
+    } else if (mc.omitted.netMargin) omitted.profitability = mc.omitted.netMargin;
+    if (mc.fcfMargin !== null) {
+      var fm = mc.fcfMargin;
       cats.push({ id: "cashflow", label: "Cashflow", grade: grade(THRESHOLDS.cashflow, fm), value: fm, unit: "ratio",
         detail: "Free-Cashflow-Marge " + (fm * 100).toFixed(1).replace(".", ",") + " % im Geschaeftsjahr " + latest, evidence: evidence(fcf[latest], rev[latest], model, "free_cash_flow / revenue FY " + latest), thresholds: THRESHOLDS.cashflow });
-    }
+    } else if (mc.omitted.fcfMargin) omitted.cashflow = mc.omitted.fcfMargin;
     if (nd[latest]) {
       var g2, det;
       if (nd[latest].v <= 0) { g2 = "Sehr solide"; det = "Mehr Kasse als Schulden (Nettokasse) zum Geschaeftsjahresende " + latest; }
@@ -383,13 +457,16 @@
       cats.push({ id: "dilution", label: "Verwässerung", grade: gradeUp(THRESHOLDS.dilution, ds), value: ds, unit: "pct",
         detail: "Aktienanzahl " + fmtPct(ds) + " in " + h.years + " Jahren", evidence: evidence(sh[h.from], sh[h.to], model, "shares FY " + h.to + " / FY " + h.from + " - 1"), thresholds: THRESHOLDS.dilution });
     }
-    return { available: cats.length > 0, horizon: h, categories: cats, omitted: jump ? { dilution: jump.note } : {},
+    if (jump) omitted.dilution = jump.note;
+    return { available: cats.length > 0, horizon: h, categories: cats, omitted: omitted,
+             plausibility: PLAUSIBILITY, staleness: staleness(model),
              asOf: model.asOf, source: model.source, version: VERSION };
   }
 
   /* ------------------------------------------------------------ LATEST */
 
-  function latest(model) {
+  function latest(model, opts) {
+    opts = opts || {};
     if (!model) return { available: false };
     var years = model.years, fy = years.length ? years[years.length - 1] : null;
     var out = { available: false, fiscalYear: fy, annual: {}, ttm: {}, ttmThrough: (model.coverage && model.coverage.ttmThrough) || null };
@@ -406,28 +483,48 @@
     });
     var rev = out.annual.revenue, ni = out.annual.net_income, eq = out.annual.stockholders_equity;
     out.derived = {};
-    if (rev && ni && rev.v > 0) out.derived.netMargin = ni.v / rev.v;
-    if (rev && out.annual.operating_income && rev.v > 0) out.derived.operatingMargin = out.annual.operating_income.v / rev.v;
-    if (rev && out.annual.gross_profit && rev.v > 0) out.derived.grossMargin = out.annual.gross_profit.v / rev.v;
-    if (rev && out.annual.free_cash_flow && rev.v > 0) out.derived.fcfMargin = out.annual.free_cash_flow.v / rev.v;
+    out.omitted = {};
+    if (fy !== null) {
+      var mc = marginCheck(model, fy, opts);
+      if (mc.netMargin !== null) out.derived.netMargin = mc.netMargin;
+      if (mc.fcfMargin !== null) out.derived.fcfMargin = mc.fcfMargin;
+      out.omitted = mc.omitted;
+      var plausibel = !mc.omitted.netMargin || mc.omitted.netMargin.reason === "NO_REVENUE";
+      if (rev && out.annual.operating_income && rev.v >= PLAUSIBILITY.minRevenueForMargins && plausibel) {
+        var om = out.annual.operating_income.v / rev.v;
+        if (Math.abs(om) <= PLAUSIBILITY.maxAbsMargin) out.derived.operatingMargin = om;
+      }
+      if (rev && out.annual.gross_profit && rev.v >= PLAUSIBILITY.minRevenueForMargins && plausibel) {
+        var gm = out.annual.gross_profit.v / rev.v;
+        if (Math.abs(gm) <= PLAUSIBILITY.maxAbsMargin) out.derived.grossMargin = gm;
+      }
+    }
     if (ni && eq && eq.v > 0) out.derived.roe = ni.v / eq.v;
+    out.staleness = staleness(model);
     return out;
   }
 
   /* ------------------------------------------------------------ SIGNALS */
 
   /** Fundamentale Signale fuer Discover-Sammlungen - jedes mit Beleg. */
-  function signals(model) {
+  function signals(model, opts) {
+    opts = opts || {};
     var out = {};
     if (!model || !model.years.length) return out;
+    out.omitted = {};
+    var st = staleness(model);
+    if (st.stale) { out.omitted.all = { reason: st.reason, detail: "Juengstes Geschaeftsjahr " + st.fiscalYear + " (Ende " + st.end + ") ist " + st.ageYears + " Jahre alt" }; out.staleness = st; return out; }
     var y = model.years, latest = y[y.length - 1];
     var rev = byYear(model.annual.revenue || []), ni = byYear(model.annual.net_income || []), fcf = byYear(model.annual.free_cash_flow || []);
     var opm = byYear(marginSeries(model, "operating_income")), nd = byYear(model.annual.net_debt || []);
     function has(m, k) { return m[k] && typeof m[k].v === "number"; }
     var r3 = (has(rev, latest) && has(rev, latest - 3)) ? cagr(rev[latest - 3].v, rev[latest].v, 3) : null;
     var r10 = (has(rev, latest) && has(rev, latest - 10)) ? cagr(rev[latest - 10].v, rev[latest].v, 10) : null;
-    var nm = (has(rev, latest) && has(ni, latest) && rev[latest].v > 0) ? ni[latest].v / rev[latest].v : null;
-    var fm = (has(rev, latest) && has(fcf, latest) && rev[latest].v > 0) ? fcf[latest].v / rev[latest].v : null;
+    var mc = marginCheck(model, latest, opts);
+    var nm = mc.netMargin, fm = mc.fcfMargin;
+    Object.keys(mc.omitted).forEach(function (k) { out.omitted[k] = mc.omitted[k]; });
+    /* Wachstum auf einer Basis unter der Margengrenze bleibt eine Zahl -
+       aber die Sammlungen pruefen die Basis (fundBasis im Build). */
     if (r3 !== null) out.revenueGrowth3y = { value: r3, evidence: evidence(rev[latest - 3], rev[latest], model, "CAGR revenue 3J") };
     if (r10 !== null) out.revenueGrowth10y = { value: r10, evidence: evidence(rev[latest - 10], rev[latest], model, "CAGR revenue 10J") };
     if (nm !== null) out.netMargin = { value: nm, evidence: evidence(ni[latest], rev[latest], model, "net_income / revenue FY " + latest) };
@@ -437,7 +534,17 @@
       var g1 = pct(ni[latest - 1].v, ni[latest - 2].v), g2 = pct(ni[latest].v, ni[latest - 1].v);
       out.earningsAcceleration = { value: g2 - g1, latestGrowth: g2, priorGrowth: g1, evidence: evidence(ni[latest - 2], ni[latest], model, "net_income Wachstum FY" + latest + " (" + fmtPct(g2) + ") vs. FY" + (latest - 1) + " (" + fmtPct(g1) + ")") };
     }
-    if (opm[latest] && opm[latest - 3]) out.marginExpansion3y = { value: (opm[latest].v - opm[latest - 3].v) * 100, evidence: evidence(opm[latest - 3], opm[latest], model, "operating margin FY" + latest + " minus FY" + (latest - 3) + " (pp)") };
+    if (opm[latest] && opm[latest - 3]) {
+      var me = (opm[latest].v - opm[latest - 3].v) * 100;
+      var revLatest = has(rev, latest) ? rev[latest].v : null, revFrom = has(rev, latest - 3) ? rev[latest - 3].v : null;
+      if (revLatest === null || revFrom === null || revLatest < PLAUSIBILITY.minRevenueForMargins || revFrom < PLAUSIBILITY.minRevenueForMargins) {
+        out.omitted.marginExpansion3y = { reason: "REVENUE_TOO_SMALL", detail: "Umsatzbasis in FY" + (latest - 3) + " oder FY" + latest + " unter " + PLAUSIBILITY.minRevenueForMargins + " $" };
+      } else if (Math.abs(me) > PLAUSIBILITY.maxAbsMarginExpansionPp || mc.omitted.netMargin) {
+        out.omitted.marginExpansion3y = { reason: mc.omitted.netMargin ? mc.omitted.netMargin.reason : "MARGIN_OUT_OF_BAND", detail: "Margenaenderung " + me.toFixed(0) + " pp" };
+      } else {
+        out.marginExpansion3y = { value: me, evidence: evidence(opm[latest - 3], opm[latest], model, "operating margin FY" + latest + " minus FY" + (latest - 3) + " (pp)") };
+      }
+    }
     var fcfPositive3 = [latest, latest - 1, latest - 2].every(function (k) { return has(fcf, k) && fcf[k].v > 0; });
     if (has(fcf, latest)) out.fcfPositiveThreeYears = { value: fcfPositive3, evidence: evidence(fcf[fcfPositive3 ? latest - 2 : latest], fcf[latest], model, "free_cash_flow > 0 in FY" + (latest - 2) + ".." + latest) };
     if (has(ni, latest) && has(ni, latest - 2) && ni[latest - 2].v < 0 && ni[latest].v > 0) out.turnaround = { value: true, evidence: evidence(ni[latest - 2], ni[latest], model, "net_income FY" + (latest - 2) + " < 0, FY" + latest + " > 0") };
@@ -485,7 +592,7 @@
              latestFiscalYear: model.years.length ? model.years[model.years.length - 1] : null, ttmThrough: c.ttmThrough || null };
   }
 
-  var api = { VERSION: VERSION, SOURCE: SOURCE, THRESHOLDS: THRESHOLDS, COMPARE_ROWS: COMPARE_ROWS,
+  var api = { PLAUSIBILITY: PLAUSIBILITY, marginCheck: marginCheck, staleness: staleness, VERSION: VERSION, SOURCE: SOURCE, THRESHOLDS: THRESHOLDS, COMPARE_ROWS: COMPARE_ROWS,
               fromBundle: fromBundle, horizon: horizon, compare: compare, journey: journey, story: story,
               health: health, latest: latest, signals: signals, priceVsFundamentals: priceVsFundamentals,
               capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr };

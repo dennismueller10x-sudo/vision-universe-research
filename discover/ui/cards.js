@@ -48,6 +48,13 @@
     if (!isNum(v)) return "–";
     return prozentText(v, digits === undefined ? 2 : digits);
   }
+  /** "11.09.2026" aus einem ISO-Datum - fuer Stand-Angaben ohne Anbietername. */
+  function dateShort(iso) {
+    if (!iso || String(iso).length < 10) return String(iso || "");
+    var t = String(iso);
+    return t.slice(8, 10) + "." + t.slice(5, 7) + "." + t.slice(0, 4);
+  }
+
   function money(v) {
     if (!isNum(v)) return "–";
     return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
@@ -318,6 +325,7 @@
       host.removeAttribute("data-loading");
       host.setAttribute("data-live", p.snapshot.regularComplete ? "complete" : "running");
       host.setAttribute("data-session", p.snapshot.sessionDate);
+      host.setAttribute("data-freshness", (p.freshness && p.freshness.freshnessState) || "");
       host.appendChild(svgNode);
       host.appendChild(liveLabel(p.label, p.snapshot));
     }
@@ -329,8 +337,10 @@
   /** "Heute · Stand 15:42" - die Beschriftung des Tagesverlaufs. */
   function liveLabel(label, snap) {
     var text = (label && label.label) || "";
-    return el("span", { class: "dx-live-label", title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
-                        "5-Minuten-Kurse, " + snap.provider + (snap.venue ? "/" + snap.venue : "") },
+    var tone = (label && label.tone) || (snap && snap.regularComplete ? "complete" : "live");
+    return el("span", { class: "dx-live-label dx-live-label--" + tone, "data-freshness": (label && label.state) || "",
+                        title: (label && label.timezoneNote ? label.timezoneNote + " · " : "") +
+                               "5-Minuten-Kurse" + (tone === "stale" ? " · dieser Stand ist nicht der letzte Handelstag" : "") },
       [el("i", { "aria-hidden": "true" }), document.createTextNode(text)]);
   }
 
@@ -421,30 +431,32 @@
          Zahl "Was ist passiert?" beantwortet. Wo keiner vorliegt, steht
          auch keiner: erfunden wird nichts. */
       card.was && !kompakt ? el("p", { class: "dx-was-line", text: card.was }) : null,
+      /* V4 §6/§26 - die Hierarchie der Karte: UNTERNEHMEN, KENNZAHL,
+         KLARTEXT, CHART, dann die fundamentale Geschichte. */
+      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
+      text.zahl ? el("div", { class: "dx-zahl" }, [
+        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
+        el("span", { text: text.zahl.label })
+      ]) : null,
       /* Die eine Aussage. Der Punkt davor trägt die Farbwelt - die Farbe
          wiederholt, was im Text steht, sie ersetzt ihn nie. */
       text.story ? el("p", { class: "dx-story" }, [
         el("i", { class: "dx-story-dot", "aria-hidden": "true" }),
         document.createTextNode(text.story)
       ]) : null,
-      /* Die eine Zahl. Groß genug, um sie aus zwei Metern zu lesen. */
-      text.zahl ? el("div", { class: "dx-zahl" }, [
-        el("b", { class: "num " + (text.zahl.ton || ""), text: text.zahl.wert }),
-        el("span", { text: text.zahl.label })
-      ]) : null,
-      /* Was das Unternehmen gemacht hat - ein belegter Satz aus den
-         Jahresabschluessen (Fundamentals-Engine). Nur wo einer vorliegt. */
-      card.hook && card.hook.text && !kompakt ? el("p", { class: "dx-hook",
-        title: "Aus den SEC-Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") }, [
-        el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
-        document.createTextNode(card.hook.text)
-      ]) : null,
       posterMedia(card, {
         height: kompakt ? 66 : (breit ? 132 : 92),
         width: breit ? 392 : (kompakt ? 224 : 300),
         ticker: breit === true || options.variant === "rank",
         scale: kompakt ? "mini" : "poster"
-      })
+      }),
+      /* Was das Unternehmen gemacht hat - ein belegter Satz aus den
+         Jahresabschluessen (Fundamentals-Engine). Nur wo einer vorliegt. */
+      card.hook && card.hook.text && !kompakt ? el("p", { class: "dx-hook",
+        title: "Aus den Jahresabschlüssen " + card.hook.from + "–" + card.hook.to + ", Stand " + (card.hook.asOf || "") + " · Herkunft: Daten & Quellen" }, [
+        el("i", { class: "dx-hook-mark", "aria-hidden": "true" }),
+        document.createTextNode(card.hook.text)
+      ]) : null
     ]);
 
     /* Die kurze Zusatzinfo. Sie wiederholt die Überschrift nicht - dafür
@@ -694,6 +706,7 @@
   }
 
   var api = {
+    dateShort: dateShort,
     pct: pct, pctPoints: pctPoints, money: money, score: score, times: times,
     toneClass: toneClass, valueOf: valueOf, statusOf: statusOf, STATUS_TEXT: STATUS_TEXT,
     svg: svg, ensureDefs: ensureDefs,

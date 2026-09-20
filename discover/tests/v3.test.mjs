@@ -107,20 +107,46 @@ test("Regeln der neuen Reihen halten: bekannte Namen, Comeback, Ueberraschungen,
   }
 });
 
-test("Cross-Collection-Diversity: ein Titel fuehrt hoechstens eine Surface an", { skip: !vorhanden }, () => {
+/* Gezaehlt werden REDAKTIONELLE Reihen, nicht Ranglisten.
+ *
+ * An einer Rangliste darf die Diversity-Regel nichts aendern - "TOP 10
+ * zeigt die echte Rangliste, ungefiltert" ist eine eigene Zusage. Wer
+ * dort oben steht, steht dort, weil die Zahlen es sagen. Am 18.09.2026
+ * stand VLO nach dem EOD-Nachlauf im 99,97. Perzentil und fuehrte drei
+ * Ranglisten an; dieser Test verlangte damit etwas, das ein anderer
+ * Vertrag verbietet, und liess zwei Datenlaeufe von je siebzig Minuten
+ * ohne Veroeffentlichung enden.
+ *
+ * Dieselbe Korrektur steht seit ac5d05a6e in
+ * scripts/discover/verify-discover-data.mjs; sie hier nachzuziehen war
+ * vergessen worden - zwei Stellen, die dieselbe Behauptung aufstellen,
+ * muessen sie auch gleich formulieren. */
+test("Cross-Collection-Diversity: ein Titel fuehrt hoechstens eine redaktionelle Reihe an", { skip: !vorhanden }, () => {
   const surfaces = homeSurfaces("US_REAL");
   const fuehrt = {};
   for (const s of surfaces) {
     const cards = s.cards || [];
     const kurz = s.type !== "featured-card" && cards.length <= 6 && (!isNum(s.total) || s.total <= 6);
-    if (s.type === "hero" || kurz) continue;
+    if (s.type === "hero" || s.type === "ranking" || kurz) continue;
     cards.slice(0, 2).forEach((c) => { fuehrt[c.symbol] = (fuehrt[c.symbol] || 0) + 1; });
   }
   const mehrfach = Object.entries(fuehrt).filter(([, n]) => n > 1);
   for (const [sym, n] of mehrfach) {
     const k = alleKarten(surfaces).find((c) => c.symbol === sym);
-    assert.ok(n <= 2 && k.metrics.leadershipPercentile >= 99, sym + " fuehrt " + n + " Surfaces an");
+    assert.ok(n <= 2 && k.metrics.leadershipPercentile >= 99,
+              sym + " fuehrt " + n + " redaktionelle Reihen an");
   }
+});
+
+/* Die Gegenprobe zur Ausnahme: sie darf nur fuer Ranglisten gelten.
+   Ohne diesen Test waere der Ausschluss oben von einem Freibrief nicht
+   zu unterscheiden. */
+test("die Ausnahme gilt nur der Rangliste, nicht den redaktionellen Reihen", { skip: !vorhanden }, () => {
+  const surfaces = homeSurfaces("US_REAL");
+  const redaktionell = surfaces.filter((s) => s.type !== "hero" && s.type !== "ranking");
+  assert.ok(redaktionell.length > 0, "es muss redaktionelle Reihen geben, sonst prueft der Test nichts");
+  const ranglisten = surfaces.filter((s) => s.type === "ranking");
+  assert.ok(ranglisten.length > 0, "es muss Ranglisten geben, sonst ist die Ausnahme gegenstandslos");
 });
 
 test("keine Fachsprache auf Ebene 1", { skip: !vorhanden }, () => {

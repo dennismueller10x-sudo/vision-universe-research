@@ -1,0 +1,304 @@
+name: Cloudflare — vu-live ausrollen (Free)
+
+# ZERO-COST REALTIME V1 AUSROLLEN
+#
+# Owner-Freigabe vom 17.09.2026, und sie ist BEDINGT: "Wenn diese
+# Nachweise gruen sind, ist die Owner-Freigabe erteilt." Deshalb steht vor
+# dem Deployment ein Tor, das die Bedingungen liest, statt sie zu
+# behaupten (scripts/market/assert-deploy-preconditions.mjs). Ein
+# versehentlich ausgeloester Lauf kommt damit nicht durch: fehlt ein
+# Nachweis oder ist er aelter als einen Tag, bricht der Job ab, bevor
+# irgendetwas hinausgeht.
+#
+# WAS HIER GESCHRIEBEN WIRD - UND WAS AUSDRUECKLICH NICHT
+#
+#   geschrieben:  der Worker vu-live, sein Tiingo-Secret bei Cloudflare,
+#                 optional der Name live.visionuniverse.de
+#   NICHT:        kein Paid-Plan, kein KV, kein R2, kein D1, kein Cron,
+#                 keine Aenderung an research.visionuniverse.de (die
+#                 bleibt auf GitHub Pages), keine neuen Zugangsdaten,
+#                 keine Rotation bestehender Secrets
+#
+# ZUGANGSDATEN
+#
+#   CLOUDFLARE_API_TOKEN     liegt bereits im Repository, unter genau dem
+#                            Namen, den wrangler liest (gemessen am
+#                            17.09.2026, cloudflare-access-probe.json)
+#   Account-ID               wird aus VU_HISTORY_S3_ENDPOINT abgeleitet -
+#                            der R2-Endpunkt traegt sie. Kein neues Secret.
+#   TIINGO_API_KEY           liegt als GitHub-Secret vor und wird ueber
+#                            stdin an `wrangler secret put` gereicht,
+#                            nie ueber die Kommandozeile und nie ins Log.
+#
+# Ausloeser: Marke im Commit-Betreff. Die Bedingung prueft die ganze
+# Nachricht - die Marke gehoert deshalb NICHT in den Fliesstext.
+
+on:
+  workflow_dispatch:
+    inputs:
+      attachDomain:
+        description: 'live.visionuniverse.de anlegen (sonst nur workers.dev)'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/cloudflare-deploy.yml'
+      - 'worker/src/**'
+      - 'worker/wrangler.toml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Tor, Deployment, Smoke-Test
+    runs-on: ubuntu-latest
+    concurrency:
+      group: vu-live-deploy
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[cf-deploy]')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # ---- Das Tor -----------------------------------------------------
+      - name: Tests des Realtime-Pfads
+        run: node scripts/market/run-realtime-tests.mjs
+
+      - name: Kein Schluessel in der Auslieferung
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      # ZERO_COST_MODE = HARD. Kein Skript und kein Workflow darf einen
+      # Tarif anfassen koennen - das wird durchsucht, nicht versprochen.
+      - name: Zero-Cost-Vertrag pruefen (PAID_SERVICES_ENABLED = 0)
+        run: node scripts/market/assert-zero-cost-mode.mjs
+
+      # Bricht ab, wenn eine der sechs Abnahmebedingungen nicht auf gruen
+      # steht. Das ist der Unterschied zwischen einer Freigabe und einer
+      # Absichtserklaerung.
+      - name: Abnahmebedingungen pruefen (bricht ab bei NO_GO)
+        run: node scripts/market/assert-deploy-preconditions.mjs --max-age-hours 24
+
+      # ---- Die Account-ID aus dem, was schon da ist ---------------------
+      - name: Account-ID aus dem R2-Endpunkt ableiten
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: |
+          set -e
+          # Kein neues Secret: der bestehende R2-Endpunkt traegt die ID
+          # (scripts/market/storage/s3-driver.mjs, Zeile 121). Sie wird als
+          # Maske angemeldet, bevor sie irgendwohin geht.
+          ACC=$(node -e '
+            const m = /^https:\/\/([0-9a-f]{32})\./i.exec(process.env.VU_HISTORY_S3_ENDPOINT || "");
+            if (!m) { console.error("Account-ID nicht aus dem R2-Endpunkt ableitbar."); process.exit(1); }
+            console.log("::add-mask::" + m[1]);
+            console.log(m[1]);
+          ' | tail -1)
+          echo "::add-mask::$ACC"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACC" >> "$GITHUB_ENV"
+          echo "Account-ID abgeleitet (maskiert)."
+
+      # ---- Deployment ---------------------------------------------------
+      # Zuerst der Worker, dann sein Secret: `wrangler secret put` fragt
+      # bei einem Skript, das es noch nicht gibt, interaktiv nach - und in
+      # einer CI antwortet niemand.
+      - name: vu-live ausrollen (Cloudflare Free)
+        id: deploy
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -e
+          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.txt
+          # Die veroeffentlichte Adresse steht in der Ausgabe. Sie ist
+          # oeffentlich, sobald sie existiert - sie darf in den Bericht.
+          URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.txt | head -1)
+          if [ -z "$URL" ]; then
+            SUB=$(npx --yes wrangler@4 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
+            [ -n "$SUB" ] && URL="https://vu-live.$SUB"
+          fi
+          echo "Endpunkt: ${URL:-unbekannt}"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      # ---- Das Secret bei Cloudflare -----------------------------------
+      - name: Tiingo-Schluessel als Cloudflare-Secret setzen
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          set -e
+          # Ueber stdin, nie als Argument: Argumente stehen in der
+          # Prozessliste, stdin nicht. Und der Schluessel wird hier weder
+          # ausgegeben noch in eine Datei geschrieben.
+          printf '%s' "$TIINGO_API_KEY" | npx --yes wrangler@4 secret put TIINGO_API_KEY 2>&1 \
+            | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+          # Das Objekt liest das Secret beim naechsten Start. Ein Redeploy
+          # ist nicht noetig - aber ein bereits laufendes Objekt haelt
+          # seine alte Umgebung, deshalb wird es angestossen.
+          npx --yes wrangler@4 deploy 2>&1 | tail -5 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+
+      # ---- Smoke-Test ---------------------------------------------------
+      - name: Realtime Runtime smoke-testen
+        env:
+          VU_LIVE_URL: ${{ steps.deploy.outputs.url }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$VU_LIVE_URL" ]; then
+            echo "Keine Adresse aus dem Deployment - Smoke-Test nicht moeglich."
+            exit 1
+          fi
+          # Das Protokoll des Workers mitschneiden, waehrend der Test
+          # laeuft. Eine Ausnahme im Durable Object ist von aussen nur
+          # als abgerissener Socket zu sehen; hier steht sie im Klartext.
+          ( cd worker && npx --yes wrangler@4 tail vu-live --format json > /tmp/tail.json 2>/tmp/tail.err & echo $! > /tmp/tail.pid )
+          sleep 8
+          set +e
+          node scripts/market/smoke-vu-live.mjs --url "$VU_LIVE_URL" --seconds 45
+          ERGEBNIS=$?
+          set -e
+          sleep 3
+          [ -f /tmp/tail.pid ] && kill "$(cat /tmp/tail.pid)" 2>/dev/null || true
+          echo ""
+          echo "--- Worker-Protokoll (Ausnahmen und Meldungen) ---"
+          if [ -s /tmp/tail.json ]; then
+            node -e '
+              const fs = require("fs");
+              const zeilen = fs.readFileSync("/tmp/tail.json", "utf8").split("\n").filter(Boolean);
+              let gezeigt = 0;
+              for (const z of zeilen) {
+                let e = null;
+                try { e = JSON.parse(z); } catch (err) { continue; }
+                const aus = (e.exceptions || []).map((x) => "AUSNAHME: " + x.name + ": " + x.message);
+                const log = (e.logs || []).map((l) => (l.level || "log") + ": " +
+                  (l.message || []).map((m) => typeof m === "string" ? m : JSON.stringify(m)).join(" "));
+                for (const t of aus.concat(log)) {
+                  if (gezeigt++ < 40) console.log("  " + t.replace(/[0-9a-f]{32}/g, "<maskiert>").slice(0, 300));
+                }
+              }
+              if (!gezeigt) console.log("  (keine Ausnahmen, keine Meldungen)");
+            '
+          else
+            echo "  (kein Mitschnitt: $(head -c 200 /tmp/tail.err 2>/dev/null))"
+          fi
+          exit $ERGEBNIS
+
+      # ---- Der bevorzugte Name -------------------------------------------
+      - name: live.visionuniverse.de anlegen
+        if: >-
+          github.event_name != 'workflow_dispatch' || inputs.attachDomain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/attach-live-domain.mjs --apply
+
+      - name: Smoke-Test auf dem bevorzugten Namen
+        continue-on-error: true
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          RESULT=$(node -e 'try{console.log(require("./quant/data/market/commercial/vu-live-domain.json").result)}catch(e){console.log("NONE")}')
+          if [ "$RESULT" = "ATTACHED" ] || [ "$RESULT" = "ALREADY_ATTACHED" ]; then
+            # Cloudflare braucht einen Moment, bis der Name traegt.
+            sleep 30
+            node scripts/market/smoke-vu-live.mjs --url "https://live.visionuniverse.de" \
+              --seconds 30 --out /tmp/domain-smoke || echo "Der Name traegt noch nicht - das ist kein Fehler des Workers."
+          else
+            echo "Kein eigener Name ($RESULT) - der Worker laeuft unter workers.dev."
+          fi
+
+      # ---- Nachweise sichern ----------------------------------------------
+      - name: Kein Schluessel in den Berichten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "vu-live: Deployment und Smoke-Test aus Lauf ${{ github.run_id }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Zero-Cost Realtime V1 — Deployment'
+            echo ''
+            if [ -f quant/data/market/commercial/deploy-preconditions.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/deploy-preconditions.json");
+                console.log("| Abnahmebedingung | Stand |");
+                console.log("|---|---|");
+                for (const c of r.conditions) console.log("| " + c.name + " | **" + c.status + "** |");
+                console.log("| Zugang | " + (r.access.ok ? "OK" : "FEHLT") + " |");
+                console.log("");
+                console.log("**" + r.verdict + "**");
+                console.log("");
+                for (const c of r.conditions) console.log("- **" + c.name + "**: " + c.reason);
+              '
+            fi
+            echo ''
+            echo '### Smoke-Test der Runtime'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-smoke.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-smoke.json");
+                console.log("Endpunkt: `" + (r.endpoint || "—") + "`  ·  Sitzung: **" +
+                            (r.session ? r.session.phase : "?") + "**");
+                console.log("");
+                console.log("| Prüfung | Ergebnis |");
+                console.log("|---|---|");
+                for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                if (r.latency) {
+                  console.log("");
+                  console.log("| Titel | erster Kurs (ms) |");
+                  console.log("|---|---|");
+                  for (const k of Object.keys(r.latency.firstTickMs)) {
+                    console.log("| " + k + " | " + (r.latency.firstTickMs[k] === null ? "keiner" : r.latency.firstTickMs[k]) + " |");
+                  }
+                  console.log("");
+                  console.log("_" + r.latency.note + "_");
+                }
+                console.log("");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+              '
+            else
+              echo 'Kein Smoke-Test entstanden.'
+            fi
+            echo ''
+            echo '### Endpunkt'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-domain.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-domain.json");
+                console.log("**" + r.result + "**");
+                console.log("");
+                console.log(r.consequence || "");
+                console.log("");
+                console.log("_Dieses Skript schreibt ausschliesslich `" + r.guard.onlyWrites +
+                            "`. Unberührt bleiben: " + r.guard.neverTouches.join(", ") + "._");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

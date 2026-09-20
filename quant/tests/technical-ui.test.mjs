@@ -33,7 +33,8 @@ test("UI3 · Keine Wahrscheinlichkeits- oder Empfehlungssprache in UI-Texten", (
 });
 
 test("UI4 · Mobile: 390px-Breakpoint, horizontal scrollbarer Chart, touch-freundliche Layer-Toggles", () => {
-  const css = read("ui/quant.css");
+  const css = read("ui/quant.css") + read("ui/technical-chart.css");
+  assert.ok(read("technical/index.html").includes("/quant/ui/technical-chart.css"), "shared chart styles loaded by legacy workspace");
   assert.match(css, /@media \(max-width:720px\)[\s\S]*\.q-tech-controls \.q-pill\{min-height:40px\}/);
   assert.match(css, /\.q-tech-chart-wrap\{overflow-x:auto/);
   assert.match(css, /\.q-tchart \.sem-wave-projected\{[^}]*stroke-dasharray/, "Projektion gestrichelt");

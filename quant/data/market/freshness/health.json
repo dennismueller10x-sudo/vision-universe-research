@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "freshness-health-1.0.0",
+  "contractVersion": "freshness-contract-1.0.0",
+  "checkedAt": "2026-09-18T22:25:21.346Z",
+  "target": "repository",
+  "market": {
+    "state": "AFTER_HOURS",
+    "localDate": "2026-09-18",
+    "localTime": "18:25:21",
+    "lastCompletedSession": "2026-09-18",
+    "currentSession": "2026-09-18",
+    "expectedIntradaySession": "2026-09-18"
+  },
+  "intraday": {
+    "indexGeneratedAt": "2026-09-18T22:25:17.515Z",
+    "indexSchema": "intraday-index-1.1.0",
+    "displaySession": {
+      "sessionDate": "2026-09-18",
+      "kind": "current",
+      "isRunning": false,
+      "isComplete": true
+    },
+    "dataSession": {
+      "sessionDate": "2026-09-18",
+      "asOf": "2026-09-18T20:55:00.000Z",
+      "asOfLocal": "16:55",
+      "regularComplete": true,
+      "snapshots": 5200,
+      "universe": true
+    },
+    "dataState": "LAST_SESSION",
+    "dataReason": "lastCompletedSession",
+    "dataLabel": "Heute · Schluss 16:00",
+    "entries": 516,
+    "byState": {
+      "LIVE": 0,
+      "LAST_SESSION": 515,
+      "STALE": 1,
+      "UNAVAILABLE": 0
+    },
+    "byReason": {
+      "lastCompletedSession": 515,
+      "lastSessionMissing": 1
+    },
+    "staleSample": [
+      "RFAI"
+    ],
+    "universeSessions": [
+      "2026-09-17",
+      "2026-09-18"
+    ],
+    "universeCoversLastSession": true,
+    "state": "OK"
+  },
+  "daily": {
+    "universeAsOf": "2026-09-17",
+    "generatedAt": "2026-09-18T19:55:40.568Z",
+    "state": "LAST_SESSION",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Do., 17.09. · Freitag folgt",
+    "expectedSession": "2026-09-18",
+    "sample": {
+      "sample": 40,
+      "byState": {
+        "LIVE": 0,
+        "LAST_SESSION": 40,
+        "STALE": 0,
+        "UNAVAILABLE": 0
+      },
+      "byReason": {
+        "closePendingWithinGrace": 40
+      },
+      "staleSample": [],
+      "seriesIndexCount": 6443
+    }
+  },
+  "overall": "OK",
+  "findings": [],
+  "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
+}

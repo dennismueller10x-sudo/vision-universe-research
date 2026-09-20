@@ -1,0 +1,54 @@
+name: VU2 Browser QA
+on:
+  pull_request:
+    paths:
+      - 'vu2/**'
+      - 'quant/ui/charts.js'
+      - 'quant/ui/technical-chart.*'
+      - 'quant/ui/quant.css'
+      - 'quant/technical/index.html'
+      - 'quant/technical/app.js'
+      - 'quant/api/**'
+      - 'scripts/vu2/**'
+      - '.github/workflows/vu2-browser-qa.yml'
+permissions:
+  contents: read
+jobs:
+  experience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test resource budget failure cases
+        run: node --test scripts/vu2/resource-budget.test.mjs
+      - name: Install isolated browser test dependency
+        run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
+      - name: Install Chromium
+        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Build the exact static release artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
+      - name: Compact delivery script without changing identifiers or removing code
+        run: |
+          /tmp/vu2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/quant2-site/vu2/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/quant2-site/vu2/release-bundle.js"
+      - name: Test desktop and mobile preview
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+          VU_QA_OUTPUT: /tmp/vu2-screenshots
+        run: |
+          cd "$RUNNER_TEMP/quant2-site"
+          node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant2-release-candidate
+          path: ${{ runner.temp }}/quant2-site
+          include-hidden-files: true
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vu2-desktop-mobile
+          path: /tmp/vu2-screenshots
+          retention-days: 14

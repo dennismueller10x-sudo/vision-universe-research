@@ -251,3 +251,26 @@ test("keine fundamentale Geschichte behauptet Staerke ueber einer negativen Zahl
   assert.equal(k.storyId, "fVerlust"); assert.equal(k.zahl.quelle, "f_netMargin");
   for (const g of K.FUNDAMENTAL_GESCHICHTEN) assert.ok(g.id && typeof g.wenn === "function" && typeof g.satz === "function");
 });
+
+/* Die Fussnote des Tagesverlaufs: STALE hat zwei Gruende und braucht zwei
+   Saetze. Gefunden an der Widerrufs-Aufnahme vom 17.09.2026, wo das
+   Etikett richtig "Heute · Stand 13:20 · nicht aktuell" sagte und die
+   Fussnote darunter behauptete, der Stand sei nicht vom letzten
+   Handelstag - und im selben Satz den heutigen Tag als erwartet nannte.
+
+   Geprueft wird die Quelle, weil die Fussnote im Browser entsteht: der
+   Satz fuer den stehen gebliebenen Lauf darf die Tagesbehauptung nicht
+   enthalten. Den Nachweis am laufenden Produkt fuehrt
+   scripts/discover/browser-qa-realtime.mjs ("fussnoteStimmt"). */
+test("stehen gebliebener Lauf und aeltere Sitzung sind zwei verschiedene Saetze", () => {
+  const code = readFileSync(join(root, "discover", "ui", "detail.js"), "utf8");
+  const fn = code.slice(code.indexOf("function staleSatz("));
+  const koerper = fn.slice(0, fn.indexOf("\n  }") + 4);
+  assert.ok(koerper.includes("runningSessionStaleAsOf"), "der Grund entscheidet den Satz");
+  const zweige = koerper.split("runningSessionStaleAsOf")[1];
+  const laufend = zweige.slice(0, zweige.indexOf("return \" · dieser Stand"));
+  assert.ok(!laufend.includes("nicht der letzte Handelstag"),
+            "ein Stand vom laufenden Tag darf nicht als anderer Handelstag beschrieben werden");
+  assert.ok(laufend.includes("laufenden Handelstag"), "er sagt stattdessen, dass der Lauf stehen blieb");
+  assert.ok(koerper.includes("expectedSessionDate"), "der andere Grund nennt weiter die erwartete Sitzung");
+});

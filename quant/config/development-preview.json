@@ -39,13 +39,18 @@
     "enabled": true,
     "interval": "5min",
     "extendedHours": true,
-    "refreshMinutes": 10,
+    "refreshMinutes": 5,
     "scopes": {
       "discover": "Titel auf Discover-Flaechen (discover/data/live-scope/<Universum>.json) - waehrend der Sitzung alle refreshMinutes.",
       "universe": "Das ganze Produktuniversum - einmal nach Handelsschluss (letzte abgeschlossene Sitzung), damit jede Aktienseite ein 1T hat."
     },
     "retentionSessions": 2,
-    "maxRequestsPerRun": 7500
+    "maxRequestsPerRun": 7500,
+    "freshness": {
+      "note": "Freshness-Vertrag (quant/engines/realtime/freshness.js): graceMinutes = wie lange nach 09:30 der Vortag bzw. nach 16:00 ein unvollstaendiger Stand noch LAST_SESSION ist (drei Workflow-Laeufe); graceHours = wie lange nach Schluss der Tagesschluss der kompakten Reihen fehlen darf (Abendlauf 22:30 UTC + Build + Auslieferung). Danach: STALE, und die Seite sagt 'nicht aktuell'.",
+      "graceMinutes": 30,
+      "graceHours": 6
+    }
   },
   "grants": [
     {
@@ -85,5 +90,18 @@
     }
   ],
   "benchmark": "SPY",
-  "benchmarkNote": "Die Vergleichsgroesse fuer relative Staerke (quant/config/tiingo-scale.json, benchmark). Sie gehoert zum Abruf-Umfang (Tageskurse in der Arbeitsablage, kompakte Reihe), ist aber kein Discover-Titel: ein ETF wird gebraucht, nicht bewertet."
+  "benchmarkNote": "Die Vergleichsgroesse fuer relative Staerke (quant/config/tiingo-scale.json, benchmark). Sie gehoert zum Abruf-Umfang (Tageskurse in der Arbeitsablage, kompakte Reihe), ist aber kein Discover-Titel: ein ETF wird gebraucht, nicht bewertet.",
+  "stream": {
+    "note": "Zero-Cost Realtime V1 (Variante C): ein Cloudflare Worker mit EINEM Durable Object haelt genau eine Tiingo-Verbindung und streamt daraus nur die Titel, die gerade jemand ansieht. Gilt ausschliesslich fuer die Aktienseite - Karten und Feed bleiben auf dem Snapshot-Pfad, weil hundert sichtbare Karten hundert abonnierte Titel waeren. Die gelieferte Zahl ist eine Kursreferenz aus einem Teilmarkt (Tiingo IEX, Stufe 6), kein Abschluss: priceType REALTIME_REFERENCE.",
+    "enabled": true,
+    "reason": null,
+    "url": "wss://live.visionuniverse.de/live",
+    "freshSeconds": 90,
+    "freshSecondsNote": "Wie jung ein Tick sein muss, damit er die Beschriftung bestimmen darf. Aelter heisst nicht 'Ausfall' - ein illiquider Titel handelt minutenlang nicht; dann gilt weiter die Beschriftung des Snapshots.",
+    "maxSymbolsPerClient": 5,
+    "decidedBy": "Owner",
+    "decidedAt": "2026-09-17",
+    "proof": "Ausgerollt und nachgewiesen am 17.09.2026: quant/data/market/commercial/vu-live-proof-domain.json (PASS, alle fuenf Titel geliefert, erster Kurs im Median 2.788 ms) und quant/data/market/commercial/vu-live-smoke.json (workers.dev, PASS). Siehe docs/VU_ZERO_COST_REALTIME_V1.md §7a.",
+    "scopeNote": "Nur die Aktienseite. Karten, Hero und Feed bleiben auf dem Snapshot-Pfad - hundert sichtbare Karten waeren hundert abonnierte Titel, und das ist die Rechnung, die dieses Produkt nicht aufmacht (Owner-Entscheidung §8)."
+  }
 }

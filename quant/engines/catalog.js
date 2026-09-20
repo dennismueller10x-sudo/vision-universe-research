@@ -52,6 +52,9 @@
       percentileAvailable: opts.pctl === true,
       values: opts.values || null,
       description: opts.description || "",
+      availability: opts.availability || null,
+      backtestEligibility: opts.backtestEligibility || null,
+      isProbability: opts.isProbability === undefined ? null : opts.isProbability === true,
       /* factorComponent: dieses Feld ist Bestandteil des genannten Faktors
          und wird von factors.js verwendet. */
       factorComponent: opts.factorComponent || null,
@@ -138,7 +141,13 @@
     f("coverage", "Datenabdeckung", "number", "ratio", "score", { higherIsBetter: true }),
     f("scoreVelocity30d", "Score-Velocity 30T", "number", "score", "score", { higherIsBetter: true, token: "SCORE_VELOCITY_30D", description: "Veraenderung des VU Quant Score ueber 30 Kalendertage" }),
     f("scoreVelocity60d", "Score-Velocity 60T", "number", "score", "score", { higherIsBetter: true, token: "SCORE_VELOCITY_60D" }),
-    f("scoreAcceleration", "Score-Beschleunigung", "number", "score", "score", { higherIsBetter: true, description: "Velocity 30T minus Velocity der vorangegangenen 30 Tage" })
+    f("scoreAcceleration", "Score-Beschleunigung", "number", "score", "score", { higherIsBetter: true, description: "Velocity 30T minus Velocity der vorangegangenen 30 Tage" }),
+
+    /* --- Technical / Elliott current snapshot ------------------------ */
+    f("technicalOpportunityScore", "Technical Opportunity Score", "number", "score", "technical", { higherIsBetter: true, availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Aktueller methodischer Technical Opportunity Score; nur fuer den aktuellen Analyse-Snapshot, nicht historisch zertifiziert" }),
+    f("technicalTrend", "Technical Trend", "enum", null, "technical", { values: ["BULLISH", "BEARISH", "NEUTRAL"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Aktueller Trendzustand des Technical-Analyse-Snapshots" }),
+    f("technicalPrimaryDirection", "Primary Technical Direction", "enum", null, "technical", { values: ["BULLISH", "BEARISH", "NEUTRAL", "UNDETERMINED"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Richtung des aktuellen primaeren Technical-Szenarios" }),
+    f("elliottCountStatus", "Elliott Count Status", "enum", null, "technical", { values: ["OK", "AMBIGUOUS", "LOW_CONFIDENCE", "UNAVAILABLE"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Methodischer Status des aktuellen Elliott Counts; keine Wahrscheinlichkeit" })
   ];
 
   var FIELDS = Object.create(null);

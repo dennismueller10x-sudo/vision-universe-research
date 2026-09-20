@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "dynamic-subscribe-verification-1.0.0",
+  "frage": "Laesst sich die Tickerliste eines bestehenden Stufe-6-Sockets aendern, ohne die Verbindung neu aufzubauen?",
+  "auftrag": "Zero-Cost Realtime V1 §1",
+  "checkedAt": "2026-09-17T13:53:04.639Z",
+  "endpoint": "wss://api.tiingo.com/iex",
+  "thresholdLevel": 6,
+  "symbols": {
+    "a": "AAPL",
+    "b": "NVDA"
+  },
+  "phaseSeconds": 45,
+  "session": {
+    "phase": "REGULAR",
+    "localDate": "2026-09-17",
+    "localTime": "09:53:04",
+    "isOpen": true,
+    "calendarCoverage": true
+  },
+  "result": "DYNAMIC_SUPPORTED",
+  "reason": null,
+  "consequence": "Nachmelden wirkt auf der offenen Verbindung. Der Subscription Manager darf im Modus 'dynamic' laufen (TIINGO_DYNAMIC_SUBSCRIBE=true); ein Titelwechsel kostet dann keinen Verbindungsaufbau mehr. Das Abmelden wirkt ebenfalls: AAPL verstummte.",
+  "control": {
+    "phase": "control",
+    "sekunden": 45,
+    "symbols": {
+      "NVDA": 63,
+      "AAPL": 46
+    },
+    "aActive": true,
+    "bActive": true,
+    "note": "Ohne diesen Lauf waere 'keine Ereignisse nach der Nachmeldung' nicht von 'der Titel handelt gerade nicht' zu unterscheiden."
+  },
+  "phases": [
+    {
+      "phase": "P0_baseline",
+      "from": "2026-09-17T13:53:49.767Z",
+      "to": "2026-09-17T13:54:34.768Z",
+      "seconds": 45,
+      "symbols": {
+        "AAPL": 52
+      },
+      "a": 52,
+      "b": 0
+    },
+    {
+      "phase": "P1_add",
+      "from": "2026-09-17T13:54:34.769Z",
+      "to": "2026-09-17T13:55:19.769Z",
+      "seconds": 45,
+      "symbols": {
+        "NVDA": 74,
+        "AAPL": 55
+      },
+      "a": 55,
+      "b": 74
+    },
+    {
+      "phase": "P2_remove",
+      "from": "2026-09-17T13:55:19.769Z",
+      "to": "2026-09-17T13:56:04.770Z",
+      "seconds": 45,
+      "symbols": {
+        "NVDA": 65
+      },
+      "a": 0,
+      "b": 65
+    }
+  ],
+  "serverMessages": [
+    {
+      "at": "2026-09-17T13:53:04.750Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "subscriptionId": 50628158
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-09-17T13:53:04.750Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-09-17T13:53:49.782Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "subscriptionId": 50628183
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-09-17T13:53:49.782Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-09-17T13:54:34.780Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "thresholdLevel": "6",
+          "tickers": [
+            "nvda",
+            "aapl"
+          ]
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-09-17T13:55:19.780Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "thresholdLevel": "6",
+          "tickers": [
+            "nvda"
+          ]
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-09-17T13:55:49.782Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    }
+  ],
+  "sent": [
+    {
+      "at": "2026-09-17T13:53:49.767Z",
+      "nachricht": {
+        "eventName": "subscribe",
+        "eventData": {
+          "thresholdLevel": 6,
+          "tickers": [
+            "aapl"
+          ]
+        },
+        "authorizationField": "entfernt (stand nur in der Nachricht an den Anbieter)"
+      }
+    },
+    {
+      "at": "2026-09-17T13:54:34.769Z",
+      "nachricht": {
+        "eventName": "subscribe",
+        "eventData": {
+          "thresholdLevel": 6,
+          "tickers": [
+            "nvda"
+          ]
+        },
+        "authorizationField": "entfernt (stand nur in der Nachricht an den Anbieter)"
+      }
+    },
+    {
+      "at": "2026-09-17T13:55:19.769Z",
+      "nachricht": {
+        "eventName": "unsubscribe",
+        "eventData": {
+          "thresholdLevel": 6,
+          "tickers": [
+            "aapl"
+          ]
+        },
+        "authorizationField": "entfernt (stand nur in der Nachricht an den Anbieter)"
+      }
+    }
+  ],
+  "socket": {
+    "stayedOpen": true,
+    "closedWith": null,
+    "reconnects": 0,
+    "openedAt": "2026-09-17T13:53:49.769Z"
+  },
+  "evidence": {
+    "baselineLeak": 0,
+    "addObserved": 74,
+    "aDuringAdd": 55,
+    "aAfterRemove": 0,
+    "bAfterRemove": 65,
+    "socketStayedOpen": true,
+    "explicitRejection": null
+  }
+}

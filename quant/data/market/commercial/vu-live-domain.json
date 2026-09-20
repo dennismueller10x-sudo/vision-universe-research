@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "vu-live-domain-1.0.0",
+  "auftrag": "Owner 17.09.2026: bevorzugt live.visionuniverse.de, research.* unberuehrt",
+  "checkedAt": "2026-09-17T17:05:05.926Z",
+  "hostname": "live.visionuniverse.de",
+  "mode": "apply",
+  "guard": {
+    "onlyWrites": "live.visionuniverse.de",
+    "neverTouches": [
+      "research.visionuniverse.de",
+      "visionuniverse.de",
+      "www.visionuniverse.de"
+    ]
+  },
+  "zoneFound": true,
+  "alreadyAttached": true,
+  "applied": false,
+  "result": "ALREADY_ATTACHED",
+  "reason": null,
+  "steps": [
+    {
+      "name": "Zone visionuniverse.de im Konto?",
+      "status": 200,
+      "detail": {
+        "found": true,
+        "status": "active"
+      }
+    },
+    {
+      "name": "Name schon vergeben?",
+      "status": 200,
+      "detail": {
+        "attached": true,
+        "service": "vu-live"
+      }
+    }
+  ],
+  "consequence": "live.visionuniverse.de zeigt bereits auf vu-live. Nichts zu tun."
+}

@@ -15,18 +15,36 @@
      node scripts/discover/browser-qa-live.mjs http://127.0.0.1:8121 [shots-dir] [--clock=ISO]
    ========================================================================= */
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const BASE = args[0] || "http://127.0.0.1:8121";
 const SHOTS = args[1]; if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 const CLOCK = (process.argv.find((a) => a.startsWith("--clock=")) || "").slice(8) || null;
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
+/* Der Strom, der in dieser Umgebung nicht erreichbar ist: ein
+   fehlgeschlagener WebSocket-Aufbau schreibt eine Konsolenzeile, die
+   kein Skript verhindern kann. Die Ausnahme gilt nur fuer GENAU die
+   Adresse aus der Auslieferung und nur fuer den Verbindungsaufbau; sie
+   wird gezaehlt und am Ende ausgewiesen. Dass der Strom laeuft, weist
+   scripts/discover/browser-qa-realtime.mjs in Actions nach - dort ohne
+   jede Ausnahme. */
+const STROM_URL = (() => {
+  try {
+    const meta = JSON.parse(readFileSync("discover/data/meta.json", "utf8"));
+    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
+  } catch (err) { return null; }
+})();
+const STROM_UNERREICHBAR = STROM_URL
+  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
+  : /$^/;
+let stromUnerreichbar = 0;
 const punkte = []; let fehler = 0;
 const ok = (n, c, d) => { punkte.push([c ? "ok  " : "FAIL", n, d || ""]); if (!c) fehler++; };
 async function seite(ctx) {
   const p = await ctx.newPage(); p.__m = []; p.__bad = []; p.__req = [];
   if (CLOCK) { await p.clock.install({ time: new Date(CLOCK) }); }
-  p.on("console", (m) => { if (m.type() === "error") { const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
+  p.on("console", (m) => { if (m.type() === "error") { if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; } const u = (m.location() && m.location().url) || ""; if ((!u || u.startsWith(BASE)) && !u.includes("favicon")) p.__m.push(m.text()); } });
   p.on("pageerror", (e) => p.__m.push("pageerror: " + e.message));
   p.on("request", (r) => { if (r.url().startsWith(BASE)) p.__req.push(r.url().replace(BASE, "")); });
   p.on("response", (r) => { if (r.status() >= 400 && r.url().startsWith(BASE) && !r.url().includes("favicon")) p.__bad.push(r.status() + " " + r.url().replace(BASE, "")); });
@@ -57,6 +75,7 @@ if (eintraege === 0) {
   await browser.close();
   console.log("\nDiscover Live-QA (ohne Snapshots) — " + punkte.length + " Pruefpunkte, " + fehler + " Fehler\n");
   for (const [s, n, dd] of punkte) console.log(`  ${s} ${n}${dd ? "  — " + dd : ""}`);
+if (stromUnerreichbar) console.log("\n  Hinweis: " + stromUnerreichbar + " Konsolenzeile(n) ueber den nicht erreichbaren Strom (" + STROM_URL + ").");
   process.exit(fehler ? 1 : 0);
 }
 /* Die Eingangsflaeche fuellt den ersten Bildschirm; die Karten beginnen
@@ -65,11 +84,17 @@ await d.mouse.wheel(0, 700); await warten(d, 900);
 const intra = await d.evaluate(() => [...document.querySelectorAll('[data-art="intraday"]')].length);
 ok("Tagesverlauf auf Karten gezeichnet (>=5 nach einem Bildschirm)", intra >= 5, "intraday svgs: " + intra);
 const labels = await d.evaluate(() => [...new Set([...document.querySelectorAll(".dx-live-label")].map((n) => n.textContent.trim()))]);
-ok("Beschriftung in Seitensprache (Heute/Letzter Handelstag)", labels.length > 0 && labels.every((t) => /^(Heute · (live|Stand \d\d:\d\d|Schluss \d\d:\d\d)|Letzter Handelstag · )/.test(t)), labels.join(" | "));
+/* V4: der Freshness-Vertrag kennt vier Zustaende; ein Stand, der nicht der
+   letzte Handelstag ist, heisst "nicht aktuell" und nie "Letzter Handelstag". */
+ok("Beschriftung in Seitensprache (Heute/Letzter Handelstag/nicht aktuell)", labels.length > 0 && labels.every((t) =>
+  /^(Heute · (live|Stand \d\d:\d\d|Schluss \d\d:\d\d)|Letzter Handelstag · |Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., \d\d\.\d\d\. · nicht aktuell|Heute · Stand \d\d:\d\d · nicht aktuell)/.test(t)), labels.join(" | "));
+ok("STALE heisst nie 'Letzter Handelstag' und traegt den Warnton", await d.evaluate(() =>
+  [...document.querySelectorAll('.dx-live-label[data-freshness="STALE"]')].every((n) => /nicht aktuell/.test(n.textContent) && !/Letzter Handelstag/.test(n.textContent) && n.classList.contains("dx-live-label--stale"))));
 ok("Keine technischen Codes auf Karten", labels.every((t) => !/OPEN|CLOSED|PRE_MARKET|AFTER_HOURS|HOLIDAY|Keine Live-Daten/.test(t)));
 /* Kein Fake: jede Intraday-Linie stammt aus einem validen Snapshot */
 const fake = await d.evaluate(() => [...document.querySelectorAll('[data-art="intraday"]')].map((s) => ({ sess: s.getAttribute("data-session"), n: s.querySelectorAll(".dx-art-line").length, title: s.querySelector("title") && s.querySelector("title").textContent })));
-ok("Jede Intraday-Linie traegt Sitzung, Quelle und Stand", fake.every((f) => f.sess && f.n === 1 && /Quelle tiingo.*Stand/.test(f.title || "")), JSON.stringify(fake[0]));
+/* V4 §11: kein Anbietername auf der Karte - die Beschreibung nennt Sitzung, Kursart und Stand. */
+ok("Jede Intraday-Linie traegt Sitzung, Kursart und Stand - ohne Anbietername", fake.every((f) => f.sess && f.n === 1 && /5-Minuten-Kurse.*Stand/.test(f.title || "") && !/tiingo|IEX/i.test(f.title || "")), JSON.stringify(fake[0]));
 const s1 = await stats(d);
 /* Abonniert wird je sichtbarem Kartenbild (data-symbol) - auch eines, fuer
    das noch kein Snapshot vorliegt: es bekommt ihn, sobald einer kommt. */
@@ -108,14 +133,31 @@ const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index()
 await d.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" }); await warten(d, 1500);
 ok("Aktienseite: 1T ist Standard", (await d.locator('.dx-tf button[aria-pressed="true"]').first().textContent()) === "1T");
 ok("Aktienseite: Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-chart .dx-micro-axis").count()) >= 3);
-ok("Aktienseite: Beschriftung mit Stand und Quelle", /Stand|Schluss|Letzter Handelstag/.test(await d.locator(".dx-intraday-note").textContent()));
-ok("Aktienseite: 5T entfaellt (eine Sitzung je Titel)", (await d.locator('.dx-tf button', { hasText: /^(1W|5T)$/ }).count()) === 0);
+/* Der Zustand des Tagesverlaufs muss auf der Seite stehen - aber nicht
+   zwingend in der Fussnote. Seit V4.1 traegt ihn die Statuszeile ueber
+   dem Chart ("Markt geoeffnet · Live", "Letzter Handelstag · Donnerstag",
+   "Heute · Stand 13:20 · nicht aktuell"), und die Fussnote sagt nur dann
+   etwas dazu, wenn es ueber den Zustand hinaus etwas zu sagen gibt.
+   Geprueft wird deshalb der Block, den ein Leser sieht, nicht ein
+   einzelner Knoten darin. */
+const zustandstext = (await d.locator(".dx-chart-hero-meta").textContent()) + " " +
+                     (await d.locator(".dx-intraday-note").textContent());
+ok("Aktienseite: Beschriftung mit Stand und Quelle",
+   /Stand|schluss|Schluss|Letzter Handelstag|Live/.test(zustandstext), zustandstext.trim().slice(0, 120));
+/* V4 §13: 1W aus der Tagesreihe (sieben Kalendertage), 5T gibt es nicht. */
+ok("Aktienseite: 1W vorhanden, 5T entfaellt", (await d.locator('.dx-tf button', { hasText: /^1W$/ }).count()) === 1 && (await d.locator('.dx-tf button', { hasText: /^5T$/ }).count()) === 0);
+ok("Aktienseite: Zeitraeume 1T 1W 1M 6M 1J 5J Max", (await d.evaluate(() => [...document.querySelectorAll(".dx-tf button")].map((b) => b.textContent).join(" "))) === "1T 1W 1M 6M 1J 5J Max");
 const s3 = await stats(d);
 ok("Aktienseite: wenige Abonnenten (Chart, Kopf, sichtbare Nachbarkarten; <= 6)", s3.subscribers <= 6, "subscribers " + s3.subscribers);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-03-detail-desktop.png" });
 /* Zeitraumwechsel auf 1J, wenn verfuegbar */
 const j = d.locator('.dx-tf button', { hasText: /^1J$/ });
-if (await j.count()) { const disabled = await j.first().isDisabled(); if (!disabled) { await j.first().click(); await warten(d, 400); ok("Aktienseite: 1J zeichnet den Jahreschart", (await d.locator(".q-tchart").count()) === 1); } else ok("Aktienseite: 1J gesperrt mit Begruendung", !!(await j.first().getAttribute("title"))); }
+if (await j.count()) { const disabled = await j.first().isDisabled(); if (!disabled) { await j.first().click(); await warten(d, 400); ok("Aktienseite: 1J zeichnet den Verbraucher-Chart (Linie, Kurs, Zeitraum)", (await d.locator(".dx-range-chart").count()) === 1 && /in einem Jahr/.test(await d.locator(".dx-chart-hero").textContent()));
+    /* Frische der Tagesreihe am Chart, nie als aktuell, wenn sie es nicht ist. */
+    const fr = await d.evaluate(() => { const n = document.querySelector(".dx-chart-hero .dx-live-label"); return n ? { t: n.textContent, s: n.getAttribute("data-freshness") } : null; });
+    ok("Aktienseite: Tagesreihe traegt Frische-Zustand", !!fr && /Schluss/.test(fr.t) && (fr.s !== "STALE" || /nicht aktuell/.test(fr.t)), JSON.stringify(fr));
+    const w = d.locator('.dx-tf button', { hasText: /^1W$/ });
+    if (!(await w.first().isDisabled())) { await w.first().click(); await warten(d, 300); ok("Aktienseite: 1W zeichnet sieben Kalendertage", /in einer Woche/.test(await d.locator(".dx-chart-hero").textContent()) && (await d.locator(".dx-range-chart").count()) === 1); } } else ok("Aktienseite: 1J gesperrt mit Begruendung", !!(await j.first().getAttribute("title"))); }
 ok("Desktop: keine Konsolenfehler", d.__m.length === 0, d.__m.slice(0, 3).join(" | "));
 ok("Desktop: keine 4xx/5xx auf eigene Pfade", d.__bad.length === 0, d.__bad.slice(0, 3).join(" | "));
 ok("Desktop: kein horizontaler Ueberlauf", await d.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "intraday-snapshot-1.0.0",
+  "instrumentId": "URSP",
+  "symbol": "URSP",
+  "securityId": "ref_URSP",
+  "provider": "tiingo",
+  "venue": "IEX",
+  "dataMode": "real",
+  "seriesType": "INTRADAY_BARS",
+  "interval": "5min",
+  "sessionDate": "2026-09-18",
+  "timezone": "America/New_York",
+  "sessionOpen": "2026-09-18T13:30:00.000Z",
+  "sessionClose": "2026-09-18T20:00:00.000Z",
+  "sessionOpenLocal": "09:30",
+  "sessionCloseLocal": "16:00",
+  "closeLocal": "16:00",
+  "earlyClose": false,
+  "extendedHours": {
+    "preOpenLocal": "04:00",
+    "afterCloseLocal": "20:00"
+  },
+  "asOf": "2026-09-18T17:00:00.000Z",
+  "asOfLocal": "13:00",
+  "fetchedAt": "2026-09-18T20:02:31.250Z",
+  "marketStateAtFetch": "AFTER_HOURS",
+  "isLive": false,
+  "isDelayed": true,
+  "delayMinutes": 5,
+  "regularComplete": false,
+  "isComplete": false,
+  "previousClose": 48.56,
+  "points": [
+    [
+      "11:35",
+      47.88
+    ],
+    [
+      "11:40",
+      47.88
+    ],
+    [
+      "11:45",
+      47.88
+    ],
+    [
+      "11:50",
+      47.88
+    ],
+    [
+      "11:55",
+      47.88
+    ],
+    [
+      "12:00",
+      47.88
+    ],
+    [
+      "12:05",
+      47.88
+    ],
+    [
+      "12:10",
+      47.88
+    ],
+    [
+      "12:15",
+      47.88
+    ],
+    [
+      "12:20",
+      47.88
+    ],
+    [
+      "12:25",
+      47.88
+    ],
+    [
+      "12:30",
+      47.88
+    ],
+    [
+      "12:35",
+      47.88
+    ],
+    [
+      "12:40",
+      47.88
+    ],
+    [
+      "12:45",
+      47.88
+    ],
+    [
+      "12:50",
+      47.88
+    ],
+    [
+      "12:55",
+      47.88
+    ],
+    [
+      "13:00",
+      47.89
+    ]
+  ],
+  "extended": {
+    "pre": [],
+    "after": []
+  },
+  "pointCount": 18,
+  "discardedBars": 0,
+  "publishable": true,
+  "publishBasis": "Erklaerung des Eigentuemers vom 2026-09-13 (siehe marketData). Intraday-Bars stammen aus dem IEX-Bestand von Tiingo (nur IEX-Volumen, Kursart vom Anbieter nicht benannt: priceType UNSPECIFIED, quant/data/market/commercial/live-candle-verification.json). Die Anzeige nennt deshalb 'Stand HH:MM' und keine Kursart.",
+  "publishCheckedAt": "2026-09-13",
+  "note": "Tagesverlauf aus Anbieter-Bars (5min, IEX). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes.",
+  "fetchedAfterClose": true,
+  "coversFinalSlot": false,
+  "lastRegularLocal": "13:00",
+  "finalSlotLocal": "15:55"
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cloudflare-access-probe-1.0.0",
+  "auftrag": "Owner-Update 17.09.2026: vorhandene Secrets nutzen, keine neuen erzeugen",
+  "checkedAt": "2026-09-17T11:48:23.401Z",
+  "note": "Dieser Bericht enthaelt keine Werte. Nur Namen, Formen und Rechte.",
+  "environment": "github-actions",
+  "environmentNote": "In Actions - hier liegen die Secrets, der Befund gilt.",
+  "secrets": [
+    {
+      "name": "CLOUDFLARE_API_TOKEN",
+      "present": true,
+      "role": "Token, von wrangler direkt gelesen",
+      "form": "unbekannt(53 Zeichen)"
+    },
+    {
+      "name": "CLOUDFLARE_API_KEY",
+      "present": false,
+      "role": "Global API Key, braucht zusaetzlich CLOUDFLARE_EMAIL",
+      "form": null
+    },
+    {
+      "name": "CLOUDFLARE_TOKEN",
+      "present": false,
+      "role": "Eigenschreibweise, muss umgehaengt werden",
+      "form": null
+    },
+    {
+      "name": "CF_API_TOKEN",
+      "present": false,
+      "role": "Eigenschreibweise, muss umgehaengt werden",
+      "form": null
+    },
+    {
+      "name": "CLOUDFLARE_API",
+      "present": false,
+      "role": "Eigenschreibweise, muss umgehaengt werden",
+      "form": null
+    },
+    {
+      "name": "CLOUDFLARE_ACCOUNT_ID",
+      "present": false,
+      "role": "Account-ID, von wrangler direkt gelesen",
+      "form": null
+    },
+    {
+      "name": "CLOUDFLARE_EMAIL",
+      "present": false,
+      "role": "nur zusammen mit einem Global API Key noetig",
+      "form": null
+    }
+  ],
+  "accountId": {
+    "derivable": true,
+    "source": "VU_HISTORY_S3_ENDPOINT",
+    "jurisdiction": null,
+    "reason": null,
+    "form": "accountIdOderHex32"
+  },
+  "verdict": "READY_TO_CHECK_PERMISSIONS",
+  "missing": [],
+  "consequence": "Namen und Account-ID sind da. Ob die RECHTE des Tokens fuer Workers und Durable Objects reichen, sagt der naechste Schritt (wrangler whoami) - der Name allein sagt es nicht.",
+  "token": {
+    "foundAs": "CLOUDFLARE_API_TOKEN",
+    "form": "unbekannt(53 Zeichen)",
+    "usableDirectly": true,
+    "needsEmail": false,
+    "note": "wrangler liest diesen Namen von selbst."
+  }
+}

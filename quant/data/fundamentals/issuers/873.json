@@ -6,9 +6,9 @@
       "cik": "0000056873",
       "name": "KROGER CO",
       "sic": "5411",
-      "rawFacts": 25875,
-      "mappedFacts": 7830,
-      "unmappedFacts": 17109,
+      "rawFacts": 26190,
+      "mappedFacts": 7934,
+      "unmappedFacts": 17310,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -20,26 +20,26 @@
       "annualPeriods": 20,
       "quarterlyPeriods": 73,
       "firstPeriodEnd": "2007-02-03",
-      "lastPeriodEnd": "2026-05-23",
+      "lastPeriodEnd": "2026-08-15",
       "historyYears": 18.92,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0,
@@ -52,56 +52,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2008-02-02",
           "lastAvailablePeriod": "2025-02-01",
           "historyYears": 17.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2007-02-03",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 18.92
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 17.0
         },
         "total_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-01-30",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 16.0,
@@ -117,39 +117,40 @@
         }
       },
       "quality": {
-        "HIGH": 500,
+        "HIGH": 505,
         "MEDIUM": 136
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 636,
-        "resolvedValues": 636
+        "datableValues": 641,
+        "resolvedValues": 641
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 19025,
+        "total": 19248,
         "by_severity": {
-          "INFO": 17109,
+          "INFO": 17310,
           "ERROR": 2,
-          "WARNING": 1914
+          "WARNING": 1936
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 665,
+          "CONCEPT_DISAGREEMENT": 677,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 102,
-          "UNEXPECTED_DURATION": 1147,
-          "UNKNOWN_CONCEPT": 17109
+          "RESTATEMENT_CONFLICT": 108,
+          "UNEXPECTED_DURATION": 1151,
+          "UNKNOWN_CONCEPT": 17310
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-078236",
-        "filing_date": "2026-06-26",
+        "accession": "0001104659-26-108926",
+        "filing_date": "2026-09-18",
         "form": "10-Q",
-        "periodic_filings": 162
+        "periodic_filings": 163,
+        "acceptance_datetime": "2026-09-18T20:02:58.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -158,7 +159,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "e676758ff4edecc706db9f9304b5c7db6df269830f2fa9fa44a0f3f2c403945e",
+      "sourceDigest": "bc821ce05f1632549473ad0fd98ee1ce6efd80ebfe0c85087f01f985256ad21e",
       "issuerId": "iss_cik_0000056873"
     },
     {

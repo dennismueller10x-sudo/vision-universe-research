@@ -4,12 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#08080a">
+<link rel="icon" href="data:,">
 <title>Discover — Vision Universe®</title>
 <meta name="description" content="Vision Universe® Discover: neue 52-Wochen-Hochs, Marktfuehrer, Momentum, Ausbrueche und relative Staerke als visuelle Entdeckungsreihen statt als Screener-Formular.">
 <link rel="stylesheet" href="/quant/ui/quant.css">
 <link rel="stylesheet" href="/discover/discover.css">
-<link rel="stylesheet" href="/assets/site-navigation.css"></head>
-<body class="dx"><vu-navigation theme="dark"></vu-navigation><script src="/assets/site-navigation.js"></script>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<!-- Farbschema vor dem ersten Bild (V4.1 §12): die gemerkte Wahl oder das
+     System - sonst blitzt die dunkle Flaeche unter einer hellen Wahl auf.
+     Dieselbe Logik lebt in /discover/engines/theme.js. -->
+<script>(function(){try{var m=localStorage.getItem("vu-discover-theme-v1");var w=(m==="light"||m==="dark")?m:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",(m==="light"||m==="dark")?m:"system");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="light"?"#f7f7f4":"#08080a");}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();</script></head>
+<body class="dx"><vu-navigation theme="dark" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 
 <div id="d-root"></div>
 
@@ -25,6 +30,9 @@
 <script src="/quant/engines/realtime/market-hours.js"></script>
 <script src="/quant/engines/realtime/trading-session.js"></script>
 <script src="/quant/engines/realtime/intraday-snapshot.js"></script>
+<script src="/quant/engines/realtime/freshness.js"></script>
+<script src="/quant/engines/realtime/source-state.js"></script>
+<script src="/quant/engines/series-sampling.js"></script>
 
 <!-- Discover-eigene Engines -->
 <script src="/discover/engines/contract.js"></script>
@@ -40,6 +48,7 @@
 <script src="/discover/engines/realtime-source.js"></script>
 <script src="/discover/engines/analytics.js"></script>
 <script src="/discover/engines/memory.js"></script>
+<script src="/discover/engines/theme.js"></script>
 <script src="/discover/engines/recommendation.js"></script>
 
 <!-- Discover-Oberflaeche -->
@@ -55,6 +64,7 @@
 <script src="/discover/ui/search.js"></script>
 <script src="/discover/ui/detail-fundamentals.js"></script>
 <script src="/discover/ui/detail.js"></script>
+<script src="/discover/ui/daten.js"></script>
 <script src="/discover/app.js"></script>
 </body>
 </html>

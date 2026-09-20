@@ -1,0 +1,214 @@
+{
+  "generatedAt": "2026-09-17T07:57:17.301Z",
+  "scope": "zeroCostRealtimeModel",
+  "note": "Rechnung gegen die dokumentierten Freigrenzen mit den gemessenen Ereignisraten. Keine Messung an einem Cloudflare-Konto - die Abrechnung selbst ist dokumentiert, nicht nachgemessen.",
+  "messung": {
+    "quelle": "firehose-capability.json (2026-09-16)",
+    "fensterSekunden": 120,
+    "titelImFenster": 6429,
+    "gesamtrateProSekunde": 1021.94,
+    "bytesProSekunde": 98070,
+    "hoechsteTitelrate": 1.675,
+    "medianTitelrate": 0.083,
+    "summeAktivste": {
+      "1": 1.675,
+      "5": 8.008333333333333,
+      "10": 15.583333333333332,
+      "25": 37.15,
+      "50": 70.57500000000005,
+      "100": 129.63333333333338
+    },
+    "tickerlisteAufStufe6": "gemessen: Anmeldung mit [\"NVDA\"] lieferte 141 Ereignisse, ausschliesslich NVDA; [\"AAPL\",\"MSFT\"] lieferte 131 Ereignisse, ausschliesslich diese beiden. Die Auswahl geschieht beim Anbieter, nicht bei uns."
+  },
+  "freigrenzen": {
+    "quelle": "cloudflare-docs @ raw.githubusercontent.com/cloudflare/cloudflare-docs/production, abgerufen 2026-09-17",
+    "dateien": [
+      "src/content/partials/durable-objects/durable-objects-pricing.mdx",
+      "src/content/docs/durable-objects/platform/pricing.mdx",
+      "src/content/docs/durable-objects/platform/limits.mdx",
+      "src/content/docs/workers/platform/limits.mdx"
+    ],
+    "durableObjects": {
+      "anfragenProTag": 100000,
+      "dauerGBsProTag": 13000,
+      "speicherProObjektMB": 128,
+      "nurSQLiteBackend": true,
+      "zeilenSchreibenProTag": 100000,
+      "hinweis": "Wird eine der Freigrenzen ueberschritten, schlagen weitere Operationen dieser Art fehl. Die Tageswerte setzen sich um 00:00 UTC zurueck."
+    },
+    "workers": {
+      "anfragenProTag": 100000,
+      "cpuMsProAnfrage": 10,
+      "speicherMB": 128,
+      "gleichzeitigeAusgehendeVerbindungenProAnfrage": 6
+    },
+    "websocket": {
+      "verhaeltnisEingehend": 20,
+      "ausgehendKostenlos": true,
+      "verbindungsaufbau": "1 Anfrage je neuer WebSocket-Verbindung",
+      "pingsKostenlos": true
+    },
+    "bezahlt": {
+      "basisUsd": 5,
+      "anfragenUsdJeMillion": 0.15,
+      "dauerUsdJeMillionGBs": 12.5,
+      "anfragenInklusive": 1000000,
+      "dauerInklusiveGBs": 400000
+    }
+  },
+  "ableitung": {
+    "tragbareNachrichtenProTag": 1800000,
+    "tragbareRateProSekunde": 76.9,
+    "maxAktiveTitelImFreibetrag": 54,
+    "maxDurchschnittlicheTitelImFreibetrag": 923,
+    "reserveAnfragenFuerClients": 10000
+  },
+  "varianten": [
+    {
+      "variante": "A — Full Firehose dauerhaft",
+      "beschreibung": "Ein Objekt haelt das ganze Band, die ganze Sitzung, unabhaengig von Nutzern.",
+      "ereignisseProSekunde": 1021.9,
+      "aktiveSekundenProTag": 23400,
+      "objekte": 1,
+      "nachrichtenProTag": 23913396,
+      "anfragenProTag": 1205670,
+      "anfragenFreiAnteil": 1205.7,
+      "dauerGBsProTag": 2995,
+      "dauerFreiAnteil": 23,
+      "imFreibetrag": false,
+      "zusatzkostenUsdProMonat": 8.65,
+      "aktualitaetSekunden": 1,
+      "maxGleichzeitigeTitel": 6429,
+      "maxNutzer": "praktisch unbegrenzt",
+      "skalierungsgrenze": "Anfragenkontingent, 12-fach ueberschritten",
+      "komplexitaet": "mittel"
+    },
+    {
+      "variante": "B — Full Firehose nur bei aktiven Nutzern",
+      "beschreibung": "Band nur offen, solange jemand da ist. Volle Rate, aber kuerzere Zeit.",
+      "ereignisseProSekunde": 1021.9,
+      "aktiveSekundenProTag": 3600,
+      "objekte": 1,
+      "nachrichtenProTag": 3678984,
+      "anfragenProTag": 193950,
+      "anfragenFreiAnteil": 194,
+      "dauerGBsProTag": 461,
+      "dauerFreiAnteil": 3.5,
+      "imFreibetrag": false,
+      "zusatzkostenUsdProMonat": 5.46,
+      "aktualitaetSekunden": 1,
+      "maxGleichzeitigeTitel": 6429,
+      "maxNutzer": "praktisch unbegrenzt",
+      "skalierungsgrenze": "rund 33 Minuten Nutzungszeit am Tag, dann ist das Kontingent leer",
+      "komplexitaet": "mittel"
+    },
+    {
+      "variante": "C — Stream nur fuer betrachtete Titel",
+      "beschreibung": "Tickerliste auf Stufe 6, nur was gerade jemand ansieht. Gemessen moeglich.",
+      "ereignisseProSekunde": 37.2,
+      "aktiveSekundenProTag": 23400,
+      "objekte": 1,
+      "nachrichtenProTag": 869310,
+      "anfragenProTag": 53466,
+      "anfragenFreiAnteil": 53.5,
+      "dauerGBsProTag": 2995,
+      "dauerFreiAnteil": 23,
+      "imFreibetrag": true,
+      "zusatzkostenUsdProMonat": 0,
+      "aktualitaetSekunden": 1,
+      "maxGleichzeitigeTitel": 54,
+      "maxNutzer": "unabhaengig von der Nutzerzahl",
+      "skalierungsgrenze": "54 gleichzeitig gestreamte aktive Titel, oder rund 923 durchschnittliche",
+      "komplexitaet": "mittel"
+    },
+    {
+      "variante": "D — vorhandener REST-/Snapshot-Pfad",
+      "beschreibung": "Was heute laeuft: Workflow alle 5 Minuten, GitHub Pages, Live-Hub pollt.",
+      "ereignisseProSekunde": 0,
+      "aktiveSekundenProTag": 0,
+      "objekte": 0,
+      "nachrichtenProTag": 0,
+      "anfragenProTag": 0,
+      "anfragenFreiAnteil": 0,
+      "dauerGBsProTag": 0,
+      "dauerFreiAnteil": 0,
+      "imFreibetrag": true,
+      "zusatzkostenUsdProMonat": 0,
+      "aktualitaetSekunden": 480,
+      "maxGleichzeitigeTitel": 524,
+      "maxNutzer": "unbegrenzt (statische Auslieferung)",
+      "skalierungsgrenze": "GitHub-Cron, kleinster Takt 5 Minuten",
+      "komplexitaet": "vorhanden, null Zusatzaufwand"
+    }
+  ],
+  "varianteCKurve": [
+    {
+      "aktiveTitel": 1,
+      "ereignisseProSekunde": 1.7,
+      "nachrichtenProTag": 39195,
+      "anfragenProTag": 11960,
+      "anteilFreibetragProzent": 12,
+      "imFreibetrag": true
+    },
+    {
+      "aktiveTitel": 5,
+      "ereignisseProSekunde": 8,
+      "nachrichtenProTag": 187395,
+      "anfragenProTag": 19370,
+      "anteilFreibetragProzent": 19.4,
+      "imFreibetrag": true
+    },
+    {
+      "aktiveTitel": 10,
+      "ereignisseProSekunde": 15.6,
+      "nachrichtenProTag": 364650,
+      "anfragenProTag": 28233,
+      "anteilFreibetragProzent": 28.2,
+      "imFreibetrag": true
+    },
+    {
+      "aktiveTitel": 25,
+      "ereignisseProSekunde": 37.2,
+      "nachrichtenProTag": 869310,
+      "anfragenProTag": 53466,
+      "anteilFreibetragProzent": 53.5,
+      "imFreibetrag": true
+    },
+    {
+      "aktiveTitel": 50,
+      "ereignisseProSekunde": 70.6,
+      "nachrichtenProTag": 1651455,
+      "anfragenProTag": 92573,
+      "anteilFreibetragProzent": 92.6,
+      "imFreibetrag": true
+    },
+    {
+      "aktiveTitel": 75,
+      "ereignisseProSekunde": 101.7,
+      "nachrichtenProTag": 2379000,
+      "anfragenProTag": 128951,
+      "anteilFreibetragProzent": 129,
+      "imFreibetrag": false
+    },
+    {
+      "aktiveTitel": 100,
+      "ereignisseProSekunde": 129.6,
+      "nachrichtenProTag": 3033420,
+      "anfragenProTag": 161672,
+      "anteilFreibetragProzent": 161.7,
+      "imFreibetrag": false
+    },
+    {
+      "aktiveTitel": 200,
+      "ereignisseProSekunde": 222.4,
+      "nachrichtenProTag": 5203575,
+      "anfragenProTag": 270179,
+      "anteilFreibetragProzent": 270.2,
+      "imFreibetrag": false
+    }
+  ],
+  "offen": [
+    "Ob Tiingo auf einer offenen Verbindung nachtraeglich abonnieren und abbestellen laesst, ist NICHT gemessen. Die aufgezeichnete Bestaetigung war ein Heartbeat ohne subscriptionId. Faellt die Antwort negativ aus, kostet ein Titelwechsel einen Neuaufbau der Verbindung - eine Anfrage, kein Kostenproblem, aber eine Sekunde Latenz.",
+    "Die Abrechnung eingehender Nachrichten eines AUSGEHENDEN Sockets ist dokumentiert nur fuer eingehende Nachrichten allgemein. Die Rechnung nimmt die teurere Auslegung."
+  ]
+}

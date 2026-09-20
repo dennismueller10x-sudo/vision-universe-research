@@ -110,6 +110,67 @@ function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 function round(v, d) { return isNum(v) ? Math.round(v * Math.pow(10, d)) / Math.pow(10, d) : null; }
 
 let bytesWritten = 0, filesWritten = 0;
+/* V4.1 §19: Feed-Quellen in der Reihenfolge, in der sie reihum gezogen
+   werden, mit dem Namen, der auf dem Bildschirm steht. */
+const FEED_SOURCES = [
+  ["market-leaders", "Die stärksten Aktien"], ["bekannte-namen", "Bekannte Namen in Bewegung"],
+  ["new-52-week-highs", "Neue Jahreshochs"], ["umsatz-waechst-stark", "Umsatz wächst stark"],
+  ["momentum-leaders", "Seit Monaten im Aufwind"], ["cashflow-maschinen", "Cashflow-Maschinen"],
+  ["ueberraschungen", "Überraschungen"], ["sp500-staerkste", "Stärkste im S&P 500"],
+  ["gewinne-beschleunigen", "Gewinne beschleunigen"], ["comeback", "Comeback?"],
+  ["langfristige-compounder", "Langfristige Compounder"], ["ndx-staerkste", "Stärkste im NASDAQ-100"],
+  ["breakout-watch", "Gerade in Bewegung"], ["qualitaet-wachstum", "Qualität + Wachstum"],
+  ["thema-ki", "Künstliche Intelligenz"], ["relative-strength", "Dem Markt voraus"],
+  ["djia-staerkste", "Stärkste im Dow Jones"], ["profitables-wachstum", "Profitables Wachstum"],
+  ["margen-werden-staerker", "Margen werden stärker"], ["trend-quality", "Stabile Aufwärtstrends"],
+  ["fundamentale-turnarounds", "Fundamentale Turnarounds"], ["thema-robotik", "Robotik & Automation"],
+  ["starke-bilanz-wachstum", "Starke Bilanz + Wachstum"], ["qualitaet-zum-preis", "Qualität zum vernünftigen Preis"],
+  ["thema-mobilitaet", "Autos & Mobilität"]
+];
+const FEED_MAX = 400;
+const FEED_BATCH = 12;
+function feedOrder(rowsById, quellen, max) {
+  const eimer = quellen.map(([rowId, herkunft]) => {
+    const row = rowsById.get(rowId);
+    return { rowId, herkunft, cards: row && row.cards ? row.cards.slice() : [], zeiger: 0 };
+  }).filter((e) => e.cards.length);
+  const out = [], gesehen = new Set();
+  let letzteSektoren = [], letzterBekannt = null;
+  const passt = (card) => {
+    if (!card || gesehen.has(card.symbol)) return false;
+    const sec = card.sector || null;
+    if (sec && letzteSektoren.length >= 2 && letzteSektoren[0] === sec && letzteSektoren[1] === sec) return false;
+    return true;
+  };
+  let leerRunden = 0;
+  while (out.length < max && leerRunden < 2) {
+    let genommen = 0;
+    for (const e of eimer) {
+      if (out.length >= max) break;
+      /* Erster passender Kandidat aus der Quelle; bevorzugt einer, der den
+         Bekanntheitswechsel haelt (bekannt nach unbekannt und umgekehrt). */
+      let wahl = -1;
+      for (let k = e.zeiger; k < e.cards.length && k < e.zeiger + 8; k++) {
+        const c = e.cards[k];
+        if (!passt(c)) continue;
+        const bekannt = c.recognitionTier === 1 ? 1 : 0;
+        if (wahl < 0) wahl = k;
+        if (letzterBekannt === null || bekannt !== letzterBekannt) { wahl = k; break; }
+      }
+      if (wahl < 0) continue;
+      const c = e.cards[wahl];
+      e.cards.splice(wahl, 1);
+      gesehen.add(c.symbol);
+      out.push({ card: c, rowId: e.rowId, herkunft: e.herkunft });
+      letzteSektoren = [c.sector || null, letzteSektoren[0] || null];
+      letzterBekannt = c.recognitionTier === 1 ? 1 : 0;
+      genommen++;
+    }
+    leerRunden = genommen ? 0 : leerRunden + 1;
+  }
+  return out;
+}
+
 function write(rel, data) {
   const file = join(OUT, rel);
   mkdirSync(dirname(file), { recursive: true });
@@ -477,6 +538,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
       was: erkannt ? erkannt.was : null,
       recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
+      bars: isNum(sec.bars) ? sec.bars : null,
       metrics,
       metricStatus: withheldMetricStatus(metrics, sec.fieldStatus),
       dataQuality: sec.dataQuality || null,
@@ -487,6 +549,9 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     stock.scoreDetail = scores;
     stock.rawValues = values;
     stock.seriesPath = seriesPath;
+    /* Laenge der Kurshistorie beim Anbieter (Faktorzeile) - fuer die
+       Qualifikation "staerkste Aktien" (>= 250 Handelstage). */
+    stock.bars = isNum(sec.bars) ? sec.bars : null;
     /* Kursspanne der ausgelieferten Reihe - fuer "Kurs + Fundamentals". */
     const dated = goldenDated || kompaktDated;
     if (dated && dated.length >= 2) {
@@ -546,7 +611,23 @@ function attachFundamentals(stock, model) {
   stock.fundamentalModel = model || null;
   stock.fundamentalCapabilities = Fundamentals.capabilities(model);
   if (!model) return;
-  const sig = Fundamentals.signals(model);
+  /* V4 §22: Plausibilitaet und Aktualitaet. Ein juengstes Geschaeftsjahr,
+     das aelter als zwei Jahre ist (RLMD: FY2013), traegt keine Kennzahl
+     auf Karten oder Sammlungen; die Aktienseite nennt den Stand und den
+     Grund. Margen mit unpassendem Nenner (CCI: 1 337 % FCF-Marge) bleiben
+     null - mit Grund (fundamentalOmitted). */
+  const fopts = { sector: stock.sector || null };
+  const stale = Fundamentals.staleness(model);
+  if (stale.stale) {
+    stock.fundamentalStale = stale;
+    stock.fundamentalOmitted = { all: { reason: stale.reason, detail: "Juengstes Geschaeftsjahr " + stale.fiscalYear + " (Ende " + stale.end + "), " + stale.ageYears + " Jahre alt" } };
+    for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) stock.metricStatus[key] = "STALE_FUNDAMENTALS";
+    stock.signals.fundamentals = true;
+    stock.hook = null;
+    return;
+  }
+  const sig = Fundamentals.signals(model, fopts);
+  stock.fundamentalOmitted = sig.omitted && Object.keys(sig.omitted).length ? sig.omitted : null;
   const m = stock.metrics;
   const v = (x) => (x && isNum(x.value)) ? x.value : null;
   const revRows = model.annual.revenue || [];
@@ -557,7 +638,7 @@ function attachFundamentals(stock, model) {
   m.f_fcfMargin = v(sig.fcfMargin);
   m.f_earningsAcceleration = v(sig.earningsAcceleration);
   m.f_marginExpansion3y = v(sig.marginExpansion3y);
-  const latest = Fundamentals.latest(model);
+  const latest = Fundamentals.latest(model, fopts);
   m.f_roe = latest.derived && isNum(latest.derived.roe) ? latest.derived.roe : null;
   const g = Unternehmen.ausConsumerBundle(model, { preis: Contract.valueOf(stock.price), preisStatus: Contract.statusOf(stock.price) });
   m.f_revenueGrowthTTM = isNum(g.umsatzWachstum) ? g.umsatzWachstum : null;
@@ -937,7 +1018,72 @@ function fundBasis(s) {
   if (isNum(m.f_revenueGrowth3y) && m.f_revenueGrowth3y > FUND_MAX_GROWTH) return false;
   return true;
 }
+/* V4 §18: "Die staerksten Aktien" - Qualifikation zuerst, Rang danach.
+   Ein Score allein qualifiziert nicht: ein 2-$-Titel mit 10 000 Stueck
+   Tagesumsatz hat dieselbe Skala wie NVIDIA. Die Regeln stehen in der
+   Methodik (qualification) und je Titel unter qualification.reasons. */
+const QUAL = METHODOLOGY.qualification || { minCoverage: 0.8, minBars: 250, minPrice: 5, minAvgDollarVolume20d: 5e6 };
+function applyQualification(universe) {
+  for (const s of universe.stocks) {
+    const reasons = [];
+    const lead = s.scoreDetail && s.scoreDetail.leadership;
+    const preis = Contract.valueOf(s.price);
+    const vol = (s.rawValues && isNum(s.rawValues.avgVolume20d)) ? s.rawValues.avgVolume20d
+              : (isNum(s.metrics.avgVolume20d) ? s.metrics.avgVolume20d : null);
+    if (!isNum(s.bars) && s.rawValues && isNum(s.rawValues.bars)) s.bars = s.rawValues.bars;
+    const dollar = isNum(vol) && isNum(preis) ? vol * preis : null;
+    if (!lead || lead.status !== "SCORED") reasons.push("NO_LEADERSHIP_SCORE");
+    else if (isNum(lead.coverage) && lead.coverage < QUAL.minCoverage) reasons.push("SCORE_COVERAGE_BELOW_" + Math.round(QUAL.minCoverage * 100));
+    if (!isNum(s.bars) || s.bars < QUAL.minBars) reasons.push("HISTORY_BELOW_" + QUAL.minBars + "_BARS");
+    if (!isNum(preis)) reasons.push("NO_PRICE");
+    else if (preis < QUAL.minPrice) reasons.push("PRICE_BELOW_" + QUAL.minPrice);
+    if (dollar === null) reasons.push("NO_DOLLAR_VOLUME");
+    else if (dollar < QUAL.minAvgDollarVolume20d) reasons.push("DOLLAR_VOLUME_BELOW_" + Math.round(QUAL.minAvgDollarVolume20d / 1e6) + "M");
+    if (s.discoveryEligible === false) reasons.push("NOT_TRADING");
+    s.qualification = { strongest: reasons.length === 0, reasons, avgDollarVolume20d: dollar === null ? null : Math.round(dollar),
+                        bars: isNum(s.bars) ? s.bars : null, scoreCoverage: lead && isNum(lead.coverage) ? lead.coverage : null,
+                        rule: QUAL.id || "strongest" };
+  }
+  universe.qualificationSummary = { rule: QUAL, qualified: universe.stocks.filter((s) => s.qualification.strongest).length,
+                                    of: universe.stocks.length };
+  return universe;
+}
+
+/* V4 §19-20: Index-Mitgliedschaft aus den veroeffentlichten Fondsbestaenden
+   (quant/data/market/index-membership). Fehlt eine Datei, gibt es die Reihe
+   nicht - geraten wird nichts. */
+function attachIndexMembership(universe) {
+  const dir = join(root, "quant", "data", "market", "index-membership");
+  const idxFile = join(dir, "index.json");
+  universe.indexes = [];
+  for (const s of universe.stocks) { s.indexMemberships = []; s.indexMembershipDetail = {}; }
+  if (!existsSync(idxFile)) { console.log("     Index-Mitgliedschaft: keine Daten (quant/data/market/index-membership fehlt) - Index-Reihen entfallen."); return universe; }
+  const verzeichnis = readJSON(idxFile);
+  const bySymbol = new Map(universe.stocks.map((s) => [s.symbol, s]));
+  for (const e of verzeichnis.indexes || []) {
+    const f = join(dir, e.indexId + ".json");
+    if (!existsSync(f)) continue;
+    const doc = readJSON(f);
+    let hits = 0;
+    for (const m of doc.members || []) {
+      const st = bySymbol.get(m.symbol);
+      if (!st) continue;
+      st.indexMemberships.push(doc.indexId);
+      st.indexMembershipDetail[doc.indexId] = { weight: m.weight, asOf: doc.asOf };
+      hits++;
+    }
+    universe.indexes.push({ indexId: doc.indexId, indexName: doc.indexName, shortLabel: doc.shortLabel || e.shortLabel || doc.indexName,
+                            asOf: doc.asOf, asOfSource: doc.asOfSource, source: doc.source, proxy: doc.proxy, memberCount: doc.memberCount,
+                            inUniverse: hits, unmatchedCount: doc.unmatchedCount, path: e.path, stale: e.stale === true });
+    console.log(`     Index ${doc.indexId}: ${doc.memberCount} Mitglieder laut ${doc.proxy.etf} (${doc.asOf}), ${hits} im Universum`);
+  }
+  return universe;
+}
+
 const ROW_FILTERS = {
+  strongest: (s) => !!(s.qualification && s.qualification.strongest),
+  indexMember: (s, config) => !!(s.qualification && s.qualification.strongest) &&
+    Array.isArray(s.indexMemberships) && s.indexMemberships.indexOf(config.indexId) !== -1,
   nearOrAtHigh: (s) => s.signals.new52WeekHigh || s.signals.nearHigh ||
     (isNum(s.metrics.distanceTo52wHigh) && s.metrics.distanceTo52wHigh >= -METHODOLOGY.high52w.watchPct),
   /* Nur das belegte Signal, nicht der Score.
@@ -995,9 +1141,35 @@ const ROW_FILTERS = {
   fundBilanzWachstum: (s) => fundBasis(s) && s.signals.netCash === true && isNum(s.metrics.f_revenueGrowth3y) && s.metrics.f_revenueGrowth3y >= 0.10
 };
 
+/* V4 §17: warum steht der Titel auf diesem Platz - maschinenlesbar, aus
+   Zahlen, die die Karte ohnehin traegt. */
+function rankingReason(s, config, rank, of, scoreKey) {
+  const detail = scoreKey && s.scoreDetail ? s.scoreDetail[scoreKey] : null;
+  const contributions = detail && Array.isArray(detail.contributions)
+    ? detail.contributions.filter((c) => isNum(c.contribution)).sort((a, b) => b.contribution - a.contribution).slice(0, 3)
+        .map((c) => ({ id: c.id, label: c.label || c.id, value: c.value, normalized: c.normalized, weight: c.weight, contribution: c.contribution }))
+    : [];
+  const pctKey = { leadership: "leadershipPercentile", momentum: "momentumPercentile", rs: "relativeStrengthPercentile" }[scoreKey];
+  return {
+    rowId: config.id, rank, of, sortField: config.sort, sortDirection: config.direction,
+    sortValue: isNum(s.metrics[config.sort]) ? s.metrics[config.sort] : null,
+    signalFirst: config.signalFirst || null, filter: config.filter || null, rule: config.rule || null,
+    score: detail ? { id: scoreKey, value: detail.score, percentile: pctKey && isNum(s.metrics[pctKey]) ? s.metrics[pctKey] : null,
+                      coverage: detail.coverage, contributions } : null,
+    qualification: s.qualification ? { strongest: s.qualification.strongest, reasons: s.qualification.reasons } : null,
+    index: config.indexId ? { indexId: config.indexId, weight: s.indexMembershipDetail && s.indexMembershipDetail[config.indexId] ? s.indexMembershipDetail[config.indexId].weight : null } : null,
+    recognitionTier: s.recognitionTier || null,
+    boost: null
+  };
+}
+
 function buildRow(universe, config) {
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
+    /* V4 §21: Qualifikation zuerst - Kurs-Reihen zeigen nur liquide,
+       gehandelte Titel mit Historie; ein eingefrorener Kurs an einem
+       "Jahreshoch" ist keine Entdeckung. */
+    if (config.qualify === true && !(s.qualification && s.qualification.strongest)) return false;
     if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
@@ -1029,15 +1201,36 @@ function buildRow(universe, config) {
      Browser rechnen - aber dann stuende auf dem Bildschirm ein Satz, den
      keine Pruefung je gesehen hat. So rechnet ihn der Build, und
      verify-discover-data.mjs rechnet ihn nach. */
-  const auswahl = pool.slice(0, isNum(config.limit) ? config.limit : pool.length);
+  /* Fundamentale Reihen zaehlen Unternehmen, nicht Gattungen: HBAN, HBANL
+     und HBANZ tragen dasselbe SEC-Bundle. Je CIK bleibt der liquideste
+     Titel (Dollarumsatz), die anderen fallen aus der Reihe - nicht aus dem
+     Universum. */
+  let bereinigt = pool;
+  if (config.filter && String(config.filter).indexOf("fund") === 0) {
+    const jeCik = new Map();
+    for (const s of pool) {
+      const cik = s.fundamentalModel && s.fundamentalModel.cik ? String(s.fundamentalModel.cik) : null;
+      if (!cik) continue;
+      const alt = jeCik.get(cik);
+      const dv = (x) => (x.qualification && isNum(x.qualification.avgDollarVolume20d)) ? x.qualification.avgDollarVolume20d : -1;
+      if (!alt || dv(s) > dv(alt)) jeCik.set(cik, s);
+    }
+    bereinigt = pool.filter((s) => {
+      const cik = s.fundamentalModel && s.fundamentalModel.cik ? String(s.fundamentalModel.cik) : null;
+      return !cik || jeCik.get(cik) === s;
+    });
+  }
+  const auswahl = bereinigt.slice(0, isNum(config.limit) ? config.limit : bereinigt.length);
   /* Die Uebersetzung kennt die ganze Reihe, nicht nur die einzelne Karte -
      sonst steht derselbe wahre Satz zwoelfmal untereinander. */
   const texte = Klartext.reihe(auswahl, config.id);
+  const scoreKey = { leadershipScore: "leadership", momentumScore: "momentum", relativeStrengthScore: "rs", breakoutScore: "breakout" }[config.sort] || null;
   const cards = auswahl.map((s, i) => Object.assign(Contract.toCard(s), {
     plain: texte[i],
     /* Der Verweis auf die Reihe, nicht die Reihe: geladen wird, was
        sichtbar wird. */
-    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol, s.seriesPath)
+    priceSeries: seriesRef(s.priceSeries, config.microRange || "6M", universe.universeId, s.symbol, s.seriesPath),
+    rankingReason: rankingReason(s, config, i + 1, bereinigt.length, scoreKey)
   }));
   /* Die Karte muss sich selbst erklaeren koennen: der Klartext wird aus
      der KARTE nachgerechnet, nicht aus dem Titel im Speicher. Was die
@@ -1046,9 +1239,14 @@ function buildRow(universe, config) {
     s.discoveryEligible !== false &&
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
 
+  const index = config.indexId ? (universe.indexes || []).find((x) => x.indexId === config.indexId) || null : null;
   return {
     rowId: config.id, title: config.title, subtitle: config.subtitle,
     world: config.world || "leadership",
+    /* V4 §19: Herkunft der Index-Mitgliedschaft an der Reihe. */
+    index: index ? { indexId: index.indexId, indexName: index.indexName, shortLabel: index.shortLabel, asOf: index.asOf,
+                     source: index.source, proxy: index.proxy, memberCount: index.memberCount, inUniverse: index.inUniverse } : null,
+    qualification: (config.filter === "strongest" || config.filter === "indexMember" || config.qualify === true) ? (universe.qualificationSummary || null) : null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     methodologyVersion: METHODOLOGY.methodologyVersion,
     asOf: universe.asOf, generatedAt: universe.generatedAt,
@@ -1059,7 +1257,8 @@ function buildRow(universe, config) {
     editorial: config.editorial === true,
     coverage: {
       universeSize: universe.stocks.length,
-      matched: pool.length,
+      matched: bereinigt.length,
+      matchedBeforeCompanyDedupe: pool.length,
       returned: cards.length,
       notEvaluable,
       note: notEvaluable > 0
@@ -1422,13 +1621,24 @@ function buildHome(universe, rowsById, sectorPayload, featured) {
     }
 
     const pure = step.type === "ranking";
-    const ordered = pure ? row.cards
-      : Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION }).cards;
+    const geordnet = pure ? { cards: row.cards, trace: null } : Relevance.discoveryOrder(row.cards, { recognition: RECOGNITION });
+    /* Der Bekanntheitszuschlag steht an der Karte (rankingReason.boost):
+       quantRank = Platz in der Rangliste, discoveryRank = Platz auf der
+       Startseite - beides nachrechenbar. */
+    const ordered = geordnet.cards.map((c, i) => {
+      const t = geordnet.trace ? geordnet.trace[i] : null;
+      return Object.assign({}, c, { rankingReason: Object.assign({}, c.rankingReason || {}, {
+        boost: t ? { source: "recognition", tier: t.tier, bonus: t.bonus, quantRank: t.quantRank, discoveryRank: t.discoveryRank } : null }) });
+    });
     surfaces.push({
       type: step.type, variant: step.variant || null, id: step.id || row.rowId, rowId: row.rowId,
       title: step.title || row.title, subtitle: row.subtitle, world: row.world, microRange: row.microRange,
       theme: row.theme || null, editorial: row.editorial === true, rule: row.rule || null,
-      cards: ordered, show: step.show || 10, pure, total: row.coverage.matched,
+      index: row.index || null,
+      /* Eine Rangliste zeigt ihre ersten Plaetze; die ganze Reihe steht
+         hinter "Alle anzeigen". Mehr Karten im Stueck wuerden nur das
+         Nachladen verzoegern. */
+      cards: pure ? ordered.slice(0, step.show || 10) : ordered, show: step.show || 10, pure, total: row.coverage.matched,
       href: "#/c/" + U + "/" + row.rowId
     });
   }
@@ -1612,6 +1822,18 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
                from: stock.priceSeries.from, reason: null, message: null };
   }
 
+  /* V4 §13: lange Wochenreihe (5J, Max) aus der Historienablage, wenn sie
+     veroeffentlicht ist (scripts/market/publish-long-series.mjs). Der
+     Client haengt die Tagesreihe hinten an. */
+  const langFile = join(root, "quant", "data", "market", "discover-series-long", stock.securityId + ".json");
+  if (series.available && existsSync(langFile)) {
+    try {
+      const lang = readJSON(langFile);
+      series.long = { path: "/quant/data/market/discover-series-long/" + stock.securityId + ".json", grain: lang.grain || "weekly",
+                      from: lang.from, to: lang.to, weeks: lang.barCount, priceSeriesType: lang.priceSeriesType || "SPLIT_ADJUSTED" };
+    } catch (e) { series.long = null; }
+  } else series.long = null;
+
   if (!series.available && stock.dataMode === "real") {
     series.reason = "WITHHELD_REDISTRIBUTION";
     series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
@@ -1638,6 +1860,17 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     signals: stock.signals, badges: stock.badges,
     metrics: stock.metrics, metricStatus: stock.metricStatus,
     high52w: stock.high52w,
+    /* V4: Index-Mitgliedschaft (Fondsbestand, Stichtag), Qualifikation fuer
+       "staerkste Aktien", weggelassene Fundamentalkennzahlen mit Grund. */
+    indexMemberships: (stock.indexMemberships || []).map((id) => {
+      const ix = (universe.indexes || []).find((x) => x.indexId === id) || {};
+      const d = stock.indexMembershipDetail ? stock.indexMembershipDetail[id] : null;
+      return { indexId: id, indexName: ix.indexName || id, shortLabel: ix.shortLabel || id, asOf: ix.asOf || null,
+               weight: d ? d.weight : null, proxy: ix.proxy ? ix.proxy.etf : null, source: ix.source || null };
+    }),
+    qualification: stock.qualification || null,
+    fundamentalOmitted: stock.fundamentalOmitted || null,
+    fundamentalStale: stock.fundamentalStale || null,
     scores: {
       leadership: stock.scoreDetail.leadership,
       momentum: stock.scoreDetail.momentum,
@@ -1727,7 +1960,8 @@ const FUNDAMENTALS = consumerFundamentalsIndex();
 console.log(`     Fundamentals (SEC Consumer): ${FUNDAMENTALS.size} Titel`);
 const goldenBars = loadGoldenPreviewBars();
 const compact = discoverSeriesIndex();
-const real = applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact)));
+const real = applyQualification(attachIndexMembership(applyValuationContext(applyPercentilesAndSignals(buildRealUniverse(nameMap, goldenBars, compact)))));
+console.log(`     Qualifikation "staerkste Aktien": ${real.qualificationSummary.qualified} von ${real.qualificationSummary.of} Titeln`);
 console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
             `${real.stocks.filter((s) => s.hasPriceSeries).length} mit freigegebener Kursreihe ` +
             `(${goldenBars.size} volle Historie, ${compact.size} kompakt)`);
@@ -1859,6 +2093,26 @@ for (const universe of universes) {
             "gelesen von scripts/market/ingest-intraday.mjs --scope=discover."
     });
     console.log(`     ${universe.universeId.padEnd(9)} Live-Umfang: ${live.size} Titel`);
+
+    /* V4.1 §17-19: der Feed "Entdecken" - eine deterministische, abwechslungs-
+       reiche Reihenfolge aus den ausgelieferten Reihen. Keine zweite
+       Rangliste: jede Karte traegt, aus welcher Sammlung sie kommt. Die
+       Quellen werden reihum abgefragt (Staerkste, bekannte Namen,
+       Jahreshochs, Wachstum, Momentum, Cashflow, Ueberraschungen, ...);
+       ein Titel erscheint einmal; nie drei Titel desselben Sektors in
+       Folge; bekannte und unbekannte Namen wechseln sich ab, wo die
+       Quellen es hergeben. Der Client zeigt Stuecke von batchSize und
+       laedt die naechsten Karten von den Aktienseiten nach. */
+    const feed = feedOrder(rowsById, FEED_SOURCES, FEED_MAX);
+    write(`feed/${universe.universeId}.json`, {
+      schemaVersion: "discover-feed-1.0.0", universeId: universe.universeId,
+      generatedAt: universe.generatedAt, asOf: universe.asOf,
+      batchSize: FEED_BATCH, count: feed.length,
+      rule: "Reihum aus den Sammlungen (" + FEED_SOURCES.map((x) => x[0]).join(", ") + "); ein Titel einmal; hoechstens zwei Titel eines Sektors in Folge; bekannte und weniger bekannte Namen im Wechsel, sofern verfuegbar. Deterministisch, ohne Zufall und ohne Modell.",
+      cards: feed.slice(0, FEED_BATCH).map((f) => f.card),
+      order: feed.map((f) => ({ s: f.card.symbol, rowId: f.rowId, herkunft: f.herkunft, sec: f.card.sector || null, k: f.card.recognitionTier === 1 ? 1 : 0 }))
+    });
+    console.log(`     ${universe.universeId.padEnd(9)} Feed: ${feed.length} Titel aus ${FEED_SOURCES.length} Sammlungen`);
   }
 
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
@@ -1963,6 +2217,26 @@ console.log("6/6  Meta …");
 /* Die Live-Lage, wie der Client sie liest: Gate UND Grundlage. Auf GitHub
    Pages heisst "live" Snapshot-Refresh im Sitzungstakt; die Seite nennt
    den Stand mit Uhrzeit. Ein LIVE-Punkt ohne Strom gibt es nicht. */
+function streamMeta(intradayVerfuegbar) {
+  const cfg = PREVIEW_CONFIG.stream || {};
+  const an = intradayVerfuegbar && cfg.enabled === true && !!cfg.url;
+  return {
+    available: an,
+    reason: an ? null : (cfg.reason || (intradayVerfuegbar ? "streamDisabled" : "intradayUnavailable")),
+    url: an ? cfg.url : null,
+    freshSeconds: cfg.freshSeconds || 90,
+    maxSymbolsPerClient: cfg.maxSymbolsPerClient || 5,
+    scope: "stockPage",
+    priceType: "REALTIME_REFERENCE",
+    source: "TIINGO_IEX_LEVEL6",
+    message: an
+      ? "Auf der Aktienseite wird der Kurs waehrend der Sitzung fortlaufend nachgefuehrt. Die Zahl ist " +
+        "eine Kursreferenz aus einem Teilmarkt, kein offizieller Abschluss; bleibt der Strom aus, zeigt " +
+        "die Seite den Snapshot-Stand mit Uhrzeit."
+      : "Der fortlaufende Kurs ist nicht eingeschaltet. Die Aktienseite zeigt den Snapshot-Stand mit Uhrzeit."
+  };
+}
+
 function realtimeMeta() {
   const intraday = DisplayPolicy.check({ providerId: "tiingo", dataClass: "intraday", audience: "public",
                                          form: "raw", gates: GATES });
@@ -1973,9 +2247,10 @@ function realtimeMeta() {
     mode: verfuegbar ? "snapshot" : "eod",
     reason: verfuegbar ? null : (intraday.reason || "gateDisabled"),
     message: verfuegbar
-      ? "Intraday-Snapshots (" + (cfg.interval || "5min") + ", Tiingo/IEX) werden waehrend der Sitzung alle " +
+      ? "Der Tagesverlauf (" + (cfg.interval || "5min") + "-Kurse) wird waehrend der Sitzung alle " +
         (cfg.refreshMinutes || 10) + " Minuten erneuert. Die Seite nennt den Stand mit Uhrzeit; " +
-        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar."
+        "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar, ein aelterer Stand heisst 'nicht aktuell'. " +
+        "Herkunft und Lizenz der Daten: Daten & Quellen."
       : (intraday.message || "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt.") +
         " Discover zeigt den letzten ausgelieferten Stand und kennzeichnet ihn als solchen.",
     basis: intraday.basis || null, checkedAt: intraday.checkedAt || null,
@@ -1984,8 +2259,18 @@ function realtimeMeta() {
       pathPattern: "/quant/data/market/intraday/<sessionDate>/<securityId>.json",
       interval: cfg.interval || "5min", refreshMinutes: cfg.refreshMinutes || 10,
       extendedHours: cfg.extendedHours !== false, provider: "tiingo", venue: "IEX",
-      isLiveStream: false, isDelayed: true
+      isLiveStream: false, isDelayed: true,
+      /* Der Freshness-Vertrag: der Client beurteilt jede Reihe mit denselben
+         Karenzen wie Ingest und Health-Check (freshness.js). */
+      freshness: Object.assign({ contractVersion: "freshness-contract-1.0.0", graceMinutes: 30, graceHours: 6 },
+                               cfg.freshness ? { graceMinutes: cfg.freshness.graceMinutes, graceHours: cfg.freshness.graceHours } : {})
     } : null,
+    /* Der Strom (Zero-Cost Realtime V1, Variante C). Ein eigenes Tor:
+       er ist aus, solange die Konfiguration ihn nicht ausdruecklich
+       einschaltet. Eine nicht ausgerollte Adresse waere sonst ein
+       Verbindungsversuch auf jeder Aktienseite - und ein "Live", das
+       keines ist. Karten und Feed benutzen ihn nicht. */
+    stream: streamMeta(verfuegbar),
     realtimeFields: ["price", "changePercent", "new52WeekHigh", "intradayBreakout"],
     derivedFields: ["leadershipScore", "momentumScore", "relativeStrengthScore",
                     "breakoutScore", "percentiles", "movingAverages"]
@@ -1993,7 +2278,7 @@ function realtimeMeta() {
 }
 const meta = {
   module: "discover",
-  moduleVersion: "discover-3.0.0",
+  moduleVersion: "discover-4.0.0",
   contractVersion: Contract.CONTRACT_VERSION,
   methodologyVersion: METHODOLOGY.methodologyVersion,
   visualLanguage: METHODOLOGY.visualLanguage,
@@ -2019,6 +2304,10 @@ const meta = {
   }, {}),
   realtime: realtimeMeta(),
   universeSource: real.universeSource,
+  /* V4: Positionierung (§4), Index-Mitgliedschaften (§19), Qualifikation (§18). */
+  positioning: METHODOLOGY.positioning || null,
+  indexes: real.indexes || [],
+  qualification: real.qualificationSummary || null,
   universes: universes.map((u) => ({
     universeId: u.universeId, label: u.label, kind: u.kind, provider: u.provider,
     benchmark: u.benchmark, asOf: u.asOf, generatedAt: u.generatedAt,

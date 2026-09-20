@@ -41,6 +41,8 @@ const engines = join(root, "quant", "engines");
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const Semantics = require(join(engines, "price-semantics.js"));
+const EodGate = require(join(engines, "market-eod-gate.js"));
+const RejectionLifecycle = require(join(engines, "rejection-lifecycle.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const DisplayPolicy = require(join(engines, "display-policy.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
@@ -51,6 +53,10 @@ const CONFIG = JSON.parse(
 const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has("--dry-run");
 const INITIAL = args.has("--initial");
+// Opt-in only. No production scheduler is enabled until durable restore and
+// provider revision/corporate-action reconciliation have their own evidence.
+const STRICT_INCREMENTAL = args.has("--strict-incremental");
+if (STRICT_INCREMENTAL && INITIAL) throw Error("STRICT_INCREMENTAL_FORBIDS_INITIAL");
 const PUBLISH = args.has("--publish");
 /* Phase 5, Golden Five: eine eigene, eng begrenzte Auslieferung neben
    --publish (das oeffentliche, weiterhin gesperrte Gate). Siehe
@@ -77,7 +83,7 @@ const PREVIEW_SCOPE = (PUBLISH_PREVIEW || SCOPE_FROM_PREVIEW)
   ? resolveScope(root, JSON.parse(readFileSync(PREVIEW_CONFIG_PATH, "utf8"))) : null;
 const SECURITIES = SCOPE_FROM_PREVIEW
   ? PREVIEW_SCOPE.securities.map((s) => Object.assign({}, s, { mic: s.mic || null }))
-  : SECURITIES;
+  : CONFIG.securities;
 const apiKey = process.env.TIINGO_API_KEY || null;
 /* Die Gates kommen aus derselben Datei, die auch der Browser liest.
    Zwei Quellen fuer dieselbe Frage waeren zwei Antworten: der Import
@@ -226,20 +232,38 @@ if (!permitted.allowed) {
   process.exit(1);
 }
 
-const runId = INITIAL ? "initial" : "incremental";
+const eodCalendar = STRICT_INCREMENTAL ? JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8")) : null;
+const closedSession = STRICT_INCREMENTAL ? EodGate.latestClosedSession(new Date(), eodCalendar) : null;
+const strictPlans = {};
+if (STRICT_INCREMENTAL) {
+  if (closedSession.state !== "AVAILABLE") throw Error(closedSession.reason);
+  // Preflight every required history before the first provider request.
+  for (const security of SECURITIES) {
+    const plan = EodGate.plan(store.lastStoredDate(security.securityId), closedSession, eodCalendar);
+    if (plan.state === "BLOCKED") throw Error(plan.reason + ":" + security.securityId);
+    strictPlans[security.securityId] = plan;
+  }
+}
+// Keep main's cross-day rejection ledger for regular imports; strict EOD owns a session-specific checkpoint.
+const runId = STRICT_INCREMENTAL ? "strict-eod-" + closedSession.date : (INITIAL ? "initial" : "incremental");
 const checkpoint = store.loadCheckpoint(runId);
+if (STRICT_INCREMENTAL) checkpoint.done = checkpoint.done.filter(id => strictPlans[id]?.state === "CURRENT");
+
 /* Der Checkpoint ist die Wiederaufnahme EINES Laufs (Budget erschoepft,
    Runner weg) - kein Gedaechtnis ueber Tage. Ein Checkpoint von gestern
    wuerde heute jeden Titel als "erledigt" ueberspringen, und die Kurse
    blieben still stehen. Deshalb: neuer Tag, neue Liste; nur die
    Ablehnungen (rejected) bleiben als Sperre bestehen. */
 const heute = new Date().toISOString().slice(0, 10);
-if (checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
+if (!STRICT_INCREMENTAL && checkpoint.startedAt && checkpoint.startedAt.slice(0, 10) !== heute) {
   console.log(`  Checkpoint vom ${checkpoint.startedAt.slice(0, 10)} verworfen (neuer Tag): ${checkpoint.done.length} erledigte Titel werden neu geprueft.`);
   checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
 }
 if (!checkpoint.startedAt) checkpoint.startedAt = new Date().toISOString();
 
+/* Wie lange eine Ablehnung wirkt, entscheidet nicht mehr eine einzige
+   Zahl, sondern ihre Ursache: quant/engines/rejection-lifecycle.js. Die
+   sieben Tage bleiben als Frist, ab der JEDE Ablehnung ohnehin verfaellt. */
 const REJECT_RETRY_DAYS = 7;
 if (!checkpoint.rejected) checkpoint.rejected = {};
 const pending = store.remaining(checkpoint, SECURITIES.map((s) => s.securityId));
@@ -259,38 +283,58 @@ function initialFromFor(security) {
 
 const perSecurity = {};
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
+/* Wer wurde wegen welcher Klasse zurueckgestellt, und wer bekam nach einer
+   Ablehnung einen neuen Versuch - beides gehoert in den Statusbericht,
+   sonst ist ein stiller Ausfall wieder moeglich. */
+const deferredByClass = {};
+const retriedAfterRejection = [];
+let recoveredAfterRejection = 0;
 
 for (const security of SECURITIES) {
   const id = security.securityId;
   const label = `  ${security.ticker.padEnd(6)}`;
 
   if (checkpoint.done.includes(id)) { skipped++; console.log(`${label} uebersprungen (erledigt)`); continue; }
-  /* Eine abgelehnte Reihe (Qualitaetspruefung) wird nicht jeden Tag erneut
-     angefragt: sieben Tage Ruhe, dann ein neuer Versuch. Der Grund steht
-     im Checkpoint - und im Statusbericht. */
+  /* Ob eine abgelehnte Reihe heute wieder gefragt wird, entscheidet die
+     Ursache, nicht der Kalender: ein Fensterartefakt sofort, ein
+     Qualitaetszustand nach knapp einem Tag (laenger, wenn er sich
+     wiederholt), ein strukturelles Problem nach dreissig Tagen. Kein
+     Titel bleibt dauerhaft draussen. Klasse und Grund stehen im
+     Checkpoint und im Statusbericht. */
   const zuletztAbgelehnt = checkpoint.rejected && checkpoint.rejected[id];
-  if (!INITIAL && zuletztAbgelehnt && (Date.now() - Date.parse(zuletztAbgelehnt.at)) < REJECT_RETRY_DAYS * 86400000) {
+  const urteil = INITIAL
+    ? { allowed: true, class: "RECOVERED", reason: "Erstimport fragt immer" }
+    : RejectionLifecycle.darfAbfragen(zuletztAbgelehnt,
+        { now: Date.now(), staleAfterMs: REJECT_RETRY_DAYS * 86400000 });
+  if (!urteil.allowed) {
     skipped++; rejected++;
+    deferredByClass[urteil.class] = (deferredByClass[urteil.class] || 0) + 1;
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed", deferred: true,
+                        rejectionClass: urteil.class, rejectionReason: urteil.reason,
                         message: zuletztAbgelehnt.codes, rejectedAt: zuletztAbgelehnt.at };
-    console.log(`${label} uebersprungen (abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
+    console.log(`${label} uebersprungen (${urteil.class}, abgelehnt am ${zuletztAbgelehnt.at.slice(0, 10)}: ${zuletztAbgelehnt.codes})`);
     continue;
   }
+  if (zuletztAbgelehnt) {
+    retriedAfterRejection.push(security.ticker);
+    console.log(`${label} erneuter Versuch (${urteil.class}: ${urteil.reason})`);
+  }
 
-  const from = INITIAL
+  const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
+  const from = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
     ? initialFromFor(security)
     : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
-    console.log(`${label} wuerde ab ${from} laden` + (last ? ` (gespeichert bis ${last})` : " (nichts gespeichert)"));
+    console.log(`${label} ${strictPlan?.state === "CURRENT" ? "bereits aktuell" : "wuerde ab " + from + " laden"}` + (last ? ` (gespeichert bis ${last})` : " (nichts gespeichert)"));
     continue;
   }
 
   /* Nichts nachzuladen ist ein Erfolg, kein Ueberspringen: der Titel ist
      aktuell. Eine Anfrage dafuer waere verschwendetes Kontingent. */
   const todayStr = new Date().toISOString().slice(0, 10);
-  if (!INITIAL && from > todayStr) {
+  if (strictPlan?.state === "CURRENT" || (!STRICT_INCREMENTAL && !INITIAL && from > todayStr)) {
     ok++;
     checkpoint.done.push(id);
     perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "aktuell" };
@@ -298,7 +342,7 @@ for (const security of SECURITIES) {
     continue;
   }
 
-  const res = await provider.getDailyBars(id, { from });
+  const res = await provider.getDailyBars(id, { from, ...(STRICT_INCREMENTAL ? { to: strictPlan.through } : {}) });
   checkpoint.requests++;
 
   if (!res.available) {
@@ -321,14 +365,47 @@ for (const security of SECURITIES) {
   const bars = res.data.bars;
   if (!bars.length) {
     ok++;
-    checkpoint.done.push(id);
+    // An empty response does not prove this session's EOD is available.
+    // Keep eligible for a same-day retry (provider lag / pre-close run).
     perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "keineNeuenTage" };
     console.log(`${label} keine neuen Handelstage`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
 
-  const validation = MarketQuality.validateBars(bars, {
+  /* DER KONTINUITAETSBELEG - UND DIE URSACHE DES STILLSTANDS VOM 16.09.2026
+   *
+   * Ein Tageslauf holt genau eine neue Bar: den Schluss. Die
+   * Qualitaetspruefung verlangt mindestens zwei, weil sich an einer
+   * einzelnen Bar weder Reihenfolge noch Luecke noch Split pruefen laesst.
+   * Der strikte Pfad loeste das laengst, indem er die letzte GESPEICHERTE
+   * Bar vor das neue Material stellt; der regulaere Pfad tat es nicht -
+   * und lehnte am 16.09.2026 um 22:41 UTC 6.831 von 6.876 Titeln mit
+   * `too_few_bars` ab. Die Ablehnung sperrte sie sieben Tage, und die
+   * Tageskurse standen still, waehrend zwei Sitzungen gehandelt wurden.
+   *
+   * Die gespeicherte Bar wird dabei weder neu geholt noch veraendert; sie
+   * dient nur als Anschluss. Das ist strenger als vorher, nicht
+   * grosszuegiger: jetzt wird die Fortsetzung wirklich geprueft. */
+  const gespeichert = store.readBars(id);
+  const anschluss = (gespeichert && Array.isArray(gespeichert.bars)) ? gespeichert.bars.slice(-1) : [];
+  /* Liefert der Anbieter die Anschluss-Bar mit (manche tun das bei
+     inklusivem startDate), waere sie nach dem Voranstellen doppelt - und
+     `duplicate_bar` wuerde den Titel ablehnen. Dieselbe Bar zweimal ist
+     kein Befund, sondern eine Ueberschneidung; sie wird verworfen. */
+  const anschlussDatumRoh = anschluss.length ? String(anschluss[0].date).slice(0, 10) : null;
+  const neueBars = anschlussDatumRoh
+    ? bars.filter((bar) => String(bar.date).slice(0, 10) > anschlussDatumRoh)
+    : bars;
+  if (!neueBars.length) {
+    ok++;
+    perSecurity[id] = { ticker: security.ticker, ok: true, added: 0, reason: "keineNeuenTage" };
+    console.log(`${label} keine neuen Handelstage (nur der bekannte Stand)`);
+    store.saveCheckpoint(checkpoint);
+    continue;
+  }
+  const validationInput = [...anschluss, ...neueBars];
+  const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus
   });
@@ -338,7 +415,9 @@ for (const security of SECURITIES) {
     const codes = validation.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = { ticker: security.ticker, ok: false, reason: "qualityCheckFailed",
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
-    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: codes.join(", ") };
+    checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
+      { at: new Date().toISOString(), codes: codes.join(", "),
+        window: INITIAL ? "full" : "incremental" });
     /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
        (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
     console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
@@ -363,13 +442,41 @@ for (const security of SECURITIES) {
       claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
       findings: semantik.findings.slice(0, 8)
     };
-    checkpoint.rejected[id] = { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", ") };
+    checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
+      { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", "),
+        window: INITIAL ? "full" : "incremental" });
     console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
                 `verhaelt sich wie ${semantik.inferredStatus}`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
 
+  /* Der Titel liefert wieder gueltige Daten: die Ablehnung ist erledigt.
+     Stehen zu lassen waere ein Gedaechtnis an einen Zustand, den es nicht
+     mehr gibt. */
+  if (checkpoint.rejected[id]) {
+    delete checkpoint.rejected[id];
+    recoveredAfterRejection++;
+    console.log(`${label} Ablehnung aufgehoben (liefert wieder gueltige Daten)`);
+  }
+
+  /* Der Anschluss aus dem Bestand gehoert nicht ins neue Material: er ist
+     Beleg, nicht Zulieferung. */
+  if (anschluss.length) {
+    const anschlussDatum = anschluss[0].date;
+    validation.bars = validation.bars.filter((bar) => bar.date > anschlussDatum);
+  }
+  if (STRICT_INCREMENTAL) validation.bars = validation.bars.filter(bar => bar.date >= strictPlan.from);
+  const strictReconciliation = STRICT_INCREMENTAL ? EodGate.reconcile(validation.bars, strictPlan) : null;
+  if (strictReconciliation?.state === "BLOCKED") {
+    rejected++;
+    perSecurity[id] = { ticker: security.ticker, ok: false, reason: strictReconciliation.reason };
+    checkpoint.failed = checkpoint.failed.filter(f => f.securityId !== id);
+    checkpoint.failed.push({securityId:id,reason:strictReconciliation.reason,at:new Date().toISOString()});
+    store.saveCheckpoint(checkpoint);
+    console.log(`${label} GESPERRT — ${strictReconciliation.reason}`);
+    continue;
+  }
   const merged = store.mergeBars(id, validation.bars, {
     ticker: security.ticker,
     name: security.name,
@@ -381,7 +488,8 @@ for (const security of SECURITIES) {
   });
 
   ok++;
-  checkpoint.done.push(id);
+  if (!STRICT_INCREMENTAL || strictReconciliation.complete) checkpoint.done.push(id);
+  checkpoint.failed = checkpoint.failed.filter(f => f.securityId !== id);
   store.saveCheckpoint(checkpoint);
   perSecurity[id] = {
     ticker: security.ticker, ok: true,
@@ -415,7 +523,7 @@ for (const security of SECURITIES) {
    Bei Abbruch bleibt sie stehen - genau dafuer ist sie da. */
 const vollstaendig = !DRY_RUN && SECURITIES.every((s) => checkpoint.done.includes(s.securityId) ||
   (perSecurity[s.securityId] && perSecurity[s.securityId].reason !== "rateLimited" && perSecurity[s.securityId].reason !== "quotaExceeded"));
-if (vollstaendig) {
+if (vollstaendig && !STRICT_INCREMENTAL) {
   checkpoint.done = []; checkpoint.failed = []; checkpoint.requests = 0; checkpoint.startedAt = null;
   checkpoint.completedAt = new Date().toISOString();
   store.saveCheckpoint(checkpoint);
@@ -436,6 +544,26 @@ console.log(`    erfolgreich ${ok} · fehlgeschlagen ${failed} · abgelehnt ${re
 console.log(`    Anfragen ${stats.requests} · Cache-Treffer ${stats.cacheHits} · Wiederholungen ${stats.retries}`);
 console.log(`    Kontingent: ${quota.hourUsed}/${quota.hourLimit} Stunde, ${quota.dayUsed}/${quota.dayLimit} Tag`);
 console.log(`    Bandbreite: ${(quota.bytesUsed / 1048576).toFixed(1)} MB`);
+
+if (STRICT_INCREMENTAL) {
+  const pendingIds = store.remaining(checkpoint, SECURITIES.map(s=>s.securityId));
+  checkpoint.health = {
+    observedAt: new Date().toISOString(), through: closedSession.date,
+    processingState: pendingIds.length ? "INCOMPLETE" : "COMPLETE",
+    qualityStatus: rejected || failed ? "FAIL" : "WARNING",
+    dataFreshness: pendingIds.length ? "INCOMPLETE" : "LATEST_CLOSED_SESSION_RECEIVED",
+    pending: pendingIds, securities: perSecurity,
+    durability: "NOT_CERTIFIED", providerFinality: "NOT_CERTIFIED"
+  };
+  store.saveCheckpoint(checkpoint);
+  const healthPath = join(store.workingDir, Tiingo.PROVIDER_ID, "strict-eod-health.json");
+  mkdirSync(dirname(healthPath), {recursive:true});
+  writeFileSync(healthPath, JSON.stringify({runId, ...checkpoint.health}, null, 2));
+  if (pendingIds.length) {
+    console.error("STRICT_EOD_INCOMPLETE: no publication; typed health persisted in working state");
+    process.exit(1);
+  }
+}
 
 if (PUBLISH) {
   /* Veroeffentlichen ist der einzige Schritt, der Anbieterdaten aus dem
@@ -543,7 +671,22 @@ writeStatus({
   quota: quota,
   summary: { requested: SECURITIES.length, ok, failed, rejected, skipped,
              requests: stats.requests, cacheHits: stats.cacheHits, retries: stats.retries,
-             bytesReceived: stats.bytesReceived },
+             bytesReceived: stats.bytesReceived,
+             /* Ohne diese drei Zahlen ist ein stiller Ausfall wieder
+                moeglich: wie viele Titel wegen welcher Klasse gar nicht
+                gefragt wurden, wie viele nach einer Ablehnung einen neuen
+                Versuch bekamen und wie viele sich dabei erholt haben. */
+             deferredByClass, retriedAfterRejection: retriedAfterRejection.length,
+             recoveredAfterRejection },
+  /* `offen`, nicht `open`: "open" ist in einem ausgelieferten Artefakt
+     der Eroeffnungskurs, und die Hygienepruefung liest es genau so - sie
+     kann einer Zahl nicht ansehen, ob sie ein Kurs oder eine Anzahl ist.
+     Der Lauf 35349647216 ist daran gescheitert, nachdem 66 Minuten
+     Abruf schon getan waren. Ein Feldname, der etwas anderes behauptet
+     als er ist, ist der Fehler - nicht die Pruefung. */
+  rejectionLedger: { offen: Object.keys(checkpoint.rejected || {}).length,
+                     ...RejectionLifecycle.pruefeRegister(checkpoint.rejected || {},
+                       { staleAfterMs: REJECT_RETRY_DAYS * 86400000 }).byClass },
   securities: perSecurity,
   checkpoint: { runId: checkpoint.runId, done: checkpoint.done.length,
                 failed: checkpoint.failed.length, requests: checkpoint.requests },

@@ -55,6 +55,15 @@ body.dx{
   --discover-violet:#a78bfa;
   --discover-violet-soft:rgba(167,139,250,.15);
 
+  /* Tinte und Gegenfarbe (V4.1 §12): alle halbdurchsichtigen Flaechen
+     mischen sich aus der Tinte - weiss auf dunklem, schwarz auf hellem
+     Grund. on-text ist die Schrift AUF einer Flaeche in Textfarbe. */
+  --discover-ink:#ffffff;
+  --discover-on-text:#0a0a0c;
+  --discover-text-strong:#ffffff;
+  --discover-bar-bg:rgba(8,8,10,.86);
+  --discover-fnav-bg:rgba(20,22,28,.78);
+
   /* Geometrie */
   --discover-radius:14px;
   --discover-radius-lg:20px;
@@ -119,6 +128,49 @@ body.dx{
 [data-world="comms"]    {--w:#a08fff;--w-glow:rgba(160,143,255,.18);--w-soft:rgba(160,143,255,.08)}
 [data-world="materials"]{--w:#b9a56f;--w-glow:rgba(185,165,111,.16);--w-soft:rgba(185,165,111,.07)}
 
+/* ==================================================== HELLES SCHEMA (V4.1 §12)
+   Dieselben Tokens, andere Werte. Gesetzt von <html data-theme="light">;
+   das Wort dort schreibt /discover/engines/theme.js (System, Hell, Dunkel).
+   Signalfarben sind auf Weiss dunkler gestimmt - dasselbe Gruen wie auf
+   Schwarz waere hier zu blass fuer eine Zahl. */
+html[data-theme="light"] body.dx{
+  --discover-bg:#f7f7f4;
+  --discover-bg-2:#ffffff;
+  --discover-surface:#ffffff;
+  --discover-surface-2:#f1f1ed;
+  --discover-surface-hover:#e9e9e4;
+  --discover-line:rgba(0,0,0,.09);
+  --discover-line-strong:rgba(0,0,0,.2);
+  --discover-text:#141418;
+  --discover-muted:#5d5d68;
+  --discover-dim:#84848f;
+  --discover-up:#178f50;
+  --discover-up-soft:rgba(23,143,80,.12);
+  --discover-down:#d1453a;
+  --discover-down-soft:rgba(209,69,58,.11);
+  --discover-accent:#3763d6;
+  --discover-accent-soft:rgba(55,99,214,.12);
+  --discover-warm:#b07a14;
+  --discover-warm-soft:rgba(176,122,20,.13);
+  --discover-violet:#7454d1;
+  --discover-violet-soft:rgba(116,84,209,.12);
+  --discover-ink:#000000;
+  --discover-on-text:#ffffff;
+  --discover-text-strong:#000000;
+  --discover-bar-bg:rgba(247,247,244,.86);
+  --discover-fnav-bg:rgba(255,255,255,.84);
+  color-scheme:light;
+}
+/* Die Weltfarben bleiben die Atmosphaere; als Schrift (Kicker, Rang,
+   Treffer) werden sie auf Weiss abgedunkelt, sonst waere Cyan auf Weiss
+   nicht zu lesen. */
+html[data-theme="light"] body.dx,
+html[data-theme="light"] body.dx [data-world]{--w-2:color-mix(in srgb, var(--w) 62%, #000)}
+html[data-theme="light"] .dx-hero-chart,html[data-theme="light"] .dx-art,html[data-theme="light"] .dx-ladder-svg,
+html[data-theme="light"] .dx-featured-media,html[data-theme="light"] .dx-feed-bild,html[data-theme="light"] .dx-poster-media{color:color-mix(in srgb, var(--w) 78%, #000)}
+html[data-theme="light"] .dx-status--stale{color:var(--discover-warm)}
+html[data-theme="light"] .dx-poster,html[data-theme="light"] .dx-featured{box-shadow:0 18px 40px -28px rgba(0,0,0,.35)}
+
 body.dx ::selection{background:rgba(111,157,255,.32)}
 body.dx :focus-visible{outline:2px solid var(--discover-accent);outline-offset:3px;border-radius:6px}
 .dx-app{min-height:100vh;background:var(--discover-bg)}
@@ -137,7 +189,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   position:sticky;top:0;z-index:60;
   display:flex;align-items:center;gap:18px;flex-wrap:wrap;
   padding:12px var(--discover-gutter);
-  background:rgba(8,8,10,.86);
+  background:var(--discover-bar-bg);
   backdrop-filter:blur(18px) saturate(140%);
   -webkit-backdrop-filter:blur(18px) saturate(140%);
   border-bottom:1px solid var(--discover-line);
@@ -160,7 +212,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-status--live .dx-dot{background:var(--discover-up)}
 @keyframes dx-pulse{70%{box-shadow:0 0 0 8px rgba(63,208,127,0)}100%{box-shadow:0 0 0 0 rgba(63,208,127,0)}}
 
-.dx-switch{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--discover-line)}
+.dx-switch{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--discover-ink) 6%,transparent);border:1px solid var(--discover-line)}
 .dx-switch button{
   border:0;background:transparent;color:var(--discover-muted);cursor:pointer;
   font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.03em;
@@ -168,7 +220,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   transition:color var(--discover-motion-fast) var(--discover-ease),
              background var(--discover-motion-fast) var(--discover-ease);
 }
-.dx-switch button[aria-pressed="true"]{background:var(--discover-text);color:#0a0a0c}
+.dx-switch button[aria-pressed="true"]{background:var(--discover-text);color:var(--discover-on-text)}
 .dx-switch button:hover:not([aria-pressed="true"]){color:var(--discover-text)}
 
 /* Der Einstieg in den Einzelmodus: ein Angebot in der Leiste, kein
@@ -192,7 +244,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 
 .dx-searchbtn{
   display:inline-flex;align-items:center;gap:9px;border:1px solid var(--discover-line);
-  background:rgba(255,255,255,.05);color:var(--discover-muted);border-radius:999px;
+  background:color-mix(in srgb,var(--discover-ink) 5%,transparent);color:var(--discover-muted);border-radius:999px;
   padding:7px 15px 7px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap;
   transition:border-color var(--discover-motion-fast) var(--discover-ease),
              color var(--discover-motion-fast) var(--discover-ease);
@@ -200,7 +252,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-searchbtn:hover{border-color:var(--discover-line-strong);color:var(--discover-text)}
 .dx-searchbtn kbd{
   font:inherit;font-size:10px;padding:2px 5px;border-radius:4px;
-  background:rgba(255,255,255,.08);color:var(--discover-dim);
+  background:color-mix(in srgb,var(--discover-ink) 8%,transparent);color:var(--discover-dim);
 }
 
 /* ==================================================================== Hero
@@ -216,7 +268,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   background:
     radial-gradient(105% 78% at 76% 14%, var(--w-glow), transparent 64%),
     radial-gradient(80% 66% at 10% 4%, var(--w-soft), transparent 66%),
-    linear-gradient(180deg, color-mix(in srgb, var(--w) 5%, #0a0a0e) 0%, var(--discover-bg) 74%);
+    linear-gradient(180deg, color-mix(in srgb, var(--w) 5%, var(--discover-bg)) 0%, var(--discover-bg) 74%);
   transition:background var(--discover-motion-slow) var(--discover-ease);
 }
 /* Ein sehr feines Liniengitter in der Weltfarbe - es macht die Fläche
@@ -277,13 +329,13 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .dx-btn{
   display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;
-  background:var(--discover-text);color:#0a0a0c;text-decoration:none;
+  background:var(--discover-text);color:var(--discover-on-text);text-decoration:none;
   font:inherit;font-size:13.5px;font-weight:700;letter-spacing:.01em;
   padding:13px 24px;border-radius:999px;
   transition:transform var(--discover-motion-fast) var(--discover-ease),
              background var(--discover-motion-fast) var(--discover-ease);
 }
-.dx-btn:hover{transform:translateY(-1px);background:#fff}
+.dx-btn:hover{transform:translateY(-1px);background:var(--discover-text-strong)}
 .dx-btn--ghost{background:transparent;color:var(--discover-text);
   border:1px solid color-mix(in srgb, var(--w) 40%, var(--discover-line-strong))}
 .dx-btn--ghost:hover{background:color-mix(in srgb, var(--w) 12%, transparent)}
@@ -294,7 +346,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-hero-chart{color:var(--w)}
 .dx-hero-chart .dx-art-line{stroke-width:2.4}
 .dx-hero-chart .dx-art-ticker{font-size:150px;fill:color-mix(in srgb, var(--w) 9%, transparent)}
-.dx-hero-chart .dx-art-tick{fill:rgba(255,255,255,.14)}
+.dx-hero-chart .dx-art-tick{fill:color-mix(in srgb,var(--discover-ink) 14%,transparent)}
 .dx-hero-chart .dx-art-tick.on{fill:var(--w)}
 .dx-hero-caption{font-size:11px;color:var(--discover-dim);line-height:1.5;max-width:52ch}
 
@@ -303,12 +355,12 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-hero-nav{position:absolute;z-index:3;left:var(--discover-gutter);bottom:22px;display:flex;gap:8px}
 .dx-hero-nav button{
   width:34px;height:3px;border:0;padding:0;border-radius:2px;cursor:pointer;
-  background:rgba(255,255,255,.22);
+  background:color-mix(in srgb,var(--discover-ink) 22%,transparent);
   transition:background var(--discover-motion-fast) var(--discover-ease),
              width var(--discover-motion-normal) var(--discover-ease);
 }
 .dx-hero-nav button[aria-current="true"]{background:var(--w-2,var(--discover-text));width:52px}
-.dx-hero-nav button:hover{background:rgba(255,255,255,.5)}
+.dx-hero-nav button:hover{background:color-mix(in srgb,var(--discover-ink) 50%,transparent)}
 
 /* =================================================================== Rails */
 /* Die Atmosphäre einer Reihe: ein weiches Licht in der Farbe ihrer Welt,
@@ -399,10 +451,10 @@ body.dx .num{font-variant-numeric:tabular-nums}
   background:linear-gradient(270deg,var(--discover-bg) 40%,transparent)}
 .dx-rail-nav i{
   display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
-  background:rgba(255,255,255,.10);border:1px solid var(--discover-line);
+  background:color-mix(in srgb,var(--discover-ink) 10%,transparent);border:1px solid var(--discover-line);
   transition:background var(--discover-motion-fast) var(--discover-ease),transform var(--discover-motion-fast) var(--discover-ease);
 }
-.dx-rail-nav:hover i{background:rgba(255,255,255,.2);transform:scale(1.07)}
+.dx-rail-nav:hover i{background:color-mix(in srgb,var(--discover-ink) 20%,transparent);transform:scale(1.07)}
 .dx-rail-nav[hidden]{display:none!important}
 @media (hover:hover) and (min-width:960px){.dx-rail-wrap:hover .dx-rail-nav{display:flex}}
 
@@ -498,7 +550,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-sig--strength{--sig:#3fd9a4}
 .dx-sig--quality{--sig:#d9bc6a}
 .dx-sig--sectors{--sig:#a8bcd8}
-.dx-sig--muted{--sig:#9d9da8;background:rgba(255,255,255,.05)}
+.dx-sig--muted{--sig:var(--discover-muted);background:color-mix(in srgb,var(--discover-ink) 5%,transparent)}
 
 /* Die Zweitnennung. Sie steht unter der Signalplakette, in der Schrift
    der Nebensachen - sie erklaert eine Beobachtung, sie behauptet nichts.
@@ -524,14 +576,14 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-art-fill{stroke:none}
 .dx-art-band{fill:color-mix(in srgb, var(--w) 7%, transparent);stroke:none}
 .dx-art-node{fill:var(--w)}
-.dx-art-base{stroke:rgba(255,255,255,.16);stroke-dasharray:2 4;stroke-width:1}
+.dx-art-base{stroke:color-mix(in srgb,var(--discover-ink) 16%,transparent);stroke-dasharray:2 4;stroke-width:1}
 .dx-art-high{stroke:var(--w);stroke-width:1;stroke-dasharray:3 3;opacity:.75}
 .dx-art-high-mark{fill:var(--w)}
-.dx-art-tick{fill:rgba(255,255,255,.18)}
+.dx-art-tick{fill:color-mix(in srgb,var(--discover-ink) 18%,transparent)}
 .dx-art-tick.on{fill:var(--w)}
 .dx-art-none{fill:var(--discover-dim);font-size:11px;font-family:var(--sans)}
 .dx-art-ticker{
-  fill:color-mix(in srgb, var(--w) 8%, rgba(255,255,255,.035));
+  fill:color-mix(in srgb, var(--w) 8%, color-mix(in srgb,var(--discover-ink) 3.5%,transparent));
   font-family:var(--sans);font-weight:800;letter-spacing:-.05em;
 }
 /* Fällt der Verlauf über den gezeigten Zeitraum, wird die Linie korallrot -
@@ -539,6 +591,12 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-art[data-direction="down"] .dx-art-line{stroke:var(--discover-down)}
 .dx-art[data-direction="down"] .dx-art-node{fill:var(--discover-down)}
 .dx-art[data-direction="down"] .dx-art-fill{fill:rgba(240,103,92,.12)}
+/* V4.1 §8: und steigt er, wird sie gruen - auf dem Hero wie auf jeder
+   Karte. Die Weltfarbe bleibt Atmosphaere (Licht, Flaeche, Ticker), die
+   Linie sagt die Richtung. */
+.dx-art[data-direction="up"] .dx-art-line{stroke:var(--discover-up)}
+.dx-art[data-direction="up"] .dx-art-node{fill:var(--discover-up)}
+.dx-art[data-direction="up"] .dx-art-fill{fill:var(--discover-up-soft)}
 .dx-spark .line{fill:none;stroke:var(--discover-up);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .dx-spark .line.down{stroke:var(--discover-down)}
 .dx-spark .area{fill:url(#dxUp);stroke:none}
@@ -553,7 +611,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   font-size:11px;color:var(--discover-dim);letter-spacing:.03em;
 }
 .dx-poster-foot .dx-meter{flex:1}
-.dx-meter{height:2px;border-radius:2px;background:rgba(255,255,255,.10);overflow:hidden}
+.dx-meter{height:2px;border-radius:2px;background:color-mix(in srgb,var(--discover-ink) 10%,transparent);overflow:hidden}
 .dx-meter i{display:block;height:100%;background:var(--w);opacity:.9;border-radius:2px;
   transition:width var(--discover-motion-slow) var(--discover-ease)}
 
@@ -589,11 +647,11 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-rank-num{
   flex:0 0 102px;display:flex;align-items:center;justify-content:flex-start;
   font-size:clamp(76px,7vw,112px);line-height:1;font-weight:800;letter-spacing:-.07em;
-  color:transparent;-webkit-text-stroke:2px color-mix(in srgb, var(--w) 55%, rgba(255,255,255,.22));
+  color:transparent;-webkit-text-stroke:2px color-mix(in srgb, var(--w) 55%, color-mix(in srgb,var(--discover-ink) 22%,transparent));
   user-select:none;pointer-events:none;overflow:visible;
   transition:-webkit-text-stroke-color var(--discover-motion-normal) var(--discover-ease);
 }
-.dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:color-mix(in srgb, var(--w) 90%, #fff)}
+.dx-rank:hover .dx-rank-num{-webkit-text-stroke-color:color-mix(in srgb, var(--w) 90%, var(--discover-ink))}
 .dx-rank .dx-poster{flex:1 1 auto;width:auto;margin-left:-18px}
 
 /* --------------------------------------------------- Poster: Landschaft
@@ -1068,8 +1126,8 @@ body.dx-feed-aktiv{overflow:hidden}
   border-radius:8px;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
   transition:background var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
 }
-.dx-tf button:hover:not([disabled]){background:rgba(255,255,255,.07);color:var(--discover-text)}
-.dx-tf button[aria-pressed="true"]{background:var(--discover-text);color:#0a0a0c}
+.dx-tf button:hover:not([disabled]){background:color-mix(in srgb,var(--discover-ink) 7%,transparent);color:var(--discover-text)}
+.dx-tf button[aria-pressed="true"]{background:var(--discover-text);color:var(--discover-on-text)}
 .dx-tf button[disabled]{opacity:.32;cursor:not-allowed}
 
 .dx-chart{position:relative;border-radius:var(--discover-radius-lg);background:var(--discover-bg-2);border:1px solid var(--discover-line);padding:10px 8px 4px}
@@ -1077,12 +1135,12 @@ body.dx-feed-aktiv{overflow:hidden}
 /* Der bestehende Technical-Chart wurde fuer helle Flaechen entworfen. Seine
    Farben kommen aus Variablen - hier bekommen sie dunkle Werte, ohne dass
    quant.css angefasst wird. */
-.dx-chart .q-tchart{--ink:#f4f4f1;--muted:#9d9da8;--muted-2:#6d6d78;--line:rgba(255,255,255,.10);
-  --line-strong:rgba(255,255,255,.2);--surface-2:#1b1b22;--green:#3fd07f;--red:#f0675c;
+.dx-chart .q-tchart{--ink:var(--discover-text);--muted:var(--discover-muted);--muted-2:var(--discover-dim);--line:color-mix(in srgb,var(--discover-ink) 10%,transparent);
+  --line-strong:color-mix(in srgb,var(--discover-ink) 20%,transparent);--surface-2:var(--discover-surface-2);--green:var(--discover-up);--red:var(--discover-down);
   --blue:#6f9dff;--purple:#a78bfa;--yellow:#e8b44c;min-width:0;width:100%}
 .dx-chart .q-tchart .line-price{stroke:var(--discover-text);stroke-width:1.8}
 .dx-chart .q-tchart .axis{fill:var(--discover-dim)}
-.dx-chart .q-tchart .grid{stroke:rgba(255,255,255,.07)}
+.dx-chart .q-tchart .grid{stroke:color-mix(in srgb,var(--discover-ink) 7%,transparent)}
 .dx-chart .q-tchart .last-price-label{fill:var(--discover-text)}
 .dx-chart .q-tchart .vol{opacity:.42}
 .dx-chart .q-tchart .ann-zone{opacity:.20}
@@ -1100,7 +1158,7 @@ body.dx-feed-aktiv{overflow:hidden}
              border-color var(--discover-motion-fast) var(--discover-ease);
 }
 .dx-ctrl:hover:not([disabled]){color:var(--discover-text);border-color:var(--discover-line-strong)}
-.dx-ctrl[aria-pressed="true"]{background:var(--discover-text);border-color:var(--discover-text);color:#0a0a0c}
+.dx-ctrl[aria-pressed="true"]{background:var(--discover-text);border-color:var(--discover-text);color:var(--discover-on-text)}
 .dx-ctrl[disabled]{opacity:.3;cursor:not-allowed}
 .dx-ctrl-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim);margin-right:4px}
 .dx-more-controls{margin-top:12px;padding-top:14px;border-top:1px solid var(--discover-line)}
@@ -1121,10 +1179,10 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-bars{display:grid;gap:9px;margin-top:14px}
 .dx-contrib{display:grid;grid-template-columns:124px 1fr 44px;align-items:center;gap:12px;font-size:11.5px}
 .dx-contrib span{color:var(--discover-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dx-contrib .track{height:5px;border-radius:3px;background:rgba(255,255,255,.09);overflow:hidden}
+.dx-contrib .track{height:5px;border-radius:3px;background:color-mix(in srgb,var(--discover-ink) 9%,transparent);overflow:hidden}
 .dx-contrib .track i{display:block;height:100%;background:var(--discover-text);opacity:.85;border-radius:3px}
 .dx-contrib b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-.dx-contrib.missing .track i{background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 4px,transparent 4px 8px);opacity:1}
+.dx-contrib.missing .track i{background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--discover-ink) 18%,transparent) 0 4px,transparent 4px 8px);opacity:1}
 .dx-contrib.missing b{color:var(--discover-dim)}
 
 .dx-ti{margin-top:26px;border:1px solid var(--discover-line);border-radius:var(--discover-radius);padding:22px;background:var(--discover-bg-2)}
@@ -1133,7 +1191,7 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-ti-state--available{background:var(--discover-up-soft);color:var(--discover-up)}
 .dx-ti-state--lowConfidence{background:var(--discover-warm-soft);color:var(--discover-warm)}
 .dx-ti-state--calculating{background:var(--discover-accent-soft);color:var(--discover-accent)}
-.dx-ti-state--unavailable{background:rgba(255,255,255,.06);color:var(--discover-muted)}
+.dx-ti-state--unavailable{background:color-mix(in srgb,var(--discover-ink) 6%,transparent);color:var(--discover-muted)}
 
 /* Zugehoerigkeiten */
 .dx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
@@ -1162,7 +1220,7 @@ body.dx-feed-aktiv{overflow:hidden}
   transition:background var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
 }
 .dx-filters button:hover{color:var(--discover-text)}
-.dx-filters button.on{background:var(--discover-text);border-color:var(--discover-text);color:#0a0a0c}
+.dx-filters button.on{background:var(--discover-text);border-color:var(--discover-text);color:var(--discover-on-text)}
 .dx-grid{display:flex;flex-wrap:wrap;gap:var(--discover-gap);padding:0 var(--discover-gutter)}
 
 /* ============================================================== Bewegung */
@@ -1223,9 +1281,10 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-was summary{font-size:11px}
   .dx-searchbtn kbd{display:none}
   .dx-status{order:3;font-size:10px;margin-left:auto;max-width:62vw;overflow:hidden;text-overflow:ellipsis}
-  /* "US Market" entfaellt auf dem Telefon: die Lage und der Stand passen
-     dann in die Zeile, ohne abgeschnitten zu werden. */
-  .dx-status b{display:none}
+  /* V4.1: das fette Wort ist jetzt die Lage selbst ("Markt geöffnet",
+     "Letzter Handelstag") - es bleibt auch auf dem Telefon stehen; der
+     Zusatz dahinter darf notfalls abgeschnitten werden. */
+  .dx-status b{display:inline}
   .dx-rail-section{margin-top:30px;scroll-margin-top:150px}
   .dx-rail{padding-bottom:18px}
   /* Zugeklappt ist der Hinweis ein Satz. Das Pluszeichen sagt, dass es
@@ -1328,9 +1387,9 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-chart .sem-ma-ema200{stroke:#f0675c}
 .dx-chart .sem-ma-sma50{stroke:#6f9dff}
 .dx-chart .sem-ma-sma200{stroke:#e8b44c}
-.dx-chart .sem-bb{stroke:rgba(255,255,255,.42);stroke-dasharray:3 3}
-.dx-chart .sem-bb-mid{stroke:rgba(255,255,255,.24)}
-.dx-chart .line-muted{stroke:rgba(255,255,255,.18);stroke-dasharray:3 3}
+.dx-chart .sem-bb{stroke:color-mix(in srgb,var(--discover-ink) 42%,transparent);stroke-dasharray:3 3}
+.dx-chart .sem-bb-mid{stroke:color-mix(in srgb,var(--discover-ink) 24%,transparent)}
+.dx-chart .line-muted{stroke:color-mix(in srgb,var(--discover-ink) 18%,transparent);stroke-dasharray:3 3}
 .dx-chart .line-compare{stroke:#6f9dff}
 .dx-chart .line-primary{stroke:var(--discover-text)}
 .dx-chart .ann-series{opacity:.95}
@@ -1341,7 +1400,7 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-legend-ma-ema200{background:#f0675c}
 .dx-legend-ma-sma50{background:#6f9dff}
 .dx-legend-ma-sma200{background:#e8b44c}
-.dx-legend-bb{background:rgba(255,255,255,.42)}
+.dx-legend-bb{background:color-mix(in srgb,var(--discover-ink) 42%,transparent)}
 
 /* =========================================================================
    AKTIENSEITE AUS DEM COMPANY MASTER
@@ -1469,11 +1528,11 @@ body.dx-feed-aktiv{overflow:hidden}
   border-radius:50%;background:var(--discover-dim);margin-left:8px;vertical-align:middle;opacity:.7}
 
 /* ------------------------------------------------------ Renditeleiter */
-.dx-ladder-base{stroke:rgba(255,255,255,.22);stroke-width:1}
+.dx-ladder-base{stroke:color-mix(in srgb,var(--discover-ink) 22%,transparent);stroke-width:1}
 .dx-ladder-bar{fill:var(--w);opacity:.9}
 .dx-ladder-bar.up{fill:var(--discover-up)}
 .dx-ladder-bar.down{fill:var(--discover-down)}
-.dx-ladder-bar.flat,.dx-ladder-bar--leer{fill:rgba(255,255,255,.18)}
+.dx-ladder-bar.flat,.dx-ladder-bar--leer{fill:color-mix(in srgb,var(--discover-ink) 18%,transparent)}
 .dx-ladder-label{fill:var(--discover-dim);font-family:var(--sans);letter-spacing:.08em}
 .dx-ladder-val{fill:var(--discover-text);font-weight:700;font-family:var(--sans)}
 .dx-ladder-val.up{fill:var(--discover-up)}
@@ -1594,10 +1653,10 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-art-skeleton{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;
   padding:0 0 10px 12px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--discover-dim);
-  background:linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,.05), rgba(255,255,255,.02));
+  background:linear-gradient(90deg, color-mix(in srgb,var(--discover-ink) 2%,transparent), color-mix(in srgb,var(--discover-ink) 5%,transparent), color-mix(in srgb,var(--discover-ink) 2%,transparent));
   background-size:200% 100%;animation:dx-skeleton 1.6s ease-in-out infinite}
 .dx-art-skeleton::before{content:"";position:absolute;left:12px;right:12px;bottom:6px;height:1px;
-  background:repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 4px, transparent 4px 9px)}
+  background:repeating-linear-gradient(90deg, color-mix(in srgb,var(--discover-ink) 14%,transparent) 0 4px, transparent 4px 9px)}
 @keyframes dx-skeleton{0%{background-position:0 0}100%{background-position:200% 0}}
 @media (prefers-reduced-motion:reduce){.dx-art-skeleton{animation:none}}
 /* Der Lazy-Rahmen fuellt seinen Behaelter wie das Datenbild zuvor - die
@@ -1621,7 +1680,7 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-micro--intraday .dx-art-node-ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.4}
 .dx-micro--intraday.dx-micro--down .dx-art-node-ring{stroke:var(--discover-down)}
 .dx-micro-axis{fill:var(--discover-dim);font-size:10.5px;font-family:var(--sans)}
-.dx-micro-grid{stroke:rgba(255,255,255,.06);stroke-width:1}
+.dx-micro-grid{stroke:color-mix(in srgb,var(--discover-ink) 6%,transparent);stroke-width:1}
 .dx-micro-price{fill:var(--discover-text);font-weight:600}
 .dx-micro-base{opacity:.7}
 .dx-hero-live{position:relative;margin-top:8px}
@@ -1664,7 +1723,10 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-feed-hook { margin-top:10px; font-size:15px; }
 
 /* Eingangsflaeche: groesser, cineastischer */
-.dx-hero { --discover-hero-height:min(70vh,660px); }
+/* V4: die Positionierungszeile (§4) steht ueber der Eingangsflaeche; damit
+   die erste Reihe am Schreibtisch im ersten Bild bleibt, gibt die Flaeche
+   die Hoehe der Zeile ab. */
+.dx-hero { --discover-hero-height:min(62vh,600px); }
 .dx-hero-title { font-size:clamp(40px,5.6vw,80px); letter-spacing:-.02em; line-height:.98; }
 /* Auf dem Desktop bleibt die erste Reihe unter der Eingangsflaeche sichtbar
    (angeschnitten, wie bei einer Streaming-Startseite): kompaktere Innenabstaende. */
@@ -1691,7 +1753,7 @@ body.dx-feed-aktiv{overflow:hidden}
   radial-gradient(60% 120% at 12% 0%, var(--world-soft), transparent 60%),
   linear-gradient(180deg, transparent, rgba(232,180,76,.06) 40%, transparent); pointer-events:none; }
 .dx-story-card { position:relative; display:grid; grid-template-columns:1.1fr 1fr; gap:36px; align-items:center;
-  padding:40px; border-radius:var(--discover-radius-lg); background:linear-gradient(135deg,#17161a,#0e0e11);
+  padding:40px; border-radius:var(--discover-radius-lg); background:linear-gradient(135deg,var(--discover-surface),var(--discover-bg-2));
   border:1px solid var(--discover-line); color:inherit; text-decoration:none; overflow:hidden; }
 .dx-story-card:hover { border-color:var(--discover-line-strong); }
 .dx-story-name { font-size:clamp(30px,3.6vw,52px); line-height:1; letter-spacing:-.02em; margin:6px 0 4px; }
@@ -1730,7 +1792,7 @@ body.dx-feed-aktiv{overflow:hidden}
 .dx-journey-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
 .dx-journey-tab { border:1px solid var(--discover-line); background:transparent; color:var(--discover-muted); border-radius:999px;
   padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
-.dx-journey-tab[aria-selected="true"] { background:var(--discover-text); color:#0a0a0c; border-color:transparent; }
+.dx-journey-tab[aria-selected="true"] { background:var(--discover-text); color:var(--discover-on-text); border-color:transparent; }
 .dx-journey-bild { background:var(--discover-surface); border:1px solid var(--discover-line); border-radius:var(--discover-radius); padding:16px; }
 .dx-journey-svg { width:100%; height:auto; display:block; }
 .dx-journey-bar { fill:var(--world,#e8b44c); opacity:.72; }
@@ -1817,3 +1879,333 @@ body.dx-feed-aktiv{overflow:hidden}
 }
 .dx-hero-hook .dx-hook-mark, .dx-dhero-hook .dx-hook-mark, .dx-poster .dx-hook .dx-hook-mark, .dx-feed-hook .dx-hook-mark { grid-column:1; margin-top:7px; }
 .dx-hero-hook .dx-hero-hook-src, .dx-dhero-hook .dx-hero-hook-src, .dx-hook .dx-hook-src { grid-column:2; flex-basis:auto; padding-left:0; }
+
+/* ===================================================================
+   V4 · Freshness-Vertrag: ein Stand, der nicht der letzte Handelstag
+   ist, sieht nie aus wie einer. Gedaempfte Linie, Warnton am Etikett,
+   Statuszeile ohne gruenen Punkt.
+   =================================================================== */
+.dx-live-label--stale{color:var(--discover-warm,#f2b544)}
+.dx-live-label--stale i{background:var(--discover-warm,#f2b544);opacity:1}
+.dx-live-label--pending i{opacity:.7}
+[data-freshness="STALE"] svg{opacity:.55;filter:saturate(.35)}
+[data-freshness="STALE"] .dx-live-label svg{opacity:1;filter:none}
+.dx-status--stale .dx-dot{background:var(--discover-warm,#f2b544);animation:none;box-shadow:none}
+.dx-status--stale{color:var(--discover-warm,#f2b544)}
+.dx-intraday-note [data-freshness="STALE"]{color:var(--discover-warm,#f2b544)}
+
+/* ===================================================================
+   V4 · Eingangsflaeche als Spur (§16): Wischen mit dem Finger, Einrasten,
+   Tastatur. touch-action: pan-y - die Seite scrollt vertikal, die Spur
+   nimmt die horizontale Geste. Die Punkte sind 44 px hohe Ziele.
+   =================================================================== */
+.dx-hero-viewport{position:relative;z-index:2;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab}
+.dx-hero--wischt .dx-hero-viewport{cursor:grabbing}
+.dx-hero-track{display:flex;width:100%;will-change:transform;transform:translate3d(0,0,0)}
+.dx-hero-track--animiert{transition:transform .42s cubic-bezier(.22,.61,.36,1)}
+@media (prefers-reduced-motion: reduce){.dx-hero-track--animiert{transition:none}}
+.dx-hero-slide{flex:0 0 100%;min-width:0;width:100%}
+.dx-hero-slide[aria-hidden="true"]{visibility:hidden}
+.dx-hero--wischt .dx-hero-slide[aria-hidden="true"]{visibility:visible}
+.dx-hero-slide[aria-hidden="true"] a,.dx-hero-slide[aria-hidden="true"] button{pointer-events:none}
+.dx-hero--wischt a,.dx-hero--wischt button{pointer-events:none}
+.dx-hero:focus-visible{outline:2px solid var(--w-2,#93a9ff);outline-offset:-2px}
+.dx-hero-nav{gap:4px}
+.dx-hero-nav button{position:relative;height:44px;width:38px;background:transparent;border-radius:0}
+.dx-hero-nav button::before{content:"";position:absolute;left:2px;right:2px;top:50%;height:3px;margin-top:-1px;border-radius:2px;
+  background:color-mix(in srgb,var(--discover-ink) 22%,transparent);transition:background var(--discover-motion-fast) var(--discover-ease)}
+.dx-hero-nav button[aria-current="true"]{width:56px;background:transparent}
+.dx-hero-nav button[aria-current="true"]::before{background:var(--w-2,var(--discover-text))}
+.dx-hero-nav button:hover::before{background:color-mix(in srgb,var(--discover-ink) 50%,transparent)}
+.dx-hero-nav button:focus-visible{outline:2px solid var(--w-2,#93a9ff);outline-offset:-6px}
+@media (max-width:860px){
+  .dx-hero-nav{bottom:4px}
+  .dx-hero-slide{padding-bottom:36px}
+}
+
+/* V4 §4: die Positionierung - ein Satz ueber der Eingangsflaeche. */
+.dx-positioning{padding:14px var(--discover-gutter) 0;max-width:1400px;margin:0 auto}
+.dx-positioning-line{margin:0;font-size:15px;line-height:1.35;color:var(--discover-text);font-weight:600;letter-spacing:-.01em}
+.dx-positioning-second{margin:2px 0 0;font-size:12px;color:var(--discover-dim)}
+@media (max-width:860px){
+  .dx-positioning{padding-top:10px}
+  .dx-positioning-line{font-size:14px}
+  .dx-positioning-second{display:none}
+}
+
+/* V4 §7: Farbwelten der Sammlungen. Gruen und Rot bleiben den Zahlen. */
+[data-world="momentum"]  {--w:#3ed6e0;--w-2:#9be9ef;--w-glow:rgba(62,214,224,.20);--w-soft:rgba(62,214,224,.09)}
+[data-world="growth"]    {--w:#a97cff;--w-2:#cdb3ff;--w-glow:rgba(169,124,255,.20);--w-soft:rgba(169,124,255,.09)}
+[data-world="cashflow"]  {--w:#5b8cff;--w-2:#9cb7ff;--w-glow:rgba(91,140,255,.20);--w-soft:rgba(91,140,255,.09)}
+[data-world="comeback"]  {--w:#e85cc1;--w-2:#f3a3dd;--w-glow:rgba(232,92,193,.18);--w-soft:rgba(232,92,193,.08)}
+[data-world="compounder"]{--w:#c8b58a;--w-2:#e6d9bb;--w-glow:rgba(200,181,138,.16);--w-soft:rgba(200,181,138,.07)}
+[data-world="highs"]     {--w:#7fd4ff;--w-2:#bde8ff;--w-glow:rgba(127,212,255,.20);--w-soft:rgba(127,212,255,.09)}
+
+/* V4 §11: Fusszeilen-Links */
+.dx-foot-links a{color:var(--discover-text);text-decoration:underline;text-underline-offset:3px}
+.dx-foot-links a:hover{color:var(--w-2,#93a9ff)}
+
+/* V4 §12-14: der Verbraucher-Chart der Aktienseite - grosse Flaeche, eine
+   Linie, kein dominanter Kasten. Der Kurs steht davor, nicht daneben. */
+.dx-chart:has(.dx-range-chart-wrap),.dx-chart:has(.dx-intraday){background:transparent;border:0;padding:0}
+.dx-chart .dx-intraday{margin:0 -4px}
+.dx-chart-hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 18px;margin:0 0 10px}
+.dx-chart-hero-preis{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.dx-chart-hero-preis > b{font-size:clamp(30px,4.2vw,44px);letter-spacing:-.02em;line-height:1;color:var(--discover-text)}
+.dx-chart-hero-preis > span.num{font-size:clamp(17px,2.2vw,22px);font-weight:700}
+.dx-chart-hero-wort{font-size:13px;color:var(--discover-dim)}
+.dx-chart-hero-meta{font-size:11.5px;color:var(--discover-dim);display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.dx-chart-hero-meta .dx-live-label{position:static;display:inline;text-transform:none;letter-spacing:0;font-size:inherit;color:var(--discover-muted)}
+.dx-chart-hero-meta .dx-live-label::before{content:"· ";color:var(--discover-dim)}
+@media (max-width:860px){.dx-chart-hero-meta .dx-live-label::before{content:""}.dx-chart-hero-meta{flex-direction:column;align-items:flex-start;gap:2px}
+  .dx-status{max-width:72vw}}
+.dx-range-chart-wrap{color:var(--w,var(--discover-text));margin:0 -4px}
+.dx-range-chart{width:100%;height:auto;display:block;overflow:visible}
+.dx-range-line{stroke:currentColor;stroke-width:2.2;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.dx-range-chart .dx-art-fill{opacity:1}
+.dx-range-chart .dx-art-node{fill:currentColor;stroke:var(--discover-bg);stroke-width:2}
+.dx-range-grid{stroke:color-mix(in srgb,var(--discover-ink) 7%,transparent);stroke-width:1}
+.dx-range-chart .dx-art-base{stroke:color-mix(in srgb,var(--discover-ink) 28%,transparent);stroke-dasharray:3 4}
+.dx-range-axis{fill:var(--discover-dim);font-size:12px;font-family:var(--sans);font-variant-numeric:tabular-nums}
+.dx-range-axis--last{fill:var(--discover-text);font-weight:700}
+.dx-range-date{fill:var(--discover-dim);font-size:11px;font-family:var(--sans)}
+.dx-pro-toggle{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--discover-muted);margin:10px 0 4px;cursor:pointer}
+.dx-pro-toggle input{accent-color:var(--w,#6f9dff);width:16px;height:16px}
+@media (max-width:860px){
+  .dx-chart-hero-preis > b{font-size:32px}
+  .dx-range-chart{aspect-ratio:640/240}
+  .dx-range-axis{font-size:15px}
+  .dx-range-date{font-size:14px}
+}
+
+/* V4 §11: Daten & Quellen */
+.dx-daten h1{font-size:clamp(28px,4vw,40px);margin:18px 0 8px;letter-spacing:-.02em}
+.dx-daten-lead{max-width:70ch;color:var(--discover-muted);font-size:15px;line-height:1.6;margin-bottom:28px}
+.dx-daten-abschnitt{max-width:80ch;padding:22px 0;border-top:1px solid var(--discover-line)}
+.dx-daten-abschnitt h2{font-size:18px;margin:0 0 10px}
+.dx-daten-abschnitt p{color:var(--discover-muted);line-height:1.65;font-size:14px;margin:0 0 10px}
+.dx-daten-zeile{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:12px;font-size:13.5px;line-height:1.55;padding:6px 0;border-top:1px dashed color-mix(in srgb,var(--discover-ink) 6%,transparent)}
+.dx-daten-zeile b{color:var(--discover-text)}
+.dx-daten-zeile span{color:var(--discover-muted)}
+@media (max-width:860px){.dx-daten-zeile{grid-template-columns:1fr}}
+
+/* V4 §25: die Unterzeile der Sammlung auch auf dem Telefon - eine Zeile. */
+@media (max-width:860px){
+  .dx-rail-head{flex-wrap:wrap;row-gap:2px}
+  .dx-rail-head p{display:block;flex:1 1 100%;order:3;font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dx-daten{padding-left:var(--discover-gutter);padding-right:var(--discover-gutter)}
+}
+/* V4 §26: Hook unter dem Chart, mit Abstand. */
+.dx-poster .dx-hook{margin-top:10px}
+.dx-poster .dx-zahl{margin-top:4px}
+
+/* V4 §19: Index-Mitgliedschaft auf der Aktienseite */
+.dx-index-badges{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.dx-index-badge{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--discover-text);
+  border:1px solid color-mix(in srgb,var(--discover-ink) 18%,transparent);border-radius:999px;padding:4px 9px;background:color-mix(in srgb,var(--discover-ink) 4%,transparent)}
+
+/* ======================================================= V4.1 (§5-6) CHART
+   Kurscharts sind gruen, wenn der Zeitraum positiv endet, rot, wenn er
+   negativ endet - auf Karten, im Eingang, auf der Aktienseite, im Feed.
+   Die Farbwelt der Sammlung bleibt in Flaeche, Licht und Beschriftung;
+   die Linie selbst folgt der Richtung. Neutral (exakt 0) bleibt die Welt. */
+.dx-micro[data-direction="up"],.dx-range-chart[data-direction="up"],.dx-range-chart-wrap[data-direction="up"],.dx-intraday[data-direction="up"]{color:var(--discover-up)}
+.dx-micro[data-direction="down"],.dx-range-chart[data-direction="down"],.dx-range-chart-wrap[data-direction="down"],.dx-intraday[data-direction="down"]{color:var(--discover-down)}
+.dx-micro[data-direction] .dx-art-line,.dx-range-chart[data-direction] .dx-art-line{stroke:currentColor}
+.dx-micro[data-direction] .dx-art-node,.dx-range-chart[data-direction] .dx-art-node{fill:currentColor}
+
+/* Der grosse Chart: pixelgenaue viewBox, keine feste Seitenverhaeltnisse. */
+.dx-range-chart,.dx-intraday-chart{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y;cursor:crosshair;max-height:none}
+@media (max-width:860px){
+  .dx-range-chart{aspect-ratio:auto}
+  .dx-intraday-chart{max-height:none}
+  .dx-range-axis{font-size:12px}
+  .dx-range-date{font-size:11.5px}
+  .dx-chart-hero-preis > b{font-size:36px}
+  .dx-chart-hero-preis > span.num{font-size:19px}
+  .dx-chapter--chart{padding-top:22px}
+}
+.dx-range-axis--mid{opacity:.7}
+.dx-chart-hero-meta .dx-live-label{position:static}
+/* Beruehrung: Zeiger und Marke; der Kopf zeigt den Kurs an der Stelle. */
+.dx-scrub-line{stroke:var(--discover-text);stroke-opacity:.45;stroke-width:1;stroke-dasharray:3 3}
+.dx-scrub-node{fill:currentColor;stroke:var(--discover-bg);stroke-width:2.5}
+.dx-scrubbing .dx-art-node{opacity:.35}
+.dx-intraday .dx-micro-axis{font-size:11.5px}
+.dx-intraday .dx-micro-price{font-weight:700;font-size:12px}
+
+/* ================================================ V4.1 (§7-10) FUNDAMENTALS
+   Die Journey als Buehne, die Zahlen als vier Karten, die Bewertung als
+   Bild. Keine Listen, keine Quellenbloecke im Kapitel. */
+.dx-journey--stage{margin-top:22px}
+.dx-journey--stage .dx-journey-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0 10px;margin:0 -2px}
+.dx-journey--stage .dx-journey-tabs::-webkit-scrollbar{display:none}
+.dx-journey--stage .dx-journey-tab{flex:0 0 auto;border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);border-radius:999px;padding:9px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:38px;white-space:nowrap}
+.dx-journey--stage .dx-journey-tab[aria-selected="true"]{background:var(--discover-text);color:var(--discover-bg);border-color:var(--discover-text)}
+.dx-journey-kopf{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px 18px;margin:14px 0 6px}
+.dx-journey-von b,.dx-journey-nach b{display:block;font-size:clamp(24px,3.4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.dx-journey-von{opacity:.62}
+.dx-journey-von span,.dx-journey-nach span{display:block;margin-top:5px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-journey-pfeil{font-size:26px;color:var(--discover-dim);padding-bottom:14px}
+.dx-journey-delta{margin-left:auto;text-align:right}
+.dx-journey-delta b{display:block;font-size:clamp(22px,3vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1}
+.dx-journey-delta span{display:block;margin-top:5px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-journey-delta.up b{color:var(--discover-up)}.dx-journey-delta.down b{color:var(--discover-down)}
+.dx-journey--stage .dx-journey-bild{margin:4px -4px 0}
+.dx-journey--stage .dx-journey-svg{width:100%;height:auto;display:block;max-height:none}
+.dx-journey-wert{fill:var(--discover-muted);font-size:12px;font-family:var(--sans);font-variant-numeric:tabular-nums}
+.dx-journey-wert.last{fill:var(--discover-text);font-weight:700}
+.dx-journey--stage .dx-journey-bar{fill:var(--w);opacity:.55}
+.dx-journey--stage .dx-journey-bar.last{opacity:1}
+.dx-journey--stage .dx-journey-bar.down{fill:var(--discover-down)}
+.dx-journey-satz{margin:12px 0 0;font-size:clamp(17px,2vw,21px);line-height:1.4;font-weight:600;letter-spacing:-.01em;max-width:44ch}
+.dx-journey-satz--caveat{font-weight:400;font-size:13.5px;color:var(--discover-muted)}
+@media (max-width:860px){
+  .dx-journey-delta{margin-left:0;flex-basis:100%;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .dx-journey-delta span{margin-top:0}
+  .dx-journey-pfeil{padding-bottom:10px}
+}
+/* Das Unternehmen in Zahlen: vier Karten. */
+.dx-zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:20px}
+.dx-zahlen-karte{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1px solid var(--discover-line);background:var(--discover-surface);border-radius:var(--discover-radius-lg);padding:20px 20px 16px;font:inherit;color:var(--discover-text);cursor:pointer;
+  transition:border-color var(--discover-motion-fast) var(--discover-ease),background var(--discover-motion-fast) var(--discover-ease)}
+.dx-zahlen-karte:hover{border-color:var(--discover-line-strong);background:var(--discover-surface-2)}
+.dx-zahlen-karte:focus-visible{outline:2px solid var(--discover-text);outline-offset:3px}
+.dx-zahlen-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.dx-zahlen-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--discover-dim)}
+.dx-zahlen-grade{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--discover-ink) 7%,transparent);color:var(--discover-muted)}
+.dx-zahlen-grade.up{color:var(--discover-up);background:var(--discover-up-soft)}
+.dx-zahlen-grade.down{color:var(--discover-down);background:var(--discover-down-soft)}
+.dx-zahlen-grade.warm{color:var(--discover-warm);background:var(--discover-warm-soft)}
+.dx-zahlen-zahl{font-size:clamp(28px,3.2vw,38px);font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:6px}
+.dx-zahlen-einheit{font-size:12.5px;color:var(--discover-muted)}
+.dx-zahlen-sub{font-size:13px;color:var(--discover-text);font-weight:600}
+.dx-zahlen-satz{margin:6px 0 0;font-size:14px;line-height:1.5;color:var(--discover-muted)}
+.dx-zahlen-cta{margin-top:auto;padding-top:10px;font-size:12.5px;font-weight:700;color:var(--w)}
+.dx-weitere{margin-top:18px;border-top:1px solid var(--discover-line);padding-top:12px}
+.dx-weitere summary{cursor:pointer;list-style:none;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--discover-muted);display:flex;align-items:center;gap:8px;min-height:36px}
+.dx-weitere summary::-webkit-details-marker{display:none}
+.dx-weitere summary::after{content:"+";font-size:14px;opacity:.8}
+.dx-weitere[open] summary::after{content:"–"}
+.dx-weitere .dx-firma{margin-top:12px}
+.dx-kapitel-fuss--link a{color:var(--discover-muted);text-decoration:underline;text-underline-offset:3px}
+/* Bewertung: zwei Balken, drei Sichten. */
+.dx-bewertung-tabs{margin-top:16px}
+.dx-bewertung-bild{margin-top:6px}
+.dx-bewertung-bild h3{margin:0 0 12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--discover-dim);font-weight:700}
+.dx-bewertung-zeile{display:grid;grid-template-columns:minmax(120px,180px) 1fr auto;align-items:center;gap:12px;margin:0 0 10px}
+.dx-bewertung-name{font-size:13px;color:var(--discover-muted)}
+.dx-bewertung-zeile--eigen .dx-bewertung-name{color:var(--discover-text);font-weight:700}
+.dx-bewertung-balken{display:block;height:12px;border-radius:999px;background:color-mix(in srgb,var(--discover-ink) 6%,transparent);overflow:hidden}
+.dx-bewertung-balken i{display:block;height:100%;border-radius:999px;background:var(--discover-muted);opacity:.7}
+.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--w);opacity:1}
+.dx-bewertung-zeile b{font-size:16px;font-variant-numeric:tabular-nums}
+.dx-bewertung-lesart{margin:10px 0 0;font-size:16px;font-weight:600}
+.dx-bewertung-erklaerung{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--discover-muted);max-width:60ch}
+.dx-bewertung-satz[data-stufe="eingeschraenkt"] b{color:var(--discover-warm)}
+@media (max-width:860px){
+  .dx-zahlen{grid-template-columns:1fr 1fr;gap:10px}
+  .dx-zahlen-karte{padding:16px 14px 14px}
+  .dx-zahlen-zahl{font-size:24px}
+  .dx-zahlen-satz{font-size:13px}
+  .dx-bewertung-zeile{grid-template-columns:96px 1fr auto;gap:8px}
+}
+@media (max-width:480px){
+  .dx-zahlen{grid-template-columns:1fr}
+}
+
+.dx-journey--stage .dx-journey-bild{background:transparent;border:0;padding:0}
+
+/* ==================================================================
+   V4.1 §14-16: Entdecken-Pille im Kopf und die schwebende Navigation
+   des Telefons. Die Pille im Kopf ist der Schreibtisch-Einstieg; auf
+   dem Telefon uebernimmt die schwebende Leiste beides (Suchen und
+   Entdecken), damit die Kopfzeile schlank bleibt.
+   ================================================================== */
+.dx-entdecken{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 12px;border-radius:999px;
+  border:1px solid var(--discover-line);color:var(--discover-muted);text-decoration:none;
+  font-size:12px;font-weight:600;white-space:nowrap;
+  transition:color var(--discover-motion-fast) var(--discover-ease),
+             border-color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-entdecken svg{flex:0 0 auto;opacity:.85}
+.dx-entdecken:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+
+.dx-fnav{
+  position:fixed;left:50%;transform:translate(-50%,0);
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  z-index:60;display:flex;gap:8px;padding:6px;border-radius:999px;
+  background:var(--discover-fnav-bg);
+  border:1px solid var(--discover-line);
+  box-shadow:0 12px 34px rgba(0,0,0,.35),0 1px 0 color-mix(in srgb,var(--discover-ink) 4%,transparent) inset;
+  -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
+  transition:transform .28s var(--discover-ease),opacity .28s var(--discover-ease);
+}
+.dx-fnav--weg{transform:translate(-50%,calc(100% + 24px + env(safe-area-inset-bottom,0px)));opacity:0;pointer-events:none}
+.dx-fnav-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;min-width:44px;padding:0 18px;border-radius:999px;border:0;
+  background:transparent;color:var(--discover-text);font:inherit;font-size:14px;font-weight:650;
+  text-decoration:none;cursor:pointer;white-space:nowrap;
+  transition:background var(--discover-motion-fast) var(--discover-ease),color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-fnav-btn svg{flex:0 0 auto}
+.dx-fnav-btn:hover{background:color-mix(in srgb,var(--discover-ink) 8%,transparent)}
+.dx-fnav-btn:focus-visible{outline:2px solid var(--discover-text);outline-offset:2px}
+.dx-fnav-entdecken{background:var(--discover-text);color:var(--discover-bg)}
+.dx-fnav-entdecken:hover{background:var(--discover-text);opacity:.92}
+/* Im Feed und ueber der Suche ist die Leiste weg: dort gibt es eigene
+   Wege zurueck, und zwei Leisten uebereinander sind eine zu viel. */
+body.dx-feed-aktiv .dx-fnav,body.dx-suche-offen .dx-fnav{display:none}
+/* Am Schreibtisch die leichtere Spielart: klein, rechts unten, ohne
+   die Kopfzeile zu doppeln - dort steht Suchen und Entdecken ohnehin. */
+@media (min-width:861px){
+  .dx-fnav{left:auto;right:22px;transform:none;padding:5px;gap:6px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+  .dx-fnav--weg{transform:translate(0,calc(100% + 30px));opacity:0}
+  .dx-fnav-btn{min-height:40px;font-size:13px;padding:0 15px}
+}
+@media (max-width:860px){
+  /* Die Kopfzeile behaelt Marke, Lage und Stand; Suchen und Entdecken
+     wohnen unten in der Leiste, immer unter dem Daumen. */
+  .dx-searchbtn,.dx-entdecken{display:none}
+  .dx-page{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+}
+
+/* V4.1 §12: der Schema-Knopf im Kopf und die Wahl am Fuss. */
+.dx-schema{
+  display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:999px;
+  border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);cursor:pointer;
+  transition:color var(--discover-motion-fast) var(--discover-ease),border-color var(--discover-motion-fast) var(--discover-ease);
+}
+.dx-schema:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-schema:focus-visible{outline:2px solid var(--discover-text);outline-offset:2px}
+.dx-schema-wahl{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:12px}
+.dx-schema-wahl b{margin-right:4px}
+.dx-schema-wahl button{
+  font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--discover-line);background:transparent;color:var(--discover-muted);
+}
+.dx-schema-wahl button:hover{color:var(--discover-text);border-color:var(--discover-line-strong)}
+.dx-schema-wahl button[aria-pressed="true"]{background:var(--discover-text);color:var(--discover-on-text);border-color:var(--discover-text)}
+@media (max-width:860px){
+  /* Auf dem Telefon steht der Knopf neben der Marke; die Lage rechts
+     bekommt den Rest der Zeile und wird notfalls abgeschnitten. */
+  .dx-schema{order:1;width:30px;height:30px;margin-left:2px}
+  .dx-status{max-width:calc(100vw - 176px)}
+}
+
+/* V4.1 §25: die Analyse hinter einer Grenze, die sich oeffnen laesst. Am
+   Schreibtisch offen, auf dem Telefon zu - der Trenner ist die Summary. */
+.dx-analyse{margin:0}
+.dx-analyse > summary.dx-trenner{cursor:pointer;list-style:none;position:relative;padding-right:44px}
+.dx-analyse > summary.dx-trenner::-webkit-details-marker{display:none}
+.dx-trenner-schalter{position:absolute;right:0;top:30px;width:34px;height:34px;border-radius:999px;
+  border:1px solid var(--discover-line);display:inline-flex;align-items:center;justify-content:center}
+.dx-trenner-schalter::after{content:"";width:8px;height:8px;border-right:1.6px solid var(--discover-muted);
+  border-bottom:1.6px solid var(--discover-muted);transform:rotate(45deg) translate(-1px,-1px);
+  transition:transform var(--discover-motion-fast) var(--discover-ease)}
+.dx-analyse[open] .dx-trenner-schalter::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.dx-analyse:not([open]) > summary.dx-trenner{padding-bottom:30px;border-bottom:1px solid var(--discover-line)}
+.dx-waage-weitere{margin-top:12px;padding-top:8px}
+.dx-waage-weitere ul{margin-top:12px}

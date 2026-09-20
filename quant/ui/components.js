@@ -338,7 +338,7 @@
           "quant/data/sec/quant-factor-inputs.json konnte nicht geladen werden.", "empty")]);
       });
     return section(title || "Golden Universe — reale Unternehmen",
-      description || ("Fuenf reale Titel mit echten SEC-Fundamentaldaten und (Development Preview) echten " +
+      description || ("Fuenf reale Titel mit echten SEC-Fundamentaldaten und echten " +
         "Tiingo-Kursen — kein synthetisches Modelluniversum. Bewusst kein VU Quant Score und keine " +
         "Einsortierung ins Perzentil-Ranking unten: eine Vergleichsgruppe von fuenf Titeln aus vier " +
         "Sektoren waere keine brauchbare Peer-Group. Anklicken fuer SEC-Daten, Marktdaten, Chart, " +

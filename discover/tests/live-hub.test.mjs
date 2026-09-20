@@ -30,7 +30,7 @@ function fenster(antworten, now) {
   };
   /* UMD-Module im Browserpfad laden: `module` ist hier nicht definiert. */
   for (const f of ["quant/engines/realtime/market-hours.js", "quant/engines/realtime/trading-session.js",
-                   "quant/engines/realtime/intraday-snapshot.js"]) {
+                   "quant/engines/realtime/intraday-snapshot.js", "quant/engines/realtime/freshness.js"]) {
     new Function("window", "module", src(f).replace("typeof window !== \"undefined\" ? window : globalThis", "window"))(w, undefined);
   }
   new Function("window", src("discover/ui/live-hub.js"))(w);
@@ -149,7 +149,8 @@ test("LH5 · Sitzungswechsel: die Beschriftung springt um 09:30 ohne neuen Snaps
   assert.ok(roll && roll.ms <= 32000, "Zeitgeber auf die Sitzungsgrenze");
   jetzt = "2026-09-14T13:31:00Z";
   roll.fn(); await tickMicro();
-  assert.equal(labels[1], "Letzter Handelstag · Freitag", "der Snapshot ist noch Freitag - und heisst so");
+  assert.equal(labels[1], "Letzter Handelstag · Freitag · heutige Kurse folgen", "der Snapshot ist noch Freitag - und heisst so");
+  assert.equal(labels.length, 2);
   assert.equal(Hub.stats().rollovers, 1);
 });
 
@@ -180,4 +181,38 @@ test("LH7 · Titel ausserhalb des Discover-Umfangs: Pfad aus Sitzung, Muster und
   let p = null; Hub.subscribe("ZZZ", (x) => { p = x; }); await tickMicro(); await tickMicro();
   assert.equal(p.snapshot.symbol, "ZZZ");
   assert.equal(calls.filter((c) => c.url.startsWith("/i/")).length, 1);
+});
+
+test("LH8 · Freshness-Vertrag im Hub: ein Freitags-Snapshot am Dienstag ist STALE und heisst 'nicht aktuell'", async () => {
+  const s = snap("AAPL", 78, true);
+  const { Hub } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: "2026-09-11", isComplete: true }),
+                            "/snap/AAPL.json": s }, "2026-09-15T07:37:00Z");
+  await Hub.loadIndex();
+  const got = [];
+  Hub.subscribe("AAPL", (p) => got.push(p));
+  await tickMicro(); await tickMicro();
+  assert.equal(got[0].freshness.freshnessState, "STALE");
+  assert.equal(got[0].freshness.expectedSessionDate, "2026-09-14");
+  assert.equal(got[0].label.label, "Stand Fr., 11.09. · nicht aktuell");
+  assert.equal(got[0].label.tone, "stale");
+  assert.equal(got[0].label.marketStateWord, "Geschlossen");
+  /* Dasselbe Verzeichnis am Montagmorgen: Freitag ist die letzte Sitzung. */
+  const { Hub: H2 } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: "2026-09-11", isComplete: true }),
+                               "/snap/AAPL.json": s }, "2026-09-14T12:00:00Z");
+  await H2.loadIndex();
+  const got2 = [];
+  H2.subscribe("AAPL", (p) => got2.push(p));
+  await tickMicro(); await tickMicro();
+  assert.equal(got2[0].freshness.freshnessState, "LAST_SESSION");
+  assert.equal(got2[0].label.label, "Letzter Handelstag · Freitag");
+});
+
+test("LH9 · Nachfragen, wenn das Verzeichnis die letzte abgeschlossene Sitzung nicht kennt (Nachzug des Workflows)", async () => {
+  const s = snap("AAPL", 78, true);
+  const index = Object.assign(idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: "2026-09-11", isComplete: true }),
+                              { lastCompletedSession: { sessionDate: "2026-09-11" } });
+  const { Hub } = fenster({ "/idx.json": index, "/snap/AAPL.json": s }, "2026-09-15T07:37:00Z");
+  await Hub.loadIndex();
+  Hub.subscribe("AAPL", () => {});
+  assert.equal(Hub.shouldPoll(), true, "das Verzeichnis haengt hinter dem Kalender - nachfragen");
 });

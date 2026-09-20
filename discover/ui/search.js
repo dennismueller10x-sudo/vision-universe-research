@@ -29,7 +29,7 @@
     var aktiv = -1;
     var treffer = [];
 
-    var input = el("input", { type: "search", placeholder: "Unternehmen oder Ticker …",
+    var input = el("input", { type: "search", placeholder: "Welche Aktie suchst du?",
                               "aria-label": "Aktien suchen", autocomplete: "off",
                               spellcheck: "false" });
     var results = el("div", { class: "dx-results", role: "listbox",
@@ -39,9 +39,9 @@
     var close = el("button", { class: "dx-search-close", type: "button", text: "Schließen" });
 
     var overlay = el("div", { class: "dx-search", role: "dialog", "aria-modal": "true",
-                              "aria-label": "Aktien entdecken" }, [
+                              "aria-label": "Aktien suchen" }, [
       el("div", { class: "dx-search-inner" }, [
-        el("h2", { text: "Aktien entdecken" }),
+        el("h2", { text: "Suchen" }),
         el("div", { class: "dx-search-field" }, [input, close]),
         hint,
         results
@@ -170,6 +170,7 @@
 
     function oeffnenOverlay() {
       overlay.classList.add("on");
+      document.body.classList.add("dx-suche-offen");
       document.body.style.overflow = "hidden";
       input.value = "";
       S.clear(results);
@@ -179,6 +180,7 @@
 
     function schliessen() {
       overlay.classList.remove("on");
+      document.body.classList.remove("dx-suche-offen");
       document.body.style.overflow = "";
     }
 

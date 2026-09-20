@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "RUN_DATE": "2026-09-16",
+  "RUN_STARTED_AT": "2026-09-16T06:42:03+00:00",
+  "STATUS": "SUCCESS",
+  "DRY_RUN": false,
+  "LAST_SUCCESSFUL_RUN": "2026-09-16T06:42:03+00:00",
+  "LAST_SEC_CHECK": "2026-09-16",
+  "SEC_INDEX": {
+    "daysChecked": [
+      "2026-09-15"
+    ],
+    "daysWithoutIndex": [
+      "2026-09-16"
+    ],
+    "indexRows": 4307
+  },
+  "SEC_CHANGES_FOUND": 6,
+  "NEW_FILINGS": 4,
+  "AMENDMENTS_FOUND": 2,
+  "ISSUERS_CHECKED": 5479,
+  "ISSUERS_CHANGED": 6,
+  "NEW_ISSUERS": 0,
+  "RETRIED": 0,
+  "ISSUERS_UPDATED": 6,
+  "NO_CHANGE": 5473,
+  "UNCHANGED_ISSUERS_REPROCESSED": 0,
+  "UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC": 0,
+  "FAILED_ISSUERS": 0,
+  "RETRY_QUEUE": 0,
+  "FACTBOOKS_UPDATED": 6,
+  "ANNUAL_HISTORIES_UPDATED": 6,
+  "QUARTERLY_HISTORIES_UPDATED": 6,
+  "PIT_HISTORIES_UPDATED": 6,
+  "ACCESSION_DUPLICATES": 0,
+  "STATE_BOOTSTRAPPED": 0,
+  "NORMALIZATION_LOGIC_VERSION": "1.10.0",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.10.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.5.0"
+    }
+  },
+  "updated": [
+    {
+      "cik": "0001164771",
+      "issuerId": "iss_cik_0001164771",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "40-F/A",
+          "accession": "0001062993-26-004942",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0001062993-26-004942",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-14T23:17:52.000Z",
+      "latestForm": "40-F/A",
+      "metricsChanged": [
+        "shares_outstanding"
+      ],
+      "observationsBefore": 451,
+      "observationsAfter": 453,
+      "annualTimelines": 167,
+      "quarterlyTimelines": 81,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    },
+    {
+      "cik": "0001360565",
+      "issuerId": "iss_cik_0001360565",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "10-Q/A",
+          "accession": "0001493152-26-042699",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0001493152-26-042699",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-15T15:46:40.000Z",
+      "latestForm": "10-Q/A",
+      "metricsChanged": [
+        "shares_outstanding"
+      ],
+      "observationsBefore": 6093,
+      "observationsAfter": 6094,
+      "annualTimelines": 529,
+      "quarterlyTimelines": 2161,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    },
+    {
+      "cik": "0001495320",
+      "issuerId": "iss_cik_0001495320",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "10-Q",
+          "accession": "0001628280-26-062019",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0001628280-26-062019",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-15T18:59:50.000Z",
+      "latestForm": "10-Q",
+      "metricsChanged": [
+        "basic_weighted_average_shares",
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "cost_of_revenue",
+        "current_assets",
+        "current_liabilities",
+        "depreciation_and_amortization",
+        "diluted_weighted_average_shares",
+        "eps_basic",
+        "eps_diluted",
+        "financing_cash_flow",
+        "gross_profit",
+        "income_tax_expense",
+        "inventory",
+        "investing_cash_flow",
+        "net_income",
+        "net_interest_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "receivables",
+        "retained_earnings",
+        "revenue",
+        "sga_expense",
+        "shares_outstanding",
+        "stock_based_compensation",
+        "stockholders_equity",
+        "total_assets",
+        "total_liabilities"
+      ],
+      "observationsBefore": 6608,
+      "observationsAfter": 6712,
+      "annualTimelines": 546,
+      "quarterlyTimelines": 2192,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    },
+    {
+      "cik": "0001944399",
+      "issuerId": "iss_cik_0001944399",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "20-F",
+          "accession": "0001213900-26-100218",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0001213900-26-100218",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-15T21:29:03.000Z",
+      "latestForm": "20-F",
+      "metricsChanged": [],
+      "observationsBefore": 356,
+      "observationsAfter": 356,
+      "annualTimelines": 159,
+      "quarterlyTimelines": 54,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    },
+    {
+      "cik": "0001948455",
+      "issuerId": "iss_cik_0001948455",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "10-K",
+          "accession": "0001213900-26-100146",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0001213900-26-100146",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-15T20:30:43.000Z",
+      "latestForm": "10-K",
+      "metricsChanged": [
+        "basic_weighted_average_shares",
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "cost_of_revenue",
+        "current_assets",
+        "current_liabilities",
+        "deposits",
+        "depreciation_and_amortization",
+        "diluted_weighted_average_shares",
+        "eps_basic",
+        "eps_diluted",
+        "financing_cash_flow",
+        "gross_profit",
+        "income_tax_expense",
+        "intangible_assets",
+        "interest_expense",
+        "inventory",
+        "investing_cash_flow",
+        "net_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "receivables",
+        "research_and_development",
+        "retained_earnings",
+        "revenue",
+        "sga_expense",
+        "share_repurchases",
+        "shares_outstanding",
+        "stock_based_compensation",
+        "stockholders_equity",
+        "total_assets",
+        "total_liabilities"
+      ],
+      "observationsBefore": 1370,
+      "observationsAfter": 1465,
+      "annualTimelines": 157,
+      "quarterlyTimelines": 552,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    },
+    {
+      "cik": "0002080126",
+      "issuerId": "iss_cik_0002080126",
+      "reason": "NEW_FILING",
+      "filings": [
+        {
+          "form": "10-K",
+          "accession": "0002080126-26-000035",
+          "filed": "20260915"
+        }
+      ],
+      "latestAccession": "0002080126-26-000035",
+      "latestFiledAt": "2026-09-15",
+      "latestAcceptedAt": "2026-09-15T10:43:36.000Z",
+      "latestForm": "10-K",
+      "metricsChanged": [
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "cost_of_revenue",
+        "current_assets",
+        "current_liabilities",
+        "debt_issued",
+        "debt_repaid",
+        "depreciation_and_amortization",
+        "financing_cash_flow",
+        "goodwill",
+        "gross_profit",
+        "income_tax_expense",
+        "intangible_assets",
+        "interest_expense",
+        "inventory",
+        "investing_cash_flow",
+        "long_term_debt",
+        "net_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "receivables",
+        "retained_earnings",
+        "revenue",
+        "sga_expense",
+        "short_term_debt",
+        "stock_based_compensation",
+        "stockholders_equity",
+        "total_assets",
+        "total_liabilities"
+      ],
+      "observationsBefore": 192,
+      "observationsAfter": 299,
+      "annualTimelines": 61,
+      "quarterlyTimelines": 186,
+      "accessionDuplicates": 0,
+      "wasNew": false
+    }
+  ],
+  "unchanged": [],
+  "failed": [],
+  "retryQueue": [],
+  "requests": {
+    "requests": 16,
+    "cache_hits": 0,
+    "retries": 0,
+    "deduplicated": 0
+  },
+  "TOTAL_RUNTIME_SECONDS": 4.8,
+  "UNIVERSE_SKIPPED_WITHOUT_CIK": 0,
+  "R2_OBJECTS_WRITTEN": 6,
+  "R2_OBJECTS_UNCHANGED": 5474,
+  "R2_PERSISTENCE": "PASS",
+  "RELOAD_WITHOUT_SEC_REFETCH": "PASS",
+  "RELOAD_SAMPLE": {
+    "requested": 6,
+    "passed": 6
+  },
+  "DOWNSTREAM_INVALIDATIONS": 6,
+  "DOWNSTREAM_TARGETS": [
+    "Fundamental History",
+    "Quant",
+    "Factor DNA",
+    "Screener",
+    "Rankings",
+    "Compare",
+    "Strategy Lab",
+    "Backtesting Data",
+    "Atlas / AI"
+  ],
+  "DOWNSTREAM_RUNTIME_SECONDS": 2.9,
+  "TOTAL_RUNTIME": 7.7
+}

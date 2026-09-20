@@ -31,9 +31,16 @@
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
   /** Aus einer Surface die Zeilenform, die Cards.rail kennt. */
+  /* V4 §19: die Index-Reihe nennt ihre Herkunft in der Unterzeile. */
+  function subtitleOf(surface) {
+    var ix = surface.index;
+    if (!ix || !ix.asOf) return surface.subtitle;
+    var quelle = ix.proxy && ix.proxy.etf ? "Bestand " + ix.proxy.etf : "Liste des Indexeigentümers";
+    return (surface.subtitle ? surface.subtitle + " " : "") + "Mitglieder laut " + quelle + ", Stand " + C().dateShort(ix.asOf) + ".";
+  }
   function rowPayload(surface, ctx) {
     return {
-      rowId: surface.rowId, title: surface.title, subtitle: surface.subtitle,
+      rowId: surface.rowId, title: surface.title, subtitle: subtitleOf(surface),
       world: surface.world, universeId: ctx.universeId, universeLabel: ctx.universeLabel,
       asOf: ctx.asOf,
       coverage: isNum(surface.total)
@@ -71,7 +78,7 @@
     var konfig = (surface.id === "top-10" && ctx.meta && ctx.meta.topTen) || {};
     var payload = Object.assign(rowPayload(surface, ctx), {
       rowId: surface.id === "top-10" ? "top-10" : surface.rowId, title: konfig.title || surface.title,
-      subtitle: konfig.subtitle || surface.subtitle
+      subtitle: konfig.subtitle || subtitleOf(surface)
     });
     var section = C().rail(payload, { variant: "rank", universeId: ctx.universeId,
                                       limit: surface.cards.length, label: surface.rowId });
@@ -157,8 +164,7 @@
       el("div", { class: "dx-featured-media" }, [
         kunst,
         el("p", { class: "dx-featured-caption", text: echt
-          ? "Echter Kursverlauf, Tagesschlusskurse — Quelle " + ps.source +
-            ", Stand " + (ps.asOf || "")
+          ? "Echter Kursverlauf, Tagesschlusskurse, split-bereinigt — Stand " + C().dateShort(ps.asOf)
           : "Rendite über 1, 3, 6 und 12 Monate als Balken — kein Kursverlauf. Für diesen Titel " +
             "liegt noch keine Kursreihe vor." })
       ])
@@ -270,7 +276,7 @@
       ]),
       el("div", { class: "dx-story-media" }, [
         tabelle,
-        el("p", { class: "dx-story-caption", text: "Aus den Jahresabschlüssen bei der SEC (Geschäftsjahre" + (jahre ? " " + jahre : "") +
+        el("p", { class: "dx-story-caption", text: "Aus den Jahresabschlüssen (Geschäftsjahre" + (jahre ? " " + jahre : "") +
           "), Stand " + (surface.story.asOf || "") + ". Jeder Satz ist rechnerisch belegt; die Aktienseite zeigt die Belege." })
       ])
     ]);

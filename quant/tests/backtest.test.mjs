@@ -65,13 +65,18 @@ test("Ein Signal vom Schlusskurs handelt nie am selben Tag (§37)", () => {
 test("Der Ausfuehrungspreis stammt vom Folgetag, nicht vom Signaltag", () => {
   const series = dataset.prices["sec_VU0010"];
   const t = series.startIndex + 500;
-  const nextOpen = Backtest.executionPrice(series, t + 1, "next_open");
+  const nextOpen = Backtest.executionPrice(series, t + 1, "next_open", "MODELED_INTERPOLATION");
   const nextClose = Backtest.executionPrice(series, t + 1, "next_close");
   assert.equal(nextClose, series.adjustedClose[t + 1]);
   assert.notEqual(nextOpen, series.adjustedClose[t], "next_open darf nicht der Signal-Schlusskurs sein");
   const lo = Math.min(series.adjustedClose[t], series.adjustedClose[t + 1]);
   const hi = Math.max(series.adjustedClose[t], series.adjustedClose[t + 1]);
   assert.ok(nextOpen >= lo && nextOpen <= hi, "Eroeffnung muss zwischen den beiden Schlusskursen liegen");
+  assert.equal(Backtest.executionPrice(series, t + 1, "next_open"), null,
+    "ohne Provider-Evidenz darf keine Eroeffnung interpoliert werden");
+  const observed = { ...series, adjustedOpen: series.adjustedClose.slice() };
+  observed.adjustedOpen[t + 1] = 123.45;
+  assert.ok(Math.abs(Backtest.executionPrice(observed, t + 1, "next_open", "OBSERVED_ADJUSTED_OPEN") - 123.45) < 0.001);
 });
 
 /* ------------------------------------- Point-in-Time ---------------------- */
@@ -218,6 +223,44 @@ test("Jeder Backtest traegt Versionen, Snapshot und Annahmen", () => {
   assert.equal(run.quantMethodologyVersion, Methodology.quant().methodologyVersion);
   assert.ok(run.dataSnapshotId);
   assert.ok(run.executionAssumptions.timing);
+  assert.ok(run.reproductionInput.providerEvidenceHash.startsWith("bte_"));
+  assert.equal(run.providerBacktestEvidence.pointInTimeFundamentals, true);
+  assert.equal(run.capabilities.executionPriceMode, "MODELED_INTERPOLATION");
+  assert.ok(run.warnings.some((w) => w.code === "modeled_next_open"));
+});
+
+test("Provider-Faehigkeiten sind fail-closed und keine Engine-Konstanten", () => {
+  const undeclared = { ...provider };
+  delete undeclared.backtestEvidence;
+  const evidence = Backtest.providerBacktestEvidence(undeclared);
+  for (const key of ["pointInTimeFundamentals", "delistedSecurities", "originalVsRestated", "corporateActions", "historicalUniverse"]) {
+    assert.equal(evidence[key], false, key);
+  }
+  assert.equal(evidence.nextOpenPriceMode, "UNAVAILABLE");
+  const invalid = Backtest.providerBacktestEvidence({ backtestEvidence: {
+    schemaVersion: "1.0", source: "claim-only",
+    pointInTimeFundamentals: { status: "VERIFIED" }
+  }});
+  assert.equal(invalid.pointInTimeFundamentals, false, "VERIFIED ohne Evidenz darf nicht anheben");
+  assert.throws(() => Backtest.runBacktest({
+    definition: qualityMomentum.versions[0].definition,
+    startDate: "2025-01-02", endDate: "2026-09-04",
+    provider: undeclared, dataSnapshotId: dataset.meta.dataSnapshotId
+  }), /NEXT_OPEN_PRICE_EVIDENCE_REQUIRED/);
+});
+
+test("Current-Snapshot Technical- und Elliott-Regeln sind nicht historisch backtestbar", () => {
+  for (const filter of [
+    { field: "technicalOpportunityScore", operator: "gte", value: 60, scale: "raw" },
+    { field: "technicalTrend", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "technicalPrimaryDirection", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS", scale: "raw" }
+  ]) {
+    const definition = Strategy.createDefinition({ filters: [filter], execution: { timing: "next_close" } });
+    assert.throws(() => Backtest.runBacktest({ definition, startDate: "2025-01-02", endDate: "2026-09-04", provider, dataSnapshotId: dataset.meta.dataSnapshotId }),
+      (error) => error.code === "RULE_METRIC_NOT_BACKTEST_CERTIFIED" && error.fields.includes(filter.field));
+    assert.throws(() => Backtest.currentHoldings({ definition, provider, dataSnapshotId: dataset.meta.dataSnapshotId }), /RULE_METRIC_NOT_BACKTEST_CERTIFIED/);
+  }
 });
 
 test("Ein Startdatum vor dem Datenbestand wird abgelehnt statt verschoben", () => {
@@ -263,6 +306,8 @@ test("Trust Score belohnt nachgewiesene Integritaet, nicht Rendite", () => {
   assert.equal(ts.blocks.dataIntegrity.points, ts.blocks.dataIntegrity.maxPoints);
   assert.ok(ts.limitations.length > 0, "Grenzen muessen benannt werden");
   assert.ok(ts.limitations.some((l) => /[Ss]ynthetisch/.test(l.label + l.note)));
+  assert.equal(ts.blocks.executionRealism.checks.find((c) => c.id === "executionTiming").status, "partial");
+  assert.ok(ts.limitations.some((l) => /modelliert/.test(l.note)));
 });
 
 test("Hard Cap: ohne Point-in-Time hoechstens 60 Punkte (§45)", () => {
