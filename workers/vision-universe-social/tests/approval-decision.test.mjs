@@ -602,3 +602,40 @@ test("AD31 · Ein Ergebnis anzuhaengen ist kein Ueberschreiben", async () => {
   assert.equal(spaeter.published, true, "Der Beleg der Veroeffentlichung ist weg.");
   assert.equal(spaeter.mediaId, "m_1");
 });
+
+test("AD32 · Die Uebersicht fragt je Wartendem, nicht die ganze Ablage", async () => {
+  /* Entscheidungen werden nie geloescht - sie sind der Beleg. Die Liste
+     waechst also dauerhaft; die Schlange nicht. Wer bei jedem
+     Seitenaufruf die Ablage durchgeht, zahlt fuer Geschichte statt
+     fuer Gegenwart, und zwar jedes Jahr mehr.
+
+     Gemessen wird das an den KV-Zugriffen, nicht am Quelltext: ein
+     Kommentar ueber Sparsamkeit ist keine Sparsamkeit. */
+  const { env, cookie, hash } = await aufbau();
+  await tun(env, cookie, `/approval/${ID}/publish`, { fingerprint: hash });
+
+  /* Hundert alte Entscheidungen aus vergangenen Monaten. */
+  const { recordDecision } = await import("../src/store.js");
+  for (let n = 0; n < 100; n += 1) {
+    await recordDecision(env, { candidateId: "cand_alt_" + n,
+      contentHash: "d".repeat(64), decision: "REJECTED", reason: "alt" });
+  }
+
+  let gelesen = 0;
+  const echtesGet = env.VU_SOCIAL_KV.get.bind(env.VU_SOCIAL_KV);
+  env.VU_SOCIAL_KV.get = async (k) => {
+    if (String(k).startsWith("approval:decision:")) gelesen += 1;
+    return echtesGet(k);
+  };
+  let aufgelistet = 0;
+  const echtesList = env.VU_SOCIAL_KV.list.bind(env.VU_SOCIAL_KV);
+  env.VU_SOCIAL_KV.list = async (o) => { aufgelistet += 1; return echtesList(o); };
+
+  const r = await worker.fetch(request("/approval", { headers: { cookie } }), env);
+  assert.equal(r.status, 200);
+
+  assert.equal(aufgelistet, 0,
+    "Die Uebersicht listet die Ablage auf - das waechst mit der Geschichte.");
+  assert.ok(gelesen <= 2,
+    "Die Schlange hat einen Eintrag; gelesen wurden " + gelesen + " Entscheidungen.");
+});

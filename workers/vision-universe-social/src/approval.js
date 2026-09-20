@@ -57,7 +57,7 @@ import {
   signInPage, approvalResponse, landingPage, alterInWorten, candidatePage
 } from "./approval-ui.js";
 import {
-  readQueue, readDecision, recordDecision, settleDecision, listDecisions
+  readQueue, readDecision, recordDecision, settleDecision
 } from "./store.js";
 import { contentHash } from "./redact.js";
 
@@ -376,9 +376,19 @@ async function handleApprovalIndex(request, url, env, options = {}) {
      Definition, neuere Tatsachen.
 
      Gesagt wird es trotzdem - siehe `soeben` in approval-ui.js. */
-  const entschieden = new Set((await listDecisions(env)).map((d) => d.candidateId));
+  /* Gefragt wird je Eintrag der Schlange, nicht die ganze Ablage. Der
+     erste Anlauf las ALLE Entscheidungen, die es je gab - das sind
+     heute eine Handvoll und in einem Jahr einige hundert, und jede
+     haette bei jedem Seitenaufruf einen KV-Lesevorgang gekostet.
+
+     Entscheidungen werden nie geloescht (sie sind der Beleg), also
+     waechst diese Liste dauerhaft. Die Schlange nicht: sie ist ein
+     Jetzt-Zustand mit wenigen Eintraegen. An ihr zu haengen statt an
+     der Ablage kostet, was es kosten muss. */
   const alle = schlange.items || [];
-  const offen = alle.filter((i) => !entschieden.has(i.candidateId));
+  const entscheidungen = await Promise.all(
+    alle.map((i) => readDecision(env, i.candidateId)));
+  const offen = alle.filter((i, n) => !entscheidungen[n]);
   const abgezogen = alle.length - offen.length;
 
   return landingPage({
