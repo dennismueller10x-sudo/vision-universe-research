@@ -338,6 +338,54 @@ export async function writeQueue(env, projektion) {
 export { QUEUE_KEY };
 
 /* =========================================================================
+   DER MANUELLE LAUF — WANN ER ZULETZT ANGESTOSSEN WURDE
+
+   -------------------------------------------------------------------------
+   WOZU DAS HIER STEHT
+   -------------------------------------------------------------------------
+
+   Der Owner tippt auf JETZT PRUEFEN. Das Netz ist langsam, die Seite
+   laedt, er tippt noch einmal. Zwei Dispatches, zwei Laeufe - und der
+   zweite wartet dann in der Concurrency-Gruppe, um danach einen
+   zweiten Zyklus zu fahren.
+
+   Die Lease im Repository faengt das ab, aber erst im Lauf. Hier wird
+   es frueher abgefangen: ein zweiter Druck innerhalb der Sperrfrist
+   loest gar nichts aus und sagt, wann es wieder geht.
+
+   DIE SPERRFRIST IST KEINE FREQUENZENTSCHEIDUNG. Sie schuetzt nur vor
+   dem doppelten Druck derselben Absicht. Ob wirklich ein Beitrag
+   entsteht, entscheidet die Kadenz im Lauf - und nicht diese Datei.
+   ========================================================================= */
+const MANUAL_RUN_KEY = "approval:manual-run:v1";
+
+export async function readManualRun(env) {
+  if (!env.VU_SOCIAL_KV) return null;
+  const raw = await env.VU_SOCIAL_KV.get(MANUAL_RUN_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (err) { return null; }
+}
+
+export async function recordManualRun(env, eintrag) {
+  if (!env.VU_SOCIAL_KV) throw new Error("KV-Bindung VU_SOCIAL_KV fehlt");
+  const wert = {
+    requestedAt: eintrag.requestedAt,
+    /* Wie es ausgegangen ist. Ein fehlgeschlagener Dispatch darf die
+       Sperrfrist NICHT ausloesen - sonst haelt ein Fehler den Owner
+       von seinem naechsten Versuch ab. */
+    ok: eintrag.ok === true,
+    status: eintrag.status === undefined ? null : eintrag.status,
+    /* Ausdruecklich kein Token, kein Header, keine URL mit Parametern
+       (§10). Was hier steht, darf ein Log sehen. */
+    hinweis: eintrag.hinweis || null
+  };
+  await env.VU_SOCIAL_KV.put(MANUAL_RUN_KEY, JSON.stringify(wert));
+  return wert;
+}
+
+export { MANUAL_RUN_KEY };
+
+/* =========================================================================
    DAS ENTSCHEIDUNGSJOURNAL
 
    -------------------------------------------------------------------------

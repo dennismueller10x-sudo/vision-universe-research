@@ -263,6 +263,7 @@ export function landingPage(zustand) {
 <p class="leise">Es liegt noch keine uebertragene Warteschlange vor. Das heisst
 <em>nicht</em>, dass nichts wartet — es heisst, dass wir es hier nicht wissen.</p>
 <p class="leise">Der Orchestrator uebertraegt sie bei seinem naechsten Lauf.</p>
+${jetztPruefen()}
 ${abmelden()}`);
   }
 
@@ -272,6 +273,7 @@ ${abmelden()}`);
 ${standZeile(z)}
 ${soeben(z)}
 ${rest(z)}
+${jetztPruefen()}
 ${abmelden()}`);
   }
 
@@ -300,6 +302,7 @@ ${standZeile(z)}
 ${soeben(z)}
 ${luecke}
 ${liste}
+${jetztPruefen()}
 ${abmelden()}`);
 }
 
@@ -342,6 +345,29 @@ function rest(z) {
   if (!gehalten && !entschieden) return "";
   return `<p class="leise">Im Bestand: ${entschieden} entschieden oder abgeloest,
 ${gehalten} auf einem Haltegrund. Beides wartet nicht auf dich.</p>`;
+}
+
+/* -------------------------------------------------------------------
+   DER KNOPF (§2)
+
+   Er steht auf ALLEN drei Lagen der Startseite - gerade auf der, auf
+   der nichts wartet. Dort ist die Frage "und jetzt?" am naechsten, und
+   ein Knopf, den es nur bei Arbeit gibt, ist bei Stille nicht da.
+
+   Ein Formular, kein Link: ein Link waere ueber ein fremdes Bild
+   ausloesbar. Und kein JavaScript - die Seite traegt keines, und
+   dieser Knopf ist kein Grund, damit anzufangen.
+
+   Der Satz darunter ist Teil des Knopfes und keine Zierde: er sagt,
+   dass hier die UHR uebersprungen wird und nichts sonst.
+   ------------------------------------------------------------------- */
+function jetztPruefen() {
+  return `<hr class="linie">
+<form method="POST" action="/approval/run">
+  <button class="weiter" type="submit">Jetzt pruefen</button>
+</form>
+<p class="leise">Startet dieselbe Pruefung, die der Zeitplan zweimal taeglich
+startet. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>`;
 }
 
 function abmelden() {
@@ -528,4 +554,56 @@ waere nie veroeffentlicht worden und hat deshalb keine Reichweite — weder eine
 schlechte noch eine gute.</p>
 
 <p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`);
+}
+
+/* =========================================================================
+   JETZT PRUEFEN — DIE ZWEI ANTWORTEN (§2–§5, §39–§41)
+
+   Der Knopf hat genau zwei Ausgaenge, und beide sagen dem Owner, was
+   als Naechstes passiert. "Angestossen" ohne den Satz, was das heisst,
+   waere eine Bestaetigung ohne Inhalt: der Owner wuesste nicht, ob er
+   gleich einen Beitrag bekommt oder eine Begruendung.
+   ========================================================================= */
+
+export function laufAngestossenSeite(d) {
+  const zeit = d && d.angestossenAt ? escapeHtml(alterInWorten(d.angestossenAt)) : "gerade eben";
+  return approvalResponse("Lauf angestossen", `
+<h1>Die Pruefung laeuft.</h1>
+<p class="leise">Angestossen ${zeit}. Es ist derselbe Lauf, den der Zeitplan
+zweimal taeglich startet — nicht ein schnellerer und nicht ein anderer.</p>
+<p class="leise">Was er findet, entscheidet er selbst. Du hast die Uhr
+uebersprungen, nicht die Pruefungen: Evidenz, Qualitaet, Portfolio und die
+Freigabe stehen unveraendert davor.</p>
+<p class="leise">Wenn etwas entsteht, steht es hier. Wenn nichts entsteht, steht
+hier, was gesucht wurde und warum nichts genommen wurde.</p>
+<p><a class="weiter" href="/approval">Zurueck zur Uebersicht</a></p>
+${abmelden()}`);
+}
+
+export function laufNichtMoeglichSeite(d) {
+  const x = d || {};
+  let detail = "";
+  if (x.grund === "NICHT_EINGERICHTET") {
+    /* Die NAMEN der fehlenden Einstellungen, nie ihre Werte. Wer die
+       Seite sieht, soll wissen, was zu tun ist; wer sie nicht sehen
+       duerfte, erfaehrt daraus nichts ueber das Geheimnis. */
+    detail = `<p class="leise">Es fehlt die Verbindung zum Lauf:
+${escapeHtml((x.fehlend || []).join(", "))}. Bis dahin startet der Lauf weiter
+nach Zeitplan.</p>`;
+  } else if (x.grund === "SCHON_ANGESTOSSEN") {
+    detail = `<p class="leise">Er wurde vor Kurzem schon angestossen und arbeitet
+noch. Ein zweiter Anstoss erzeugt keinen zweiten Lauf — er wuerde nur warten und
+danach dieselbe Arbeit noch einmal machen.</p>
+<p class="leise">Wieder moeglich in etwa ${escapeHtml(String(
+      Math.ceil((x.wartenSekunden || 0) / 60)))} Minute(n).</p>`;
+  } else {
+    detail = `<p class="leise">Der Anstoss kam nicht an${
+      x.status ? " (Status " + escapeHtml(String(x.status)) + ")" : ""}. Der
+Zeitplan laeuft unveraendert weiter; es ist nichts verloren.</p>`;
+  }
+  return approvalResponse("Lauf nicht angestossen", `
+<h1>${escapeHtml(x.satz || "Der Lauf laesst sich nicht anstossen.")}</h1>
+${detail}
+<p><a class="weiter" href="/approval">Zurueck zur Uebersicht</a></p>
+${abmelden()}`);
 }

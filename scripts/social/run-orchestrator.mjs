@@ -15,7 +15,7 @@
      node scripts/social/run-orchestrator.mjs
      node scripts/social/run-orchestrator.mjs --github-output
    ========================================================================= */
-import { readFileSync, existsSync, readdirSync, appendFileSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, appendFileSync, statSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -29,6 +29,7 @@ const Job = require(join(ROOT, "social/engines/creative-job.js"));
 const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
 const Kadenz = require(join(ROOT, "social/engines/content-cadence.js"));
 const NoPost = require(join(ROOT, "social/engines/no-post.js"));
+const RunLease = require(join(ROOT, "social/engines/run-lease.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 import * as VisualDaten from "./visual-data.mjs";
 import { ausgabePfad } from "../quality/out-path.mjs";
@@ -329,6 +330,62 @@ export function keinBeitragNachweis(z, k, root) {
   });
 }
 
+/* =====================================================================
+   DIE LEASE EINES LAUFS (§5/§27–§31)
+
+   Sie liegt im Datenverzeichnis wie jeder andere Zustand, damit der
+   naechste Lauf sie sieht - der Workflow schreibt social/data ohnehin
+   nach jedem Lauf fest.
+
+   WAS HIER NICHT PASSIERT: keine Tageszaehler, keine
+   Abstandszeitpunkte, kein Portfolio-Zustand werden angefasst (§38).
+   Diese drei Dinge gehoeren der Kadenz, und JETZT PRUEFEN darf die Uhr
+   ueberspringen, aber keine Grenze.
+   ===================================================================== */
+const LEASE_DATEI = () => join(DATEN, "orchestrator-lease.json");
+
+export function leaseLesen() {
+  return readJson(LEASE_DATEI(), null);
+}
+
+function leaseSchreiben(l) {
+  mkdirSync(DATEN, { recursive: true });
+  writeFileSync(LEASE_DATEI(), JSON.stringify(l, null, 2) + "\n");
+}
+
+/**
+ * Die Lease nehmen - oder begruendet nicht.
+ *
+ * Gibt IMMER eine Antwort zurueck; ein Lauf ohne Lease darf weiter
+ * messen und berichten. Verwehrt ist nur das Produktive.
+ */
+export function leaseNehmen(runId, options) {
+  const o = options || {};
+  const now = o.now || new Date().toISOString();
+  const vorhanden = leaseLesen();
+  const urteil = RunLease.pruefe(vorhanden, { now, runId });
+  if (!urteil.darfArbeiten) return { genommen: false, urteil, lease: vorhanden };
+  const lease = RunLease.nimm({ now, runId, takenBy: o.takenBy || null });
+  leaseSchreiben(lease);
+  return { genommen: true, urteil, lease };
+}
+
+/** Die Lease zurueckgeben. `produktiv` entscheidet ueber die Abklingzeit. */
+export function leaseZurueck(runId, produktiv, options) {
+  const o = options || {};
+  const now = o.now || new Date().toISOString();
+  const vorhanden = leaseLesen();
+  /* Eine fremde Lease gibt niemand zurueck - sonst hebt ein Lauf die
+     Sperre eines anderen auf, und die Sperre waere keine. */
+  if (vorhanden && vorhanden.runId && runId && String(vorhanden.runId) !== String(runId)) {
+    return { zurueck: false, grund: "FREMDE_LEASE", lease: vorhanden };
+  }
+  const lease = RunLease.gib(vorhanden || RunLease.nimm({ now, runId }),
+    { now, produktiv: produktiv === true });
+  leaseSchreiben(lease);
+  return { zurueck: true, grund: null, lease };
+}
+
 /** Die Kadenzentscheidung zu einem Zustand. Eine Stelle, ein Weg. */
 export function kadenz(z) {
   return Kadenz.entscheide(z,
@@ -337,6 +394,48 @@ export function kadenz(z) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
+
+  /* -------------------------------------------------------------------
+     DIE LEASE ALS EIGENER AUFRUF
+
+     Sie steht VOR allem anderen: ein Lauf, der die Lease nicht
+     bekommt, soll das erfahren, bevor er irgendetwas anderes tut -
+     und der Workflow soll seine produktiven Schritte daran haengen
+     koennen, ohne den ganzen Bericht zu lesen.
+     ------------------------------------------------------------------- */
+  const flagWert = (name) => {
+    const i = args.indexOf(name);
+    return i >= 0 && args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : null;
+  };
+
+  if (args.includes("--lease-claim")) {
+    const runId = flagWert("--lease-claim") || process.env.GITHUB_RUN_ID || null;
+    const r = leaseNehmen(runId, { takenBy: flagWert("--von") || null });
+    console.log("VISION UNIVERSE SOCIAL — Lauf-Lease");
+    console.log("Lauf             : " + (runId || "ohne Kennung"));
+    console.log("Produktiv erlaubt: " + (r.genommen ? "ja" : "nein"));
+    console.log("Grund            : " + r.urteil.grund);
+    console.log("Erklaerung       : " + r.urteil.erklaerung);
+    if (r.urteil.wartetBis) console.log("Fruehestens      : " + r.urteil.wartetBis);
+    if (process.env.GITHUB_OUTPUT) {
+      appendFileSync(process.env.GITHUB_OUTPUT,
+        "produktiv_erlaubt=" + (r.genommen ? "true" : "false") + "\n" +
+        "lease_grund=" + r.urteil.grund + "\n");
+    }
+    /* Kein Fehlercode: eine verwehrte Lease ist eine Antwort und kein
+       Fehlschlag. Der Workflow liest die Ausgabe. */
+    process.exit(0);
+  }
+
+  if (args.includes("--lease-release")) {
+    const runId = flagWert("--lease-release") || process.env.GITHUB_RUN_ID || null;
+    const produktiv = args.includes("--produktiv");
+    const r = leaseZurueck(runId, produktiv);
+    console.log("Lease zurueck    : " + (r.zurueck ? "ja" : "nein — " + r.grund));
+    console.log("Produktiv gewesen: " + (produktiv ? "ja" : "nein"));
+    process.exit(0);
+  }
+
   const z = zustand({});
   const k = kadenz(z);
   const h = Orchestrator.naechsteHandlung(z, { cadence: k });
