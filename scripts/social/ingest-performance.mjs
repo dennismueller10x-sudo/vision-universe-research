@@ -30,6 +30,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Schema = require(join(ROOT, "social/engines/schema.js"));
@@ -354,7 +355,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const u of ergebnis.unmeasured) console.log("  NICHT gemessen: " + u.mediaId + " — " + u.reason);
 
   if (OUT) {
-    const dir = join(ROOT, OUT);
+    const dir = ausgabePfad(ROOT, OUT);
     mkdirSync(dir, { recursive: true });
     const ziel = join(dir, "performance.json");
 

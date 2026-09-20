@@ -35,10 +35,11 @@
    ueberschreibt (MASTER §31.10).
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
-import { join, dirname, isAbsolute } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -2168,7 +2169,7 @@ async function main() {
        Lauf, der ausserhalb schreiben soll, hat damit hineingeschrieben.
        Genau diese Kopplung von Ausgabepfad und Produktionsbaum soll es
        nicht geben. */
-    const dir = isAbsolute(OUT_DIR) ? OUT_DIR : join(ROOT, OUT_DIR);
+    const dir = ausgabePfad(ROOT, OUT_DIR);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "cycle-report.json"), JSON.stringify(report, null, 2) + "\n");
     writeFileSync(join(dir, "publications.json"),

@@ -13,6 +13,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -192,7 +193,7 @@ if (JSON_OUT) {
     closest: auswahl.closest ? auswahl.closest.variant.id : null,
     explanation: auswahl.explanation
   };
-  mkdirSync(dirname(join(ROOT, JSON_OUT)), { recursive: true });
-  writeFileSync(join(ROOT, JSON_OUT), JSON.stringify(daten, null, 2) + "\n");
+  mkdirSync(dirname(ausgabePfad(ROOT, JSON_OUT)), { recursive: true });
+  writeFileSync(ausgabePfad(ROOT, JSON_OUT), JSON.stringify(daten, null, 2) + "\n");
   console.log("\nGeschrieben: " + JSON_OUT);
 }

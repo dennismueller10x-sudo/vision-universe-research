@@ -48,6 +48,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Meta = require(join(ROOT, "social/providers/meta/adapter.js"));
@@ -175,7 +176,7 @@ async function main() {
 
 function finish() {
   if (OUT_DIR) {
-    const dir = join(ROOT, OUT_DIR);
+    const dir = ausgabePfad(ROOT, OUT_DIR);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "meta-verification.json"), JSON.stringify(report, null, 2) + "\n");
     console.log("\nGeschrieben: " + OUT_DIR + "/meta-verification.json");

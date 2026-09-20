@@ -40,6 +40,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const argv = process.argv.slice(2);
@@ -252,7 +253,7 @@ if (report.summary.publishable === 0) {
 }
 
 if (OUT_DIR) {
-  const dir = join(ROOT, OUT_DIR);
+  const dir = ausgabePfad(ROOT, OUT_DIR);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "signals.json"), JSON.stringify(report, null, 2) + "\n");
   console.log("\nGeschrieben: " + OUT_DIR + "/signals.json");

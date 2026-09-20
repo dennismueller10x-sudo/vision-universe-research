@@ -44,6 +44,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -272,7 +273,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exitCode = 4;
   }
 
-  const ziel = join(ROOT, OUT);
+  const ziel = ausgabePfad(ROOT, OUT);
   mkdirSync(ziel, { recursive: true });
   writeFileSync(join(ziel, "dispatch-plan.json"), JSON.stringify({
     generatedAt: NOW,

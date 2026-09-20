@@ -1,163 +1,36 @@
 {
-  "generatedAt": "2026-09-19T14:16:55.380Z",
+  "generatedAt": "2026-09-20T10:28:03.662Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-19T14:16:55.380Z",
-      "packageId": "pkg_073d896891b9f4f4",
-      "topic": "Technisches Setup — XOM",
-      "archetype": "STOCK_STORY",
-      "visualType": "GENERATIVE",
-      "hook": "47,6 % in 12 Monaten, aber nur 76 von 100: XOMs Stärke hat ein Gegengewicht.",
-      "caption": "Der Gesamtwert ist eine Summe aus sechs Bausteinen, und keiner erreicht sein Maximum. Die Trendstruktur ist mit 27,35 von 30 der stärkste. Die Schwankungsbreite bleibt als einzige bei der Hälfte, 5 von 10, doch den größten Einzelabzug trägt der Aufbau. Ein einzelner Baustein erklärt den Abstand zu 100 also nicht. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf und ist keine Prognose; auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
-      "hashtags": [],
-      "authoringPattern": "chatgpt-work/value_first",
-      "authoringAuthorId": "chatgpt-work",
-      "authoring": {
-        "briefId": "brief_e444dc5b0939ca4f",
-        "authorId": "chatgpt-work",
-        "editorialCorrection": {
-          "by": "vision-universe",
-          "reason": "Der ausgelieferte Satz machte VOLATILITY zur Ursache des Gesamtwerts (\"begrenzt damit\"). Gemessen traegt VOLATILITY 5,00 der 24,01 fehlenden Punkte - 20,8 %. Den groessten Einzelverlust traegt SETUP mit 6,56. Jede Zahl im Satz war belegt; falsch war das Wort ohne Zahl. Das ist eine Ursachenbehauptung, die die Evidenz nicht traegt - und die der Brief seit dem ersten Auftrag verbietet.",
-          "criterion": "causalAttribution",
-          "supersededCaption": "Die Auflösung liegt im Gegengewicht: Die Trendstruktur erreicht 27,35 von 30, doch die Schwankungsbreite trägt nur 5 von 10 bei und begrenzt damit den Gesamtwert auf 76 von 100. Die 12M-Entwicklung von 47,6 % beschreibt den bisherigen Verlauf; sie ist keine Prognose. Auch 76 ist weder Wahrscheinlichkeit noch Renditeerwartung, sondern eine technische Einordnung im Band „Konstruktiv“, das ab 60 beginnt. Stand: 11.09.2026, Quelle: Tiingo. Keine Anlageberatung.",
-          "correctedAt": "2026-09-19T08:30:00.000Z"
-        },
-        "textAuthor": {
-          "hook": "chatgpt-work",
-          "caption": "vision-universe"
-        },
-        "pattern": "chatgpt-work/value_first",
-        "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:02",
-        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster chatgpt-work/value_first am wenigsten dasselbe bei (96 gegen 93).",
-        "selectionCriteria": {
-          "brandScoreChosen": 100,
-          "compositionScoreChosen": 96,
-          "alternatives": [
-            {
-              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:01",
-              "pattern": "chatgpt-work/value_first",
-              "brandScore": 100,
-              "compositionScore": 93,
-              "recentUses": 0
-            },
-            {
-              "variantId": "vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:value_first:04",
-              "pattern": "chatgpt-work/value_first",
-              "brandScore": 100,
-              "compositionScore": 90,
-              "recentUses": 0
-            }
-          ],
-          "discriminatedBy": [
-            "composition (Gleichstand beim Markenwert)"
-          ],
-          "predictsPerformance": false,
-          "performanceLearnings": {
-            "sampleSize": 0,
-            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
-          }
-        },
-        "considered": 4,
-        "passed": 3,
-        "rejected": [
-          {
-            "pattern": "chatgpt-work/value_first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 60 %."
-              }
-            ]
-          }
-        ],
-        "attempts": [
-          {
-            "authorId": "chatgpt-work",
-            "ok": true,
-            "variants": 4
-          }
-        ]
-      },
-      "opportunityId": "opp_xom_2026-09-19",
-      "signalIds": [
-        "sig_092494d1c4e827dd"
-      ],
-      "plannedHourUtc": 18,
-      "timingSource": "Startwert",
-      "timingReason": "Zeitfenster 18:00 (Startwert).",
-      "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 85 >= Rate 25 %).",
-      "strategyVersion": "strategy_initial",
-      "wouldPublish": true,
-      "published": false,
-      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
-      "asset": {
-        "plannable": true,
-        "visualType": "GENERATIVE",
-        "reason": null,
-        "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_073d896891b9f4f4.jpg",
-        "quality": {
-          "applicable": false,
-          "explanation": "Generatives Bild ohne Textebene. Die Kartenpruefung misst Redundanz, Vollstaendigkeit und Lesbarkeit von Text und trifft hier auf nichts."
-        },
-        "origin": "generative",
-        "sourceAsset": {
-          "path": "authoring/requests/vu-xom-20260911/assets/visual-01.png",
-          "sha256": "a378d07895c481cbdb2b60ea21d42512ed844b9ce0216ca262efcc8fcc9e0b40",
-          "mimeType": "image/png",
-          "variantId": "vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:visual:FUTURE_TECH:01",
-          "strategy": "FUTURE_TECH"
-        },
-        "rendered": true,
-        "bytes": 199336
-      }
-    },
-    {
-      "decidedAt": "2026-09-19T14:16:55.380Z",
-      "packageId": "pkg_58ddd3be0771daa2",
+      "decidedAt": "2026-09-20T10:28:03.662Z",
+      "packageId": "pkg_4066bd83869874d7",
       "topic": "Technisches Setup — AAPL",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "65.3 — AAPL, Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet AAPL derzeit mit 65.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: Apple bei 65.3.",
+      "caption": "Unsere technische Auswertung bewertet Apple mit 65.3 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.42 von 30 Punkten bei. MOMENTUM trägt 15.88 von 20 Punkten bei. VOLUME trägt 6.36 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "value-first/state-limit-reason",
+      "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_f99aa582c146d186",
+        "briefId": "brief_f03ab1d2b9241256",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "value-first/state-limit-reason",
-        "variantId": "var_f2f0eebc1bbb3080",
-        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_d66277bdd75647b9",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 89,
-          "alternatives": [
-            {
-              "variantId": "var_09f4202d0d453dc9",
-              "pattern": "metric-frame/evidence-led",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            },
-            {
-              "variantId": "var_f79f05070e3000eb",
-              "pattern": "subject-first/method-first",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            }
-          ],
+          "compositionScoreChosen": 72,
+          "alternatives": [],
           "discriminatedBy": [
-            "composition (Gleichstand beim Markenwert)"
+            "einzige bestandene Variante"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -166,8 +39,26 @@
           }
         },
         "considered": 4,
-        "passed": 3,
+        "passed": 1,
         "rejected": [
+          {
+            "pattern": "value-first/state-limit-reason",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "subject-first/method-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
           {
             "pattern": "limit-first/limit-first",
             "reasons": [
@@ -196,15 +87,15 @@
           }
         ]
       },
-      "opportunityId": "opp_aapl_2026-09-19",
+      "opportunityId": "opp_aapl_2026-09-20",
       "signalIds": [
         "sig_8f4ebf5dbb1869f9"
       ],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
-      "mode": "EXPLORE",
-      "modeReason": "Erkundung (Ziehung 24 < Rate 25 %). Ein Teil der Beitraege muss bewusst anders sein, sonst lernt das System nur noch, was es ohnehin glaubt.",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 79 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -214,58 +105,56 @@
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_58ddd3be0771daa2.jpg",
-        "quality": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4066bd83869874d7.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "failureType": null,
+          "neverReportedAs": [
+            "CONTENT_FAILED",
+            "PROVIDER_FAILED",
+            "IMAGE_FAILED",
+            "ASSET_TRANSPORT_INTEGRITY_FAILED",
+            "VISUAL_CREATIVE_QUALITY_FAILED"
+          ],
+          "explanation": "Bildwert 100."
+        },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 48027
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-19T14:16:55.380Z",
-      "packageId": "pkg_4e7b2f5b580ba617",
+      "decidedAt": "2026-09-20T10:28:03.662Z",
+      "packageId": "pkg_650c56f397dcd407",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "63.3 — JPM, Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet JPM derzeit mit 63.3 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: JPMorgan Chase & bei 63.3.",
+      "caption": "Unsere technische Auswertung bewertet JPMorgan Chase & mit 63.3 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 24.75 von 30 Punkten bei. MOMENTUM trägt 16.28 von 20 Punkten bei. VOLUME trägt 3.75 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "value-first/state-limit-reason",
+      "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_609deed5b66c1951",
+        "briefId": "brief_695e7ec5be8ed881",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "value-first/state-limit-reason",
-        "variantId": "var_925d7ff2840314f6",
-        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_36f6e0b2ba90b516",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 89,
-          "alternatives": [
-            {
-              "variantId": "var_2ffee760c9e647d4",
-              "pattern": "metric-frame/evidence-led",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            },
-            {
-              "variantId": "var_c64605a54c78a4d9",
-              "pattern": "subject-first/method-first",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            }
-          ],
+          "compositionScoreChosen": 67,
+          "alternatives": [],
           "discriminatedBy": [
-            "composition (Gleichstand beim Markenwert)"
+            "einzige bestandene Variante"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -274,8 +163,26 @@
           }
         },
         "considered": 4,
-        "passed": 3,
+        "passed": 1,
         "rejected": [
+          {
+            "pattern": "value-first/state-limit-reason",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "subject-first/method-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
           {
             "pattern": "limit-first/limit-first",
             "reasons": [
@@ -304,7 +211,7 @@
           }
         ]
       },
-      "opportunityId": "opp_jpm_2026-09-19",
+      "opportunityId": "opp_jpm_2026-09-20",
       "signalIds": [
         "sig_62bbe8d8d1ae222c"
       ],
@@ -312,7 +219,7 @@
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 35 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 45 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -322,58 +229,56 @@
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4e7b2f5b580ba617.jpg",
-        "quality": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_650c56f397dcd407.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "failureType": null,
+          "neverReportedAs": [
+            "CONTENT_FAILED",
+            "PROVIDER_FAILED",
+            "IMAGE_FAILED",
+            "ASSET_TRANSPORT_INTEGRITY_FAILED",
+            "VISUAL_CREATIVE_QUALITY_FAILED"
+          ],
+          "explanation": "Bildwert 100."
+        },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 50609
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-19T14:16:55.380Z",
-      "packageId": "pkg_f1a3b11682ad94aa",
+      "decidedAt": "2026-09-20T10:28:03.662Z",
+      "packageId": "pkg_8c7e8bde0c22aea2",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "60.6 — MSFT, Technical Opportunity Score.",
-      "caption": "Unsere technische Auswertung bewertet MSFT derzeit mit 60.6 im Technical Opportunity Score. Der Wert beschreibt die aktuelle Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine Einschätzung ohne Grundlage. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: Microsoft bei 60.6.",
+      "caption": "Unsere technische Auswertung bewertet Microsoft mit 60.6 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.48 von 30 Punkten bei. MOMENTUM trägt 13.56 von 20 Punkten bei. VOLUME trägt 6.38 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "value-first/state-limit-reason",
+      "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_d684b15cbe5e0f30",
+        "briefId": "brief_814a5090cc4da9c4",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "value-first/state-limit-reason",
-        "variantId": "var_cace36f84a0bccfc",
-        "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster value-first/state-limit-reason am wenigsten dasselbe bei (89 gegen 83).",
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_0499e81ce8697dd8",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 89,
-          "alternatives": [
-            {
-              "variantId": "var_9332736eed24f37a",
-              "pattern": "metric-frame/evidence-led",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            },
-            {
-              "variantId": "var_96f2218fab304db3",
-              "pattern": "subject-first/method-first",
-              "brandScore": 100,
-              "compositionScore": 83,
-              "recentUses": 0
-            }
-          ],
+          "compositionScoreChosen": 72,
+          "alternatives": [],
           "discriminatedBy": [
-            "composition (Gleichstand beim Markenwert)"
+            "einzige bestandene Variante"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -382,8 +287,26 @@
           }
         },
         "considered": 4,
-        "passed": 3,
+        "passed": 1,
         "rejected": [
+          {
+            "pattern": "value-first/state-limit-reason",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "subject-first/method-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
           {
             "pattern": "limit-first/limit-first",
             "reasons": [
@@ -412,7 +335,7 @@
           }
         ]
       },
-      "opportunityId": "opp_msft_2026-09-19",
+      "opportunityId": "opp_msft_2026-09-20",
       "signalIds": [
         "sig_6dde03ed207a3699"
       ],
@@ -420,7 +343,7 @@
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 92 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 37 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
@@ -430,12 +353,25 @@
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_f1a3b11682ad94aa.jpg",
-        "quality": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_8c7e8bde0c22aea2.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "failureType": null,
+          "neverReportedAs": [
+            "CONTENT_FAILED",
+            "PROVIDER_FAILED",
+            "IMAGE_FAILED",
+            "ASSET_TRANSPORT_INTEGRITY_FAILED",
+            "VISUAL_CREATIVE_QUALITY_FAILED"
+          ],
+          "explanation": "Bildwert 100."
+        },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 45703
+        "rendered": false
       }
     }
   ]

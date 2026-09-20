@@ -1,69 +1,278 @@
 {
-  "generatedAt": "2026-09-19T14:16:55.380Z",
+  "generatedAt": "2026-09-20T10:28:03.662Z",
   "entries": [
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-19T14:16:55.380Z",
+      "timestamp": "2026-09-20T10:28:03.662Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
       "inputs": [
-        "pkg_073d896891b9f4f4"
+        "pkg_4066bd83869874d7"
+      ],
+      "output": {
+        "publicationId": "pubid_85b17169d8963d6d"
+      },
+      "provider": "mock",
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_d33b747149fef585"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_85b17169d8963d6d"
+      ],
+      "output": {
+        "from": "IDEA",
+        "to": "DRAFT"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_ec1991ba015ec04e"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_85b17169d8963d6d"
+      ],
+      "output": {
+        "from": "DRAFT",
+        "to": "VALIDATED"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_ec1991ba015ec04e"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_85b17169d8963d6d"
+      ],
+      "output": {
+        "from": "VALIDATED",
+        "to": "READY"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_ec1991ba015ec04e"
+    },
+    {
+      "decision": "cycle.hold",
+      "timestamp": "2026-09-20T10:28:03.759Z",
+      "actor": "system",
+      "autonomyLevel": 0,
+      "strategyVersion": null,
+      "inputs": [
+        "pkg_4066bd83869874d7"
       ],
       "output": null,
       "provider": "mock",
-      "result": "skipped",
-      "reason": "Bereits geplant unter pubid_97043d40decd6714.",
+      "result": "blocked",
+      "reason": "Globale automatische Veroeffentlichung ist aus. Noch nie freigegeben. Autonome Veroeffentlichung setzt nach §16 voraus: stabiler Provider, korrekte Analytics, stabiles Publishing, geprueft laufende Brand- und Faktenvalidierung, Rollback und Kill Switch. Von diesen Voraussetzungen ist keine im Produktionsbetrieb nachgewiesen - der Meta-Provider ist nicht konfiguriert.",
       "detail": null,
-      "entryId": "aud_4bf51fb623ea095a"
+      "entryId": "aud_6e126423dcb14a7f"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-19T14:16:55.380Z",
+      "timestamp": "2026-09-20T10:28:03.662Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
       "inputs": [
-        "pkg_58ddd3be0771daa2"
+        "pkg_650c56f397dcd407"
+      ],
+      "output": {
+        "publicationId": "pubid_e4b1f267f01b9a3b"
+      },
+      "provider": "mock",
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_3b40082b7d8655f7"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_e4b1f267f01b9a3b"
+      ],
+      "output": {
+        "from": "IDEA",
+        "to": "DRAFT"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_46cda0860d294dca"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_e4b1f267f01b9a3b"
+      ],
+      "output": {
+        "from": "DRAFT",
+        "to": "VALIDATED"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_46cda0860d294dca"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_e4b1f267f01b9a3b"
+      ],
+      "output": {
+        "from": "VALIDATED",
+        "to": "READY"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_46cda0860d294dca"
+    },
+    {
+      "decision": "cycle.hold",
+      "timestamp": "2026-09-20T10:28:03.760Z",
+      "actor": "system",
+      "autonomyLevel": 0,
+      "strategyVersion": null,
+      "inputs": [
+        "pkg_650c56f397dcd407"
       ],
       "output": null,
       "provider": "mock",
-      "result": "skipped",
-      "reason": "Bereits geplant unter pubid_b77ed1e2e378b8f6.",
+      "result": "blocked",
+      "reason": "Globale automatische Veroeffentlichung ist aus. Noch nie freigegeben. Autonome Veroeffentlichung setzt nach §16 voraus: stabiler Provider, korrekte Analytics, stabiles Publishing, geprueft laufende Brand- und Faktenvalidierung, Rollback und Kill Switch. Von diesen Voraussetzungen ist keine im Produktionsbetrieb nachgewiesen - der Meta-Provider ist nicht konfiguriert.",
       "detail": null,
-      "entryId": "aud_d3e4141edd0fde6a"
+      "entryId": "aud_35bb18811a680375"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-19T14:16:55.380Z",
+      "timestamp": "2026-09-20T10:28:03.662Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
       "inputs": [
-        "pkg_4e7b2f5b580ba617"
+        "pkg_8c7e8bde0c22aea2"
       ],
-      "output": null,
+      "output": {
+        "publicationId": "pubid_b30eb17c40b75b78"
+      },
       "provider": "mock",
-      "result": "skipped",
-      "reason": "Bereits geplant unter pubid_dda7b45c57e04700.",
+      "result": "succeeded",
+      "reason": null,
       "detail": null,
-      "entryId": "aud_4ecc6c0b1688f647"
+      "entryId": "aud_107aa443f9a99347"
     },
     {
-      "decision": "publication.intend",
-      "timestamp": "2026-09-19T14:16:55.380Z",
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
       "inputs": [
-        "pkg_f1a3b11682ad94aa"
+        "pubid_b30eb17c40b75b78"
+      ],
+      "output": {
+        "from": "IDEA",
+        "to": "DRAFT"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_f9ae61abc747879f"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_b30eb17c40b75b78"
+      ],
+      "output": {
+        "from": "DRAFT",
+        "to": "VALIDATED"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_f9ae61abc747879f"
+    },
+    {
+      "decision": "publication.transition",
+      "timestamp": "2026-09-20T10:28:03.662Z",
+      "actor": "system",
+      "autonomyLevel": null,
+      "strategyVersion": null,
+      "inputs": [
+        "pubid_b30eb17c40b75b78"
+      ],
+      "output": {
+        "from": "VALIDATED",
+        "to": "READY"
+      },
+      "provider": null,
+      "result": "succeeded",
+      "reason": null,
+      "detail": null,
+      "entryId": "aud_f9ae61abc747879f"
+    },
+    {
+      "decision": "cycle.hold",
+      "timestamp": "2026-09-20T10:28:03.760Z",
+      "actor": "system",
+      "autonomyLevel": 0,
+      "strategyVersion": null,
+      "inputs": [
+        "pkg_8c7e8bde0c22aea2"
       ],
       "output": null,
       "provider": "mock",
-      "result": "skipped",
-      "reason": "Bereits geplant unter pubid_e618c430f890c36c.",
+      "result": "blocked",
+      "reason": "Globale automatische Veroeffentlichung ist aus. Noch nie freigegeben. Autonome Veroeffentlichung setzt nach §16 voraus: stabiler Provider, korrekte Analytics, stabiles Publishing, geprueft laufende Brand- und Faktenvalidierung, Rollback und Kill Switch. Von diesen Voraussetzungen ist keine im Produktionsbetrieb nachgewiesen - der Meta-Provider ist nicht konfiguriert.",
       "detail": null,
-      "entryId": "aud_8bab63197f6e2225"
+      "entryId": "aud_47fac521f3cebe1d"
     }
   ]
 }

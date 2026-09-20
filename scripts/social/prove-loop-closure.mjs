@@ -56,6 +56,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const require = createRequire(import.meta.url);
 const EvidenceRegime = require(join(ROOT, "social/engines/evidence-regime.js"));
@@ -348,7 +349,7 @@ const nachweis = {
 };
 
 if (OUT) {
-  const dir = join(ROOT, OUT);
+  const dir = ausgabePfad(ROOT, OUT);
   mkdirSync(dir, { recursive: true });
   const name = "loop-closure-" + EVIDENCE + ".json";
   writeFileSync(join(dir, name), JSON.stringify(nachweis, null, 2) + "\n");

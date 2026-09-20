@@ -37,6 +37,7 @@ import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { ausgabePfad } from "../quality/out-path.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Universe = require(join(ROOT, "social/engines/content-universe.js"));
@@ -351,7 +352,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   if (OUT) {
-    const ziel = join(ROOT, OUT, "opportunity-slate.json");
+    const ziel = join(ausgabePfad(ROOT, OUT), "opportunity-slate.json");
     mkdirSync(dirname(ziel), { recursive: true });
     writeFileSync(ziel, JSON.stringify(s, null, 2) + "\n");
     console.log("\nGeschrieben: " + join(OUT, "opportunity-slate.json"));

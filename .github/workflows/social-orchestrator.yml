@@ -80,9 +80,25 @@ jobs:
       # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
       # Produktionsdaten. Die Suite ist schnell; sie laeuft zuerst.
       - name: Tests, bevor irgendetwas geschieht
+        id: suite
         run: |
           set -euo pipefail
           node --test "social/tests/*.test.mjs" 2>&1 | tail -5
+          # Der Schritt bricht oben ab, wenn die Suite rot ist. Dass er
+          # hier ankommt, IST der Befund - und nur dann wird er
+          # weitergereicht. Ein Reifebericht, der seine eigene Suite
+          # startet und dann "gruen" meldet, bestaetigt sich selbst.
+          echo "gruen=social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
+
+      # Schreibt kein Testlauf in Produktionsdaten? Das laesst sich nur
+      # von aussen beantworten: ein Test kann nicht messen, was vor ihm
+      # geschehen ist.
+      - name: Isolation von Test und Produktion
+        id: isolation
+        run: |
+          set -euo pipefail
+          node scripts/quality/check-test-isolation.mjs --suite "social/tests/*.test.mjs"
+          echo "belegt=check-test-isolation, social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
 
       - name: Was ist jetzt dran?
         id: plan
@@ -121,6 +137,19 @@ jobs:
           node scripts/social/make-publish-candidate.mjs --data social/data --write \
             | tail -40
 
+      # Der Reifezustand nach dem Lauf, gegen den dann aktuellen
+      # Datenstand. Er schaltet nichts frei - er stellt fest.
+      - name: SOCIAL_ORCHESTRATOR_PRODUCTION_READY
+        id: reife
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node scripts/social/production-readiness.mjs \
+            --suites-green "${{ steps.suite.outputs.gruen }}" \
+            --isolation-proven "${{ steps.isolation.outputs.belegt }}" \
+            | tee /tmp/reife.txt
+
       - name: Der Stand, den der Owner sieht
         if: always()
         run: |
@@ -132,6 +161,11 @@ jobs:
             echo ""
             echo '```'
             cat /tmp/plan.txt 2>/dev/null || echo "kein Plan"
+            echo '```'
+            echo ""
+            echo "### Produktionsreife"
+            echo '```'
+            cat /tmp/reife.txt 2>/dev/null || echo "kein Reifebericht"
             echo '```'
             echo ""
             echo "### Opportunities"

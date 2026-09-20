@@ -13,6 +13,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { ausgabePfad } from "../quality/out-path.mjs";
 import { baueSlate } from "./build-opportunity-slate.mjs";
 
 const require = createRequire(import.meta.url);
@@ -85,9 +86,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      nicht - und ohne sie entstuende keine Zeitreihe. */
   const abzufragen = p.newQueries.concat(p.refresh).map((x) => x.hashtag);
   if (OUT) {
-    mkdirSync(join(ROOT, OUT), { recursive: true });
-    writeFileSync(join(ROOT, OUT, "tags.txt"), abzufragen.slice(0, 10).join(","));
-    writeFileSync(join(ROOT, OUT, "plan.json"), JSON.stringify(p, null, 2) + "\n");
+    mkdirSync(ausgabePfad(ROOT, OUT), { recursive: true });
+    writeFileSync(join(ausgabePfad(ROOT, OUT), "tags.txt"), abzufragen.slice(0, 10).join(","));
+    writeFileSync(join(ausgabePfad(ROOT, OUT), "plan.json"), JSON.stringify(p, null, 2) + "\n");
     console.log("\nGeschrieben: " + join(OUT, "tags.txt") + " (" +
       Math.min(abzufragen.length, 10) + " Hashtags - der Worker nimmt " +
       "hoechstens zehn je Anfrage, weil jeder zwei ausgehende Aufrufe kostet)");
