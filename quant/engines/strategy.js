@@ -224,6 +224,39 @@
     return def;
   }
 
+  /**
+   * Rule-definition eligibility only. This does not certify the historical
+   * provider, PIT panel, corporate actions or execution prices. The result is
+   * the shared preflight before any historical worker is created.
+   */
+  function backtestEligibility(def) {
+    var validation = validate(def);
+    if (!validation.valid) {
+      return {
+        eligible: false,
+        code: "INVALID_STRATEGY_DEFINITION",
+        blockedFields: [],
+        errors: validation.errors.slice(),
+        scope: "RULE_DEFINITION_ONLY"
+      };
+    }
+    var seen = Object.create(null);
+    var blocked = def.filters.map(function (filter) { return Catalog.field(filter.field); })
+      .filter(function (field) {
+        if (!field || field.backtestEligibility !== "NOT_CERTIFIED" || seen[field.id]) return false;
+        seen[field.id] = true;
+        return true;
+      })
+      .map(function (field) { return field.id; });
+    return {
+      eligible: blocked.length === 0,
+      code: blocked.length ? "RULE_METRIC_NOT_BACKTEST_CERTIFIED" : "ELIGIBLE",
+      blockedFields: blocked,
+      errors: [],
+      scope: "RULE_DEFINITION_ONLY"
+    };
+  }
+
   function definitionHash(def) { return Hash.prefixedHash("sdef", def); }
 
   function selectionPredicate(def) {
@@ -391,6 +424,7 @@
     createDefinition: createDefinition,
     validate: validate,
     assertValid: assertValid,
+    backtestEligibility: backtestEligibility,
     definitionHash: definitionHash,
     selectionPredicate: selectionPredicate,
     createStrategy: createStrategy,

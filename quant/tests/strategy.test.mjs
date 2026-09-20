@@ -257,6 +257,42 @@ test("Strategiefilter und Screenerfilter teilen denselben Validator (§27)", () 
   assert.match(queryErrors, /unknown field/);
 });
 
+test("Backtest-Eligibility klassifiziert alle Current-Snapshot-Regeln zentral und deterministisch", () => {
+  const blocked = [
+    { field: "technicalOpportunityScore", operator: "gte", value: 60, scale: "raw" },
+    { field: "technicalTrend", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "technicalPrimaryDirection", operator: "eq", value: "BULLISH", scale: "raw" },
+    { field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS", scale: "raw" }
+  ];
+  for (const filter of blocked) {
+    const result = Strategy.backtestEligibility(Strategy.createDefinition({ filters: [filter] }));
+    assert.deepEqual(result, {
+      eligible: false,
+      code: "RULE_METRIC_NOT_BACKTEST_CERTIFIED",
+      blockedFields: [filter.field],
+      errors: [],
+      scope: "RULE_DEFINITION_ONLY"
+    });
+  }
+  const mixed = Strategy.createDefinition({ filters: [blocked[0], blocked[3]] });
+  assert.deepEqual(Strategy.backtestEligibility(mixed).blockedFields,
+    ["technicalOpportunityScore", "elliottCountStatus"]);
+});
+
+test("Backtest-Eligibility behauptet nur Regel-Eignung und validiert zuerst das Schema", () => {
+  const ordinary = Strategy.backtestEligibility(Strategy.createDefinition({
+    filters: [{ field: "roic", operator: "gte", value: 10, scale: "raw" }]
+  }));
+  assert.deepEqual(ordinary, {
+    eligible: true, code: "ELIGIBLE", blockedFields: [], errors: [], scope: "RULE_DEFINITION_ONLY"
+  });
+  const invalid = Strategy.backtestEligibility({ schemaVersion: "broken" });
+  assert.equal(invalid.eligible, false);
+  assert.equal(invalid.code, "INVALID_STRATEGY_DEFINITION");
+  assert.equal(invalid.scope, "RULE_DEFINITION_ONLY");
+  assert.ok(invalid.errors.length > 0);
+});
+
 test("Der Feldkatalog ist konsistent: eindeutige IDs und VUQL-Tokens", () => {
   const ids = new Set(), tokens = new Set();
   for (const field of Catalog.FIELD_LIST) {

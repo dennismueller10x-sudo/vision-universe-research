@@ -532,3 +532,42 @@ SEC/PIT, Company Master, History, Intraday, Realtime and the materialized standa
 Fundamentals path are unchanged. No Discovery path is modified and no recurring
 cost is introduced. Full local gates, remote PR/main gates and production smoke
 remain required before this tranche is recorded as deployed.
+
+## 2026-09-20 — Technical/Elliott rules deployed; historical preflight unified
+
+PR #124 merged to main as
+`127adb34bc8e72b48085c5694d538ee70e2d6f36`. All PR gates succeeded: Quant,
+SEC, Company Master, Production Pages, VU2 Browser QA and Vercel. Main-push
+Quant, SEC and Production Pages gates also succeeded. Production Screener rules
+returned real materialized Technical and Elliott matches; the Strategy handoff
+preserved the canonical condition. Backtesting rendered its existing stored
+mock run, and the separate Discovery product rendered without page-origin console
+errors. Evidence is recorded on PR #124. `DISCOVERY_CHANGED=false`.
+
+Exact remote evidence: PR-head Company Master #40, Pages #108, Quant #182,
+Browser QA #78 and SEC #175 passed; exact-main Pages #109 (including deploy),
+Quant #183 and SEC #176 passed. Production `release-delivery.json` names the
+exact main source commit, bundle `e6d12619aee0967e`, SEC bytes
+4,846,342/8,388,608 and `EXISTING_R2_UNCHANGED`. The bundle id independently
+matches the SHA-256 prefix recomputed from the main bundle inputs.
+
+The next bounded tranche centralizes historical rule-definition eligibility in
+`Strategy.backtestEligibility`. Backtest delegates to it and Product API checks
+it before Worker creation. Strategy detail disables historical launch with the
+typed code and blocked fields. Classic synthetic Screener/Strategy workspaces no
+longer offer real current-snapshot fields they do not load, and fail closed for a
+persisted or manipulated definition rather than showing a false empty result.
+
+This classifier has explicit `RULE_DEFINITION_ONLY` scope. It does not certify a
+provider, PIT fact panel, historical universe, delistings, corporate actions or
+execution prices. Current VU2 materialized Product Data use remains available;
+only historical execution of uncertified metrics is blocked. Focused local tests
+are 65/65 PASS; full Quant 1,230/1,230, SEC Python 471/471, internal PIT 32/32,
+shared Worker/Discovery 66/66 and resource-budget 5/5 PASS. The exact release
+remains within the existing SEC budget at 4,846,342/8,388,608 bytes with
+`EXISTING_R2_UNCHANGED`. Remote and production gates remain required before this
+tranche is recorded as deployed.
+
+No data path, endpoint, Worker provider, secret, schedule or recurring cost is
+added. SEC/PIT, Company Master, History, Intraday, Realtime and standard
+materialized Fundamentals are unchanged. No Discovery path is modified.

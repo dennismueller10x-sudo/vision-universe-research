@@ -293,6 +293,16 @@
       return wrap;
     }
 
+    var unavailable = def.filters.map(function (filter) { return Catalog.field(filter.field); })
+      .filter(function (field) { return field && field.availability === "CURRENT_SNAPSHOT_ONLY"; })
+      .map(function (field) { return field.label; });
+    if (unavailable.length) {
+      wrap.appendChild(S.stateBox("Current-Snapshot-Regel hier nicht verfuegbar",
+        "Das Classic Strategy Lab arbeitet auf dem synthetischen historischen Modelluniversum und laedt keine realen aktuellen Technical-/Elliott-Snapshots: " +
+        unavailable.join(", ") + ". Die Definition wurde weder als leere Auswahl interpretiert noch fuer einen Backtest freigegeben.", "error"));
+      return wrap;
+    }
+
     if (validation.warnings.length) {
       wrap.appendChild(el("div", { class: "q-mock-banner" }, [
         el("span", { class: "q-mock-dot" }),
@@ -436,13 +446,16 @@
   function fieldSelect(value, onChange) {
     var sel = el("select", { class: "q-select", onchange: function () { onChange(sel.value); } });
     var byCategory = {};
-    Catalog.FIELD_LIST.forEach(function (f) { (byCategory[f.category] || (byCategory[f.category] = [])).push(f); });
+    Catalog.FIELD_LIST.filter(function (f) { return f.availability !== "CURRENT_SNAPSHOT_ONLY" || f.id === value; })
+      .forEach(function (f) { (byCategory[f.category] || (byCategory[f.category] = [])).push(f); });
     var LABELS = { reference: "Stammdaten", market: "Markt", quality: "Quality", momentum: "Momentum",
                    value: "Value", growth: "Growth", risk: "Risk", income: "Ausschuettung", score: "Scores" };
     Object.keys(byCategory).forEach(function (cat) {
       var group = el("optgroup", { label: LABELS[cat] || cat });
       byCategory[cat].forEach(function (f) {
-        group.appendChild(el("option", { value: f.id, text: f.label, selected: f.id === value ? true : null }));
+        var unavailable = f.availability === "CURRENT_SNAPSHOT_ONLY";
+        group.appendChild(el("option", { value: f.id, text: f.label + (unavailable ? " (hier nicht verfuegbar)" : ""),
+          selected: f.id === value ? true : null, disabled: unavailable ? true : null }));
       });
       sel.appendChild(group);
     });
