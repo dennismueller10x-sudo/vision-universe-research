@@ -43,7 +43,8 @@
      node scripts/social/asset-hashtag-done.mjs --json
      node scripts/social/asset-hashtag-done.mjs --worker https://social.visionuniverse.de
    ========================================================================= */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, writeFileSync,
+         mkdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -702,17 +703,41 @@ zustaende.push({ id: "CRITICAL_BLOCKERS", ref: "§26",
         : "Kein gemessener Blocker.")
     : blocker.map((b) => b.id).join(", ") });
 
+const bericht = {
+  generatedAt: new Date().toISOString(),
+  commit: git("rev-parse", "HEAD"),
+  worker: WORKER,
+  ORDER_DONE: fertig,
+  states: zustaende,
+  conditions: bedingungen,
+  blockers: blocker.map((b) => b.id),
+  unverified: ungeprueft.map((b) => b.id)
+};
+
+/* -------------------------------------------------------------------
+   DIE MESSUNG FESTHALTEN — ABER NUR AUF AUSDRUECKLICHE ANWEISUNG
+
+   Wer den Worker erreicht, misst Dinge, die sonst niemand sehen kann.
+   Diese Antwort verfaellt mit dem Lauf, wenn sie nur im Protokoll
+   steht — und ein Protokoll, das man nicht mehr aufrollen kann, ist
+   keine Auskunft.
+
+   `--out` und nichts sonst: ohne die Fahne schreibt dieses Skript
+   NICHTS. Die eigene Testsuite ruft es ohne sie auf, und ein Bericht,
+   der beim blossen Lesen Produktionsdaten veraendert, verletzt §23.
+   ------------------------------------------------------------------- */
+const ZIEL = arg("out", null);
+if (ZIEL) {
+  const datei = ZIEL.endsWith(".json")
+    ? ZIEL : join(ZIEL, "asset-hashtag-status.json");
+  const voll = datei.startsWith("/") ? datei : join(ROOT, datei);
+  mkdirSync(dirname(voll), { recursive: true });
+  writeFileSync(voll, JSON.stringify(bericht, null, 2) + "\n");
+  if (!JSON_AUS) console.log("Geschrieben: " + datei + "\n");
+}
+
 if (JSON_AUS) {
-  console.log(JSON.stringify({
-    generatedAt: new Date().toISOString(),
-    commit: git("rev-parse", "HEAD"),
-    worker: WORKER,
-    ORDER_DONE: fertig,
-    states: zustaende,
-    conditions: bedingungen,
-    blockers: blocker.map((b) => b.id),
-    unverified: ungeprueft.map((b) => b.id)
-  }, null, 2));
+  console.log(JSON.stringify(bericht, null, 2));
 } else {
   const Z = { ERFUELLT: "+", NICHT_ERFUELLT: "x", UNGEPRUEFT: "?" };
   console.log("VISION UNIVERSE SOCIAL — APPROVAL ASSET + HASHTAG PRODUCTION FIX\n");

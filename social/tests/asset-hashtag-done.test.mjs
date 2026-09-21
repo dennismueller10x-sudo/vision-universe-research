@@ -263,3 +263,34 @@ test("AH13 · Der Vergleich mit main holt main, statt ihn vorauszusetzen", () =>
     .replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
   assert.equal((ohneKommentare.match(/git\("fetch"/g) || []).length, 1);
 });
+
+test("AH14 · Ohne --out schreibt der Bericht nichts (§23)", () => {
+  /* Die eigene Suite ruft dieses Skript auf. Schriebe es dabei nach
+     social/data, veraenderte ein Testlauf Produktionsdaten — genau
+     das, was §23 verbietet und was check-test-isolation misst.
+
+     Gemessen am Ergebnis: der Lauf oben (ohne --out) lief bereits,
+     und danach darf sich keine Datei geaendert haben. */
+  const stand = execFileSync("git",
+    ["status", "--porcelain", "--", "social/data", "assets/social"],
+    { cwd: ROOT, encoding: "utf8" }).trim();
+  assert.equal(stand, "",
+    "Der Bericht hat beim Lesen Produktionsdaten veraendert:\n" + stand);
+});
+
+test("AH15 · Mit --out schreibt er genau dorthin — und sonst nirgends", () => {
+  const ziel = join(ROOT, "tmp", "ah15", "stand.json");
+  lauf(["--worker", "http://127.0.0.1:9", "--out", ziel]);
+  assert.ok(existsSync(ziel), "Nichts geschrieben, obwohl --out gesetzt war.");
+
+  const b = JSON.parse(readFileSync(ziel, "utf8"));
+  assert.equal(b.states.length, 15);
+  assert.equal(b.conditions.length, 13);
+  assert.equal(typeof b.commit, "string");
+  assert.ok(Array.isArray(b.blockers) && Array.isArray(b.unverified));
+
+  const stand = execFileSync("git",
+    ["status", "--porcelain", "--", "social/data", "assets/social"],
+    { cwd: ROOT, encoding: "utf8" }).trim();
+  assert.equal(stand, "", "Auch mit --out darf nichts anderes wandern:\n" + stand);
+});

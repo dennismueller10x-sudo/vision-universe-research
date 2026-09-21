@@ -524,13 +524,34 @@ jobs:
         continue-on-error: true
         run: |
           set -uo pipefail
-          node scripts/social/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          # --out: die Messung wird FESTGEHALTEN, nicht nur gedruckt.
+          # Was diese Umgebung sieht, sieht sonst niemand — sie ist die
+          # einzige, die den Worker erreicht. Steht die Antwort nur im
+          # Protokoll, verfaellt sie mit dem Lauf.
+          node scripts/social/asset-hashtag-done.mjs \
+            --out social/data/asset-hashtag-status.json \
+            | tee /tmp/asset-hashtag.log || true
           {
             echo "## ASSET + HASHTAG — §26/§27"
             echo '```'
             cat /tmp/asset-hashtag.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # ERST hinzufuegen, DANN vergleichen: `git diff` sieht keine
+          # unverfolgte Datei und meldete fuer die erste Fassung
+          # "keine Aenderung" — derselbe Fehler, der die Leistungszahlen
+          # vier Laeufe lang verschwinden liess.
+          git add social/data/asset-hashtag-status.json
+          if git diff --cached --quiet -- social/data/asset-hashtag-status.json; then
+            echo "Keine Aenderung am gemessenen Stand."
+          else
+            git commit -m "Gemessener Asset-/Hashtag-Stand aus der Produktion" \
+              -m "Erzeugt vom Workflow social-cloudflare (§25/§26). Nur gelesene Zustaende: Approval Center, Bilderreichbarkeit, Tagbreite, Sendetext. Kein Publishing."
+            git push
+          fi
 
       - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
