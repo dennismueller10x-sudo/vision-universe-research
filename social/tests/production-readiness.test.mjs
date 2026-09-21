@@ -229,12 +229,28 @@ test("PR17b · Der Abschreiber erfindet keine Entscheidung", () => {
   }
 });
 
-test("PR18 · Der Scheduler schreibt ausschliesslich social/data/", () => {
+test("PR18 · Der Scheduler kommt an keinen Autopublish-Schalter", () => {
   /* Die Autopublish-Schalter liegen in social/config/. Dass der
      Festschreiben-Schritt sie nicht anfasst, ist die strukturelle
      Antwort auf "kann ein Lauf sie setzen?" - und sie muss hier
      stehen, damit ein spaeterer Schritt sie nicht versehentlich
-     weitet. */
+     weitet.
+
+     DIESER TEST STAND AN DER FALSCHEN GRENZE.
+
+     Er verlangte `startsWith("social/data")`. Gemeint war aber, was
+     im Kommentar darueber steht: die SCHALTER bleiben unerreichbar.
+     Beides fiel auseinander, als sich zeigte, dass render-asset.mjs
+     nach assets/social/ schreibt — ausserhalb von social/data. Der
+     Workflow durfte das Bild deshalb nicht festschreiben, warf es bei
+     jedem Lauf weg, und dieser Test bestaetigte das als richtig.
+
+     Im Approval Center stand danach eine kaputte Bildflaeche.
+
+     Geprueft wird jetzt die Absicht: kein hinzugefuegter Pfad darf
+     eine Schalterdatei enthalten. Das ist STRENGER als vorher, wo
+     "social/data" als Praefix auch "social/data-und-mehr" erlaubt
+     haette, und es laesst zu, was es zulassen muss. */
   const w = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
   /* Je PFAD, nicht je Zeile: "git add social/data/ social/config/"
      ist EINE Zeile und ZWEI Pfade, und die erste Fassung dieses Tests
@@ -243,10 +259,49 @@ test("PR18 · Der Scheduler schreibt ausschliesslich social/data/", () => {
     .flatMap((m) => m[1].trim().split(/\s+/))
     .filter((a) => a.length && !a.startsWith("-"));
   assert.ok(addiert.length > 0, "kein git add gefunden");
+
+  const SCHALTER = ["social/config/kill-switch.json",
+                    "social/config/autonomy.json"];
+  const fasst = (pfad) => {
+    const roh = String(pfad).trim();
+    if (["", ".", "./", "*", "..", "/"].includes(roh)) return true;
+    const p = roh.replace(/^\.\//, "").replace(/\/+$/, "") + "/";
+    return SCHALTER.some((d) => d.startsWith(p) || d === roh);
+  };
+
   for (const a of addiert) {
-    assert.ok(a.startsWith("social/data"),
-      "Der Scheduler schreibt ausserhalb von social/data: " + a);
+    assert.ok(!fasst(a),
+      "Der Scheduler koennte ueber '" + a + "' einen Schalter schreiben");
   }
+
+  /* Und die Regel selbst gepinnt — sonst prueft die Schleife oben
+     gegen eine Funktion, die alles durchlaesst. */
+  assert.equal(fasst("."), true, "`git add .` gilt als harmlos");
+  assert.equal(fasst("social/"), true);
+  assert.equal(fasst("social/config/"), true);
+  assert.equal(fasst("social/config/kill-switch.json"), true);
+  assert.equal(fasst("social/data/"), false);
+  assert.equal(fasst("assets/social/"), false,
+    "Das Bildverzeichnis gilt als gefaehrlich — dann wird es wieder weggeworfen");
+});
+
+test("PR18b · Das gerenderte Bild wird auch festgeschrieben", () => {
+  /* Die andere Haelfte desselben Befunds: es genuegt nicht, dass
+     assets/social/ ERLAUBT ist — es muss auch tatsaechlich
+     dabeistehen, sonst bleibt jedes Bild im Runner. */
+  const w = readFileSync(".github/workflows/social-orchestrator.yml", "utf8")
+    .split("\n").map((z) => z.replace(/(^|\s)#.*$/, "")).join("\n");
+  const addiert = [...w.matchAll(/git add ([^\n]+)/g)]
+    .flatMap((m) => m[1].trim().split(/\s+/));
+  assert.ok(addiert.some((a) => a.startsWith("assets/social")),
+    "Der Festschreiben-Schritt nimmt das gerenderte Bild nicht mit — " +
+    "die Adresse im Kandidaten zeigt dann auf eine Datei, die es nie gab");
+
+  /* Und die Abbruchbedingung darueber muss dasselbe Verzeichnis
+     kennen: prueft sie nur social/data, beendet sich der Schritt bei
+     einem reinen Bild-Lauf mit "Keine Aenderung". */
+  assert.match(w, /git status --porcelain --[^\n]*assets\/social/,
+    "Die Abbruchbedingung sieht das Bildverzeichnis nicht");
 });
 
 test("PR19 · Der Scheduler setzt keinen Autopublish-Schalter", () => {

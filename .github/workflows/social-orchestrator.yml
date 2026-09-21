@@ -405,13 +405,32 @@ jobs:
           set -euo pipefail
           # `git diff` sieht neue Dateien nicht, und beim ersten Lauf
           # sind Kandidat und Bild neu.
-          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+          #
+          # ============================================================
+          # DAS BILD GEHOERT DAZU
+          #
+          # Hier stand nur `social/data/`. Das gerenderte Bild schreibt
+          # render-asset.mjs aber nach assets/social/ — und das liegt
+          # NICHT darunter. Jeder Lauf hat sein Bild also erzeugt, die
+          # Adresse in den Kandidaten geschrieben und die Datei mit dem
+          # Runner weggeworfen.
+          #
+          # Im Approval Center stand danach eine kaputte Bildflaeche,
+          # und die Adresse zeigte auf eine Datei, die es nie gab.
+          # `git log --all -- assets/social/pkg_ca25cb404ae49dc4.jpg`
+          # ist leer. Die dreizehn Bilder, die im Repository liegen,
+          # stammen alle aus Sitzungs-Commits frueherer Auftraege.
+          #
+          # Der Kommentar zwei Zeilen hoeher wusste es ("Kandidat und
+          # BILD"). Nur die Pfade wussten es nicht.
+          # ============================================================
+          if [ -z "$(git status --porcelain -- social/data/ assets/social/)" ]; then
             echo "Keine Aenderung."
             exit 0
           fi
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          git add social/data/
+          git add social/data/ assets/social/
           git commit -m "Orchestrator: ${{ steps.plan.outputs.stage }}"
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"

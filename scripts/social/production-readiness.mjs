@@ -197,7 +197,49 @@ function schedulerSchreiber() {
   const addiert = [...workflow.matchAll(/git add ([^\n]+)/g)]
     .flatMap((m) => m[1].trim().split(/\s+/))
     .filter((a) => a.length && !a.startsWith("-"));
-  const fremd = addiert.filter((a) => !a.startsWith("social/data"));
+
+  /* -----------------------------------------------------------------
+     DIE WACHE STAND AN DER FALSCHEN GRENZE
+
+     Hier hiess die Regel "nur social/data". Gemeint war aber etwas
+     anderes: der Scheduler darf die SCHALTER nicht schreiben. Die
+     liegen in social/config/.
+
+     Der Unterschied war nicht akademisch. render-asset.mjs schreibt
+     nach assets/social/ — ausserhalb von social/data. Der Workflow
+     durfte es deshalb nicht festschreiben, warf jedes gerenderte Bild
+     weg, und diese Pruefung meldete dafuer ERFUELLT. Ein Waechter, der
+     enger gebaut ist als das, was er bewacht, erzwingt einen Fehler
+     und nennt ihn eine Invariante.
+
+     Gefragt wird jetzt das, was gemeint ist: koennte einer der
+     hinzugefuegten Pfade eine Schalterdatei enthalten? Das ist eine
+     Frage ueber Dateien und nicht ueber Namen — ein spaeter
+     umbenanntes Verzeichnis faellt damit trotzdem auf.
+     ----------------------------------------------------------------- */
+  const SCHALTERDATEIEN = [
+    "social/config/kill-switch.json",
+    "social/config/autonomy.json"
+  ];
+
+  /* Ein Pfad ist gefaehrlich, wenn eine Schalterdatei darunter liegt.
+     "social/" faengt sie, "social/data/" nicht, "assets/social/" auch
+     nicht — und genau so soll es sein. */
+  function fasstSchalter(pfad) {
+    const roh = String(pfad).trim();
+
+    /* Der weiteste Fall zuerst, weil er beim ersten Anlauf durchfiel:
+       `git add .` fuegt ALLES hinzu, und "social/config/kill-switch.json"
+       faengt nicht mit "./" an. Eine Wache, die den Sonderfall
+       uebersieht, den sie am dringendsten fangen muesste, ist keine. */
+    if (roh === "." || roh === "./" || roh === "*" || roh === "" ||
+        roh === ".." || roh === "/") return true;
+
+    const p = roh.replace(/^\.\//, "").replace(/\/+$/, "") + "/";
+    return SCHALTERDATEIEN.some((datei) => datei.startsWith(p) || datei === roh);
+  }
+
+  const fremd = addiert.filter(fasstSchalter);
   const nurDaten = addiert.length > 0 && fremd.length === 0;
   if (!nurDaten) {
     schreiber.push({ gate: "GLOBAL_AUTOPUBLISH",
