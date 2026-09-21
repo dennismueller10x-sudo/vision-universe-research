@@ -303,6 +303,199 @@
   }
 
   /* -------------------------------------------------------------------
+     DER LOGO-VERTRAG (§18)
+
+     Atlas ist eine Figur; das Logo ist eine Signatur. Der Unterschied
+     ist nicht kosmetisch: eine Figur darf sich bewegen, drehen, anders
+     ausgeschnitten sein. Eine Signatur darf das nicht. Sie ist
+     entweder korrekt oder falsch.
+
+     Deshalb ist die Liste der erlaubten Transformationen hier kuerzer
+     als bei Atlas - und sie enthaelt ausdruecklich KEIN Umfaerben,
+     kein Drehen und kein freies Skalieren.
+
+     -------------------------------------------------------------------
+     WAS EIN GENERATIVES MODELL HIER NIEMALS TUN DARF
+     -------------------------------------------------------------------
+
+     Ein Bildmodell, das "VISION UNIVERSE" schreiben soll, schreibt
+     frueher oder spaeter VISION UNIVERSE mit einem falschen Buchstaben,
+     einem falschen Abstand oder einer falschen Punze. Das faellt auf
+     einem Telefon nicht auf und auf einem Screenshot sehr wohl.
+
+     §44 sagt es direkt: fuer kritische Typografie nicht darauf
+     verlassen, dass ein Modell Text korrekt schreibt. Das Logo wird
+     komponiert, nicht gemalt.
+
+     -------------------------------------------------------------------
+     WAS DIESE PRUEFUNG MISST UND WAS SIE NICHT KANN
+     -------------------------------------------------------------------
+
+     Sie rechnet an einer Beschreibung: Flaeche, Kasten, erklaerte
+     Transformationen, gemessener Kontrast. Sie sieht keine Pixel.
+
+     Der Kontrast ist deshalb eine UEBERGEBENE MESSUNG und keine
+     Schaetzung. Fehlt er, ist das UNGEPRUEFT - und ungeprueft faellt
+     durch. Ein Logo, von dem niemand weiss, ob es sich vom Hintergrund
+     abhebt, ist genau der Fall, den §18 "mit dem Hintergrund
+     verschmelzen" nennt.
+     ------------------------------------------------------------------- */
+  var LOGO_ASSET_PATH = "assets/vision-universe-logo.png";
+
+  /* Das Original ist 2172x724. Das Verhaeltnis ist Teil der Marke:
+     wer es aendert, hat ein anderes Logo. */
+  var LOGO_SEITENVERHAELTNIS = 2172 / 724;
+
+  /* Nur Platzieren und gleichmaessig Skalieren. Jede weitere
+     Transformation veraendert die Signatur selbst. */
+  var LOGO_TRANSFORMS = ["scale-uniform", "place"];
+
+  var LOGO_REGELN = {
+    /* -----------------------------------------------------------------
+       DIE SCHUTZZONE MISST AN DER HOEHE, NICHT AN DER BREITE
+
+       Der erste Entwurf nahm die halbe BREITE. Bei einem 3:1-Zeichen
+       sind das anderthalb Logohoehen Abstand auf jeder Seite - eine
+       Zahl, die kein Markenhandbuch verlangt und die jede sinnvolle
+       Platzierung verbietet. Ein Tor, das alles sperrt, sperrt auch
+       den Betrieb.
+
+       Das uebliche und begruendbare Mass ist die eigene HOEHE. Fuer
+       dieses Zeichen sind das rund ein Drittel seiner Breite. */
+    schutzzoneHoehenAnteil: 1.0,
+    /* Unter diesem Anteil der Flaechenbreite ist sie auf einem
+       Telefon nicht mehr zu lesen. */
+    mindestBreiteAnteil: 0.12,
+    /* Ueber diesem Anteil ist sie kein Absender mehr, sondern das
+       Motiv. */
+    hoechstBreiteAnteil: 0.40,
+    /* Abweichung vom Seitenverhaeltnis, ab der es Verzerrung ist. */
+    verhaeltnisToleranz: 0.02,
+    /* Kontrast nach WCAG. Unter 3:1 verschwimmt eine Wortmarke auf
+       einem bewegten Hintergrund. */
+    mindestKontrast: 3
+  };
+
+  function zahlOderNull(v) {
+    if (v === null || v === undefined || v === "") return null;
+    var n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  /**
+   * Haelt dieses Visual den Logo-Vertrag ein?
+   *
+   * @param spec {
+   *   referenceAsset   Pfad des benutzten Assets
+   *   generationMode   "compose" | "text-to-image" | ...
+   *   transforms       [String]
+   *   canvas           { width, height }  Flaeche in Pixeln
+   *   box              { x, y, width, height }  Lage der Signatur
+   *   kontrast         gemessenes Kontrastverhaeltnis, oder null
+   * }
+   */
+  function checkLogoUsage(spec) {
+    spec = spec || {};
+    var problems = [];
+
+    /* 1. Das Original, und nichts anderes. Ein Logo hat keine
+          "freigegebene Variante" - das waere ein zweites Logo. */
+    if (!spec.referenceAsset) {
+      problems.push("Kein Referenz-Asset angegeben. Das Logo wird nie " +
+        "geschrieben, sondern komponiert.");
+    } else if (spec.referenceAsset !== LOGO_ASSET_PATH) {
+      problems.push("Das Referenz-Asset ist nicht das kanonische Logo (" +
+        LOGO_ASSET_PATH + ").");
+    }
+
+    /* 2. Niemals gemalt. */
+    if (spec.generationMode === "text-to-image") {
+      problems.push("text-to-image ist fuer das Logo ausgeschlossen (§44). " +
+        "Ein Bildmodell schreibt die Wortmarke frueher oder spaeter falsch, " +
+        "und das faellt erst auf, wenn es oeffentlich steht.");
+    }
+
+    /* 3. Nur platzieren und gleichmaessig skalieren. */
+    (spec.transforms || []).forEach(function (t) {
+      if (LOGO_TRANSFORMS.indexOf(t) === -1) {
+        problems.push("Unzulaessige Transformation '" + t + "'. Am Logo " +
+          "erlaubt: " + LOGO_TRANSFORMS.join(", ") + ".");
+      }
+    });
+
+    var flaeche = spec.canvas || null;
+    var kasten = spec.box || null;
+    var fw = flaeche ? zahlOderNull(flaeche.width) : null;
+    var fh = flaeche ? zahlOderNull(flaeche.height) : null;
+    var bx = kasten ? zahlOderNull(kasten.x) : null;
+    var by = kasten ? zahlOderNull(kasten.y) : null;
+    var bw = kasten ? zahlOderNull(kasten.width) : null;
+    var bh = kasten ? zahlOderNull(kasten.height) : null;
+
+    if (fw === null || fh === null || bx === null || by === null ||
+        bw === null || bh === null) {
+      /* Ohne Lage laesst sich nichts pruefen - und "nicht pruefbar"
+         ist kein Bestehen. */
+      problems.push("Flaeche und Lage des Logos sind nicht vollstaendig " +
+        "angegeben. Ohne sie laesst sich weder Verzerrung noch Schutzzone " +
+        "noch Lesbarkeit pruefen.");
+    } else {
+      /* 4. Verzerrung: das Seitenverhaeltnis IST die Marke. */
+      var verhaeltnis = bh > 0 ? bw / bh : 0;
+      var abweichung = Math.abs(verhaeltnis - LOGO_SEITENVERHAELTNIS) /
+        LOGO_SEITENVERHAELTNIS;
+      if (abweichung > LOGO_REGELN.verhaeltnisToleranz) {
+        problems.push("Das Logo ist verzerrt: " + verhaeltnis.toFixed(2) +
+          ":1 statt " + LOGO_SEITENVERHAELTNIS.toFixed(2) + ":1.");
+      }
+
+      /* 5. Lesbarkeit und Groessenverhaeltnis. */
+      var anteil = fw > 0 ? bw / fw : 0;
+      if (anteil < LOGO_REGELN.mindestBreiteAnteil) {
+        problems.push("Das Logo ist zu klein (" + (anteil * 100).toFixed(1) +
+          " % der Breite, noetig " +
+          (LOGO_REGELN.mindestBreiteAnteil * 100) + " %). Auf einem Telefon " +
+          "ist es dann keine Signatur mehr, sondern ein Fleck.");
+      }
+      if (anteil > LOGO_REGELN.hoechstBreiteAnteil) {
+        problems.push("Das Logo ist zu gross (" + (anteil * 100).toFixed(1) +
+          " % der Breite). Ein Absender wird damit zum Motiv.");
+      }
+
+      /* 6. Schutzzone: die Signatur braucht Luft, sonst klebt sie. */
+      var zone = bh * LOGO_REGELN.schutzzoneHoehenAnteil;
+      var links = bx, oben = by;
+      var rechts = fw - (bx + bw), unten = fh - (by + bh);
+      if (links < zone || oben < zone || rechts < zone || unten < zone) {
+        problems.push("Die Schutzzone ist verletzt: das Logo braucht " +
+          Math.round(zone) + " px Abstand, hat aber links " +
+          Math.round(links) + ", oben " + Math.round(oben) + ", rechts " +
+          Math.round(rechts) + ", unten " + Math.round(unten) + ".");
+      }
+    }
+
+    /* 7. Der Kontrast ist eine MESSUNG, keine Annahme. */
+    var k = zahlOderNull(spec.kontrast);
+    if (k === null) {
+      problems.push("Der Kontrast des Logos zum Hintergrund wurde nicht " +
+        "gemessen. Ungeprueft ist kein Bestehen: ein Logo, von dem niemand " +
+        "weiss, ob es sich abhebt, ist der Fall aus §18.");
+    } else if (k < LOGO_REGELN.mindestKontrast) {
+      problems.push("Das Logo verschmilzt mit dem Hintergrund (Kontrast " +
+        k.toFixed(1) + ":1, noetig " + LOGO_REGELN.mindestKontrast + ":1).");
+    }
+
+    return {
+      passed: problems.length === 0,
+      problems: problems,
+      explanation: problems.length === 0
+        ? "Das kanonische Logo steht unverzerrt, lesbar, mit Schutzzone und " +
+          "gemessenem Kontrast."
+        : problems.join(" ")
+    };
+  }
+
+  /* -------------------------------------------------------------------
      DIE MARKENPASSUNG EINES THEMAS — OHNE TEXT
 
      Diese Funktion stand im Zyklus-Skript. Dort war sie nicht
@@ -334,8 +527,13 @@
     HOOK_PROMISES: HOOK_PROMISES.map(function (p) { return p.id; }),
     ATLAS_ASSET_PATH: ATLAS_ASSET_PATH,
     ATLAS_TRANSFORMS: ATLAS_TRANSFORMS,
+    LOGO_ASSET_PATH: LOGO_ASSET_PATH,
+    LOGO_TRANSFORMS: LOGO_TRANSFORMS,
+    LOGO_REGELN: LOGO_REGELN,
+    LOGO_SEITENVERHAELTNIS: LOGO_SEITENVERHAELTNIS,
     check: check,
     checkAtlasUsage: checkAtlasUsage,
+    checkLogoUsage: checkLogoUsage,
     maxCapsRun: maxCapsRun
   };
 
