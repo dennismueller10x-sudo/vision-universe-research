@@ -65,6 +65,7 @@ function eintrag(hash, over = {}) {
        UNGEPRUEFT und damit gesperrt - das ist die Regel und kein
        Testartefakt. Wer sie prueft, tut es in asset-gate.test.mjs. */
     asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+      url: BILD,
       satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
       gemessenAm: "2026-09-21T10:00:00Z" },
     anzeige: { thema: { value: "Technisches Setup — XOM", basis: "presentation.topic" },

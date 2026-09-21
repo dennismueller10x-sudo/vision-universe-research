@@ -49,6 +49,7 @@ function eintrag(over = {}) {
     contentHash: "c".repeat(64),
     payload: { contentId: "pkg_test", imageUrl: BILD, caption: CAPTION },
     asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+      url: BILD,
       satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
       gemessenAm: "2026-09-21T10:00:00Z" },
     anzeige: {

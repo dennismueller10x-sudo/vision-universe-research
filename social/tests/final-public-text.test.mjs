@@ -185,3 +185,93 @@ test("FT7 · Die alte Tagliste wird NICHT als Sendetext-Tag ausgegeben", () => {
   };
   assert.deepEqual(Projektion.eintrag(neu).text.hashtags, ["#Eins"]);
 });
+
+/* =========================================================================
+   GEMESSEN WURDE EINE ADRESSE, NICHT EIN KANDIDAT (§22)
+
+   Zwischen Messung und Anzeige kann das Bild ausgetauscht worden sein.
+   Das Urteil gehoert dann zur alten Adresse - und ueber die neue sagt
+   es nichts. Genau das ist der Fall "Preview ungleich Publish-Asset".
+   ========================================================================= */
+const BILD_A = "https://research.visionuniverse.de/assets/social/a.jpg";
+const BILD_B = "https://research.visionuniverse.de/assets/social/b.jpg";
+
+function mitMessung(url, messung) {
+  return {
+    candidateId: "cand_x", state: "AWAITING_APPROVAL",
+    content: { contentId: "pkg_x", imageUrl: url, caption: "Ein Text." },
+    presentation: {},
+    assetDelivery: messung
+  };
+}
+
+test("FT8 · Eine Messung derselben Adresse gilt", () => {
+  const e = Projektion.eintrag(mitMessung(BILD_A, {
+    url: BILD_A, zustand: "ASSET_PUBLICLY_REACHABLE", grund: null,
+    satz: "Liegt dort.", gemessenAm: "2026-09-21T10:00:00Z" }));
+  assert.equal(e.asset.erreichbar, true);
+  assert.equal(e.asset.url, BILD_A);
+});
+
+test("FT9 · Eine Messung EINER ANDEREN Adresse gilt nicht", () => {
+  const e = Projektion.eintrag(mitMessung(BILD_A, {
+    url: BILD_B, zustand: "ASSET_PUBLICLY_REACHABLE", grund: null,
+    satz: "Liegt dort.", gemessenAm: "2026-09-21T10:00:00Z" }));
+  assert.equal(e.asset.erreichbar, false);
+  assert.equal(e.asset.zustand, "ASSET_REACHABILITY_UNVERIFIED");
+  assert.equal(e.asset.grund, "MEASURED_ANOTHER_URL");
+  /* Und der Satz sagt es, ohne das Bild zu beschuldigen. */
+  assert.match(e.asset.satz, /nicht das Bild, das hier veroeffentlicht wuerde/);
+});
+
+test("FT10 · Eine Messung ohne Adresse gilt fuer gar nichts", () => {
+  const e = Projektion.eintrag(mitMessung(BILD_A, {
+    zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, satz: "Liegt dort." }));
+  assert.equal(e.asset.erreichbar, false);
+  assert.equal(e.asset.grund, "MEASUREMENT_WITHOUT_URL");
+});
+
+test("FT11 · Der Messende schreibt die Adresse mit — gemessen, nicht gelesen", async () => {
+  /* Die Gegenprobe zu FT10: liesse publish-approval-queue.mjs die
+     Adresse weg, waere jede Messung wertlos, und zwar still.
+
+     Geprueft wird das am ERGEBNIS eines echten Laufs mit gestelltem
+     Netz - nicht an einer Zeichenfolge im Quelltext. Ein Pruefer, der
+     den Quelltext liest, hat in diesem Projekt schon dreimal einen
+     Kommentar fuer ausgefuehrten Code gehalten. */
+  const { baue: bauen } = await import("../../scripts/social/publish-approval-queue.mjs");
+
+  const url = "https://research.visionuniverse.de/assets/social/pkg_ft.jpg";
+  const caption = "Ein Text ohne Tags.";
+  const k = {
+    candidateId: "cand_ft", version: 1, state: "AWAITING_APPROVAL",
+    createdAt: "2026-09-20T08:00:00.000Z",
+    content: { contentId: "pkg_ft", imageUrl: url, caption },
+    presentation: {},
+    contentHash: Abdruck.contentHash({ contentId: "pkg_ft", imageUrl: url, caption })
+  };
+
+  const echtesFetch = globalThis.fetch;
+  let gefragt = null;
+  globalThis.fetch = async (angefragt) => {
+    gefragt = String(angefragt);
+    /* Eine glaubwuerdige 404-Antwort vom Ziel selbst. */
+    return new Response("nicht da", { status: 404,
+      headers: { "content-type": "text/plain" } });
+  };
+  let p;
+  try {
+    p = await bauen([k], { now: "2026-09-21T10:00:00.000Z", pruefeAssets: true });
+  } finally {
+    globalThis.fetch = echtesFetch;
+  }
+
+  assert.equal(gefragt, url, "Abgefragt wurde nicht die Adresse des Kandidaten.");
+  assert.equal(p.items.length, 1);
+  const a = p.items[0].asset;
+  assert.equal(a.url, url, "Die Messung nennt die Adresse nicht, die sie betraf.");
+  assert.equal(a.erreichbar, false);
+  assert.equal(a.zustand, "ASSET_NOT_REACHABLE");
+  assert.equal(a.grund, "HTTP_404");
+  assert.equal(a.gemessenAm, "2026-09-21T10:00:00.000Z");
+});

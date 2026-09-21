@@ -618,6 +618,13 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
   if (!bild || typeof bild !== "object" || !bild.zustand) {
     return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
   }
+  /* Gemessen wurde eine ADRESSE. Nennt das Urteil nicht die, die
+     veroeffentlicht wuerde, gilt es fuer ein anderes Bild - und die
+     Vorschau waere nicht die Sendung. Ein Urteil ohne Adresse gilt
+     fuer gar nichts. */
+  if (!bild.url || bild.url !== eintrag.payload.imageUrl) {
+    return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
+  }
   if (bild.zustand !== "ASSET_PUBLICLY_REACHABLE") {
     return {
       ok: false,

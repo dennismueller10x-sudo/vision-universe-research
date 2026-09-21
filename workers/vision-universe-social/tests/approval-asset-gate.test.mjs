@@ -46,17 +46,17 @@ const TAGS = ["#ExxonMobil", "#Aktienanalyse", "#Energie"];
 const CAPTION = finalerText(BASIS, TAGS);
 
 const ERREICHBAR = {
-  zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+  zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true, url: BILD,
   satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
   gemessenAm: "2026-09-21T10:00:00Z"
 };
 const WEG = {
-  zustand: "ASSET_NOT_REACHABLE", grund: "HTTP_404", erreichbar: false,
+  zustand: "ASSET_NOT_REACHABLE", grund: "HTTP_404", erreichbar: false, url: BILD,
   satz: "Unter dieser Adresse liegt kein Bild.",
   gemessenAm: "2026-09-21T10:00:00Z"
 };
 const UNGEPRUEFT = {
-  zustand: "ASSET_REACHABILITY_UNVERIFIED", grund: "NOT_ASKED", erreichbar: false,
+  zustand: "ASSET_REACHABILITY_UNVERIFIED", grund: "NOT_ASKED", erreichbar: false, url: BILD,
   satz: "Ob das Bild erreichbar ist, wurde zu dieser Uebertragung nicht gemessen.",
   gemessenAm: null
 };
@@ -423,4 +423,39 @@ test("AG24 · Ungeprueft heisst nirgends auf der Karte \"nicht abrufbar\"", asyn
   /* Und im geprueften Fall steht es sehr wohl da. */
   const w = await karte(projektion([await eintrag({ asset: WEG })]));
   assert.match(text(w.html), /nicht abrufbar/);
+});
+
+/* =============================== Gemessen wurde eine Adresse (§22) */
+
+test("AG25 · Ein Urteil ueber ein ANDERES Bild gibt dieses nicht frei", async () => {
+  /* Preview ungleich Publish-Asset: das Bild wurde zwischen Messung
+     und Anzeige ausgetauscht. Das alte "erreichbar" gehoert zur alten
+     Adresse und sagt ueber die neue nichts. */
+  const e = await eintrag({
+    asset: Object.assign({}, ERREICHBAR, {
+      url: "https://research.visionuniverse.de/assets/social/ein_anderes.jpg" }) });
+  const { env, cookie } = await aufbauen(projektion([e]));
+  const r = await tun(env, cookie, "/approval/" + ID + "/approve",
+    { fingerprint: e.contentHash });
+  assert.notEqual(r.status, 200);
+  assert.doesNotMatch(text(await r.text()), /Wirklich veroeffentlichen/);
+});
+
+test("AG26 · Und die Karte zeigt dann keinen Freigabeknopf", async () => {
+  const e = await eintrag({
+    asset: Object.assign({}, ERREICHBAR, {
+      url: "https://research.visionuniverse.de/assets/social/ein_anderes.jpg" }) });
+  const { html } = await karte(projektion([e]));
+  assert.doesNotMatch(html, /action="\/approval\/[^"]+\/approve"/);
+  assert.match(text(html), /nicht geprueft/);
+});
+
+test("AG27 · Ein Urteil ohne Adresse gilt fuer gar nichts", async () => {
+  const ohne = Object.assign({}, ERREICHBAR);
+  delete ohne.url;
+  const e = await eintrag({ asset: ohne });
+  const { env, cookie } = await aufbauen(projektion([e]));
+  const r = await tun(env, cookie, "/approval/" + ID + "/approve",
+    { fingerprint: e.contentHash });
+  assert.notEqual(r.status, 200);
 });

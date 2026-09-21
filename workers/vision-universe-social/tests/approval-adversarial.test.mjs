@@ -64,6 +64,7 @@ async function lager(options = {}) {
       candidateId: ID, state: "AWAITING_APPROVAL", contentHash: hash,
       payload: { contentId: INHALT, imageUrl: BILD, caption: TEXT },
       asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+      url: BILD,
         satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
         gemessenAm: "2026-09-21T10:00:00Z" },
       anzeige: { thema: { value: "Geheimes Thema", basis: "presentation.topic" },

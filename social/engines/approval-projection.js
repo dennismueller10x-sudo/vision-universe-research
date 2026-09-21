@@ -181,13 +181,36 @@
      ------------------------------------------------------------------- */
   function bildzustand(k) {
     var a = (k && k.assetDelivery) || null;
+    var adresse = pfad(k, "content.imageUrl") || null;
     if (!a || typeof a !== "object" || !a.zustand) {
       return {
         zustand: "ASSET_REACHABILITY_UNVERIFIED",
         grund: "NOT_ASKED",
         erreichbar: false,
+        url: null,
         satz: "Ob das Bild erreichbar ist, wurde zu dieser Uebertragung " +
           "nicht gemessen."
+      };
+    }
+    /* ---------------------------------------------------------------
+       GEMESSEN WURDE EINE ADRESSE, NICHT EIN KANDIDAT
+
+       Zwischen Messung und Anzeige kann das Bild ausgetauscht worden
+       sein - eine neue Fassung, ein anderer Zuschnitt, ein anderer
+       Dateiname. Das Urteil gehoert zu der Adresse, die abgerufen
+       wurde, und zu keiner anderen. Passt sie nicht zu dem, was
+       veroeffentlicht wuerde, ist DIESES Bild ungeprueft: die
+       Vorschau waere sonst ein anderes Asset als die Sendung.
+       --------------------------------------------------------------- */
+    if (!a.url || a.url !== adresse) {
+      return {
+        zustand: "ASSET_REACHABILITY_UNVERIFIED",
+        grund: a.url ? "MEASURED_ANOTHER_URL" : "MEASUREMENT_WITHOUT_URL",
+        erreichbar: false,
+        url: a.url || null,
+        satz: "Gemessen wurde nicht das Bild, das hier veroeffentlicht " +
+          "wuerde. Fuer dieses Bild liegt keine Pruefung vor.",
+        gemessenAm: a.gemessenAm || null
       };
     }
     return {
@@ -197,6 +220,7 @@
          Zustand, und zwei Quellen fuer dieselbe Aussage koennen
          auseinanderlaufen. */
       erreichbar: a.zustand === "ASSET_PUBLICLY_REACHABLE",
+      url: a.url,
       satz: a.satz || null,
       gemessenAm: a.gemessenAm || null
     };

@@ -594,6 +594,16 @@ function bildLage(i) {
       satz: "Ob dieses Bild oeffentlich abrufbar ist, wurde zu diesem Stand " +
         "nicht geprueft." };
   }
+  /* Gemessen wurde eine ADRESSE. Nennt das Urteil eine andere als die,
+     die veroeffentlicht wuerde, gehoert es zu einem anderen Bild —
+     dann ist DIESES ungeprueft, und zwar unabhaengig davon, was das
+     Urteil sagt. */
+  const adresse = (i && i.payload && i.payload.imageUrl) || null;
+  if (!a.url || a.url !== adresse) {
+    return { erreichbar: false, geprueft: false,
+      satz: "Gemessen wurde nicht das Bild, das hier veroeffentlicht wuerde. " +
+        "Fuer dieses Bild liegt keine Pruefung vor." };
+  }
   return {
     erreichbar: a.zustand === "ASSET_PUBLICLY_REACHABLE",
     geprueft: a.zustand !== "ASSET_REACHABILITY_UNVERIFIED",

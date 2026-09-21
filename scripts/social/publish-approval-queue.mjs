@@ -175,6 +175,11 @@ export async function baue(kandidaten, options = {}) {
       });
       nachId[id] = Object.assign({}, k, {
         assetDelivery: {
+          /* WELCHE Adresse gemessen wurde. Ohne sie waere das Urteil
+             an den Kandidaten gebunden und nicht an das Bild - und
+             ein "erreichbar" von gestern gaebe das Bild von heute
+             frei, das niemand abgerufen hat. */
+          url: url || null,
           zustand: befund.zustand, grund: befund.grund,
           satz: befund.satz, gemessenAm: options.now || new Date().toISOString()
         }
