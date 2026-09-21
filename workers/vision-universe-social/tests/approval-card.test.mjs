@@ -48,6 +48,9 @@ function eintrag(over = {}) {
     state: "AWAITING_APPROVAL",
     contentHash: "c".repeat(64),
     payload: { contentId: "pkg_test", imageUrl: BILD, caption: CAPTION },
+    asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+      satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
+      gemessenAm: "2026-09-21T10:00:00Z" },
     anzeige: {
       thema: f("Technisches Setup — XOM", "presentation.topic"),
       hook: f("52 von 100 — und warum das keine Empfehlung ist.", "presentation.hook"),

@@ -172,6 +172,68 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     DER BILDZUSTAND AM EINTRAG
+
+     Er kommt vom Messenden (publish-approval-queue.mjs) und wird hier
+     nur weitergereicht. Diese Engine misst nichts — sie hat kein Netz
+     und soll auch keines bekommen.
+     ------------------------------------------------------------------- */
+  function bildzustand(k) {
+    var a = (k && k.assetDelivery) || null;
+    if (!a || typeof a !== "object" || !a.zustand) {
+      return {
+        zustand: "ASSET_REACHABILITY_UNVERIFIED",
+        grund: "NOT_ASKED",
+        erreichbar: false,
+        satz: "Ob das Bild erreichbar ist, wurde zu dieser Uebertragung " +
+          "nicht gemessen."
+      };
+    }
+    return {
+      zustand: a.zustand,
+      grund: a.grund || null,
+      /* Nicht das mitgelieferte Flag glauben: es ergibt sich aus dem
+         Zustand, und zwei Quellen fuer dieselbe Aussage koennen
+         auseinanderlaufen. */
+      erreichbar: a.zustand === "ASSET_PUBLICLY_REACHABLE",
+      satz: a.satz || null,
+      gemessenAm: a.gemessenAm || null
+    };
+  }
+
+  /* -------------------------------------------------------------------
+     DIE BESTANDTEILE — NUR, WENN SIE ZUM SENDETEXT GEHOEREN
+
+     `presentation.hashtags` gibt es in diesem Bestand ZWEIMAL, mit
+     zwei Bedeutungen:
+
+       aeltere Kandidaten  eine abgeleitete Liste, die NIE in der
+                           Caption stand - drei feste Tags unter jedem
+                           Beitrag, die nirgends hingingen.
+       neue Kandidaten     die Tags, die im Sendetext stehen, zusammen
+                           mit `captionBase`, aus dem er entstand.
+
+     Sie sehen gleich aus. Die alte Liste anzuzeigen hiesse, dem Owner
+     Tags zu zeigen, die der Beitrag nicht traegt - und danach zu
+     fragen, ob er das freigibt.
+
+     `captionBase` unterscheidet die beiden: es wird ausschliesslich
+     auf dem neuen Weg geschrieben, zusammen mit der Caption, aus
+     derselben Ableitung. Ohne ihn gibt es hier keine Tags - nicht
+     weil sie fehlen, sondern weil sie nicht zum Text gehoeren.
+     ------------------------------------------------------------------- */
+  function textteile(k) {
+    var basis = pfad(k, "presentation.captionBase");
+    var hat = typeof basis === "string" && basis.trim().length > 0;
+    return {
+      captionBase: hat ? basis : null,
+      hashtags: hat && Array.isArray(pfad(k, "presentation.hashtags"))
+        ? pfad(k, "presentation.hashtags").slice() : [],
+      hashtagSatz: hat ? (pfad(k, "presentation.hashtagSatz") || null) : null
+    };
+  }
+
   /** Ein Kandidat als das, was der Owner sieht - und als das, was ginge. */
   function eintrag(k) {
     return {
@@ -190,10 +252,39 @@
       payload: {
         contentId: pfad(k, "content.contentId") || null,
         imageUrl: pfad(k, "content.imageUrl") || null,
+        /* Das ist der FINAL_PUBLIC_TEXT: Caption, Leerzeile, Hashtags.
+           Es gibt keinen zweiten Text — die Tags stehen HIER drin und
+           nicht daneben, sonst liesse sich die Tagliste nach der
+           Freigabe tauschen, waehrend der Abdruck weiter stimmt. */
         caption: pfad(k, "content.caption") === undefined
           ? null : pfad(k, "content.caption")
       },
       contentHash: k.contentHash || null,
+
+      /* -------------------------------------------------------------
+         DIE BESTANDTEILE — ZUM ZEIGEN, NICHT ZUM SENDEN
+
+         Der Owner soll Text und Tags getrennt lesen koennen. Gesendet
+         wird trotzdem nur `payload.caption`. Beide stammen aus
+         derselben Ableitung; ein Test rechnet nach, dass
+         finalerText(captionBase, hashtags) wieder payload.caption
+         ergibt — sonst zeigte die Seite eine Zusammensetzung, die es
+         so nie gab. */
+      text: textteile(k),
+
+      /* -------------------------------------------------------------
+         KOMMT DAS BILD AN? (§4/§5/§6)
+
+         Gemessen wird dort, wo es messbar ist: im Lauf, der die
+         Schlange uebertraegt — der erreicht research.visionuniverse.de.
+         Der Worker zeigt nur, was ihm gesagt wurde, und sperrt die
+         Freigabe, solange es nicht ERREICHBAR heisst.
+
+         Fehlt die Angabe ganz, ist das UNGEPRUEFT und nicht "in
+         Ordnung": eine aeltere Uebertragung kennt das Feld nicht, und
+         auch dann darf niemand etwas freigeben, dessen Bild niemand
+         gesehen hat. */
+      asset: bildzustand(k),
 
       anzeige: {
         thema: aus(k, "presentation.topic"),

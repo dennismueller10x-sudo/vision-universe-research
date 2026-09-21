@@ -61,6 +61,12 @@ function eintrag(hash, over = {}) {
     state: "AWAITING_APPROVAL",
     contentHash: hash,
     payload: { contentId: INHALT, imageUrl: BILD, caption: TEXT },
+    /* Gemessen und erreichbar. Ohne dieses Feld ist ein Eintrag
+       UNGEPRUEFT und damit gesperrt - das ist die Regel und kein
+       Testartefakt. Wer sie prueft, tut es in asset-gate.test.mjs. */
+    asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
+      satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
+      gemessenAm: "2026-09-21T10:00:00Z" },
     anzeige: { thema: { value: "Technisches Setup — XOM", basis: "presentation.topic" },
       hook: { value: "52 von 100.", basis: "presentation.hook" } },
     guete: { zustand: "BESTANDEN", score: 82, erklaerung: null, warnungen: [] },
@@ -331,8 +337,14 @@ test("AD15 · Ein unerreichbares Bild ist ein Versandproblem, kein Beitragsprobl
   const html = await r.text();
 
   assert.equal(r.status, 502);
-  assert.match(titel(html), /Bild ist nicht erreichbar/);
-  assert.match(html, /NICHT veroeffentlicht/);
+  assert.match(titel(html), /Bild/);
+  /* Der Owner muss zwei Dinge erfahren: dass nichts hinausging, und
+     dass es am Bild liegt und nicht am Beitrag. Geprueft wird das
+     hier an der Aussage, nicht an einer Formulierung - sonst faellt
+     der Test beim naechsten Umschreiben des Satzes um, ohne dass
+     etwas kaputt waere. */
+  assert.match(html, /nichts veroeffentlicht|NICHT veroeffentlicht/);
+  assert.match(html, /am Bild, nicht am Beitrag/);
   /* Kein Stacktrace, keine Fehlernummer, kein Meta-Rohtext. */
   assert.ok(!/stack|at Object|fbtrace|error_subcode/i.test(html));
 });

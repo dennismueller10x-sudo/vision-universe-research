@@ -333,21 +333,21 @@ function echt(over = {}) {
   return k;
 }
 
-test("AP15 · Ein stimmiger Kandidat geht durch", () => {
-  const p = baue([echt()], { now: "2026-09-20T10:00:00.000Z" });
+test("AP15 · Ein stimmiger Kandidat geht durch", async () => {
+  const p = await baue([echt()], { now: "2026-09-20T10:00:00.000Z" });
   assert.equal(p.activeCount, 1);
   assert.equal(p.items.length, 1);
   assert.equal(p.complete, true);
 });
 
-test("AP16 · Ein nachtraeglich veraenderter Kandidat geht NICHT hinaus", () => {
+test("AP16 · Ein nachtraeglich veraenderter Kandidat geht NICHT hinaus", async () => {
   /* Der Abdruck in der Datei sagt "dieser Text"; der Text ist ein
      anderer. Was der Owner freigaebe, waere nicht das, worueber
      entschieden wurde. */
   const k = echt();
   k.content.caption = "Etwas anderes, nachtraeglich hineingeschrieben.";
 
-  const p = baue([k], { now: "2026-09-20T10:00:00.000Z" });
+  const p = await baue([k], { now: "2026-09-20T10:00:00.000Z" });
 
   assert.equal(p.items.length, 0, "Der veraenderte Kandidat wurde uebertragen.");
   assert.equal(p.activeCount, 1, "Die Zahl bleibt die der Maschine.");
@@ -358,22 +358,89 @@ test("AP16 · Ein nachtraeglich veraenderter Kandidat geht NICHT hinaus", () => 
   assert.match(p.unresolved[0].detail, /nach seiner Erzeugung veraendert/);
 });
 
-test("AP17 · Der Abdruck wird nur fuer Wartende nachgerechnet", () => {
+test("AP17 · Der Abdruck wird nur fuer Wartende nachgerechnet", async () => {
   /* Fuer einen abgeloesten Kandidaten waere es eine Rechnung ohne
      Frage - und ein Befund, der niemanden betrifft, sieht aus wie
      ein Problem. */
   const alt = echt({ candidateId: "abgeloest", state: "SUPERSEDED" });
   alt.content.caption = "spaeter veraendert";
 
-  const p = baue([alt, echt()], { now: "2026-09-20T10:00:00.000Z" });
+  const p = await baue([alt, echt()], { now: "2026-09-20T10:00:00.000Z" });
   assert.equal(p.unresolved.length, 0);
   assert.equal(p.activeCount, 1);
   assert.equal(p.complete, true);
 });
 
-test("AP18 · Eine unlesbare Datei zaehlt nicht als wartend", () => {
-  const p = baue([{ candidateId: "kaputt", state: null, __unlesbar: true }, echt()],
+test("AP18 · Eine unlesbare Datei zaehlt nicht als wartend", async () => {
+  const p = await baue([{ candidateId: "kaputt", state: null, __unlesbar: true }, echt()],
     { now: "2026-09-20T10:00:00.000Z" });
   assert.equal(p.activeCount, 1);
   assert.equal(p.unknown.length, 1, "Unbekannt bleibt unbekannt und wird nicht zu null.");
+});
+
+/* =========================================================================
+   TEXT UND TAGS — DER EINZELNE KANDIDAT STATT DER GANZEN SCHLANGE (§17)
+
+   Der Worker weist eine Uebertragung zurueck, deren Zusammensetzung
+   nicht aufgeht — und zwar die ganze. Ein einziger schiefer Kandidat
+   liesse den Owner damit auf einem alten Stand sitzen, ohne alle
+   anderen. Also wird hier entschieden, wo sich einer herausnehmen
+   laesst.
+   ========================================================================= */
+const Tags = require("../engines/hashtags.js");
+
+/** Ein Kandidat mit stimmigem Abdruck UND stimmigen Textbestandteilen. */
+function mitTags(basis, tags, over = {}) {
+  const caption = Tags.finalerText(basis, tags);
+  const k = kandidat(over);
+  k.content.caption = caption;
+  k.presentation.caption = caption;
+  k.presentation.captionBase = basis;
+  k.presentation.hashtags = tags;
+  k.contentHash = ContentHash.contentHash({
+    contentId: k.content.contentId, imageUrl: k.content.imageUrl, caption });
+  return k;
+}
+
+test("AP19 · Ein Kandidat mit stimmigen Tags geht durch — mit Bestandteilen", async () => {
+  const k = mitTags("Ein Satz zum Thema.", ["#ExxonMobil", "#Energie"]);
+  const p = await baue([k], { now: "2026-09-20T10:00:00.000Z" });
+
+  assert.equal(p.items.length, 1);
+  assert.deepEqual(p.items[0].text.hashtags, ["#ExxonMobil", "#Energie"]);
+  assert.equal(Tags.finalerText(p.items[0].text.captionBase, p.items[0].text.hashtags),
+    p.items[0].payload.caption);
+});
+
+test("AP20 · Tags, die sich nicht zurueckrechnen lassen, nehmen den Kandidaten heraus", async () => {
+  const k = mitTags("Ein Satz zum Thema.", ["#ExxonMobil"]);
+  /* Die Tagliste wird NACH der Caption veraendert - genau der Fall,
+     den die Oberflaeche sonst als Aufteilung zeigte, die es nie gab.
+     Der Abdruck bleibt gueltig: es ist kein Abdruckfehler. */
+  k.presentation.hashtags = ["#EtwasGanzAnderes"];
+
+  const p = await baue([k], { now: "2026-09-20T10:00:00.000Z" });
+
+  assert.equal(p.items.length, 0, "Der schiefe Kandidat wurde uebertragen.");
+  assert.equal(p.complete, false);
+  assert.equal(p.unresolved.length, 1);
+  assert.equal(p.unresolved[0].reason, "FINAL_TEXT_MISMATCH");
+  assert.match(p.unresolved[0].detail, /Aufteilung, die es nie gab/);
+});
+
+test("AP21 · Ein schiefer Kandidat reisst die anderen nicht mit", async () => {
+  /* Der eigentliche Grund, warum das hier und nicht im Worker
+     entschieden wird. */
+  const schief = mitTags("Ein Satz.", ["#Eins"], { candidateId: "cand_schief" });
+  schief.presentation.hashtags = ["#Anders"];
+  const heil = mitTags("Ein anderer Satz.", ["#Zwei"], { candidateId: "cand_heil" });
+  heil.content.contentId = "pkg_heil";
+  heil.contentHash = ContentHash.contentHash({
+    contentId: heil.content.contentId, imageUrl: heil.content.imageUrl,
+    caption: heil.content.caption });
+
+  const p = await baue([schief, heil], { now: "2026-09-20T10:00:00.000Z" });
+
+  assert.deepEqual(p.items.map((e) => e.candidateId), ["cand_heil"]);
+  assert.deepEqual(p.unresolved.map((u) => u.candidateId), ["cand_schief"]);
 });

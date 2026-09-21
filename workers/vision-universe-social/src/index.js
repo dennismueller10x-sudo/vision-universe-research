@@ -66,6 +66,7 @@ import { readConnection, writeConnection, deleteConnection, readPublic, updateHe
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 import { routeApproval } from "./approval.js";
+import { finalerText, MAX_HASHTAGS } from "./public-text.js";
 
 /* Ein Admin-Schluessel unter dieser Laenge wird abgelehnt. Der Worker hat
    keinen Zaehler fuer Fehlversuche; die einzige belastbare Verteidigung
@@ -1690,6 +1691,14 @@ async function handleDisconnect(request, url, env) {
    ===================================================================== */
 
 const QUEUE_VERSION = "approval-projection-v1";
+/* Die Bildzustaende, zu denen die Oberflaeche einen Satz hat. Ein
+   vierter Zustand waere ein Wort ohne Satz - und die Karte zeigte eine
+   leere Zeile, wo die Begruendung stehen muss. */
+const ASSET_ZUSTAENDE = [
+  "ASSET_PUBLICLY_REACHABLE",
+  "ASSET_NOT_REACHABLE",
+  "ASSET_REACHABILITY_UNVERIFIED"
+];
 const QUEUE_SOURCE = "owner-decision.warteschlange";
 /* 512 KiB. Eine Schlange ist eine Handvoll Beitraege; alles darueber
    ist ein Irrtum und kein Wachstum. KV traegt mehr, aber ein Speicher,
@@ -1793,6 +1802,88 @@ function pruefeProjektion(p) {
       return { ok: false, reason: "itemWithoutHash",
         message: "Eintrag " + i.candidateId + " traegt keinen Inhaltsabdruck. Ohne " +
           "ihn bindet eine Freigabe an nichts." };
+    }
+
+    /* -----------------------------------------------------------------
+       DER BILDZUSTAND (§4/§6)
+
+       Er darf FEHLEN: eine aeltere Uebertragung kennt ihn nicht. Das
+       ist kein Grund, die Schlange zurueckzuweisen - wohl aber einer,
+       die Freigabe zu sperren, und genau das tut pruefeFreigabe, wenn
+       das Feld fehlt. Hier geht es nur um die FORM.
+
+       Ist er da, muss er einer der drei Zustaende sein und einen Satz
+       tragen. Ein unbekanntes Wort waere fuer den Owner keine Auskunft
+       - und "irgendwas steht da" ist kein Zustand.
+       ----------------------------------------------------------------- */
+    if (i.asset !== undefined && i.asset !== null) {
+      const a = i.asset;
+      if (typeof a !== "object" || Array.isArray(a)) {
+        return { ok: false, reason: "badAsset",
+          message: "Eintrag " + i.candidateId + ": der Bildzustand ist kein Objekt." };
+      }
+      if (!ASSET_ZUSTAENDE.includes(a.zustand)) {
+        return { ok: false, reason: "unknownAssetState",
+          message: "Eintrag " + i.candidateId + " meldet einen unbekannten " +
+            "Bildzustand: " + String(a.zustand) + "." };
+      }
+      if (typeof a.satz !== "string" || !a.satz.trim()) {
+        return { ok: false, reason: "assetWithoutSentence",
+          message: "Eintrag " + i.candidateId + ": ein Bildzustand ohne Satz " +
+            "sperrt die Freigabe, ohne zu sagen warum." };
+      }
+      /* Zwei Quellen fuer dieselbe Aussage koennen auseinanderlaufen.
+         `erreichbar` MUSS aus `zustand` folgen - sonst kaeme eine
+         Uebertragung durch, die NICHT_ERREICHBAR meldet und trotzdem
+         erreichbar: true mitschickt. */
+      if (a.erreichbar !== undefined &&
+          a.erreichbar !== (a.zustand === "ASSET_PUBLICLY_REACHABLE")) {
+        return { ok: false, reason: "assetFlagContradictsState",
+          message: "Eintrag " + i.candidateId + ": erreichbar=" +
+            String(a.erreichbar) + " widerspricht " + String(a.zustand) + "." };
+      }
+    }
+
+    /* -----------------------------------------------------------------
+       VORSCHAU IST SENDUNG — NACHGERECHNET (§15/§17)
+
+       Auch `text` darf fehlen. Ist es da, wird die Zusammensetzung
+       nachgerechnet: Caption + Leerzeile + Tags muss GENAU das
+       ergeben, was gesendet wuerde. Andernfalls zeigte die Karte eine
+       Aufteilung, die es so nie gab - und der Owner gaebe etwas frei,
+       das er in dieser Form nicht gelesen hat.
+       ----------------------------------------------------------------- */
+    if (i.text !== undefined && i.text !== null) {
+      const t = i.text;
+      if (typeof t !== "object" || Array.isArray(t)) {
+        return { ok: false, reason: "badText",
+          message: "Eintrag " + i.candidateId + ": die Textbestandteile sind " +
+            "kein Objekt." };
+      }
+      const tags = t.hashtags === undefined || t.hashtags === null ? [] : t.hashtags;
+      if (!Array.isArray(tags) || tags.some((x) => typeof x !== "string")) {
+        return { ok: false, reason: "badHashtags",
+          message: "Eintrag " + i.candidateId + ": hashtags muss eine Liste von " +
+            "Zeichenketten sein." };
+      }
+      if (tags.length > MAX_HASHTAGS) {
+        return { ok: false, reason: "tooManyHashtags",
+          message: "Eintrag " + i.candidateId + " traegt " + tags.length +
+            " Tags. Mehr als " + MAX_HASHTAGS + " sind nicht vorgesehen." };
+      }
+      /* Tags ohne nachrechenbare Grundlage sind eine Behauptung. */
+      if (tags.length && (typeof t.captionBase !== "string" || !t.captionBase.trim())) {
+        return { ok: false, reason: "hashtagsWithoutBase",
+          message: "Eintrag " + i.candidateId + " zeigt Tags, aber keinen Text, " +
+            "zu dem sie gehoeren. Dann laesst sich nicht nachrechnen, was " +
+            "hinausginge." };
+      }
+      if (typeof t.captionBase === "string" && t.captionBase.trim() &&
+          finalerText(t.captionBase, tags) !== nutz.caption) {
+        return { ok: false, reason: "textDoesNotComposePayload",
+          message: "Eintrag " + i.candidateId + ": Text plus Tags ergibt nicht " +
+            "den Text, der veroeffentlicht wuerde. Die Vorschau IST die Sendung." };
+      }
     }
   }
 

@@ -331,11 +331,18 @@ jobs:
           set -euo pipefail
           if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
             echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
-            node scripts/social/publish-approval-queue.mjs | tee /tmp/queue.txt
+            node scripts/social/publish-approval-queue.mjs --check-assets \
+              | tee /tmp/queue.txt
             exit 0
           fi
+          # --check-assets: jedes wartende Bild wird HIER abgerufen, aus der
+          # Umgebung, die den Assethost erreicht. Der Worker kann das nicht
+          # nachholen - er zeigt nur, was ihm gesagt wurde, und sperrt die
+          # Freigabe, solange es nicht ERREICHBAR heisst. Ohne diese Fahne
+          # bleibt jeder Eintrag UNGEPRUEFT, und UNGEPRUEFT ist gesperrt.
+          #
           # Exit 4 heisst "kein Schluessel" und ist eine Antwort, kein Ausfall.
-          node scripts/social/publish-approval-queue.mjs --write \
+          node scripts/social/publish-approval-queue.mjs --write --check-assets \
             | tee /tmp/queue.txt || [ "$?" = "4" ]
 
       # Der Reifezustand nach dem Lauf, gegen den dann aktuellen

@@ -66,7 +66,9 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Projection = require(join(ROOT, "social/engines/approval-projection.js"));
+const AssetDelivery = require(join(ROOT, "social/engines/asset-delivery.js"));
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
+const Hashtags = require(join(ROOT, "social/engines/hashtags.js"));
 import { keinBeitragNachweis, zustand as orchestratorZustand, kadenz }
   from "./run-orchestrator.mjs";
 
@@ -85,6 +87,34 @@ export function leseKandidaten(verzeichnis) {
 }
 
 /**
+ * Die Bildadresse abfragen — genau so, wie Meta es spaeter tut.
+ *
+ * `redirect: "manual"`: eine Umleitung auf eine Anmeldung ist ein
+ * eigener Befund und darf nicht verfolgt werden, bis am Ende ein 200
+ * mit einer Loginseite steht.
+ */
+async function holeAsset(url) {
+  if (!url) return { antwort: null, fehler: "keine Adresse" };
+  try {
+    const antwort = await fetch(url, { method: "GET", redirect: "manual" });
+    const headers = {};
+    antwort.headers.forEach((v, k) => { headers[k] = v; });
+    const typ = String(headers["content-type"] || "").toLowerCase();
+    let bytes = null, koerperText = null;
+    if (antwort.status === 200 && typ.startsWith("image/")) {
+      bytes = Buffer.from(await antwort.arrayBuffer());
+    } else {
+      koerperText = await antwort.text().catch(() => "");
+    }
+    return { antwort: { status: antwort.status, headers,
+      finalUrl: antwort.url || url }, bytes, koerperText };
+  } catch (err) {
+    return { antwort: null, bytes: null, koerperText: null,
+             fehler: String((err && err.message) || err) };
+  }
+}
+
+/**
  * Baut die Projektion aus einem Kandidatenbestand.
  *
  * Der Abdruck wird NACHGERECHNET und nicht uebernommen. Zwischen dem
@@ -93,7 +123,7 @@ export function leseKandidaten(verzeichnis) {
  * eingetragenen ab, geht der Kandidat NICHT hinaus - er ist dann nicht
  * mehr der, ueber den entschieden werden sollte.
  */
-export function baue(kandidaten, options = {}) {
+export async function baue(kandidaten, options = {}) {
   const schlange = OwnerDecision.warteschlange(kandidaten);
 
   const nachId = {};
@@ -117,6 +147,39 @@ export function baue(kandidaten, options = {}) {
       continue;
     }
     nachId[id] = k;
+  }
+
+  /* -------------------------------------------------------------------
+     KOMMT DAS BILD AN? (§4/§5)
+
+     Meta holt das Bild beim Veroeffentlichen SELBST ab. Eine Adresse,
+     die nur im Kandidaten steht, genuegt nicht.
+
+     Gemessen wird HIER, weil hier das Netz ist: dieser Schritt laeuft
+     im Orchestrator-Workflow und erreicht research.visionuniverse.de.
+     Der Worker bekommt das Urteil und zeigt es; er misst nicht selbst
+     — sonst gaebe es zwei Begriffe von "erreichbar".
+
+     Ohne `--check-assets` (etwa in einem Test) wird nicht gemessen,
+     und die Projektion traegt dann UNGEPRUEFT. Ungeprueft sperrt die
+     Freigabe genauso wie unerreichbar; es liest sich nur anders. */
+  if (options.pruefeAssets) {
+    for (const id of Object.keys(nachId)) {
+      const k = nachId[id];
+      const url = k.content && k.content.imageUrl;
+      const geholt = await holeAsset(url);
+      const befund = AssetDelivery.beurteile({
+        url,
+        antwort: geholt.antwort, bytes: geholt.bytes,
+        koerperText: geholt.koerperText, fehler: geholt.fehler
+      });
+      nachId[id] = Object.assign({}, k, {
+        assetDelivery: {
+          zustand: befund.zustand, grund: befund.grund,
+          satz: befund.satz, gemessenAm: options.now || new Date().toISOString()
+        }
+      });
+    }
   }
 
   /* -------------------------------------------------------------------
@@ -168,6 +231,43 @@ export function baue(kandidaten, options = {}) {
     if (schon === -1) projektion.unresolved.push(eintrag);
     else projektion.unresolved[schon] = eintrag;
   }
+  /* -------------------------------------------------------------------
+     TEXT UND TAGS MUESSEN ZUSAMMEN DEN SENDETEXT ERGEBEN (§17)
+
+     Der Worker weist eine Uebertragung zurueck, in der das nicht
+     aufgeht - und zwar die GANZE, nicht den einen Eintrag. Dann saehe
+     der Owner wegen eines Kandidaten einen alten Stand ohne alle
+     anderen.
+
+     Also wird es hier entschieden, wo ein einzelner Kandidat
+     herausgenommen werden kann: derselbe Weg wie beim abweichenden
+     Abdruck, derselbe Grund-je-Kandidat, dieselbe Sichtbarkeit.
+     ------------------------------------------------------------------- */
+  const passtNicht = [];
+  projektion.items = projektion.items.filter((e) => {
+    const t = e.text || {};
+    const tags = Array.isArray(t.hashtags) ? t.hashtags : [];
+    if (!tags.length) return true;
+    if (typeof t.captionBase !== "string" || !t.captionBase.trim() ||
+        Hashtags.finalerText(t.captionBase, tags) !== e.payload.caption) {
+      passtNicht.push(e.candidateId);
+      return false;
+    }
+    return true;
+  });
+  for (const id of passtNicht) {
+    const eintrag = {
+      candidateId: id,
+      reason: "FINAL_TEXT_MISMATCH",
+      detail: "Text und Hashtags ergeben zusammen nicht das, was gesendet " +
+        "wuerde. Der Kandidat geht nicht zur Freigabe: der Owner saehe sonst " +
+        "eine Aufteilung, die es nie gab."
+    };
+    const schon = projektion.unresolved.findIndex((u) => u.candidateId === id);
+    if (schon === -1) projektion.unresolved.push(eintrag);
+    else projektion.unresolved[schon] = eintrag;
+  }
+
   projektion.complete = projektion.unresolved.length === 0
     && projektion.items.length === projektion.activeCount;
 
@@ -219,7 +319,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const verzeichnis = join(ausgabePfad(ROOT, DATA), "publish-candidates");
   const kandidaten = leseKandidaten(verzeichnis);
-  const p = baue(kandidaten, { now: arg("now", undefined) });
+  /* `--check-assets`: die Bildadressen wirklich abfragen. Im
+     Orchestrator-Workflow ist das an; in einer Umgebung ohne Zugang
+     bleibt es aus, und die Projektion sagt dann ehrlich UNGEPRUEFT. */
+  const p = await baue(kandidaten, {
+    now: arg("now", undefined),
+    pruefeAssets: process.argv.includes("--check-assets")
+  });
 
   console.log("VISION UNIVERSE SOCIAL — Approval Queue");
   console.log("Datenstand: " + verzeichnis);
