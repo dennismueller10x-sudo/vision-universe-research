@@ -41,23 +41,37 @@
     'PROFITABLES WACHSTUM': 'Profitables Wachstum'
   };
   function title(text) { return text ? (Object.prototype.hasOwnProperty.call(titles, text) ? titles[text] : text) : 'Aktien entdecken'; }
-  function bindArtworkCaption(media, caption, card, ctx) {
+  var rangeLabels = { '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1J': '1 Jahr' };
+  var freshnessLabels = { LIVE: 'Realtime', LAST_SESSION: 'Letzte Sitzung', STALE: 'Nicht aktuell', UNAVAILABLE: 'Nicht verfügbar' };
+  function bindArtworkCaption(media, caption, card, ctx, range) {
     var observer;
     function update() {
       var svg = media.querySelector('svg.dx-art');
-      if (!svg) { caption.textContent = 'Kursverlauf wird geladen …'; return false; }
-      var description = svg.getAttribute('aria-label') || '';
-      var priceCaption = description.match(/Kursverlauf über [^,]+, Tagesschlusskurse, Stand [^,]+/);
-      caption.textContent = priceCaption ? priceCaption[0] : 'Renditen über 1, 3, 6 und 12 Monate · kein Kursverlauf';
-      if (svg.querySelector('.dx-art-none')) caption.textContent = 'Keine Kursreihe oder Renditen verfügbar';
       var renderedCard = card, series = card.priceSeries;
       var cached = series && series.path && D.SeriesLoader && D.SeriesLoader.peek(series.path);
       if (cached) renderedCard = Object.assign({}, card, { priceSeries: D.SeriesLoader.merge(series, cached) });
-      var rendered = D.Artwork.verlauf(renderedCard, '1J');
+      var rendered = D.Artwork.verlauf(renderedCard, range);
+      var liveState = media.getAttribute('data-freshness');
+      var sessionDate = media.getAttribute('data-session');
+      if (media.hasAttribute('data-live')) {
+        caption.textContent = 'Tagesverlauf · ' + (freshnessLabels[liveState] || 'Sitzungsstand') +
+          (sessionDate ? ' · ' + D.Cards.dateShort(sessionDate) : '');
+      } else if (rendered) {
+        caption.textContent = 'Kursverlauf · ' + (rangeLabels[rendered.range] || rendered.range) +
+          ' · Stand ' + D.Cards.dateShort(rendered.asOf) + ' · Tagesschlusskurse';
+      } else if (svg && svg.querySelector('.dx-art-none')) {
+        caption.textContent = 'Keine Kursreihe oder Renditen verfügbar';
+      } else {
+        caption.textContent = 'Renditen über 1, 3, 6 und 12 Monate · kein Kursverlauf';
+      }
+      if (!svg) return false;
       var values = rendered && rendered.werte.filter(function (v) { return typeof v === 'number' && Number.isFinite(v); });
       // Visual direction only: no metric or ranking is recomputed.
-      if (!values || values.length < 2 || values[0] === values[values.length - 1] || !priceCaption) svg.setAttribute('data-direction', 'neutral');
-      if (observer) observer.disconnect();
+      if (!media.hasAttribute('data-live') && (!values || values.length < 2 || values[0] === values[values.length - 1])) svg.setAttribute('data-direction', 'neutral');
+      // A lazy historical chart may be replaced by the existing intraday
+      // client moments later. Keep watching that bounded host until the
+      // structured live state arrives; static inline charts need no observer.
+      if (observer && (media.hasAttribute('data-live') || !media.hasAttribute('data-series'))) observer.disconnect();
       return true;
     }
     // Inline series settle synchronously; only lazy series need an observer.
@@ -85,20 +99,33 @@
     if (options.hero) copy.appendChild(node('span', 'v2-stock-cta', 'Aktie entdecken ↗'));
     a.appendChild(copy);
     // The existing renderer owns series selection and semantic chart colors.
-    var media = D.Cards.lazyArtwork(card, { width: options.hero ? 800 : 380, height: options.hero ? 260 : 150, range: '1J', live: false, ticker: false, scale: 'hero' });
+    var chartRange = options.range || '1J';
+    var media = D.Cards.lazyArtwork(card, { width: options.hero ? 800 : 380, height: options.hero ? 260 : 150, range: chartRange, live: options.live !== false, ticker: false, scale: 'hero' });
     a.appendChild(media);
     var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
-    bindArtworkCaption(media, caption, card, ctx);
+    bindArtworkCaption(media, caption, card, ctx, chartRange);
     if (card.hook && card.hook.text) a.appendChild(node('p', 'v2-stock-hook', card.hook.text));
     if (!options.hero) a.appendChild(node('span', 'v2-stock-cta', 'Entdecken ↗'));
     return a;
   }
+  function archetypeFor(surface, index) {
+    if (surface.index) return 'index';
+    if (surface.type === 'theme') return 'theme';
+    if (surface.type === 'ranking') return surface.world === 'cashflow' ? 'ranking-ledger' : 'ranking';
+    if (['growth', 'cashflow'].indexOf(surface.world) >= 0) return 'fundamental';
+    if (surface.world === 'compounder' || surface.world === 'quality') return 'cinema';
+    if (surface.world === 'breakout' || surface.world === 'comeback') return 'spotlight';
+    if (surface.world === 'highs' || surface.world === 'momentum') return 'compact';
+    if (surface.world === 'strength') return index % 2 ? 'split' : 'performance';
+    if (['tech', 'health', 'energy', 'finance', 'consumer'].indexOf(surface.world) >= 0) return 'sector';
+    return index % 3 === 0 ? 'wide' : index % 3 === 1 ? 'performance' : 'compact';
+  }
   function rail(surface, ctx, index) {
-    var archetype = surface.index ? 'index' : surface.type === 'theme' ? 'theme' : surface.type === 'ranking' ? 'ranking' : ['growth','cashflow','compounder'].indexOf(surface.world) >= 0 ? 'fundamental' : index % 3 === 0 ? 'wide' : 'performance';
+    var archetype = archetypeFor(surface, index);
     var section = node('section', 'v2-world v2-world-' + archetype);
     section.dataset.archetype = archetype;
     section.dataset.surface = surface.id; section.dataset.surfaceType = surface.type;
-    section.dataset.world = surface.world || 'default';
+    section.dataset.world = surface.world || 'default'; section.dataset.sequence = String(index + 1);
     var header = node('div', 'v2-world-head'), intro = node('div', '');
     intro.appendChild(node('span', 'v2-eyebrow', surface.type === 'theme' ? 'Themenwelt' : surface.index ? 'Die großen Indizes' : surface.type === 'ranking' ? 'Das Ranking entdecken' : 'Neue Perspektiven'));
     intro.appendChild(node('h2', '', title(surface.title)));
@@ -109,7 +136,7 @@
     if (surface.href) header.appendChild(link('Alle ansehen ↗', surface.href, 'v2-world-more'));
     section.appendChild(header);
     var track = el('div', { class: 'v2-track' + (surface.type === 'ranking' ? ' v2-track-ranking' : '') + (index % 4 === 2 ? ' v2-track-wide' : ''), role: 'list', 'aria-label': title(surface.title) });
-    (surface.cards || []).forEach(function (card, i) { var item = node('div', 'v2-track-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { rowId: surface.rowId, rank: surface.type === 'ranking' ? i + 1 : null })); track.appendChild(item); });
+    (surface.cards || []).forEach(function (card, i) { var item = node('div', 'v2-track-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { rowId: surface.rowId, rank: surface.type === 'ranking' ? i + 1 : null, range: surface.microRange || '1J' })); track.appendChild(item); });
     section.appendChild(D.Cards.withRailNav(track, { label: surface.title, universeId: ctx.universeId }));
     return section;
   }

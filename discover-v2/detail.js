@@ -143,16 +143,32 @@
       var contextEnd = page.querySelector(".dv2-stock-context") || chart;
       if (contextEnd) contextEnd.insertAdjacentElement("afterend", research);
     }
-    if (business) business.classList.add("dv2-stock-business");
-    if (risks) risks.classList.add("dv2-stock-risks");
-    if (valuation) valuation.classList.add("dv2-stock-valuation");
+    if (business) {
+      business.classList.add("dv2-stock-business");
+      var businessKicker = business.querySelector(".dx-kicker");
+      if (businessKicker) businessKicker.textContent = "01 / Das Unternehmen";
+    }
+    if (valuation) {
+      valuation.classList.add("dv2-stock-valuation");
+      var valuationKicker = valuation.querySelector(".dx-kicker");
+      if (valuationKicker) valuationKicker.textContent = "03 / Bewertung einordnen";
+    }
+    if (risks) {
+      risks.classList.add("dv2-stock-risks");
+      var risksKicker = risks.querySelector(".dx-kicker");
+      if (risksKicker) risksKicker.textContent = "04 / Chancen und Risiken";
+    }
     /* Existing contracts provide the neighbors and collection destinations.
      * Give them a visible new exploration stage without inventing a rank. */
     var next = page.querySelector(".dx-chapter--next");
     Array.from(page.children).forEach(function (section) {
       if (section.querySelector && section.querySelector(".dx-rail")) section.classList.add("dv2-stock-neighbors");
     });
-    if (next) next.classList.add("dv2-stock-next");
+    if (next) {
+      next.classList.add("dv2-stock-next");
+      var nextKicker = next.querySelector(".dx-kicker");
+      if (nextKicker) nextKicker.textContent = "Weiter im Vision Universe";
+    }
     if (!next) {
       next = node("section", "dv2-stock-next dx-chapter");
       next.appendChild(node("p", "dv2-detail-eyebrow", "Die nächste Perspektive"));

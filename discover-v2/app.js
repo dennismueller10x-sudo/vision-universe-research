@@ -5,6 +5,15 @@
   const el = S.el, BASE = '/discover/data/';
   let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose;
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
+  function labelCurrentNavigation() {
+    const nav=document.querySelector('vu-navigation');
+    const link=nav&&nav.shadowRoot&&nav.shadowRoot.querySelector('a[href$="/discover-v2/"]');
+    if(link&&link.textContent!=='Discover 2.1')link.textContent='Discover 2.1';
+  }
+  function syncThemeChrome(state) {
+    const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
+    const tag=document.querySelector('meta[name="theme-color"]');if(tag)tag.setAttribute('content',color);
+  }
   function message(root, title, copy, retry) {
     S.clear(root);
     root.append(el('section', {class:'v2-message'}, [el('h1',{text:title}),el('p',{text:copy})]));
@@ -20,10 +29,11 @@
     ]);
   }
   function navigation() {
-    const current=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
+    const routeKey=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
+    const current=routeKey==='c'?'welten':routeKey;
     const nav=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'});
     [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
-      const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button'}),...(current===key?{'aria-current':'page'}:{})},[
+      const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button','aria-haspopup':'dialog','aria-expanded':'false'}),...(current===key?{'aria-current':'page'}:{})},[
         el('span',{class:'v2-nav-icon v2-icon-'+icon,'aria-hidden':'true'}),el('span',{text:label})
       ]);
       if(!href)item.onclick=()=>search.open();
@@ -37,7 +47,7 @@
     const label=()=>{themeButton.textContent=theme.label(theme.mode());themeButton.setAttribute('aria-label','Darstellung: '+theme.label(theme.mode()));};
     label();themeButton.onclick=()=>{theme.cycle();label();};
     const bar=el('div',{class:'v2-bar'},[
-      el('a',{href:'#/',class:'v2-wordmark',text:'Discover 2.0'}),el('span',{class:'v2-preview',text:'Preview'}),
+      el('a',{href:'#/',class:'v2-wordmark',text:'Discover 2.1'}),
       el('a',{href:'/discover/',class:'v2-compare',text:'Discover 1.0 ↗'}),themeButton
     ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
@@ -54,6 +64,8 @@
       const isOpen=search.node.classList.contains('on');
       document.getElementById('v2-shell').inert=isOpen;
       const nav=document.querySelector('vu-navigation');if(nav)nav.inert=isOpen;
+      const searchButton=document.querySelector('.v2-dock-search');
+      if(searchButton){searchButton.setAttribute('aria-expanded',String(isOpen));searchButton.classList.toggle('is-active',isOpen);}
       if(isOpen&&!wasOpen&&!previousFocus)previousFocus=document.activeElement;
       if(!isOpen&&wasOpen&&previousFocus&&previousFocus.isConnected)previousFocus.focus();
       wasOpen=isOpen;
@@ -86,7 +98,7 @@
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
-    document.title='Discover 2.0 — Vision Universe®';global.scrollTo(0,0);
+    document.title='Discover 2.1 — Vision Universe®';global.scrollTo(0,0);
     try {
       await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
       if(parts[0]==='s'&&parts[2]){
@@ -96,7 +108,7 @@
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
-          document.title=(detail.companyName||symbol)+' — Discover 2.0';
+          document.title=(detail.companyName||symbol)+' — Discover 2.1';
           if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
         }else await instrument(root,symbol,active);
       } else if(parts[0]==='welten'){
@@ -154,7 +166,7 @@
       if(active())D.Cards.revealOnScroll(root);
     } catch(err) {
       if(active())message(root,'Gerade nicht erreichbar','Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal.',true);
-      console.error('Discover 2.0 route',err);
+      console.error('Discover 2.1 route',err);
     } finally {if(active())root.setAttribute('aria-busy','false');}
   }
   async function boot(){
@@ -167,8 +179,9 @@
       document.querySelector('.v2-skip').onclick=event=>{event.preventDefault();const main=document.getElementById('v2-main');if(main){main.focus();main.scrollIntoView();}};
       let storage;try{storage=global.localStorage;}catch(_){}
       theme=D.Theme.create({storage,document,matchMedia:q=>global.matchMedia(q)});D.theme=theme;D.memory=D.Memory.create();
+      theme.onChange(syncThemeChrome);syncThemeChrome({resolved:theme.resolved()});labelCurrentNavigation();
       setupSearch();global.addEventListener('hashchange',route);await route();
-    }catch(err){message(document.getElementById('v2-shell'),'Discover 2.0 ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}
+    }catch(err){message(document.getElementById('v2-shell'),'Discover 2.1 ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}
   }
   boot();
 })(window);
