@@ -130,21 +130,123 @@ function hookIntelligence() {
 /* ===================================================================
    3. TEXT_ON_VISUAL_REQUIRED (§13/§14/§15)
    =================================================================== */
-function textOnVisual() {
-  /* §13 ist eine harte Owner-Entscheidung: ein normaler Feed-Post
-     ohne starken Text im Bild gilt NICHT als produktionsreif.
-     Gemessen wird, ob es ein Tor gibt, das das durchsetzt. */
-  const gate = existiert("social/engines/scroll-stop.js");
-  if (!gate) {
+async function textOnVisual() {
+  /* -----------------------------------------------------------------
+     §13 IST EINE OWNER-ENTSCHEIDUNG, ALSO WIRD SIE AM TOR GEMESSEN
+
+     Der erste Entwurf suchte einen Zustandsnamen im Quelltext von
+     scroll-stop.js. Dieselbe schwache Form wie bei BRAND_SYSTEM_READY:
+     ein Name beweist keine Sperre. Die Gegenprobe dort hat es gezeigt,
+     und sie gilt hier genauso.
+
+     Gefragt wird deshalb am Verhalten:
+       1. Weist das Tor ein Bild OHNE Text zurueck?
+       2. Weist es ein Bild zurueck, dessen Text zwar da ist, aber
+          nicht fuehrt (Beleg groesser als Hook)?
+       3. Faellt es bei FEHLENDER Messung geschlossen aus?
+       4. Laesst es ein korrektes Bild durch - sonst waere es kein
+          Tor, sondern eine Mauer?
+       5. Steht es im Produktionsweg: wirft render() bei einem Bild
+          ohne Hook, statt es als Asset zurueckzugeben?
+     ----------------------------------------------------------------- */
+  const pfad = "social/engines/scroll-stop.js";
+  if (!existiert(pfad)) {
     return nein("Es gibt kein SCROLL_STOP_QUALITY-Tor. Text-on-Visual ist " +
       "damit eine Absicht und keine Vorbedingung - §13 verlangt das " +
       "Gegenteil.");
   }
-  const q = ohneKommentare(text("social/engines/scroll-stop.js"));
-  return /TEXT_ON_VISUAL_FEHLT|OHNE_TEXT/.test(q)
-    ? ja("Ein Tor sperrt Kandidaten ohne Text im Bild.")
-    : nein("Das Tor existiert, kennt aber keinen Zustand fuer fehlenden " +
-      "Text im Bild.");
+  let S;
+  try { S = require(join(ROOT, pfad)); } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "scroll-stop.js liess sich nicht laden (" + e.message + ")." };
+  }
+
+  const gut = {
+    breite: 1080, hoehe: 1350,
+    texte: [
+      { rolle: "SIGNATUR", text: "VISION UNIVERSE", flaeche: 19686,
+        oben: 96, unten: 127, links: 88, rechts: 417, schrift: 26 },
+      { rolle: "HOOK", text: "So weit lagen sie seit 1999 nicht auseinander.",
+        flaeche: 146764, oben: 427, unten: 610, links: 88, rechts: 941,
+        schrift: 76 },
+      { rolle: "BELEG", text: "-38 %", flaeche: 55316, oben: 710,
+        unten: 857, links: 88, rechts: 464, schrift: 122 }
+    ]
+  };
+  const ohneText = { breite: 1080, hoehe: 1350, texte: [] };
+  const belegFuehrt = { breite: 1080, hoehe: 1350,
+    texte: gut.texte.map((t) => t.rolle === "BELEG"
+      ? Object.assign({}, t, { flaeche: 300000 }) : t) };
+
+  const luecken = [];
+  const probe = (name, eingabe, sollDurch) => {
+    let r;
+    try { r = S.pruefe(eingabe); } catch (e) {
+      luecken.push(name + " (wirft: " + e.message + ")"); return;
+    }
+    if (!!r.ok !== sollDurch) luecken.push(name + " (meldet " + r.zustand + ")");
+  };
+  probe("ein Bild ohne Text kommt durch", { messung: ohneText }, false);
+  probe("ein Bild ohne fuehrende Hook kommt durch", { messung: belegFuehrt }, false);
+  probe("eine fehlende Messung gilt als bestanden", {}, false);
+  probe("ein korrektes Bild wird abgewiesen", { messung: gut }, true);
+  if (luecken.length) {
+    return nein("Das Tor urteilt nicht: " + luecken.join("; ") + ".");
+  }
+
+  /* Und im Produktionsweg. Ohne Chromium laesst sich das nicht
+     entscheiden - dann ist es UNGEPRUEFT und nicht bestanden. */
+  const R = await import("file://" + join(ROOT, "scripts/social/render-asset.mjs"));
+  try { R.chromiumPfad(); } catch {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Das Tor urteilt richtig, aber ohne Chromium laesst sich " +
+        "nicht pruefen, ob es im Produktionsweg steht." };
+  }
+  const entwurf = R.plan({
+    packageId: "readiness-probe", visualType: "DATA_CARD",
+    visualDirectionReady: true, visualDirectionMissing: [],
+    hook: "Der Abstand ist so gross wie seit 1999 nicht.",
+    visualBrief: { entity: "RUSSELL 2000",
+      textLayers: [{ text: "So weit lagen sie seit 1999 nicht auseinander." }] },
+    claims: [
+      { text: "-38 %", numeric: -38,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } },
+      { text: "Bewertungsabstand Russell 2000 zu S&P 500", numeric: null,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } }
+    ]
+  });
+  if (!entwurf.ok) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Der Probeplan liess sich nicht zeichnen (" + entwurf.reason + ")." };
+  }
+  const ziel = join(ROOT, "tmp", "readiness-scrollstop.jpg");
+  let echt = null, gesperrt = false;
+  try {
+    echt = R.render(entwurf, ziel, { schrift: R.ladeSchrift(ROOT) });
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Ein korrektes Bild liess sich nicht rendern (" + e.message + ")." };
+  }
+  /* Und derselbe Plan ohne Hook darf KEIN Asset ergeben. */
+  const ohneHook = Object.assign({}, entwurf,
+    { ebenen: Object.assign({}, entwurf.ebenen, { aussage: "" }) });
+  try { R.render(ohneHook, ziel, { schrift: R.ladeSchrift(ROOT) }); }
+  catch (e) { gesperrt = !!e.zustand; }
+  try { require("node:fs").rmSync(ziel, { force: true }); } catch { /* egal */ }
+
+  if (!echt.messung || !echt.scrollStop) {
+    return nein("render() gibt ein Asset zurueck, ohne es vermessen und " +
+      "beurteilt zu haben. Das Tor steht neben dem Weg.");
+  }
+  if (!gesperrt) {
+    return nein("render() liefert auch ohne Hook ein Asset. §13 waere " +
+      "damit eine Absicht - ein Tor, das nicht im Weg steht, ist kein Tor.");
+  }
+  return ja("Das Tor weist ein Bild ohne Text, ein Bild ohne fuehrende " +
+    "Hook und eine fehlende Messung zurueck, laesst ein korrektes durch - " +
+    "und render() gibt ohne Hook kein Asset heraus (gemessen: " +
+    echt.scrollStop.hookFlaeche + " gegen " + echt.scrollStop.andereFlaeche +
+    " Quadratpixel).");
 }
 
 /* ===================================================================
@@ -631,7 +733,7 @@ function learningLoop() {
 const messungen = {
   CONTENT_INTELLIGENCE_READY: contentIntelligence(),
   HOOK_INTELLIGENCE_READY: hookIntelligence(),
-  TEXT_ON_VISUAL_REQUIRED: textOnVisual(),
+  TEXT_ON_VISUAL_REQUIRED: await textOnVisual(),
   BRAND_SYSTEM_READY: await brandSystem(),
   CANONICAL_ATLAS_READY: markenAsset("Atlas", /atlas/i, "ATLAS_ASSET"),
   CANONICAL_LOGO_READY: markenAsset("Logo", /logo/i, "LOGO_ASSET"),

@@ -55,6 +55,8 @@ const VisualQuality = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js"));
 const VisualGrammar = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js"));
+const ScrollStop = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -100,13 +102,76 @@ export const SCHRIFT_PFAD = "assets/fonts/inter-latin.woff2";
 
    Die Werte in Pixel beziehen sich auf die Flaeche 1080x1350.
    ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   DIE SEITE VERMISST SICH SELBST
+
+   Die Frage, die §13 stellt - was liest das Auge zuerst - laesst sich
+   an Schriftgroessen nicht beantworten. Eine Zahl in 122 Pixeln hat
+   die groessere Versalhoehe; ein Satz in 76 Pixeln ueber zwei Zeilen
+   hat die dreifache FLAECHE. Gemessen sind es 39.793 gegen 114.356
+   Quadratpixel.
+
+   Geschaetzt werden muss das nicht. Der Browser, der das Bild ohnehin
+   zeichnet, kennt jede Zeilenbox. Dieses Skript liest sie mit einer
+   Range ueber den Textinhalt - also die wirkliche Flaeche der
+   Schrift, nicht den Kasten des Elements, der bei einem Block-Element
+   immer die volle Breite hat.
+
+   Das Ergebnis landet in einem Element, das `--dump-dom` zurueckgibt.
+   Kein Protokoll, kein zweiter Prozess: dieselbe Seite, aus der das
+   JPEG entsteht.
+   ------------------------------------------------------------------- */
+export const MESS_SKRIPT = `<script>
+(function(){
+  function messen(){
+    var out=[];
+    var knoten=document.querySelectorAll("[data-vu-rolle]");
+    for(var n=0;n<knoten.length;n++){
+      var el=knoten[n];
+      var rng=document.createRange(); rng.selectNodeContents(el);
+      var k=rng.getClientRects();
+      var flaeche=0,oben=null,unten=null,links=null,rechts=null;
+      for(var i=0;i<k.length;i++){
+        flaeche+=k[i].width*k[i].height;
+        oben  =oben  ===null?k[i].top   :Math.min(oben,k[i].top);
+        unten =unten ===null?k[i].bottom:Math.max(unten,k[i].bottom);
+        links =links ===null?k[i].left  :Math.min(links,k[i].left);
+        rechts=rechts===null?k[i].right :Math.max(rechts,k[i].right);
+      }
+      if(!k.length) continue;
+      out.push({rolle:el.getAttribute("data-vu-rolle"),
+        text:(el.textContent||"").trim(),
+        zeilen:k.length,flaeche:Math.round(flaeche),
+        oben:Math.round(oben),unten:Math.round(unten),
+        links:Math.round(links),rechts:Math.round(rechts),
+        schrift:Math.round(parseFloat(getComputedStyle(el).fontSize))});
+    }
+    /* In ein ATTRIBUT, nicht in ein Element. Der erste Entwurf schrieb
+       die Zahlen in ein <div> - und sie standen im fertigen JPEG, unter
+       der Quellenzeile, in sechs Zeilen Kleingedrucktem. Der Test sah es
+       nicht, das Tor sah es nicht; sichtbar wurde es erst, als jemand
+       das Bild ansah. Ein Attribut kann per Konstruktion nicht rendern,
+       egal was ein spaeteres Stylesheet tut. */
+    document.documentElement.setAttribute("data-vu-messung",JSON.stringify(out));
+  }
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(messen);}
+  else{messen();}
+})();
+<\/script>`;
+
 export function textGroessen(visualType) {
   return {
     marke: 26,
     entitaet: 34,
     zahl: visualType === "NUMBER_VISUAL" ? 190 : 122,
     zahlText: 32,
-    aussage: visualType === "NUMBER_VISUAL" ? 40 : 58,
+    /* Die Kopfzeile traegt die Hook, und §15 verlangt, dass man sie auf
+       einem Telefon LIEST und nicht nur sieht. Die Mobilschwelle der
+       Visual Grammar liegt bei 5,5 % der Bildhoehe, also 74 Pixel bei
+       1350. Vorher standen hier 58 (und 40 bei NUMBER_VISUAL) - beides
+       darunter. */
+    aussage: 76,
+    beleg: 40,
     quelle: 24
   };
 }
@@ -381,7 +446,7 @@ export function plan(pkg, options = {}) {
 
 /* -------------------------------------------------------------- Zeichnen */
 
-function seite(p, schriftDaten) {
+export function seite(p, schriftDaten) {
   const font = schriftDaten
     ? `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${schriftDaten.toString("base64")}) format("woff2");font-weight:100 900;font-display:block}`
     : "";
@@ -392,15 +457,23 @@ function seite(p, schriftDaten) {
      ausdruecklich so will (Test ohne Schrift). Der Lauf unten holt die
      Schrift immer und bricht ab, wenn sie fehlt. */
 
+  /* -------------------------------------------------------------------
+     DIE ROLLEN STEHEN IM MARKUP
+
+     `data-vu-rolle` ist nicht Dekoration: das Messskript findet die
+     Textbloecke daran, und scroll-stop.js urteilt ueber die Rollen.
+     Wer hier eine Rolle vergisst, bekommt kein stilles Durchwinken -
+     der Block fehlt dann in der Messung, und das Tor faellt
+     geschlossen aus. */
   const zahlBlock = p.ebenen.zahl ? `
     <div class="zahlblock">
-      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
-      <div class="zahl">${escape(p.ebenen.zahl)}</div>
-      ${p.ebenen.zahlText ? `<div class="zahltext">${escape(p.ebenen.zahlText)}</div>` : ""}
+      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
+      <div class="zahl" data-vu-rolle="BELEG">${escape(p.ebenen.zahl)}</div>
+      ${p.ebenen.zahlText ? `<div class="zahltext" data-vu-rolle="BELEG">${escape(p.ebenen.zahlText)}</div>` : ""}
     </div>` : "";
 
   const quelle = p.ebenen.quelle
-    ? `<div class="quelle">Quelle: ${escape(p.ebenen.quelle)}</div>` : "";
+    ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : "";
 
   /* Die Zahl dominiert bei NUMBER_VISUAL, die Aussage bei den anderen.
      Das ist der ganze Unterschied zwischen den beiden Formen — und er
@@ -418,6 +491,12 @@ function seite(p, schriftDaten) {
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
 ${font}
 *{margin:0;padding:0;box-sizing:border-box}
+/* Ein einzelnes langes Wort - ein Ticker, eine URL, ein
+   hereingereichter Fremdtext - laeuft sonst ueber den Bildrand und
+   wird abgeschnitten. Das faellt auf einem Screenshot auf und im
+   Konto zu spaet. Das SCROLL_STOP-Tor hat genau diesen Fall
+   gemessen: rechts 1199 auf einer 1080 Pixel breiten Flaeche. */
+*{overflow-wrap:anywhere}
 html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};overflow:hidden}
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
@@ -426,27 +505,28 @@ body{font-family:${familie};color:${FARBEN.weiss};
   font-weight:600}
 .marke b{color:${FARBEN.weiss};font-weight:700}
 .mitte{display:flex;flex-direction:column;gap:20px}
-.zahlblock{margin-bottom:34px}
+.zahlblock{margin-top:38px}
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
   text-transform:uppercase;margin-bottom:16px}
 .zahl{font-size:${zahlGroesse}px;line-height:.95;font-weight:800;letter-spacing:-.03em;
   color:${FARBEN.weiss};font-variant-numeric:tabular-nums}
 .zahltext{font-size:32px;line-height:1.35;color:${FARBEN.gedeckt};font-weight:500;margin-top:18px}
-.aussage{font-size:${aussageGroesse}px;line-height:1.24;font-weight:650;letter-spacing:-.015em;
-  max-width:19ch}
+.aussage{font-size:${aussageGroesse}px;line-height:1.20;font-weight:700;letter-spacing:-.02em;
+  max-width:17ch}
 .fuss{display:flex;flex-direction:column;gap:18px}
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
 </style></head><body>
-  <div class="marke"><b>VISION UNIVERSE</b>®</div>
+  <div class="marke" data-vu-rolle="SIGNATUR"><b>VISION UNIVERSE</b>®</div>
   <div class="mitte">
+    <div class="aussage" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage)}</div>
     ${zahlBlock}
-    <div class="aussage">${escape(p.ebenen.aussage)}</div>
   </div>
   <div class="fuss">
     <div class="strich"></div>
     ${quelle}
   </div>
+  ${MESS_SKRIPT}
 </body></html>`;
 }
 
@@ -472,19 +552,46 @@ export function planKomposition(pkg, komposition, ebenen) {
       message: "Eine Grafik ohne Aussage laesst den Betrachter raten, was " +
         "er sieht. Die Zahlen sagen WAS, nicht WARUM es hier steht." };
   }
+
+  /* -------------------------------------------------------------------
+     DIE KOPFZEILE TRAEGT DIE HOOK, NICHT DEN GERECHNETEN SATZ
+
+     Bis hierher stand ueber jeder gezeichneten Grafik das Ergebnis
+     einer Rechnung: "Seit 15.08.2025: +12,3 %." Das ist ein BELEG. Er
+     beantwortet eine Frage, die im Vorbeiscrollen niemand gestellt
+     hat - und §13 verlangt genau die Frage, nicht ihre Antwort.
+
+     Die Hook ruecke deshalb nach oben, der gerechnete Satz eine Zeile
+     tiefer. Beide bleiben: der Beleg loest ein, was die Hook
+     verspricht. Verschoben wird die Rangfolge, nicht der Inhalt - und
+     ohne Hook entsteht kein Plan, statt dass ersatzweise der Beleg
+     die Kopfzeile bekommt.
+     ------------------------------------------------------------------- */
+  const hookEbene = ((pkg && pkg.visualBrief && pkg.visualBrief.textLayers) || [])
+    .find((l) => l && l.text && String(l.text).trim());
+  const kopf = String((hookEbene && hookEbene.text) || (pkg && pkg.hook) || "").trim();
+  if (!kopf) {
+    return { ok: false, reason: "noHookOnVisual",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "Die Grafik traegt keinen Satz, der einen Grund zum " +
+        "Anhalten gibt. §13 macht Text-on-Visual zur Vorbedingung: " +
+        "der gerechnete Befund ist ein Beleg und keine Hook." };
+  }
+  /* Derselbe Satz zweimal waere kein Aufbau, sondern ein Doppel. */
+  const beleg = (VisualQuality.overlap(kopf, e.aussage) >= 0.6)
+    ? null : e.aussage;
   const entwurf = {
     ok: true,
     visualType: (pkg && pkg.visualType) || komposition.kind,
     modus: "komposition",
     breite: 1080, hoehe: 1350,
     komposition,
-    ebenen: { entitaet: e.entitaet || null, aussage: e.aussage,
-      quelle: e.quelle || null },
+    ebenen: { entitaet: e.entitaet || null, aussage: kopf,
+      beleg: beleg, quelle: e.quelle || null },
     textGroessen: textGroessen((pkg && pkg.visualType) || komposition.kind),
-    /* Im Kompositionspfad ist die Aussage AUS DEN DATEN GERECHNET
-       (visual-composition.aussage). Das ist ein Beleg und keine Hook -
-       und die Grammatik soll das sehen, nicht uebersehen. */
-    ebenenHerkunft: { aussage: "komposition" },
+    ebenenHerkunft: {
+      aussage: hookEbene ? "visualBrief.textLayers" : "pkg.hook",
+      beleg: beleg ? "komposition" : null },
     explanation: komposition.kind + ": " + komposition.explanation
   };
 
@@ -594,6 +701,8 @@ export function seiteKomposition(p, schriftDaten) {
     : "";
   const familie = schriftDaten ? "Inter, system-ui, sans-serif"
     : "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
+  /* Aus dem Plan, nicht aus einer zweiten Tabelle hier. */
+  const g2 = p.textGroessen || textGroessen(p.visualType);
 
   let grafik = "", achsen = "";
   if (k.kind === "CHART") {
@@ -611,6 +720,12 @@ export function seiteKomposition(p, schriftDaten) {
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
 ${font}
 *{margin:0;padding:0;box-sizing:border-box}
+/* Ein einzelnes langes Wort - ein Ticker, eine URL, ein
+   hereingereichter Fremdtext - laeuft sonst ueber den Bildrand und
+   wird abgeschnitten. Das faellt auf einem Screenshot auf und im
+   Konto zu spaet. Das SCROLL_STOP-Tor hat genau diesen Fall
+   gemessen: rechts 1199 auf einer 1080 Pixel breiten Flaeche. */
+*{overflow-wrap:anywhere}
 html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};overflow:hidden}
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
@@ -620,7 +735,8 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .kopf{margin-bottom:30px}
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
   text-transform:uppercase;margin-bottom:14px}
-.titel{font-size:52px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:20ch}
+.titel{font-size:${g2.aussage}px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:17ch}
+.beleg{font-size:${g2.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:16px}
 .mitte{display:flex;flex-direction:column;gap:22px}
 .achsen{display:flex;justify-content:space-between;font-size:23px;color:${FARBEN.gedeckt};
   font-weight:500;margin-top:14px}
@@ -628,19 +744,21 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
 </style></head><body>
-  <div class="marke"><b>VISION UNIVERSE</b>®</div>
+  <div class="marke" data-vu-rolle="SIGNATUR"><b>VISION UNIVERSE</b>®</div>
   <div class="mitte">
     <div class="kopf">
-      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
-      <div class="titel">${escape(p.ebenen.aussage || "")}</div>
+      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
+      <div class="titel" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage || "")}</div>
+      ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     </div>
     ${grafik}
     ${achsen}
   </div>
   <div class="fuss">
     <div class="strich"></div>
-    ${p.ebenen.quelle ? `<div class="quelle">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+    ${p.ebenen.quelle ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
   </div>
+  ${MESS_SKRIPT}
 </body></html>`;
 }
 
@@ -681,6 +799,47 @@ export function pruefeJpeg(pfad) {
  * sonst erst im Moment der Veroeffentlichung auf, und dann ist der
  * Anspruch schon angemeldet.
  */
+/* -------------------------------------------------------------------
+   DIE GEMESSENE SEITE ZURUECKLESEN
+
+   Derselbe Chromium, dieselbe Datei, ein zweiter Lauf mit
+   `--dump-dom`. Das Messskript in der Seite hat seine Zahlen bis
+   dahin in `#vu-messung` geschrieben.
+
+   Schlaegt das fehl, wird NICHTS zurueckgegeben - keine leere Liste.
+   Eine leere Liste hiesse "kein Text auf dem Bild", und das waere
+   eine Aussage ueber das Bild, die in Wahrheit eine Aussage ueber das
+   Werkzeug ist. Genau diese Verwechslung hat in diesem Projekt schon
+   einen Bericht erfunden.
+   ------------------------------------------------------------------- */
+export function messeSeite(htmlPfad, breite, hoehe) {
+  let dom;
+  try {
+    dom = execFileSync(chromiumPfad(), [
+      "--headless", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+      "--force-device-scale-factor=1", "--virtual-time-budget=5000",
+      `--window-size=${breite},${hoehe}`,
+      "--dump-dom", "file://" + htmlPfad
+    ], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"] });
+  } catch { return null; }
+
+  const treffer = /data-vu-messung="([^"]*)"/.exec(dom);
+  if (!treffer) return null;
+  let texte;
+  try { texte = JSON.parse(entkommen(treffer[1])); } catch { return null; }
+  if (!Array.isArray(texte)) return null;
+  return { breite, hoehe, texte };
+}
+
+/** Die DOM-Ausgabe ist HTML-kodiert; das JSON darin will es nicht sein. */
+function entkommen(s) {
+  return String(s)
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 export function render(p, zielPfad, options = {}) {
   if (!p.ok) throw new Error("Kein zeichenbarer Plan: " + p.message);
 
@@ -705,7 +864,33 @@ export function render(p, zielPfad, options = {}) {
   if (befund.breite !== p.breite || befund.hoehe !== p.hoehe) {
     throw new Error(`Erwartet ${p.breite}x${p.hoehe}, erhalten ${befund.breite}x${befund.hoehe}.`);
   }
-  return Object.assign({ pfad: zielPfad }, befund);
+
+  /* -----------------------------------------------------------------
+     SCROLL_STOP_QUALITY — DAS TOR STEHT HIER, WEIL ES HIER MESSBAR IST
+
+     §13 ist eine Owner-Entscheidung und kein Ratschlag: ein Feed-Post
+     ohne starken Text im Bild ist nicht produktionsreif. Das Urteil
+     braucht die gerenderte Seite - vorher gibt es keine Textflaechen,
+     ueber die sich reden liesse. Also steht es hier, unmittelbar
+     hinter dem Bild und vor jedem, der das Bild bekommt.
+
+     `render()` wirft bereits, wenn die Ausgabe kein JPEG ist oder die
+     Masse nicht stimmen. Ein Bild ohne fuehrenden Text gehoert in
+     dieselbe Kategorie: es ist kein veroeffentlichungsfaehiges Asset.
+     ----------------------------------------------------------------- */
+  const messung = messeSeite(arbeit, p.breite, p.hoehe);
+  const scrollStop = ScrollStop.pruefe({ messung, caption: options.caption || null });
+
+  if (!scrollStop.ok && options.scrollStopPruefen !== false) {
+    const fehler = new Error("SCROLL_STOP_QUALITY nicht bestanden (" +
+      scrollStop.zustand + "): " + scrollStop.erklaerung);
+    fehler.zustand = scrollStop.zustand;
+    fehler.scrollStop = scrollStop;
+    throw fehler;
+  }
+
+  return Object.assign({ pfad: zielPfad }, befund,
+    { messung, scrollStop });
 }
 
 /* --------------------------------------------------------------- Lauf */

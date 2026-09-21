@@ -1,0 +1,291 @@
+/* =========================================================================
+   SCROLL_STOP_QUALITY — §13 (Text-on-Visual als Pflicht), §14, §15
+
+   Das Tor urteilt ueber eine MESSUNG der gerenderten Seite. Diese
+   Tests fuettern deshalb Messungen, nicht Absichten - und die letzten
+   pruefen am echten Chromium nach, dass die Messung auch wirklich
+   entsteht und dass das Tor im Weg steht.
+   ========================================================================= */
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { existsSync, mkdirSync, rmSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { createRequire } from "node:module";
+import { plan, planKomposition, render, messeSeite, seite, textGroessen,
+  chromiumPfad, ladeSchrift } from "../../scripts/social/render-asset.mjs";
+
+const require = createRequire(import.meta.url);
+const S = require("../engines/scroll-stop.js");
+const Grammar = require("../engines/visual-grammar.js");
+const VQ = require("../engines/visual-quality.js");
+const ROOT = process.cwd();
+
+let chromiumDa = true;
+try { chromiumPfad(); } catch { chromiumDa = false; }
+
+/** Eine Messung, die durchgeht. Ausgangspunkt jeder Gegenprobe. */
+function messung(ueber) {
+  return Object.assign({
+    breite: 1080, hoehe: 1350,
+    texte: [
+      { rolle: "SIGNATUR", text: "VISION UNIVERSE®", flaeche: 19686,
+        zeilen: 3, oben: 96, unten: 127, links: 88, rechts: 417, schrift: 26 },
+      { rolle: "HOOK", text: "So weit lagen sie seit 1999 nicht auseinander.",
+        flaeche: 146764, zeilen: 2, oben: 427, unten: 610, links: 88,
+        rechts: 941, schrift: 76 },
+      { rolle: "KONTEXT", text: "RUSSELL 2000", flaeche: 11217, zeilen: 1,
+        oben: 669, unten: 710, links: 88, rechts: 362, schrift: 34 },
+      { rolle: "BELEG", text: "-38 %", flaeche: 55316, zeilen: 1,
+        oben: 710, unten: 857, links: 88, rechts: 464, schrift: 122 },
+      { rolle: "QUELLE", text: "Quelle: Bloomberg", flaeche: 6136, zeilen: 1,
+        oben: 1225, unten: 1254, links: 88, rechts: 300, schrift: 24 }
+    ]
+  }, ueber || {});
+}
+
+/** Dieselbe Messung mit einem veraenderten Textblock. */
+function mit(rolle, aenderung) {
+  const m = messung();
+  m.texte = m.texte.map((t) => t.rolle === rolle
+    ? Object.assign({}, t, aenderung) : t);
+  return m;
+}
+
+function ohne(rolle) {
+  const m = messung();
+  m.texte = m.texte.filter((t) => t.rolle !== rolle);
+  return m;
+}
+
+/* ------------------------------------------------- Geschlossen ausfallen */
+
+test("SS1 · Ohne Messung faellt das Tor GESCHLOSSEN aus", () => {
+  assert.equal(S.pruefe({}).zustand, S.ZUSTAND.MESSUNG_FEHLT);
+  assert.equal(S.pruefe({ messung: null }).ok, false);
+  /* Und nicht etwa: keine Texte gefunden, also kein Problem. */
+  assert.notEqual(S.pruefe({}).zustand, S.ZUSTAND.OK);
+});
+
+test("SS2 · Eine Messung ohne Textliste ist keine Messung", () => {
+  assert.equal(S.pruefe({ messung: { breite: 1080, hoehe: 1350 } }).zustand,
+    S.ZUSTAND.MESSUNG_FEHLT);
+});
+
+/* ------------------------------------------------------------ §13 Pflicht */
+
+test("SS3 · Ein Bild ohne jeden Text besteht nicht (§13)", () => {
+  assert.equal(S.pruefe({ messung: { breite: 1080, hoehe: 1350, texte: [] } })
+    .zustand, S.ZUSTAND.TEXT_ON_VISUAL_FEHLT);
+});
+
+test("SS4 · Text ohne Hook besteht nicht - ein Beleg ist keine Hook", () => {
+  const r = S.pruefe({ messung: ohne("HOOK") });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_FEHLT_AUF_BILD);
+  assert.ok(r.rollen.includes("BELEG"));
+});
+
+test("SS5 · Eine vollstaendige Messung besteht - sonst waere jede Gegenprobe wertlos", () => {
+  const r = S.pruefe({ messung: messung() });
+  assert.equal(r.zustand, S.ZUSTAND.OK, r.erklaerung);
+  assert.equal(r.ok, true);
+});
+
+/* ---------------------------------------------------------- §14 Dominanz */
+
+test("SS6 · Die Hook muss den ersten Blick haben, nicht nur dabei sein", () => {
+  /* Die Zahl bekommt mehr Flaeche als die Hook. */
+  const r = S.pruefe({ messung: mit("BELEG", { flaeche: 200000 }) });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_NICHT_DOMINANT);
+  assert.equal(r.staerksteAndere, "BELEG");
+});
+
+test("SS7 · Fast gleich gross ist nicht fuehrend", () => {
+  /* 130.000 gegen die 146.764 der Hook: die Hook ist groesser, aber
+     nicht MIT ABSTAND groesser. Zwei Bloecke fast gleicher Flaeche
+     teilen den Blick, und geteilt ist nicht gefuehrt.
+
+     Die Zahl steht hier fest und wird NICHT aus S.VORSPRUNG
+     gerechnet. Der erste Entwurf tat genau das - und war damit ein
+     Test, der jeden Vorsprung bestaetigt, auch den Vorsprung 1,0.
+     Ein Test, der seine Erwartung aus dem Wert ableitet, den er
+     pruefen soll, kann nicht durchfallen. */
+  const r = S.pruefe({ messung: mit("BELEG", { flaeche: 130000 }) });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_NICHT_DOMINANT,
+    "146764 gegen 130000 darf nicht als fuehrend gelten");
+  /* Und knapp darueber traegt sie. */
+  assert.equal(S.pruefe({ messung: mit("BELEG", { flaeche: 110000 }) }).ok, true);
+});
+
+test("SS8 · Flaeche schlaegt Schriftgroesse - genau darum wird gemessen", () => {
+  /* Die Zahl hat 122 px Versalhoehe gegen 76 der Hook und besteht
+     trotzdem nicht gegen sie: zwei Zeilen Satz haben die groessere
+     Flaeche. Waere die Schriftgroesse das Mass, waere dieses Bild
+     durchgefallen. */
+  const r = S.pruefe({ messung: messung() });
+  const hook = messung().texte.find((t) => t.rolle === "HOOK");
+  const zahl = messung().texte.find((t) => t.rolle === "BELEG");
+  assert.ok(zahl.schrift > hook.schrift);
+  assert.ok(hook.flaeche > zahl.flaeche);
+  assert.equal(r.ok, true);
+});
+
+test("SS9 · Ueber der Hook darf kein Inhalt stehen - der Blick faengt oben an", () => {
+  const r = S.pruefe({ messung: mit("BELEG", { oben: 200, unten: 347 }) });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_NICHT_OBEN);
+  assert.ok(r.darueber.includes("BELEG"));
+});
+
+test("SS10 · Die Absenderzeile darf ueber der Hook stehen", () => {
+  /* Sie steht bei 96 und ist keine Aussage. Waere sie nicht
+     ausgenommen, wuerde jedes korrekte Bild durchfallen. */
+  assert.equal(S.pruefe({ messung: messung() }).ok, true);
+});
+
+/* -------------------------------------------------------- §15 Mobilregeln */
+
+test("SS11 · 58 Pixel auf 1350 sind sichtbar, aber nicht lesbar", () => {
+  /* 58 ist keine gegriffene Zahl: so gross war die Kopfzeile in
+     diesem Repository, bis §15 gemessen wurde. Der Test haelt den
+     konkreten Fall fest statt eine Schwelle gegen sich selbst zu
+     pruefen - sonst bestuende er auch bei einer Schwelle von 1 %. */
+  const r = S.pruefe({ messung: mit("HOOK", { schrift: 58 }) });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_ZU_KLEIN_FUER_MOBIL);
+  /* Und die Schwelle selbst darf nicht ins Bedeutungslose rutschen. */
+  assert.ok(Grammar.MOBIL.mindestHoeheAnteil >= 0.05,
+    "Unter 5 % der Bildhoehe misst die Regel nichts mehr.");
+});
+
+test("SS12 · Die Mobilschwelle kommt aus der Visual Grammar, nicht von hier", () => {
+  /* Zwei Zahlen fuer dieselbe Frage waeren zwei Antworten (§2). */
+  const genau = Math.ceil(Grammar.MOBIL.mindestHoeheAnteil * 1350);
+  assert.equal(S.pruefe({ messung: mit("HOOK", { schrift: genau }) }).ok, true);
+  assert.equal(
+    S.pruefe({ messung: mit("HOOK", { schrift: genau - 1 }) }).ok, false);
+});
+
+test("SS13 · Ein Text, der ueber den Bildrand laeuft, besteht nicht", () => {
+  assert.equal(S.pruefe({ messung: mit("HOOK", { rechts: 1199 }) }).zustand,
+    S.ZUSTAND.HOOK_AUSSERHALB_SICHERBEREICH);
+  assert.equal(S.pruefe({ messung: mit("HOOK", { oben: 10 }) }).zustand,
+    S.ZUSTAND.HOOK_AUSSERHALB_SICHERBEREICH);
+});
+
+/* --------------------------------------------------------- Doppelung */
+
+test("SS14 · Der Bildtext darf nicht die Caption sein", () => {
+  const r = S.pruefe({ messung: messung(),
+    caption: "So weit lagen sie seit 1999 nicht auseinander. Mehr dazu unten." });
+  assert.equal(r.zustand, S.ZUSTAND.HOOK_WIEDERHOLT_CAPTION);
+});
+
+test("SS15 · Eine Caption, die etwas anderes sagt, ist kein Doppel", () => {
+  assert.equal(S.pruefe({ messung: messung(),
+    caption: "Kleine Unternehmen kosten gemessen am Gewinn heute weniger " +
+      "als grosse. Woran das liegt und was daraus folgt." }).ok, true);
+});
+
+test("SS16 · Die Doppel-Schwelle ist dieselbe wie in visual-quality", () => {
+  assert.equal(S.CAPTION_UEBERSCHNEIDUNG, VQ.GRENZEN.redundanz);
+  assert.ok(typeof VQ.GRENZEN.redundanz === "number");
+});
+
+test("SS17 · Eine Hook, die zu lang ist, haelt niemanden an", () => {
+  const lang = "Ein Satz, den man anhalten muss, um ihn zu lesen, und der " +
+    "deshalb genau das verfehlt, wofuer er da ist, naemlich jemanden im " +
+    "Vorbeiscrollen aufzuhalten.";
+  assert.equal(S.pruefe({ messung: mit("HOOK", { text: lang }) }).zustand,
+    S.ZUSTAND.HOOK_ZU_LANG);
+});
+
+/* ------------------------------------------- Am echten Bild, am echten Tor */
+
+const paket = (over = {}) => Object.assign({
+  packageId: "ss-probe", visualType: "DATA_CARD",
+  visualDirectionReady: true, visualDirectionMissing: [],
+  hook: "Der Abstand ist so gross wie seit 1999 nicht.",
+  visualBrief: { entity: "RUSSELL 2000",
+    textLayers: [{ text: "So weit lagen sie seit 1999 nicht auseinander." }] },
+  claims: [
+    { text: "-38 %", numeric: -38,
+      source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } },
+    { text: "Bewertungsabstand Russell 2000 zu S&P 500", numeric: null,
+      source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } }
+  ]
+}, over);
+
+const nurMitChromium = { skip: chromiumDa ? false : "Kein Chromium." };
+
+test("SS18 · Die gerenderte Seite vermisst sich selbst", nurMitChromium, () => {
+  const dir = join(ROOT, "tmp", "ss-" + process.pid);
+  mkdirSync(dir, { recursive: true });
+  try {
+    const p = plan(paket());
+    const ziel = join(dir, "a.jpg");
+    const r = render(p, ziel, { schrift: ladeSchrift(ROOT) });
+    assert.ok(r.messung, "keine Messung zurueckgelesen");
+    const rollen = r.messung.texte.map((t) => t.rolle);
+    assert.ok(rollen.includes("HOOK"), rollen.join(","));
+    assert.ok(rollen.includes("BELEG"));
+    assert.ok(rollen.includes("QUELLE"));
+    assert.equal(r.scrollStop.zustand, S.ZUSTAND.OK, r.scrollStop.erklaerung);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("SS19 · Die Messung steht NICHT im Bild", nurMitChromium, () => {
+  /* Sie stand dort einmal: sechs Zeilen JSON unter der Quellenzeile,
+     im fertigen JPEG. Weder Test noch Tor haben es gesehen. Seither
+     liegt sie in einem Attribut, das per Konstruktion nicht rendern
+     kann - und diese Pruefung haelt das fest. */
+  const html = seite(Object.assign(plan(paket()), {}), null);
+  assert.doesNotMatch(html, /<div id="vu-messung"/);
+  assert.match(html, /data-vu-messung/);
+});
+
+test("SS20 · Das Tor steht im Weg: ohne Hook entsteht kein Bild", nurMitChromium, () => {
+  const dir = join(ROOT, "tmp", "ss-sperr-" + process.pid);
+  mkdirSync(dir, { recursive: true });
+  try {
+    /* Ein Plan, dessen Hook-Ebene leer ist. Er laesst sich zeichnen -
+       und darf trotzdem kein Asset werden. */
+    const p = plan(paket());
+    p.ebenen.aussage = "";
+    let geworfen = null;
+    try { render(p, join(dir, "b.jpg"), { schrift: ladeSchrift(ROOT) }); }
+    catch (e) { geworfen = e; }
+    assert.ok(geworfen, "render() hat ein Bild ohne Hook durchgelassen");
+    assert.ok([S.ZUSTAND.TEXT_ON_VISUAL_FEHLT, S.ZUSTAND.HOOK_FEHLT_AUF_BILD]
+      .includes(geworfen.zustand), String(geworfen.zustand));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("SS21 · Der Kompositionspfad setzt die Hook in die Kopfzeile, nicht den Beleg", () => {
+  const kompo = { ok: true, kind: "CHART", points: [], labels: { start: "A", end: "B" },
+    changePercent: 12.3, explanation: "270 Punkte." };
+  const p = planKomposition(
+    paket({ visualType: "CHART" }), kompo,
+    { entitaet: "AAPL", aussage: "Seit 15.08.2025: +12,3 %.", quelle: "Stooq" });
+  assert.equal(p.ok, true, p.message);
+  assert.equal(p.ebenen.aussage,
+    "So weit lagen sie seit 1999 nicht auseinander.");
+  assert.equal(p.ebenen.beleg, "Seit 15.08.2025: +12,3 %.");
+  assert.equal(p.ebenenHerkunft.aussage, "visualBrief.textLayers");
+});
+
+test("SS22 · Ohne Hook entsteht im Kompositionspfad gar kein Plan", () => {
+  const kompo = { ok: true, kind: "CHART", points: [], labels: { start: "A", end: "B" },
+    changePercent: 12.3, explanation: "270 Punkte." };
+  const p = planKomposition(
+    { visualType: "CHART", packageId: "x" }, kompo,
+    { entitaet: "AAPL", aussage: "Seit 15.08.2025: +12,3 %.", quelle: "Stooq" });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "noHookOnVisual");
+});
+
+test("SS23 · Die Kopfzeile ist gross genug fuer die Mobilschwelle", () => {
+  const g = textGroessen("DATA_CARD");
+  assert.ok(g.aussage / 1350 >= Grammar.MOBIL.mindestHoeheAnteil,
+    "Die Kopfzeile misst " + g.aussage + " von 1350 - unter der Schwelle.");
+  /* Und auch bei NUMBER_VISUAL, wo sie frueher 40 Pixel mass. */
+  assert.ok(textGroessen("NUMBER_VISUAL").aussage / 1350 >=
+    Grammar.MOBIL.mindestHoeheAnteil);
+});

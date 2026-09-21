@@ -49,7 +49,14 @@
     statementMaxWords: 16,
     labelMaxChars: 48,
     entityMaxChars: 12,
-    valueMaxChars: 12
+    valueMaxChars: 12,
+    /* Ab wann zwei Texte derselbe Text sind. Die beiden Zahlen standen
+       als Literale an ihren Aufrufstellen. Das genuegte, solange nur
+       diese Datei sie brauchte - scroll-stop.js stellt dieselbe Frage
+       ueber die Grenze zwischen Bild und Caption hinweg, und eine
+       zweite 0.6 daneben waere eine zweite Antwort darauf (§2). */
+    redundanz: 0.6,
+    hookDoppel: 0.7
   };
 
   function normalise(s) {
@@ -157,7 +164,7 @@
 
     if (e.zahlText && e.aussage) {
       var ueberschneidung = overlap(e.zahlText, e.aussage);
-      if (ueberschneidung >= 0.6) {
+      if (ueberschneidung >= GRENZEN.redundanz) {
         blocking.push({ id: "redundant-label",
           message: "Die Aussage wiederholt die Bezeichnung (" +
             Math.round(ueberschneidung * 100) + " % derselben Woerter)." });
@@ -166,7 +173,7 @@
 
     if (options.hook && e.aussage) {
       var mitHook = overlap(e.aussage, options.hook);
-      if (mitHook >= 0.7) {
+      if (mitHook >= GRENZEN.hookDoppel) {
         warnings.push({ id: "redundant-hook",
           message: "Die Bildaussage wiederholt den Hook (" + Math.round(mitHook * 100) +
             " %). Bild und Text sollen zusammen mehr sagen als einzeln." });
