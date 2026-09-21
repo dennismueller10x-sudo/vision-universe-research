@@ -38,6 +38,7 @@ import { p0Befund } from "./p0-regression.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Produkt = require(join(ROOT, "social/engines/product-readiness.js"));
+const VisualIntelligence = require(join(ROOT, "social/engines/visual-intelligence.js"));
 const Z = Produkt.ZUSTAND;
 
 const JSON_AUS = process.argv.includes("--json");
@@ -149,19 +150,171 @@ function textOnVisual() {
 /* ===================================================================
    4. BRAND_SYSTEM_READY (§12/§16/§19)
    =================================================================== */
-function brandSystem() {
-  const noetig = ["CINEMATIC_STORY", "DATA_EDITORIAL", "RANKING",
-    "COMPARISON", "EXPLAINER", "MAGAZINE_REPORT"];
-  if (!existiert("social/engines/visual-grammar.js")) {
+async function brandSystem() {
+  /* -----------------------------------------------------------------
+     DREI FRAGEN, NICHT EINE
+
+     Der erste Entwurf dieser Messung suchte sechs Namen im Quelltext.
+     Das ist genau die Sorte Pruefung, die dieses Projekt schon
+     mehrfach getaeuscht hat: sie trifft auf Wortlaut und nicht auf
+     eine Messung. Sechs Zeichenketten in einer Datei beweisen keine
+     Grammatik - eine Kommentarzeile mit den sechs Namen haette
+     genuegt.
+
+     Gefragt wird deshalb:
+       1. Gibt es die sechs Familien ALS STRUKTUR, jede mit dem, was
+          §16 nennt (Zweck, Storytypen, Atlas-Rolle, Text-Hierarchie,
+          Visual-Hierarchie, Akzentlogik, Mobilregeln, Failure
+          Conditions)?
+       2. Sind die Failure Conditions AUSFUEHRBAR - also lehnt die
+          Grammatik einen leeren Entwurf wirklich ab?
+       3. Laeuft sie im PRODUKTIONSWEG mit, oder steht sie daneben?
+          Ein Tor, das nicht im Weg steht, ist kein Tor.
+     ----------------------------------------------------------------- */
+  const pfad = "social/engines/visual-grammar.js";
+  if (!existiert(pfad)) {
     return nein("Es gibt keine Visual Grammar. §16 verlangt benannte " +
       "Visual Families mit Zweck, Atlas-Rolle, Text-Hierarchie und " +
       "Failure Conditions - sonst kollabiert der Feed in ein Layout (§19).");
   }
-  const q = ohneKommentare(text("social/engines/visual-grammar.js"));
-  const fehlt = noetig.filter((n) => !q.includes(n));
-  return fehlt.length === 0
-    ? ja("Sechs Visual Families benannt.")
-    : nein("Der Visual Grammar fehlen Familien: " + fehlt.join(", ") + ".");
+
+  let G;
+  try { G = require(join(ROOT, pfad)); } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "social/engines/visual-grammar.js liess sich nicht laden (" +
+        e.message + "). Ob es eine Grammatik gibt, ist damit unbekannt." };
+  }
+
+  const noetig = ["CINEMATIC_STORY", "DATA_EDITORIAL", "RANKING",
+    "COMPARISON", "EXPLAINER", "MAGAZINE_REPORT"];
+  const fehlt = noetig.filter((n) => !G.FAMILIEN || !G.FAMILIEN[n]);
+  if (fehlt.length) {
+    return nein("Der Visual Grammar fehlen Familien: " + fehlt.join(", ") + ".");
+  }
+
+  /* §16 nennt acht Bestandteile je Familie. Eine Familie, der einer
+     fehlt, ist eine Ueberschrift. */
+  const teile = ["zweck", "storytypen", "formen", "atlasRollen",
+    "textHierarchie", "visualHierarchie", "akzente", "mobil", "fehlerbilder"];
+  const luecken = [];
+  noetig.forEach((n) => {
+    const f = G.FAMILIEN[n];
+    teile.forEach((t) => {
+      const v = f[t];
+      const leer = v === null || v === undefined || v === "" ||
+        (Array.isArray(v) && v.length === 0);
+      if (leer) luecken.push(n + "." + t);
+    });
+    /* Die Formen muessen es in visual-intelligence.js geben. Eine
+       Familie, die eine erfundene Form fuehrt, hat eine zweite
+       Formliste aufgemacht (§2). */
+    (f.formen || []).forEach((fo) => {
+      if (!VisualIntelligence.FORMEN[fo]) luecken.push(n + ".formen:" + fo);
+    });
+    /* Ebenso die Atlas-Rollen: §17 nennt vier, nicht beliebig viele. */
+    (f.atlasRollen || []).forEach((r) => {
+      if (!G.ATLAS_ROLLEN[r]) luecken.push(n + ".atlasRollen:" + r);
+    });
+  });
+  if (luecken.length) {
+    return nein("Unvollstaendige Familien (§16): " + luecken.join(", ") + ".");
+  }
+
+  const rollen = ["ATLAS_HERO", "ATLAS_GUIDE", "ATLAS_OBSERVER", "ATLAS_SIGNATURE"];
+  const rollenFehlt = rollen.filter((r) => !G.ATLAS_ROLLEN || !G.ATLAS_ROLLEN[r]);
+  if (rollenFehlt.length) {
+    return nein("§17 verlangt vier Atlas-Rollen, es fehlen: " +
+      rollenFehlt.join(", ") + ".");
+  }
+
+  /* -----------------------------------------------------------------
+     DIE BEDINGUNGEN MUESSEN LAUFEN, NICHT NUR DASTEHEN
+
+     Der erste Entwurf fragte, ob `pruefe(familie, {})` durchfaellt.
+     Die Gegenprobe hat ihn widerlegt: mit ausgeschalteten
+     Fehlerbildern fiel der leere Entwurf weiter durch - an der
+     Formpruefung, die daneben steht. Die Messung bestand also, waehrend
+     KEINE einzige Failure Condition mehr lief.
+
+     Gefragt wird deshalb nach der HERKUNFT der Befunde: jede Familie
+     muss mindestens einen Verstoss aus ihrer EIGENEN Liste melden und
+     mindestens einen aus der allgemeinen. Ein Entwurf mit einem Wert
+     und einem Schritt loest in jeder der sechs etwas aus.
+     ----------------------------------------------------------------- */
+  const probe = { eintraege: 1, schritte: 1 };
+  const allgemein = (G.ALLGEMEINE_FEHLERBILDER || []).map((f) => f.id);
+  const stumpf = [];
+  noetig.forEach((n) => {
+    let raus;
+    try { raus = G.pruefe(n, probe).verstoesse.map((v) => v.id); }
+    catch (e) { stumpf.push(n + " (wirft: " + e.message + ")"); return; }
+    const eigene = G.FAMILIEN[n].fehlerbilder.map((f) => f.id);
+    if (!raus.some((id) => eigene.includes(id))) {
+      stumpf.push(n + " (keine eigene Failure Condition greift)");
+    }
+    if (!raus.some((id) => allgemein.includes(id))) {
+      stumpf.push(n + " (keine allgemeine Failure Condition greift)");
+    }
+  });
+  if (stumpf.length) {
+    return nein("Failure Conditions, die nie zutreffen, sind Kommentare: " +
+      stumpf.join("; ") + ".");
+  }
+
+  /* §19: die Feed-Variation muss eine RECHNUNG sein. Ein Fenster aus
+     lauter gleichen Beitraegen muss kollabieren, ein gemischtes nicht -
+     sonst misst die Dimension nichts. */
+  const gleich = Array.from({ length: 8 }, () => ({
+    familie: "DATA_EDITORIAL", form: "CHART", atlasRolle: "ATLAS_SIGNATURE",
+    dominantesTextRolle: "HOOK", akzente: ["RICHTUNG"], farbwelt: "VU" }));
+  if (!G.feedVariation || G.feedVariation(gleich).zustand !== "KOLLABIERT") {
+    return nein("§19 ist nicht gemessen: acht identisch gebaute Beitraege " +
+      "gelten der Feed-Variation nicht als Kollaps.");
+  }
+
+  /* -----------------------------------------------------------------
+     UND DER PRODUKTIONSWEG - GEMESSEN, NICHT GESUCHT
+
+     Auch hier hat die Gegenprobe den ersten Entwurf widerlegt. Er
+     suchte "VisualGrammar.ausRenderPlan" im Quelltext. Nimmt man den
+     AUFRUF aus plan() heraus und laesst die Hilfsfunktion stehen,
+     findet die Suche sie weiter - und die Messung meldete verdrahtet,
+     waehrend kein einziges Bild mehr geprueft wurde.
+
+     Eine definierte Funktion ist kein Tor. Gemessen wird deshalb an
+     einem echten Plan: kommt ein Befund am Bild heraus oder nicht.
+     ----------------------------------------------------------------- */
+  const { plan } = await import(
+    "file://" + join(ROOT, "scripts/social/render-asset.mjs"));
+  const entwurf = plan({
+    packageId: "readiness-probe", visualType: "DATA_CARD",
+    visualDirectionReady: true, visualDirectionMissing: [],
+    hook: "Der Abstand ist so gross wie seit 1999 nicht.",
+    visualBrief: { entity: "RUSSELL 2000",
+      textLayers: [{ text: "So weit lagen sie seit 1999 nicht auseinander." }] },
+    claims: [
+      { text: "-38 %", numeric: -38,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } },
+      { text: "Bewertungsabstand Russell 2000 zu S&P 500", numeric: null,
+        source: { source: "Bloomberg", retrievedAt: "2026-09-16T10:00:00Z" } }
+    ]
+  });
+  if (!entwurf || entwurf.ok !== true) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Der Probeplan liess sich nicht zeichnen (" +
+        ((entwurf && entwurf.reason) || "unbekannt") + "). Ob die Grammatik " +
+        "im Produktionsweg steht, ist damit ungeprueft." };
+  }
+  if (!entwurf.grammatik || !entwurf.grammatik.familie) {
+    return nein("Die Visual Grammar steht neben dem Produktionsweg: ein " +
+      "gezeichneter Plan traegt keinen Grammatik-Befund. Ein Tor, das " +
+      "nicht im Weg steht, ist kein Tor.");
+  }
+
+  return ja("Sechs Visual Families mit je " + teile.length + " Bestandteilen " +
+    "(§16), vier Atlas-Rollen (§17), greifende Failure Conditions, eine " +
+    "rechnende Feed-Variation (§19) - und ein gezeichneter Plan traegt " +
+    "den Befund (" + entwurf.grammatik.familie + ").");
 }
 
 /* ===================================================================
@@ -479,7 +632,7 @@ const messungen = {
   CONTENT_INTELLIGENCE_READY: contentIntelligence(),
   HOOK_INTELLIGENCE_READY: hookIntelligence(),
   TEXT_ON_VISUAL_REQUIRED: textOnVisual(),
-  BRAND_SYSTEM_READY: brandSystem(),
+  BRAND_SYSTEM_READY: await brandSystem(),
   CANONICAL_ATLAS_READY: markenAsset("Atlas", /atlas/i, "ATLAS_ASSET"),
   CANONICAL_LOGO_READY: markenAsset("Logo", /logo/i, "LOGO_ASSET"),
   ASSET_DELIVERY_SAFE: await assetDelivery(),

@@ -53,6 +53,8 @@ import { createHash } from "node:crypto";
 const require = createRequire(import.meta.url);
 const VisualQuality = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js"));
+const VisualGrammar = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -87,6 +89,27 @@ export const NICHT_GEZEICHNET = {
    Bilder unter einer Kennung, und der Unterschied fiele erst im Konto
    auf. */
 export const SCHRIFT_PFAD = "assets/fonts/inter-latin.woff2";
+
+/* -------------------------------------------------------------------
+   DIE SCHRIFTGROESSEN DES GEZEICHNETEN BILDES
+
+   Sie sind kein Geschmack, sondern eine Eigenschaft des Bildes, die
+   sich messen laesst - und die Visual Grammar misst sie. Deshalb
+   stehen sie an EINEM Ort und reisen im Plan mit, statt im
+   HTML-Template ein zweites Mal aufzutauchen.
+
+   Die Werte in Pixel beziehen sich auf die Flaeche 1080x1350.
+   ------------------------------------------------------------------- */
+export function textGroessen(visualType) {
+  return {
+    marke: 26,
+    entitaet: 34,
+    zahl: visualType === "NUMBER_VISUAL" ? 190 : 122,
+    zahlText: 32,
+    aussage: visualType === "NUMBER_VISUAL" ? 40 : 58,
+    quelle: 24
+  };
+}
 
 export function ladeSchrift(wurzel) {
   const pfad = resolve(join(wurzel || process.cwd(), SCHRIFT_PFAD));
@@ -163,6 +186,50 @@ export function ersteBelegteZahl(pkg) {
  * Chromium zu starten. Der Zyklus kann das im Schattenbetrieb mitlaufen
  * lassen; ein Test kann es ohne Browser pruefen.
  */
+/* -------------------------------------------------------------------
+   DIE GRAMMATIK URTEILT UEBER DAS, WAS WIRKLICH GEZEICHNET WIRD
+
+   Sie bekommt den Plan - nicht eine Beschreibung daneben. Was der
+   Plan nicht enthaelt, wird nicht ergaenzt; fehlt eine Angabe, faellt
+   die zugehoerige Regel als ungemessen durch.
+
+   Der Befund BLOCKIERT hier noch nicht. Das ist keine Nachlaessigkeit,
+   sondern die Reihenfolge: der gezeichnete Kartenpfad hat heute keine
+   eigene Hook-Ebene, der Satz auf dem Bild ist im Kompositionspfad aus
+   Daten gerechnet. Ein Tor, das jedes reale Bild abweist, waere kein
+   Qualitaetstor, sondern ein Stillstand. Der Befund wird deshalb
+   GEMESSEN, benannt und mitgefuehrt - und die Sperre folgt mit der
+   Hook-Ebene (§13/§15).
+   ------------------------------------------------------------------- */
+function grammatikBefund(entwurf, pkg) {
+  const spec = VisualGrammar.ausRenderPlan(entwurf, {
+    /* Wie viele Werte das Bild wirklich zeigt. Die Karte zeigt genau
+       einen, sobald sie eine Zahl traegt - und diese Eins ist es, die
+       Rangliste und Vergleich ausschliesst. Ohne sie waere jede
+       Datenkarte mehrdeutig. */
+    eintraege: entwurf.komposition && Array.isArray(entwurf.komposition.bars)
+      ? entwurf.komposition.bars.length
+      : (entwurf.ebenen && entwurf.ebenen.zahl ? 1 : null),
+    gemesseneReihe: !!(entwurf.komposition &&
+      Array.isArray(entwurf.komposition.points)),
+    farbwelt: "VU_SCHWARZ_ROT"
+  });
+  const wahl = VisualGrammar.waehleFamilie(spec);
+  if (!wahl.familie) {
+    return { familie: null, ok: false, wahlGrund: wahl.grund,
+      mehrdeutig: wahl.mehrdeutig || null,
+      verstoesse: [{ id: "KEINE_FAMILIE", satz: wahl.grund }],
+      erklaerung: wahl.grund,
+      dominantesTextRolle: spec.dominantesTextRolle,
+      dominantesTextFeld: spec.dominantesTextFeld };
+  }
+  const urteil = VisualGrammar.pruefe(wahl.familie, spec);
+  urteil.wahlGrund = wahl.grund;
+  urteil.dominantesTextRolle = spec.dominantesTextRolle;
+  urteil.dominantesTextFeld = spec.dominantesTextFeld;
+  return urteil;
+}
+
 export function plan(pkg, options = {}) {
   const typ = (pkg && pkg.visualType) || null;
 
@@ -204,6 +271,23 @@ export function plan(pkg, options = {}) {
     .find((l) => l && l.text && String(l.text).trim());
   const aussage = String(
     (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+
+  /* -------------------------------------------------------------------
+     WOHER DER SATZ STAMMT, ENTSCHEIDET, WAS ER IST
+
+     Derselbe Kasten auf dem Bild traegt je nach Herkunft eine andere
+     Rolle: aus der Textebene oder aus der Hook ist er eine HOOK, aus
+     These oder Thema ist er eine Ueberschrift, aus der Komposition
+     gerechnet ist er ein BELEG.
+
+     Die Visual Grammar fragt danach, und sie darf die Antwort nicht
+     raten. Ein Satz, der als Hook GILT, ohne je einer gewesen zu
+     sein, ist die bequemste Art, §13 zu bestehen, ohne ihm zu
+     genuegen. */
+  const aussageHerkunft = (ebene && ebene.text) ? "visualBrief.textLayers"
+    : pkg.hook ? "pkg.hook"
+      : pkg.thesis ? "pkg.thesis"
+        : pkg.topic ? "pkg.topic" : null;
 
   if (!aussage) {
     return { ok: false, reason: "noStatement", visualType: typ,
@@ -252,7 +336,9 @@ export function plan(pkg, options = {}) {
     packageId: pkg.packageId || null,
     breite: Number(options.breite) || 1080,
     hoehe: Number(options.hoehe) || 1350,
-    ebenen
+    ebenen,
+    ebenenHerkunft: { aussage: aussageHerkunft },
+    textGroessen: textGroessen(typ)
   };
 
   /* -------------------------------------------------------------------
@@ -274,6 +360,7 @@ export function plan(pkg, options = {}) {
     directionMissing: pkg.visualDirectionMissing || []
   });
   entwurf.quality = guete;
+  entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
     return { ok: false,
@@ -317,9 +404,16 @@ function seite(p, schriftDaten) {
 
   /* Die Zahl dominiert bei NUMBER_VISUAL, die Aussage bei den anderen.
      Das ist der ganze Unterschied zwischen den beiden Formen — und er
-     steht hier als Zahl, nicht als Absicht. */
-  const zahlGroesse = p.visualType === "NUMBER_VISUAL" ? 190 : 122;
-  const aussageGroesse = p.visualType === "NUMBER_VISUAL" ? 40 : 58;
+     steht hier als Zahl, nicht als Absicht.
+
+     Die Groessen stehen im PLAN und nicht mehr hier. Der Grund ist
+     nicht Ordnung, sondern Pruefbarkeit: die Visual Grammar fragt, wie
+     hoch der fuehrende Text ist, und sie darf die Antwort nicht aus
+     einer zweiten Kopie derselben Zahlen nehmen. Eine zweite Kopie
+     driftet, und dann prueft das Tor ein Bild, das es nicht gibt. */
+  const g = p.textGroessen || textGroessen(p.visualType);
+  const zahlGroesse = g.zahl;
+  const aussageGroesse = g.aussage;
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
 ${font}
@@ -386,6 +480,11 @@ export function planKomposition(pkg, komposition, ebenen) {
     komposition,
     ebenen: { entitaet: e.entitaet || null, aussage: e.aussage,
       quelle: e.quelle || null },
+    textGroessen: textGroessen((pkg && pkg.visualType) || komposition.kind),
+    /* Im Kompositionspfad ist die Aussage AUS DEN DATEN GERECHNET
+       (visual-composition.aussage). Das ist ein Beleg und keine Hook -
+       und die Grammatik soll das sehen, nicht uebersehen. */
+    ebenenHerkunft: { aussage: "komposition" },
     explanation: komposition.kind + ": " + komposition.explanation
   };
 
@@ -407,6 +506,7 @@ export function planKomposition(pkg, komposition, ebenen) {
     directionMissing: (pkg && pkg.visualDirectionMissing) || []
   });
   entwurf.quality = guete;
+  entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
     const richtung = guete.failureType === VisualQuality.VISUAL_DIRECTION_INCOMPLETE;
