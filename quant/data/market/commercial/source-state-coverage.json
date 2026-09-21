@@ -1,10 +1,10 @@
 {
   "schemaVersion": "source-state-coverage-1.0.0",
   "auftrag": "Owner 19.09.2026 Punkt 8: kein titelabhaengiger stiller Rueckfall",
-  "checkedAt": "2026-09-21T14:24:17.747Z",
+  "checkedAt": "2026-09-21T15:29:42.871Z",
   "session": {
     "phase": "REGULAR",
-    "localTime": "10:24:17",
+    "localTime": "11:29:42",
     "isOpen": true
   },
   "dataSession": "2026-09-21",
@@ -18,83 +18,163 @@
   ],
   "unvollstaendigerFall": "AAPL",
   "zufallstitel": [
-    "CAT",
-    "JPM"
+    "MMM",
+    "SUPV",
+    "KNSA",
+    "VRTX",
+    "CDNA",
+    "LCII",
+    "WIT",
+    "NTRA",
+    "SLDE",
+    "RDIB"
   ],
   "states": {
-    "SNAPSHOT": 8
+    "STALE": 16
   },
   "rows": [
     {
       "ticker": "NBIS",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
       "ticker": "AAPL",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:05 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:05",
       "coversFinalSlot": false
     },
     {
       "ticker": "NVDA",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
       "ticker": "MSFT",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
       "ticker": "PANW",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
       "ticker": "VLO",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
-      "ticker": "CAT",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "ticker": "MMM",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
       "coversFinalSlot": false
     },
     {
-      "ticker": "JPM",
-      "state": "SNAPSHOT",
-      "reason": "runningSession",
-      "label": "Heute · Stand 10:10",
+      "ticker": "SUPV",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "10:10",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "KNSA",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "VRTX",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "CDNA",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:05 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:05",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "LCII",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "WIT",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 10:50 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "10:50",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "NTRA",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "SLDE",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 11:10 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "11:10",
+      "coversFinalSlot": false
+    },
+    {
+      "ticker": "RDIB",
+      "state": "STALE",
+      "reason": "runningSessionStaleAsOf",
+      "label": "Heute · Stand 10:20 · nicht aktuell",
+      "sourceText": "5-Minuten-Kurse",
+      "lastRegularLocal": "10:20",
       "coversFinalSlot": false
     }
   ],
