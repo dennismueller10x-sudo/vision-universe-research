@@ -219,10 +219,52 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("\nGepusht: " + branch);
 
   const body = bodyFor(CID, befund.job, GRUND);
-  const nummer = execFileSync("gh",
-    ["pr", "create", "--base", "main", "--head", branch,
-     "--title", titleFor(CID), "--body", body],
-    { cwd: ROOT, encoding: "utf8" }).trim();
+
+  /* -------------------------------------------------------------------
+     ZWEI SCHALTER, UND NUR EINER STEHT IM WORKFLOW
+
+     `permissions: pull-requests: write` im Workflow ist nicht das
+     Recht, einen Pull Request zu OEFFNEN. Darueber entscheidet ein
+     zweiter Schalter am Repository (Settings -> Actions -> General ->
+     "Allow GitHub Actions to create and approve pull requests"), und
+     steht der auf aus, weist GitHub createPullRequest ab - mit
+     vollstaendig erteiltem Workflow-Recht.
+
+     Am 21.09. ist genau das im ersten produktiven Lauf nach der
+     Recovery passiert. Der Abbruch war ein GraphQL-Stack-Trace: der
+     Zweig lag gepusht da, der Brief war geschrieben, und was der
+     Owner umlegen muss, stand nirgends.
+
+     Diese Lage ist kein Fehler dieses Skripts und laesst sich von hier
+     aus nicht beheben. Sie bekommt deshalb einen Namen und einen
+     Satz, der sagt, wo der Schalter sitzt. */
+  let nummer;
+  try {
+    nummer = execFileSync("gh",
+      ["pr", "create", "--base", "main", "--head", branch,
+       "--title", titleFor(CID), "--body", body],
+      { cwd: ROOT, encoding: "utf8" }).trim();
+  } catch (err) {
+    const text = String((err && err.stderr) || "") + String((err && err.stdout) || "");
+    if (/not permitted to create or approve pull requests/i.test(text)) {
+      console.error("\nACTIONS_DARF_KEINE_PULL_REQUESTS_OEFFNEN");
+      console.error(
+        "Der Zweig " + branch + " ist gepusht und traegt den Brief. Der Pull " +
+        "Request fehlt, und GitHub hat ihn nicht wegen dieses Laufs " +
+        "abgewiesen, sondern wegen einer Repository-Einstellung.");
+      console.error(
+        "Owner-Schritt: Settings -> Actions -> General -> Workflow " +
+        "permissions -> \"Allow GitHub Actions to create and approve pull " +
+        "requests\" einschalten. Das Workflow-Recht pull-requests: write ist " +
+        "bereits erteilt und genuegt allein nicht.");
+      console.error(
+        "Der Creative Job bleibt unversehrt: das Register wurde NICHT auf " +
+        "DISPATCHED gesetzt, und der naechste Lauf findet denselben Zustand " +
+        "vor.");
+      process.exit(3);
+    }
+    throw err;
+  }
 
   console.log("Pull Request: " + nummer);
 

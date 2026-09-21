@@ -763,11 +763,33 @@ const schlange = OwnerDecision.warteschlange(kandidatenZustaende());
 
    Die Frage ist nicht, ob je einer entstanden ist. Sie ist, ob der
    Weg dasteht: die drei bestehenden Schritte, die Bindung an die
-   eigene Entscheidung, und das Recht, einen Pull Request zu oeffnen.
+   eigene Entscheidung, und das im Workflow erteilte Recht
+   pull-requests: write.
 
    Jede dieser vier Bedingungen ist im Workflow nachlesbar. Fehlt
    eine, ist die Faehigkeit nicht da - auch dann nicht, wenn im
    Ledger hundert Jobs staenden.
+
+   -------------------------------------------------------------------
+   WAS HIER NICHT GEPRUEFT WERDEN KANN - UND FRUEHER BEHAUPTET WURDE
+   -------------------------------------------------------------------
+
+   Diese Funktion schrieb bis zum 21.09. "und er darf den Pull Request
+   oeffnen". Sie las dafuer `pull-requests: write` aus dem Workflow -
+   und das ist die falsche Stelle. Ueber das Oeffnen entscheidet ein
+   ZWEITER Schalter am Repository ("Allow GitHub Actions to create and
+   approve pull requests"); steht der auf aus, weist GitHub den Aufruf
+   ab, obwohl das Workflow-Recht vollstaendig erteilt ist.
+
+   Genau so ist der erste produktive Lauf nach der Creative-Job-
+   Recovery gescheitert: Brief geschrieben, Zweig gepusht,
+   createPullRequest abgewiesen - waehrend dieser Bericht die
+   Faehigkeit als belegt fuehrte.
+
+   Ein Schalter, der ausserhalb des Repositoryinhalts steht, laesst
+   sich aus dem Repositoryinhalt nicht lesen. Diese Funktion behauptet
+   ihn deshalb nicht mehr; sie sagt, was sie geprueft hat, und benennt
+   die Luecke.
    ------------------------------------------------------------------- */
 function schedulerKannDispatchen() {
   if (!workflow) {
@@ -797,9 +819,13 @@ function schedulerKannDispatchen() {
     ok: fehlt.length === 0,
     explanation: fehlt.length === 0
       ? "Der Scheduler ruft die drei bestehenden Schritte auf, der Aufruf " +
-        "haengt an seiner eigenen Entscheidung, und er darf den Pull Request " +
-        "oeffnen. (" + anzahl + " Job(s) im Ledger - historisch und hier " +
-        "ausdruecklich KEIN Beleg.)"
+        "haengt an seiner eigenen Entscheidung, und der Workflow erteilt " +
+        "pull-requests: write. NICHT GEPRUEFT ist damit, ob das Repository " +
+        "Actions das Oeffnen von Pull Requests ueberhaupt erlaubt - dieser " +
+        "zweite Schalter steht in den Repository-Einstellungen und ist von " +
+        "hier aus nicht lesbar. Am 21.09. stand er auf aus, und der Lauf " +
+        "scheiterte mit vollstaendig erteiltem Workflow-Recht. (" + anzahl +
+        " Job(s) im Ledger - historisch und hier ausdruecklich KEIN Beleg.)"
       : "Nicht scheduler-ausgeloest. Es fehlt: " + fehlt.join(", ") + "."
   };
 }
