@@ -252,6 +252,19 @@
          Bemerkt wird sie trotzdem, und zwar unter eigenem Namen. Erst
          dadurch kann der leere Tag sagen, dass es Fragen gab. */
       if (stufe.ideation) {
+        /* -------------------------------------------------------------
+           WAS `abgedeckt` HIER HEUTE NOCH NICHT LEISTET
+
+           Die Abdeckungsliste kommt aus dem Content Memory und enthaelt
+           `topicId`s veroeffentlichter Themen. Die Kennungen dieser
+           Stufe tragen das Praefix `ideation:` und stehen dort noch
+           nie - denn es gibt bis jetzt keinen Weg, der aus einer Frage
+           einen Beitrag macht.
+
+           Die Sperre ist trotzdem verdrahtet und geprueft, damit sie
+           an dem Tag wirkt, an dem es den Weg gibt. Sie als "wirkt
+           heute" zu lesen waere falsch: sie wirkt heute nur, weil
+           heute niemand eine Frage benutzt. */
         var redaktion = Ideation && typeof Ideation.ideen === "function"
           ? Ideation.ideen({ now: o.now, abgedeckt: abgedeckt,
               ausgeschlosseneFamilien: ausgeschlossen })
