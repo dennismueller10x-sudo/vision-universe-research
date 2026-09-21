@@ -8,10 +8,15 @@ test('approved universe and stock use existing real data; chart history is prese
 test('out-of-scope ticker cannot trigger raw data read',async()=>{const before=reads.length;const s=await api.getStockIntelligence('TSLA');assert.equal(s.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.equal(s.identityState,'AVAILABLE');assert.ok(reads.slice(before).every(p=>p.startsWith('/quant/data/universe/')));});
 test('Discover/screener executes canonical Query AST on the scoped real set',async()=>{const q=Query.createQuery({filters:[{field:'momentum6m',operator:'gte',value:999,scale:'raw'}]});const result=await api.screen(q);assert.equal(result.eligible,5);assert.deepEqual(result.stocks,[]);assert.ok(result.queryHash);assert.equal(result.predicateHash,Rules.predicateHash(Rules.fromQuery(q)));});
 test('canonical Screener consumes the existing real Technical and Elliott snapshot index',async()=>{
+ const technicalIndex=JSON.parse(await readFile(new URL('quant/data/technical/index.json',root),'utf8'));
+ const previewTickers=new Set((await api.getUniverse()).stocks.map(stock=>stock.ticker));
+ const expectedRows=technicalIndex.instruments.filter(row=>previewTickers.has(row.instrumentId)&&row.dataMode==='real'&&!row.isMock);
  const score=Query.createQuery({filters:[{field:'technicalOpportunityScore',operator:'gte',value:65,scale:'raw'}],sort:[{field:'technicalOpportunityScore',direction:'desc'}]});
- const scored=await api.screen(score);assert.equal(scored.state,'AVAILABLE');assert.deepEqual(scored.stocks.map(s=>s.ticker),['AAPL','NVDA']);assert.equal(scored.predicateHash,Rules.predicateHash(Rules.fromQuery(score)));assert.ok(scored.stocks.every(s=>s.technicalOpportunityScore.asOf==='2026-09-17'));
+ const expectedScored=expectedRows.filter(row=>row.opportunityScore>=65).sort((a,b)=>b.opportunityScore-a.opportunityScore).map(row=>row.instrumentId);
+ const scored=await api.screen(score);assert.equal(scored.state,'AVAILABLE');assert.deepEqual(scored.stocks.map(s=>s.ticker),expectedScored);assert.equal(scored.predicateHash,Rules.predicateHash(Rules.fromQuery(score)));assert.ok(scored.stocks.every(stock=>stock.technicalOpportunityScore.asOf===expectedRows.find(row=>row.instrumentId===stock.ticker).asOf));
  const elliott=await api.screen(Query.createQuery({filters:[{field:'elliottCountStatus',operator:'eq',value:'LOW_CONFIDENCE',scale:'raw'}],sort:[{field:'technicalOpportunityScore',direction:'desc'}]}));
- assert.deepEqual(elliott.stocks.map(s=>s.ticker),['MSFT']);assert.equal(elliott.stocks[0].elliottCountStatus.isProbability,false);assert.equal(elliott.stocks[0].elliottCountStatus.unit,'method_fit');
+ const expectedElliott=expectedRows.filter(row=>row.elliottStatus==='LOW_CONFIDENCE').sort((a,b)=>b.opportunityScore-a.opportunityScore).map(row=>row.instrumentId);
+ assert.deepEqual(elliott.stocks.map(s=>s.ticker),expectedElliott);assert.ok(elliott.stocks.length>0);assert.ok(elliott.stocks.every(stock=>stock.elliottCountStatus.isProbability===false&&stock.elliottCountStatus.unit==='method_fit'));
 });
 test('Technical rule rows fail closed on mock, future, identity and methodology drift without breaking ordinary screens',async()=>{
  for(const mutate of [
