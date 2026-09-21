@@ -53,6 +53,22 @@ const Content      = require(join(ROOT, "social/engines/content.js"));
 const VisualComposition = require(join(ROOT, "social/engines/visual-composition.js"));
 const VisualIntelligence = require(join(ROOT, "social/engines/visual-intelligence.js"));
 const LearningUnit = require(join(ROOT, "social/engines/learning-unit.js"));
+const VisualGrammar = require(join(ROOT, "social/engines/visual-grammar.js"));
+const Hook         = require(join(ROOT, "social/engines/hook.js"));
+
+/* -------------------------------------------------------------------
+   WIE WEIT DAS GEDAECHTNIS FUER ABWECHSLUNG ZURUECKREICHT (§19)
+
+   Nicht alles: ein Archetyp, der vor Monaten haeufig war, sagt
+   nichts darueber, ob der Feed HEUTE ein Einstieg ist. Und nicht zu
+   wenig: unter visual-grammar.FENSTER_MINDEST urteilt die Messung
+   ohnehin nicht, und das ist richtig so.
+
+   Zwanzig ist bei ein bis zwei Beitraegen je Tag (§27) rund zwei
+   Wochen - der Zeitraum, in dem ein Leser den Feed als Feed
+   wahrnimmt.
+   ------------------------------------------------------------------- */
+const FEED_FENSTER = 20;
 
 /* -------------------------------------------------------------------
    WIE STARK GEMESSENE LEISTUNG DIE HOOK-WAHL VERSCHIEBT
@@ -593,6 +609,9 @@ const AUTOR_REIHENFOLGE = ["chatgpt-work", "model", "template"];
  */
 function schreiberAus(variante) {
   return {
+    /* Kein Verhalten, eine Tatsache ueber den Schreiber: in welcher
+       Bauform sein Satz entsteht. */
+    muster: variante.pattern || null,
     thesis: function (opportunity, researchData) {
       var f = researchData.facts[0];
       if (!f) return null;
@@ -1261,6 +1280,47 @@ async function main() {
 
   /* --------------------------------------- 4. Strategie und Content */
   const packages = [];
+
+  /* -------------------------------------------------------------------
+     DAS FENSTER, UEBER DAS ABWECHSLUNG GEMESSEN WIRD (§19)
+
+     Erinnerte Beitraege zuerst, dann die dieses Laufs. Ein Beitrag
+     zaehlt mit seinen erfassten Lerndimensionen (§38) - dieselben
+     Felder, die spaeter gegen die Leistung gehalten werden. Was ein
+     Eintrag NICHT erfasst, bleibt unbekannt und zaehlt in dieser
+     Dimension gar nicht mit.
+     ------------------------------------------------------------------- */
+  function feedFenster() {
+    const erinnert = memory.all().slice(-FEED_FENSTER);
+    /* Die zwoelf Dimensionen aus §38 werden NICHT hier aufgezaehlt -
+       memory.js fuehrt die eine Liste, und sie kommt von dort. Eine
+       zweite Aufzaehlung waere genau der Fehler, den LU21 festhaelt.
+
+       Die Bauform ist keine der zwoelf: sie steht an der
+       Hook-Auswahl und wird einzeln geholt. */
+    const ausLauf = packages.map((p) => {
+      const pk = (p.result && p.result.package) || {};
+      const eintrag = Memory.mitDimensionen({}, pk);
+      eintrag.authoringPattern = (pk.hookSelection && pk.hookSelection.gewaehlt &&
+        pk.hookSelection.gewaehlt.muster) || null;
+      eintrag.form = pk.visualType || null;
+      return eintrag;
+    });
+    return erinnert.concat(ausLauf);
+  }
+
+  /* Zwei Dimensionen, zwei Tabellen. Zusammengerechnet waere nicht
+     mehr zu sehen, ob ein Archetyp oder eine Bauform abgenutzt ist. */
+  function abwechslungAus(fenster) {
+    const befund = VisualGrammar.feedVariation(fenster);
+    return {
+      befund,
+      archetyp: VisualGrammar.alsAbschlag(befund, "hookArchetyp",
+        { staerke: Hook.ABSCHLAG_STAERKE }),
+      muster: VisualGrammar.alsAbschlag(befund, "muster",
+        { staerke: Hook.ABSCHLAG_STAERKE })
+    };
+  }
   const rejections = [];
   /* Die Datenlage je Thema - fuer den Zeichenschritt weiter unten. */
   const bildDatenlage = {};
@@ -1590,6 +1650,8 @@ async function main() {
           rechercheBelege.some((s) => s.value !== null) }),
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
       writer: schreiberAus(gewaehlteVariante),
+      /* Die Bauform des gewaehlten Textes - sie entscheidet, wie der
+         Satz aussieht, und der Feed kollabiert an ihr. */
       /* -----------------------------------------------------------------
          §39 — DER KREIS SCHLIESST SICH HIER
 
@@ -1609,6 +1671,23 @@ async function main() {
       hookPerformance: LearningUnit.alsGewichte(
         LearningUnit.leistung(memory.all()), "HOOK_ARCHETYPE",
         { faktor: HOOK_LEISTUNG_FAKTOR }),
+      /* -----------------------------------------------------------------
+         §19 — DER FEED SOLL NICHT EIN EINSTIEG SEIN
+
+         feedVariation() gab es seit dem Brand-Auftrag, und kein
+         Produktionspfad hat es je gefragt. Der reale Lauf hat gezeigt,
+         wozu das fuehrt: fuenf Beitraege, fuenf Hooks derselben
+         Bauform ("N von 5951 geprueften Titeln - <Thema>").
+
+         Das Fenster ist das Gedaechtnis UND was dieser Lauf bereits
+         gewaehlt hat. Nur das Gedaechtnis zu fragen hiesse, die
+         Wiederholung innerhalb eines Laufs nicht zu sehen - und
+         genau dort ist sie entstanden.
+
+         Was daraus wird, entscheidet hook.js: ein benannter Posten
+         neben der gemessenen Leistung, nicht mit ihr verrechnet.
+         ----------------------------------------------------------------- */
+      hookAbwechslung: abwechslungAus(feedFenster()),
       audienceFrame: rahmen || null
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
 

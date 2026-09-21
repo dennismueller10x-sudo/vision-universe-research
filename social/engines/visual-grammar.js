@@ -790,24 +790,100 @@
      als "bestanden" zu verbuchen waere wieder der Fall, in dem
      Unbekanntes als Ja gezaehlt wird.
      ------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------
+     EIN FEED BESTEHT AUS ERINNERTEN BEITRAEGEN, NICHT AUS RENDERPLAENEN
+
+     Diese Dimensionen lasen die Felder eines Renderplans - und der
+     Feed, ueber den sie urteilen sollen, liegt im Gedaechtnis, wo
+     dieselben Tatsachen andere Feldnamen tragen (`visualFamily`
+     statt `familie`, `atlasRole` statt `atlasRolle`). Die Namen hier
+     ein zweites Mal zu fuehren waere die abgeschriebene Feldliste,
+     die in diesem Projekt schon dreimal ein Feld verloren hat.
+
+     Deshalb kennt JEDE Dimension beide Schreibweisen, an einer
+     Stelle, direkt neben ihrer Schwelle.
+
+     Und: NICHT ERFASST ist nicht dasselbe wie NICHTS. Ein Eintrag,
+     der ueber Akzente gar nichts sagt, ist kein Beitrag ohne
+     Akzente - er ist ein Beitrag, ueber den wir es nicht wissen.
+     Ihn als "OHNE_AKZENT" zu zaehlen haette jeden Feed aus dem
+     Gedaechtnis in dieser Dimension kollabieren lassen, und der
+     Abschlag waere ein Artefakt der Erfassung gewesen.
+     ------------------------------------------------------------------- */
+  function hatFeld(p, name) {
+    return p !== null && typeof p === "object" &&
+      Object.prototype.hasOwnProperty.call(p, name);
+  }
+
   var VARIATIONS_DIMENSIONEN = [
-    { id: "familie", lies: function (p) { return p.familie || null; },
+    { id: "familie", lies: function (p) {
+        return p.familie || p.visualFamily || null; },
       hoechstAnteil: 0.50, mindestVerschieden: 3 },
-    { id: "form", lies: function (p) { return p.form || null; },
+    { id: "form", lies: function (p) {
+        return p.form || p.visualType || null; },
       hoechstAnteil: 0.60, mindestVerschieden: 3 },
     { id: "atlasRolle", lies: function (p) {
-        return p.atlasRolle || (p.atlas && p.atlas.rolle) || "OHNE_ATLAS"; },
+        if (p.atlasRolle) return p.atlasRolle;
+        if (p.atlas && p.atlas.rolle) return p.atlas.rolle;
+        if (hatFeld(p, "atlasRole")) return p.atlasRole || "OHNE_ATLAS";
+        if (hatFeld(p, "atlas") || hatFeld(p, "atlasRolle")) return "OHNE_ATLAS";
+        return null;
+      },
       hoechstAnteil: 0.70, mindestVerschieden: 2 },
     { id: "dominantesElement", lies: function (p) {
-        return p.dominantesTextRolle || null; },
+        return p.dominantesTextRolle || p.textOnVisualPattern || null; },
       hoechstAnteil: 0.80, mindestVerschieden: 2 },
     { id: "akzent", lies: function (p) {
+        if (!hatFeld(p, "akzente")) return null;
         var a = liste(p.akzente).map(function (x) {
           return (x && x.bedeutung) ? x.bedeutung : x; });
         return a.length ? a.slice().sort().join("+") : "OHNE_AKZENT"; },
       hoechstAnteil: 0.70, mindestVerschieden: 2 },
     { id: "farbwelt", lies: function (p) { return p.farbwelt || null; },
-      hoechstAnteil: 0.70, mindestVerschieden: 2 }
+      hoechstAnteil: 0.70, mindestVerschieden: 2 },
+    /* -----------------------------------------------------------------
+       DER EINSTIEG IST EINE VARIATIONSDIMENSION (§19)
+
+       Diese Liste beschrieb bis hierher nur das BILD. Der reale Lauf
+       hat gezeigt, dass der Feed woanders zuerst kollabiert: fuenf
+       erzeugte Beitraege trugen fuenf Hooks derselben Bauform -
+
+         "33 von 5951 geprueften Titeln - Bekannte Namen in Bewegung."
+         "20 von 5951 geprueften Titeln - Gerade in Bewegung."
+         "565 von 5951 geprueften Titeln - Cashflow-Maschinen."
+
+       Alle fuenf ZAHL_MIT_BEZUG, alle fuenf dieselbe Zahl im Nenner.
+       Ein Leser sieht nicht sechs Bildmerkmale, er sieht die erste
+       Zeile - und sie war fuenfmal dieselbe.
+
+       Die Schwelle liegt niedriger als bei den Bildmerkmalen: eine
+       Form darf das Bild praegen, der Einstieg soll es nicht.
+       ----------------------------------------------------------------- */
+    { id: "hookArchetyp", lies: function (p) {
+        return p.hookArchetyp || p.hookArchetype || null; },
+      hoechstAnteil: 0.50, mindestVerschieden: 2 },
+    /* -----------------------------------------------------------------
+       DAS TEXTMUSTER, WEIL "AUTOR" KEINE FORM IST
+
+       Der reale Feed kollabierte, und die Archetyp-Dimension sah es
+       NICHT: der deterministische Schreiber tritt als Kandidat AUTOR
+       an, und AUTOR ist eine Herkunft, keine rhetorische Form. Fuenf
+       Beitraege derselben Bauform stehen im Gedaechtnis alle unter
+       demselben Wort - eine Dimension, die nicht unterscheiden kann,
+       misst nichts.
+
+       Was die Form WIRKLICH festlegt, ist das Textmuster des
+       Schreibers ("group-count/group-rule-evidence"). Es wird seit
+       jeher als `authoringPattern` mitgeschrieben - es wurde nur nie
+       gefragt.
+
+       Das ist kein Ersatz fuer die Archetyp-Dimension, sondern die
+       zweite Haelfte derselben Frage: WAS fuer ein Satz, und in
+       WELCHER Bauform.
+       ----------------------------------------------------------------- */
+    { id: "muster", lies: function (p) {
+        return p.muster || p.authoringPattern || null; },
+      hoechstAnteil: 0.50, mindestVerschieden: 2 }
   ];
 
   var FENSTER_MINDEST = 6;
@@ -976,9 +1052,50 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     AUS EINEM BEFUND WIRD EINE WIRKUNG
+
+     feedVariation() war seit seiner Entstehung ein Messgeraet ohne
+     Anschluss: die Reifepruefung fragte danach, ein Test fragte
+     danach, und kein Produktionspfad hat es je gelesen. Dasselbe
+     Muster wie die vier Atlas-Rollen, die niemand zeichnete - ein
+     Modell, das nichts verhindert, weil der Fall nie an ihm
+     vorbeikommt.
+
+     `alsAbschlag` ist der Anschluss, und zwar in der Form, die dieses
+     System fuer solche Einfluesse schon hat: eine Tabelle Wert ->
+     Zahl, wie LearningUnit.alsGewichte sie fuer gemessene Leistung
+     liefert. Sie wird dort addiert, wo auch die Leistung addiert
+     wird, und sie heisst anders - zwei verschiedene Tatsachen unter
+     einem Namen waeren genau der Fehler, den dieses Projekt
+     wiederholt gemacht hat.
+
+     Abgezogen wird NUR bei einer gemessenen Enge und NUR dem Wert,
+     der sie verursacht. Ein Abschlag fuer alle waere kein Steuern,
+     sondern Rauschen; ein Abschlag ohne Messung waere eine
+     Behauptung. Und weil UNGEPRUEFT kein bestandener Befund ist,
+     wirkt unter FENSTER_MINDEST gar nichts: ein zu kleines Fenster
+     rechtfertigt keinen Eingriff.
+     ------------------------------------------------------------------- */
+  function alsAbschlag(befund, dimensionId, options) {
+    var o = options || {};
+    var staerke = typeof o.staerke === "number" ? o.staerke : 1;
+    var d = liste(befund && befund.dimensionen).filter(function (x) {
+      return x && x.id === dimensionId; })[0];
+    if (!d || d.zustand !== "KOLLABIERT") return {};
+    if (d.groesstWert === null || d.groesstWert === undefined) return {};
+    var aus = {};
+    /* Der Abschlag waechst mit der Enge. Wer das ganze Fenster
+       ausmacht, verliert mehr als wer knapp ueber der Grenze liegt -
+       sonst waere die Schwelle ein Schalter und keine Messung. */
+    aus[d.groesstWert] = -(d.groesstAnteil * staerke);
+    return aus;
+  }
+
   var api = {
     FLAECHE: FLAECHE,
     MOBIL: MOBIL,
+    alsAbschlag: alsAbschlag,
     FAMILIEN: FAMILIEN,
     FAMILIEN_IDS: FAMILIEN_IDS,
     ATLAS_ROLLEN: ATLAS_ROLLEN,

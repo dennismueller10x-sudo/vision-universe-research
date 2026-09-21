@@ -148,7 +148,8 @@
      verspricht, reist mit (`erwartet`), und BRAND_CHECK prueft die
      Einloesung spaeter am fertigen Paket - so wie bisher.
      ------------------------------------------------------------------- */
-  function hook(opportunity, thesisData, researchData, writer, leistung) {
+  function hook(opportunity, thesisData, researchData, writer, leistung,
+    abwechslung) {
     var autorText = writer && typeof writer.hook === "function"
       ? writer.hook(opportunity, thesisData, researchData)
       : null;
@@ -159,7 +160,11 @@
       thesis: thesisData && thesisData.text
     });
     kontext.zusaetzlich = autorText
-      ? [{ archetyp: "AUTOR", text: String(autorText) }] : [];
+      ? [{ archetyp: "AUTOR", text: String(autorText),
+           /* Die Bauform reist mit, wenn der Schreiber sie nennt. Ohne
+              sie waere jeder Satz des Autors derselbe Wert - und die
+              Abwechslung koennte ihn nie unterscheiden. */
+           muster: (writer && writer.muster) || null }] : [];
     /* -----------------------------------------------------------------
        §39 — WAS ERFASST IST, BEEINFLUSST DIE NAECHSTE AUSWAHL
 
@@ -172,6 +177,24 @@
        mitgeschrieben, gemessen, und kommt hier zurueck.
        ----------------------------------------------------------------- */
     if (leistung && typeof leistung === "object") kontext.leistung = leistung;
+
+    /* -----------------------------------------------------------------
+       §19 — WAS ZULETZT ZU OFT KAM, TRITT MIT ABSCHLAG AN
+
+       Derselbe Weg wie die gemessene Leistung, aus einer anderen
+       Quelle: visual-grammar.feedVariation() misst, ob der Feed in
+       einer Dimension kollabiert ist, und alsAbschlag() macht daraus
+       eine Tabelle Archetyp -> Abzug.
+
+       Fehlt sie - zu kleines Fenster, kein Kollaps -, fliesst NICHTS
+       ein. Ein Abschlag ohne gemessene Enge waere eine Behauptung,
+       und eine erfundene Messung ist in diesem Projekt schon einmal
+       als Bericht durchgegangen.
+       ----------------------------------------------------------------- */
+    if (abwechslung && typeof abwechslung === "object") {
+      kontext.abwechslung = abwechslung.archetyp || null;
+      kontext.abwechslungMuster = abwechslung.muster || null;
+    }
 
     var wahl = Hook.waehle(kontext);
     if (!wahl.ok) {
@@ -304,7 +327,7 @@
 
     /* 3. HOOK */
     var h = hook(opportunity, t.data, r.data, input.writer,
-      input.hookPerformance || null);
+      input.hookPerformance || null, input.hookAbwechslung || null);
     if (!h.ok) return stop(h);
     stages.push(h);
 

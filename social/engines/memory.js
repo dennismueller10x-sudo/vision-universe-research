@@ -411,6 +411,11 @@
     shingles: shingles,
     shingleSimilarity: shingleSimilarity,
     entry: entry,
+    /* Die eine Stelle, an der die zwoelf Feldnamen aus §38 kopiert
+       werden. Wer einen Eintrag in Gedaechtnisform braucht - auch
+       ausserhalb dieser Datei -, holt sie hier und zaehlt sie nicht
+       ein zweites Mal auf. */
+    mitDimensionen: mitDimensionen,
     createMemory: createMemory
   };
 

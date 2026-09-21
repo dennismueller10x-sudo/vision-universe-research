@@ -393,3 +393,100 @@ test("VG41 · Die Schriftgroessen stehen genau einmal im Renderer", () => {
     "Die Groessentabelle darf nur an einer Stelle stehen.");
   assert.match(OHNE_KOMMENTARE, /textGroessen\s*:\s*textGroessen\(/);
 });
+
+/* ------------------------------------------------------------------ */
+/* §19 — AUS DEM BEFUND WIRD EINE WIRKUNG                              */
+/* ------------------------------------------------------------------ */
+
+test("VG42 · Der Einstieg ist eine Variationsdimension", () => {
+  /* Der reale Lauf hat fuenf Hooks derselben Bauform erzeugt. Sechs
+     Bilddimensionen haben das nicht gesehen, weil der Leser zuerst
+     die erste Zeile sieht und nicht das Layout. */
+  const feed = Array.from({ length: 8 }, () => ({
+    hookArchetyp: "ZAHL_MIT_BEZUG", familie: "RANKING", form: "COMPARISON" }));
+  const r = G.feedVariation(feed);
+  const d = r.dimensionen.find((x) => x.id === "hookArchetyp");
+  assert.ok(d, "Die Dimension hookArchetyp fehlt.");
+  assert.equal(d.zustand, "KOLLABIERT");
+  assert.equal(d.groesstWert, "ZAHL_MIT_BEZUG");
+});
+
+test("VG43 · Das Textmuster wird eigenstaendig gemessen", () => {
+  /* "AUTOR" ist eine Herkunft, keine Form: fuenf verschieden
+     formulierte Saetze desselben Schreibers stehen alle unter
+     demselben Wort. Was die Form festlegt, ist das Muster. */
+  const feed = Array.from({ length: 8 }, (_, i) => ({
+    hookArchetyp: i % 2 ? "KONTRAST" : "ZAHL_MIT_BEZUG",
+    authoringPattern: "group-count/group-rule-evidence",
+    familie: "RANKING", form: "COMPARISON" }));
+  const r = G.feedVariation(feed);
+  const archetyp = r.dimensionen.find((x) => x.id === "hookArchetyp");
+  const muster = r.dimensionen.find((x) => x.id === "muster");
+  assert.equal(archetyp.zustand, "VIELFAELTIG",
+    "Die Archetypen wechseln - das soll nicht als Kollaps gelten.");
+  assert.equal(muster.zustand, "KOLLABIERT");
+  assert.equal(muster.groesstWert, "group-count/group-rule-evidence");
+});
+
+test("VG44 · Nicht erfasst ist nicht dasselbe wie nichts", () => {
+  /* Ein Gedaechtniseintrag sagt ueber Akzente gar nichts. Ihn als
+     "ohne Akzente" zu zaehlen haette jeden Feed aus dem Gedaechtnis
+     in dieser Dimension kollabieren lassen - ein Abschlag als
+     Artefakt der Erfassung. */
+  const ohneFeld = Array.from({ length: 8 }, () => ({ familie: "RANKING" }));
+  const mitLeer = Array.from({ length: 8 }, () => ({ familie: "RANKING", akzente: [] }));
+  assert.equal(G.feedVariation(ohneFeld).dimensionen
+    .find((x) => x.id === "akzent").zustand, "UNGEPRUEFT");
+  assert.equal(G.feedVariation(mitLeer).dimensionen
+    .find((x) => x.id === "akzent").zustand, "KOLLABIERT");
+});
+
+test("VG45 · Die Dimensionen lesen auch die Namen des Gedaechtnisses", () => {
+  /* Der Feed liegt im Gedaechtnis, wo dieselben Tatsachen
+     `visualFamily`, `visualType`, `atlasRole` heissen. Eine zweite
+     Feldliste waere die, die hier schon dreimal ein Feld verloren
+     hat. */
+  const feed = Array.from({ length: 6 }, () => ({
+    visualFamily: "RANKING", visualType: "COMPARISON",
+    atlasRole: "ATLAS_SIGNATURE", textOnVisualPattern: "HOOK",
+    hookArchetype: "ZAHL_MIT_BEZUG", authoringPattern: "p1" }));
+  const r = G.feedVariation(feed);
+  const werte = {};
+  r.dimensionen.forEach((d) => { werte[d.id] = d.groesstWert; });
+  assert.equal(werte.familie, "RANKING");
+  assert.equal(werte.form, "COMPARISON");
+  assert.equal(werte.atlasRolle, "ATLAS_SIGNATURE");
+  assert.equal(werte.dominantesElement, "HOOK");
+  assert.equal(werte.hookArchetyp, "ZAHL_MIT_BEZUG");
+  assert.equal(werte.muster, "p1");
+});
+
+test("VG46 · Abschlag nur bei gemessener Enge, und nur fuer den Wert", () => {
+  const eng = G.feedVariation(Array.from({ length: 8 }, () => ({
+    hookArchetyp: "ZAHL_MIT_BEZUG" })));
+  const ab = G.alsAbschlag(eng, "hookArchetyp", { staerke: 10 });
+  assert.deepEqual(Object.keys(ab), ["ZAHL_MIT_BEZUG"]);
+  assert.equal(ab.ZAHL_MIT_BEZUG, -10);
+
+  /* Weit: kein Abschlag. Ein Tor, das immer anschlaegt, steuert nicht. */
+  const weit = G.feedVariation(["A", "B", "C", "D", "E", "F", "G", "H"]
+    .map((x) => ({ hookArchetyp: x })));
+  assert.deepEqual(G.alsAbschlag(weit, "hookArchetyp", { staerke: 10 }), {});
+
+  /* Zu kleines Fenster: UNGEPRUEFT ist kein bestandener Befund - und
+     erst recht kein Grund einzugreifen. */
+  const klein = G.feedVariation(Array.from({ length: G.FENSTER_MINDEST - 1 },
+    () => ({ hookArchetyp: "ZAHL_MIT_BEZUG" })));
+  assert.equal(klein.zustand, "UNGEPRUEFT");
+  assert.deepEqual(G.alsAbschlag(klein, "hookArchetyp", { staerke: 10 }), {});
+});
+
+test("VG47 · Der Abschlag waechst mit der Enge", () => {
+  /* Sonst waere die Schwelle ein Schalter und keine Messung. */
+  const ganz = G.feedVariation(Array.from({ length: 8 }, () => ({ hookArchetyp: "A" })));
+  const knapp = G.feedVariation(
+    Array.from({ length: 8 }, (_, i) => ({ hookArchetyp: i < 5 ? "A" : "B" })));
+  const a = G.alsAbschlag(ganz, "hookArchetyp", { staerke: 10 }).A;
+  const b = G.alsAbschlag(knapp, "hookArchetyp", { staerke: 10 }).A;
+  assert.ok(b < 0 && a < b, "ganz " + a + " sollte staerker sein als knapp " + b);
+});

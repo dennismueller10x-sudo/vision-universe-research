@@ -433,6 +433,22 @@
     eigenstaendig: 20
   };
 
+  /* -------------------------------------------------------------------
+     WIE SCHWER EIN KOLLABIERTER FEED WIEGT (§19)
+
+     Die vier Gewichte oben ergeben zusammen 100. Ein Archetyp, der
+     das ganze Fenster ausmacht, verliert hier 10 - genug, um eine
+     knappe Entscheidung zu drehen (im realen Lauf lagen Sieger und
+     Zweiter 0,33 Punkte auseinander), zu wenig, um einen deutlich
+     besseren Satz zu ueberstimmen.
+
+     Das ist der Punkt: Abwechslung soll bei Gleichstand entscheiden,
+     nicht Qualitaet ersetzen. §4 verbietet, eine Schwelle zu senken;
+     ein Abschlag, der einen schwachen Hook gewinnen liesse, waere
+     genau das.
+     ------------------------------------------------------------------- */
+  var ABSCHLAG_STAERKE = 10;
+
   function bewerte(kandidat, kontext) {
     var k = kontext || {};
     var text = String(kandidat.text || "");
@@ -523,8 +539,42 @@
       punkte += leistung;
     }
 
+    /* -----------------------------------------------------------------
+       ABWECHSLUNG — UND WARUM SIE NICHT LEISTUNG HEISST (§19)
+
+       Gemessene Leistung sagt: dieser Einstieg hat funktioniert.
+       Abwechslung sagt: dieser Einstieg kam zuletzt zu oft. Das sind
+       zwei verschiedene Tatsachen, und sie koennen sich
+       widersprechen - ein Archetyp kann gut UND ueberstrapaziert
+       sein.
+
+       Sie stehen deshalb als zwei Posten in `teile`, nicht als eine
+       verrechnete Zahl. Zwei Register fuer eine Tatsache ist in
+       diesem Projekt ein Fehler; eine Tatsache fuer zwei ist der
+       umgekehrte, und er macht den Bericht unlesbar: "leistung -3"
+       liesse nicht mehr erkennen, ob gemessen oder gesteuert wurde.
+       ----------------------------------------------------------------- */
+    var abschlag = (k.abwechslung && typeof k.abwechslung === "object")
+      ? zahl(k.abwechslung[kandidat.archetyp]) : null;
+    if (abschlag !== null) {
+      teile.abwechslung = abschlag;
+      punkte += abschlag;
+    }
+
+    /* Und dieselbe Frage an die Bauform. Zwei Posten, weil es zwei
+       Dimensionen sind: ein Archetyp kann selten und seine Bauform
+       trotzdem abgenutzt sein. */
+    var musterAbschlag = (kandidat.muster &&
+      k.abwechslungMuster && typeof k.abwechslungMuster === "object")
+      ? zahl(k.abwechslungMuster[kandidat.muster]) : null;
+    if (musterAbschlag !== null) {
+      teile.abwechslungMuster = musterAbschlag;
+      punkte += musterAbschlag;
+    }
+
     return {
       archetyp: kandidat.archetyp,
+      muster: kandidat.muster || null,
       text: text,
       belege: liste(kandidat.belege),
       zulaessig: ausschluss.length === 0,
@@ -567,6 +617,10 @@
       if (!z || !gefuellt(z.text)) return;
       erzeugt.kandidaten.push({
         archetyp: gefuellt(z.archetyp) ? String(z.archetyp) : "AUTOR",
+        /* Die Bauform des Satzes, wenn der Einreicher sie kennt.
+           "AUTOR" sagt, WOHER der Satz kommt, nicht WIE er gebaut
+           ist - und der Feed kollabiert an der Bauform. */
+        muster: gefuellt(z.muster) ? String(z.muster) : null,
         text: String(z.text).trim(),
         erwartet: liste(z.erwartet),
         belege: liste(z.belege)
@@ -650,6 +704,7 @@
     VORAUSSETZUNG: VORAUSSETZUNG,
     AUSSCHLUSS: AUSSCHLUSS,
     GEWICHTE: GEWICHTE,
+    ABSCHLAG_STAERKE: ABSCHLAG_STAERKE,
     ableiten: ableiten,
     kandidaten: kandidaten,
     bewerte: bewerte,

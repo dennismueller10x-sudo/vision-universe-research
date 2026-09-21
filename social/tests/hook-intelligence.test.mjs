@@ -371,3 +371,120 @@ test("HK30 · Ein ausgeschlossener Kandidat wird auch nicht gewaehlt", () => {
   assert.equal(r.gewaehlt, null);
   assert.ok(r.bewertet.every((b) => !b.zulaessig));
 });
+
+/* ------------------------------------------------------------------ */
+/* §19 — ABWECHSLUNG ENTSCHEIDET BEI GLEICHSTAND, NICHT STATT QUALITAET */
+/* ------------------------------------------------------------------ */
+
+const LAGE = {
+  opportunity: { topic: "Kleine gegen grosse Unternehmen",
+    entities: ["Russell 2000", "S&P 500"] },
+  facts: [
+    { entity: "Russell 2000", metric: "KGV", value: 13.4, source: "vu.technical" },
+    { entity: "S&P 500", metric: "KGV", value: 21.6, source: "vu.technical" }],
+  thesis: "Der Bewertungsabstand ist so gross wie lange nicht."
+};
+
+test("HK31 · Ein abgenutzter Archetyp verliert seinen Vorsprung", () => {
+  /* Der Kreis, den §19 schliesst: feedVariation misst, alsAbschlag
+     rechnet, und hier faellt die Entscheidung anders aus. Ohne den
+     Abschlag gewinnt ZAHL_MIT_BEZUG mit 66 vor KONTRAST mit 63,33. */
+  const ohne = H.waehle(H.ableiten(LAGE));
+  assert.equal(ohne.gewaehlt.archetyp, "ZAHL_MIT_BEZUG");
+
+  const mit = H.waehle(Object.assign(H.ableiten(LAGE),
+    { abwechslung: { ZAHL_MIT_BEZUG: -H.ABSCHLAG_STAERKE } }));
+  assert.equal(mit.gewaehlt.archetyp, "KONTRAST");
+});
+
+test("HK32 · Der Abschlag steht als eigener Posten, nicht in der Leistung", () => {
+  /* Gemessene Leistung sagt: hat funktioniert. Abwechslung sagt: kam
+     zuletzt zu oft. Verrechnet man sie, liesse der Bericht nicht mehr
+     erkennen, ob gemessen oder gesteuert wurde. */
+  const w = H.waehle(Object.assign(H.ableiten(LAGE), {
+    leistung: { ZAHL_MIT_BEZUG: 4 },
+    abwechslung: { ZAHL_MIT_BEZUG: -3 } }));
+  const b = w.bewertet.find((x) => x.archetyp === "ZAHL_MIT_BEZUG");
+  assert.equal(b.teile.leistung, 4);
+  assert.equal(b.teile.abwechslung, -3);
+  assert.equal(b.leistungGemessen, true);
+});
+
+test("HK33 · Ohne gemessene Enge fliesst nichts ein", () => {
+  /* Ein Abschlag ohne Messung waere eine Behauptung - und erfundene
+     Messungen sind in diesem Projekt schon als Bericht durchgegangen. */
+  const w = H.waehle(H.ableiten(LAGE));
+  w.bewertet.forEach((b) => {
+    assert.equal("abwechslung" in b.teile, false, b.archetyp);
+    assert.equal("abwechslungMuster" in b.teile, false, b.archetyp);
+  });
+});
+
+test("HK34 · Die Bauform des Autors wird eigenstaendig abgeschlagen", () => {
+  /* "AUTOR" ist eine Herkunft. Was den Satz baut, ist das Muster -
+     und nur so laesst sich ein abgenutzter Schreiber ueberhaupt
+     erkennen. */
+  const k = H.ableiten(LAGE);
+  k.zusaetzlich = [{ archetyp: "AUTOR", text: "Zwei Indizes, ein Abstand von 8,2.",
+    muster: "group-count/group-rule-evidence" }];
+  const ohne = H.waehle(Object.assign({}, k));
+  const autorOhne = ohne.bewertet.find((b) => b.archetyp === "AUTOR");
+  assert.equal(autorOhne.muster, "group-count/group-rule-evidence");
+  assert.equal("abwechslungMuster" in autorOhne.teile, false);
+
+  const mit = H.waehle(Object.assign({}, k, {
+    abwechslungMuster: { "group-count/group-rule-evidence": -7 } }));
+  const autorMit = mit.bewertet.find((b) => b.archetyp === "AUTOR");
+  assert.equal(autorMit.teile.abwechslungMuster, -7);
+  assert.equal(autorMit.punkte, Math.round((autorOhne.punkte - 7) * 100) / 100);
+});
+
+test("HK35 · Der Abschlag laesst einen schwachen Hook nicht gewinnen", () => {
+  /* §4: keine Schwelle senken. Abwechslung soll bei Gleichstand
+     entscheiden - ein Satz, der an einer Tuer scheitert, bleibt
+     draussen, egal wie abgenutzt die Konkurrenz ist. */
+  const k = H.ableiten(LAGE);
+  k.zusaetzlich = [{ archetyp: "AUTOR", text: "Diese Aktie verdoppelt sich sicher." }];
+  const w = H.waehle(Object.assign({}, k, {
+    abwechslung: { ZAHL_MIT_BEZUG: -50, KONTRAST: -50 } }));
+  assert.notEqual(w.gewaehlt.archetyp, "AUTOR");
+  const autor = w.bewertet.find((b) => b.archetyp === "AUTOR");
+  assert.equal(autor.zulaessig, false);
+});
+
+test("HK36 · Bauform und Abschlag reisen durch content.js bis zur Wahl", () => {
+  /* Die Kette hat drei Glieder, und jedes ist schon einmal in diesem
+     Projekt gerissen: der Schreiber nennt seine Bauform, content.js
+     reicht sie an den Kandidaten weiter, hook.js rechnet mit ihr.
+     Geprueft wird deshalb der ganze Weg, nicht das mittlere Glied. */
+  const lage = {
+    opportunity: { opportunityId: "opp_muster", topic: "KI-Rechenzentren",
+      entities: ["NVDA"], platform: "instagram" },
+    sources: [{ source: "vu.technical", provider: "tiingo", entity: "NVDA",
+      metric: "52-Wochen-Hoch", value: "184,20", unit: "USD",
+      state: "VERIFIED", observedAt: "2026-09-15T11:00:00Z" }],
+    strategyDecision: { platform: "instagram", archetype: "DATA_STORY",
+      timeSensitivity: "TIMELY" },
+    visualAvailability: { timeSeries: true, keyNumber: true },
+    writer: Object.assign(Content.createTemplateWriter(),
+      { muster: "metric-frame/evidence-led" })
+  };
+
+  const ohne = Content.run(lage, { now: NOW });
+  assert.equal(ohne.ok, true, ohne.explanation);
+  const autorOhne = ohne.package.hookSelection.bewertet
+    .find((b) => b.archetyp === "AUTOR");
+  assert.ok(autorOhne, "Der Schreiber tritt nicht als Kandidat an.");
+  assert.equal(autorOhne.muster, "metric-frame/evidence-led",
+    "Die Bauform ist auf dem Weg verloren gegangen.");
+  assert.equal("abwechslungMuster" in autorOhne.teile, false);
+
+  const mit = Content.run(Object.assign({}, lage, {
+    hookAbwechslung: { muster: { "metric-frame/evidence-led": -9 } }
+  }), { now: NOW });
+  const autorMit = mit.package.hookSelection.bewertet
+    .find((b) => b.archetyp === "AUTOR");
+  assert.equal(autorMit.teile.abwechslungMuster, -9,
+    "Der Abschlag ist nicht bis zur Bewertung durchgekommen.");
+  assert.equal(autorMit.punkte, Math.round((autorOhne.punkte - 9) * 100) / 100);
+});

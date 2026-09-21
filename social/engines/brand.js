@@ -42,7 +42,26 @@
     { id: "moon", re: /\b(?:to\s+the\s+moon|Rakete|explodiert\s+gleich|geht\s+durch\s+die\s+Decke)\b/gi,
       message: "Moon-Rhetorik" },
     { id: "fear", re: /\b(?:Crash\s+kommt|Alles\s+verlieren|Totalverlust\s+droht)\b/gi,
-      message: "Angstmache" }
+      message: "Angstmache" },
+    /* -----------------------------------------------------------------
+       DAS RENDITEVERSPRECHEN — GEFUNDEN, WEIL EIN TEST ES BRAUCHTE
+
+       Die vier Register oben decken Casino, Geheimtipp, Mond und
+       Angst ab. Ein adversarialer Hook-Test reichte "Diese Aktie
+       verdoppelt sich sicher." ein und erwartete, dass die Tuer
+       zugeht - sie ging nicht zu. Fuer einen Finanzabsender ist das
+       der folgenreichste Satz ueberhaupt, folgenreicher als
+       "Jackpot".
+
+       Eng gefasst, und absichtlich so: getroffen wird die ZUSICHERUNG
+       eines kuenftigen Ergebnisses, nicht die Feststellung eines
+       vergangenen. "Die Aktie hat sich seit 2020 verdoppelt" ist eine
+       Tatsache und muss durchgehen - ein Pruefer, der richtigen Text
+       abweist, ist in diesem Projekt eine eigene Fehlerfamilie.
+       ----------------------------------------------------------------- */
+    { id: "renditeversprechen",
+      re: /\b(?:garantierte[rnms]?\s+(?:Rendite|Gewinn\w*|Ertrag)|Rendite\s+garantiert|risikolos\w*|sichere[rnms]?\s+(?:Rendite|Gewinn\w*|Verdoppl\w+)|(?:verdoppelt|verdreifacht|vervielfacht)\s+sich\s+(?:sicher|garantiert|auf\s+jeden\s+Fall)|wird\s+sich\s+(?:sicher|garantiert)\s+(?:verdoppeln|verdreifachen|vervielfachen)|macht\s+(?:dich|Sie)\s+reich|kann\s+nicht\s+fallen)\b/gi,
+      message: "Renditeversprechen: ein kuenftiges Ergebnis wird zugesichert" }
   ];
 
   var WARNING_TERMS = [
