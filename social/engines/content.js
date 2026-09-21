@@ -48,12 +48,15 @@
   var FactCheck  = isNode ? require("./fact-check.js") : global.VUSocialFactCheck;
   var Brand      = isNode ? require("./brand.js")      : global.VUSocialBrand;
   var Hook       = isNode ? require("./hook.js")       : global.VUSocialHook;
+  var ContentIntelligence = isNode ? require("./content-intelligence.js")
+    : global.VUSocialContentIntelligence;
   var Visual     = isNode ? require("./visual.js")     : global.VUSocialVisual;
   var Untrusted  = isNode ? require("./untrusted.js")  : global.VUSocialUntrusted;
   var Hash       = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
 
   var STAGES = ["RESEARCH", "THESIS", "HOOK", "STRUCTURE", "DRAFT",
-                "FACT_CHECK", "BRAND_CHECK", "PLATFORM_ADAPTATION", "PACKAGE"];
+                "FACT_CHECK", "AUDIENCE_SEPARATION", "BRAND_CHECK",
+                "PLATFORM_ADAPTATION", "PACKAGE"];
 
   /* Plattformgrenzen. Sie stehen hier und nicht im Adapter, weil sie die
      TEXTERZEUGUNG betreffen: ein Text, der erst beim Veroeffentlichen an
@@ -377,7 +380,45 @@
                      "Genau das darf zwischen Agenten nicht passieren (§39)." };
     }
 
-    /* 7. BRAND CHECK */
+    /* -----------------------------------------------------------------
+       7. AUDIENCE SEPARATION (§8)
+
+       Die vier Ebenen aus §8 gab es in diesem System schon, nur ohne
+       gemeinsamen Namen - und ohne Tor. `internalTermsNotSuitableForHook`
+       stand seit dem Publikumsrahmen in audience-frame.js, floss in die
+       `mustNotShow`-Liste der Bildrichtung und in einen Bericht, und
+       wurde nie gegen einen veroeffentlichten Satz gehalten.
+
+       Der erste gerenderte Kandidat dieses Systems trug "XOM: 76 im
+       Technical Opportunity Score". Das ist der Fehler, den §8
+       verbietet, und er ist hier passiert, waehrend die Liste danebenlag.
+
+       Diese Stufe steht vor BRAND_CHECK, weil sie eine andere Frage
+       stellt: nicht "klingt das nach uns", sondern "ist das ueberhaupt
+       fuer draussen".
+       ----------------------------------------------------------------- */
+    var ebenen = ContentIntelligence.trenne(ContentIntelligence.ableiten({
+      package: pkg,
+      opportunity: opportunity,
+      audienceFrame: input.audienceFrame || null,
+      evidence: r.data.facts
+    }));
+    /* Gemeldet wird `dicht`, nicht `ok`: die Stufe SPERRT, wenn etwas
+       Internes nach draussen gelangt. Dass eine Ebene fehlt, ist ein
+       Befund ueber die Vorarbeit - ohne Publikumsrahmen gibt es die
+       Kernfrage hier nicht - und kein Grund, den Beitrag zu sperren.
+       Beides unter einem Ja/Nein zu fuehren waere ein Register fuer
+       zwei Tatsachen. */
+    stages.push(stageResult("AUDIENCE_SEPARATION", ebenen.dicht, ebenen,
+      ebenen.dicht ? null : ebenen.erklaerung));
+    if (!ebenen.dicht) {
+      return { ok: false, package: null, stages: stages,
+        failedStage: "AUDIENCE_SEPARATION",
+        explanation: "Die Ebenen aus §8 sind nicht getrennt: " +
+          ebenen.undicht.map(function (v) { return v.satz; }).join(" ") };
+    }
+
+    /* 8. BRAND CHECK */
     var brand = Brand.check(pkg);
     stages.push(stageResult("BRAND_CHECK", brand.passed, brand, brand.passed ? null : brand.explanation));
     if (!brand.passed) {
@@ -385,7 +426,7 @@
                explanation: "Markenpruefung nicht bestanden: " + brand.explanation };
     }
 
-    /* 8. PLATFORM ADAPTATION */
+    /* 9. PLATFORM ADAPTATION */
     var adapted = adaptToPlatform(pkg, platform);
     if (!adapted.ok) return stop(adapted);
     stages.push(adapted);
@@ -397,7 +438,7 @@
       recentVisuals: input.recentVisuals || []
     });
 
-    /* 9. PACKAGE */
+    /* 10. PACKAGE */
     var finalPackage = Schema.contentPackage({
       packageId: pkg.packageId,
       opportunityId: pkg.opportunityId,
@@ -435,6 +476,10 @@
       validation: {
         factCheck: { passed: fact.passed, state: fact.state, explanation: fact.explanation },
         brandCheck: { passed: brand.passed, score: brand.score, explanation: brand.explanation },
+        audienceSeparation: { passed: ebenen.dicht, vollstaendig: ebenen.ok,
+          zustand: ebenen.zustand, geprueft: ebenen.geprueft,
+          fehlendeEbenen: ebenen.fehlendeEbenen,
+          explanation: ebenen.erklaerung },
         fatigueCheck: null   /* laeuft erst gegen das Gedaechtnis, eine Stufe spaeter */
       }
     });
@@ -447,7 +492,10 @@
       failedStage: null,
       visual: visual,
       adaptationNotes: adapted.data.notes,
-      explanation: "Alle neun Stufen durchlaufen. Faktenpruefung " + fact.state +
+      /* Die Zahl wird gezaehlt, nicht geschrieben. Als die Stufe
+         AUDIENCE_SEPARATION dazukam, stand hier weiter "neun" - ein
+         Satz, der eine Tatsache behauptet, statt sie abzulesen. */
+      explanation: "Alle " + STAGES.length + " Stufen durchlaufen. Faktenpruefung " + fact.state +
         ", Markenwert " + brand.score + ", Bildform " + (visual.visualType || "keine") + "."
     };
   }

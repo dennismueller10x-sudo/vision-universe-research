@@ -84,23 +84,173 @@ const ja = (satz, belege) => ({ zustand: Z.ERFUELLT, satz, belege: belege || [] 
    1. CONTENT_INTELLIGENCE_READY (§6/§7/§8)
    =================================================================== */
 function contentIntelligence() {
-  /* §8 verlangt, dass das System vier Dinge AUSDRUECKLICH
-     unterscheidet. Gemessen wird deshalb, ob es die Begriffe als
-     benannte Groessen fuehrt - nicht, ob irgendwo das Wort "Hook"
-     vorkommt. */
-  const noetig = ["INTERNAL_SIGNAL", "EDITORIAL_ANGLE", "PUBLIC_HOOK", "PUBLIC_STORY"];
-  const treffer = [];
-  for (const d of readdirSync(join(ROOT, "social/engines"))) {
-    const q = ohneKommentare(text("social/engines/" + d));
-    for (const n of noetig) if (q && q.includes(n) && !treffer.includes(n)) treffer.push(n);
+  /* -----------------------------------------------------------------
+     §8 VERLANGT EINE TRENNUNG, KEINE VIER WOERTER IM QUELLTEXT
+
+     Der erste Entwurf suchte die vier Namen quer durch social/engines.
+     Vier Zeichenketten - ein Kommentar haette genuegt. Dieselbe
+     schwache Form, die bei den drei Bedingungen davor schon durch die
+     Gegenprobe gefallen ist.
+
+     Gemessen wird am Verhalten, und zwar an dem einen Fall, der hier
+     wirklich passiert ist: "XOM: 76 im Technical Opportunity Score"
+     auf dem ersten gerenderten Kandidaten.
+
+       1. Sind die vier Ebenen als Groessen gefuehrt, jede mit Zweck
+          und Wohnort?
+       2. Weist die Trennung ein internes Signal im oeffentlichen Text
+          zurueck - im Hook UND im Beitrag?
+       3. Ist eine fehlende Begriffsliste KEIN Freibrief?
+       4. Weist sie dabei keinen richtigen Text ab (kein "SMA" in
+          "Smartphone")?
+       5. Sperrt der reale Durchlauf den Vorfall - und laesst er einen
+          Beitrag aus oeffentlichen Kennzahlen durch?
+     ----------------------------------------------------------------- */
+  const pfad = "social/engines/content-intelligence.js";
+  if (!existiert(pfad)) {
+    return nein("Die vier Ebenen aus §8 sind nirgends als Groessen " +
+      "gefuehrt. Ohne sie laesst sich ein internes Signal nicht von " +
+      "einer oeffentlichen Geschichte unterscheiden - genau die " +
+      "Verwechslung, die §8 verbietet.");
   }
-  const fehlt = noetig.filter((n) => !treffer.includes(n));
-  return fehlt.length === 0
-    ? ja("Die vier Ebenen sind als benannte Groessen gefuehrt.", treffer)
-    : nein("Die vier Ebenen aus §8 sind nicht getrennt benannt; es fehlen: " +
-      fehlt.join(", ") + ". Ohne sie laesst sich ein internes Signal nicht " +
-      "von einer oeffentlichen Geschichte unterscheiden - genau die " +
-      "Verwechslung, die §8 verbietet.", treffer);
+  let CI, C, AF;
+  try {
+    CI = require(join(ROOT, pfad));
+    C = require(join(ROOT, "social/engines/content.js"));
+    AF = require(join(ROOT, "social/engines/audience-frame.js"));
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "content-intelligence.js liess sich nicht laden (" + e.message + ")." };
+  }
+
+  const noetig = ["INTERNAL_SIGNAL", "EDITORIAL_ANGLE", "PUBLIC_HOOK",
+    "PUBLIC_STORY"];
+  const fehlt = noetig.filter((n) => !CI.EBENEN || !CI.EBENEN[n]);
+  if (fehlt.length) {
+    return nein("Die vier Ebenen aus §8 sind nicht getrennt benannt; es " +
+      "fehlen: " + fehlt.join(", ") + ".");
+  }
+
+  const luecken = [];
+  noetig.forEach((n) => {
+    const e = CI.EBENEN[n];
+    if (!e.zweck || !e.wohnt || typeof e.oeffentlich !== "boolean") {
+      luecken.push(n + " unvollstaendig");
+    }
+  });
+
+  const gut = {
+    internalSignal: ["Technical Opportunity Score", "76"],
+    editorialAngle: "Was ist bei diesem Unternehmen gerade los?",
+    publicHook: "So nah am Jahreshoch war Exxon seit 2022 nicht.",
+    publicStory: "Der Konzern steht am oberen Rand seiner Gruppe."
+  };
+  if (!CI.trenne(gut).dicht) {
+    luecken.push("ein sauber getrennter Beitrag wird abgewiesen");
+  }
+
+  const vorfall = Object.assign({}, gut,
+    { publicHook: "XOM: 76 im Technical Opportunity Score." });
+  if (CI.trenne(vorfall).dicht) {
+    luecken.push("der Satz vom ersten Kandidaten kommt durch");
+  }
+  const imText = Object.assign({}, gut,
+    { publicStory: "Der Setup-Rang liegt im obersten Perzentil." });
+  if (CI.trenne(imText).dicht) {
+    luecken.push("ein interner Begriff im Beitragstext kommt durch");
+  }
+
+  /* Die Frage darf nicht das Signal sein, und die Hook nicht die
+     Frage. Ohne diese beiden Proben blieb der Bericht gruen, waehrend
+     die Tests rot wurden - die Gegenprobe hat es gezeigt. */
+  const angleGleichSignal = CI.trenne(Object.assign({}, gut, {
+    internalSignal: "Der Rang im Vergleich zur Gruppe ist hoch",
+    editorialAngle: "Der Rang im Vergleich zur Gruppe ist hoch" }));
+  if (!angleGleichSignal.verstoesse.some(
+      (v) => v.id === CI.BEFUND.ANGLE_IST_DAS_SIGNAL)) {
+    luecken.push("eine Frage, die nur das Signal umschreibt, faellt nicht auf");
+  }
+  const hookGleichFrage = CI.trenne(Object.assign({}, gut, {
+    editorialAngle: "Was bedeutet das fuer mein Depot?",
+    publicHook: "Was bedeutet das fuer mein Depot?" }));
+  if (!hookGleichFrage.verstoesse.some(
+      (v) => v.id === CI.BEFUND.HOOK_IST_DER_ANGLE)) {
+    luecken.push("eine Hook, die nur die Kernfrage ist, faellt nicht auf");
+  }
+
+  /* Und eine fehlende Ebene muss benannt werden - getrennt von der
+     Sperre, aber eben benannt. */
+  const ohneFrage = CI.trenne(Object.assign({}, gut, { editorialAngle: "" }));
+  if (ohneFrage.ok || !ohneFrage.dicht ||
+      !ohneFrage.fehlendeEbenen.includes("EDITORIAL_ANGLE")) {
+    luecken.push("eine fehlende Ebene wird nicht als solche gefuehrt");
+  }
+
+  /* Eine leere Liste darf kein Freibrief sein. */
+  const ohneListe = CI.trenne(Object.assign({}, vorfall, { internalTerms: [] }));
+  if (ohneListe.dicht) {
+    luecken.push("eine fehlende Begriffsliste gilt als keine Einschraenkung");
+  }
+
+  /* Und kein Pruefer, der richtigen Text abweist. */
+  if (CI.interneTreffer("Ein Smartphone mit SMS", ["SMA"]).length ||
+      CI.interneTreffer("Attraktive Titel", ["ATR"]).length) {
+    luecken.push("ein Kuerzel wird mitten im Wort gefunden");
+  }
+  if (!CI.interneTreffer("Eine Perzentilrechnung", ["Perzentil"]).length) {
+    luecken.push("eine Zusammensetzung wird nicht gefunden");
+  }
+
+  /* Und der Produktionsweg. */
+  if (!(C.STAGES || []).includes("AUDIENCE_SEPARATION")) {
+    luecken.push("die Pipeline hat keine Stufe dafuer");
+  }
+  const NOW = "2026-09-16T10:00:00Z";
+  const lauf = (quellen, rahmen) => C.run({
+    opportunity: { opportunityId: "readiness", topic: "Probe",
+      entities: ["NVDA"], platform: "instagram" },
+    sources: quellen,
+    strategyDecision: { platform: "instagram", archetype: "DATA_STORY",
+      timeSensitivity: "TIMELY" },
+    visualAvailability: { timeSeries: true, keyNumber: true },
+    audienceFrame: rahmen || null,
+    writer: C.createTemplateWriter()
+  }, { now: NOW });
+
+  let gesperrt = null, durch = null;
+  try {
+    gesperrt = lauf([{ source: "vu.technical", provider: "tiingo",
+      entity: "NVDA", metric: "Technical Opportunity Score", value: 76,
+      state: "VERIFIED", observedAt: NOW }],
+      AF.frame({ topicId: "t", family: "STOCK_STORY", entities: ["NVDA"] },
+        { names: { NVDA: "Nvidia" } }));
+    durch = lauf([{ source: "vu.technical", provider: "tiingo",
+      entity: "NVDA", metric: "52-Wochen-Hoch", value: "184,20", unit: "USD",
+      state: "VERIFIED", observedAt: "2026-09-15T11:00:00Z" }], null);
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Der Probedurchlauf warf: " + e.message };
+  }
+  if (gesperrt.ok || gesperrt.failedStage !== "AUDIENCE_SEPARATION") {
+    luecken.push("der reale Durchlauf sperrt den Vorfall nicht (endete in " +
+      (gesperrt.failedStage || "keiner Stufe") + ")");
+  }
+  if (!durch.ok) {
+    luecken.push("das Tor sperrt auch einen Beitrag aus oeffentlichen " +
+      "Kennzahlen (" + durch.failedStage + ")");
+  } else if (!durch.package.validation.audienceSeparation) {
+    luecken.push("der Befund faellt beim Verpacken heraus");
+  }
+
+  if (luecken.length) {
+    return nein("Die Ebenen aus §8 sind nicht wirksam getrennt: " +
+      luecken.join("; ") + ".");
+  }
+  return ja("Vier benannte Ebenen mit Zweck und Wohnort, und ein Tor, das " +
+    "sie trennt: der Satz vom ersten Kandidaten (\"XOM: 76 im Technical " +
+    "Opportunity Score\") wird im realen Durchlauf gesperrt, ein Beitrag " +
+    "aus oeffentlichen Kennzahlen geht durch, und \"SMA\" schlaegt in " +
+    "\"Smartphone\" nicht an.");
 }
 
 /* ===================================================================

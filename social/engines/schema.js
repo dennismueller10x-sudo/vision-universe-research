@@ -324,7 +324,8 @@
         };
       }) : [],
       validation: spec.validation && typeof spec.validation === "object" ? spec.validation : {
-        factCheck: null, brandCheck: null, fatigueCheck: null
+        factCheck: null, brandCheck: null, audienceSeparation: null,
+        fatigueCheck: null
       }
     };
   }
