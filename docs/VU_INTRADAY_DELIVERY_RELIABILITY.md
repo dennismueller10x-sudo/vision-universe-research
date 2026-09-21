@@ -342,47 +342,81 @@ denselben Ref.
 
 ## 15. Drei aufeinanderfolgende Produktionszyklen
 
-Block `35618350851`, Lauf per `workflow_dispatch`, gemessen am 21.09.2026
-(Quelle: `quant/data/market/intraday/pacemaker-ledger.json` und die
-git-Commitzeiten auf `main`):
+Der Auftrag verlangt drei. Gemessen wurden fünf, ohne Unterbrechung, in
+einem einzigen Block `35618350851` (`workflow_dispatch`, 21.09.2026).
+Quellen: `quant/data/market/intraday/pacemaker-ledger.json` und die
+git-Commitzeiten auf `main`.
 
-| | Zyklus 1 | Zyklus 2 | Zyklus 3 | Zyklus 4 |
-|---|---|---|---|---|
-| Auslöser (New York) | 11:21:43 | 11:26:51 | 11:31:59 | 11:37:07 |
-| Provider-Abruf Beginn | 15:21:43 | 15:26:51 | 15:31:59 | 15:37:07 |
-| Provider-Abruf Ende | 15:26:44 | 15:31:53 | 15:37:01 | 15:42:06 |
-| **Abrufdauer** | **5:01** | **5:02** | **5:02** | **4:59** |
-| Snapshot geschrieben | 505 | 492 | 489 | 491 |
-| Anfragen | 527 | 527 | 527 | 527 |
-| Commit | 15:26:45 | 15:31:53 | 15:37:01 | 15:42:06 |
-| Push | 15:26:51 | 15:31:59 | — | — |
-| Commit-SHA | `cdf73c142c` | `7d6ece858c` | `6a01740b96` | `8e1b…` |
-| Wächter | FAIL | FAIL | — | — |
+| | Zyklus 1 | Zyklus 2 | Zyklus 3 | Zyklus 4 | Zyklus 5 |
+|---|---|---|---|---|---|
+| Abruf Beginn (UTC) | 15:21:43 | 15:26:51 | 15:31:59 | 15:37:04 | 15:42:08 |
+| New York | 11:21:43 | 11:26:51 | 11:31:59 | 11:37:04 | 11:42:08 |
+| Abruf Ende | 15:26:45 | 15:31:53 | 15:37:02 | 15:42:06 | 15:47:10 |
+| **Abrufdauer** | **5:02** | **5:02** | **5:02** | **5:02** | **5:02** |
+| Snapshots geschrieben | 505 | 492 | 489 | 491 | 488 |
+| Anfragen | 527 | 527 | 527 | 527 | 527 |
+| Commit | 15:26:45 | 15:31:54 | 15:37:02 | 15:42:06 | 15:47:10 |
+| Push | 15:26:51 | 15:31:59 | 15:37:04 | 15:42:08 | 15:47:12 |
+| Commit-SHA | `4104115f79` | `537db1d2bf` | `6a01740b96` | `a0f5b82c5b` | `5e2498a498` |
 
-**Gemessener Takt: 5:08** (15:21:43 → 15:26:51 → 15:31:59 → 15:37:07).
-Kein einziges GitHub-Zeitplan-Ereignis war dafür nötig.
+**Gemessener Takt: 5:08 · 5:08 · 5:05 · 5:04.** Kein einziges
+GitHub-Zeitplan-Ereignis war dafür nötig — ein Lauf hält den Takt selbst.
 
 Zum Vergleich der Takt VOR der Korrektur der Wartezeit-Regel: 14:53:36,
-15:00:01, dann erst 15:10 — **rund zehn Minuten**.
+15:00:01, dann erst 15:10 — **rund zehn Minuten**. Und davor, im alten
+Zustand: zwischen 13:09 und 14:13 UTC überhaupt kein Lauf.
 
-Die leeren Felder in Zyklus 3 und 4 sind kein Fehler: ein Zyklus wird zweimal
-ins Register geschrieben — vor dem Commit (damit er in demselben Commit landet
-wie die Daten, die er beschreibt) und im nächsten Durchgang, wenn Commit-,
-Push- und Wächterzeitpunkt feststehen. Die letzten beiden Zeilen holen das
-beim jeweils folgenden Zyklus nach.
+Der Abstand von 5:08 statt 5:00 ist kein Schlupf, sondern die Rechnung:
+der Abruf braucht 5:02 (527 Titel bei höchstens 100 Anfragen je Minute,
+§8), Commit und Push brauchen die restlichen sechs Sekunden. Die
+Wartezeit-Regel wartet dann null Sekunden, weil der Zyklus länger
+gedauert hat als das Intervall — schneller geht es nicht, solange die
+Anbietergrenze nicht belegt höher liegt (Owner Escalation 1).
 
-### Der Wächter sagt FAIL — und hat recht
+### Die Kette, Ende zu Ende gemessen
+
+Die drei Wächterläufe am Ende des Blocks messen nicht die Daten, sondern
+den Weg vom Repository in den Browser:
 
 ```
-checkedAt 2026-09-21T15:31:59Z · Markt OPEN · 11:31:59 New York
-snapshotSession   2026-09-21   snapshotAgeMinutes   2
-deliveredSession  2026-09-21   generatedAt          15:14:46
-FAIL  auslieferungZuWeitHinterher - Die Auslieferung ist 20 min hinter dem Repository.
+15:42:07  FAIL     auslieferungZuWeitHinterher · 30 min hinter dem Repository
+15:47:52  FAIL     auslieferungZuWeitHinterher · 35 min hinter dem Repository
+15:50:21  WARNING  auslieferungHinterher       · 10 min hinter dem Repository
 ```
 
-Die Daten im Repository sind zwei Minuten alt. Was der Browser bekommt, ist
-zwanzig Minuten alt. **Die Datenfrische ist repariert, die Auslieferung nicht** —
-und der Wächter verschweigt es nicht, sondern meldet es in jedem Zyklus.
+Dazwischen liegt Pages-Lauf `35620629344` (Kopf `6a01740b96`, Zyklus 3),
+angelegt 15:41:19, **fertig 15:48:52** — 7:33 statt der üblichen ~97
+Sekunden, weil die Gruppe `pages-production` verstopft war. Der Wächter
+um 15:47:52 lief sechsundzwanzig Sekunden davor und meldete deshalb noch
+FAIL. Das ist kein Messfehler, sondern genau die Trennschärfe, die §16
+verlangt: der Wächter urteilt über den Zustand, den der Browser in diesem
+Moment sieht, nicht über den, der gleich kommt.
+
+Die letzte Messung, gegen die frisch ausgelieferte Seite:
+
+```
+Intraday-Auslieferung · 11:50:21 New York · OPEN
+  erwartete Sitzung   2026-09-21
+  im Repository       2026-09-21  (5 min alt)
+  ausgeliefert        2026-09-21
+  letzter Zyklus      vor 8 min
+
+  WARNING Die Auslieferung ist 10 min hinter dem Repository.
+
+URTEIL: WARNING
+```
+
+Damit ist die Kette **Provider → Ingest → Commit → Push → Pages →
+Browser** zum ersten Mal an diesem Tag geschlossen und in einer Zahl
+gemessen: zehn Minuten. Die Hälfte davon ist der Takt selbst (ein
+Zyklus ist im Mittel 2:30 alt, wenn man ihn abfragt), die andere Hälfte
+die Pages-Auslieferung.
+
+WARNING statt PASS heißt: die Seite zeigt die richtige Sitzung und einen
+ehrlich datierten Stand, aber sie liegt weiter hinter dem Repository als
+das Ziel von §22. Solange der automatische Auslöser fehlt (Owner
+Escalation 2), bleibt das so — und der Wächter sagt es in jedem Lauf,
+statt es zu verschweigen.
 
 ## 16. Browser-Nachweis
 
@@ -459,7 +493,10 @@ keine geänderten Verträge.
    ist. Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
    (Eskalation 2)
 2. **Der Fünf-Minuten-Takt ist nicht erreichbar**, solange das Providerlimit
-   unbelegt ist. Der ehrliche Takt ist ~6:25. (Eskalation 1)
+   unbelegt ist. Der gemessene ehrliche Takt ist 5:04 bis 5:08 — der Abruf
+   allein braucht 5:02 bei 527 Titeln und höchstens 100 Anfragen je Minute.
+   Näher als acht Sekunden kommt man dem Ziel nicht, ohne die Grenze zu
+   belegen. (Eskalation 1)
 3. **Der Sitzungsbeginn bleibt dünn.** Kein Fix möglich — der Anbieter liefert
    nicht. Die Aktienseite überbrückt es über den Realtime-Strom, die
    Discover-Flächen nicht.
