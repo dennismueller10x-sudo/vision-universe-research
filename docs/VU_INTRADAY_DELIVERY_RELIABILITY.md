@@ -298,14 +298,67 @@ sprang korrekt **nicht** an, weil ein Auslieferungsrückstand kein weiterer Abru
 - **(b) eigener Workflow, alle 15 Minuten.** Mit **demselben** Failure Mode wie der
   ausgefallene Zeitplan. Das steht so in der Datei.
 - **(c) Cloudflare-Wecker.** Der einzige wirklich unabhängige Pfad. Gebaut, getestet,
-  nicht ausgerollt.
+  ausgerollt.
 
-> **OWNER-ESKALATION 2:** Ein GitHub-Token mit `actions:write` (fine-grained PAT,
-> nur dieses Repository) als Cloudflare-Secret `GITHUB_DISPATCH_TOKEN`. Damit
-> schließt sich sowohl die Wächter-Lücke als auch die Auslieferungs-Brücke aus §10:
-> ein Zyklus wird dann wieder ein Workflow-Lauf, und Pages feuert wie früher über
-> `workflow_run`. Ohne dieses Token ist keine der beiden Lücken zero-cost
-> schließbar.
+> **OWNER-ESKALATION 2 — beantwortet am 21.09.2026.** Die ursprüngliche Bitte
+> lautete auf ein persönliches Token mit `actions:write`. Der Eigentümer hat
+> stattdessen eine **GitHub App** angelegt (App ID 5023229, installiert auf genau
+> diesem Repository, Berechtigung *Actions: read and write*) — die bessere Antwort:
+> ein PAT hängt an einem Menschen und gilt bis zum Widerruf, ein
+> Installationstoken gehört einer Sache und gilt eine Stunde.
+>
+> Offen bleibt genau ein Schritt, den nur der Eigentümer tun kann: den privaten
+> Schlüssel einmalig als Cloudflare-Secret `GITHUB_APP_PRIVATE_KEY` hinterlegen.
+> Er läuft dabei **nicht** durch GitHub Actions — siehe §12a.
+
+---
+
+### 12a. Wie der Wecker sich ausweist
+
+```
+Privater Schluessel  (Cloudflare-Secret, verlaesst den Worker nie)
+   -> JWT, RS256, gueltig 9 Minuten (iat -60 s gegen Uhrendrift)
+   -> GET  /repos/{repo}/installation          -> Installation ID
+   -> POST /app/installations/{id}/access_tokens -> Token, 1 Stunde
+   -> POST /repos/{repo}/actions/workflows/intraday-pacemaker.yml/dispatches
+   -> die bestehende Pipeline, unveraendert
+```
+
+Drei Entscheidungen, die nicht offensichtlich sind:
+
+**Die Installation ID wird ermittelt, nicht konfiguriert.** Ein Aufruf gegen
+`GET /repos/{repo}/installation` liefert sie. Ein weiterer Wert von Hand wäre
+ein weiterer Wert, der falsch sein kann — und der beim Neuinstallieren der App
+still veraltet. Fällt der Tokentausch fehl, wird die gemerkte ID verworfen,
+statt bei jedem weiteren Takt an demselben alten Wert zu scheitern.
+
+**`workflow_dispatch`, nicht `repository_dispatch`.** Der Taktgeber hört auf
+beides, aber die Wahl fällt nach der Berechtigung, nicht nach Geschmack:
+
+| Eingang | verlangt |
+|---|---|
+| `POST /repos/{repo}/dispatches` | **Contents: write** |
+| `POST /repos/{repo}/actions/workflows/{x}/dispatches` | **Actions: write** |
+
+Die App hat Actions read and write und sonst nichts. Über `repository_dispatch`
+bekäme sie bei jedem Takt ein 403 — ein ausgerollter, tickender Wecker, der
+nichts auslöst. Das fällt in keinem Einheitstest auf, in dem der Dispatch nur
+„ok" antwortet; deshalb steht die Wahl des Eingangs als Test fest (WK-19).
+
+**Beide PEM-Formate werden gelesen.** GitHub liefert PKCS#1
+(`BEGIN RSA PRIVATE KEY`), WebCrypto liest nur PKCS#8. Statt den Eigentümer zu
+einer `openssl`-Umwandlung zu zwingen — ein Schritt mehr, bei dem eine zweite
+Kopie des Schlüssels auf der Platte liegen bleibt — legt der Worker die
+PKCS#8-Hülle selbst herum. Das ist reine DER-Verpackung, keine Kryptografie.
+WK-12 beweist es von der harten Seite: beide Wege, derselbe Zeitstempel,
+**bytegleiche Signatur**.
+
+**Der Schlüssel berührt GitHub nie.** Der frühere Deploy-Workflow reichte ein
+PAT aus einem GitHub-Secret nach Cloudflare weiter. Dieser Schritt ist
+ersatzlos entfernt. Ein Schlüssel, der durch einen Actions-Lauf läuft,
+existiert danach an drei Orten statt an einem. Der Workflow rollt jetzt aus und
+sieht **nach**, ob das Secret bei Cloudflare liegt (`wrangler secret list` nennt
+Namen, nie Werte) — hinterlegt wird es vom Eigentümer direkt.
 
 ---
 
@@ -459,12 +512,12 @@ Nebenbei belegt dasselbe Etikett den Befund aus §15 von der anderen Seite: um
 Uploaded vu-intraday-waker (1.21 sec) · 3,09 KiB · Startzeit 2 ms
 Deployed vu-intraday-waker triggers · schedule: */5 13-21 * * 1-5
 Bindings: env.GITHUB_REPO (Umgebungsvariable)  — mehr nicht
-Schritt "Token hinterlegen": skipped (GH_DISPATCH_TOKEN fehlt)
+Schritt "Token hinterlegen": entfernt (der Schluessel laeuft nicht durch Actions)
 Schluesselpruefung: 24.711 Dateien, 0 Funde
 ```
 
-Der Wecker läuft und tickt. Er meldet bei jedem Takt `keinToken` und löst
-nichts aus, bis der Eigentümer den PAT hinterlegt (Eskalation 2) — er
+Der Wecker läuft und tickt. Er meldet bei jedem Takt `keinSchluessel` und
+löst nichts aus, bis der Eigentümer den App-Schlüssel hinterlegt (§12a) — er
 fällt nicht still aus, sondern laut. Ein zweiter Worker neben `vu-live`;
 `vu-live` selbst wurde nicht angefasst.
 
@@ -480,10 +533,18 @@ Geprüft durch `PM-17`, `PM-18`, `WK-7`, `WK-8`, `WK-10`.
 | `quant/tests/delivery-watchdog.test.mjs` | 15 | 8, 11, 12, 13, 17, 19, 20 |
 | `worker-waker/tests/waker.test.mjs` | 10 | 2, 15, 17, 18 |
 | `quant/tests/intraday-delivery-contract.test.mjs` | 12 | 7, 9, 10, 16 — und ID-10 prüft, dass **jeder** der zwanzig Fälle einen benannten Test hat |
-| **Summe neu** | **57** | |
+| **Summe neu** | **66** | |
+
+Die neun zusätzlichen Fälle (WK-11 bis WK-19) prüfen die
+GitHub-App-Authentifizierung: JWT-Struktur und **nachgerechnete** Signatur,
+beide PEM-Formate mit bytegleichem Ergebnis, abgewiesener Murks, Ermittlung der
+Installation ID, Wiederverwendung und Erneuerung des Tokens, ein eigener Name
+für jede der sechs Bruchstellen, kein Schlüsselmaterial in Protokoll oder
+Statuspunkt, und der Eingang, der zur vergebenen Berechtigung passt.
 
 Scharfe Regeln mit Gegenprobe: PM-3/PM-4, PM-10/PM-11, PM-12/PM-13,
-WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10, ID-2/ID-2b.
+WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10, WK-12/WK-13,
+ID-2/ID-2b.
 
 **Gesamtlauf `node --test quant/tests/*.test.mjs` auf dem Stand dieses
 Berichts: 1320 Tests, 1315 grün, 5 rot.** Die fünf roten sind nicht aus
@@ -523,8 +584,8 @@ keine geänderten Verträge.
 ## 20. Verbleibende echte Risiken
 
 1. **Dem Wecker fehlt das Token.** Er ist ausgerollt und tickt seit 15:59 UTC
-   alle fünf Minuten, aber ohne `GITHUB_DISPATCH_TOKEN` meldet er `keinToken`
-   und löst nichts aus. Bis dahin hängen sowohl der Rückfall-Wächter als auch
+   alle fünf Minuten, aber ohne `GITHUB_APP_PRIVATE_KEY` meldet er
+   `keinSchluessel` und löst nichts aus. Bis dahin hängen sowohl der Rückfall-Wächter als auch
    die Auslieferungs-Brücke am selben Zeitplanmechanismus, der ausgefallen ist.
    Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
    (Eskalation 2)
