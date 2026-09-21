@@ -305,6 +305,11 @@
          ----------------------------------------------------------------- */
       hookArchetype: spec.hookArchetype || null,
       hookSelection: spec.hookSelection || null,
+      /* Die Vergleichsreihe: jeder Wert mit seinem Gegenstand. Ohne
+         sie im Paket muesste der Renderer sie neu ableiten, und zwei
+         Ableitungen sind zwei Gelegenheiten, Zahl und Name
+         auseinanderzubringen. */
+      visualComparison: spec.visualComparison || null,
       caption: spec.caption || null,
       cta: spec.cta || null,
       hashtags: Array.isArray(spec.hashtags) ? spec.hashtags.slice() : [],

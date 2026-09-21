@@ -69,6 +69,8 @@
     : global.VUSocialClaimBinding;
   var VQ = isNode ? require("./visual-quality.js") : global.VUSocialVisualQuality;
   var German = isNode ? require("./german-text.js") : global.VUSocialGermanText;
+  var EvidenceShape = isNode ? require("./evidence-shape.js")
+    : global.VUSocialEvidenceShape;
 
   function zahl(x) {
     if (typeof x === "number" && isFinite(x)) return x;
@@ -352,22 +354,30 @@
        ----------------------------------------------------------------- */
     var belege = { kennzahl: erstes || null, vergleich: null };
 
-    /* Ein Vergleich braucht EINE Achse. Zwei Belege mit verschiedenen
-       Kennzahlen nebeneinanderzustellen waere genau die ungleiche
-       Achse, die visual-composition.js an der Grafik verbietet. */
+    /* -----------------------------------------------------------------
+       EIN VERGLEICH BRAUCHT EINE ACHSE - UND DIE FRAGE HAT EINEN ORT
+
+       Diese Schleife stand hier ausgeschrieben. Die Bildseite stellt
+       dieselbe Frage an dieselben Belege - "liegen mehrere Werte auf
+       einer Achse" -, kannte sie aber nicht, und eine Evidenz mit
+       zwei vergleichbaren Werten endete als Datenkarte mit EINER
+       Zahl.
+
+       Zwei Antworten auf eine Frage laufen auseinander. Sie steht
+       jetzt in evidence-shape.js, und beide fragen dort.
+       ----------------------------------------------------------------- */
+    var achse = EvidenceShape.aufEinerAchse(fakten);
+    var kontrast = EvidenceShape.alsKontrast(achse);
     var vergleich = null;
-    for (var i = 0; i < fakten.length && !vergleich; i++) {
-      for (var j = i + 1; j < fakten.length; j++) {
-        var a = fakten[i], b = fakten[j];
-        if (a.metric && a.metric === b.metric &&
-            gefuellt(a.entity) && gefuellt(b.entity) && a.entity !== b.entity) {
-          vergleich = { eines: a.entity, wertEines: a.value,
-            anderes: b.entity, wertAnderes: b.value,
-            einheit: a.unit || a.metric };
-          belege.vergleich = [a, b];
-          break;
-        }
-      }
+    if (kontrast) {
+      vergleich = { eines: kontrast.eines, wertEines: kontrast.wertEines,
+        anderes: kontrast.anderes, wertAnderes: kontrast.wertAnderes,
+        einheit: kontrast.einheit };
+      belege.vergleich = kontrast.belege.length ? achse.werte.slice(0, 2)
+        .map(function (w) {
+          return { metric: achse.metrik, value: w.wert, unit: achse.einheit,
+            entity: w.entitaet, source: w.quelle };
+        }) : null;
     }
 
     return {

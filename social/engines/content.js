@@ -51,6 +51,8 @@
   var German     = isNode ? require("./german-text.js") : global.VUSocialGermanText;
   var ContentIntelligence = isNode ? require("./content-intelligence.js")
     : global.VUSocialContentIntelligence;
+  var EvidenceShape = isNode ? require("./evidence-shape.js")
+    : global.VUSocialEvidenceShape;
   var Visual     = isNode ? require("./visual.js")     : global.VUSocialVisual;
   var Untrusted  = isNode ? require("./untrusted.js")  : global.VUSocialUntrusted;
   var Hash       = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
@@ -448,10 +450,34 @@
     if (!adapted.ok) return stop(adapted);
     stages.push(adapted);
 
-    /* Visual. */
+    /* -----------------------------------------------------------------
+       WAS DIE BELEGE BILDLICH HERGEBEN
+
+       `visualAvailability` kam bisher ausschliesslich von aussen - aus
+       den Quant-Daten des Zyklus. Was in der RECHERCHE dieses Beitrags
+       steht, hat die Bildwahl nie erfahren.
+
+       Das hatte eine sichtbare Folge: zwei Werte auf einer Achse
+       (13,4 und 21,6 im KGV) endeten als Datenkarte mit EINER Zahl,
+       weil nur `keyNumber` gemeldet war. Die Karte zeigt aber genau
+       einen Namen - und die zweite Zahl hineinzusetzen haette den
+       S&P-Wert unter dem Namen Russell 2000 gezeigt.
+
+       Der Vergleich ist die richtige Form dafuer, und die Belege
+       sagen, dass es ihn gibt. Gemeldet wird nur, was wirklich
+       dasteht: `peerValues` genau dann, wenn mindestens zwei
+       Gegenstaende auf DERSELBEN Kennzahl liegen.
+       ----------------------------------------------------------------- */
+    var achse = EvidenceShape.aufEinerAchse(r.data.facts);
+    var peers = achse
+      ? EvidenceShape.alsPeers(achse,
+          (opportunity.entities || [])[0] || achse.werte[0].entitaet)
+      : null;
+
     var visual = Visual.selectVisual({
       archetype: pkg.archetype,
-      available: input.visualAvailability || {},
+      available: Object.assign({}, input.visualAvailability || {},
+        peers ? { peerValues: true } : {}),
       recentVisuals: input.recentVisuals || []
     });
 
@@ -465,6 +491,13 @@
       hook: pkg.hook,
       hookArchetype: pkg.hookArchetype,
       hookSelection: pkg.hookSelection,
+      /* Die Vergleichsreihe reist mit: jeder Wert mit SEINEM
+         Gegenstand. Der Renderer soll sie nicht noch einmal ableiten -
+         zwei Ableitungen sind zwei Gelegenheiten, Zahl und Name
+         auseinanderzubringen. */
+      visualComparison: peers
+        ? { metrik: achse.metrik, einheit: achse.einheit, peers: peers }
+        : null,
       caption: adapted.data.caption,
       cta: pkg.cta,
       hashtags: adapted.data.hashtags,
