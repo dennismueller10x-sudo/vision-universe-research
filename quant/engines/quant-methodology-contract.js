@@ -43,6 +43,10 @@
         config.publication.missingFactorWeightRedistribution !== false) errors.push("PUBLICATION_LOCK");
     if (!config || !config.factors || !config.factors.revisions ||
         config.factors.revisions.readiness !== "BLOCKED_EXTERNAL") errors.push("REVISIONS_GATE");
+    var binding = config && config.normalization && config.normalization.classificationBinding;
+    if (!binding || binding.industry !== "sic4_industry" || binding.sector !== "sic_division" ||
+        binding.universe !== "universe" || binding.scope !== "CURRENT_ONLY" ||
+        binding.historicalPolicy !== "FAIL_CLOSED") errors.push("PEER_TAXONOMY_BINDING");
     return { ok: errors.length === 0, errors: errors };
   }
 
