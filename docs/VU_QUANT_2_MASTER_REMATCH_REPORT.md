@@ -61,10 +61,7 @@ Der historische North Star „FROM INVESTMENT IDEA TO EVIDENCE TO MONITORING“ 
 
 Die belegte Quant-V1-Methodik hat fünf aktive Faktoren: Quality 30 %, Momentum 30 %, Growth 20 %, Value 15 %, Risk 5 %. Revisions ist bewusst inaktiv; Profitability ist Bestandteil von Quality.
 
-Die aktuelle Zielvorgabe nennt sieben Faktoren. Beides darf nicht vermischt werden. Der Rematch setzt deshalb ein Owner-Gate:
-
-- **Option A:** V1 bleibt kanonisch; Profitability wird als Quality-Unterdimension und Revisions als unavailable gezeigt.
-- **Option B:** neues, versioniertes Quant V2 mit sieben Faktoren, neuen Gewichten, Überlappungskontrolle, Vergleichsregeln und validierter Revisionshistorie.
+Das frühere Owner-Gate ist entschieden. `quant-v2.0.0-full-7f` ist die kanonische Spezifikation mit Quality 10 %, Growth 15 %, Momentum 25 %, Value 15 %, Profitability 15 %, Revisions 15 % und Risk 5 %. V1 bleibt unverändert als Legacy-/Vergleichslaufzeit. V2 ist wegen fehlender Revisionshistorie, unzureichender Peer-Klassifikation und noch nicht materialisiertem breiten Panel ausdrücklich nicht aktiv.
 
 Bis zur Entscheidung wird kein Score umgewichtet.
 
@@ -236,7 +233,7 @@ Spätere Daten-/Social-/Orchestrator-Commits bis `1a192f92` ändern dieses begre
 
 ### P0 — Produktkern blockiert
 
-1. **Methodik-Lock:** Owner-Entscheidung V1 versus versioniertes Quant V2; Revisionsdaten bleiben bis Zertifizierung inaktiv.
+1. **Methodik-Lock:** PASS — versioniertes Quant V2 festgelegt; Revisionsdaten und Score-Publikation bleiben bis Zertifizierung inaktiv.
 2. **Capability- und Product-Row-Contract:** einen Quant-eigenen materialisierten, zeitgestempelten Product-Row-Layer aus Company Master, bestehender SEC-Consumer-/PIT-Pipeline und bestehenden Market-Factor-Artefakten definieren. Keine neue Source of Truth.
 3. **Ranking-Hygiene-Gate:** die auf einem alten PR88-Branch verbliebene Quarantäne für unplausible Marktwerte semantisch rekonstruieren und gegen aktuelle Daten testen. Das heutige Full-Universe-Artefakt führt `MINE` mit einem offenkundig unplausiblen 12M-Momentum von 2.969.999 und speist daraus bereits einen sichtbaren Discovery-Wert von `+296999900 %`. Der gemeinsame Producer wird fail-closed repariert; Discovery selbst bleibt unverändert und wird regressionsgeprüft. Reale Rankings dürfen vorher nicht aktiviert werden.
 4. **Breadth Integration:** VU2 Product Services vom expliziten Five-Scope auf Capability-gesteuerte 6.875er Identität und abgestufte Feature-Verfügbarkeit umstellen.
@@ -297,4 +294,4 @@ Spätere Daten-/Social-/Orchestrator-Commits bis `1a192f92` ändern dieses begre
 
 ## 13. Stop-/Handoff-Entscheidung
 
-Der definierte Rematch-Zielzustand ist erreicht. Gemäß Auftrag beginnt die Implementierungsphase **erst nach** diesem Rematch. Vor dem ersten Score-/Factor-Change besteht genau ein echtes Owner-Gate: V1-Faktortaxonomie bewahren oder Quant V2 spezifizieren. Unabhängig davon können die nicht-methodenverändernden P0-Arbeiten am Capability-/Product-Row-Contract und an der Breadth-Integration dependency-correct vorbereitet werden.
+Der definierte Rematch-Zielzustand ist erreicht und die Owner-Entscheidung für Quant V2 ist im versionierten Vertrag umgesetzt. Vor dem ersten Score bleibt das Evidenzgate maßgeblich: kein Composite ohne sieben verfügbare Faktoren, ausreichende Peers und breite materialisierte Factor Rows. P0-Arbeiten an Ranking-Hygiene, Capability-/Product-Row-Contract und Breadth laufen dependency-correct weiter.
