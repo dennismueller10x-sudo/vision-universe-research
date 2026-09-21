@@ -90,32 +90,31 @@ test("SC1 · Universe Scanner: Summaries, Perzentile, strukturierte Filter, kein
   assert.ok(scan.rows[0].opportunityScore >= scan.rows[scan.rows.length - 1].opportunityScore);
   const bull = Scanner.applyFilters(scan, [{ field: "trend", op: "==", value: "BULLISH" }, { field: "technicalScore", op: ">", value: 40 }]);
   assert.ok(bull.rows.every((r) => r.trend === "BULLISH" && r.opportunityScore > 40));
-  const predicate = Scanner.predicateFromFilters([{ field: "trend", op: "==", value: "BULLISH" }, { field: "technicalScore", op: ">", value: 40 }]);
+  const predicate = Scanner.predicateFromFilters([{ field: "trend", op: "==", value: "BULLISH" }, { field: "technicalScore", op: ">", value: 40 }], scan);
   const canonical = Scanner.applyPredicate(scan, predicate);
   assert.deepEqual(canonical.rows.map((r) => r.instrumentId), bull.rows.map((r) => r.instrumentId), "Legacy-DSL und Rule Contract liefern dieselben Treffer");
   assert.deepEqual(predicate.filters.map((f) => f.field), ["technicalTrend", "technicalOpportunityScore"]);
   assert.equal(bull.predicateHash, canonical.predicateHash);
   const elliott = Scanner.canonicalRow({ elliott: { status: "AMBIGUOUS" } });
   assert.equal(elliott.elliottCountStatus, "AMBIGUOUS");
-  const elliottPredicate = RuleContract.create({ filters: [{ field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS" }] });
-  assert.equal(Scanner.applyPredicate({ rows: [{ instrumentId: "E", elliott: { status: "AMBIGUOUS" } }] }, elliottPredicate).count, 1);
-  const unrelated = RuleContract.create({ filters: [{ field: "quantScore", operator: "gte", value: 50 }] });
+  const elliottScan = { universeId: "synthetic", universeVersion: "v1", rows: [{ instrumentId: "E", elliott: { status: "AMBIGUOUS" } }] };
+  const elliottPredicate = RuleContract.create({ universe: { universeId: "US_EQUITIES", region: "US", assetType: "equity", constituentSetId: "synthetic", constituentSetVersion: "v1" }, filters: [{ field: "elliottCountStatus", operator: "eq", value: "AMBIGUOUS" }] });
+  assert.equal(Scanner.applyPredicate(elliottScan, elliottPredicate).count, 1);
+  const unrelated = RuleContract.create({ universe: elliottPredicate.universe, filters: [{ field: "quantScore", operator: "gte", value: 50 }] });
   assert.throws(() => Scanner.applyPredicate(scan, unrelated), /nicht gemapptes kanonisches Feld/);
   assert.throws(() => Scanner.applyFilters(scan, [{ field: "eval", op: ">", value: 1 }]), /unbekanntes Feld/);
   assert.throws(() => Scanner.applyFilters(scan, [{ field: "trend", op: "=~", value: "x" }]), /Operator/);
   // Missing != Match: Titel ohne RR fallen bei RR-Filter heraus, statt als 0 zu gelten.
   const rr = Scanner.applyFilters(scan, [{ field: "riskReward", op: ">=", value: 0 }]);
   assert.ok(rr.rows.every((r) => r.riskReward !== null));
-  assert.equal(rr.predicateHash, undefined, "Nicht gemappte Legacy-Felder behalten den bisherigen Evaluator");
-  const legacyNumericIn = Scanner.applyFilters(scan, [{ field: "technicalScore", op: "in", value: [scan.rows[0].opportunityScore] }]);
-  assert.equal(legacyNumericIn.rows[0].instrumentId, scan.rows[0].instrumentId, "Alte, nicht kanonisch typisierte DSL-Operatoren bleiben kompatibel");
-  assert.equal(legacyNumericIn.predicateHash, undefined);
-  assert.equal(Scanner.applyFilters(scan, []).count, scan.count);
+  assert.ok(rr.predicateHash, "Auch Risk/Reward laeuft ueber den Rule Contract");
+  assert.throws(() => Scanner.applyFilters(scan, [{ field: "technicalScore", op: "in", value: [scan.rows[0].opportunityScore] }]), /nicht kanonisch abbildbar/, "Typwidriges numerisches in wird fail-closed abgelehnt");
+  assert.ok(Scanner.applyFilters(scan, []).predicateHash);
 });
 
 test("AI1 · Technical-Tools registrieren sich auf der bestehenden Registry; AI bekommt nur strukturierte Outputs", async () => {
   const bundle = run(fixtures.cleanUptrend(), fixtures.range(), { annotations: true });
-  const scan = Scanner.scanUniverse({ universe: [{ instrumentId: "SYN_UP", series: fixtures.cleanUptrend() }], benchmarkSeries: fixtures.range(), methodology: METH, universeId: "t" });
+  const scan = Scanner.scanUniverse({ universe: [{ instrumentId: "SYN_UP", series: fixtures.cleanUptrend() }], benchmarkSeries: fixtures.range(), methodology: METH, universeId: "t", universeVersion: "v1" });
   const registry = AiTools.createToolRegistry({});
   Tools.registerTechnicalTools(registry, { getBundle: (s) => (s === "SYN_UP" ? bundle : null), getScan: () => scan, getMethodology: (id) => METH[id] || null });
   const names = registry.list().map((d) => d.name);

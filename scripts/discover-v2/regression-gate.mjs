@@ -4,14 +4,24 @@
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-const baseline=process.env.DISCOVER_BASELINE || '27b045971cb5a96db71646a5e5befe63943b4e5e';
 const git=(...args)=>execFileSync('git',args,{maxBuffer:32*1024*1024});
-const allowed=path=>/^(discover-v2|scripts\/discover-v2|docs\/discover-v2)\//.test(path)||path==='.github/workflows/discover-v2-ci.yml';
+const fixedBaseline='c84caa38382022a6bd65fc00df0ec20389bc96e1';
+const frozenDiscoverTree='de6baacf4c8c08891f7d4d2dc17ff40459517a8d';
+const baseline=process.env.DISCOVER_BASELINE||(()=>{try{return git('merge-base','HEAD','origin/main').toString().trim();}catch{return fixedBaseline;}})();
+const allowedPaths=new Set([
+  'discover-v2/app.css','discover-v2/app.js','discover-v2/detail.css','discover-v2/detail.js',
+  'discover-v2/home.css','discover-v2/home.js','discover-v2/index.html',
+  'scripts/discover-v2/browser-qa.mjs','scripts/discover-v2/contract-qa.mjs','scripts/discover-v2/regression-gate.mjs',
+  'docs/discover-v2/premium-orchestration.md','docs/discover-v2/premium-contract-audit.md',
+  'docs/discover-v2/premium-design-qa.md'
+]);
+const allowed=path=>allowedPaths.has(path);
 const files=git('ls-tree','-r','--name-only',baseline).toString().trim().split('\n').filter(path=>path&&!allowed(path));
 const changed=git('diff','--name-only',baseline).toString().trim().split('\n').filter(path=>path&&!allowed(path));
 const untracked=git('ls-files','--others','--exclude-standard').toString().trim().split('\n').filter(path=>path&&!allowed(path));
 assert.deepEqual([...changed,...untracked],[],'Files outside the isolated preview changed');
 const checked=files.length;
+assert.equal(git('rev-parse',baseline+':discover').toString().trim(),frozenDiscoverTree,'Discover 1.0 tree differs from the frozen owner baseline');
 const navPath='assets/site-navigation.js';
 const before=git('show',baseline+':'+navPath).toString();
 const after=readFileSync(navPath,'utf8');
@@ -23,4 +33,7 @@ assert(/<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(html),'Pr
 assert(/<vu-navigation[\s>]/i.test(html),'Shared navigation required');
 assert(html.includes('/assets/site-navigation.css'),'Shared navigation CSS required');
 assert(/lang=["']de["']/.test(html),'German document language required');
-console.log(JSON.stringify({status:'PASS',baseline,protectedFiles:checked,discoverTree:git('rev-parse',baseline+':discover').toString().trim(),navigation:'UNCHANGED',preview:'NOINDEX'},null,2));
+const permittedChanged=git('diff','--name-only',baseline).toString().trim().split('\n').filter(Boolean).filter(allowed);
+const contractGate=JSON.parse(execFileSync(process.execPath,['scripts/discover-v2/contract-qa.mjs'],{maxBuffer:4*1024*1024}).toString());
+assert.match(contractGate.status,/^PASS/,'Discover 2.1 contract gate failed');
+console.log(JSON.stringify({status:'PASS',baseline,protectedFiles:checked,protectedDiscoverTree:frozenDiscoverTree,allowedPaths:[...allowedPaths].sort(),permittedChanged,navigation:'UNCHANGED',preview:'NOINDEX',contractGate:{status:contractGate.status,b1:contractGate.b1,b2:contractGate.b2,b3:contractGate.b3,b4:contractGate.b4,b5:contractGate.b5,zeroCost:contractGate.zeroCost,ownerReview:contractGate.ownerReview}},null,2));

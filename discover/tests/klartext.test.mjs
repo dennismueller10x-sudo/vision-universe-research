@@ -57,6 +57,21 @@ test("keine Aussage widerspricht ihrer eigenen Zahl", () => {
   assert.match(k.story, /^Zuletzt schwächer/, k.story);
 });
 
+test("eine Geschichte wird gegen ihre spätere eigene Zahl geprüft", () => {
+  /* Regression aus dem Produktions-Build: eine positive Jahresrendite
+     ließ die Breakout-Geschichte passieren, bevor die Karte auf die
+     negative Monatsrendite umschaltete. */
+  const s = titel({
+    signals: Object.assign(titel().signals, { breakout: true }),
+    metrics: Object.assign(titel().metrics, { return12M: 0.18, return1M: -0.007 })
+  });
+  const k = K.karte(s, {});
+  assert.notEqual(k.storyId, "schub");
+  assert.ok(!/Bewegung/.test(k.story), k.story);
+  assert.ok(!k.zahl || k.zahl.roh >= 0 || /^Zuletzt schwächer/.test(k.story),
+    `${k.story} über ${k.zahl && k.zahl.wert}`);
+});
+
 test("die Zahl stammt aus dem Zeitraum, über den die Reihe spricht", () => {
   const s = titel({ signals: Object.assign(titel().signals, { momentumLeader: true }) });
   assert.equal(K.karte(s, { rowId: "momentum-leaders" }).zahl.quelle, "return6M");

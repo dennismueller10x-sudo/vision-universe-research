@@ -42,13 +42,30 @@ The JSON contract contains the exact formulas, direction, source semantics, mand
 
 Scoring is issuer-level. An eligible row needs canonical identity, product eligibility, a deterministic primary US common/accepted ADR security, USD quote, market cap of at least USD 300m, 60-session average dollar volume of at least USD 5m and 252 market sessions. Warrants, rights, units, preferreds, tests and unresolved identities are excluded. Historical membership is selected as of the score cutoff.
 
-Normalization uses deterministic midranks and a 70% peer / 30% universe blend:
+Normalization uses deterministic midranks and a 70% peer / 30% universe blend. In
+the current-snapshot V2 projection, methodology `industry` is explicitly bound to
+four-digit SEC SIC (`sic4_industry`) and methodology `sector` to the official SEC
+SIC Division range (`sic_division`). SIC Division must not be presented as GICS
+or as a modern sector taxonomy:
 
 1. industry with at least 20 valid issuers;
 2. sector with at least 40;
 3. score universe with at least 200.
 
-Unknown classifications are never invented. Universe-only fallback is disclosed and lowers confidence. Current broad classification coverage is insufficient for peer claims, so this remains a publication gate.
+Unknown classifications are never invented. Universe-only fallback is disclosed
+and lowers confidence. The canonical chain `factor.securityId` → Company Master
+`masterMemberId` → `issuerId` → exact CIK-derived Fundamentals `issuerId`
+currently projects 5,355 factor securities / 5,046 distinct issuers. Of these,
+5,206 securities have a
+valid SIC classification. The 149 classification-missing securities remain in
+the score universe and may use only the disclosed universe fallback with LOW
+confidence and mandatory penalty. The remaining 1,049 securities fail closed for
+canonical identity reasons. Tickers are never join keys. These are taxonomy
+populations, not
+metric-valid populations. Every component must reapply the 20/40/200 minimum to
+its own valid issuer observations before normalization. No historical SIC series
+exists in the product artifacts, so historical scoring and Backtesting remain
+fail-closed.
 
 ## Validation, missing data and outliers
 

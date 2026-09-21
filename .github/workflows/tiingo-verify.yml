@@ -34,6 +34,10 @@ on:
         description: 'Zusaetzlich den IEX-WebSocket pruefen (oeffnet eine Verbindung, wartet bis zu 45 Sekunden)'
         type: boolean
         default: false
+      run_limits:
+        description: 'Was erlaubt der Zugang wirklich? (~ein Dutzend Anfragen, keine Lastprobe)'
+        type: boolean
+        default: false
 
   # Nach dem Merge ist workflow_dispatch der vorgesehene Weg: der Workflow
   # liegt dann auf dem Default-Branch und laesst sich dort mit den beiden
@@ -103,6 +107,24 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/verify-tiingo-runtime.mjs
+
+      # Auftrag vom 21.09.2026 §7: die 100 Anfragen je Minute in
+      # COMMERCIAL_LIMITS tragen die Kennzeichnung SAFETY_CEILING, und
+      # providerObserved steht auf UNKNOWN - es ist UNSERE Zahl, nicht
+      # Tiingos. Sie ist zugleich der kritische Pfad des Intraday-Laufs
+      # (527 Titel / 100 je Minute = 5:01 von 5:27 Gesamtlaufzeit).
+      # Bevor daran etwas gedreht wird, muss die echte Grenze belegt
+      # sein. Dieses Skript fragt danach, es laeuft nicht dagegen.
+      #
+      # Ausdruecklich als eigener Schalter: der Nachweis liegt sonst nur
+      # in tiingo-scale.yml, und ein Dispatch dort startet zugleich das
+      # Scale Gate - einen Lauf mit 330 Minuten Zeitlimit mitten in der
+      # Sitzung.
+      - name: Was erlaubt der Zugang wirklich?
+        if: steps.secret.outputs.available == 'true' && github.event_name == 'workflow_dispatch' && inputs.run_limits
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/verify-request-limits.mjs
 
       - name: Der Bericht enthaelt keinen Schluessel
         if: steps.secret.outputs.available == 'true'

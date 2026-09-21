@@ -90,6 +90,22 @@ Nach jeder Aenderung an `engines/mock-generator.js`, `engines/factors.js`,
 `SPECIFIED_NOT_ACTIVE`. `Methodology.quant()` bleibt deshalb die unveraenderte
 V1-Legacy-Laufzeit, waehrend `Methodology.quantV2()` den V2-Vertrag ausliefert.
 
+Die kompakte aktuelle Peer-Taxonomie unter
+`data/product/sic-peer-taxonomy-v1.json` wird deterministisch aus den bereits
+vorhandenen Full-Universe-Faktorzeilen und SEC-Fundamentals-Emittentenshards
+gebaut. `industry` bedeutet dort ausschließlich `sic4_industry`, `sector`
+ausschließlich die offizielle `sic_division`; beides ist weder GICS noch eine
+historische Klassifikation. Der Contract verlangt pro Metrik erneut valide
+Issuer-Zahlen 20/40/200 und fällt danach auf Universe bzw. `UNAVAILABLE` zurück.
+Das Artefakt aktiviert weder V2-Scores noch historische Backtests.
+Die Zuordnung folgt ausschließlich `securityId`/`masterMemberId`/`issuerId`;
+Ticker werden nur ausgegeben und nie zum Join verwendet. Der SEC-Zeitpunkt ist
+ein beobachteter Materialisierungszeitpunkt, kein SIC-Gültigkeitsdatum;
+`effectiveAt` bleibt deshalb `null`.
+Eine valide kanonische Emittentenidentität ohne gültigen SIC bleibt im
+Score-Universum, erhält aber ausschließlich den Universe-Fallback mit `LOW`
+Confidence und Pflicht-Penalty. Nur Identitätsfehler werden verworfen.
+
 `verify-quant-data.mjs` faellt genau darauf: es rechnet alle Scores nach und vergleicht
 sie mit der ausgelieferten Datei. Es laeuft in der CI, weil eine stille Abweichung
 zwischen Uebersicht und Backtest der gefaehrlichste Datenfehler des Systems waere.
@@ -114,6 +130,21 @@ der passenden versionierten Methodikdatei. V1 wird nie ueberschrieben; V2-Aender
 erzeugen eine neue `quant-v2.x`-Version und eigene Artefakte.
 
 ## Grenzen und Trennung
+
+Die Produktbreite wird nicht durch eine vergroesserte Preview-Allowlist erzeugt.
+`scripts/vu2/build-product-capabilities.mjs` projiziert die bestehende, gemessene
+Capability Matrix kompakt nach `data/product/capabilities-v1.json` und ihre aggregierte
+Coverage nach `data/product/capabilities-summary-v1.json`. Product Services laden die
+Summary fuer allgemeine Produktansichten und die titelgenaue Projektion erst nach einer
+konkreten Security-Abfrage. Beide Artefakte stammen aus demselben Builder und derselben
+Matrix. Sie erzeugen weder Kennzahlen noch eine zweite Datenquelle und laden nicht das
+21-MiB-Faktorartefakt in den Browser.
+
+`engines/setup-state-contract.js` ist der gemeinsame, versionierte Produktvertrag fuer
+Setup-Beobachtungen. Er referenziert kanonische Regeln und Evidenz, evaluiert sie aber nicht
+erneut. `methodology/setup-state-v1.json` bleibt inaktiv, bis ein freigegebenes Mapping und
+eine geordnete reale Snapshotfolge existieren. Einzelne Technical-Snapshots duerfen keinen
+Lifecycle-Zustand oder eine Backtest-Zertifizierung erzeugen.
 
 `quant/` liest keine Daten aus `dashboard/`, `macro/`, `hedgefonds/` oder `academy/` und
 schreibt dort nichts hinein. Umgekehrt aendert dieser Bereich an keiner bestehenden

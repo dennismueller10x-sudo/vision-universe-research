@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T08:10:16.224Z",
+  "generatedAt": "2026-09-21T12:32:23.651Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -315,6 +315,28 @@
       "visualMode": "INHERIT_VERIFIED_ASSET",
       "registerNote": "Die Zeitpunkte fuer DISPATCHED und RESULT_AVAILABLE stammen aus beobachtbaren Quellen (GitHub bzw. git) und ersetzen zwei geschaetzte Werte, von denen einer VOR dem Ereignis lag, das er quittieren sollte. Fuer VERIFIED und die Zahl der beobachteten Starts gibt es keine Quelle - sie stehen als unobserved statt als plausible Zahl. Ein erfundener Zeitpunkt ist schlimmer als eine Luecke: die Luecke sieht man.",
       "observedStartsSource": "unobserved"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260917:e1fde86545f8a836f706a40a195e45735c78da83:attempt1",
+      "contentId": "vu-xom-20260917",
+      "briefId": "brief_df8533a704ebca9b",
+      "briefBlobSha": "e1fde86545f8a836f706a40a195e45735c78da83",
+      "processingKey": "brief_df8533a704ebca9b:vu-xom-20260917:e1fde86545f8a836f706a40a195e45735c78da83:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_REQUESTED",
+      "createdAt": "2026-09-21T12:32:23.651Z",
+      "updatedAt": "2026-09-21T12:32:23.651Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-21T12:32:23.651Z",
+          "note": null
+        }
+      ]
     }
   ],
   "budget": {

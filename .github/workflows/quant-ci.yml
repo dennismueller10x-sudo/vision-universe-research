@@ -12,6 +12,9 @@ on:
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   pull_request:
+    # Full-universe refresh PRs change well over GitHub's 300-file path-filter
+    # window. Keep this workflow file in those PRs so Quant CI cannot be
+    # silently omitted while Discover CI still runs.
     paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',

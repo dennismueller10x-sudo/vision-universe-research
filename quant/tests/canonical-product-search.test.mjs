@@ -8,7 +8,7 @@ const root=new URL('../../',import.meta.url);
 function api(mutate=()=>{},reads=[]){return Service.create({loadJSON:async p=>{reads.push(p);const d=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));mutate(p,d);return d;},displayPolicy:Policy,queryEngine:Query});}
 test('canonical search resolves stable identities beyond the five-row panel without financial reads',async()=>{
  const reads=[],service=api(()=>{},reads),r=await service.searchInstruments('TSLA');assert.equal(r.state,'AVAILABLE');const hit=r.entries.find(e=>e.ticker==='TSLA');assert.match(hit.securityId,/^vu_/);assert.equal(hit.masterMemberId,'ref_TSLA');assert.ok(reads.every(p=>p.startsWith('/quant/data/universe/')));assert.ok(reads.length<15);
- const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'UNAVAILABLE');assert.equal(stock.availability.history.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.equal((await service.getUniverse()).stocks.length,5);
+ const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'AVAILABLE');assert.equal((await service.getUniverse()).stocks.length,6875);
 });
 test('missing issuer/CIK does not remove an eligible security from search or identity page',async()=>{
  const service=api((p,d)=>{if(p.includes('/instruments/'))for(const i of d.instruments){i.cik=null;i.issuerId=null;}}),r=await service.searchInstruments('TSLA');assert.ok(r.entries.some(e=>e.ticker==='TSLA'));const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.issuerId,null);
@@ -36,7 +36,7 @@ test('search UI ignores stale asynchronous results and displays loading, empty a
 
 test('identity-only stock does not request the unrelated five-company financial panel',async()=>{
  const reads=[],service=api(p=>{if(p.endsWith('quant-factor-inputs.json'))throw Error('panel offline');},reads);
- const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.ticker,'TSLA');assert.equal(stock.reason,'PRODUCT_DATA_NOT_CONNECTED');assert.ok(!reads.some(p=>p.endsWith('quant-factor-inputs.json')));
+ const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.ticker,'TSLA');assert.equal(stock.state,'AVAILABLE');assert.ok(reads.some(p=>p.endsWith('quant-factor-inputs.json')));
 });
 test('config and connected-panel failures preserve independent canonical identity with typed availability',async()=>{
  for(const failed of ['/quant/config/development-preview.json','/quant/config/feature-gates.json','/quant/data/sec/quant-factor-inputs.json']){

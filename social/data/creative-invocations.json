@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T08:14:34.119Z",
+  "generatedAt": "2026-09-21T12:32:23.582Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -483,17 +483,20 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Ergebnis bestaetigt, Bild unveraendert geerbt."
+    },
+    {
+      "processingKey": "brief_df8533a704ebca9b:vu-xom-20260917:e1fde86545f8a836f706a40a195e45735c78da83:1.0",
+      "state": "REQUESTED",
+      "at": "2026-09-21T12:32:23.582Z",
+      "contentId": "vu-xom-20260917",
+      "briefId": "brief_df8533a704ebca9b",
+      "briefBlobSha": "e1fde86545f8a836f706a40a195e45735c78da83",
+      "pullRequest": null,
+      "deliveryId": null,
+      "observed": false,
+      "timestampProvenance": "hand-entered-approximate",
+      "note": "Brief geschrieben nach authoring/requests/vu-xom-20260917/authoring-brief.json. PR folgt."
     }
   ],
-  "latencyObservations": [
-    {
-      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
-      "contentId": "vu-xom-20260911",
-      "seconds": 313,
-      "startedAt": "2026-09-18T04:33:28.228Z",
-      "resultAt": "2026-09-18T06:38:41+02:00",
-      "source": "ingest",
-      "note": "Von der letzten beobachteten Aktivitaet bis zum bestaetigten Ergebnis."
-    }
-  ]
+  "latencyObservations": []
 }

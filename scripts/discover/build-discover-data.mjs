@@ -2247,9 +2247,20 @@ function realtimeMeta() {
     mode: verfuegbar ? "snapshot" : "eod",
     reason: verfuegbar ? null : (intraday.reason || "gateDisabled"),
     message: verfuegbar
+      /* Der Satz zum Sitzungsbeginn kam am 21.09.2026 dazu. An diesem Tag
+         lieferte der Bestand um 09:38 und 09:46 New Yorker Zeit fuer alle
+         527 angefragten Titel NULL regulaere Bars; die ersten kamen ab
+         etwa 09:55. Am Freitag zuvor dasselbe Bild: 09:36 erst 37 von
+         524 Titeln, 09:58 dann 495.
+         Was hier NICHT steht, ist eine Zahl. Zwei Sitzungen sind eine
+         Beobachtung, kein Anbietervertrag - "immer 25 Minuten" waere
+         erfunden. Der Aktualitaetszustand kommt weiterhin aus den
+         tatsaechlich vorhandenen Daten, nicht aus einer Uhrzeitregel. */
       ? "Der Tagesverlauf (" + (cfg.interval || "5min") + "-Kurse) wird waehrend der Sitzung alle " +
         (cfg.refreshMinutes || 10) + " Minuten erneuert. Die Seite nennt den Stand mit Uhrzeit; " +
         "ausserhalb der Sitzung bleibt die letzte abgeschlossene Sitzung sichtbar, ein aelterer Stand heisst 'nicht aktuell'. " +
+        "Unmittelbar nach Handelsbeginn kann der Tagesverlauf noch verzoegert oder unvollstaendig sein - " +
+        "die Seite zeigt dann den letzten vorhandenen Stand und sagt, von wann er ist. " +
         "Herkunft und Lizenz der Daten: Daten & Quellen."
       : (intraday.message || "ENABLE_PUBLIC_LIVE_MARKET_DATA ist nicht gesetzt.") +
         " Discover zeigt den letzten ausgelieferten Stand und kennzeichnet ihn als solchen.",

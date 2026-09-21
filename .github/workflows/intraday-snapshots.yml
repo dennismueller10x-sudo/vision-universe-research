@@ -40,7 +40,15 @@ on:
         type: string
         default: 'discover'
   schedule:
-    - cron: '*/5 13-21 * * 1-5'
+    # Der Fuenf-Minuten-Takt WAEHREND der Sitzung ist am 21.09.2026 an
+    # intraday-pacemaker.yml uebergegangen. Grund: er verlangte 78
+    # Zeitplan-Ereignisse je Sitzung, und GitHub legte an diesem Tag ueber
+    # eine Stunde lang keines davon an. Zwei Workflows, die dieselben
+    # Dateien schreiben, waeren ausserdem ein Wettlauf um denselben Ref.
+    #
+    # Was hier bleibt: der Universumslauf nach Schluss, der Handbetrieb
+    # (workflow_dispatch) und die Marke auf Entwicklungsbranches. Derselbe
+    # Ingest, dieselben Vertraege - nur nicht mehr derselbe Takt.
     - cron: '35 21 * * 1-5'
   push:
     branches:
@@ -50,7 +58,20 @@ permissions:
   contents: write
 
 concurrency:
-  group: intraday-snapshots
+  # DIESELBE GRUPPE WIE DER TAKTGEBER, seit dem 21.09.2026.
+  #
+  # Drei Workflows schreiben inzwischen nach quant/data/market/intraday:
+  # dieser hier (Universumslauf nach Schluss, Handbetrieb), der
+  # Taktgeber waehrend der Sitzung, und die Reparatur des Waechters.
+  # Eine eigene Gruppe je Workflow heisst: sie koennen gleichzeitig
+  # laufen. Zwei Prozesse, die dieselben Dateien schreiben und auf
+  # denselben Ref pushen, sind ein Wettlauf - und der Verlierer merkt es
+  # erst am Rebase-Konflikt.
+  #
+  # Eine Gruppe fuer alle drei heisst: immer genau ein Schreiber. Wer
+  # kommt, waehrend einer laeuft, wartet (cancel-in-progress: false) -
+  # kein Abbruch, kein Datenverlust, keine Commit-Konflikte.
+  group: intraday-pacemaker
   cancel-in-progress: false
 
 jobs:
@@ -123,6 +144,9 @@ jobs:
       - name: Capability Matrix nachziehen (Intraday-Spalten)
         run: node scripts/market/build-capability-matrix.mjs
 
+      - name: Quant-2.0-Product-Capabilities nachziehen
+        run: node scripts/vu2/build-product-capabilities.mjs
+
       - name: Freshness-Check (Health-Bericht, kein Abbruch)
         run: node scripts/market/check-freshness.mjs
 
@@ -130,7 +154,8 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A quant/data/market/intraday quant/data/market/capabilities quant/data/market/freshness
+          git add -A quant/data/market/intraday quant/data/market/capabilities quant/data/market/freshness \
+            quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
           if git diff --cached --quiet; then
             echo "Keine neuen Snapshots."
           else

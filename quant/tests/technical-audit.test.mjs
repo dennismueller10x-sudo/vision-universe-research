@@ -140,7 +140,7 @@ test("AU10 · Range-Szenario ist zweiseitig invalidierbar; Gap-Zonen-Distanz fol
   if (p.template === "RANGE") { assert.ok(p.invalidation.upperPrice > p.invalidation.price); assert.match(p.invalidation.rule, /Oberkante/); }
   const g = run(fixtures.gap()).supportResistance.zones.filter((z) => z.origin === "GAP_UP");
   for (const z of g) assert.ok(z.currentRole === "INSIDE" ? z.distanceAtr === 0 : z.distanceAtr >= 0, JSON.stringify(z));
-  const scan = Scanner.scanUniverse({ universe: [{ instrumentId: "A", series: fixtures.cleanUptrend(300) }, { instrumentId: "B", series: fixtures.cleanDowntrend(400) }], benchmarkSeries: null, methodology: METH, universeId: "t" });
+  const scan = Scanner.scanUniverse({ universe: [{ instrumentId: "A", series: fixtures.cleanUptrend(300) }, { instrumentId: "B", series: fixtures.cleanDowntrend(400) }], benchmarkSeries: null, methodology: METH, universeId: "t", universeVersion: "v1" });
   assert.equal(scan.asOf, scan.rows.map((r) => r.analysisTime).sort().pop());
 });
 

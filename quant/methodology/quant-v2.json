@@ -189,6 +189,7 @@
     "winsorization": {"lowerPercentile":2,"upperPercentile":98,"separatePeerAndUniverse":true,"countsAndBinariesExcluded":true},
     "peerFallback": [{"level":"industry","minimumValidIssuers":20},{"level":"sector","minimumValidIssuers":40},{"level":"universe","minimumValidIssuers":200}],
     "peerBlend": {"peer":0.70,"universe":0.30},
+    "classificationBinding": {"industry":"sic4_industry","sector":"sic_division","universe":"universe","taxonomyVersion":"sic-peer-taxonomy-1.0.0","scope":"CURRENT_ONLY","historicalPolicy":"FAIL_CLOSED","note":"SEC SIC Division is an official SIC division, not GICS or a modern sector taxonomy."},
     "universeOnlyFallback": {"allowed":true,"confidencePenaltyRequired":true},
     "unknownClassificationPolicy": "Do not invent a classification; use documented universe fallback only when its minimum size is met."
   },

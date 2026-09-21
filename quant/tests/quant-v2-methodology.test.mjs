@@ -37,6 +37,13 @@ test("no component is owned by two V2 factors", () => {
   assert.equal(new Set(ids).size, ids.length);
 });
 
+test("Quant V2 binds peer levels to current SIC taxonomy without historical inference", () => {
+  const binding = v2.normalization.classificationBinding;
+  assert.deepEqual([binding.industry, binding.sector, binding.universe], ["sic4_industry", "sic_division", "universe"]);
+  assert.equal(binding.scope, "CURRENT_ONLY");
+  assert.equal(binding.historicalPolicy, "FAIL_CLOSED");
+});
+
 test("contract rejects activation, missing revisions and component overlap", () => {
   const changed = structuredClone(v2);
   changed.status = "ACTIVE";

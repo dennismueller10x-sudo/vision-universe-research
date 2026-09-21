@@ -195,6 +195,14 @@ Jeder Zustand enthält:
 
 Zustände werden deterministisch aus versionierten Regeln abgeleitet. Freie Buy-/Sell-Labels sind unzulässig.
 
+Der kanonische Beobachtungsvertrag ist `setup-state-1.0.0`; seine Methodik
+`setup-state-v1.0.0` bleibt `SPECIFIED_NOT_ACTIVE`, bis eine freigegebene
+Zustandsabbildung und mindestens zwei kausal geordnete reale Snapshots derselben
+Identitäts- und Methodikkette vorliegen. Scenario-Status, Trade-Setup-Vollständigkeit
+und Elliott-Zählung sind Evidenz, aber niemals direkte Synonyme eines Produktzustands.
+Aktuelle Einzel-Snapshots liefern daher fail-closed `setupState=null` und
+`NOT_CERTIFIED` für Backtesting.
+
 ## 13. Technical
 
 Technical ist sowohl eigener Workspace als auch Input für Quant-Kontext, Screener, Signals, Strategy Lab, Setup Engine und Backtesting. Mindestens methodisch definierte Familien:

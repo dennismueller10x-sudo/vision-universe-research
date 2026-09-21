@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T19:53:18.308Z",
+  "generatedAt": "2026-09-21T12:17:48.056Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -12,9 +12,9 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "35382249695",
-    "commit": "2c731b4a8dfea3409781ae501b659f5a54a5324b",
-    "runtimeMs": 18183,
+    "runId": "35592820083",
+    "commit": "e91aff5279804452def19ddf2ed388dc4cee8004",
+    "runtimeMs": 18640,
     "msPerSymbol": 3
   },
   "redistribution": {
@@ -22,51 +22,43 @@
     "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
   },
   "universeSize": 6875,
-  "evaluable": 6401,
-  "notEvaluable": 474,
+  "evaluable": 6404,
+  "notEvaluable": 471,
   "note": "Jede Frage traegt drei Zahlen: Treffer, Nichttreffer und nicht entscheidbar. Die dritte ist die wichtigste - ohne sie liest sich eine Luecke wie ein Befund.",
   "questions": [
     {
       "id": "aboveSMA20",
       "label": "Alle Aktien ueber SMA20",
       "kind": "boolean",
-      "matched": 2104,
-      "notMatched": 4297,
+      "matched": 2028,
+      "notMatched": 4376,
       "notEvaluable": 0,
-      "evaluatedOf": 6401,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AAAC",
         "AAAP",
-        "AACI",
         "AACO",
         "AACP",
         "AAME",
         "AAPL",
-        "AAT",
         "ABBV",
         "ABCL",
-        "ABEV",
         "ABM",
         "ABSI",
-        "ABTS",
         "ABVC",
         "ACA",
         "ACAA",
-        "ACCO",
+        "ACCS",
         "ACDC",
         "ACEI",
         "ACGC",
         "ACGO",
-        "ACHC",
         "ACHV",
-        "ACI",
         "ACII",
         "ACLO",
-        "ACN",
         "ACON",
         "ACR-P-C",
-        "ACTG",
         "ACV-A",
         "ACVA",
         "ACYN",
@@ -77,14 +69,22 @@
         "ADAMM",
         "ADAMO",
         "ADEX",
-        "ADIG",
+        "ADI",
         "ADM",
         "ADPT",
-        "ADV",
+        "ADSE",
         "ADVM",
         "AEFC",
         "AEG",
-        "AEHR"
+        "AEHR",
+        "AEMD",
+        "AERT",
+        "AES",
+        "AESI",
+        "AFBI",
+        "AFGB",
+        "AFGC",
+        "AFGD"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [],
@@ -94,10 +94,10 @@
       "id": "aboveSMA50",
       "label": "Alle Aktien ueber SMA50",
       "kind": "boolean",
-      "matched": 2484,
-      "notMatched": 3876,
-      "notEvaluable": 41,
-      "evaluatedOf": 6401,
+      "matched": 2428,
+      "notMatched": 3933,
+      "notEvaluable": 43,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AAAC",
@@ -108,16 +108,17 @@
         "AACP",
         "AAMI",
         "AAPL",
+        "AAUC",
         "ABBV",
         "ABCL",
         "ABM",
+        "ABOS",
         "ABSI",
         "ABTS",
         "ABUS",
         "ABVC",
         "ACA",
         "ACB",
-        "ACCO",
         "ACDC",
         "ACEI",
         "ACET",
@@ -137,7 +138,6 @@
         "ACVA",
         "ACYN",
         "ACYS",
-        "AD",
         "ADAC",
         "ADAMH",
         "ADAML",
@@ -145,10 +145,10 @@
         "ADAMN",
         "ADAMO",
         "ADEX",
+        "ADI",
         "ADIL",
         "ADM",
-        "ADP",
-        "ADPT"
+        "ADP"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -156,12 +156,12 @@
         "APMD",
         "ATLQ",
         "ATTO",
+        "AXICY",
         "BCCQ",
         "BIDWR",
+        "BLSM",
         "BNZI",
-        "BRVE",
-        "CCCT",
-        "CSQR"
+        "BRVE"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -169,10 +169,10 @@
       "id": "aboveSMA100",
       "label": "Alle Aktien ueber SMA100",
       "kind": "boolean",
-      "matched": 2666,
-      "notMatched": 3364,
-      "notEvaluable": 371,
-      "evaluatedOf": 6401,
+      "matched": 2651,
+      "notMatched": 3379,
+      "notEvaluable": 374,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AAAC",
@@ -181,7 +181,6 @@
         "AACO",
         "AAMI",
         "AAPL",
-        "AARD",
         "ABBV",
         "ABCL",
         "ABI",
@@ -199,6 +198,7 @@
         "ACCO",
         "ACEI",
         "ACET",
+        "ACGL",
         "ACHC",
         "ACHL",
         "ACHV",
@@ -210,6 +210,7 @@
         "ACNT",
         "ACOG",
         "ACRS",
+        "ACRV",
         "ACT",
         "ACU",
         "ACV-A",
@@ -222,8 +223,7 @@
         "ADAMM",
         "ADAMN",
         "ADAMO",
-        "ADBE",
-        "ADEX"
+        "ADBE"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -244,14 +244,15 @@
       "id": "aboveSMA200",
       "label": "Alle Aktien ueber SMA200",
       "kind": "boolean",
-      "matched": 2774,
-      "notMatched": 2914,
-      "notEvaluable": 713,
-      "evaluatedOf": 6401,
+      "matched": 2757,
+      "notMatched": 2931,
+      "notEvaluable": 716,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AACB",
         "AAMI",
+        "AAOI",
         "AAPL",
         "AAT",
         "ABBV",
@@ -283,6 +284,7 @@
         "ACNB",
         "ACOG",
         "ACRS",
+        "ACRV",
         "ACT",
         "ACTG",
         "ACU",
@@ -296,9 +298,7 @@
         "ADEA",
         "ADI",
         "ADIL",
-        "ADM",
-        "ADP",
-        "ADPT"
+        "ADM"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -319,10 +319,10 @@
       "id": "aboveSMA20And50And200",
       "label": "Ueber SMA20 und SMA50 und SMA200",
       "kind": "boolean",
-      "matched": 1142,
-      "notMatched": 4546,
-      "notEvaluable": 713,
-      "evaluatedOf": 6401,
+      "matched": 1087,
+      "notMatched": 4601,
+      "notEvaluable": 716,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AAPL",
@@ -331,7 +331,6 @@
         "ABM",
         "ABSI",
         "ACA",
-        "ACCO",
         "ACEI",
         "ACHV",
         "ACLO",
@@ -339,9 +338,12 @@
         "ADAMH",
         "ADAML",
         "ADAMM",
+        "ADI",
         "ADM",
         "ADPT",
         "AEG",
+        "AEHR",
+        "AERT",
         "AES",
         "AESI",
         "AFBI",
@@ -351,28 +353,26 @@
         "AFGE",
         "AFRI",
         "AGCO",
+        "AGEN",
         "AGIQ",
-        "AGM",
         "AGNCL",
         "AGNCM",
-        "AGNCP",
         "AGR",
-        "AGRO",
-        "AI",
         "AII",
         "AIIA",
         "AIRTP",
-        "AIZ",
-        "AKO-B",
+        "AKA",
         "ALDF",
+        "ALF",
         "ALIS",
         "ALL-P-B",
         "ALL-P-J",
         "ALNT",
         "ALOT",
-        "ALTG-P-A",
         "ALVO",
         "ALZN",
+        "AMBQ",
+        "AMBR",
         "AMD"
       ],
       "tickersTruncated": true,
@@ -394,10 +394,10 @@
       "id": "aboveAllSMA",
       "label": "Ueber allen vier Durchschnitten",
       "kind": "boolean",
-      "matched": 1088,
-      "notMatched": 4600,
-      "notEvaluable": 713,
-      "evaluatedOf": 6401,
+      "matched": 1027,
+      "notMatched": 4661,
+      "notEvaluable": 716,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AAPL",
@@ -406,7 +406,6 @@
         "ABM",
         "ABSI",
         "ACA",
-        "ACCO",
         "ACEI",
         "ACHV",
         "ACLO",
@@ -417,6 +416,7 @@
         "ADM",
         "ADPT",
         "AEG",
+        "AERT",
         "AES",
         "AFBI",
         "AFGB",
@@ -425,30 +425,30 @@
         "AFGE",
         "AFRI",
         "AGCO",
+        "AGEN",
         "AGIQ",
-        "AGM",
         "AGNCL",
         "AGNCM",
-        "AGNCP",
         "AGR",
-        "AGRO",
-        "AI",
         "AII",
         "AIIA",
         "AIRTP",
-        "AIZ",
-        "AKO-B",
+        "AKA",
         "ALDF",
+        "ALF",
         "ALIS",
         "ALL-P-B",
         "ALL-P-J",
         "ALNT",
         "ALOT",
-        "ALTG-P-A",
         "ALVO",
         "ALZN",
+        "AMBR",
         "AMD",
-        "AMN"
+        "AMN",
+        "AMPH",
+        "AMRX",
+        "AMTB"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -469,61 +469,61 @@
       "id": "newHigh52w",
       "label": "Neue 52-Wochen-Hochs",
       "kind": "boolean",
-      "matched": 191,
-      "notMatched": 5392,
-      "notEvaluable": 818,
-      "evaluatedOf": 6401,
+      "matched": 165,
+      "notMatched": 5419,
+      "notEvaluable": 820,
+      "evaluatedOf": 6404,
       "tickers": [
-        "ABCL",
+        "ADAMH",
         "ADAML",
+        "ADAMM",
         "ADEX",
-        "ADPT",
         "AFAR",
         "AFBI",
-        "AFRI",
+        "AFGB",
+        "AFGD",
         "AGIQ",
-        "AGNCO",
         "AL",
         "ALDF",
-        "ALL-P-J",
-        "APOS",
+        "ALL-P-B",
+        "AOUT",
         "ARAV",
-        "ARCC",
         "ARD",
-        "ASC",
+        "ASBA",
         "ASLN",
-        "ATKR",
-        "ATLCL",
+        "ATHS",
         "ATLCZ",
         "ATRC",
-        "AVTR",
-        "BBY",
+        "AUC",
         "BIO-B",
         "BMAC",
         "BOWN",
-        "BPOPM",
-        "BRKRP",
-        "BUUU",
-        "BWLP",
         "BWNB",
         "CALT",
         "CCLDO",
-        "CDNA",
         "CEO",
         "CFFS",
+        "CHAR",
         "CHL",
         "CHT",
         "CHU",
         "CITE",
-        "CMBT",
         "CMPOV",
-        "CODI-P-B",
+        "COLA",
         "CRBG",
-        "CRWD",
         "CVI",
-        "CZNC",
-        "DAC",
-        "DCOMG"
+        "CXW",
+        "CYPH",
+        "DCOMG",
+        "DELL",
+        "DHT",
+        "DINO",
+        "DK",
+        "DRDB",
+        "DSX",
+        "DT",
+        "DX-P-C",
+        "ECCV"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -544,10 +544,10 @@
       "id": "within5PctOf52wHigh",
       "label": "Innerhalb 5 % vom 52-Wochen-Hoch",
       "kind": "boolean",
-      "matched": 930,
-      "notMatched": 4653,
-      "notEvaluable": 818,
-      "evaluatedOf": 6401,
+      "matched": 874,
+      "notMatched": 4710,
+      "notEvaluable": 820,
+      "evaluatedOf": 6404,
       "tickers": [
         "A",
         "AACB",
@@ -558,9 +558,9 @@
         "ABM",
         "ABR-P-F",
         "ACA",
-        "ACCO",
         "ACHL",
         "ACLO",
+        "ACNB",
         "ACT",
         "ACU",
         "ACVA",
@@ -570,13 +570,13 @@
         "ADAMN",
         "ADEX",
         "ADM",
-        "ADP",
         "ADPT",
         "AEG",
         "AFAR",
         "AFBI",
         "AFG",
         "AFGB",
+        "AFGC",
         "AFGD",
         "AGIQ",
         "AGNCL",
@@ -619,61 +619,61 @@
       "id": "volumeBreakout",
       "label": "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
       "kind": "boolean",
-      "matched": 410,
-      "notMatched": 5593,
-      "notEvaluable": 398,
-      "evaluatedOf": 6401,
+      "matched": 1937,
+      "notMatched": 4060,
+      "notEvaluable": 407,
+      "evaluatedOf": 6404,
       "tickers": [
-        "AAAP",
-        "AACP",
-        "ABEO",
+        "AA",
+        "AACI",
+        "AADX",
+        "AAMI",
+        "AAUC",
+        "ABCB",
+        "ABG",
+        "ABM",
+        "ABNB",
+        "ABOS",
+        "ABR",
         "ABSI",
+        "ABT",
         "ABTS",
+        "ABX",
+        "ACAD",
+        "ACCO",
         "ACEI",
-        "ACGC",
-        "ACGLO",
-        "ACLO",
-        "ACMM",
-        "ACR-P-D",
-        "ACU",
-        "AEMD",
-        "AFGB",
-        "AFYA",
-        "AGCC",
-        "AGM-P-E",
-        "AGMH",
-        "AGNCL",
-        "AIFF",
-        "ALF",
-        "ALHC",
-        "ALMU",
-        "AMBP",
-        "AMZE",
-        "AN",
-        "ANGX",
-        "ANV",
-        "APXT",
-        "AQLG",
-        "ARQT",
-        "ARTC",
-        "ASAN",
-        "ASB-P-E",
-        "ASBA",
-        "ASTH",
-        "ATC",
-        "ATCH",
-        "ATRO",
-        "BA",
-        "BAFN",
-        "BBNX",
-        "BCBP",
-        "BCSS",
-        "BDCX",
-        "BEAG",
-        "BFS-P-D",
-        "BFS-P-E",
-        "BIAF",
-        "BKLG"
+        "ACEL",
+        "ACGL",
+        "ACH",
+        "ACIW",
+        "ACLZ",
+        "ACN",
+        "ACNB",
+        "ACR",
+        "ACRE",
+        "ACT",
+        "ACTG",
+        "AD",
+        "ADAM",
+        "ADC",
+        "ADEA",
+        "ADI",
+        "ADM",
+        "ADMA",
+        "ADNT",
+        "ADP",
+        "ADT",
+        "ADTN",
+        "ADUS",
+        "ADV",
+        "AEAQ",
+        "AEC",
+        "AEI",
+        "AEIS",
+        "AEP",
+        "AEXA",
+        "AFG",
+        "AFGB"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -695,209 +695,727 @@
       "label": "Staerkstes Momentum (12 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5580,
-      "notEvaluable": 821,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "returns.12M",
+      "evaluated": 5551,
+      "notEvaluable": 822,
+      "quarantined": [
         {
-          "ticker": "MINE",
-          "value": 2969999
-        },
-        {
-          "ticker": "FLXI",
-          "value": 115.81451
-        },
-        {
-          "ticker": "SHAZ",
-          "value": 55.725
-        },
-        {
-          "ticker": "CATG",
-          "value": 27.485714
-        },
-        {
-          "ticker": "MGRT",
-          "value": 26.995255
-        },
-        {
-          "ticker": "ZCSH",
-          "value": 22.354726
+          "ticker": "AEMD",
+          "value": -0.832626,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "AXTI",
-          "value": 15.895262
+          "value": 16.774112,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NINE",
-          "value": 14.245203
+          "ticker": "CATG",
+          "value": 28.257143,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NUAI",
-          "value": 11.366965
+          "ticker": "CPHI",
+          "value": -0.640506,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": -0.999909,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CYPH",
+          "value": 10.505273,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": -0.851176,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "DMRA",
+          "value": 6.926316,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "FLXI",
+          "value": 115.778109,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "GIBO",
-          "value": 9.787879
+          "value": 10.982079,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
         },
+        {
+          "ticker": "GOTU",
+          "value": -0.91519,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -0.999923,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -0.944751,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": 28.042857,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": 2939999,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 14.289855,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 11.993348,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -0.639037,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": -0.329815,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": 0.082251,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": 2.813559,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": 56.56,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": -0.731773,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -0.993956,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": -0.959778,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": 3.949092,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 2.815345,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": -0.987692,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -0.748359,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 22.544,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -0.856545,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 31,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
         {
           "ticker": "CMRX",
           "value": 8.704545
         },
         {
-          "ticker": "CYPH",
-          "value": 8.672338
-        },
-        {
-          "ticker": "ERAS",
-          "value": 7.97076
+          "ticker": "AUC",
+          "value": 8.582007
         },
         {
           "ticker": "ANL",
-          "value": 7.536313
+          "value": 7.863112
+        },
+        {
+          "ticker": "ERAS",
+          "value": 7.844311
         },
         {
           "ticker": "MTC",
-          "value": 7.324873
-        },
-        {
-          "ticker": "DMRA",
-          "value": 7.283636
+          "value": 7.103022
         },
         {
           "ticker": "ANRO",
-          "value": 6.843038
-        },
-        {
-          "ticker": "PRAX",
-          "value": 6.392143
+          "value": 6.924084
         },
         {
           "ticker": "STBX",
-          "value": 6.351916
-        },
-        {
-          "ticker": "CLYM",
-          "value": 5.995025
+          "value": 6.275862
         },
         {
           "ticker": "SLS",
-          "value": 5.904192
+          "value": 5.798817
         },
         {
-          "ticker": "AUC",
-          "value": 5.757576
+          "ticker": "PRAX",
+          "value": 5.789689
         },
         {
-          "ticker": "ORKA",
-          "value": 5.55906
-        },
-        {
-          "ticker": "MBX",
-          "value": 5.556183
-        },
-        {
-          "ticker": "MRNA",
-          "value": 5.363527
+          "ticker": "CLYM",
+          "value": 5.627358
         },
         {
           "ticker": "IMMX",
-          "value": 5.36
-        },
-        {
-          "ticker": "SYRE",
-          "value": 5.253711
+          "value": 5.377551
         },
         {
           "ticker": "MU",
-          "value": 5.164751
+          "value": 5.359447
         },
         {
-          "ticker": "EDRY",
-          "value": 4.889344
-        },
-        {
-          "ticker": "TXG",
-          "value": 4.862148
-        },
-        {
-          "ticker": "QTTB",
-          "value": 4.776596
+          "ticker": "MBX",
+          "value": 5.328974
         },
         {
           "ticker": "TWST",
-          "value": 4.744461
+          "value": 5.191694
+        },
+        {
+          "ticker": "MRNA",
+          "value": 5.1616
+        },
+        {
+          "ticker": "SYRE",
+          "value": 4.996678
+        },
+        {
+          "ticker": "TXG",
+          "value": 4.956454
+        },
+        {
+          "ticker": "QTTB",
+          "value": 4.888268
         },
         {
           "ticker": "BUUU",
-          "value": 4.651106
+          "value": 4.884224
         },
         {
-          "ticker": "SPRB",
-          "value": 4.622129
+          "ticker": "ORKA",
+          "value": 4.858112
         },
         {
           "ticker": "LITE",
-          "value": 4.228847
+          "value": 4.699216
+        },
+        {
+          "ticker": "SPRB",
+          "value": 4.572479
+        },
+        {
+          "ticker": "EDRY",
+          "value": 4.506805
         },
         {
           "ticker": "CHRN",
-          "value": 4.057789
-        },
-        {
-          "ticker": "BFLY",
-          "value": 3.883436
-        },
-        {
-          "ticker": "SRXH",
-          "value": 3.814831
+          "value": 4.235897
         },
         {
           "ticker": "MAMK",
-          "value": 3.760335
-        },
-        {
-          "ticker": "MAAS",
-          "value": 3.750733
-        },
-        {
-          "ticker": "DELL",
-          "value": 3.667495
-        },
-        {
-          "ticker": "RLAY",
-          "value": 3.646489
+          "value": 4.058366
         },
         {
           "ticker": "MXL",
-          "value": 3.629012
+          "value": 4.019802
         },
         {
-          "ticker": "OMER",
-          "value": 3.578164
+          "ticker": "MAAS",
+          "value": 3.861272
         },
         {
-          "ticker": "RVMD",
-          "value": 3.405817
+          "ticker": "BFLY",
+          "value": 3.834356
         },
         {
           "ticker": "BDSX",
-          "value": 3.391768
+          "value": 3.702093
         },
         {
-          "ticker": "IOVA",
-          "value": 3.356522
+          "ticker": "PRLD",
+          "value": 3.682692
         },
         {
           "ticker": "MAGH",
-          "value": 3.305732
+          "value": 3.662069
+        },
+        {
+          "ticker": "IOVA",
+          "value": 3.617117
+        },
+        {
+          "ticker": "RLAY",
+          "value": 3.606357
+        },
+        {
+          "ticker": "DELL",
+          "value": 3.414185
+        },
+        {
+          "ticker": "OMER",
+          "value": 3.401478
+        },
+        {
+          "ticker": "WDC",
+          "value": 3.380665
         },
         {
           "ticker": "INTC",
-          "value": 3.305501
+          "value": 3.361446
+        },
+        {
+          "ticker": "RVMD",
+          "value": 3.358594
+        },
+        {
+          "ticker": "TRT",
+          "value": 3.276803
+        },
+        {
+          "ticker": "VICR",
+          "value": 3.265849
+        },
+        {
+          "ticker": "VNCE",
+          "value": 3.196078
         },
         {
           "ticker": "ANAB",
-          "value": 3.257216
+          "value": 3.179707
+        },
+        {
+          "ticker": "STX",
+          "value": 3.058095
+        },
+        {
+          "ticker": "DFTX",
+          "value": 3.055381
+        },
+        {
+          "ticker": "DRTS",
+          "value": 2.96875
+        },
+        {
+          "ticker": "ANTX",
+          "value": 2.914729
+        },
+        {
+          "ticker": "OPTX",
+          "value": 2.836158
+        },
+        {
+          "ticker": "FTH",
+          "value": 2.833333
+        },
+        {
+          "ticker": "ABSI",
+          "value": 2.784314
+        },
+        {
+          "ticker": "IPSC",
+          "value": 2.781256
         }
       ],
       "notEvaluableSample": [
@@ -918,209 +1436,739 @@
       "label": "Staerkstes Momentum (6 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5925,
-      "notEvaluable": 476,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "returns.6M",
+      "evaluated": 5898,
+      "notEvaluable": 474,
+      "quarantined": [
         {
-          "ticker": "VIVKD",
-          "value": 189.767241
+          "ticker": "AEMD",
+          "value": -0.428959,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "AXTI",
+          "value": 0.205543,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "CATG",
-          "value": 48.85
+          "value": 50.2,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "QHUOY",
-          "value": 37.037566
+          "ticker": "CPHI",
+          "value": 0.290909,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "GIBO",
-          "value": 21.885714
-        },
-        {
-          "ticker": "NINE",
-          "value": 16.073171
-        },
-        {
-          "ticker": "MGRT",
-          "value": 13.567901
-        },
-        {
-          "ticker": "SRXH",
-          "value": 11.377919
-        },
-        {
-          "ticker": "AUC",
-          "value": 6.870588
-        },
-        {
-          "ticker": "XHLD",
-          "value": 5.893617
-        },
-        {
-          "ticker": "ZCSH",
-          "value": 5.307248
-        },
-        {
-          "ticker": "AGL",
-          "value": 5.044399
-        },
-        {
-          "ticker": "PMI",
-          "value": 3.827586
-        },
-        {
-          "ticker": "BBGI",
-          "value": 3.800562
-        },
-        {
-          "ticker": "CUE",
-          "value": 3.77055
-        },
-        {
-          "ticker": "QMCO",
-          "value": 3.70566
-        },
-        {
-          "ticker": "MXL",
-          "value": 3.555893
-        },
-        {
-          "ticker": "GENVR",
-          "value": 3.454545
-        },
-        {
-          "ticker": "VNCE",
-          "value": 3.443439
-        },
-        {
-          "ticker": "TXG",
-          "value": 3.436311
+          "ticker": "CPTAF",
+          "value": -0.999805,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "CYPH",
-          "value": 3.281132
+          "value": 4.086183,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "TTRX",
-          "value": 2.971264
+          "ticker": "DLXY",
+          "value": 0.215482,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "DELL",
-          "value": 2.9613
+          "ticker": "DMRA",
+          "value": 0.176562,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "ETS",
-          "value": 2.893805
+          "ticker": "FLXI",
+          "value": -0.004172,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "PAYS",
-          "value": 2.857143
+          "ticker": "GIBO",
+          "value": 22.542254,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "BLZE",
-          "value": 2.819945
+          "ticker": "GOTU",
+          "value": 0.107692,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -0.996921,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -0.354891,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": 16.376068,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": -0.00339,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 16.994201,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 0.193483,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -0.567308,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": 3.535714,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": 43.404973,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "RFAI",
-          "value": 2.786372
+          "value": 2.713893,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "CSTE",
-          "value": 2.784002
+          "ticker": "SHAZ",
+          "value": 1.250195,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "EDRY",
-          "value": 2.652771
+          "ticker": "SION",
+          "value": -0.832065,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "ABCL",
-          "value": 2.616477
+          "ticker": "SLAIY",
+          "value": -0.97892,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "TWST",
-          "value": 2.498875
+          "ticker": "SMJF",
+          "value": -0.65,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.093797,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "CORT",
-          "value": 2.449249
+          "ticker": "SNYR",
+          "value": -0.9276,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "FATN",
-          "value": 2.412121
+          "ticker": "SRXH",
+          "value": 12.579586,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "BAND",
-          "value": 2.371829
+          "ticker": "VIVKD",
+          "value": 196.580357,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "LIFE",
-          "value": 2.37037
+          "ticker": "YHC",
+          "value": -0.985906,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "APPS",
-          "value": 2.361963
+          "ticker": "YXT",
+          "value": -0.603448,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "TMCI",
-          "value": 2.355556
+          "ticker": "ZCSH",
+          "value": 5.432787,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "ALOT",
-          "value": 2.313143
+          "ticker": "ZYBT",
+          "value": 0.256881,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 32,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
+        {
+          "ticker": "AUC",
+          "value": 9.909856
         },
         {
-          "ticker": "MKDW",
-          "value": 2.301802
+          "ticker": "AGL",
+          "value": 6.555932
         },
         {
-          "ticker": "SAIH",
-          "value": 2.290281
+          "ticker": "XHLD",
+          "value": 6.235294
         },
         {
-          "ticker": "ABSI",
-          "value": 2.241259
+          "ticker": "VNCE",
+          "value": 3.885845
+        },
+        {
+          "ticker": "QMCO",
+          "value": 3.834297
+        },
+        {
+          "ticker": "MXL",
+          "value": 3.74386
+        },
+        {
+          "ticker": "CUE",
+          "value": 3.674489
+        },
+        {
+          "ticker": "BBGI",
+          "value": 3.654054
+        },
+        {
+          "ticker": "TTRX",
+          "value": 3.355685
+        },
+        {
+          "ticker": "ETS",
+          "value": 3.333333
+        },
+        {
+          "ticker": "TXG",
+          "value": 3.167573
+        },
+        {
+          "ticker": "PAYS",
+          "value": 2.880503
+        },
+        {
+          "ticker": "GENVR",
+          "value": 2.862385
         },
         {
           "ticker": "SVRN",
-          "value": 2.208955
+          "value": 2.733921
         },
         {
-          "ticker": "QXL",
-          "value": 2.131868
+          "ticker": "TWST",
+          "value": 2.727455
         },
         {
-          "ticker": "CDNA",
-          "value": 2.12313
+          "ticker": "EDRY",
+          "value": 2.723877
         },
         {
-          "ticker": "CPIX",
-          "value": 2.104318
+          "ticker": "DELL",
+          "value": 2.640172
         },
         {
-          "ticker": "ADIL",
-          "value": 2.064706
+          "ticker": "BLZE",
+          "value": 2.605479
         },
         {
-          "ticker": "EXFY",
-          "value": 2.052838
+          "ticker": "LIFE",
+          "value": 2.6
         },
         {
-          "ticker": "SMWB",
-          "value": 2.043796
+          "ticker": "ABCL",
+          "value": 2.577904
+        },
+        {
+          "ticker": "CSTE",
+          "value": 2.469955
+        },
+        {
+          "ticker": "TMCI",
+          "value": 2.427481
+        },
+        {
+          "ticker": "ALOT",
+          "value": 2.301822
+        },
+        {
+          "ticker": "APPS",
+          "value": 2.290123
+        },
+        {
+          "ticker": "BAND",
+          "value": 2.259572
+        },
+        {
+          "ticker": "CORT",
+          "value": 2.236209
+        },
+        {
+          "ticker": "SAIH",
+          "value": 2.187654
+        },
+        {
+          "ticker": "FATN",
+          "value": 2.148352
+        },
+        {
+          "ticker": "ABSI",
+          "value": 2.133117
         },
         {
           "ticker": "BUUU",
-          "value": 2.027312
+          "value": 2.125
         },
         {
-          "ticker": "HCHL",
-          "value": 2.022901
+          "ticker": "AERT",
+          "value": 2.077191
+        },
+        {
+          "ticker": "CPIX",
+          "value": 2.072656
+        },
+        {
+          "ticker": "CDNA",
+          "value": 2.060262
+        },
+        {
+          "ticker": "QXL",
+          "value": 2.043956
+        },
+        {
+          "ticker": "SMWB",
+          "value": 2.0369
+        },
+        {
+          "ticker": "PCLA",
+          "value": 2.021739
+        },
+        {
+          "ticker": "PENG",
+          "value": 2.017897
+        },
+        {
+          "ticker": "OESX",
+          "value": 1.966559
         },
         {
           "ticker": "MRNA",
-          "value": 2.016603
+          "value": 1.941379
+        },
+        {
+          "ticker": "MAAS",
+          "value": 1.935428
+        },
+        {
+          "ticker": "QURE",
+          "value": 1.883355
+        },
+        {
+          "ticker": "HCHL",
+          "value": 1.869565
+        },
+        {
+          "ticker": "XGN",
+          "value": 1.83165
+        },
+        {
+          "ticker": "SWVL",
+          "value": 1.827815
+        },
+        {
+          "ticker": "HPE",
+          "value": 1.771352
+        },
+        {
+          "ticker": "EXFY",
+          "value": 1.750829
+        },
+        {
+          "ticker": "EVC",
+          "value": 1.745824
+        },
+        {
+          "ticker": "RCEL",
+          "value": 1.734491
+        },
+        {
+          "ticker": "TKNO",
+          "value": 1.733333
+        },
+        {
+          "ticker": "MRVL",
+          "value": 1.730104
         }
       ],
       "notEvaluableSample": [
@@ -1141,209 +2189,727 @@
       "label": "Staerkstes Momentum (12 Monate ohne den letzten)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5580,
-      "notEvaluable": 821,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "return12M1M",
+      "evaluated": 5551,
+      "notEvaluable": 822,
+      "quarantined": [
         {
-          "ticker": "MINE",
-          "value": 2949999
-        },
-        {
-          "ticker": "FLXI",
-          "value": 117.915644
-        },
-        {
-          "ticker": "SHAZ",
-          "value": 67.78
-        },
-        {
-          "ticker": "CATG",
-          "value": 31.342857
-        },
-        {
-          "ticker": "MGRT",
-          "value": 21.711744
+          "ticker": "AEMD",
+          "value": -0.92626,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "AXTI",
-          "value": 19.526185
+          "value": 17.637056,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NINE",
-          "value": 14.427962
+          "ticker": "CATG",
+          "value": 29.237143,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CPHI",
+          "value": -0.453165,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": -0.996364,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CYPH",
+          "value": 2.419623,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": -0.930346,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "DMRA",
-          "value": 10.563636
+          "value": 10.382456,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NUAI",
-          "value": 9.91954
-        },
-        {
-          "ticker": "ERAS",
-          "value": 9.584795
+          "ticker": "FLXI",
+          "value": 118.185389,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "GIBO",
-          "value": 9.23569
+          "value": 9.896057,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "GOTU",
+          "value": -0.934822,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -0.999875,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -0.978988,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": 22.52381,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": 3009999,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 14.289855,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 10.973392,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -0.592567,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": -0.565963,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": 0.082251,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": 0.054143,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": 64.45,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": -0.718722,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -0.909091,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": -0.952444,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": 4.541797,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 2.815345,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": -0.982692,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -0.659737,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 7.83816,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -0.806283,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 31,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
+        {
+          "ticker": "ERAS",
+          "value": 9.820359
         },
         {
           "ticker": "CMRX",
           "value": 8.704545
         },
         {
-          "ticker": "PRAX",
-          "value": 7.805714
-        },
-        {
-          "ticker": "CLYM",
-          "value": 7.651741
-        },
-        {
           "ticker": "ANRO",
-          "value": 7.640506
+          "value": 8.133508
         },
         {
           "ticker": "QTTB",
-          "value": 7.132979
+          "value": 7.849162
         },
         {
-          "ticker": "ANL",
-          "value": 6.910615
+          "ticker": "PRAX",
+          "value": 7.771065
         },
         {
           "ticker": "SLS",
-          "value": 6.844311
+          "value": 7.195266
         },
         {
-          "ticker": "ZCSH",
-          "value": 6.784909
+          "ticker": "CLYM",
+          "value": 7.179245
         },
         {
-          "ticker": "ORKA",
-          "value": 6.589262
+          "ticker": "ANL",
+          "value": 7.069148
         },
         {
           "ticker": "STBX",
-          "value": 6.351916
+          "value": 6.275862
         },
         {
           "ticker": "SYRE",
-          "value": 6.275304
+          "value": 6.237209
         },
         {
           "ticker": "AUC",
-          "value": 6.050505
+          "value": 6.168532
+        },
+        {
+          "ticker": "MRNA",
+          "value": 5.9752
         },
         {
           "ticker": "MBX",
-          "value": 5.826065
+          "value": 5.881288
         },
         {
-          "ticker": "ALMS",
-          "value": 4.980769
-        },
-        {
-          "ticker": "MU",
-          "value": 4.933045
-        },
-        {
-          "ticker": "CHRN",
-          "value": 4.91206
+          "ticker": "ORKA",
+          "value": 5.766811
         },
         {
           "ticker": "IMMX",
-          "value": 4.905
+          "value": 5.729592
+        },
+        {
+          "ticker": "CHRN",
+          "value": 5.076923
+        },
+        {
+          "ticker": "MU",
+          "value": 4.866775
+        },
+        {
+          "ticker": "ALMS",
+          "value": 4.808717
         },
         {
           "ticker": "BFLY",
-          "value": 4.521472
+          "value": 4.625767
         },
         {
           "ticker": "SPRB",
-          "value": 4.51618
-        },
-        {
-          "ticker": "SRXH",
-          "value": 4.320091
-        },
-        {
-          "ticker": "LITE",
-          "value": 4.110064
-        },
-        {
-          "ticker": "BNAI",
-          "value": 4.088283
-        },
-        {
-          "ticker": "RLAY",
-          "value": 3.990315
+          "value": 4.563025
         },
         {
           "ticker": "PRLD",
-          "value": 3.956897
+          "value": 4.557692
+        },
+        {
+          "ticker": "TWST",
+          "value": 4.27957
         },
         {
           "ticker": "ARTV",
-          "value": 3.92827
+          "value": 4.131579
         },
         {
-          "ticker": "YARW",
-          "value": 3.859221
+          "ticker": "RLAY",
+          "value": 4.070905
         },
         {
-          "ticker": "RVMD",
-          "value": 3.832215
-        },
-        {
-          "ticker": "WDC",
-          "value": 3.820356
+          "ticker": "LITE",
+          "value": 4.066732
         },
         {
           "ticker": "MAMK",
-          "value": 3.760335
+          "value": 4.058366
+        },
+        {
+          "ticker": "BNAI",
+          "value": 4.045698
+        },
+        {
+          "ticker": "RVMD",
+          "value": 3.899795
+        },
+        {
+          "ticker": "TXG",
+          "value": 3.835925
         },
         {
           "ticker": "DFTX",
-          "value": 3.755922
+          "value": 3.787879
         },
         {
-          "ticker": "MAAS",
-          "value": 3.721408
+          "ticker": "YARW",
+          "value": 3.781238
+        },
+        {
+          "ticker": "OPTX",
+          "value": 3.759887
+        },
+        {
+          "ticker": "MAGH",
+          "value": 3.662069
         },
         {
           "ticker": "ANTX",
-          "value": 3.664063
+          "value": 3.620155
         },
         {
-          "ticker": "VICR",
-          "value": 3.656358
+          "ticker": "MAAS",
+          "value": 3.604046
         },
         {
-          "ticker": "VELO",
-          "value": 3.644444
+          "ticker": "WDC",
+          "value": 3.584977
+        },
+        {
+          "ticker": "OMER",
+          "value": 3.529557
         },
         {
           "ticker": "ANAB",
-          "value": 3.561082
+          "value": 3.487128
         },
         {
-          "ticker": "AAOI",
-          "value": 3.542344
+          "ticker": "NBTX",
+          "value": 3.448866
         },
         {
-          "ticker": "MXL",
-          "value": 3.483333
+          "ticker": "TRT",
+          "value": 3.413255
+        },
+        {
+          "ticker": "VELO",
+          "value": 3.354232
         },
         {
           "ticker": "KOD",
-          "value": 3.356913
+          "value": 3.350706
         },
         {
-          "ticker": "AEHR",
-          "value": 3.323045
+          "ticker": "IPSC",
+          "value": 3.28949
+        },
+        {
+          "ticker": "VICR",
+          "value": 3.162996
+        },
+        {
+          "ticker": "ATEX",
+          "value": 3.157525
+        },
+        {
+          "ticker": "AAOI",
+          "value": 3.14625
+        },
+        {
+          "ticker": "BDSX",
+          "value": 3.112721
+        },
+        {
+          "ticker": "MXL",
+          "value": 3.110767
+        },
+        {
+          "ticker": "STTK",
+          "value": 2.948454
+        },
+        {
+          "ticker": "PACS",
+          "value": 2.944742
         }
       ],
       "notEvaluableSample": [
@@ -1364,209 +2930,727 @@
       "label": "Staerkste relative Staerke gegen SPY (12 Monate)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5580,
-      "notEvaluable": 821,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "relativeStrength.12M",
+      "evaluated": 5551,
+      "notEvaluable": 822,
+      "quarantined": [
         {
-          "ticker": "MINE",
-          "value": 14.748586
-        },
-        {
-          "ticker": "FLXI",
-          "value": 4.605101
-        },
-        {
-          "ticker": "SHAZ",
-          "value": 3.882729
-        },
-        {
-          "ticker": "CATG",
-          "value": 3.193916
-        },
-        {
-          "ticker": "MGRT",
-          "value": 3.176549
-        },
-        {
-          "ticker": "ZCSH",
-          "value": 2.995313
+          "ticker": "AEMD",
+          "value": -1.943011,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "AXTI",
-          "value": 2.671547
+          "value": 2.722257,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NINE",
-          "value": 2.568779
+          "ticker": "CATG",
+          "value": 3.220637,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NUAI",
-          "value": 2.359542
+          "ticker": "CPHI",
+          "value": -1.178545,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": -9.461137,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CYPH",
+          "value": 2.287319,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": -2.06048,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "DMRA",
+          "value": 1.914702,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "FLXI",
+          "value": 4.604789,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "GIBO",
-          "value": 2.222937
+          "value": 2.327926,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
         },
+        {
+          "ticker": "GOTU",
+          "value": -2.622824,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -9.627398,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -3.051392,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": 3.213286,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": 14.738434,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 2.571703,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 2.408951,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -1.174467,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": -0.555688,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": -0.076443,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": 1.183077,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": 3.897342,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": -1.471409,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -5.264183,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": -3.368822,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": 1.443718,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 1.183545,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": -4.553017,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -1.535238,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 3.003385,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -2.097217,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 31,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
         {
           "ticker": "CMRX",
           "value": 2.117108
         },
         {
-          "ticker": "CYPH",
-          "value": 2.113784
-        },
-        {
-          "ticker": "ERAS",
-          "value": 2.038484
+          "ticker": "AUC",
+          "value": 2.104401
         },
         {
           "ticker": "ANL",
-          "value": 1.988843
+          "value": 2.026412
+        },
+        {
+          "ticker": "ERAS",
+          "value": 2.024288
         },
         {
           "ticker": "MTC",
-          "value": 1.963761
-        },
-        {
-          "ticker": "DMRA",
-          "value": 1.958796
+          "value": 1.936751
         },
         {
           "ticker": "ANRO",
-          "value": 1.90414
-        },
-        {
-          "ticker": "PRAX",
-          "value": 1.844931
+          "value": 1.91442
         },
         {
           "ticker": "STBX",
-          "value": 1.839475
-        },
-        {
-          "ticker": "CLYM",
-          "value": 1.789713
+          "value": 1.829076
         },
         {
           "ticker": "SLS",
-          "value": 1.776642
+          "value": 1.761262
         },
         {
-          "ticker": "AUC",
-          "value": 1.755178
+          "ticker": "PRAX",
+          "value": 1.759919
         },
         {
-          "ticker": "ORKA",
-          "value": 1.725361
-        },
-        {
-          "ticker": "MBX",
-          "value": 1.724922
-        },
-        {
-          "ticker": "MRNA",
-          "value": 1.695096
+          "ticker": "CLYM",
+          "value": 1.73572
         },
         {
           "ticker": "IMMX",
-          "value": 1.694542
-        },
-        {
-          "ticker": "SYRE",
-          "value": 1.677689
+          "value": 1.697298
         },
         {
           "ticker": "MU",
-          "value": 1.663361
+          "value": 1.694455
         },
         {
-          "ticker": "EDRY",
-          "value": 1.617658
-        },
-        {
-          "ticker": "TXG",
-          "value": 1.61303
-        },
-        {
-          "ticker": "QTTB",
-          "value": 1.598328
+          "ticker": "MBX",
+          "value": 1.689652
         },
         {
           "ticker": "TWST",
-          "value": 1.59275
+          "value": 1.667722
+        },
+        {
+          "ticker": "MRNA",
+          "value": 1.66285
+        },
+        {
+          "ticker": "SYRE",
+          "value": 1.635719
+        },
+        {
+          "ticker": "TXG",
+          "value": 1.628989
+        },
+        {
+          "ticker": "QTTB",
+          "value": 1.617476
         },
         {
           "ticker": "BUUU",
-          "value": 1.576365
+          "value": 1.616789
         },
         {
-          "ticker": "SPRB",
-          "value": 1.571224
+          "ticker": "ORKA",
+          "value": 1.612341
         },
         {
           "ticker": "LITE",
-          "value": 1.498705
+          "value": 1.584842
+        },
+        {
+          "ticker": "SPRB",
+          "value": 1.562354
+        },
+        {
+          "ticker": "EDRY",
+          "value": 1.550498
         },
         {
           "ticker": "CHRN",
-          "value": 1.465443
-        },
-        {
-          "ticker": "BFLY",
-          "value": 1.430363
-        },
-        {
-          "ticker": "SRXH",
-          "value": 1.416215
+          "value": 1.500052
         },
         {
           "ticker": "MAMK",
-          "value": 1.404832
-        },
-        {
-          "ticker": "MAAS",
-          "value": 1.402813
-        },
-        {
-          "ticker": "DELL",
-          "value": 1.385136
-        },
-        {
-          "ticker": "RLAY",
-          "value": 1.380626
+          "value": 1.465557
         },
         {
           "ticker": "MXL",
-          "value": 1.376857
+          "value": 1.457904
         },
         {
-          "ticker": "OMER",
-          "value": 1.365812
+          "ticker": "MAAS",
+          "value": 1.425814
         },
         {
-          "ticker": "RVMD",
-          "value": 1.327439
+          "ticker": "BFLY",
+          "value": 1.420262
         },
         {
           "ticker": "BDSX",
-          "value": 1.324246
+          "value": 1.392522
         },
         {
-          "ticker": "IOVA",
-          "value": 1.316188
+          "ticker": "PRLD",
+          "value": 1.388387
         },
         {
           "ticker": "MAGH",
-          "value": 1.304461
+          "value": 1.383973
+        },
+        {
+          "ticker": "IOVA",
+          "value": 1.374284
+        },
+        {
+          "ticker": "RLAY",
+          "value": 1.371951
+        },
+        {
+          "ticker": "DELL",
+          "value": 1.329337
+        },
+        {
+          "ticker": "OMER",
+          "value": 1.326454
+        },
+        {
+          "ticker": "WDC",
+          "value": 1.321714
         },
         {
           "ticker": "INTC",
-          "value": 1.304407
+          "value": 1.317317
+        },
+        {
+          "ticker": "RVMD",
+          "value": 1.316663
+        },
+        {
+          "ticker": "TRT",
+          "value": 1.297719
+        },
+        {
+          "ticker": "VICR",
+          "value": 1.295155
+        },
+        {
+          "ticker": "VNCE",
+          "value": 1.278664
         },
         {
           "ticker": "ANAB",
-          "value": 1.293129
+          "value": 1.274755
+        },
+        {
+          "ticker": "STX",
+          "value": 1.245227
+        },
+        {
+          "ticker": "DFTX",
+          "value": 1.244558
+        },
+        {
+          "ticker": "DRTS",
+          "value": 1.222965
+        },
+        {
+          "ticker": "ANTX",
+          "value": 1.20926
+        },
+        {
+          "ticker": "OPTX",
+          "value": 1.188985
+        },
+        {
+          "ticker": "FTH",
+          "value": 1.188248
+        },
+        {
+          "ticker": "ABSI",
+          "value": 1.175378
+        },
+        {
+          "ticker": "IPSC",
+          "value": 1.17457
         }
       ],
       "notEvaluableSample": [
@@ -1587,209 +3671,751 @@
       "label": "Trendbeschleunigung (1M gegen 3M)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 6296,
-      "notEvaluable": 105,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "momentumAcceleration",
+      "evaluated": 6269,
+      "notEvaluable": 102,
+      "quarantined": [
         {
-          "ticker": "KEEX",
-          "value": 3.744903
+          "ticker": "AEMD",
+          "value": 1.380542,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "INDP",
-          "value": 3.240491
+          "ticker": "AHMA",
+          "value": 0.16997,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.414067,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "PDSB",
-          "value": 3.073534
+          "ticker": "AXTI",
+          "value": 0.011007,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "MEDS",
-          "value": 2.265691
+          "ticker": "CATG",
+          "value": 0.093552,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "RFAI",
-          "value": 2.201493
+          "ticker": "CPHI",
+          "value": -0.316181,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": -0.647956,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "CYPH",
-          "value": 1.802323
-        },
-        {
-          "ticker": "NWGL",
-          "value": 1.606671
-        },
-        {
-          "ticker": "AEMD",
-          "value": 1.442705
-        },
-        {
-          "ticker": "ZSTK",
-          "value": 1.409394
-        },
-        {
-          "ticker": "SWVL",
-          "value": 1.405187
-        },
-        {
-          "ticker": "AVAT",
-          "value": 1.346297
-        },
-        {
-          "ticker": "FTFT",
-          "value": 1.092931
-        },
-        {
-          "ticker": "MNOV",
-          "value": 1.049751
-        },
-        {
-          "ticker": "GPRO",
-          "value": 1.037752
-        },
-        {
-          "ticker": "ZCSH",
-          "value": 0.992744
-        },
-        {
-          "ticker": "MRNA",
-          "value": 0.991386
-        },
-        {
-          "ticker": "VEEA",
-          "value": 0.990783
-        },
-        {
-          "ticker": "SVRN",
-          "value": 0.887003
-        },
-        {
-          "ticker": "TELA",
-          "value": 0.839031
-        },
-        {
-          "ticker": "HOWL",
-          "value": 0.753566
+          "value": 1.074443,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "DLXY",
-          "value": 0.744177
+          "value": 0.725377,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "WCT",
-          "value": 0.729894
+          "ticker": "DMRA",
+          "value": -0.32499,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "BRRWW",
-          "value": 0.719838
+          "ticker": "FLXI",
+          "value": -0.016596,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "NTRB",
-          "value": 0.717391
+          "ticker": "GIBO",
+          "value": -7.821317,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "MTC",
-          "value": 0.683399
+          "ticker": "GOTU",
+          "value": 0.198175,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "LSTA",
-          "value": 0.681604
+          "ticker": "LBGJ",
+          "value": -0.053581,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "PURR",
-          "value": 0.679328
+          "ticker": "MEDS",
+          "value": 1.582426,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "ATER",
-          "value": 0.660652
+          "ticker": "MGRT",
+          "value": 0.002834,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "ARCT",
-          "value": 0.628695
+          "ticker": "MINE",
+          "value": -0.068301,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "VIOT",
-          "value": 0.626782
+          "ticker": "NINE",
+          "value": 0.020741,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "GIPR",
-          "value": 0.605501
+          "ticker": "NUAI",
+          "value": 0.105985,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "GVH",
-          "value": 0.60249
+          "ticker": "PLAG",
+          "value": 0.094276,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "CMRC",
-          "value": 0.564315
+          "ticker": "PMI",
+          "value": -8.421514,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "SST",
-          "value": 0.559852
+          "ticker": "QHUOY",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "EBS",
-          "value": 0.552302
+          "ticker": "RFAI",
+          "value": 1.725974,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "BRLS",
-          "value": 0.552071
-        },
-        {
-          "ticker": "CAPR",
-          "value": 0.551498
-        },
-        {
-          "ticker": "FAMI",
-          "value": 0.540829
-        },
-        {
-          "ticker": "CELU",
-          "value": 0.525745
-        },
-        {
-          "ticker": "MBRX",
-          "value": 0.518955
-        },
-        {
-          "ticker": "GLE",
-          "value": 0.511474
-        },
-        {
-          "ticker": "VNCE",
-          "value": 0.504825
-        },
-        {
-          "ticker": "GLOO",
-          "value": 0.499541
-        },
-        {
-          "ticker": "ALPS",
-          "value": 0.495201
-        },
-        {
-          "ticker": "MWC",
-          "value": 0.493203
-        },
-        {
-          "ticker": "STLU",
-          "value": 0.488406
-        },
-        {
-          "ticker": "YFOR",
-          "value": 0.479691
+          "ticker": "SHAZ",
+          "value": 0.005807,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "SION",
-          "value": 0.476927
+          "value": 0.233671,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -0.613299,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SMJF",
+          "value": -0.635768,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.093797,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": 0.052907,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": -4.35832,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": 0.039642,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -0.123195,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 0.552996,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -0.535015,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 33,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
+        {
+          "ticker": "KEEX",
+          "value": 4.487954
+        },
+        {
+          "ticker": "PDSB",
+          "value": 3.065635
+        },
+        {
+          "ticker": "INDP",
+          "value": 2.806511
+        },
+        {
+          "ticker": "GIPR",
+          "value": 1.556664
+        },
+        {
+          "ticker": "SVRN",
+          "value": 1.49931
+        },
+        {
+          "ticker": "AVAT",
+          "value": 1.453309
+        },
+        {
+          "ticker": "SWVL",
+          "value": 1.39655
+        },
+        {
+          "ticker": "AMBR",
+          "value": 0.99749
+        },
+        {
+          "ticker": "VEEA",
+          "value": 0.921406
+        },
+        {
+          "ticker": "MNOV",
+          "value": 0.900746
+        },
+        {
+          "ticker": "GPRO",
+          "value": 0.843838
+        },
+        {
+          "ticker": "MTC",
+          "value": 0.831414
+        },
+        {
+          "ticker": "HOWL",
+          "value": 0.775371
+        },
+        {
+          "ticker": "FTFT",
+          "value": 0.763676
+        },
+        {
+          "ticker": "TELA",
+          "value": 0.745144
+        },
+        {
+          "ticker": "LSTA",
+          "value": 0.690205
+        },
+        {
+          "ticker": "NTRB",
+          "value": 0.688992
+        },
+        {
+          "ticker": "ATER",
+          "value": 0.679538
+        },
+        {
+          "ticker": "VIOT",
+          "value": 0.676887
+        },
+        {
+          "ticker": "WCT",
+          "value": 0.661851
+        },
+        {
+          "ticker": "ALPS",
+          "value": 0.629629
+        },
+        {
+          "ticker": "BIAF",
+          "value": 0.62011
+        },
+        {
+          "ticker": "MBRX",
+          "value": 0.595427
+        },
+        {
+          "ticker": "VNCE",
+          "value": 0.587965
+        },
+        {
+          "ticker": "EMAT",
+          "value": 0.563752
+        },
+        {
+          "ticker": "SST",
+          "value": 0.560365
+        },
+        {
+          "ticker": "RDIB",
+          "value": 0.5539
+        },
+        {
+          "ticker": "QNME",
+          "value": 0.551985
+        },
+        {
+          "ticker": "BMRA",
+          "value": 0.517238
+        },
+        {
+          "ticker": "GVH",
+          "value": 0.515833
         },
         {
           "ticker": "CAN",
-          "value": 0.475909
+          "value": 0.507849
+        },
+        {
+          "ticker": "FAMI",
+          "value": 0.507769
+        },
+        {
+          "ticker": "EXYN",
+          "value": 0.502683
+        },
+        {
+          "ticker": "MRNO",
+          "value": 0.496993
+        },
+        {
+          "ticker": "CHOW",
+          "value": 0.488172
+        },
+        {
+          "ticker": "BRLS",
+          "value": 0.486926
+        },
+        {
+          "ticker": "COSM",
+          "value": 0.482392
+        },
+        {
+          "ticker": "CRDF",
+          "value": 0.481705
+        },
+        {
+          "ticker": "CMRC",
+          "value": 0.477061
+        },
+        {
+          "ticker": "GLE",
+          "value": 0.472178
         },
         {
           "ticker": "ALAR",
-          "value": 0.467021
+          "value": 0.469278
+        },
+        {
+          "ticker": "CANG",
+          "value": 0.454198
+        },
+        {
+          "ticker": "GLOO",
+          "value": 0.451961
+        },
+        {
+          "ticker": "REFR",
+          "value": 0.451055
+        },
+        {
+          "ticker": "EBS",
+          "value": 0.440593
+        },
+        {
+          "ticker": "BTDR",
+          "value": 0.439043
+        },
+        {
+          "ticker": "CELU",
+          "value": 0.436696
+        },
+        {
+          "ticker": "KPLT",
+          "value": 0.431913
+        },
+        {
+          "ticker": "MWC",
+          "value": 0.431067
+        },
+        {
+          "ticker": "XELB",
+          "value": 0.428188
         }
       ],
       "notEvaluableSample": [
@@ -1801,8 +4427,8 @@
         "APMD",
         "ATLQ",
         "ATTO",
-        "BCCQ",
-        "BIDWR"
+        "AXICY",
+        "BCCQ"
       ]
     },
     {
@@ -1810,221 +4436,763 @@
       "label": "Hoechste Volatilitaet (60 Tage, annualisiert)",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 6321,
-      "notEvaluable": 80,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "volatility60d",
+      "evaluated": 6306,
+      "notEvaluable": 65,
+      "quarantined": [
         {
-          "ticker": "CPTAF",
-          "value": 14.664442
-        },
-        {
-          "ticker": "SRXH",
-          "value": 8.765353
-        },
-        {
-          "ticker": "PMI",
-          "value": 8.391319
+          "ticker": "AEMD",
+          "value": 3.390905,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "AHMA",
-          "value": 6.416705
+          "value": 6.414067,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.414067,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "SLAIY",
-          "value": 6.219841
+          "ticker": "AXTI",
+          "value": 1.55704,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "PLAG",
-          "value": 6.093114
-        },
-        {
-          "ticker": "GIBO",
-          "value": 5.946205
-        },
-        {
-          "ticker": "ZYBT",
-          "value": 5.864323
-        },
-        {
-          "ticker": "LBGJ",
-          "value": 5.767711
+          "ticker": "CATG",
+          "value": 0.873644,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "CPHI",
-          "value": 5.732214
+          "value": 5.729652,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "YXT",
-          "value": 5.239481
+          "ticker": "CPTAF",
+          "value": 14.664442,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "YHC",
-          "value": 5.189306
-        },
-        {
-          "ticker": "SION",
-          "value": 5.049266
-        },
-        {
-          "ticker": "AMZE",
-          "value": 4.792086
-        },
-        {
-          "ticker": "LGCL",
-          "value": 4.730271
-        },
-        {
-          "ticker": "RITR",
-          "value": 4.640688
-        },
-        {
-          "ticker": "SDOT",
-          "value": 4.295578
-        },
-        {
-          "ticker": "SMJF",
-          "value": 4.265959
-        },
-        {
-          "ticker": "OMH",
-          "value": 4.166687
+          "ticker": "CYPH",
+          "value": 1.422673,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "DLXY",
-          "value": 4.138558
+          "value": 4.138349,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "JLHL",
-          "value": 4.045112
+          "ticker": "DMRA",
+          "value": 0.785749,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "TC",
-          "value": 3.901481
+          "ticker": "FLXI",
+          "value": 0.045844,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "SCKT",
-          "value": 3.788412
+          "ticker": "GIBO",
+          "value": 5.940211,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "SNYR",
-          "value": 3.725273
+          "ticker": "GOTU",
+          "value": 0.470969,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "GPUS",
-          "value": 3.592207
-        },
-        {
-          "ticker": "AMPGZ",
-          "value": 3.528786
-        },
-        {
-          "ticker": "KEEX",
-          "value": 3.429499
-        },
-        {
-          "ticker": "AEMD",
-          "value": 3.395027
-        },
-        {
-          "ticker": "WYHG",
-          "value": 3.328022
-        },
-        {
-          "ticker": "ZTG",
-          "value": 3.325846
+          "ticker": "LBGJ",
+          "value": 5.769286,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "MEDS",
-          "value": 3.324639
+          "value": 3.346895,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
         },
         {
-          "ticker": "LHAI",
-          "value": 3.319533
+          "ticker": "MGRT",
+          "value": 0.661101,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
         },
         {
-          "ticker": "FAMI",
-          "value": 3.308651
+          "ticker": "MINE",
+          "value": 0.711337,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 0.701989,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 1.222722,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": 6.093103,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": 8.395615,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
         },
         {
           "ticker": "RFAI",
-          "value": 3.265059
+          "value": 3.265634,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": 1.295062,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": 5.057838,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": 6.222216,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SMJF",
+          "value": 4.265703,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.093797,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": 3.725083,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": 8.764864,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": 5.18737,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": 5.239481,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 1.084583,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": 5.864193,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 33,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
+        {
+          "ticker": "AMZE",
+          "value": 4.791763
+        },
+        {
+          "ticker": "LGCL",
+          "value": 4.72888
+        },
+        {
+          "ticker": "RITR",
+          "value": 4.638684
+        },
+        {
+          "ticker": "SDOT",
+          "value": 4.243496
+        },
+        {
+          "ticker": "OMH",
+          "value": 4.166688
+        },
+        {
+          "ticker": "JLHL",
+          "value": 3.974348
+        },
+        {
+          "ticker": "TC",
+          "value": 3.90144
+        },
+        {
+          "ticker": "SCKT",
+          "value": 3.785815
+        },
+        {
+          "ticker": "GPUS",
+          "value": 3.534815
+        },
+        {
+          "ticker": "AMPGZ",
+          "value": 3.529493
+        },
+        {
+          "ticker": "KEEX",
+          "value": 3.439635
+        },
+        {
+          "ticker": "ZTG",
+          "value": 3.431665
+        },
+        {
+          "ticker": "WYHG",
+          "value": 3.328891
+        },
+        {
+          "ticker": "LHAI",
+          "value": 3.31908
+        },
+        {
+          "ticker": "FAMI",
+          "value": 3.304616
         },
         {
           "ticker": "XHLD",
-          "value": 3.264057
+          "value": 3.263609
         },
         {
           "ticker": "CLRO",
-          "value": 3.197621
+          "value": 3.190732
         },
         {
           "ticker": "AXTX",
-          "value": 3.129717
+          "value": 3.104144
         },
         {
           "ticker": "YJ",
-          "value": 3.014217
+          "value": 3.014287
         },
         {
           "ticker": "BIYA",
-          "value": 2.964875
+          "value": 2.963222
         },
         {
           "ticker": "EHGO",
-          "value": 2.859299
-        },
-        {
-          "ticker": "GVH",
-          "value": 2.83635
+          "value": 2.857258
         },
         {
           "ticker": "FTFT",
-          "value": 2.835844
+          "value": 2.845317
         },
         {
-          "ticker": "MPLT",
-          "value": 2.810276
-        },
-        {
-          "ticker": "KPTI",
-          "value": 2.770024
-        },
-        {
-          "ticker": "PDSB",
-          "value": 2.746803
-        },
-        {
-          "ticker": "CAPR",
-          "value": 2.668712
-        },
-        {
-          "ticker": "NXTC",
-          "value": 2.657313
-        },
-        {
-          "ticker": "WYFL",
-          "value": 2.639796
+          "ticker": "GVH",
+          "value": 2.837284
         },
         {
           "ticker": "GIPR",
-          "value": 2.627412
+          "value": 2.8236
+        },
+        {
+          "ticker": "MPLT",
+          "value": 2.805267
+        },
+        {
+          "ticker": "KPTI",
+          "value": 2.773779
+        },
+        {
+          "ticker": "PDSB",
+          "value": 2.746918
+        },
+        {
+          "ticker": "MKDW",
+          "value": 2.71567
+        },
+        {
+          "ticker": "CAPR",
+          "value": 2.668804
+        },
+        {
+          "ticker": "NXTC",
+          "value": 2.65843
+        },
+        {
+          "ticker": "WYFL",
+          "value": 2.592548
         },
         {
           "ticker": "BEZ",
-          "value": 2.581653
+          "value": 2.591403
+        },
+        {
+          "ticker": "VTGN",
+          "value": 2.569622
+        },
+        {
+          "ticker": "AAOG",
+          "value": 2.519249
+        },
+        {
+          "ticker": "CAST",
+          "value": 2.517723
+        },
+        {
+          "ticker": "GENVR",
+          "value": 2.51392
+        },
+        {
+          "ticker": "FNGR",
+          "value": 2.482543
+        },
+        {
+          "ticker": "ZSTK",
+          "value": 2.477996
+        },
+        {
+          "ticker": "PCLA",
+          "value": 2.463503
+        },
+        {
+          "ticker": "ZONE",
+          "value": 2.428791
+        },
+        {
+          "ticker": "QNME",
+          "value": 2.428658
+        },
+        {
+          "ticker": "EYPT",
+          "value": 2.42115
+        },
+        {
+          "ticker": "MBRX",
+          "value": 2.418945
+        },
+        {
+          "ticker": "PMNT",
+          "value": 2.417296
+        },
+        {
+          "ticker": "UMAL",
+          "value": 2.41614
+        },
+        {
+          "ticker": "NCRA",
+          "value": 2.414709
+        },
+        {
+          "ticker": "CRE",
+          "value": 2.413526
+        },
+        {
+          "ticker": "SDST",
+          "value": 2.404749
+        },
+        {
+          "ticker": "TGHL",
+          "value": 2.392072
+        },
+        {
+          "ticker": "EGG",
+          "value": 2.380816
         }
       ],
       "notEvaluableSample": [
-        "ACLZ",
-        "ACMM",
         "ADIG",
         "ALPX",
         "APMD",
         "ATLQ",
         "ATTO",
+        "AXICY",
         "BCCQ",
         "BIDWR",
+        "BLSM",
         "BNZI"
       ]
     },
@@ -2033,9 +5201,551 @@
       "label": "Niedrigste Volatilitaet (60 Tage, annualisiert)",
       "kind": "ranked",
       "direction": "asc",
-      "evaluated": 6321,
-      "notEvaluable": 80,
-      "evaluatedOf": 6401,
+      "metric": "volatility60d",
+      "evaluated": 6306,
+      "notEvaluable": 65,
+      "quarantined": [
+        {
+          "ticker": "AEMD",
+          "value": 3.390905,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "AHMA",
+          "value": 6.414067,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.414067,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "AXTI",
+          "value": 1.55704,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CATG",
+          "value": 0.873644,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CPHI",
+          "value": 5.729652,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": 14.664442,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CYPH",
+          "value": 1.422673,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": 4.138349,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "DMRA",
+          "value": 0.785749,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "FLXI",
+          "value": 0.045844,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "GIBO",
+          "value": 5.940211,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "GOTU",
+          "value": 0.470969,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": 5.769286,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": 3.346895,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": 0.661101,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": 0.711337,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": 0.701989,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": 1.222722,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": 6.093103,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": 8.395615,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": 3.265634,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": 1.295062,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": 5.057838,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": 6.222216,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SMJF",
+          "value": 4.265703,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.093797,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": 3.725083,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": 8.764864,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": 0,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": 5.18737,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": 5.239481,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": 1.084583,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": 5.864193,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 33,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
       "top": [
         {
           "ticker": "AACT",
@@ -2239,15 +5949,15 @@
         }
       ],
       "notEvaluableSample": [
-        "ACLZ",
-        "ACMM",
         "ADIG",
         "ALPX",
         "APMD",
         "ATLQ",
         "ATTO",
+        "AXICY",
         "BCCQ",
         "BIDWR",
+        "BLSM",
         "BNZI"
       ]
     },
@@ -2256,9 +5966,527 @@
       "label": "Geringster Abstand zum 52-Wochen-Hoch",
       "kind": "ranked",
       "direction": "desc",
-      "evaluated": 5583,
-      "notEvaluable": 818,
-      "evaluatedOf": 6401,
+      "metric": "distanceTo52wHigh",
+      "evaluated": 5553,
+      "notEvaluable": 820,
+      "quarantined": [
+        {
+          "ticker": "AEMD",
+          "value": -0.8474,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "AXTI",
+          "value": -0.510827,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CATG",
+          "value": -0.46533,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CPHI",
+          "value": -0.963002,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CPTAF",
+          "value": -0.999914,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "CYPH",
+          "value": -0.02965,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": -0.877114,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "DMRA",
+          "value": -0.410569,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "FLXI",
+          "value": -0.024263,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "GIBO",
+          "value": -0.108296,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "GOTU",
+          "value": -0.941935,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -0.999937,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -0.948434,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": -0.282471,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": -0.397541,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": -0.20257,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": -0.379566,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -0.900881,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": -0.628655,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": -0.539171,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": -0.445205,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": -0.40952,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": -0.891577,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -0.994698,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": -0.969426,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": -0.685339,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": -0.293545,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": -0.989244,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -0.928438,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": -0.024937,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -0.864576,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 31,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
       "top": [
         {
           "ticker": "ADEX",
@@ -2290,6 +6518,10 @@
         },
         {
           "ticker": "ASLN",
+          "value": 0
+        },
+        {
+          "ticker": "AUC",
           "value": 0
         },
         {
@@ -2341,19 +6573,11 @@
           "value": 0
         },
         {
-          "ticker": "CODI-P-B",
-          "value": 0
-        },
-        {
           "ticker": "DCOMG",
           "value": 0
         },
         {
-          "ticker": "DX-P-C",
-          "value": 0
-        },
-        {
-          "ticker": "ECCV",
+          "ticker": "DRDB",
           "value": 0
         },
         {
@@ -2385,11 +6609,27 @@
           "value": 0
         },
         {
+          "ticker": "HAFN",
+          "value": 0
+        },
+        {
           "ticker": "HUDA",
           "value": 0
         },
         {
+          "ticker": "HZO",
+          "value": 0
+        },
+        {
+          "ticker": "IBAC",
+          "value": 0
+        },
+        {
           "ticker": "INAC",
+          "value": 0
+        },
+        {
+          "ticker": "KFII",
           "value": 0
         },
         {
@@ -2425,19 +6665,19 @@
           "value": 0
         },
         {
-          "ticker": "NEO",
-          "value": 0
-        },
-        {
           "ticker": "NHPAP",
           "value": 0
         },
         {
-          "ticker": "OBA",
+          "ticker": "NMP",
           "value": 0
         },
         {
           "ticker": "OCFCP",
+          "value": 0
+        },
+        {
+          "ticker": "ONCT",
           "value": 0
         },
         {
@@ -2446,18 +6686,6 @@
         },
         {
           "ticker": "OXSQZ",
-          "value": 0
-        },
-        {
-          "ticker": "OZON",
-          "value": 0
-        },
-        {
-          "ticker": "PACH",
-          "value": 0
-        },
-        {
-          "ticker": "POWWP",
           "value": 0
         }
       ],
@@ -2479,18 +6707,528 @@
       "label": "Groesster Rueckgang im letzten Jahr",
       "kind": "ranked",
       "direction": "asc",
-      "evaluated": 5583,
-      "notEvaluable": 818,
-      "evaluatedOf": 6401,
-      "top": [
+      "metric": "maxDrawdown252d",
+      "evaluated": 5553,
+      "notEvaluable": 820,
+      "quarantined": [
         {
-          "ticker": "LBGJ",
-          "value": -0.999929
+          "ticker": "AEMD",
+          "value": -0.964219,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.607686,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "AXTI",
+          "value": -0.737485,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.774112,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 17.637056,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CATG",
+          "value": -0.493678,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 50.2,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.257143,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 29.237143,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "CPHI",
+          "value": -0.912346,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.729652,
+              "bound": 5
+            }
+          ]
         },
         {
           "ticker": "CPTAF",
-          "value": -0.999909
+          "value": -0.999909,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 18.819923,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.664442,
+              "bound": 5
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 9.096609,
+              "bound": 5
+            }
+          ]
         },
+        {
+          "ticker": "CYPH",
+          "value": -0.827104,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.505273,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "DLXY",
+          "value": -0.947902,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 7.035422,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "DMRA",
+          "value": -0.723772,
+          "reasons": [
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.382456,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "FLXI",
+          "value": -0.035198,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 115.778109,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 118.185389,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "GIBO",
+          "value": -0.590164,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 23.762963,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.542254,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.982079,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.940211,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "GOTU",
+          "value": -0.961318,
+          "reasons": [
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.999952,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "LBGJ",
+          "value": -0.999929,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.769286,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MEDS",
+          "value": -0.987314,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.371744,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "MGRT",
+          "value": -0.631418,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.376068,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 28.042857,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.52381,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "MINE",
+          "value": -0.9,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 2939999,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 3009999,
+              "bound": 10
+            },
+            {
+              "metric": "relativeStrength.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.738434,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 15.645143,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "NINE",
+          "value": -0.568529,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 16.994201,
+              "bound": 10
+            },
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 14.289855,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "NUAI",
+          "value": -0.625,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 11.993348,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 10.973392,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "PLAG",
+          "value": -0.896575,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.093103,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "PMI",
+          "value": -0.993342,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 26.89676,
+              "bound": 8
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.395615,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "QHUOY",
+          "value": -0.991357,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 43.404973,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "RFAI",
+          "value": -0.496379,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.538164,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SHAZ",
+          "value": -0.56753,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 56.56,
+              "bound": 10
+            },
+            {
+              "metric": "return12M1M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 64.45,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "SION",
+          "value": -0.911834,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.057838,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SLAIY",
+          "value": -0.994683,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.760474,
+              "bound": 5
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 6.222216,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SNYR",
+          "value": -0.969519,
+          "reasons": [
+            {
+              "metric": "volatility20d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.996565,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "SRXH",
+          "value": -0.844425,
+          "reasons": [
+            {
+              "metric": "returns.3M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.754103,
+              "bound": 8
+            },
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 12.579586,
+              "bound": 10
+            },
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 8.764864,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "VIVKD",
+          "value": -0.990415,
+          "reasons": [
+            {
+              "metric": "returns.6M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 196.580357,
+              "bound": 10
+            },
+            {
+              "metric": "volatility252d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.346501,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YHC",
+          "value": -0.988919,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.18737,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "YXT",
+          "value": -0.904396,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.239481,
+              "bound": 5
+            }
+          ]
+        },
+        {
+          "ticker": "ZCSH",
+          "value": -0.696156,
+          "reasons": [
+            {
+              "metric": "returns.12M",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 22.544,
+              "bound": 10
+            }
+          ]
+        },
+        {
+          "ticker": "ZYBT",
+          "value": -0.931763,
+          "reasons": [
+            {
+              "metric": "volatility60d",
+              "reason": "IMPLAUSIBLE_VALUE",
+              "value": 5.864193,
+              "bound": 5
+            }
+          ]
+        }
+      ],
+      "quarantinedCount": 31,
+      "rankingHygiene": {
+        "version": "ranking-hygiene-2.0.0",
+        "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
+      },
+      "evaluatedOf": 6404,
+      "top": [
         {
           "ticker": "KIDZ",
           "value": -0.999734
@@ -2505,11 +7243,11 @@
         },
         {
           "ticker": "CMND",
-          "value": -0.998307
+          "value": -0.998321
         },
         {
           "ticker": "YFOR",
-          "value": -0.998231
+          "value": -0.998193
         },
         {
           "ticker": "TDIC",
@@ -2520,16 +7258,12 @@
           "value": -0.9976
         },
         {
-          "ticker": "LGCL",
-          "value": -0.996587
-        },
-        {
           "ticker": "SMTK",
-          "value": -0.996554
+          "value": -0.996631
         },
         {
-          "ticker": "SLAIY",
-          "value": -0.994683
+          "ticker": "LGCL",
+          "value": -0.996598
         },
         {
           "ticker": "ASNS",
@@ -2537,11 +7271,7 @@
         },
         {
           "ticker": "MIMI",
-          "value": -0.993902
-        },
-        {
-          "ticker": "PMI",
-          "value": -0.993342
+          "value": -0.993393
         },
         {
           "ticker": "BHAT",
@@ -2560,16 +7290,12 @@
           "value": -0.9915
         },
         {
-          "ticker": "ASBP",
-          "value": -0.991389
-        },
-        {
-          "ticker": "QHUOY",
-          "value": -0.991357
-        },
-        {
           "ticker": "AZI",
           "value": -0.991293
+        },
+        {
+          "ticker": "ASBP",
+          "value": -0.99129
         },
         {
           "ticker": "FTFT",
@@ -2580,10 +7306,6 @@
           "value": -0.991268
         },
         {
-          "ticker": "VIVKD",
-          "value": -0.990415
-        },
-        {
           "ticker": "SLMT",
           "value": -0.990362
         },
@@ -2592,24 +7314,20 @@
           "value": -0.989895
         },
         {
-          "ticker": "GOEV",
-          "value": -0.989355
-        },
-        {
           "ticker": "ONFO",
           "value": -0.989324
         },
         {
-          "ticker": "YHC",
-          "value": -0.988919
-        },
-        {
-          "ticker": "TRUG",
-          "value": -0.988828
+          "ticker": "GOEV",
+          "value": -0.988776
         },
         {
           "ticker": "TIRX",
           "value": -0.988609
+        },
+        {
+          "ticker": "TRUG",
+          "value": -0.988588
         },
         {
           "ticker": "VSME",
@@ -2626,10 +7344,6 @@
         {
           "ticker": "NTCL",
           "value": -0.987629
-        },
-        {
-          "ticker": "MEDS",
-          "value": -0.987496
         },
         {
           "ticker": "ANPA",
@@ -2652,16 +7366,24 @@
           "value": -0.982455
         },
         {
+          "ticker": "SDST",
+          "value": -0.98237
+        },
+        {
           "ticker": "QNCX",
           "value": -0.981818
         },
         {
-          "ticker": "SDST",
-          "value": -0.980818
+          "ticker": "VWAV",
+          "value": -0.981467
         },
         {
           "ticker": "DRCT",
-          "value": -0.980816
+          "value": -0.980988
+        },
+        {
+          "ticker": "VNRX",
+          "value": -0.980882
         },
         {
           "ticker": "SHFS",
@@ -2672,16 +7394,40 @@
           "value": -0.98009
         },
         {
-          "ticker": "VNRX",
-          "value": -0.979787
-        },
-        {
           "ticker": "CBCY",
           "value": -0.979672
         },
         {
           "ticker": "KITT",
           "value": -0.979514
+        },
+        {
+          "ticker": "BGM",
+          "value": -0.978962
+        },
+        {
+          "ticker": "JUNS",
+          "value": -0.978815
+        },
+        {
+          "ticker": "IPDN",
+          "value": -0.978567
+        },
+        {
+          "ticker": "GOVX",
+          "value": -0.978419
+        },
+        {
+          "ticker": "MENS",
+          "value": -0.977751
+        },
+        {
+          "ticker": "MSS",
+          "value": -0.977719
+        },
+        {
+          "ticker": "NCRA",
+          "value": -0.977157
         }
       ],
       "notEvaluableSample": [

@@ -113,6 +113,15 @@ jobs:
       - name: Capability Matrix je Instrument (Company Master x Marktdaten)
         run: node scripts/market/build-capability-matrix.mjs
 
+      - name: Kompakte Product-Capability-Projektion fuer Quant 2.0
+        run: node scripts/vu2/build-product-capabilities.mjs
+
+      # Aktuelle SEC-SIC-Klassifikation auf die bereits gebauten Faktorzeilen
+      # projizieren. Das ist keine neue Quelle und keine historische Taxonomie:
+      # Backtests bleiben ohne datierte Klassifikationen fail-closed.
+      - name: Quant V2 Peer-Taxonomie (SEC SIC, nur aktueller Snapshot)
+        run: node scripts/quant/build-sic-peer-taxonomy.mjs
+
       - name: Kein Schluessel im Statusbericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -185,6 +194,9 @@ jobs:
                       quant/data/sec/quant-factor-inputs.json \
                       discover/data \
                       quant/data/market/capabilities \
+                      quant/data/product/capabilities-v1.json \
+                      quant/data/product/capabilities-summary-v1.json \
+                      quant/data/product/sic-peer-taxonomy-v1.json \
                       quant/data/market/freshness \
                       quant/data/market/commercial/rejection-ledger.json \
                       quant/data/market/commercial/daily-lifecycle-health.json; do

@@ -1,0 +1,149 @@
+name: Intraday-Auslieferung — Waechter
+
+# =============================================================================
+# SIEHT EIN MENSCH GERADE DEN STAND, DEN ER SEHEN SOLLTE?
+#
+# Am 21.09.2026 meldete jede Stufe Erfolg, waehrend die Seite eine Stunde
+# lang den Freitag zeigte: der letzte Lauf gruen, das letzte Deployment
+# gruen, der letzte Snapshot gueltig. Es gab nur keinen neuen Lauf - und
+# "kein Lauf" war nirgends ein Fehlerzustand.
+#
+# DREI KONTROLLPFADE, UND WAS JEDER KANN
+#
+#   a) IM TAKTGEBER selbst, nach jedem Zyklus. Haengt nicht am
+#      GitHub-Zeitplan, weil der Block schon laeuft. Findet alles ausser
+#      dem einen Fall: dass gar kein Block laeuft.
+#
+#   b) DIESER WORKFLOW, als Rueckfall. Er hat ausdruecklich DENSELBEN
+#      Failure Mode wie der ausgefallene Zeitplan - wird er nicht
+#      angelegt, prueft er nichts. Das ist keine Nachlaessigkeit, sondern
+#      der Grund fuer (c). Es hier zu verschweigen waere schlimmer als
+#      die Luecke selbst.
+#
+#   c) EIN CLOUDFLARE-CRON, der von aussen weckt. Der einzige wirklich
+#      unabhaengige Pfad. Er ist gebaut (worker-waker/) und braucht ein
+#      GitHub-Token mit actions:write als Worker-Secret. Das ist eine
+#      Owner-Entscheidung; bis sie faellt, tragen (a) und (b) allein.
+#
+# WARUM DIE REPARATUR NICHT DISPATCHT
+#
+# Ein Workflow kann mit GITHUB_TOKEN keinen anderen Workflow ausloesen -
+# GitHub unterbindet das, um Rekursion zu verhindern. Der Waechter kann
+# den Taktgeber also nicht wecken. Er tut deshalb das Naechstbeste und
+# ehrlichere: er holt EINEN Zyklus selbst nach. Ueber dieselbe
+# Concurrency-Gruppe wie der Taktgeber - laeuft ein Block, wartet die
+# Reparatur, statt parallel dieselben Dateien zu schreiben.
+# =============================================================================
+
+on:
+  schedule:
+    - cron: '*/15 13-21 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Zu pruefende Domain'
+        type: string
+        default: 'https://research.visionuniverse.de'
+      recover:
+        description: 'Bei FAIL einen Zyklus selbst nachholen'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  pruefen:
+    name: Kette pruefen
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # BEWUSST OHNE Concurrency-Gruppe: das Urteil muss auch dann
+    # entstehen, wenn ein Taktgeber laeuft. Ein Waechter, der hinter dem
+    # wartet, was er ueberwacht, meldet nie etwas.
+    outputs:
+      verdict: ${{ steps.wacht.outputs.verdict }}
+      codes: ${{ steps.wacht.outputs.codes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Urteil bilden
+        id: wacht
+        run: |
+          node scripts/market/assert-intraday-delivery.mjs \
+            --site="${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}" \
+            | tee /tmp/wacht.txt
+          node -e '
+            const w = require("./quant/data/market/commercial/intraday-delivery-watchdog.json");
+            const fs = require("node:fs");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "verdict=" + w.verdict + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "codes=" + (w.findings||[]).map(f=>f.code).join(",") + "\n");
+          '
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Waechter · '"${{ steps.wacht.outputs.verdict }}"
+            echo ''
+            echo '```'
+            cat /tmp/wacht.txt 2>/dev/null || echo 'kein Urteil'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ein FAIL bleibt ein FAIL
+        if: steps.wacht.outputs.verdict == 'FAIL'
+        run: |
+          echo "::error::Intraday-Auslieferung FAIL: ${{ steps.wacht.outputs.codes }}"
+          exit 1
+
+  nachholen:
+    name: Einen Zyklus nachholen
+    needs: pruefen
+    # Nur bei den Befunden, die ein fehlender Takt erzeugt. Ein zu alter
+    # Stand, weil der Anbieter nichts liefert, ist mit einem weiteren
+    # Abruf nicht zu heilen - dort waere ein Nachholen nur Verkehr.
+    if: >-
+      always() && needs.pruefen.outputs.verdict == 'FAIL' &&
+      (contains(needs.pruefen.outputs.codes, 'keinZyklus') ||
+       contains(needs.pruefen.outputs.codes, 'taktAusgefallen') ||
+       contains(needs.pruefen.outputs.codes, 'falscheSitzung')) &&
+      (github.event_name != 'workflow_dispatch' || inputs.recover)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      # Dieselbe Gruppe wie der Taktgeber: nie zwei Schreiber auf
+      # denselben Dateien. Laeuft ein Block, wartet die Reparatur -
+      # und ist danach meist ueberfluessig, was sie selbst merkt.
+      group: intraday-pacemaker
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist die Lage noch dieselbe?
+        id: nochmal
+        run: |
+          node scripts/market/assert-intraday-delivery.mjs --quiet || true
+          node -e '
+            const w = require("./quant/data/market/commercial/intraday-delivery-watchdog.json");
+            const fs = require("node:fs");
+            console.log("Urteil jetzt: " + w.verdict);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "verdict=" + w.verdict + "\n");
+          '
+
+      - name: Einen Zyklus holen
+        if: steps.nochmal.outputs.verdict == 'FAIL'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/run-pacemaker.mjs --max-cycles=1
+
+      - name: Kein Schluessel im Statusbericht
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs

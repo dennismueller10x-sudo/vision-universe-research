@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-09-20T06:40:13.370Z",
+  "generated_at_utc": "2026-09-21T12:55:33.402Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5479,
     "companies": 5480,
     "validationSet": 5,
-    "withDeliveredStockPage": 5027,
+    "withDeliveredStockPage": 5030,
     "excluded": {
       "noCik": 1348,
       "notUs": 0,
@@ -4736,17 +4736,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "ATAI",
-      "name": "AtaiBeckley Inc.",
-      "cik": "0002081043",
-      "instrumentId": "vu_cb4528485d1494",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "ATAT",
       "name": "Atour Lifestyle Holdings Ltd",
       "cik": "0001853717",
@@ -5595,6 +5584,17 @@
       "cik": "0000805928",
       "instrumentId": "vu_85902ce719ed94",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "AXICY",
+      "name": "AXIA Energia S.A.",
+      "cik": "0001439124",
+      "instrumentId": "vu_4d9197d61f6944",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -7623,6 +7623,17 @@
       "cik": "0001872195",
       "instrumentId": "vu_f9dee2d19184e0",
       "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "BLSM",
+      "name": "BlossomHill Therapeutics, Inc.",
+      "cik": "0001839970",
+      "instrumentId": "vu_b08c197d619973",
+      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -31153,6 +31164,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "LTGO",
+      "name": "Latigo Biotherapeutics, Inc.",
+      "cik": "0002056611",
+      "instrumentId": "vu_9112eaade02f6f",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "LTGR",
       "name": "Long Table Growth Corp.",
       "cik": "0002104177",
@@ -51077,6 +51099,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "TP",
+      "name": "Ticketplus Ltd.",
+      "cik": "0002104296",
+      "instrumentId": "vu_df7fb3c4336748",
+      "exchange": "NYSE MKT",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "TPC",
       "name": "Tutor Perini",
       "cik": "0000077543",
@@ -57735,6 +57768,17 @@
       "role": "universe"
     },
     {
+      "ticker": "ATAI",
+      "name": "AtaiBeckley Inc.",
+      "cik": "0002081043",
+      "instrumentId": "vu_cb4528485d1494",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "ATOS",
       "name": "Atossa Therapeutics, Inc.",
       "cik": "0001488039",
@@ -57795,17 +57839,6 @@
       "cik": "0001826397",
       "instrumentId": "vu_c5081b92709e89",
       "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "AXICY",
-      "name": "AXIA Energia S.A.",
-      "cik": "0001439124",
-      "instrumentId": "vu_4d9197d61f6944",
-      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -57988,17 +58021,6 @@
       "name": "BioLineRx Ltd.",
       "cik": "0001498403",
       "instrumentId": "vu_ab036f0792ef4a",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "BLSM",
-      "name": "BlossomHill Therapeutics, Inc.",
-      "cik": "0001839970",
-      "instrumentId": "vu_b08c197d619973",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -60087,17 +60109,6 @@
       "role": "universe"
     },
     {
-      "ticker": "LTGO",
-      "name": "Latigo Biotherapeutics, Inc.",
-      "cik": "0002056611",
-      "instrumentId": "vu_9112eaade02f6f",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "LTRYW",
       "name": "Sports Entertainment Gaming Global Corp",
       "cik": "0001673481",
@@ -61835,17 +61846,6 @@
       "cik": "0001355848",
       "instrumentId": "vu_cd0d9eca2de0b7",
       "exchange": "AMEX",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "TP",
-      "name": "Ticketplus Ltd.",
-      "cik": "0002104296",
-      "instrumentId": "vu_df7fb3c4336748",
-      "exchange": "NYSE MKT",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
