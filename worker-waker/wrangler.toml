@@ -1,0 +1,52 @@
+# =============================================================================
+# VISION UNIVERSE — worker-waker/wrangler.toml
+#
+# Der unabhaengige Puls des Intraday-Takts. Alles hier ist so gewaehlt,
+# dass es in die kostenlosen Kontingente passt und dort bleibt.
+#
+# WAS HIER ABSICHTLICH FEHLT
+#
+#   Kein Durable Object          -> der Wecker haelt keinen Zustand
+#   Kein KV, kein R2, kein D1    -> er speichert nichts
+#   Kein WebSocket               -> er spricht mit niemandem ausser GitHub
+#   Kein Tiingo-Schluessel       -> er holt keine Kurse, nie
+#   Kein usage_model             -> kein Workers Paid
+#
+# WARUM NICHT IN vu-live
+#
+# vu-live traegt den Realtime-Strom und das Durable Object. Der Auftrag
+# vom 21.09.2026 (§14) sagt: an dieser Laufzeit nichts aendern. Ein
+# Wecker im selben Skript koennte sie im Fehlerfall mitreissen. Getrennt
+# kann er das nicht.
+#
+# KONTINGENT
+#
+# Cloudflare Workers Free: 100.000 Anfragen am Tag. Ein Takt alle fuenf
+# Minuten waehrend einer Sitzung sind 78 Ausloesungen - 0,078 % davon.
+#
+# WAS NOCH FEHLT (Owner-Entscheidung)
+#
+#   wrangler secret put GITHUB_DISPATCH_TOKEN   (Fine-grained PAT,
+#     nur dieses Repository, Berechtigung "Actions: read and write")
+#
+# Ohne dieses Secret laeuft der Wecker, sagt bei jedem Takt "keinToken"
+# ins Protokoll und loest nichts aus. Er faellt nicht still aus.
+# =============================================================================
+
+name = "vu-intraday-waker"
+main = "src/index.mjs"
+compatibility_date = "2026-09-21"
+workers_dev = true
+compatibility_flags = []
+
+[observability]
+enabled = true
+
+# Alle fuenf Minuten im breiten Sitzungsfenster. Cron kennt keine
+# Sommerzeit; das Fenster ist deshalb breit, und der Taktgeber selbst
+# entscheidet in Sekunden, ob gerade gehandelt wird.
+[triggers]
+crons = ["*/5 13-21 * * 1-5"]
+
+[vars]
+GITHUB_REPO = "dennismueller10x-sudo/vision-universe-research"

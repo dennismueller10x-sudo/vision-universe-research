@@ -69,7 +69,8 @@ const LEDGER = join(root, "quant", "data", "market", "intraday", "pacemaker-ledg
    gelandet ist. */
 const ZYKLUS_PFADE = [
   "quant/data/market/intraday",
-  "quant/data/market/freshness"
+  "quant/data/market/freshness",
+  "quant/data/market/commercial/intraday-delivery-watchdog.json"
 ];
 /* Was nach dem Block nachgezogen wird - nicht in jedem Zyklus. */
 const BLOCK_PFADE = [
@@ -92,10 +93,11 @@ function leise(befehl, argumente) {
   return { ok: r.status === 0, out: (r.stdout || "").trim(), err: (r.stderr || "").trim() };
 }
 
-function ledgerLesen() {
-  if (!existsSync(LEDGER)) return null;
-  try { return JSON.parse(readFileSync(LEDGER, "utf8")); } catch (e) { return null; }
+function lies(pfad) {
+  if (!existsSync(pfad)) return null;
+  try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (e) { return null; }
 }
+function ledgerLesen() { return lies(LEDGER); }
 
 /* Das Register wird fortgeschrieben, nicht ersetzt: der
    Produktionsnachweis braucht DREI AUFEINANDERFOLGENDE Zyklen, und die
@@ -254,9 +256,22 @@ while (nummer < MAX_CYCLES) {
     Object.assign(zyklus, veroeffentlichen(ZYKLUS_PFADE, nachricht));
   }
 
+  /* Der Waechter im eigenen Takt. Das ist der Kontrollpfad, der NICHT am
+     GitHub-Zeitplan haengt: solange ein Block laeuft, prueft er sich
+     selbst - inklusive der Frage, ob der Browser den Stand auch bekommt.
+     Was er allein nicht finden kann, ist "es laeuft gar kein Block";
+     dafuer steht der externe Wecker aus (Owner-Entscheidung). */
+  const wacht = leise(process.execPath,
+    ["scripts/market/assert-intraday-delivery.mjs", "--quiet"]);
+  const wurteil = lies(join(root, "quant", "data", "market", "commercial",
+                            "intraday-delivery-watchdog.json"));
+  zyklus.watchdog = wurteil ? { verdict: wurteil.verdict,
+                                codes: (wurteil.findings || []).map((f) => f.code) } : null;
+
   zyklen.push(zyklus);
   console.log("  Zyklus " + nummer + ": " + (zyklus.ok ? "ok" : "FEHLER") +
-              (zyklus.changed ? ", committet " + zyklus.sha : ", nichts Neues"));
+              (zyklus.changed ? ", committet " + zyklus.sha : ", nichts Neues") +
+              (zyklus.watchdog ? " · Waechter " + zyklus.watchdog.verdict : ""));
 
   const warten = Pacemaker.wartezeit(jetzt(), INTERVAL_MS);
   if (nummer >= MAX_CYCLES) { grund = "maxCycles"; break; }
