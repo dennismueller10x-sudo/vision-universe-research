@@ -25,6 +25,7 @@ on:
     workflows:
       - "Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach Schluss)"
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+      - "SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)"
     types: [completed]
     branches: [main]
   workflow_dispatch:

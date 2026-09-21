@@ -571,3 +571,32 @@ tranche is recorded as deployed.
 No data path, endpoint, Worker provider, secret, schedule or recurring cost is
 added. SEC/PIT, Company Master, History, Intraday, Realtime and standard
 materialized Fundamentals are unchanged. No Discovery path is modified.
+
+## 2026-09-21 — Quant V2 methodology lock and first P0 recovery slice
+
+Owner selected a versioned seven-factor Quant 2.0 model. The immutable
+`quant-v2.0.0-full-7f` contract specifies Quality 10%, Growth 15%, Momentum 25%,
+Value 15%, Profitability 15%, Revisions 15% and Risk 5%, including every input,
+window, normalization, applicability, missing-data, outlier, PIT, cadence,
+interpretation and confidence rule. Quant V1 remains byte-compatible as the active
+legacy/comparison runtime. V2 is `SPECIFIED_NOT_ACTIVE`: there is no score or
+weight redistribution while licensed PIT analyst-consensus history, sufficient
+peer classification and broad factor rows are absent.
+
+The lost full-universe ranking hygiene was reconstructed as version 2.0 at the
+shared Market Factor screener producer. It evaluates every row before sorting and
+Top-K, quarantines an entire broken series across investor rankings with typed
+reasons, and never rewrites raw factor values. This repairs the old stacked-branch
+post-Top-K defect. Generated artifacts still require the existing Market Data
+Refresh, Quant/Discovery regression and production deployment before the live
+`MINE` anomaly can be recorded as closed.
+
+Pages now subscribes to successful SEC Consumer-Fundamentals runs in addition to
+Market and Intraday producers. This closes the trigger omission that left live
+Pages at `124def57` while main reached `e2cdb196`; exact production deployment is
+still pending.
+
+No Discovery application, navigation, collection, layout or interaction file was
+changed. Shared generated data will pass the existing Discovery regression gate
+before deployment. No provider, pipeline, endpoint, credential, schedule or
+recurring cost was added.

@@ -39,6 +39,7 @@ const engines = join(root, "quant", "engines");
 const MarketFactors = require(join(engines, "market-factors.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const MarketStore = require(join(engines, "market-store.js"));
+const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
 
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -225,19 +226,16 @@ function booleanQuestion(id, label, pick) {
              : null };
 }
 
-function rankedQuestion(id, label, pick, direction) {
-  const scored = [], notEvaluable = [];
-  for (const r of rows) {
-    const v = pick(r.values);
-    if (typeof v === "number" && isFinite(v)) scored.push({ ticker: r.ticker, value: v });
-    else notEvaluable.push(r.ticker);
-  }
-  scored.sort((a, b) => direction === "asc" ? a.value - b.value : b.value - a.value);
+function rankedQuestion(id, label, metric, pick, direction) {
+  const ranked = RankingHygiene.rankRows(rows, { metric, pick, direction, limit: RANK_LIMIT });
   return { id, label, kind: "ranked", direction,
-           evaluated: scored.length, notEvaluable: notEvaluable.length,
+           metric, evaluated: ranked.evaluated, notEvaluable: ranked.notEvaluable.length,
+           quarantined: ranked.quarantined,
+           quarantinedCount: ranked.quarantinedCount,
+           rankingHygiene: { version: ranked.hygieneVersion, policy: ranked.policy },
            evaluatedOf: rows.length,
-           top: scored.slice(0, RANK_LIMIT),
-           notEvaluableSample: notEvaluable.slice(0, 10) };
+           top: ranked.top,
+           notEvaluableSample: ranked.notEvaluable.slice(0, 10) };
 }
 
 const questions = [
@@ -254,24 +252,24 @@ const questions = [
   booleanQuestion("volumeBreakout", "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
                   (v) => v.volumeBreakout),
   rankedQuestion("strongestMomentum12M", "Staerkstes Momentum (12 Monate)",
-                 (v) => v.returns && v.returns["12M"], "desc"),
+                 "returns.12M", (v) => v.returns && v.returns["12M"], "desc"),
   rankedQuestion("strongestMomentum6M", "Staerkstes Momentum (6 Monate)",
-                 (v) => v.returns && v.returns["6M"], "desc"),
+                 "returns.6M", (v) => v.returns && v.returns["6M"], "desc"),
   rankedQuestion("strongestMomentum12M1M", "Staerkstes Momentum (12 Monate ohne den letzten)",
-                 (v) => v.return12M1M, "desc"),
+                 "return12M1M", (v) => v.return12M1M, "desc"),
   rankedQuestion("strongestRelativeStrength12M",
                  `Staerkste relative Staerke gegen ${BENCHMARK} (12 Monate)`,
-                 (v) => v.relativeStrength && v.relativeStrength["12M"], "desc"),
+                 "relativeStrength.12M", (v) => v.relativeStrength && v.relativeStrength["12M"], "desc"),
   rankedQuestion("trendAcceleration", "Trendbeschleunigung (1M gegen 3M)",
-                 (v) => v.momentumAcceleration, "desc"),
+                 "momentumAcceleration", (v) => v.momentumAcceleration, "desc"),
   rankedQuestion("highVolatility", "Hoechste Volatilitaet (60 Tage, annualisiert)",
-                 (v) => v.volatility60d, "desc"),
+                 "volatility60d", (v) => v.volatility60d, "desc"),
   rankedQuestion("lowVolatility", "Niedrigste Volatilitaet (60 Tage, annualisiert)",
-                 (v) => v.volatility60d, "asc"),
+                 "volatility60d", (v) => v.volatility60d, "asc"),
   rankedQuestion("nearest52wHigh", "Geringster Abstand zum 52-Wochen-Hoch",
-                 (v) => v.distanceTo52wHigh, "desc"),
+                 "distanceTo52wHigh", (v) => v.distanceTo52wHigh, "desc"),
   rankedQuestion("deepestDrawdown", "Groesster Rueckgang im letzten Jahr",
-                 (v) => v.maxDrawdown252d, "asc")
+                 "maxDrawdown252d", (v) => v.maxDrawdown252d, "asc")
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });

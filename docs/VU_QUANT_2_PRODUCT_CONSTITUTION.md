@@ -105,7 +105,7 @@ Der VU Quant Score ist ein erklärbarer, relativer Multifaktor-Score. Die Verarb
 
 Quant V1 verwendet teilweise industrie-neutrale Vergleichswerte: 70 % geeignete Peer-Gruppe, 30 % globales Universum; bei zu kleiner Industrie erfolgt ein dokumentierter Fallback über Sektor zum Universum. Fehlende Daten bleiben fehlend. Coverage und Confidence werden separat ausgewiesen.
 
-### 7.1 Aktive, versionierte V1-Methodik
+### 7.1 Legacy-Laufzeit V1
 
 | Faktor | Gewicht | Kerndimensionen |
 |---|---:|---|
@@ -115,14 +115,11 @@ Quant V1 verwendet teilweise industrie-neutrale Vergleichswerte: 70 % geeignete 
 | Value | 15 % | FCF-/Earnings-Yield, EV/EBITDA, P/FCF, EV/Sales |
 | Risk | 5 % | Volatilität, Downside Volatility, Max Drawdown, Beta |
 
-### 7.2 Methoden-Widerspruch und Owner-Gate
+### 7.2 Kanonische Quant-V2-Methodik
 
-Die aktuelle Zielbeschreibung nennt sieben Faktoren: Quality, Growth, Momentum, Value, Profitability, Revisions und Risk. Das ist **nicht** die bestehende V1-Methodik:
+Die Owner-Entscheidung vom 21.09.2026 legt `quant-v2.0.0-full-7f` als kanonische Produktspezifikation fest: Quality 10 %, Growth 15 %, Momentum 25 %, Value 15 %, Profitability 15 %, Revisions 15 %, Risk 5 %. Der vollständige Vertrag steht in `quant/methodology/quant-v2.json` und `docs/VU_QUANT_2_METHODOLOGY.md`.
 
-- Profitability ist in V1 eine transparente Unterdimension von Quality, kein unabhängiger Faktor.
-- Revisions ist im Schema vorhanden, aber wegen fehlender zertifizierter historischer Konsensschätzungen inaktiv und erhält 0 %.
-
-Bis zu einer expliziten Owner-Methodenentscheidung bleibt V1 unverändert. Ein separates siebenfaktoriges Modell darf nur als versioniertes `quant-v2` entstehen, mit neuen Gewichten, Überschneidungsanalyse, Missing-Data-Policy, historischer Vergleichsregel und validierter Revisionsquelle. Ein stilles Umgewichten ist verboten.
+V2 ist spezifiziert, aber noch nicht aktiv: Revisions besitzt keine lizenzierte PIT-Konsenshistorie, die Peer-Klassifikation ist nicht breit genug und der reale Factor Panel ist nicht produktionsweit materialisiert. Es wird kein fehlendes Gewicht verteilt und kein Score erzeugt. V1 bleibt unverändert als Legacy-/Vergleichsversion; historische V1-Ergebnisse werden nie in V2 umetikettiert.
 
 ## 8. Factor DNA
 
@@ -137,7 +134,7 @@ Factor DNA zeigt nicht nur den Composite, sondern je Faktor:
 - Coverage und Missing-Data-Policy;
 - Interpretation und Grenzen.
 
-Profitability bleibt in V1 als Quality-Unterdimension sichtbar. Revisions wird als `UNAVAILABLE` erklärt, bis die Daten- und Historienanforderungen erfüllt sind. Kein Faktor ist eine Blackbox.
+In V2 ist Profitability eine eigenständige Ebene für Return-/Margen-Niveaus; Quality enthält ausschließlich Durability, Accruals und Bilanzresilienz. Revisions bleibt `BLOCKED_EXTERNAL`, bis lizenzierte zeitgestempelte Analystenkonsensdaten die Methodik erfüllen. SEC-Restatements sind kein Ersatz. Kein Faktor ist eine Blackbox.
 
 ## 9. Score Momentum
 
@@ -408,4 +405,4 @@ Recovery Paths:
 - gemeinsame Infrastruktur betroffen → Discovery-Regressionsgate vor Merge und nach Deploy.
 - externe Credentials/Provider fehlen → exakt benötigte bestehende sichere Variablen nennen; keine Werte im Chat und keine neuen Secrets ohne Auftrag.
 
-Owner-Escalations sind auf echte Produktentscheidungen begrenzt: Quant-V2-Faktortaxonomie/Gewichte, vollständige Regeln der fünf fehlenden Strategien, neue lizenzierte Revisionsdaten oder Kosten-/Providerentscheidungen. Alle anderen Arbeiten laufen nach dieser Constitution autonom weiter.
+Owner-Escalations sind auf echte Produktentscheidungen begrenzt: vollständige Regeln der fünf historisch nicht belegten Strategien, neue lizenzierte Revisionsdaten oder Kosten-/Providerentscheidungen. Die Quant-V2-Faktortaxonomie und Gewichte sind entschieden. Alle anderen Arbeiten laufen nach dieser Constitution autonom weiter.

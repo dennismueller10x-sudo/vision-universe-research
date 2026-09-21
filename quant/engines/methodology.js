@@ -19,6 +19,7 @@
 
   if (isNode) {
     store.quant = require("../methodology/quant-v1.json");
+    store.quantV2 = require("../methodology/quant-v2.json");
     store.backtest = require("../methodology/backtest-v1.json");
     store.trustScore = require("../methodology/trust-score-v1.json");
     store.strategies = require("../methodology/strategies-v1.json");
@@ -39,6 +40,8 @@
   }
 
   function quant()      { return get("quant"); }
+  /** Canonical V2 specification. It is deliberately not the active quant() runtime. */
+  function quantV2()    { return get("quantV2"); }
   function backtest()   { return get("backtest"); }
   function trustScore() { return get("trustScore"); }
   function strategies() { return get("strategies"); }
@@ -69,6 +72,7 @@
     configure: configure,
     get: get,
     quant: quant,
+    quantV2: quantV2,
     backtest: backtest,
     trustScore: trustScore,
     strategies: strategies,
@@ -78,6 +82,7 @@
     /** Dateinamen, die der Browser laden muss. Eine Liste, ein Ort. */
     FILES: {
       quant: "quant-v1.json",
+      quantV2: "quant-v2.json",
       backtest: "backtest-v1.json",
       trustScore: "trust-score-v1.json",
       strategies: "strategies-v1.json"

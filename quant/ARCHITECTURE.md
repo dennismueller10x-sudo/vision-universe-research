@@ -85,7 +85,10 @@ Fallback-Stack.
 
 Nach jeder Aenderung an `engines/mock-generator.js`, `engines/factors.js`,
 `engines/quant-score.js`, `engines/normalization.js`, `engines/radar.js` oder
-`methodology/quant-v1.json`.
+`methodology/quant-v1.json`. Die kanonische Quant-2.0-Spezifikation liegt separat in
+`methodology/quant-v2.json`; sie ist bis zum Erfuellen ihrer Daten- und Evidenzgates
+`SPECIFIED_NOT_ACTIVE`. `Methodology.quant()` bleibt deshalb die unveraenderte
+V1-Legacy-Laufzeit, waehrend `Methodology.quantV2()` den V2-Vertrag ausliefert.
 
 `verify-quant-data.mjs` faellt genau darauf: es rechnet alle Scores nach und vergleicht
 sie mit der ausgelieferten Datei. Es laeuft in der CI, weil eine stille Abweichung
@@ -107,7 +110,8 @@ Die CI prueft, dass jede Seite Shell und Navigation einbindet.
 Ein Feld wird **einmal** in `engines/catalog.js` definiert und steht danach automatisch in
 Screener-UI, VUQL-Parser, Query-Validierung, Strategiefiltern und AI-Werkzeugbeschreibung
 zur Verfuegung. Soll es Faktorkomponente werden, kommt es zusaetzlich mit Gewicht in
-`methodology/quant-v1.json` — und die Methodikversion wird erhoeht.
+der passenden versionierten Methodikdatei. V1 wird nie ueberschrieben; V2-Aenderungen
+erzeugen eine neue `quant-v2.x`-Version und eigene Artefakte.
 
 ## Grenzen und Trennung
 
