@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-21T09:31:31.387Z",
-  "commit": "74c3bf86f38c1c48a247da8ef5756bacef878284",
+  "generatedAt": "2026-09-21T12:09:48.875Z",
+  "commit": "d2c20173f7501208fa15365e67c0903752aa2863",
   "worker": "https://social.visionuniverse.de",
   "ORDER_DONE": true,
   "states": [
@@ -9,42 +9,42 @@
       "ref": null,
       "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "/approval antwortet mit 401 [cf-ray a3e80eaf6b9812c7-IAD, server cloudflare]."
+      "satz": "/approval antwortet mit 401 [cf-ray a3e8f68e8aee64aa-IAD, server cloudflare]."
     },
     {
       "id": "CURRENT_CANDIDATE",
       "ref": null,
-      "wert": "cand_20260920_247c5e70",
+      "wert": "KEINER",
       "zustand": "ERFUELLT",
-      "satz": "Technisches Setup — XOM"
+      "satz": "Kein Kandidat wartet auf Freigabe. Das ist ein Ergebnis, kein Mangel."
     },
     {
       "id": "ASSET_PUBLICLY_REACHABLE",
       "ref": null,
-      "wert": "false",
-      "zustand": "NICHT_ERFUELLT",
-      "satz": "Unter dieser Adresse liegt nichts. Die Datei ist nie dort angekommen, oder sie wurde entfernt."
+      "wert": "NICHT_ANWENDBAR",
+      "zustand": "ERFUELLT",
+      "satz": "Kein wartender Kandidat, kein Bild zu pruefen."
     },
     {
       "id": "ASSET_PREVIEW_EQUALS_PUBLISH_ASSET",
       "ref": null,
-      "wert": "true",
+      "wert": "NICHT_ANWENDBAR",
       "zustand": "ERFUELLT",
-      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
+      "satz": "Kein wartender Kandidat."
     },
     {
       "id": "HASHTAG_ENGINE_READY",
       "ref": null,
       "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "29 Themen ergeben 18 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
+      "satz": "32 Themen ergeben 16 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
     },
     {
       "id": "HASHTAG_COUNT_CURRENT_CANDIDATE",
       "ref": null,
-      "wert": "0",
+      "wert": "NICHT_ANWENDBAR",
       "zustand": "ERFUELLT",
-      "satz": "Dieser Kandidat traegt keine Tags im Sendetext."
+      "satz": "Kein wartender Kandidat."
     },
     {
       "id": "FINAL_PUBLIC_TEXT_READY",
@@ -56,9 +56,9 @@
     {
       "id": "ACTIVE_APPROVAL_QUEUE_COUNT",
       "ref": null,
-      "wert": "1",
+      "wert": "0",
       "zustand": "ERFUELLT",
-      "satz": "aus owner-decision.warteschlange (AWAITING_APPROVAL), nicht aus dem Ordner; 1 uebertragbar, 0 ungeloest."
+      "satz": "aus owner-decision.warteschlange (AWAITING_APPROVAL), nicht aus dem Ordner; 0 uebertragbar, 0 ungeloest."
     },
     {
       "id": "MANUAL_ORCHESTRATOR_RUN",
@@ -72,14 +72,14 @@
       "ref": null,
       "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "9 Stufen ueber 15 Inhaltsfamilien."
+      "satz": "10 Stufen ueber 15 Inhaltsfamilien."
     },
     {
       "id": "MAX_OPEN_CREATIVE_JOBS",
       "ref": null,
-      "wert": "1",
+      "wert": "0",
       "zustand": "ERFUELLT",
-      "satz": "gemessen: 1 (soll 1)"
+      "satz": "gemessen: 0 (soll 1)"
     },
     {
       "id": "OWNER_PUBLISHING_GATE",
@@ -120,40 +120,40 @@
     {
       "id": "ASSET_PREVIEW_PRODUCTION_SAFE",
       "ref": "§3",
-      "wert": "true",
+      "wert": "NICHT_ANWENDBAR",
       "zustand": "ERFUELLT",
-      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
+      "satz": "Kein wartender Kandidat."
     },
     {
       "id": "FREIGABE_GESPERRT_OHNE_ERREICHBARKEIT",
       "ref": "§6",
       "zustand": "ERFUELLT",
-      "satz": "Das Bild ist nicht erreichbar; kein Freigabeknopf, Ablehnen bleibt moeglich."
+      "satz": "Kein wartender Kandidat; nichts freizugeben."
     },
     {
       "id": "HASHTAGS_VISIBLE_BEFORE_APPROVAL",
       "ref": "§15/§16",
       "zustand": "ERFUELLT",
-      "satz": "Der Block ist da und sagt, warum keine Tags im Text stehen."
+      "satz": "Kein wartender Kandidat."
     },
     {
       "id": "PREVIEW_EQUALS_PUBLISH_PAYLOAD",
       "ref": "§17",
       "zustand": "ERFUELLT",
-      "satz": "Der Textabsatz der Karte ist zeichengleich mit dem, was gesendet wuerde (344 Zeichen)."
+      "satz": "Kein wartender Kandidat."
     },
     {
       "id": "HASHTAG_ENGINE_LIEFERT_BREITE",
       "ref": "§10/§12",
       "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "29 Themen ergeben 18 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
+      "satz": "32 Themen ergeben 16 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
     },
     {
       "id": "CURRENT_XOM_CANDIDATE_NOT_PUBLISHED",
       "ref": "§18",
       "zustand": "ERFUELLT",
-      "satz": "cand_20260920_247c5e70 steht auf AWAITING_APPROVAL; kein Kandidat im Bestand steht auf PUBLISHED."
+      "satz": "Kein wartender Kandidat, nichts veroeffentlicht."
     },
     {
       "id": "CONTENT_FALLBACK_LADDER_UNCHANGED",
@@ -171,25 +171,25 @@
       "id": "SUITEN_GRUEN",
       "ref": "§21",
       "zustand": "ERFUELLT",
-      "satz": "social: 1446/1460 (14 uebersprungen), worker: 354/354 (Stand 74c3bf86f3)"
+      "satz": "social: 1511/1525 (14 uebersprungen), worker: 356/356 (Stand d2c20173f7)"
     },
     {
       "id": "TEST_PRODUKTIONS_ISOLATION",
       "ref": "§23",
       "zustand": "ERFUELLT",
-      "satz": "social: unveraendert, worker: unveraendert (Stand 74c3bf86f3)"
+      "satz": "social: unveraendert, worker: unveraendert (Stand d2c20173f7)"
     },
     {
       "id": "IN_MAIN_INTEGRIERT",
       "ref": "§24",
       "zustand": "ERFUELLT",
-      "satz": "Dieser Stand IST main (74c3bf86f3)."
+      "satz": "Dieser Stand IST main (d2c20173f7)."
     },
     {
       "id": "PRODUCTION_SMOKE_OHNE_VEROEFFENTLICHUNG",
       "ref": "§25",
       "zustand": "ERFUELLT",
-      "satz": "/approval -> 401 [cf-ray a3e80eb0da12f26c-IAD], /social/status -> 401 [cf-ray a3e80eb11cf112c7-IAD]; kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht."
+      "satz": "/approval -> 401 [cf-ray a3e8f6903b1b07fb-IAD], /social/status -> 401 [cf-ray a3e8f6906dca64aa-IAD]; kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht."
     }
   ],
   "blockers": [],
