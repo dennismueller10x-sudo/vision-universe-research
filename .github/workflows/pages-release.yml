@@ -26,8 +26,38 @@ on:
       - "Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach Schluss)"
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
       - "SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)"
+      # Der Taktgeber - aber er hilft hier nur am Blockende, und das ist
+      # der Punkt: workflow_run feuert bei COMPLETED. Ein Block, der den
+      # Takt fuenf Stunden haelt, ist fuenf Stunden lang nicht completed.
+      # Der Eintrag steht trotzdem hier, damit der letzte Stand eines
+      # Blocks sicher ausgeliefert wird.
+      - "Intraday-Taktgeber (ein Lauf haelt den Takt)"
     types: [completed]
     branches: [main]
+
+  # DIE BRUECKE, SOLANGE DER EXTERNE WECKER FEHLT
+  #
+  # Am 21.09.2026 stellte sich heraus: der Taktgeber schreibt zwar alle
+  # fuenf Minuten einen frischen Stand nach main, aber NICHTS lieferte
+  # ihn aus. Push mit GITHUB_TOKEN loest keinen Lauf aus (siehe oben),
+  # und workflow_run wartet auf das Blockende. Der erste Waechterlauf
+  # hat genau das gemessen: "Die Auslieferung ist 40 min hinter dem
+  # Repository."
+  #
+  # Die saubere Loesung ist ein Zyklus = ein Workflow-Lauf, geweckt von
+  # aussen (worker-waker/). Die braucht ein GitHub-Token mit
+  # actions:write als Cloudflare-Secret - eine Owner-Entscheidung.
+  #
+  # Bis dahin diese Bruecke. Sie ist ausdruecklich ein Zeitplan und
+  # teilt damit den Failure Mode, der den Vorfall ausgeloest hat - aber
+  # sie ist ein ANDERER Workflow als der Taktgeber, faellt also
+  # unabhaengig aus. Ein verpasster Takt kostet hier zehn Minuten
+  # Auslieferung, nicht eine Stunde Datenstillstand. Ein Lauf dauert
+  # rund 97 Sekunden; das Repository ist oeffentlich, Actions-Minuten
+  # sind unbegrenzt.
+  schedule:
+    - cron: '*/10 13-21 * * 1-5'
+
   workflow_dispatch:
 
 permissions:
