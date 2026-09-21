@@ -333,12 +333,12 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#1a1c1f;--disc
 /* Premium QA convergence. This stylesheet loads last, so these rules also
    protect the shell material from older Discover 2.0 cascade rules. */
 body.dv2 .v2-main{overflow-x:clip}
-@media(min-width:761px){body.dv2 .v2-dock{z-index:320}}
+@media(min-width:761px){body.dv2 .v2-dock{z-index:320}body.dv2 .v2-journey{min-height:calc(100vh - 280px)}}
 @media(max-width:760px){
   body.dv2 .v2-dock,body.dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.80)}
-  body.dv2 .v2-dock .v2-nav-item[aria-current="page"],body.dv2 .v2-dock .v2-nav-item.is-active,body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#101113;color:#fff}
+  body.dv2 .v2-dock .v2-nav-item[aria-current="page"],body.dv2 .v2-dock .v2-nav-item.is-active,body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#101113!important;color:#fff!important}
   html:not([data-theme="light"]) body.dv2 .v2-dock,html:not([data-theme="light"]) body.dv2.v2-feed-active .v2-dock{background:rgba(23,24,27,.82)}
-  html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#fff;color:#111214}
+  html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#fff!important;color:#111214!important}
   body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{margin-inline:-12px}
   body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:12px}
   body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(28px,8vw,34px);letter-spacing:-.045em}
