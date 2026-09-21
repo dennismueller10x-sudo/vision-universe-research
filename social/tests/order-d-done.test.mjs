@@ -173,6 +173,20 @@ test("OD12 · Auf dem Zweig allein ist nichts integriert", () => {
      falsch waere nur, es nicht zu messen. */
   assert.ok(["ERFUELLT", "NICHT_ERFUELLT", "UNGEPRUEFT"].includes(c.zustand));
   assert.match(c.satz, /main/);
+  /* Und laeuft der Bericht AUF main, muss er sagen, dass die Frage
+     sich dort selbst beantwortet - sonst liest sich eine Gleichheit
+     wie eine gepruefte Integration. */
+  const kopf = execFileSync("git", ["rev-parse", "HEAD"],
+    { cwd: ROOT, encoding: "utf8" }).trim();
+  let main = null;
+  try {
+    main = execFileSync("git", ["rev-parse", "origin/main"],
+      { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch { main = null; }
+  if (main && kopf === main) {
+    assert.match(c.satz, /beantwortet sich die Frage selbst/,
+      "Auf main liest sich die Gleichheit wie eine gepruefte Integration: " + c.satz);
+  }
 });
 
 /* ------------------------------------------------ Was es nicht tut */

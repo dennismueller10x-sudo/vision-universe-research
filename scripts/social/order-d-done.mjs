@@ -237,11 +237,28 @@ function inMain() {
       { cwd: ROOT, stdio: "ignore" });
     enthalten = true;
   } catch { enthalten = false; }
+  /* -----------------------------------------------------------------
+     "MAIN ENTHAELT MAIN" IST KEINE AUSKUNFT
+
+     Laeuft dieser Bericht AUF main - etwa im Cloudflare-Workflow nach
+     dem Merge -, dann ist HEAD gleich origin/main, und die Frage
+     beantwortet sich selbst. Die Antwort ist dann zwar richtig, aber
+     sie belegt nichts: geprueft wurde eine Gleichheit, keine
+     Integration.
+
+     Der Satz sagt das, statt eine Pruefung vorzutaeuschen, die an
+     dieser Stelle keine ist. */
+  const istMain = kopf === main;
   return { zustand: enthalten ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
-    satz: enthalten
-      ? "main (" + main.slice(0, 10) + ") enthaelt " + kopf.slice(0, 10) + "."
-      : kopf.slice(0, 10) + " ist noch nicht in main (" + main.slice(0, 10) +
-        "). Solange nur auf dem Zweig, ist nichts integriert." };
+    satz: !enthalten
+      ? kopf.slice(0, 10) + " ist noch nicht in main (" + main.slice(0, 10) +
+        "). Solange nur auf dem Zweig, ist nichts integriert."
+      : (istMain
+          ? "Dieser Stand IST main (" + kopf.slice(0, 10) + "). Von hier aus " +
+            "beantwortet sich die Frage selbst — als Beleg fuer eine " +
+            "Integration taugt sie nur von einem Zweig aus."
+          : "main (" + main.slice(0, 10) + ") enthaelt " + kopf.slice(0, 10) +
+            ".") };
 }
 
 /* -------------------------------------------------------------------
