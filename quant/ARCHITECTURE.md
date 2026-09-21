@@ -115,6 +115,15 @@ erzeugen eine neue `quant-v2.x`-Version und eigene Artefakte.
 
 ## Grenzen und Trennung
 
+Die Produktbreite wird nicht durch eine vergroesserte Preview-Allowlist erzeugt.
+`scripts/vu2/build-product-capabilities.mjs` projiziert die bestehende, gemessene
+Capability Matrix kompakt nach `data/product/capabilities-v1.json` und ihre aggregierte
+Coverage nach `data/product/capabilities-summary-v1.json`. Product Services laden die
+Summary fuer allgemeine Produktansichten und die titelgenaue Projektion erst nach einer
+konkreten Security-Abfrage. Beide Artefakte stammen aus demselben Builder und derselben
+Matrix. Sie erzeugen weder Kennzahlen noch eine zweite Datenquelle und laden nicht das
+21-MiB-Faktorartefakt in den Browser.
+
 `quant/` liest keine Daten aus `dashboard/`, `macro/`, `hedgefonds/` oder `academy/` und
 schreibt dort nichts hinein. Umgekehrt aendert dieser Bereich an keiner bestehenden
 Produktseite etwas ausser einem Menuepunkt in `assets/site-navigation.js` und einer Zeile
