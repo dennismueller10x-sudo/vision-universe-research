@@ -30,7 +30,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import worker, { __internals } from "../src/index.js";
-import { createEnv, request, TEST_ADMIN_KEY } from "./harness.mjs";
+import { createEnv, request, TEST_ADMIN_KEY , JPEG_SHA256} from "./harness.mjs";
 
 const KEY = "?key=" + encodeURIComponent(TEST_ADMIN_KEY);
 const ID = "cand_20260920_4c7ee69c";
@@ -51,7 +51,8 @@ function eintrag(over = {}) {
     asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
       url: BILD,
       satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
-      gemessenAm: "2026-09-21T10:00:00Z" },
+      gemessenAm: "2026-09-21T10:00:00Z",
+      sha256: JPEG_SHA256, dimensions: { width: 1080, height: 1350 } },
     anzeige: {
       thema: f("Technisches Setup — XOM", "presentation.topic"),
       hook: f("52 von 100 — und warum das keine Empfehlung ist.", "presentation.hook"),

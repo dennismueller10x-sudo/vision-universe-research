@@ -27,7 +27,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import worker from "../src/index.js";
-import { createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY } from "./harness.mjs";
+import { createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY,
+  jpegBytes, bildAntwort } from "./harness.mjs";
 import { CONNECTION_KEY, claimKey, readClaim } from "../src/store.js";
 import { contentHash } from "../src/redact.js";
 
@@ -60,9 +61,9 @@ function publishGraph(options = {}) {
       headers: new Headers({ "content-type": "application/json" })
     });
 
-    if (methode === "HEAD") {
-      return { ok: true, status: 200,
-        headers: new Headers({ "content-type": "image/jpeg", "content-length": "68000" }) };
+    /* Die Bildpruefung holt die Datei, nicht ihren Kopf. */
+    if (!url.hostname.includes("graph.") || methode === "HEAD") {
+      return bildAntwort(jpegBytes());
     }
     if (pfad === `${IG_ID}/media` && methode === "POST") return json({ id: "container_9" });
     if (pfad === "container_9") return json({ status_code: "FINISHED" });

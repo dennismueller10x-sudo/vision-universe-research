@@ -525,6 +525,25 @@ const BETRIEB = {
       "veroeffentlicht. Freigegeben wird nur, was jemand gesehen hat — der " +
       "naechste Orchestratorlauf sieht nach."
   },
+  /* Auch das ein eigener Zustand. Das Bild IST erreichbar - nur laesst
+     sich nicht belegen, dass es dasselbe ist, das der Owner sehen
+     wird. "Nicht erreichbar" waere hier eine falsche Auskunft, und
+     "ungeprueft" waere die halbe. */
+  ASSET_FINGERPRINT_UNVERIFIED: {
+    titel: "Es ist nicht belegt, dass die Vorschau das gesendete Bild ist.",
+    text: "Der Beitrag kann noch nicht freigegeben werden. Es wurde nichts " +
+      "veroeffentlicht. Das Bild ist abrufbar — was fehlt, ist der Abdruck " +
+      "seiner Bytes, und ohne ihn koennte hinter derselben Adresse eine andere " +
+      "Datei liegen als die, die du siehst. Der naechste Orchestratorlauf " +
+      "misst ihn mit."
+  },
+  ASSET_CHANGED_SINCE_APPROVAL: {
+    titel: "Das Bild hat sich seit der Freigabe geaendert.",
+    text: "Es wurde nichts veroeffentlicht. Unter derselben Adresse liegt jetzt " +
+      "eine andere Datei als bei der Freigabe. Das ist kein Formfehler: " +
+      "veroeffentlicht wuerde etwas, das du nie gesehen hast. Eine Aenderung " +
+      "nach der Freigabe braucht eine neue Freigabe."
+  },
   AUTH_EXPIRED: {
     titel: "Die Verbindung zu Instagram besteht nicht mehr.",
     text: "Der Beitrag wurde NICHT veroeffentlicht. Die Verbindung muss erneuert " +
@@ -634,6 +653,25 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
     };
   }
 
+  /* -------------------------------------------------------------------
+     OHNE ABDRUCK KEINE FREIGABE (§25)
+
+     Bis hierher ist belegt: unter DIESER ADRESSE lag zum Zeitpunkt der
+     Messung ein gueltiges Bild. Mehr nicht.
+
+     Was dabei offen blieb, hat am 21.09. einen oeffentlichen Beitrag
+     ohne Bild erzeugt: zwischen Messung und Sendung kann die Datei
+     hinter der Adresse ausgetauscht oder entfernt werden. Die Adresse
+     bleibt dieselbe, das Urteil gilt weiter, und niemand sieht hin.
+
+     Der Byte-Abdruck ist die einzige Groesse, an der sich das
+     feststellen laesst. Fehlt er, ist "Vorschau = Sendung" nicht
+     pruefbar - und was nicht pruefbar ist, wird nicht freigegeben.
+     Ablehnen bleibt moeglich. */
+  if (!bild.sha256) {
+    return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
+  }
+
   /* 3. Das Qualitaetstor. NICHT_ANWENDBAR ist kein Durchfallen - die
      Pruefung misst Text auf der Flaeche, und ein generatives Bild
      traegt laut Brief keinen. NICHT_BESTANDEN ist eines. */
@@ -648,7 +686,17 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
 function zustandAus(antwort) {
   if (!antwort || typeof antwort !== "object") return "META_PUBLISH_FAILED";
   if (antwort.uncertain) return "PUBLISH_UNCERTAIN";
-  if (antwort.stage === "imageCheck") return "ASSET_NOT_REACHABLE";
+  /* Der Bildcheck scheitert aus zwei verschiedenen Gruenden, und sie
+     sagen dem Owner Verschiedenes: das Bild fehlt, oder das Bild ist
+     ein anderes geworden. Beides unter "nicht erreichbar" zu fuehren
+     hiesse, den zweiten Fall als Transportproblem auszugeben. */
+  if (antwort.stage === "imageCheck") {
+    if (antwort.error === "imageFingerprintMismatch" ||
+        antwort.error === "imageDimensionsChanged") {
+      return "ASSET_CHANGED_SINCE_APPROVAL";
+    }
+    return "ASSET_NOT_REACHABLE";
+  }
   if (antwort.error === "imageNotReachable" || antwort.error === "imageNotAnImage") {
     return "ASSET_NOT_REACHABLE";
   }
@@ -779,6 +827,12 @@ async function handlePublishDecision(candidateId, request, env, options) {
     contentId: i.payload.contentId,
     imageUrl: i.payload.imageUrl,
     caption: i.payload.caption,
+    /* Der Abdruck dessen, was der Owner gesehen hat. Der
+       Veroeffentlichungspfad holt das Bild gleich selbst und haelt es
+       dagegen - unmittelbar bevor Meta es abholt. Das ist der einzige
+       Zeitpunkt, an dem "Vorschau = Sendung" noch etwas heisst. */
+    assetSha256: i.asset && i.asset.sha256 ? i.asset.sha256 : null,
+    assetDimensions: (i.asset && i.asset.dimensions) || null,
     approval: {
       candidateId,
       approvedBy: "owner",

@@ -222,7 +222,23 @@
       erreichbar: a.zustand === "ASSET_PUBLICLY_REACHABLE",
       url: a.url,
       satz: a.satz || null,
-      gemessenAm: a.gemessenAm || null
+      gemessenAm: a.gemessenAm || null,
+
+      /* -----------------------------------------------------------------
+         DER ABDRUCK REIST MIT BIS ZUR SENDUNG
+
+         Auch hier stand eine von Hand gepflegte Feldliste, und auch hier
+         fiel der Abdruck heraus. Zweimal dieselbe Stelle, zweimal
+         dasselbe verlorene Feld - deshalb steht es jetzt an beiden.
+
+         Der Worker braucht ihn: er ist die EINZIGE Groesse, an der sich
+         unmittelbar vor der Sendung pruefen laesst, ob hinter der
+         Adresse noch dasselbe Bild liegt wie bei der Freigabe. `null`
+         heisst NICHT GEMESSEN und sperrt die Freigabe - nicht "passt
+         schon". */
+      sha256: a.sha256 || null,
+      bytes: a.bytes === undefined ? null : a.bytes,
+      dimensions: a.dimensions || null
     };
   }
 

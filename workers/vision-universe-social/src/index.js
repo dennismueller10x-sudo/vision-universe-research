@@ -320,11 +320,87 @@ function metaFehlerdaten(result, env) {
  * zwischen "Instagram mag das Bild nicht" und "die Adresse antwortet
  * nicht" gehoert festgestellt, bevor Meta gefragt wird.
  */
-async function pruefeBild(imageUrl, fetchImpl) {
+/** SHA-256 der Bytes, hexadezimal - derselbe Abdruck, den die Messung rechnet. */
+async function bytesAbdruck(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Die Masse eines JPEG aus seinen eigenen Bytes lesen.
+ *
+ * Kein Header und keine Fremdangabe: der SOF-Marker steht im Bild
+ * selbst. Laesst er sich nicht finden, ist das UNBEKANNT und keine
+ * Zustimmung - der Aufrufer entscheidet, was er damit macht.
+ */
+function jpegMasse(bytes) {
+  const d = new DataView(bytes.buffer || bytes, bytes.byteOffset || 0, bytes.byteLength);
+  if (d.byteLength < 4 || d.getUint8(0) !== 0xFF || d.getUint8(1) !== 0xD8) return null;
+  let i = 2;
+  while (i + 9 < d.byteLength) {
+    if (d.getUint8(i) !== 0xFF) { i += 1; continue; }
+    const marker = d.getUint8(i + 1);
+    /* Die SOF-Marker tragen die Masse. C4, C8 und CC heissen etwas
+       anderes und werden ausdruecklich uebersprungen - sie stehen im
+       selben Zahlenbereich und waeren sonst als Bildkopf gelesen. */
+    if (marker >= 0xC0 && marker <= 0xCF &&
+        marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
+      return { height: d.getUint16(i + 5), width: d.getUint16(i + 7) };
+    }
+    if (marker === 0xD8 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) {
+      i += 2; continue;
+    }
+    const laenge = d.getUint16(i + 2);
+    if (laenge < 2) return null;
+    i += 2 + laenge;
+  }
+  return null;
+}
+
+/**
+ * Prueft, dass das Bild ueberhaupt erreichbar ist — BEVOR Meta es
+ * abholen soll.
+ *
+ * Ohne diesen Schritt kommt ein unerreichbares Bild als Meta-Fehlercode
+ * zurueck, der nach einem Problem mit dem Konto aussieht. Der Unterschied
+ * zwischen "Instagram mag das Bild nicht" und "die Adresse antwortet
+ * nicht" gehoert festgestellt, bevor Meta gefragt wird.
+ *
+ * -------------------------------------------------------------------
+ * WARUM GET UND NICHT HEAD (§23)
+ * -------------------------------------------------------------------
+ *
+ * Diese Funktion fragte mit HEAD. HEAD beantwortet eine Frage ueber
+ * die ADRESSE: gibt es dort etwas, und wie nennt es der Server sich
+ * selbst. Beides kann stimmen, waehrend unter der Adresse kein
+ * brauchbares Bild liegt - ein CDN-Eintrag ohne Koerper, eine
+ * Fehlerseite mit geerbtem Inhaltstyp, eine abgeschnittene Datei.
+ *
+ * Meta holt das Bild per GET. Wer mit HEAD prueft, prueft etwas
+ * anderes als das, was passieren wird. Also GET, und die Bytes
+ * werden angesehen: SOI-Marker, Masse aus dem SOF, Abdruck.
+ *
+ * -------------------------------------------------------------------
+ * PREVIEW = PUBLISH IST EINE MESSUNG, KEINE BEHAUPTUNG (§25)
+ * -------------------------------------------------------------------
+ *
+ * `erwartet.sha256` ist der Abdruck der Bytes, die der Owner gesehen
+ * und freigegeben hat. Stimmt er nicht mit dem ueberein, was JETZT
+ * unter der Adresse liegt, ist die Vorschau nicht die Sendung - und
+ * zwar unabhaengig davon, dass die Adresse dieselbe geblieben ist.
+ *
+ * Genau diese Luecke war offen: gleiche Adresse, andere Datei, und
+ * niemand sah hin.
+ *
+ * @param erwartet { sha256, dimensions } - was die Freigabe gesehen hat
+ */
+async function pruefeBild(imageUrl, fetchImpl, erwartet) {
   const holen = fetchImpl || fetch;
+  const soll = erwartet || {};
   let antwort;
   try {
-    antwort = await holen(imageUrl, { method: "HEAD" });
+    antwort = await holen(imageUrl, { method: "GET" });
   } catch (err) {
     return { ok: false, reason: "imageUnreachable",
       message: "Die Bildadresse ist nicht erreichbar: " + String(err && err.message).slice(0, 160) };
@@ -340,8 +416,47 @@ async function pruefeBild(imageUrl, fetchImpl) {
       message: `Die Bildadresse liefert \`${typ || "keinen Inhaltstyp"}\`. Instagram nimmt fuer ` +
         "einen Bildbeitrag JPEG." };
   }
-  return { ok: true, contentType: typ,
-    contentLength: Number(antwort.headers.get("content-length")) || null };
+
+  let bytes;
+  try {
+    bytes = new Uint8Array(await antwort.arrayBuffer());
+  } catch (err) {
+    return { ok: false, reason: "imageUnreadable",
+      message: "Die Bildadresse antwortet, aber der Koerper laesst sich nicht lesen: " +
+        String(err && err.message).slice(0, 160) };
+  }
+  if (!bytes.byteLength) {
+    return { ok: false, reason: "imageEmpty",
+      message: "Die Bildadresse antwortet mit einem leeren Koerper. Ein Inhaltstyp ohne " +
+        "Inhalt ist kein Bild." };
+  }
+  /* Der Server nennt es JPEG. Die Bytes muessen es auch sein. */
+  if (!(bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF)) {
+    return { ok: false, reason: "imageNotJpegBytes",
+      message: "Der Inhaltstyp sagt JPEG, die Bytes fangen nicht wie ein JPEG an. Der " +
+        "Server hat etwas anderes geliefert, als er behauptet." };
+  }
+
+  const abdruck = await bytesAbdruck(bytes);
+  if (soll.sha256 && abdruck !== soll.sha256) {
+    return { ok: false, reason: "imageFingerprintMismatch",
+      message: "Unter der Adresse liegt jetzt ein ANDERES Bild als bei der Freigabe. " +
+        "Die Adresse ist dieselbe geblieben, die Datei nicht. Es wird nichts gesendet.",
+      expectedSha256: soll.sha256, actualSha256: abdruck };
+  }
+
+  const masse = jpegMasse(bytes);
+  if (soll.dimensions && soll.dimensions.width && soll.dimensions.height && masse &&
+      (masse.width !== soll.dimensions.width || masse.height !== soll.dimensions.height)) {
+    return { ok: false, reason: "imageDimensionsChanged",
+      message: "Das Bild unter der Adresse hat andere Masse als bei der Freigabe (" +
+        masse.width + "x" + masse.height + " statt " +
+        soll.dimensions.width + "x" + soll.dimensions.height + ").",
+      expected: soll.dimensions, actual: masse };
+  }
+
+  return { ok: true, contentType: typ, contentLength: bytes.byteLength,
+    sha256: abdruck, dimensions: masse };
 }
 
 async function handleSmokePublish(request, url, env) {
@@ -596,6 +711,24 @@ async function publishCore(body, env) {
   const imageUrl = String((body && body.imageUrl) || "").trim();
   const caption = String(body && body.caption === undefined ? "" : body.caption);
 
+  /* -------------------------------------------------------------------
+     WAS DER OWNER GESEHEN HAT — ALS ABDRUCK, NICHT ALS ADRESSE
+
+     `approval.contentHash` deckt contentId, Bildadresse und Caption ab.
+     Er beweist, dass der TEXT und die ADRESSE seit der Freigabe
+     unveraendert sind. Ueber die Datei hinter der Adresse sagt er
+     nichts - eine Zeichenkette kann keine Bytes bezeugen.
+
+     Deshalb reist der Byte-Abdruck getrennt mit. Fehlt er, prueft
+     pruefeBild nur Erreichbarkeit und Form; liegt er vor, prueft es
+     unmittelbar vor der Sendung, ob dort noch dasselbe Bild liegt. */
+  const erwartetesBild = {
+    sha256: String((body && body.assetSha256) ||
+      (body && body.approval && body.approval.assetSha256) || "").trim().toLowerCase() || null,
+    dimensions: (body && body.assetDimensions) ||
+      (body && body.approval && body.approval.assetDimensions) || null
+  };
+
   /* ---------------------------------------------------------------------
      DIE ZWEI ERLAUBNISSE
 
@@ -740,12 +873,17 @@ async function publishCore(body, env) {
   /* ------------------------------------------------ DIE VEROEFFENTLICHUNG */
   const ctx = graphContext(env);
 
-  const bild = await pruefeBild(imageUrl, ctx.fetchImpl);
+  const bild = await pruefeBild(imageUrl, ctx.fetchImpl, erwartetesBild);
   if (!bild.ok) {
     await settleClaim(env, contentId, { state: "FAILED", stage: "imageCheck",
       error: { reason: bild.reason, message: bild.message }, now: beginn });
     return json({ error: bild.reason, message: bild.message, stage: "imageCheck",
-      published: false, contentId }, 400);
+      published: false, contentId,
+      /* Bei einem Abdruck-Konflikt gehoeren beide Werte in die Antwort:
+         "es hat sich etwas geaendert" ohne zu sagen was, ist keine
+         Auskunft, sondern eine Ahnung. */
+      expectedSha256: bild.expectedSha256 || null,
+      actualSha256: bild.actualSha256 || null }, 400);
   }
 
   const container = await createMediaContainer(ctx, {

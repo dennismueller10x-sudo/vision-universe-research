@@ -40,7 +40,7 @@ import assert from "node:assert/strict";
 import worker, { __internals } from "../src/index.js";
 import {
   createEnv, request, TEST_ADMIN_KEY,
-  createPublishGraph, verbinde, PUBLISH_MEDIA_ID, PUBLISH_PERMALINK
+  createPublishGraph, verbinde, PUBLISH_MEDIA_ID, PUBLISH_PERMALINK, JPEG_SHA256, jpegBytes
 } from "./harness.mjs";
 import { contentHash } from "../src/redact.js";
 import { CLAIM_PREFIX, DECISION_PREFIX } from "../src/store.js";
@@ -67,7 +67,8 @@ function eintrag(hash, over = {}) {
     asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
       url: BILD,
       satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
-      gemessenAm: "2026-09-21T10:00:00Z" },
+      gemessenAm: "2026-09-21T10:00:00Z",
+      sha256: JPEG_SHA256, dimensions: { width: 1080, height: 1350 } },
     anzeige: { thema: { value: "Technisches Setup — XOM", basis: "presentation.topic" },
       hook: { value: "52 von 100.", basis: "presentation.hook" } },
     guete: { zustand: "BESTANDEN", score: 82, erklaerung: null, warnungen: [] },
@@ -162,7 +163,20 @@ test("AD2 · Senden geht hinaus und meldet, was daraus wurde", async () => {
   /* Und der Weg war der bestehende: Bildpruefung, Container, Status,
      Freigabe, Nachschau. */
   const pfade = g.aufrufe.map((a) => a.methode + " " + a.pfad);
-  assert.ok(pfade.some((p) => p.startsWith("HEAD")), "Die Bildpruefung lief nicht.");
+  /* -----------------------------------------------------------------
+     GEPRUEFT WIRD, DASS DAS BILD GEHOLT WURDE - UND ZWAR GANZ
+
+     Hier stand `startsWith("HEAD")`. Das war nie die Frage: HEAD war
+     nur die Methode, mit der die Pruefung zufaellig lief. Seit der
+     Worker die BYTES ansieht, ist GET die Bedingung - ein HEAD wuerde
+     den Koerper gar nicht sehen und genau die Luecke wieder oeffnen,
+     durch die ein Beitrag ohne ladbares Bild hinausging.
+
+     Der Test misst deshalb die Adresse und die Methode zusammen. */
+  const bildAbruf = g.aufrufe.find((a) => a.url === BILD);
+  assert.ok(bildAbruf, "Das Bild wurde nicht abgerufen.");
+  assert.equal(bildAbruf.methode, "GET",
+    "Das Bild wurde nicht ganz geholt - HEAD sieht die Bytes nicht.");
   assert.ok(pfade.some((p) => /media$/.test(p)));
   assert.ok(pfade.some((p) => /media_publish$/.test(p)));
 });
@@ -651,4 +665,37 @@ test("AD32 · Die Uebersicht fragt je Wartendem, nicht die ganze Ablage", async 
     "Die Uebersicht listet die Ablage auf - das waechst mit der Geschichte.");
   assert.ok(gelesen <= 2,
     "Die Schlange hat einen Eintrag; gelesen wurden " + gelesen + " Entscheidungen.");
+});
+
+/* ============================================ §25 durch den ganzen Weg
+
+   AG28-AG30 halten fest, dass ohne Abdruck nicht freigegeben wird.
+   Hier geht es um die andere Haelfte: dass der Abdruck den Weg von der
+   Schlange bis zum Bildabruf TATSAECHLICH geht.
+
+   Beide Zeilen - der Abdruck im Eintrag und der Abdruck im Aufruf -
+   liessen sich einzeln entfernen, ohne dass ein Test fiel. Ein Tor, das
+   nicht im Weg steht, ist keines.
+   ================================================================= */
+
+test("AD29 · Ein ausgetauschtes Bild kommt nicht durch den Owner-Pfad", async () => {
+  /* Alles stimmt, was sich an Zeichenketten pruefen laesst: Adresse,
+     Caption, contentHash. Nur die Datei hinter der Adresse ist eine
+     andere geworden - genau die Lage vom 21.09.
+
+     `fuellung` aendert ein Byte: gleiche Masse, gleicher Typ, anderer
+     Abdruck. */
+  const { env, cookie, hash, g } =
+    await aufbau({ graph: { bild: jpegBytes({ fuellung: 3 }) } });
+  const r = await tun(env, cookie, `/approval/${ID}/publish`, { fingerprint: hash });
+  const html = await r.text();
+
+  assert.match(titel(html), /Bild hat sich seit der Freigabe geaendert/,
+    "Der Owner erfaehrt nicht, was wirklich los ist: " + titel(html));
+
+  /* Und zwar, BEVOR etwas an Meta ging. Ein Container, der steht, ist
+     nicht zurueckzunehmen. */
+  const schreibend = g.aufrufe.filter((a) => a.methode === "POST");
+  assert.equal(schreibend.length, 0,
+    "Es ging etwas an Meta hinaus, obwohl das Bild ein anderes war.");
 });
