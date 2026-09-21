@@ -1,0 +1,232 @@
+{
+  "methodologyVersion": "quant-v2.0.0",
+  "modelProfileId": "quant-v2.0.0-full-7f",
+  "modelVersion": "2.0.0",
+  "label": "VU Quant Score 2.0 · Full 7F",
+  "status": "SPECIFIED_NOT_ACTIVE",
+  "effectiveFrom": null,
+  "supersedes": null,
+  "legacyComparisonVersion": "quant-v1.0.0",
+  "publication": {
+    "allowed": false,
+    "reason": "Der kanonische siebenfaktorige Vertrag ist festgelegt, aber Revisions-, Peer- und breite PIT-Evidenz sind noch nicht produktionsreif.",
+    "fullScoreRequiresEveryFactor": true,
+    "missingFactorWeightRedistribution": false,
+    "minimumConfidence": 60
+  },
+  "factorOrder": ["quality", "growth", "momentum", "value", "profitability", "revisions", "risk"],
+  "factorWeights": {
+    "quality": 0.10,
+    "growth": 0.15,
+    "momentum": 0.25,
+    "value": 0.15,
+    "profitability": 0.15,
+    "revisions": 0.15,
+    "risk": 0.05
+  },
+  "factors": {
+    "quality": {
+      "label": "Quality",
+      "purpose": "Durability, accounting quality and balance-sheet resilience; no profitability levels are reused.",
+      "weight": 0.10,
+      "components": [
+        {"id":"accrualRatio","weight":0.25,"input":"(netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets","window":"TTM","direction":"lower"},
+        {"id":"netDebtToAssets","weight":0.20,"input":"(totalDebt-cash-shortTermInvestments)/totalAssets","window":"latest filing","direction":"lower"},
+        {"id":"equityToAssets","weight":0.15,"input":"stockholdersEquity/totalAssets","window":"latest filing","direction":"higher"},
+        {"id":"positiveFcfYears","weight":0.20,"input":"count(annualFreeCashFlow>0)","window":"last 5 fiscal years","direction":"higher"},
+        {"id":"operatingMarginStability","weight":0.20,"input":"medianAbsoluteDeviation(annualOperatingMargin)","window":"last 5 fiscal years; minimum 4","direction":"lower"}
+      ],
+      "mandatory": ["one of accrualRatio or positiveFcfYears", "one balance-sheet component"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60},
+      "sectorTreatment": "Generic formula is NOT_APPLICABLE for banks, insurers and REITs until separately versioned templates exist.",
+      "missingDataPolicy": "Invalid or unavailable inputs are null, never zero; legitimate negative values remain valid; available weights may renormalize only within the factor and must be disclosed.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation; counts are not winsorized.",
+      "pitRequirements": "Use only filing observations with availableAt<=scoreCutoff; prefer acceptedAt, otherwise validated filedAt; later restatements remain invisible until their own availability.",
+      "updateFrequency": "Event-driven after accepted filing/materialized consumer update; nightly snapshot only when a dependency changed.",
+      "interpretation": "Higher means stronger accounting durability and balance-sheet resilience, not a recommendation.",
+      "readiness": "PARTIAL"
+    },
+    "growth": {
+      "label": "Growth",
+      "purpose": "Operating expansion and acceleration; changes rather than profitability levels.",
+      "weight": 0.15,
+      "components": [
+        {"id":"revenueCagr3y","weight":0.30,"input":"revenue CAGR","window":"3 fiscal years","direction":"higher"},
+        {"id":"epsCagr3y","weight":0.20,"input":"diluted EPS CAGR; both endpoints positive","window":"3 fiscal years","direction":"higher"},
+        {"id":"fcfCagr3y","weight":0.15,"input":"free cash flow CAGR; both endpoints positive","window":"3 fiscal years","direction":"higher"},
+        {"id":"revenueGrowthTtmYoy","weight":0.15,"input":"current TTM revenue/prior-year TTM revenue-1","window":"1 year","direction":"higher"},
+        {"id":"operatingMarginExpansion3y","weight":0.10,"input":"operating-margin percentage-point change","window":"3 fiscal years","direction":"higher"},
+        {"id":"revenueGrowthAcceleration","weight":0.10,"input":"current revenue YoY growth-previous revenue YoY growth","window":"two YoY intervals","direction":"higher"}
+      ],
+      "mandatory": ["one of revenueCagr3y or revenueGrowthTtmYoy"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60},
+      "sectorTreatment": "Industry then sector then universe normalization; no invented classification.",
+      "missingDataPolicy": "Cross-zero EPS or FCF CAGR is null; invalid inputs are never zero; within-factor renormalization is disclosed.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
+      "pitRequirements": "All endpoints must have been available by scoreCutoff; use period identity and acceptedAt/filedAt lifecycle.",
+      "updateFrequency": "Event-driven after accepted filing/materialized consumer update.",
+      "interpretation": "Higher means stronger realized operating expansion, not expected revisions or a recommendation.",
+      "readiness": "PARTIAL"
+    },
+    "momentum": {
+      "label": "Momentum",
+      "purpose": "Medium-horizon total-return strength and market confirmation.",
+      "weight": 0.25,
+      "components": [
+        {"id":"totalReturn12m1m","weight":0.30,"input":"total return T-252 to T-21","window":"252/21 sessions","direction":"higher"},
+        {"id":"totalReturn6m","weight":0.20,"input":"total return","window":"126 sessions","direction":"higher"},
+        {"id":"totalReturn3m","weight":0.10,"input":"total return","window":"63 sessions","direction":"higher"},
+        {"id":"relativeStrength12m1m","weight":0.20,"input":"security 12-1 total return minus certified broad benchmark 12-1 total return","window":"252/21 sessions","direction":"higher"},
+        {"id":"distanceTo52wHigh","weight":0.10,"input":"(high252-current split-adjusted close)/high252","window":"252 sessions","direction":"lower"},
+        {"id":"distanceToSma200","weight":0.10,"input":"(split-adjusted close-SMA200)/SMA200","window":"200 sessions","direction":"higher"}
+      ],
+      "mandatory": ["totalReturn12m1m"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60,"minimumSessions":252,"minimumValidObservationRatio":0.95,"priceThroughLastCompletedSession":true},
+      "sectorTreatment": "Industry then sector then universe normalization; no invented classification.",
+      "missingDataPolicy": "Insufficient or semantically ambiguous price history is null; TOTAL_RETURN and SPLIT_ADJUSTED bases may not be aliased.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after semantic validation.",
+      "pitRequirements": "Use only final bars available before scoreCutoff and the certified benchmark observation aligned to each security date.",
+      "updateFrequency": "After every completed EOD session.",
+      "interpretation": "Higher means stronger recent market confirmation, not a forecast or recommendation.",
+      "readiness": "PARTIAL"
+    },
+    "value": {
+      "label": "Value",
+      "purpose": "Price relative to current PIT-safe business fundamentals.",
+      "weight": 0.15,
+      "components": [
+        {"id":"fcfYield","weight":0.30,"input":"TTM free cash flow/market capitalization","window":"latest close and PIT-safe TTM","direction":"higher"},
+        {"id":"earningsYield","weight":0.25,"input":"TTM net income/market capitalization","window":"latest close and PIT-safe TTM","direction":"higher"},
+        {"id":"ebitdaYield","weight":0.20,"input":"TTM EBITDA/enterprise value","window":"latest close and PIT-safe TTM","direction":"higher"},
+        {"id":"salesYield","weight":0.10,"input":"TTM revenue/enterprise value","window":"latest close and PIT-safe TTM","direction":"higher"},
+        {"id":"bookToMarket","weight":0.15,"input":"stockholders equity/market capitalization","window":"latest filing and close","direction":"higher"}
+      ],
+      "mandatory": ["one cash or earnings yield", "one enterprise or book metric"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60},
+      "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit.",
+      "missingDataPolicy": "Negative earnings and FCF yields are valid adverse values; EV metrics require positive finite EV; negative equity makes bookToMarket unavailable.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
+      "pitRequirements": "Price, shares, cash and debt must be the latest values known at scoreCutoff; no today-known values in historical scores.",
+      "updateFrequency": "After completed EOD close or accepted filing when a dependency changed.",
+      "interpretation": "Higher means cheaper relative valuation within the eligible universe, not intrinsic value certainty.",
+      "readiness": "PARTIAL"
+    },
+    "profitability": {
+      "label": "Profitability",
+      "purpose": "Current and persistent operating profitability; excludes balance-sheet safety and accounting-quality components.",
+      "weight": 0.15,
+      "components": [
+        {"id":"roicTtm","weight":0.25,"input":"canonical return on invested capital; tax assumption disclosed","window":"latest PIT-safe TTM","direction":"higher"},
+        {"id":"roicMedian3y","weight":0.15,"input":"median annual ROIC","window":"last 3 fiscal years","direction":"higher"},
+        {"id":"grossProfitabilityTtm","weight":0.20,"input":"TTM gross profit/average total assets","window":"TTM","direction":"higher"},
+        {"id":"operatingMarginTtm","weight":0.15,"input":"TTM operating income/TTM revenue","window":"TTM","direction":"higher"},
+        {"id":"fcfMarginTtm","weight":0.15,"input":"TTM free cash flow/TTM revenue","window":"TTM","direction":"higher"},
+        {"id":"roaTtm","weight":0.10,"input":"TTM net income/average total assets","window":"TTM","direction":"higher"}
+      ],
+      "mandatory": ["one of roicTtm or roaTtm", "one margin component"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60},
+      "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit.",
+      "missingDataPolicy": "Negative margins and returns are valid adverse values; invalid denominators are null; within-factor renormalization is disclosed.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
+      "pitRequirements": "Use only PIT-safe TTM and annual observations known at scoreCutoff.",
+      "updateFrequency": "Event-driven after accepted filing/materialized consumer update.",
+      "interpretation": "Higher means stronger current and persistent operating economics, not accounting quality or a recommendation.",
+      "readiness": "PARTIAL"
+    },
+    "revisions": {
+      "label": "Revisions",
+      "purpose": "Changes in analyst expectations; SEC restatements and filing revisions are explicitly not this factor.",
+      "weight": 0.15,
+      "components": [
+        {"id":"fy1EpsRevisionYield3m","weight":0.30,"input":"(current FY1 EPS consensus-prior consensus)/baseline share price","window":"3 months","direction":"higher"},
+        {"id":"fy2EpsRevisionYield3m","weight":0.15,"input":"(current FY2 EPS consensus-prior consensus)/baseline share price","window":"3 months","direction":"higher"},
+        {"id":"nextQuarterEpsRevisionYield1m","weight":0.10,"input":"next-quarter consensus change/baseline share price","window":"1 month","direction":"higher"},
+        {"id":"fy1RevenueRevision3m","weight":0.10,"input":"percentage change in FY1 revenue consensus","window":"3 months","direction":"higher"},
+        {"id":"epsRevisionBreadth3m","weight":0.20,"input":"(upward analysts-downward analysts)/analysts","window":"3 months","direction":"higher"},
+        {"id":"revisionAcceleration","weight":0.10,"input":"latest one-month FY1 EPS revision yield-preceding one-month yield","window":"two 1-month windows","direction":"higher"},
+        {"id":"estimateDispersion","weight":0.05,"input":"standard deviation of FY1 EPS estimates/share price","window":"current snapshot","direction":"lower"}
+      ],
+      "mandatory": ["fy1EpsRevisionYield3m", "epsRevisionBreadth3m"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60,"minimumAnalystsAtBothEndpoints":3,"maximumCurrentSnapshotAgeDays":7,"baselineDateToleranceDays":7},
+      "sectorTreatment": "Industry then sector then universe normalization; no invented classification.",
+      "missingDataPolicy": "Without licensed immutable PIT consensus snapshots the entire factor is UNAVAILABLE; no proxy and no factor-weight redistribution.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation; breadth is bounded and not winsorized.",
+      "pitRequirements": "Same fiscal-period identity; actual provider publication timestamp; immutable current and baseline snapshots; corporate-action-adjusted per-share estimates; never reconstruct from today's history.",
+      "updateFrequency": "Event-driven after a valid provider snapshot; nightly score snapshot only when dependency changed.",
+      "interpretation": "Higher means improving analyst expectations, not a restatement signal or recommendation.",
+      "readiness": "BLOCKED_EXTERNAL",
+      "blocker": "No licensed, certified historical PIT analyst-consensus source is present."
+    },
+    "risk": {
+      "label": "Risk",
+      "purpose": "Historical market risk; a higher score always means lower observed risk.",
+      "weight": 0.05,
+      "components": [
+        {"id":"realizedVolatility252d","weight":0.35,"input":"annualized daily total-return volatility","window":"252 sessions","direction":"lower"},
+        {"id":"downsideVolatility252d","weight":0.25,"input":"annualized volatility of negative daily returns","window":"252 sessions","direction":"lower"},
+        {"id":"maxDrawdown252d","weight":0.25,"input":"peak-to-trough total-return drawdown","window":"252 sessions","direction":"lower"},
+        {"id":"beta252d","weight":0.15,"input":"covariance with certified benchmark/benchmark variance","window":"252 sessions","direction":"lower"}
+      ],
+      "mandatory": ["realizedVolatility252d"],
+      "minimumDataRequirements": {"minimumComponents":3,"minimumOriginalWeight":0.60,"minimumValidReturns":240,"minimumAlignedBenchmarkReturnsForBeta":240},
+      "sectorTreatment": "Industry then sector then universe normalization; no invented classification.",
+      "missingDataPolicy": "Insufficient or unaligned return history is null, never zero; within-factor renormalization is disclosed.",
+      "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
+      "pitRequirements": "Only final total-return bars available before scoreCutoff and an aligned certified benchmark may be used.",
+      "updateFrequency": "After every completed EOD session.",
+      "interpretation": "Higher means lower observed historical market risk, not safety or a forecast.",
+      "readiness": "PARTIAL"
+    }
+  },
+  "universe": {
+    "scoringLevel": "issuer",
+    "requirements": ["canonical Company/Security Master identity", "product-eligible active US common equity or accepted ADR", "deterministic primary security per issuer", "USD quote", "market capitalization >= 300000000 USD", "60-session average dollar volume >= 5000000 USD", "at least 252 valid market sessions"],
+    "exclusions": ["warrants", "rights", "units", "preferred shares", "test instruments", "unresolved identity"],
+    "historicalMembershipAsOfCutoff": true
+  },
+  "normalization": {
+    "pipeline": ["canonical identity and as-of membership", "PIT observation selection", "unit/period/denominator/price-basis validation", "applicability", "preserve legitimate negatives", "invalid/nonfinite to null", "2/98 winsorization", "deterministic midrank percentiles", "factor score", "composite and universe percentile"],
+    "winsorization": {"lowerPercentile":2,"upperPercentile":98,"separatePeerAndUniverse":true,"countsAndBinariesExcluded":true},
+    "peerFallback": [{"level":"industry","minimumValidIssuers":20},{"level":"sector","minimumValidIssuers":40},{"level":"universe","minimumValidIssuers":200}],
+    "peerBlend": {"peer":0.70,"universe":0.30},
+    "universeOnlyFallback": {"allowed":true,"confidencePenaltyRequired":true},
+    "unknownClassificationPolicy": "Do not invent a classification; use documented universe fallback only when its minimum size is met."
+  },
+  "score": {
+    "factorFormula": "sum(componentWeight*componentScore)/sum(availableComponentWeight)",
+    "compositeFormula": "0.10*quality+0.15*growth+0.25*momentum+0.15*value+0.15*profitability+0.15*revisions+0.05*risk",
+    "quantScore": "deterministic percentile rank of compositeScore in eligible score universe",
+    "minimumWeightedComponentCoverage": 0.80,
+    "semantics": "Relative rank, not a probability, target price or recommendation.",
+    "ratingBands": [{"min":90,"label":"Top 10%"},{"min":75,"label":"Above average"},{"min":45,"label":"Average range"},{"min":25,"label":"Below average"},{"min":0,"label":"Bottom quartile"}]
+  },
+  "confidence": {
+    "formulaWeights": {"coverage":0.50,"freshness":0.20,"peerQuality":0.15,"historyDepth":0.10,"provenance":0.05},
+    "bands": [{"min":90,"label":"high"},{"min":75,"label":"medium"},{"min":60,"label":"low"},{"min":0,"label":"insufficient"}],
+    "notSuccessProbability": true
+  },
+  "temporal": {
+    "currentMaterialization": "nightly only if a dependency changed",
+    "canonicalHistory": "immutable weekly snapshot using the final completed session",
+    "eventSnapshots": "optional after material filing or large valid revision; never replace weekly history",
+    "scoreMomentum": {"velocityDays":[30,60],"accelerationDays":30,"factorVelocity":true},
+    "snapshotIdentityIncludes": ["methodology hash", "universe hash", "data snapshot hashes"]
+  },
+  "overlapControls": {
+    "uniqueComponentOwnership": true,
+    "prohibitFcfYieldAndPriceToFcfTogether": true,
+    "qualityProfitabilityReviewThresholdAbsoluteSpearman": 0.75,
+    "reviewWindowSnapshots": 24,
+    "automaticWeightChanges": false,
+    "weightOptimizationAgainstProductEvidenceBacktest": false
+  },
+  "knownGates": [
+    "licensed historical PIT analyst-consensus snapshots",
+    "certified broad-market total-return benchmark",
+    "historical PIT universe membership and classifications",
+    "complete corporate-action semantics",
+    "PIT shares and enterprise-value inputs",
+    "industry templates for banks, insurers and REITs",
+    "broad component coverage and cross-sectional validation"
+  ]
+}
