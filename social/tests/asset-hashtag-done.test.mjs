@@ -239,3 +239,27 @@ test("AH12 · Er rechnet die Schlange nicht zum zweiten Mal", () => {
   assert.equal((ohneKommentare.match(/await baue\(/g) || []).length, 1);
   assert.match(ohneKommentare, /projektion\.activeCount/);
 });
+
+test("AH13 · Der Vergleich mit main holt main, statt ihn vorauszusetzen", () => {
+  /* In einem CI-Checkout (fetch-depth 1, ein Zweig) gibt es
+     `origin/main` erst nach einem fetch. Die erste Fassung fragte in
+     zwei Bedingungen ohne fetch und meldete UNGEPRUEFT — eine Grenze,
+     die es nicht gab.
+
+     Gemessen wird am Ergebnis: die drei Bedingungen, die gegen main
+     vergleichen, duerfen hier nicht an "origin/main nicht
+     feststellbar" scheitern. */
+  for (const id of ["CONTENT_FALLBACK_LADDER_UNCHANGED",
+                    "MANUAL_ORCHESTRATOR_RUN_UNCHANGED",
+                    "IN_MAIN_INTEGRIERT"]) {
+    const c = bedingung(id);
+    assert.ok(c, "Der Bericht meldet " + id + " nicht.");
+    assert.doesNotMatch(c.satz, /nicht feststellbar/,
+      id + " hat main nicht geholt: " + c.satz);
+  }
+  /* Und genau EINMAL geholt: drei fetches je Lauf waeren dreimal
+     dieselbe Frage ans Netz. */
+  const ohneKommentare = quelle
+    .replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  assert.equal((ohneKommentare.match(/git\("fetch"/g) || []).length, 1);
+});

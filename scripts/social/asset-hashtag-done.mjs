@@ -91,6 +91,32 @@ function git(...a) {
 }
 
 /* -------------------------------------------------------------------
+   DER STAND VON MAIN — EINMAL GEHOLT, DANN GEMERKT
+
+   Drei Bedingungen vergleichen gegen main. In einem CI-Checkout
+   (fetch-depth 1, ein Zweig) gibt es `origin/main` erst NACH einem
+   fetch - und ohne ihn haetten zwei davon UNGEPRUEFT gemeldet, obwohl
+   die Antwort zu holen gewesen waere. Ungeprueft aus Bequemlichkeit
+   ist keine Grenze der Messung, sondern eine verpasste.
+   ------------------------------------------------------------------- */
+let __main;
+function hauptstand() {
+  if (__main !== undefined) return __main;
+  git("fetch", "origin", "main");
+  __main = git("rev-parse", "origin/main");
+  return __main;
+}
+
+/** Die Dateien, die dieser Stand gegenueber main veraendert. */
+function geaendertGegenMain() {
+  const basis = hauptstand();
+  if (!basis) return null;
+  const roh = git("diff", "--name-only", basis, "HEAD");
+  if (roh === null) return null;
+  return roh.split("\n").filter((z) => z.trim().length);
+}
+
+/* -------------------------------------------------------------------
    DIE EINE GRUNDLAGE: DIE ECHTE PROJEKTION, EINMAL GEBAUT
 
    Alles Weitere liest daraus. Zwei Rechenwege fuer denselben Stand
@@ -495,12 +521,10 @@ function nichtVeroeffentlicht() {
 
 /** Die Leiter ist unveraendert geblieben (§20). */
 function leiterUnveraendert() {
-  const basis = git("rev-parse", "origin/main");
-  if (!basis) {
+  const geaendert = geaendertGegenMain();
+  if (geaendert === null) {
     return { zustand: ZUSTAND.UNGEPRUEFT, satz: "origin/main nicht feststellbar." };
   }
-  const geaendert = (git("diff", "--name-only", basis, "HEAD") || "")
-    .split("\n").filter((z) => z.trim().length);
   const beruehrt = geaendert.filter((f) =>
     /content-ladder\.js|ladder-in-cycle|content-cadence\.js/.test(f));
   return { zustand: beruehrt.length === 0 ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
@@ -511,12 +535,10 @@ function leiterUnveraendert() {
 
 /** JETZT PRUEFEN ist unveraendert geblieben (§20). */
 function manuellerLaufUnveraendert() {
-  const basis = git("rev-parse", "origin/main");
-  if (!basis) {
+  const geaendert = geaendertGegenMain();
+  if (geaendert === null) {
     return { zustand: ZUSTAND.UNGEPRUEFT, satz: "origin/main nicht feststellbar." };
   }
-  const geaendert = (git("diff", "--name-only", basis, "HEAD") || "")
-    .split("\n").filter((z) => z.trim().length);
   const beruehrt = geaendert.filter((f) => /run-lease\.js|manual-run/.test(f));
   const laeuft = manuellerLauf();
   const ok = beruehrt.length === 0 && laeuft.zustand === ZUSTAND.ERFUELLT;
@@ -549,8 +571,7 @@ function ausBeleg(feld, satzBauer) {
 
 function inMain() {
   const kopf = git("rev-parse", "HEAD");
-  git("fetch", "origin", "main");
-  const main = git("rev-parse", "origin/main");
+  const main = hauptstand();
   if (!kopf || !main) {
     return { zustand: ZUSTAND.UNGEPRUEFT, satz: "main ist nicht feststellbar." };
   }
