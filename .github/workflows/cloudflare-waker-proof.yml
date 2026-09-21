@@ -93,6 +93,14 @@ jobs:
       # 3. Zuhoeren. Jeder Cron-Takt schreibt genau ein Ereignis.
       #    `timeout` beendet den Strom kontrolliert; 124 ist dabei der
       #    Erfolgsfall, kein Fehler.
+      #
+      #    ERSTER ANLAUF, ERSTER FEHLER: hier stand `--format=json`, und
+      #    ausgegeben wurde trotzdem das Klartextformat. Der Parser sah
+      #    108 Zeilen und verstand keine - gemeldet wurde nur die Zahl
+      #    108. Eine Zahl ohne Probe ist kein Befund. Deshalb wird jetzt
+      #    immer ein Ausschnitt gedruckt, und gelesen wird formatfrei:
+      #    gesucht werden die Ereignisnamen, die der Wecker selbst
+      #    schreibt - die stehen in beiden Formaten drin.
       - name: Drei Takte mithoeren
         working-directory: worker-waker
         env:
@@ -100,7 +108,7 @@ jobs:
         run: |
           echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${{ inputs.minuten }} Minuten."
           set +e
-          timeout "${{ inputs.minuten }}m" npx --yes wrangler@4 tail --format=json \
+          timeout "${{ inputs.minuten }}m" npx --yes wrangler@4 tail --format json \
             > /tmp/tail-roh.txt 2>/tmp/tail-fehler.txt
           CODE=$?
           set -e
@@ -111,53 +119,69 @@ jobs:
           # Maskieren, bevor irgendetwas gedruckt wird.
           sed -E 's/gh[pousr]_[A-Za-z0-9]+/<maskiert>/g; s/[A-Za-z0-9+\/=]{60,}/<maskiert>/g' \
             /tmp/tail-roh.txt > /tmp/tail.txt
-          echo "Roh-Ereignisse: $(wc -l < /tmp/tail.txt)"
+          echo "Roh-Zeilen: $(wc -l < /tmp/tail.txt)"
+          echo ''
+          echo '--- Probe der ersten 25 Zeilen (maskiert) ---'
+          head -25 /tmp/tail.txt | cut -c1-240
+          echo '--- Ende der Probe ---'
 
       - name: Was der Wecker gesagt hat
         id: urteil
         run: |
+          set -o pipefail   # sonst gewinnt tee, und die Pruefung kann nicht durchfallen
           node -e '
             const fs = require("node:fs");
-            const zeilen = fs.readFileSync("/tmp/tail.txt","utf8").split("\n").filter(Boolean);
-            const takte = [];
-            for (const z of zeilen) {
-              let e; try { e = JSON.parse(z); } catch (x) { continue; }
-              const zeit = new Date(e.eventTimestamp || Date.now()).toISOString().slice(11,19);
-              const art = e.event && e.event.cron ? "cron " + e.event.cron : (e.event && e.event.request ? "http" : "?");
-              const meldungen = [];
-              for (const l of (e.logs || [])) {
-                for (const m of (l.message || [])) {
-                  if (typeof m !== "string") continue;
-                  try { meldungen.push(JSON.parse(m)); } catch (x) { meldungen.push({ ereignis: m }); }
-                }
-              }
-              if (art.startsWith("cron")) takte.push({ zeit, art, outcome: e.outcome, meldungen });
-            }
-            console.log("| Uhrzeit (UTC) | Ausloeser | Ergebnis | Ereignisse |");
-            console.log("|---|---|---|---|");
-            for (const t of takte) {
-              console.log("| " + t.zeit + " | " + t.art + " | " + t.outcome + " | " +
-                          t.meldungen.map((m) => "`" + m.ereignis + "`").join(" · ") + " |");
-            }
-            const alle = takte.flatMap((t) => t.meldungen.map((m) => m.ereignis));
-            const schlecht = alle.filter((e) => ["keinSchluessel","keineAppId","keinRepo",
-              "schluesselUnlesbar","signaturFehlgeschlagen","keineInstallation",
-              "keinZugangstoken","weckenFehlgeschlagen"].includes(e));
-            const gut = alle.filter((e) => ["geweckt","bereitsWach"].includes(e));
+            const roh = fs.readFileSync("/tmp/tail.txt", "utf8");
+
+            /* Formatfrei lesen. Der Wecker schreibt je Takt eine Zeile
+               JSON mit dem Feld "ereignis" - egal ob wrangler sie als
+               JSON-Ereignis verpackt oder im Klartext durchreicht,
+               dieser Bestandteil steht drin. */
+            const NAMEN = ["geweckt","bereitsWach","lageUnbekannt","installationErmittelt",
+                           "ausgeliefert","auslieferungLaeuft","auslieferungLageUnbekannt"];
+            const FEHLER = ["keinSchluessel","keineAppId","keinRepo","schluesselUnlesbar",
+                            "signaturFehlgeschlagen","keineInstallation","keinZugangstoken",
+                            "weckenFehlgeschlagen","auslieferungFehlgeschlagen"];
+
+            /* Im JSON-Format steckt die Zeile des Weckers als
+               escapter String IN einem JSON-Feld: \"ereignis\". Erst
+               entschaerfen, dann suchen - sonst findet die Suche nur
+               das Klartextformat und meldet beim anderen null Treffer,
+               ohne dass jemand merkt warum. */
+            const flach = roh.replace(/\\"/g, "\"");
+            const gefunden = [];
+            const re = /"ereignis"\s*:\s*"([A-Za-z]+)"/g;
+            let m;
+            while ((m = re.exec(flach)) !== null) gefunden.push(m[1]);
+
+            /* Takte zaehlen: jede Zeile, die einen Cron-Ausloeser nennt.
+               Beide Formate nennen ihn - als "cron" im JSON oder als
+               "scheduled at" im Klartext. */
+            const taktZeilen = roh.split("\n").filter((z) =>
+              /"cron"\s*:/.test(z) || /scheduled at/i.test(z) || /\bTrigger\b.*cron/i.test(z));
+
+            console.log("Ereignisse des Weckers: " + (gefunden.length ? gefunden.join(", ") : "keine"));
+            console.log("Zeilen mit Cron-Ausloeser: " + taktZeilen.length);
+            for (const z of taktZeilen.slice(0, 10)) console.log("  " + z.slice(0, 200));
+
+            const schlecht = gefunden.filter((e) => FEHLER.includes(e));
+            const gut = gefunden.filter((e) => NAMEN.includes(e));
+            const takte = Math.max(taktZeilen.length,
+                                   gefunden.filter((e) => e === "geweckt" || e === "bereitsWach").length);
+
             console.log("");
-            console.log("Cron-Takte gehoert: " + takte.length);
-            console.log("davon in Ordnung:   " + gut.length + "  (" +
-                        alle.filter((e)=>e==="geweckt").length + " geweckt, " +
-                        alle.filter((e)=>e==="bereitsWach").length + " bereits wach)");
-            console.log("Fehlerereignisse:   " + schlecht.length +
+            console.log("Takte:            " + takte);
+            console.log("in Ordnung:       " + gut.length + "  (" + gut.join(", ") + ")");
+            console.log("Fehlerereignisse: " + schlecht.length +
                         (schlecht.length ? "  -> " + schlecht.join(", ") : ""));
-            if (/PRIVATE KEY/.test(fs.readFileSync("/tmp/tail.txt","utf8"))) {
+
+            if (/PRIVATE KEY/.test(roh)) {
               console.error("NICHT BESTANDEN: Schluesselmaterial im Protokoll."); process.exit(1);
             }
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, "takte=" + takte.length + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "takte=" + takte + "\n");
             fs.appendFileSync(process.env.GITHUB_OUTPUT, "fehler=" + schlecht.length + "\n");
             if (schlecht.length) { console.error("NICHT BESTANDEN: der Wecker meldet Fehler."); process.exit(1); }
-            if (takte.length < 3) { console.error("NICHT BESTANDEN: weniger als drei Cron-Takte gehoert."); process.exit(1); }
+            if (takte < 3) { console.error("NICHT BESTANDEN: weniger als drei Cron-Takte gehoert."); process.exit(1); }
             console.log("BESTANDEN");
           ' | tee /tmp/urteil.txt
 
