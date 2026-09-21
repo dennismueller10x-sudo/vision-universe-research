@@ -2349,6 +2349,11 @@ export const __internals = {
   configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
   pruefeProjektion, handleQueueIngest, QUEUE_VERSION, QUEUE_SOURCE, QUEUE_MAX_BYTES,
   publishCore, handleDecisions,
+  /* Fuer den kanonischen Regressionsfall vom 21.09.: der Nachweis
+     fuehrt DIESE Funktionen vor, nicht eine Nachbildung von ihnen.
+     Ein Vertrag, der gegen eine zweite Implementierung geprueft wird,
+     beweist die zweite. */
+  pruefeBild, jpegMasse,
   handleConnect, handleCallback, handleStatus, handleVerify, handleDisconnect,
   MIN_ADMIN_KEY_LENGTH
 };
