@@ -261,3 +261,42 @@ test("CI20 · Eine fehlende Ebene sperrt nicht, ein interner Begriff schon", () 
   assert.equal(leck.dicht, false);
   assert.match(CONTENT_QUELLE, /if \(!ebenen\.dicht\)/);
 });
+
+/* ------------------------------------------------------------------ */
+/* EIN SYSTEMSCHLUESSEL IST KEIN NAME                                  */
+/* ------------------------------------------------------------------ */
+
+test("CI21 · Ein Schluessel wird an seiner Form erkannt, nicht an einer Liste", () => {
+  /* "Quelle: vu.technical" stand unter einem fertig gezeichneten
+     Bild. Eine Wortliste haette nur die Schluessel gekannt, die
+     jemand aufgeschrieben hat - der naechste neue waere wieder
+     durchgerutscht. */
+  assert.equal(CI.istSystemschluessel("vu.technical"), true);
+  assert.equal(CI.istSystemschluessel("vu.sentiment"), true);
+  assert.equal(CI.istSystemschluessel("trend_structure.raw"), true);
+});
+
+test("CI22 · Ein oeffentlicher Name ist kein Schluessel", () => {
+  /* Die Gegenrichtung ist die wichtigere: ein Tor, das richtige
+     Quellen abweist, hat in diesem Projekt schon drei fertige Bilder
+     verhindert. */
+  ["Bloomberg", "Tiingo", "Vision Universe", "S&P 500", "Reuters",
+   "Deutsche Boerse", "Stooq"].forEach((n) => {
+    assert.equal(CI.istSystemschluessel(n), false, n + " gilt als Schluessel.");
+  });
+  assert.equal(CI.istSystemschluessel(""), false);
+  assert.equal(CI.istSystemschluessel(null), false);
+});
+
+test("CI23 · Im Satz wird der Schluessel gefunden, der Satzpunkt nicht", () => {
+  assert.deepEqual(CI.schluesselImText("Quelle: vu.technical"), ["vu.technical"]);
+  assert.deepEqual(CI.schluesselImText("Quelle: Vision Universe"), []);
+  /* Ein Satz, der auf einen Schluessel endet: der Punkt gehoert zum
+     Satz. Ohne diese Unterscheidung waere "vu.technical." ein anderer
+     Begriff als "vu.technical" - und einer davon unentdeckt. */
+  assert.deepEqual(CI.schluesselImText("Gemessen von vu.technical."),
+    ["vu.technical"]);
+  /* Und ein gewoehnlicher deutscher Satz loest nichts aus. */
+  assert.deepEqual(
+    CI.schluesselImText("So weit lagen sie seit 1999 nicht auseinander."), []);
+});

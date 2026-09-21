@@ -123,7 +123,16 @@ const richtung = VisualIntelligence.deriveDirection({
     family: rahmen.family, entities: rahmen.publicEntityNames || [] },
   audienceFrame: rahmen,
   story: { thesis: pkg.thesis, hook: pkg.hook, claims: pkg.claims || [] },
-  visualData: { source: QUELLEN[0].source },
+  /* Die Bildrichtung braucht dieselben Daten wie die Komposition -
+     FORMEN.COMPARISON verlangt `peers`. Sie hier wegzulassen hiesse,
+     die Richtung an etwas zu messen, das es im Bild gar nicht gibt. */
+  visualData: {
+    source: QUELLEN[0].source,
+    peers: pkg.visualComparison
+      ? pkg.visualComparison.peers.map(function (p) {
+          return { label: p.label, value: p.value, highlight: p.highlight }; })
+      : []
+  },
   oneSecondMessage: pkg.hook
 });
 const richtungBereit = VisualIntelligence.ready(richtung);
@@ -134,7 +143,36 @@ pkg.visualDirectionMissing = richtungBereit.missing;
 /* Das Bild - derselbe Renderer, dieselben Tore. */
 mkdirSync(OUT, { recursive: true });
 const bildPfad = join(OUT, "beitrag.jpg");
-const plan = Renderer.plan(pkg, {});
+
+/* -------------------------------------------------------------------
+   ZWEI WEGE ZU EINEM BILD - UND DER RICHTIGE FUER DIESE EVIDENZ
+
+   Der Kartenpfad zeichnet EINEN Namen und EINE Zahl. Diese Evidenz
+   traegt zwei Werte auf einer Achse; eine Karte muesste einen davon
+   weglassen, und ihn hineinzusetzen haette ihn unter dem falschen
+   Namen gezeigt.
+
+   Der Kompositionspfad kann es: visual-composition.comparison()
+   fuehrt jeden Wert mit SEINEM Gegenstand, und svgBalken zeichnet
+   beide als beschriftete Balken. Genau diesen Weg geht auch der
+   Zyklus - der Nachweis baut keinen eigenen.
+   ------------------------------------------------------------------- */
+const VisualComposition = require(
+  join(ROOT, "social/engines/visual-composition.js"));
+
+const vergleich = pkg.visualComparison;
+const komposition = vergleich
+  /* Die Einheit reist mit: ohne sie muesste der Satz unter der Grafik
+     sich eine ausdenken oder den Abstand verschweigen. */
+  ? VisualComposition.comparison({ peers: vergleich.peers,
+      einheit: vergleich.einheit || null }) : null;
+
+const plan = (komposition && komposition.ok)
+  ? Renderer.planKomposition(pkg, komposition, {
+      entitaet: vergleich.metrik,
+      aussage: VisualComposition.aussage(komposition, vergleich.metrik),
+      quelle: QUELLEN[0].source })
+  : Renderer.plan(pkg, {});
 if (!plan.ok) {
   console.error("Kein zeichenbarer Plan: " + plan.message);
   process.exit(4);
@@ -204,10 +242,41 @@ const befunde = [];
 /* ---- 3. Die Visual Grammar hat geurteilt ------------------------- */
 {
   const g = plan.grammatik;
-  befunde.push(befund("VISUAL_GRAMMAR", "§16/§17", !!(g && g.ok),
-    g ? (g.familie ? "Familie " + g.familie + ": " + g.erklaerung
-      : g.erklaerung) : "Kein Grammatik-Befund am Plan.",
-    g || null));
+  /* -------------------------------------------------------------------
+     §16 UND §17 SIND ZWEI FRAGEN
+
+     Bisher zaehlte hier nur das Urteil ueber die Familie. Das Bild
+     bestand - und trug keinen Atlas. Die vier Atlas-Rollen aus §17
+     waren ein vollstaendiges Modell ohne Produktionsweg: geprueft
+     wurde eine Figur, die nie gezeichnet wurde. Ein Modell, das
+     nichts verbietet, weil nie etwas vorkommt, ist ein Invariant, das
+     durch Unmoeglichkeit erfuellt ist.
+
+     Deshalb zwei Bedingungen unter EINEM Befund - §53 nennt eine
+     Eigenschaft des Bildes, nicht zwei Haken: die Grammatik urteilt,
+     UND die Figur ist auf der Seite gemessen worden, in dem
+     Flaechenband ihrer Rolle.
+     ------------------------------------------------------------------- */
+  const figur = ((gerendert.messung && gerendert.messung.figuren) || [])
+    .find((f) => f && f.figur === "ATLAS");
+  const band = plan.atlas
+    ? Grammar.ATLAS_ROLLEN[plan.atlas.rolle] : null;
+  const anteil = figur ? figur.flaeche / (gerendert.breite * gerendert.hoehe) : null;
+  const atlasOk = !!(band && anteil !== null &&
+    anteil >= band.flaecheMin && anteil <= band.flaecheMax);
+  befunde.push(befund("VISUAL_GRAMMAR", "§16/§17", !!(g && g.ok) && atlasOk,
+    (g ? (g.familie ? "Familie " + g.familie + ": " + g.erklaerung
+      : g.erklaerung) : "Kein Grammatik-Befund am Plan.") + " " +
+    (atlasOk
+      ? "Atlas als " + plan.atlas.rolle + " gemessen: " + figur.breite + "x" +
+        figur.hoehe + " Pixel, " + Math.round(anteil * 1000) / 10 + " % der Flaeche."
+      : plan.atlas
+        ? "Atlas ist als " + plan.atlas.rolle + " geplant, aber " +
+          (figur ? "mit " + Math.round(anteil * 1000) / 10 +
+            " % ausserhalb seines Bandes gezeichnet." : "im Bild nicht gemessen.")
+        : "Kein Atlas im Bild (§17)."),
+    { grammatik: g || null, atlas: plan.atlas || null, gemessen: figur || null,
+      flaechenAnteil: anteil }));
 }
 
 /* ---- 4. VU CI: die Farben sind die der Marke --------------------- */
@@ -254,9 +323,31 @@ const befunde = [];
 /* ---- 7. Social-first: kein internes Signal im Text --------------- */
 {
   const v = pkg.validation && pkg.validation.audienceSeparation;
-  befunde.push(befund("SOCIAL_FIRST", "§7/§8", !!(v && v.passed),
-    v ? v.explanation : "Die Trennung der Ebenen wurde nicht geprueft.",
-    v || null));
+  /* -------------------------------------------------------------------
+     DER TEXT IST NICHT NUR DIE CAPTION
+
+     Dieser Befund las bis hierher ausschliesslich das Paket. Unter
+     der fertigen Grafik stand derweil "Quelle: vu.technical" - ein
+     Schluessel aus unserer Maschine, auf einem oeffentlichen Bild,
+     an einem Befund vorbei, der SOCIAL_FIRST heisst.
+
+     Geprueft werden jetzt auch die Zeilen, die das Bild WIRKLICH
+     traegt - gemessen, nicht aus dem Plan gelesen. Ein Schluessel hat
+     eine Form: klein geschrieben, durch Punkte getrennt, ohne
+     Leerzeichen. Was so aussieht, ist kein Name, den jemand kennt.
+     ------------------------------------------------------------------- */
+  const SCHLUESSELFORM = /(^|\s)[a-z0-9]+(?:[._][a-z0-9]+)+(\s|$|\.)/;
+  const bildzeilen = ((gerendert.messung && gerendert.messung.texte) || [])
+    .map((t) => String(t.text || ""));
+  const verdaechtig = bildzeilen.filter((z) => SCHLUESSELFORM.test(z));
+  const sauber = verdaechtig.length === 0;
+  befunde.push(befund("SOCIAL_FIRST", "§7/§8", !!(v && v.passed) && sauber,
+    (v ? v.explanation : "Die Trennung der Ebenen wurde nicht geprueft.") +
+    " " + (sauber
+      ? bildzeilen.length + " gemessene Bildzeilen, keine davon traegt " +
+        "einen Systemschluessel."
+      : "Auf dem Bild steht ein Systemschluessel: " + verdaechtig.join(" | ")),
+    { paket: v || null, bildzeilen, verdaechtig }));
 }
 
 /* ---- 8. Der Hook ist gewaehlt, nicht entstanden ------------------ */

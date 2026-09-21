@@ -2465,7 +2465,14 @@ async function main() {
     const richtungBereit = VisualIntelligence.ready(richtung);
 
     const kompo = (!mitgebracht && lage)
-      ? VisualComposition.compose(pkg.visualType, lage.composition) : null;
+      ? VisualComposition.compose(pkg.visualType,
+        /* Die Einheit der Achse gehoert zur Komposition: der Satz
+           unter einem Vergleich nennt den Abstand, und ohne Einheit
+           muesste er sich eine ausdenken. */
+        Object.assign({}, lage.composition,
+          pkg.visualComparison && pkg.visualComparison.einheit
+            ? { einheit: pkg.visualComparison.einheit } : {}))
+      : null;
 
     /* Die Richtung reist mit dem Paket - sonst waere sie eine
        Zwischenrechnung, die nur in diesem Lauf existiert, und das

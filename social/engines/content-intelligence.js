@@ -322,8 +322,51 @@
     };
   }
 
+  /* -------------------------------------------------------------------
+     EIN SYSTEMSCHLUESSEL IST KEIN NAME
+
+     "Quelle: vu.technical" stand unter einer fertig gezeichneten
+     Grafik. `vu.technical` ist unser Schluessel fuer eine Datenreihe;
+     ihn abzudrucken heisst, einem Leser den Innenraum unserer Maschine
+     zu zeigen - genau das, was §7/§8 trennen.
+
+     Die Unterscheidung ist eine FORM, keine Wortliste. Ein Schluessel
+     ist durchgehend klein geschrieben, hat keine Leerzeichen und
+     besteht aus mindestens zwei durch Punkt oder Unterstrich
+     getrennten Teilen. "Bloomberg", "Tiingo", "Vision Universe" sind
+     Namen und fallen nicht darunter; sie brauchen auch keinen Eintrag
+     in einem Register, um oeffentlich zu sein.
+
+     Eine Wortliste haette hier nicht getaugt: sie kennt nur die
+     Schluessel, die jemand aufgeschrieben hat, und der naechste neue
+     waere wieder durchgerutscht.
+     ------------------------------------------------------------------- */
+  var SCHLUESSEL_FORM = /^[a-z0-9]+(?:[._][a-z0-9]+)+$/;
+
+  function istSystemschluessel(s) {
+    var t = String(s === null || s === undefined ? "" : s).trim();
+    return t !== "" && SCHLUESSEL_FORM.test(t);
+  }
+
+  /** Dieselbe Form, irgendwo in einem Satz. Fuer gemessene Bildzeilen. */
+  function schluesselImText(s) {
+    var t = String(s === null || s === undefined ? "" : s);
+    var treffer = [];
+    t.split(/[\s,;()"']+/).forEach(function (w) {
+      /* Ein Satzpunkt am Ende gehoert zum Satz, nicht zum Wort. */
+      var wort = w.replace(/\.$/, "");
+      if (istSystemschluessel(wort) && treffer.indexOf(wort) === -1) {
+        treffer.push(wort);
+      }
+    });
+    return treffer;
+  }
+
   var api = {
     EBENEN: EBENEN,
+    SCHLUESSEL_FORM: SCHLUESSEL_FORM,
+    istSystemschluessel: istSystemschluessel,
+    schluesselImText: schluesselImText,
     EBENEN_IDS: EBENEN_IDS,
     REIHENFOLGE: REIHENFOLGE,
     BEFUND: BEFUND,

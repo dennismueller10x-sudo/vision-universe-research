@@ -12,7 +12,8 @@ import { existsSync, mkdirSync, rmSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { plan, planKomposition, render, messeSeite, seite, textGroessen,
-  chromiumPfad, ladeSchrift } from "../../scripts/social/render-asset.mjs";
+  hookEbeneAus, seiteKomposition, atlasKasten, chromiumPfad,
+  ladeSchrift } from "../../scripts/social/render-asset.mjs";
 
 const require = createRequire(import.meta.url);
 const S = require("../engines/scroll-stop.js");
@@ -258,17 +259,82 @@ test("SS20 · Das Tor steht im Weg: ohne Hook entsteht kein Bild", nurMitChromiu
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+const KOMPO = { ok: true, kind: "CHART", points: [], labels: { start: "A", end: "B" },
+  changePercent: 12.3, explanation: "270 Punkte." };
+const KOMPO_EBENEN = { entitaet: "AAPL", aussage: "Seit 15.08.2025: +12,3 %.",
+  quelle: "Stooq" };
+
 test("SS21 · Der Kompositionspfad setzt die Hook in die Kopfzeile, nicht den Beleg", () => {
-  const kompo = { ok: true, kind: "CHART", points: [], labels: { start: "A", end: "B" },
-    changePercent: 12.3, explanation: "270 Punkte." };
-  const p = planKomposition(
-    paket({ visualType: "CHART" }), kompo,
-    { entitaet: "AAPL", aussage: "Seit 15.08.2025: +12,3 %.", quelle: "Stooq" });
+  const pkg = paket({ visualType: "CHART" });
+  pkg.visualBrief.textLayers = [
+    { role: "HOOK", text: "So weit lagen sie seit 1999 nicht auseinander." }];
+  const p = planKomposition(pkg, KOMPO, KOMPO_EBENEN);
   assert.equal(p.ok, true, p.message);
   assert.equal(p.ebenen.aussage,
     "So weit lagen sie seit 1999 nicht auseinander.");
   assert.equal(p.ebenen.beleg, "Seit 15.08.2025: +12,3 %.");
   assert.equal(p.ebenenHerkunft.aussage, "visualBrief.textLayers");
+});
+
+test("SS21b · Eine Textebene ohne Rolle HOOK fuehrt das Bild nicht", () => {
+  /* Der Produktnachweis hat es gezeigt: oben stand "Lagebeschreibung,
+     keine Prognose." - die Zeile FUERS Bild, deren eigener Kommentar
+     sagt "Nicht die Hook".
+
+     Der Kartenpfad verlangte damals schon `role: "HOOK"`, der
+     Kompositionspfad nahm die erste Ebene mit Text. Zwei Register fuer
+     eine Regel, und korrigiert war nur eines. Dieser Test haelt die
+     zweite Stelle fest: keine Rolle, keine Kopfzeile.
+
+     Ohne die Korrektur stuende hier die Bildzeile und
+     `ebenenHerkunft.aussage` waere "visualBrief.textLayers". */
+  const pkg = paket({ visualType: "CHART" });
+  pkg.visualBrief.textLayers = [{ text: "Lagebeschreibung, keine Prognose." }];
+  const p = planKomposition(pkg, KOMPO, KOMPO_EBENEN);
+  assert.equal(p.ok, true, p.message);
+  assert.equal(p.ebenen.aussage, pkg.hook);
+  assert.equal(p.ebenenHerkunft.aussage, "pkg.hook");
+});
+
+test("SS21c · Auf der Karte gilt dieselbe Regel aus derselben Funktion", () => {
+  const pkg = paket();
+  pkg.visualBrief.textLayers = [{ text: "Lagebeschreibung, keine Prognose." }];
+  assert.equal(hookEbeneAus(pkg), null);
+  const p = plan(pkg);
+  assert.equal(p.ok, true, p.message);
+  assert.equal(p.ebenen.aussage, pkg.hook);
+
+  pkg.visualBrief.textLayers = [{ role: "HOOK", text: "Zwei Indizes, ein Abstand." }];
+  assert.equal(hookEbeneAus(pkg).text, "Zwei Indizes, ein Abstand.");
+});
+
+test("SS21d · Ein Systemschluessel kommt nicht unter die Grafik", () => {
+  /* "Quelle: vu.technical" stand unter einem fertigen Bild. Drei
+     Faelle, und jeder hat eine andere richtige Antwort:
+
+       vu.technical   unser Schluessel MIT Eintrag -> der Name
+       vu.sentiment   unser Schluessel OHNE Eintrag -> kein Bild
+       Bloomberg      ein oeffentlicher Name -> unveraendert
+
+     Der zweite Fall ist der, der frueher durchrutschte; der dritte
+     der, den der erste Entwurf dieses Tors faelschlich abwies. */
+  const bekannt = planKomposition(
+    paket({ visualType: "CHART" }), KOMPO,
+    Object.assign({}, KOMPO_EBENEN, { quelle: "vu.technical" }));
+  assert.equal(bekannt.ok, true, bekannt.message);
+  assert.equal(bekannt.ebenen.quelle, "Vision Universe");
+
+  const mitSchluessel = planKomposition(
+    paket({ visualType: "CHART" }), KOMPO,
+    Object.assign({}, KOMPO_EBENEN, { quelle: "vu.sentiment" }));
+  assert.equal(mitSchluessel.ok, false);
+  assert.equal(mitSchluessel.reason, "unknownSourceName");
+
+  const mitName = planKomposition(
+    paket({ visualType: "CHART" }), KOMPO,
+    Object.assign({}, KOMPO_EBENEN, { quelle: "Bloomberg" }));
+  assert.equal(mitName.ok, true, mitName.message);
+  assert.equal(mitName.ebenen.quelle, "Bloomberg");
 });
 
 test("SS22 · Ohne Hook entsteht im Kompositionspfad gar kein Plan", () => {
@@ -288,4 +354,93 @@ test("SS23 · Die Kopfzeile ist gross genug fuer die Mobilschwelle", () => {
   /* Und auch bei NUMBER_VISUAL, wo sie frueher 40 Pixel mass. */
   assert.ok(textGroessen("NUMBER_VISUAL").aussage / 1350 >=
     Grammar.MOBIL.mindestHoeheAnteil);
+});
+
+/* ------------------------------------------------------------------ */
+/* WAS AUF DEM FERTIGEN BILD STEHT (§16/§17)                          */
+/* ------------------------------------------------------------------ */
+
+const VERGLEICH = {
+  ok: true, kind: "COMPARISON", width: 904, einheit: null,
+  bars: [
+    { label: "S&P 500", value: 21.6, anzeige: "21,6", rank: 1, pixels: 904 },
+    { label: "Russell 2000", value: 13.4, anzeige: "13,4", rank: 2,
+      pixels: 561, highlight: true }],
+  highlightRank: 2, explanation: "2 Werte, Hoechstwert 21.6."
+};
+
+function vergleichsplan() {
+  const pkg = paket({ visualType: "COMPARISON" });
+  pkg.visualBrief.textLayers = [
+    { role: "HOOK", text: "So weit lagen sie seit 1999 nicht auseinander." }];
+  return planKomposition(pkg, VERGLEICH, { entitaet: "KGV",
+    aussage: "S&P 500 liegt um 8,2 vor Russell 2000.", quelle: "vu.technical" });
+}
+
+test("SS24 · Die Balken tragen die Zahl der Quelle, nicht eine gerundete", () => {
+  /* Auf dem Produktnachweis stand "22" und "13". Geprueft wird der
+     gezeichnete Text, nicht die Absicht: was im HTML steht, geht so
+     in den Screenshot. */
+  const p = vergleichsplan();
+  assert.equal(p.ok, true, p.message);
+  const html = seiteKomposition(p, null);
+  assert.match(html, />21,6</);
+  assert.match(html, />13,4</);
+  assert.doesNotMatch(html, />22</);
+  assert.doesNotMatch(html, />13</);
+});
+
+test("SS25 · Atlas steht im Bild, in einer Rolle, die die Familie kennt", () => {
+  /* §17 beschreibt vier Atlas-Rollen mit Flaechenbaendern, brand.js
+     fuehrt den Atlas-Vertrag, visual-grammar.js prueft Rolle gegen
+     Familie - und gezeichnet wurde Atlas nie. Ein Modell, das nichts
+     verbietet, weil der Fall nie vorkommt, ist kein Tor.
+
+     Drei Dinge zusammen, weil einzeln jedes erfuellbar waere, ohne
+     dass eine Figur im Bild steht: eine Rolle im Plan, ein
+     Flaechenanteil in ihrem Band, und das kanonische Asset im
+     Markup. */
+  const p = vergleichsplan();
+  assert.ok(p.atlas, "Der Plan traegt keinen Atlas.");
+  const band = Grammar.ATLAS_ROLLEN[p.atlas.rolle];
+  assert.ok(band, "Die Rolle " + p.atlas.rolle + " steht nicht in §17.");
+  const fam = Grammar.FAMILIEN[p.grammatik.familie];
+  assert.ok(fam.atlasRollen.includes(p.atlas.rolle),
+    "In " + fam.id + " ist " + p.atlas.rolle + " nicht zulaessig.");
+  assert.ok(p.atlas.flaechenAnteil >= band.flaecheMin &&
+    p.atlas.flaechenAnteil <= band.flaecheMax,
+    "Flaechenanteil " + p.atlas.flaechenAnteil + " liegt nicht im Band.");
+  assert.equal(p.atlas.referenceAsset, "assets/atlas.png");
+
+  const html = seiteKomposition(p, null);
+  assert.match(html, /data-vu-figur="ATLAS"/);
+  /* Die Bytes des kanonischen Assets, nicht ein Pfad und kein Nachbau. */
+  assert.ok(html.includes(p.atlasUri.slice(0, 256)),
+    "Das kanonische Atlas-Asset steckt nicht im Markup.");
+});
+
+test("SS26 · Der Atlas-Kasten folgt dem Band der Rolle und dem echten Asset", () => {
+  for (const rolle of ["ATLAS_GUIDE", "ATLAS_OBSERVER", "ATLAS_SIGNATURE"]) {
+    const k = atlasKasten(rolle, 1080, 1350);
+    const band = Grammar.ATLAS_ROLLEN[rolle];
+    assert.ok(k.flaechenAnteil >= band.flaecheMin &&
+      k.flaechenAnteil <= band.flaecheMax, rolle + ": " + k.flaechenAnteil);
+    /* Das Seitenverhaeltnis ist das der Datei, nicht eine hier
+       hinterlegte Zahl - ein zweiter Eintrag koennte driften. */
+    const soll = k.asset.breite / k.asset.hoehe;
+    assert.ok(Math.abs((k.breite / k.hoehe) - soll) < 0.01,
+      rolle + ": verzerrt (" + (k.breite / k.hoehe) + " statt " + soll + ")");
+  }
+});
+
+test("SS27 · Die Figurenmessung ist von der Textmessung getrennt", () => {
+  /* Ein Atlas in der Textliste haette als "andere Flaeche" gezaehlt
+     und die Hook-Dominanz nach §14 rechnerisch geschlagen - ein Tor,
+     das an einer Figur scheitert, misst nicht mehr, was es messen
+     soll. */
+  const p = vergleichsplan();
+  const html = seiteKomposition(p, null);
+  const figur = /data-vu-figur="ATLAS"[^>]*/.exec(html);
+  assert.ok(figur, "Keine Figur im Markup.");
+  assert.doesNotMatch(figur[0], /data-vu-rolle=/);
 });

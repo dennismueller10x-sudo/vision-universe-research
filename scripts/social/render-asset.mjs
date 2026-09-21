@@ -59,6 +59,15 @@ const ScrollStop = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js"));
 const Brand = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/brand.js"));
+/* Wie viele Stellen eine Zahl hat, rechnet die Komposition - die
+   Balkenbeschriftung holt die Antwort von dort, statt sie ein zweites
+   Mal zu bilden. */
+/* Was innen bleibt und was nach draussen darf, entscheidet eine
+   Engine - nicht der Renderer mit einer eigenen Regel. */
+const ContentIntelligence = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/content-intelligence.js"));
+const VisualComposition = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-composition.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -165,6 +174,68 @@ export function logoDatenUri(root) {
     readFileSync(join(root || process.cwd(), LOGO_PFAD)).toString("base64");
 }
 
+/* =====================================================================
+   ATLAS WIRD GEZEICHNET, NICHT NUR MODELLIERT
+
+   §16/§17 beschreiben vier Atlas-Rollen mit Flaechenbaendern, brand.js
+   fuehrt den Atlas-Vertrag, visual-grammar.js prueft Rolle gegen
+   Familie - und auf keinem erzeugten Bild war Atlas je zu sehen. Das
+   Modell war vollstaendig und ohne Produktionsweg: ein Vertrag ueber
+   etwas, das nie stattfand.
+
+   Aufgefallen ist es nicht in einem Test, sondern beim Ansehen des
+   fertigen Bildes. Dasselbe Muster wie beim Logo, das als HTML-Text
+   nachgebaut war: die Regel stand da, die einzige Stelle, an der
+   gezeichnet wird, kannte sie nicht.
+
+   Wie beim Logo gilt: das kanonische Asset, sonst nichts. Kein
+   Textprompt, keine Neuzeichnung, keine Approximation. Erlaubt ist
+   genau `scale` - die Figur wird kleiner, nicht anders.
+   ===================================================================== */
+export const ATLAS_PFAD = Brand.ATLAS_ASSET_PATH;
+
+export function atlasMasse(root) {
+  const d = readFileSync(join(root || process.cwd(), ATLAS_PFAD));
+  return { breite: d.readUInt32BE(16), hoehe: d.readUInt32BE(20), bytes: d.length };
+}
+
+export function atlasDatenUri(root) {
+  return "data:image/png;base64," +
+    readFileSync(join(root || process.cwd(), ATLAS_PFAD)).toString("base64");
+}
+
+/* Welche Rolle der Renderer spielen kann.
+
+   HERO ist ausgeschlossen: als HERO traegt Atlas die AUSSAGE des
+   Bildes, und dieser Renderer zeichnet keine Szene - er setzt eine
+   Figur an den Rand. Eine Rolle zu behaupten, die das Bild nicht
+   einloest, waere genau der Dekorationsfall, den §12 ausschliesst.
+
+   Die Reihenfolge ist eine Vorliebe, keine Rangfolge: anwesend und
+   mitsehend, sonst als Absenderzeichen, sonst fuehrend. Was die
+   gewaehlte Familie nicht zulaesst, kommt nicht vor. */
+const ATLAS_ROLLEN_VORLIEBE = ["ATLAS_OBSERVER", "ATLAS_SIGNATURE", "ATLAS_GUIDE"];
+
+/**
+ * Der Atlas-Kasten zu einer Rolle: Pixel aus dem Flaechenband der
+ * Rolle und dem Seitenverhaeltnis des ECHTEN Assets.
+ *
+ * Der angegebene Flaechenanteil wird aus den gerundeten Pixeln
+ * zurueckgerechnet. Den beabsichtigten Anteil zu melden waere eine
+ * Angabe ueber die Absicht und nicht ueber das Bild.
+ */
+export function atlasKasten(rolle, breite, hoehe, root) {
+  const r = VisualGrammar.ATLAS_ROLLEN[rolle];
+  if (!r) return null;
+  const m = atlasMasse(root);
+  const seite = m.breite / m.hoehe;
+  const ziel = (r.flaecheMin + r.flaecheMax) / 2;
+  const h = Math.round(Math.sqrt((ziel * breite * hoehe) / seite));
+  const b = Math.round(h * seite);
+  return { rolle, breite: b, hoehe: h,
+    flaechenAnteil: (b * h) / (breite * hoehe), asset: m };
+}
+
 /* -------------------------------------------------------------------
    DIE SCHRIFTGROESSEN DES GEZEICHNETEN BILDES
 
@@ -226,11 +297,105 @@ export const MESS_SKRIPT = `<script>
        das Bild ansah. Ein Attribut kann per Konstruktion nicht rendern,
        egal was ein spaeteres Stylesheet tut. */
     document.documentElement.setAttribute("data-vu-messung",JSON.stringify(out));
+    /* Figuren getrennt von Text. Eine Figur hat keine Schriftgroesse
+       und keine Zeilen; sie in dieselbe Liste zu legen hiesse, die
+       Textmessung mit etwas zu fuellen, das kein Text ist. */
+    var figuren=[];
+    var f=document.querySelectorAll("[data-vu-figur]");
+    for(var j=0;j<f.length;j++){
+      var e2=f[j]; var r2=e2.getBoundingClientRect();
+      if(!r2.width||!r2.height) continue;
+      figuren.push({figur:e2.getAttribute("data-vu-figur"),
+        rolle:e2.getAttribute("data-vu-atlas-rolle")||null,
+        flaeche:Math.round(r2.width*r2.height),
+        breite:Math.round(r2.width),hoehe:Math.round(r2.height),
+        oben:Math.round(r2.top),unten:Math.round(r2.bottom),
+        links:Math.round(r2.left),rechts:Math.round(r2.right)});
+    }
+    document.documentElement.setAttribute("data-vu-figuren",JSON.stringify(figuren));
   }
   if(document.fonts&&document.fonts.ready){document.fonts.ready.then(messen);}
   else{messen();}
 })();
 <\/script>`;
+
+/* ---------------------------------------------------------------------
+   WELCHE TEXTEBENE DIE HOOK TRAEGT — EINMAL, NICHT ZWEIMAL
+
+   Diese Regel stand zweimal im Haus: der Kartenpfad verlangte
+   ausdruecklich `role: "HOOK"`, der Kompositionspfad nahm die erste
+   Ebene, die irgendeinen Text trug. Beide Pfade zeichnen dieselbe
+   Kopfzeile, und nur einer war korrigiert - auf dem gezeichneten Bild
+   stand deshalb weiter "Lagebeschreibung, keine Prognose.", der
+   Nachsatz einer These, gross und oben.
+
+   Zwei Register fuer eine Tatsache: genau das Fehlerbild, das dieses
+   Projekt schon bei den Lerndimensionen und beim Quellennamen hatte.
+   Die Regel wohnt ab hier an einer Stelle.
+   --------------------------------------------------------------------- */
+export function hookEbeneAus(pkg) {
+  const ebenen = (pkg && pkg.visualBrief && pkg.visualBrief.textLayers) || [];
+  return ebenen.find((l) => l && l.text && String(l.text).trim() &&
+    String(l.role || l.rolle || "").toUpperCase() === "HOOK") || null;
+}
+
+/* ---------------------------------------------------------------------
+   DER NAME EINER QUELLE IST KEIN SCHLUESSEL
+
+   "Quelle: vu.technical" stand unter einer fertig gezeichneten
+   Grafik. `vu.technical` ist unser Schluessel fuer eine Datenreihe,
+   kein Name, den jemand kennt - ein interner Systembegriff auf einem
+   oeffentlichen Bild.
+
+   Der Kartenpfad bildete den Schluessel schon ab, der
+   Kompositionspfad nicht. Statt die Abbildung ein zweites Mal
+   einzusetzen, entscheidet ab hier EINE Funktion fuer beide Pfade.
+
+   Zwei Schritte, und der zweite war der erste Entwurf nicht:
+
+     1. Steht der Wert in QUELLENNAME, ist er einer UNSERER Schluessel
+        und bekommt seinen oeffentlichen Namen.
+     2. Sonst gilt er als Name - es sei denn, er hat die FORM eines
+        Schluessels.
+
+   Der erste Entwurf wies alles ab, was nicht im Register stand. Das
+   war ein zu weit gebautes Tor: "Bloomberg" ist ein oeffentlicher
+   Name und braucht keinen Eintrag, um einer zu sein. QUELLENNAME ist
+   das Register unserer eigenen Schluessel, nicht das Verzeichnis aller
+   Quellen der Welt - es dafuer zu halten, hat im Test drei richtige
+   Bilder verhindert.
+
+   Was ein Schluessel IST, entscheidet content-intelligence.js an
+   seiner Form. Diese Frage gehoert dorthin, wo innen und aussen
+   getrennt werden, und nicht ein zweites Mal hierher.
+   --------------------------------------------------------------------- */
+export function quellenName(roh) {
+  const text = String(roh === null || roh === undefined ? "" : roh).trim();
+  if (!text) return { ok: false, grund: "leer", name: null };
+  if (QUELLENNAME[text]) return { ok: true, name: QUELLENNAME[text] };
+  if (ContentIntelligence.istSystemschluessel(text)) {
+    return { ok: false, grund: "systemschluessel", name: null };
+  }
+  return { ok: true, name: text };
+}
+
+/* ---------------------------------------------------------------------
+   DIE FIGUR IM MARKUP - EINMAL FUER BEIDE VORLAGEN
+
+   `data-vu-figur` und nicht `data-vu-rolle`: die Messung trennt Text
+   von Figur. Ein Atlas in der Textmessung haette als "andere Flaeche"
+   gezaehlt und die Hook-Dominanz nach §14 rechnerisch geschlagen -
+   ein Tor, das an einer Figur scheitert, misst nicht mehr, was es
+   messen soll.
+   --------------------------------------------------------------------- */
+function atlasBild(p) {
+  const a = p && p.atlas;
+  if (!a || !p.atlasUri) return "";
+  return `<img class="atlas" alt="Atlas" data-vu-figur="ATLAS"
+    data-vu-atlas-rolle="${a.rolle}"
+    width="${a.breite}" height="${a.hoehe}"
+    style="width:${a.breite}px;height:${a.hoehe}px" src="${p.atlasUri}">`;
+}
 
 export function textGroessen(visualType) {
   return {
@@ -343,8 +508,8 @@ export function ersteBelegteZahl(pkg) {
    GEMESSEN, benannt und mitgefuehrt - und die Sperre folgt mit der
    Hook-Ebene (§13/§15).
    ------------------------------------------------------------------- */
-function grammatikBefund(entwurf, pkg) {
-  const spec = VisualGrammar.ausRenderPlan(entwurf, {
+function grammatikSpec(entwurf) {
+  return VisualGrammar.ausRenderPlan(entwurf, {
     /* Wie viele Werte das Bild wirklich zeigt. Die Karte zeigt genau
        einen, sobald sie eine Zahl traegt - und diese Eins ist es, die
        Rangliste und Vergleich ausschliesst. Ohne sie waere jede
@@ -359,8 +524,52 @@ function grammatikBefund(entwurf, pkg) {
           entwurf.ebenen.zahlWeggelassen)) ? 1 : null),
     gemesseneReihe: !!(entwurf.komposition &&
       Array.isArray(entwurf.komposition.points)),
-    farbwelt: "VU_SCHWARZ_ROT"
+    farbwelt: "VU_SCHWARZ_ROT",
+    atlas: entwurf.atlas || null
   });
+}
+
+/* ---------------------------------------------------------------------
+   WELCHE ROLLE ATLAS IN DIESEM BILD SPIELT
+
+   Die Rolle haengt an der Familie - §17 sagt, welche Rollen zu
+   welcher Familie passen. Die Familie wiederum wird aus dem Bild
+   GEWAEHLT, und in diese Wahl geht Atlas nicht ein: waehleFamilie()
+   entscheidet an den Gestaltmerkmalen, nicht an der Figur. Deshalb
+   laesst sich erst die Familie bestimmen und dann die Rolle, ohne
+   dass daraus ein Kreis wird.
+
+   Passt keine der zeichenbaren Rollen zur Familie, bekommt das Bild
+   KEINEN Atlas. Eine Figur in einer Rolle, die die Familie nicht
+   kennt, waere schlimmer als keine Figur - visual-grammar.js weist
+   sie als ATLAS_ROLLE_PASST_NICHT_ZUR_FAMILIE ab, und zu Recht.
+   --------------------------------------------------------------------- */
+function atlasPlan(entwurf) {
+  const wahl = VisualGrammar.waehleFamilie(grammatikSpec(entwurf));
+  const fam = wahl.familie ? VisualGrammar.FAMILIEN[wahl.familie] : null;
+  if (!fam) return null;
+  const rolle = ATLAS_ROLLEN_VORLIEBE
+    .find((r) => (fam.atlasRollen || []).indexOf(r) !== -1);
+  if (!rolle) return null;
+  const kasten = atlasKasten(rolle, entwurf.breite, entwurf.hoehe);
+  if (!kasten) return null;
+  return {
+    rolle,
+    flaechenAnteil: kasten.flaechenAnteil,
+    breite: kasten.breite, hoehe: kasten.hoehe,
+    /* Die Figur steht neben der Quellenzeile, nicht ueber den Daten.
+       Beides sind Tatsachen ueber die Seite, und die Grammatik fragt
+       danach. */
+    traegtAussage: false,
+    vorDaten: false,
+    referenceAsset: ATLAS_PFAD,
+    transforms: ["scale"],
+    familie: wahl.familie
+  };
+}
+
+function grammatikBefund(entwurf, pkg) {
+  const spec = grammatikSpec(entwurf);
   const wahl = VisualGrammar.waehleFamilie(spec);
   if (!wahl.familie) {
     return { familie: null, ok: false, wahlGrund: wahl.grund,
@@ -434,8 +643,7 @@ export function plan(pkg, options = {}) {
      Zeile fuers Bild bleibt, was sie ist: ein Beleg eine Zeile tiefer.
      ------------------------------------------------------------------- */
   const ebenen_ = (pkg.visualBrief && pkg.visualBrief.textLayers) || [];
-  const hookEbene_ = ebenen_.find((l) => l && l.text &&
-    String(l.text).trim() && String(l.role || l.rolle || "").toUpperCase() === "HOOK");
+  const hookEbene_ = hookEbeneAus(pkg);
   const bildzeile = ebenen_.find((l) => l && l.text && String(l.text).trim() &&
     l !== hookEbene_);
   const ebene = hookEbene_ || null;
@@ -507,7 +715,15 @@ export function plan(pkg, options = {}) {
        Die Zuordnung gibt es seit jeher in visual-data.mjs; sie hier
        ein zweites Mal zu fuehren waere ein zweiter Begriff davon, wie
        unsere Quellen heissen. */
-    ebenen.quelle = QUELLENNAME[zahl.quelle] || zahl.quelle;
+    const qn = quellenName(zahl.quelle);
+    if (!qn.ok) {
+      return { ok: false, reason: "unknownSourceName", visualType: typ,
+        message: "'" + zahl.quelle + "' hat die Form eines " +
+          "Systemschluessels und keinen Eintrag in QUELLENNAME. Einen " +
+          "Schluessel ersatzweise abzudrucken hat 'Quelle: vu.technical' " +
+          "auf ein fertiges Bild gebracht." };
+    }
+    ebenen.quelle = qn.name;
 
     /* -----------------------------------------------------------------
        WENN DIE KOPFZEILE DIE ZAHL SCHON SAGT
@@ -581,6 +797,10 @@ export function plan(pkg, options = {}) {
     directionMissing: pkg.visualDirectionMissing || []
   });
   entwurf.quality = guete;
+  /* Atlas VOR dem Grammatik-Urteil: die Rolle ist eine Eigenschaft des
+     Bildes, und die Grammatik soll sie pruefen, nicht erfahren. */
+  entwurf.atlas = atlasPlan(entwurf);
+  if (entwurf.atlas) entwurf.atlasUri = atlasDatenUri();
   entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
@@ -675,9 +895,17 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .zahltext{font-size:32px;line-height:1.35;color:${FARBEN.gedeckt};font-weight:500;margin-top:18px}
 .aussage{font-size:${aussageGroesse}px;line-height:1.20;font-weight:700;letter-spacing:-.02em;
   max-width:17ch}
-.fuss{display:flex;flex-direction:column;gap:18px}
+.fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.absender{display:flex;flex-direction:column;gap:18px}
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
+/* Atlas steht NEBEN der Quellenzeile, nicht ueber den Balken. Eine
+   Figur, die den Beleg verdeckt, auf den sich der Beitrag beruft,
+   heisst in der Grammatik ATLAS_VERDECKT_DATEN - und in einer Rolle,
+   die nicht vor den Daten stehen darf, ist sie ein Verstoss und kein
+   Layout. (Keine Backticks in diesem Kommentar: er steht in einem
+   Template-Literal, und ein Backtick beendet es.) */
+.atlas{display:block;flex:0 0 auto}
 </style></head><body>
   <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
@@ -686,8 +914,11 @@ body{font-family:${familie};color:${FARBEN.weiss};
     ${zahlBlock}
   </div>
   <div class="fuss">
-    <div class="strich"></div>
-    ${quelle}
+    <div class="absender">
+      <div class="strich"></div>
+      ${quelle}
+    </div>
+    ${atlasBild(p)}
   </div>
   ${MESS_SKRIPT}
 </body></html>`;
@@ -730,8 +961,7 @@ export function planKomposition(pkg, komposition, ebenen) {
      ohne Hook entsteht kein Plan, statt dass ersatzweise der Beleg
      die Kopfzeile bekommt.
      ------------------------------------------------------------------- */
-  const hookEbene = ((pkg && pkg.visualBrief && pkg.visualBrief.textLayers) || [])
-    .find((l) => l && l.text && String(l.text).trim());
+  const hookEbene = hookEbeneAus(pkg);
   const kopf = String((hookEbene && hookEbene.text) || (pkg && pkg.hook) || "").trim();
   if (!kopf) {
     return { ok: false, reason: "noHookOnVisual",
@@ -743,6 +973,17 @@ export function planKomposition(pkg, komposition, ebenen) {
   /* Derselbe Satz zweimal waere kein Aufbau, sondern ein Doppel. */
   const beleg = (VisualQuality.overlap(kopf, e.aussage) >= 0.6)
     ? null : e.aussage;
+
+  /* Dieselbe Pruefung wie im Kartenpfad - und aus demselben Grund. */
+  const qn = quellenName(e.quelle);
+  if (e.quelle && !qn.ok) {
+    return { ok: false, reason: "unknownSourceName",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "'" + e.quelle + "' hat die Form eines Systemschluessels " +
+        "und keinen Eintrag in QUELLENNAME. Ein Schluessel unter der " +
+        "Grafik ist ein interner Systembegriff auf einem oeffentlichen " +
+        "Bild." };
+  }
   const entwurf = {
     ok: true,
     visualType: (pkg && pkg.visualType) || komposition.kind,
@@ -750,7 +991,7 @@ export function planKomposition(pkg, komposition, ebenen) {
     breite: 1080, hoehe: 1350,
     komposition,
     ebenen: { entitaet: e.entitaet || null, aussage: kopf,
-      beleg: beleg, quelle: e.quelle || null },
+      beleg: beleg, quelle: qn.ok ? qn.name : null },
     textGroessen: textGroessen((pkg && pkg.visualType) || komposition.kind),
     logoUri: logoDatenUri(),
     ebenenHerkunft: {
@@ -777,6 +1018,10 @@ export function planKomposition(pkg, komposition, ebenen) {
     directionMissing: (pkg && pkg.visualDirectionMissing) || []
   });
   entwurf.quality = guete;
+  /* Atlas VOR dem Grammatik-Urteil: die Rolle ist eine Eigenschaft des
+     Bildes, und die Grammatik soll sie pruefen, nicht erfahren. */
+  entwurf.atlas = atlasPlan(entwurf);
+  if (entwurf.atlas) entwurf.atlasUri = atlasDatenUri();
   entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
@@ -808,6 +1053,12 @@ function zahlDe(x, stellen = 1) {
   return Number(x).toFixed(stellen).replace(".", ",");
 }
 
+/* Wie viele Nachkommastellen die Werte einer Grafik wirklich tragen.
+   Dieselbe Rechnung fuehrt visual-composition.js fuer den Satz unter
+   der Grafik; sie wird von dort geholt, damit Balken und Satz nicht
+   verschieden runden. */
+const stellenAus = VisualComposition.stellenAus;
+
 function svgChart(k) {
   const farbe = k.direction === "up" ? FARBEN.rot : FARBEN.gedeckt;
   return `<svg width="${k.width}" height="${k.height}" viewBox="0 0 ${k.width} ${k.height}"
@@ -825,7 +1076,21 @@ function svgChart(k) {
 }
 
 function svgBalken(k, opts = {}) {
-  const zeile = 74;
+  /* -------------------------------------------------------------------
+     WENIGE BALKEN DUERFEN NICHT WIE EIN TABELLENAUSZUG AUSSEHEN
+
+     Feste 74 Pixel pro Zeile: bei zehn Werten eine Grafik, bei zwei
+     ein schmaler Streifen in einer sonst leeren Flaeche. Auf dem
+     fertigen Bild sah der Vergleich zweier Indizes aus wie der Export
+     einer Datenbank, nicht wie ein Beitrag.
+
+     Die Zeilenhoehe folgt deshalb der Anzahl. Sie wird nicht frei
+     gewaehlt, sondern aus einer Zielhoehe geteilt und in ein Band
+     gezwungen - sonst wuerde ein einzelner Vergleich die halbe Seite
+     einnehmen.
+     ------------------------------------------------------------------- */
+  const zeile = Math.max(70, Math.min(124, Math.round(620 / k.bars.length)));
+  const dick = zeile >= 100 ? 18 : 10;
   const hoehe = k.bars.length * zeile;
   const balken = k.bars.map((b, i) => {
     const y = i * zeile;
@@ -835,18 +1100,32 @@ function svgBalken(k, opts = {}) {
     const farbe = stark ? FARBEN.rot : FARBEN.gedeckt;
     const x = b.from !== undefined ? b.from : 0;
     const breite = b.pixels;
+    /* -----------------------------------------------------------------
+       DIE ZAHL AM BALKEN IST DIE ZAHL DER QUELLE
+
+       Hier stand `opts.stellen ?? 2`, und der Vergleich rief mit
+       `stellen: 0` auf. Auf dem fertigen Bild wurden daraus "22" und
+       "13" - aus 21,6 und 13,4. Eine gerundete Zahl ist eine andere
+       Zahl, und sie stand unter dem Namen eines Gegenstands als
+       dessen Wert.
+
+       Vorrang hat die Schreibweise der Quelle ("184,20" ist nicht
+       "184,2"); gibt es keine, entscheiden die Werte selbst, wie
+       viele Stellen sie haben. Geraten wird nichts mehr.
+       ----------------------------------------------------------------- */
     const wert = opts.prozent
       ? (b.value >= 0 ? "+" : "") + zahlDe(b.value) + " %"
-      : zahlDe(b.value, opts.stellen ?? 2) + (b.max ? " / " + b.max : "");
+      : (b.anzeige || zahlDe(b.value, opts.stellen ?? stellenAus(k.bars))) +
+        (b.max ? " / " + b.max : "");
     return `
       <text x="0" y="${y + 24}" fill="${FARBEN.weiss}" font-size="27"
         font-weight="600">${escape(b.label)}</text>
       <text x="${k.width}" y="${y + 24}" fill="${FARBEN.gedeckt}" font-size="25"
         text-anchor="end" font-weight="500">${escape(wert)}</text>
-      <rect x="0" y="${y + 38}" width="${k.width}" height="10" rx="5"
+      <rect x="0" y="${y + 38}" width="${k.width}" height="${dick}" rx="${dick / 2}"
         fill="#ffffff" fill-opacity="0.08"/>
       <rect x="${x.toFixed(2)}" y="${y + 38}" width="${Math.max(breite, 3).toFixed(2)}"
-        height="10" rx="5" fill="${farbe}"/>`;
+        height="${dick}" rx="${dick / 2}" fill="${farbe}"/>`;
   }).join("");
 
   const nulllinie = k.zeroX !== undefined
@@ -879,7 +1158,8 @@ export function seiteKomposition(p, schriftDaten) {
   } else if (k.kind === "PERFORMANCE") {
     grafik = svgBalken(k, { prozent: true });
   } else if (k.kind === "COMPARISON") {
-    grafik = svgBalken(k, { stellen: 0 });
+    /* Kein `stellen` mehr: der Vergleich rundete auf ganze Zahlen. */
+    grafik = svgBalken(k);
   }
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
@@ -898,30 +1178,40 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .marke{display:block;width:${g2.logo.breite}px;height:${g2.logo.hoehe}px;
   filter:invert(1)}
 .kopf{margin-bottom:30px}
+/* Die Hook fuehrt (§13). Die Kontextzeile stand als Ueberzeile
+   darueber - der Blick betritt das Bild oben, und dort las man dann
+   die Kennzahl statt des Satzes. Jetzt steht sie darunter. */
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
-  text-transform:uppercase;margin-bottom:14px}
+  text-transform:uppercase;margin-top:18px}
 .titel{font-size:${g2.aussage}px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:17ch}
 .beleg{font-size:${g2.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:16px}
 .mitte{display:flex;flex-direction:column;gap:22px}
 .achsen{display:flex;justify-content:space-between;font-size:23px;color:${FARBEN.gedeckt};
   font-weight:500;margin-top:14px}
-.fuss{display:flex;flex-direction:column;gap:18px}
+.fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.absender{display:flex;flex-direction:column;gap:18px}
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
+/* Siehe Kartenvorlage: die Figur steht neben dem Absender, nie ueber
+   den Daten. */
+.atlas{display:block;flex:0 0 auto}
 </style></head><body>
   <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
     <div class="kopf">
-      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
       <div class="titel" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage || "")}</div>
+      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
       ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     </div>
     ${grafik}
     ${achsen}
   </div>
   <div class="fuss">
-    <div class="strich"></div>
-    ${p.ebenen.quelle ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+    <div class="absender">
+      <div class="strich"></div>
+      ${p.ebenen.quelle ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+    </div>
+    ${atlasBild(p)}
   </div>
   ${MESS_SKRIPT}
 </body></html>`;
@@ -994,7 +1284,17 @@ export function messeSeite(htmlPfad, breite, hoehe) {
   let texte;
   try { texte = JSON.parse(entkommen(treffer[1])); } catch { return null; }
   if (!Array.isArray(texte)) return null;
-  return { breite, hoehe, texte };
+
+  /* Figuren fehlen duerfen - eine Seite ohne Atlas hat keine. Eine
+     KAPUTTE Figurenliste darf aber nicht als "keine Figur" gelesen
+     werden: das waere wieder unbekannt als leer. */
+  let figuren = [];
+  const tf = /data-vu-figuren="([^"]*)"/.exec(dom);
+  if (tf) {
+    try { figuren = JSON.parse(entkommen(tf[1])); } catch { return null; }
+    if (!Array.isArray(figuren)) return null;
+  }
+  return { breite, hoehe, texte, figuren };
 }
 
 /** Die DOM-Ausgabe ist HTML-kodiert; das JSON darin will es nicht sein. */
@@ -1082,6 +1382,56 @@ export function render(p, zielPfad, options = {}) {
     throw fehler;
   }
 
+  /* -----------------------------------------------------------------
+     DER ATLAS-VERTRAG, AN DERSELBEN STELLE (§11/§17)
+
+     Dieselbe Geschichte wie beim Logo, nur eine Figur weiter:
+     checkAtlasUsage() stand seit dem Brand-Auftrag in brand.js, und
+     die einzige Stelle, an der gezeichnet wird, hat nie gefragt -
+     weil hier ueberhaupt kein Atlas gezeichnet wurde.
+
+     Zusaetzlich wird die GEZEICHNETE Flaeche gegen das Band der
+     erklaerten Rolle gehalten. Die Rolle zu melden und die Pixel
+     nicht zu pruefen waere eine Angabe ueber die Absicht: eine
+     Signatur, die ein Viertel des Bildes einnimmt, wuerde sich
+     weiter Signatur nennen.
+     ----------------------------------------------------------------- */
+  let atlasBefund = null;
+  if (p.atlas) {
+    atlasBefund = Brand.checkAtlasUsage({
+      referenceAsset: p.atlas.referenceAsset,
+      generationMode: "asset-transform",
+      transforms: p.atlas.transforms
+    });
+    const gemessen = ((messung && messung.figuren) || [])
+      .find((f) => f && f.figur === "ATLAS");
+    const band = VisualGrammar.ATLAS_ROLLEN[p.atlas.rolle];
+    if (!gemessen) {
+      atlasBefund = { passed: false, problems: ["Die Figur wurde auf der " +
+        "Seite nicht gemessen. Ein Atlas im Plan, der im Bild fehlt, ist " +
+        "eine Rolle ohne Figur."], explanation: "Atlas nicht gemessen." };
+    } else if (band) {
+      const anteil = gemessen.flaeche / (p.breite * p.hoehe);
+      if (anteil < band.flaecheMin || anteil > band.flaecheMax) {
+        atlasBefund = { passed: false, problems: ["Gemessen " +
+          Math.round(anteil * 1000) / 10 + " % der Flaeche; " + p.atlas.rolle +
+          " laesst " + Math.round(band.flaecheMin * 1000) / 10 + " bis " +
+          Math.round(band.flaecheMax * 1000) / 10 + " % zu."],
+          explanation: "Die gezeichnete Flaeche passt nicht zur Rolle." };
+      } else {
+        atlasBefund = Object.assign({}, atlasBefund,
+          { gemessen, flaechenAnteil: anteil });
+      }
+    }
+    if (!atlasBefund.passed) {
+      const fehler = new Error("Atlas-Vertrag nicht bestanden (§17): " +
+        atlasBefund.explanation);
+      fehler.zustand = "ATLAS_VERTRAG_VERLETZT";
+      fehler.atlas = atlasBefund;
+      throw fehler;
+    }
+  }
+
   if (!scrollStop.ok && options.scrollStopPruefen !== false) {
     const fehler = new Error("SCROLL_STOP_QUALITY nicht bestanden (" +
       scrollStop.zustand + "): " + scrollStop.erklaerung);
@@ -1091,7 +1441,7 @@ export function render(p, zielPfad, options = {}) {
   }
 
   return Object.assign({ pfad: zielPfad }, befund,
-    { messung, scrollStop, logo: logoBefund });
+    { messung, scrollStop, logo: logoBefund, atlas: atlasBefund });
 }
 
 /* --------------------------------------------------------------- Lauf */

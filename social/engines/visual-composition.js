@@ -278,6 +278,10 @@
       var v = zahl(p && p.value);
       if (v === null || !p.label) return;
       werte.push({ label: String(p.label), value: v,
+        /* Die Schreibweise der Quelle, wenn sie eine hat. Sie wird hier
+           nur DURCHGEREICHT - diese Datei rechnet, sie textet nicht. */
+        anzeige: (typeof p.anzeige === "string" && p.anzeige.trim())
+          ? p.anzeige.trim() : null,
         highlight: !!p.highlight });
     });
 
@@ -299,8 +303,15 @@
       ok: true,
       kind: "COMPARISON",
       width: breite,
+      /* Die Einheit gehoert zur Achse, nicht zum einzelnen Balken:
+         zwei Werte auf einer Achse haben dieselbe. Sie steht hier,
+         damit der Satz unter der Grafik den Abstand benennen kann,
+         ohne sich eine Einheit auszudenken. */
+      einheit: (typeof spec.einheit === "string" && spec.einheit.trim())
+        ? spec.einheit.trim() : null,
       bars: werte.map(function (w, i) {
-        return { label: w.label, value: w.value, rank: i + 1,
+        return { label: w.label, value: w.value, anzeige: w.anzeige,
+          rank: i + 1,
           pixels: (w.value / max) * breite, highlight: w.highlight };
       }),
       highlightRank: (werte.filter(function (w) { return w.highlight; })[0] || {}).label
@@ -324,6 +335,24 @@
      bricht "43,5 %" um, und auf der naechsten Zeile steht ein einsames
      Prozentzeichen. */
   var NBSP = "\u202F";
+
+  /* Wie viele Nachkommastellen die Werte einer Achse WIRKLICH haben.
+     Nicht geraten und nicht fest gesetzt: 21,6 und 13,4 haben eine,
+     27,35 hat zwei, 8 hat keine. Gedeckelt bei zwei - mehr traegt
+     eine Balkenbeschriftung nicht. */
+  function stellenAus(werte) {
+    var max = 0;
+    (werte || []).forEach(function (w) {
+      var s = String(w && w.value !== undefined ? w.value : w);
+      var punkt = s.indexOf(".");
+      if (punkt >= 0) max = Math.max(max, Math.min(s.length - punkt - 1, 2));
+    });
+    return max;
+  }
+
+  function wertDe(x, stellen) {
+    return Number(x).toFixed(stellen === undefined ? 1 : stellen).replace(".", ",");
+  }
 
   function prozentDe(x, stellen) {
     var s = Math.abs(x).toFixed(stellen === undefined ? 1 : stellen).replace(".", ",");
@@ -349,10 +378,35 @@
       case "PERFORMANCE":
         return "Entwicklung ueber " + k.bars.length + " gemessene Horizonte.";
       case "COMPARISON": {
+        /* -------------------------------------------------------------
+           "RANG 2 VON 2 IN DIESEM LAUF."
+
+           So stand es unter der fertigen Grafik. Zwei Maengel in einem
+           Satz: "in diesem Lauf" ist ein Begriff aus unserer Maschine
+           und sagt dem Leser nichts, und ein Rang unter ZWEI Werten
+           ist keine Information - er sagt nur, dass einer der beiden
+           der kleinere ist, was die Balken schon zeigen.
+
+           Bei zwei Werten ist der ABSTAND die Aussage. Er steht in
+           keiner Beschriftung, also fuegt er etwas hinzu. Ab drei
+           Werten traegt die Rangfolge wieder, und sie wird dann so
+           benannt, wie ein Leser sie liest - im Vergleich, nicht in
+           einem Lauf.
+           ------------------------------------------------------------- */
+        var stellen = stellenAus(k.bars);
+        if (k.bars.length === 2) {
+          var vorn = k.bars[0], hinten = k.bars[1];
+          var abstand = wertDe(Math.abs(vorn.value - hinten.value), stellen);
+          var mass = k.einheit
+            ? abstand + (k.einheit === "%" ? NBSP : " ") + k.einheit
+            : "um " + abstand;
+          return vorn.label + " liegt " + mass + " vor " + hinten.label + ".";
+        }
         var eigener = k.bars.filter(function (b) { return b.highlight; })[0];
         return eigener
-          ? "Rang " + eigener.rank + " von " + k.bars.length + " in diesem Lauf."
-          : "Die Rangfolge dieses Laufs.";
+          ? eigener.label + " auf Rang " + eigener.rank + " von " +
+            k.bars.length + " im Vergleich."
+          : "Die Rangfolge im Vergleich.";
       }
       default: return null;
     }
@@ -376,7 +430,8 @@
   var api = {
     FLAECHE: FLAECHE, MINDEST: MINDEST,
     datumDe: datumDe,
-    aussage: aussage, prozentDe: prozentDe,
+    aussage: aussage, prozentDe: prozentDe, wertDe: wertDe,
+    stellenAus: stellenAus,
     chart: chart, score: score, performance: performance,
     comparison: comparison, compose: compose
   };
