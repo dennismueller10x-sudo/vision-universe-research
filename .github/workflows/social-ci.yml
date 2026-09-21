@@ -80,6 +80,37 @@ jobs:
       - name: APPROVAL_CENTER_PRODUCTION_READY
         run: node scripts/social/approval-center-readiness.mjs
 
+      # =====================================================================
+      # §26/§27 — DIE GEMESSENEN ZUSTAENDE DES ASSET-/HASHTAG-AUFTRAGS
+      #
+      # Von hier aus ist fast alles messbar: die Tagbreite ueber den
+      # echten Themenbestand, die gerenderte Karte, die Sperre, die
+      # Zusammensetzung des Sendetextes. Und, anders als in der
+      # Entwicklungsumgebung, auch die Erreichbarkeit des Bildes: dieser
+      # Runner erreicht research.visionuniverse.de.
+      #
+      # Was er NICHT erreicht, ist der Worker hinter der eigenen Domain;
+      # der Production Smoke steht deshalb erst im Deploy-Workflow.
+      #
+      # `|| true`: auf einem Zweig ist IN_MAIN_INTEGRIERT
+      # notwendigerweise offen. Der Bericht stellt fest, er schaltet
+      # nichts frei — und ein roter Lauf dafuer saegte an der falschen
+      # Stelle. Rot wird die CI von den Suiten darueber.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ASSET + HASHTAG — die gemessenen Zustaende
+        if: always()
+        run: |
+          set -uo pipefail
+          node scripts/social/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          {
+            echo "## ASSET + HASHTAG"
+            echo '```'
+            cat /tmp/asset-hashtag.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
         # Sie werden vom Workflow social-cloudflare gerufen, wo ein
         # Syntaxfehler erst nach dem Start auffiele — und dann mit
