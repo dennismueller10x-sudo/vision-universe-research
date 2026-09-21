@@ -424,12 +424,33 @@ function suchLage(n) {
   const breite = `Gesucht in ${escapeHtml(String(s.familienGefragtAnzahl || 0))}
 Content Families, ${escapeHtml(String(s.themenGeprueft || 0))} Thema/Themen
 geprueft.`;
+  /* -----------------------------------------------------------------
+     DIE DRITTE LAGE, DIE HIER EIN LEERER SATZ WAR
+
+     Zwei Faelle standen hier: alles gefragt, oder Stufen ausgelassen.
+     Seit die Leiter auf einer redaktionellen Stufe endet, gibt es
+     einen dritten: jede Stufe gefragt, keine ausgelassen - und auf
+     der letzten stehen trotzdem Fragen offen.
+
+     Der fiel durch beide Zweige und ergab eine Zeile, die mit
+     "0 Thema/Themen geprueft." aufhoerte. Genau die Auslassung, vor
+     der der Kommentar ueber dieser Funktion warnt: es klang
+     vollstaendig und war es nicht.
+
+     `> 0` und nicht `wahrheitswertig`: null heisst hier NICHT
+     UEBERTRAGEN, und daraus "keine offen" zu machen waere dieselbe
+     Glaettung noch einmal. */
+  const fragen = Number(s.redaktionelleFragenOffen);
   const rest = s.vollstaendig
-    ? " Jede Stufe wurde gefragt."
+    ? " Jede Stufe wurde gefragt, auch die redaktionelle."
     : offen.length
       ? ` Nicht gefragt: ${escapeHtml(offen.map((o) => o.id || ("Stufe " + o.stufe))
           .join(", "))} — weiter oben war genug.`
-      : "";
+      : Number.isFinite(fragen) && fragen > 0
+        ? ` Jede Stufe wurde gefragt; auf der letzten stehen noch ${escapeHtml(
+            String(fragen))} redaktionelle Fragen offen, denen heute niemand
+nachgegangen ist.`
+        : "";
   return `<p class="leise">${breite}${rest}</p>`;
 }
 

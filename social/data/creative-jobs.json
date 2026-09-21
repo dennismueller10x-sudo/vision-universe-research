@@ -214,9 +214,9 @@
       "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
       "attempt": 4,
       "revision": "text-only",
-      "state": "CREATIVE_JOB_IN_FLIGHT",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-19T06:25:47.285Z",
-      "updatedAt": "2026-09-19T07:55:19.000Z",
+      "updatedAt": "2026-09-21T11:25:01.940Z",
       "prNumber": 112,
       "deliveryIds": [
         "2d1eed70-b3ff-11f1-9185-93442bb605c2"
@@ -247,6 +247,16 @@
           "state": "CREATIVE_JOB_IN_FLIGHT",
           "at": "2026-09-19T07:55:19.000Z",
           "note": "VU_CREATIVE_AGENT_INVOCATION STARTED, 1m54s nach dem Ereignis. Die Quittung nennt request_type TEXT_REVISION - der erweiterte Contract ist auf Providerseite real."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-21T11:25:01.940Z",
+          "note": "authoring/requests/vu-xom-20260911-rev2/authoring-result.json — reconciled aus RESULT_VERIFIED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-21T11:25:01.940Z",
+          "note": "authoring/requests/vu-xom-20260911-rev2/authoring-result.json — reconciled aus RESULT_VERIFIED (Schritt 2 von 2)"
         }
       ],
       "prState": "open",
@@ -313,5 +323,6 @@
     "maxAttemptsPerContentId": 3,
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
-  }
+  },
+  "reconciledAt": "2026-09-21T11:25:01.940Z"
 }

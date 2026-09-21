@@ -67,7 +67,16 @@
     "CREATIVE_JOB_RESULT_AVAILABLE",
     "CREATIVE_JOB_VERIFIED",
     "CREATIVE_JOB_FAILED",
-    "CREATIVE_JOB_STALE"
+    "CREATIVE_JOB_STALE",
+    /* -----------------------------------------------------------------
+       UEBERHOLT IST NICHT GESCHEITERT
+
+       Ein Job, den eine spaetere Revision ersetzt hat, ist fertig -
+       aber er hat nicht geliefert, und FAILED waere eine Aussage ueber
+       den Agenten, die niemand belegen kann. Ohne eigenen Zustand
+       bliebe nur die Wahl zwischen einer Luege und einem Zombie.
+       ----------------------------------------------------------------- */
+    "CREATIVE_JOB_SUPERSEDED"
   ];
 
   /* Von hier geht es nicht mehr weiter.
@@ -76,7 +85,8 @@
      Begruendung wie im Ledger: "wir haben nichts gesehen" ist keine
      Aussage darueber, dass nichts mehr kommt. PR 105 hat nach elf
      Stunden noch gemeldet. */
-  var TERMINAL = ["CREATIVE_JOB_VERIFIED", "CREATIVE_JOB_FAILED"];
+  var TERMINAL = ["CREATIVE_JOB_VERIFIED", "CREATIVE_JOB_FAILED",
+    "CREATIVE_JOB_SUPERSEDED"];
 
   /* Zustaende, in denen die externe Welt den Job noch bearbeiten kann -
      und in denen ein offener Request-PR weiter Wiederholungen einsammelt. */
@@ -102,17 +112,62 @@
     "CREATIVE_JOB_STALE"];
 
   var UEBERGAENGE = {
-    CREATIVE_JOB_REQUESTED: ["CREATIVE_JOB_DISPATCHED", "CREATIVE_JOB_FAILED"],
+    CREATIVE_JOB_REQUESTED: ["CREATIVE_JOB_DISPATCHED", "CREATIVE_JOB_FAILED",
+      "CREATIVE_JOB_SUPERSEDED"],
     CREATIVE_JOB_DISPATCHED: ["CREATIVE_JOB_IN_FLIGHT", "CREATIVE_JOB_RESULT_AVAILABLE",
-      "CREATIVE_JOB_STALE", "CREATIVE_JOB_FAILED"],
+      "CREATIVE_JOB_STALE", "CREATIVE_JOB_FAILED", "CREATIVE_JOB_SUPERSEDED"],
     CREATIVE_JOB_IN_FLIGHT: ["CREATIVE_JOB_RESULT_AVAILABLE", "CREATIVE_JOB_STALE",
-      "CREATIVE_JOB_FAILED"],
-    CREATIVE_JOB_RESULT_AVAILABLE: ["CREATIVE_JOB_VERIFIED", "CREATIVE_JOB_FAILED"],
+      "CREATIVE_JOB_FAILED", "CREATIVE_JOB_SUPERSEDED"],
+    CREATIVE_JOB_RESULT_AVAILABLE: ["CREATIVE_JOB_VERIFIED", "CREATIVE_JOB_FAILED",
+      "CREATIVE_JOB_SUPERSEDED"],
     CREATIVE_JOB_STALE: ["CREATIVE_JOB_RESULT_AVAILABLE", "CREATIVE_JOB_IN_FLIGHT",
-      "CREATIVE_JOB_FAILED"],
+      "CREATIVE_JOB_FAILED", "CREATIVE_JOB_SUPERSEDED"],
     CREATIVE_JOB_VERIFIED: [],
-    CREATIVE_JOB_FAILED: []
+    CREATIVE_JOB_FAILED: [],
+    CREATIVE_JOB_SUPERSEDED: []
   };
+
+  /* =====================================================================
+     DIE EVIDENZ, DIE EINEN OFFENEN JOB SCHLIESSEN DARF
+
+     ---------------------------------------------------------------------
+     WARUM DIESE LISTE CODE IST UND KEIN KOMMENTAR
+     ---------------------------------------------------------------------
+
+     Ein Job blieb 51 Stunden auf IN_FLIGHT, obwohl sein Ergebnis seit
+     zehn Minuten nach dem Start im Repository lag und das Ledger ihn
+     COMPLETED nannte. Der Abschluss wurde an einer Stelle notiert und
+     an einer anderen gezaehlt; zwischen beiden gab es keinen Rueckweg.
+
+     Beim Reparieren ist die naechstliegende Versuchung, das Alter zum
+     Beweis zu machen: 51 Stunden, also tot. Das ist kein Beweis,
+     sondern Ungeduld. PR 105 hat nach elf Stunden noch geliefert.
+
+     Deshalb steht hier eine geschlossene Liste. Was nicht darin steht,
+     schliesst keinen Job - und zwar nicht, weil ein Kommentar es
+     verbietet, sondern weil `reconcile` es zurueckweist.
+     ===================================================================== */
+  var EVIDENZ = {
+    /* Ein geprueftes Ergebnis mit identischem Schluessel. Die staerkste
+       Evidenz, die es gibt: der Job HAT geliefert. */
+    RESULT_VERIFIED: "CREATIVE_JOB_VERIFIED",
+    /* Das Ledger nennt denselben Schluessel abgeschlossen. Dieselbe
+       Tatsache, an der anderen Stelle notiert. */
+    LEDGER_COMPLETED: "CREATIVE_JOB_VERIFIED",
+    /* Das Ledger hat das Ergebnis abgelehnt. Eine Aussage ueber das
+       Ergebnis, und deshalb hier zulaessig. */
+    LEDGER_REJECTED: "CREATIVE_JOB_FAILED",
+    /* Ein kanonischer Nachfolger nennt diesen Job ausdruecklich als
+       Vorgaenger und ist selbst abgeschlossen. Der Job ist damit
+       fertig, ohne geliefert zu haben - und ohne gescheitert zu sein. */
+    SUPERSEDED_BY_VERIFIED_SUCCESSOR: "CREATIVE_JOB_SUPERSEDED"
+  };
+
+  /* Was ausdruecklich NICHT genuegt. Steht als Liste da, damit ein
+     Aufrufer die Zurueckweisung benannt bekommt statt eines stummen
+     "unbekannt". */
+  var KEINE_EVIDENZ = ["ALTER", "KEIN_WORK_CHAT", "KEINE_NEUEN_KOMMENTARE",
+    "PR_GESCHLOSSEN", "OWNER_VERMUTUNG"];
 
   /* -------------------------------------------------------------------
      DAS BUDGET
@@ -387,6 +442,101 @@
      * arbeitet gegen einen offenen PR. Ein abgeschlossener Job mit
      * offenem PR ist eine Einladung, die niemand mehr braucht.
      */
+    /* -----------------------------------------------------------------
+       RECONCILE: DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN
+
+       Nicht ueberschreiben — GEHEN. Der Job laeuft ueber dieselben
+       Uebergaenge, die er im Betrieb genommen haette, und jeder
+       Schritt schreibt seine History. Ein Sprung von IN_FLIGHT direkt
+       auf VERIFIED waere schneller und wuerde verschweigen, dass ein
+       Ergebnis vorlag.
+
+       IDEMPOTENT: ist der Job schon terminal, passiert nichts und die
+       History bleibt, wie sie ist. Ein zweiter Lauf darf keinen
+       zweiten Eintrag erzeugen — sonst waechst die Provenance mit der
+       Zahl der Reparaturlaeufe statt mit den Ereignissen.
+       ----------------------------------------------------------------- */
+    function reconcile(creativeJobId, evidenzArt, options) {
+      options = options || {};
+      var job = null;
+      for (var i = 0; i < bestand.length; i++) {
+        if (bestand[i].creativeJobId === creativeJobId) { job = bestand[i]; break; }
+      }
+      if (!job) {
+        return { ok: false, geaendert: false, reason: "unknownJob",
+          message: "Unbekannter Job: " + creativeJobId };
+      }
+
+      /* Die geschlossene Liste. Alles andere wird benannt abgewiesen. */
+      var ziel = EVIDENZ[evidenzArt];
+      if (!ziel) {
+        return { ok: false, geaendert: false, reason: "inadmissibleEvidence",
+          job: job,
+          message: KEINE_EVIDENZ.indexOf(evidenzArt) !== -1
+            ? evidenzArt + " allein schliesst keinen Job. Es sagt etwas " +
+              "darueber, was NICHT beobachtet wurde, und nichts darueber, " +
+              "was geschehen ist."
+            : "Unbekannte Evidenzart: " + String(evidenzArt) };
+      }
+
+      if (TERMINAL.indexOf(job.state) !== -1) {
+        return { ok: true, geaendert: false,
+          reason: job.state === ziel ? "bereitsReconciled" : "bereitsTerminal",
+          job: job, from: job.state, to: job.state,
+          message: "Der Job ist bereits abgeschlossen (" + job.state + ")." };
+      }
+
+      /* Der Weg dorthin, Schritt fuer Schritt ueber erlaubte
+         Uebergaenge. Gibt es keinen, wird NICHT gesprungen. */
+      var weg = pfadZu(job.state, ziel);
+      if (!weg) {
+        return { ok: false, geaendert: false, reason: "noLegalPath", job: job,
+          message: "Von " + job.state + " fuehrt kein zulaessiger Weg nach " +
+            ziel + "." };
+      }
+
+      var ausgang = job.state;
+      var schritte = [];
+      for (var k = 0; k < weg.length; k++) {
+        transition(job.creativeJobId, weg[k], {
+          now: options.now,
+          note: (options.note ? options.note + " — " : "") +
+            "reconciled aus " + evidenzArt +
+            (weg.length > 1 ? " (Schritt " + (k + 1) + " von " + weg.length + ")" : "")
+        });
+        schritte.push(weg[k]);
+      }
+
+      return { ok: true, geaendert: true, reason: "reconciled", job: job,
+        from: ausgang,
+        to: ziel, steps: schritte, evidence: evidenzArt,
+        message: "Ueber " + schritte.join(" -> ") + " aus " + evidenzArt + "." };
+    }
+
+    /* Breitensuche ueber UEBERGAENGE. Sie ist hier richtig und nicht
+       zu viel: die Maschine hat acht Zustaende, und eine von Hand
+       gepflegte Wegtabelle waere die naechste Stelle, die beim
+       naechsten Zustand vergessen wird. */
+    function pfadZu(von, nach) {
+      if (von === nach) return [];
+      var schlange = [[von, []]];
+      var gesehen = {};
+      gesehen[von] = true;
+      while (schlange.length) {
+        var kopf = schlange.shift();
+        var nachbarn = UEBERGAENGE[kopf[0]] || [];
+        for (var i = 0; i < nachbarn.length; i++) {
+          var n = nachbarn[i];
+          if (gesehen[n]) continue;
+          var weg = kopf[1].concat([n]);
+          if (n === nach) return weg;
+          gesehen[n] = true;
+          schlange.push([n, weg]);
+        }
+      }
+      return null;
+    }
+
     function closable() {
       return bestand.filter(function (j) {
         return TERMINAL.indexOf(j.state) !== -1 && j.prNumber && !j.prClosedAt;
@@ -402,6 +552,8 @@
     }
 
     return {
+      reconcile: reconcile,
+      pfadZu: pfadZu,
       all: function () { return bestand.slice(); },
       byKey: byKey, byContent: byContent, openFor: offeneFuer,
       mayDispatch: mayDispatch,
@@ -423,6 +575,7 @@
 
   var api = {
     STATES: STATES, TERMINAL: TERMINAL, OFFEN: OFFEN,
+    EVIDENZ: EVIDENZ, KEINE_EVIDENZ: KEINE_EVIDENZ,
     UEBERGAENGE: UEBERGAENGE, BUDGET: BUDGET,
     jobId: jobId, istDiagnostisch: istDiagnostisch,
     createRegistry: createRegistry

@@ -178,12 +178,31 @@ test("AO7 · Angriff: 'alles gefragt' behaupten, ohne alles gefragt zu haben", (
      Behauptung macht aus NO_POST_UNEXPLAINED ein NO_POST_JUSTIFIED. */
   const gelogen = { nichtGefragt: [], fallbackDepthReached: 2,
                     familiesConsidered: ["NEWS_NOW"], familiesConsideredCount: 1,
-                    gefunden: [], rejectionReasons: {} };
+                    gefunden: [], rejectionReasons: {},
+                    redaktionelleFragenAnzahl: 0 };
   assert.equal(NoPost.vollstaendigGesucht(gelogen), false,
     "Eine Selbstauskunft hat als vollstaendige Suche gegolten");
 
   const echt = Object.assign({}, gelogen, { fallbackDepthReached: NoPost.letzteStufe() });
   assert.equal(NoPost.vollstaendigGesucht(echt), true);
+
+  /* -----------------------------------------------------------------
+     DIE ZWEITE FORM DERSELBEN BEHAUPTUNG
+
+     Bis zur letzten Stufe gelaufen zu sein ist nicht dasselbe wie
+     fertig zu sein. Die zehnte Stufe liefert redaktionelle Fragen;
+     stehen welche offen, hat die Suche aufgehoert, nicht das Angebot.
+
+     Ein Bericht ohne diese Zahl hat die Stufe nicht gefahren - er
+     gilt als unbekannt und nicht als null. */
+  const mitOffenen = Object.assign({}, echt, { redaktionelleFragenAnzahl: 20 });
+  assert.equal(NoPost.vollstaendigGesucht(mitOffenen), false,
+    "Zwanzig offene redaktionelle Fragen galten als zu Ende gesuchte Leiter");
+
+  const ohneAngabe = Object.assign({}, echt);
+  delete ohneAngabe.redaktionelleFragenAnzahl;
+  assert.equal(NoPost.vollstaendigGesucht(ohneAngabe), false,
+    "Eine fehlende Angabe galt als null offene Fragen");
 });
 
 test("AO8 · Die Zahl der Stufen kommt aus der Leiter, nicht aus no-post.js", () => {

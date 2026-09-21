@@ -47,9 +47,17 @@ const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/
 const AssetIntegrity = require(join(ROOT, "social/engines/asset-integrity.js"));
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 const Contract = require(join(ROOT, "social/engines/creative-contract.js"));
+const Job = require(join(ROOT, "social/engines/creative-job.js"));
 import { verify as pruefeRevision } from "./verify-revision-result.mjs";
 
 export const LEDGER_DATEI = "social/data/creative-invocations.json";
+/* Das Job-Register liegt daneben und wird beim Abschluss mitgezogen.
+   Als Konstante und nicht als zusammengebauter Pfad: die erste Fassung
+   schrieb `join(ROOT, DATEN, ...)` mit einem DATEN, das es in dieser
+   Datei nie gab. `node --check` sieht so etwas nicht — es haette erst
+   beim ersten echten Ingest geknallt, also genau dann, wenn ein
+   Ergebnis vorliegt und niemand zusieht. */
+export const JOB_REGISTER_DATEI = "social/data/creative-jobs.json";
 
 /* ------------------------------------------------------------------ */
 /* DER ZUGRIFF AUF DEN REQUEST-BRANCH                                  */
@@ -203,6 +211,107 @@ export function pruefeErgebnis(ref, contentId, options) {
     resultRaw: ergebnisRoh,
     briefRaw: briefRoh
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* DER RUECKWEG INS JOB-REGISTER                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Zieht den Job-Registereintrag an den Abschluss nach, den das Ledger
+ * gerade festgehalten hat.
+ *
+ * -------------------------------------------------------------------
+ * WARUM DAS EINE EIGENE FUNKTION IST
+ * -------------------------------------------------------------------
+ *
+ * Als Block in `main` war der Rueckweg nur ueber den Quelltext
+ * pruefbar — und ein Test, der Quelltext liest, ueberlebt jede
+ * Faelschung der Messung. Genau das hat die Gegenprobe gezeigt: den
+ * Block entfernen und den Zustand direkt setzen fiel beides nur einem
+ * Grep auf.
+ *
+ * Als Funktion laesst sie sich fahren und am Ergebnis messen.
+ *
+ * -------------------------------------------------------------------
+ * WAS SIE TUT
+ * -------------------------------------------------------------------
+ *
+ * Der Orchestrator zaehlt das JOB-REGISTER, wenn er
+ * MAX_OPEN_CREATIVE_JOBS prueft. Dieses Skript schrieb bis dahin
+ * ausschliesslich ins Ledger. Ein abgeschlossener Job blieb deshalb
+ * auf CREATIVE_JOB_IN_FLIGHT stehen und blockierte den einen Slot —
+ * einmal 51 Stunden lang, und ohne diese Funktion fuer immer: eine
+ * Altersregel, die ihn freigaebe, gibt es nicht und soll es nicht
+ * geben.
+ *
+ * Die Bruecke ist der processing_key. Er steht auf beiden Seiten und
+ * verbindet sie eindeutig; ueber die content_id zu gehen waere
+ * bequemer und falsch — zu einem Inhaltsobjekt gibt es mehrere
+ * Anlaeufe.
+ *
+ * Gegangen wird ueber die Zustandsmaschine, nicht daran vorbei.
+ *
+ * @returns { ok, geaendert, befunde }
+ */
+export function registerNachziehen(bericht, options = {}) {
+  const log = options.log || { log() {}, error() {} };
+  const pfad = options.registerPfad
+    ? (options.registerPfad.startsWith("/")
+        ? options.registerPfad : join(ROOT, options.registerPfad))
+    : join(ROOT, JOB_REGISTER_DATEI);
+
+  if (!existsSync(pfad)) {
+    return { ok: true, geaendert: false, befunde: [], grund: "keinRegister" };
+  }
+
+  let datei = null;
+  try { datei = JSON.parse(readFileSync(pfad, "utf8")); }
+  catch (err) { datei = null; }
+
+  if (!datei) {
+    /* Da, aber unlesbar. Nicht stillschweigend weitergehen: wer den
+       Slot zaehlt, bekaeme eine Zahl, die niemand kennt. */
+    log.error("\nWARNUNG: " + JOB_REGISTER_DATEI + " ist nicht lesbar. " +
+      "Der Job-Zustand wurde NICHT abgeglichen.");
+    return { ok: false, geaendert: false, befunde: [], grund: "registerUnlesbar" };
+  }
+
+  const art = bericht.state === "COMPLETED" ? "LEDGER_COMPLETED"
+    : bericht.state === "REJECTED" ? "LEDGER_REJECTED" : null;
+  if (!art) {
+    return { ok: true, geaendert: false, befunde: [], grund: "keinAbschluss" };
+  }
+
+  const registry = Job.createRegistry(datei.jobs || []);
+  const betroffen = (datei.jobs || [])
+    .filter((j) => j.processingKey === bericht.processingKey);
+
+  if (!betroffen.length) {
+    log.log("\nKein Job-Registereintrag zu diesem Schluessel — nichts abzugleichen.");
+    return { ok: true, geaendert: false, befunde: [], grund: "keinEintrag" };
+  }
+
+  const befunde = [];
+  let geaendert = false;
+  for (const j of betroffen) {
+    const r = registry.reconcile(j.creativeJobId, art,
+      { now: options.now, note: "ingest-creative" });
+    befunde.push({ creativeJobId: j.creativeJobId, contentId: j.contentId,
+      from: r.from || j.state, to: r.geaendert ? r.to : j.state,
+      geaendert: !!r.geaendert, reason: r.reason });
+    log.log("\nJob-Register: " + j.contentId + " " + (r.from || j.state) +
+      (r.geaendert ? " -> " + r.to : " (unveraendert: " + r.reason + ")"));
+    if (r.geaendert) geaendert = true;
+  }
+
+  if (geaendert) {
+    writeFileSync(pfad, JSON.stringify(Object.assign({}, datei,
+      { jobs: registry.all(), reconciledAt: options.now }), null, 2) + "\n");
+    log.log("Job-Register fortgeschrieben: " + JOB_REGISTER_DATEI);
+  }
+
+  return { ok: true, geaendert, befunde };
 }
 
 /* ------------------------------------------------------------------ */
@@ -441,6 +550,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
   ledgerSchreiben(pfad, ledger, NOW);
   console.log("\nLedger fortgeschrieben: " + LEDGER_DATEI);
+
+  /* -------------------------------------------------------------------
+     UND DAS JOB-REGISTER — DER RUECKWEG, DER GEFEHLT HAT
+
+     Bis hierher schrieb dieses Skript ausschliesslich ins Ledger. Der
+     Orchestrator zaehlt aber das JOB-REGISTER, wenn er
+     MAX_OPEN_CREATIVE_JOBS prueft. Ein abgeschlossener Job blieb dort
+     auf CREATIVE_JOB_IN_FLIGHT stehen und blockierte den einen Slot —
+     einmal 51 Stunden lang, und ohne diesen Block fuer immer: es gibt
+     keine Altersregel, die ihn je freigaebe.
+
+     Zwei Register fuer dieselbe Tatsache, und nur eines wurde
+     fortgeschrieben. Die Bruecke ist der processing_key; er steht auf
+     beiden Seiten und verbindet sie eindeutig.
+
+     Gegangen wird ueber die Zustandsmaschine, nicht daran vorbei: der
+     Job nimmt dieselben Uebergaenge, die er im Betrieb genommen
+     haette, und jeder schreibt seine History. Ist er schon terminal,
+     passiert nichts — auch kein zweiter History-Eintrag.
+     ------------------------------------------------------------------- */
+  registerNachziehen(bericht, { now: NOW, log: console });
 
   process.exit(bericht.ok ? 0 : 1);
 }

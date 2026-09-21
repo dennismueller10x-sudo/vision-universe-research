@@ -96,10 +96,53 @@ test("CS5 · Wurde alles gefragt, steht das auch da", async () => {
   const ganz = JSON.parse(JSON.stringify(NACHWEIS));
   ganz.suche.vollstaendig = true;
   ganz.suche.nichtGefragt = [];
+  ganz.suche.redaktionelleFragenOffen = 0;
   const t = await html({ anzahl: 0, contentStatus: {
     zustand: "NO_POST_JUSTIFIED", erklaerung: "x", nachweis: ganz } });
   assert.match(t, /Jede Stufe wurde gefragt/);
   assert.doesNotMatch(t, /Nicht gefragt:/);
+});
+
+test("CS13 · Offene redaktionelle Fragen stehen auf der Seite", async () => {
+  /* -----------------------------------------------------------------
+     DIE ZEILE, DIE MITTEN IM SATZ AUFHOERTE
+
+     Diese Seite kannte zwei Lagen: alles gefragt, oder Stufen
+     ausgelassen. Seit die Leiter auf einer redaktionellen Stufe
+     endet, gibt es eine dritte - jede Stufe gefragt, keine
+     ausgelassen, und trotzdem steht etwas offen.
+
+     Sie fiel durch beide Zweige, und die Seite endete mit
+     "0 Thema/Themen geprueft." Der Owner las eine vollstaendig
+     wirkende Zeile ueber eine unvollstaendige Suche. */
+  const offen = JSON.parse(JSON.stringify(NACHWEIS));
+  offen.suche.vollstaendig = false;
+  offen.suche.nichtGefragt = [];
+  offen.suche.redaktionelleFragenOffen = 20;
+  const t = await html({ anzahl: 0, contentStatus: {
+    zustand: "NO_POST_UNEXPLAINED", erklaerung: "x", nachweis: offen } });
+  assert.match(t, /20 redaktionelle Fragen offen/);
+  assert.doesNotMatch(t, /Nicht gefragt:/);
+});
+
+test("CS14 · Nicht uebertragene Fragen werden nicht zu null Fragen", async () => {
+  /* Die Gegenprobe, und die Fehlerfamilie, die dieses Projekt beim
+     Namen nennt: `null` heisst NICHT UEBERTRAGEN. Daraus "keine
+     offen" zu machen waere dieselbe Glaettung, gegen die die ganze
+     Funktion gebaut ist - und sie muesste hier ohne Zahl auskommen,
+     also schweigt sie ueber die Fragen statt zu behaupten. */
+  for (const wert of [null, undefined, "zwanzig"]) {
+    const unklar = JSON.parse(JSON.stringify(NACHWEIS));
+    unklar.suche.vollstaendig = false;
+    unklar.suche.nichtGefragt = [];
+    unklar.suche.redaktionelleFragenOffen = wert;
+    const t = await html({ anzahl: 0, contentStatus: {
+      zustand: "NO_POST_UNEXPLAINED", erklaerung: "x", nachweis: unklar } });
+    assert.doesNotMatch(t, /redaktionelle Fragen offen/,
+      "Aus " + String(wert) + " wurde eine Aussage ueber offene Fragen.");
+    assert.doesNotMatch(t, /Jede Stufe wurde gefragt/,
+      "Aus " + String(wert) + " wurde eine vollstaendige Suche.");
+  }
 });
 
 /* --------------------------------------------- Zeit in beide Richtungen */

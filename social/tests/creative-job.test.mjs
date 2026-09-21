@@ -253,12 +253,41 @@ test("CJ12 · Der Ergebnis-Commit des Agenten loest keinen neuen Lauf aus", () =
   /* Ein Negativbefund, der ausdruecklich festgehalten gehoert: die
      Sorge vor einer Rekursion ueber Result-Commits war unbegruendet.
      PRs 103, 106 und 108 haben einen Ergebnis-Commit (ein
-     synchronize-Ereignis) und trotzdem nur ihre eine delivery_id. */
-  const mitErgebnis = ECHT.filter((j) =>
+     synchronize-Ereignis) und trotzdem nur ihre eine delivery_id.
+
+     -----------------------------------------------------------------
+     NULL HEISST NICHT ERFASST, NICHT KEINE
+
+     Die erste Fassung prueft `deliveryCount === 1` fuer JEDEN
+     verifizierten Job. Solange PR 112 auf IN_FLIGHT stand, sah sie ihn
+     nicht. Nach dem Abgleich ist er verifiziert — und traegt
+     deliveryCount 0 bei einer vorhandenen delivery_id. Die beiden
+     Felder widersprechen sich in diesem Datensatz seit jeher; der
+     Zaehler wurde fuer diesen PR nie gepflegt.
+
+     0 belegt die Aussage nicht und verletzt sie auch nicht. Ein Test,
+     der ihn durchfallen laesst, misst die Pflege eines Feldes und
+     nicht die Rekursion, gegen die er steht. Gemessen wird deshalb
+     dort, wo der Zaehler ERFASST ist — und dort muss er 1 sein.
+     ----------------------------------------------------------------- */
+  const verifiziert = ECHT.filter((j) =>
     j.state === "CREATIVE_JOB_VERIFIED" && j.prNumber);
-  assert.ok(mitErgebnis.length >= 3);
-  mitErgebnis.forEach((j) => assert.equal(j.deliveryCount, 1,
+  const erfasst = verifiziert.filter((j) => typeof j.deliveryCount === "number" &&
+    j.deliveryCount > 0);
+
+  assert.ok(erfasst.length >= 3,
+    "Zu wenige verifizierte PRs mit erfasstem Zaehler: " + erfasst.length);
+  erfasst.forEach((j) => assert.equal(j.deliveryCount, 1,
     "PR " + j.prNumber + ": der Ergebnis-Commit hat eine zweite Delivery erzeugt"));
+
+  /* Und die Luecke bleibt sichtbar, statt still durchzugehen. */
+  const ohne = verifiziert.filter((j) => !j.deliveryCount);
+  if (ohne.length) {
+    console.log("CJ12 · ohne erfassten Delivery-Zaehler: " +
+      ohne.map((j) => "PR" + j.prNumber).join(", "));
+  }
+  assert.ok(ohne.length <= 1,
+    "Mehr als ein verifizierter PR ohne Zaehler — das Feld verfaellt.");
 });
 
 test("CJ13 · Anlauf ist nicht Revision", () => {

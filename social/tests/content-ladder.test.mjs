@@ -57,11 +57,20 @@ function thema(family, over = {}) {
 
 /* ============================================ Die Leiter selbst */
 
-test("CL1 · Die neun Stufen stehen in der Reihenfolge des Auftrags", () => {
-  assert.equal(L.LEITER.length, 9);
-  assert.deepEqual(L.LEITER.map((s) => s.stufe), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+test("CL1 · Die zehn Stufen stehen in der Reihenfolge des Auftrags", () => {
+  assert.equal(L.LEITER.length, 10);
+  assert.deepEqual(L.LEITER.map((s) => s.stufe),
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   assert.deepEqual(L.LEITER[0].familien, ["NEWS_NOW", "EARNINGS", "MARKET_EXPLAINER"]);
   assert.deepEqual(L.LEITER[4].familien, ["RANKING", "COMPARISON"]);
+
+  /* Die zehnte ist die redaktionelle, und sie fragt keine Familie.
+     Stuende dort eine, waere eine sechzehnte Taxonomie entstanden -
+     oder eine bestehende wuerde zweimal gefragt. */
+  const letzte = L.LEITER[9];
+  assert.equal(letzte.id, "EDITORIAL_IDEATION");
+  assert.equal(letzte.ideation, true);
+  assert.deepEqual(letzte.familien, []);
 });
 
 test("CL2 · Jede bestehende Content Family hat genau eine Stufe", () => {
@@ -191,7 +200,7 @@ test("CL9 · Nicht gefragt ist nicht geprueft", () => {
      nicht erreicht hat, steht getrennt. */
   const b = L.suche([thema("STOCK_STORY")], { benoetigt: 1 });
   assert.equal(b.fallbackDepthReached, 4);
-  assert.deepEqual(b.nichtGefragt.map((s) => s.stufe), [5, 6, 7, 8, 9]);
+  assert.deepEqual(b.nichtGefragt.map((s) => s.stufe), [5, 6, 7, 8, 9, 10]);
 
   for (const s of b.nichtGefragt) {
     for (const f of s.familien) {
@@ -224,9 +233,17 @@ test("CL11 · Eine leere Platte erzeugt keine Gelegenheit", () => {
   const b = L.suche([], { benoetigt: 1 });
   assert.equal(b.gefunden.length, 0);
   assert.equal(b.genug, false);
-  assert.equal(b.fallbackDepthReached, 9, "Sie hat nicht alle Stufen gefragt.");
+  assert.equal(b.fallbackDepthReached, 10, "Sie hat nicht alle Stufen gefragt.");
   assert.equal(b.opportunitiesConsidered, 0);
   assert.match(L.erklaerung(b), /Keine erfuellte/);
+
+  /* Und die redaktionelle Stufe, die IMMER etwas hat, hat trotzdem
+     nichts GEFUNDEN. Das ist der Unterschied, auf dem die ganze
+     Stufe steht: sie liefert Fragen, keine Gelegenheiten. */
+  assert.ok(b.redaktionelleFragenAnzahl > 0,
+    "Die redaktionelle Stufe hat nichts geliefert.");
+  assert.equal(b.gefunden.length, 0,
+    "Eine unbelegte Frage ist in die Fundliste geraten.");
 });
 
 test("CL12 · Sie gibt genau die Themen zurueck, die hereinkamen", () => {
