@@ -105,6 +105,97 @@
     return best;
   }
 
+  /* -------------------------------------------------------------------
+     WAS AN EINEM TEXT LIEGT UND WAS AM BEITRAG
+
+     Diese Pruefungen sind Eigenschaften EINES STUECKS TEXT: umschriebene
+     Umlaute, verbotenes Vokabular, Ausrufezeichen, Grossbuchstaben,
+     Emoji-Dichte. Sie gelten fuer einen Hook-Kandidaten genauso wie
+     fuer einen fertigen Beitrag.
+
+     Die uebrigen Regeln in check() sind es NICHT. Der Pflichthinweis
+     bei Einzelwerten zum Beispiel ist eine Eigenschaft des
+     veroeffentlichten Beitrags - ein Hook kann ihn gar nicht tragen,
+     er hat dafuer keinen Platz und ist auch nicht der Ort dafuer.
+
+     Die Trennung hat einen konkreten Anlass. Die Hook Engine prueft
+     ihre Kandidaten gegen das Register und rief dafuer zuerst
+     check(). Damit fiel ein voellig korrekter Kontrast-Hook durch -
+     wegen eines fehlenden Hinweises, den er nie haette tragen
+     koennen. Ein Tor an der falschen Grenze weist richtigen Text ab.
+     ------------------------------------------------------------------- */
+  function textRegister(text, options) {
+    var limits = Object.assign({}, LIMITS, (options && options.limits) || options || {});
+    var all = String(text || "");
+    var blocking = [], warnings = [];
+
+    var umschrieben = German.residue(all);
+    if (umschrieben.length) {
+      blocking.push({ id: "transliterated-umlauts",
+        message: "Umschriebene Umlaute im veroeffentlichten Text: " +
+          umschrieben.join(", ") +
+          ". Der Quelltext darf ASCII sein, der Beitrag nicht." });
+    }
+
+    BLOCKING_TERMS.forEach(function (t) {
+      if (new RegExp(t.re.source, t.re.flags).test(all)) blocking.push({ id: t.id, message: t.message });
+    });
+    WARNING_TERMS.forEach(function (t) {
+      if (new RegExp(t.re.source, t.re.flags).test(all)) warnings.push({ id: t.id, message: t.message });
+    });
+
+    var exclamations = countMatches(all, /!/g);
+    if (exclamations > limits.maxExclamations) {
+      warnings.push({ id: "exclamations", message: exclamations + " Ausrufezeichen; erlaubt sind " + limits.maxExclamations + "." });
+    }
+    var caps = maxCapsRun(all);
+    if (caps > limits.maxConsecutiveCapsWords) {
+      warnings.push({ id: "caps", message: caps + " Woerter in Folge in Grossbuchstaben." });
+    }
+    var emoji = countMatches(all, emojiRe());
+    var per100 = all.length > 0 ? (emoji / all.length) * 100 : 0;
+    if (per100 > limits.maxEmojiPerHundredChars) {
+      warnings.push({ id: "emoji", message: "Emoji-Dichte zu hoch (" + Math.round(per100 * 10) / 10 + " je 100 Zeichen)." });
+    }
+
+    return { blocking: blocking, warnings: warnings,
+      ok: blocking.length === 0,
+      /* Die gezaehlten Groessen reist mit: check() berichtet sie, und
+         sie ein zweites Mal zu rechnen waere eine zweite Antwort auf
+         dieselbe Frage. */
+      metrics: { exclamations: exclamations, capsRun: caps, emoji: emoji } };
+  }
+
+  /* -------------------------------------------------------------------
+     WELCHE VERSPRECHEN EINE HOOK MACHT UND WELCHE SIE EINLOEST
+
+     Die Rechnung stand mitten in check(). Die Hook Engine (§9) muss
+     dieselbe Frage stellen, bevor es ueberhaupt ein Paket gibt - sie
+     bewertet Kandidaten und nicht fertige Beitraege.
+
+     Sie bekommt deshalb hier eine eigene Funktion statt eine Kopie
+     der Regeln drueben. HOOK_PROMISES bleibt, wo es steht: es gibt
+     genau eine Liste davon, was eine Hook verspricht.
+     ------------------------------------------------------------------- */
+  function hookEinloesung(hook, body) {
+    var h = String(hook || "");
+    var b = String(body || "");
+    var ausgeloest = [], offen = [];
+    if (h) {
+      HOOK_PROMISES.forEach(function (p) {
+        if (!p.trigger.test(h)) return;
+        ausgeloest.push({ id: p.id, message: p.message });
+        if (!p.fulfilled(b)) offen.push({ id: p.id, message: p.message });
+      });
+    }
+    return {
+      ausgeloest: ausgeloest,
+      offen: offen,
+      eingeloest: ausgeloest.length - offen.length,
+      ok: offen.length === 0
+    };
+  }
+
   /**
    * Prueft ein Content Package gegen das Brand Brain.
    *
@@ -174,35 +265,9 @@
        Reparatur-Woerterbuch sind. Unbekanntes blockiert, statt
        durchzurutschen.
        ------------------------------------------------------------------- */
-    var umschrieben = German.residue(all);
-    if (umschrieben.length) {
-      blocking.push({ id: "transliterated-umlauts",
-        message: "Umschriebene Umlaute im veroeffentlichten Text: " +
-          umschrieben.join(", ") +
-          ". Der Quelltext darf ASCII sein, der Beitrag nicht." });
-    }
-
-    BLOCKING_TERMS.forEach(function (t) {
-      if (new RegExp(t.re.source, t.re.flags).test(all)) blocking.push({ id: t.id, message: t.message });
-    });
-    WARNING_TERMS.forEach(function (t) {
-      if (new RegExp(t.re.source, t.re.flags).test(all)) warnings.push({ id: t.id, message: t.message });
-    });
-
-    /* Register. */
-    var exclamations = countMatches(all, /!/g);
-    if (exclamations > limits.maxExclamations) {
-      warnings.push({ id: "exclamations", message: exclamations + " Ausrufezeichen; erlaubt sind " + limits.maxExclamations + "." });
-    }
-    var caps = maxCapsRun(all);
-    if (caps > limits.maxConsecutiveCapsWords) {
-      warnings.push({ id: "caps", message: caps + " Woerter in Folge in Grossbuchstaben." });
-    }
-    var emoji = countMatches(all, emojiRe());
-    var per100 = all.length > 0 ? (emoji / all.length) * 100 : 0;
-    if (per100 > limits.maxEmojiPerHundredChars) {
-      warnings.push({ id: "emoji", message: "Emoji-Dichte zu hoch (" + Math.round(per100 * 10) / 10 + " je 100 Zeichen)." });
-    }
+    var register = textRegister(all, limits);
+    register.blocking.forEach(function (b) { blocking.push(b); });
+    register.warnings.forEach(function (w) { warnings.push(w); });
 
     /* Laengen. */
     if (caption && caption.length < limits.minCaptionLength) {
@@ -220,10 +285,8 @@
     /* DER KERN: Hook-Einloesung. Nicht eingeloeste Versprechen sind
        BLOCKIEREND, nicht nur eine Warnung — das ist die Grenze zwischen
        starker Hook und Clickbait (§11). */
-    HOOK_PROMISES.forEach(function (p) {
-      if (!hook) return;
-      if (!p.trigger.test(hook)) return;
-      if (!p.fulfilled(body)) blocking.push({ id: "unfulfilled-" + p.id, message: p.message });
+    hookEinloesung(hook, body).offen.forEach(function (p) {
+      blocking.push({ id: "unfulfilled-" + p.id, message: p.message });
     });
 
     /* Eine Hook ohne jeden Text ist keine Hook, sondern eine Ueberschrift. */
@@ -242,8 +305,8 @@
       score: score,
       blocking: blocking,
       warnings: warnings,
-      metrics: { exclamations: exclamations, capsRun: caps, emoji: emoji,
-                 hookLength: hook.length, captionLength: caption.length },
+      metrics: Object.assign({}, register.metrics,
+        { hookLength: hook.length, captionLength: caption.length }),
       explanation: blocking.length === 0 && warnings.length === 0
         ? "Der Beitrag entspricht dem Markenregister."
         : blocking.concat(warnings).map(function (x) { return x.message; }).join(" ")
@@ -534,7 +597,9 @@
     check: check,
     checkAtlasUsage: checkAtlasUsage,
     checkLogoUsage: checkLogoUsage,
-    maxCapsRun: maxCapsRun
+    maxCapsRun: maxCapsRun,
+    hookEinloesung: hookEinloesung,
+    textRegister: textRegister
   };
 
   if (isNode) module.exports = api;

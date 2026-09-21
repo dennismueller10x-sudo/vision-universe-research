@@ -107,24 +107,201 @@ function contentIntelligence() {
    2. HOOK_INTELLIGENCE_READY (§9)
    =================================================================== */
 function hookIntelligence() {
-  /* §9: mehrere Kandidaten, bewertet, nicht mechanisch rotiert. Eine
-     Engine, die EINEN Hook zurueckgibt, erfuellt das nicht - auch
-     wenn der Hook gut ist. */
-  if (!existiert("social/engines/hook.js")) {
+  /* -----------------------------------------------------------------
+     §9 VERLANGT EIN OPTIMIERUNGSOBJEKT, KEINE DATEI MIT DREI WOERTERN
+
+     Der erste Entwurf suchte "ARCHETYP", "kandidat" und "bewerte" im
+     Quelltext. Drei Zeichenketten - ein Kommentar haette genuegt.
+     Dieselbe schwache Form, die bei BRAND_SYSTEM_READY und
+     TEXT_ON_VISUAL_REQUIRED schon durch die Gegenprobe gefallen ist.
+
+     Gemessen wird deshalb am Verhalten:
+       1. Gibt es benannte Archetypen, und sagt jeder, was er braucht?
+       2. Entsteht ohne Evidenz KEIN Kandidat - statt einem mit Luecke?
+       3. Ergibt eine reiche Lage MEHRERE Kandidaten?
+       4. Schliesst eine unbelegte Zahl aus, statt Punkte zu kosten?
+       5. Ist die Wahl deterministisch (keine mechanische Rotation)?
+       6. Verschiebt eine GEMESSENE Leistung die Wahl - und fliesst
+          ohne Messung nichts ein?
+       7. Laeuft das alles im Produktionsweg von content.js?
+     ----------------------------------------------------------------- */
+  const pfad = "social/engines/hook.js";
+  if (!existiert(pfad)) {
     return nein("Es gibt keine Hook-Engine. Der Hook entsteht heute als " +
       "Nebenprodukt der Textproduktion; §9 verlangt ihn als eigenes " +
       "Optimierungsobjekt mit mehreren bewerteten Kandidaten.");
   }
-  const q = ohneKommentare(text("social/engines/hook.js"));
-  const hatArchetypen = /ARCHETYP/.test(q);
-  const hatKandidaten = /kandidat/i.test(q);
-  const hatBewertung = /bewerte|bewertung/i.test(q);
-  return (hatArchetypen && hatKandidaten && hatBewertung)
-    ? ja("Hook-Engine mit Archetypen, Kandidaten und Bewertung.")
-    : nein("Die Hook-Engine fuehrt nicht alle drei Teile aus §9: " +
-      "Archetypen " + (hatArchetypen ? "ja" : "NEIN") + ", Kandidaten " +
-      (hatKandidaten ? "ja" : "NEIN") + ", Bewertung " +
-      (hatBewertung ? "ja" : "NEIN") + ".");
+  let H, C;
+  try {
+    H = require(join(ROOT, pfad));
+    C = require(join(ROOT, "social/engines/content.js"));
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "hook.js liess sich nicht laden (" + e.message + ")." };
+  }
+
+  const luecken = [];
+
+  const ids = H.ARCHETYP_IDS || [];
+  if (ids.length < 5) luecken.push("nur " + ids.length + " Archetypen");
+  ids.forEach((id) => {
+    const a = H.ARCHETYPEN[id];
+    if (!a.zweck || !a.risiko || !Array.isArray(a.braucht) || !a.braucht.length) {
+      luecken.push(id + " unvollstaendig");
+    }
+    (a.braucht || []).forEach((b) => {
+      if (typeof H.VORAUSSETZUNG[b] !== "function") {
+        luecken.push(id + " verlangt '" + b + "' ohne Pruefung");
+      }
+    });
+  });
+
+  const leer = H.kandidaten({});
+  if (leer.kandidaten.length) {
+    luecken.push("ohne Evidenz entstehen " + leer.kandidaten.length +
+      " Kandidaten - eine Schablone, die sich immer fuellen laesst");
+  }
+
+  const reich = {
+    subjekt: "Russell 2000",
+    kennzahl: { name: "Bewertungsabstand", wert: -38, einheit: "%" },
+    extrem: { richtung: "weit auseinander", seit: "1999" },
+    vergleich: { eines: "Russell 2000", wertEines: 13.4,
+      anderes: "S&P 500", wertAnderes: 21.6, einheit: "KGV" },
+    ursache: "kleine Unternehmen ziehen seit 2021 weniger Kapital an",
+    bedeutung: "wer breit anlegt, haelt beide Seiten dieses Abstands"
+  };
+  const wahl = H.waehle(reich);
+  if (!wahl.ok || wahl.bewertet.length < 3) {
+    luecken.push("eine reiche Lage ergibt keine drei Kandidaten");
+  }
+
+  /* Eine unbelegte Zahl muss AUSSCHLIESSEN und nicht Punkte kosten. */
+  const unbelegt = H.bewerte({ archetyp: "AUTOR", text: "91 % Abstand." },
+    { subjekt: "Abstand",
+      evidence: [{ statement: "Der Abstand liegt bei 38 %", value: 38 }] });
+  if (unbelegt.zulaessig) {
+    luecken.push("eine unbelegte Zahl ist zulaessig");
+  } else if (!(unbelegt.punkte > 0)) {
+    /* Wenn ein ausgeschlossener Kandidat auch noch null Punkte haette,
+       liesse sich nicht unterscheiden, ob die Tuer oder die Rechnung
+       ihn aufgehalten hat. */
+    luecken.push("der Ausschluss ist von einer schlechten Bewertung nicht " +
+      "zu unterscheiden");
+  }
+
+  /* Und die Tuer muss die WAHL binden, nicht nur ein Feld setzen.
+     Die Gegenprobe hat es gezeigt: entfernt man den Filter in
+     waehle(), bleibt `zulaessig: false` korrekt stehen - und der
+     Kandidat gewinnt trotzdem. Ein Flag, das niemanden aufhaelt, ist
+     kein Ausschluss. */
+  const nurVerbotenes = H.waehle({ subjekt: "Russell 2000",
+    ursache: "Geheimtipp aus dem Casino", bedeutung: "Jackpot" });
+  if (nurVerbotenes.ok) {
+    luecken.push("ein ausgeschlossener Kandidat wird trotzdem gewaehlt");
+  }
+
+  /* Deterministisch. */
+  if (H.waehle(reich).gewaehlt.text !== H.waehle(reich).gewaehlt.text) {
+    luecken.push("die Wahl ist nicht reproduzierbar");
+  }
+
+  /* Gemessene Leistung verschiebt - fehlende fliesst nicht ein. */
+  const verlierer = wahl.ok ? wahl.bewertet
+    .filter((b) => b.zulaessig && b.archetyp !== wahl.gewaehlt.archetyp)
+    .sort((a, b) => a.punkte - b.punkte)[0] : null;
+  if (verlierer) {
+    const mit = H.waehle(Object.assign({}, reich,
+      { leistung: { [verlierer.archetyp]: 100 } }));
+    if (mit.gewaehlt.archetyp !== verlierer.archetyp) {
+      luecken.push("eine gemessene Leistung verschiebt die Wahl nicht");
+    }
+  }
+  if (wahl.ok && wahl.bewertet.some((b) => b.leistungGemessen ||
+      b.teile.leistung !== undefined)) {
+    luecken.push("ohne Messung fliesst trotzdem eine Leistung ein");
+  }
+
+  /* Und der Produktionsweg: ein echter Durchlauf muss den Archetyp und
+     die unterlegenen Kandidaten mitfuehren. */
+  let paket = null;
+  try {
+    const res = C.run({
+      opportunity: { opportunityId: "readiness", topic: "KI-Rechenzentren",
+        entities: ["NVDA"], platform: "instagram" },
+      sources: [{ source: "vu.technical", provider: "tiingo", entity: "NVDA",
+        metric: "52-Wochen-Hoch", value: "184,20", unit: "USD",
+        state: "VERIFIED", observedAt: "2026-09-15T11:00:00Z" }],
+      strategyDecision: { platform: "instagram", archetype: "DATA_STORY",
+        timeSensitivity: "TIMELY" },
+      visualAvailability: { timeSeries: true, keyNumber: true },
+      /* -------------------------------------------------------------
+         EIN SCHREIBER, DESSEN CLAIMS DEN HOOK NICHT DECKEN
+
+         Mit der Vorlage deckten sie ihn zufaellig mit ab - und dann
+         konnte die Frage "ist die Zahl im Hook belegt" nicht mit Nein
+         beantwortet werden. Die Gegenprobe hat es gezeigt: die
+         Herkunft aus dem Kandidaten zu nehmen faerbte die Tests rot
+         und diesen Bericht gruen.
+
+         Jetzt bringt der Hook seinen Beleg selbst mit oder gar keinen.
+         ------------------------------------------------------------- */
+      writer: Object.assign(C.createTemplateWriter(), {
+        draft: () => ({
+          caption: "Kleine Unternehmen ziehen seit Jahren weniger Kapital " +
+            "an, und das sieht man inzwischen an der Bewertung deutlich.",
+          claims: [], cta: null, hashtags: [] })
+      })
+    }, { now: new Date().toISOString() });
+    if (!res.ok) {
+      return { zustand: Z.UNGEPRUEFT,
+        satz: "Der Probedurchlauf endete in " + res.failedStage + ": " +
+          res.explanation };
+    }
+    paket = res.package;
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Der Probedurchlauf warf: " + e.message };
+  }
+  if (!paket.hookArchetype || !paket.hookSelection) {
+    luecken.push("der echte Durchlauf fuehrt den Archetyp nicht mit - die " +
+      "Engine steht neben dem Weg");
+  } else if (!(paket.hookSelection.bewertet || []).length ||
+             paket.hookSelection.bewertet.length < 2) {
+    luecken.push("im echten Durchlauf stand nur ein Kandidat zur Wahl");
+  }
+
+  /* -----------------------------------------------------------------
+     UND JEDE ZAHL IM HOOK IST BELEGT
+
+     Seit der Hook eigene Werte setzen kann, ist er belegpflichtig wie
+     jeder andere Satz. Die Gegenprobe hat gezeigt, dass die Messung
+     das brauchte: nimmt man die Herkunft aus dem Kandidaten, aus der
+     Feldliste oder aus dem Claim-Nachtrag heraus, stand die Zahl
+     unbelegt im Text - und dieser Bericht meldete weiter ERFUELLT.
+
+     Gefragt wird an den Claims des fertigen Pakets, nicht am
+     Zwischenstand.
+     ----------------------------------------------------------------- */
+  const hookZahlen = String(paket.hook || "").match(/\d+(?:[.,]\d+)?/g) || [];
+  const belegt = (paket.claims || []).map((c) => String(c && c.text || ""));
+  const offen = hookZahlen.filter(
+    (z) => !belegt.some((t) => t.indexOf(z) !== -1));
+  if (offen.length) {
+    luecken.push("Zahlen im Hook ohne Beleg in den Claims: " +
+      offen.join(", "));
+  }
+
+  if (luecken.length) {
+    return nein("Der Hook ist noch kein Optimierungsobjekt: " +
+      luecken.join("; ") + ".");
+  }
+  return ja(ids.length + " benannte Archetypen mit eigenen Voraussetzungen, " +
+    wahl.bewertet.length + " bewertete Kandidaten aus einer reichen Lage, " +
+    "unbelegte Zahlen schliessen aus statt Punkte zu kosten, die Wahl ist " +
+    "reproduzierbar, und der echte Durchlauf waehlt " + paket.hookArchetype +
+    " aus " + paket.hookSelection.bewertet.length + " Kandidaten - mit " +
+    "Beleg fuer jede Zahl im Satz.");
 }
 
 /* ===================================================================

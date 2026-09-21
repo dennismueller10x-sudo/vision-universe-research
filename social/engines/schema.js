@@ -290,6 +290,21 @@
       topic: requireString(spec.topic, "contentPackage.topic"),
       thesis: spec.thesis || null,
       hook: spec.hook || null,
+      /* -----------------------------------------------------------------
+         WIE DIESER HOOK ZUSTANDE KAM
+
+         §9 macht den Hook zu einem eigenen Optimierungsobjekt. Ein
+         Optimierungsobjekt, dessen Herkunft beim Verpacken verlorengeht,
+         ist keines: der Lernpfad koennte spaeter nie fragen, welcher
+         Archetyp getragen hat und was zur Wahl stand.
+
+         Genau das ist passiert. Der Archetyp stand im Zwischenpaket und
+         fehlte im fertigen - eine von Hand gefuehrte Feldliste, aus der
+         ein Feld faellt. Dieselbe Fehlerfamilie, die in diesem Projekt
+         schon den Byte-Abdruck zweimal unterwegs verloren hat.
+         ----------------------------------------------------------------- */
+      hookArchetype: spec.hookArchetype || null,
+      hookSelection: spec.hookSelection || null,
       caption: spec.caption || null,
       cta: spec.cta || null,
       hashtags: Array.isArray(spec.hashtags) ? spec.hashtags.slice() : [],

@@ -47,6 +47,7 @@
   var Schema     = isNode ? require("./schema.js")     : global.VUSocialSchema;
   var FactCheck  = isNode ? require("./fact-check.js") : global.VUSocialFactCheck;
   var Brand      = isNode ? require("./brand.js")      : global.VUSocialBrand;
+  var Hook       = isNode ? require("./hook.js")       : global.VUSocialHook;
   var Visual     = isNode ? require("./visual.js")     : global.VUSocialVisual;
   var Untrusted  = isNode ? require("./untrusted.js")  : global.VUSocialUntrusted;
   var Hash       = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
@@ -119,13 +120,59 @@
     return stageResult("THESIS", true, { text: String(text) });
   }
 
-  /** HOOK — der Einstieg. Stark erlaubt, unbelegt nicht. */
+  /* -------------------------------------------------------------------
+     HOOK — der Einstieg, und ein eigenes Optimierungsobjekt (§9)
+
+     Bis hierher gab `writer.hook()` EINEN Satz zurueck. Ein Satz laesst
+     sich pruefen, aber nicht optimieren: es gibt nichts, womit man ihn
+     vergleichen koennte.
+
+     Jetzt leitet hook.js aus den Belegen ab, welche Archetypen die
+     Evidenz ueberhaupt traegt, baut je einen Kandidaten, bewertet sie
+     und waehlt begruendet. Der Satz des bestehenden Autors tritt als
+     Kandidat AUTOR mit an - er ist oft richtig, und ihn zu uebergehen
+     hiesse, fertige Arbeit wegzuwerfen.
+
+     WAS HIER NOCH NICHT GEHT
+
+     Die Einloesung. An dieser Stelle gibt es den Beitragstext noch
+     nicht - DRAFT kommt erst danach. Ein Kandidat wird deshalb hier
+     NICHT daran gemessen, ob der Text sein Versprechen haelt; das
+     waere eine Messung gegen etwas, das es noch nicht gibt. Was er
+     verspricht, reist mit (`erwartet`), und BRAND_CHECK prueft die
+     Einloesung spaeter am fertigen Paket - so wie bisher.
+     ------------------------------------------------------------------- */
   function hook(opportunity, thesisData, researchData, writer) {
-    var text = writer && typeof writer.hook === "function"
+    var autorText = writer && typeof writer.hook === "function"
       ? writer.hook(opportunity, thesisData, researchData)
       : null;
-    if (!text) return stageResult("HOOK", false, null, "Keine Hook erzeugt.");
-    return stageResult("HOOK", true, { text: String(text) });
+
+    var kontext = Hook.ableiten({
+      opportunity: opportunity,
+      facts: (researchData && researchData.facts) || [],
+      thesis: thesisData && thesisData.text
+    });
+    kontext.zusaetzlich = autorText
+      ? [{ archetyp: "AUTOR", text: String(autorText) }] : [];
+
+    var wahl = Hook.waehle(kontext);
+    if (!wahl.ok) {
+      return stageResult("HOOK", false, { auswahl: wahl },
+        "Keine Hook erzeugt: " + wahl.erklaerung);
+    }
+    return stageResult("HOOK", true, {
+      text: wahl.gewaehlt.text,
+      archetyp: wahl.gewaehlt.archetyp,
+      /* Die Belege, aus denen die Zahlen dieses Satzes stammen. Sie
+         gehen in die Claims des Pakets - eine Zahl im Hook ist
+         belegpflichtig wie jede andere. */
+      belege: wahl.gewaehlt.belege || [],
+      /* Was dieser Einstieg verspricht. BRAND_CHECK loest es ein. */
+      erwartet: wahl.gewaehlt.erwartet || [],
+      /* Die Unterlegenen bleiben stehen: ohne sie koennte der Lernpfad
+         nie fragen, ob die Wahl die richtige war. */
+      auswahl: wahl
+    });
   }
 
   /** STRUCTURE — der Aufbau, noch ohne Formulierung. */
@@ -250,6 +297,37 @@
     /* 5. DRAFT */
     var d = draft(opportunity, { thesis: t.data, hook: h.data, structure: s.data, research: r.data }, input.writer);
     if (!d.ok) return stop(d);
+
+    /* -----------------------------------------------------------------
+       DIE BELEGE DES HOOKS GEHEN IN DIE CLAIMS
+
+       Der Autor baut seine Claims aus den Fakten, die ER benutzt. Seit
+       der Hook eigene Zahlen setzen kann, reicht das nicht mehr: die
+       Faktenpruefung meldete "184,2 USD ohne Beleg", und sie hatte
+       recht.
+
+       Ergaenzt wird nur, was noch nicht dasteht - derselbe Beleg
+       zweimal waere kein zweiter Beleg.
+       ----------------------------------------------------------------- */
+    d.data.claims = d.data.claims || [];
+    var ergaenze = function (anzeige, wert, quelle) {
+      if (!anzeige) return;
+      var schon = d.data.claims.some(function (c) {
+        return c && String(c.text).trim() === anzeige; });
+      if (schon) return;
+      d.data.claims.push({ text: anzeige, numeric: wert, source: quelle });
+    };
+    (h.data.belege || []).forEach(function (f) {
+      if (!f || f.value === null || f.value === undefined) return;
+      /* Der Wert - in der Schreibweise der Quelle, nicht umformatiert. */
+      ergaenze(String(f.value) + (f.unit ? " " + f.unit : ""), f.value, f.source);
+      /* UND die Bezeichnung. Auch sie ist belegpflichtig: "52-Wochen-Hoch"
+         ist eine Rekordaussage und keine Beschriftung. Genau das hat die
+         Faktenpruefung gemeldet, nachdem nur der Wert nachgetragen war -
+         dieselbe Regel, nach der der Vorlagen-Autor seine Zahl seit jeher
+         mit zwei Claims belegt. */
+      ergaenze(f.metric ? String(f.metric) : null, null, f.source);
+    });
     stages.push(d);
 
     /* Zwischenstand als Paket. */
@@ -263,6 +341,8 @@
       topic: opportunity.topic || "unbenannt",
       thesis: t.data.text,
       hook: h.data.text,
+      hookArchetype: h.data.archetyp || null,
+      hookSelection: h.data.auswahl || null,
       caption: d.data.caption,
       cta: d.data.cta,
       hashtags: d.data.hashtags,
@@ -325,6 +405,8 @@
       topic: pkg.topic,
       thesis: pkg.thesis,
       hook: pkg.hook,
+      hookArchetype: pkg.hookArchetype,
+      hookSelection: pkg.hookSelection,
       caption: adapted.data.caption,
       cta: pkg.cta,
       hashtags: adapted.data.hashtags,
