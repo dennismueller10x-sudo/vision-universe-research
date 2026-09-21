@@ -27,6 +27,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+import { ausgabePfad } from "../quality/out-path.mjs";
+
 const Readiness = require(join(ROOT, "social/engines/production-readiness.js"));
 const Registry = require(join(ROOT, "social/engines/source-registry.js"));
 const Orchestrator = require(join(ROOT, "social/engines/orchestrator.js"));
@@ -54,8 +56,65 @@ function fahne(name) {
 const SUITEN = fahne("--suites-green");
 const ISOLATION = fahne("--isolation-proven");
 
+/* -------------------------------------------------------------------
+   GRUEN WOANDERS IST KEIN BELEG FUER HIER
+
+   Die beiden Fahnen oben waren eine Behauptung des Aufrufers: wer
+   --suites-green schrieb, setzte damit eine der zehn Bedingungen auf
+   ERFUELLT - ohne Zahl, ohne Quelle, ohne Stand. Sie liess sich auch
+   dann setzen, wenn die Suiten zuletzt vor drei Wochen liefen.
+
+   scripts/social/verify-suites.mjs laesst sie stattdessen wirklich
+   laufen und schreibt, was herauskam, samt dem Commit, an dem es lief.
+   Hier wird dieser Commit mit HEAD verglichen. Ein Befund von einem
+   anderen Stand ist keiner fuer diesen und zaehlt wie kein Befund.
+
+   Die Fahnen bleiben - fuer eine Umgebung, in der ein Aufrufer den
+   Lauf wirklich von aussen belegt. Der gemessene Befund geht ihnen
+   vor, und beide nennen im Bericht ihre Herkunft.
+   ------------------------------------------------------------------- */
+const BELEG_PFAD = fahne("--evidence") || ".verification/suites.json";
+/* `join(ROOT, "/tmp/x")` klebt an, statt zu befolgen - derselbe
+   Fallstrick wie ueberall sonst. */
+const beleg = lies(ausgabePfad(ROOT, BELEG_PFAD));
+
+function kopfCommit() {
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"],
+      { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch { return null; }
+}
+
+/**
+ * Der gemessene Befund - oder die Begruendung, warum er keiner ist.
+ *
+ * @param feld     "suitesOk" oder "isolationOk"
+ * @param zaehlung ein Satz mit den gemessenen Zahlen
+ */
+function ausBeleg(feld, zaehlung) {
+  if (!beleg) return null;
+  const kopf = kopfCommit();
+  if (!beleg.commit || !kopf) {
+    return { ok: false, explanation: "Der Beleg in " + BELEG_PFAD +
+      " nennt keinen Stand, oder der Stand dieses Baums ist unbekannt. " +
+      "Ohne Stand laesst sich nicht sagen, wofuer er gilt." };
+  }
+  if (beleg.commit !== kopf) {
+    return { ok: false, explanation: "Der Beleg stammt von " +
+      beleg.commit.slice(0, 10) + ", dieser Baum steht auf " + kopf.slice(0, 10) +
+      ". Gruen an einem anderen Stand ist kein Beleg fuer diesen." };
+  }
+  if (beleg.cleanTree === false) {
+    return { ok: false, explanation: "Zum Zeitpunkt der Messung war der " +
+      "Arbeitsbaum nicht sauber. Der Befund gehoert dann zu keinem Commit." };
+  }
+  return { ok: beleg[feld] === true, explanation: zaehlung(beleg) +
+    " (gemessen am Stand " + beleg.commit.slice(0, 10) + ", " +
+    beleg.generatedAt + ")" };
+}
+
 function lies(pfad, fallback = null) {
-  const p = join(ROOT, pfad);
+  const p = pfad.startsWith("/") ? pfad : join(ROOT, pfad);
   if (!existsSync(p)) return fallback;
   try { return JSON.parse(readFileSync(p, "utf8")); } catch { return fallback; }
 }
@@ -73,7 +132,41 @@ const quellenBestand = lies("social/data/external-sources.json");
 const bericht = lies("social/data/cycle-report.json");
 const leistung = lies("social/data/performance.json");
 const gedaechtnis = lies("social/data/content-memory.json");
-const workflow = text(".github/workflows/social-orchestrator.yml");
+const workflowRoh = text(".github/workflows/social-orchestrator.yml");
+
+/* -------------------------------------------------------------------
+   EIN KOMMENTAR IST KEINE HANDLUNG
+
+   SCHEDULER_NEVER_PUBLISHES stand auf NICHT_ERFUELLT mit der Begruendung
+   "Der Scheduler fuehrt aus: APPROVE, REJECT". Der Workflow ruft
+   decide-candidate.mjs aber gar nicht auf - der Name steht in einem
+   YAML-Kommentar, der erklaert, welchen Weg die Owner-Entscheidung
+   nimmt. Die Pruefung hat eine Erklaerung fuer eine Ausfuehrung
+   gehalten und damit fuenf Auftraege lang einen Mangel gemeldet, den
+   es nicht gab.
+
+   Derselbe Fehler ist in diesem Projekt schon einmal vorgekommen (ein
+   Test, der einen Kommentar mit `evidenceSufficient: false` als Code
+   las). Deshalb steht die Antwort jetzt an EINER Stelle.
+
+   Vorsichtig: entfernt werden nur ganze Kommentarzeilen und
+   Zeilenenden nach einem `#`, das nicht in Anfuehrungszeichen steht.
+   Ein `#` in einem Cron-Ausdruck oder einer Zeichenkette bleibt.
+   ------------------------------------------------------------------- */
+function ohneYamlKommentare(quelle) {
+  return String(quelle || "").split("\n").map((zeile) => {
+    let inEinfach = false, inDoppelt = false;
+    for (let i = 0; i < zeile.length; i += 1) {
+      const c = zeile[i];
+      if (c === "'" && !inDoppelt) inEinfach = !inEinfach;
+      else if (c === '"' && !inEinfach) inDoppelt = !inDoppelt;
+      else if (c === "#" && !inEinfach && !inDoppelt) return zeile.slice(0, i);
+    }
+    return zeile;
+  }).join("\n");
+}
+
+const workflow = ohneYamlKommentare(workflowRoh);
 
 /* -------------------------------------------------------------------
    WER KOENNTE EINEN AUTOPUBLISH-SCHALTER SETZEN?
@@ -131,6 +224,21 @@ function schedulerSchreiber() {
 
 /* Welche Handlungen fuehrt der Scheduler aus? Aus den Schritt-Namen
    und den aufgerufenen Skripten - nicht aus der Absicht im Kopf. */
+/* Ein ES-Modul in einem synchronen Skript: der Aufruf laeuft in einem
+   eigenen Node-Prozess, damit dieser Bericht synchron bleiben kann und
+   nichts vom geprueften Skript in seinen eigenen Zustand gerät. */
+function ladeSynchron(pfad) {
+  const aus = execFileSync("node", ["-e", `
+    const m = await import(${JSON.stringify(join(ROOT, pfad))});
+    const lagen = [undefined, "MAYBE", "", null];
+    console.log(JSON.stringify(lagen.map((z) =>
+      m.befehleFuer({ candidateId: "pruefung", decision: z }))));
+  `], { encoding: "utf8", cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] });
+  const ergebnisse = JSON.parse(aus.trim());
+  return { befehleFuer: (posten) => ergebnisse[
+    [undefined, "MAYBE", "", null].indexOf(posten.decision)] ?? null };
+}
+
 function schedulerHandlungen() {
   if (!workflow) return null;
   const handlungen = [];
@@ -142,6 +250,48 @@ function schedulerHandlungen() {
   if (/make-publish-candidate\.mjs/.test(workflow)) handlungen.push("CANDIDATE");
   if (/dispatch-publications\.mjs/.test(workflow)) handlungen.push("PUBLISH");
   if (/decide-candidate\.mjs/.test(workflow)) handlungen.push("APPROVE", "REJECT");
+
+  /* -----------------------------------------------------------------
+     TRAGEN IST NICHT ENTSCHEIDEN
+
+     ingest-owner-decisions.mjs steht im Workflow, und es schreibt
+     APPROVED und REJECTED ins Repository. Es TRIFFT diese
+     Entscheidungen aber nicht: es holt sie unter dem Admin-Schluessel
+     beim Worker ab, wo der Owner sie gefaellt hat.
+
+     Der Unterschied ist genau die Invariante. Deshalb wird er hier
+     nicht unterstellt, sondern nachgesehen: stammt die Entscheidung
+     aus der Antwort des Workers - oder koennte das Skript sie sich
+     auch selbst geben? Findet sich ein zweiter Ursprung, ist das
+     Tragen doch ein Entscheiden, und die Invariante faellt. */
+  if (/ingest-owner-decisions\.mjs/.test(workflow)) {
+    const quelle = text("scripts/social/ingest-owner-decisions.mjs") || "";
+
+    /* Dass die Entscheidung vom Worker kommt, ist die eine Haelfte. */
+    const vomWorker = /\/social\/approval\/decisions/.test(quelle);
+
+    /* Die andere wird GEFRAGT statt gelesen: `befehleFuer` bekommt
+       nacheinander einen Posten ohne Entscheidung, einen mit einem
+       Zustand, den es nicht gibt, und einen mit leerem Zustand. Ergibt
+       eine dieser drei Lagen einen Befehl, dann kann der Scheduler eine
+       Freigabe erzeugen, die der Owner nie getroffen hat - und genau
+       das ist die verbotene Handlung.
+
+       Ein Blick in den Quelltext haette hier nur gezeigt, dass
+       "--approve" darin vorkommt. Es kommt vor; die Frage ist, WORAN es
+       haengt. */
+    let erfindetEntscheidung = null;
+    try {
+      const mod = ladeSynchron("scripts/social/ingest-owner-decisions.mjs");
+      erfindetEntscheidung = [undefined, "MAYBE", "", null]
+        .some((zustand) => mod.befehleFuer(
+          { candidateId: "pruefung", decision: zustand }) !== null);
+    } catch { erfindetEntscheidung = null; }
+
+    if (!vomWorker || erfindetEntscheidung !== false) {
+      handlungen.push("APPROVE", "REJECT");
+    }
+  }
   return [...new Set(handlungen)];
 }
 
@@ -488,9 +638,18 @@ const ergebnis = Readiness.pruefe({
   /* Diese beiden kommen von aussen. Ohne die Fahne bleiben sie
      ungeprueft - und das ist ehrlicher als ein Skript, das seine
      eigene Hausaufgabe abnimmt. */
-  isolation: ISOLATION ? { ok: true,
-    explanation: "Von aussen belegt: " + ISOLATION } : null,
-  suites: SUITEN ? { ok: true, explanation: "Von aussen belegt: " + SUITEN } : null
+  /* Gemessener Befund zuerst, Behauptung nur ersatzweise - und jede
+     nennt, woher sie kommt. */
+  isolation: ausBeleg("isolationOk", (b) =>
+      b.isolation.map((i) => i.id + ": " + (i.ok ? "unveraendert" : "VERAENDERT"))
+        .join(", ")) ||
+    (ISOLATION ? { ok: true, explanation: "Von aussen behauptet: " + ISOLATION +
+      " — nicht gemessen." } : null),
+  suites: ausBeleg("suitesOk", (b) =>
+      b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests +
+        (r.fail ? " (" + r.fail + " gefallen)" : "")).join(", ")) ||
+    (SUITEN ? { ok: true, explanation: "Von aussen behauptet: " + SUITEN +
+      " — nicht gemessen." } : null)
 });
 
 /* ===================================================================
