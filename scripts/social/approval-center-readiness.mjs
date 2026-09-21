@@ -27,6 +27,7 @@
      node scripts/social/approval-center-readiness.mjs --suites-green ja --live ja
    ========================================================================= */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -73,7 +74,10 @@ export function pruefe(options = {}) {
       : options.suitesGreen === undefined
         ? "Ob die Suiten gruen sind, weiss dieser Lauf nicht. Mit " +
           "--suites-green von aussen hereingeben."
-        : "Alle Bausteine vorhanden; Suitenzustand von aussen gemeldet."));
+        : "Alle Bausteine vorhanden; Suitenzustand " +
+          (options.suitesQuelle === "gemessen"
+            ? "gemessen (verify-suites.mjs, Stand dieses Baums)."
+            : "von aussen BEHAUPTET, nicht gemessen.")));
 
   /* 2. Steht es unter der Adresse, unter der der Owner es aufruft?
         Das ist von hier aus NICHT messbar - der Egress-Proxy dieser
@@ -249,7 +253,37 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const ja = (v) => v === undefined || v === "" ? undefined
     : ["ja", "true", "1", "yes"].includes(String(v).toLowerCase());
 
-  const zustaende = pruefe({ suitesGreen: ja(arg("suites-green")), live: ja(arg("live")) });
+  /* -----------------------------------------------------------------
+     DER GEMESSENE BEFUND GEHT DER BEHAUPTUNG VOR
+
+     `--suites-green ja` war eine Behauptung des Aufrufers ueber die
+     Arbeit, die dieser Bericht bewerten soll - dieselbe Form, die in
+     production-readiness.mjs schon ersetzt ist. Die CI setzte sie,
+     weil zwei Schritte davor Tests gelaufen waren.
+
+     scripts/social/verify-suites.mjs misst stattdessen und schreibt
+     den Commit dazu. Ein Befund von einem anderen Stand oder aus einem
+     nicht sauberen Baum gilt nicht - dann bleibt es UNGEPRUEFT, und
+     ungeprueft blockiert.
+
+     Die Fahne bleibt als ausdrueckliche Behauptung bestehen; der
+     gemessene Befund geht ihr vor. */
+  const belegPfad = arg("evidence") || ".verification/suites.json";
+  const belegDatei = belegPfad.startsWith("/") ? belegPfad : join(ROOT, belegPfad);
+  let gemessen;
+  try {
+    const b = JSON.parse(readFileSync(belegDatei, "utf8"));
+    const kopf = execFileSync("git", ["rev-parse", "HEAD"],
+      { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    gemessen = (b.commit && b.commit === kopf && b.cleanTree !== false)
+      ? b.suitesOk === true : undefined;
+  } catch { gemessen = undefined; }
+
+  const zustaende = pruefe({
+    suitesGreen: gemessen !== undefined ? gemessen : ja(arg("suites-green")),
+    suitesQuelle: gemessen !== undefined ? "gemessen" : "behauptet",
+    live: ja(arg("live"))
+  });
   const schlange = warteschlange();
 
   console.log("VISION UNIVERSE SOCIAL — APPROVAL CENTER");

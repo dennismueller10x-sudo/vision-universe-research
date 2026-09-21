@@ -513,8 +513,13 @@ VU_SOCIAL_AUTOPUBLISH           ist false   soll false
 OWNER_PUBLISHING_GATE           ist true    soll true
 EXTERNAL_SOCIAL_SOURCES_ACTIVE  ist 0       soll 0
 
-social: 1383/1383    worker: 327/327    Isolation: beide unveraendert
+social: 1387/1387    worker: 327/327    Isolation: beide unveraendert
 ```
+
+In einem frischen Klon liest sich die erste Zahl als `1373/1387
+(14 uebersprungen)`: `asset-transport.test.mjs` braucht ein Bild aus einem
+Zweig, der dort nicht liegt. Die Auslassung ist erklaert und wird benannt —
+sie zaehlt nicht als Beleg und verschwindet auch nicht hinter der Zahl.
 
 **Es wurde nichts veroeffentlicht.** Kein Kandidat erzwungen, keine
 Work-Invocation verbraucht, keine externe Quelle aktiviert.
@@ -550,10 +555,48 @@ selbst aus dem falschen Grund (AO10, OD4) — beide stehen jetzt mit dem Grund i
 Kommentar. Ein Test, der auf eine **Formulierung** prueft (`"vom Worker"`) statt
 auf eine **Kennung** (`cf-ray`), merkt den Ausbau des Nachweises nicht.
 
-### Was offen bleibt
+### Deployment und Betriebs-Smoke
 
-`DEPLOYT` und `BETRIEBS_SMOKE_OHNE_VEROEFFENTLICHUNG` sind aus einer Umgebung
-ohne Zugang zu `social.visionuniverse.de` **UNGEPRUEFT** — und ungeprueft zaehlt
-wie nicht erfuellt. Beide werden im Schritt `ORDER_D_DONE` des Workflows
-`social-cloudflare` (`action: deploy` oder `verify`) gemessen, wo der Worker
-erreichbar ist.
+Aus einer Umgebung ohne Zugang zu `social.visionuniverse.de` sind `DEPLOYT` und
+`BETRIEBS_SMOKE_OHNE_VEROEFFENTLICHUNG` **UNGEPRUEFT** — und ungeprueft zaehlt
+wie nicht erfuellt. Gemessen werden sie im Schritt `ORDER_D_DONE` des Workflows
+`social-cloudflare` (`action: deploy` oder `verify`), wo der Worker antwortet.
+
+Der kontrollierte Deployment-Lauf vom 2026-09-21 (`action: deploy`,
+`confirm_deploy: DEPLOY`, Stand `49b19d7f01`) hat beide gemessen:
+
+```
+ORDER_D_DONE  true        OFFEN  0 von 12
+
+DEPLOYT   /approval/run -> 401 [cf-ray a3e731254ac92288-ORD, server cloudflare]
+          die Adresse gibt es, und ein GET ohne Sitzung kommt nicht durch
+SMOKE     /social/status -> 401, /approval -> 401, je mit cf-ray
+          kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht
+```
+
+Die `cf-ray`-Kennung ist der Grund, warum diese beiden Zeilen etwas belegen: sie
+entsteht in Cloudflares Netz. Ein `403` des Egress-Proxy in einer
+Entwicklungsumgebung sieht sonst genauso aus wie ein `403` des Owner-Tors — und
+hat in der ersten Fassung dieses Berichts genau dazu gefuehrt.
+
+### Was der Deployment-Lauf danach noch gefunden hat
+
+Zwei Fehler in Pruefungen, die in diesem Auftrag selbst entstanden sind und
+vorher nicht auffallen konnten:
+
+**`IN_MAIN_INTEGRIERT` fragte nach Abstammung.** Dieses Repository merged mit
+Squash; der Zweigstand ist danach kein Vorfahre von main, obwohl sein Inhalt
+dort liegt. Die Bedingung waere nach jedem korrekten Merge `NICHT_ERFUELLT`
+gewesen. Eine Bedingung, welche die eigene Merge-Konvention nicht erfuellen
+kann, ist keine Pruefung. Gefragt wird jetzt nach dem Inhalt.
+
+**`SUITEN_GRUEN` meldete ERFUELLT bei `1369/1383`.** Vierzehn Tests waren weder
+bestanden noch gefallen, `fail` stand auf 0. Es sind die vierzehn aus
+`asset-transport.test.mjs`, die sich selbst ueberspringen, wenn das bekannt gute
+Bild im Klon fehlt — in einem frischen CI-Checkout fehlt es. Eine erklaerte
+Auslassung, kein Fehlschlag.
+
+Die naheliegende Verschaerfung (`pass === tests`) waere der naechste Fehler
+gewesen: sie haette die CI fuer eine ehrliche Auslassung rot gefaerbt. Getrennt
+wird jetzt zwischen **uebersprungen** (erklaert, zaehlt nicht als Beleg, muss
+aber sichtbar sein) und **abgebrochen** (nicht gelaufen, niemand sagt warum).

@@ -84,6 +84,33 @@ function sauber() {
  * endet ebenfalls mit 0, und "0 von 0 bestanden" ist kein gruener
  * Lauf, sondern ein leerer.
  */
+/**
+ * Geht die Bilanz eines Laufs auf?
+ *
+ * Herausgezogen, damit die Regel geprueft werden kann, ohne eine Suite
+ * zu starten - und damit sie an EINER Stelle steht.
+ */
+export function bilanzGeht(z) {
+  const zahlOderNull = (v) => (typeof v === "number" && Number.isFinite(v)) ? v : null;
+  const tests = zahlOderNull(z.tests);
+  const bestanden = zahlOderNull(z.pass);
+  if (tests === null || bestanden === null) return false;
+
+  /* Ein Lauf ohne Tests ist kein gruener Lauf: `node --test` auf ein
+     Muster ohne Treffer endet mit 0. */
+  if (tests <= 0) return false;
+  if ((z.fail || 0) !== 0) return false;
+  if (z.exitCode !== 0) return false;
+
+  /* Abgebrochen heisst: nicht gelaufen, und niemand hat gesagt warum. */
+  if ((z.cancelled || 0) !== 0) return false;
+
+  /* Jeder gezaehlte Test ist entweder bestanden oder erklaert
+     ausgelassen. Bleibt etwas uebrig, ist es weder das eine noch das
+     andere - und das faellt sonst niemandem auf. */
+  return bestanden + (z.skipped || 0) + (z.todo || 0) === tests;
+}
+
 function laufen(suite) {
   let ausgabe = "";
   let code = 0;
@@ -102,13 +129,48 @@ function laufen(suite) {
   const tests = zahl("tests");
   const bestanden = zahl("pass");
   const gefallen = zahl("fail");
-  return {
-    id: suite.id, pattern: suite.muster,
-    tests, pass: bestanden, fail: gefallen, exitCode: code,
-    /* Drei Bedingungen, und die erste ist die, die ein Exit-Code
-       nicht stellt. */
-    ok: tests !== null && tests > 0 && gefallen === 0 && code === 0
-  };
+  const abgebrochen = zahl("cancelled");
+  const uebersprungen = zahl("skipped");
+  const offen = zahl("todo");
+
+  /* -----------------------------------------------------------------
+     ZWEI ARTEN, NICHT BESTANDEN ZU HABEN
+
+     Die erste Fassung prueffte `tests > 0 && fail === 0`. Ein Lauf der
+     Produktionsintegration hat sie widerlegt: der Bericht meldete
+
+         SUITEN_GRUEN  ERFUELLT
+         social: 1369/1383
+
+     Vierzehn Tests waren weder bestanden noch gefallen, und `fail`
+     stand auf 0. "1369/1383" sah wie ein Mangel aus und stand als
+     gruen da.
+
+     Nachgesehen: es sind die vierzehn aus asset-transport.test.mjs.
+     Sie UEBERSPRINGEN sich selbst, wenn das bekannt gute Bild im Klon
+     nicht erreichbar ist - in einem frischen CI-Checkout ist es das
+     nicht. Das ist eine erklaerte Auslassung und kein Fehlschlag.
+
+     Die naheliegende Verschaerfung (`pass === tests`) waere deshalb
+     falsch gewesen: sie haette die CI fuer eine ehrliche Auslassung
+     rot gefaerbt - ein Tor, das im Weg steht, wo niemand durchwollte.
+
+     Unterschieden wird daher:
+
+       uebersprungen   erklaert, zaehlt nicht als Beleg, MUSS aber
+                       sichtbar sein - sonst verschwindet eine Luecke
+                       hinter einer gruenen Zahl
+       abgebrochen     nicht gelaufen, und niemand hat gesagt warum;
+                       das ist kein gruener Lauf
+     ----------------------------------------------------------------- */
+  const z = { tests, pass: bestanden, fail: gefallen,
+    cancelled: abgebrochen, skipped: uebersprungen, todo: offen,
+    exitCode: code };
+
+  return Object.assign({ id: suite.id, pattern: suite.muster }, z, {
+    unfinished: (tests !== null && bestanden !== null) ? tests - bestanden : null,
+    ok: bilanzGeht(z)
+  });
 }
 
 /** Die Isolationspruefung, je Suite. */
@@ -129,14 +191,29 @@ function isolation(suite) {
     satz: ausgabe.trim().split("\n").slice(-1)[0] || null };
 }
 
-/* ------------------------------------------------------------------ Lauf */
+/* ------------------------------------------------------------------ Lauf
+   Nur beim direkten Aufruf. Wer `bilanzGeht` importiert, um die Regel
+   zu pruefen, soll damit nicht die Suiten starten - die erste Fassung
+   tat genau das. */
+if (import.meta.url !== `file://${process.argv[1]}`) {
+  // als Modul geladen: nichts tun
+} else {
 console.log("VISION UNIVERSE SOCIAL — Suiten und Isolation messen\n");
 
 const laeufe = SUITEN.map((s) => {
   process.stdout.write("  " + s.id.padEnd(8) + " laeuft ... ");
   const r = laufen(s);
-  console.log(r.ok ? (r.pass + " gruen") : ("FEHLGESCHLAGEN (" +
-    (r.fail === null ? "keine Zusammenfassung" : r.fail + " gefallen") + ")"));
+  console.log(r.ok
+    ? (r.pass + " gruen" +
+       (r.skipped ? ", " + r.skipped + " uebersprungen" : ""))
+    : ("FEHLGESCHLAGEN (" +
+       (r.tests === null ? "keine Zusammenfassung"
+        : (r.fail ? r.fail + " gefallen"
+           : (r.unfinished
+              ? r.unfinished + " weder bestanden noch gefallen" +
+                " (abgebrochen " + r.cancelled + ", uebersprungen " +
+                r.skipped + ", offen " + r.todo + ")"
+              : "kein Test gelaufen"))) + ")"));
   return r;
 });
 
@@ -167,3 +244,4 @@ console.log("  Isolation: " + (befund.isolationOk ? "unveraendert" : "veraendert
 console.log("  Geschrieben: " + AUS);
 
 process.exit(befund.suitesOk && befund.isolationOk ? 0 : 1);
+}

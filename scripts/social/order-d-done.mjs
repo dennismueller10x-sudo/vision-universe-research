@@ -220,7 +220,25 @@ function ausBeleg(feld, satzBauer) {
     satz: satzBauer(beleg) + " (Stand " + beleg.commit.slice(0, 10) + ")" };
 }
 
-/** 7. Dieser Stand ist ueber PR und CI in main angekommen (§46). */
+/* -------------------------------------------------------------------
+   7. IST DIESER STAND IN MAIN ANGEKOMMEN? (§46)
+
+   ABSTAMMUNG BEANTWORTET DAS NICHT.
+
+   Der erste Anlauf fragte `git merge-base --is-ancestor HEAD main`.
+   Dieses Repository merged aber mit SQUASH: aus fuenfzehn Commits wird
+   auf main einer, und der traegt eine neue Kennung. Der Zweigstand ist
+   danach KEIN Vorfahre von main - obwohl sein ganzer Inhalt dort liegt.
+
+   Die Bedingung waere damit nach jedem korrekten Merge dieses
+   Repositories `NICHT_ERFUELLT` gewesen: eine Invariante, die die
+   eigene Merge-Konvention nicht erfuellen kann, ist keine Pruefung,
+   sondern ein Dauerfehler.
+
+   Gefragt wird deshalb nach dem INHALT: unterscheidet sich der Baum
+   dieses Standes von dem auf main? Ist der Unterschied leer, ist
+   dieser Stand angekommen - gleichgueltig, ueber welche Commit-Form.
+   ------------------------------------------------------------------- */
 function inMain() {
   const kopf = git("rev-parse", "HEAD");
   git("fetch", "origin", "main");
@@ -229,36 +247,32 @@ function inMain() {
     return { zustand: ZUSTAND.UNGEPRUEFT,
       satz: "Der Stand von main ist von hier aus nicht feststellbar." };
   }
-  /* Vorfahre heisst: main enthaelt diesen Stand. Ein Merge-Commit auf
-     main reicht; identische Staende sind nicht verlangt. */
-  let enthalten = false;
-  try {
-    execFileSync("git", ["merge-base", "--is-ancestor", kopf, main],
-      { cwd: ROOT, stdio: "ignore" });
-    enthalten = true;
-  } catch { enthalten = false; }
-  /* -----------------------------------------------------------------
-     "MAIN ENTHAELT MAIN" IST KEINE AUSKUNFT
 
-     Laeuft dieser Bericht AUF main - etwa im Cloudflare-Workflow nach
-     dem Merge -, dann ist HEAD gleich origin/main, und die Frage
-     beantwortet sich selbst. Die Antwort ist dann zwar richtig, aber
-     sie belegt nichts: geprueft wurde eine Gleichheit, keine
-     Integration.
+  /* "main enthaelt main" ist keine Auskunft: laeuft dieser Bericht AUF
+     main - etwa im Cloudflare-Workflow nach dem Merge -, beantwortet
+     sich die Frage selbst. Die Antwort ist dann richtig und belegt
+     nichts; der Satz sagt das. */
+  if (kopf === main) {
+    return { zustand: ZUSTAND.ERFUELLT,
+      satz: "Dieser Stand IST main (" + kopf.slice(0, 10) + "). Von hier aus " +
+        "beantwortet sich die Frage selbst — als Beleg fuer eine Integration " +
+        "taugt sie nur von einem Zweig aus." };
+  }
 
-     Der Satz sagt das, statt eine Pruefung vorzutaeuschen, die an
-     dieser Stelle keine ist. */
-  const istMain = kopf === main;
-  return { zustand: enthalten ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
-    satz: !enthalten
-      ? kopf.slice(0, 10) + " ist noch nicht in main (" + main.slice(0, 10) +
-        "). Solange nur auf dem Zweig, ist nichts integriert."
-      : (istMain
-          ? "Dieser Stand IST main (" + kopf.slice(0, 10) + "). Von hier aus " +
-            "beantwortet sich die Frage selbst — als Beleg fuer eine " +
-            "Integration taugt sie nur von einem Zweig aus."
-          : "main (" + main.slice(0, 10) + ") enthaelt " + kopf.slice(0, 10) +
-            ".") };
+  const unterschied = git("diff", "--name-only", main, kopf);
+  if (unterschied === null) {
+    return { zustand: ZUSTAND.UNGEPRUEFT,
+      satz: "Der Vergleich mit main ist nicht zustande gekommen." };
+  }
+  const dateien = unterschied.split("\n").filter((z) => z.trim().length);
+  return { zustand: dateien.length === 0 ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
+    satz: dateien.length === 0
+      ? "Inhaltsgleich mit main (" + main.slice(0, 10) + "): keine Datei " +
+        "unterscheidet sich. Der Squash-Merge macht diesen Stand nicht zum " +
+        "Vorfahren, aber sein Inhalt liegt dort."
+      : dateien.length + " Datei(en) unterscheiden sich noch von main (" +
+        main.slice(0, 10) + "), darunter " + dateien.slice(0, 3).join(", ") +
+        ". Solange nur auf dem Zweig, ist nichts integriert." };
 }
 
 /* -------------------------------------------------------------------
@@ -399,7 +413,11 @@ const BEDINGUNGEN = [
   { id: "KEIN_ZWEITER_PRODUKTIVER_LAUF", ref: "§27-§31", befund: keinZweiterLauf },
   { id: "FREQUENZLERNEN_OHNE_BEHAUPTUNG", ref: "§22-§25", befund: lernenOhneBehauptung },
   { id: "SUITEN_GRUEN", ref: "§46", befund: () => ausBeleg("suitesOk", (b) =>
-      b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests).join(", ")) },
+      /* Uebersprungene Tests gehoeren in den Satz: "1369/1383" allein
+         liest sich wie ein Mangel, und eine Luecke, die niemand nennt,
+         faellt spaeter niemandem auf. */
+      b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests +
+        (r.skipped ? " (" + r.skipped + " uebersprungen)" : "")).join(", ")) },
   { id: "TEST_PRODUKTIONS_ISOLATION", ref: "§42", befund: () => ausBeleg("isolationOk",
       (b) => b.isolation.map((i) => i.id + ": " +
         (i.ok ? "unveraendert" : "VERAENDERT")).join(", ")) },

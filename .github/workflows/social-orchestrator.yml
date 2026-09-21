@@ -82,28 +82,30 @@ jobs:
         with:
           node-version: '22'
 
+      # =====================================================================
+      # TESTS UND ISOLATION, BEVOR IRGENDETWAS GESCHIEHT
+      #
       # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
-      # Produktionsdaten. Die Suite ist schnell; sie laeuft zuerst.
-      - name: Tests, bevor irgendetwas geschieht
-        id: suite
-        run: |
-          set -euo pipefail
-          node --test "social/tests/*.test.mjs" 2>&1 | tail -5
-          # Der Schritt bricht oben ab, wenn die Suite rot ist. Dass er
-          # hier ankommt, IST der Befund - und nur dann wird er
-          # weitergereicht. Ein Reifebericht, der seine eigene Suite
-          # startet und dann "gruen" meldet, bestaetigt sich selbst.
-          echo "gruen=social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
-
-      # Schreibt kein Testlauf in Produktionsdaten? Das laesst sich nur
-      # von aussen beantworten: ein Test kann nicht messen, was vor ihm
-      # geschehen ist.
-      - name: Isolation von Test und Produktion
-        id: isolation
-        run: |
-          set -euo pipefail
-          node scripts/quality/check-test-isolation.mjs --suite "social/tests/*.test.mjs"
-          echo "belegt=check-test-isolation, social/tests ($(date -u +%FT%TZ))" >> "$GITHUB_OUTPUT"
+      # Produktionsdaten. Deshalb zuerst - und mit demselben Messer wie
+      # in der CI.
+      #
+      # Hier standen zwei Schritte, die je einen STRING in $GITHUB_OUTPUT
+      # schrieben ("gruen=social/tests (Zeitpunkt)"), den der Reifebericht
+      # dann als --suites-green bekam. Das war ehrlicher als in der CI -
+      # der Schritt brach oben ab, wenn die Suite rot war - aber es blieb
+      # eine Behauptung in Textform: keine Zahl, kein Stand, und 14
+      # uebersprungene Tests waeren darin unsichtbar geblieben.
+      #
+      # verify-suites.mjs laesst beide Suiten und beide Isolationslaeufe
+      # laufen und schreibt, was herauskam, samt Commit. Der Bericht liest
+      # das und vergleicht den Commit mit HEAD.
+      #
+      # Der Schritt scheitert bei roter Suite oder veraenderten
+      # Produktionsdaten - der Lauf kommt dann gar nicht erst zum
+      # Schreiben.
+      # =====================================================================
+      - name: Tests und Isolation, bevor irgendetwas geschieht
+        run: node scripts/social/verify-suites.mjs
 
       - name: Was ist jetzt dran?
         id: plan
@@ -344,10 +346,10 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          node scripts/social/production-readiness.mjs \
-            --suites-green "${{ steps.suite.outputs.gruen }}" \
-            --isolation-proven "${{ steps.isolation.outputs.belegt }}" \
-            | tee /tmp/reife.txt
+          # Ohne Fahnen: der Suiten- und Isolationszustand kommt aus dem
+          # gemessenen Befund des Schritts oben, an diesen Commit
+          # gebunden.
+          node scripts/social/production-readiness.mjs | tee /tmp/reife.txt
 
       - name: Der Stand, den der Owner sieht
         if: always()

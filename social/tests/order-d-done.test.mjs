@@ -187,6 +187,29 @@ test("OD12 · Auf dem Zweig allein ist nichts integriert", () => {
     assert.match(c.satz, /beantwortet sich die Frage selbst/,
       "Auf main liest sich die Gleichheit wie eine gepruefte Integration: " + c.satz);
   }
+
+  /* DIE ABSTAMMUNG BEANTWORTET DIESE FRAGE NICHT.
+
+     Dieses Repository merged mit Squash: aus fuenfzehn Commits wird auf
+     main einer mit neuer Kennung, und der Zweigstand ist danach KEIN
+     Vorfahre von main - obwohl sein ganzer Inhalt dort liegt. Die erste
+     Fassung fragte `merge-base --is-ancestor` und waere damit nach
+     jedem korrekten Merge dieses Repositories NICHT_ERFUELLT gewesen.
+
+     Eine Bedingung, welche die eigene Merge-Konvention nicht erfuellen
+     kann, ist keine Pruefung, sondern ein Dauerfehler. */
+  /* Ohne Kommentare gelesen: der Block oben ERKLAERT `is-ancestor`, und
+     ein Pruefer, der die Erklaerung fuer den Aufruf haelt, ist genau der
+     Fehler, den dieser Auftrag zweimal gefunden hat (der YAML-Kommentar
+     in SCHEDULER_NEVER_PUBLISHES, und dieser Test beim ersten Versuch). */
+  const quelle = readFileSync(SKRIPT, "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+  assert.ok(!/is-ancestor/.test(quelle),
+    "IN_MAIN_INTEGRIERT fragt wieder nach Abstammung — das kann ein " +
+    "Squash-Merge nie erfuellen");
+  assert.match(quelle, /"diff", "--name-only"/,
+    "Die Bedingung vergleicht nicht den Inhalt");
 });
 
 /* ------------------------------------------------ Was es nicht tut */

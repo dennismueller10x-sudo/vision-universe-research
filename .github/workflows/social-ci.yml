@@ -73,8 +73,12 @@ jobs:
       # Er schaltet nichts frei; er stellt fest - und was er von hier aus
       # nicht messen kann (ob der Worker deployt ist), bleibt
       # ausdruecklich UNGEPRUEFT statt als bestanden zu gelten.
+      # Ohne --suites-green: der Suitenzustand kommt aus dem gemessenen
+      # Befund des Schritts oben (.verification/suites.json, an diesen
+      # Commit gebunden). Die Fahne war eine Behauptung des Workflows
+      # ueber die Arbeit, die dieser Bericht bewerten soll.
       - name: APPROVAL_CENTER_PRODUCTION_READY
-        run: node scripts/social/approval-center-readiness.mjs --suites-green ja
+        run: node scripts/social/approval-center-readiness.mjs
 
       - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
         # Sie werden vom Workflow social-cloudflare gerufen, wo ein
