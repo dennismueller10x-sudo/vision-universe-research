@@ -4,7 +4,7 @@
   "supersedes": null,
   "supersedesAll": [],
   "createdAt": "2026-09-21T12:33:44.963Z",
-  "state": "AWAITING_APPROVAL",
+  "state": "PUBLISHED",
   "content": {
     "contentId": "pkg_1308b7b21c113e46",
     "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_1308b7b21c113e46.jpg",
@@ -244,10 +244,15 @@
     "plannedHourUtc": 18,
     "experimentId": null,
     "decidedMode": "EXPLOIT",
-    "approval": null,
-    "mediaId": null,
+    "approval": {
+      "approvedBy": "owner",
+      "approvedAt": "2026-09-21T12:52:10.577Z",
+      "contentHash": "66242a521835794015c9aada78c6b32c763ad092e4b943c2565be35a3a8d2850"
+    },
+    "mediaId": "17896230441398636",
     "measurements": [],
-    "learning": null
+    "learning": null,
+    "permalink": "https://www.instagram.com/p/DdjNA2-iH23/"
   },
   "cadence": {
     "erlaubt": true,
@@ -256,5 +261,18 @@
     "stundenSeither": null,
     "in7Tagen": 0,
     "in30Tagen": 0
+  },
+  "approval": {
+    "approvedBy": "owner",
+    "approvedAt": "2026-09-21T12:52:10.577Z",
+    "contentHash": "66242a521835794015c9aada78c6b32c763ad092e4b943c2565be35a3a8d2850"
+  },
+  "publishedAt": "2026-09-21T13:15:24.551Z",
+  "publishResult": {
+    "via": null,
+    "idempotent": false,
+    "verified": false,
+    "mediaId": "17896230441398636",
+    "permalink": "https://www.instagram.com/p/DdjNA2-iH23/"
   }
 }
