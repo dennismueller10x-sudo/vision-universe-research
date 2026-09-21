@@ -53,6 +53,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
+const Hashtags = require(join(ROOT, "social/engines/hashtags.js"));
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 import { ausgabePfad } from "../quality/out-path.mjs";
@@ -288,11 +289,48 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const unterlegen = vorschlagsfaehig.slice(1)
     .map((x) => x.entscheidung.topic + " (" + x.score + ")");
 
-  /* ------------------------------------------------------- Der Abdruck */
+  /* ==================================================== Die Hashtags
+     Abgeleitet aus dem Content Context, der ohnehin dasteht — keine
+     feste Liste, keine externe Quelle. Vorher stand in content.js als
+     Vorgabewert `["VisionUniverse", "Investment", "Daten"]`, und weil
+     niemand `options.hashtags` uebergab, trug jeder Beitrag dieselben
+     drei. Einer davon war ein interner Markenbegriff.
+     =================================================================== */
+  const tagBefund = Hashtags.ableiten({
+    entities: d.entities || (d.topicEntities || []),
+    entityType: d.entityType || null,
+    topic: d.topic || null,
+    question: d.question || null,
+    story: (d.visualDirection && d.visualDirection.story) || null,
+    family: d.family || d.archetype || null,
+    sector: d.sector || null,
+    audience: d.audience || null,
+    caption: d.caption || null
+  });
+
+  const basisCaption = d.caption === undefined || d.caption === null ? "" : d.caption;
+
+  /* ------------------------------------------------------- Der Abdruck
+
+     WARUM DIE TAGS IN DIE CAPTION GEHEN UND NICHT DANEBEN
+
+     Der Inhaltsabdruck deckt contentId, imageUrl und caption — "genau
+     die drei Dinge, die oeffentlich werden" (content-hash.js). Meta
+     bekommt EINEN Textkoerper.
+
+     Stuenden die Tags in einem eigenen Feld ausserhalb des Abdrucks,
+     liesse sich nach der Freigabe die Tagliste austauschen, und der
+     Abdruck wuerde weiter stimmen — genau die Luecke, gegen die es
+     ihn gibt.
+
+     `caption` ist deshalb der FINAL_PUBLIC_TEXT: Caption, Leerzeile,
+     Hashtags. Was der Owner sieht, was abgedruckt wird und was Meta
+     bekommt, ist ein und derselbe Text. Es gibt keine zweite Fassung,
+     die auseinanderlaufen koennte. */
   const inhalt = {
     contentId: d.packageId,
     imageUrl: d.asset.imageUrl,
-    caption: d.caption === undefined || d.caption === null ? "" : d.caption
+    caption: Hashtags.finalerText(basisCaption, tagBefund.hashtags)
   };
   const abdruck = ContentHash.contentHash(inhalt);
 
@@ -405,8 +443,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     presentation: {
       topic: d.topic,
       hook: d.hook,
+      /* Der eine Text, den Meta bekommt — und den der Owner sieht.
+         Es gibt keine zweite Fassung. */
       caption: inhalt.caption,
-      hashtags: d.hashtags || [],
+      /* Die Bestandteile, damit die Oberflaeche sie getrennt zeigen
+         kann. Sie sind ABGELEITET aus derselben Quelle wie die Caption,
+         nicht daneben gepflegt: `finalerText(captionBase, hashtags)`
+         ergibt wieder `caption`, und ein Test rechnet genau das nach. */
+      captionBase: basisCaption,
+      hashtags: tagBefund.hashtags,
+      hashtagDetail: tagBefund.detail,
+      hashtagVerworfen: tagBefund.verworfen,
+      hashtagSatz: tagBefund.satz,
       visualType: d.visualType,
       mediaFormat: "IMAGE",
       plannedHourUtc: d.plannedHourUtc,
