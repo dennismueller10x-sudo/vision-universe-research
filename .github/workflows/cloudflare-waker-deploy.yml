@@ -1,0 +1,123 @@
+name: Cloudflare — Intraday-Wecker ausrollen
+
+# =============================================================================
+# EIN EIGENER WORKFLOW, WEIL vu-live NICHT ANGEFASST WIRD
+#
+# Der Auftrag vom 21.09.2026 (§14) sagt: an der Realtime-Laufzeit nichts
+# aendern - kein neuer WebSocket-Dienst, kein neues Durable Object, kein
+# Umbau. cloudflare-deploy.yml rollt vu-live aus und bleibt deshalb
+# unberuehrt. Der Wecker bekommt seinen eigenen Weg.
+#
+# WAS DER WECKER IST
+#
+# Ein Cron auf Cloudflare, der den bestehenden Taktgeber-Workflow weckt.
+# Er holt keine Kurse, speichert nichts und kennt keine Daten (siehe
+# worker-waker/src/index.mjs und die Tests WK-1 bis WK-10).
+#
+# WAS NOCH FEHLT - OWNER-ENTSCHEIDUNG
+#
+# Ein GitHub-Token mit actions:write. Ohne dieses Token laeuft der Wecker
+# zwar, meldet aber bei jedem Takt "keinToken" und loest nichts aus. Der
+# Workflow rollt ihn dann trotzdem aus und sagt es deutlich - ein Wecker,
+# der stillschweigend nichts tut, waere schlimmer als keiner.
+#
+#   Repository -> Settings -> Secrets -> Actions -> New secret
+#   Name:  GH_DISPATCH_TOKEN
+#   Wert:  Fine-grained PAT, NUR dieses Repository,
+#          Berechtigung "Actions: read and write", sonst nichts.
+#
+# Dieser Workflow reicht ihn als Cloudflare-Secret GITHUB_DISPATCH_TOKEN
+# weiter. Er steht nie in einer Datei und nie in einem Protokoll.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: 'Nur pruefen, nichts ausrollen'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vu-intraday-waker-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Wecker ausrollen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Der Wecker haelt seinen eigenen Vertrag ein
+        run: node --test worker-waker/tests/waker.test.mjs
+
+      - name: Liegen die Zugaenge vor?
+        id: zugang
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Kein CLOUDFLARE_API_TOKEN. Ohne Cloudflare-Zugang kein Wecker."
+            exit 1
+          fi
+          if [ -z "$GH_DISPATCH_TOKEN" ]; then
+            echo "dispatch=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GH_DISPATCH_TOKEN fehlt. Der Wecker wird ausgerollt, kann aber nichts ausloesen."
+          else
+            echo "dispatch=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ausrollen
+        if: ${{ !inputs.dryRun }}
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+
+      # Erst der Worker, dann sein Secret: `wrangler secret put` verlangt
+      # ein bestehendes Projekt. Der Wert kommt ueber stdin, nie ueber die
+      # Kommandozeile - Argumente stehen in Prozesslisten.
+      - name: Token hinterlegen
+        if: ${{ !inputs.dryRun && steps.zugang.outputs.dispatch == 'true' }}
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
+        run: |
+          printf '%s' "$GH_DISPATCH_TOKEN" \
+            | npx --yes wrangler@4 secret put GITHUB_DISPATCH_TOKEN 2>&1 \
+            | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tail -3
+
+      - name: Kein Schluessel im Bericht
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
+        run: node scripts/market/assert-no-secrets.mjs --all
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Intraday-Wecker'
+            echo ''
+            if [ "${{ steps.zugang.outputs.dispatch }}" = "true" ]; then
+              echo 'Token hinterlegt - der Wecker kann den Taktgeber ausloesen.'
+            else
+              echo '**GH_DISPATCH_TOKEN fehlt.** Der Wecker laeuft, meldet bei jedem'
+              echo 'Takt `keinToken` und loest nichts aus. Damit bleiben zwei Luecken offen:'
+              echo ''
+              echo '1. Der Waechter hat keinen von GitHub unabhaengigen Kontrollpfad.'
+              echo '2. Die Auslieferung braucht weiter die Pages-Bruecke (Zeitplan).'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
