@@ -1,5 +1,5 @@
-/* V2 visual system: cinematic chart stage, rank rail, index podium,
-   saturated topic worlds and a warm interactive fundamental story. */
+/* Discover 2.1 Premium home: true-white neutral stages, restrained colour
+   worlds and near-black cinema stages. Price direction remains semantic. */
 body.dv2 .v2-home{--v2-green:#67edac;--v2-red:#ff8e98;max-width:1440px;margin:auto;color:var(--v2-ink);padding:0 0 40px}
 body.dv2 .v2-intro{display:grid;grid-template-columns:1fr 360px;align-items:center;gap:24px;margin:5px 0 25px}
 body.dv2 .v2-intro h1{font-size:clamp(28px,3.1vw,46px);letter-spacing:-.055em;line-height:1.03;margin:0;font-weight:750}
@@ -10,7 +10,7 @@ body.dv2 .v2-eyebrow{font-size:10px;letter-spacing:.12em;font-weight:700;text-tr
 body.dv2 .v2-hero-track,body.dv2 .v2-track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:0;scrollbar-width:none;padding:3px 0 9px;overscroll-behavior-x:contain}
 body.dv2 .v2-hero-track::-webkit-scrollbar,body.dv2 .v2-track::-webkit-scrollbar{display:none}
 body.dv2 .v2-hero-item{flex:0 0 88%;min-width:0;scroll-snap-align:start}
-body.dv2 .v2-stock{display:flex;flex-direction:column;position:relative;height:100%;overflow:hidden;text-decoration:none!important;background:#181b21;color:#f7f7f2;border:1px solid #323640;border-radius:16px;padding:24px 24px 18px;transition:border-color .18s}
+body.dv2 .v2-stock{display:flex;flex-direction:column;position:relative;height:100%;overflow:hidden;text-decoration:none!important;background:#181b21;color:#fafafa;border:1px solid #323640;border-radius:16px;padding:24px 24px 18px;transition:border-color .18s}
 body.dv2 .v2-stock:hover{border-color:#8d96a8}body.dv2 .v2-stock-copy{min-width:0}
 body.dv2 .v2-stock-symbol{font-size:10px;letter-spacing:.08em;text-transform:uppercase;display:block;color:#b8bdc7;margin-bottom:12px;overflow-wrap:anywhere}
 body.dv2 .v2-stock-name{font-size:25px;letter-spacing:-.04em;line-height:1.08;margin:0 0 18px;font-weight:700;overflow-wrap:anywhere}
@@ -25,8 +25,8 @@ body.dv2 .v2-stock .dx-art[data-direction=up]{color:var(--v2-green)}body.dv2 .v2
 body.dv2 .v2-stock .dx-art-line{fill:none;stroke:currentColor;stroke-width:2.4}body.dv2 .v2-stock .dx-art-base,body.dv2 .v2-stock .dx-art-high{stroke:currentColor;opacity:.18}body.dv2 .v2-stock .dx-art-tick{fill:#bbc2cf;font-size:9px}body.dv2 .v2-stock .dx-art-node{fill:currentColor}
 body.dv2 .v2-stock-caption{color:#b8bdc7;font-size:10px;line-height:1.5;margin:8px 0}
 body.dv2 .v2-stock-hook{color:#dce0e8;font-size:12px;line-height:1.5;padding-top:12px;margin:10px 0;border-top:1px solid #414650}
-body.dv2 .v2-stock-cta{font-size:12px;font-weight:700;color:#f7f7f2;margin-top:auto;padding-top:15px}
-body.dv2 .v2-stock-hero{--v2-green:#087441;--v2-red:#ba2440;display:grid;grid-template-columns:minmax(0,43fr) minmax(0,57fr);column-gap:30px;align-items:center;background:#f0f0e8;color:#191c21;border:0;border-radius:24px;padding:38px 40px 24px;min-height:375px}
+body.dv2 .v2-stock-cta{font-size:12px;font-weight:700;color:#fafafa;margin-top:auto;padding-top:15px}
+body.dv2 .v2-stock-hero{--v2-green:#087441;--v2-red:#ba2440;display:grid;grid-template-columns:minmax(0,43fr) minmax(0,57fr);column-gap:30px;align-items:center;background:#fff;color:#111318;border:1px solid #dfe2e6;border-radius:24px;padding:38px 40px 24px;min-height:375px;box-shadow:0 18px 55px rgba(15,18,24,.08)}
 body.dv2 .v2-stock-hero .v2-stock-copy{grid-column:1;grid-row:1}body.dv2 .v2-stock-hero .v2-stock-symbol{color:#50575f}
 body.dv2 .v2-stock-hero .v2-stock-name{font-size:clamp(32px,3.7vw,56px);max-width:550px;margin-bottom:20px}
 body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:clamp(56px,6.5vw,92px);letter-spacing:-.07em}
@@ -42,30 +42,30 @@ body.dv2 .v2-world h2{font-size:clamp(28px,3vw,42px);letter-spacing:-.055em;line
 body.dv2 .v2-world-subtitle{font-size:13px;color:var(--v2-muted);line-height:1.6;margin:12px 0 0;max-width:670px}body.dv2 .v2-world-evidence{font-size:10px;color:var(--v2-muted);margin:8px 0 0;line-height:1.5}body.dv2 .v2-world-more{flex:none;font-size:12px;color:var(--v2-ink);font-weight:650;text-decoration:none;padding:12px 0}
 body.dv2 .v2-track-item{flex:0 0 300px;min-width:0;scroll-snap-align:start}
 body.dv2 .v2-world-wide .v2-track-item{flex-basis:450px}body.dv2 .v2-world-wide .v2-stock{border:0;background:#202733;padding:30px}body.dv2 .v2-world-wide .v2-stock-performance strong{font-size:64px}body.dv2 .v2-world-wide .dx-lazy-media{height:200px}
-body.dv2 .v2-world-ranking{padding:35px 0;border-top:1px solid var(--v2-line);border-bottom:1px solid var(--v2-line)}body.dv2 .v2-world-ranking .v2-track-item{flex-basis:330px}
+body.dv2 .v2-world-ranking{--v2-green:#087942;--v2-red:#b33129;padding:35px 0;border-top:1px solid var(--v2-line);border-bottom:1px solid var(--v2-line)}body.dv2 .v2-world-ranking .v2-track-item{flex-basis:330px}
 body.dv2 .v2-world-ranking .v2-stock{border:0;border-radius:0;background:transparent;color:var(--v2-ink);padding:0 15px 0 0}
 body.dv2 .v2-stock-rank{display:block;font-size:100px;letter-spacing:-.08em;font-weight:850;line-height:.95;color:#bcb2fa;margin:0 0 14px}
 body.dv2 .v2-world-ranking .v2-stock-symbol,body.dv2 .v2-world-ranking .v2-stock-performance span,body.dv2 .v2-world-ranking .v2-stock-caption{color:var(--v2-muted)}body.dv2 .v2-world-ranking .v2-stock-why,body.dv2 .v2-world-ranking .v2-stock-hook,body.dv2 .v2-world-ranking .v2-stock-cta{color:var(--v2-ink)}body.dv2 .v2-world-ranking .v2-stock-hook{border-color:var(--v2-line)}
-body.dv2 .v2-world-index{background:#22262d;border-radius:24px;padding:30px;color:#f7f7f2}
-body.dv2 .v2-world-index .v2-eyebrow,body.dv2 .v2-world-index .v2-world-subtitle,body.dv2 .v2-world-index .v2-world-evidence{color:#c2c7d0}body.dv2 .v2-world-index .v2-world-more{color:#f7f7f2}
+body.dv2 .v2-world-index{background:#111318;border-radius:24px;padding:30px;color:#fafafa;box-shadow:0 25px 75px rgba(9,11,15,.2)}
+body.dv2 .v2-world-index .v2-eyebrow,body.dv2 .v2-world-index .v2-world-subtitle,body.dv2 .v2-world-index .v2-world-evidence{color:#c2c7d0}body.dv2 .v2-world-index .v2-world-more{color:#fafafa}
 body.dv2 .v2-world-index .v2-track{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:0 25px;overflow:visible}body.dv2 .v2-world-index .v2-track-item{min-width:0;border-top:1px solid #50555e}body.dv2 .v2-world-index .v2-track-item:first-child{grid-row:span 5;border-top:0}
 body.dv2 .v2-world-index .v2-stock{background:transparent;border:0;border-radius:0;padding:18px 0;display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 8px}body.dv2 .v2-world-index .v2-stock-rank{font-size:26px;letter-spacing:-.05em;color:#c4c9d2;margin:0;grid-column:1}body.dv2 .v2-world-index .v2-stock-copy{grid-column:2}
 body.dv2 .v2-world-index .v2-stock-name{font-size:17px;margin-bottom:10px}body.dv2 .v2-world-index .v2-stock-symbol{font-size:9px;margin-bottom:7px}body.dv2 .v2-world-index .v2-stock-performance strong{font-size:29px}body.dv2 .v2-world-index .v2-stock-why{font-size:11px;margin-top:8px}
 body.dv2 .v2-world-index .v2-track-item:not(:first-child) .dx-lazy-media,body.dv2 .v2-world-index .v2-track-item:not(:first-child) .v2-stock-caption,body.dv2 .v2-world-index .v2-track-item:not(:first-child) .v2-stock-hook,body.dv2 .v2-world-index .v2-track-item:not(:first-child) .v2-stock-cta{display:none}
 body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock{display:flex;padding-right:12px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-rank{font-size:90px;margin-bottom:22px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-name{font-size:30px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-performance strong{font-size:52px}body.dv2 .v2-world-index .dx-rail-arrow{display:none}
-body.dv2 .v2-world-theme{background:#5735ba;color:#fff;padding:40px;border-radius:26px;overflow:hidden}body.dv2 .v2-world-theme[data-world=industry]{background:#aee8e8;color:#132a30}body.dv2 .v2-world-theme[data-world=consumer]{background:#cce679;color:#1a2714}
+body.dv2 .v2-world-theme{background:#35117f;color:#fff;padding:40px;border-radius:26px;overflow:hidden}body.dv2 .v2-world-theme[data-world=industry]{background:#075565;color:#f5feff}body.dv2 .v2-world-theme[data-world=consumer]{background:#143f70;color:#f7fbff}
 body.dv2 .v2-world-theme h2{font-size:clamp(38px,6vw,78px);max-width:780px}body.dv2 .v2-world-theme .v2-eyebrow,body.dv2 .v2-world-theme .v2-world-subtitle,body.dv2 .v2-world-theme .v2-world-evidence,body.dv2 .v2-world-theme .v2-world-more{color:inherit}
 body.dv2 .v2-world-theme .v2-track-item{flex-basis:340px}body.dv2 .v2-world-theme .v2-stock{background:#151922;border-color:#373e4b;border-radius:14px;min-height:430px}body.dv2 .v2-world-theme .v2-stock-name{font-size:29px}body.dv2 .v2-world-theme .dx-lazy-media{height:200px}
 body.dv2 .v2-world-fundamental .v2-track-item{flex-basis:350px}body.dv2 .v2-world-fundamental .v2-stock{background:#133c34;border-color:#3d695e}body.dv2 .v2-world-fundamental .v2-stock-hook{font-size:18px;letter-spacing:-.025em;line-height:1.3;border-color:#568378}body.dv2 .v2-world-fundamental .v2-stock-performance strong{font-size:55px}body.dv2 .v2-world-fundamental .dx-lazy-media{height:110px}
-body.dv2 .v2-feature{margin-top:68px}body.dv2 .v2-feature .v2-stock-hero{background:#d4e8cd}
-body.dv2 .v2-business-story{background:#f3cd75;color:#292319;border-radius:26px;margin-top:68px;padding:40px;display:grid;grid-template-columns:1fr 1.1fr;column-gap:50px}
+body.dv2 .v2-feature{margin-top:68px}body.dv2 .v2-feature .v2-stock-hero{background:#071916;color:#f8fbfa;border-color:#173b33;box-shadow:0 24px 70px rgba(4,26,21,.18)}body.dv2 .v2-feature .v2-stock-hero .v2-stock-symbol,body.dv2 .v2-feature .v2-stock-hero .v2-stock-performance span,body.dv2 .v2-feature .v2-stock-hero .v2-stock-caption{color:#aebeb9}body.dv2 .v2-feature .v2-stock-hero .v2-stock-why,body.dv2 .v2-feature .v2-stock-hero .v2-stock-hook{color:#dbe7e3}body.dv2 .v2-feature .v2-stock-hero .v2-stock-cta{background:#fff;color:#071916}
+body.dv2 .v2-business-story{background:#c69a2e;color:#17140d;border-radius:26px;margin-top:68px;padding:40px;display:grid;grid-template-columns:1fr 1.1fr;column-gap:50px;box-shadow:0 20px 65px rgba(79,57,6,.14)}
 body.dv2 .v2-business-story>.v2-eyebrow{color:#514126;grid-column:1}body.dv2 .v2-business-story h2{grid-column:1;font-size:clamp(35px,4.5vw,65px);letter-spacing:-.055em;line-height:1.02;margin:5px 0 25px;align-self:start}
 body.dv2 .v2-story-tabs{grid-column:1;display:flex;align-self:start;gap:7px;overflow:auto;scrollbar-width:none;padding:4px 0;min-width:0}body.dv2 .v2-story-tab{flex:none;background:transparent;color:#3f3320;border:1px solid #907239;border-radius:99px;padding:11px 15px;font:inherit;font-size:12px;cursor:pointer;min-height:44px}body.dv2 .v2-story-tab[aria-selected=true]{background:#292319;color:#fff6e2;border-color:#292319}
 body.dv2 .v2-story-panel{grid-column:2;grid-row:1/span 4;min-width:0}body.dv2 .v2-story-statement{font-size:25px;letter-spacing:-.035em;line-height:1.15;margin:0 0 28px;max-width:440px;font-weight:650}
 body.dv2 .v2-story-bars{display:flex;justify-content:space-around;align-items:end;gap:25px;min-height:255px;border-bottom:1px solid #ad8a43;padding-bottom:15px}body.dv2 .v2-story-column{width:45%;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:12px;font-size:13px}body.dv2 .v2-story-column strong{font-size:22px;letter-spacing:-.04em}body.dv2 .v2-story-bar{width:80%;background:#554324;border-radius:7px 7px 0 0}body.dv2 .v2-story-column:first-child .v2-story-bar{background:#a2803d}body.dv2 .v2-story-bar.is-negative{background:repeating-linear-gradient(45deg,#554324,#554324 4px,#b7944b 4px,#b7944b 8px)}
 body.dv2 .v2-story-evidence{font-size:10px;color:#514126;line-height:1.5;margin:13px 0 0}body.dv2 .v2-story-link{grid-column:1;align-self:end;color:#292319;text-decoration:none;font-weight:700;font-size:13px;margin-top:28px;padding:12px 0}
 body.dv2 .v2-journey>.dx-rail-section,body.dv2 .v2-journey>.dx-immersive{margin-top:68px}body.dv2 .v2-load-state,body.dv2 .v2-load-more{color:var(--v2-ink);font-size:14px;margin:36px auto;display:block}body.dv2 .v2-load-more{background:var(--v2-panel);border:1px solid var(--v2-line);border-radius:99px;padding:16px 25px;min-height:48px;cursor:pointer}
-body.dv2 .v2-finish{padding:65px 30px;text-align:center;margin-top:68px;background:#c4b5f2;color:#252033;border-radius:26px}body.dv2 .v2-finish .v2-eyebrow{color:#514663}body.dv2 .v2-finish h2{font-size:clamp(30px,4vw,52px);letter-spacing:-.055em;line-height:1.05;max-width:650px;margin:10px auto 26px}body.dv2 .v2-finish-link{display:inline-block;background:#282332;color:#fff;padding:16px 24px;border-radius:99px;text-decoration:none;font-weight:700;font-size:13px}
+body.dv2 .v2-finish{padding:65px 30px;text-align:center;margin-top:68px;background:#0a0b0e;color:#fff;border-radius:26px;box-shadow:0 22px 70px rgba(5,6,8,.2)}body.dv2 .v2-finish .v2-eyebrow{color:#aaaeb7}body.dv2 .v2-finish h2{font-size:clamp(30px,4vw,52px);letter-spacing:-.055em;line-height:1.05;max-width:650px;margin:10px auto 26px}body.dv2 .v2-finish-link{display:inline-block;background:#fff;color:#0a0b0e;padding:16px 24px;border-radius:99px;text-decoration:none;font-weight:700;font-size:13px}
 body.dv2 .v2-home a:focus-visible,body.dv2 .v2-home button:focus-visible{outline:3px solid #faab3f;outline-offset:3px}
 html[data-theme=light] body.dv2 .v2-world-ranking{--v2-green:#087441;--v2-red:#ba2440}html[data-theme=light] body.dv2 .v2-world-ranking .v2-stock-rank{color:#594498}html[data-theme=light] body.dv2 .v2-world-ranking .dx-art-tick{fill:#50575f}
 @media(max-width:1000px){body.dv2 .v2-world-index .v2-track{grid-template-columns:1fr 1fr}body.dv2 .v2-world-index .v2-track-item:first-child{grid-row:span 9}}
@@ -93,3 +93,104 @@ body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-rank{font-size:65p
 }
 @media(max-width:350px){body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock{grid-template-columns:68px minmax(0,1fr)}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-rank{font-size:54px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-name{font-size:22px}body.dv2 .v2-world-index .v2-track-item:first-child .v2-stock-performance strong{font-size:33px}}
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-stock{transition:none}body.dv2 .v2-track,body.dv2 .v2-hero-track{scroll-behavior:auto}}
+
+/* Premium archetype library. These rules change composition and atmosphere;
+   they never change order, eligibility, values or chart direction. */
+body.dv2 .v2-home{--v2-neutral:#fff;--v2-neutral-2:#f5f6f7;--v2-neutral-line:#dfe2e6;--v2-neutral-ink:#111318;--v2-neutral-muted:#5d6570}
+body.dv2 .v2-intro,body.dv2 .v2-spotlight,body.dv2 .v2-world-performance,body.dv2 .v2-world-compact,body.dv2 .v2-world-split,body.dv2 .v2-world-sector,body.dv2 .v2-world-ranking,body.dv2 .v2-world-fundamental{color:var(--v2-neutral-ink)}
+body.dv2 .v2-intro h1 span,body.dv2 .v2-world-performance .v2-world-subtitle,body.dv2 .v2-world-compact .v2-world-subtitle,body.dv2 .v2-world-split .v2-world-subtitle,body.dv2 .v2-world-sector .v2-world-subtitle,body.dv2 .v2-world-fundamental .v2-world-subtitle{color:var(--v2-neutral-muted)}
+body.dv2 .v2-search-prompt{background:#fff;border-color:#d7dbe0;color:#111318;box-shadow:0 7px 26px rgba(18,22,30,.05)}
+body.dv2 .v2-spotlight{padding-bottom:4px}
+
+/* White performance stage: chart-first cards with almost no chrome. */
+body.dv2 .v2-world-performance{padding:34px 0;border-top:1px solid var(--v2-neutral-line);border-bottom:1px solid var(--v2-neutral-line)}
+body.dv2 .v2-world-performance .v2-track-item{flex-basis:390px}
+body.dv2 .v2-world-performance .v2-stock{--v2-green:#087942;--v2-red:#b33129;background:#fff;color:#111318;border:0;border-radius:0;padding:4px 24px 12px 0}
+body.dv2 .v2-world-performance .v2-stock-symbol,body.dv2 .v2-world-performance .v2-stock-performance span,body.dv2 .v2-world-performance .v2-stock-caption{color:#68707a}
+body.dv2 .v2-world-performance .v2-stock-why,body.dv2 .v2-world-performance .v2-stock-hook,body.dv2 .v2-world-performance .v2-stock-cta{color:#262b32}
+body.dv2 .v2-world-performance .v2-stock-hook{border-color:#dfe2e6}
+body.dv2 .v2-world-performance .v2-stock .dx-lazy-media{height:220px;margin:14px -4px 0}
+
+/* Fast compact rail: shorter, denser cards for a deliberate pace change. */
+body.dv2 .v2-world-compact .v2-track-item{flex-basis:246px}
+body.dv2 .v2-world-compact .v2-stock{--v2-green:#087942;--v2-red:#b33129;background:#f5f6f7;color:#111318;border:1px solid #e0e3e7;border-radius:14px;padding:19px 18px 15px}
+body.dv2 .v2-world-compact .v2-stock-name{font-size:20px;margin-bottom:12px}
+body.dv2 .v2-world-compact .v2-stock-performance strong{font-size:37px}
+body.dv2 .v2-world-compact .v2-stock-symbol,body.dv2 .v2-world-compact .v2-stock-performance span,body.dv2 .v2-world-compact .v2-stock-caption{color:#646c76}
+body.dv2 .v2-world-compact .v2-stock-why,body.dv2 .v2-world-compact .v2-stock-hook,body.dv2 .v2-world-compact .v2-stock-cta{color:#20252b}
+body.dv2 .v2-world-compact .v2-stock-hook{border-color:#d8dce1}
+body.dv2 .v2-world-compact .v2-stock .dx-lazy-media{height:105px;margin:13px -7px 0}
+
+/* Split rail: a dominant lead stock followed by compact alternatives. */
+body.dv2 .v2-world-split .v2-track-item{flex-basis:275px}
+body.dv2 .v2-world-split .v2-track-item:first-child{flex-basis:560px}
+body.dv2 .v2-world-split .v2-stock{background:#f3f5f7;color:#111318;border:0;padding:22px}
+body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock{background:#102f28;color:#fff;padding:30px}
+body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock-name{font-size:36px}
+body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock-performance strong{font-size:68px}
+body.dv2 .v2-world-split .v2-track-item:first-child .dx-lazy-media{height:225px}
+body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock{--v2-green:#087942;--v2-red:#b33129}body.dv2 .v2-world-split .v2-track-item:not(:first-child) .dx-lazy-media{height:125px}
+body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-symbol,body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-performance span,body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-caption{color:#646c76}
+body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-why,body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-hook,body.dv2 .v2-world-split .v2-track-item:not(:first-child) .v2-stock-cta{color:#20252b}
+
+/* Cinema stage: the entire world becomes the visual, not a stack of boxes. */
+body.dv2 .v2-world-cinema{background:#090b0e;color:#f8f9fa;border-radius:26px;padding:42px 38px;overflow:hidden;box-shadow:0 25px 80px rgba(6,8,11,.22)}
+body.dv2 .v2-world-cinema .v2-eyebrow,body.dv2 .v2-world-cinema .v2-world-subtitle,body.dv2 .v2-world-cinema .v2-world-evidence{color:#aeb4bd}
+body.dv2 .v2-world-cinema .v2-world-more{color:#fff}
+body.dv2 .v2-world-cinema .v2-track-item{flex-basis:480px}
+body.dv2 .v2-world-cinema .v2-stock{background:transparent;border:0;border-radius:0;padding:4px 28px 5px 0}
+body.dv2 .v2-world-cinema .v2-stock-name{font-size:34px}
+body.dv2 .v2-world-cinema .v2-stock-performance strong{font-size:70px}
+body.dv2 .v2-world-cinema .v2-stock .dx-lazy-media{height:250px;margin:20px -6px 0}
+
+/* Spotlight alternates one screen-filling moment with smaller follow-ups. */
+body.dv2 .v2-world-spotlight{padding:38px;background:#fff;border:1px solid #dfe2e6;border-radius:26px}
+body.dv2 .v2-world-spotlight .v2-track-item{flex-basis:300px}
+body.dv2 .v2-world-spotlight .v2-track-item:first-child{flex-basis:min(760px,78vw)}
+body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock{background:#18100f;border-color:#3f2521;padding:34px}
+body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock-name{font-size:40px}
+body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock-performance strong{font-size:75px}
+body.dv2 .v2-world-spotlight .v2-track-item:first-child .dx-lazy-media{height:270px}
+
+/* Sector rail behaves like a premium market strip, distinct from themes. */
+body.dv2 .v2-world-sector{padding-top:34px;border-top:1px solid #dfe2e6}
+body.dv2 .v2-world-sector .v2-track-item{flex-basis:265px}
+body.dv2 .v2-world-sector .v2-stock{--v2-green:#087942;--v2-red:#b33129;background:#fff;color:#111318;border:1px solid #dfe2e6;border-radius:12px;padding:20px}
+body.dv2 .v2-world-sector .v2-stock-symbol,body.dv2 .v2-world-sector .v2-stock-performance span,body.dv2 .v2-world-sector .v2-stock-caption{color:#646c76}
+body.dv2 .v2-world-sector .v2-stock-why,body.dv2 .v2-world-sector .v2-stock-hook,body.dv2 .v2-world-sector .v2-stock-cta{color:#20252b}
+body.dv2 .v2-world-sector .v2-stock-hook{border-color:#dfe2e6}
+body.dv2 .v2-world-sector .dx-lazy-media{height:130px}
+body.dv2 .v2-world-sector[data-world=health] .v2-world-head{border-left:5px solid #087c6b;padding-left:18px}
+body.dv2 .v2-world-sector[data-world=tech] .v2-world-head{border-left:5px solid #264ad6;padding-left:18px}
+body.dv2 .v2-world-sector[data-world=energy] .v2-world-head{border-left:5px solid #b56d00;padding-left:18px}
+body.dv2 .v2-world-sector[data-world=finance] .v2-world-head{border-left:5px solid #252b35;padding-left:18px}
+body.dv2 .v2-world-sector[data-world=consumer] .v2-world-head{border-left:5px solid #914315;padding-left:18px}
+
+/* Gold ledger ranking and fundamental rails provide data-story interludes. */
+body.dv2 .v2-world-ranking-ledger{background:#f1e6c7;color:#18150f;border-radius:26px;padding:38px}
+body.dv2 .v2-world-ranking-ledger .v2-track-item{flex-basis:310px}
+body.dv2 .v2-world-ranking-ledger .v2-stock{--v2-green:#087942;--v2-red:#b33129;background:transparent;color:#18150f;border:0;border-radius:0;padding:0 18px 0 0}
+body.dv2 .v2-world-ranking-ledger .v2-stock-rank{color:#7c5c0a;font-size:82px}
+body.dv2 .v2-world-ranking-ledger .v2-stock-symbol,body.dv2 .v2-world-ranking-ledger .v2-stock-performance span,body.dv2 .v2-world-ranking-ledger .v2-stock-caption,body.dv2 .v2-world-ranking-ledger .v2-world-subtitle,body.dv2 .v2-world-ranking-ledger .v2-world-evidence{color:#62583f}
+body.dv2 .v2-world-ranking-ledger .v2-stock-why,body.dv2 .v2-world-ranking-ledger .v2-stock-hook,body.dv2 .v2-world-ranking-ledger .v2-stock-cta,body.dv2 .v2-world-ranking-ledger .v2-world-more{color:#18150f}
+body.dv2 .v2-world-ranking-ledger .v2-stock-hook{border-color:#c7b788}
+body.dv2 .v2-world-fundamental{background:#fff;border-top:1px solid #dfe2e6;border-bottom:1px solid #dfe2e6;padding:38px 0}
+body.dv2 .v2-world-fundamental .v2-stock{background:#112b25;border-color:#315048}
+
+/* Mature, saturated worlds. World colour frames the data; charts keep green/red. */
+body.dv2 .v2-world-theme{background:#35117f;box-shadow:0 24px 75px rgba(39,17,94,.2)}
+body.dv2 .v2-world-theme[data-world=tech]{background:linear-gradient(145deg,#29105f 0%,#5422ba 100%)}
+body.dv2 .v2-world-theme[data-world=industry]{background:linear-gradient(145deg,#063d49 0%,#087e92 100%);color:#f5feff}
+body.dv2 .v2-world-theme[data-world=consumer]{background:linear-gradient(145deg,#0e2949 0%,#185da5 100%);color:#f7fbff}
+body.dv2 .v2-world-theme .v2-stock{background:rgba(7,9,14,.88);border-color:rgba(255,255,255,.18);box-shadow:0 15px 45px rgba(0,0,0,.18)}
+
+@media(max-width:700px){
+  body.dv2 .v2-world-performance{padding:26px 0}body.dv2 .v2-world-performance .v2-track-item{flex-basis:88%}body.dv2 .v2-world-performance .v2-stock .dx-lazy-media{height:180px}
+  body.dv2 .v2-world-compact .v2-track-item{flex-basis:68%}body.dv2 .v2-world-compact .v2-stock{padding:17px 15px 14px}
+  body.dv2 .v2-world-split .v2-track-item{flex-basis:72%}body.dv2 .v2-world-split .v2-track-item:first-child{flex-basis:94%}body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock{padding:25px 20px}body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock-name{font-size:30px}body.dv2 .v2-world-split .v2-track-item:first-child .v2-stock-performance strong{font-size:57px}body.dv2 .v2-world-split .v2-track-item:first-child .dx-lazy-media{height:180px}
+  body.dv2 .v2-world-cinema,body.dv2 .v2-world-theme{margin-left:-20px;margin-right:-20px;border-radius:0;padding:34px 20px}body.dv2 .v2-world-cinema .v2-track-item{flex-basis:92%}body.dv2 .v2-world-cinema .v2-stock-name{font-size:30px}body.dv2 .v2-world-cinema .v2-stock-performance strong{font-size:58px}body.dv2 .v2-world-cinema .v2-stock .dx-lazy-media{height:205px}
+  body.dv2 .v2-world-spotlight{padding:27px 18px}body.dv2 .v2-world-spotlight .v2-track-item{flex-basis:72%}body.dv2 .v2-world-spotlight .v2-track-item:first-child{flex-basis:96%}body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock{padding:25px 20px}body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock-name{font-size:31px}body.dv2 .v2-world-spotlight .v2-track-item:first-child .v2-stock-performance strong{font-size:58px}body.dv2 .v2-world-spotlight .v2-track-item:first-child .dx-lazy-media{height:205px}
+  body.dv2 .v2-world-sector .v2-track-item{flex-basis:74%}
+  body.dv2 .v2-world-ranking-ledger{padding:28px 18px}body.dv2 .v2-world-ranking-ledger .v2-track-item{flex-basis:82%}body.dv2 .v2-world-ranking-ledger .v2-stock-rank{font-size:86px}
+  body.dv2 .v2-world-fundamental{padding:28px 0}
+}

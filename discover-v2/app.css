@@ -68,3 +68,72 @@ body.dv2.v2-feed-active .v2-main{padding-top:62px;height:calc(100dvh - 88px)}
 .dv2 .v2-collection-source{font-size:12px;color:var(--v2-muted)}
 .dv2 .v2-feed-resume{display:flex;align-items:center;gap:8px;color:var(--v2-muted);font-size:10px}.dv2 .v2-feed-restart{border:0;background:var(--v2-panel);color:var(--v2-ink);border-radius:20px;padding:8px 12px;min-height:44px;font-size:11px}.dv2 .v2-feed-active .dx-feed-bar{gap:8px}
 @media(max-width:360px){.dv2 .v2-feed-resume{gap:3px}.dv2 .v2-feed-restart{padding:8px;font-size:10px}.dv2 .dx-feed-bar{gap:8px}.dv2 .dx-feed-zaehler{font-size:9px;letter-spacing:.03em}}
+
+/* Discover 2.1 premium shell. White is the neutral canvas; colour is
+   reserved for intentional worlds and the semantic chart direction. */
+html[data-theme=light] body.dv2{
+  --v2-bg:#fff;--v2-ink:#0b0c0e;--v2-muted:#656a73;--v2-panel:#f3f4f5;
+  --v2-line:#dedfe2;--v2-accent:#111214;background:#fff
+}
+html[data-theme=light] body.dv2 .v2-bar{background:#fff}
+.dv2 .v2-bar{position:relative;z-index:310}
+.dv2 .v2-wordmark{font-weight:800;letter-spacing:-.045em}
+
+/* Desktop keeps the useful information architecture in the header. */
+@media(min-width:761px){
+  .dv2 .v2-dock{top:9px;padding:4px;border:1px solid color-mix(in srgb,var(--v2-line) 72%,transparent);border-radius:999px;background:color-mix(in srgb,var(--v2-bg) 78%,transparent);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 8px 28px #0000000b}
+  .dv2 .v2-dock .v2-nav-item{padding:9px 15px;min-height:40px;color:var(--v2-muted);transition:background-color .18s ease,color .18s ease,transform .18s ease}
+  .dv2 .v2-dock .v2-nav-item:hover{color:var(--v2-ink);background:color-mix(in srgb,var(--v2-panel) 78%,transparent)}
+  .dv2 .v2-dock .v2-nav-item[aria-current=page],.dv2 .v2-dock .v2-nav-item.is-active{background:#111214;color:#fff;box-shadow:0 5px 14px #0002}
+  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:var(--v2-muted)}
+  .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#111214;color:#fff}
+}
+
+/* Worlds are entrances, not pastel filter cards. Four restrained premium
+   atmospheres repeat as a system while each title remains data-driven. */
+.dv2 .v2-world-directory{gap:16px}
+.dv2 .v2-world-door{position:relative;isolation:isolate;overflow:hidden;border:1px solid #ffffff24;border-radius:26px;background:linear-gradient(145deg,#22143f 0%,#5023a8 58%,#7439e2 100%);color:#fff;box-shadow:0 18px 50px #28126020;transition:transform .22s ease,box-shadow .22s ease}
+.dv2 .v2-world-door:before{content:'';position:absolute;z-index:-1;width:230px;height:230px;right:-90px;bottom:-110px;border:1px solid #ffffff2e;border-radius:50%;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff05}
+.dv2 .v2-world-door[data-tone="1"]{background:linear-gradient(145deg,#052f2a 0%,#075e4e 60%,#078c70 100%);color:#fff}
+.dv2 .v2-world-door[data-tone="2"]{background:linear-gradient(145deg,#111214 0%,#272a2f 67%,#41454d 100%);color:#fff}
+.dv2 .v2-world-door[data-tone="3"]{background:linear-gradient(145deg,#043746 0%,#006b82 58%,#00a2bb 100%);color:#fff}
+.dv2 .v2-world-door:hover{transform:translateY(-5px);box-shadow:0 24px 60px #0002}
+.dv2 .v2-world-door-count{color:#ffffffb8;font-weight:700}.dv2 .v2-world-door p{color:#ffffffe0}.dv2 .v2-world-door-arrow{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid #ffffff30}
+
+/* Canonical freshness labels remain readable on every surface. Their text
+   and state continue to come from the shared freshness contract. */
+.dv2 .dx-live-label{border:1px solid color-mix(in srgb,currentColor 20%,transparent);box-shadow:0 3px 14px #00000010;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.dv2 [data-freshness=STALE] .dx-live-label,.dv2 .dx-live-label[data-freshness=STALE]{font-weight:750}
+.dv2 [data-freshness=UNAVAILABLE] .dx-live-label,.dv2 .dx-live-label[data-freshness=UNAVAILABLE]{opacity:.9}
+
+/* The immersive feed gets cinema restraint and leaves the chart as the
+   primary visual object. */
+.dv2 .dx-feed-bar{background:color-mix(in srgb,var(--v2-bg) 84%,transparent);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid color-mix(in srgb,var(--v2-line) 70%,transparent)}
+.dv2 .dx-feed-bild{border-radius:0;background:transparent}
+.dv2 .dx-feed-screen .dx-btn{background:var(--v2-ink);color:var(--v2-bg);border-color:transparent;box-shadow:none}
+.dv2 .dx-feed-restart{border:1px solid var(--v2-line);background:transparent}
+
+/* Mobile: floating monochrome glass dock with a real safe-area gap. */
+@media(max-width:760px){
+  body.dv2{background:#fff}
+  html:not([data-theme=light]) body.dv2{background:var(--v2-bg)}
+  .dv2 .v2-main{padding-bottom:118px}.dv2 .v2-footer{padding-bottom:145px}
+  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{
+    left:14px;right:14px;bottom:max(12px,env(safe-area-inset-bottom));
+    grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;
+    padding:6px;border:1px solid #ffffff94;border-radius:25px;
+    background:#f7f7f4c9;color:#101113;
+    -webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);
+    box-shadow:0 16px 48px #0000002b,0 2px 8px #00000012,inset 0 1px 0 #fff;
+  }
+  html:not([data-theme=light]) .dv2 .v2-dock,html:not([data-theme=light]) .dv2.v2-feed-active .v2-dock{background:#17181bce;color:#fff;border-color:#ffffff24;box-shadow:0 16px 52px #0009,inset 0 1px 0 #ffffff18}
+  .dv2 .v2-dock .v2-nav-item{gap:4px;min-height:54px;padding:7px 2px;border-radius:19px;color:#5f6268;background:transparent;font-size:10px;font-weight:700;transition:transform .16s ease,background-color .16s ease,color .16s ease}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item{color:#b9bbc0}
+  .dv2 .v2-dock .v2-nav-item:active{transform:scale(.96)}
+  .dv2 .v2-dock .v2-nav-item[aria-current=page],.dv2 .v2-dock .v2-nav-item.is-active,.dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#101113;color:#fff;box-shadow:0 7px 18px #0003}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#fff;color:#111214;box-shadow:0 7px 20px #0007}
+  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:#5f6268}
+  .dv2 .v2-world-directory{grid-template-columns:1fr;gap:13px}.dv2 .v2-world-door{min-height:210px;padding:22px;border-radius:24px}.dv2 .v2-world-door h2{font-size:clamp(25px,7.2vw,31px);max-width:12ch}.dv2 .v2-world-door p{max-width:35ch}
+  body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 146px - env(safe-area-inset-bottom));padding:0}
+}
+@media(max-width:360px){.dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{left:8px;right:8px}.dv2 .v2-dock .v2-nav-item{font-size:9px}}
