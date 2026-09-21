@@ -29,7 +29,7 @@ export function symbolAus(topic) {
 /* Anzeigenamen der Datenquellen. Ein Bild ohne nachvollziehbare Quelle
    ist bei uns keines - und "tiingo" klein geschrieben ist ein
    Schluesselwort, kein Quellenname. */
-const QUELLENNAME = { tiingo: "Tiingo", "vu.technical": "Vision Universe" };
+export const QUELLENNAME = { tiingo: "Tiingo", "vu.technical": "Vision Universe" };
 
 /** Die Kursreihe eines Instruments samt Herkunft, oder null. */
 export function kursreihe(symbol, root) {

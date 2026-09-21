@@ -57,6 +57,8 @@ const VisualGrammar = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js"));
 const ScrollStop = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js"));
+const Brand = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/brand.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -91,6 +93,77 @@ export const NICHT_GEZEICHNET = {
    Bilder unter einer Kennung, und der Unterschied fiele erst im Konto
    auf. */
 export const SCHRIFT_PFAD = "assets/fonts/inter-latin.woff2";
+
+/* =====================================================================
+   DAS LOGO IST EIN ASSET, KEIN GESETZTER TEXT (§11, §18, §44)
+
+   Hier stand bis zuletzt:
+
+       <div class="marke"><b>VISION UNIVERSE</b>&reg;</div>
+
+   Also dieselben Buchstaben in Inter Bold. Das kanonische Zeichen ist
+   eine eigene, geometrische Wortmarke - andere Buchstabenformen,
+   andere Laufweite, anderes R im Kreis. Nebeneinandergelegt sind es
+   zwei verschiedene Zeichen, und §18 nennt genau das beim Namen:
+   "Logo nicht neu zeichnen oder textuell approximieren".
+
+   Bitter daran: checkLogoUsage() steht seit diesem Auftrag in
+   brand.js und haette das abgewiesen - nur hat es niemand gefragt.
+   Ein Tor, das nicht im Weg steht, ist kein Tor, und diesmal stand es
+   neben der einzigen Stelle, an der die Marke wirklich gezeichnet
+   wird.
+
+   Das Asset ist schwarz und die Karte ist schwarz. Dafuer gibt es
+   jetzt genau eine, eng gefasste Transformation
+   (`invert-monochrome`), und sie gilt nur fuer ein einfarbiges
+   Zeichen. Geometrie, Proportion und Abstaende bleiben unberuehrt.
+   ===================================================================== */
+export const LOGO_PFAD = "assets/vision-universe-logo.png";
+
+/* Die oeffentlichen Namen unserer Quellen. Sie stehen in
+   visual-data.mjs und werden von dort uebernommen - ein zweiter
+   Begriff davon, wie unsere Quellen heissen, waere einer zu viel. */
+import { QUELLENNAME } from "./visual-data.mjs";
+
+/* Die Masse des kanonischen Assets. Sie stehen NICHT hier als Zahlen,
+   sondern werden aus der Datei gelesen - eine zweite Angabe koennte
+   driften, und dann prueft der Vertrag ein Logo, das es nicht gibt. */
+export function logoMasse(root) {
+  const pfad = join(root || process.cwd(), LOGO_PFAD);
+  const d = readFileSync(pfad);
+  /* PNG: IHDR steht immer an Byte 16..24. */
+  return { breite: d.readUInt32BE(16), hoehe: d.readUInt32BE(20), bytes: d.length };
+}
+
+/* Wie breit das Logo auf der Karte steht: ein Viertel der Flaeche.
+   Der Logo-Vertrag laesst 12 bis 40 Prozent zu; 24 liegt in der Mitte
+   und ergibt bei 1080 Pixeln Breite eine Signatur von 260 Pixeln. */
+export const LOGO_BREITEN_ANTEIL = 0.24;
+
+export function logoKasten(breite, root) {
+  const m = logoMasse(root);
+  const bw = Math.round(breite * LOGO_BREITEN_ANTEIL);
+  return { breite: bw, hoehe: Math.round(bw * (m.hoehe / m.breite)), asset: m };
+}
+
+/* Weiss auf #050505. Der Kontrast wird GERECHNET und nicht geschaetzt:
+   relative Leuchtdichte nach WCAG, (L1+0.05)/(L2+0.05). */
+function leuchtdichte(hex) {
+  const k = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2];
+}
+export function kontrast(a, b) {
+  const l1 = leuchtdichte(a), l2 = leuchtdichte(b);
+  const [hell, dunkel] = l1 > l2 ? [l1, l2] : [l2, l1];
+  return Math.round(((hell + 0.05) / (dunkel + 0.05)) * 100) / 100;
+}
+
+/** Das Logo als Data-URI, damit das Bild ohne Netz entsteht. */
+export function logoDatenUri(root) {
+  return "data:image/png;base64," +
+    readFileSync(join(root || process.cwd(), LOGO_PFAD)).toString("base64");
+}
 
 /* -------------------------------------------------------------------
    DIE SCHRIFTGROESSEN DES GEZEICHNETEN BILDES
@@ -172,7 +245,11 @@ export function textGroessen(visualType) {
        darunter. */
     aussage: 76,
     beleg: 40,
-    quelle: 24
+    quelle: 24,
+    /* Das Logo ist kein Schriftgrad, sondern ein Kasten. Er steht hier,
+       weil die Vorlagen und der Logo-Vertrag dieselbe Angabe brauchen -
+       zwei Kaesten waeren zwei Logos. */
+    logo: logoKasten(1080)
   };
 }
 
@@ -274,7 +351,12 @@ function grammatikBefund(entwurf, pkg) {
        Datenkarte mehrdeutig. */
     eintraege: entwurf.komposition && Array.isArray(entwurf.komposition.bars)
       ? entwurf.komposition.bars.length
-      : (entwurf.ebenen && entwurf.ebenen.zahl ? 1 : null),
+      /* Auch eine Zahl, die nur in der Kopfzeile steht, ist EINE Zahl.
+         Gezaehlt wird, WOVON die Karte handelt - nicht, welcher Block
+         gezeichnet wurde. Nach der Redundanzaufloesung stand hier
+         sonst null, und die Familienwahl wurde wieder mehrdeutig. */
+      : ((entwurf.ebenen && (entwurf.ebenen.zahl ||
+          entwurf.ebenen.zahlWeggelassen)) ? 1 : null),
     gemesseneReihe: !!(entwurf.komposition &&
       Array.isArray(entwurf.komposition.points)),
     farbwelt: "VU_SCHWARZ_ROT"
@@ -332,8 +414,31 @@ export function plan(pkg, options = {}) {
      Hook als Rueckfall — ein doppelter Text ist immer noch besser als
      gar keiner.
      ------------------------------------------------------------------- */
-  const ebene = ((pkg.visualBrief && pkg.visualBrief.textLayers) || [])
-    .find((l) => l && l.text && String(l.text).trim());
+  /* -------------------------------------------------------------------
+     DIE KOPFZEILE IST DIE HOOK - NICHT IRGENDEINE TEXTEBENE
+
+     Hier wurde jede Textebene des Bildbriefs genommen, die Text trug.
+     Der Produktnachweis hat gezeigt, wohin das fuehrt: auf der Karte
+     stand "Lagebeschreibung, keine Prognose." - der Nachsatz einer
+     These, gross, oben, als Einstieg. Ein Satz, der nichts ueber den
+     Gegenstand sagt und niemanden anhaelt.
+
+     Die Ebene kam aus `writer.visualLine`, und deren eigener Kommentar
+     sagt es woertlich: "Die Zeile FUERS BILD. Nicht die Hook." Sie als
+     Hook zu setzen war eine Verwechslung, und SCROLL_STOP hat sie
+     durchgelassen, weil dort ein Text in der Rolle HOOK stand - nicht,
+     weil er aus der Hook stammte.
+
+     Eine Textebene fuehrt jetzt nur, wenn sie sich ausdruecklich als
+     Hook ausweist (`role: "HOOK"`). Sonst fuehrt `pkg.hook`, und die
+     Zeile fuers Bild bleibt, was sie ist: ein Beleg eine Zeile tiefer.
+     ------------------------------------------------------------------- */
+  const ebenen_ = (pkg.visualBrief && pkg.visualBrief.textLayers) || [];
+  const hookEbene_ = ebenen_.find((l) => l && l.text &&
+    String(l.text).trim() && String(l.role || l.rolle || "").toUpperCase() === "HOOK");
+  const bildzeile = ebenen_.find((l) => l && l.text && String(l.text).trim() &&
+    l !== hookEbene_);
+  const ebene = hookEbene_ || null;
   const aussage = String(
     (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
 
@@ -353,6 +458,10 @@ export function plan(pkg, options = {}) {
     : pkg.hook ? "pkg.hook"
       : pkg.thesis ? "pkg.thesis"
         : pkg.topic ? "pkg.topic" : null;
+  /* Die Zeile fuers Bild bleibt erhalten - als Beleg, eine Zeile
+     tiefer. Sie wegzuwerfen hiesse, eine Aussage zu verlieren, die
+     nirgends sonst steht. */
+  const belegzeile = bildzeile ? String(bildzeile.text).trim() : null;
 
   if (!aussage) {
     return { ok: false, reason: "noStatement", visualType: typ,
@@ -365,7 +474,8 @@ export function plan(pkg, options = {}) {
   const entitaet = (pkg.visualBrief && pkg.visualBrief.entity)
     ? String(pkg.visualBrief.entity).trim() : null;
 
-  const ebenen = { aussage, entitaet, zahl: null, zahlText: null, quelle: null };
+  const ebenen = { aussage, beleg: belegzeile, entitaet, zahl: null,
+    zahlText: null, quelle: null };
 
   if (typ === "DATA_CARD" || typ === "NUMBER_VISUAL") {
     const zahl = ersteBelegteZahl(pkg);
@@ -392,7 +502,52 @@ export function plan(pkg, options = {}) {
     }
     ebenen.zahl = zahl.wert;
     ebenen.zahlText = zahl.bezeichnung;
-    ebenen.quelle = zahl.quelle;
+    /* "vu.technical" ist unser Schluessel, kein Quellenname. Auf der
+       Karte stand er trotzdem - der Produktnachweis hat es gezeigt.
+       Die Zuordnung gibt es seit jeher in visual-data.mjs; sie hier
+       ein zweites Mal zu fuehren waere ein zweiter Begriff davon, wie
+       unsere Quellen heissen. */
+    ebenen.quelle = QUELLENNAME[zahl.quelle] || zahl.quelle;
+
+    /* -----------------------------------------------------------------
+       WENN DIE KOPFZEILE DIE ZAHL SCHON SAGT
+
+       Seit die Kopfzeile die HOOK traegt (§13) und nicht mehr eine
+       beliebige Textebene, kann sie dasselbe sagen wie der Zahlenblock
+       darunter. Beim Produktnachweis stand genau das auf der Karte:
+       "13,4 KGV - Russell 2000." als Einstieg, und darunter noch
+       einmal RUSSELL 2000 / 13,4 / KGV.
+
+       Das ist die "dreimal dasselbe"-Karte, die dieses Projekt schon
+       einmal hatte. visual-quality.js findet sie - und weist sie ab.
+       Abweisen ist hier die falsche Antwort: die Hook ist richtig, die
+       Zahl ist belegt, sie wird nur zweimal gezeigt.
+
+       Also wird sie einmal gezeigt. Die Kopfzeile fuehrt (§13), der
+       Zahlenblock weicht. Der Beleg geht nicht verloren - er steht im
+       selben Satz, nur oben. Was weggelassen wurde, steht im Plan;
+       stillschweigend etwas fallen zu lassen waere schlimmer als es
+       zweimal zu zeigen.
+       ----------------------------------------------------------------- */
+    /* Dieselben zwei Fragen, die visual-quality.js stellt - nicht zwei
+       neue. Die Zahl: steht sie woertlich im Satz? Die Bezeichnung:
+       ueberschneidet sie sich mit ihm? Eine eigene Rechnung hier haette
+       eine andere Antwort gegeben als das Tor eine Zeile spaeter, und
+       dann haette der Plan genau das behoben, was danach trotzdem
+       blockiert. */
+    const zahlImText = VisualQuality.wiederholtZahl(aussage, zahl.wert);
+    const labelDoppelt = zahl.bezeichnung
+      ? VisualQuality.overlap(zahl.bezeichnung, aussage) >=
+        VisualQuality.GRENZEN.redundanz : false;
+    if (zahlImText || labelDoppelt) {
+      ebenen.zahlWeggelassen = {
+        wert: zahl.wert, bezeichnung: zahl.bezeichnung,
+        zahlImText, labelDoppelt,
+        grund: "Die Kopfzeile traegt dieselbe Angabe. Zweimal gezeigt " +
+          "ist nicht zweimal so deutlich." };
+      ebenen.zahl = null;
+      ebenen.zahlText = null;
+    }
   }
 
   var entwurf = {
@@ -403,7 +558,8 @@ export function plan(pkg, options = {}) {
     hoehe: Number(options.hoehe) || 1350,
     ebenen,
     ebenenHerkunft: { aussage: aussageHerkunft },
-    textGroessen: textGroessen(typ)
+    textGroessen: textGroessen(typ),
+    logoUri: logoDatenUri()
   };
 
   /* -------------------------------------------------------------------
@@ -486,6 +642,9 @@ export function seite(p, schriftDaten) {
      driftet, und dann prueft das Tor ein Bild, das es nicht gibt. */
   const g = p.textGroessen || textGroessen(p.visualType);
   const zahlGroesse = g.zahl;
+  /* Der Data-URI kommt aus dem Plan; nur wenn er fehlt (ein Test ohne
+     Repositorywurzel), wird er hier geholt. */
+  p = Object.assign({}, p, { logoUri: p.logoUri || logoDatenUri() });
   const aussageGroesse = g.aussage;
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
@@ -501,11 +660,14 @@ html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};o
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
   padding:96px 88px;-webkit-font-smoothing:antialiased}
-.marke{font-size:26px;letter-spacing:.20em;text-transform:uppercase;color:${FARBEN.gedeckt};
-  font-weight:600}
-.marke b{color:${FARBEN.weiss};font-weight:700}
+/* Das kanonische Asset, nicht gesetzter Text (§18). Die Umkehrung ist
+   die einzige erlaubte Transformation eines einfarbigen Zeichens:
+   schwarz zu weiss, keine Geometrie. */
+.marke{display:block;width:${g.logo.breite}px;height:${g.logo.hoehe}px;
+  filter:invert(1)}
 .mitte{display:flex;flex-direction:column;gap:20px}
 .zahlblock{margin-top:38px}
+.beleg{font-size:${g.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:18px}
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
   text-transform:uppercase;margin-bottom:16px}
 .zahl{font-size:${zahlGroesse}px;line-height:.95;font-weight:800;letter-spacing:-.03em;
@@ -517,9 +679,10 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
 </style></head><body>
-  <div class="marke" data-vu-rolle="SIGNATUR"><b>VISION UNIVERSE</b>®</div>
+  <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
     <div class="aussage" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage)}</div>
+    ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     ${zahlBlock}
   </div>
   <div class="fuss">
@@ -589,6 +752,7 @@ export function planKomposition(pkg, komposition, ebenen) {
     ebenen: { entitaet: e.entitaet || null, aussage: kopf,
       beleg: beleg, quelle: e.quelle || null },
     textGroessen: textGroessen((pkg && pkg.visualType) || komposition.kind),
+    logoUri: logoDatenUri(),
     ebenenHerkunft: {
       aussage: hookEbene ? "visualBrief.textLayers" : "pkg.hook",
       beleg: beleg ? "komposition" : null },
@@ -703,6 +867,7 @@ export function seiteKomposition(p, schriftDaten) {
     : "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
   /* Aus dem Plan, nicht aus einer zweiten Tabelle hier. */
   const g2 = p.textGroessen || textGroessen(p.visualType);
+  p = Object.assign({}, p, { logoUri: p.logoUri || logoDatenUri() });
 
   let grafik = "", achsen = "";
   if (k.kind === "CHART") {
@@ -730,8 +895,8 @@ html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};o
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
   padding:96px 88px;-webkit-font-smoothing:antialiased}
-.marke{font-size:26px;letter-spacing:.20em;text-transform:uppercase;color:${FARBEN.gedeckt};font-weight:600}
-.marke b{color:${FARBEN.weiss};font-weight:700}
+.marke{display:block;width:${g2.logo.breite}px;height:${g2.logo.hoehe}px;
+  filter:invert(1)}
 .kopf{margin-bottom:30px}
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
   text-transform:uppercase;margin-bottom:14px}
@@ -744,7 +909,7 @@ body{font-family:${familie};color:${FARBEN.weiss};
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
 </style></head><body>
-  <div class="marke" data-vu-rolle="SIGNATUR"><b>VISION UNIVERSE</b>®</div>
+  <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
     <div class="kopf">
       ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
@@ -881,6 +1046,42 @@ export function render(p, zielPfad, options = {}) {
   const messung = messeSeite(arbeit, p.breite, p.hoehe);
   const scrollStop = ScrollStop.pruefe({ messung, caption: options.caption || null });
 
+  /* -----------------------------------------------------------------
+     DER LOGO-VERTRAG, ENDLICH IM WEG (§11/§18)
+
+     checkLogoUsage() stand in brand.js, mit sieben Pruefungen und elf
+     Tests - und niemand hat es an der einzigen Stelle gefragt, an der
+     die Marke wirklich gezeichnet wird. Die Karte trug deshalb bis
+     zuletzt "VISION UNIVERSE" in Inter Bold, also genau die textuelle
+     Approximation, die der Vertrag abweist.
+
+     Ein Tor, das nicht im Weg steht, ist kein Tor. Jetzt steht es hier,
+     mit den GEMESSENEN Groessen: dem Kasten aus derselben Tabelle, aus
+     der die Vorlage ihn nimmt, und dem gerechneten Kontrast zwischen
+     Zeichenfarbe und Untergrund.
+     ----------------------------------------------------------------- */
+  const logoKast = (p.textGroessen && p.textGroessen.logo) ||
+    logoKasten(p.breite);
+  const logoBefund = Brand.checkLogoUsage({
+    referenceAsset: Brand.LOGO_ASSET_PATH,
+    transforms: ["place", "scale-uniform", "invert-monochrome"],
+    monochrom: true,
+    generationMode: "asset-transform",
+    canvas: { width: p.breite, height: p.hoehe },
+    box: { x: 88, y: 96, width: logoKast.breite, height: logoKast.hoehe },
+    /* Weiss auf der Kartenfarbe, nach WCAG gerechnet. Der Feldname ist
+       der, den brand.js liest - ein danebenliegender Name waere eine
+       Pruefung, die still nichts tut. */
+    kontrast: kontrast(FARBEN.weiss, FARBEN.schwarz)
+  });
+  if (!logoBefund.passed) {
+    const fehler = new Error("Logo-Vertrag nicht bestanden (§18): " +
+      logoBefund.explanation);
+    fehler.zustand = "LOGO_VERTRAG_VERLETZT";
+    fehler.logo = logoBefund;
+    throw fehler;
+  }
+
   if (!scrollStop.ok && options.scrollStopPruefen !== false) {
     const fehler = new Error("SCROLL_STOP_QUALITY nicht bestanden (" +
       scrollStop.zustand + "): " + scrollStop.erklaerung);
@@ -890,7 +1091,7 @@ export function render(p, zielPfad, options = {}) {
   }
 
   return Object.assign({ pfad: zielPfad }, befund,
-    { messung, scrollStop });
+    { messung, scrollStop, logo: logoBefund });
 }
 
 /* --------------------------------------------------------------- Lauf */

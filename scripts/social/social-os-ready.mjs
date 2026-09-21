@@ -1442,7 +1442,33 @@ const messungen = {
   LEARNING_LOOP_READY: learningLoop()
 };
 
-const ergebnis = Produkt.beurteile(messungen);
+/* -------------------------------------------------------------------
+   DER PRODUKTNACHWEIS (§53) GEHT IN DAS URTEIL EIN
+
+   Er wird NICHT hier gefuehrt: er rendert ein Bild und braucht
+   Chromium, und ein Reifebericht soll lesen, nicht erzeugen. Er wird
+   uebergeben - mit --proof <datei> aus einem Lauf von
+   product-proof.mjs.
+
+   Fehlt er, ist SOCIAL_OS_1_0_PRODUCTION_READY nicht true, sondern
+   ungefuehrt. §55 laesst dazu keinen Zweifel: dreizehn gruene
+   Bedingungen sind notwendig und nicht hinreichend. */
+const PROOF_DATEI = (() => {
+  const i = process.argv.indexOf("--proof");
+  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : null;
+})();
+const nachweis = (() => {
+  if (!PROOF_DATEI || !existsSync(PROOF_DATEI)) return null;
+  try {
+    const d = JSON.parse(readFileSync(PROOF_DATEI, "utf8"));
+    const b = d.befunde || [];
+    return { ok: d.ok === true, gesamt: b.length,
+      erfuellt: b.filter((x) => x.ok).length,
+      offen: b.filter((x) => !x.ok).map((x) => x.id) };
+  } catch { return null; }
+})();
+
+const ergebnis = Produkt.beurteile(messungen, nachweis);
 ergebnis.stand = git("rev-parse", "--short", "HEAD");
 ergebnis.generatedAt = new Date().toISOString();
 
@@ -1451,6 +1477,14 @@ if (JSON_AUS) {
 } else {
   console.log("VISION UNIVERSE SOCIAL OS 1.0 — PRODUKTREIFE (§55)\n");
   console.log("SOCIAL_OS_1_0_PRODUCTION_READY  " + ergebnis.ready);
+  console.log("  Bedingungen (§55)             " +
+    (ergebnis.bedingungenErfuellt ? "alle dreizehn" : "offen"));
+  console.log("  Produktnachweis (§53)         " +
+    (ergebnis.produktnachweis.ungefuehrt ? "NICHT GEFUEHRT"
+      : ergebnis.produktnachweis.ok ? "vollstaendig"
+        : ergebnis.produktnachweis.erfuellt + " von " +
+          ergebnis.produktnachweis.gesamt + " (offen: " +
+          (ergebnis.produktnachweis.offen || []).join(", ") + ")"));
   console.log("Stand                           " + ergebnis.stand);
   const z = ergebnis.zaehlung;
   console.log("Erfuellt " + z.erfuellt + " · offen " + z.nichtErfuellt +

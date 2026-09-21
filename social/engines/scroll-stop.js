@@ -243,13 +243,36 @@
        einmal zu viel - dieselbe Redundanz, die visual-quality.js
        innerhalb der Karte findet, nur ueber die Grenze hinweg. */
     if (hookText && spec.caption) {
-      var u = VQ.overlap(hookText, String(spec.caption).slice(0, 220));
-      if (u >= CAPTION_UEBERSCHNEIDUNG) {
+      /* -----------------------------------------------------------------
+         DIE RICHTUNG DER FRAGE
+
+         Der erste Entwurf rechnete `overlap(hook, caption)` - also:
+         wie viele Woerter der HOOK kommen in der Caption vor. Bei
+         einem kurzen Satz und einem langen Text ist das fast immer
+         alles, und fuer eine Hook aus Zahl, Kennzahl und Name ist es
+         zwingend: die Caption MUSS den Gegenstand und die Zahl nennen,
+         sonst erklaert sie nichts.
+
+         Damit konnte die Pruefung nur ja sagen. Eine Invariante, die
+         sich nicht verletzen laesst, ist keine - und eine, die sich
+         nicht erfuellen laesst, ebensowenig. Der Produktnachweis ist
+         daran haengengeblieben: 100 %, bei jeder Caption, die den
+         Beitrag ueberhaupt erklaert.
+
+         Gefragt ist die andere Richtung: wie viel vom ERSTEN SATZ der
+         Caption ist nichts als die Hook? Faengt der Text mit einer
+         Wiederholung an, hat der Beitrag einen Grund zum Anhalten
+         weniger. Erklaert er etwas, ist es kein Doppel - auch wenn er
+         dabei dieselbe Zahl nennt.
+         ----------------------------------------------------------------- */
+      var ersterSatz = String(spec.caption).split(/(?<=[.!?])\s+/)[0] || "";
+      var u = VQ.overlap(ersterSatz, hookText);
+      if (ersterSatz && u >= CAPTION_UEBERSCHNEIDUNG) {
         return befund(ZUSTAND.HOOK_WIEDERHOLT_CAPTION,
-          "Der Bildtext und der Anfang der Caption sind zu " +
-          Math.round(u * 100) + "% dieselben Woerter. Dann sagt das Bild " +
-          "nichts, was der Text nicht schon sagt - und der Beitrag hat " +
-          "einen Grund zum Anhalten weniger.", { ueberschneidung: u });
+          "Der erste Satz der Caption besteht zu " + Math.round(u * 100) +
+          "% aus den Woertern der Hook. Dann faengt der Text mit einer " +
+          "Wiederholung an - und der Beitrag hat einen Grund zum Anhalten " +
+          "weniger.", { ueberschneidung: u, ersterSatz: ersterSatz });
       }
     }
 

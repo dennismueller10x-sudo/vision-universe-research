@@ -159,7 +159,7 @@
    *
    * @param messungen { <BEDINGUNG_ID>: { zustand, satz, belege?, blocker? } }
    */
-  function beurteile(messungen) {
+  function beurteile(messungen, produktnachweis) {
     var m = messungen || {};
     var befunde = BEDINGUNGEN.map(function (b) { return befund(b, m[b.id]); });
 
@@ -176,11 +176,46 @@
        er ersetzt es nicht.
 
        Diese Zeile ist der ganze Sinn der vier Zustaende. */
-    var ready = erfuellt.length === BEDINGUNGEN.length;
+    var alleErfuellt = erfuellt.length === BEDINGUNGEN.length;
+
+    /* -----------------------------------------------------------------
+       UND DREIZEHN GRUENE BEDINGUNGEN SIND NOCH KEIN PRODUKT (§55)
+
+       §55 sagt es woertlich: SOCIAL_OS_1_0_PRODUCTION_READY darf NICHT
+       allein aus gruenen Tests, gruener CI, gemergten PRs und gruenen
+       Deployments abgeleitet werden. Dreizehn gemessene Bedingungen
+       sind derselbe Fall: eine notwendige Aussage, keine hinreichende.
+
+       Die hinreichende ist ein ERGEBNIS, das man ansehen kann - der
+       Produktnachweis aus §53. Er stand bis hierher als Satz in einem
+       Bericht; als Satz hat er noch nie etwas aufgehalten.
+
+       Fehlt er, ist das Ergebnis UNGEPRUEFT und ausdruecklich nicht
+       `ready`. Unbekanntes als Ja zu lesen ist die Fehlerfamilie,
+       gegen die dieses ganze System gebaut ist.
+       ----------------------------------------------------------------- */
+    var nachweisOk = !!(produktnachweis && produktnachweis.ok === true);
+    var nachweisGefuehrt = produktnachweis !== undefined &&
+      produktnachweis !== null;
+    var ready = alleErfuellt && nachweisOk;
 
     return {
       id: "SOCIAL_OS_1_0_PRODUCTION_READY",
       ready: ready,
+      /* Getrennt gefuehrt, damit man sieht, WORAN es liegt. Beides
+         unter einem Ja/Nein waere ein Register fuer zwei Tatsachen. */
+      bedingungenErfuellt: alleErfuellt,
+      produktnachweis: nachweisGefuehrt
+        ? { ok: nachweisOk,
+            erfuellt: produktnachweis.erfuellt !== undefined
+              ? produktnachweis.erfuellt : null,
+            gesamt: produktnachweis.gesamt !== undefined
+              ? produktnachweis.gesamt : null,
+            offen: produktnachweis.offen || null }
+        : { ok: false, ungefuehrt: true,
+            satz: "Der Produktnachweis (§53) wurde nicht gefuehrt. " +
+              "Dreizehn gemessene Bedingungen sind notwendig und nicht " +
+              "hinreichend (§55)." },
       bedingungen: befunde,
       zaehlung: {
         gesamt: BEDINGUNGEN.length,

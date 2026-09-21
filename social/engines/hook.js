@@ -68,6 +68,7 @@
   var ClaimBinding = isNode ? require("./claim-binding.js")
     : global.VUSocialClaimBinding;
   var VQ = isNode ? require("./visual-quality.js") : global.VUSocialVisualQuality;
+  var German = isNode ? require("./german-text.js") : global.VUSocialGermanText;
 
   function zahl(x) {
     if (typeof x === "number" && isFinite(x)) return x;
@@ -77,26 +78,14 @@
   function gefuellt(v) { return !!(v !== null && v !== undefined && String(v).trim()); }
   function liste(v) { return Array.isArray(v) ? v.slice() : []; }
 
-  /* -------------------------------------------------------------------
-     EINE ZAHL WIRD NICHT UMGESCHRIEBEN
+  /* Eine Zahl im veroeffentlichten Text ist deutsch, und eine
+     Zeichenkette bleibt, wie die Quelle sie geschrieben hat. Die Regel
+     stand hier als eigene Funktion - sie steht jetzt in
+     german-text.js, weil die Claims im Zyklus dieselbe Frage hatten
+     und "13.4 KGV" auf der Karte landete. Zwei Antworten auf eine
+     Frage sind eine zu viel. */
+  var zahlDe = German.zahl;
 
-     Schreibt der Beleg "184,20", dann heisst der Wert "184,20" - und
-     nicht "184,2". Der erste Entwurf hat jeden Wert durch parseFloat
-     geschickt und deutsch neu formatiert. Aus "184,20" wurde "184,2",
-     und die Faktenpruefung meldete voellig zu Recht: "184,2 USD" ohne
-     Beleg. Die Zahl stimmte auf zwei Stellen, die Aussage nicht mehr:
-     ein 52-Wochen-Hoch von 184,20 ist eine andere Angabe als eines
-     von 184,2.
-
-     Eine Zeichenkette kommt deshalb so heraus, wie die Quelle sie
-     geschrieben hat. Nur eine echte JavaScript-Zahl wird deutsch
-     gesetzt - dort waere der Punkt die falsche Schreibung.
-     ------------------------------------------------------------------- */
-  function zahlDe(x) {
-    if (typeof x === "string") return x.trim();
-    var n = zahl(x);
-    return n === null ? String(x) : String(n).replace(".", ",");
-  }
 
   /* -------------------------------------------------------------------
      DIE ARCHETYPEN

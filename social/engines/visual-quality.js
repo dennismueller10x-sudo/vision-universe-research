@@ -68,6 +68,16 @@
   function words(s) { return normalise(s).split(" ").filter(Boolean); }
 
   /** Anteil der Woerter von a, die auch in b vorkommen. */
+  /* Steht die Zahl woertlich im Satz? Die Frage stellte sich bisher nur
+     hier; seit der Renderer sie VOR dem Tor beantworten muss - um die
+     Zahl dann nur einmal zu zeigen -, braucht sie einen Namen. Zwei
+     Rechnungen fuer dieselbe Frage haetten sich widersprochen: der Plan
+     haette etwas behoben, was das Tor danach trotzdem beanstandet. */
+  function wiederholtZahl(aussage, zahl) {
+    if (!zahl || !aussage) return false;
+    return normalise(aussage).indexOf(normalise(zahl)) !== -1;
+  }
+
   function overlap(a, b) {
     var wa = words(a), wb = words(b);
     if (!wa.length || !wb.length) return 0;
@@ -155,7 +165,7 @@
     }
 
     /* ---------------------------------------------------- Redundanz */
-    var zahlImText = e.zahl ? normalise(e.aussage).indexOf(normalise(e.zahl)) !== -1 : false;
+    var zahlImText = wiederholtZahl(e.aussage, e.zahl);
     if (zahlImText) {
       blocking.push({ id: "redundant-number",
         message: "Die Aussage wiederholt die Zahl, die darueber steht. " +
@@ -232,7 +242,8 @@
     };
   }
 
-  var api = { GRENZEN: GRENZEN, overlap: overlap, check: check,
+  var api = { GRENZEN: GRENZEN, overlap: overlap,
+    wiederholtZahl: wiederholtZahl, check: check,
     VISUAL_DIRECTION_INCOMPLETE: RICHTUNG_UNVOLLSTAENDIG, NIEMALS: NIEMALS };
 
   if (isNode) module.exports = api;

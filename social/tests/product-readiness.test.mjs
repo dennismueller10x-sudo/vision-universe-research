@@ -66,11 +66,13 @@ test("PR42 · Ein Blocker ersetzt keine Erfuellung", () => {
   /* Ein Blocker erklaert, warum etwas fehlt. Er macht es nicht da. */
   const alle = {};
   for (const b of P.BEDINGUNGEN) alle[b.id] = { zustand: "ERFUELLT", satz: "x" };
-  assert.equal(P.beurteile(alle).ready, true);
+  /* Mit dem Produktnachweis (§53) ist es ready - ohne ihn nicht, und
+     das ist eine eigene Zusicherung: siehe PR50. */
+  assert.equal(P.beurteile(alle, { ok: true }).ready, true);
 
   alle[P.BEDINGUNGEN[0].id] = { zustand: "BLOCKIERT", satz: "x",
     blocker: "Owner muss entscheiden" };
-  const r = P.beurteile(alle);
+  const r = P.beurteile(alle, { ok: true });
   assert.equal(r.ready, false, "Ein Blocker wurde als Erfuellung gezaehlt.");
   assert.equal(r.zaehlung.blockiert, 1);
   assert.equal(r.bedingungen[0].blocker, "Owner muss entscheiden");
@@ -187,4 +189,36 @@ test("PR49 · Ein Feld ohne Werte zaehlt nicht als erfasste Dimension", () => {
   assert.ok(e.some((x) => !x.contentFamily),
     "Alle Eintraege tragen eine Familie - dann wurde nachtraeglich " +
     "erfunden, was niemand entschieden hat.");
+});
+
+test("PR50 · Dreizehn gruene Bedingungen sind noch kein Produkt (§55)", () => {
+  /* §55 woertlich: SOCIAL_OS_1_0_PRODUCTION_READY darf NICHT allein
+     aus gruenen Tests, gruener CI, gemergten PRs und gruenen
+     Deployments abgeleitet werden. Dreizehn gemessene Bedingungen
+     sind derselbe Fall - notwendig, nicht hinreichend.
+
+     Der Produktnachweis aus §53 stand lange als Satz in einem
+     Bericht. Als Satz hat er noch nie etwas aufgehalten; hier steht
+     er im Urteil. */
+  const alle = {};
+  for (const b of P.BEDINGUNGEN) alle[b.id] = { zustand: "ERFUELLT", satz: "x" };
+
+  const ohne = P.beurteile(alle);
+  assert.equal(ohne.bedingungenErfuellt, true, "Alle dreizehn sind erfuellt");
+  assert.equal(ohne.ready, false,
+    "Dreizehn gruene Bedingungen allein haben ready:true ergeben");
+  assert.equal(ohne.produktnachweis.ungefuehrt, true);
+
+  const unvollstaendig = P.beurteile(alle,
+    { ok: false, erfuellt: 11, gesamt: 12, offen: ["VISUAL_GRAMMAR"] });
+  assert.equal(unvollstaendig.ready, false);
+  assert.deepEqual(unvollstaendig.produktnachweis.offen, ["VISUAL_GRAMMAR"]);
+
+  assert.equal(P.beurteile(alle, { ok: true }).ready, true);
+
+  /* Und umgekehrt: ein vollstaendiger Nachweis rettet keine offene
+     Bedingung. */
+  const eineOffen = Object.assign({}, alle);
+  eineOffen[P.BEDINGUNGEN[0].id] = { zustand: "NICHT_ERFUELLT", satz: "x" };
+  assert.equal(P.beurteile(eineOffen, { ok: true }).ready, false);
 });

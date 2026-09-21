@@ -410,8 +410,30 @@
   var LOGO_SEITENVERHAELTNIS = 2172 / 724;
 
   /* Nur Platzieren und gleichmaessig Skalieren. Jede weitere
-     Transformation veraendert die Signatur selbst. */
-  var LOGO_TRANSFORMS = ["scale-uniform", "place"];
+     Transformation veraendert die Signatur selbst.
+
+     -------------------------------------------------------------------
+     UND EINE DRITTE, ENG GEFASSTE
+     -------------------------------------------------------------------
+
+     Das kanonische Asset ist schwarz. Die VU-Karte ist schwarz. Ohne
+     eine Umkehrung koennte die Marke auf ihrem eigenen Bild nicht
+     erscheinen - und die Karte trug deshalb bis hierher die Worte
+     "VISION UNIVERSE" als gesetzten Text. Das ist genau die
+     textuelle Approximation, die §18 verbietet: dieselben Buchstaben
+     in einer anderen Schrift sind ein anderes Zeichen.
+
+     `invert-monochrome` ist deshalb erlaubt, und zwar so eng wie
+     moeglich: sie taucht ein EINFARBIGES Zeichen um, schwarz zu
+     weiss. Keine Geometrie, keine Proportion, kein Abstand, keine
+     Punze aendert sich - nur die Helligkeit.
+
+     Sie gilt NUR fuer ein monochromes Asset. Bei einem mehrfarbigen
+     waere eine Umkehrung eine Umfaerbung, und die bleibt
+     ausgeschlossen. `checkLogoUsage` verlangt dafuer die ausdrueckliche
+     Angabe `monochrom: true` - eine fehlende Angabe ist keine
+     Erlaubnis. */
+  var LOGO_TRANSFORMS = ["scale-uniform", "place", "invert-monochrome"];
 
   var LOGO_REGELN = {
     /* -----------------------------------------------------------------
@@ -479,6 +501,12 @@
     }
 
     /* 3. Nur platzieren und gleichmaessig skalieren. */
+    if ((spec.transforms || []).indexOf("invert-monochrome") !== -1 &&
+        spec.monochrom !== true) {
+      problems.push("invert-monochrome ist nur fuer ein einfarbiges Zeichen " +
+        "erlaubt. Ohne die ausdrueckliche Angabe monochrom:true waere die " +
+        "Umkehrung eine Umfaerbung - und die ist ausgeschlossen.");
+    }
     (spec.transforms || []).forEach(function (t) {
       if (LOGO_TRANSFORMS.indexOf(t) === -1) {
         problems.push("Unzulaessige Transformation '" + t + "'. Am Logo " +

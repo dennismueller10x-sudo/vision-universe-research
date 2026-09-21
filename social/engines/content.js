@@ -48,6 +48,7 @@
   var FactCheck  = isNode ? require("./fact-check.js") : global.VUSocialFactCheck;
   var Brand      = isNode ? require("./brand.js")      : global.VUSocialBrand;
   var Hook       = isNode ? require("./hook.js")       : global.VUSocialHook;
+  var German     = isNode ? require("./german-text.js") : global.VUSocialGermanText;
   var ContentIntelligence = isNode ? require("./content-intelligence.js")
     : global.VUSocialContentIntelligence;
   var Visual     = isNode ? require("./visual.js")     : global.VUSocialVisual;
@@ -335,8 +336,11 @@
     };
     (h.data.belege || []).forEach(function (f) {
       if (!f || f.value === null || f.value === undefined) return;
-      /* Der Wert - in der Schreibweise der Quelle, nicht umformatiert. */
-      ergaenze(String(f.value) + (f.unit ? " " + f.unit : ""), f.value, f.source);
+      /* Der Wert - in der Schreibweise der Quelle, wenn sie eine hat,
+         und sonst deutsch gesetzt. Auf der Karte stand "13.4 KGV": der
+         Wert kam als JavaScript-Zahl, und String(13.4) ist "13.4". */
+      ergaenze(German.zahl(f.value) + (f.unit ? " " + f.unit : ""),
+        f.value, f.source);
       /* UND die Bezeichnung. Auch sie ist belegpflichtig: "52-Wochen-Hoch"
          ist eine Rekordaussage und keine Beschriftung. Genau das hat die
          Faktenpruefung gemeldet, nachdem nur der Wert nachgetragen war -
@@ -597,9 +601,25 @@
            Der mittlere Satz ist der wichtigste. Eine Kennzahl ohne ihre
            Grenze liest sich wie eine Aussage ueber die Zukunft, und
            genau das ist sie nicht. */
+        /* -----------------------------------------------------------
+           DIE CAPTION FAENGT NICHT MIT DER HOOK AN
+
+           Sie tat es: "Unsere technische Auswertung bewertet X derzeit
+           mit 13,4 im KGV." Wenn die Hook "13,4 KGV - X" lautet,
+           stehen dieselben vier Woerter zweimal - einmal gross im
+           Bild, einmal als erster Satz darunter. Das SCROLL_STOP-Tor
+           hat es beim Produktnachweis gemeldet, und es hatte recht:
+           dann sagt das Bild nichts, was der Text nicht schon sagt.
+
+           Der erste Satz benennt jetzt den GEGENSTAND und die Frage,
+           die dahintersteht. Die Zahl kommt im zweiten - sie steht ja
+           schon im Bild, und der Text soll sie einordnen, nicht
+           vorlesen. */
         var caption =
-          "Unsere technische Auswertung bewertet " + wer + " derzeit mit " +
-          valueText + " im " + f.metric + ". " +
+          "Wie teuer ist " + wer + " gerade, gemessen an dem, was das " +
+          "Unternehmen verdient? " +
+          "Unsere technische Auswertung kommt auf " + valueText +
+          " im " + f.metric + ". " +
           "Der Wert beschreibt die aktuelle Lage " + STRICH + " nicht ihre Ursache und " +
           "nicht, was als n" + AE + "chstes passiert. " +
           "Wir zeigen ihn, weil eine nachvollziehbare Zahl mehr wert ist als eine " +
