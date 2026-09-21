@@ -41,7 +41,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "discover-klartext-1.1.0";
+  var ENGINE_VERSION = "discover-klartext-1.1.1";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
@@ -574,12 +574,18 @@
 
     var gesperrt = opt.ausser || [];
     function passt(g, ohne) {
+      /* Ohne feste Reihenzahl liefert die gewählte Geschichte später ihre
+         eigene Kennzahl aus. Deshalb muss schon die Auswahl gegen genau
+         diese Zahl geprüft werden. Andernfalls konnte z. B. ein Breakout
+         über eine positive Zwölfmonatszahl gewählt und anschließend mit
+         einer negativen Monatszahl angezeigt werden. */
+      var pruefzahl = (!vorgabe && g.zahl) ? hauptzahl(stock, g.zahl) : zahl;
       if (ohne && schonGesagt.indexOf(g.id) !== -1) return false;
       if (ohne && gesperrt.indexOf(g.id) !== -1) return false;
-      if (!g.wenn(stock, zahl)) return false;
+      if (!g.wenn(stock, pruefzahl)) return false;
       /* Eine Geschichte, die Stärke behauptet, darf nicht über einer
          negativen Zahl stehen. */
-      if (g.positiv && zahl && isNum(zahl.roh) && zahl.roh < 0) return false;
+      if (g.positiv && pruefzahl && isNum(pruefzahl.roh) && pruefzahl.roh < 0) return false;
       return true;
     }
     function suche(ohne) {

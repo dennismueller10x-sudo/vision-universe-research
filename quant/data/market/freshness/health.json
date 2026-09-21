@@ -1,14 +1,14 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-18T22:25:21.346Z",
+  "checkedAt": "2026-09-21T12:21:02.169Z",
   "target": "repository",
   "market": {
-    "state": "AFTER_HOURS",
-    "localDate": "2026-09-18",
-    "localTime": "18:25:21",
+    "state": "PRE_MARKET",
+    "localDate": "2026-09-21",
+    "localTime": "08:21:02",
     "lastCompletedSession": "2026-09-18",
-    "currentSession": "2026-09-18",
+    "currentSession": "2026-09-21",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
@@ -30,7 +30,7 @@
     },
     "dataState": "LAST_SESSION",
     "dataReason": "lastCompletedSession",
-    "dataLabel": "Heute · Schluss 16:00",
+    "dataLabel": "Letzter Handelstag · Freitag",
     "entries": 516,
     "byState": {
       "LIVE": 0,
@@ -53,11 +53,11 @@
     "state": "OK"
   },
   "daily": {
-    "universeAsOf": "2026-09-17",
-    "generatedAt": "2026-09-18T19:55:40.568Z",
+    "universeAsOf": "2026-09-18",
+    "generatedAt": "2026-09-21T12:20:57.126Z",
     "state": "LAST_SESSION",
-    "reason": "closePendingWithinGrace",
-    "label": "Schluss Do., 17.09. · Freitag folgt",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Freitag",
     "expectedSession": "2026-09-18",
     "sample": {
       "sample": 40,
@@ -68,10 +68,10 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "closePendingWithinGrace": 40
+        "lastCompletedSession": 40
       },
       "staleSample": [],
-      "seriesIndexCount": 6443
+      "seriesIndexCount": 6447
     }
   },
   "overall": "OK",
