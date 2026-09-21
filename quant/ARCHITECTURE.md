@@ -140,6 +140,12 @@ konkreten Security-Abfrage. Beide Artefakte stammen aus demselben Builder und de
 Matrix. Sie erzeugen weder Kennzahlen noch eine zweite Datenquelle und laden nicht das
 21-MiB-Faktorartefakt in den Browser.
 
+`engines/setup-state-contract.js` ist der gemeinsame, versionierte Produktvertrag fuer
+Setup-Beobachtungen. Er referenziert kanonische Regeln und Evidenz, evaluiert sie aber nicht
+erneut. `methodology/setup-state-v1.json` bleibt inaktiv, bis ein freigegebenes Mapping und
+eine geordnete reale Snapshotfolge existieren. Einzelne Technical-Snapshots duerfen keinen
+Lifecycle-Zustand oder eine Backtest-Zertifizierung erzeugen.
+
 `quant/` liest keine Daten aus `dashboard/`, `macro/`, `hedgefonds/` oder `academy/` und
 schreibt dort nichts hinein. Umgekehrt aendert dieser Bereich an keiner bestehenden
 Produktseite etwas ausser einem Menuepunkt in `assets/site-navigation.js` und einer Zeile
