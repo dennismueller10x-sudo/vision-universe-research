@@ -413,7 +413,11 @@ const BEDINGUNGEN = [
   { id: "KEIN_ZWEITER_PRODUKTIVER_LAUF", ref: "§27-§31", befund: keinZweiterLauf },
   { id: "FREQUENZLERNEN_OHNE_BEHAUPTUNG", ref: "§22-§25", befund: lernenOhneBehauptung },
   { id: "SUITEN_GRUEN", ref: "§46", befund: () => ausBeleg("suitesOk", (b) =>
-      b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests).join(", ")) },
+      /* Uebersprungene Tests gehoeren in den Satz: "1369/1383" allein
+         liest sich wie ein Mangel, und eine Luecke, die niemand nennt,
+         faellt spaeter niemandem auf. */
+      b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests +
+        (r.skipped ? " (" + r.skipped + " uebersprungen)" : "")).join(", ")) },
   { id: "TEST_PRODUKTIONS_ISOLATION", ref: "§42", befund: () => ausBeleg("isolationOk",
       (b) => b.isolation.map((i) => i.id + ": " +
         (i.ok ? "unveraendert" : "VERAENDERT")).join(", ")) },

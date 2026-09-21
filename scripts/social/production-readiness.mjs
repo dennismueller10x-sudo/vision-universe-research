@@ -647,7 +647,8 @@ const ergebnis = Readiness.pruefe({
       " — nicht gemessen." } : null),
   suites: ausBeleg("suitesOk", (b) =>
       b.suites.map((r) => r.id + ": " + r.pass + "/" + r.tests +
-        (r.fail ? " (" + r.fail + " gefallen)" : "")).join(", ")) ||
+        (r.fail ? " (" + r.fail + " gefallen)" : "") +
+        (r.skipped ? " (" + r.skipped + " uebersprungen)" : "")).join(", ")) ||
     (SUITEN ? { ok: true, explanation: "Von aussen behauptet: " + SUITEN +
       " — nicht gemessen." } : null)
 });
