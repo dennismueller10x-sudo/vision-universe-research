@@ -2,7 +2,7 @@
 
 Owner decision: Discover 1.0 is frozen. Discover 2.0 at `/discover-v2/` is the only implementation base and is refined in place into Discover 2.1 Premium.
 
-Graph-start baseline: `32b4796b51bcb95b7ef37bff36e18e34a85ad9c1` (21 September 2026). Integration baseline: `c84caa38382022a6bd65fc00df0ec20389bc96e1`; the intervening main commits did not change `discover/`, `discover-v2/` or the shared navigation. The frozen Discover 1.0 tree remains `de6baacf4c8c08891f7d4d2dc17ff40459517a8d`.
+Graph-start baseline: `32b4796b51bcb95b7ef37bff36e18e34a85ad9c1` (21 September 2026). The gate resolves the current PR merge-base at runtime, compares every path outside the explicit 2.1 allowlist against it and independently requires the frozen Discover 1.0 tree `de6baacf4c8c08891f7d4d2dc17ff40459517a8d`. This keeps the isolation proof exact while unrelated mainline data or Quant commits continue.
 
 ## State graph
 

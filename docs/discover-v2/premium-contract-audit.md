@@ -2,7 +2,7 @@
 
 Stand: 21. September 2026  
 Scope: ausschließlich `/discover-v2/`, dessen QA und Dokumentation  
-Integrations-Baseline des Isolation-Gates: `c84caa38382022a6bd65fc00df0ec20389bc96e1` (Graph-Start: `32b4796b51bcb95b7ef37bff36e18e34a85ad9c1`; der geschützte Discover-1.0-Tree ist in beiden Baselines identisch.)
+Der Isolation-Gate verwendet den aktuellen PR-Merge-Base als Integrations-Baseline (Graph-Start: `32b4796b51bcb95b7ef37bff36e18e34a85ad9c1`) und erzwingt davon unabhängig den geschützten Discover-1.0-Tree `de6baacf4c8c08891f7d4d2dc17ff40459517a8d`.
 
 ## Ergebnis
 
