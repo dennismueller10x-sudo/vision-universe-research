@@ -329,3 +329,26 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#1a1c1f;--disc
 @media(prefers-reduced-motion:reduce){
   body.dv2 .dv2-stock .dx-tf button{transition:none}
 }
+
+/* Premium QA convergence. This stylesheet loads last, so these rules also
+   protect the shell material from older Discover 2.0 cascade rules. */
+body.dv2 .v2-main{overflow-x:clip}
+@media(min-width:761px){body.dv2 .v2-dock{z-index:320}}
+@media(max-width:760px){
+  body.dv2 .v2-dock,body.dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.80)}
+  body.dv2 .v2-dock .v2-nav-item[aria-current="page"],body.dv2 .v2-dock .v2-nav-item.is-active,body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#101113;color:#fff}
+  html:not([data-theme="light"]) body.dv2 .v2-dock,html:not([data-theme="light"]) body.dv2.v2-feed-active .v2-dock{background:rgba(23,24,27,.82)}
+  html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#fff;color:#111214}
+  body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{margin-inline:-12px}
+  body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:12px}
+  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(28px,8vw,34px);letter-spacing:-.045em}
+}
+
+html:not([data-theme="light"]) body.dv2 .v2-intro,html:not([data-theme="light"]) body.dv2 .v2-world-performance,html:not([data-theme="light"]) body.dv2 .v2-world-compact,html:not([data-theme="light"]) body.dv2 .v2-world-split,html:not([data-theme="light"]) body.dv2 .v2-world-sector,html:not([data-theme="light"]) body.dv2 .v2-world-ranking,html:not([data-theme="light"]) body.dv2 .v2-world-fundamental{color:#f7f8fa}
+html:not([data-theme="light"]) body.dv2 .v2-intro h1 span,html:not([data-theme="light"]) body.dv2 .v2-world-performance .v2-world-subtitle,html:not([data-theme="light"]) body.dv2 .v2-world-compact .v2-world-subtitle,html:not([data-theme="light"]) body.dv2 .v2-world-split .v2-world-subtitle,html:not([data-theme="light"]) body.dv2 .v2-world-sector .v2-world-subtitle,html:not([data-theme="light"]) body.dv2 .v2-world-fundamental .v2-world-subtitle{color:#b9bec7}
+
+html[data-theme="light"] body.dv2 .dv2-research-number{color:#6e4f0a}
+html:not([data-theme="light"]) body.dv2 .dv2-research-number{color:#e2c270}
+html[data-theme="light"] body.dv2 .dv2-stock .dx-journey-delta b{color:#08713c}
+html:not([data-theme="light"]) body.dv2 .dv2-stock .dx-journey-delta b{color:#67d89a}
+html:not([data-theme="light"]) body.dv2 .dv2-stock #dv2-stock-1-2>.dx-kicker{color:#e2c270}
