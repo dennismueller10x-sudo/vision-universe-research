@@ -65,6 +65,24 @@ import { contentHash } from "./redact.js";
 
 const MIN_ADMIN_KEY_LENGTH = 32;
 
+/* -------------------------------------------------------------------
+   DIE DREI KNOEPFE - UND NUR IHRE NAMEN
+
+   Der Worker ist ein eigenes Bundle; die Engines des Repositories
+   laufen dort nicht. Was ein Auftrag AUFHEBEN DARF, steht deshalb
+   nicht hier, sondern in social/engines/manual-mode.js - einmal, und
+   dort, wo der Lauf es liest.
+
+   Hier stehen nur die drei Namen, die das Formular ohnehin braucht,
+   um drei Knoepfe zu zeichnen. Ein Test haelt sie gegen die Engine;
+   driften sie auseinander, wird er rot.
+
+   Ohne Angabe bleibt es bei JETZT PRUEFEN. Eine fehlende Angabe darf
+   nie zur weiterreichenden Handlung werden.
+   ------------------------------------------------------------------- */
+const MANUAL_MODI = ["JETZT_PRUEFEN", "MANUAL_NOW", "MANUAL_TOPIC"];
+const MANUAL_THEMA_MAX = 120;
+
 /* ------------------------------------------------------------------ */
 /* Das Tor                                                             */
 /* ------------------------------------------------------------------ */
@@ -1050,6 +1068,44 @@ export async function handleManualRun(request, env, options = {}) {
   const jetzt = options.now ? new Date(options.now) : new Date();
   const nowIso = jetzt.toISOString();
 
+  /* -------------------------------------------------------------------
+     WELCHER DER DREI KNOEPFE (§28, §29, §30)
+
+     Ohne Angabe bleibt es bei JETZT PRUEFEN - dem Knopf, den es
+     vorher gab. Eine fehlende Angabe darf nicht zum Auftrag werden:
+     Unbekanntes wird hier nicht zur weitreichenderen Handlung.
+
+     Was ein Auftrag darf, entscheidet manual-mode.js. Der Worker
+     nimmt die Eingabe entgegen und reicht das Urteil weiter; er faellt
+     es nicht selbst, sonst gaebe es die Regel zweimal.
+     ------------------------------------------------------------------- */
+  let modus = "JETZT_PRUEFEN";
+  let thema = "";
+  try {
+    const form = await request.formData();
+    const m = form.get("modus");
+    if (m !== null && String(m).trim()) modus = String(m).trim();
+    const t = form.get("thema");
+    if (t !== null) thema = String(t).trim().slice(0, MANUAL_THEMA_MAX);
+  } catch {
+    /* Kein Formular - dann bleibt es beim Vorgabemodus. */
+  }
+
+  if (!MANUAL_MODI.includes(modus)) {
+    return laufNichtMoeglichSeite({
+      grund: "UNBEKANNTER_MODUS",
+      satz: "'" + modus + "' ist keiner der drei Knoepfe."
+    });
+  }
+  if (modus === "MANUAL_TOPIC" && !thema) {
+    return laufNichtMoeglichSeite({
+      grund: "THEMA_FEHLT",
+      satz: "POST ZU THEMA ohne Thema ist der andere Knopf mit einem leeren " +
+        "Feld. Entweder steht ein Thema da, oder es ist JETZT POST ERSTELLEN."
+    });
+  }
+  const istAuftrag = modus !== "JETZT_PRUEFEN";
+
   const token = env.VU_GITHUB_DISPATCH_TOKEN || null;
   const repo = env.VU_GITHUB_REPO || null;
   const zweig = env.VU_GITHUB_REF || "main";
@@ -1129,7 +1185,17 @@ export async function handleManualRun(request, env, options = {}) {
           "content-type": "application/json",
           "user-agent": "vision-universe-social-worker"
         },
-        body: JSON.stringify({ ref: zweig })
+        /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
+           Workflow und keine zweite Deployment-Architektur (§58):
+           derselbe Lauf, ein anderer Auftrag. */
+        /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
+           Workflow und keine zweite Deployment-Architektur (§58):
+           derselbe Lauf, ein anderer Auftrag. */
+        body: JSON.stringify({ ref: zweig, inputs: {
+          modus: modus,
+          thema: thema,
+          nur_entscheiden: istAuftrag ? "false" : "true"
+        } })
       });
     status = antwort.status;
     ok = antwort.status === 204;
@@ -1142,8 +1208,11 @@ export async function handleManualRun(request, env, options = {}) {
   }
 
   await recordManualRun(env, {
-    requestedAt: nowIso, ok, status,
-    hinweis: ok ? "workflow_dispatch angenommen" : "Dispatch nicht angenommen"
+    requestedAt: nowIso, ok, status, modus: modus,
+    /* Das Thema wird NICHT mitgeschrieben: es ist fremder Text, und der
+       Vermerk ueber den letzten Anstoss ist kein Ort fuer fremden Text. */
+    hinweis: ok ? "workflow_dispatch angenommen (" + modus + ")"
+      : "Dispatch nicht angenommen"
   });
 
   if (!ok) {

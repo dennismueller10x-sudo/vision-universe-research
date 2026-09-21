@@ -500,13 +500,48 @@ function laufZeile(n, jetzt) {
   return `<p class="leise">${teile.join(", ")}.</p>`;
 }
 
+/* -------------------------------------------------------------------
+   DREI KNOEPFE, DIE NICHT DASSELBE TUN (§28, §29, §30)
+
+   Bis hierher gab es einen: "Jetzt pruefen". Er sagt, was dran waere,
+   und erzeugt ausdruecklich nichts (§28).
+
+   §29 und §30 verlangen zwei weitere - und sie sind Auftraege. Sie
+   heben die UHR auf, kein Tor: die Obergrenze von einem Creative Job,
+   jede Qualitaetsschwelle und die Freigabe des Owners gelten
+   unveraendert. Was ein Auftrag aufheben darf, steht in
+   social/engines/manual-mode.js, und nur dort.
+
+   Drei Formulare statt eines mit Auswahlfeld: der Unterschied
+   zwischen "sag mir was dran waere" und "mach jetzt einen Beitrag"
+   soll man sehen, bevor man drueckt, und nicht in einer Liste
+   aufklappen.
+   ------------------------------------------------------------------- */
 function jetztPruefen() {
   return `<hr class="linie">
 <form method="POST" action="/approval/run">
+  <input type="hidden" name="modus" value="JETZT_PRUEFEN">
   <button class="weiter" type="submit">Jetzt pruefen</button>
 </form>
 <p class="leise">Startet dieselbe Pruefung, die der Zeitplan zweimal taeglich
-startet. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>`;
+startet. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>
+
+<form method="POST" action="/approval/run">
+  <input type="hidden" name="modus" value="MANUAL_NOW">
+  <button class="leer" type="submit">Jetzt Post erstellen</button>
+</form>
+<p class="leise">Ein Auftrag: es soll jetzt ein Beitrag entstehen. Das hebt
+Tagesobergrenze und Mindestabstand auf — nicht die Qualitaetstore, nicht die
+Grenze von einem laufenden Auftrag, und nicht deine Freigabe.</p>
+
+<form method="POST" action="/approval/run">
+  <input type="hidden" name="modus" value="MANUAL_TOPIC">
+  <input type="text" name="thema" maxlength="120" required
+         placeholder="Thema, zu dem ein Beitrag entstehen soll">
+  <button class="leer" type="submit">Post zu Thema</button>
+</form>
+<p class="leise">Derselbe Auftrag, aber du nennst den Gegenstand statt der
+Gelegenheitsbewertung. Ein Thema ist ein Gegenstand, keine Anweisung.</p>`;
 }
 
 function abmelden() {

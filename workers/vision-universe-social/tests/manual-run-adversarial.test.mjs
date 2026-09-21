@@ -192,8 +192,35 @@ test("AY6 · Angriff: dem Lauf ueber den Rumpf Eingaben mitgeben", async () => {
 
   assert.equal(netz.rufe.length, 1);
   const rumpf = JSON.parse(netz.rufe[0].init.body);
-  assert.deepEqual(Object.keys(rumpf), ["ref"],
-    "Der Dispatch traegt mehr als den Zweig: " + JSON.stringify(rumpf));
+
+  /* -----------------------------------------------------------------
+     SEIT §29/§30 TRAEGT DER DISPATCH EINGABEN - ABER EIGENE
+
+     Vorher galt hier "nur `ref` und sonst nichts". Das war die
+     einfachste Form der richtigen Regel, solange es nur einen Knopf
+     gab.
+
+     Jetzt gibt es drei, und der Modus muss mitreisen. Die Regel ist
+     deshalb nicht schwaecher geworden, sondern genauer: der Worker
+     BAUT die Eingaben aus einem gepruefen Modus, er reicht keine
+     durch. Was der Aufrufer schickt, kommt nicht an.
+     ----------------------------------------------------------------- */
+  assert.deepEqual(Object.keys(rumpf).sort(), ["inputs", "ref"],
+    "Der Dispatch traegt etwas anderes als Zweig und Eingaben: " +
+    JSON.stringify(rumpf));
+  assert.deepEqual(Object.keys(rumpf.inputs).sort(),
+    ["modus", "nur_entscheiden", "thema"],
+    "Die Eingaben sind nicht der geschlossene Satz: " +
+    JSON.stringify(rumpf.inputs));
+  assert.ok(["JETZT_PRUEFEN", "MANUAL_NOW", "MANUAL_TOPIC"]
+    .includes(rumpf.inputs.modus));
+  /* Ein JSON-Rumpf ist kein Formular: die Eingaben des Angreifers
+     erreichen den Worker gar nicht erst, und es bleibt beim
+     harmlosesten der drei Modi. */
+  assert.equal(rumpf.inputs.modus, "JETZT_PRUEFEN",
+    "Eine fehlende Angabe ist zur weiterreichenden Handlung geworden");
+  assert.equal(rumpf.inputs.nur_entscheiden, "true");
+  assert.equal(rumpf.inputs.thema, "");
   assert.equal(rumpf.ref, "main", "Der Zweig kam vom Aufrufer statt aus der Konfiguration");
   assert.ok(!netz.rufe[0].url.includes("deploy.yml"),
     "Der Aufrufer konnte den Workflow waehlen");
