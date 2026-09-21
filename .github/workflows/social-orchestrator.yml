@@ -107,6 +107,30 @@ jobs:
       - name: Tests und Isolation, bevor irgendetwas geschieht
         run: node scripts/social/verify-suites.mjs
 
+      # =====================================================================
+      # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR DEM ZAEHLEN
+      #
+      # Ein Creative Job stand 51 Stunden auf CREATIVE_JOB_IN_FLIGHT und
+      # blockierte MAX_OPEN_CREATIVE_JOBS = 1, obwohl sein Ergebnis seit
+      # zehn Minuten nach dem Start im Repository lag und das Ledger
+      # denselben Schluessel COMPLETED nannte. Der Abschluss wurde an
+      # einer Stelle notiert und an einer anderen gezaehlt.
+      #
+      # ingest-creative.mjs zieht das Register seitdem selbst nach. Das
+      # hier ist die ZWEITE Linie: verpasst der Ingest den Rueckweg -
+      # weil ein Lauf abbrach, weil jemand ihn uebersprang -, holt ihn
+      # der naechste Orchestratorlauf nach, bevor er zaehlt.
+      #
+      # Er schliesst NIE einen Job wegen seines Alters. Nur harte
+      # Evidenz mit identischem processing_key zaehlt; die Liste steht
+      # in creative-job.js und weist alles andere benannt zurueck.
+      #
+      # VOR "Was ist jetzt dran?", weil genau dort die offenen Jobs
+      # gezaehlt werden. Danach waere er ein Tor neben dem Weg.
+      # =====================================================================
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
       - name: Was ist jetzt dran?
         id: plan
         run: |
