@@ -1,22 +1,22 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-21T12:21:02.169Z",
+  "checkedAt": "2026-09-21T13:15:13.446Z",
   "target": "repository",
   "market": {
     "state": "PRE_MARKET",
     "localDate": "2026-09-21",
-    "localTime": "08:21:02",
+    "localTime": "09:15:13",
     "lastCompletedSession": "2026-09-18",
     "currentSession": "2026-09-21",
     "expectedIntradaySession": "2026-09-18"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-18T22:25:17.515Z",
+    "indexGeneratedAt": "2026-09-21T13:15:09.861Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-09-18",
-      "kind": "current",
+      "kind": "last",
       "isRunning": false,
       "isComplete": true
     },
@@ -24,33 +24,40 @@
       "sessionDate": "2026-09-18",
       "asOf": "2026-09-18T20:55:00.000Z",
       "asOfLocal": "16:55",
-      "regularComplete": true,
+      "regularComplete": false,
       "snapshots": 5200,
       "universe": true
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "lastCompletedSession",
-    "dataLabel": "Letzter Handelstag · Freitag",
-    "entries": 516,
+    "dataState": "STALE",
+    "dataReason": "closeMissing",
+    "dataLabel": "Stand Fr., 18.09. · nicht aktuell",
+    "entries": 522,
     "byState": {
       "LIVE": 0,
       "LAST_SESSION": 515,
-      "STALE": 1,
+      "STALE": 7,
       "UNAVAILABLE": 0
     },
     "byReason": {
       "lastCompletedSession": 515,
-      "lastSessionMissing": 1
+      "closeMissing": 5,
+      "lastSessionMissing": 2
     },
     "staleSample": [
-      "RFAI"
+      "ATHS",
+      "CCM",
+      "EDRY",
+      "MSC",
+      "RFAI",
+      "STRF",
+      "UFG"
     ],
     "universeSessions": [
       "2026-09-17",
       "2026-09-18"
     ],
     "universeCoversLastSession": true,
-    "state": "OK"
+    "state": "STALE"
   },
   "daily": {
     "universeAsOf": "2026-09-18",
@@ -74,7 +81,9 @@
       "seriesIndexCount": 6447
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Intraday STALE: Datenstand 2026-09-18, erwartet 2026-09-18 (closeMissing)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
