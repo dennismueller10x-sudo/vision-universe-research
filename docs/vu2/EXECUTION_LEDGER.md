@@ -632,3 +632,34 @@ production `release-delivery.json` names source commit
 8 MiB budget and `EXISTING_R2_UNCHANGED`. `/vu2/`, the `/quant/` handoff page and
 `/discover/` each return HTTP 200. Ranking-hygiene data refresh remains a separate
 materialization gate and is not inferred from that code deployment.
+
+## 2026-09-21 — Quant V2 current SIC peer-taxonomy projection
+
+The existing market refresh now deterministically projects the current
+Full-Universe factor securities onto the existing SEC Fundamentals issuer SIC
+metadata. The versioned compact artifact contains 5,355 securities representing
+5,046 distinct issuers. Of these, 5,206 securities have a valid SIC. The 149
+classification-missing securities keep their canonical issuer identity and enter
+only the Universe fallback with `LOW` confidence and a mandatory penalty. They
+are not identity rejects. A further 1,049 factor securities fail closed for
+identity reasons (1,044 missing issuer identities and five missing canonical
+master members). The only join is factor `securityId` → Company Master
+`masterMemberId` → exact canonical `issuerId` → exact CIK-derived Fundamentals
+`issuerId`; ticker mutation or duplication cannot change the match. Six duplicate master-member
+records are exposed as identity conflicts and excluded rather than guessed.
+
+The methodology binding is exact: `industry` means `sic4_industry`; `sector`
+means the official SEC `sic_division`, not GICS or a modern sector taxonomy.
+Current taxonomy population counts are upper bounds only. Each future component
+normalization must prove 20/40/200 metric-valid issuers before choosing SIC4,
+division or universe, with an explicit confidence penalty on universe fallback.
+Raw SIC and the SEC source shard are preserved. SEC state time is recorded only
+as `observedAt`; `effectiveAt=null` because these artifacts contain no dated SIC
+classification history. Market snapshot/as-of remains separate. `generatedAt`
+is deterministically the later of the two recorded source timestamps.
+
+This slice is `CURRENT_ONLY`, `historicalClassificationAvailable=false`,
+`backtestEligible=false` and `scorePublicationAllowed=false`. It adds no provider,
+source, pipeline, endpoint, secret, schedule or recurring cost. No Discovery file
+is changed. Focused tests pass locally; full Quant and workflow regression gates
+remain required before merge/deployment.

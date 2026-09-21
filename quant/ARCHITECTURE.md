@@ -90,6 +90,22 @@ Nach jeder Aenderung an `engines/mock-generator.js`, `engines/factors.js`,
 `SPECIFIED_NOT_ACTIVE`. `Methodology.quant()` bleibt deshalb die unveraenderte
 V1-Legacy-Laufzeit, waehrend `Methodology.quantV2()` den V2-Vertrag ausliefert.
 
+Die kompakte aktuelle Peer-Taxonomie unter
+`data/product/sic-peer-taxonomy-v1.json` wird deterministisch aus den bereits
+vorhandenen Full-Universe-Faktorzeilen und SEC-Fundamentals-Emittentenshards
+gebaut. `industry` bedeutet dort ausschließlich `sic4_industry`, `sector`
+ausschließlich die offizielle `sic_division`; beides ist weder GICS noch eine
+historische Klassifikation. Der Contract verlangt pro Metrik erneut valide
+Issuer-Zahlen 20/40/200 und fällt danach auf Universe bzw. `UNAVAILABLE` zurück.
+Das Artefakt aktiviert weder V2-Scores noch historische Backtests.
+Die Zuordnung folgt ausschließlich `securityId`/`masterMemberId`/`issuerId`;
+Ticker werden nur ausgegeben und nie zum Join verwendet. Der SEC-Zeitpunkt ist
+ein beobachteter Materialisierungszeitpunkt, kein SIC-Gültigkeitsdatum;
+`effectiveAt` bleibt deshalb `null`.
+Eine valide kanonische Emittentenidentität ohne gültigen SIC bleibt im
+Score-Universum, erhält aber ausschließlich den Universe-Fallback mit `LOW`
+Confidence und Pflicht-Penalty. Nur Identitätsfehler werden verworfen.
+
 `verify-quant-data.mjs` faellt genau darauf: es rechnet alle Scores nach und vergleicht
 sie mit der ausgelieferten Datei. Es laeuft in der CI, weil eine stille Abweichung
 zwischen Uebersicht und Backtest der gefaehrlichste Datenfehler des Systems waere.

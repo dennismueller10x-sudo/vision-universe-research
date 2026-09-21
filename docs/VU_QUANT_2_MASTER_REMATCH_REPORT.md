@@ -237,7 +237,14 @@ Spätere Daten-/Social-/Orchestrator-Commits bis `1a192f92` ändern dieses begre
 2. **Capability- und Product-Row-Contract:** einen Quant-eigenen materialisierten, zeitgestempelten Product-Row-Layer aus Company Master, bestehender SEC-Consumer-/PIT-Pipeline und bestehenden Market-Factor-Artefakten definieren. Keine neue Source of Truth.
 3. **Ranking-Hygiene-Gate:** die auf einem alten PR88-Branch verbliebene Quarantäne für unplausible Marktwerte semantisch rekonstruieren und gegen aktuelle Daten testen. Das heutige Full-Universe-Artefakt führt `MINE` mit einem offenkundig unplausiblen 12M-Momentum von 2.969.999 und speist daraus bereits einen sichtbaren Discovery-Wert von `+296999900 %`. Der gemeinsame Producer wird fail-closed repariert; Discovery selbst bleibt unverändert und wird regressionsgeprüft. Reale Rankings dürfen vorher nicht aktiviert werden.
 4. **Breadth Integration:** VU2 Product Services vom expliziten Five-Scope auf Capability-gesteuerte 6.875er Identität und abgestufte Feature-Verfügbarkeit umstellen.
-5. **Realer Quant Panel:** peer-fähige Factor Rows, Coverage und Methodikversion materialisieren; erst dann Score, DNA und Ranking freigeben.
+5. **Realer Quant Panel:** `PARTIAL` — die aktuelle SEC-SIC-Projektion bindet
+   `industry` an SIC4 und `sector` an SIC Division für 5.203 klassifizierte
+   Faktorwertpapiere; 149 weitere kanonisch identifizierte Wertpapiere bleiben
+   ausschließlich im penalisierten Universe-Fallback. Die Projektion folgt der
+   kanonischen Security→Issuer-ID-Kette (nie per Ticker) und bleibt ausdrücklich
+   nur ein Populations-Upper-Bound. Metrik-spezifische
+   valide Peer Counts, vollständige Komponenten, Revisionsdaten und historische
+   Klassifikationen fehlen; erst danach Score, DNA und Ranking freigeben.
 6. **SetupState Contract + Stock Journey:** gemeinsame Rules, Why Now, Entry, Invalidation, Exit, Risiko und Horizont als Hauptjourney integrieren.
 7. **Rule Convergence:** Radar, Alerts, Watchlist-Transitions und restlichen Technical Scanner auf den Canonical Rule Contract führen.
 8. **Strategy Contracts:** fünf wiedergefundene Strategien vervollständigen; fünf fehlende nach Owner-/Research-Spezifikation definieren.
