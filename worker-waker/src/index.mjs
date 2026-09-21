@@ -58,6 +58,7 @@
 import { holeZugang } from "./github-app.mjs";
 
 const WORKFLOW = "intraday-pacemaker.yml";
+const PAGES = "pages-release.yml";
 
 function notiere(ereignis, felder) {
   /* Nur Anzahlen, Gruende und Zustaende - nie ein Schluessel, nie ein
@@ -75,13 +76,85 @@ function notiere(ereignis, felder) {
  * Trigger-Sturm mit Wartezimmer. Der Auftrag verlangt Deduplication
  * (§17), und die gehoert an die Stelle, die das Wecken ausloest.
  */
-async function laeuftSchon(env, kopf) {
-  const url = "https://api.github.com/repos/" + env.GITHUB_REPO +
-              "/actions/workflows/" + WORKFLOW + "/runs?status=in_progress&per_page=1";
-  const r = await fetch(url, { headers: kopf });
-  if (!r.ok) return { bekannt: false, grund: "http" + r.status };
-  const d = await r.json();
-  return { bekannt: true, laeuft: (d.total_count || 0) > 0 };
+async function laeuftSchon(env, kopf, workflow, zustaende) {
+  const wf = workflow || WORKFLOW;
+  for (const zustand of (zustaende || ["in_progress"])) {
+    const url = "https://api.github.com/repos/" + env.GITHUB_REPO +
+                "/actions/workflows/" + wf + "/runs?status=" + zustand + "&per_page=1";
+    const r = await fetch(url, { headers: kopf });
+    if (!r.ok) return { bekannt: false, grund: "http" + r.status };
+    const d = await r.json();
+    if ((d.total_count || 0) > 0) return { bekannt: true, laeuft: true, zustand };
+  }
+  return { bekannt: true, laeuft: false };
+}
+
+/**
+ * Einen Workflow anstossen.
+ *
+ * workflow_dispatch, nicht repository_dispatch - siehe die Begruendung
+ * in wecke(). Der Ref muss mitkommen; ohne ihn antwortet GitHub mit 422.
+ */
+async function stosseAn(env, kopf, workflow) {
+  return fetch(
+    "https://api.github.com/repos/" + env.GITHUB_REPO +
+      "/actions/workflows/" + workflow + "/dispatches",
+    {
+      method: "POST",
+      headers: Object.assign({ "content-type": "application/json" }, kopf),
+      body: JSON.stringify({ ref: env.GITHUB_BRANCH || "main" })
+    }
+  );
+}
+
+/**
+ * Sorgt dafuer, dass der frische Stand auch im Browser ankommt.
+ *
+ * WARUM DAS HIERHER GEHOERT UND NICHT IN DEN TAKTGEBER
+ *
+ * Der Taktgeber schreibt alle fuenf Minuten einen frischen Stand nach
+ * main - und niemand liefert ihn aus. Zwei GitHub-Regeln zusammen:
+ * ein Push mit GITHUB_TOKEN erzeugt keinen Workflow-Lauf (Schutz gegen
+ * Rekursion), und workflow_run feuert erst bei COMPLETED. Ein Block,
+ * der den Takt fuenf Stunden haelt, ist fuenf Stunden lang nicht
+ * completed. Gemessen am 21.09.2026: die Seite lag zehn Minuten hinter
+ * dem Repository, zeitweise fuenfunddreissig.
+ *
+ * Die bisherige Bruecke war ein Zeitplan - also genau der Mechanismus,
+ * dessen Ausfall den Vorfall ausgeloest hat. Sie hat waehrend des
+ * Nachweises am 21.09. kein einziges Mal gefeuert (event: schedule,
+ * total_count: 0).
+ *
+ * Der Wecker steht ausserhalb von GitHub und hat mit Actions: write
+ * bereits alles, was dafuer noetig ist. Keine neue Berechtigung, kein
+ * neuer Dienst, keine zweite Pipeline: derselbe Puls stoesst denselben
+ * bestehenden Pages-Workflow an.
+ *
+ * KEIN STAU
+ *
+ * Laeuft oder wartet schon ein Pages-Lauf, wird nichts angestossen.
+ * Die Gruppe pages-production laesst ohnehin nur einen zugleich zu;
+ * ohne diese Pruefung entstuende eine Warteschlange, die den Stand
+ * aelter macht statt frischer - am 21.09. brauchte ein gestauter
+ * Pages-Lauf 7:33 statt 97 Sekunden.
+ */
+async function sorgeFuerAuslieferung(env, kopf) {
+  const lage = await laeuftSchon(env, kopf, PAGES, ["in_progress", "queued"]);
+  if (!lage.bekannt) {
+    notiere("auslieferungLageUnbekannt", { grund: lage.grund });
+    return { ok: false, grund: "lageUnbekannt" };
+  }
+  if (lage.laeuft) {
+    notiere("auslieferungLaeuft", { zustand: lage.zustand });
+    return { ok: true, grund: "auslieferungLaeuft" };
+  }
+  const r = await stosseAn(env, kopf, PAGES);
+  if (!r.ok) {
+    notiere("auslieferungFehlgeschlagen", { status: r.status });
+    return { ok: false, grund: "http" + r.status };
+  }
+  notiere("ausgeliefert", {});
+  return { ok: true, grund: "ausgeliefert" };
 }
 
 async function wecke(env, optionen) {
@@ -113,10 +186,6 @@ async function wecke(env, optionen) {
   };
 
   const lage = await laeuftSchon(env, kopf);
-  if (lage.bekannt && lage.laeuft) {
-    notiere("bereitsWach", { hinweis: "Ein Block laeuft - nicht geweckt." });
-    return { ok: true, grund: "bereitsWach" };
-  }
   if (!lage.bekannt) {
     /* Unbekannt heisst nicht "nein". Wecken ist hier die sichere
        Richtung: ein ueberfluessiger Lauf endet in Sekunden, ein
@@ -124,33 +193,38 @@ async function wecke(env, optionen) {
     notiere("lageUnbekannt", { grund: lage.grund });
   }
 
-  /* WARUM workflow_dispatch UND NICHT repository_dispatch
-     ---------------------------------------------------
-     Der Taktgeber hoert auf beides. Die Wahl faellt aber nicht nach
-     Geschmack, sondern nach der Berechtigung, die die App hat:
+  let takt;
+  if (lage.bekannt && lage.laeuft) {
+    notiere("bereitsWach", { hinweis: "Ein Block laeuft - nicht geweckt." });
+    takt = { ok: true, grund: "bereitsWach" };
+  } else {
+    /* WARUM workflow_dispatch UND NICHT repository_dispatch
+       ---------------------------------------------------
+       Der Taktgeber hoert auf beides. Die Wahl faellt aber nicht nach
+       Geschmack, sondern nach der Berechtigung, die die App hat:
 
-       POST /repos/{repo}/dispatches                      -> Contents: write
-       POST /repos/{repo}/actions/workflows/{x}/dispatches -> Actions:  write
+         POST /repos/{repo}/dispatches                      -> Contents: write
+         POST /repos/{repo}/actions/workflows/{x}/dispatches -> Actions:  write
 
-     Die App hat Actions read and write und sonst nichts. Ueber
-     repository_dispatch bekaeme sie bei jedem Takt ein 403, und der
-     Wecker waere eine Attrappe. Der Workflow behaelt beide Eingaenge -
-     genutzt wird der, der zur vergebenen Berechtigung passt. */
-  const r = await fetch(
-    "https://api.github.com/repos/" + env.GITHUB_REPO +
-      "/actions/workflows/" + WORKFLOW + "/dispatches",
-    {
-      method: "POST",
-      headers: Object.assign({ "content-type": "application/json" }, kopf),
-      body: JSON.stringify({ ref: env.GITHUB_BRANCH || "main" })
+       Die App hat Actions read and write und sonst nichts. Ueber
+       repository_dispatch bekaeme sie bei jedem Takt ein 403, und der
+       Wecker waere eine Attrappe. Der Workflow behaelt beide Eingaenge -
+       genutzt wird der, der zur vergebenen Berechtigung passt. */
+    const r = await stosseAn(env, kopf, WORKFLOW);
+    if (!r.ok) {
+      notiere("weckenFehlgeschlagen", { status: r.status });
+      takt = { ok: false, grund: "http" + r.status };
+    } else {
+      notiere("geweckt", { ausSpeicher: !!zugang.ausSpeicher });
+      takt = { ok: true, grund: "geweckt" };
     }
-  );
-  if (!r.ok) {
-    notiere("weckenFehlgeschlagen", { status: r.status });
-    return { ok: false, grund: "http" + r.status };
   }
-  notiere("geweckt", { ausSpeicher: !!zugang.ausSpeicher });
-  return { ok: true, grund: "geweckt" };
+
+  /* Der Takt allein macht keine Seite frisch. Auch wenn das Wecken
+     fehlschlug: es kann ein frisch geschriebener Stand dastehen, der
+     nur noch ausgeliefert werden muss. */
+  const auslieferung = await sorgeFuerAuslieferung(env, kopf);
+  return Object.assign({}, takt, { auslieferung: auslieferung.grund });
 }
 
 const HINWEISE = {
@@ -183,7 +257,7 @@ export default {
     }
     return Response.json({
       dienst: "vu-intraday-waker",
-      rolle: "Wecker fuer " + WORKFLOW + " - holt keine Daten",
+      rolle: "Wecker fuer " + WORKFLOW + " und " + PAGES + " - holt keine Daten",
       ausweis: "github-app",
       appIdHinterlegt: !!env.GITHUB_APP_ID,
       schluesselHinterlegt: !!env.GITHUB_APP_PRIVATE_KEY,
@@ -193,4 +267,4 @@ export default {
   }
 };
 
-export { wecke, laeuftSchon };
+export { wecke, laeuftSchon, sorgeFuerAuslieferung };

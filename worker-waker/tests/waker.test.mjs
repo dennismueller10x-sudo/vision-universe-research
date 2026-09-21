@@ -68,6 +68,14 @@ function appAntworten(zusatz) {
   ].concat(zusatz || []);
 }
 
+/* Die Auslieferung ist seit dem 21.09.2026 Teil jedes Taktes. Wer sie
+   in einem Test nicht eigens prueft, muss sie trotzdem beantworten -
+   sonst scheitert der Test an einem unerwarteten Aufruf statt an dem,
+   was er prueft. Standard: es laeuft schon einer, also passiert nichts. */
+function pagesRuht() {
+  return [{ enthaelt: "pages-release.yml/runs", json: { total_count: 1 } }];
+}
+
 function netz(antworten) {
   const gerufen = [];
   const original = globalThis.fetch;
@@ -111,12 +119,12 @@ test("WK-1 ohne Schluessel wird nichts ausgeloest, und der Wecker sagt es", asyn
 test("WK-2 laeuft schon ein Block, wird nicht geweckt", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 1 } }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs?status=in_progress", json: { total_count: 1 } }
+  ].concat(pagesRuht())));
   try {
     const r = await wecke(umgebung());
     assert.equal(r.grund, "bereitsWach");
-    assert.ok(!n.gerufen.some((g) => g.url.endsWith("/dispatches")),
+    assert.ok(!n.gerufen.some((g) => g.url.includes("intraday-pacemaker.yml/dispatches")),
               "ein zweiter Block waere ein Trigger-Sturm mit Wartezimmer");
   } finally { n.zurueck(); p.zurueck(); }
 });
@@ -124,13 +132,13 @@ test("WK-2 laeuft schon ein Block, wird nicht geweckt", async () => {
 test("WK-3 Gegenprobe: laeuft keiner, wird geweckt", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     const r = await wecke(umgebung());
     assert.equal(r.grund, "geweckt");
-    const d = n.gerufen.find((g) => g.url.endsWith("/dispatches"));
+    const d = n.gerufen.find((g) => g.url.includes("intraday-pacemaker.yml/dispatches"));
     assert.ok(d, "es haette gedispatcht werden muessen");
     assert.equal(d.method, "POST");
     assert.match(d.body, /"ref":"main"/, "workflow_dispatch braucht einen Ref");
@@ -144,9 +152,9 @@ test("WK-4 bei unbekannter Lage wird geweckt, nicht geschwiegen", async () => {
      ein ausgefallener Takt kostet eine Stunde Stillstand. */
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", ok: false, status: 403 },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", ok: false, status: 403 },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     const r = await wecke(umgebung());
     assert.equal(r.grund, "geweckt");
@@ -157,9 +165,9 @@ test("WK-4 bei unbekannter Lage wird geweckt, nicht geschwiegen", async () => {
 test("WK-5 ein fehlgeschlagenes Wecken wird gemeldet, nicht verschluckt", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", ok: false, status: 401 }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", ok: false, status: 401 }
+  ].concat(pagesRuht())));
   try {
     const r = await wecke(umgebung());
     assert.equal(r.ok, false);
@@ -171,9 +179,9 @@ test("WK-5 ein fehlgeschlagenes Wecken wird gemeldet, nicht verschluckt", async 
 test("WK-6 weder Schluessel noch Token landen im Protokoll", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     await wecke(umgebung());
     const text = p.zeilen.join("\n");
@@ -315,9 +323,9 @@ test("WK-13 Gegenprobe: was kein PEM ist, wird abgewiesen statt geraten", async 
 test("WK-14 die Installation ID wird ermittelt, nicht konfiguriert", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     const r = await wecke(umgebung());
     assert.equal(r.grund, "geweckt");
@@ -337,9 +345,9 @@ test("WK-14 die Installation ID wird ermittelt, nicht konfiguriert", async () =>
 test("WK-15 ein gueltiges Token wird wiederverwendet, ein ablaufendes erneuert", async () => {
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     await wecke(umgebung());
     const ersteTauschzahl = n.gerufen.filter((g) => g.url.includes("access_tokens")).length;
@@ -357,9 +365,9 @@ test("WK-15 ein gueltiges Token wird wiederverwendet, ein ablaufendes erneuert",
     { enthaelt: "/repos/" + REPO + "/installation", json: { id: INSTALLATION } },
     { enthaelt: "access_tokens",
       json: { token: TOKEN, expires_at: new Date(Date.now() + 120000).toISOString() } },
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]);
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht()));
   try {
     await wecke(umgebung());
     await wecke(umgebung());
@@ -437,12 +445,12 @@ test("WK-19 geweckt wird ueber den Eingang, der zur Berechtigung passt", async (
      hier fest. */
   const p = protokoll();
   const n = netz(appAntworten([
-    { enthaelt: "/runs?status=in_progress", json: { total_count: 0 } },
-    { enthaelt: "/dispatches", json: {} }
-  ]));
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", json: {} }
+  ].concat(pagesRuht())));
   try {
     await wecke(umgebung());
-    const d = n.gerufen.find((g) => g.url.endsWith("/dispatches"));
+    const d = n.gerufen.find((g) => g.url.includes("intraday-pacemaker.yml/dispatches"));
     assert.match(d.url, /\/actions\/workflows\/intraday-pacemaker\.yml\/dispatches$/,
                  "workflow_dispatch (Actions: write), nicht repository_dispatch (Contents: write)");
     assert.ok(!/\/repos\/[^/]+\/[^/]+\/dispatches$/.test(d.url),
@@ -454,4 +462,88 @@ test("WK-19 geweckt wird ueber den Eingang, der zur Berechtigung passt", async (
     assert.ok(!/required:\s*true/.test(ruecksprung ? ruecksprung[1] : ""),
               "ein Pflichteingabefeld wuerde den Wecker aussperren");
   } finally { n.zurueck(); p.zurueck(); }
+});
+
+/* --- Die Auslieferung (Owner 21.09.2026, nach dem gemessenen Befund) --- */
+
+test("WK-20 der frische Stand wird auch ausgeliefert", async () => {
+  /* Der Taktgeber schreibt alle fuenf Minuten nach main - und niemand
+     liefert aus: Push mit GITHUB_TOKEN erzeugt keinen Lauf, und
+     workflow_run wartet auf das Blockende. Gemessen: zehn Minuten
+     Rueckstand, zeitweise fuenfunddreissig. Derselbe Puls, der den Takt
+     haelt, stoesst jetzt auch die bestehende Pages-Auslieferung an. */
+  const p = protokoll();
+  const n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "pages-release.yml/dispatches", json: {} }
+  ]));
+  try {
+    const r = await wecke(umgebung());
+    assert.equal(r.grund, "bereitsWach", "der Block lief - nur die Auslieferung ist offen");
+    assert.equal(r.auslieferung, "ausgeliefert");
+    const d = n.gerufen.find((g) => g.url.includes("pages-release.yml/dispatches"));
+    assert.ok(d, "die Auslieferung haette angestossen werden muessen");
+    assert.equal(d.method, "POST");
+    assert.match(d.body, /"ref":"main"/);
+    assert.equal(d.headers.authorization, "Bearer " + TOKEN,
+                 "dieselbe App, dieselbe Actions-write-Berechtigung, kein neues Recht");
+  } finally { n.zurueck(); p.zurueck(); }
+});
+
+test("WK-21 Gegenprobe: laeuft oder wartet schon einer, wird nicht angestossen", async () => {
+  /* Die Gruppe pages-production laesst nur einen zugleich zu. Ohne
+     diese Pruefung entstuende eine Warteschlange, die den Stand AELTER
+     macht statt frischer - am 21.09. brauchte ein gestauter Pages-Lauf
+     7:33 statt 97 Sekunden. Beide Zustaende zaehlen, nicht nur der
+     laufende. */
+  for (const zustand of ["in_progress", "queued"]) {
+    const p = protokoll();
+    const n = netz(appAntworten([
+      { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+      { enthaelt: "pages-release.yml/runs?status=" + zustand, json: { total_count: 1 } },
+      { enthaelt: "pages-release.yml/runs", json: { total_count: 0 } }
+    ]));
+    try {
+      const r = await wecke(umgebung());
+      assert.equal(r.auslieferung, "auslieferungLaeuft", "wartend bei " + zustand);
+      assert.ok(!n.gerufen.some((g) => g.url.includes("pages-release.yml/dispatches")),
+                "ein Stau macht den Stand aelter, nicht frischer (" + zustand + ")");
+      assert.ok(p.zeilen.some((z) => /auslieferungLaeuft/.test(z)));
+    } finally { n.zurueck(); p.zurueck(); }
+  }
+});
+
+test("WK-22 ein gescheitertes Wecken haelt die Auslieferung nicht auf", async () => {
+  /* Auch wenn der Takt nicht anspringt, kann ein frisch geschriebener
+     Stand dastehen, der nur noch ausgeliefert werden muss. Die beiden
+     Aufgaben duerfen sich nicht gegenseitig blockieren. */
+  const p = protokoll();
+  const n = netz(appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "intraday-pacemaker.yml/dispatches", ok: false, status: 500 },
+    { enthaelt: "pages-release.yml/runs", json: { total_count: 0 } },
+    { enthaelt: "pages-release.yml/dispatches", json: {} }
+  ]));
+  try {
+    const r = await wecke(umgebung());
+    assert.equal(r.ok, false, "das Wecken ist gescheitert");
+    assert.equal(r.auslieferung, "ausgeliefert", "die Auslieferung lief trotzdem");
+  } finally { n.zurueck(); p.zurueck(); }
+});
+
+test("WK-23 die Auslieferung braucht kein neues Recht", () => {
+  /* Der ganze Punkt dieser Ergaenzung: sie kommt ohne zusaetzliche
+     Berechtigung aus. workflow_dispatch verlangt Actions: write - das
+     hat die App bereits. Waere hier repository_dispatch oder ein
+     Contents-Aufruf gelandet, muesste der Eigentuemer die App
+     nachkonfigurieren, ohne es zu merken. */
+  const quelle = readFileSync(join(root, "worker-waker", "src", "index.mjs"), "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.ok(!/repos\/" \+ env\.GITHUB_REPO \+ "\/dispatches/.test(quelle),
+            "repository_dispatch verlangt Contents: write");
+  for (const v of ["/contents/", "/git/refs", "/git/trees"]) {
+    assert.ok(!quelle.includes(v), "Contents-Aufruf gefunden: " + v);
+  }
+  assert.ok(quelle.includes("pages-release.yml"), "die bestehende Auslieferung, kein neuer Weg");
 });
