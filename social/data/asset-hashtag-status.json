@@ -1,0 +1,197 @@
+{
+  "generatedAt": "2026-09-21T09:31:31.387Z",
+  "commit": "74c3bf86f38c1c48a247da8ef5756bacef878284",
+  "worker": "https://social.visionuniverse.de",
+  "ORDER_DONE": true,
+  "states": [
+    {
+      "id": "APPROVAL_CENTER_LIVE",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "/approval antwortet mit 401 [cf-ray a3e80eaf6b9812c7-IAD, server cloudflare]."
+    },
+    {
+      "id": "CURRENT_CANDIDATE",
+      "ref": null,
+      "wert": "cand_20260920_247c5e70",
+      "zustand": "ERFUELLT",
+      "satz": "Technisches Setup — XOM"
+    },
+    {
+      "id": "ASSET_PUBLICLY_REACHABLE",
+      "ref": null,
+      "wert": "false",
+      "zustand": "NICHT_ERFUELLT",
+      "satz": "Unter dieser Adresse liegt nichts. Die Datei ist nie dort angekommen, oder sie wurde entfernt."
+    },
+    {
+      "id": "ASSET_PREVIEW_EQUALS_PUBLISH_ASSET",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
+    },
+    {
+      "id": "HASHTAG_ENGINE_READY",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "29 Themen ergeben 18 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
+    },
+    {
+      "id": "HASHTAG_COUNT_CURRENT_CANDIDATE",
+      "ref": null,
+      "wert": "0",
+      "zustand": "ERFUELLT",
+      "satz": "Dieser Kandidat traegt keine Tags im Sendetext."
+    },
+    {
+      "id": "FINAL_PUBLIC_TEXT_READY",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "6 Faelle: Repository und Worker setzen denselben Text zusammen, Grenze beidseits 5."
+    },
+    {
+      "id": "ACTIVE_APPROVAL_QUEUE_COUNT",
+      "ref": null,
+      "wert": "1",
+      "zustand": "ERFUELLT",
+      "satz": "aus owner-decision.warteschlange (AWAITING_APPROVAL), nicht aus dem Ordner; 1 uebertragbar, 0 ungeloest."
+    },
+    {
+      "id": "MANUAL_ORCHESTRATOR_RUN",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "Der Knopf stoesst social-orchestrator.yml an — dieselbe Datei, die der Zeitplan startet."
+    },
+    {
+      "id": "CONTENT_FALLBACK_LADDER_READY",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "9 Stufen ueber 15 Inhaltsfamilien."
+    },
+    {
+      "id": "MAX_OPEN_CREATIVE_JOBS",
+      "ref": null,
+      "wert": "1",
+      "zustand": "ERFUELLT",
+      "satz": "gemessen: 1 (soll 1)"
+    },
+    {
+      "id": "OWNER_PUBLISHING_GATE",
+      "ref": null,
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "gemessen: true (soll REQUIRED)"
+    },
+    {
+      "id": "GLOBAL_AUTOPUBLISH",
+      "ref": null,
+      "wert": "false",
+      "zustand": "ERFUELLT",
+      "satz": "gemessen: false (soll false)"
+    },
+    {
+      "id": "VU_SOCIAL_AUTOPUBLISH",
+      "ref": null,
+      "wert": "false",
+      "zustand": "ERFUELLT",
+      "satz": "gemessen: false (soll false)"
+    },
+    {
+      "id": "CRITICAL_BLOCKERS",
+      "ref": "§26",
+      "wert": "0",
+      "zustand": "ERFUELLT",
+      "satz": "Kein gemessener Blocker."
+    }
+  ],
+  "conditions": [
+    {
+      "id": "ASSET_ROOT_CAUSE_BEHOBEN",
+      "ref": "§2",
+      "zustand": "ERFUELLT",
+      "satz": "Der Lauf schreibt assets/social/ fest, der Waechter sieht dort hin, und jedes wartende Bild wird abgerufen."
+    },
+    {
+      "id": "ASSET_PREVIEW_PRODUCTION_SAFE",
+      "ref": "§3",
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
+    },
+    {
+      "id": "FREIGABE_GESPERRT_OHNE_ERREICHBARKEIT",
+      "ref": "§6",
+      "zustand": "ERFUELLT",
+      "satz": "Das Bild ist nicht erreichbar; kein Freigabeknopf, Ablehnen bleibt moeglich."
+    },
+    {
+      "id": "HASHTAGS_VISIBLE_BEFORE_APPROVAL",
+      "ref": "§15/§16",
+      "zustand": "ERFUELLT",
+      "satz": "Der Block ist da und sagt, warum keine Tags im Text stehen."
+    },
+    {
+      "id": "PREVIEW_EQUALS_PUBLISH_PAYLOAD",
+      "ref": "§17",
+      "zustand": "ERFUELLT",
+      "satz": "Der Textabsatz der Karte ist zeichengleich mit dem, was gesendet wuerde (344 Zeichen)."
+    },
+    {
+      "id": "HASHTAG_ENGINE_LIEFERT_BREITE",
+      "ref": "§10/§12",
+      "wert": "true",
+      "zustand": "ERFUELLT",
+      "satz": "29 Themen ergeben 18 verschiedene Tagmengen (hoechstens 5 Tags, Grenze 5; 0-mal keine)."
+    },
+    {
+      "id": "CURRENT_XOM_CANDIDATE_NOT_PUBLISHED",
+      "ref": "§18",
+      "zustand": "ERFUELLT",
+      "satz": "cand_20260920_247c5e70 steht auf AWAITING_APPROVAL; kein Kandidat im Bestand steht auf PUBLISHED."
+    },
+    {
+      "id": "CONTENT_FALLBACK_LADDER_UNCHANGED",
+      "ref": "§20",
+      "zustand": "ERFUELLT",
+      "satz": "Keine Datei der Content Fallback Ladder unterscheidet sich von main."
+    },
+    {
+      "id": "MANUAL_ORCHESTRATOR_RUN_UNCHANGED",
+      "ref": "§20",
+      "zustand": "ERFUELLT",
+      "satz": "Unveraendert und funktionsfaehig: Der Knopf stoesst social-orchestrator.yml an — dieselbe Datei, die der Zeitplan startet."
+    },
+    {
+      "id": "SUITEN_GRUEN",
+      "ref": "§21",
+      "zustand": "ERFUELLT",
+      "satz": "social: 1446/1460 (14 uebersprungen), worker: 354/354 (Stand 74c3bf86f3)"
+    },
+    {
+      "id": "TEST_PRODUKTIONS_ISOLATION",
+      "ref": "§23",
+      "zustand": "ERFUELLT",
+      "satz": "social: unveraendert, worker: unveraendert (Stand 74c3bf86f3)"
+    },
+    {
+      "id": "IN_MAIN_INTEGRIERT",
+      "ref": "§24",
+      "zustand": "ERFUELLT",
+      "satz": "Dieser Stand IST main (74c3bf86f3)."
+    },
+    {
+      "id": "PRODUCTION_SMOKE_OHNE_VEROEFFENTLICHUNG",
+      "ref": "§25",
+      "zustand": "ERFUELLT",
+      "satz": "/approval -> 401 [cf-ray a3e80eb0da12f26c-IAD], /social/status -> 401 [cf-ray a3e80eb11cf112c7-IAD]; kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht."
+    }
+  ],
+  "blockers": [],
+  "unverified": []
+}
