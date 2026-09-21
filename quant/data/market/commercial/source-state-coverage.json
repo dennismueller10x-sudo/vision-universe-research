@@ -1,191 +1,101 @@
 {
   "schemaVersion": "source-state-coverage-1.0.0",
   "auftrag": "Owner 19.09.2026 Punkt 8: kein titelabhaengiger stiller Rueckfall",
-  "checkedAt": "2026-09-21T13:47:30.129Z",
+  "checkedAt": "2026-09-21T14:24:17.747Z",
   "session": {
     "phase": "REGULAR",
-    "localTime": "09:47:30",
+    "localTime": "10:24:17",
     "isOpen": true
   },
-  "dataSession": "2026-09-18",
+  "dataSession": "2026-09-21",
   "pflichttitel": [
     "NBIS",
     "AAPL",
     "NVDA",
     "MSFT",
     "PANW",
-    "VLO",
-    "ATHS"
+    "VLO"
   ],
-  "unvollstaendigerFall": "ATHS",
+  "unvollstaendigerFall": "AAPL",
   "zufallstitel": [
-    "IPSC",
-    "KRP",
-    "BP",
-    "VISN",
-    "ANIP",
-    "DAC",
-    "C",
-    "PLTR",
-    "AIR",
-    "VSTM"
+    "CAT",
+    "JPM"
   ],
   "states": {
-    "STALE": 17
+    "SNAPSHOT": 8
   },
   "rows": [
     {
       "ticker": "NBIS",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "AAPL",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "NVDA",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "MSFT",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "PANW",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "VLO",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "ATHS",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:45",
+      "lastRegularLocal": "10:10",
       "coversFinalSlot": false
     },
     {
-      "ticker": "IPSC",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "AAPL",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "KRP",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "NVDA",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "BP",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "MSFT",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "VISN",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "PANW",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "ANIP",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "VLO",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "DAC",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "CAT",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     },
     {
-      "ticker": "C",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
+      "ticker": "JPM",
+      "state": "SNAPSHOT",
+      "reason": "runningSession",
+      "label": "Heute · Stand 10:10",
       "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "PLTR",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "AIR",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
-    },
-    {
-      "ticker": "VSTM",
-      "state": "STALE",
-      "reason": "currentSessionMissing",
-      "label": "Letzter Handelstag · 2026-09-18 · heutige Kurse fehlen",
-      "sourceText": "5-Minuten-Kurse",
-      "lastRegularLocal": "15:55",
-      "coversFinalSlot": true
+      "lastRegularLocal": "10:10",
+      "coversFinalSlot": false
     }
   ],
   "findings": [],
