@@ -1,38 +1,17 @@
 {
-  "schemaVersion": "intraday-pacemaker-ledger-1.0.0",
+  "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-09-21T15:09:44.684Z",
-    "runId": "35616991190",
-    "runNumber": "2",
+    "startedAt": "2026-09-21T15:21:43.019Z",
+    "runId": "35618350851",
+    "runNumber": "3",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
-    "blockMaxMs": 17400000,
+    "blockMaxMs": 16200000,
     "branch": "main"
   },
-  "updatedAt": "2026-09-21T15:14:46.060Z",
+  "updatedAt": "2026-09-21T15:26:44.905Z",
   "cycles": [
-    {
-      "cycle": 1,
-      "runId": "35614593521",
-      "triggerAt": "2026-09-21T14:48:33.471Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "10:48:33",
-      "fetchStartAt": "2026-09-21T14:48:33.517Z",
-      "fetchEndAt": "2026-09-21T14:53:35.366Z",
-      "session": "2026-09-21",
-      "written": 509,
-      "requests": 527,
-      "notPublishable": 18,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-09-21T14:53:35.357Z"
-    },
     {
       "cycle": 1,
       "runId": "35614593521",
@@ -96,6 +75,27 @@
       "ok": true,
       "reason": null,
       "snapshotAt": "2026-09-21T15:14:46.049Z"
+    },
+    {
+      "cycle": 1,
+      "runId": "35618350851",
+      "triggerAt": "2026-09-21T15:21:43.028Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "11:21:43",
+      "fetchStartAt": "2026-09-21T15:21:43.071Z",
+      "fetchEndAt": "2026-09-21T15:26:44.904Z",
+      "session": "2026-09-21",
+      "written": 505,
+      "requests": 527,
+      "notPublishable": 14,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-09-21T15:26:44.895Z"
     }
   ]
 }
