@@ -215,3 +215,36 @@ test("ID-10 jeder der zwanzig Faelle aus §21 hat einen Test", () => {
   }
   assert.deepEqual(fehlend, [], "Faelle ohne Test: " + fehlend.join(", "));
 });
+
+/* ============================================================ §18
+   Genau ein Schreiber auf denselben Dateien.
+   ==================================================================== */
+
+test("ID-11 alle Schreiber des Intraday-Bestands teilen eine Concurrency-Gruppe", () => {
+  /* Drei Workflows schreiben nach quant/data/market/intraday: der
+     Taktgeber waehrend der Sitzung, der Universumslauf nach Schluss und
+     die Reparatur des Waechters. Eigene Gruppen heisst: sie koennen
+     gleichzeitig laufen - und zwei Prozesse auf denselben Dateien und
+     demselben Ref sind ein Wettlauf, dessen Verlierer es erst am
+     Rebase-Konflikt merkt. */
+  const wf = (name) => readFileSync(join(root, ".github", "workflows", name), "utf8");
+  const schreiber = ["intraday-pacemaker.yml", "intraday-snapshots.yml"];
+  for (const name of schreiber) {
+    const text = wf(name);
+    assert.match(text, /group:\s*intraday-pacemaker/,
+                 name + " schreibt denselben Bestand, liegt aber in einer anderen Gruppe");
+    assert.match(text, /cancel-in-progress:\s*false/,
+                 name + ": ein Abbruch mitten im Zyklus ist Datenverlust");
+  }
+  /* Die Reparatur setzt ihre Gruppe am Job, nicht am Workflow - sie
+     besteht aus einem pruefenden Job (der laufen MUSS, auch waehrend ein
+     Block laeuft) und einem holenden (der warten muss). */
+  const waechterText = wf("intraday-delivery-watchdog.yml");
+  const nachholen = waechterText.slice(waechterText.indexOf("  nachholen:"));
+  assert.match(nachholen, /group:\s*intraday-pacemaker/);
+  const pruefen = waechterText.slice(waechterText.indexOf("  pruefen:"),
+                                     waechterText.indexOf("  nachholen:"));
+  assert.ok(!/group:\s*intraday-pacemaker/.test(pruefen),
+            "der pruefende Job darf NICHT warten - ein Waechter, der hinter dem " +
+            "wartet, was er ueberwacht, meldet nie etwas");
+});

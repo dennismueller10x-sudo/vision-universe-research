@@ -58,7 +58,20 @@ permissions:
   contents: write
 
 concurrency:
-  group: intraday-snapshots
+  # DIESELBE GRUPPE WIE DER TAKTGEBER, seit dem 21.09.2026.
+  #
+  # Drei Workflows schreiben inzwischen nach quant/data/market/intraday:
+  # dieser hier (Universumslauf nach Schluss, Handbetrieb), der
+  # Taktgeber waehrend der Sitzung, und die Reparatur des Waechters.
+  # Eine eigene Gruppe je Workflow heisst: sie koennen gleichzeitig
+  # laufen. Zwei Prozesse, die dieselben Dateien schreiben und auf
+  # denselben Ref pushen, sind ein Wettlauf - und der Verlierer merkt es
+  # erst am Rebase-Konflikt.
+  #
+  # Eine Gruppe fuer alle drei heisst: immer genau ein Schreiber. Wer
+  # kommt, waehrend einer laeuft, wartet (cancel-in-progress: false) -
+  # kein Abbruch, kein Datenverlust, keine Commit-Konflikte.
+  group: intraday-pacemaker
   cancel-in-progress: false
 
 jobs:
