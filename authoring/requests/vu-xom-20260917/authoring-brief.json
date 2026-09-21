@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_df8533a704ebca9b",
+  "content_id": "vu-xom-20260917",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "XOM — technische Lage zum 2026-09-17",
+  "objective": "Aus der freigegebenen technischen Evidenz einen belegbaren, nuechternen Beitrag formulieren, der die Leitzahl EINORDNET statt sie zu feiern.",
+  "audience": "Anleger, die wissen wollen, woher eine Zahl kommt",
+  "hook_strategy": {
+    "strategy_id": "vu-stock-story-value-first-v1",
+    "hook_type": "value_first",
+    "instruction": "Formuliere vier deutlich verschiedene Hooks innerhalb dieser Strategie. Jede Zahl muss exakt aus `evidence` stammen. Keine Prognose, keine Empfehlung, keine Ursachenbehauptung."
+  },
+  "visual_strategy": {
+    "strategy_id": "FUTURE_TECH",
+    "instruction": "Eine hochwertige, abstrakte Future-Tech-Szene im Vision-Universe-Register. Sie illustriert Messung und Einordnung — nicht Kursverlauf und nicht Gewinn.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5, centered, generous negative space",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "score",
+      "dimension": "SCORE",
+      "statement": "Technical Opportunity Score 52 von 100 (Band „Neutral“ ab 40).",
+      "value": 52,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Technical Opportunity Score",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/score"
+    },
+    {
+      "id": "score-meaning",
+      "dimension": "SCORE",
+      "statement": "Methodologischer Setup-Rang 0–100. Keine Wahrscheinlichkeit, keine Renditeerwartung.",
+      "value": null,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Bedeutung des Scores",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/disclaimer"
+    },
+    {
+      "id": "score-not-probability",
+      "dimension": "SCORE",
+      "statement": "Der Wert ist ein methodischer Rang (methodology_rank), keine Wahrscheinlichkeit und keine Renditeerwartung.",
+      "value": null,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Interpretation",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/interpretation"
+    },
+    {
+      "id": "score-contribution-trend_structure",
+      "dimension": "SCORE",
+      "statement": "TREND_STRUCTURE trägt 27.26 von 30 Punkten bei.",
+      "value": 27.26,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag TREND_STRUCTURE",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/TREND_STRUCTURE"
+    },
+    {
+      "id": "score-contribution-momentum",
+      "dimension": "SCORE",
+      "statement": "MOMENTUM trägt 14.54 von 20 Punkten bei.",
+      "value": 14.54,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag MOMENTUM",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/MOMENTUM"
+    },
+    {
+      "id": "score-contribution-volume",
+      "dimension": "SCORE",
+      "statement": "VOLUME trägt 3.88 von 10 Punkten bei.",
+      "value": 3.88,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag VOLUME",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/VOLUME"
+    },
+    {
+      "id": "score-contribution-volatility",
+      "dimension": "SCORE",
+      "statement": "VOLATILITY trägt 5 von 10 Punkten bei.",
+      "value": 5,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag VOLATILITY",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/VOLATILITY"
+    },
+    {
+      "id": "score-contribution-setup",
+      "dimension": "SCORE",
+      "statement": "SETUP trägt 3.6 von 20 Punkten bei.",
+      "value": 3.6,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag SETUP",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/SETUP"
+    },
+    {
+      "id": "score-contribution-projection_auxiliary",
+      "dimension": "SCORE",
+      "statement": "PROJECTION_AUXILIARY trägt 1.9 von 10 Punkten bei.",
+      "value": 1.9,
+      "unit": "Punkte",
+      "entity": "XOM",
+      "metric": "Beitrag PROJECTION_AUXILIARY",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/contributions/PROJECTION_AUXILIARY"
+    },
+    {
+      "id": "score-note-1",
+      "dimension": "SCORE",
+      "statement": "Relative Stärke nicht verfügbar — Momentum-Beitrag nur absolut.",
+      "value": null,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Hinweis",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/opportunityScore/notes/0"
+    },
+    {
+      "id": "price-close",
+      "dimension": "PRICE",
+      "statement": "Schlusskurs 163.27 USD am 2026-09-17.",
+      "value": 163.27,
+      "unit": "USD",
+      "entity": "XOM",
+      "metric": "Schlusskurs",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/lastBar/close"
+    },
+    {
+      "id": "trend",
+      "dimension": "TREND",
+      "statement": "Trendrichtung BULLISH, Trendwert 81.7.",
+      "value": 81.7,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Trend",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/trend/trendScore"
+    },
+    {
+      "id": "trend-SMA50",
+      "dimension": "TREND",
+      "statement": "Kurs über SMA50 (1.57 ATR)",
+      "value": 1.574205,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "SMA50",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/trend/evidence/0"
+    },
+    {
+      "id": "trend-SMA200",
+      "dimension": "TREND",
+      "statement": "Kurs über SMA200 (4.35 ATR)",
+      "value": 4.351052,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "SMA200",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/trend/evidence/1"
+    },
+    {
+      "id": "trend-SMA50_vs_SMA200",
+      "dimension": "TREND",
+      "statement": "SMA50 über SMA200 (2.78 ATR)",
+      "value": 2.776847,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "SMA50_vs_SMA200",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/trend/evidence/2"
+    },
+    {
+      "id": "trend-SMA50_slope",
+      "dimension": "TREND",
+      "statement": "SMA50 steigt (2.34 ATR / 20 Bars)",
+      "value": 2.341153,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "SMA50_slope",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/trend/evidence/3"
+    },
+    {
+      "id": "momentum",
+      "dimension": "MOMENTUM",
+      "statement": "Momentum POSITIVE, Wert 72.7.",
+      "value": 72.7,
+      "unit": null,
+      "entity": "XOM",
+      "metric": "Momentum",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/momentum/momentumScore"
+    },
+    {
+      "id": "momentum-1m",
+      "dimension": "MOMENTUM",
+      "statement": "1M-Entwicklung -1.4 % (z=-0.192).",
+      "value": -1.4,
+      "unit": "%",
+      "entity": "XOM",
+      "metric": "1M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/momentum/horizons/1M/return"
+    },
+    {
+      "id": "momentum-3m",
+      "dimension": "MOMENTUM",
+      "statement": "3M-Entwicklung 16 % (z=1.179).",
+      "value": 16,
+      "unit": "%",
+      "entity": "XOM",
+      "metric": "3M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/momentum/horizons/3M/return"
+    },
+    {
+      "id": "momentum-12m",
+      "dimension": "MOMENTUM",
+      "statement": "12M-Entwicklung 42.4 % (z=1.403).",
+      "value": 42.4,
+      "unit": "%",
+      "entity": "XOM",
+      "metric": "12M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/momentum/horizons/12M/return"
+    },
+    {
+      "id": "volatility",
+      "dimension": "VOLATILITY",
+      "statement": "Volatilität NORMAL, ATR 2.34 % des Kurses (Perzentil 55).",
+      "value": 2.34,
+      "unit": "%",
+      "entity": "XOM",
+      "metric": "Volatilitaetsregime",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/volatility/metrics/atrPct"
+    },
+    {
+      "id": "volume",
+      "dimension": "VOLUME",
+      "statement": "Volumen NORMAL, relativ 0.801× zum Median.",
+      "value": 0.801,
+      "unit": "x",
+      "entity": "XOM",
+      "metric": "Relatives Volumen",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/volume/metrics/relativeVolume"
+    },
+    {
+      "id": "data-basis",
+      "dimension": "SCORE",
+      "statement": "Grundlage sind 2944 Handelstage seit 2015-01-02.",
+      "value": 2944,
+      "unit": "Handelstage",
+      "entity": "XOM",
+      "metric": "Datengrundlage",
+      "source": "tiingo",
+      "observed_at": "2026-09-17",
+      "pointer": "/analysisLookback/bars"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-xom-20260917/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 4,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "unavailable": [
+    {
+      "dimension": "RELATIVE_STRENGTH",
+      "reason": "Benchmark nicht verfuegbar",
+      "pointer": "/relativeStrength/reason"
+    },
+    {
+      "dimension": "STRUCTURE",
+      "reason": "Kein Strukturbefund."
+    }
+  ],
+  "evidence_package": {
+    "package_id": "evp_d117031f9fddc44b",
+    "as_of": "2026-09-17",
+    "methodology_version": "technical-v1.0.0",
+    "data_version": "dv_213d8d94dbd9"
+  }
+}
