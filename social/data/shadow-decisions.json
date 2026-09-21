@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-09-20T10:28:03.662Z",
+  "generatedAt": "2026-09-20T19:03:02.846Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-20T10:28:03.662Z",
-      "packageId": "pkg_4066bd83869874d7",
-      "topic": "Technisches Setup — AAPL",
+      "decidedAt": "2026-09-20T19:03:02.846Z",
+      "packageId": "pkg_ca25cb404ae49dc4",
+      "topic": "Technisches Setup — XOM",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: Apple bei 65.3.",
-      "caption": "Unsere technische Auswertung bewertet Apple mit 65.3 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.42 von 30 Punkten bei. MOMENTUM trägt 15.88 von 20 Punkten bei. VOLUME trägt 6.36 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: Exxon Mobil bei 52.",
+      "caption": "Unsere technische Auswertung bewertet Exxon Mobil mit 52 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 27.26 von 30 Punkten bei. MOMENTUM trägt 14.54 von 20 Punkten bei. VOLUME trägt 3.88 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
@@ -18,12 +18,220 @@
       "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_f03ab1d2b9241256",
+        "briefId": "brief_4d3399b390499c2f",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "metric-frame/evidence-led",
-        "variantId": "var_d66277bdd75647b9",
+        "variantId": "var_e1d6acdec393ebb2",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 67,
+          "alternatives": [],
+          "discriminatedBy": [
+            "einzige bestandene Variante"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
+        "considered": 4,
+        "passed": 1,
+        "rejected": [
+          {
+            "pattern": "value-first/state-limit-reason",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "subject-first/method-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
+        "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
+      "opportunityId": "opp_xom_2026-09-20",
+      "signalIds": [
+        "sig_092494d1c4e827dd"
+      ],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 69 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_ca25cb404ae49dc4",
+        "visualStrategy": "CHART",
+        "story": "XOM: Technical Opportunity Score steht bei 52. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine einzige Kurve: Exxon Mobil Corporation ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 27,26 von 30, Setup nur 3,6 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
+        "oneSecondMessage": "Seit 21.08.2025: +49,5 %.",
+        "mainSubject": "Exxon Mobil Corporation",
+        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "visualHierarchy": [
+          "Der Verlauf",
+          "Der Name Exxon Mobil Corporation",
+          "Der Bezugspunkt der Achse"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Exxon Mobil Corporation\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Exxon Mobil Corporation. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:CHART"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:CHART"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "CHART",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus CHART auf Exxon Mobil Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "ARCHETYPE",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Exxon Mobil Corporation"
+        ],
+        "basis": "BOOTSTRAP"
+      },
+      "asset": {
+        "plannable": true,
+        "visualType": "CHART",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_ca25cb404ae49dc4.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "failureType": null,
+          "neverReportedAs": [
+            "CONTENT_FAILED",
+            "PROVIDER_FAILED",
+            "IMAGE_FAILED",
+            "ASSET_TRANSPORT_INTEGRITY_FAILED",
+            "VISUAL_CREATIVE_QUALITY_FAILED"
+          ],
+          "explanation": "Bildwert 100."
+        },
+        "origin": "rendered",
+        "sourceAsset": null,
+        "rendered": true,
+        "bytes": 19015
+      }
+    },
+    {
+      "decidedAt": "2026-09-20T19:03:02.846Z",
+      "packageId": "pkg_bfd40dc0bea7a32c",
+      "topic": "Technisches Setup — AAPL",
+      "archetype": "STOCK_STORY",
+      "visualType": "CHART",
+      "hook": "Technical Opportunity Score, Stand heute: Apple bei 66.6.",
+      "caption": "Unsere technische Auswertung bewertet Apple mit 66.6 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.67 von 30 Punkten bei. MOMENTUM trägt 16 von 20 Punkten bei. VOLUME trägt 6.24 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "authoringPattern": "metric-frame/evidence-led",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_1709794aecda22d6",
+        "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_f6ced928ae0ec9b4",
         "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
@@ -100,12 +308,95 @@
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_bfd40dc0bea7a32c",
+        "visualStrategy": "CHART",
+        "story": "AAPL: Technical Opportunity Score steht bei 66.6. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine einzige Kurve: Apple Inc. ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 26,67 von 30, Setup nur 5,71 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
+        "oneSecondMessage": "Seit 21.08.2025: +49,8 %.",
+        "mainSubject": "Apple Inc.",
+        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "visualHierarchy": [
+          "Der Verlauf",
+          "Der Name Apple Inc.",
+          "Der Bezugspunkt der Achse"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Apple Inc.\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Apple Inc. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:CHART"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:CHART"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "CHART",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus CHART auf Apple Inc. mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "ARCHETYPE",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Apple Inc."
+        ],
+        "basis": "BOOTSTRAP"
+      },
       "asset": {
         "plannable": true,
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4066bd83869874d7.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_bfd40dc0bea7a32c.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -123,17 +414,18 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": true,
+        "bytes": 19015
       }
     },
     {
-      "decidedAt": "2026-09-20T10:28:03.662Z",
-      "packageId": "pkg_650c56f397dcd407",
+      "decidedAt": "2026-09-20T19:03:02.846Z",
+      "packageId": "pkg_e289547f31260363",
       "topic": "Technisches Setup — JPM",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: JPMorgan Chase & bei 63.3.",
-      "caption": "Unsere technische Auswertung bewertet JPMorgan Chase & mit 63.3 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 24.75 von 30 Punkten bei. MOMENTUM trägt 16.28 von 20 Punkten bei. VOLUME trägt 3.75 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: JPMorgan Chase & bei 64.5.",
+      "caption": "Unsere technische Auswertung bewertet JPMorgan Chase & mit 64.5 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 25.08 von 30 Punkten bei. MOMENTUM trägt 14.24 von 20 Punkten bei. VOLUME trägt 4.93 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
@@ -142,12 +434,12 @@
       "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_695e7ec5be8ed881",
+        "briefId": "brief_645274fc86019bb0",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "metric-frame/evidence-led",
-        "variantId": "var_36f6e0b2ba90b516",
+        "variantId": "var_2cd65194d4021230",
         "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
@@ -224,12 +516,95 @@
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_e289547f31260363",
+        "visualStrategy": "CHART",
+        "story": "JPM: Technical Opportunity Score steht bei 64.5. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine einzige Kurve: JPMorgan Chase & Co. ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 25,08 von 30, Setup nur 5,21 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
+        "oneSecondMessage": "Seit 21.08.2025: +19,8 %.",
+        "mainSubject": "JPMorgan Chase & Co.",
+        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "visualHierarchy": [
+          "Der Verlauf",
+          "Der Name JPMorgan Chase & Co.",
+          "Der Bezugspunkt der Achse"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"JPMorgan Chase & Co.\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name JPMorgan Chase & Co. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:CHART"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:CHART"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "CHART",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus CHART auf JPMorgan Chase & Co. mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "ARCHETYPE",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "JPMorgan Chase & Co."
+        ],
+        "basis": "BOOTSTRAP"
+      },
       "asset": {
         "plannable": true,
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_650c56f397dcd407.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_e289547f31260363.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -247,17 +622,18 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": true,
+        "bytes": 19015
       }
     },
     {
-      "decidedAt": "2026-09-20T10:28:03.662Z",
-      "packageId": "pkg_8c7e8bde0c22aea2",
+      "decidedAt": "2026-09-20T19:03:02.846Z",
+      "packageId": "pkg_c678778dde06ec81",
       "topic": "Technisches Setup — MSFT",
       "archetype": "STOCK_STORY",
       "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: Microsoft bei 60.6.",
-      "caption": "Unsere technische Auswertung bewertet Microsoft mit 60.6 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.48 von 30 Punkten bei. MOMENTUM trägt 13.56 von 20 Punkten bei. VOLUME trägt 6.38 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hook": "Technical Opportunity Score, Stand heute: Microsoft bei 61.8.",
+      "caption": "Unsere technische Auswertung bewertet Microsoft mit 61.8 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.78 von 30 Punkten bei. MOMENTUM trägt 14.26 von 20 Punkten bei. VOLUME trägt 6.65 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
@@ -266,12 +642,12 @@
       "authoringPattern": "metric-frame/evidence-led",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_814a5090cc4da9c4",
+        "briefId": "brief_9f327d5d2fe21a69",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "metric-frame/evidence-led",
-        "variantId": "var_0499e81ce8697dd8",
+        "variantId": "var_ee590bbd7af9b481",
         "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
@@ -348,12 +724,95 @@
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_c678778dde06ec81",
+        "visualStrategy": "CHART",
+        "story": "MSFT: Technical Opportunity Score steht bei 61.8. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine einzige Kurve: Microsoft Corporation ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 26,78 von 30, Setup nur 2,45 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
+        "oneSecondMessage": "Seit 21.08.2025: −1,3 %.",
+        "mainSubject": "Microsoft Corporation",
+        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "visualHierarchy": [
+          "Der Verlauf",
+          "Der Name Microsoft Corporation",
+          "Der Bezugspunkt der Achse"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Microsoft Corporation\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Microsoft Corporation. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:CHART"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:CHART",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:CHART"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "CHART",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus CHART auf Microsoft Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "ARCHETYPE",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Microsoft Corporation"
+        ],
+        "basis": "BOOTSTRAP"
+      },
       "asset": {
         "plannable": true,
         "visualType": "CHART",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_8c7e8bde0c22aea2.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_c678778dde06ec81.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -371,7 +830,8 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": true,
+        "bytes": 19015
       }
     }
   ]
