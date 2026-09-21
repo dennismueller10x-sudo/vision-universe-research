@@ -141,6 +141,19 @@ function create(options){
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
+ function broadQuantWorkspace(stock){
+  const metric=(id,label,m)=>({metricId:id,label,unit:m.unit,value:m.value,state:m.state,reason:m.state==='AVAILABLE'?null:'SOURCE_MISSING',asOf:stock.asOf||null,availableAt:stock.asOf||null});
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf||null,
+   score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,
+   factorCoverage:{published:stock.factorState==='AVAILABLE',source:stock.provenance.sourcePath||null,dataQuality:stock.provenance.dataQuality||'SOURCE_MISSING'},
+   families:[
+    {id:'quality',label:'Quality',metrics:[]},{id:'growth',label:'Growth',metrics:[]},
+    {id:'momentum',label:'Momentum',metrics:[metric('momentum6m','6M Return',stock.momentum6m),metric('momentum12m','12M Return',stock.momentum12m),metric('priceTo200dma','Distance to SMA200',stock.priceTo200dma)]},
+    {id:'value',label:'Value',metrics:[]},{id:'profitability',label:'Profitability',metrics:[]},
+    {id:'revisions',label:'Revisions',metrics:[{metricId:'revisions',label:'Revisions',value:null,state:'UNAVAILABLE',reason:'LICENSED_ANALYST_PIT_NOT_AVAILABLE'}]},
+    {id:'risk',label:'Risk',metrics:[metric('volatility','252D Volatility',stock.volatility),metric('maxDrawdown','252D Max Drawdown',stock.drawdown)]}
+   ],methodology:'quant-v2.0.0',methodologyState:'SPECIFIED_NOT_ACTIVE',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+ }
  async function getUniverse(){try{const c=await init();
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
@@ -184,7 +197,7 @@ function create(options){
     const broad=member&&broadRow(c,member);
     if(!broad)return identityOnlyStock(ticker);
     broad.chart={state:'UNAVAILABLE',bars:[],reason:'HISTORY_BUNDLE_NOT_PUBLISHED'};
-    broad.quant={state:'UNAVAILABLE',reason:'LEGACY_PANEL_NOT_PUBLISHED'};
+    broad.quant=broadQuantWorkspace(broad);
     broad.health=await marketHealth([broad]);
     return broad;
    }
@@ -225,7 +238,10 @@ function create(options){
  }
  async function getQuantWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker))return unavailable('OUTSIDE_PREVIEW_SCOPE');
+  try{const c=await init();if(!(c.preview.scope||[]).includes(ticker)){
+    const member=(c.capabilities.members||[]).find(m=>m.s===ticker),stock=member&&broadRow(c,member);
+    return stock?broadQuantWorkspace(stock):unavailable('OUTSIDE_PREVIEW_SCOPE');
+   }
    const stock=await row(c,ticker);
    // Source alias validated by row() before adapting to the shared primary ID.
    return QuantWorkspace.build(stock,stock?{...c.panel.securities[ticker],securityId:stock.securityId}:null,c.panel.versions);
