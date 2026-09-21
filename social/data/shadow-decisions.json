@@ -1,36 +1,66 @@
 {
-  "generatedAt": "2026-09-20T19:03:02.846Z",
+  "generatedAt": "2026-09-21T12:33:36.957Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-20T19:03:02.846Z",
-      "packageId": "pkg_ca25cb404ae49dc4",
-      "topic": "Technisches Setup — XOM",
-      "archetype": "STOCK_STORY",
-      "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: Exxon Mobil bei 52.",
-      "caption": "Unsere technische Auswertung bewertet Exxon Mobil mit 52 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 27.26 von 30 Punkten bei. MOMENTUM trägt 14.54 von 20 Punkten bei. VOLUME trägt 3.88 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "decidedAt": "2026-09-21T12:33:36.957Z",
+      "packageId": "pkg_369d996a8fc3b12e",
+      "topic": "Bekannte Namen in Bewegung",
+      "archetype": "RANKING_LIST",
+      "entities": [
+        "Valero Energy",
+        "Salesforce",
+        "HP Inc",
+        "Microsoft",
+        "Adobe",
+        "Merck & Co",
+        "Honda Motor",
+        "Vodafone Group",
+        "Shell Plc ADR (Representing - )",
+        "Newmont"
+      ],
+      "entityType": null,
+      "family": "RANKING",
+      "question": null,
+      "visualType": "COMPARISON",
+      "hook": "33 von 5951 geprüften Titeln — Bekannte Namen in Bewegung.",
+      "caption": "Diese Auswahl umfasst 33 von 5951 geprüften Titeln. Was in ihr steht: Valero Energy: Kurs 412,53 USD. Valero Energy: in 12 Monaten 159 %. Salesforce: Kurs 242,85 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "metric-frame/evidence-led",
+      "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_4d3399b390499c2f",
+        "briefId": "brief_18c70c3cc8add2d0",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "metric-frame/evidence-led",
-        "variantId": "var_e1d6acdec393ebb2",
-        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "pattern": "group-count/group-rule-evidence",
+        "variantId": "var_806c07d472fbf068",
+        "reason": "Markenwert 100 unter 3 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 67,
-          "alternatives": [],
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_6143a1d5be96e0a1",
+              "pattern": "group-subject/group-method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_a20ccb5841948c04",
+              "pattern": "group-limit/group-limit",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
           "discriminatedBy": [
-            "einzige bestandene Variante"
+            "composition (Gleichstand beim Markenwert)"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -38,37 +68,9 @@
             "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
           }
         },
-        "considered": 4,
-        "passed": 1,
-        "rejected": [
-          {
-            "pattern": "value-first/state-limit-reason",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "subject-first/method-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "limit-first/limit-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          }
-        ],
+        "considered": 3,
+        "passed": 3,
+        "rejected": [],
         "attempts": [
           {
             "authorId": "chatgpt-work",
@@ -83,66 +85,64 @@
           {
             "authorId": "template",
             "ok": true,
-            "variants": 4
+            "variants": 3
           }
         ]
       },
-      "opportunityId": "opp_xom_2026-09-20",
-      "signalIds": [
-        "sig_092494d1c4e827dd"
-      ],
+      "opportunityId": "opp_ranking_cfa4c40d",
+      "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 69 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 25 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_ca25cb404ae49dc4",
-        "visualStrategy": "CHART",
-        "story": "XOM: Technical Opportunity Score steht bei 52. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine einzige Kurve: Exxon Mobil Corporation ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 27,26 von 30, Setup nur 3,6 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
-        "oneSecondMessage": "Seit 21.08.2025: +49,5 %.",
-        "mainSubject": "Exxon Mobil Corporation",
-        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "topicId": "pkg_369d996a8fc3b12e",
+        "visualStrategy": "COMPARISON",
+        "story": "von 5951 geprüften Titeln steht bei 33. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Bekannte Namen in Bewegung: 5 Titel auf einer Achse, und darin Microsoft steht bei 497,75, HP Inc bei 34,66 - dasselbe Mass, derselbe Stichtag. Die Spannweite ist das Motiv - nicht der einzelne Wert.",
+        "oneSecondMessage": "Die Rangfolge dieses Laufs.",
+        "mainSubject": "Bekannte Namen in Bewegung",
+        "compositionIntent": "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei Einheiten in einem Vergleich sind kein Vergleich.",
         "visualHierarchy": [
-          "Der Verlauf",
-          "Der Name Exxon Mobil Corporation",
-          "Der Bezugspunkt der Achse"
+          "Die Spannweite der Reihe",
+          "Der Titel Bekannte Namen in Bewegung",
+          "Die einzelnen Werte"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
-          "Den Klarnamen \"Exxon Mobil Corporation\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
-          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+          "Den Klarnamen \"Bekannte Namen in Bewegung\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine Vergleichsgruppe ohne Regel ist eine Auswahl"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
-          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
         ],
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Exxon Mobil Corporation. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "mobileFocalPoint": "Die Spannweite der Reihe und ihr Titel Bekannte Namen in Bewegung. Wer eine Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, nicht welchen jeder hat.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames",
-            "STORY_DIRECTION/evidence:contributions"
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           ],
           "mobileFocalPoint": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "compositionIntent": [
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ],
           "visualHierarchy": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "brandIntent": [
@@ -150,45 +150,53 @@
           ],
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
-            "VISUAL_STRATEGY:CHART",
-            "AUDIENCE_FRAME:coreQuestion",
-            "STORY_DIRECTION/evidence:source"
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:coreQuestion"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
             "STORY_DIRECTION:claims",
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ]
         },
         "justifiedGenericMotifs": [],
         "derivation": {
           "derived": true,
-          "strategy": "CHART",
+          "strategy": "COMPARISON",
           "missingInputs": [],
           "tension": {
-            "kind": "CONTRIBUTION_GAP",
-            "from": "STORY_DIRECTION/evidence:contributions"
+            "kind": "PEER_SPREAD",
+            "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Abgeleitet aus CHART auf Exxon Mobil Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+          "explanation": "Abgeleitet aus COMPARISON auf Bekannte Namen in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
       "visualDirectionReady": true,
       "visualDirectionFailureType": null,
       "audienceFrame": {
-        "family": "STOCK_STORY",
-        "familyBasis": "ARCHETYPE",
-        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "family": "RANKING",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Exxon Mobil Corporation"
+          "Valero Energy",
+          "Salesforce",
+          "HP Inc",
+          "Microsoft",
+          "Adobe",
+          "Merck & Co",
+          "Honda Motor",
+          "Vodafone Group",
+          "Shell Plc ADR (Representing - )",
+          "Newmont"
         ],
         "basis": "BOOTSTRAP"
       },
       "asset": {
         "plannable": true,
-        "visualType": "CHART",
+        "visualType": "COMPARISON",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_ca25cb404ae49dc4.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_369d996a8fc3b12e.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -211,34 +219,57 @@
       }
     },
     {
-      "decidedAt": "2026-09-20T19:03:02.846Z",
-      "packageId": "pkg_bfd40dc0bea7a32c",
-      "topic": "Technisches Setup — AAPL",
-      "archetype": "STOCK_STORY",
-      "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: Apple bei 66.6.",
-      "caption": "Unsere technische Auswertung bewertet Apple mit 66.6 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.67 von 30 Punkten bei. MOMENTUM trägt 16 von 20 Punkten bei. VOLUME trägt 6.24 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "decidedAt": "2026-09-21T12:33:36.957Z",
+      "packageId": "pkg_f53fd3ca3d0dc4ee",
+      "topic": "Gerade in Bewegung",
+      "archetype": "RANKING_LIST",
+      "entities": [
+        "Natera",
+        "Grayscale Investments",
+        "Schrodinger",
+        "Rush Enterprises Class B",
+        "Precigen",
+        "Frontline",
+        "Cybin",
+        "Ceribell",
+        "Mistras Group",
+        "Heritage Insurance Holdings"
+      ],
+      "entityType": null,
+      "family": "RANKING",
+      "question": null,
+      "visualType": "COMPARISON",
+      "hook": "20 von 5951 geprüften Titeln — Gerade in Bewegung.",
+      "caption": "Diese Auswahl umfasst 20 von 5951 geprüften Titeln. Was in ihr steht: Natera: Kurs 366,31 USD. Natera: in 3 Monaten 62 %. Grayscale Investments: Kurs 120,09 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "metric-frame/evidence-led",
+      "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_1709794aecda22d6",
+        "briefId": "brief_8694a51bc1a4634f",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "metric-frame/evidence-led",
-        "variantId": "var_f6ced928ae0ec9b4",
-        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "pattern": "group-count/group-rule-evidence",
+        "variantId": "var_4956de716bbc38c5",
+        "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 72,
-          "alternatives": [],
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_5b06391177a8f645",
+              "pattern": "group-subject/group-method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
           "discriminatedBy": [
-            "einzige bestandene Variante"
+            "composition (Gleichstand beim Markenwert)"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -246,33 +277,15 @@
             "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
           }
         },
-        "considered": 4,
-        "passed": 1,
+        "considered": 3,
+        "passed": 2,
         "rejected": [
           {
-            "pattern": "value-first/state-limit-reason",
+            "pattern": "group-limit/group-limit",
             "reasons": [
               {
                 "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "subject-first/method-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "limit-first/limit-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
+                "message": "hook und caption ueberschneiden sich zu 60 %."
               }
             ]
           }
@@ -291,66 +304,64 @@
           {
             "authorId": "template",
             "ok": true,
-            "variants": 4
+            "variants": 3
           }
         ]
       },
-      "opportunityId": "opp_aapl_2026-09-20",
-      "signalIds": [
-        "sig_8f4ebf5dbb1869f9"
-      ],
+      "opportunityId": "opp_ranking_7c028613",
+      "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 79 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 54 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_bfd40dc0bea7a32c",
-        "visualStrategy": "CHART",
-        "story": "AAPL: Technical Opportunity Score steht bei 66.6. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine einzige Kurve: Apple Inc. ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 26,67 von 30, Setup nur 5,71 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
-        "oneSecondMessage": "Seit 21.08.2025: +49,8 %.",
-        "mainSubject": "Apple Inc.",
-        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "topicId": "pkg_f53fd3ca3d0dc4ee",
+        "visualStrategy": "COMPARISON",
+        "story": "von 5951 geprüften Titeln steht bei 20. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Gerade in Bewegung: 5 Titel auf einer Achse, und darin Natera steht bei 366,31, Precigen bei 7,87 - dasselbe Mass, derselbe Stichtag. Die Spannweite ist das Motiv - nicht der einzelne Wert.",
+        "oneSecondMessage": "Die Rangfolge dieses Laufs.",
+        "mainSubject": "Gerade in Bewegung",
+        "compositionIntent": "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei Einheiten in einem Vergleich sind kein Vergleich.",
         "visualHierarchy": [
-          "Der Verlauf",
-          "Der Name Apple Inc.",
-          "Der Bezugspunkt der Achse"
+          "Die Spannweite der Reihe",
+          "Der Titel Gerade in Bewegung",
+          "Die einzelnen Werte"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
-          "Den Klarnamen \"Apple Inc.\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
-          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+          "Den Klarnamen \"Gerade in Bewegung\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine Vergleichsgruppe ohne Regel ist eine Auswahl"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
-          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
         ],
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Apple Inc. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "mobileFocalPoint": "Die Spannweite der Reihe und ihr Titel Gerade in Bewegung. Wer eine Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, nicht welchen jeder hat.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames",
-            "STORY_DIRECTION/evidence:contributions"
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           ],
           "mobileFocalPoint": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "compositionIntent": [
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ],
           "visualHierarchy": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "brandIntent": [
@@ -358,45 +369,53 @@
           ],
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
-            "VISUAL_STRATEGY:CHART",
-            "AUDIENCE_FRAME:coreQuestion",
-            "STORY_DIRECTION/evidence:source"
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:coreQuestion"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
             "STORY_DIRECTION:claims",
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ]
         },
         "justifiedGenericMotifs": [],
         "derivation": {
           "derived": true,
-          "strategy": "CHART",
+          "strategy": "COMPARISON",
           "missingInputs": [],
           "tension": {
-            "kind": "CONTRIBUTION_GAP",
-            "from": "STORY_DIRECTION/evidence:contributions"
+            "kind": "PEER_SPREAD",
+            "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Abgeleitet aus CHART auf Apple Inc. mit gemessener Spannung (CONTRIBUTION_GAP)."
+          "explanation": "Abgeleitet aus COMPARISON auf Gerade in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
       "visualDirectionReady": true,
       "visualDirectionFailureType": null,
       "audienceFrame": {
-        "family": "STOCK_STORY",
-        "familyBasis": "ARCHETYPE",
-        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "family": "RANKING",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Apple Inc."
+          "Natera",
+          "Grayscale Investments",
+          "Schrodinger",
+          "Rush Enterprises Class B",
+          "Precigen",
+          "Frontline",
+          "Cybin",
+          "Ceribell",
+          "Mistras Group",
+          "Heritage Insurance Holdings"
         ],
         "basis": "BOOTSTRAP"
       },
       "asset": {
         "plannable": true,
-        "visualType": "CHART",
+        "visualType": "COMPARISON",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_bfd40dc0bea7a32c.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_f53fd3ca3d0dc4ee.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -419,34 +438,57 @@
       }
     },
     {
-      "decidedAt": "2026-09-20T19:03:02.846Z",
-      "packageId": "pkg_e289547f31260363",
-      "topic": "Technisches Setup — JPM",
-      "archetype": "STOCK_STORY",
-      "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: JPMorgan Chase & bei 64.5.",
-      "caption": "Unsere technische Auswertung bewertet JPMorgan Chase & mit 64.5 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 25.08 von 30 Punkten bei. MOMENTUM trägt 14.24 von 20 Punkten bei. VOLUME trägt 4.93 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "decidedAt": "2026-09-21T12:33:36.957Z",
+      "packageId": "pkg_1308b7b21c113e46",
+      "topic": "Cashflow-Maschinen",
+      "archetype": "RANKING_LIST",
+      "entities": [
+        "Natural Resource Partners",
+        "Webull",
+        "Sezzle",
+        "Orix",
+        "Permian Resources Class A",
+        "MGIC Investment",
+        "DigitalBridge Group Class A",
+        "Affirm Holdings Class A",
+        "Slide Insurance Holdings",
+        "Essent Group"
+      ],
+      "entityType": null,
+      "family": "RANKING",
+      "question": null,
+      "visualType": "COMPARISON",
+      "hook": "565 von 5951 geprüften Titeln — Cashflow-Maschinen.",
+      "caption": "Diese Auswahl umfasst 565 von 5951 geprüften Titeln. Was in ihr steht: Natural Resource Partners: Kurs 109,32 USD. Webull: Kurs 7,71 USD. Sezzle: Kurs 113,08 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "metric-frame/evidence-led",
+      "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_645274fc86019bb0",
+        "briefId": "brief_0d4c2d5ba0c56917",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "metric-frame/evidence-led",
-        "variantId": "var_2cd65194d4021230",
-        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "pattern": "group-count/group-rule-evidence",
+        "variantId": "var_06d960ed2f90d881",
+        "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 67,
-          "alternatives": [],
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_f9b2c8c8d2a4a794",
+              "pattern": "group-subject/group-method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
           "discriminatedBy": [
-            "einzige bestandene Variante"
+            "composition (Gleichstand beim Markenwert)"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -454,33 +496,15 @@
             "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
           }
         },
-        "considered": 4,
-        "passed": 1,
+        "considered": 3,
+        "passed": 2,
         "rejected": [
           {
-            "pattern": "value-first/state-limit-reason",
+            "pattern": "group-limit/group-limit",
             "reasons": [
               {
                 "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "subject-first/method-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "limit-first/limit-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
+                "message": "hook und caption ueberschneiden sich zu 60 %."
               }
             ]
           }
@@ -499,66 +523,64 @@
           {
             "authorId": "template",
             "ok": true,
-            "variants": 4
+            "variants": 3
           }
         ]
       },
-      "opportunityId": "opp_jpm_2026-09-20",
-      "signalIds": [
-        "sig_62bbe8d8d1ae222c"
-      ],
+      "opportunityId": "opp_ranking_05233b0e",
+      "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 45 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 77 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_e289547f31260363",
-        "visualStrategy": "CHART",
-        "story": "JPM: Technical Opportunity Score steht bei 64.5. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine einzige Kurve: JPMorgan Chase & Co. ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 25,08 von 30, Setup nur 5,21 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
-        "oneSecondMessage": "Seit 21.08.2025: +19,8 %.",
-        "mainSubject": "JPMorgan Chase & Co.",
-        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "topicId": "pkg_1308b7b21c113e46",
+        "visualStrategy": "COMPARISON",
+        "story": "von 5951 geprüften Titeln steht bei 565. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Cashflow-Maschinen: 5 Titel auf einer Achse, und darin Sezzle steht bei 113,08, Webull bei 7,71 - dasselbe Mass, derselbe Stichtag. Die Spannweite ist das Motiv - nicht der einzelne Wert.",
+        "oneSecondMessage": "Die Rangfolge dieses Laufs.",
+        "mainSubject": "Cashflow-Maschinen",
+        "compositionIntent": "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei Einheiten in einem Vergleich sind kein Vergleich.",
         "visualHierarchy": [
-          "Der Verlauf",
-          "Der Name JPMorgan Chase & Co.",
-          "Der Bezugspunkt der Achse"
+          "Die Spannweite der Reihe",
+          "Der Titel Cashflow-Maschinen",
+          "Die einzelnen Werte"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
-          "Den Klarnamen \"JPMorgan Chase & Co.\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
-          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+          "Den Klarnamen \"Cashflow-Maschinen\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine Vergleichsgruppe ohne Regel ist eine Auswahl"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
-          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
         ],
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name JPMorgan Chase & Co. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "mobileFocalPoint": "Die Spannweite der Reihe und ihr Titel Cashflow-Maschinen. Wer eine Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, nicht welchen jeder hat.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames",
-            "STORY_DIRECTION/evidence:contributions"
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           ],
           "mobileFocalPoint": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "compositionIntent": [
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ],
           "visualHierarchy": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "brandIntent": [
@@ -566,45 +588,53 @@
           ],
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
-            "VISUAL_STRATEGY:CHART",
-            "AUDIENCE_FRAME:coreQuestion",
-            "STORY_DIRECTION/evidence:source"
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:coreQuestion"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
             "STORY_DIRECTION:claims",
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ]
         },
         "justifiedGenericMotifs": [],
         "derivation": {
           "derived": true,
-          "strategy": "CHART",
+          "strategy": "COMPARISON",
           "missingInputs": [],
           "tension": {
-            "kind": "CONTRIBUTION_GAP",
-            "from": "STORY_DIRECTION/evidence:contributions"
+            "kind": "PEER_SPREAD",
+            "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Abgeleitet aus CHART auf JPMorgan Chase & Co. mit gemessener Spannung (CONTRIBUTION_GAP)."
+          "explanation": "Abgeleitet aus COMPARISON auf Cashflow-Maschinen mit gemessener Spannung (PEER_SPREAD)."
         }
       },
       "visualDirectionReady": true,
       "visualDirectionFailureType": null,
       "audienceFrame": {
-        "family": "STOCK_STORY",
-        "familyBasis": "ARCHETYPE",
-        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "family": "RANKING",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "JPMorgan Chase & Co."
+          "Natural Resource Partners",
+          "Webull",
+          "Sezzle",
+          "Orix",
+          "Permian Resources Class A",
+          "MGIC Investment",
+          "DigitalBridge Group Class A",
+          "Affirm Holdings Class A",
+          "Slide Insurance Holdings",
+          "Essent Group"
         ],
         "basis": "BOOTSTRAP"
       },
       "asset": {
         "plannable": true,
-        "visualType": "CHART",
+        "visualType": "COMPARISON",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_e289547f31260363.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_1308b7b21c113e46.jpg",
         "quality": {
           "passed": true,
           "score": 100,
@@ -627,34 +657,64 @@
       }
     },
     {
-      "decidedAt": "2026-09-20T19:03:02.846Z",
-      "packageId": "pkg_c678778dde06ec81",
-      "topic": "Technisches Setup — MSFT",
-      "archetype": "STOCK_STORY",
-      "visualType": "CHART",
-      "hook": "Technical Opportunity Score, Stand heute: Microsoft bei 61.8.",
-      "caption": "Unsere technische Auswertung bewertet Microsoft mit 61.8 im Technical Opportunity Score. Was dahintersteht: TREND_STRUCTURE trägt 26.78 von 30 Punkten bei. MOMENTUM trägt 14.26 von 20 Punkten bei. VOLUME trägt 6.65 von 10 Punkten bei. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "decidedAt": "2026-09-21T12:33:36.957Z",
+      "packageId": "pkg_e34082d5f4735f71",
+      "topic": "Stärkste Aktien im Dow Jones",
+      "archetype": "RANKING_LIST",
+      "entities": [
+        "Merck & Co",
+        "Johnson & Johnson",
+        "Travelers Companies",
+        "Apple",
+        "Chevron",
+        "Coca-Cola",
+        "NVIDIA",
+        "Cisco Systems",
+        "AMGEN",
+        "Salesforce"
+      ],
+      "entityType": null,
+      "family": "RANKING",
+      "question": null,
+      "visualType": "COMPARISON",
+      "hook": "30 von 5951 geprüften Titeln — Stärkste Aktien im Dow Jones.",
+      "caption": "Diese Auswahl umfasst 30 von 5951 geprüften Titeln. Was in ihr steht: Merck & Co: Kurs 147,15 USD. Merck & Co: in 12 Monaten 87 %. Johnson & Johnson: Kurs 270,22 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
         "Daten"
       ],
-      "authoringPattern": "metric-frame/evidence-led",
+      "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_9f327d5d2fe21a69",
+        "briefId": "brief_b15edb2f2a9ff0ab",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
-        "pattern": "metric-frame/evidence-led",
-        "variantId": "var_ee590bbd7af9b481",
-        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
+        "pattern": "group-count/group-rule-evidence",
+        "variantId": "var_078a063986f40a95",
+        "reason": "Markenwert 100 unter 3 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 86).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
-          "compositionScoreChosen": 72,
-          "alternatives": [],
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_e869deecb484e580",
+              "pattern": "group-limit/group-limit",
+              "brandScore": 100,
+              "compositionScore": 86,
+              "recentUses": 0
+            },
+            {
+              "variantId": "var_a281316b09bf614f",
+              "pattern": "group-subject/group-method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
           "discriminatedBy": [
-            "einzige bestandene Variante"
+            "composition (Gleichstand beim Markenwert)"
           ],
           "predictsPerformance": false,
           "performanceLearnings": {
@@ -662,33 +722,224 @@
             "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
           }
         },
-        "considered": 4,
-        "passed": 1,
+        "considered": 3,
+        "passed": 3,
+        "rejected": [],
+        "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 3
+          }
+        ]
+      },
+      "opportunityId": "opp_ranking_ff865fa5",
+      "signalIds": [],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLOIT",
+      "modeReason": "Bewaehrte Wahl (Ziehung 81 >= Rate 25 %).",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_e34082d5f4735f71",
+        "visualStrategy": "COMPARISON",
+        "story": "von 5951 geprüften Titeln steht bei 30. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Stärkste Aktien im Dow Jones: 5 Titel auf einer Achse, und darin Travelers Companies steht bei 379,49, Merck & Co bei 147,15 - dasselbe Mass, derselbe Stichtag. Die Spannweite ist das Motiv - nicht der einzelne Wert.",
+        "oneSecondMessage": "Die Rangfolge dieses Laufs.",
+        "mainSubject": "Stärkste Aktien im Dow Jones",
+        "compositionIntent": "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei Einheiten in einem Vergleich sind kein Vergleich.",
+        "visualHierarchy": [
+          "Die Spannweite der Reihe",
+          "Der Titel Stärkste Aktien im Dow Jones",
+          "Die einzelnen Werte"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Stärkste Aktien im Dow Jones\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine Vergleichsgruppe ohne Regel ist eine Auswahl"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Die Spannweite der Reihe und ihr Titel Stärkste Aktien im Dow Jones. Wer eine Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, nicht welchen jeder hat.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:COMPARISON"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:coreQuestion"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:COMPARISON"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "COMPARISON",
+          "missingInputs": [],
+          "tension": {
+            "kind": "PEER_SPREAD",
+            "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
+          },
+          "explanation": "Abgeleitet aus COMPARISON auf Stärkste Aktien im Dow Jones mit gemessener Spannung (PEER_SPREAD)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "RANKING",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
+        "publicEntityNames": [
+          "Merck & Co",
+          "Johnson & Johnson",
+          "Travelers Companies",
+          "Apple",
+          "Chevron",
+          "Coca-Cola",
+          "NVIDIA",
+          "Cisco Systems",
+          "AMGEN",
+          "Salesforce"
+        ],
+        "basis": "BOOTSTRAP"
+      },
+      "asset": {
+        "plannable": true,
+        "visualType": "COMPARISON",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_e34082d5f4735f71.jpg",
+        "quality": {
+          "passed": true,
+          "score": 100,
+          "blocking": [],
+          "warnings": [],
+          "failureType": null,
+          "neverReportedAs": [
+            "CONTENT_FAILED",
+            "PROVIDER_FAILED",
+            "IMAGE_FAILED",
+            "ASSET_TRANSPORT_INTEGRITY_FAILED",
+            "VISUAL_CREATIVE_QUALITY_FAILED"
+          ],
+          "explanation": "Bildwert 100."
+        },
+        "origin": "rendered",
+        "sourceAsset": null,
+        "rendered": true,
+        "bytes": 19015
+      }
+    },
+    {
+      "decidedAt": "2026-09-21T12:33:36.957Z",
+      "packageId": "pkg_3b80e8ae66d9c11a",
+      "topic": "Fundamentale Turnarounds",
+      "archetype": "RANKING_LIST",
+      "entities": [
+        "RingCentral Class A",
+        "Utz Brands Class A",
+        "Aveanna Healthcare Holdings",
+        "Rapid7",
+        "Five9",
+        "Inspire Medical Systems",
+        "Appian Class A",
+        "Vistance Networks",
+        "Okta Inc - Class A",
+        "Pagerduty"
+      ],
+      "entityType": null,
+      "family": "RANKING",
+      "question": null,
+      "visualType": "COMPARISON",
+      "hook": "308 von 5951 geprüften Titeln — Fundamentale Turnarounds.",
+      "caption": "Diese Auswahl umfasst 308 von 5951 geprüften Titeln. Was in ihr steht: RingCentral Class A: Kurs 74,78 USD. Utz Brands Class A: Kurs 14,27 USD. Aveanna Healthcare Holdings: Kurs 13,97 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "authoringPattern": "group-count/group-rule-evidence",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_dcb1775a2c4d709e",
+        "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
+        "pattern": "group-count/group-rule-evidence",
+        "variantId": "var_273514fa9e8845be",
+        "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 89,
+          "alternatives": [
+            {
+              "variantId": "var_1dfda7e06e77da64",
+              "pattern": "group-subject/group-method-first",
+              "brandScore": 100,
+              "compositionScore": 83,
+              "recentUses": 0
+            }
+          ],
+          "discriminatedBy": [
+            "composition (Gleichstand beim Markenwert)"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
+        "considered": 3,
+        "passed": 2,
         "rejected": [
           {
-            "pattern": "value-first/state-limit-reason",
+            "pattern": "group-limit/group-limit",
             "reasons": [
               {
                 "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "subject-first/method-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
-              }
-            ]
-          },
-          {
-            "pattern": "limit-first/limit-first",
-            "reasons": [
-              {
-                "gate": "composition",
-                "message": "hook und caption ueberschneiden sich zu 100 %."
+                "message": "hook und caption ueberschneiden sich zu 60 %."
               }
             ]
           }
@@ -707,66 +958,64 @@
           {
             "authorId": "template",
             "ok": true,
-            "variants": 4
+            "variants": 3
           }
         ]
       },
-      "opportunityId": "opp_msft_2026-09-20",
-      "signalIds": [
-        "sig_6dde03ed207a3699"
-      ],
+      "opportunityId": "opp_ranking_92261ca9",
+      "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 37 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 68 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_c678778dde06ec81",
-        "visualStrategy": "CHART",
-        "story": "MSFT: Technical Opportunity Score steht bei 61.8. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine einzige Kurve: Microsoft Corporation ueber 270 beobachtete Punkte, und in ihr Trendstruktur traegt 26,78 von 30, Setup nur 2,45 von 20. Die Bewegung selbst ist das Motiv - kein Symbolbild fuer \"Kursentwicklung\".",
-        "oneSecondMessage": "Seit 21.08.2025: −1,3 %.",
-        "mainSubject": "Microsoft Corporation",
-        "compositionIntent": "Die Kurve nimmt die Flaeche, nicht den Rand. Ein Bezugspunkt macht die Bewegung lesbar; eine zweite Reihe waere eine zweite Aussage.",
+        "topicId": "pkg_3b80e8ae66d9c11a",
+        "visualStrategy": "COMPARISON",
+        "story": "von 5951 geprüften Titeln steht bei 308. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Fundamentale Turnarounds: 5 Titel auf einer Achse, und darin RingCentral Class A steht bei 74,78, Rapid7 bei 12,41 - dasselbe Mass, derselbe Stichtag. Die Spannweite ist das Motiv - nicht der einzelne Wert.",
+        "oneSecondMessage": "Die Rangfolge dieses Laufs.",
+        "mainSubject": "Fundamentale Turnarounds",
+        "compositionIntent": "Alle Werte auf EINER Achse, gleiche Einheit, gleiche Richtung. Zwei Einheiten in einem Vergleich sind kein Vergleich.",
         "visualHierarchy": [
-          "Der Verlauf",
-          "Der Name Microsoft Corporation",
-          "Der Bezugspunkt der Achse"
+          "Die Spannweite der Reihe",
+          "Der Titel Fundamentale Turnarounds",
+          "Die einzelnen Werte"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
-          "Den Klarnamen \"Microsoft Corporation\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
-          "Die Quellenzeile \"Tiingo, Stand 17.09.2026\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+          "Den Klarnamen \"Fundamentale Turnarounds\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Wer die Gruppe ist und wonach sie ausgewaehlt wurde - eine Vergleichsgruppe ohne Regel ist eine Auswahl"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
-          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 2 Belegen ist keiner eine Prognose"
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
         ],
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "Die Richtung des Verlaufs und der Name Microsoft Corporation. Eine Achsenbeschriftung darf auf dem Telefon klein bleiben, die Form der Bewegung nicht.",
+        "mobileFocalPoint": "Die Spannweite der Reihe und ihr Titel Fundamentale Turnarounds. Wer eine Sekunde hinsieht, muss sehen, wie weit die Werte auseinanderliegen, nicht welchen jeder hat.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames",
-            "STORY_DIRECTION/evidence:contributions"
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           ],
           "mobileFocalPoint": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "compositionIntent": [
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ],
           "visualHierarchy": [
-            "VISUAL_STRATEGY:CHART",
+            "VISUAL_STRATEGY:COMPARISON",
             "AUDIENCE_FRAME:publicEntityNames"
           ],
           "brandIntent": [
@@ -774,45 +1023,53 @@
           ],
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
-            "VISUAL_STRATEGY:CHART",
-            "AUDIENCE_FRAME:coreQuestion",
-            "STORY_DIRECTION/evidence:source"
+            "VISUAL_STRATEGY:COMPARISON",
+            "AUDIENCE_FRAME:coreQuestion"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
             "STORY_DIRECTION:claims",
-            "VISUAL_STRATEGY:CHART"
+            "VISUAL_STRATEGY:COMPARISON"
           ]
         },
         "justifiedGenericMotifs": [],
         "derivation": {
           "derived": true,
-          "strategy": "CHART",
+          "strategy": "COMPARISON",
           "missingInputs": [],
           "tension": {
-            "kind": "CONTRIBUTION_GAP",
-            "from": "STORY_DIRECTION/evidence:contributions"
+            "kind": "PEER_SPREAD",
+            "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Abgeleitet aus CHART auf Microsoft Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+          "explanation": "Abgeleitet aus COMPARISON auf Fundamentale Turnarounds mit gemessener Spannung (PEER_SPREAD)."
         }
       },
       "visualDirectionReady": true,
       "visualDirectionFailureType": null,
       "audienceFrame": {
-        "family": "STOCK_STORY",
-        "familyBasis": "ARCHETYPE",
-        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "family": "RANKING",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Microsoft Corporation"
+          "RingCentral Class A",
+          "Utz Brands Class A",
+          "Aveanna Healthcare Holdings",
+          "Rapid7",
+          "Five9",
+          "Inspire Medical Systems",
+          "Appian Class A",
+          "Vistance Networks",
+          "Okta Inc - Class A",
+          "Pagerduty"
         ],
         "basis": "BOOTSTRAP"
       },
       "asset": {
         "plannable": true,
-        "visualType": "CHART",
+        "visualType": "COMPARISON",
         "reason": null,
         "message": null,
-        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_c678778dde06ec81.jpg",
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_3b80e8ae66d9c11a.jpg",
         "quality": {
           "passed": true,
           "score": 100,
