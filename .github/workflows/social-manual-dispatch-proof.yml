@@ -1,0 +1,105 @@
+# =========================================================================
+# VISION UNIVERSE SOCIAL — „JETZT PRUEFEN" EINMAL PRODUKTIV DRUECKEN
+#
+# -------------------------------------------------------------------------
+# WOZU ES DIESE DATEI GIBT
+# -------------------------------------------------------------------------
+#
+# Der Knopf im Approval Center steht hinter der Owner-Sitzung, und die
+# Sitzung entsteht aus dem Admin-Schluessel. Eine Entwicklungsumgebung
+# erreicht social.visionuniverse.de nicht; dieser Runner tut es.
+#
+# Das hier ist KEIN zweiter Weg in den Lauf. Es ist derselbe
+# HTTP-Verkehr, den der Browser fuehrt — anmelden, POST auf
+# /approval/run — nur von einer Stelle aus, die den Worker erreicht.
+# Der Worker entscheidet unveraendert selbst, ob er anstoesst.
+#
+# -------------------------------------------------------------------------
+# WARUM NUR PER HAND UND MIT GETIPPTER BESTAETIGUNG
+# -------------------------------------------------------------------------
+#
+# Ein Orchestratorlauf ist echte Arbeit: er kann einen Kandidaten
+# erzeugen und einen Creative Job oeffnen. Das gehoert an einen
+# Knopfdruck und nicht an einen Push. Kein Zeitplan, kein
+# push-Ausloeser, und `confirm` muss getippt werden.
+#
+# -------------------------------------------------------------------------
+# WAS ER NICHT TUT
+# -------------------------------------------------------------------------
+#
+# Er veroeffentlicht nichts, gibt nichts frei, deployt nichts und
+# beruehrt keinen Kandidatenzustand. Der Wert von
+# VU_GITHUB_DISPATCH_TOKEN wird nie gelesen — er liegt im Worker, und
+# dieser Lauf erfaehrt nur, OB der Worker damit durchgekommen ist.
+# =========================================================================
+name: Social Manual Dispatch Proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'JETZT PRUEFEN einmal produktiv ausloesen: "PRUEFEN" eintippen.'
+        type: string
+        required: true
+        default: ''
+
+# Zwei gleichzeitige Nachweise waeren zwei Druecke auf denselben Knopf.
+concurrency:
+  group: social-manual-dispatch-proof
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bestaetigung
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.confirm }}" != "PRUEFEN" ]; then
+            echo "::error::Ohne getippte Bestaetigung wird nicht gedrueckt."
+            exit 1
+          fi
+          echo "Bestaetigt."
+
+      # =====================================================================
+      # DER DRUCK
+      #
+      # Das Skript drueckt GENAU EINMAL und danach ein zweites Mal, um die
+      # Sperre zu messen — der zweite Druck erzeugt keinen zweiten Lauf,
+      # das ist gerade sein Zweck.
+      #
+      # Ohne Admin-Schluessel endet es mit 4: eine Antwort, kein Ausfall.
+      # =====================================================================
+      - name: JETZT PRUEFEN — einmal, und die Sperre messen
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -uo pipefail
+          node scripts/social/verify-manual-dispatch.mjs \
+            --out /tmp/dispatch.json | tee /tmp/dispatch.log
+          rc=$?
+          {
+            echo "## JETZT PRUEFEN — produktiv"
+            echo '```'
+            cat /tmp/dispatch.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+
+      # Der Befund als Artefakt: der Nachweis soll den Lauf ueberleben.
+      # Er traegt nur Zustaende und Zeitstempel, kein Geheimnis.
+      - name: Befund sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-dispatch-proof
+          path: /tmp/dispatch.json
+          if-no-files-found: warn
