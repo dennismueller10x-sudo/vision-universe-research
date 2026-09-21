@@ -99,7 +99,23 @@
        Dieser Grund ist nur dann eine ausreichende Tagesentscheidung,
        wenn die Leiter WIRKLICH jede Stufe gefragt hat. no-post.js
        prueft das; hier steht nur der Name. */
-    NO_TOPIC_IN_ANY_FAMILY:          "NO_TOPIC_IN_ANY_FAMILY"
+    NO_TOPIC_IN_ANY_FAMILY:          "NO_TOPIC_IN_ANY_FAMILY",
+
+    /* -----------------------------------------------------------------
+       WIE VIELE JOBS OFFEN SIND, WEISS GERADE NIEMAND
+
+       Nicht dasselbe wie "keiner ist offen", und der Unterschied ist
+       genau der, an dem MAX_OPEN_CREATIVE_JOBS = 1 haengt.
+
+       Die erste Fassung las `zahl(z.openCreativeJobs, 0)`. Ein
+       fehlendes Feld, ein `null`, ein nicht lesbares Register - alles
+       wurde zu NULL OFFENEN JOBS, und null offene Jobs heisst: bau
+       einen neuen. Der Deckel war dann genau in dem Moment offen, in
+       dem man am wenigsten wusste.
+
+       Unbekannt haelt an. Das ist keine Vorsicht, sondern die einzige
+       Lesart, die nicht behauptet, was niemand gezaehlt hat. */
+    CREATIVE_JOB_COUNT_UNKNOWN:      "CREATIVE_JOB_COUNT_UNKNOWN"
   };
 
   /* -------------------------------------------------------------------
@@ -115,6 +131,36 @@
      ------------------------------------------------------------------- */
   var NIE_ALLEIN = ["NO_MARKET_SIGNAL", "NO_QUANT_SIGNAL", "NO_BREAKING_NEWS",
     "NO_SINGLE_STOCK_SIGNAL"];
+
+  /* Null, undefined und Leerstring sind KEINE Zahlen - auch wenn
+     `Number()` aus zweien davon eine 0 macht. Wo der Unterschied
+     zwischen "null" und "unbekannt" etwas entscheidet, wird diese
+     Funktion gebraucht und nicht `zahl()`. */
+  function ganzeZahlOderNull(v) {
+    /* -----------------------------------------------------------------
+       FEHLT DAS FELD, ODER FEHLT DIE ZAHL?
+
+       Zwei verschiedene Saetze, und nur der zweite ist ein Befund:
+
+         undefined   der Aufrufer redet ueber diese Groesse nicht.
+                     Ein Test zur Reihenfolge von Messen und Vorbereiten
+                     hat mit Creative Jobs nichts zu tun; ihn deshalb
+                     anzuhalten waere ein Tor, das im Weg steht, wo
+                     niemand durchwollte.
+
+         null        der Aufrufer hat gezaehlt und konnte es nicht.
+                     DAS ist unbekannt, und unbekannt haelt an.
+
+       Der Unterschied laesst sich hier nicht erraten - er ist nur dort
+       bekannt, wo die Datei gelesen wird. scripts/social/run-orchestrator.mjs
+       setzt deshalb ausdruecklich `null`, wenn das Register da ist und
+       sich nicht lesen laesst, und die Zahl, wenn es sich lesen laesst.
+       ----------------------------------------------------------------- */
+    if (v === undefined) return 0;
+    if (v === null || v === "") return null;
+    var n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
 
   function zahl(v, fallback) {
     var n = Number(v);
@@ -188,7 +234,13 @@
         erfuellt: seitLetztem === null || seitLetztem >= r.minHoursBetweenCandidates
       },
       warteschlange: zahl(z.activeApprovalQueue, 0),
-      offeneCreativeJobs: zahl(z.openCreativeJobs, 0),
+      /* `null` statt einer erfundenen Null: siehe CREATIVE_JOB_COUNT_UNKNOWN.
+
+         Und NICHT ueber `zahl()`: dort steht `Number(v)`, und
+         `Number(null)` ist 0. Der Fehler, den dieser Grund verhindern
+         soll, sass beim ersten Anlauf in der Zeile, die ihn verhindern
+         sollte. */
+      offeneCreativeJobs: ganzeZahlOderNull(z.openCreativeJobs),
       regime: r.regime
     };
 
@@ -223,6 +275,13 @@
       return nein(GRUND.ACTIVE_APPROVAL_QUEUE_NOT_EMPTY,
         lage.warteschlange + " Beitrag/Beitraege warten bereits auf deine Freigabe. " +
         "Es entsteht kein weiterer, bevor du entschieden hast.");
+    }
+
+    if (lage.offeneCreativeJobs === null) {
+      return nein(GRUND.CREATIVE_JOB_COUNT_UNKNOWN,
+        "Wie viele Creative Jobs gerade offen sind, laesst sich nicht feststellen. " +
+        "Solange das so ist, entsteht kein neuer — sonst waere die Obergrenze von " +
+        "einem Job genau dann aufgehoben, wenn niemand nachzaehlen kann.");
     }
 
     if (lage.offeneCreativeJobs > 0) {
@@ -462,6 +521,7 @@
     GRUND: GRUND,
     NIE_ALLEIN: NIE_ALLEIN,
     regime: regime,
+    ganzeZahlOderNull: ganzeZahlOderNull,
     entscheide: entscheide,
     zweiterZulaessig: zweiterZulaessig,
     grundZulaessig: grundZulaessig

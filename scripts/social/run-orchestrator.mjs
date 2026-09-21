@@ -275,9 +275,28 @@ export function zustand(options) {
   /* Dieselbe Zaehlung wie in creativeBedarf(): das rohe Register, nach
      Job.OFFEN gefiltert. Ein zweiter Weg, offene Jobs zu zaehlen, waere
      ein zweiter Begriff von "offen". */
-  const register = readJson(join(DATEN, "creative-jobs.json"), null);
-  const offeneJobs = ((register && register.jobs) || [])
-    .filter((j) => Job.OFFEN.includes(j.state)).length;
+  /* -------------------------------------------------------------------
+     GEZAEHLT ODER NICHT GEZAEHLT - UND NIE DAZWISCHEN
+
+     `readJson(..., null)` gab frueher fuer BEIDE Faelle null zurueck:
+     fuer das Register, das es noch nicht gibt (dann sind null Jobs
+     offen, und das stimmt), und fuer das Register, das da ist und
+     sich nicht lesen laesst (dann weiss niemand, wie viele offen
+     sind). Die Zeile darunter machte aus beidem eine 0 - und 0 offene
+     Jobs heisst: bau einen neuen.
+
+     MAX_OPEN_CREATIVE_JOBS = 1 waere damit genau dann aufgehoben
+     gewesen, wenn die Datei kaputt ist. Hier wird deshalb zuerst
+     gefragt, OB es das Register gibt.
+     ------------------------------------------------------------------- */
+  const registerPfad = join(DATEN, "creative-jobs.json");
+  const registerDa = existsSync(registerPfad);
+  const register = registerDa ? readJson(registerPfad, null) : { jobs: [] };
+  const offeneJobs = register
+    ? ((register.jobs) || []).filter((j) => Job.OFFEN.includes(j.state)).length
+    /* Da, aber nicht lesbar: null heisst UNBEKANNT, und die Kadenz-Engine
+       haelt darauf an (CREATIVE_JOB_COUNT_UNKNOWN). */
+    : null;
 
   return {
     now,

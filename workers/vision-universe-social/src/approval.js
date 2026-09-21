@@ -961,7 +961,40 @@ export async function handleManualRun(request, env, options = {}) {
   const zuletzt = await readManualRun(env);
   if (zuletzt && zuletzt.ok && zuletzt.requestedAt) {
     const her = (jetzt.getTime() - Date.parse(zuletzt.requestedAt)) / 1000;
-    if (Number.isFinite(her) && her >= 0 && her < MANUAL_RUN_SPERRE_SEKUNDEN) {
+
+    /* -----------------------------------------------------------------
+       EIN NICHT LESBARER ZEITPUNKT IST KEIN VERGANGENER
+
+       Die erste Fassung las `Number.isFinite(her) && her >= 0 && ...`.
+       Beide Zusaetze liessen den Schutz genau dann VERSCHWINDEN, wenn
+       man ihm am wenigsten trauen kann: bei einem unlesbaren Datum und
+       bei einem Datum aus der Zukunft (eine zurueckgestellte Uhr) fiel
+       die Sperre ersatzlos weg, und der naechste Druck loeste einen
+       zweiten Lauf aus.
+
+       Ein Schutz gegen den doppelten Druck darf nicht daran scheitern,
+       dass der letzte Druck schlecht notiert ist. Er sperrt deshalb
+       auch dann - und schreibt den Zeitpunkt mit der eigenen Uhr neu,
+       damit sich die Lage nach der Sperrfrist von selbst aufloest und
+       der Knopf nicht fuer immer tot ist.
+       ----------------------------------------------------------------- */
+    const unlesbar = !Number.isFinite(her);
+    const ausDerZukunft = Number.isFinite(her) && her < 0;
+
+    if (unlesbar || ausDerZukunft) {
+      await recordManualRun(env, {
+        requestedAt: nowIso, ok: true, status: zuletzt.status ?? null,
+        hinweis: "Zeitpunkt des letzten Anstosses war " +
+          (unlesbar ? "nicht lesbar" : "in der Zukunft") + "; mit der eigenen Uhr neu gesetzt"
+      });
+      return laufNichtMoeglichSeite({
+        grund: "SCHON_ANGESTOSSEN",
+        wartenSekunden: MANUAL_RUN_SPERRE_SEKUNDEN,
+        satz: "Der Lauf wurde gerade schon angestossen."
+      });
+    }
+
+    if (her < MANUAL_RUN_SPERRE_SEKUNDEN) {
       return laufNichtMoeglichSeite({
         grund: "SCHON_ANGESTOSSEN",
         wartenSekunden: Math.ceil(MANUAL_RUN_SPERRE_SEKUNDEN - her),

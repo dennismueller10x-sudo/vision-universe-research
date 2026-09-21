@@ -89,6 +89,33 @@
     return (b - a) / 60000;
   }
 
+  /* -------------------------------------------------------------------
+     EIN ALTER UNTER NULL IST KEIN ALTER
+
+     Eine Gegenprobe hat es gezeigt: steht in der Lease-Datei ein
+     Zeitpunkt in der Zukunft, rechnet `minuten()` ein negatives Alter
+     aus, und `alter < ablauf` ist damit fuer immer wahr. Die Antwort
+     lautete woertlich
+
+         "Ein anderer Lauf arbeitet seit -38015280 Minuten"
+
+     und kein produktiver Lauf waere je wieder zustande gekommen - bis
+     2099. Eine einzelne falsche Zeile in einer Datei haette den
+     Orchestrator stillgelegt, und die Erklaerung haette dabei die
+     ganze Zeit danebengestanden.
+
+     Ein negatives Alter heisst nicht "arbeitet noch". Es heisst: diese
+     Zeitangabe stimmt nicht. Das ist etwas anderes und wird auch
+     anders behandelt - die Lease wird verworfen, und der Grund steht
+     da. Eine kleine Abweichung bleibt erlaubt, weil zwei Maschinen nie
+     genau dieselbe Uhr haben.
+     ------------------------------------------------------------------- */
+  var UHR_TOLERANZ_MINUTEN = 2;
+
+  function unglaubwuerdig(alter) {
+    return alter !== null && alter < -UHR_TOLERANZ_MINUTEN;
+  }
+
   function optZahl(v, fallback) {
     var n = Number(v);
     return Number.isFinite(n) && n >= 0 ? n : fallback;
@@ -123,10 +150,22 @@
     /* Noch nicht zurueckgegeben und noch nicht abgelaufen. */
     if (!l.endedAt) {
       var alter = minuten(l.takenAt, now);
+      if (unglaubwuerdig(alter)) {
+        return { darfArbeiten: true, grund: GRUND.FREI,
+          erklaerung: "Die Lease von " + (l.runId || "einem frueheren Lauf") +
+            " traegt einen Zeitpunkt in der Zukunft (" + l.takenAt + "). Ein Lauf, " +
+            "der noch nicht begonnen hat, arbeitet nicht.",
+          wartetBis: null, verfallen: true, unglaubwuerdig: true };
+      }
       if (alter !== null && alter < ablauf) {
         return { darfArbeiten: false, grund: GRUND.LAUF_AKTIV,
           erklaerung: "Ein anderer Lauf arbeitet seit " +
-            Math.round(alter) + " Minuten (" + (l.runId || "ohne Kennung") + ").",
+            /* Innerhalb der Toleranz kann das Alter knapp negativ sein - zwei
+               Maschinen, zwei Uhren. Gesperrt wird trotzdem; nur die Zahl
+               wird nicht unter null gezeigt, weil "seit -1 Minuten" nichts
+               erklaert. */
+            Math.max(0, Math.round(alter)) + " Minuten (" +
+            (l.runId || "ohne Kennung") + ").",
           wartetBis: neuerZeitpunkt(l.takenAt, ablauf) };
       }
       /* Abgelaufen: der Lauf ist gestorben, ohne zurueckzugeben. Das
@@ -146,10 +185,16 @@
     }
 
     var seitEnde = minuten(l.endedAt, now);
+    if (unglaubwuerdig(seitEnde)) {
+      return { darfArbeiten: true, grund: GRUND.FREI,
+        erklaerung: "Der letzte Lauf traegt ein Ende in der Zukunft (" + l.endedAt +
+          "). Daraus laesst sich keine Abklingzeit rechnen.",
+        wartetBis: null, unglaubwuerdig: true };
+    }
     if (seitEnde !== null && seitEnde < abklingen) {
       return { darfArbeiten: false, grund: GRUND.ABKLINGZEIT,
         erklaerung: "Ein produktiver Zyklus endete vor " +
-          Math.round(seitEnde * 10) / 10 + " Minuten. Ein zweiter beginnt " +
+          Math.max(0, Math.round(seitEnde * 10) / 10) + " Minuten. Ein zweiter beginnt " +
           "fruehestens " + abklingen + " Minuten danach.",
         wartetBis: neuerZeitpunkt(l.endedAt, abklingen) };
     }
@@ -201,6 +246,7 @@
 
   var api = {
     ABLAUF_MINUTEN: ABLAUF_MINUTEN,
+    UHR_TOLERANZ_MINUTEN: UHR_TOLERANZ_MINUTEN,
     ABKLINGEN_MINUTEN: ABKLINGEN_MINUTEN,
     GRUND: GRUND,
     pruefe: pruefe,

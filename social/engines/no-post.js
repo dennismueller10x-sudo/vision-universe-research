@@ -65,6 +65,7 @@
   "use strict";
   var isNode = typeof module !== "undefined" && module.exports;
   var Kadenz = isNode ? require("./content-cadence.js") : global.VUSocialContentCadence;
+  var Leiter = isNode ? require("./content-ladder.js") : global.VUSocialContentLadder;
 
   var ZUSTAND = {
     POST_PREPARED:       "POST_PREPARED",
@@ -132,11 +133,40 @@
    * Sonst hat die Suche frueh aufgehoert, und genau diese Verwechslung
    * - aufgehoert mit zu Ende - soll der Nachweis unmoeglich machen.
    */
+  function letzteStufe() {
+    var stufen = (Leiter && Leiter.LEITER) || [];
+    var hoechste = 0;
+    for (var i = 0; i < stufen.length; i += 1) {
+      var n = Number(stufen[i].stufe);
+      if (Number.isFinite(n) && n > hoechste) hoechste = n;
+    }
+    return hoechste;
+  }
+
+  /* -------------------------------------------------------------------
+     "VOLLSTAENDIG GESUCHT" DARF KEINE SELBSTAUSKUNFT SEIN
+
+     Die erste Fassung las nur `nichtGefragt`. Das ist ein Feld, das
+     der Suchende ueber sich selbst schreibt - und ein leeres Feld
+     genuegte, um "alle Familien gefragt" in den Nachweis zu bringen.
+     Ein Bericht mit `nichtGefragt: []` und `fallbackDepthReached: 2`
+     haette dann behauptet, neun Stufen geprueft zu haben, waehrend
+     zwei liefen.
+
+     Deshalb wird die Angabe gegen die LEITER gerechnet, die es
+     tatsaechlich gibt. Beide Aussagen muessen stimmen, und die zweite
+     kommt nicht vom Berichtenden.
+     ------------------------------------------------------------------- */
   function vollstaendigGesucht(leiter) {
     var l = leiter || {};
     var nicht = Array.isArray(l.nichtGefragt) ? l.nichtGefragt : null;
-    if (nicht === null) return false;
-    return nicht.length === 0;
+    if (nicht === null || nicht.length !== 0) return false;
+
+    var letzte = letzteStufe();
+    if (!letzte) return false;
+    var tiefe = Number(l.fallbackDepthReached);
+    /* Unbekannte Tiefe ist keine erreichte Tiefe. */
+    return Number.isFinite(tiefe) && tiefe >= letzte;
   }
 
   /**
@@ -413,6 +443,7 @@
     TEILE: TEILE,
     nachStufe: nachStufe,
     grundAusSuche: grundAusSuche,
+    letzteStufe: letzteStufe,
     vollstaendigGesucht: vollstaendigGesucht,
     beurteile: beurteile
   };
