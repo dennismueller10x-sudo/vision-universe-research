@@ -23,7 +23,7 @@ Dieses Register benennt ohne Beschönigung, was in der ursprünglichen Vision sp
 |---|---|---|---|---|---|
 | LW-001 | Realer VU Quant Score | transparenter Peer-/Global-Composite über echtes Universum | Score-Engine und 511er Modelluniversum existieren; reale VU2-Daten umfassen fünf Titel und liefern korrekt `INSUFFICIENT_PEER_UNIVERSE` | `NOT_CONNECTED` | realen, ausreichend breiten Factor Panel materialisieren; keine Fünf-Titel-Perzentile |
 | LW-002 | Factor DNA Journey | aktive Faktoren, Subdimensionen, Peers, Coverage und Historie in VU2 | realer Fünf-Titel-Pfad zeigt Rohwerte; dedizierte VU2-DNA fehlt; breiter DNA-Pfad ist synthetisch | `PARTIAL` / `NOT_VISIBLE` | auf realen Quant-Panel-Vertrag aufsetzen |
-| LW-003 | Faktor-Taxonomie | historisch fünf aktive Faktoren plus inaktive Revisionsdimension | aktueller Auftrag nennt zusätzlich eigenständige Profitability und aktive Revisionsdimension | `CONTRADICTION` | Owner entscheidet: V1 bewahren oder versioniertes Quant V2 spezifizieren |
+| LW-003 | Faktor-Taxonomie | historisch fünf aktive Faktoren plus inaktive Revisionsdimension | Owner hat `quant-v2.0.0-full-7f` mit sieben disjunkten Faktoren und festen Gewichten entschieden; V1 bleibt Legacy | `RECOVERED_SPEC` | V2-Daten-/Publikationsgates erfüllen; keine Scores vor Evidenz |
 | LW-004 | Score Momentum | PIT-konsistente Score-Historie, Velocity, Acceleration und Faktortreiber | Engine und synthetische Score-Historie vorhanden; keine reale materialisierte Historie | `NOT_CONNECTED` | erst nach realem Score-Panel und historischer Zeitsemantik |
 | LW-005 | Quant Radar | Upgrades, Leaders, Breakouts, Deterioration und Setup-Events | sieben Legacy-Module auf Mock-Daten; VU2 Signals sind nur zwei EOD-Transitions | `LEGACY` / `NOT_CONNECTED` | Radar auf Rule Contract und reale Score-Snapshots migrieren |
 | LW-006 | Market Regime | erklärbarer breiter Marktzustand | keine Produkt-Engine; VU2 lehnt Fünf-Titel-Regime korrekt ab | `MISSING` | nach breiter Market-Factor-Materialisierung entwickeln |
@@ -56,7 +56,7 @@ Dieses Register benennt ohne Beschönigung, was in der ursprünglichen Vision sp
 | LW-033 | Frische Produktionsdaten | klare, aktuelle EOD-/Intraday-Stände | EOD am Audit einen abgeschlossenen Handelstag zurück; UI markiert korrekt stale | `OPERATIONS_GAP` | Datenlauf/Deploy-Freshness überwachen, keine alte Zahl als aktuell labeln |
 | LW-034 | Discovery-Schutz | gemeinsame Infrastruktur ohne Produktregression | aktueller Rematch hat Discovery nicht verändert; Regression Smoke grün | `PRESERVED` | als Hard Gate jeder folgenden Integration beibehalten |
 | LW-035 | Originale Quant-2-Research-Anhänge | drei ursprüngliche V2-Berichte als Primärquellen | Git enthält nur Dateinamen, Hashes und Größen in `docs/vu2/inventory.json`; der übergreifende Deep-Research-Masterplan ist als Work-Artefakt wiedergefunden, die drei exakten Anhänge fehlen | `LOST_SOURCE` | Anhänge bei Gelegenheit hashgenau archivieren; bis dahin kondensierte Traceability plus Masterplan verwenden |
-| LW-036 | Full-Universe Ranking Hygiene | unplausible Providerwerte vor Ranking quarantänisieren | PR88-Branch enthält Contract/Policy/Tests, Main nicht; aktuelles Full-Universe-Artefakt rankt `MINE` mit offenkundig unplausiblem 12M-Momentum von 2.969.999 an Platz 1 und das daraus erzeugte Discovery-Artefakt zeigt `+296999900 %` | `LOST` / `P0_BLOCKER` | Shared-Data-Producer/Ranking-Policy semantisch rekonstruieren und testen; Discovery selbst nicht patchen; Discovery-Regressionsgate; stale Branch nicht blind mergen |
+| LW-036 | Full-Universe Ranking Hygiene | unplausible Providerwerte vor Ranking quarantänisieren | Engine 2.0 und Producer-Integration rekonstituiert: Volluniversum wird vor Sortierung/Top-K geprüft, Rohwerte bleiben erhalten; Artefakt-Refresh/Production-Verify noch ausstehend | `RECOVERED_CODE` / `DEPLOY_PENDING` | bestehendes Market-Refresh ausführen, Quant/Discovery regressionsprüfen, Pages deployen und Production verifizieren |
 
 ## Explizit nicht als verlorene Quant-Arbeit zu behandeln
 
@@ -69,9 +69,8 @@ Dieses Register benennt ohne Beschönigung, was in der ursprünglichen Vision sp
 
 Nur folgende Registereinträge benötigen vor Implementierung eine echte Owner-Entscheidung:
 
-1. **LW-003:** V1-Faktortaxonomie beibehalten oder versioniertes Quant V2 mit sieben Faktoren definieren.
-2. **LW-009:** belastbare Regeln für die fünf fehlenden Strategien freigeben.
-3. **LW-024:** Quelle/Lizenz und Methodik für historische Earnings Revisions freigeben.
+1. **LW-009:** belastbare Regeln für die fünf historisch nicht belegten Strategien freigeben.
+2. **LW-024:** Quelle/Lizenz für historische Earnings Revisions freigeben; Methodik ist in Quant V2 definiert.
 4. Neue laufende Kosten oder Providerverträge, falls bestehende Pfade die Evidenzanforderungen objektiv nicht erfüllen.
 
 Alle anderen Einträge sind dependency-correct innerhalb der bestehenden Architektur ausführbar.
