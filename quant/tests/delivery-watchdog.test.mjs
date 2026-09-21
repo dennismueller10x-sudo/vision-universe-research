@@ -177,3 +177,132 @@ test("WD-15 der Bericht traegt keine Kurse", () => {
   assert.ok(!/price|close|last|bid|ask/i.test(text.replace(/lastCycle\w*/g, "")),
             "der Waechter beschreibt Zeiten und Sitzungen, keine Kurse");
 });
+
+/* --- Der Produktionsbefund vom 21.09.2026, 18:06:55 -------------------- */
+
+/* Der Waechter meldete WARNING "Letzter Taktzyklus vor 10 min", waehrend
+   der Takt voellig stabil lief. Verglichen wurden zwei verschiedene
+   Dinge: die Zeit SEIT Zyklusbeginn gegen den Abstand ZWISCHEN zwei
+   Beginnen. Ein Zyklus beginnt alle 5:04 und dauert 5:02 - das Alter
+   seines Beginns pendelt also zwischen 0 und gut 10 Minuten, und die
+   Schwelle liegt bei 9. Wer frueh im Zyklus misst, bekommt PASS; wer
+   spaet misst, WARNING - bei identischer Produktion. */
+
+const ECHT = Date.parse("2026-09-21T18:06:55Z");
+const echterZyklus = {
+  triggerAt: "2026-09-21T18:02:10.906Z",     /* Beginn: 4:44 vor der Messung */
+  fetchEndAt: "2026-09-21T18:07:12.294Z",    /* Ende liegt NACH der Messung  */
+  ok: true, written: 488
+};
+
+test("WD-16 ein stabiler Takt schlaegt nicht an, auch kurz vor dem naechsten Zyklus", () => {
+  /* Genau die Lage von 18:06:55: der zuletzt VERZEICHNETE Zyklus ist
+     Z10 (Beginn 17:57:03, Ende 18:02:04) - sein Beginn ist 9:52 alt,
+     sein Ende 4:51. Gemessen wird ab dem Ende. */
+  const u = Watchdog.beurteile({
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 6 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 8 * MIN },
+    lastCycle: {
+      triggerAt: "2026-09-21T17:57:03.091Z",
+      fetchEndAt: "2026-09-21T18:02:04.513Z",
+      ok: true, written: 486
+    },
+    intervalMs: 5 * MIN
+  });
+  assert.ok(!codes(u).includes("taktVerspaetet"),
+            "stabiler Takt darf nicht als verspaetet gelten: " + JSON.stringify(codes(u)));
+  assert.ok(!codes(u).includes("taktAusgefallen"), JSON.stringify(codes(u)));
+});
+
+test("WD-17 Gegenprobe: ein wirklich stehengebliebener Takt schlaegt weiterhin an", () => {
+  /* Ohne diese Gegenprobe waere WD-16 nur eine Abschaltung der Regel.
+     Zwoelf Minuten seit dem ENDE des letzten Zyklus sind echt zu lang. */
+  const spaet = Watchdog.beurteile({
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 12 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 12 * MIN },
+    lastCycle: {
+      triggerAt: "2026-09-21T17:49:00.000Z",
+      fetchEndAt: "2026-09-21T17:54:00.000Z",   /* 12:55 vor der Messung */
+      ok: true, written: 480
+    },
+    intervalMs: 5 * MIN
+  });
+  assert.ok(codes(spaet).includes("taktVerspaetet"), JSON.stringify(codes(spaet)));
+
+  /* Und eine halbe Stunde Stillstand bleibt FAIL, nicht WARNING. */
+  const tot = Watchdog.beurteile({
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 30 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 30 * MIN },
+    lastCycle: {
+      triggerAt: "2026-09-21T17:31:00.000Z",
+      fetchEndAt: "2026-09-21T17:36:00.000Z",
+      ok: true, written: 480
+    },
+    intervalMs: 5 * MIN
+  });
+  assert.ok(codes(tot).includes("taktAusgefallen"), JSON.stringify(codes(tot)));
+  assert.equal(tot.verdict, "FAIL");
+});
+
+test("WD-18 laeuft ein Zyklus noch, zaehlt sein Beginn - die Uhr darf nicht stehen", () => {
+  /* Ohne Ende gibt es nichts anderes als den Beginn, und das ist auch
+     richtig so: waehrend eines laufenden Abrufs soll die Zeit weiter
+     laufen, sonst wuerde ein haengender Zyklus nie auffallen. */
+  const laeuft = Watchdog.beurteile({
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 2 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 4 * MIN },
+    lastCycle: { triggerAt: new Date(ECHT - 3 * MIN).toISOString(), ok: true, written: 0 },
+    intervalMs: 5 * MIN
+  });
+  assert.ok(!codes(laeuft).includes("taktVerspaetet"), JSON.stringify(codes(laeuft)));
+
+  const haengt = Watchdog.beurteile({
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 20 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 20 * MIN },
+    lastCycle: { triggerAt: new Date(ECHT - 20 * MIN).toISOString(), ok: true, written: 0 },
+    intervalMs: 5 * MIN
+  });
+  assert.ok(codes(haengt).includes("taktAusgefallen"),
+            "ein haengender Zyklus muss auffallen: " + JSON.stringify(codes(haengt)));
+});
+
+test("WD-19 Gegenprobe: das Ende gewinnt gegen den Beginn, nicht umgekehrt", () => {
+  /* Scharf gestellt: derselbe Zyklus, einmal mit und einmal ohne Ende.
+     Mit Ende ist er jung, ohne Ende alt. Waere die Reihenfolge
+     vertauscht, fiele WD-16 genauso aus - und der Fehler bliebe. */
+  const basis = {
+    nowMs: ECHT,
+    marketState: "OPEN",
+    expectedSession: "2026-09-21",
+    snapshot: { sessionDate: "2026-09-21", asOfMs: ECHT - 6 * MIN },
+    delivered: { sessionDate: "2026-09-21", asOfMs: ECHT - 8 * MIN },
+    intervalMs: 5 * MIN
+  };
+  const mitEnde = Watchdog.beurteile(Object.assign({}, basis, {
+    lastCycle: { triggerAt: "2026-09-21T17:57:03.091Z",
+                 fetchEndAt: "2026-09-21T18:02:04.513Z", ok: true, written: 486 }
+  }));
+  const ohneEnde = Watchdog.beurteile(Object.assign({}, basis, {
+    lastCycle: { triggerAt: "2026-09-21T17:57:03.091Z", ok: true, written: 486 }
+  }));
+  assert.equal(mitEnde.facts.lastCycleAgeMinutes, 5, "ab Ende gemessen");
+  assert.equal(ohneEnde.facts.lastCycleAgeMinutes, 10, "ab Beginn gemessen");
+  assert.ok(!codes(mitEnde).includes("taktVerspaetet"));
+  assert.ok(codes(ohneEnde).includes("taktVerspaetet"),
+            "ohne Ende bleibt es der alte, strengere Massstab");
+});
