@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "intraday-pacemaker-ledger-1.0.0",
+  "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
+  "block": {
+    "startedAt": "2026-09-21T14:48:33.463Z",
+    "runId": "35614593521",
+    "runNumber": "1",
+    "trigger": "workflow_dispatch",
+    "intervalMs": 300000,
+    "blockMaxMs": 19200000,
+    "branch": "main"
+  },
+  "updatedAt": "2026-09-21T14:53:35.367Z",
+  "cycles": [
+    {
+      "cycle": 1,
+      "runId": "35614593521",
+      "triggerAt": "2026-09-21T14:48:33.471Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "10:48:33",
+      "fetchStartAt": "2026-09-21T14:48:33.517Z",
+      "fetchEndAt": "2026-09-21T14:53:35.366Z",
+      "session": "2026-09-21",
+      "written": 509,
+      "requests": 527,
+      "notPublishable": 18,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-09-21T14:53:35.357Z"
+    }
+  ]
+}
