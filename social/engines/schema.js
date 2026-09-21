@@ -73,7 +73,27 @@
     "BREAKING_MARKET_INSIGHT", "EXPLAIN_THE_MOVE", "FUTURE_TECHNOLOGY",
     "STOCK_STORY", "DATA_STORY", "MYTH_VS_REALITY", "OPPORTUNITY_RISK",
     "EDUCATIONAL", "MARKET_CONTEXT", "CONTRARIAN_INSIGHT",
-    "VISUAL_DATA_STORY", "COMPANY_DEEP_DIVE", "WEEKLY_THEME", "TREND_EXPLAINER"
+    "VISUAL_DATA_STORY", "COMPANY_DEEP_DIVE", "WEEKLY_THEME", "TREND_EXPLAINER",
+    /* -----------------------------------------------------------------
+       DER ARCHETYP, DEN ES FUER DIE GROESSTE FAMILIE NICHT GAB
+
+       Die Content Family RANKING steht seit langem in
+       content-universe.js, der Einstiegsvorschlag "list_tension" in
+       audience-frame.js, die Bildform COMPARISON in visual.js. Nur ein
+       ARCHETYP fehlte - die Liste hier war fuer Formate ueber EINEN
+       Titel gebaut.
+
+       Die Folge war im ersten Lauf ueber die Content Ladder zu sehen:
+       eine Rangliste ueber zehn Unternehmen bekam erst STOCK_STORY
+       (ein Format fuer einen Titel), nach der Formpruefung dann
+       DATA_STORY und schliesslich EDUCATIONAL - jedes Mal das erste,
+       was uebrig blieb. Gemessen worden waere spaeter "EDUCATIONAL
+       erreicht n Reichweite" fuer eine Rangliste.
+
+       Die Zuordnung ist eine redaktionelle Entscheidung (§21). Sie
+       steht hier, weil die Daten sie verlangen, und sie ist
+       ausdruecklich als solche benannt. */
+    "RANKING_LIST"
   ];
 
   /* Visuelle Strategien (§13). */
@@ -82,10 +102,29 @@
      sondern von einem Creative Agent erzeugt und uebernommen. Es als
      DATA_CARD zu fuehren hiesse, dem Lernen eine Bildform beizubringen,
      die nie zu sehen war. */
+  /* -------------------------------------------------------------------
+     DREI FORMEN, DIE ES GAB, ABER NICHT GEBEN DURFTE
+
+     SCORE, PERFORMANCE und COMPARISON standen seit ihrer Einfuehrung
+     in visual.js (mit Datenbedarf), in visual-composition.js (mit
+     Layout) und in render-asset.mjs (mit Zeichenzweig) - nur hier
+     nicht. Eine Bildform, die drei Stufen bauen koennen und die
+     vierte nicht kennt.
+
+     Aufgefallen ist es erst, als der Lauf zum ersten Mal ein Thema
+     ueber MEHRERE Titel baute: dort ist keine Zeitreihe verfuegbar,
+     die Wahl faellt auf COMPARISON - und das Schema brach den Zyklus
+     ab. Solange nur Einzelwerte liefen, gewann immer CHART, und der
+     Widerspruch blieb unsichtbar.
+
+     EINE VOKABEL AN ZWEI STELLEN GEHT AUSEINANDER. Ein Test haelt die
+     beiden Listen jetzt aneinander (VT1), damit die naechste neue
+     Bildform nicht wieder nur an drei von vier Stellen entsteht.
+     ------------------------------------------------------------------- */
   var VISUAL_TYPES = [
     "CHART", "NUMBER_VISUAL", "ATLAS", "COMPANY_VISUAL", "DATA_CARD",
     "CAROUSEL", "MOTION_GRAPHIC", "VIDEO", "MINIMAL_TYPOGRAPHY", "MIXED",
-    "GENERATIVE"
+    "GENERATIVE", "SCORE", "PERFORMANCE", "COMPARISON"
   ];
 
   /* Kanonische Metriken (§17). Jede Plattform meldet eine Teilmenge; was

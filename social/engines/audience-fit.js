@@ -59,6 +59,56 @@
   var SKALA_BENANNT =
     /\b(?:punkte?n?|score|bewertung|skala|note|rang|platz|index|prozent)\b/i;
 
+  /* -------------------------------------------------------------------
+     DIE ZWEITE ART, EINE SKALA ZU BENENNEN: DIE GEZAEHLTE MENGE
+
+     "76 von 100" ist eine Skala, die ihren Namen braucht. "33 von 5951
+     geprueften Titeln" ist keine Skala, sondern eine Auszaehlung - und
+     sie sagt bereits im selben Atemzug, WAS gezaehlt wurde.
+
+     Die Wortliste oben ist auf Scores gebaut (Punkte, Note, Rang) und
+     kannte diesen Fall nicht. Sie wies damit jeden Einstieg einer
+     Rangliste ab, obwohl er die Frage beantwortete, die sie stellt.
+
+     ENG GEFASST, DAMIT ES EINE PRUEFUNG BLEIBT: verlangt ist ein
+     grossgeschriebenes Wort UNMITTELBAR nach der Zahl, hoechstens zwei
+     kleingeschriebene Woerter (Adjektive) dazwischen. "76 von 100."
+     faellt weiter durch - da steht nichts. "76 von 100: XOMs Staerke"
+     ebenfalls: ein Doppelpunkt ist kein Leerzeichen, und was nach ihm
+     kommt, gehoert zum naechsten Satzteil, nicht zur Skala.
+     ------------------------------------------------------------------- */
+  var SKALA_ANSCHLUSS =
+    /\bvon\s+\d+(?:[.,]\d+)?\s+((?:[a-z\u00e4\u00f6\u00fc\u00df]+\s+){0,2})([A-Z\u00c4\u00d6\u00dc][a-z\u00e4\u00f6\u00fc\u00dfA-Z]{3,})/;
+
+  /* Eine geschlossene Wortklasse: Praepositionen, Artikel,
+     Konjunktionen. Steht eines davon zwischen der Zahl und dem
+     Substantiv, beginnt ein NEUER Satzteil - das Substantiv gehoert
+     dann nicht mehr zur Zahl.
+
+     Der erste Entwurf liess "76 von 100 im Vergleich." durch:
+     grossgeschriebenes Wort nach der Zahl, also "benannt". Gesagt hat
+     der Satz damit nichts - "im Vergleich" nennt nicht, WAS gemessen
+     wurde. Eine Pruefung, die das durchlaesst, prueft die Grammatik
+     und nicht die Aussage. */
+  var FUNKTIONSWORT = [
+    "im", "in", "an", "am", "auf", "aus", "bei", "fuer", "f\u00fcr", "mit",
+    "nach", "von", "vom", "vor", "zu", "zum", "zur", "ueber", "\u00fcber",
+    "unter", "gegen", "ohne", "um", "seit", "durch", "waehrend", "w\u00e4hrend",
+    "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem",
+    "einer", "und", "oder", "als", "wie", "je", "pro", "laut", "trotz"
+  ];
+
+  /* Nennt der Einstieg die gezaehlte Menge? */
+  function gezaehlteMengeBenannt(text) {
+    var m = SKALA_ANSCHLUSS.exec(String(text || ""));
+    if (!m) return false;
+    var dazwischen = m[1].trim() ? m[1].trim().split(/\s+/) : [];
+    for (var i = 0; i < dazwischen.length; i++) {
+      if (FUNKTIONSWORT.indexOf(dazwischen[i].toLowerCase()) !== -1) return false;
+    }
+    return true;
+  }
+
   /* Begriffe, die ein interessierter Anleger nicht ohne Weiteres
      aufloest. Nicht verboten - nur nicht im Einstieg. */
   var FACHJARGON = [
@@ -135,7 +185,7 @@
 
     /* --- eine Skala, die sich selbst erklaert ---------------------- */
     var hatSkala = SKALA.test(einstieg);
-    var benannt = SKALA_BENANNT.test(einstieg);
+    var benannt = SKALA_BENANNT.test(einstieg) || gezaehlteMengeBenannt(einstieg);
     pruefe("scaleSelfExplaining", !hatSkala || benannt, true,
       "Der Einstieg nennt \"" + (SKALA.exec(einstieg) || [])[0] +
       "\", ohne zu sagen, WAS gemessen wurde. Eine Zahl ohne " +

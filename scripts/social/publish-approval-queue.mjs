@@ -67,6 +67,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Projection = require(join(ROOT, "social/engines/approval-projection.js"));
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
+import { keinBeitragNachweis, zustand as orchestratorZustand, kadenz }
+  from "./run-orchestrator.mjs";
 
 const WORKER = process.env.VU_SOCIAL_WORKER_URL || "https://social.visionuniverse.de";
 
@@ -117,7 +119,27 @@ export function baue(kandidaten, options = {}) {
     nachId[id] = k;
   }
 
-  const projektion = Projection.projiziere(schlange, nachId, { now: options.now });
+  /* -------------------------------------------------------------------
+     DER INHALTLICHE STAND REIST MIT (§16/§39–§41)
+
+     Er wird NICHT hier gerechnet: der Orchestrator hat ihn bereits,
+     aus derselben Kadenzentscheidung und demselben Suchnachweis, die
+     auch sein Bericht zeigt. Ein zweiter Rechenweg waere ein zweiter
+     Stand, und der erste, der vom anderen abweicht, gewinnt per
+     Zufall.
+
+     Geht er nicht zu ermitteln, bleibt er null - und die Oberflaeche
+     sagt dann "nicht uebertragen" statt "nichts passiert". */
+  let inhalt = null;
+  try {
+    const z = orchestratorZustand({ now: options.now });
+    inhalt = keinBeitragNachweis(z, kadenz(z));
+  } catch (err) {
+    inhalt = null;
+  }
+
+  const projektion = Projection.projiziere(schlange, nachId,
+    { now: options.now, contentStatus: inhalt });
 
   /* -------------------------------------------------------------------
      EIN GRUND JE KANDIDAT, UND ZWAR DER RICHTIGE

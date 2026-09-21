@@ -274,6 +274,24 @@
 
       /* Was NICHT wartet, mit Grund. Der Owner sieht es nicht; wer den
          Betrieb prueft, schon - und findet dann nicht nur eine Null. */
+      /* -----------------------------------------------------------------
+         WAS DER LAUF INHALTLICH GETAN HAT (§16/§39–§41)
+
+         Die Warteschlange sagt, was WARTET. Sie sagt nichts darueber,
+         warum heute nichts wartet - und genau das ist die Frage, die
+         ein Owner vor einer leeren Seite stellt.
+
+         DURCHGEREICHT, NICHT GERECHNET. Der Nachweis entsteht in
+         no-post.js aus der Kadenzentscheidung und dem Suchnachweis des
+         Zyklus. Ihn hier noch einmal herzuleiten waere eine zweite
+         Wahrheit ueber denselben Tag; diese Datei uebernimmt ihn
+         unveraendert oder laesst ihn null.
+
+         `null` heisst "nicht uebertragen" und NICHT "nichts
+         passiert" - die Oberflaeche muss den Unterschied zeigen
+         koennen, genau wie bei der Schlange selbst. */
+      contentStatus: o.contentStatus || null,
+
       held: (s.held || []).slice(),
       decided: (s.decided || []).slice(),
       unknown: (s.unknown || []).slice(),

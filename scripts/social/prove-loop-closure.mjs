@@ -112,17 +112,32 @@ function simuliertesGedaechtnis() {
      kommt, koennte die Entscheidung gar nicht erreichen, und der
      Nachweis waere wertlos.
 
-     EXPLAIN_THE_MOVE ist die Wahl, die ohne Wissen faellt (erstes
-     zulaessiges, am seltensten genutzt). DATA_STORY laeuft in dieser
-     Simulation deutlich besser. Greift der Lernpfad, muss die
+     DATA_STORY ist die Wahl, die ohne Wissen faellt (erstes
+     zulaessiges, am seltensten genutzt). OPPORTUNITY_RISK laeuft in
+     dieser Simulation deutlich besser. Greift der Lernpfad, muss die
      Entscheidung kippen — und genau das ist die Behauptung, die hier
      ueberprueft wird.
+
+     HIER STAND FRUEHER EXPLAIN_THE_MOVE ALS DAS SCHWAECHERE FORMAT.
+     Das war richtig, solange der Zyklus aus Kurssignalen einzelne
+     Titel baute. Seit er seine Themen ueber die Content Ladder aus
+     der Platte nimmt, tragen sie keinen ANLASS im Sinne der
+     Strategie - eine Auswahlregel ist ein Kriterium, kein Ereignis -
+     und EXPLAIN_THE_MOVE ist damit gar nicht mehr zulaessig.
+
+     Der Nachweis lief weiter durch und verglich zwei Laeufe, die
+     BEIDE DATA_STORY waehlten: die Evidenz konnte die Entscheidung
+     nicht erreichen, weil das bessere Format nie zur Wahl stand.
+     Damit das nicht noch einmal unbemerkt passiert, prueft dieses
+     Skript jetzt nach, ob beide simulierten Formate im Lauf
+     ueberhaupt zulaessig waren (`zulaessigeFormate`), und bricht
+     sonst ab.
 
      Ob der Effekt die Signifikanzschwelle passiert, entscheidet die
      Learning Engine und nicht dieses Skript. */
   const muster = [
-    ["DATA_STORY", [78, 82, 75, 85, 80, 79, 83, 77]],
-    ["EXPLAIN_THE_MOVE", [41, 38, 45, 36, 43, 40, 39, 44]]
+    ["OPPORTUNITY_RISK", [78, 82, 75, 85, 80, 79, 83, 77]],
+    ["DATA_STORY", [41, 38, 45, 36, 43, 40, 39, 44]]
   ];
   let i = 0;
   for (const [archetype, werte] of muster) {
@@ -180,12 +195,30 @@ function entscheidungsbild(bericht) {
 }
 
 /* ------------------------------------------------------------------ Lauf */
+/* -------------------------------------------------------------------------
+   JEDER STAND BRAUCHT SEINE EIGENE PLATTE
+
+   Der Zyklus nimmt seine Gelegenheiten seit der Content Ladder aus
+   der Platte. Ein Stand ohne Platte hat keine Themen - und dieser
+   Nachweis wuerde dann nicht die Kreislauf-Schliessung messen,
+   sondern eine fehlende Datei.
+
+   Gebaut mit dem Zeitpunkt DIESES Laufs, damit der Zyklus ihr Alter
+   gegen dieselbe Uhr misst. Geschrieben wird nur in den Stand.
+   ------------------------------------------------------------------------- */
+function platteNach(verzeichnis) {
+  execFileSync(process.execPath,
+    [join(ROOT, "scripts/social/build-opportunity-slate.mjs"), "--now", NOW,
+     "--out", verzeichnis], { cwd: ROOT, stdio: ["ignore", "ignore", "pipe"] });
+}
+
 mkdirSync(ARBEIT, { recursive: true });
 
 /* Lauf A: unbeschriebener Zustand. Keine Leistungsdaten, kein Gedaechtnis. */
 const dirA = join(ARBEIT, "stand-a");
 mkdirSync(dirA, { recursive: true });
 copyFileSync(join(ROOT, "social/data/signals.json"), join(dirA, "signals.json"));
+platteNach(dirA);
 
 console.log("VISION UNIVERSE SOCIAL — Nachweis der Kreislauf-Schliessung");
 console.log("Evidenz: " + EVIDENCE.toUpperCase());
@@ -213,10 +246,51 @@ zyklus(join(ARBEIT_REL, "stand-a"), "lauf-a1", true);
 const berichtA = zyklus(join(ARBEIT_REL, "stand-a"), "lauf-a2");
 const A = entscheidungsbild(berichtA);
 
+/* -------------------------------------------------------------------
+   WAR DAS BESSERE FORMAT UEBERHAUPT ZUR WAHL?
+
+   Ein Nachweis, dessen simuliertes Spitzenformat fuer die Themen des
+   Laufs unzulaessig ist, vergleicht zwei identische Entscheidungen und
+   nennt das Ergebnis "kein Lerneffekt". Er misst dann die Vorlage,
+   nicht den Lernpfad.
+
+   Deshalb wird die Annahme hier zur Messung: beide simulierten
+   Formate muessen in den zulaessigen Kandidaten von Lauf A vorkommen.
+   ------------------------------------------------------------------- */
+if (EVIDENCE === "simulated") {
+  const zulaessigeFormate = new Set();
+  for (const p of berichtA.packages || []) {
+    /* Im BERICHT steht die Liste direkt am Paket - die Projektion hat
+       sie aus der Entscheidung herausgezogen. Der erste Anlauf las
+       hier `p.strategyDecision.archetypeCandidates`, also die Form im
+       Arbeitsspeicher, und fand nichts: der Nachweis brach ab und
+       meldete "zulaessig waren: keine", obwohl fuenf Formate zur Wahl
+       standen. Eine Pruefung, die am falschen Feld sucht, ist eine
+       Pruefung, die immer Alarm schlaegt. */
+    for (const k of (p.archetypeCandidates || [])) {
+      if (k && k.archetype) zulaessigeFormate.add(k.archetype);
+    }
+  }
+  const simuliert = simuliertesGedaechtnis()
+    .map((e) => e.archetype)
+    .filter((a, i, alle) => alle.indexOf(a) === i);
+  const fehlend = simuliert.filter((a) => !zulaessigeFormate.has(a));
+  if (!zulaessigeFormate.size || fehlend.length) {
+    console.error("\nDie Simulation traegt Formate, die dieser Lauf gar nicht " +
+      "waehlen kann: " + (fehlend.join(", ") || "(kein Paket entstanden)") + ".");
+    console.error("Zulaessig waren: " + ([...zulaessigeFormate].join(", ") || "keine") + ".");
+    console.error("Ein Vergleich waere wertlos - die Evidenz koennte die " +
+      "Entscheidung nicht erreichen. Der Nachweis bricht hier ab, statt " +
+      "ein Ergebnis zu melden, das nichts bedeutet.");
+    process.exit(2);
+  }
+}
+
 /* Dazwischen: die Evidenz trifft ein. */
 const dirB = join(ARBEIT, "stand-b");
 mkdirSync(dirB, { recursive: true });
 copyFileSync(join(ROOT, "social/data/signals.json"), join(dirB, "signals.json"));
+platteNach(dirB);
 
 let evidenzHerkunft;
 if (EVIDENCE === "simulated") {

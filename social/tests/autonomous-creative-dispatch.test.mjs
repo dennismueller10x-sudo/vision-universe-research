@@ -218,7 +218,22 @@ test("AD18 · Der PR-Text nennt Job, Schluessel und Grund", async () => {
 /* ------------------------------------------------------------------ */
 
 test("AD19 · Der Dispatch haengt an der Entscheidung, nicht am Lauf", () => {
-  assert.match(WORKFLOW, /if: steps\.plan\.outputs\.creative == 'ja'/);
+  /* -----------------------------------------------------------------
+     GEPRUEFT WIRD DIE BEDINGUNG, NICHT IHRE SCHREIBWEISE
+
+     Der erste Anlauf suchte die Zeile `if: steps.plan.outputs.creative
+     == 'ja'` woertlich. Als die Lauf-Lease (§5) als zweite Bedingung
+     dazukam, wurde aus der einen Zeile ein mehrzeiliger Block - und
+     der Test meldete einen Fehler, obwohl die Bedingung unveraendert
+     dastand und sogar strenger geworden war.
+
+     Wieder ein Pruefer, der korrekten Text verbietet. Gesucht wird
+     jetzt im if-Block des Schritts, nicht nach einer Formatierung. */
+  const ab = WORKFLOW.indexOf("- name: CREATIVE JOB");
+  assert.ok(ab > 0, "Der Schritt fehlt");
+  const block = WORKFLOW.slice(ab, ab + 500);
+  assert.match(block, /steps\.plan\.outputs\.creative == 'ja'/,
+    "Der Dispatch haengt nicht mehr an der Entscheidung");
   /* Und der Orchestrator gibt diese Zeile nur aus, wenn er sie
      entschieden hat. */
   const runner = readFileSync("scripts/social/run-orchestrator.mjs", "utf8");

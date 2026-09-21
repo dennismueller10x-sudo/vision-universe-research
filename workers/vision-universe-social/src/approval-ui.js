@@ -263,6 +263,7 @@ export function landingPage(zustand) {
 <p class="leise">Es liegt noch keine uebertragene Warteschlange vor. Das heisst
 <em>nicht</em>, dass nichts wartet — es heisst, dass wir es hier nicht wissen.</p>
 <p class="leise">Der Orchestrator uebertraegt sie bei seinem naechsten Lauf.</p>
+${jetztPruefen()}
 ${abmelden()}`);
   }
 
@@ -271,7 +272,9 @@ ${abmelden()}`);
 <h1>Aktuell wartet kein Beitrag auf deine Freigabe.</h1>
 ${standZeile(z)}
 ${soeben(z)}
+${inhaltlicherStand(z)}
 ${rest(z)}
+${jetztPruefen()}
 ${abmelden()}`);
   }
 
@@ -300,6 +303,8 @@ ${standZeile(z)}
 ${soeben(z)}
 ${luecke}
 ${liste}
+${inhaltlicherStand(z)}
+${jetztPruefen()}
 ${abmelden()}`);
 }
 
@@ -342,6 +347,136 @@ function rest(z) {
   if (!gehalten && !entschieden) return "";
   return `<p class="leise">Im Bestand: ${entschieden} entschieden oder abgeloest,
 ${gehalten} auf einem Haltegrund. Beides wartet nicht auf dich.</p>`;
+}
+
+/* -------------------------------------------------------------------
+   DER KNOPF (§2)
+
+   Er steht auf ALLEN drei Lagen der Startseite - gerade auf der, auf
+   der nichts wartet. Dort ist die Frage "und jetzt?" am naechsten, und
+   ein Knopf, den es nur bei Arbeit gibt, ist bei Stille nicht da.
+
+   Ein Formular, kein Link: ein Link waere ueber ein fremdes Bild
+   ausloesbar. Und kein JavaScript - die Seite traegt keines, und
+   dieser Knopf ist kein Grund, damit anzufangen.
+
+   Der Satz darunter ist Teil des Knopfes und keine Zierde: er sagt,
+   dass hier die UHR uebersprungen wird und nichts sonst.
+   ------------------------------------------------------------------- */
+/* =========================================================================
+   WAS DER LAUF GETAN HAT (§16, §39–§41)
+
+   -------------------------------------------------------------------------
+   DIE FRAGE VOR EINER LEEREN SEITE
+   -------------------------------------------------------------------------
+
+   "Aktuell wartet kein Beitrag auf deine Freigabe" ist wahr und
+   unbefriedigend. Der Owner will wissen, ob das Ruhe ist oder
+   Stillstand - und das ist derselbe Unterschied, den der Lauf selbst
+   zwischen NO_POST_JUSTIFIED und NO_POST_UNEXPLAINED macht.
+
+   Drei Lagen, und keine wird zur anderen geglaettet:
+
+     nicht uebertragen   Wir wissen es hier nicht. Nicht "es ist
+                         nichts passiert".
+     erklaert            Der Lauf hat gesucht und sagt, warum nichts
+                         genommen wurde.
+     unerklaert          Der Lauf hat nichts gefunden UND kann es nicht
+                         begruenden. Das ist ein Befund, und er steht
+                         als solcher da - nicht als beruhigende Zeile.
+   ========================================================================= */
+function inhaltlicherStand(z) {
+  const c = z && z.contentStatus;
+  if (!c) {
+    return `<p class="leise">Zum letzten Lauf liegt hier keine Auskunft vor. Das
+heisst <em>nicht</em>, dass nichts geschehen ist — es heisst, dass wir es hier
+nicht wissen.</p>`;
+  }
+
+  const unerklaert = c.zustand === "NO_POST_UNEXPLAINED";
+  const klasse = unerklaert ? "leise warnung" : "leise";
+  const satz = `<p class="${klasse}">${escapeHtml(c.erklaerung || "")}</p>`;
+
+  return satz + suchLage(c.nachweis) + laufZeile(c.nachweis, z.jetzt);
+}
+
+/* -------------------------------------------------------------------
+   WIE BREIT GESUCHT WURDE (§41)
+
+   Die Zahl der gefragten Familien allein waere eine Fleissangabe.
+   Interessant ist die Gegenseite: WELCHE Stufen nicht gefragt wurden.
+   Sie zu verschweigen waere die bequemste Auslassung dieser Seite -
+   "neun Familien geprueft" klingt vollstaendig und ist es nicht.
+   ------------------------------------------------------------------- */
+function suchLage(n) {
+  const s = n && n.suche;
+  if (!s) return "";
+  const offen = Array.isArray(s.nichtGefragt) ? s.nichtGefragt : [];
+  const breite = `Gesucht in ${escapeHtml(String(s.familienGefragtAnzahl || 0))}
+Content Families, ${escapeHtml(String(s.themenGeprueft || 0))} Thema/Themen
+geprueft.`;
+  const rest = s.vollstaendig
+    ? " Jede Stufe wurde gefragt."
+    : offen.length
+      ? ` Nicht gefragt: ${escapeHtml(offen.map((o) => o.id || ("Stufe " + o.stufe))
+          .join(", "))} — weiter oben war genug.`
+      : "";
+  return `<p class="leise">${breite}${rest}</p>`;
+}
+
+/* -------------------------------------------------------------------
+   EIN ZEITPUNKT IN WORTEN — IN BEIDE RICHTUNGEN
+
+   `alterInWorten` nimmt ein ALTER in Millisekunden, keinen Zeitstempel.
+   Der erste Entwurf reichte ihm ISO-Zeichenketten: die Funktion gab
+   pflichtgemaess `null` zurueck, und auf der Seite stand woertlich
+   "Letzter Lauf , fruehestens wieder ,". Zwei leere Stellen, wo zwei
+   Angaben stehen sollten - und nichts daran sah nach einem Fehler aus.
+
+   Diese Funktion rechnet den Zeitstempel in ein Alter um und kann
+   auch nach VORN schauen: `naechsteFruehestens` liegt in der Zukunft,
+   und ein Alter ist dort negativ.
+
+   UNLESBAR IST NICHT LEER. Wo sich kein Zeitpunkt lesen laesst, steht
+   das da - eine fehlende Angabe soll nicht wie eine fehlende Zeile
+   aussehen.
+   ------------------------------------------------------------------- */
+function zeitpunktInWorten(iso, jetzt) {
+  const t = Date.parse(String(iso || ""));
+  if (!Number.isFinite(t)) return "Zeitpunkt unklar";
+  const now = Number.isFinite(jetzt) ? jetzt : Date.now();
+  if (t <= now) {
+    return alterInWorten(now - t) || "gerade eben";
+  }
+  const worte = alterInWorten(t - now);
+  return worte ? worte.replace(/^vor /, "in ") : "gleich";
+}
+
+/* Wann der Lauf war und ob die Uhr gerade im Weg steht (§40). */
+function laufZeile(n, jetzt) {
+  if (!n) return "";
+  const teile = [];
+  if (n.laufVom) {
+    teile.push("Letzter Lauf " + escapeHtml(zeitpunktInWorten(n.laufVom, jetzt)));
+  }
+  if (n.uhr && n.uhr.darfErzeugen === false && n.uhr.naechsteFruehestens) {
+    teile.push("fruehestens wieder " +
+      escapeHtml(zeitpunktInWorten(n.uhr.naechsteFruehestens, jetzt)));
+  }
+  if (n.tore && n.tore.abgelehnt) {
+    teile.push(escapeHtml(String(n.tore.abgelehnt)) + " an den Qualitaetstoren abgewiesen");
+  }
+  if (!teile.length) return "";
+  return `<p class="leise">${teile.join(", ")}.</p>`;
+}
+
+function jetztPruefen() {
+  return `<hr class="linie">
+<form method="POST" action="/approval/run">
+  <button class="weiter" type="submit">Jetzt pruefen</button>
+</form>
+<p class="leise">Startet dieselbe Pruefung, die der Zeitplan zweimal taeglich
+startet. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>`;
 }
 
 function abmelden() {
@@ -528,4 +663,56 @@ waere nie veroeffentlicht worden und hat deshalb keine Reichweite — weder eine
 schlechte noch eine gute.</p>
 
 <p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`);
+}
+
+/* =========================================================================
+   JETZT PRUEFEN — DIE ZWEI ANTWORTEN (§2–§5, §39–§41)
+
+   Der Knopf hat genau zwei Ausgaenge, und beide sagen dem Owner, was
+   als Naechstes passiert. "Angestossen" ohne den Satz, was das heisst,
+   waere eine Bestaetigung ohne Inhalt: der Owner wuesste nicht, ob er
+   gleich einen Beitrag bekommt oder eine Begruendung.
+   ========================================================================= */
+
+export function laufAngestossenSeite(d) {
+  const zeit = d && d.angestossenAt ? escapeHtml(alterInWorten(d.angestossenAt)) : "gerade eben";
+  return approvalResponse("Lauf angestossen", `
+<h1>Die Pruefung laeuft.</h1>
+<p class="leise">Angestossen ${zeit}. Es ist derselbe Lauf, den der Zeitplan
+zweimal taeglich startet — nicht ein schnellerer und nicht ein anderer.</p>
+<p class="leise">Was er findet, entscheidet er selbst. Du hast die Uhr
+uebersprungen, nicht die Pruefungen: Evidenz, Qualitaet, Portfolio und die
+Freigabe stehen unveraendert davor.</p>
+<p class="leise">Wenn etwas entsteht, steht es hier. Wenn nichts entsteht, steht
+hier, was gesucht wurde und warum nichts genommen wurde.</p>
+<p><a class="weiter" href="/approval">Zurueck zur Uebersicht</a></p>
+${abmelden()}`);
+}
+
+export function laufNichtMoeglichSeite(d) {
+  const x = d || {};
+  let detail = "";
+  if (x.grund === "NICHT_EINGERICHTET") {
+    /* Die NAMEN der fehlenden Einstellungen, nie ihre Werte. Wer die
+       Seite sieht, soll wissen, was zu tun ist; wer sie nicht sehen
+       duerfte, erfaehrt daraus nichts ueber das Geheimnis. */
+    detail = `<p class="leise">Es fehlt die Verbindung zum Lauf:
+${escapeHtml((x.fehlend || []).join(", "))}. Bis dahin startet der Lauf weiter
+nach Zeitplan.</p>`;
+  } else if (x.grund === "SCHON_ANGESTOSSEN") {
+    detail = `<p class="leise">Er wurde vor Kurzem schon angestossen und arbeitet
+noch. Ein zweiter Anstoss erzeugt keinen zweiten Lauf — er wuerde nur warten und
+danach dieselbe Arbeit noch einmal machen.</p>
+<p class="leise">Wieder moeglich in etwa ${escapeHtml(String(
+      Math.ceil((x.wartenSekunden || 0) / 60)))} Minute(n).</p>`;
+  } else {
+    detail = `<p class="leise">Der Anstoss kam nicht an${
+      x.status ? " (Status " + escapeHtml(String(x.status)) + ")" : ""}. Der
+Zeitplan laeuft unveraendert weiter; es ist nichts verloren.</p>`;
+  }
+  return approvalResponse("Lauf nicht angestossen", `
+<h1>${escapeHtml(x.satz || "Der Lauf laesst sich nicht anstossen.")}</h1>
+${detail}
+<p><a class="weiter" href="/approval">Zurueck zur Uebersicht</a></p>
+${abmelden()}`);
 }

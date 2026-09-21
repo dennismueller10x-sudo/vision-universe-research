@@ -77,7 +77,10 @@
     VISUAL_DATA_STORY:       ["CHART", "MOTION_GRAPHIC", "MIXED"],
     COMPANY_DEEP_DIVE:       ["CAROUSEL", "COMPANY_VISUAL", "CHART"],
     WEEKLY_THEME:            ["ATLAS", "CAROUSEL", "MINIMAL_TYPOGRAPHY"],
-    TREND_EXPLAINER:         ["CAROUSEL", "CHART", "ATLAS"]
+    TREND_EXPLAINER:         ["CAROUSEL", "CHART", "ATLAS"],
+    /* Eine Rangliste zeigt Werte nebeneinander. COMPARISON zuerst -
+       das ist die Form, die genau das tut. */
+    RANKING_LIST:            ["COMPARISON", "CAROUSEL", "DATA_CARD", "MINIMAL_TYPOGRAPHY"]
   };
 
   /**

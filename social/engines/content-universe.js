@@ -107,6 +107,35 @@
     EDITORIAL:       ["EDUCATION", "EVERGREEN", "COMPARISON", "RANKING"]
   };
 
+  /* -------------------------------------------------------------------
+     WELCHE FAMILIE EIN ARCHETYP OEFFENTLICH IST
+
+     Die Tabelle stand in audience-frame.js, weil sie dort gebraucht
+     wurde. Sie ist aber eine Aussage ueber FAMILIEN, und Familien
+     wohnen hier. Sie steht jetzt an einer Stelle und wird von dort
+     gelesen - audience-frame.js reicht sie weiter, damit niemand
+     zwei Tabellen pflegen muss, die auseinanderlaufen.
+
+     Sie ist eine redaktionelle Zuordnung, keine Messung.
+     ------------------------------------------------------------------- */
+  var FAMILY_FOR_ARCHETYPE = {
+    BREAKING_MARKET_INSIGHT: "NEWS_NOW",
+    EXPLAIN_THE_MOVE:        "STOCK_STORY",
+    FUTURE_TECHNOLOGY:       "MEGATREND",
+    STOCK_STORY:             "STOCK_STORY",
+    DATA_STORY:              "DATA_STORY",
+    MYTH_VS_REALITY:         "EDUCATION",
+    OPPORTUNITY_RISK:        "MARKET_EXPLAINER",
+    EDUCATIONAL:             "EDUCATION",
+    MARKET_CONTEXT:          "MARKET_EXPLAINER",
+    CONTRARIAN_INSIGHT:      "EDUCATION",
+    VISUAL_DATA_STORY:       "DATA_STORY",
+    COMPANY_DEEP_DIVE:       "REPORT_STORY",
+    WEEKLY_THEME:            "MAGAZINE_STORY",
+    TREND_EXPLAINER:         "MEGATREND",
+    RANKING_LIST:            "RANKING"
+  };
+
   /* Wie viele Entitaeten eine Familie ueblicherweise traegt. Das ist
      eine Plausibilitaetsgrenze, keine Vorschrift: ein Vergleich mit
      einer einzigen Entitaet ist keiner. */
@@ -122,6 +151,43 @@
     EARNINGS:   { min: 1, max: 1 },
     DIVIDEND:   { min: 1, max: null }
   };
+
+  /* -------------------------------------------------------------------
+     PASST DIESER ARCHETYP ZU EINEM THEMA MIT n ENTITAETEN?
+
+     Der erste Lauf ueber die Content Ladder baute aus einer Rangliste
+     ueber ZEHN Unternehmen einen Beitrag mit dem Archetyp STOCK_STORY
+     und dem Einstieg "412,53 USD - Valero Energy, Kurs." Der Text war
+     nicht falsch; das ETIKETT war es. Gemessen worden waere spaeter
+     "STOCK_STORY erreicht n Reichweite" - fuer eine Rangliste.
+
+     Die noetige Information lag schon da: FAMILY_ENTITY_SHAPE sagt,
+     wie viele Entitaeten eine Familie traegt, und FAMILY_FOR_ARCHETYPE
+     sagt, welche Familie ein Archetyp oeffentlich ist. Sie waren nur
+     nie verbunden.
+
+     UNBEKANNT IST NICHT "PASST": ist die Anzahl nicht bekannt, gibt
+     diese Funktion `null` zurueck - "nicht entscheidbar" - und der
+     Aufrufer sagt, was er damit macht. Ein `true` waere hier die
+     bequeme Unwahrheit.
+     ------------------------------------------------------------------- */
+  function archetypePassesEntityShape(archetype, entityCount) {
+    /* `Number(null)` ist 0, und 0 ist eine endliche Zahl. Der erste
+       Entwurf las damit "keine Angabe" als "null Entitaeten" und wies
+       STOCK_STORY ab, weil es mindestens eine braucht - eine
+       Ablehnung aus Unwissen, genau das, was diese Funktion nicht tun
+       soll. Unbekannt wird deshalb VOR der Umrechnung abgefangen. */
+    if (entityCount === null || entityCount === undefined || entityCount === "") return null;
+    var n = Number(entityCount);
+    if (!Number.isFinite(n) || n < 0) return null;
+    var fam = FAMILY_FOR_ARCHETYPE[archetype];
+    if (!fam) return null;
+    var shape = FAMILY_ENTITY_SHAPE[fam];
+    if (!shape) return null;
+    if (typeof shape.min === "number" && n < shape.min) return false;
+    if (typeof shape.max === "number" && shape.max !== null && n > shape.max) return false;
+    return true;
+  }
 
   /* Aus einem Titel eine stabile, lesbare Kennung. */
   function slugify(t) {
@@ -192,6 +258,36 @@
       evidence: Array.isArray(spec.evidence) ? spec.evidence.slice() : [],
       evidenceSufficient: spec.evidenceSufficient === true,
       evidenceRejected: spec.evidenceRejected === undefined ? null : spec.evidenceRejected,
+      /* -----------------------------------------------------------------
+         WOVON DER ANLASS HANDELT — UND OB ES EINEN GIBT
+
+         Die Strategiestufe fragt beides, und bisher konnte nur ein
+         Signal antworten: `premise` und `hasCause` entstanden in
+         signals.js und existierten nur dort. Ein Thema aus der Platte
+         kam ohne beides an und fiel damit aus der Archetyp-Eignung -
+         nicht, weil es unpassend war, sondern weil es nicht gefragt
+         werden konnte.
+
+         ZWEI VERSCHIEDENE FRAGEN, DIE LEICHT VERWECHSELT WERDEN:
+
+           premise  WOVON der Anlass handelt (SECURITY_METRIC, EVENT,
+                    MARKET_STATE, CONCEPT). Die Vokabel stammt aus
+                    signals.js; jede Quelle kann sie beantworten.
+
+           cause    Der Satz, der einen ANLASS nennt - ein Wechsel,
+                    ein Ereignis mit Datum. NICHT die Auswahlregel
+                    einer Reihe: die ist ein Kriterium, kein Anlass.
+                    Waere sie hier eingetragen, waere EXPLAIN_THE_MOVE
+                    fuer eine Rangliste zulaessig, und das Etikett
+                    wuerde spaeter als Evidenz zitiert ("EXPLAIN_THE_MOVE
+                    erreicht n Reichweite"), obwohl etwas anderes
+                    gemessen wurde.
+
+         Beide stehen auf null, wenn die Quelle sie nicht beantwortet.
+         Fail closed: kein Anlass ist nicht dasselbe wie "wird schon
+         einer sein". */
+      premise: spec.premise || null,
+      cause: spec.cause || null,
       timeSensitivity: spec.timeSensitivity || "EVERGREEN",
       /* Der Stand der Quelldatei. Ohne ihn ist die Aktualitaet des
          Anlasses nicht messbar - und faellt als Luecke ins Gewicht,
@@ -299,6 +395,8 @@
     CONTENT_SOURCES: CONTENT_SOURCES,
     SOURCE_CAPABILITIES: SOURCE_CAPABILITIES,
     FAMILY_ENTITY_SHAPE: FAMILY_ENTITY_SHAPE,
+    FAMILY_FOR_ARCHETYPE: FAMILY_FOR_ARCHETYPE,
+    archetypePassesEntityShape: archetypePassesEntityShape,
     slugify: slugify,
     topic: topic,
     validate: validate,

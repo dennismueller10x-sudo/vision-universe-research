@@ -42,14 +42,32 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Engine-, Provider- und Kreislauftests
-        run: node --test "social/tests/*.test.mjs"
+      # =====================================================================
+      # DIE SUITEN UND DIE ISOLATION — EINMAL, UND MIT STAND
+      #
+      # verify-suites.mjs laesst beide Suiten und die Isolationspruefung
+      # laufen und schreibt das Ergebnis samt Commit nach
+      # .verification/suites.json. Frueher standen hier zwei getrennte
+      # Testschritte, und der Reifebericht bekam die Fahne
+      # `--suites-green ja` - eine Behauptung des Workflows ueber die
+      # Arbeit, die der Bericht bewerten sollte.
+      #
+      # Der Schritt scheitert, wenn eine Suite rot ist oder ein Testlauf
+      # eine Produktionsdatei veraendert hat. Beides bleibt damit ein
+      # harter Fehler der CI und wird nicht erst im Bericht sichtbar.
+      # =====================================================================
+      - name: Suiten und Test-/Produktionsisolation messen
+        run: node scripts/social/verify-suites.mjs
 
-      - name: Worker-Tests (OAuth, CSRF, Token, Schwaerzung)
-        # Der Worker laeuft in der CI OHNE Cloudflare und OHNE Meta: er
-        # benutzt ausschliesslich Web-Standards, die Node 22 mitbringt.
-        # KV und Graph-API werden eingesetzt (tests/harness.mjs).
-        run: node --test "workers/vision-universe-social/tests/*.test.mjs"
+      - name: Was gemessen wurde
+        if: always()
+        run: cat .verification/suites.json || echo "Kein Befund geschrieben."
+
+      # Die fuenf harten Invarianten (§45). Sie werden GEMESSEN, nicht
+      # gelesen: der Publish-Pfad wird zweimal aufgerufen und muss
+      # zweimal mit SEINEM eigenen Grund ablehnen.
+      - name: Die fuenf harten Invarianten
+        run: node scripts/social/check-hard-invariants.mjs
 
       # Der Reifezustand des Approval Centers, gemessen am Repository.
       # Er schaltet nichts frei; er stellt fest - und was er von hier aus

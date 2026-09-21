@@ -221,6 +221,23 @@
     { von: /gehoer/gi,   zu: "geh" + oe + "r" },  /* gehoert, zugehoerig */
     { von: /stuetz/gi,   zu: "st" + ue + "tz" },  /* stuetzt, Unterstuetzung */
     { von: /fuehr/gi,    zu: "f" + ue + "hr" },   /* fuehrt, Ausfuehrung, gefuehrt */
+    /* -----------------------------------------------------------------
+       "fuell" WURDE FUER ECHTES DEUTSCH GEHALTEN
+
+       `erfuellen` blieb unveraendert stehen UND wurde von residue()
+       nicht gemeldet: die Folge "uelle" steht in ECHT_MUSTER, weil
+       aktuelle, Quelle und individuelle sie legitim tragen. Damit
+       rutschte jede Form von "fuellen" durch beide Netze.
+
+       Aufgefallen ist es am Einstieg einer Rangliste: das Markentor
+       beanstandete "geprueften" im selben Satz - und "erfuellen"
+       daneben nicht, weil es als korrektes Deutsch galt. Ein Tor, das
+       eines von zwei gleichen Fehlern sieht, ist kein Tor.
+
+       Der Stamm ist eng genug: "fuell" kommt in echtem Deutsch nicht
+       als ASCII-Folge vor. "aktuelle" und "Quelle" tragen ein "q"
+       bzw. "t" davor und bleiben unberuehrt. */
+    { von: /fuell/gi,    zu: "f" + ue + "ll" },   /* erfuellen, gefuellt, Fuelle */
     { von: /pruef/gi,    zu: "pr" + ue + "f" },   /* prueft, Pruefung, geprueft */
     { von: /begruend/gi, zu: "begr" + ue + "nd" },
     { von: /beruecksicht/gi, zu: "ber" + ue + "cksicht" },
@@ -350,11 +367,77 @@
     return { text: normalisiert, residue: residue(normalisiert) };
   }
 
+  /* =====================================================================
+     EINE UEBERSCHRIFT IN VERSALIEN IST KEIN SATZ
+
+     Die Discover-Reihen tragen ihre Titel als Versalien: "BEKANNTE
+     NAMEN IN BEWEGUNG". Auf der Seite ist das eine Gestaltung; in
+     einem Social-Einstieg ist es Geschrei - und die Claim-Bindung
+     liest kurze Versalwoerter als unerklaerte Kuerzel ("NAMEN", "IN").
+
+     Hier wird nur die SCHREIBWEISE geaendert, kein Wort und keine
+     Reihenfolge. Funktionswoerter bleiben klein, ausser am Anfang -
+     das ist die deutsche Titelkonvention und keine Erfindung.
+
+     Ein Titel, der NICHT durchgehend gross ist, wird nicht angefasst:
+     dort hat jemand die Schreibweise bereits entschieden.
+     ===================================================================== */
+  var TITEL_KLEIN = [
+    "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem",
+    "einer", "und", "oder", "aber", "als", "wie", "im", "in", "am", "an",
+    "auf", "aus", "bei", "beim", "f" + ue + "r", "mit", "nach", "von", "vom",
+    "vor", "zu", "zum", "zur", ue + "ber", "unter", "gegen", "ohne", "um",
+    "seit", "durch", "je", "pro", "bis", "ab"
+  ];
+
+  function titelfall(text) {
+    var roh = String(text || "");
+    var buchstaben = roh.replace(/[^A-Za-z\u00c0-\u024f]/g, "");
+    if (!buchstaben) return roh;
+    /* Nur eingreifen, wenn WIRKLICH alles gross ist. */
+    if (buchstaben !== buchstaben.toUpperCase()) return roh;
+
+    var woerter = roh.split(/(\s+)/);
+    var ersteGesehen = false;
+    return woerter.map(function (w) {
+      if (!/[A-Za-z\u00c0-\u024f]/.test(w)) return w;
+
+      /* Vorn und hinten darf Satzzeichen stehen ("COMEBACK?"); MITTEN
+         im Wort heisst es, dass hier kein gewoehnliches Wort steht -
+         "S&P", "US-AKTIEN", "3M". Der erste Entwurf machte daraus
+         "S&p": eine Schreibweise, die es nicht gibt. Solche Woerter
+         bleiben unberuehrt; eine unveraenderte Versalie ist besser
+         als eine falsche Kleinschreibung. */
+      var rumpf = w.replace(/^[^A-Za-z\u00c0-\u024f]+/, "")
+                   .replace(/[^A-Za-z\u00c0-\u024f]+$/, "");
+      /* Ein Bindestrich ZWISCHEN Buchstaben ist ein deutsches
+         Kompositum ("CASHFLOW-MASCHINEN"), kein Sonderzeichen. Der
+         erste Entwurf liess es unberuehrt und schrieb weiter
+         Versalien in den Einstieg. Alles andere mitten im Wort
+         ("S&P", "3M") bleibt, wie es ist. */
+      if (/[^A-Za-z\u00c0-\u024f-]/.test(rumpf)) return w;
+
+      var klein = w.toLowerCase();
+      var kern = klein.replace(/[^a-z\u00e0-\u024f]/g, "");
+      var erste = !ersteGesehen;
+      ersteGesehen = true;
+      if (!erste && TITEL_KLEIN.indexOf(kern) !== -1) return klein;
+      /* Jeder Teil eines Kompositums wird gross: "Cashflow-Maschinen",
+         nicht "Cashflow-maschinen". */
+      /* "^" allein reichte nicht: in "3m" steht der erste Buchstabe
+         nicht am Wortanfang, und aus "3M UND CO" wurde "3m und Co". */
+      return klein.replace(/(^[^a-z\u00e0-\u024f]*|-)([a-z\u00e0-\u024f])/g,
+        function (_, vor, c) { return vor + c.toUpperCase(); });
+    }).join("");
+  }
+
   var api = {
     STAEMME: STAEMME,
     normalize: normalize,
     residue: residue,
     clean: clean,
+    TITEL_KLEIN: TITEL_KLEIN,
+    titelfall: titelfall,
     WOERTER: WOERTER
   };
 

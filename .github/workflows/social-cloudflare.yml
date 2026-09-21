@@ -475,6 +475,36 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # =====================================================================
+      # DIE ZWOELF BEDINGUNGEN — VON HIER AUS MESSBAR
+      #
+      # order-d-done.mjs beantwortet zehn der zwoelf Bedingungen ueberall.
+      # Zwei aber nicht: ob die neue Fassung wirklich deployt ist, und ob
+      # der Betriebs-Smoke stattgefunden hat. Beide brauchen eine Umgebung,
+      # die den Worker erreicht - und das ist diese hier.
+      #
+      # Der Bericht verlangt fuer beide einen NACHWEIS, dass die Antwort
+      # vom Worker kam (cf-ray, server: cloudflare). Eine 403 von einem
+      # Proxy dazwischen sieht genauso aus wie eine 403 vom Owner-Tor; in
+      # einer frueheren Fassung hat genau das zwei Bedingungen
+      # faelschlich auf ERFUELLT gesetzt.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ORDER_D_DONE — die zwoelf Bedingungen
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          node scripts/social/verify-suites.mjs > /tmp/suites.log 2>&1 || true
+          node scripts/social/order-d-done.mjs | tee /tmp/order-d.log || true
+          {
+            echo "## ORDER_D_DONE"
+            echo '```'
+            cat /tmp/order-d.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         continue-on-error: true

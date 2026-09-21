@@ -112,6 +112,30 @@ jobs:
           node scripts/social/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
 
       # =====================================================================
+      # DIE LEASE — ZWEI AUSLOESER, EIN PRODUKTIVER ZYKLUS (§5)
+      #
+      # Der Scheduler startet um 06:35, und der Owner tippt um 06:35 auf
+      # JETZT PRUEFEN. Die Concurrency-Gruppe oben laesst die beiden nicht
+      # gleichzeitig laufen - der zweite wartet. Danach faende er einen
+      # Zustand, in dem nichts mehr verboten ist, und fuehre einen
+      # zweiten vollen Zyklus: kein Fehler, nur doppelte Arbeit. Wo
+      # Work-Aufrufe Geld kosten, ist doppelte Arbeit ein Schaden.
+      #
+      # Die Lease steht im Datenverzeichnis und wird am Ende
+      # mitfestgeschrieben. Sie sperrt NICHTS Lesendes: Messen,
+      # Berichten und die Warteschlange laufen weiter. Verwehrt ist nur
+      # der produktive Teil.
+      # =====================================================================
+      - name: Lauf-Lease nehmen
+        id: lease
+        if: inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          node scripts/social/run-orchestrator.mjs \
+            --lease-claim "${{ github.run_id }}" \
+            --von "${{ github.event_name }}"
+
+      # =====================================================================
       # DIE ENTSCHEIDUNGEN DES OWNERS ZURUECK
       #
       # Der Owner entscheidet am Telefon, der Worker haelt fest, dieser
@@ -142,6 +166,30 @@ jobs:
           fi
           node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
+
+      # =====================================================================
+      # DIE PLATTE — DAS BREITE CONTENT UNIVERSE, FRISCH
+      #
+      # build-opportunity-slate.mjs lief bis hierher in KEINEM Workflow.
+      # Die Datei auf der Platte stammte vom Vortag, und der
+      # Owner-Bericht zeigte ihre 32 Themen aus fuenf Familien, waehrend
+      # der Zyklus aus vier Quant-Signalen drei STOCK_STORY-Pakete
+      # baute. Wer den Bericht las, schloss auf eine Breite, die im
+      # Lauf keine Rolle spielte.
+      #
+      # Der Schritt ist lesend und netzfrei: er ruft keine externe
+      # Quelle und schon gar keine der beiden vom Owner nicht
+      # aktivierten. Er schreibt genau eine Datei.
+      #
+      # VOR dem Messen, weil die Platte den Datenstand beschreibt, auf
+      # dem dieser Lauf entscheidet - nicht den von gestern.
+      # =====================================================================
+      - name: DIE PLATTE — Content Universe in voller Breite
+        if: inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          node scripts/social/build-opportunity-slate.mjs \
+            --data social/data --out social/data | tail -25
 
       - name: MESSEN — Zahlen holen, lernen, anpassen
         if: steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true
@@ -180,7 +228,10 @@ jobs:
       # Protokoll.
       # =====================================================================
       - name: CREATIVE JOB — Brief, Register, Request-PR
-        if: steps.plan.outputs.creative == 'ja' && inputs.nur_entscheiden != true
+        if: >-
+          steps.plan.outputs.creative == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
         env:
           GH_TOKEN: ${{ github.token }}
           SYMBOL: ${{ steps.plan.outputs.creative_symbol }}
@@ -234,7 +285,10 @@ jobs:
             --branch "authoring/request/$CONTENT_ID"
 
       - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus
-        if: steps.plan.outputs.prepare == 'ja' && inputs.nur_entscheiden != true
+        if: >-
+          steps.plan.outputs.prepare == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
         run: |
           set -euo pipefail
           sudo apt-get update -qq
@@ -323,6 +377,25 @@ jobs:
             sed -n '/ZWEI EVIDENZKLASSEN/,$p' /tmp/rank.txt 2>/dev/null | head -40
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Die Rueckgabe steht VOR dem Festschreiben: sonst ginge die
+      # beendete Lease nicht mit, und der naechste Lauf saehe einen
+      # Lauf, der ewig arbeitet.
+      #
+      # `--produktiv` nur dann, wenn wirklich etwas entstanden ist.
+      # Ein Lauf, der nur gemessen hat, haelt den naechsten nicht auf.
+      - name: Lauf-Lease zurueckgeben
+        if: always() && inputs.nur_entscheiden != true
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.plan.outputs.creative }}" = "ja" ] || \
+             [ "${{ steps.plan.outputs.prepare }}" = "ja" ]; then
+            node scripts/social/run-orchestrator.mjs \
+              --lease-release "${{ github.run_id }}" --produktiv
+          else
+            node scripts/social/run-orchestrator.mjs \
+              --lease-release "${{ github.run_id }}"
+          fi
 
       - name: Festschreiben
         if: inputs.nur_entscheiden != true

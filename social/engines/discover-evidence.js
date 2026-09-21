@@ -48,6 +48,89 @@
   /* Kennzahlen, bei denen ein Wert ueber dieser Grenze unmoeglich ist. */
   var OBERGRENZE = { marge: 100, anteil: 100, quote: 100 };
 
+  /* -------------------------------------------------------------------
+     DAS BRIEF-EVIDENZTOR — EINE DEFINITION, ZWEI AUFRUFER
+
+     Diese Schwelle entschied bisher nur ueber Discover-Reihen, und sie
+     stand mitten in `fromRow`. Seit der Owner sie zum Tor der
+     Content-Leiter gemacht hat, urteilt sie auch ueber Gelegenheiten
+     aus Signalen — und eine Schwelle, die an zwei Stellen NEU
+     geschrieben wird, ist zwei Schwellen mit einem Namen.
+
+     Also steht sie hier, einmal, und `fromRow` ruft sie auf wie jeder
+     andere auch.
+
+     ZWEI BEDINGUNGEN, NICHT EINE:
+
+       genug Belege     Drei Saetze, die etwas behaupten, das
+                        nachpruefbar ist.
+       eine Begruendung Der Satz, der sagt, WARUM dieses Thema
+                        zusammengehoert. Bei einer Discover-Reihe ist
+                        das ihre Auswahlregel; bei einem Signal der
+                        Anlass, den es mitbringt.
+
+     Die zweite ist die wichtigere. Drei Zahlen ohne Grund sind eine
+     Aufzaehlung, kein Thema — und genau diese Verwechslung ist der
+     Ticker-first-Rueckfall, den §12 verbietet.
+     ------------------------------------------------------------------- */
+  var MINDEST_BELEGE = 3;
+
+  function genuegt(belegAnzahl, begruendung) {
+    var n = Number(belegAnzahl);
+    if (!isFinite(n) || n < MINDEST_BELEGE) return false;
+    /* Eine leere Zeichenkette ist keine Begruendung, `true` auch nicht:
+       verlangt ist ein Satz, den jemand lesen kann. Unbekannt faellt
+       hier auf `false` und nicht auf "wird schon". */
+    return typeof begruendung === "string" && begruendung.trim().length > 0;
+  }
+
+  /* -------------------------------------------------------------------
+     DIE ANZEIGE DER QUELLE IST IHRE EINHEITSERKLAERUNG
+
+     `plain.zahl` traegt BEIDES: `roh` (1.59171) und `wert` ("+159 %").
+     Genommen wurde bisher `roh` - und im Beitrag stand dann "Valero
+     Energy: in 12 Monaten 1.59171." Ein Leser liest 1,59. Gemeint ist
+     +159 %.
+
+     Dieselbe Verwechslung, vor der der Kopf dieser Datei warnt, nur
+     andersherum: dort wurde eine Marge zurueckgewiesen, WEIL die
+     Einheit unerklaert war. Hier lag die Erklaerung die ganze Zeit
+     daneben - in dem Feld, das die Seite dem Leser ohnehin zeigt.
+
+     Gemessen ueber alle Reihen: 707 angezeigte Werte, Einheit
+     ausnahmslos Prozent. Es wird also nichts geraten und nichts
+     umgerechnet - es wird gelesen, was die Quelle selbst schreibt.
+     ------------------------------------------------------------------- */
+  function ausAnzeige(anzeige) {
+    var t = String(anzeige === null || anzeige === undefined ? "" : anzeige).trim();
+    if (!t) return { ok: false, reason: "keineAnzeige" };
+    /* Das Minus der Anzeige ist ein typografisches (U+2212), nicht das
+       Tastaturminus. Wer nur "-" prueft, liest jeden Verlust als
+       Gewinn. */
+    var m = /^([+\u2212-]?)\s*([0-9]+(?:[.,][0-9]+)?)\s*%$/.exec(t);
+    if (!m) {
+      return { ok: false, reason: "anzeigeUnlesbar",
+        message: "Die Quelle zeigt \"" + t + "\" - daraus ist keine Zahl mit " +
+          "Einheit zu lesen. Geraten wird hier nicht." };
+    }
+    var zahl = Number(m[2].replace(",", "."));
+    if (!isFinite(zahl)) return { ok: false, reason: "keineZahl" };
+    if (m[1] === "-" || m[1] === "\u2212") zahl = -zahl;
+    return { ok: true, value: zahl, unit: "%" };
+  }
+
+  /* Die Obergrenze, die fuer dieses Label gilt - oder null. Sie stand
+     seit jeher in OBERGRENZE und wurde nie gefragt: eine Schwelle, die
+     niemandem im Weg steht, ist keine. */
+  function obergrenzeFuer(label) {
+    var l = String(label || "").toLowerCase();
+    var treffer = null;
+    Object.keys(OBERGRENZE).forEach(function (k) {
+      if (l.indexOf(k) !== -1) treffer = OBERGRENZE[k];
+    });
+    return treffer;
+  }
+
   function istMarge(label) {
     return /marge|quote|anteil|rendite/i.test(String(label || ""));
   }
@@ -147,7 +230,22 @@
        Aussage. */
     var c = r.coverage;
     if (c && typeof c.matched === "number" && typeof c.universeSize === "number") {
+      /* -----------------------------------------------------------------
+         DIE ABDECKUNG IST EINE ZAHL, NICHT NUR EIN SATZ
+
+         Sie stand hier als Text ohne Wert - und der Content Brief
+         nimmt nur Belege MIT Zahl auf. Damit erreichte die einzige
+         Aussage, die ueber die REIHE spricht statt ueber einen
+         einzelnen Titel, den Autor nie. Der Einstieg einer Rangliste
+         ueber zehn Unternehmen lautete deshalb "412,53 USD - Valero
+         Energy, Kurs.": der Autor hatte nichts anderes.
+
+         Die Zahl wird nicht erfunden; sie stand im Satz und steht
+         jetzt auch im Feld. Es kommt KEIN Beleg hinzu - die Schwelle
+         des Evidenztors bleibt dieselbe. */
       belege.push({ id: "row-coverage",
+        metric: "von " + c.universeSize + " geprueften Titeln",
+        value: c.matched,
         statement: c.matched + " von " + c.universeSize + " geprueften Titeln " +
           "erfuellen das" + (typeof c.notEvaluable === "number" && c.notEvaluable
             ? "; bei " + c.notEvaluable + " fehlt die noetige Kennzahl" : "") + ".",
@@ -164,12 +262,56 @@
       if (p.ok) {
         belege.push({ id: "price-" + k.symbol, entity: name,
           metric: "Kurs", value: p.value, unit: "USD",
-          statement: name + ": Kurs " + p.value + " USD.",
+          statement: name + ": Kurs " + String(p.value).replace(".", ",") + " USD.",
           source: "discover.card", observedAt: k.asOf || r.asOf || null, temporal: true });
       }
 
       var z = (k.plain || {}).zahl;
       if (z && z.label) {
+        /* -----------------------------------------------------------------
+           DIE ANZEIGE GILT - AUSSER BEI MARGEN
+
+           Fuer Margen, Quoten und Anteile hat der Kopf dieser Datei
+           eine Entscheidung getroffen: sie werden NICHT uebernommen,
+           solange die Quelle die Einheit nicht erklaert, weil dieselbe
+           Kennzahl dort teils als Bruch und teils als Prozent steht
+           und die Anzeige immer mal hundert rechnet.
+
+           Diese Entscheidung bleibt. Sie ueber die Anzeige zu
+           umgehen waere genau das, was hier nie passieren soll: eine
+           Schwelle senken, bis etwas durchkommt. Die Anzeige wird nur
+           dort gelesen, wo die Quelle nie im Verdacht stand - bei
+           Renditen und Veraenderungen wie "in 12 Monaten". */
+        var a = istMarge(z.label) ? { ok: false, reason: "margeStrikt" }
+                                  : ausAnzeige(z.wert);
+        if (a.ok) {
+          /* Die Obergrenze greift hier heute nie: jedes Label mit
+             Obergrenze ist eine Marge, und Margen kommen nicht bis
+             hierher. Sie steht trotzdem, weil sie die Frage
+             beantwortet, die sich stellt, SOBALD die Quelle Margen
+             mit Einheit liefert - und weil ein Wert ueber 100 %
+             dann nicht erst im Beitrag auffallen soll. Test LZ-DE
+             haelt diese Beziehung fest. */
+          var grenze = obergrenzeFuer(z.label);
+          if (grenze !== null && Math.abs(a.value) > grenze) {
+            befunde.push({ id: "unmoeglicherWert", entity: name,
+              message: z.label + ": " + a.value + " " + a.unit + " ist fuer diese " +
+                "Kennzahl unmoeglich (hoechstens " + grenze + " " + a.unit + "). " +
+                "Was in einen Beitrag gelangt, wird gelesen." });
+          } else {
+            belege.push({ id: "metric-" + k.symbol, entity: name,
+              metric: z.label, value: a.value, unit: a.unit,
+              /* Deutsche Schreibweise: 1,4 und nicht 1.4. Der Wert
+                 bleibt derselbe; nur der Leser sieht das Komma, das er
+                 erwartet. */
+              statement: name + ": " + z.label + " " +
+                String(a.value).replace(".", ",") + " " + a.unit + ".",
+              source: "discover.card." + (z.quelle || "unbekannt"),
+              observedAt: k.asOf || null, temporal: false });
+          }
+          return;
+        }
+
         /* Der Rohwert kommt als nackte Zahl - ohne Status und ohne
            Einheit. Genau das ist das Problem, und es wird hier nicht
            weggebuegelt. */
@@ -208,8 +350,8 @@
          die uebrigen Belege stimmen. */
       evidenceCount: belege.length,
       rejectedCount: befunde.length,
-      sufficient: belege.length >= 3 && !!r.rule,
-      explanation: belege.length >= 3 && r.rule
+      sufficient: genuegt(belege.length, r.rule),
+      explanation: genuegt(belege.length, r.rule)
         ? belege.length + " Belege aus der Reihe, Auswahlregel vorhanden."
         : "Zu wenig Evidenz fuer eine eigene Geschichte: " + belege.length +
           " Belege" + (r.rule ? "" : ", keine Auswahlregel") + "."
@@ -220,7 +362,11 @@
     NICHT_VERBREITBAR: NICHT_VERBREITBAR,
     BELASTBAR: BELASTBAR,
     OBERGRENZE: OBERGRENZE,
+    MINDEST_BELEGE: MINDEST_BELEGE,
+    genuegt: genuegt,
     wertAus: wertAus,
+    ausAnzeige: ausAnzeige,
+    obergrenzeFuer: obergrenzeFuer,
     fromRow: fromRow
   };
 

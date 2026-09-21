@@ -79,6 +79,9 @@ const Lifecycle    = require(join(ROOT, "social/engines/provider-lifecycle.js"))
 const CreativeContract = require(join(ROOT, "social/engines/creative-contract.js"));
 const AudienceFit  = require(join(ROOT, "social/engines/audience-fit.js"));
 const AudienceFrame = require(join(ROOT, "social/engines/audience-frame.js"));
+const ContentLadder = require(join(ROOT, "social/engines/content-ladder.js"));
+const LearnDim = require(join(ROOT, "social/engines/learning-dimensions.js"));
+const Universe     = require(join(ROOT, "social/engines/content-universe.js"));
 
 /* -------------------------------------------------------------------
    KLARNAMEN — EINE QUELLE, NICHT ZWEI
@@ -151,7 +154,12 @@ const NOW = arg("--now", new Date().toISOString());
    Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
    braucht, ohne die Produktionsdaten anzufassen. */
 const DATA_DIR = arg("--data", "social/data");
-const D = (name) => join(ROOT, DATA_DIR, name);
+/* `join(ROOT, "/tmp/x")` ergibt "<ROOT>/tmp/x" - ein absoluter Pfad im
+   zweiten Argument wird angeklebt, nicht befolgt. Derselbe Fehler wie
+   bei den Ausgabepfaden, nur eine Zeile weiter: ein Lauf mit
+   `--data /tmp/...` las dann ein Verzeichnis IM Repository und meldete
+   "keine Platte". `ausgabePfad` beantwortet diese Frage schon. */
+const D = (name) => join(ausgabePfad(ROOT, DATA_DIR), name);
 const VERBOSE = flag("--verbose");
 
 const log = (...parts) => console.log(...parts);
@@ -679,6 +687,249 @@ function ladeEvidenzPaket(sources, nowIso) {
   });
 }
 
+/* =====================================================================
+   DIE PLATTE DES LAUFS
+
+   Sie liegt als Datei im Repository und wird vom Scheduler-Schritt
+   "DIE PLATTE" gebaut. Der Zyklus LIEST sie; er baut sie nicht noch
+   einmal - das waere eine zweite Rechnung fuer dieselbe Frage.
+
+   EIN ALTER STAND IST KEIN STAND. Die Belege der Platte tragen Daten
+   (Kurse mit `observedAt`). Eine Woche alte Platte wuerde heute
+   Kurse von letzter Woche als aktuelle Belege einspeisen. Also gilt
+   sie nur eine begrenzte Zeit - und laeuft sie ab, sagt der Lauf das,
+   statt still auf den Ticker zurueckzufallen.
+   ===================================================================== */
+const PLATTE_MAX_ALTER_STUNDEN = 36;
+
+function platteLesen(nowIso, datenPfad) {
+  /* Ueber das Datenverzeichnis des Laufs, nicht ueber einen festen
+     Pfad: ein isolierter Lauf muss eine isolierte Platte lesen
+     koennen, sonst zieht er Produktionsdaten in den Test (§42). */
+  const pfad = datenPfad || D("opportunity-slate.json");
+  if (!existsSync(pfad)) {
+    return { ok: false, grund: "KEINE_PLATTE",
+      erklaerung: "Keine Platte im Repository. Der Schritt, der sie baut, " +
+        "lief in diesem Lauf nicht.", themen: [], unavailableFamilies: [] };
+  }
+  let roh;
+  try { roh = JSON.parse(readFileSync(pfad, "utf8")); }
+  catch (err) {
+    return { ok: false, grund: "PLATTE_UNLESBAR", erklaerung: err.message,
+      themen: [], unavailableFamilies: [] };
+  }
+
+  const alter = roh.generatedAt
+    ? (Date.parse(nowIso) - Date.parse(roh.generatedAt)) / 3600000 : null;
+  if (alter === null || !Number.isFinite(alter)) {
+    return { ok: false, grund: "PLATTE_OHNE_STAND",
+      erklaerung: "Die Platte nennt keinen Zeitpunkt. Ohne ihn ist ihr Alter " +
+        "nicht messbar - und ein unmessbares Alter wird nicht als frisch gelesen.",
+      themen: [], unavailableFamilies: [] };
+  }
+  if (alter > PLATTE_MAX_ALTER_STUNDEN) {
+    return { ok: false, grund: "PLATTE_VERALTET",
+      erklaerung: "Die Platte ist " + Math.round(alter) + " Stunden alt; " +
+        "zulaessig sind " + PLATTE_MAX_ALTER_STUNDEN + ". Ihre Kursbelege " +
+        "waeren heute falsch datiert.",
+      themen: [], unavailableFamilies: [] };
+  }
+
+  return { ok: true, grund: null, erklaerung: null,
+    generatedAt: roh.generatedAt, alterStunden: alter,
+    themen: Array.isArray(roh.topics) ? roh.topics : [],
+    unavailableFamilies: Array.isArray(roh.unavailableFamilies)
+      ? roh.unavailableFamilies : [] };
+}
+
+/* =====================================================================
+   AUS EINEM THEMA DER PLATTE WIRD EINE GELEGENHEIT DES ZYKLUS
+
+   ZWEI EINGANGSADAPTER, EINE RECHNUNG. `buildOpportunities` bewertet
+   Signalbuendel, diese Funktion bewertet Themen - aber BEIDE rufen
+   dieselbe `Opportunity.score`. Eine zweite Bewertungsformel waere
+   zwei Wahrheiten ueber denselben Vorschlag; zwei Adapter auf eine
+   Formel sind nur zwei Arten, dieselben Fragen zu beantworten.
+
+   WAS HIER NICHT ERFUNDEN WIRD:
+
+     vuSignal        Ein Thema aus einer Discover-Reihe hat kein
+                     internes Signalereignis. Das ist NICHT ANWENDBAR
+                     und keine Luecke - genauso, wie hinter einem
+                     52-Wochen-Hoch kein Magazinstueck steht und
+                     `editorialBasis` dort als nicht anwendbar gefuehrt
+                     wird. Dieselbe Unterscheidung, andere Richtung.
+
+     editorialBasis  Fuer ein Thema mit kuratiertem VU-Artefakt
+                     dahinter: vorhanden. Die Frage "gibt es eine
+                     redaktionelle Grundlage" hat eine Ja/Nein-Antwort,
+                     und die wird hier gelesen, nicht geschaetzt. Eine
+                     erfundene Abstufung ("0,7 redaktionell") waere
+                     eine Zahl ohne Messung.
+   ===================================================================== */
+/* =====================================================================
+   WAS DIESES SYSTEM HEUTE NICHT WISSEN KANN
+
+   Die Opportunity Engine unterscheidet seit jeher zwei Gruende, warum
+   eine Dimension fehlt: sie ist fuer DIESES Thema nicht anwendbar,
+   oder das SYSTEM kann sie ueberhaupt nicht messen. Nur der erste
+   Grund ist eine Aussage ueber das Thema; der zweite darf eine
+   Gelegenheit nicht schlechter stellen, denn kein Thema der Welt
+   koennte ihn beheben.
+
+   GENUTZT WURDE DAVON EINE EINZIGE DIMENSION. `externalInterest` stand
+   im Aufruf, `trend`, `audienceInterest`, `platformFit` und
+   `historicalPerformance` nicht - obwohl fuer sie dasselbe gilt und
+   obwohl die Methodik-Notiz genau sie beim Namen nennt.
+
+   Sichtbar wurde es erst an einem redaktionellen Thema. Fuer eine
+   Signalgelegenheit tragen Trend und VU-Signal zusammen 0,40 der
+   Gewichtung, und die Schwelle von 55 % ist erreichbar. Fuer ein Thema
+   aus der Platte faellt das VU-Signal weg und `editorialBasis` traegt
+   0,12: erreichbar waren damit hoechstens 51 % - die Schwelle war
+   STRUKTURELL unerfuellbar, unabhaengig von der Guete des Themas. Die
+   Methodik-Notiz nennt genau diesen Fall unzulaessig: "nicht streng,
+   sondern unerfuellbar".
+
+   DIE SCHWELLE WIRD NICHT GESENKT (§34). Sie bleibt bei 55 %. Was sich
+   aendert, ist der Nenner: geprueft wird gegen das, was dieses System
+   heute ueberhaupt beantworten kann. Der Score selbst aendert sich
+   dadurch nicht - `notApplicable` bewegt ihn, `systemicallyUnavailable`
+   nicht.
+
+   GEMESSEN, NICHT BEHAUPTET. Jeder Eintrag folgt aus einem Zustand des
+   Laufs: keine externe Quelle angebunden, kein Provider registriert,
+   kein bewerteter Beitrag im Gedaechtnis. Kommt eine Quelle dazu,
+   verschwindet ihr Eintrag von selbst.
+   ===================================================================== */
+function systemischUnmessbar(signals, registry, providerId, memory) {
+  const fehlend = [];
+  const klasse = (k) => (signals || []).some((s) => s && s.signalClass === k);
+
+  /* Ohne externe Social-Quelle gibt es weder einen Trend Score noch
+     ein Mass fuer die Aufmerksamkeit ausserhalb (§45). */
+  if (!klasse("SOCIAL")) fehlend.push("trend", "externalInterest");
+
+  /* Publikumsinteresse braucht Publikumssignale. */
+  if (!klasse("AUDIENCE")) fehlend.push("audienceInterest");
+
+  /* Plattformpassung braucht eine angebundene Plattform. */
+  if (!providerId || !registry.has(providerId)) fehlend.push("platformFit");
+
+  /* Und die Leistung vergleichbarer Beitraege braucht Beitraege, die
+     schon gemessen wurden. */
+  const vergleichbar = memory.comparablePerformance({ archetype: null, platform: "instagram" });
+  if (!vergleichbar.sampleSize) fehlend.push("historicalPerformance");
+
+  return fehlend;
+}
+
+/* Eine kurze, stabile Handhabe fuer die Inhaltskennung. Der volle
+   topicId einer Rangliste ist 154 Zeichen lang - als Dateiname und in
+   `vu-<entity>-<datum>` unbrauchbar. Gekuerzt wuerde er kollidieren,
+   also wird er abgedruckt: dieselbe Kennung, die auch die
+   Gelegenheitskennung der Leiter traegt. */
+/* -------------------------------------------------------------------
+   DIE TITEL EINES THEMAS AUF EINER ACHSE
+
+   Aus den Belegen des Themas, nicht aus einer zweiten Rechnung: jeder
+   Eintrag traegt Entitaet, Kennzahl und Wert. Gewaehlt wird die
+   Kennzahl mit den meisten Werten - und NUR sie, damit alle Balken
+   dieselbe Einheit haben.
+
+   Weniger als zwei Werte sind keine Gruppe. Dann gibt diese Funktion
+   nichts zurueck, und der Aufrufer bleibt bei dem, was er sonst
+   haette.
+   ------------------------------------------------------------------- */
+function peersAusThema(thema) {
+  const nachKennzahl = new Map();
+  for (const e of (thema && thema.evidence) || []) {
+    if (!e || !e.entity || !e.metric) continue;
+    if (e.value === null || e.value === undefined) continue;
+    const wert = Number(e.value);
+    if (!Number.isFinite(wert)) continue;
+    if (!nachKennzahl.has(e.metric)) nachKennzahl.set(e.metric, []);
+    nachKennzahl.get(e.metric).push({ label: e.entity, value: wert, highlight: false });
+  }
+  let beste = [];
+  for (const liste of nachKennzahl.values()) {
+    if (liste.length > beste.length) beste = liste;
+  }
+  return beste.length >= 2 ? beste : [];
+}
+
+function kurzname(thema) {
+  const g = ContentLadder.alsGelegenheit(thema, {});
+  return g ? String(g.opportunityId).replace(/^opp_/, "") : null;
+}
+
+function gelegenheitAusThema(thema, kontext) {
+  const memory = kontext.memory;
+  const titel = thema.title || thema.topicId;
+  const vergangen = memory.daysSinceTopic(titel, kontext.now);
+  const vergleichbar = memory.comparablePerformance({ archetype: null, platform: "instagram" });
+
+  /* Ein Quant-Thema traegt eine gemessene Signalstaerke; ein Thema aus
+     einer redaktionellen Quelle traegt eine redaktionelle Grundlage.
+     Keines traegt beides, und keines wird so behandelt, als fehle ihm
+     das jeweils andere. */
+  const hatSignal = typeof thema.signalStrength === "number";
+  const hatRedaktion = Array.isArray(thema.evidenceRefs) && thema.evidenceRefs.length > 0;
+
+  const nichtAnwendbar = [];
+  if (!hatSignal) nichtAnwendbar.push("vuSignal");
+  if (!hatRedaktion) nichtAnwendbar.push("editorialBasis");
+
+  const score = Opportunity.score({
+    /* Keine externe Trendquelle angebunden (§45). */
+    trendScore: null,
+    vuSignalStrength: hatSignal ? thema.signalStrength : null,
+    editorialBasis: hatRedaktion ? 1 : null,
+    audienceInterest: null,
+    historicalPerformance: vergleichbar.mean === null ? null : vergleichbar.mean / 100,
+    historicalSampleSize: vergleichbar.sampleSize,
+    platformFit: kontext.platformFit,
+    hoursSinceTrigger: thema.asOf
+      ? (Date.parse(kontext.now) - Date.parse(thema.asOf)) / 3600000 : null,
+    contentGap: vergangen === null ? 1 : Math.min(1, vergangen / 30),
+    brandFit: measureBrandFit(titel, thema.entities || [])
+  }, {
+    notApplicable: nichtAnwendbar,
+    systemicallyUnavailable: kontext.systemischFehlend || []
+  });
+
+  const gelegenheit = ContentLadder.alsGelegenheit(thema, {
+    now: kontext.now, score: score.score, platform: "instagram"
+  });
+
+  return {
+    opportunity: Schema.contentOpportunity(gelegenheit),
+    score,
+    trend: { available: false, score: null,
+      explanation: "Kein externes Social-Signal zu diesem Thema — die Quelle ist nicht angebunden." },
+    /* Was die Strategiestufe fragt - aus dem Thema gelesen, nicht geraten. */
+    internal: {
+      eventType: null,
+      label: titel,
+      timeSensitivity: thema.timeSensitivity || "EVERGREEN",
+      /* Traegt irgendein Beleg eine Zahl? Das ist eine Messung an den
+         Belegen und keine Annahme ueber die Familie. */
+      hasNumbers: (thema.evidence || []).some(
+        (e) => e && e.value !== null && e.value !== undefined),
+      hasCause: !!thema.cause,
+      premise: thema.premise || null,
+      strength: hatSignal ? thema.signalStrength : null,
+      context: null
+    },
+    cluster: null,
+    /* Das Thema reist mit: sein Belegsatz IST das Evidenzpaket dieser
+       Gelegenheit, und ohne ihn muesste der Zyklus es sich aus einem
+       Instrumentenbundle zusammensuchen, das es fuer eine Rangliste
+       ueber zehn Titel nicht gibt. */
+    thema
+  };
+}
+
 function buildOpportunities(signals, internal, memory, registry, providerId) {
   const clusters = Signals.cluster(signals);
   const out = [];
@@ -729,8 +980,14 @@ function buildOpportunities(signals, internal, memory, registry, providerId) {
          externe Quelle angebunden ist. Als Luecke des THEMAS gezaehlt
          haette die neue Dimension jede bestehende Gelegenheit unter die
          Mindestabdeckung gedrueckt - ohne dass sich an einer von ihnen
-         etwas geaendert haette. */
-      systemicallyUnavailable: ["externalInterest"]
+         etwas geaendert haette.
+
+         Dasselbe gilt fuer die drei anderen, die dieses System heute
+         nicht beantworten kann. Sie stehen nicht mehr hier als Liste,
+         sondern kommen aus `systemischUnmessbar()` - EINE Auskunft
+         darueber, was messbar ist, fuer beide Eingangsadapter. Zwei
+         Listen waeren zwei Aussagen ueber denselben Systemzustand. */
+      systemicallyUnavailable: systemischUnmessbar(signals, registry, providerId, memory)
     });
 
     out.push({
@@ -856,21 +1113,103 @@ async function main() {
 
   /* ------------------------------------------------ 3. Gelegenheiten */
   const creativeZustaende = [];
-  const candidates = buildOpportunities(signalData.signals, signalData.internal, memory,
+  const signalGelegenheiten = buildOpportunities(signalData.signals, signalData.internal, memory,
                                         registry, PROVIDER_ID || "mock");
+  log("\nSignale:       " + signalGelegenheiten.length + " Gelegenheit(en) aus internen Ereignissen");
+  for (const c of signalGelegenheiten) detail(c.opportunity.topic, "—", c.score.explanation);
+
+  /* ===================================================================
+     DIE CONTENT LADDER (§11/§12)
+
+     BIS HIERHER WAR DIES DIE STELLE, AN DER DIE BREITE VERLOREN GING.
+     Der Lauf bewertete die vier Gelegenheiten aus dem Ticker und
+     nannte die vorschlagsfaehigen "die Gelegenheiten des Tages". Die
+     Platte - 32 Themen aus fuenf Content Families, 22 davon belegt -
+     lag daneben und wurde in der Zusammenfassung angezeigt, als waere
+     sie im Spiel. Sie war es nie.
+
+     Jetzt entscheidet die Leiter, woran der Lauf arbeitet:
+
+       - Sie sucht von Stufe 1 (aktuelles Marktgeschehen) abwaerts.
+       - Sie bricht ab, sobald eine Stufe GENUG BELEGTE Themen
+         geliefert hat - nicht, sobald eine Stufe ueberhaupt Themen
+         hatte.
+       - Das Tor ist das Brief-Evidenztor der Platte, die Entscheidung
+         des Owners. Es wird hier nicht gelockert und nicht umgangen.
+
+     §12 IST DAMIT ERFUELLT, UND ZWAR STRUKTURELL: die Signale sind
+     weiterhin eine Gelegenheitsquelle - sie stehen als STOCK_STORY in
+     der Platte, aus `ausQuant`. Aber sie kommen nur durch dasselbe
+     Tor wie alles andere. Ein Kurs-Score hat kein automatisches
+     Veroeffentlichungsrecht mehr, auch nicht ueber die
+     Opportunity-Schwelle des Zyklus.
+     =================================================================== */
+  const platte = platteLesen(NOW, arg("--platte", null));
+  if (!platte.ok) {
+    log("\nPlatte:        NICHT NUTZBAR — " + platte.grund);
+    detail(platte.erklaerung);
+  } else {
+    log("\nPlatte:        " + platte.themen.length + " Thema/Themen, Stand " +
+        platte.generatedAt + " (" + Math.round(platte.alterStunden) + " h alt)");
+  }
+
+  /* Was zuletzt behandelt wurde, wird nicht noch einmal behandelt.
+     Gemessen am Content Memory - dem einzigen Ort, der weiss, worueber
+     wirklich veroeffentlicht wurde. */
+  const bereitsAbgedeckt = platte.themen.filter((t) => {
+    const d = memory.daysSinceTopic(t.title || t.topicId, NOW);
+    return d !== null && d < 14;
+  }).map((t) => t.topicId);
+
+  const leiter = ContentLadder.suche(platte.themen, {
+    /* EINS, nicht fuenf. Die Leiter soll die HOECHSTE Stufe finden,
+       die traegt - nicht so tief steigen, bis fuenf Themen beisammen
+       sind. Sie gibt die ganze Stufe zurueck, auf der sie faendig
+       wird; die Auswahl darunter trifft `Opportunity.prioritize`. */
+    benoetigt: 1,
+    bereitsAbgedeckt,
+    unavailableFamilies: platte.unavailableFamilies
+  });
+
+  log("Leiter:        " + ContentLadder.erklaerung(leiter));
+  detail("Stufen gefragt bis " + leiter.fallbackDepthReached + " von " +
+         ContentLadder.LEITER.length + ", Familien " + leiter.familiesConsideredCount +
+         ", Themen geprueft " + leiter.opportunitiesConsidered);
+  for (const st of leiter.stufen) {
+    detail("Stufe " + st.stufe + " " + st.titel + " — " + st.qualifiziert + " belegt");
+  }
+
+  const kontext = {
+    memory, now: NOW,
+    platformFit: measurePlatformFit(registry, PROVIDER_ID || "mock"),
+    systemischFehlend: systemischUnmessbar(signalData.signals, registry,
+                                           PROVIDER_ID || "mock", memory)
+  };
+  const candidates = leiter.gefunden.map((t) => gelegenheitAusThema(t, kontext));
   const proposable = candidates.filter((c) => c.score.proposable);
-  log("\nGelegenheiten: " + candidates.length + " geprueft, " + proposable.length + " vorschlagsfaehig");
+  log("Gelegenheiten: " + candidates.length + " aus der Leiter, " +
+      proposable.length + " vorschlagsfaehig");
   for (const c of candidates) detail(c.opportunity.topic, "—", c.score.explanation);
 
+  /* Der Trend Score haengt an einem EXTERNEN Signal. Themen aus der
+     Platte tragen keines und koennen keines tragen - sie hier
+     mitzuzaehlen hiesse, die Trendquelle als "nicht angebunden" zu
+     melden, weil eine Rangliste keinen Tweet hat. Gefragt werden
+     deshalb die Signalgelegenheiten. */
+  const mitTrend = signalGelegenheiten.some((c) => c.trend.available);
   componentStates["intelligence.trend"] = {
-    state: candidates.some((c) => c.trend.available) ? "PASS" : "UNAVAILABLE",
-    failureMode: candidates.some((c) => c.trend.available) ? null
+    state: mitTrend ? "PASS" : "UNAVAILABLE",
+    failureMode: mitTrend ? null
       : "Keine externe Trendquelle angebunden; der Trend Score enthaelt sich (§45).",
-    lastSuccessAt: candidates.some((c) => c.trend.available) ? NOW : null
+    lastSuccessAt: mitTrend ? NOW : null
   };
   componentStates["intelligence.opportunity"] = {
     lastSuccessAt: candidates.length ? NOW : null,
-    failureMode: candidates.length ? null : "Keine Signale, also keine Gelegenheiten."
+    failureMode: candidates.length ? null
+      : (platte.ok
+          ? "Die Leiter fand auf keiner Stufe ein belegtes Thema: " +
+            ContentLadder.erklaerung(leiter)
+          : "Keine nutzbare Platte (" + platte.grund + "), also keine Gelegenheiten.")
   };
 
   /* --------------------------------------- 4. Strategie und Content */
@@ -924,6 +1263,17 @@ async function main() {
       /* Wovon der Anlass handelt. Ohne diese Angabe waere ein Kurs-Score
          als FUTURE_TECHNOLOGY zulaessig. */
       premise: c.internal.premise || null,
+      /* UEBER WIE VIELE. Ohne diese Zahl waehlte die Strategie fuer
+         eine Rangliste ueber zehn Titel den Archetyp STOCK_STORY -
+         ein Format fuer genau einen Titel, und der Einstieg lautete
+         dann "412,53 USD - Valero Energy, Kurs." fuer eine Liste aus
+         zehn Unternehmen. Die Zahl stand in der Gelegenheit; sie
+         musste nur gefragt werden. */
+      entityCount: Array.isArray(opportunity.entities) ? opportunity.entities.length : null,
+      /* Und WELCHE oeffentliche Form das Thema ist, wenn es das weiss.
+         Eine Gelegenheit aus einem Signal weiss es nicht und bekommt
+         hier `null` - dann entscheidet die Eignung wie bisher. */
+      family: (c.thema && c.thema.family) || null,
       platform: "instagram"
     }, {
       /* DER RUECKKANAL. Hier stand eine leere Menge — deshalb konnte
@@ -960,7 +1310,26 @@ async function main() {
 
        Der erste Kandidat sagte "76", weil nur "76" mitgenommen wurde.
        ================================================================ */
-    const evidenzPaket = ladeEvidenzPaket(sources, NOW);
+    /* -----------------------------------------------------------------
+       ZWEI HERKUENFTE, EIN KANONISCHES PAKET
+
+       Eine Gelegenheit aus einem Signal zeigt auf EINEN Einzelwert -
+       ihr Paket kommt aus dessen technischem Bundle. Eine Gelegenheit
+       aus der Platte traegt ihre Belege bereits mit: die Auswahlregel
+       der Reihe, ihre Abdeckung, die Kurse und Kennzahlen der Titel.
+
+       Fuer sie ein Instrumentenbundle zu suchen, hiesse die erste
+       Entitaet einer Rangliste ueber zehn Titel fuer "das Thema" zu
+       halten. Beide Wege enden im selben Paketformat und werden von
+       demselben Sufficiency-Tor geprueft - die Schwelle ist fuer
+       keinen der beiden eine andere. */
+    const evidenzPaket = c.thema
+      ? EvidencePackage.fromTopicEvidence(c.thema, {
+          now: NOW,
+          entity: kurzname(c.thema),
+          source: (c.thema.sources || [])[0] || null
+        })
+      : ladeEvidenzPaket(sources, NOW);
     const evidenzSaetze = evidenzPaket && evidenzPaket.ok
       ? evidenzPaket.evidence.map((e) => ({
           source: e.source, provider: null, entity: e.entity, metric: e.metric,
@@ -1104,11 +1473,33 @@ async function main() {
        eroeffnet Bildformen, die aus den Daten DIESES Objekts entstehen
        und keinen externen Lauf kosten.
        ----------------------------------------------------------------- */
+    /* -----------------------------------------------------------------
+       DIE VERGLEICHSGRUPPE EINER RANGLISTE SIND IHRE EIGENEN TITEL
+
+       `vergleichsgruppe` sind die ANDEREN GELEGENHEITEN des Laufs mit
+       ihrem Opportunity Score. Fuer ein Thema ueber einen Einzelwert
+       ist das eine ehrliche Gruppe - dieselbe Messung, derselbe
+       Stichtag.
+
+       Fuer eine Rangliste ist es Unsinn. Die Bildrichtung lautete
+       woertlich: "Valero Energy in seiner Gruppe: 22 Werte auf einer
+       Achse, und darin Bekannte Namen in Bewegung steht bei 71, Neue
+       Jahreshochs bei 62" - ein Balkendiagramm, das Themen-Scores
+       gegeneinander stellt und "Valero Energy" darueber schreibt.
+
+       Die richtige Gruppe steht im Thema selbst: seine Titel, alle mit
+       derselben Kennzahl und derselben Einheit. Genommen wird die
+       Kennzahl, zu der die MEISTEN Werte vorliegen - eine Achse,
+       eine Einheit. Zwei Einheiten in einem Vergleich sind keiner.
+       ----------------------------------------------------------------- */
+    const eigeneGruppe = c.thema ? peersAusThema(c.thema) : null;
     const lage = VisualDaten.datenlage({
       topic: opportunity.topic,
       evidence: (evidenzPaket && evidenzPaket.ok) ? (evidenzPaket.evidence || []) : [],
-      peers: vergleichsgruppe.map((v) => Object.assign({}, v, {
-        highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
+      peers: (eigeneGruppe && eigeneGruppe.length)
+        ? eigeneGruppe
+        : vergleichsgruppe.map((v) => Object.assign({}, v, {
+            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
     }, ROOT);
     bildDatenlage[opportunity.topic] = lage;
 
@@ -1119,6 +1510,21 @@ async function main() {
     publikumsRahmen[opportunity.topic] = AudienceFrame.frame({
       topicId: opportunity.opportunityId,
       entities: opportunity.entities,
+      /* -----------------------------------------------------------------
+         DIE FAMILIE STAND AM THEMA, WURDE ABER AUS DEM ARCHETYP GERATEN
+
+         Der Rahmen leitet die Content Family aus dem Archetyp ab, wenn
+         das Thema keine nennt - und vermerkt das als `familyBasis:
+         "ARCHETYPE"`. Fuer eine Gelegenheit aus der Platte ist die
+         Familie aber bekannt: sie ist die Stufe, auf der die Leiter
+         faendig wurde. Sie nicht durchzureichen hiess, eine Rangliste
+         ueber die Archetyp-Tabelle als DATA_STORY zu rahmen - und
+         damit den Einstieg "hidden_number" statt "list_tension" zu
+         waehlen.
+
+         Fuer eine Signalgelegenheit bleibt es bei der Ableitung: dort
+         gibt es kein Thema, das die Familie nennen koennte. */
+      family: (c.thema && c.thema.family) || null,
       asOf: (lage.series && lage.series.asOf) || null,
       timeSensitivity: opportunity.timeSensitivity
     }, {
@@ -2090,6 +2496,38 @@ async function main() {
     health: matrix,
     autonomy,
     signals: signalData.signals.length,
+
+    /* -----------------------------------------------------------------
+       DER SUCHNACHWEIS DER LEITER (§15)
+
+       Er entsteht im Zyklus und wird dort gebraucht - und der
+       Orchestrator braucht ihn ein zweites Mal, um einen leeren Tag zu
+       beurteilen. Ihn NICHT zu berichten hiesse, ihn dort noch einmal
+       zu rechnen: eine zweite Suche fuer eine Frage, die schon eine
+       Antwort hat.
+
+       `gefunden` steht als Zahl und nicht als Themenliste - der
+       Nachweis soll sagen, WIE GESUCHT wurde, nicht die Platte
+       verdoppeln. */
+    ladder: {
+      familiesConsidered: leiter.familiesConsidered,
+      familiesConsideredCount: leiter.familiesConsideredCount,
+      opportunitiesConsidered: leiter.opportunitiesConsidered,
+      fallbackDepthReached: leiter.fallbackDepthReached,
+      rejectionReasons: leiter.rejectionReasons,
+      nichtGefragt: leiter.nichtGefragt,
+      gefunden: (leiter.gefunden || []).length,
+      genug: leiter.genug === true,
+      stufen: leiter.stufen
+    },
+    slate: {
+      ok: platte.ok === true,
+      grund: platte.grund,
+      erklaerung: platte.erklaerung,
+      generatedAt: platte.generatedAt || null,
+      themen: (platte.themen || []).length
+    },
+
     opportunities: candidates.map((c) => ({
       opportunityId: c.opportunity.opportunityId, topic: c.opportunity.topic,
       score: c.score.score, proposable: c.score.proposable, explanation: c.score.explanation,
@@ -2104,6 +2542,41 @@ async function main() {
       opportunityId: p.candidate.opportunity.opportunityId,
       archetype: p.result.package.archetype, visualType: p.result.package.visualType,
       hook: p.result.package.hook,
+      /* -----------------------------------------------------------------
+         WELCHE FORMATE ZUR WAHL STANDEN
+
+         Der gewaehlte Archetyp allein sagt nicht, ob ueberhaupt eine
+         Wahl bestand. Der Nachweis der Kreislauf-Schliessung verglich
+         zwei Laeufe, die beide DATA_STORY waehlten, und las daraus
+         "kein Lerneffekt" - dabei war das bessere Format gar nicht
+         zulaessig. Mit dieser Zeile kann er die Annahme pruefen,
+         statt sie zu machen. */
+      archetypeCandidates: ((p.strategyDecision || {}).archetypeCandidates || [])
+        .map((k) => ({ archetype: k.archetype, sampleSize: k.sampleSize,
+                       proven: k.proven === true })),
+
+      /* -----------------------------------------------------------------
+         DIE LERNDIMENSIONEN (§22–§25)
+
+         own-performance.js nennt zwoelf; neun davon standen ueber 53
+         Beitraege hinweg auf 0 % Abdeckung - "nicht mitgeschrieben".
+         Die Werte waren nicht verloren: sie stehen im Rahmen, im
+         Autorenergebnis und in der Bildwahl, genau hier. Sie wurden auf
+         dem Weg zum Kandidaten von einer handgeschriebenen Feldliste
+         nicht mitgenommen.
+
+         Abgeleitet wird EINMAL, an dieser Stelle, und dann nur noch
+         durchgereicht. Die Herkunft reist mit: ein leeres Feld soll in
+         einem Jahr noch zu deuten sein. */
+      learningDimensions: LearnDim.ausPaket({
+        audienceFrame: publikumsRahmen[p.result.package.topic] || null,
+        authoring: p.authoring || null,
+        visualType: p.result.package.visualType,
+        visual: (p.result.package.visual) ||
+          ((p.production && p.production.asset) ? { origin: "generative",
+            variantId: (p.production.asset.sourceAsset || {}).variantId } : null),
+        thema: (p.candidate && p.candidate.thema) || null
+      }),
       /* Wer geschrieben hat, welches Muster gewann und wogegen. */
       authoring: p.authoring || null,
       /* -----------------------------------------------------------------

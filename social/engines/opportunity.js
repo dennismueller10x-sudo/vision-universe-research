@@ -359,7 +359,11 @@
       })
       .sort(function (a, b) { return b.contribution - a.contribution; });
 
-    var missing = DIMENSIONS.filter(function (d) { return !components[d].available; });
+    /* Was NICHT ANWENDBAR ist, blieb nicht "ungemessen" - die Frage
+       stellte sich nicht. Beides in einen Satz zu werfen hiesse, dem
+       Leser eine Luecke zu melden, die keine ist. */
+    var missing = DIMENSIONS.filter(function (d) {
+      return !components[d].available && nichtAnwendbar.indexOf(d) === -1; });
 
     return {
       available: true,
@@ -410,7 +414,14 @@
       parts.push("Das liegt ueber der Schwelle fuer autonomes Handeln.");
     }
     if (missing.length) {
-      parts.push("Ungemessen blieb: " + missing.map(function (m) { return m.label; }).join(", ") + ".");
+      /* `missing` traegt Dimensionsnamen, keine Objekte. `m.label` war
+         auf jedem davon undefined, und die Erklaerung las sich
+         woertlich "Ungemessen blieb: , , , ." - vier Luecken ohne
+         Namen. Aufgefallen ist es erst, als eine Gelegenheit vier
+         ungemessene Dimensionen hatte; bei einer sah es nach einem
+         Satzzeichenfehler aus. */
+      parts.push("Ungemessen blieb: " + missing.map(function (m) {
+        return DIMENSION_LABELS[m] || m; }).join(", ") + ".");
     }
     return parts.join(" ");
   }

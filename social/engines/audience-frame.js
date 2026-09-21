@@ -33,6 +33,7 @@
 (function (global) {
   "use strict";
   var isNode = typeof module !== "undefined" && module.exports;
+  var Universe = isNode ? require("./content-universe.js") : global.VUSocialContentUniverse;
 
   var BASIS = {
     BOOTSTRAP: "BOOTSTRAP",   /* aus Struktur und Owner-Vorgabe */
@@ -112,22 +113,11 @@
      Genau deshalb traegt der Rahmen `familyBasis` mit: wer ihn liest,
      sieht, ob die Familie am Thema stand oder aus dem Archetyp kam.
      ------------------------------------------------------------------- */
-  var FAMILIE_AUS_ARCHETYP = {
-    BREAKING_MARKET_INSIGHT: "NEWS_NOW",
-    EXPLAIN_THE_MOVE:        "STOCK_STORY",
-    FUTURE_TECHNOLOGY:       "MEGATREND",
-    STOCK_STORY:             "STOCK_STORY",
-    DATA_STORY:              "DATA_STORY",
-    MYTH_VS_REALITY:         "EDUCATION",
-    OPPORTUNITY_RISK:        "MARKET_EXPLAINER",
-    EDUCATIONAL:             "EDUCATION",
-    MARKET_CONTEXT:          "MARKET_EXPLAINER",
-    CONTRARIAN_INSIGHT:      "EDUCATION",
-    VISUAL_DATA_STORY:       "DATA_STORY",
-    COMPANY_DEEP_DIVE:       "REPORT_STORY",
-    WEEKLY_THEME:            "MAGAZINE_STORY",
-    TREND_EXPLAINER:         "MEGATREND"
-  };
+  /* Eine Tabelle, ein Ort. Sie wohnt bei den Familien
+     (content-universe.js) und wird hier nur gelesen - zwei Kopien
+     waeren zwei Wahrheiten darueber, was ein Archetyp oeffentlich
+     ist. */
+  var FAMILIE_AUS_ARCHETYP = Universe.FAMILY_FOR_ARCHETYPE;
 
   var HOOK_VORSCHLAG = {
     RANKING:              "list_tension",

@@ -42,6 +42,9 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Universe = require(join(ROOT, "social/engines/content-universe.js"));
 const DiscoverEvidence = require(join(ROOT, "social/engines/discover-evidence.js"));
+const Signals = require(join(ROOT, "social/engines/signals.js"));
+const German = require(join(ROOT, "social/engines/german-text.js"));
+const FactCheck = require(join(ROOT, "social/engines/fact-check.js"));
 
 function readJson(p, f) {
   try { return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : f; }
@@ -61,7 +64,8 @@ function readJson(p, f) {
    ein Vergleich ueber mehrere Titel - genau eine der Formen, die das
    alte Signalmodell gar nicht bilden konnte.
    ------------------------------------------------------------------- */
-function ausDiscoverReihen() {
+function ausDiscoverReihen(o) {
+  o = o || {};
   const dir = join(ROOT, "discover/data/rows/US_REAL");
   if (!existsSync(dir)) {
     return { verfuegbar: false, grund: "Kein Discover-Reihenverzeichnis.", themen: [] };
@@ -102,13 +106,43 @@ function ausDiscoverReihen() {
       entities: namen.slice(0, 10),
       sources: ["VU_DISCOVER"],
       slug: basename(datei, ".json"),
-      title: r.title,
+      /* -----------------------------------------------------------------
+         DER REIHENTITEL IST EINE UEBERSCHRIFT, KEIN SATZ
+
+         Die Reihen heissen "BEKANNTE NAMEN IN BEWEGUNG" - auf der
+         Seite eine Gestaltung, in einem Social-Einstieg Geschrei. Die
+         Claim-Bindung las die kurzen Versalwoerter ausserdem als
+         unerklaerte Kuerzel ("NAMEN", "IN") und wies jede Variante ab.
+
+         Geaendert wird nur die Schreibweise. Die Datei, die den Titel
+         setzt, bleibt die Quelle; hier wird er fuer den oeffentlichen
+         Gebrauch gesetzt, nicht umgeschrieben. */
+      title: German.titelfall(r.title),
       question: r.subtitle || null,
       evidenceRefs: ["discover/data/rows/US_REAL/" + datei],
       evidence: ev.evidence,
       evidenceSufficient: ev.sufficient,
       evidenceRejected: ev.rejectedCount,
-      timeSensitivity: "TIMELY",
+      /* Die Reihe filtert ueber Kennzahlen - davon handelt ihr Anlass. */
+      premise: "SECURITY_METRIC",
+      /* AUSDRUECKLICH NULL, obwohl die Reihe eine Auswahlregel hat.
+         Die Regel ist ein Kriterium ("Bekanntheitsstufe 1 UND neues
+         Jahreshoch"), kein Anlass. Sie hier einzutragen hiesse, einer
+         Rangliste den Archetyp EXPLAIN_THE_MOVE zu erlauben - fuer
+         einen Text, der keine Bewegung erklaert. */
+      cause: null,
+      /* -----------------------------------------------------------------
+         DIE DRINGLICHKEIT IST EINE MESSUNG, KEINE KONSTANTE
+
+         Hier stand "TIMELY" fuer jede Reihe. Die Kurse der Reihen sind
+         neun Tage alt, und die Faktenpruefung wies jeden Beitrag
+         daraus zurueck: "zu alt fuer die Dringlichkeit 'TIMELY'".
+         Die Platte behauptete eine Aktualitaet, die ihre eigenen Daten
+         nicht trugen.
+
+         Gefragt wird jetzt die Stelle, die die Schwellen kennt. */
+      timeSensitivity: FactCheck.dringlichkeitFuer(
+        r.asOf || r.generatedAt || null, o.now || null),
       asOf: r.asOf || r.generatedAt || null,
       note: "Reihe mit " + karten.length + " Titeln, Stand " + (r.asOf || "unbekannt") +
         ". Form aus den Daten: " + (istThema
@@ -126,7 +160,8 @@ function ausDiscoverReihen() {
    je Ausgabe EIN Thema; welche Geschichte daraus wird, entscheidet
    spaeter die Story-Auswahl.
    ------------------------------------------------------------------- */
-function ausMagazin() {
+function ausMagazin(o) {
+  o = o || {};
   const dir = join(ROOT, "magazin");
   if (!existsSync(dir)) return { verfuegbar: false, grund: "Kein Magazinverzeichnis.", themen: [] };
   const themen = [];
@@ -143,7 +178,13 @@ function ausMagazin() {
       slug: "magazin-" + ausgabe,
       title: titel.trim(),
       evidenceRefs: ["magazin/" + ausgabe + "/index.html"],
-      timeSensitivity: "TIMELY",
+      /* Ein Magazinstueck handelt von einem Gedanken, nicht von einer
+         Kennzahl. */
+      premise: "CONCEPT",
+      cause: null,
+      /* Eine Ausgabe traegt kein Datum in dieser Datei. Ohne Stand
+         keine Dringlichkeit - EVERGREEN ist die ehrliche Angabe. */
+      timeSensitivity: FactCheck.dringlichkeitFuer(null, o.now || null),
       note: "Eine Ausgabe kann mehrere Social Stories tragen."
     }));
   }
@@ -157,7 +198,8 @@ function ausMagazin() {
    tragen, eine Education oder einen Vergleich. Welche daraus wird,
    entscheidet die Opportunity - nicht die Quelle.
    ------------------------------------------------------------------- */
-function ausReports() {
+function ausReports(o) {
+  o = o || {};
   const dir = join(ROOT, "reports");
   if (!existsSync(dir)) return { verfuegbar: false, grund: "Kein Reportverzeichnis.", themen: [] };
   const namen = readJson(join(ROOT, "discover/config/company-names.json"), { names: {} }).names || {};
@@ -176,6 +218,8 @@ function ausReports() {
       slug: "report-" + eintrag,
       title: (titel || eintrag).trim(),
       evidenceRefs: ["reports/" + eintrag + "/index.html"],
+      premise: "SECURITY_METRIC",
+      cause: null,
       timeSensitivity: "EVERGREEN",
       note: klar ? null : "Kein Klarname zu \"" + eintrag + "\" bekannt - " +
         "das Audience-Tor wird das im Einstieg beanstanden."
@@ -190,7 +234,8 @@ function ausReports() {
    Die bisher EINZIGE Quelle des Systems. Sie bleibt - als eine von
    mehreren, nicht als die eine.
    ------------------------------------------------------------------- */
-function ausQuant() {
+function ausQuant(o) {
+  o = o || {};
   const pfad = join(ROOT, "social/data/signals.json");
   const roh = readJson(pfad, null);
   /* -------------------------------------------------------------------
@@ -225,6 +270,27 @@ function ausQuant() {
     .slice(0, 10)
     .map((e) => {
       const klar = namen[String(e.entity).toUpperCase()] || null;
+
+      /* -----------------------------------------------------------------
+         DER ANLASS DES EREIGNISSES — GELESEN, NICHT GESETZT
+
+         Bis eben stand hier `evidenceSufficient: false` als feste
+         Zahl. Die Antwort war zufaellig richtig (ein Beleg), aber sie
+         war keine Messung: haette ein Quant-Thema je drei Belege und
+         einen Anlass getragen, haette die Zeile weiter "nein" gesagt.
+
+         Jetzt fragt sie dasselbe Tor wie jede andere Quelle. Und den
+         Anlass kennt signals.js seit jeher: ein Momentumwechsel ist
+         einer, ein technischer Score ist keiner - eine Lage ist nicht
+         ihr eigener Grund. */
+      const anlass = Signals.providesCause(e.type)
+        ? (LABEL[e.type] || e.type) + " bei " + (klar || e.entity) + "."
+        : null;
+      const belege = [{ id: "quant-" + e.type, entity: (klar || e.entity),
+        metric: e.metric, value: e.value,
+        statement: (klar || e.entity) + ": " + e.metric + " " + e.value + ".",
+        source: e.source, observedAt: e.observedAt || null, temporal: true }];
+
       return Universe.topic({
         family: "STOCK_STORY",
         entityType: "STOCK",
@@ -238,18 +304,17 @@ function ausQuant() {
         question: null,
         evidenceRefs: ["social/data/signals.json#" +
           ((e.context && e.context.snapshotId) || e.type)],
-        timeSensitivity: "TIMELY",
+        timeSensitivity: FactCheck.dringlichkeitFuer(e.observedAt || null, o.now || null),
         asOf: e.observedAt || null,
         /* Die reale Signalstaerke reist mit. Ohne sie bleibt der Anlass
            eines Quant-Themas unbelegt - und das Thema faellt aus der
            Bewertung, obwohl der Messwert danebenliegt. */
         signalStrength: typeof e.strength === "number" ? e.strength : null,
-        evidence: [{ id: "quant-" + e.type, entity: (klar || e.entity),
-          metric: e.metric, value: e.value,
-          statement: (klar || e.entity) + ": " + e.metric + " " + e.value + ".",
-          source: e.source, observedAt: e.observedAt || null, temporal: true }],
-        evidenceSufficient: false,
+        evidence: belege,
+        evidenceSufficient: DiscoverEvidence.genuegt(belege.length, anlass),
         evidenceRejected: 0,
+        premise: Signals.premiseOf(e.type),
+        cause: anlass,
         note: e.metric + " " + e.value + ", Quelle " + e.source + "."
       });
     });
@@ -274,11 +339,12 @@ const QUELLEN = [
   { id: "VU_QUANT", fn: ausQuant }
 ];
 
-export function baueSlate() {
+export function baueSlate(optionen) {
+  const o = optionen || {};
   const themen = [];
   const leer = [];
   for (const q of QUELLEN) {
-    const r = q.fn();
+    const r = q.fn(o);
     if (r.verfuegbar) themen.push(...r.themen);
     else leer.push({ source: q.id, reason: r.grund });
   }
@@ -297,7 +363,10 @@ export function baueSlate() {
       explanation: Universe.validate(t).explanation }));
 
   return {
-    generatedAt: new Date().toISOString(),
+    /* Der Stand darf gesetzt werden: ein deterministischer Lauf
+       (Test, Nachweis) braucht eine Platte mit SEINEM Zeitpunkt,
+       sonst misst der Zyklus ihr Alter gegen eine andere Uhr. */
+    generatedAt: o.now || new Date().toISOString(),
     /* Ausdruecklich: kein Publishing, kein Kandidat. */
     purpose: "BREADTH_PROOF_ONLY",
     topics: gueltig,
@@ -319,7 +388,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const i = args.indexOf("--out");
   const OUT = i === -1 ? null : args[i + 1];
-  const s = baueSlate();
+  const j = args.indexOf("--now");
+  const s = baueSlate({ now: j === -1 ? null : args[j + 1] });
 
   console.log("VISION UNIVERSE SOCIAL — Opportunity Slate");
   console.log("Zweck: " + s.purpose + " (kein Publishing, kein Kandidat)\n");

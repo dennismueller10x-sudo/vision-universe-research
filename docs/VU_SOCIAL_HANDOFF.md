@@ -452,3 +452,108 @@ Die Mutation der beiden `quant/data/universe`-Artefakte durch den Quant-Testlauf
 wurde **nicht** in diesem Commit repariert — sie gehoert in einen eigenen
 Quant-Fix. Generierte Aenderungen an diesen Dateien sind nicht committet; die
 Social-CI meldet den Befund als Warnung.
+
+---
+
+## Nachtrag 2026-09-21 — Order D: manuelle Orchestrator-Kontrolle und adaptive Kadenz
+
+### Der strukturelle Befund, mit dem dieser Auftrag anfing
+
+Die Opportunity-Platte hielt **32 Themen aus fuenf Content Families** und
+**22 evidenzfaehige RANKING-Gelegenheiten mit 345 Belegen**. Der echte Zyklus
+baute daraus `STOCK_STORY` aus vier Quant-Signalen. Die reichste Familie hatte
+noch nie einen Beitrag erzeugt.
+
+`content-ladder.js` war gebaut und wurde von keinem Lauf aufgerufen. Beim
+Anschliessen kam heraus, warum es nicht genuegte, sie nur zu rufen: eine
+unausgesprochene Annahme — *ein Thema handelt von genau einem Titel* — sass an
+**sechs** Stellen im Content-Pfad (Schema, Visual Intelligence, Strategie,
+Audience Fit, Fact Check, Authoring). `RANKING_LIST` und die Gruppen-Hooks sind
+die Antwort darauf.
+
+### Was dazugekommen ist
+
+| Datei | Wofuer |
+|---|---|
+| `social/engines/content-ladder.js` → Zyklus | Die Leiter entscheidet, woran der Lauf arbeitet (§10–§12) |
+| `social/engines/no-post.js` | `NO_POST_JUSTIFIED` mit Suchnachweis (§13–§16) |
+| `social/engines/run-lease.js` | Zeitplan und Owner-Knopf, eine Uhr (§27–§31) |
+| `social/engines/frequency-learning.js` | Neun Lerndimensionen, die es gab und die nie jemand fuellte (§22–§25) |
+| `social/engines/learning-dimensions.js` | Die Dimensionsliste an EINER Stelle |
+| `social/engines/hard-invariants.js` | Fuenf Saetze, gemessen statt hingeschrieben (§45) |
+| `scripts/social/check-hard-invariants.mjs` | Misst sie am echten Publish-Pfad |
+| `scripts/social/verify-suites.mjs` | Suiten und Isolation, mit Stand (§46) |
+| `scripts/social/order-d-done.mjs` | Die zwoelf Bedingungen (§49/§50) |
+| `workers/…/src/approval.js` | `/approval/run` — „JETZT PRUEFEN" (§2–§7) |
+
+### Der Bericht ist nicht diese Datei
+
+Jede Zahl unten stammt aus einem Skript und wird bei jedem Lauf neu gemessen.
+Was hier steht, ist der Stand vom 2026-09-21 und **kein Beleg fuer spaeter**:
+
+```
+node scripts/social/verify-suites.mjs           Suiten + Isolation, mit Commit
+node scripts/social/production-readiness.mjs    die 20 benannten Zustaende
+node scripts/social/check-hard-invariants.mjs   die fuenf harten Saetze
+node scripts/social/order-d-done.mjs            die zwoelf Bedingungen
+```
+
+Gemessen am Stand dieses Nachtrags:
+
+```
+SOCIAL_ORCHESTRATOR_PRODUCTION_READY  true
+CRITICAL_BLOCKERS                     0
+  10 Reifebedingungen          ERFUELLT
+  10 Autonomie-Invarianten     ERFUELLT
+   3 harte Invarianten (§7)    ERFUELLT
+
+MAX_OPEN_CREATIVE_JOBS          ist 1       soll 1
+GLOBAL_AUTOPUBLISH              ist false   soll false
+VU_SOCIAL_AUTOPUBLISH           ist false   soll false
+OWNER_PUBLISHING_GATE           ist true    soll true
+EXTERNAL_SOCIAL_SOURCES_ACTIVE  ist 0       soll 0
+
+social: 1383/1383    worker: 327/327    Isolation: beide unveraendert
+```
+
+**Es wurde nichts veroeffentlicht.** Kein Kandidat erzwungen, keine
+Work-Invocation verbraucht, keine externe Quelle aktiviert.
+
+### Die wiederkehrende Fehlerform, jetzt benannt
+
+Vier Waechter in diesem Auftrag hielten — aus einem Grund, der mit der Frage
+nichts zu tun hatte. Alle vier sind durch eine **Gegenprobe** gefunden worden,
+nicht durch Nachdenken:
+
+1. **Das Owner-Tor.** Die Pruefung fragte, OB der Publish-Pfad ablehnt. Baut man
+   die Abdruckpruefung aus, stirbt die Anfrage eine Stufe spaeter am Bild:
+   `imageUnreachable`, Bericht `OK`. Gefragt wird jetzt, **womit** abgelehnt wurde.
+2. **Die Jobzahl.** `Number(null) === 0` machte aus „unbekannt" „keine offenen
+   Jobs" — und keine offenen Jobs heisst: bau einen neuen.
+3. **Die Lease.** Ein Zeitpunkt in der Zukunft ergibt ein negatives Alter, und ein
+   negatives Alter ist immer kleiner als die Ablaufzeit. *„Ein anderer Lauf
+   arbeitet seit -38015280 Minuten."*
+4. **Der Proxy.** `order-d-done.mjs` bekam 403 und meldete „das Owner-Tor haelt".
+   Im Koerper stand *„Host not in allowlist"* — der Worker hatte die Anfrage nie
+   gesehen. Eine Antwort zaehlt jetzt nur mit `cf-ray`.
+
+Dazu zwei Zustaende, die **seit fuenf Auftraegen falsch gemeldet** waren:
+`SCHEDULER_NEVER_PUBLISHES` las `decide-candidate.mjs` aus einem YAML-Kommentar,
+und `SUITE_GREEN`/`TEST_PRODUCTION_ISOLATION` hingen an Fahnen, die der Aufrufer
+selbst setzte.
+
+### Wie hier gearbeitet wird
+
+Jeder der **101 neuen Tests** ist gegengeprobt: der Fehler, den er fangen soll,
+wurde wieder eingebaut, und der Test ist gefallen. Zwei Tests hielten dabei
+selbst aus dem falschen Grund (AO10, OD4) — beide stehen jetzt mit dem Grund im
+Kommentar. Ein Test, der auf eine **Formulierung** prueft (`"vom Worker"`) statt
+auf eine **Kennung** (`cf-ray`), merkt den Ausbau des Nachweises nicht.
+
+### Was offen bleibt
+
+`DEPLOYT` und `BETRIEBS_SMOKE_OHNE_VEROEFFENTLICHUNG` sind aus einer Umgebung
+ohne Zugang zu `social.visionuniverse.de` **UNGEPRUEFT** — und ungeprueft zaehlt
+wie nicht erfuellt. Beide werden im Schritt `ORDER_D_DONE` des Workflows
+`social-cloudflare` (`action: deploy` oder `verify`) gemessen, wo der Worker
+erreichbar ist.

@@ -89,6 +89,15 @@ invocation_logs = false
 # VARIABLEN (keine Geheimnisse)
 # -------------------------------------------------------------------------
 [vars]
+# -------------------------------------------------------------------------
+# WELCHES REPOSITORY UND WELCHER ZWEIG (§2)
+#
+# Beides ist KEIN Geheimnis und steht deshalb hier und nicht bei den
+# Secrets. Das Token allein oeffnet nichts, wenn niemand weiss, wohin -
+# aber umgekehrt oeffnet dieser Name ohne Token auch nichts.
+# -------------------------------------------------------------------------
+VU_GITHUB_REPO = "dennismueller10x-sudo/vision-universe-research"
+VU_GITHUB_REF = "main"
 # Die oeffentliche Basis-URL DIESES Workers. Aus ihr wird die redirect_uri
 # gebaut: <PUBLIC_BASE_URL>/social/meta/callback
 #
@@ -202,6 +211,15 @@ id = "582accaa66bf471a833b3813a6d2a45b"
 #   VU_SOCIAL_ADMIN_KEY    schuetzt connect/status/verify/disconnect;
 #                          mindestens 32 Zeichen, sonst lehnt der Worker ab
 #   META_WEBHOOK_SECRET    erst noetig, wenn Webhooks eingerichtet werden
+#   VU_GITHUB_DISPATCH_TOKEN
+#                          erlaubt JETZT PRUEFEN (§2), den bestehenden
+#                          Orchestrator-Workflow anzustossen. Ein
+#                          fein geschnittenes Token mit genau einem
+#                          Recht: Actions dieses Repositories starten.
+#                          Fehlt es, faellt der Knopf geschlossen aus
+#                          und sagt das - der Zeitplan laeuft weiter.
+#                          KEINE neue Identitaetsplattform: dasselbe
+#                          Worker-Secret-Verfahren wie oben.
 #
 # Pruefen, welche gesetzt sind (zeigt Namen, keine Werte):
 #     npx wrangler secret list

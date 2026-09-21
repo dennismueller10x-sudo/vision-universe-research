@@ -54,10 +54,12 @@ import {
   createSession, sessionFromRequest, clearSessionCookie, timingSafeEqual
 } from "./session.js";
 import {
-  signInPage, approvalResponse, landingPage, alterInWorten, candidatePage
+  signInPage, approvalResponse, landingPage, alterInWorten, candidatePage,
+  laufAngestossenSeite, laufNichtMoeglichSeite
 } from "./approval-ui.js";
 import {
-  readQueue, readDecision, recordDecision, settleDecision
+  readQueue, readDecision, recordDecision, settleDecision,
+  readManualRun, recordManualRun
 } from "./store.js";
 import { contentHash } from "./redact.js";
 
@@ -241,6 +243,28 @@ export async function routeApproval(request, url, env, options = {}) {
      festmachen, statt an einer Liste reservierter Woerter, die beim
      naechsten Endpunkt jemand zu ergaenzen vergisst.
      ------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------
+     JETZT PRUEFEN (§2–§5)
+
+     Dieselbe Maschine, die der Scheduler startet - nicht eine zweite.
+     Der Worker kann sie nicht selbst fahren; er stoesst den Workflow
+     an, der sie fuehrt.
+
+     NUR POST. Ein GET waere ueber einen untergeschobenen Link
+     ausloesbar, und das Ergebnis waere ein produktiver Lauf auf Kosten
+     des Owners. Dass das Sitzungscookie SameSite=Strict traegt, ist
+     die zweite Linie, nicht die einzige.
+     ------------------------------------------------------------------- */
+  if (path === "/approval/run") {
+    if (methode !== "POST") {
+      return approvalResponse("Nicht erlaubt", `
+<h1>Nicht erlaubt</h1>
+<p class="leise">Ein Lauf wird gesendet, nicht aufgerufen — ein Link duerfte ihn
+nicht ausloesen koennen.</p>`, 405);
+    }
+    return await handleManualRun(request, env, options);
+  }
+
   const aktion = path.match(/^\/approval\/(cand_[A-Za-z0-9_.-]+)\/(approve|publish|reject)$/);
   if (aktion) {
     /* Nur POST. Ein GET waere ueber einen untergeschobenen Link
@@ -402,7 +426,19 @@ async function handleApprovalIndex(request, url, env, options = {}) {
     held: schlange.held || [],
     decided: schlange.decided || [],
     alter: alterMs === null ? null : alterInWorten(alterMs),
-    veraltet: alterMs !== null && alterMs > STAND_ALT_MS
+    veraltet: alterMs !== null && alterMs > STAND_ALT_MS,
+
+    /* -----------------------------------------------------------------
+       DER INHALTLICHE STAND — DURCHGEREICHT, NICHT GEDEUTET (§16/§39–§41)
+
+       Er kommt aus derselben Uebertragung wie die Schlange und wird
+       hier nicht nachgerechnet und nicht geglaettet. Fehlt er, bleibt
+       er null - und die Seite sagt dann "nicht uebertragen" statt
+       "nichts passiert". */
+    contentStatus: schlange.contentStatus || null,
+    /* Die Uhr der Seite, damit "vor einer Stunde" von hier und nicht
+       aus dem Browser kommt. */
+    jetzt: jetzt
   });
 }
 
@@ -839,4 +875,175 @@ function betriebsSeite(zustand, candidateId) {
 <h1>${escape(b.titel)}</h1>
 <p class="leise">${escape(b.text)}</p>
 <p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`, status);
+}
+
+/* =========================================================================
+   JETZT PRUEFEN — DERSELBE ORCHESTRATOR, EINE UHR (§2–§5, §27–§31, §38)
+
+   -------------------------------------------------------------------------
+   WAS DIESER KNOPF IST UND WAS ER NICHT IST
+   -------------------------------------------------------------------------
+
+   ER IST: "Starte dieselbe autonome Maschine jetzt." Derselbe Workflow,
+   denselben Weg, dieselben Tore. Keine zweite Pipeline, kein
+   Sonderpfad, keine gelockerte Pruefung.
+
+   ER IST NICHT: "Erstelle zwingend Content." Der Owner darf die UHR
+   ueberspringen - nicht die Evidenz-, Qualitaets-, Portfolio-,
+   Safety- oder Publishing-Tore. Was der Lauf findet, entscheidet der
+   Lauf.
+
+   ER SETZT NICHTS ZURUECK (§38). Keine Tageszaehler, keine
+   Abstandszeitpunkte, kein Portfolio-Zustand. Dieser Handler schreibt
+   genau EINEN Eintrag - wann zuletzt gedrueckt wurde - und sonst
+   nichts.
+
+   -------------------------------------------------------------------------
+   DREI SCHUTZLINIEN GEGEN DEN DOPPELTEN LAUF (§5)
+   -------------------------------------------------------------------------
+
+     hier           Ein zweiter Druck innerhalb der Sperrfrist loest
+                    gar nichts aus.
+     Concurrency    Die Workflow-Gruppe laesst zwei Laeufe nicht
+                    gleichzeitig arbeiten.
+     Lease          Und der zweite Lauf, der danach startet, findet im
+                    Repository, dass gerade ein produktiver Zyklus lief.
+
+   Eine allein genuegt nicht: die erste kennt den Scheduler nicht, die
+   zweite verhindert nur Gleichzeitigkeit, die dritte greift erst im
+   Lauf.
+
+   -------------------------------------------------------------------------
+   DAS GEHEIMNIS
+   -------------------------------------------------------------------------
+
+   Der Dispatch braucht ein GitHub-Token. Es steht als Worker-Secret
+   neben VU_SOCIAL_ADMIN_KEY - dieselbe Architektur, kein neuer
+   Identitaetsanbieter. Es erscheint NIRGENDWO: nicht im HTML, nicht im
+   Client-JavaScript (es gibt keins), nicht in einer URL, nicht in
+   einem Query-Parameter, nicht in einem Log und nicht in dieser
+   Antwort. Fehlt es, faellt dieser Weg geschlossen aus und sagt
+   genau, welcher Name fehlt - nicht, welchen Wert er haette.
+   ========================================================================= */
+
+/* Wie lange nach einem erfolgreichen Anstoss kein zweiter ausgeloest
+   wird. Sie deckt den doppelten Druck ab, nicht mehr: ein Lauf
+   braucht Minuten, und wer nach fuenf Minuten erneut drueckt, meint
+   es. */
+export const MANUAL_RUN_SPERRE_SEKUNDEN = 300;
+
+/* Die Angaben, die kein Geheimnis sind: welches Repository, welcher
+   Workflow, welcher Zweig. Sie stehen als Variablen, damit ein
+   anderer Zweig getestet werden kann, ohne Code zu aendern. */
+const WORKFLOW_DATEI = "social-orchestrator.yml";
+
+export async function handleManualRun(request, env, options = {}) {
+  const jetzt = options.now ? new Date(options.now) : new Date();
+  const nowIso = jetzt.toISOString();
+
+  const token = env.VU_GITHUB_DISPATCH_TOKEN || null;
+  const repo = env.VU_GITHUB_REPO || null;
+  const zweig = env.VU_GITHUB_REF || "main";
+
+  /* ------------------------------------------------------ Fail closed */
+  const fehlend = [];
+  if (!token) fehlend.push("VU_GITHUB_DISPATCH_TOKEN");
+  if (!repo) fehlend.push("VU_GITHUB_REPO");
+  if (fehlend.length) {
+    return laufNichtMoeglichSeite({
+      grund: "NICHT_EINGERICHTET",
+      fehlend,
+      satz: "Der Lauf laesst sich von hier aus noch nicht anstossen."
+    });
+  }
+
+  /* --------------------------------------------- Der doppelte Druck */
+  const zuletzt = await readManualRun(env);
+  if (zuletzt && zuletzt.ok && zuletzt.requestedAt) {
+    const her = (jetzt.getTime() - Date.parse(zuletzt.requestedAt)) / 1000;
+
+    /* -----------------------------------------------------------------
+       EIN NICHT LESBARER ZEITPUNKT IST KEIN VERGANGENER
+
+       Die erste Fassung las `Number.isFinite(her) && her >= 0 && ...`.
+       Beide Zusaetze liessen den Schutz genau dann VERSCHWINDEN, wenn
+       man ihm am wenigsten trauen kann: bei einem unlesbaren Datum und
+       bei einem Datum aus der Zukunft (eine zurueckgestellte Uhr) fiel
+       die Sperre ersatzlos weg, und der naechste Druck loeste einen
+       zweiten Lauf aus.
+
+       Ein Schutz gegen den doppelten Druck darf nicht daran scheitern,
+       dass der letzte Druck schlecht notiert ist. Er sperrt deshalb
+       auch dann - und schreibt den Zeitpunkt mit der eigenen Uhr neu,
+       damit sich die Lage nach der Sperrfrist von selbst aufloest und
+       der Knopf nicht fuer immer tot ist.
+       ----------------------------------------------------------------- */
+    const unlesbar = !Number.isFinite(her);
+    const ausDerZukunft = Number.isFinite(her) && her < 0;
+
+    if (unlesbar || ausDerZukunft) {
+      await recordManualRun(env, {
+        requestedAt: nowIso, ok: true, status: zuletzt.status ?? null,
+        hinweis: "Zeitpunkt des letzten Anstosses war " +
+          (unlesbar ? "nicht lesbar" : "in der Zukunft") + "; mit der eigenen Uhr neu gesetzt"
+      });
+      return laufNichtMoeglichSeite({
+        grund: "SCHON_ANGESTOSSEN",
+        wartenSekunden: MANUAL_RUN_SPERRE_SEKUNDEN,
+        satz: "Der Lauf wurde gerade schon angestossen."
+      });
+    }
+
+    if (her < MANUAL_RUN_SPERRE_SEKUNDEN) {
+      return laufNichtMoeglichSeite({
+        grund: "SCHON_ANGESTOSSEN",
+        wartenSekunden: Math.ceil(MANUAL_RUN_SPERRE_SEKUNDEN - her),
+        satz: "Der Lauf wurde gerade schon angestossen."
+      });
+    }
+  }
+
+  /* ------------------------------------------------------ Der Anstoss */
+  let status = null;
+  let ok = false;
+  try {
+    const antwort = await fetch(
+      "https://api.github.com/repos/" + repo + "/actions/workflows/" +
+      WORKFLOW_DATEI + "/dispatches",
+      {
+        method: "POST",
+        headers: {
+          /* Das Token steht im HEADER und nie in der Adresse: eine URL
+             landet in Logs, Proxys und der History. */
+          "authorization": "Bearer " + token,
+          "accept": "application/vnd.github+json",
+          "content-type": "application/json",
+          "user-agent": "vision-universe-social-worker"
+        },
+        body: JSON.stringify({ ref: zweig })
+      });
+    status = antwort.status;
+    ok = antwort.status === 204;
+  } catch (err) {
+    /* Die Fehlermeldung von aussen wird NICHT durchgereicht: sie kann
+       Adressen und Header enthalten. Was der Owner braucht, ist, dass
+       es nicht geklappt hat. */
+    status = null;
+    ok = false;
+  }
+
+  await recordManualRun(env, {
+    requestedAt: nowIso, ok, status,
+    hinweis: ok ? "workflow_dispatch angenommen" : "Dispatch nicht angenommen"
+  });
+
+  if (!ok) {
+    return laufNichtMoeglichSeite({
+      grund: "DISPATCH_FEHLGESCHLAGEN",
+      status,
+      satz: "Der Lauf liess sich nicht anstossen."
+    });
+  }
+
+  return laufAngestossenSeite({ angestossenAt: nowIso });
 }

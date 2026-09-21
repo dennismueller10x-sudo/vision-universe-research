@@ -40,17 +40,50 @@ export const GESCHUETZT = [
   /^authoring\/requests\/[^/]+\/authoring-result\.json$/
 ];
 
-/** Ein Abdruck des Arbeitsbaums: Pfad -> Zustand. */
+/* -------------------------------------------------------------------
+   DIE GESCHUETZTEN BAEUME ALS PFADE
+
+   Dieselbe Menge wie GESCHUETZT, nur in der Form, die `git diff`
+   versteht. Zwei Listen waeren zwei Meinungen darueber, was geschuetzt
+   ist; diese hier ist abgeleitet und nicht abgeschrieben.
+   ------------------------------------------------------------------- */
+const GESCHUETZTE_BAEUME = ["quant/data", "social/data", "discover/data",
+  "authoring/requests"];
+
+/** Ein Abdruck des Arbeitsbaums: Pfad -> Zustand, plus der Inhalt. */
 function abdruck() {
   const zeilen = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT })
     .toString().split("\n").filter(Boolean);
   const map = new Map();
   for (const z of zeilen) map.set(z.slice(3).trim(), z.slice(0, 2));
-  /* Auch der Inhalt zaehlt: eine Datei, die vorher UND nachher als
-     geaendert gilt, kann dazwischen ein zweites Mal geaendert worden
-     sein. */
-  const hashes = execFileSync("git", ["diff", "--no-color"], { cwd: ROOT }).toString();
-  return { map, diffLength: hashes.length };
+
+  /* -----------------------------------------------------------------
+     DER INHALT, NICHT NUR DER ZUSTAND
+
+     Hier stand `git diff` ueber den GANZEN Baum, und das Ergebnis
+     wurde als `diffLength` mitgefuehrt - und nie verglichen. Eine
+     Messung, die niemandem im Weg steht, ist keine.
+
+     Verglichen wird jetzt, und zwar nur ueber den geschuetzten
+     Baeumen: sonst schlaegt die Pruefung an, sobald irgendwo anders im
+     Repository etwas liegt, was mit dem Testlauf nichts zu tun hat.
+
+     Der Fall, den erst das faengt: eine Datei, die VORHER schon als
+     geaendert galt und WAEHREND des Laufs ein zweites Mal - anders -
+     geschrieben wurde. `git status` zeigt beide Male "M", und der
+     erste Vergleich sieht keinen Unterschied.
+
+     WAS ES NICHT FAENGT, und das steht hier, damit es niemand fuer
+     mehr haelt: ein Schreiben, das sich selbst zurueckstellt. Wer eine
+     Datei aendert und exakt den alten Inhalt wieder hineinschreibt,
+     hinterlaesst keine Spur, die ein Vorher-Nachher-Vergleich finden
+     koennte. Dagegen hilft kein Abdruck, sondern nur, dass Tests
+     ueberhaupt nicht in diese Baeume schreiben - und genau das ist
+     der Grund, warum diese Pruefung existiert und nicht die einzige
+     Verteidigung ist. */
+  const inhalt = execFileSync("git",
+    ["diff", "--no-color", "--", ...GESCHUETZTE_BAEUME], { cwd: ROOT }).toString();
+  return { map, inhalt };
 }
 
 export function pruefe(suite) {
@@ -71,10 +104,22 @@ export function pruefe(suite) {
     if (GESCHUETZT.some((r) => r.test(pfad))) neu.push({ pfad, vor: vor || "sauber", nach: zustand });
   }
 
+  /* Der Inhalt der geschuetzten Baeume hat sich geaendert, ohne dass
+     `git status` eine neue Datei meldet: dann wurde in einer bereits
+     geaenderten Datei ein zweites Mal geschrieben. Das ist ein eigener
+     Befund und keine Wiederholung des ersten. */
+  const inhaltGeaendert = vorher.inhalt !== nachher.inhalt;
+  if (inhaltGeaendert && !neu.length) {
+    neu.push({ pfad: "(Inhalt eines geschuetzten Baumes)",
+      vor: vorher.inhalt.length + " Zeichen Diff",
+      nach: nachher.inhalt.length + " Zeichen Diff" });
+  }
+
   return {
     suite,
     testsExitCode: exitCode,
     violations: neu,
+    contentChanged: inhaltGeaendert,
     ok: neu.length === 0,
     explanation: neu.length === 0
       ? "Der Lauf hat keine Produktionsdatei veraendert."
