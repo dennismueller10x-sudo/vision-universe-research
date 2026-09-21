@@ -453,6 +453,21 @@ Nebenbei belegt dasselbe Etikett den Befund aus §15 von der anderen Seite: um
 | Wecker-Kontingent | 78 Auslösungen je Sitzung = 0,078 % von 100.000/Tag |
 | Neue kostenpflichtige Dienste | keine |
 
+**Ausgerollt am 21.09.2026, 15:59 UTC** (Lauf `35622518554`):
+
+```
+Uploaded vu-intraday-waker (1.21 sec) · 3,09 KiB · Startzeit 2 ms
+Deployed vu-intraday-waker triggers · schedule: */5 13-21 * * 1-5
+Bindings: env.GITHUB_REPO (Umgebungsvariable)  — mehr nicht
+Schritt "Token hinterlegen": skipped (GH_DISPATCH_TOKEN fehlt)
+Schluesselpruefung: 24.711 Dateien, 0 Funde
+```
+
+Der Wecker läuft und tickt. Er meldet bei jedem Takt `keinToken` und löst
+nichts aus, bis der Eigentümer den PAT hinterlegt (Eskalation 2) — er
+fällt nicht still aus, sondern laut. Ein zweiter Worker neben `vu-live`;
+`vu-live` selbst wurde nicht angefasst.
+
 Geprüft durch `PM-17`, `PM-18`, `WK-7`, `WK-8`, `WK-10`.
 
 ---
@@ -461,14 +476,32 @@ Geprüft durch `PM-17`, `PM-18`, `WK-7`, `WK-8`, `WK-10`.
 
 | Datei | Fälle | Deckt Auftrag §21 |
 |---|---|---|
-| `quant/tests/pacemaker.test.mjs` | 19 | 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 18 |
+| `quant/tests/pacemaker.test.mjs` | 20 | 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 18 |
 | `quant/tests/delivery-watchdog.test.mjs` | 15 | 8, 11, 12, 13, 17, 19, 20 |
 | `worker-waker/tests/waker.test.mjs` | 10 | 2, 15, 17, 18 |
+| `quant/tests/intraday-delivery-contract.test.mjs` | 12 | 7, 9, 10, 16 — und ID-10 prüft, dass **jeder** der zwanzig Fälle einen benannten Test hat |
+| **Summe neu** | **57** | |
 
 Scharfe Regeln mit Gegenprobe: PM-3/PM-4, PM-10/PM-11, PM-12/PM-13,
-WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10.
+WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10, ID-2/ID-2b.
 
-Bestehende Tests unverändert: 1297 quant-Tests grün.
+**Gesamtlauf `node --test quant/tests/*.test.mjs` auf dem Stand dieses
+Berichts: 1320 Tests, 1315 grün, 5 rot.** Die fünf roten sind nicht aus
+diesem Auftrag und wurden nicht angefasst:
+
+```
+529  real observations reproduce two known MSFT rule transitions …
+534  approved scope is preserved and denied raw display prevents history reads
+535  overflow, insufficient comparison history and pre-close snapshots fail closed
+536  unavailable coverage retains the requested company identity
+637  canonical product universe projects the full capability set …
+```
+
+Sie stammen aus `market-signal-contract.test.mjs` und
+`product-services.test.mjs` und waren bereits auf `2cb2c99062` rot — dem
+letzten Quant-2.0-Commit **vor** dieser Arbeit. Nachgewiesen über einen
+Arbeitsbaum auf genau diesem Commit. Sie gehören dem Quant-2.0-Strang;
+dort zu reparieren wäre ein Eingriff in einen fremden Workstream.
 
 ---
 
@@ -479,7 +512,8 @@ Bestehende Tests unverändert: 1297 quant-Tests grün.
 | `intraday-pacemaker.yml` löschen oder Zeitplan entfernen | Taktgeber aus |
 | in `intraday-snapshots.yml` `- cron: '*/5 13-21 * * 1-5'` wieder eintragen | alter Takt zurück |
 | Zeitplan aus `pages-release.yml` entfernen | Brücke zurück |
-| `worker-waker/` löschen | nie ausgerollt, keine Wirkung |
+| `npx wrangler delete` im Ordner `worker-waker/` | Wecker weg; `vu-live` unberührt |
+| `worker-waker/` löschen | entfernt den Bauplan; der ausgerollte Worker bleibt, bis er geloescht wird |
 
 Alles in einem Commit reversibel. Keine Datenmigration, kein Schemawechsel,
 keine geänderten Verträge.
@@ -488,9 +522,11 @@ keine geänderten Verträge.
 
 ## 20. Verbleibende echte Risiken
 
-1. **Der externe Wecker fehlt.** Ohne ihn hängen sowohl der Rückfall-Wächter als
-   auch die Auslieferungs-Brücke am selben Zeitplanmechanismus, der ausgefallen
-   ist. Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
+1. **Dem Wecker fehlt das Token.** Er ist ausgerollt und tickt seit 15:59 UTC
+   alle fünf Minuten, aber ohne `GITHUB_DISPATCH_TOKEN` meldet er `keinToken`
+   und löst nichts aus. Bis dahin hängen sowohl der Rückfall-Wächter als auch
+   die Auslieferungs-Brücke am selben Zeitplanmechanismus, der ausgefallen ist.
+   Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
    (Eskalation 2)
 2. **Der Fünf-Minuten-Takt ist nicht erreichbar**, solange das Providerlimit
    unbelegt ist. Der gemessene ehrliche Takt ist 5:04 bis 5:08 — der Abruf
