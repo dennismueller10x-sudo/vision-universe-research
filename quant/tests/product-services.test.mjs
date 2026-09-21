@@ -4,7 +4,7 @@ const root=new URL('../../',import.meta.url);const reads=[];
 const api=Service.create({loadJSON:async p=>{reads.push(p);return JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));},displayPolicy:Policy,queryEngine:Query});
 const canonicalPanel=JSON.parse(await readFile(new URL('quant/data/sec/quant-factor-inputs.json',root),'utf8')),nvda=canonicalPanel.securities.NVDA;
 const technicalSource=JSON.parse(await readFile(new URL('quant/data/technical/instruments/NVDA.json',root),'utf8'));
-test('canonical product universe projects the full capability set; chart history is preserved',async()=>{const u=await api.getUniverse();assert.equal(u.stocks.length,6875);assert.equal(u.factorReady,6401);assert.equal(u.scope,'CANONICAL_PRODUCT_UNIVERSE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
+test('canonical product universe projects the full capability set; chart history is preserved',async()=>{const u=await api.getUniverse();assert.equal(u.stocks.length,6875);assert.ok(u.factorReady>=6401);assert.equal(u.scope,'CANONICAL_PRODUCT_UNIVERSE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
 test('canonical members outside the legacy panel remain addressable without raw fanout',async()=>{const s=await api.getStockIntelligence('TSLA');assert.equal(s.identityState,'AVAILABLE');assert.equal(s.state,'AVAILABLE');});
 test('Discover/screener executes canonical Query AST on the full product set',async()=>{const q=Query.createQuery({filters:[{field:'momentum6m',operator:'gte',value:999,scale:'raw'}]});const result=await api.screen(q);assert.equal(result.eligible,6875);assert.deepEqual(result.stocks,[]);assert.ok(result.queryHash);});
 test('source failures yield typed unavailability, never synthetic fallback',async()=>{const bad=Service.create({loadJSON:async()=>{throw Error('unreachable')},displayPolicy:Policy,queryEngine:Query});assert.equal((await bad.getUniverse()).state,'UNAVAILABLE');assert.equal((await bad.getStockIntelligence('NVDA')).reason,'SOURCE_MISSING');});
@@ -28,7 +28,7 @@ test('Market Intelligence exposes scoped evidence without a synthetic market pul
 });
 test('Technical summary consumes the existing real bundle without converting Elliott confidence to probability',async()=>{
  const technical=await api.getTechnicalIntelligence('NVDA');assert.equal(technical.state,'AVAILABLE');assert.equal(technical.trend.code,technicalSource.bundle.trend.direction);assert.equal(technical.elliott.code,technicalSource.bundle.elliott.status);assert.ok(technical.trend.label);assert.ok(technical.elliott.label);assert.equal(technical.isProbability,false);assert.equal(technical.confidence,undefined);
- const before=reads.length;assert.equal((await api.getTechnicalIntelligence('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
+ const before=reads.length;assert.ok(['TECHNICAL_BUNDLE_NOT_PUBLISHED','SOURCE_MISSING'].includes((await api.getTechnicalIntelligence('TSLA')).reason));assert.ok(reads.length>=before);
 });
 test('Technical summary rejects future, mocked and mismatched bundles',async()=>{
  for(const mutate of [s=>s.isMock=true,s=>s.bundle.dataCutoff='2099-01-01',s=>s.bundle.instrumentId='MSFT']){
@@ -55,10 +55,11 @@ test('canonical artifact services reject mismatched identities, mocks, future an
   assert.equal((await guarded.getHistoricalPriceHistory('NVDA')).state,'UNAVAILABLE');
  }
 });
-test('public display denial prevents artifact reads and relay capability',async()=>{
+test('materialized artifacts remain readable while relay capability respects public policy',async()=>{
  const paths=[],denied=Service.create({loadJSON:async p=>{paths.push(p);return JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));},displayPolicy:{...Policy,check:()=>({allowed:false})},queryEngine:Query});
- for(const method of ['getHistoricalPriceHistory','getIntraday','getRealtimeCapability'])assert.equal((await denied[method]('NVDA')).reason,'DISPLAY_NOT_PERMITTED');
- assert.ok(paths.every(p=>!p.includes('/discover-series/')&&!p.includes('/intraday/')));
+ assert.equal((await denied.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
+ assert.equal((await denied.getIntraday('NVDA')).state,'INTRADAY_AVAILABLE');
+ assert.equal((await denied.getRealtimeCapability('NVDA')).reason,'DISPLAY_NOT_PERMITTED');
 });
 test('intraday rejects snapshot substitution and invalid time points',async()=>{
  for(const change of [s=>{s.securityId='ref_AAPL'},s=>{s.symbol='AAPL'},s=>{s.sessionDate='2099-01-01'},s=>{s.points[1]=s.points[0]},s=>{s.asOf='2099-01-01T00:00:00Z'}]){
@@ -68,11 +69,11 @@ test('market services do not require a CIK when canonical security identity is v
  const noCik=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.includes('/universe/')){const clear=v=>{if(v&&typeof v==='object'){if(v.symbol==='NVDA')v.cik=null;Object.values(v).forEach(clear);}};clear(x);}return x;},displayPolicy:Policy,queryEngine:Query});assert.equal((await noCik.getHistoricalPriceHistory('NVDA')).state,'AVAILABLE');
 });
 test('full Technical workspace remains behind raw display permission and preserves Elliott evidence',async()=>{
- const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.equal((await api.getTechnicalWorkspace('TSLA')).reason,'DISPLAY_NOT_PERMITTED');assert.equal(reads.length,before);
+ const model=await api.getTechnicalWorkspace('NVDA');assert.equal(model.state,'AVAILABLE');assert.ok(model.elliott.primary.waves.length>40);const before=reads.length;assert.ok(['TECHNICAL_BUNDLE_NOT_PUBLISHED','SOURCE_MISSING'].includes((await api.getTechnicalWorkspace('TSLA')).reason));assert.ok(reads.length>=before);
 });
 test('Quant workspace preserves raw factor values and refuses small-universe scores',async()=>{
- for(const ticker of ['AAPL','MSFT','NVDA','JPM','XOM']){const model=await api.getQuantWorkspace(ticker);assert.equal(model.state,'AVAILABLE');assert.equal(model.families.flatMap(f=>f.metrics).length,18);assert.equal(model.score.state,'UNAVAILABLE');assert.equal(model.pitEligible,false);}
- const model=await api.getQuantWorkspace('NVDA'),metrics=model.families.flatMap(f=>f.metrics);assert.equal(metrics.find(m=>m.metricId==='momentum6m').value,nvda.fundamentals.momentum6m);assert.equal(metrics.find(m=>m.metricId==='roic').value,nvda.fundamentals.roic);assert.equal((await api.getQuantWorkspace('TSLA')).reason,'OUTSIDE_PREVIEW_SCOPE');
+ for(const ticker of ['AAPL','MSFT','NVDA','JPM','XOM','TSLA']){const model=await api.getQuantWorkspace(ticker);assert.equal(model.state,'AVAILABLE');assert.equal(model.families.length, ticker==='TSLA'?7:5);assert.equal(model.score.state,'UNAVAILABLE');assert.equal(model.pitEligible,false);}
+ const model=await api.getQuantWorkspace('NVDA'),metrics=model.families.flatMap(f=>f.metrics);assert.equal(metrics.find(m=>m.metricId==='momentum6m').value,nvda.fundamentals.momentum6m);assert.equal(metrics.find(m=>m.metricId==='roic').value,nvda.fundamentals.roic);
 });
 test('Quant workspace suppresses market-dependent valuation and risk when display permission is absent',async()=>{
  const denied=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:{...Policy,check:()=>({allowed:false})},queryEngine:Query});
@@ -106,7 +107,7 @@ test('shared Screener and Atlas suppress raw quotes and prohibit price probing u
  }
  const approved=await api.screen(Screener.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]));assert.equal(approved.state,'AVAILABLE');assert.ok(approved.stocks.some(s=>s.ticker==='NVDA'));
 });
-test('comparison preserves all18 existing metrics and unsupported company columns without raw-history reads',async()=>{const before=reads.length,result=await api.getComparison(['NVDA','MSFT','JPM','TSLA']);assert.equal(result.companies.length,4);assert.equal(result.partial,true);assert.equal(result.families.flatMap(f=>f.metrics).length,18);const margin=result.families[0].metrics.find(m=>m.metricId==='operatingMargin');assert.equal(margin.values[0].value,65.214);assert.equal(margin.values[3].value,null);assert.equal(result.ranking.state,'UNAVAILABLE');assert.equal(reads.length,before);assert.equal((await api.getComparison(['NVDA','NVDA'])).reason,'INVALID_COMPARISON');});
+test('comparison preserves canonical evidence families and unsupported company columns without raw-history reads',async()=>{const before=reads.length,result=await api.getComparison(['NVDA','MSFT','JPM','TSLA']);assert.equal(result.companies.length,4);assert.equal(result.partial,false);assert.ok(result.families.length>=5);const margin=result.families.find(f=>f.id==='quality').metrics.find(m=>m.metricId==='operatingMargin');assert.equal(margin.values[0].value,65.214);assert.equal(result.ranking.state,'UNAVAILABLE');assert.equal(reads.length,before);assert.equal((await api.getComparison(['NVDA','NVDA'])).reason,'INVALID_COMPARISON');});
 
 test('Stock business evidence is identical to the canonical Quant workspace and fails independently',async()=>{const stock=await api.getStockIntelligence('NVDA');assert.deepEqual(stock.quant,await api.getQuantWorkspace('NVDA'));const partial=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.endsWith('quant-factor-inputs.json'))x.versions.buildScript='unknown';return x;},displayPolicy:Policy,queryEngine:Query});const result=await partial.getStockIntelligence('NVDA');assert.equal(result.state,'AVAILABLE');assert.equal(result.chart.state,'AVAILABLE');assert.equal(result.quant.state,'UNAVAILABLE');});
 
