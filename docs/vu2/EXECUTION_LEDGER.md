@@ -600,3 +600,30 @@ No Discovery application, navigation, collection, layout or interaction file was
 changed. Shared generated data will pass the existing Discovery regression gate
 before deployment. No provider, pipeline, endpoint, credential, schedule or
 recurring cost was added.
+
+## 2026-09-21 — Capability-driven product breadth contract
+
+The existing 4.3 MiB Capability Matrix now produces a compact 166 KiB static Product
+projection for all 6,875 canonical product members. It is a deterministic projection,
+not a second source or pipeline. Product Services use it only after canonical identity
+resolution to report measured History, Fundamentals, Market Factor, Intraday and Live
+availability outside the five fully connected intelligence rows. They do not load the
+full 21 MiB factor artifact, widen `development_preview.scope`, invent missing values
+or claim a broad Quant ranking. Market-factor availability is exposed separately from
+Quant availability; Quant stays unavailable until the broad ranking is certified.
+
+The five rows remain `FEATURED_FULL_INTELLIGENCE_SET`; the product response separately
+names `CANONICAL_PRODUCT_UNIVERSE`, its measured size and capability counts. Existing
+search and partial Stock Journey paths can therefore distinguish available materialized
+History/Fundamentals from unavailable Technical/V2 Quant depth. The existing Market
+Refresh regenerates the projection immediately after its Capability Matrix step, and
+the existing Pages release ships it. The VU2 Product Universe surface names the measured
+canonical breadth and capability counts while keeping its five fully connected rows
+explicitly separate. No Discovery application file is modified.
+
+The preceding Quant V2 methodology/ranking-hygiene merge is independently live:
+production `release-delivery.json` names source commit
+`2be2325781100833e1e3472c5a07ad54e86d43f4`, reports 4,895,972 SEC bytes within the
+8 MiB budget and `EXISTING_R2_UNCHANGED`. `/vu2/`, the `/quant/` handoff page and
+`/discover/` each return HTTP 200. Ranking-hygiene data refresh remains a separate
+materialization gate and is not inferred from that code deployment.

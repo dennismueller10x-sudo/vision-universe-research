@@ -113,6 +113,9 @@ jobs:
       - name: Capability Matrix je Instrument (Company Master x Marktdaten)
         run: node scripts/market/build-capability-matrix.mjs
 
+      - name: Kompakte Product-Capability-Projektion fuer Quant 2.0
+        run: node scripts/vu2/build-product-capabilities.mjs
+
       - name: Kein Schluessel im Statusbericht
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
