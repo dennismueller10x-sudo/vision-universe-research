@@ -340,8 +340,8 @@ body.dv2 .v2-main{overflow-x:clip}
   html:not([data-theme="light"]) body.dv2 .v2-dock,html:not([data-theme="light"]) body.dv2.v2-feed-active .v2-dock{background:rgba(23,24,27,.82)}
   html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#fff!important;color:#111214!important}
   body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{margin-inline:-12px}
-  body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:12px}
-  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(28px,8vw,34px);letter-spacing:-.045em}
+  body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:20px}
+  body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:28px;letter-spacing:-.045em;white-space:nowrap}
 }
 
 html:not([data-theme="light"]) body.dv2 .v2-intro,html:not([data-theme="light"]) body.dv2 .v2-world-performance,html:not([data-theme="light"]) body.dv2 .v2-world-compact,html:not([data-theme="light"]) body.dv2 .v2-world-split,html:not([data-theme="light"]) body.dv2 .v2-world-sector,html:not([data-theme="light"]) body.dv2 .v2-world-ranking,html:not([data-theme="light"]) body.dv2 .v2-world-fundamental{color:#f7f8fa}
