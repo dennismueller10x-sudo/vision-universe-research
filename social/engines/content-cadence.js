@@ -119,6 +119,95 @@
   };
 
   /* -------------------------------------------------------------------
+     ZWEI GROESSEN, DIE VERWECHSELT WURDEN
+
+     CONTENT SUPPLY ist bei Vision Universe reichlich: das Content
+     Universe traegt fuenfzehn Familien, die Leiter fragt sie in
+     Stufen, und die letzte Stufe ist eine Frage, keine Fundstelle.
+     Ideen sind nicht knapp.
+
+     PUBLISHING CAPACITY ist beschraenkt, und zwar absichtlich: ein
+     offener Creative Job, eine wartende Freigabe, ein Mindestabstand,
+     ein Wochendach. Das sind Owner-Entscheidungen.
+
+     Ein leerer Tag aus BESCHRAENKTER KAPAZITAET ist ein Betriebs-
+     zustand. Ein leerer Tag aus ANGEBLICH FEHLENDEM ANGEBOT ist ein
+     Befund - denn das Angebot ist da; was fehlte, war die Suche.
+
+     Und dazwischen liegt eine dritte Klasse, die weder das eine noch
+     das andere ist: es WURDE etwas gefunden, gemessen und fuer zu
+     schwach befunden. Das darf einen Tag beenden, und zwar ohne
+     schlechtes Gewissen - eine schwache Geschichte zu senden, um eine
+     Quote zu fuellen, waere der teurere Fehler.
+
+     Diese drei in zwei zu pressen waere ein Tor, das zu weit gebaut
+     ist. Deshalb drei.
+     ------------------------------------------------------------------- */
+  var KLASSE = {
+    KAPAZITAET: "PUBLISHING_CAPACITY",
+    QUALITAET:  "CONTENT_QUALITY",
+    ANGEBOT:    "CONTENT_SUPPLY"
+  };
+
+  /* Ob ein Grund ALLEIN einen Tag beenden darf. Drei Antworten, nicht
+     zwei: die mittlere ist die, an der sich "gesucht" von
+     "aufgehoert" unterscheidet. */
+  var ALLEIN = {
+    JA:                "ALLEIN_GENUG",
+    NEIN:              "NIE_ALLEIN",
+    NUR_NACH_SUCHE:    "NUR_NACH_VOLLSTAENDIGER_SUCHE"
+  };
+
+  /* -------------------------------------------------------------------
+     EINE TABELLE, EIN EINTRAG JE GRUND
+
+     Die erste Fassung hatte eine Liste NIE_ALLEIN NEBEN der Liste
+     GRUND. Zwei Register fuer dieselbe Tatsache - dieselbe Familie
+     von Fehlern, die den Creative Slot eine Woche lang blockiert hat,
+     weil nur eines von beiden fortgeschrieben wurde.
+
+     Jetzt steht jede Aussage ueber einen Grund an genau einer Stelle,
+     und NIE_ALLEIN wird daraus ABGELEITET statt daneben gepflegt.
+
+     Die Tabelle umfasst mehr Namen als GRUND: die Opportunity Engine
+     meldet eigene Codes (NO_MARKET_SIGNAL und Verwandte), und die
+     Frage "darf das einen Tag beenden" muss auch fuer sie beantwortet
+     sein. Ein Grund ohne Eintrag ist ein unbekannter Grund.
+     ------------------------------------------------------------------- */
+  var GRUND_KLASSE = {
+    /* --- Beschraenkte Kapazitaet: benannt, gewollt, allein genug --- */
+    ACTIVE_APPROVAL_QUEUE_NOT_EMPTY: { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    CREATIVE_JOB_IN_FLIGHT:          { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    CREATIVE_JOB_COUNT_UNKNOWN:      { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    DAILY_CONTENT_CAP_REACHED:       { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    MINIMUM_SPACING_NOT_REACHED:     { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    OWNER_HELD_STATE:                { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+    OPERATIONAL_BLOCKER:             { klasse: KLASSE.KAPAZITAET, allein: ALLEIN.JA },
+
+    /* --- Gefunden und gemessen, und es trug nicht --------------------
+       Diese Gruende senken keine Schwelle; sie halten eine. */
+    NO_OPPORTUNITY_PASSED_QUALITY:   { klasse: KLASSE.QUALITAET, allein: ALLEIN.JA },
+    INSUFFICIENT_EVIDENCE:           { klasse: KLASSE.QUALITAET, allein: ALLEIN.JA },
+    CONTENT_REPETITION:              { klasse: KLASSE.QUALITAET, allein: ALLEIN.JA },
+    PORTFOLIO_SATURATION:            { klasse: KLASSE.QUALITAET, allein: ALLEIN.JA },
+
+    /* --- Behauptungen ueber ein leeres Angebot ----------------------
+       "Keine Familie trug ein Thema" ist gegen die Leiter NACHPRUEFBAR
+       und darf deshalb nach VOLLSTAENDIGER Suche stehen bleiben.
+
+       Alle anderen hier sind Aussagen ueber EINE Familie oder ueber
+       Geschmack. Sie beenden den Tag nie allein - auch nicht mit
+       Suchnachweis, denn sie messen die Suche gar nicht. */
+    NO_TOPIC_IN_ANY_FAMILY:  { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NUR_NACH_SUCHE },
+    NO_MARKET_SIGNAL:        { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN },
+    NO_QUANT_SIGNAL:         { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN },
+    NO_BREAKING_NEWS:        { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN },
+    NO_SINGLE_STOCK_SIGNAL:  { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN },
+    NO_IDEA:                 { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN },
+    NO_INTERESTING_TOPIC:    { klasse: KLASSE.ANGEBOT, allein: ALLEIN.NEIN }
+  };
+
+  /* -------------------------------------------------------------------
      UND DIE, DIE ALLEIN NICHT GENUEGEN
 
      Ein fehlendes Marktsignal ist kein leerer Content-Tag. Vision
@@ -126,11 +215,13 @@
      keine Kursbewegung traegt, heisst nur, dass die Suche weitergehen
      muss - nicht, dass sie zu Ende ist.
 
-     Diese Liste steht hier und nicht in einem Kommentar, damit ein
-     Test sie halten kann.
+     Der Name bleibt, weil Aufrufer und Tests ihn benutzen. Der INHALT
+     kommt jetzt aus der Tabelle oben und wird nicht mehr daneben
+     gepflegt.
      ------------------------------------------------------------------- */
-  var NIE_ALLEIN = ["NO_MARKET_SIGNAL", "NO_QUANT_SIGNAL", "NO_BREAKING_NEWS",
-    "NO_SINGLE_STOCK_SIGNAL"];
+  var NIE_ALLEIN = Object.keys(GRUND_KLASSE).filter(function (g) {
+    return GRUND_KLASSE[g].allein === ALLEIN.NEIN;
+  });
 
   /* Null, undefined und Leerstring sind KEINE Zahlen - auch wenn
      `Number()` aus zweien davon eine 0 macht. Wo der Unterschied
@@ -437,24 +528,74 @@
    * Der Fall, den das verhindert: die Opportunity Engine findet kein
    * Kursereignis, meldet NO_MARKET_SIGNAL, und der Tag ist vorbei -
    * obwohl vierzehn weitere Content Families nie gefragt wurden.
+   *
+   * -------------------------------------------------------------------
+   * DER ZWEITE PARAMETER IST FAIL-CLOSED, UND ZWAR ABSICHTLICH
+   * -------------------------------------------------------------------
+   *
+   * `nachweis.vollstaendigGesucht` beantwortet die einzige Frage, die
+   * einen Angebotsgrund tragen kann: hat die Leiter WIRKLICH jede
+   * Stufe gefragt? Wer ihn nicht uebergibt, bekommt fuer
+   * NO_TOPIC_IN_ANY_FAMILY ein Nein.
+   *
+   * Das ist keine Strenge um ihrer selbst willen. Ein fehlender
+   * Parameter, der als `true` gelesen wird, ist genau die Form von
+   * "unbekannt als ja", die den Creative Slot schon einmal geoeffnet
+   * hat, als niemand gezaehlt hatte.
+   *
+   * @param nachweis { vollstaendigGesucht: true|false } - optional
    */
-  function grundZulaessig(grund) {
+  function grundZulaessig(grund, nachweis) {
     var g = String(grund || "");
-    if (NIE_ALLEIN.indexOf(g) !== -1) {
+    var eintrag = Object.prototype.hasOwnProperty.call(GRUND_KLASSE, g)
+      ? GRUND_KLASSE[g] : null;
+
+    if (!eintrag) {
       return {
-        zulaessig: false,
-        erklaerung: g + " ist kein ausreichender alleiniger Grund fuer einen " +
+        zulaessig: false, klasse: null, allein: null, verlangt: null,
+        erklaerung: "Unbekannter Grund: " + g + ". Eine Tagesentscheidung " +
+          "braucht einen benannten Grund, keinen erfundenen."
+      };
+    }
+
+    if (eintrag.allein === ALLEIN.NEIN) {
+      return {
+        zulaessig: false, klasse: eintrag.klasse, allein: eintrag.allein,
+        verlangt: null,
+        /* OHNE den Code im Satz. Er stand hier vorn, und ein Test hielt
+           genau zwei Codes davon ab, im Owner-Text zu erscheinen - die
+           uebrigen kamen durch. Was der Owner liest, ist ein Satz; der
+           Code steht daneben im Feld `klasse` und in `grund`. */
+        erklaerung: "Das ist kein ausreichender alleiniger Grund fuer einen " +
           "leeren Content-Tag. Vision Universe hat ein breites Content " +
           "Universe; ein fehlendes Marktsignal verlangt, weitere Familien zu " +
           "pruefen, und beendet den Tag nicht."
       };
     }
-    var bekannt = Object.keys(GRUND).indexOf(g) !== -1;
+
+    if (eintrag.allein === ALLEIN.NUR_NACH_SUCHE) {
+      var voll = !!(nachweis && nachweis.vollstaendigGesucht === true);
+      if (!voll) {
+        return {
+          zulaessig: false, klasse: eintrag.klasse, allein: eintrag.allein,
+          verlangt: "VOLLSTAENDIGE_SUCHE",
+          erklaerung: "Dieser Grund sagt etwas ueber das ANGEBOT, und das " +
+            "Angebot ist bei Vision Universe breit. Er traegt einen Tag nur, " +
+            "wenn die Leiter jede Stufe bis zur letzten gefragt hat und auch " +
+            "redaktionell nichts mehr offen stand. Solange das nicht " +
+            "nachgewiesen ist, heisst der Befund: die Suche hat aufgehoert, " +
+            "nicht das Angebot."
+        };
+      }
+      return {
+        zulaessig: true, klasse: eintrag.klasse, allein: eintrag.allein,
+        verlangt: null, erklaerung: null
+      };
+    }
+
     return {
-      zulaessig: bekannt,
-      erklaerung: bekannt ? null
-        : "Unbekannter Grund: " + g + ". Eine Tagesentscheidung braucht einen " +
-          "benannten Grund, keinen erfundenen."
+      zulaessig: true, klasse: eintrag.klasse, allein: eintrag.allein,
+      verlangt: null, erklaerung: null
     };
   }
 
@@ -515,10 +656,93 @@
     };
   }
 
+  /**
+   * Die Verfassung des leeren Tages, als Messung statt als Behauptung.
+   *
+   * -------------------------------------------------------------------
+   * WARUM DAS EINE EIGENE ANTWORT IST
+   * -------------------------------------------------------------------
+   *
+   * "Heute kein Beitrag" ist bisher EIN Satz gewesen, und ein Satz
+   * kann zwei voellig verschiedene Lagen meinen:
+   *
+   *   Der Freigabe-Slot ist belegt          -> Kapazitaet, gewollt
+   *   Kein Thema in keiner Familie          -> Angebot, und das waere
+   *                                            bei fuenfzehn Familien
+   *                                            ein Befund
+   *
+   * Wer beides gleich meldet, kann den Unterschied spaeter nicht mehr
+   * lesen. Diese Funktion schreibt ihn in den Bericht.
+   *
+   * SIE RECHNET NICHTS NEU. Die Zahlen kommen von dort, wo sie
+   * gemessen werden - der Leiter, dem Job-Register, der Konfiguration.
+   * Fehlt eine, steht `null` und nicht 0: die Verwechslung von
+   * "unbekannt" mit "keins" hat hier schon genug gekostet.
+   *
+   * @param eingabe {
+   *   leiterStufen       wie viele Stufen die Leiter hat
+   *   familien           wie viele Content Families es gibt
+   *   ideationStufe      die Stufe, auf der redaktionell gefragt wird
+   *   maxOpenCreativeJobs, offeneCreativeJobs,
+   *   aktiveFreigaben, dailyIntentMax, maxPostsPer7Days
+   * }
+   */
+  function verfassung(eingabe) {
+    var e = eingabe || {};
+    var stufen = ganzeZahlOderNull(e.leiterStufen);
+    var familien = ganzeZahlOderNull(e.familien);
+    var ideation = ganzeZahlOderNull(e.ideationStufe);
+
+    /* Reichlich ist keine Stimmung, sondern eine Eigenschaft der
+       Leiter: sie endet auf einer Stufe, die IMMER eine Frage hat.
+       Ist diese Stufe nicht da, ist die Aussage nicht belegt - und
+       dann sagt sie das, statt sie trotzdem zu behaupten. */
+    var letzteStufeIstIdeation =
+      stufen !== null && ideation !== null && ideation === stufen;
+
+    return {
+      contentSupply: {
+        modell: "ABUNDANT",
+        belegt: letzteStufeIstIdeation && familien !== null && familien > 0,
+        leiterStufen: stufen,
+        familien: familien,
+        letzteStufe: ideation,
+        letzteStufeIstIdeation: letzteStufeIstIdeation,
+        erklaerung: letzteStufeIstIdeation
+          ? "Die Leiter endet auf einer Stufe, die immer eine Frage hat. " +
+            "Ein leerer Tag kann deshalb nicht mit fehlenden Ideen begruendet " +
+            "werden - hoechstens mit fehlender Evidenz fuer eine Idee."
+          : "Die letzte Leiterstufe stellt keine redaktionelle Frage. Solange " +
+            "das so ist, laesst sich 'Ideen sind reichlich' nicht messen, " +
+            "sondern nur behaupten."
+      },
+      publishingCapacity: {
+        modell: "BOUNDED",
+        maxOpenCreativeJobs: ganzeZahlOderNull(e.maxOpenCreativeJobs),
+        offeneCreativeJobs: ganzeZahlOderNull(e.offeneCreativeJobs),
+        aktiveFreigaben: ganzeZahlOderNull(e.aktiveFreigaben),
+        dailyIntentMax: ganzeZahlOderNull(e.dailyIntentMax),
+        maxPostsPer7Days: ganzeZahlOderNull(e.maxPostsPer7Days),
+        erklaerung: "Kapazitaet ist absichtlich knapp: ein offener Creative " +
+          "Job, eine wartende Freigabe, ein Mindestabstand, ein Wochendach. " +
+          "Ein leerer Tag aus diesen Gruenden ist ein Betriebszustand und " +
+          "kein Mangel."
+      },
+      /* Der Satz, um dessentwillen die ganze Funktion existiert. */
+      erklaerung: "CONTENT SUPPLY = ABUNDANT, PUBLISHING CAPACITY = BOUNDED. " +
+        "Die beiden werden getrennt gemeldet, damit ein leerer Tag sagen " +
+        "kann, WELCHE der beiden Groessen ihn erklaert."
+    };
+  }
+
   var api = {
     EBENEN: EBENEN,
     spannung: spannung,
+    verfassung: verfassung,
     GRUND: GRUND,
+    KLASSE: KLASSE,
+    ALLEIN: ALLEIN,
+    GRUND_KLASSE: GRUND_KLASSE,
     NIE_ALLEIN: NIE_ALLEIN,
     regime: regime,
     ganzeZahlOderNull: ganzeZahlOderNull,

@@ -119,7 +119,19 @@
     /* Alles, was sie sah, war schon behandelt. */
     if (zahl(gruende.ALREADY_COVERED) > 0) return Kadenz.GRUND.CONTENT_REPETITION;
 
-    /* Keine Familie trug ueberhaupt ein Thema. */
+    /* -----------------------------------------------------------------
+       KEINE FAMILIE TRUG UEBERHAUPT EIN THEMA
+
+       Hier stand einen Entwurf lang eine Zeile, die offene
+       redaktionelle Fragen zu INSUFFICIENT_EVIDENCE gemacht haette:
+       "es gab Fragen, keine war belegt". Das klang richtig und war
+       eine Behauptung ueber eine Recherche, die niemand gefuehrt hat.
+       Niemand ist den zwanzig Fragen nachgegangen; zu melden, sie
+       seien unbelegt, waere ein Messergebnis ohne Messung.
+
+       Offene Fragen aendern den GRUND deshalb nicht. Sie aendern, ob
+       er den Tag tragen darf - und das entscheidet die Kadenz-Engine
+       am Suchnachweis, nicht diese Funktion. */
     if (zahl(l.opportunitiesConsidered) === 0) {
       return Kadenz.GRUND.NO_TOPIC_IN_ANY_FAMILY;
     }
@@ -166,7 +178,41 @@
     if (!letzte) return false;
     var tiefe = Number(l.fallbackDepthReached);
     /* Unbekannte Tiefe ist keine erreichte Tiefe. */
-    return Number.isFinite(tiefe) && tiefe >= letzte;
+    if (!Number.isFinite(tiefe) || tiefe < letzte) return false;
+
+    /* -----------------------------------------------------------------
+       DIE LETZTE STUFE ZU ERREICHEN IST NICHT DASSELBE WIE FERTIG ZU SEIN
+
+       Stufe 10 liefert redaktionelle Fragen. Bleiben welche offen, ist
+       die Leiter zwar bis unten gelaufen, aber die Suche ist nicht zu
+       Ende - es stand noch etwas da, dem niemand nachgegangen ist.
+
+       Das ist der Unterschied, um dessentwillen die ganze Stufe
+       existiert: "keine Familie trug ein Thema" darf einen Tag nur
+       beenden, wenn auch redaktionell nichts mehr offen war. Sonst
+       heisst der Befund weiterhin: aufgehoert, nicht zu Ende.
+
+       Fehlt die Angabe, gilt sie als unbekannt und nicht als null.
+       Ein Bericht ohne diese Zahl hat die Stufe nicht gefahren. */
+    var offen = Number(l.redaktionelleFragenAnzahl);
+    if (!Number.isFinite(offen)) return false;
+    return offen === 0;
+  }
+
+  /** Wie viele redaktionelle Fragen offen blieben - null heisst unbekannt. */
+  function offeneFragen(leiter) {
+    var n = Number((leiter || {}).redaktionelleFragenAnzahl);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  /* Der Satz ueber die offenen Fragen - an EINER Stelle, weil ihn
+     zwei Antworten brauchen. Zwei Fassungen desselben Satzes laufen
+     auseinander, und der Owner liest dann je nach Zweig etwas
+     anderes ueber denselben Tag. */
+  function fragenSatz(offen) {
+    if (!(offen > 0)) return null;
+    return "Jede Stufe wurde gefragt; auf der letzten stehen noch " + offen +
+      " redaktionelle Fragen offen, denen heute niemand nachgegangen ist.";
   }
 
   /**
@@ -246,6 +292,8 @@
         ablehnungsgruende: l.rejectionReasons || {},
         /* Das ehrlichste Feld des Nachweises. */
         nichtGefragt: l.nichtGefragt || [],
+        /* null heisst unbekannt, nicht null Fragen. */
+        redaktionelleFragenOffen: offeneFragen(l),
         vollstaendig: vollstaendigGesucht(l)
       } : null,
       tore: {
@@ -275,6 +323,10 @@
        steht weiter im Nachweis; es entscheidet hier nur nichts mehr. */
     if (uhrBlockiert) {
       var uhrGrund = k.grund || null;
+      /* Kein Suchnachweis uebergeben, und zwar mit Absicht: in diesem
+         Zweig hat die Leiter gar nicht erst gesucht. Ein Angebotsgrund
+         faellt hier deshalb durch - was richtig ist, denn die Uhr
+         kennt nur Kapazitaetsgruende. */
       var uhrPruefung = uhrGrund ? Kadenz.grundZulaessig(uhrGrund)
         : { zulaessig: false, erklaerung: "Kein Grund benannt." };
       if (!uhrGrund || !uhrPruefung.zulaessig) {
@@ -327,26 +379,31 @@
     if (!grund) fehlend.push(TEILE.BENANNTER_GRUND);
 
     /* -----------------------------------------------------------------
-       EIN GRUND AUS NIE_ALLEIN BEENDET DEN TAG NICHT
+       DIE KLASSE DES GRUNDES ENTSCHEIDET, NICHT SEIN NAME
 
-       Diese Pruefung greift hier heute nie: `grundAusSuche()` gibt nur
-       Gruende zurueck, die einen Tag beenden duerfen. Das ist kein
-       Zufall, sondern die Zusicherung dieser Funktion - und ein Test
-       haelt sie fest (NP17), statt sie zu behaupten.
+       Hier stand eine Zeile, die NO_TOPIC_IN_ANY_FAMILY beim Namen
+       nannte und gegen die Suche hielt. Sie war richtig - und sie war
+       eine von Hand gepflegte Aufzaehlung neben einer Regel. Ein
+       zweiter Angebotsgrund haette denselben Schutz gebraucht und ihn
+       nicht bekommen; gemerkt haette es niemand, weil ein fehlendes
+       Tor wie ein ruhiger Betrieb aussieht.
 
-       Sie steht trotzdem. Wer `grundAusSuche()` erweitert, soll nicht
-       aus Versehen NO_MARKET_SIGNAL zu einer Tagesentscheidung machen
-       koennen; im Uhrzweig, wo der Grund von aussen kommt, greift
-       dieselbe Pruefung sehr wohl. */
-    var pruefung = grund ? Kadenz.grundZulaessig(grund)
-                         : { zulaessig: false, erklaerung: "Kein Grund benannt." };
-    if (grund && !pruefung.zulaessig) fehlend.push(TEILE.BENANNTER_GRUND);
+       Jetzt sagt die Kadenz-Engine, welche KLASSE ein Grund hat und
+       was er verlangt. Der Suchnachweis wird ihr uebergeben, und was
+       fehlt, kommt als Antwort zurueck statt aus einer Liste hier.
 
-    /* "Keine Familie trug ein Thema" gilt nur, wenn wirklich jede
-       gefragt wurde. */
-    if (grund === Kadenz.GRUND.NO_TOPIC_IN_ANY_FAMILY &&
-        !vollstaendigGesucht(l)) {
-      fehlend.push(TEILE.SUCHE);
+       Der Uhrzweig oben uebergibt ihn bewusst nicht - dort wurde
+       nicht gesucht. */
+    var pruefung = grund
+      ? Kadenz.grundZulaessig(grund, { vollstaendigGesucht: vollstaendigGesucht(l) })
+      : { zulaessig: false, erklaerung: "Kein Grund benannt." };
+
+    if (grund && !pruefung.zulaessig) {
+      /* Was die Engine verlangt, uebersetzt in das Teil, das der
+         Nachweis vermisst. Verlangt sie die vollstaendige Suche, ist
+         die SUCHE unvollstaendig - und nicht der Grund unbenannt. */
+      fehlend.push(pruefung.verlangt === "VOLLSTAENDIGE_SUCHE"
+        ? TEILE.SUCHE : TEILE.BENANNTER_GRUND);
     }
 
     /* Wurde gesucht und nichts gefunden, ohne dass die Suche selbst
@@ -366,8 +423,14 @@
         vollstaendig: false,
         fehlendeTeile: einmalig,
         nachweis: nachweis,
+        /* Der Satz ueber die offenen Fragen gehoert AUCH hierher.
+           Genau in diesem Zweig landet der haeufigste leere Tag, und
+           ohne ihn las der Owner, der Nachweis sei unvollstaendig -
+           aber nicht, WAS unbeantwortet danebenlag. */
         erklaerung: "Heute ist kein Beitrag entstanden, und der Nachweis dafuer " +
           "ist unvollstaendig: " + einmalig.join(", ") + ". " +
+          (fragenSatz(nachweis.suche && nachweis.suche.redaktionelleFragenOffen)
+            ? fragenSatz(nachweis.suche.redaktionelleFragenOffen) + " " : "") +
           (pruefung.erklaerung || "") +
           " Ein unerklaerter leerer Tag ist ein Befund, kein Betriebszustand."
       };
@@ -405,10 +468,16 @@
       "wurden " + s.themenGeprueft + " Thema/Themen.");
 
     if (s.vollstaendig) {
-      teile.push("Jede Stufe der Leiter wurde gefragt.");
+      teile.push("Jede Stufe der Leiter wurde gefragt, auch die redaktionelle.");
     } else if ((s.nichtGefragt || []).length) {
       teile.push("Nicht gefragt wurden " + s.nichtGefragt.length + " tiefere " +
         "Stufe(n), weil weiter oben genug gefunden wurde.");
+    } else if (fragenSatz(s.redaktionelleFragenOffen)) {
+      /* Der Fall, den der Owner sonst nicht saehe: die Leiter ist bis
+         unten gelaufen, es fehlt keine Stufe - und trotzdem steht
+         etwas offen. Ohne diesen Satz endete der Bericht mit
+         "gesucht in 15 Familien" und verschwiege, was daneben lag. */
+      teile.push(fragenSatz(s.redaktionelleFragenOffen));
     }
 
     if (nachweis.tore.abgelehnt > 0) {
@@ -445,6 +514,7 @@
     grundAusSuche: grundAusSuche,
     letzteStufe: letzteStufe,
     vollstaendigGesucht: vollstaendigGesucht,
+    offeneFragen: offeneFragen,
     beurteile: beurteile
   };
 

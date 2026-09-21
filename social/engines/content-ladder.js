@@ -67,15 +67,33 @@
 (function (global) {
   "use strict";
   var isNode = typeof module !== "undefined" && module.exports;
+  var Ideation = isNode ? require("./editorial-ideation.js")
+                        : global.VUSocialEditorialIdeation;
 
   /* -------------------------------------------------------------------
-     DIE NEUN STUFEN
+     DIE ZEHN STUFEN
 
      Die Reihenfolge ist eine Owner-Entscheidung. Die Zuordnung der
      Familien ist es nicht: sie folgt den fuenfzehn Familien, die es
      gibt, und erfindet keine neue Taxonomie. Jede bestehende Familie
      kommt genau einmal vor - ein Test haelt das fest, weil eine
      Familie ohne Stufe nie gefragt wuerde.
+
+     DIE ZEHNTE STUFE FRAGT KEINE FAMILIE.
+
+     Neun Stufen fragen die Platte: welches THEMA traegt heute? Wenn
+     keine von ihnen etwas hat, war die Antwort bisher "keine Familie
+     trug ein Thema" - ein Satz ueber das ANGEBOT, ausgesprochen von
+     einem Haus mit fuenfzehn Familien.
+
+     Stufe 10 fragt nicht die Platte, sondern die Redaktion, und sie
+     hat immer eine Frage. Ihre `familien` sind absichtlich leer: sie
+     bringt keine sechzehnte Familie, sie bringt Fragen, die in den
+     bestehenden fuenfzehn landen wuerden.
+
+     Was sie liefert, zaehlt NICHT als Fund. Eine Frage ohne Beleg ist
+     kein Beitrag, und diese Stufe verkuerzt den Weg zur
+     Veroeffentlichung um keinen Schritt.
      ------------------------------------------------------------------- */
   var LEITER = [
     { stufe: 1, id: "CURRENT_MARKET",
@@ -104,7 +122,10 @@
       familien: ["EVERGREEN"] },
     { stufe: 9, id: "PORTFOLIO_EXPLORE",
       titel: "Portfolio-Vielfalt und Erkundung",
-      familien: ["DATA_STORY", "ETF_PRODUCT", "DIVIDEND"] }
+      familien: ["DATA_STORY", "ETF_PRODUCT", "DIVIDEND"] },
+    { stufe: 10, id: "EDITORIAL_IDEATION",
+      titel: "Redaktionelle Fragen",
+      familien: [], ideation: true }
   ];
 
   /* Warum ein Thema nicht zaehlt. Jeder Grund ist eine eigene Aussage;
@@ -115,7 +136,12 @@
     NO_TOPICS_IN_FAMILY:   "NO_TOPICS_IN_FAMILY",
     ALREADY_COVERED:       "ALREADY_COVERED",
     PORTFOLIO_SATURATED:   "PORTFOLIO_SATURATED",
-    EXCLUDED_BY_CALLER:    "EXCLUDED_BY_CALLER"
+    EXCLUDED_BY_CALLER:    "EXCLUDED_BY_CALLER",
+    /* Stufe 10: es GAB etwas, es war nur noch nicht belegt. Diesen
+       Grund mit NO_TOPICS_IN_FAMILY zusammenzuziehen hiesse, den
+       Unterschied zwischen "nichts da" und "noch nicht recherchiert"
+       wieder einzuebnen - und genau der traegt die Tagesentscheidung. */
+    IDEAS_WITHOUT_EVIDENCE: "IDEAS_WITHOUT_EVIDENCE"
   };
 
   /** Alle Familien, die die Leiter kennt. */
@@ -203,6 +229,7 @@
     var themenGeprueft = 0;
     var ablehnungen = {};
     var tiefe = 0;
+    var redaktionelleFragen = [];
 
     function ablehnen(code) {
       ablehnungen[code] = (ablehnungen[code] || 0) + 1;
@@ -211,6 +238,46 @@
     for (var i = 0; i < LEITER.length; i++) {
       var stufe = LEITER[i];
       tiefe = stufe.stufe;
+
+      /* ---------------------------------------------------------------
+         DIE STUFE, DIE NICHT DIE PLATTE FRAGT
+
+         Sie laeuft nur, wenn die neun davor nicht genug gefunden
+         haben - die Abbruchbedingung unten sorgt dafuer. Was sie
+         liefert, geht NICHT in `stufenFund` und damit nie in
+         `gefundene`: eine Frage ohne Beleg ist kein Fund, und eine
+         Stufe, die Funde erfindet, waere die teuerste Zeile dieser
+         Datei.
+
+         Bemerkt wird sie trotzdem, und zwar unter eigenem Namen. Erst
+         dadurch kann der leere Tag sagen, dass es Fragen gab. */
+      if (stufe.ideation) {
+        var redaktion = Ideation && typeof Ideation.ideen === "function"
+          ? Ideation.ideen({ now: o.now, abgedeckt: abgedeckt,
+              ausgeschlosseneFamilien: ausgeschlossen })
+          : null;
+        var fragen = (redaktion && redaktion.ideen) || [];
+        redaktionelleFragen = fragen;
+
+        /* Je Frage eine Ablehnung: der Nachweis soll die ANZAHL
+           tragen, nicht nur die Tatsache. Eine einzige Zaehlung fuer
+           zwanzig offene Fragen liesse sich spaeter nicht von einer
+           fuer eine unterscheiden. */
+        for (var q = 0; q < fragen.length; q += 1) {
+          ablehnen(ABLEHNUNG.IDEAS_WITHOUT_EVIDENCE);
+        }
+
+        stufenBericht.push({
+          stufe: stufe.stufe, id: stufe.id, titel: stufe.titel,
+          familien: [],
+          qualifiziert: 0,
+          ideation: true,
+          ideen: fragen.length,
+          hinweis: (redaktion && redaktion.erklaerung) ||
+            "Die redaktionelle Stufe war nicht erreichbar."
+        });
+        continue;
+      }
 
       var stufenFund = [];
       var familienHier = [];
@@ -295,6 +362,11 @@
       fallbackDepthReached: tiefe,
       rejectionReasons: ablehnungen,
       stufen: stufenBericht,
+
+      /* Die offenen redaktionellen Fragen. Sie stehen NEBEN `gefunden`
+         und nie darin: getrennt gezaehlt, getrennt gemeldet. */
+      redaktionelleFragen: redaktionelleFragen,
+      redaktionelleFragenAnzahl: redaktionelleFragen.length,
 
       /* Was NICHT gefragt wurde, weil die Suche vorher genug fand.
          Es als "geprueft" zu fuehren waere die bequemste Unwahrheit

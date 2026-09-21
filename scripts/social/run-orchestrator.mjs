@@ -29,6 +29,8 @@ const Job = require(join(ROOT, "social/engines/creative-job.js"));
 const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
 const Kadenz = require(join(ROOT, "social/engines/content-cadence.js"));
 const NoPost = require(join(ROOT, "social/engines/no-post.js"));
+const Leiter = require(join(ROOT, "social/engines/content-ladder.js"));
+const Harte = require(join(ROOT, "social/engines/hard-invariants.js"));
 const RunLease = require(join(ROOT, "social/engines/run-lease.js"));
 const FrequenzLernen = require(join(ROOT, "social/engines/frequency-learning.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
@@ -543,8 +545,46 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       (e.empfehlung === null ? "keine Empfehlung" : String(e.empfehlung)));
   }
 
-  const sp = Kadenz.spannung(
-    readJson(join(ROOT, "social/config/cadence.json"), null));
+  /* --------------------------------------------------- §7-§13
+     DIE VERFASSUNG, VOR DER STUFENENTSCHEIDUNG GEDRUCKT
+
+     Sie steht hier und nicht in einem Kommentar, weil ein leerer Tag
+     genau an dieser Stelle gelesen wird. Wer ihn erklaert bekommt,
+     soll zugleich sehen, WELCHE der beiden Groessen knapp war - das
+     Angebot ist es bei fuenfzehn Familien und einer redaktionellen
+     Stufe naemlich nie. */
+  const cfg = readJson(join(ROOT, "social/config/cadence.json"), null);
+  const vf = Kadenz.verfassung({
+    leiterStufen: Leiter.LEITER.length,
+    familien: Leiter.alleFamilien().length,
+    ideationStufe: (Leiter.LEITER.find((x) => x.ideation) || {}).stufe,
+    maxOpenCreativeJobs: Harte.SOLL.MAX_OPEN_CREATIVE_JOBS,
+    offeneCreativeJobs: z.openCreativeJobs,
+    aktiveFreigaben: z.activeApprovalQueue,
+    dailyIntentMax: (cfg && cfg.contentCreation || {}).dailyIntentMax,
+    maxPostsPer7Days: cfg && cfg.maxPostsPer7Days
+  });
+  console.log("\n--- ANGEBOT UND KAPAZITAET (§7-§13) ---");
+  console.log("Content Supply   : " + vf.contentSupply.modell +
+    "   (" + vf.contentSupply.familien + " Familien, " +
+    vf.contentSupply.leiterStufen + " Leiterstufen, die letzte fragt " +
+    "redaktionell: " + (vf.contentSupply.letzteStufeIstIdeation ? "ja" : "NEIN") + ")");
+  console.log("Publishing Cap.  : " + vf.publishingCapacity.modell +
+    "   (offene Creative Jobs " +
+    (vf.publishingCapacity.offeneCreativeJobs === null ? "unbekannt"
+      : vf.publishingCapacity.offeneCreativeJobs) +
+    " von " + vf.publishingCapacity.maxOpenCreativeJobs +
+    ", wartende Freigaben " + vf.publishingCapacity.aktiveFreigaben +
+    ", Dach " + vf.publishingCapacity.maxPostsPer7Days + "/Woche)");
+  if (nachweis.grund) {
+    const kl = Kadenz.grundZulaessig(nachweis.grund,
+      { vollstaendigGesucht: !!(nachweis.nachweis.suche &&
+          nachweis.nachweis.suche.vollstaendig) });
+    console.log("Grund gehoert zu : " + (kl.klasse || "unbekannt"));
+  }
+  console.log(vf.erklaerung);
+
+  const sp = Kadenz.spannung(cfg);
   if (sp.gemessen && sp.gespannt) {
     console.log("Spannung         : " + sp.erzeugungProWoche + " Kandidaten/Woche " +
       "moeglich, " + sp.publishingDachProWoche + " Beitraege/Woche erlaubt");

@@ -93,12 +93,38 @@ function nachweispflicht() {
      wirklich einen BEFUND statt einer Ausrede? */
   const ohneSuche = NoPost.beurteile({ erzeugt: 0, kadenz: null,
     leiter: null, ablehnungen: [] });
+  /* -----------------------------------------------------------------
+     DIE PROBE GEHOERT IN DEN SUCHZWEIG, NICHT IN DEN UHRZWEIG
+
+     Der erste Entwurf legte "NO_TOPIC_IN_ANY_FAMILY" als UHR-Grund
+     an. Der Uhrzweig hat aber nie gesucht - er kennt nur
+     Kapazitaetsgruende - und ein Angebotsgrund faellt dort zu Recht
+     durch. Gemessen wurde damit nicht die Nachweispflicht, sondern
+     eine Lage, die im Betrieb nicht vorkommt.
+
+     Jetzt laeuft die Probe durch den Zweig, um den es in §13-§16
+     geht: die Uhr laesst einen Beitrag zu, die Suche lief bis zur
+     letzten Stufe, und es stand auch redaktionell nichts mehr offen. */
+  const volleSuche = { nichtGefragt: [], fallbackDepthReached: NoPost.letzteStufe(),
+    familiesConsidered: ["a"], familiesConsideredCount: 1, gefunden: [],
+    opportunitiesConsidered: 0, redaktionelleFragenAnzahl: 0,
+    rejectionReasons: { NO_TOPICS_IN_FAMILY: 3 } };
   const mitSuche = NoPost.beurteile({
     erzeugt: 0,
-    kadenz: { darfErzeugen: false, grund: "NO_TOPIC_IN_ANY_FAMILY" },
-    leiter: { nichtGefragt: [], fallbackDepthReached: NoPost.letzteStufe(),
-      familiesConsidered: ["a"], familiesConsideredCount: 1, gefunden: [],
-      rejectionReasons: { INSUFFICIENT_EVIDENCE: 3 } },
+    kadenz: { darfErzeugen: true, grund: null, lage: {} },
+    leiter: volleSuche,
+    ablehnungen: []
+  });
+
+  /* Und die dritte Lage, die die Verfassung erst zu einer macht:
+     dieselbe Suche mit offenen redaktionellen Fragen traegt den Tag
+     NICHT. Ohne diese Haelfte waere "mit Suche JUSTIFIED" von einem
+     Tor nicht zu unterscheiden, das immer offen steht. */
+  const mitOffenenFragen = NoPost.beurteile({
+    erzeugt: 0,
+    kadenz: { darfErzeugen: true, grund: null, lage: {} },
+    leiter: Object.assign({}, volleSuche, { redaktionelleFragenAnzahl: 20,
+      rejectionReasons: { NO_TOPICS_IN_FAMILY: 3, IDEAS_WITHOUT_EVIDENCE: 20 } }),
     ablehnungen: []
   });
   /* Und ist der Nachweis im Lauf verdrahtet, oder nur gebaut? */
@@ -112,13 +138,16 @@ function nachweispflicht() {
         .replace(/export function keinBeitragNachweis\s*\(/, ""));
 
   const ok = ohneSuche.zustand === NoPost.ZUSTAND.NO_POST_UNEXPLAINED &&
-    mitSuche.zustand === NoPost.ZUSTAND.NO_POST_JUSTIFIED && imLauf;
+    mitSuche.zustand === NoPost.ZUSTAND.NO_POST_JUSTIFIED &&
+    mitOffenenFragen.zustand === NoPost.ZUSTAND.NO_POST_UNEXPLAINED && imLauf;
   return { zustand: ok ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
     satz: ok
       ? "Ohne Suche: " + ohneSuche.zustand + ". Mit voller Suche: " +
-        mitSuche.zustand + ". Im Orchestrator verdrahtet: " + imLauf + "."
+        mitSuche.zustand + ". Mit offenen redaktionellen Fragen: " +
+        mitOffenenFragen.zustand + ". Im Orchestrator verdrahtet: " + imLauf + "."
       : "Ohne Suche: " + ohneSuche.zustand + ", mit Suche: " +
-        mitSuche.zustand + ", im Lauf: " + imLauf };
+        mitSuche.zustand + ", mit offenen Fragen: " + mitOffenenFragen.zustand +
+        ", im Lauf: " + imLauf };
 }
 
 /** 2. JETZT PRUEFEN startet DENSELBEN Workflow wie der Zeitplan (§2-§5). */

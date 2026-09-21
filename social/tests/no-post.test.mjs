@@ -32,6 +32,17 @@ const SUCHE_MIT_FUND = {
 };
 
 /* Und die Form einer Suche, die bis zum Ende ging und nichts fand. */
+/* -------------------------------------------------------------------
+   DER SELTENE TAG: AUCH REDAKTIONELL STAND NICHTS MEHR OFFEN
+
+   `redaktionelleFragenAnzahl: 0` ist keine Formalie. Die zehnte
+   Leiterstufe hat immer Fragen; null heisst, dass jede einzelne schon
+   abgedeckt oder ausgeschlossen war. Nur dann ist "keine Familie trug
+   ein Thema" eine Aussage ueber das Angebot und nicht ueber die
+   Suche.
+
+   Der haeufige Fall steht darunter.
+   ------------------------------------------------------------------- */
 const SUCHE_LEER = {
   familiesConsidered: Ladder.alleFamilien(),
   familiesConsideredCount: Ladder.alleFamilien().length,
@@ -39,9 +50,18 @@ const SUCHE_LEER = {
   fallbackDepthReached: Ladder.LEITER.length,
   rejectionReasons: { NO_TOPICS_IN_FAMILY: 9, FAMILY_UNAVAILABLE: 6 },
   nichtGefragt: [],
+  redaktionelleFragenAnzahl: 0,
   gefunden: 0,
   genug: false
 };
+
+/* Dieselbe leere Platte, aber die redaktionelle Stufe hatte etwas -
+   also der Normalfall eines leeren Tages. */
+const SUCHE_LEER_MIT_FRAGEN = Object.assign({}, SUCHE_LEER, {
+  rejectionReasons: { NO_TOPICS_IN_FAMILY: 9, FAMILY_UNAVAILABLE: 6,
+    IDEAS_WITHOUT_EVIDENCE: 20 },
+  redaktionelleFragenAnzahl: 20
+});
 
 const UHR_FREI = {
   darfErzeugen: true, grund: null, erklaerung: "Heute noch kein Beitrag.",
@@ -234,7 +254,72 @@ test("NP17 · Die Suche nennt nur Gruende, die einen Tag beenden duerfen", () =>
   for (const [leiter, ablehnungen] of formen) {
     const g = NoPost.grundAusSuche(leiter, ablehnungen);
     assert.ok(g, "kein Grund fuer " + JSON.stringify(leiter && leiter.rejectionReasons));
-    assert.equal(Kadenz.grundZulaessig(g).zulaessig, true,
-      "Die Suche nennt einen Grund, der keinen Tag beenden darf: " + g);
+
+    /* Die eigentliche Zusicherung: NIE ein Grund aus der Klasse, die
+       allein nie genuegt. Ein NO_MARKET_SIGNAL aus der Suche waere
+       der Tagesabschluss aus einer einzigen Familie. */
+    assert.ok(!Kadenz.NIE_ALLEIN.includes(g),
+      "Die Suche nennt einen Grund, der nie allein genuegt: " + g);
+
+    /* Und die zweite Haelfte, die die erste Fassung mit der ersten
+       verwechselt hat: ob der Grund den Tag TRAEGT, haengt an der
+       Suche, die ihn hervorgebracht hat. `leiter: null` ist keine
+       Suche - dort gehoert er nicht angenommen, sondern vermisst. */
+    const p = Kadenz.grundZulaessig(g,
+      { vollstaendigGesucht: NoPost.vollstaendigGesucht(leiter) });
+    if (leiter && NoPost.vollstaendigGesucht(leiter)) {
+      assert.equal(p.zulaessig, true,
+        "Eine vollstaendige Suche nennt einen Grund, der nicht traegt: " + g);
+    }
   }
+
+  /* Gegenprobe zur Klassenaussage: ohne jede Suche traegt derselbe
+     Grund nicht. Ohne sie waere oben nicht zu sehen, ob die Pruefung
+     ueberhaupt etwas unterscheidet. */
+  const ohne = NoPost.grundAusSuche(null, []);
+  assert.equal(Kadenz.grundZulaessig(ohne,
+    { vollstaendigGesucht: NoPost.vollstaendigGesucht(null) }).zulaessig, false);
+});
+
+test("NP18 · Offene redaktionelle Fragen beenden den Tag nicht", () => {
+  /* §11/§12: das Angebot von Vision Universe ist breit. Ein leerer
+     Tag, waehrend zwanzig redaktionelle Fragen unbeantwortet
+     dastehen, ist ein Befund - die Suche hat aufgehoert, nicht das
+     Angebot. */
+  const b = NoPost.beurteile({ erzeugt: 0, kadenz: UHR_FREI,
+    leiter: SUCHE_LEER_MIT_FRAGEN });
+  assert.equal(b.zustand, NoPost.ZUSTAND.NO_POST_UNEXPLAINED);
+  assert.ok(b.fehlendeTeile.includes(NoPost.TEILE.SUCHE),
+    "Vermisst wird die Suche, nicht der Grund: " + b.fehlendeTeile.join(", "));
+  assert.equal(b.nachweis.suche.redaktionelleFragenOffen, 20);
+  /* Und der Owner erfaehrt es auch - in seinem Satz, ohne Code. */
+  assert.match(b.erklaerung, /20 redaktionelle Fragen offen/,
+    "Der Owner-Satz verschweigt die offenen Fragen: " + b.erklaerung);
+  for (const g of Object.keys(Kadenz.GRUND_KLASSE)) {
+    assert.ok(!b.erklaerung.includes(g), "Der Satz nennt den Code " + g);
+  }
+
+  /* Gegenprobe: derselbe leere Tag, nur ohne offene Fragen. Dann -
+     und nur dann - traegt er sich selbst. Ohne diese Haelfte waere
+     die Pruefung oben von einem Tor nicht zu unterscheiden, das immer
+     zu ist. */
+  const zu = NoPost.beurteile({ erzeugt: 0, kadenz: UHR_FREI, leiter: SUCHE_LEER });
+  assert.equal(zu.zustand, NoPost.ZUSTAND.NO_POST_JUSTIFIED);
+  assert.equal(zu.grund, Kadenz.GRUND.NO_TOPIC_IN_ANY_FAMILY);
+});
+
+test("NP19 · Der gemessene Qualitaetsbefund traegt den Tag auch bei offenen Fragen", () => {
+  /* Die andere Haelfte der Verfassung: reichliches Angebot senkt
+     keine Schwelle. Wer Themen hatte, sie gemessen hat und sie zu
+     schwach fand, hat einen gerechtfertigten leeren Tag - auch wenn
+     redaktionell noch zwanzig Fragen offen stehen.
+
+     Waere das anders, muesste das System bei offenen Fragen IRGENDWAS
+     senden. Genau das verbietet der Auftrag. */
+  const b = NoPost.beurteile({ erzeugt: 0, kadenz: UHR_FREI,
+    leiter: Object.assign({}, SUCHE_MIT_FUND, { redaktionelleFragenAnzahl: 20 }),
+    ablehnungen: [{ topic: "T", stage: "FACT_CHECK", reason: "zu duenn" }] });
+  assert.equal(b.zustand, NoPost.ZUSTAND.NO_POST_JUSTIFIED);
+  assert.equal(b.grund, Kadenz.GRUND.NO_OPPORTUNITY_PASSED_QUALITY);
+  assert.equal(Kadenz.grundZulaessig(b.grund).klasse, Kadenz.KLASSE.QUALITAET);
 });

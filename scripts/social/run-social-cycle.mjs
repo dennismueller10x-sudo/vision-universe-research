@@ -1168,7 +1168,10 @@ async function main() {
        wird; die Auswahl darunter trifft `Opportunity.prioritize`. */
     benoetigt: 1,
     bereitsAbgedeckt,
-    unavailableFamilies: platte.unavailableFamilies
+    unavailableFamilies: platte.unavailableFamilies,
+    /* Fuer die Reihenfolge der redaktionellen Stufe. Ohne sie fuehrte
+       jeden Tag dieselbe Frage die Liste an. */
+    now: NOW
   });
 
   log("Leiter:        " + ContentLadder.erklaerung(leiter));
@@ -1176,7 +1179,8 @@ async function main() {
          ContentLadder.LEITER.length + ", Familien " + leiter.familiesConsideredCount +
          ", Themen geprueft " + leiter.opportunitiesConsidered);
   for (const st of leiter.stufen) {
-    detail("Stufe " + st.stufe + " " + st.titel + " — " + st.qualifiziert + " belegt");
+    detail("Stufe " + st.stufe + " " + st.titel + " — " + st.qualifiziert + " belegt" +
+      (st.ideation ? " (" + st.ideen + " redaktionelle Fragen offen)" : ""));
   }
 
   const kontext = {
@@ -2548,6 +2552,19 @@ async function main() {
       fallbackDepthReached: leiter.fallbackDepthReached,
       rejectionReasons: leiter.rejectionReasons,
       nichtGefragt: leiter.nichtGefragt,
+      /* -----------------------------------------------------------------
+         DIE ZAHL, OHNE DIE DER NACHWEIS BLIND IST
+
+         Diese Liste ist von Hand gepflegt, und genau so ist in diesem
+         Projekt schon einmal ein Feld verlorengegangen: die Engine
+         liefert es, der Bericht laesst es weg, und der Leser bekommt
+         `undefined`. no-post.js liest `undefined` als UNBEKANNT und
+         faellt zu - der Betrieb saehe "vorsichtig" aus und waere
+         blind.
+
+         Ein Test haelt deshalb fest, dass hier alles steht, was
+         `vollstaendigGesucht()` liest. */
+      redaktionelleFragenAnzahl: leiter.redaktionelleFragenAnzahl,
       gefunden: (leiter.gefunden || []).length,
       genug: leiter.genug === true,
       stufen: leiter.stufen
