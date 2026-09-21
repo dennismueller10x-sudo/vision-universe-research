@@ -120,14 +120,30 @@
   /**
    * Wie lange nach einem Zyklus zu warten ist.
    *
-   * Dauerte der Zyklus laenger als der Takt, ist der naechste Rasterpunkt
-   * schon vorbei. Dann wird NICHT nachgeholt: zwei Zyklen hintereinander
-   * fragen denselben Anbieter zweimal nach fast denselben Bars. Es wird
-   * auf den naechsten freien Rasterpunkt gewartet - der Takt ist dann
-   * ehrlich laenger, statt heimlich zu driften.
+   * Die erste Fassung wartete immer bis zum naechsten Rasterpunkt. In
+   * Produktion hat sich das am 21.09.2026 sofort geraecht: ein Zyklus
+   * beginnt um 14:55:00, braucht 5:01 und endet um 15:00:01 - eine
+   * Sekunde NACH dem Rasterpunkt. Die Regel wartete daraufhin volle
+   * fuenf Minuten bis 15:05. Aus einem Zieltakt von fuenf Minuten wurden
+   * gemessene zehn (14:53:36, 15:00:01, dann 15:10).
+   *
+   * Der Denkfehler: die Wartezeit sollte verhindern, den Anbieter
+   * zweimal kurz hintereinander dasselbe zu fragen. Genau das kann aber
+   * nicht passieren, wenn der Zyklus selbst schon laenger als ein
+   * Intervall gedauert hat - dann ist unterwegs eine neue Bar entstanden,
+   * und sofort weiterzumachen ist nicht Hast, sondern der natuerliche
+   * Takt. Gewartet wird nur, wenn der Zyklus SCHNELLER war als das
+   * Intervall.
+   *
+   * @param {number} fertigMs   wann der Zyklus fertig wurde
+   * @param {number} intervalMs Zieltakt
+   * @param {number} dauerMs    wie lange der Zyklus gedauert hat
    */
-  function wartezeit(fertigMs, intervalMs) {
-    return Math.max(0, naechsterTakt(fertigMs, intervalMs) - fertigMs);
+  function wartezeit(fertigMs, intervalMs, dauerMs) {
+    var i = zahl(intervalMs, 300000);
+    var d = zahl(dauerMs, 0);
+    if (d >= i) return 0;
+    return Math.max(0, naechsterTakt(fertigMs, i) - fertigMs);
   }
 
   var API = {

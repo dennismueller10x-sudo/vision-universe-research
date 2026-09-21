@@ -105,30 +105,54 @@ test("PM-6 ein Block taktet ohne ein einziges weiteres Zeitplan-Ereignis durch",
 
 /* --- Fall 5: der Lauf dauert laenger als sein Takt ---------------------- */
 
-test("PM-7 ein ueberlanger Zyklus holt nicht auf, sondern nimmt den naechsten Rasterpunkt", () => {
+test("PM-7 ein Zyklus, der laenger als ein Intervall dauerte, wartet nicht", () => {
+  /* DER FEHLER, DEN DIE PRODUKTION GEFUNDEN HAT. Die erste Fassung
+     wartete hier bis zum naechsten Rasterpunkt - und weil ein 5:01-Lauf
+     eine Sekunde NACH dem Rasterpunkt endet, waren das volle fuenf
+     Minuten. Gemessen am 21.09.2026: Zyklus 1 um 14:53:36, Zyklus 2 um
+     15:00:01, Zyklus 3 erst um 15:10. Aus fuenf Minuten Zieltakt wurden
+     zehn.
+     Waehrend eines Zyklus, der laenger als das Intervall dauert, ist
+     unterwegs eine neue Bar entstanden. Sofort weiterzumachen ist dann
+     nicht Hast, sondern der natuerliche Takt. */
   const raster = Date.parse("2026-09-21T14:00:00Z");
-  /* Ein Zyklus, der 5:20 gebraucht hat, endet nach dem naechsten
-     Rasterpunkt. Nachholen hiesse: sofort wieder losfahren und den
-     Anbieter zweimal dasselbe fragen. */
-  const fertig = raster + 5 * MIN + 20000;
-  const warten = Pacemaker.wartezeit(fertig, TAKT);
-  assert.ok(warten > 0, "es muss gewartet werden");
-  assert.equal(fertig + warten, raster + 10 * MIN, "Ziel ist der naechste freie Rasterpunkt");
+  const dauer = 5 * MIN + 1000;
+  assert.equal(Pacemaker.wartezeit(raster + dauer, TAKT, dauer), 0);
 });
 
-test("PM-8 der Takt driftet nicht: zehn ueberlange Zyklen bleiben auf dem Raster", () => {
+test("PM-8 der gemessene Takt wird nicht laenger als der Zyklus selbst", () => {
+  /* Zehn Zyklen a 5:01 duerfen nicht 50, sondern hoechstens ~50:10
+     ergeben - und keinesfalls 100 Minuten wie in der ersten Fassung. */
+  const dauer = 5 * MIN + 1000;
   let t = Date.parse("2026-09-21T14:00:00Z");
+  const start = t;
   for (let i = 0; i < 10; i++) {
-    const fertig = t + 5 * MIN + 17000;          /* jedes Mal 17 s zu lang */
-    t = fertig + Pacemaker.wartezeit(fertig, TAKT);
-    assert.equal(t % TAKT, 0, "Zyklus " + i + " liegt neben dem Raster");
+    const fertig = t + dauer;
+    t = fertig + Pacemaker.wartezeit(fertig, TAKT, dauer);
   }
+  const takt = (t - start) / 10;
+  assert.ok(takt <= dauer + 1000, "gemessener Takt " + Math.round(takt / 1000) + " s");
+  assert.ok(takt >= dauer, "schneller als der Zyklus selbst kann es nicht gehen");
 });
 
 test("PM-9 Gegenprobe: ein kurzer Zyklus wartet bis zum Raster, statt sofort erneut zu laufen", () => {
+  /* Ohne diese Haelfte waere aus der Korrektur ein Trigger-Sturm
+     geworden: ein Zyklus, der in 45 Sekunden fertig ist, darf nicht
+     zwoelfmal je Intervall laufen. */
   const raster = Date.parse("2026-09-21T14:00:00Z");
   const fertig = raster + 45000;
-  assert.equal(Pacemaker.wartezeit(fertig, TAKT), 4 * MIN + 15000);
+  assert.equal(Pacemaker.wartezeit(fertig, TAKT, 45000), 4 * MIN + 15000);
+});
+
+test("PM-20 die Wartezeit ist nie negativ und nie laenger als ein Intervall", () => {
+  const raster = Date.parse("2026-09-21T14:00:00Z");
+  for (const dauer of [0, 1000, 60000, TAKT - 1, TAKT, TAKT + 1, 3 * TAKT]) {
+    for (const versatz of [0, 1, 999, 60000, TAKT - 1]) {
+      const w = Pacemaker.wartezeit(raster + versatz, TAKT, dauer);
+      assert.ok(w >= 0, "negativ bei dauer=" + dauer + " versatz=" + versatz);
+      assert.ok(w <= TAKT, "laenger als ein Intervall bei dauer=" + dauer);
+    }
+  }
 });
 
 /* --- Fall 18: kein Trigger-Sturm --------------------------------------- */

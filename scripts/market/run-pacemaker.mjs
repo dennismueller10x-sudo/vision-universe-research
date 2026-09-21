@@ -273,7 +273,8 @@ while (nummer < MAX_CYCLES) {
               (zyklus.changed ? ", committet " + zyklus.sha : ", nichts Neues") +
               (zyklus.watchdog ? " · Waechter " + zyklus.watchdog.verdict : ""));
 
-  const warten = Pacemaker.wartezeit(jetzt(), INTERVAL_MS);
+  const fertigMs = jetzt();
+  const warten = Pacemaker.wartezeit(fertigMs, INTERVAL_MS, fertigMs - n);
   if (nummer >= MAX_CYCLES) { grund = "maxCycles"; break; }
   console.log("  naechster Takt in " + Math.round(warten / 1000) + " s");
   await new Promise((r) => setTimeout(r, warten));
