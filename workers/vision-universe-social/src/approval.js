@@ -505,9 +505,25 @@ const BETRIEB = {
       "nichts veroeffentlicht. Bitte die Uebersicht neu laden."
   },
   ASSET_NOT_REACHABLE: {
-    titel: "Das Bild ist nicht erreichbar.",
-    text: "Der Beitrag wurde NICHT veroeffentlicht. Das liegt am Bild, nicht am " +
-      "Beitrag — die Freigabe bleibt moeglich, sobald das Bild wieder abrufbar ist."
+    titel: "Das Bild ist derzeit nicht erreichbar.",
+    /* Derselbe Zustand trifft zwei Lagen: das Tor VOR der Freigabe und
+       einen Versand, der am Bild scheiterte. Der Satz muss in beiden
+       stimmen - "noch nicht freigegeben" waere nach einer Freigabe
+       schlicht falsch. */
+    text: "Es wurde nichts veroeffentlicht. Das liegt am Bild, nicht am Beitrag. " +
+      "Solange es nicht abrufbar ist, geht dieser Beitrag nicht hinaus — sobald " +
+      "es wieder da ist, geht es weiter."
+  },
+  /* Ein eigener Zustand, kein Unterfall des vorigen. "Nicht erreichbar"
+     behauptet, jemand habe nachgesehen. Hat niemand. Die beiden zu
+     verschmelzen hiesse, eine Messung zu melden, die nie stattfand -
+     und aus einem Transportproblem eine Aussage ueber das Bild zu
+     machen (§5). */
+  ASSET_REACHABILITY_UNVERIFIED: {
+    titel: "Ob das Bild erreichbar ist, wurde nicht geprueft.",
+    text: "Der Beitrag kann noch nicht freigegeben werden. Es wurde nichts " +
+      "veroeffentlicht. Freigegeben wird nur, was jemand gesehen hat — der " +
+      "naechste Orchestratorlauf sieht nach."
   },
   AUTH_EXPIRED: {
     titel: "Die Verbindung zu Instagram besteht nicht mehr.",
@@ -577,6 +593,45 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
   }
   if (!/^https:\/\//.test(String(eintrag.payload.imageUrl))) {
     return { ok: false, zustand: "ASSET_NOT_REACHABLE", eintrag };
+  }
+
+  /* -------------------------------------------------------------------
+     DAS BILD MUSS DA SEIN — GEMESSEN, NICHT ANGENOMMEN (§6)
+
+     Bis hierher wurde die Adresse geprueft und nicht das Bild. Eine
+     wohlgeformte https-Adresse, unter der nichts liegt, kam durch -
+     und beim Owner stand ein leerer Rahmen.
+
+     Die Messung macht der Lauf, der die Schlange uebertraegt; er
+     erreicht den Assethost, der Worker fragt ihn nicht selbst. Hier
+     wird nur DAS ERGEBNIS zur Bedingung gemacht.
+
+     FEHLT die Messung, ist das UNGEPRUEFT und ausdruecklich kein
+     "in Ordnung": eine aeltere Uebertragung kennt das Feld nicht, und
+     auch dann hat niemand nachgesehen. Freigegeben wird nur, was
+     jemand gesehen hat.
+
+     Die Ablehnung bleibt davon unberuehrt: handleReject faellt nur
+     auf STALE_CANDIDATE zurueck. Ein Beitrag mit verschwundenem Bild
+     laesst sich also weiterhin ablehnen - nur nicht freigeben. */
+  const bild = eintrag.asset;
+  if (!bild || typeof bild !== "object" || !bild.zustand) {
+    return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
+  }
+  /* Gemessen wurde eine ADRESSE. Nennt das Urteil nicht die, die
+     veroeffentlicht wuerde, gilt es fuer ein anderes Bild - und die
+     Vorschau waere nicht die Sendung. Ein Urteil ohne Adresse gilt
+     fuer gar nichts. */
+  if (!bild.url || bild.url !== eintrag.payload.imageUrl) {
+    return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
+  }
+  if (bild.zustand !== "ASSET_PUBLICLY_REACHABLE") {
+    return {
+      ok: false,
+      zustand: bild.zustand === "ASSET_REACHABILITY_UNVERIFIED"
+        ? "ASSET_REACHABILITY_UNVERIFIED" : "ASSET_NOT_REACHABLE",
+      eintrag
+    };
   }
 
   /* 3. Das Qualitaetstor. NICHT_ANWENDBAR ist kein Durchfallen - die

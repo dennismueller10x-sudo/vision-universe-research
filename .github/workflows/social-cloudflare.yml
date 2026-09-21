@@ -505,6 +505,33 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # =====================================================================
+      # §25/§26/§27 — DER PRODUCTION SMOKE DES ASSET-/HASHTAG-AUFTRAGS
+      #
+      # Dieselbe Lage wie eine Stufe hoeher: der Bericht beantwortet fast
+      # alles ueberall, aber zwei Fragen brauchen eine Umgebung, die den
+      # Worker erreicht — ob das Approval Center lebt und ob der lesende
+      # Smoke stattgefunden hat. Das ist diese hier.
+      #
+      # Er verlangt fuer beide einen Nachweis, dass die Antwort vom
+      # Worker kam (cf-ray, server: cloudflare). Ohne den steht
+      # UNGEPRUEFT da, und UNGEPRUEFT ist nicht erfuellt.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ASSET + HASHTAG — §26 Zustaende und §27 Definition of Done
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          node scripts/social/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          {
+            echo "## ASSET + HASHTAG — §26/§27"
+            echo '```'
+            cat /tmp/asset-hashtag.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         continue-on-error: true

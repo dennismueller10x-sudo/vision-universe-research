@@ -2142,11 +2142,43 @@ async function main() {
   const shadowDecisions = packages.map((entry) => {
     const pkg = entry.result.package;
     const d = entry.strategyDecision;
+    /* `packages.push({ candidate: c, ... })` — die Gelegenheit haengt
+       AM Kandidaten, nicht am Eintrag. Beim ersten Anlauf stand hier
+       `entry.opportunity`, das gibt es nicht, und `entities` waere
+       still leer geblieben: keine falsche Antwort, sondern wieder eine
+       Frage, die nie gestellt wurde. */
+    const gelegenheit = (entry.candidate && entry.candidate.opportunity) || {};
+    const rahmen = publikumsRahmen[pkg.topic] || {};
     return {
       decidedAt: NOW,
       packageId: pkg.packageId,
       topic: pkg.topic,
       archetype: pkg.archetype,
+
+      /* -----------------------------------------------------------------
+         DER CONTENT CONTEXT REIST MIT (§9)
+
+         Klarnamen, Entitaetsart und Content Family standen an der
+         Gelegenheit und am Publikumsrahmen — aber nicht an der
+         Entscheidung. make-publish-candidate.mjs sieht nur die
+         Entscheidung, und damit war fuer die Hashtags nur der Archetyp
+         und ein Ticker im Titel erreichbar.
+
+         Ergebnis waere #XOM statt #ExxonMobil gewesen: der Ticker
+         gewinnt nicht, weil er besser ist, sondern weil der Name den
+         Weg nicht mitgegangen ist.
+
+         Nichts davon ist neu berechnet. Es ist dasselbe, was oben schon
+         in den Brief und in den Rahmen ging, endlich bis dorthin
+         gereicht, wo es gebraucht wird. */
+      entities: Array.isArray(gelegenheit.entities)
+        ? gelegenheit.entities.slice() : [],
+      entityType: gelegenheit.entityType || null,
+      family: rahmen.family || gelegenheit.family || null,
+      /* Die Fragestellung sagt oft praeziser, worum es geht, als die
+         Schlagzeile: "Mindestens 15 Cent freier Cashflow je Dollar
+         Umsatz" gegenueber "CASHFLOW-MASCHINEN". */
+      question: gelegenheit.question || null,
       visualType: pkg.visualType,
       hook: pkg.hook,
       /* Der Text, der hinausginge. Er gehoert in die Entscheidung und

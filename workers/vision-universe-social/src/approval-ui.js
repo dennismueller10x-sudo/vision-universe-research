@@ -53,6 +53,8 @@ function escapeHtml(value) {
    und Abstand, nicht Gruen und Grau. Farbe gibt es an genau einer
    Stelle: dem Knopf, der etwas oeffentlich macht.
    ------------------------------------------------------------------------- */
+import { finalerText, tagListe } from "./public-text.js";
+
 const STYLE = `
   :root { color-scheme: light; --tinte:#0b0b0b; --papier:#ffffff; --grau:#6b6b6b;
           --linie:#e6e6e6; }
@@ -116,6 +118,13 @@ const STYLE = `
   form + form { margin-top:28px; }
   blockquote.grund { margin:16px 0; padding:12px 0 12px 16px;
                      border-left:3px solid var(--tinte); font-size:17px; }
+  .tags { font-size:16px; word-spacing:.25em; }
+  .gesperrt { border:1px solid var(--tinte); padding:16px; margin:24px 0 0; }
+  .gesperrt p:last-child { margin-bottom:0; }
+  .gesperrt .knopf { display:block; width:100%; min-height:52px; margin-top:14px;
+    padding:14px 18px; font-weight:700; letter-spacing:.02em; text-align:center;
+    line-height:24px; color:var(--grau); background:var(--papier);
+    border:1px dashed var(--grau); }
 `;
 
 function huelle(titel, inhalt) {
@@ -563,10 +572,89 @@ const GUETE_TEXT = {
  * @param stelle   { nummer, von }  — "1 von 3"
  * @param hinweis  optionaler Betriebszustand (§12), NIE eine Leistungsaussage
  */
+/* -------------------------------------------------------------------------
+   DER BILDZUSTAND AUF DER KARTE (§3/§6)
+
+   Das Bild bleibt das ECHTE - dieselbe Adresse, die veroeffentlicht
+   wuerde. Kein Ersatzbild, kein Platzhalter: wer einen Platzhalter
+   sieht und freigibt, hat nicht gesehen, was hinausgeht. Ist die
+   Adresse tot, zeigt der Browser einen leeren Rahmen, und darunter
+   steht, warum.
+
+   Der Satz kommt aus der Messung mit. Er nennt keine Codes: "HTTP_404"
+   ist eine Auskunft fuer den, der den Fehler behebt, nicht fuer den,
+   der entscheidet.
+   ------------------------------------------------------------------------- */
+function bildLage(i) {
+  const a = (i && i.asset) || null;
+  /* Fehlt die Angabe, ist sie UNGEPRUEFT und nicht "in Ordnung". Ein
+     fehlendes Feld darf nie als bestandene Pruefung durchgehen. */
+  if (!a || typeof a !== "object" || !a.zustand) {
+    return { erreichbar: false, geprueft: false,
+      satz: "Ob dieses Bild oeffentlich abrufbar ist, wurde zu diesem Stand " +
+        "nicht geprueft." };
+  }
+  /* Gemessen wurde eine ADRESSE. Nennt das Urteil eine andere als die,
+     die veroeffentlicht wuerde, gehoert es zu einem anderen Bild —
+     dann ist DIESES ungeprueft, und zwar unabhaengig davon, was das
+     Urteil sagt. */
+  const adresse = (i && i.payload && i.payload.imageUrl) || null;
+  if (!a.url || a.url !== adresse) {
+    return { erreichbar: false, geprueft: false,
+      satz: "Gemessen wurde nicht das Bild, das hier veroeffentlicht wuerde. " +
+        "Fuer dieses Bild liegt keine Pruefung vor." };
+  }
+  return {
+    erreichbar: a.zustand === "ASSET_PUBLICLY_REACHABLE",
+    geprueft: a.zustand !== "ASSET_REACHABILITY_UNVERIFIED",
+    satz: typeof a.satz === "string" && a.satz.trim() ? a.satz.trim() : null
+  };
+}
+
+/* -------------------------------------------------------------------------
+   HASHTAGS — SICHTBAR VOR DER FREIGABE (§15/§16)
+
+   Sie stehen bereits in `payload.caption`; hier werden sie noch einmal
+   FUER SICH gezeigt, damit der Owner sie lesen kann, ohne sie aus dem
+   Fliesstext zu suchen.
+
+   Dass beides zusammenpasst, wird nachgerechnet und nicht behauptet.
+   Geht die Rechnung nicht auf, sagt die Karte das, statt eine
+   Aufteilung zu zeigen, die es so nie gab.
+   ------------------------------------------------------------------------- */
+function tagBlock(i) {
+  const t = (i && i.text) || {};
+  const tags = tagListe(t.hashtags);
+  const basis = typeof t.captionBase === "string" ? t.captionBase : null;
+
+  if (!tags.length) {
+    /* Null Tags sind ein Ergebnis und kein Fehler (§12): eher keiner
+       als einer, der nicht passt. Aber der Owner erfaehrt, warum. */
+    const satz = typeof t.hashtagSatz === "string" && t.hashtagSatz.trim()
+      ? t.hashtagSatz.trim()
+      : "Zu diesem Beitrag stehen keine Hashtags im Text.";
+    return `<h2>Hashtags</h2>\n<p class="leise">${escapeHtml(satz)}</p>`;
+  }
+
+  const stimmt = basis !== null &&
+    finalerText(basis, tags) === (i.payload ? i.payload.caption : null);
+
+  const warnung = stimmt ? "" : `
+<p class="leise warnung">Diese Tagliste laesst sich nicht aus dem Text oben
+zurueckrechnen. Gesendet wuerde der Text oben — Wort fuer Wort, so wie er
+dort steht.</p>`;
+
+  return `<h2>Hashtags</h2>
+<p class="tags">${escapeHtml(tags.join(" "))}</p>
+<p class="leise">${escapeHtml(String(tags.length))} von 5. Sie stehen bereits im
+Text oben und werden nicht noch einmal angehaengt.</p>${warnung}`;
+}
+
 export function candidatePage(i, stelle, hinweis) {
   const a = i.anzeige || {};
   const w = i.warum || {};
   const g = i.guete || {};
+  const bild = bildLage(i);
 
   const zaehler = stelle && stelle.von
     ? `<p class="zaehler">${escapeHtml(String(stelle.nummer))} von ${escapeHtml(String(stelle.von))}</p>`
@@ -598,15 +686,23 @@ ${meldung}
 
 <figure>
   <img src="${escapeHtml(i.payload.imageUrl)}" alt="" width="1080" height="1350">
-  <figcaption class="leise">Dieses Bild wuerde veroeffentlicht — unter genau dieser Adresse.</figcaption>
+  <figcaption class="leise">Dieses Bild wuerde veroeffentlicht — unter genau dieser
+  Adresse.${bild.erreichbar ? "" : (bild.geprueft
+    ? ` Es ist dort gerade nicht abrufbar.`
+    : ` Ob dort etwas liegt, wurde nicht geprueft.`)}</figcaption>
 </figure>
+${bild.erreichbar ? "" : `<p class="leise warnung">${escapeHtml(bild.satz ||
+  "Das Bild ist derzeit nicht erreichbar.")}</p>`}
 
 <h1 class="hook">${escapeHtml((a.hook && a.hook.value) || "Ohne Hook")}</h1>
 
 <h2>Text</h2>
 <p class="caption">${escapeHtml(i.payload.caption === null || i.payload.caption === undefined
   ? "" : i.payload.caption)}</p>
-<p class="leise">Das ist der Text, der veroeffentlicht wuerde. Wort fuer Wort.</p>
+<p class="leise">Das ist der Text, der veroeffentlicht wuerde. Wort fuer Wort,
+einschliesslich der Hashtags.</p>
+
+${tagBlock(i)}
 
 <h2>Steckbrief</h2>
 <dl>
@@ -645,10 +741,19 @@ ${warumBlock("Warum dieses Visual", [
 
 <hr class="linie">
 
+${bild.erreichbar ? `
 <form method="POST" action="/approval/${escapeHtml(i.candidateId)}/approve">
   <input type="hidden" name="fingerprint" value="${escapeHtml(i.contentHash)}">
   <button type="submit">Freigeben</button>
-</form>
+</form>` : `
+<div class="gesperrt">
+  <p><strong>${bild.geprueft
+    ? "Das Bild ist derzeit nicht erreichbar."
+    : "Ob das Bild erreichbar ist, wurde nicht geprueft."}</strong></p>
+  <p class="leise">Der Beitrag kann noch nicht freigegeben werden. Am Beitrag
+  liegt es nicht — Thema, Text und Tags bleiben, wie sie sind.</p>
+  <span class="knopf" aria-disabled="true">Freigeben nicht moeglich</span>
+</div>`}
 
 <form method="POST" action="/approval/${escapeHtml(i.candidateId)}/reject">
   <input type="hidden" name="fingerprint" value="${escapeHtml(i.contentHash)}">

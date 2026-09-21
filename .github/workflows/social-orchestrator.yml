@@ -331,11 +331,18 @@ jobs:
           set -euo pipefail
           if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
             echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
-            node scripts/social/publish-approval-queue.mjs | tee /tmp/queue.txt
+            node scripts/social/publish-approval-queue.mjs --check-assets \
+              | tee /tmp/queue.txt
             exit 0
           fi
+          # --check-assets: jedes wartende Bild wird HIER abgerufen, aus der
+          # Umgebung, die den Assethost erreicht. Der Worker kann das nicht
+          # nachholen - er zeigt nur, was ihm gesagt wurde, und sperrt die
+          # Freigabe, solange es nicht ERREICHBAR heisst. Ohne diese Fahne
+          # bleibt jeder Eintrag UNGEPRUEFT, und UNGEPRUEFT ist gesperrt.
+          #
           # Exit 4 heisst "kein Schluessel" und ist eine Antwort, kein Ausfall.
-          node scripts/social/publish-approval-queue.mjs --write \
+          node scripts/social/publish-approval-queue.mjs --write --check-assets \
             | tee /tmp/queue.txt || [ "$?" = "4" ]
 
       # Der Reifezustand nach dem Lauf, gegen den dann aktuellen
@@ -405,13 +412,32 @@ jobs:
           set -euo pipefail
           # `git diff` sieht neue Dateien nicht, und beim ersten Lauf
           # sind Kandidat und Bild neu.
-          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+          #
+          # ============================================================
+          # DAS BILD GEHOERT DAZU
+          #
+          # Hier stand nur `social/data/`. Das gerenderte Bild schreibt
+          # render-asset.mjs aber nach assets/social/ — und das liegt
+          # NICHT darunter. Jeder Lauf hat sein Bild also erzeugt, die
+          # Adresse in den Kandidaten geschrieben und die Datei mit dem
+          # Runner weggeworfen.
+          #
+          # Im Approval Center stand danach eine kaputte Bildflaeche,
+          # und die Adresse zeigte auf eine Datei, die es nie gab.
+          # `git log --all -- assets/social/pkg_ca25cb404ae49dc4.jpg`
+          # ist leer. Die dreizehn Bilder, die im Repository liegen,
+          # stammen alle aus Sitzungs-Commits frueherer Auftraege.
+          #
+          # Der Kommentar zwei Zeilen hoeher wusste es ("Kandidat und
+          # BILD"). Nur die Pfade wussten es nicht.
+          # ============================================================
+          if [ -z "$(git status --porcelain -- social/data/ assets/social/)" ]; then
             echo "Keine Aenderung."
             exit 0
           fi
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          git add social/data/
+          git add social/data/ assets/social/
           git commit -m "Orchestrator: ${{ steps.plan.outputs.stage }}"
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
