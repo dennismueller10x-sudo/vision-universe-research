@@ -362,6 +362,52 @@ Namen, nie Werte) — hinterlegt wird es vom Eigentümer direkt.
 
 ---
 
+### 12b. Der gemessene Befund zur Auslieferung, und was daraus folgte
+
+Am 21.09.2026 um 17:22:33 UTC, mit dem vom Wecker gestarteten Block im
+Betrieb, urteilte der Wächter gegen die veröffentlichte Seite:
+
+```
+Intraday-Auslieferung · 13:22:33 New York · OPEN
+  erwartete Sitzung   2026-09-21
+  im Repository       2026-09-21  (3 min alt)
+  ausgeliefert        2026-09-21
+  letzter Zyklus      vor 6 min
+
+  FAIL    Die Auslieferung ist 15 min hinter dem Repository.
+```
+
+**Die Daten waren drei Minuten alt. Was der Browser bekam, war fünfzehn
+Minuten alt.** Der Takt war repariert, die Auslieferung nicht — und zwar
+als einziger verbleibender Punkt der Kette.
+
+Warum: ein Push mit `GITHUB_TOKEN` erzeugt keinen Workflow-Lauf
+(Rekursionsschutz), und `workflow_run` feuert erst bei `completed` — ein
+Block, der den Takt fünf Stunden hält, ist fünf Stunden lang nicht
+completed. Die Zwischenlösung war ein `*/5`-Zeitplan, also genau der
+Mechanismus, dessen Ausfall den Vorfall ausgelöst hat; er hat während
+des Nachweises **kein einziges Mal** gefeuert (`event: schedule`,
+`total_count: 0`).
+
+Mit der App lag die Lösung bereits vor: derselbe Wecker, dieselbe
+`Actions: write`-Berechtigung, derselbe `workflow_dispatch` — nur auf
+`pages-release.yml` statt auf den Taktgeber. **Kein neuer Dienst, keine
+zweite Pipeline, kein zusätzliches Recht.** WK-23 prüft das von der
+harten Seite: keine `Contents`-Aufrufe, kein `repository_dispatch` —
+sonst müsste der Eigentümer die App nachkonfigurieren, ohne es zu
+merken.
+
+Gegen den Stau: läuft oder **wartet** schon ein Pages-Lauf, wird nichts
+angestoßen. Die Gruppe `pages-production` lässt ohnehin nur einen
+zugleich zu; ohne diese Prüfung entstünde eine Warteschlange, die den
+Stand älter macht statt frischer — an diesem Tag brauchte ein gestauter
+Pages-Lauf 7:33 statt 97 Sekunden. WK-21 prüft beide Zustände. Und ein
+gescheitertes Wecken hält die Auslieferung nicht auf (WK-22): auch wenn
+der Takt nicht anspringt, kann ein frisch geschriebener Stand dastehen,
+der nur noch ausgeliefert werden muss.
+
+---
+
 ## 13. Recovery
 
 Ein Workflow kann mit `GITHUB_TOKEN` keinen anderen Workflow auslösen — GitHub
