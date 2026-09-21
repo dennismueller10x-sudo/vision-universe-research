@@ -29,9 +29,10 @@ containing one of these fields with `RULE_METRIC_NOT_BACKTEST_CERTIFIED`, before
 provider data execution. Current Strategy preview continues to use the exact same
 predicate as Screener.
 
-The Technical Scanner maps its compatible legacy filters to the canonical Rule
-Contract and exposes the resulting predicate hash. Unmapped legacy scanner fields
-retain their existing evaluator; an unmapped canonical field fails closed.
+The Technical Scanner initially mapped four compatible legacy filters to the
+canonical Rule Contract. The remaining legacy evaluator described by this
+historical phase was removed by phase 35; all supported scanner fields now
+translate to a canonical predicate and unmappable typed semantics fail closed.
 
 ## Data and scope gates
 

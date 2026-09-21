@@ -12,7 +12,10 @@ const client=readFileSync(new URL('../api/client.js',import.meta.url),'utf8');
 test('classic synthetic workspaces do not offer current real snapshot fields',()=>{
  const current=Catalog.FIELD_LIST.filter(field=>field.availability==='CURRENT_SNAPSHOT_ONLY');
  assert.deepEqual(current.map(field=>field.id),[
-  'technicalOpportunityScore','technicalTrend','technicalPrimaryDirection','elliottCountStatus'
+  'technicalOpportunityScore','technicalOpportunityPercentile','technicalRiskReward','technicalTrend','technicalStructure',
+  'technicalMomentumState','technicalRelativeStrengthState','technicalRelativeStrengthPercentile','technicalScenarioConfidence',
+  'technicalSetupStatus','technicalEntryStatus','technicalPrimaryDirection','technicalVolatilityRegime','technicalVolumeState',
+  'technicalDistanceTo52wHigh','technicalMomentum12MReturn','elliottCountStatus'
  ]);
  for(const source of [screener,builder]){
   assert.match(source,/availability\s*!==\s*"CURRENT_SNAPSHOT_ONLY"/);

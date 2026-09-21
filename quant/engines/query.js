@@ -85,6 +85,11 @@
       else {
         if (u.region && u.region !== known.region) err("universe.region: '" + u.region + "' does not match universe " + u.universeId);
         if (u.assetType && u.assetType !== known.assetType) err("universe.assetType: '" + u.assetType + "' does not match universe " + u.universeId);
+        var hasSetId = typeof u.constituentSetId === "string" && u.constituentSetId.length > 0;
+        var hasSetVersion = typeof u.constituentSetVersion === "string" && u.constituentSetVersion.length > 0;
+        if (hasSetId !== hasSetVersion) err("universe: constituentSetId and constituentSetVersion must be supplied together");
+        if (u.constituentSetId !== undefined && !hasSetId) err("universe.constituentSetId: required non-empty string");
+        if (u.constituentSetVersion !== undefined && !hasSetVersion) err("universe.constituentSetVersion: required non-empty string");
       }
     }
 
