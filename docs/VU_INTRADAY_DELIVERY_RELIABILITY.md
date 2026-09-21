@@ -146,10 +146,16 @@ Gemessen an den Zyklen des Taktgebers, Lauf 35614593521 (siehe Register
 | Capability + Produktfähigkeiten | **0 s je Zyklus** | ans Blockende verschoben |
 | Pages (Brücke */5) | ≤ 5:00 Wartezeit + 1:37 | |
 
-**Ehrlicher Takt: ~6:25** (gemessen: Zyklus 1 um 14:53:36, Zyklus 2 um 15:00:01).
-Der Zieltakt von fünf Minuten ist mit diesem Abruf **nicht erreichbar** — siehe §8.
-Über eine Sitzung spart der Taktgeber 78 Checkouts und 78 Node-Einrichtungen:
-rund 390 statt 429 Runner-Minuten.
+**Gemessener Takt: 5:08** (Block 35618350851, vier Zyklen, siehe §15).
+
+Die erste Fassung der Wartezeit-Regel ergab **zehn Minuten** (14:53:36, 15:00:01,
+dann 15:10) — ein 5:01-Zyklus endet eine Sekunde nach dem Rasterpunkt und wartete
+daraufhin einen ganzen weiteren. Korrigiert: gewartet wird nur noch, wenn der
+Zyklus schneller war als das Intervall.
+
+Der Zieltakt von exakt fünf Minuten bleibt mit diesem Abruf **nicht erreichbar** —
+siehe §8. Über eine Sitzung spart der Taktgeber 78 Checkouts und 78
+Node-Einrichtungen: rund 390 statt 429 Runner-Minuten.
 
 ---
 
@@ -218,7 +224,22 @@ Der Taktgeber hat damit die Datenfrische repariert und die Auslieferung gebroche
 Token aus Eskalation 2.
 
 **Brücke bis dahin:** `pages-release.yml` bekommt einen Fünf-Minuten-Zeitplan im
-Sitzungsfenster. Sie teilt den Failure Mode, der den Vorfall ausgelöst hat — aber
+Sitzungsfenster.
+
+> **GEMESSEN UM 15:40 UTC — DIE BRÜCKE HAT NICHT GEHALTEN.** Seit dem Eintragen
+> des Zeitplans um 15:02 hat GitHub **null** Läufe daraus erzeugt
+> (`event: schedule`, `total_count: 0`). Die Auslieferung während des
+> Produktionsnachweises lief ausschließlich über **meine eigenen Pushes** — die
+> erzeugen ein `push`-Ereignis, weil sie nicht mit `GITHUB_TOKEN` erfolgen.
+>
+> Damit ist die Brücke auf genau dieselbe Mechanik gebaut, die den Vorfall
+> ausgelöst hat, und sie versagt aus demselben Grund. Der Wächter hat es
+> gemeldet: *„Die Auslieferung ist 20 min hinter dem Repository."*
+>
+> **Jeder zero-cost-Auslöser in diesem Repository geht über GitHubs Zeitplan,
+> und GitHubs Zeitplan ist das Problem.** Das ist kein Konstruktionsfehler mehr,
+> den ich beheben könnte — es ist die objektive Grenze ohne das Token aus
+> Eskalation 2. Sie teilt den Failure Mode, der den Vorfall ausgelöst hat — aber
 sie ist ein **anderer** Workflow als der Taktgeber und fällt unabhängig aus. Ein
 verpasster Takt kostet hier fünf Minuten Auslieferung statt einer Stunde
 Datenstillstand. Der Taktgeber steht zusätzlich in der `workflow_run`-Liste, damit
@@ -319,10 +340,70 @@ denselben Ref.
 
 ---
 
-## 15–16. Produktionsnachweis
+## 15. Drei aufeinanderfolgende Produktionszyklen
 
-Siehe `quant/data/market/intraday/pacemaker-ledger.json` (Zeitstempel je Zyklus)
-und den Abschnitt im Abschlussbericht.
+Block `35618350851`, Lauf per `workflow_dispatch`, gemessen am 21.09.2026
+(Quelle: `quant/data/market/intraday/pacemaker-ledger.json` und die
+git-Commitzeiten auf `main`):
+
+| | Zyklus 1 | Zyklus 2 | Zyklus 3 | Zyklus 4 |
+|---|---|---|---|---|
+| Auslöser (New York) | 11:21:43 | 11:26:51 | 11:31:59 | 11:37:07 |
+| Provider-Abruf Beginn | 15:21:43 | 15:26:51 | 15:31:59 | 15:37:07 |
+| Provider-Abruf Ende | 15:26:44 | 15:31:53 | 15:37:01 | 15:42:06 |
+| **Abrufdauer** | **5:01** | **5:02** | **5:02** | **4:59** |
+| Snapshot geschrieben | 505 | 492 | 489 | 491 |
+| Anfragen | 527 | 527 | 527 | 527 |
+| Commit | 15:26:45 | 15:31:53 | 15:37:01 | 15:42:06 |
+| Push | 15:26:51 | 15:31:59 | — | — |
+| Commit-SHA | `cdf73c142c` | `7d6ece858c` | `6a01740b96` | `8e1b…` |
+| Wächter | FAIL | FAIL | — | — |
+
+**Gemessener Takt: 5:08** (15:21:43 → 15:26:51 → 15:31:59 → 15:37:07).
+Kein einziges GitHub-Zeitplan-Ereignis war dafür nötig.
+
+Zum Vergleich der Takt VOR der Korrektur der Wartezeit-Regel: 14:53:36,
+15:00:01, dann erst 15:10 — **rund zehn Minuten**.
+
+Die leeren Felder in Zyklus 3 und 4 sind kein Fehler: ein Zyklus wird zweimal
+ins Register geschrieben — vor dem Commit (damit er in demselben Commit landet
+wie die Daten, die er beschreibt) und im nächsten Durchgang, wenn Commit-,
+Push- und Wächterzeitpunkt feststehen. Die letzten beiden Zeilen holen das
+beim jeweils folgenden Zyklus nach.
+
+### Der Wächter sagt FAIL — und hat recht
+
+```
+checkedAt 2026-09-21T15:31:59Z · Markt OPEN · 11:31:59 New York
+snapshotSession   2026-09-21   snapshotAgeMinutes   2
+deliveredSession  2026-09-21   generatedAt          15:14:46
+FAIL  auslieferungZuWeitHinterher - Die Auslieferung ist 20 min hinter dem Repository.
+```
+
+Die Daten im Repository sind zwei Minuten alt. Was der Browser bekommt, ist
+zwanzig Minuten alt. **Die Datenfrische ist repariert, die Auslieferung nicht** —
+und der Wächter verschweigt es nicht, sondern meldet es in jedem Zyklus.
+
+## 16. Browser-Nachweis
+
+Realtime Production Smoke, Lauf `35618520773`, 11:23:45 New York, gegen die
+veröffentlichte Seite:
+
+```
+result PASS · realtimeVerified true · 14 von 14 Prüfungen
+
+AAPL  35 Ticks · erster nach   249 ms · 33 Chart-Updates · REALTIME
+NVDA  43 Ticks · erster nach   249 ms · 34 Chart-Updates · REALTIME
+MSFT  23 Ticks · erster nach 1.999 ms · 22 Chart-Updates · REALTIME
+      Etiketten: "Heute · Stand 11:10 · nicht aktuell"  →  "Markt geöffnet · Live"
+```
+
+MSFT hält den Übergang **SNAPSHOT → REALTIME** fest: die Seite zeigte zuerst
+den ausgelieferten Snapshot samt ehrlichem „nicht aktuell", und nach knapp zwei
+Sekunden übernahm der Strom. Kein Mock, echte Ticks, offene Sitzung.
+
+Nebenbei belegt dasselbe Etikett den Befund aus §15 von der anderen Seite: um
+11:23 trug die Seite den Stand von 11:10.
 
 ---
 
