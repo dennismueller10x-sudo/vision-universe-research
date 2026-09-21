@@ -1,0 +1,175 @@
+name: Cloudflare — Intraday-Wecker: Produktionsnachweis
+
+# =============================================================================
+# EIN MESSINSTRUMENT, KEINE ARCHITEKTUR
+#
+# Dieser Workflow aendert nichts. Er sieht zu. Er gehoert in dieselbe
+# Kategorie wie intraday-delivery-watchdog.yml und der Realtime-Rauchtest:
+# Werkzeuge, die eine Zusage nachrechnen, statt sie zu wiederholen.
+#
+# WAS ER BEANTWORTET
+#
+# Der Wecker laeuft auf Cloudflare. Von aussen sieht man nur seine
+# Wirkung - einen Workflow-Lauf, der entsteht. Bleibt die Wirkung aus,
+# sagt das allein nicht, WO die Kette gerissen ist: fehlender
+# Schluessel, unlesbares PEM, nicht gefundene Installation, verweigertes
+# Token, falsche Berechtigung. Fuenf Moeglichkeiten, ein Symptom.
+#
+# `wrangler tail` holt die Protokollzeilen des Weckers live aus
+# Cloudflare heraus. Der Wecker schreibt je Takt genau ein Ereignis mit
+# Namen (siehe HINWEISE in src/index.mjs), und diese Namen sind der
+# Nachweis - nicht meine Behauptung darueber.
+#
+# WARUM DAS SICHER IST
+#
+# Der Wecker protokolliert grundsaetzlich keine Geheimnisse: keinen
+# Schluessel, kein JWT, kein Token, keinen Authorization-Kopf. WK-6
+# prueft genau das, inklusive abgeschnittener PEM-Zeilen. Die Ausgabe
+# wird hier trotzdem maskiert - eine zweite Schranke kostet nichts.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      minuten:
+        description: 'Wie lange zuhoeren (Minuten). 17 faengt drei Takte.'
+        type: string
+        default: '17'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vu-intraday-waker-proof
+  cancel-in-progress: false
+
+jobs:
+  nachweis:
+    name: Dem Wecker zuhoeren
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 1. Liegt der Schluessel wirklich bei Cloudflare?
+      #    `secret list` nennt Namen und Typen, nie Werte.
+      - name: Der Schluessel liegt bei Cloudflare
+        id: secret
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if npx --yes wrangler@4 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
+            echo "GITHUB_APP_PRIVATE_KEY ist hinterlegt."
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "GITHUB_APP_PRIVATE_KEY fehlt - ohne ihn ist jeder weitere Nachweis sinnlos."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      # 2. Und sagt der Wecker selbst dasselbe? Der Zustandspunkt ist
+      #    oeffentlich und nennt nur, OB etwas hinterlegt ist.
+      - name: Der Wecker sagt dasselbe
+        id: status
+        run: |
+          ANTWORT=$(curl -sS --max-time 20 https://vu-intraday-waker.little-credit-15d3.workers.dev/status)
+          echo "$ANTWORT" | tee /tmp/status.json
+          echo ''
+          node -e '
+            const s = JSON.parse(require("fs").readFileSync("/tmp/status.json","utf8"));
+            const fehler = [];
+            if (s.ausweis !== "github-app") fehler.push("ausweis ist " + s.ausweis);
+            if (s.schluesselHinterlegt !== true) fehler.push("schluesselHinterlegt ist " + s.schluesselHinterlegt);
+            if (s.appIdHinterlegt !== true) fehler.push("appIdHinterlegt ist " + s.appIdHinterlegt);
+            if (/PRIVATE KEY|ghs_|ghp_/.test(JSON.stringify(s))) fehler.push("der Zustandspunkt verraet Schluesselmaterial");
+            if (fehler.length) { console.error("NICHT BESTANDEN: " + fehler.join("; ")); process.exit(1); }
+            console.log("Zustandspunkt in Ordnung: github-app, App ID und Schluessel hinterlegt, nichts verraten.");
+          '
+
+      # 3. Zuhoeren. Jeder Cron-Takt schreibt genau ein Ereignis.
+      #    `timeout` beendet den Strom kontrolliert; 124 ist dabei der
+      #    Erfolgsfall, kein Fehler.
+      - name: Drei Takte mithoeren
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${{ inputs.minuten }} Minuten."
+          set +e
+          timeout "${{ inputs.minuten }}m" npx --yes wrangler@4 tail --format=json \
+            > /tmp/tail-roh.txt 2>/tmp/tail-fehler.txt
+          CODE=$?
+          set -e
+          if [ "$CODE" != "124" ] && [ "$CODE" != "0" ]; then
+            echo "wrangler tail endete mit $CODE:"
+            sed -E 's/[A-Za-z0-9_-]{30,}/<maskiert>/g' /tmp/tail-fehler.txt | tail -20
+          fi
+          # Maskieren, bevor irgendetwas gedruckt wird.
+          sed -E 's/gh[pousr]_[A-Za-z0-9]+/<maskiert>/g; s/[A-Za-z0-9+\/=]{60,}/<maskiert>/g' \
+            /tmp/tail-roh.txt > /tmp/tail.txt
+          echo "Roh-Ereignisse: $(wc -l < /tmp/tail.txt)"
+
+      - name: Was der Wecker gesagt hat
+        id: urteil
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const zeilen = fs.readFileSync("/tmp/tail.txt","utf8").split("\n").filter(Boolean);
+            const takte = [];
+            for (const z of zeilen) {
+              let e; try { e = JSON.parse(z); } catch (x) { continue; }
+              const zeit = new Date(e.eventTimestamp || Date.now()).toISOString().slice(11,19);
+              const art = e.event && e.event.cron ? "cron " + e.event.cron : (e.event && e.event.request ? "http" : "?");
+              const meldungen = [];
+              for (const l of (e.logs || [])) {
+                for (const m of (l.message || [])) {
+                  if (typeof m !== "string") continue;
+                  try { meldungen.push(JSON.parse(m)); } catch (x) { meldungen.push({ ereignis: m }); }
+                }
+              }
+              if (art.startsWith("cron")) takte.push({ zeit, art, outcome: e.outcome, meldungen });
+            }
+            console.log("| Uhrzeit (UTC) | Ausloeser | Ergebnis | Ereignisse |");
+            console.log("|---|---|---|---|");
+            for (const t of takte) {
+              console.log("| " + t.zeit + " | " + t.art + " | " + t.outcome + " | " +
+                          t.meldungen.map((m) => "`" + m.ereignis + "`").join(" · ") + " |");
+            }
+            const alle = takte.flatMap((t) => t.meldungen.map((m) => m.ereignis));
+            const schlecht = alle.filter((e) => ["keinSchluessel","keineAppId","keinRepo",
+              "schluesselUnlesbar","signaturFehlgeschlagen","keineInstallation",
+              "keinZugangstoken","weckenFehlgeschlagen"].includes(e));
+            const gut = alle.filter((e) => ["geweckt","bereitsWach"].includes(e));
+            console.log("");
+            console.log("Cron-Takte gehoert: " + takte.length);
+            console.log("davon in Ordnung:   " + gut.length + "  (" +
+                        alle.filter((e)=>e==="geweckt").length + " geweckt, " +
+                        alle.filter((e)=>e==="bereitsWach").length + " bereits wach)");
+            console.log("Fehlerereignisse:   " + schlecht.length +
+                        (schlecht.length ? "  -> " + schlecht.join(", ") : ""));
+            if (/PRIVATE KEY/.test(fs.readFileSync("/tmp/tail.txt","utf8"))) {
+              console.error("NICHT BESTANDEN: Schluesselmaterial im Protokoll."); process.exit(1);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "takte=" + takte.length + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "fehler=" + schlecht.length + "\n");
+            if (schlecht.length) { console.error("NICHT BESTANDEN: der Wecker meldet Fehler."); process.exit(1); }
+            if (takte.length < 3) { console.error("NICHT BESTANDEN: weniger als drei Cron-Takte gehoert."); process.exit(1); }
+            console.log("BESTANDEN");
+          ' | tee /tmp/urteil.txt
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Wecker-Nachweis'
+            echo ''
+            echo '```'
+            cat /tmp/status.json 2>/dev/null || echo 'kein Zustandspunkt'
+            echo '```'
+            echo ''
+            cat /tmp/urteil.txt 2>/dev/null || echo 'kein Urteil'
+          } >> "$GITHUB_STEP_SUMMARY"
