@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0.0",
+  "methodologyVersion": "setup-state-v1.0.0",
+  "status": "SPECIFIED_NOT_ACTIVE",
+  "effectiveFrom": null,
+  "publication": {
+    "enabled": false,
+    "reason": "SETUP_STATE_MAPPING_NOT_ACTIVE"
+  },
+  "states": [
+    "NO_SETUP",
+    "WATCH",
+    "SETUP_FORMING",
+    "CONFIRMED",
+    "ACTIVE",
+    "RISK_RISING",
+    "INVALIDATED",
+    "EXIT"
+  ],
+  "requirements": {
+    "orderedSnapshots": 2,
+    "sameIdentity": true,
+    "sameMethodologyChain": true,
+    "realDataOnly": true,
+    "ruleContractVersion": "1.0",
+    "backtestCertification": "NOT_CERTIFIED"
+  },
+  "semanticBoundaries": {
+    "technicalScenarioStatusIsSetupState": false,
+    "tradeSetupStatusIsSetupState": false,
+    "elliottMayConfirmSetup": false,
+    "elliottRole": "EVIDENCE_ONLY"
+  },
+  "activationGates": [
+    "VERSIONED_STATE_MAPPING_APPROVED",
+    "ORDERED_REAL_SNAPSHOT_HISTORY_MATERIALIZED",
+    "RULE_REFERENCES_VERIFIABLE",
+    "IDENTITY_AND_METHODOLOGY_CHAIN_VALIDATED"
+  ]
+}
