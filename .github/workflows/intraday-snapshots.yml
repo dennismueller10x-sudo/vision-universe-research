@@ -40,7 +40,15 @@ on:
         type: string
         default: 'discover'
   schedule:
-    - cron: '*/5 13-21 * * 1-5'
+    # Der Fuenf-Minuten-Takt WAEHREND der Sitzung ist am 21.09.2026 an
+    # intraday-pacemaker.yml uebergegangen. Grund: er verlangte 78
+    # Zeitplan-Ereignisse je Sitzung, und GitHub legte an diesem Tag ueber
+    # eine Stunde lang keines davon an. Zwei Workflows, die dieselben
+    # Dateien schreiben, waeren ausserdem ein Wettlauf um denselben Ref.
+    #
+    # Was hier bleibt: der Universumslauf nach Schluss, der Handbetrieb
+    # (workflow_dispatch) und die Marke auf Entwicklungsbranches. Derselbe
+    # Ingest, dieselben Vertraege - nur nicht mehr derselbe Takt.
     - cron: '35 21 * * 1-5'
   push:
     branches:

@@ -277,6 +277,18 @@ const bilanz = { requested: symbole.length, fetched: 0, written: 0, grown: 0, un
 const perSymbol = {};
 const zaehle = (reason) => { bilanz.reasons[reason] = (bilanz.reasons[reason] || 0) + 1; };
 
+/* writeStatus() fragt `provider`, und der Weg ohne Zugang ruft writeStatus
+   AUF, bevor der Anbieter gebaut ist. Mit `const` weiter unten war das
+   keine Null-Pruefung, sondern ein ReferenceError aus der temporalen
+   Totzone: der Lauf ohne Schluessel stuerzte ab, statt sauber
+   auszusteigen. Aufgefallen am 21.09.2026 beim ersten Rauchtest des
+   Taktgebers - im Betrieb liegt der Schluessel vor, deshalb hat es
+   niemand gesehen. Ein Fehlerpfad, der selbst fehlerhaft ist, faellt
+   genau dann auf, wenn man ihn braucht. */
+let provider = null;
+let abbruch = null;
+const t0 = Date.now();
+
 if (!apiKey) {
   console.log("  Kein TIINGO_API_KEY gesetzt. Es wird nichts abgerufen und NICHT auf Demo-Daten zurueckgefallen.");
   if (!DRY_RUN) writeStatus({ configured: false, notice: "Kein Zugang. Keine Snapshots geholt." });
@@ -295,15 +307,13 @@ capabilities.limits = Object.assign({}, capabilities.limits, {
   requestsPerDay: Math.max(capabilities.limits.requestsPerDay, MAX_REQUESTS * 4),
   concurrency: CONCURRENCY
 });
-const provider = Tiingo.createTiingoProvider({
+provider = Tiingo.createTiingoProvider({
   apiKey, capabilities, symbolRegistry: registry,
   baseUrl: process.env.TIINGO_BASE_URL || undefined,
   fetchImpl: (url, init) => fetch(url, init)
 });
 
 /* ------------------------------------------------------------- Lauf */
-const t0 = Date.now();
-let abbruch = null;
 const warteschlange = symbole.slice();
 
 async function einer(ticker) {

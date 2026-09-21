@@ -1,0 +1,148 @@
+name: Intraday-Taktgeber (ein Lauf haelt den Takt)
+
+# =============================================================================
+# WARUM ES DIESEN WORKFLOW GIBT
+#
+# Am 21.09.2026 stand die Consumer-Ansicht von 09:09 bis 10:13 New Yorker
+# Zeit auf dem Stand vom Freitag. Der Fuenf-Minuten-Zeitplan von
+# intraday-snapshots.yml erzeugte in dieser Stunde KEINEN Lauf - nicht
+# failed, nicht cancelled, sondern gar nicht angelegt. In denselben 92
+# Minuten entstanden im Repository 100 push-ausgeloeste Laeufe aus
+# parallelen Arbeitsstraengen. GitHub verwirft Zeitplan-Ereignisse unter
+# hoher Actions-Last; belegt ist die Beobachtung, die Kausalitaet bleibt
+# eine gut gestuetzte Vermutung (siehe Bericht).
+#
+# Der alte Entwurf brauchte 78 Ereignisse je Sitzung. Jedes war eine
+# Gelegenheit zu scheitern, und das Scheitern war unsichtbar.
+#
+# WAS SICH AENDERT
+#
+# Ein Lauf haelt den Takt fuer einen ganzen Block und entscheidet selbst,
+# wann der naechste Zyklus faellig ist (quant/engines/realtime/pacemaker.js).
+# Der stuendliche Zeitplan legt waehrenddessen einen NACHFOLGER in die
+# Warteschlange - `cancel-in-progress: false` laesst ihn warten, und er
+# startet in der Sekunde, in der der laufende Block endet. Faellt ein
+# stuendliches Ereignis aus, versucht es das naechste eine Stunde spaeter;
+# faellt der Block selbst aus, ist die Luecke hoechstens eine Stunde statt
+# unbegrenzt.
+#
+# WAS SICH NICHT AENDERT
+#
+# Geholt wird ueber scripts/market/ingest-intraday.mjs - denselben Weg wie
+# bisher. Keine zweite Datenpipeline, keine zweite Source of Truth, kein
+# neuer Anbieter, kein neuer Dienst.
+#
+# ZERO COST
+#
+# Das Repository ist oeffentlich; Actions-Minuten sind damit unbegrenzt
+# und kostenlos. Der Taktgeber ist ausserdem GUENSTIGER als der alte
+# Entwurf: 78 Laeufe a 5,5 min = 429 Runner-Minuten je Sitzung gegenueber
+# rund 390 Minuten fuer durchgehende Bloecke - es entfallen 78 Checkouts
+# und 78 Node-Einrichtungen.
+# =============================================================================
+
+on:
+  schedule:
+    # Stuendlich waehrend des breiten Sitzungsfensters (Cron kennt keine
+    # Sommerzeit). Ein Lauf, der ausserhalb der Sitzung startet, beendet
+    # sich nach wenigen Sekunden von selbst.
+    - cron: '2 13-20 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      intervalSeconds:
+        description: 'Zieltakt in Sekunden'
+        type: string
+        default: '300'
+      blockMinutes:
+        description: 'Hoechstdauer dieses Blocks in Minuten'
+        type: string
+        default: '345'
+      scope:
+        description: 'discover (Consumer-Flaechen) oder Tickerliste'
+        type: string
+        default: 'discover'
+  # Der bevorzugte Wecker von aussen (Cloudflare Cron, siehe
+  # docs/VU_INTRADAY_DELIVERY_RELIABILITY.md). Er braucht ein
+  # GitHub-Token mit actions:write - solange das fehlt, traegt der
+  # stuendliche Zeitplan den Takt allein.
+  repository_dispatch:
+    types: [intraday-tick]
+
+permissions:
+  contents: write
+
+concurrency:
+  # cancel-in-progress: false ist hier die ganze Idee. Ein neuer Block
+  # bricht den laufenden NICHT ab (das waere Datenverlust mitten im
+  # Zyklus), sondern wartet - und uebernimmt nahtlos, sobald der
+  # Vorgaenger endet.
+  group: intraday-pacemaker
+  cancel-in-progress: false
+
+jobs:
+  takt:
+    name: Takt halten
+    runs-on: ubuntu-latest
+    # Der Block selbst hoert frueher auf (blockMinutes). Dieses Limit ist
+    # nur das Netz darunter.
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang wird nichts abgerufen."
+            exit 1
+          fi
+
+      - name: Takt halten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/run-pacemaker.mjs \
+            --interval-ms=$(( ${{ github.event_name == 'workflow_dispatch' && inputs.intervalSeconds || '300' }} * 1000 )) \
+            --block-max-ms=$(( ${{ github.event_name == 'workflow_dispatch' && inputs.blockMinutes || '345' }} * 60000 )) \
+            --scope=${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'discover' }}
+
+      - name: Kein Schluessel im Statusbericht
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        if: always()
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Intraday-Taktgeber'
+            echo ''
+            if [ -f quant/data/market/intraday/pacemaker-ledger.json ]; then
+              node -e '
+                const l = require("./quant/data/market/intraday/pacemaker-ledger.json");
+                const eigene = (l.cycles || []).filter((c) => c.runId === process.env.GITHUB_RUN_ID);
+                console.log("| Zyklus | Ausloeser (NY) | Sitzung | geschrieben | Anfragen | Commit |");
+                console.log("|---|---|---|---|---|---|");
+                for (const c of eigene) {
+                  console.log("| " + c.cycle + " | " + c.localTimeAtTrigger + " | " + (c.session || "-") +
+                              " | " + (c.written === null ? "-" : c.written) +
+                              " | " + (c.requests === null ? "-" : c.requests) +
+                              " | " + (c.sha || "-") + " |");
+                }
+                console.log("");
+                console.log("Zyklen in diesem Block: " + eigene.length);
+                if (l.block && l.block.reason) console.log("Blockende: " + l.block.reason);
+              '
+            else
+              echo 'Kein Zyklusregister erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
