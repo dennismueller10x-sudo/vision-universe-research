@@ -20,7 +20,7 @@ const Directory=typeof module!=='undefined'&&module.exports?require('../engines/
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 const ProductCapabilities=typeof module!=='undefined'&&module.exports?require('../engines/product-capabilities.js'):g.VUProductCapabilities;
 function create(options){
- const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady,technicalReady,productCapabilitiesReady;
+ const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady,technicalReady,productCapabilitiesReady,productCapabilitiesSummaryReady;
  const directory=Directory.create({loadJSON:load});
  async function compressedJSON(path){
   if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
@@ -58,6 +58,7 @@ function create(options){
  }
  function capabilityState(available,reason){return available?{state:'AVAILABLE'}:{state:'UNAVAILABLE',reason};}
  async function productCapabilities(){if(!productCapabilitiesReady)productCapabilitiesReady=load('/quant/data/product/capabilities-v1.json').then(payload=>{if(!ProductCapabilities.validate(payload))throw Error('INVALID_PRODUCT_CAPABILITIES');return payload;}).catch(e=>{productCapabilitiesReady=null;throw e;});return productCapabilitiesReady;}
+ async function productCapabilitiesSummary(){if(!productCapabilitiesSummaryReady)productCapabilitiesSummaryReady=load('/quant/data/product/capabilities-summary-v1.json').then(payload=>{if(!ProductCapabilities.validateSummary(payload))throw Error('INVALID_PRODUCT_CAPABILITIES_SUMMARY');return payload;}).catch(e=>{productCapabilitiesSummaryReady=null;throw e;});return productCapabilitiesSummaryReady;}
  async function identityOnlyStock(ticker,reason='PRODUCT_DATA_NOT_CONNECTED'){
   try{const result=await directory.getInstrument(ticker),i=result.instrument;if(result.status!=='OK'||i?.symbol!==ticker||!canonicalIdentity(i))return unavailable('INVALID_IDENTITY');
    if(reason!=='PRODUCT_DATA_NOT_CONNECTED'){const missing={state:'UNAVAILABLE',reason};return {...identityModel(i),state:'UNAVAILABLE',identityState:'AVAILABLE',reason,availability:{fundamentals:{...missing},history:{...missing},technical:{...missing},quant:{...missing},intraday:{...missing},realtime:{...missing}},workspaces:workspaces(ticker)};}
@@ -135,7 +136,7 @@ function create(options){
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
- async function getUniverse(){try{const c=await init(),stocks=(await Promise.all((c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)))).filter(Boolean);let capabilities=null;try{capabilities=await productCapabilities();}catch{}
+ async function getUniverse(){try{const c=await init(),stocks=(await Promise.all((c.preview.scope||[]).filter(t=>permission(c,t).allowed).map(t=>row(c,t)))).filter(Boolean);let capabilities=null;try{capabilities=await productCapabilitiesSummary();}catch{}
    return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'FEATURED_FULL_INTELLIGENCE_SET',productCapabilityState:capabilities?'AVAILABLE':'UNAVAILABLE',productCapabilityReason:capabilities?null:'CAPABILITY_SOURCE_UNAVAILABLE',productScope:capabilities?capabilities.scope:null,productUniverseSize:capabilities?capabilities.counts.productUniverse:null,capabilityCounts:capabilities?capabilities.counts:null,totalMarketState:'UNAVAILABLE',reason:'BROAD_RANKING_NOT_CERTIFIED'};}catch{return unavailable('SOURCE_MISSING');}}
  async function getMarketIntelligence(){
   const universe=await getUniverse();

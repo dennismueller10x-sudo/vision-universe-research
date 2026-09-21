@@ -2,23 +2,25 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
-import { buildProductCapabilities, CAPABILITIES, VERSION } from "../../scripts/vu2/build-product-capabilities.mjs";
+import { buildProductCapabilities, CAPABILITIES, VERSION, SUMMARY_VERSION } from "../../scripts/vu2/build-product-capabilities.mjs";
 
 const require = createRequire(import.meta.url);
 const Contract = require("../engines/product-capabilities.js");
 const root = new URL("../../", import.meta.url).pathname;
 
 test("compact projection exactly covers the canonical product universe", () => {
-  const payload = buildProductCapabilities({ root, write: false });
+  const { payload, summary } = buildProductCapabilities({ root, write: false });
   assert.equal(payload.version, VERSION);
   assert.deepEqual(payload.capabilities, CAPABILITIES);
   assert.equal(Object.keys(payload.rows).length, payload.counts.productUniverse);
   assert.ok(Object.keys(payload.rows).length > 6000);
   assert.equal(Contract.validate(payload), true);
+  assert.equal(summary.version, SUMMARY_VERSION);
+  assert.equal(Contract.validateSummary(summary), true);
 });
 
 test("capability bitset preserves measured availability and identity", () => {
-  const payload = buildProductCapabilities({ root, write: false });
+  const { payload } = buildProductCapabilities({ root, write: false });
   const matrix = JSON.parse(readFileSync(new URL("../data/market/capabilities/matrix.json", import.meta.url)));
   for (const ticker of ["AAPL", "TSLA", "ASML", "NVDA"]) {
     const source = matrix.rows.find((row) => row.ticker === ticker && row.inProductUniverse);
@@ -29,7 +31,7 @@ test("capability bitset preserves measured availability and identity", () => {
 });
 
 test("projection is compact and rejects drifted or mismatched identities", () => {
-  const payload = buildProductCapabilities({ root, write: false });
+  const { payload, summary } = buildProductCapabilities({ root, write: false });
   assert.ok(Buffer.byteLength(JSON.stringify(payload)) < 500_000);
   assert.equal(Contract.get(payload, "AAPL", "ref_WRONG").status, "NOT_IN_PRODUCT_UNIVERSE");
   const changed = structuredClone(payload); changed.capabilities.reverse();
@@ -46,11 +48,18 @@ test("projection is compact and rejects drifted or mismatched identities", () =>
   assert.equal(Contract.validate(driftedCount), false);
   const driftedMeasured = structuredClone(payload); driftedMeasured.measuredCounts.HAS_FACTORS += 1;
   assert.equal(Contract.validate(driftedMeasured), false);
+  const driftedSummary = structuredClone(summary); driftedSummary.counts.factorEligible += 1;
+  assert.equal(Contract.validateSummary(driftedSummary), false);
+  const futureSummary = structuredClone(summary); futureSummary.generatedAt = futureSummary.source.generatedAt = "2099-01-01T00:00:00.000Z";
+  assert.equal(Contract.validateSummary(futureSummary), false);
 });
 
 test("committed projection is reproducible from the existing capability matrix", () => {
   const expected = buildProductCapabilities({ root, write: false });
   const committed = JSON.parse(readFileSync(new URL("../data/product/capabilities-v1.json", import.meta.url)));
-  assert.deepEqual(committed, expected);
+  const committedSummary = JSON.parse(readFileSync(new URL("../data/product/capabilities-summary-v1.json", import.meta.url)));
+  assert.deepEqual(committed, expected.payload);
+  assert.deepEqual(committedSummary, expected.summary);
   assert.ok(statSync(new URL("../data/product/capabilities-v1.json", import.meta.url)).size < 500_000);
+  assert.ok(statSync(new URL("../data/product/capabilities-summary-v1.json", import.meta.url)).size < 5_000);
 });

@@ -1,6 +1,7 @@
 (function (global) {
   "use strict";
   var VERSION = "product-capabilities-1.0.0";
+  var SUMMARY_VERSION = "product-capabilities-summary-1.0.0";
   var EXPECTED = ["HAS_MARKET_DATA", "HAS_HISTORICAL", "HAS_INTRADAY", "HAS_LIVE", "HAS_FACTORS",
     "HAS_FUNDAMENTALS", "HAS_FUNDAMENTALS_5Y", "HAS_FUNDAMENTALS_10Y", "HAS_TTM",
     "HAS_NAME", "DISCOVER_ELIGIBLE", "HAS_STOCK_PAGE"];
@@ -42,6 +43,23 @@
     if (payload.counts.namesMissing !== payload.counts.productUniverse - measured.HAS_NAME) return false;
     return true;
   }
+  function validateSummary(payload) {
+    var generatedAt = payload && Date.parse(payload.generatedAt);
+    if (!payload || payload.version !== SUMMARY_VERSION || payload.schemaVersion !== "1.0.0" ||
+        payload.scope !== "CANONICAL_PRODUCT_UNIVERSE" ||
+        JSON.stringify(payload.capabilities) !== JSON.stringify(EXPECTED) ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(payload.generatedAt || "") || !Number.isFinite(generatedAt) || generatedAt > Date.now() ||
+        !payload.source || payload.source.version !== "capability-matrix-1.0.0" || payload.source.generatedAt !== payload.generatedAt ||
+        payload.source.projectionVersion !== VERSION || !payload.counts || !payload.measuredCounts ||
+        !Number.isSafeInteger(payload.counts.productUniverse) || payload.counts.productUniverse < 1) return false;
+    for (var capability of EXPECTED) {
+      if (!Number.isSafeInteger(payload.measuredCounts[capability]) || payload.measuredCounts[capability] < 0 ||
+          payload.measuredCounts[capability] > payload.counts.productUniverse) return false;
+    }
+    for (var mapped of Object.keys(COUNT_FIELDS)) if (payload.counts[COUNT_FIELDS[mapped]] !== payload.measuredCounts[mapped]) return false;
+    if (payload.counts.namesMissing !== payload.counts.productUniverse - payload.measuredCounts.HAS_NAME) return false;
+    return true;
+  }
   function get(payload, ticker, masterMemberId) {
     if (!validate(payload)) return { status: "INVALID_ARTIFACT", capabilities: null };
     ticker = String(ticker || "").toUpperCase();
@@ -54,7 +72,7 @@
     return { status: "OK", capabilities: values, generatedAt: payload.generatedAt,
       sourceVersion: payload.source && payload.source.version };
   }
-  var api = { VERSION: VERSION, CAPABILITIES: EXPECTED.slice(), COUNT_FIELDS: Object.assign({}, COUNT_FIELDS), measuredCounts: measuredCounts, validate: validate, get: get };
+  var api = { VERSION: VERSION, SUMMARY_VERSION: SUMMARY_VERSION, CAPABILITIES: EXPECTED.slice(), COUNT_FIELDS: Object.assign({}, COUNT_FIELDS), measuredCounts: measuredCounts, validate: validate, validateSummary: validateSummary, get: get };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else global.VUProductCapabilities = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const VERSION = "product-capabilities-1.0.0";
+export const SUMMARY_VERSION = "product-capabilities-summary-1.0.0";
 export const CAPABILITIES = [
   "HAS_MARKET_DATA", "HAS_HISTORICAL", "HAS_INTRADAY", "HAS_LIVE", "HAS_FACTORS",
   "HAS_FUNDAMENTALS", "HAS_FUNDAMENTALS_5Y", "HAS_FUNDAMENTALS_10Y", "HAS_TTM",
@@ -45,16 +46,23 @@ export function buildProductCapabilities({ root, write = true } = {}) {
     scope: "CANONICAL_PRODUCT_UNIVERSE", capabilities: CAPABILITIES,
     counts: summary.counts, measuredCounts, rows
   };
+  const summaryPayload = {
+    schemaVersion: "1.0.0", version: SUMMARY_VERSION, generatedAt: matrix.generatedAt,
+    source: { version: matrix.version, generatedAt: matrix.generatedAt, projectionVersion: VERSION },
+    scope: "CANONICAL_PRODUCT_UNIVERSE", capabilities: CAPABILITIES,
+    counts: summary.counts, measuredCounts
+  };
   if (write) {
     const target = join(root, "quant/data/product/capabilities-v1.json");
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, JSON.stringify(payload));
+    writeFileSync(join(root, "quant/data/product/capabilities-summary-v1.json"), JSON.stringify(summaryPayload));
   }
-  return payload;
+  return { payload, summary: summaryPayload };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const rootArg = process.argv.find((arg) => arg.startsWith("--root="));
   const result = buildProductCapabilities({ root: rootArg ? rootArg.slice(7) : undefined });
-  console.log(`Product Capabilities: ${Object.keys(result.rows).length} Titel · ${result.generatedAt}`);
+  console.log(`Product Capabilities: ${Object.keys(result.payload.rows).length} Titel · ${result.payload.generatedAt}`);
 }
