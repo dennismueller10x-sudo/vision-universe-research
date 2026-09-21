@@ -294,3 +294,68 @@ test("RB16 · Der Messer startet nichts, wenn man ihn nur liest", async () => {
   assert.match(q, /import\.meta\.url !== `file:\/\/\$\{process\.argv\[1\]\}`/,
     "Der Messer laeuft auch dann los, wenn ihn jemand nur importiert");
 });
+
+/* ===========================================================================
+   DIESELBE FAHNE, DERSELBE FEHLER — IM ZWEITEN BERICHT
+
+   approval-center-readiness.mjs kannte `--suites-green ja` genauso, und die
+   CI setzte sie genauso: weil zwei Schritte davor Tests gelaufen waren. Zwei
+   Berichte nebeneinander, von denen einer misst und der andere glaubt, sind
+   schlimmer als zwei, die beide glauben — der Leser weiss nicht, welcher.
+   =========================================================================== */
+
+const ZENTRUM = join(ROOT, "scripts/social/approval-center-readiness.mjs");
+
+function zentrumMit(beleg, extra = []) {
+  const d = mkdtempSync(join(tmpdir(), "vu-beleg2-"));
+  const datei = join(d, "suites.json");
+  writeFileSync(datei, JSON.stringify(beleg));
+  try {
+    return execFileSync("node", [ZENTRUM, "--evidence", datei, ...extra],
+      { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024,
+        stdio: ["ignore", "pipe", "ignore"] });
+  } catch (err) {
+    if (err.stdout) return String(err.stdout);
+    throw err;
+  } finally { rmSync(d, { recursive: true, force: true }); }
+}
+
+test("RB17 · Auch das Approval Center misst, statt zu glauben", () => {
+  const aus = zentrumMit({
+    generatedAt: "2026-09-21T06:00:00.000Z", commit: kopf(), cleanTree: true,
+    suites: [{ id: "social", tests: 10, pass: 10, fail: 0, ok: true }],
+    isolation: [{ id: "social", ok: true }], suitesOk: true, isolationOk: true
+  });
+  /* Zeilenanfang: "ERFUELLT" steckt auch in "NICHT_ERFUELLT", und genau
+     daran ist die erste Fassung von RB19 gescheitert - ein Muster, das
+     sein eigenes Gegenteil trifft. */
+  assert.match(aus, /^ERFUELLT\s+APPROVAL_CENTER_PRODUCTION_READY/m);
+  assert.match(aus, /Suitenzustand gemessen/,
+    "Der Bericht sagt nicht, dass er gemessen hat");
+});
+
+test("RB18 · Ein Beleg von einem anderen Stand zaehlt auch hier nicht", () => {
+  /* Und die Fahne rettet ihn nicht: sie darf einen gemessenen Befund
+     nicht ueberstimmen, aber wo keiner gilt, muss sie sich als
+     Behauptung zu erkennen geben. */
+  const aus = zentrumMit({
+    generatedAt: "2026-09-21T06:00:00.000Z",
+    commit: "0000000000000000000000000000000000000000", cleanTree: true,
+    suites: [], isolation: [], suitesOk: true, isolationOk: true
+  }, ["--suites-green", "ja"]);
+  assert.match(aus, /BEHAUPTET, nicht gemessen/,
+    "Eine Behauptung gibt sich als Beleg aus");
+});
+
+test("RB19 · Ein roter Beleg schlaegt die Fahne", () => {
+  /* Der gefaehrlichste Fall: die Suiten sind rot, und der Aufrufer
+     schreibt trotzdem --suites-green ja. Der gemessene Befund gewinnt. */
+  const aus = zentrumMit({
+    generatedAt: "2026-09-21T06:00:00.000Z", commit: kopf(), cleanTree: true,
+    suites: [{ id: "social", tests: 10, pass: 3, fail: 7, ok: false }],
+    isolation: [{ id: "social", ok: true }], suitesOk: false, isolationOk: true
+  }, ["--suites-green", "ja"]);
+  assert.ok(!/^ERFUELLT\s+APPROVAL_CENTER_PRODUCTION_READY/m.test(aus),
+    "Die Fahne hat einen roten Messwert ueberstimmt:\n" + aus);
+  assert.match(aus, /^NICHT_ERFUELLT\s+APPROVAL_CENTER_PRODUCTION_READY/m);
+});
