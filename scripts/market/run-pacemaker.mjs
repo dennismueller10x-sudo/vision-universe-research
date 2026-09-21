@@ -107,12 +107,27 @@ function ledgerSchreiben(zyklen, block) {
   const grenze = jetzt() - 24 * 3600000;
   const bisher = (alt && Array.isArray(alt.cycles) ? alt.cycles : [])
     .filter((c) => Date.parse(c.triggerAt || 0) > grenze);
+
+  /* Ein Zyklus wird ZWEIMAL geschrieben: einmal vor dem Commit, damit er
+     in demselben Commit landet wie die Daten, die er beschreibt - und
+     einmal im naechsten Durchgang, wenn Commit-, Push- und
+     Waechterzeitpunkt feststehen. Ohne Zusammenfuehrung stuende jeder
+     Zyklus zweimal im Register, einmal halb und einmal ganz. Genau das
+     stand um 15:16 darin.
+     Zusammengefuehrt wird ueber Lauf und Nummer; der spaetere Eintrag
+     gewinnt, weil er mehr weiss. */
+  const nach = new Map();
+  for (const c of bisher.concat(zyklen)) {
+    nach.set((c.runId || "-") + "#" + c.cycle, Object.assign(nach.get((c.runId || "-") + "#" + c.cycle) || {}, c));
+  }
   const inhalt = {
-    schemaVersion: "intraday-pacemaker-ledger-1.0.0",
+    schemaVersion: "intraday-pacemaker-ledger-1.1.0",
     note: "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
     block,
     updatedAt: new Date().toISOString(),
-    cycles: bisher.concat(zyklen).slice(-200)
+    cycles: Array.from(nach.values())
+      .sort((a, b) => Date.parse(a.triggerAt || 0) - Date.parse(b.triggerAt || 0))
+      .slice(-200)
   };
   mkdirSync(dirname(LEDGER), { recursive: true });
   writeFileSync(LEDGER, JSON.stringify(inhalt, null, 2) + "\n");
