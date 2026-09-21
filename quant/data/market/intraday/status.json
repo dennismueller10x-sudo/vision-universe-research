@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T13:46:00.884Z",
+  "generatedAt": "2026-09-21T14:13:06.476Z",
   "provider": "tiingo",
   "interval": "5min",
   "extendedHours": true,
@@ -14,7 +14,7 @@
     "earlyClose": false
   },
   "marketStateAtRun": "OPEN",
-  "localTimeAtRun": "2026-09-21 09:45:59",
+  "localTimeAtRun": "2026-09-21 10:13:05",
   "gates": {
     "ENABLE_LIVE_MARKET_DATA": true,
     "ENABLE_PUBLIC_LIVE_MARKET_DATA": true
@@ -27,18 +27,16 @@
   "summary": {
     "requested": 8,
     "fetched": 8,
-    "written": 0,
+    "written": 8,
     "grown": 0,
     "unchanged": 0,
     "skippedImmutable": 0,
-    "notPublishable": 8,
+    "notPublishable": 0,
     "failed": 0,
     "requests": 8,
-    "reasons": {
-      "noRegularBars": 8
-    },
+    "reasons": {},
     "stopped": null,
-    "runtimeMs": 1041,
+    "runtimeMs": 766,
     "providerRequests": 8,
     "retries": 0
   },
@@ -49,53 +47,53 @@
     "dayLimit": 50000
   },
   "perSymbol": {
-    "AAPL": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
     "CAT": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
-    },
-    "NVDA": {
-      "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     },
     "MSFT": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     },
     "JPM": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     },
-    "NBIS": {
+    "AAPL": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     },
-    "PANW": {
+    "NVDA": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     },
     "VLO": {
       "ok": true,
-      "reason": "noRegularBars",
-      "bars": 0,
-      "discarded": 0
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
+    },
+    "PANW": {
+      "ok": true,
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
+    },
+    "NBIS": {
+      "ok": true,
+      "reason": "first",
+      "points": 4,
+      "asOfLocal": "10:10"
     }
   },
   "note": "Bilanz des Intraday-Laufs. Keine Kurse - nur Zaehlungen und Gruende."
