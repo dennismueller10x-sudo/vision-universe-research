@@ -1135,22 +1135,55 @@ function performanceMessung() {
 /* ===================================================================
    13. LEARNING_LOOP_READY (§38/§39/§40/§41)
    =================================================================== */
+const NOW_PROBE = "2026-09-16T10:00:00Z";
+
 function learningLoop() {
   /* -----------------------------------------------------------------
-     GEMESSEN WIRD AM GEDAECHTNIS, NICHT AN EINER ENGINE
+     GEMESSEN WIRD AM GEDAECHTNIS, GEGEN DIE TABELLE DER ENGINE
 
-     Der erste Entwurf rechnete die zwoelf Dimensionen aus §38 gegen
-     learning-dimensions.js - eine Engine, die ueber die HERKUNFT von
-     Dimensionen spricht und die Liste nie kannte. Ergebnis: "es
-     fehlen zwoelf von zwoelf", waehrend sechs davon in jedem
-     Gedaechtniseintrag stehen.
+     Zwei Irrwege liegen hinter dieser Messung, und beide sind
+     lehrreich.
 
-     Eine Pruefung, die am falschen Ort sucht, meldet immer dasselbe -
-     und es klingt wie ein Befund.
+     Der erste rechnete gegen learning-dimensions.js - eine Engine,
+     die ueber die HERKUNFT von Dimensionen spricht und die Liste nie
+     kannte. Ergebnis: "es fehlen zwoelf von zwoelf", waehrend sechs
+     in jedem Eintrag standen. Eine Pruefung am falschen Ort meldet
+     immer dasselbe, und es klingt wie ein Befund.
 
-     Gefragt ist, was eine LEARNING UNIT traegt. Die liegt im Content
-     Memory, ein Eintrag je veroeffentlichtem Beitrag. Dort wird
-     gezaehlt. */
+     Der zweite fuehrte die zwoelf Namen samt Feldnamen HIER - eine
+     zweite Liste neben der des Zyklus. Sie waere beim naechsten
+     Zusatz auseinandergelaufen, und der Bericht haette von einer
+     Dimension gesprochen, die es nicht mehr gibt.
+
+     Jetzt kommt die Liste aus learning-unit.js, dort, wo sie auch
+     geschrieben wird. Und gefragt wird nach beidem, was §38-§41
+     verlangen:
+
+       1. Tragen die eigenen Eintraege alle zwoelf mit WERTEN?
+       2. Schliesst sich der Kreis - beeinflusst eine GEMESSENE
+          Leistung eine spaetere Auswahl (§39)?
+       3. Und tut sie es NICHT, wenn zu wenig gemessen wurde?
+     ----------------------------------------------------------------- */
+  const pfad = "social/engines/learning-unit.js";
+  if (!existiert(pfad)) {
+    return nein("Es gibt keine kanonische Learning Unit. §38 nennt zwoelf " +
+      "Dimensionen; ohne einen Ort, an dem sie stehen, werden sie in einer " +
+      "von Hand gefuehrten Feldliste vergessen.");
+  }
+  let L, C;
+  try {
+    L = require(join(ROOT, pfad));
+    C = require(join(ROOT, "social/engines/content.js"));
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "learning-unit.js liess sich nicht laden (" + e.message + ")." };
+  }
+
+  if (L.DIMENSIONEN.length !== 12) {
+    return nein("§38 nennt zwoelf Dimensionen, die Tabelle fuehrt " +
+      L.DIMENSIONEN.length + ".");
+  }
+
   const m = JSON.parse(text("social/data/content-memory.json") || "null");
   const eintraege = (m && m.entries) || [];
   if (!eintraege.length) {
@@ -1159,61 +1192,233 @@ function learningLoop() {
         "Unit traegt, laesst sich nicht messen." };
   }
 
-  /* Die zwoelf aus §38, mit den Feldern, die sie heute tragen. Wo
-     kein Feld steht, ist die Dimension nicht erfasst - und was nicht
-     erfasst ist, kann keine kuenftige Auswahl beeinflussen (§39). */
-  const DIMENSIONEN = [
-    ["CONTENT_FAMILY",          "contentFamily"],
-    ["TOPIC",                   "topic"],
-    ["ANGLE",                   null],
-    ["HOOK_ARCHETYPE",          null],
-    ["STORY_STRUCTURE",         "storyStructure"],
-    ["VISUAL_FAMILY",           null],
-    ["ATLAS_ROLE",              null],
-    ["TEXT_ON_VISUAL_PATTERN",  null],
-    ["FORMAT",                  "mediaFormat"],
-    ["HASHTAG_SET",             null],
-    ["DAYPART",                 null],
-    ["EXPLORE_EXPLOIT_STATE",   null]
-  ];
-
-  /* -----------------------------------------------------------------
-     DAS FENSTER IST "EIGENE EINTRAEGE", NICHT "DIE LETZTEN ZEHN"
-
-     Der erste Entwurf nahm die letzten zehn - und traf die frisch
-     eingelesenen Konto-Altbeitraege, die gar keine Learning Units
-     dieses Systems sind. `mediaFormat` verschwand dadurch aus der
-     Zaehlung, obwohl 25 Eintraege es tragen.
-
-     Gezaehlt wird ueber alles, was dieses System erzeugt hat -
-     erkennbar an packageId oder lineage.
-
-     Und ein Feld zaehlt nur mit WERTEN. Ein Feldname, in dem ueberall
-     null steht, sieht nach erfasster Dimension aus und ist keine: die
-     passive Form dessen, was §38 verbietet. */
+  /* Das Fenster sind die EIGENEN Eintraege - erkennbar an packageId
+     oder lineage. Die eingelesenen Konto-Altbeitraege sind keine
+     Learning Units dieses Systems, und nachtraeglich eine Familie zu
+     erfinden waere eine Aussage ueber Beitraege, die niemand unter
+     diesem Gesichtspunkt geschrieben hat. */
   const eigene = eintraege.filter((e) => e && (e.packageId || e.lineage));
   const basis = eigene.length ? eigene : eintraege;
-  const getragen = [];
-  const fehlend = [];
-  const zaehlung = {};
-  for (const [name, feld] of DIMENSIONEN) {
-    const n = feld ? basis.filter((e) => e && e[feld] !== undefined &&
-      e[feld] !== null && e[feld] !== "").length : 0;
-    zaehlung[name] = n;
-    (n > 0 ? getragen : fehlend).push(name);
+  const erf = L.erfassung(basis);
+
+  /* -----------------------------------------------------------------
+     ZUERST DIE MASCHINE, DANN DIE DATEI
+
+     Der erste Entwurf las NUR das Gedaechtnis. Die Gegenprobe hat ihn
+     zerlegt: nimmt man das Schreiben aus dem Zyklus heraus, aendert
+     sich an der Datei nichts - sie traegt die Werte ja schon -, und
+     dieser Bericht meldete weiter ERFUELLT. Gemessen wurde ein
+     eingefrorenes Ergebnis und keine Faehigkeit.
+
+     Dasselbe galt fuer memory.entry, fuer die Stufentrennung, fuer
+     das Zaehlen von Werten statt Feldern: zehn von dreizehn
+     Gegenproben faerbten die Tests rot und den Bericht gruen.
+
+     Deshalb wird hier ZUERST eine Learning Unit gebaut - durch
+     dieselben Funktionen, die der Zyklus benutzt - und geprueft, ob
+     alle zwoelf ankommen. Die Datei sagt danach, ob es in der
+     Produktion auch wirklich passiert ist. Zwei Fragen, zwei
+     Antworten.
+     ----------------------------------------------------------------- */
+  let Memory;
+  try { Memory = require(join(ROOT, "social/engines/memory.js")); }
+  catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "memory.js liess sich nicht laden (" + e.message + ")." };
   }
 
-  return fehlend.length === 0
-    ? ja("Eine Learning Unit traegt alle zwoelf Dimensionen aus §38.",
-        getragen)
-    : nein(getragen.length + " von 12 Dimensionen aus §38 werden ueber " +
-      basis.length + " eigene Eintraege real erfasst (" +
-      getragen.map((g) => g + "=" + zaehlung[g]).join(", ") + "). Es fehlen: " +
-      fehlend.join(", ") + ". Mehrere davon stehen als Feld im Schema und " +
-      "tragen ueberall null - ein Name ohne Wert sieht nach erfasster " +
-      "Dimension aus und ist keine. Was nicht erfasst ist, kann keine " +
-      "kuenftige Auswahl beeinflussen (§39).",
-      getragen.map((g) => g + "=" + zaehlung[g]));
+  const probeKontext = {
+    package: { topic: "Halbleiter NVDA", archetype: "STOCK_STORY",
+      hookArchetype: "ZAHL_MIT_BEZUG", visualType: "CHART",
+      hashtags: ["#Aktien", "#ETF"] },
+    audienceFrame: { family: "RANKING",
+      coreQuestion: "Was bedeutet das fuer mein Depot?" },
+    structure: { beats: [{ id: "observation" }, { id: "context" }] },
+    decision: { plannedHourUtc: 9, mode: "EXPLOIT" },
+    now: NOW_PROBE
+  };
+  const probeBild = { plan: { grammatik: { familie: "DATA_EDITORIAL",
+    atlasRolle: "ATLAS_SIGNATURE", dominantesTextRolle: "HOOK" },
+    messung: { texte: [1, 2, 3] } } };
+
+  const bauLuecken = [];
+  let gebaut;
+  try {
+    /* Genau der Weg des Zyklus: Paketdimensionen -> memory.entry ->
+       Bilddimensionen nachtragen. */
+    gebaut = Memory.entry(Object.assign({ packageId: "readiness-probe",
+      hook: "H", caption: "C" }, L.ausKontext(probeKontext, "PAKET")));
+    L.ergaenze(gebaut, probeBild);
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Die Bauprobe warf: " + e.message };
+  }
+  const gebautErf = L.erfassung([gebaut]);
+  if (!gebautErf.vollstaendig) {
+    bauLuecken.push("eine frisch gebaute Learning Unit traegt nur " +
+      gebautErf.getragen.length + " von " + gebautErf.gesamt +
+      " Dimensionen; es fehlen: " + gebautErf.fehlend.join(", "));
+  }
+  /* Die Stufentrennung muss halten: eine Bilddimension darf beim Paket
+     NICHT entstehen, sie waere geraten. */
+  const nurPaket = L.ausKontext(
+    Object.assign({}, probeKontext, probeBild), "PAKET");
+  if (nurPaket.visualFamily !== undefined) {
+    bauLuecken.push("eine Bilddimension entsteht schon beim Paket - " +
+      "geraten ist hier dasselbe wie erfunden");
+  }
+  /* Und ein vorhandener Wert darf nicht ueberschrieben werden. */
+  const belegt = { visualFamily: "RANKING" };
+  L.ergaenze(belegt, probeBild);
+  if (belegt.visualFamily !== "RANKING") {
+    bauLuecken.push("ein vorhandener Wert wird ueberschrieben - das " +
+      "Gedaechtnis waere ein Arbeitsblatt");
+  }
+  /* Und ein Feldname ohne Wert darf nicht als erfasst gelten. */
+  const leer = {};
+  L.DIMENSIONEN.forEach((d) => { leer[d.feld] = null; });
+  if (L.erfassung([leer]).getragen.length) {
+    bauLuecken.push("ein Feldname ohne Wert gilt als erfasste Dimension");
+  }
+  /* Und Ungemessenes darf nicht als Leistung null zaehlen. */
+  const gemischt = [];
+  for (let i = 0; i < 3; i++) {
+    gemischt.push({ hookArchetype: "KONTRAST",
+      performance: { engagementRate: 0.09 } });
+  }
+  gemischt.push({ hookArchetype: "KONTRAST", performance: null });
+  const k = L.leistung(gemischt).dimensionen.HOOK_ARCHETYPE
+    .find((x) => x.wert === "KONTRAST");
+  if (!k || k.gemessen !== 3 || Math.abs(k.mittel - 0.09) > 1e-9) {
+    bauLuecken.push("ein ungesendeter Beitrag zaehlt als Beitrag mit " +
+      "Leistung null");
+  }
+  if (bauLuecken.length) {
+    return nein("Die Maschine traegt die Dimensionen nicht: " +
+      bauLuecken.join("; ") + ".");
+  }
+
+  if (!erf.vollstaendig) {
+    return nein(erf.getragen.length + " von " + erf.gesamt + " Dimensionen " +
+      "aus §38 werden ueber " + basis.length + " eigene Eintraege real " +
+      "erfasst (" + erf.getragen.map((g) => g + "=" + erf.zaehlung[g]).join(", ") +
+      "). Es fehlen: " + erf.fehlend.join(", ") + ". Ein Feldname, in dem " +
+      "ueberall null steht, sieht nach erfasster Dimension aus und ist " +
+      "keine. Was nicht erfasst ist, kann keine kuenftige Auswahl " +
+      "beeinflussen (§39).",
+      erf.getragen.map((g) => g + "=" + erf.zaehlung[g]));
+  }
+
+  /* -----------------------------------------------------------------
+     §39/§40 — UND JETZT DER KREIS
+
+     Erfassen allein genuegt nicht. Eine gemessene Leistung muss eine
+     spaetere Auswahl VERSCHIEBEN, sonst ist das Gedaechtnis ein
+     Archiv. Geprueft wird am echten Weg: derselbe Kontext einmal
+     ohne und einmal mit Messung.
+     ----------------------------------------------------------------- */
+  const NOW = NOW_PROBE;
+  const quellen = [
+    { source: "vu.technical", provider: "tiingo", entity: "NVDA",
+      metric: "KGV", value: 13.4, state: "VERIFIED", observedAt: NOW },
+    { source: "vu.technical", provider: "tiingo", entity: "AMD",
+      metric: "KGV", value: 21.6, state: "VERIFIED", observedAt: NOW }
+  ];
+  const eingabe = (perf) => ({
+    opportunity: { opportunityId: "readiness", topic: "Halbleiter",
+      entities: ["NVDA"], platform: "instagram" },
+    sources: quellen,
+    strategyDecision: { platform: "instagram", archetype: "DATA_STORY",
+      timeSensitivity: "TIMELY" },
+    visualAvailability: { keyNumber: true },
+    writer: C.createTemplateWriter(),
+    hookPerformance: perf
+  });
+
+  let ohne, mit, duenn;
+  try {
+    ohne = C.run(eingabe(null), { now: NOW });
+    /* Ein Gedaechtnis, in dem KONTRAST gemessen besser lief. */
+    const fiktiv = [];
+    for (let i = 0; i < 4; i++) {
+      fiktiv.push({ hookArchetype: "KONTRAST",
+        performance: { engagementRate: 0.09 } });
+    }
+    for (let i = 0; i < 4; i++) {
+      fiktiv.push({ hookArchetype: "ZAHL_MIT_BEZUG",
+        performance: { engagementRate: 0.01 } });
+    }
+    const gewichte = L.alsGewichte(L.leistung(fiktiv), "HOOK_ARCHETYPE",
+      { faktor: 2500 });
+    mit = C.run(eingabe(gewichte), { now: NOW });
+    duenn = L.alsGewichte(L.leistung(fiktiv.slice(0, 2)), "HOOK_ARCHETYPE",
+      { faktor: 2500 });
+  } catch (e) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Die Kreisprobe warf: " + e.message };
+  }
+
+  const luecken = [];
+  if (!ohne.ok || !mit.ok) {
+    return { zustand: Z.UNGEPRUEFT,
+      satz: "Die Kreisprobe lief nicht durch (" +
+        (ohne.failedStage || mit.failedStage) + ")." };
+  }
+  if (ohne.package.hookArchetype === mit.package.hookArchetype) {
+    luecken.push("eine gemessene Leistung verschiebt die Auswahl nicht - " +
+      "das Gedaechtnis ist dann ein Archiv (§39)");
+  }
+  if (Object.keys(duenn).length) {
+    luecken.push("zu wenige Messungen fliessen trotzdem ein - eine Zahl aus " +
+      "einer Beobachtung ist keine Leistung");
+  }
+  /* Und der Weg: content.js muss die Leistung wirklich annehmen. */
+  const q = ohneKommentare(text("social/engines/content.js") || "");
+  if (!/hookPerformance/.test(q)) {
+    luecken.push("content.js nimmt keine gemessene Leistung entgegen");
+  }
+  /* -----------------------------------------------------------------
+     DER AUFRUF, NICHT DER NAME
+
+     Auch hier hat die Gegenprobe den ersten Entwurf widerlegt. Er
+     suchte "hookPerformance" und "LearningUnit.ergaenze" im
+     Quelltext. Benennt man den Schluessel in
+     `hookPerformanceUngenutzt` um oder stellt ein `if (false)` davor,
+     findet die Suche beides weiter - und der Kreis waere offen,
+     waehrend der Bericht ihn schliesst.
+
+     Gesucht wird deshalb das Ergebnis im Einsatz: die Dimensionen
+     muessen in das Objekt gehen, das ins Gedaechtnis wandert, und die
+     Gewichte in den Schluessel, den content.js wirklich liest.
+     ----------------------------------------------------------------- */
+  const zyklus = ohneKommentare(text("scripts/social/run-social-cycle.mjs") || "");
+  if (!/LearningUnit\s*\.\s*ausKontext/.test(zyklus) ||
+      !/memory\.add\(Object\.assign\(/.test(zyklus) ||
+      !/\}, dimensionen\)\)/.test(zyklus)) {
+    luecken.push("der Zyklus schreibt die Dimensionen nicht in den Eintrag");
+  }
+  if (!/if \(lernEintrag\) LearningUnit\.ergaenze\(/.test(zyklus)) {
+    luecken.push("der Zyklus traegt die Bilddimensionen nicht nach");
+  }
+  if (!/^\s*hookPerformance: LearningUnit\.alsGewichte\(/m.test(zyklus)) {
+    luecken.push("der Zyklus reicht die gemessene Leistung nicht in die " +
+      "naechste Auswahl");
+  }
+  /* Und keine zweite Feldliste. */
+  if (/\b(contentFamily|hookArchetype|visualFamily|daypart)\s*:/.test(zyklus)) {
+    luecken.push("der Zyklus fuehrt die Dimensionen ein zweites Mal von Hand");
+  }
+
+  if (luecken.length) {
+    return nein("Die zwoelf Dimensionen werden erfasst, aber der Kreis ist " +
+      "offen: " + luecken.join("; ") + ".");
+  }
+  return ja("Alle " + erf.gesamt + " Dimensionen aus §38 werden ueber " +
+    basis.length + " eigene Eintraege mit Werten erfasst, und der Kreis " +
+    "schliesst sich: eine gemessene Leistung verschiebt die Hook-Auswahl " +
+    "von " + ohne.package.hookArchetype + " zu " + mit.package.hookArchetype +
+    " (§39) - zu wenige Messungen verschieben nichts.",
+    erf.getragen.map((g) => g + "=" + erf.zaehlung[g]));
 }
 
 /* ===================================================================

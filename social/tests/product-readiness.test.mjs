@@ -147,18 +147,44 @@ test("PR48 · Die Lerndimensionen werden am Gedaechtnis gezaehlt", () => {
 
 test("PR49 · Ein Feld ohne Werte zaehlt nicht als erfasste Dimension", () => {
   /* Die passive Form dessen, was §38 verbietet: ein Feldname, in dem
-     ueberall null steht, sieht nach erfasster Dimension aus. */
+     ueberall null steht, sieht nach erfasster Dimension aus.
+
+     Dieser Test hat frueher festgehalten, DASS der Fall real vorlag -
+     `contentFamily` gab es als Feld und in allen 57 Eintraegen stand
+     null. Er sollte laut werden, sobald das behoben ist, und genau das
+     ist passiert: seit learning-unit.js traegt das Feld Werte.
+
+     Was bleibt, ist die REGEL, nicht der Zustand: eine Zaehlung, die
+     Felder statt Werte zaehlt, meldet erfasste Dimensionen, die keine
+     sind. Ein Test, der eine Datenlage festhaelt, wird von ihrer
+     Behebung ueberholt; ein Test, der die Regel festhaelt, nicht.
+
+     Und weil der alte Fall nicht verschwinden soll: die Altbeitraege
+     aus dem Konto tragen die Dimension weiterhin nicht, und das muss
+     als "nicht erfasst" sichtbar bleiben - nachtraeglich eine Familie
+     zu erfinden waere eine Aussage ueber Beitraege, die niemand unter
+     diesem Gesichtspunkt geschrieben hat. */
+  const L = require("../engines/learning-unit.js");
+
+  const nurFelder = {};
+  for (const d of L.DIMENSIONEN) nurFelder[d.feld] = null;
+  const leer = L.erfassung([nurFelder, nurFelder, nurFelder]);
+  assert.equal(leer.getragen.length, 0,
+    "Ein Feldname ohne Wert zaehlt als erfasste Dimension");
+  assert.equal(leer.vollstaendig, false);
+
+  /* Und am echten Gedaechtnis: das Feld gibt es, und es traegt jetzt
+     auch Werte - beides. */
   const m = JSON.parse(readFileSync(
     new URL("../data/content-memory.json", import.meta.url), "utf8"));
   const e = m.entries || [];
   assert.ok(e.length, "Kein Gedaechtnis - der Test prueft nichts.");
-
-  /* Genau dieser Fall liegt real vor: das Feld gibt es, Werte nicht. */
-  const hatFeld = e.some((x) => "contentFamily" in x);
-  const hatWert = e.some((x) => x.contentFamily !== null &&
-    x.contentFamily !== undefined && x.contentFamily !== "");
-  assert.ok(hatFeld, "Das Feld contentFamily gibt es gar nicht mehr.");
-  assert.equal(hatWert, false,
-    "contentFamily traegt jetzt Werte - dann ist dieser Test ueberholt " +
-    "und LEARNING_LOOP_READY muss ihn mitzaehlen.");
+  assert.ok(e.some((x) => "contentFamily" in x),
+    "Das Feld contentFamily gibt es gar nicht mehr.");
+  assert.ok(e.some((x) => x.contentFamily),
+    "contentFamily traegt keine Werte mehr - §38 waere wieder offen.");
+  /* Die Altbeitraege bleiben leer, und das ist richtig. */
+  assert.ok(e.some((x) => !x.contentFamily),
+    "Alle Eintraege tragen eine Familie - dann wurde nachtraeglich " +
+    "erfunden, was niemand entschieden hat.");
 });

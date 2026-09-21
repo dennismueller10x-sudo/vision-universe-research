@@ -145,7 +145,7 @@
      verspricht, reist mit (`erwartet`), und BRAND_CHECK prueft die
      Einloesung spaeter am fertigen Paket - so wie bisher.
      ------------------------------------------------------------------- */
-  function hook(opportunity, thesisData, researchData, writer) {
+  function hook(opportunity, thesisData, researchData, writer, leistung) {
     var autorText = writer && typeof writer.hook === "function"
       ? writer.hook(opportunity, thesisData, researchData)
       : null;
@@ -157,6 +157,18 @@
     });
     kontext.zusaetzlich = autorText
       ? [{ archetyp: "AUTOR", text: String(autorText) }] : [];
+    /* -----------------------------------------------------------------
+       §39 — WAS ERFASST IST, BEEINFLUSST DIE NAECHSTE AUSWAHL
+
+       Die gemessene Leistung je Archetyp kommt aus dem Gedaechtnis
+       (learning-unit.js) und geht hier in die Bewertung. Fehlt sie -
+       weil noch nichts gemessen wurde -, fliesst NICHTS ein: hook.js
+       setzt dann keinen Ersatzwert, und die Wahl faellt wie vorher.
+
+       Damit ist der Kreis geschlossen: HOOK_ARCHETYPE wird
+       mitgeschrieben, gemessen, und kommt hier zurueck.
+       ----------------------------------------------------------------- */
+    if (leistung && typeof leistung === "object") kontext.leistung = leistung;
 
     var wahl = Hook.waehle(kontext);
     if (!wahl.ok) {
@@ -288,7 +300,8 @@
     stages.push(t);
 
     /* 3. HOOK */
-    var h = hook(opportunity, t.data, r.data, input.writer);
+    var h = hook(opportunity, t.data, r.data, input.writer,
+      input.hookPerformance || null);
     if (!h.ok) return stop(h);
     stages.push(h);
 

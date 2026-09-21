@@ -27,6 +27,8 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
+  var LearningUnit = isNode ? require("./learning-unit.js")
+    : global.VUSocialLearningUnit;
 
   /* Woerter ohne Unterscheidungskraft. Sie bleiben bewusst kurz: eine
      lange Stoppwortliste macht aus verschiedenen Saetzen gleiche. */
@@ -78,10 +80,36 @@
    * Ein Gedaechtniseintrag. Er speichert die ENTSCHEIDUNG und das
    * ERGEBNIS — die Verbindung, die §17 verlangt.
    */
+  /* -------------------------------------------------------------------
+     DIE ZWOELF DIMENSIONEN AUS §38 KOMMEN AUS IHRER TABELLE
+
+     Diese Funktion zaehlt ihre Felder auf, und das ist fuer alles
+     richtig, was sie selbst bedeutet. Fuer die Lerndimensionen war es
+     falsch: der Zyklus uebergab acht davon, `entry()` kannte vier -
+     und die uebrigen fielen lautlos heraus. Im Gedaechtnis stand
+     danach, was §38 verlangt, in genau zwei Dimensionen.
+
+     Dieselbe Fehlerfamilie, die hier schon den Byte-Abdruck, den
+     Hook-Archetyp und die Belege des Hooks verloren hat: eine von
+     Hand gefuehrte Feldliste, aus der etwas faellt.
+
+     Deshalb werden sie nicht aufgezaehlt, sondern aus
+     learning-unit.js uebernommen. Wer dort eine Dimension eintraegt,
+     hat sie damit auch hier.
+     ------------------------------------------------------------------- */
+  function mitDimensionen(basis, spec) {
+    (LearningUnit.DIMENSIONEN || []).forEach(function (d) {
+      if (Object.prototype.hasOwnProperty.call(basis, d.feld)) return;
+      var v = spec[d.feld];
+      basis[d.feld] = (v === undefined || v === "") ? null : v;
+    });
+    return basis;
+  }
+
   function entry(spec) {
     spec = spec || {};
     var hookTokens = tokenize(spec.hook);
-    return {
+    return mitDimensionen({
       publicationId: spec.publicationId || null,
       packageId: spec.packageId || null,
       publishedAt: spec.publishedAt || null,
@@ -231,7 +259,7 @@
          aufgefallen, die einer Umstellung des Massstabs hinterherlaeuft. */
       performanceRegime: spec.performanceRegime || null,
       performanceCohort: spec.performanceCohort || null
-    };
+    }, spec);
   }
 
   function createMemory(existingEntries) {

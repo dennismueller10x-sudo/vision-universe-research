@@ -52,6 +52,21 @@ const Strategy     = require(join(ROOT, "social/engines/strategy.js"));
 const Content      = require(join(ROOT, "social/engines/content.js"));
 const VisualComposition = require(join(ROOT, "social/engines/visual-composition.js"));
 const VisualIntelligence = require(join(ROOT, "social/engines/visual-intelligence.js"));
+const LearningUnit = require(join(ROOT, "social/engines/learning-unit.js"));
+
+/* -------------------------------------------------------------------
+   WIE STARK GEMESSENE LEISTUNG DIE HOOK-WAHL VERSCHIEBT
+
+   Die Bewertung in hook.js vergibt hoechstens 100 Punkte aus vier
+   Anteilen. Die Engagement-Rate bewegt sich im Bereich einstelliger
+   Prozentzahlen - unskaliert waere sie ein Rundungsfehler und der
+   Kreis nur auf dem Papier geschlossen.
+
+   Der Faktor macht aus einem Prozentpunkt Unterschied rund 25
+   Punkte: genug, um bei aehnlich guten Kandidaten zu entscheiden, zu
+   wenig, um einen schwachen Kandidaten an einem starken
+   vorbeizuziehen. Eine Zahl mit Begruendung, keine gegriffene. */
+const HOOK_LEISTUNG_FAKTOR = 2500;
 const Memory       = require(join(ROOT, "social/engines/memory.js"));
 const Fatigue      = require(join(ROOT, "social/engines/fatigue.js"));
 const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
@@ -1535,6 +1550,7 @@ async function main() {
       names: FIRMENNAMEN,
       archetype: strategyDecision.archetype || null
     });
+    const rahmen = publikumsRahmen[opportunity.topic] || null;
 
     const result = Content.run({
       opportunity, sources: rechercheBelege, strategyDecision,
@@ -1542,7 +1558,27 @@ async function main() {
         keyNumber: lage.availability.keyNumber ||
           rechercheBelege.some((s) => s.value !== null) }),
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
-      writer: schreiberAus(gewaehlteVariante)
+      writer: schreiberAus(gewaehlteVariante),
+      /* -----------------------------------------------------------------
+         §39 — DER KREIS SCHLIESST SICH HIER
+
+         HOOK_ARCHETYPE wird als Lerndimension mitgeschrieben (§38),
+         im Gedaechtnis gegen die gemessene Leistung gehalten, und
+         kommt an dieser Stelle in die naechste Auswahl zurueck.
+
+         `alsGewichte` gibt nur Werte heraus, zu denen es genug
+         Messungen gibt. Steht nichts drin, fliesst nichts ein -
+         hook.js setzt dann keinen Ersatzwert. Eine Dimension, die
+         noch nie gemessen wurde, soll die Wahl nicht beeinflussen und
+         auch nicht so tun.
+
+         `audienceFrame` reist mit, damit AUDIENCE_SEPARATION (§8) die
+         Kernfrage kennt.
+         ----------------------------------------------------------------- */
+      hookPerformance: LearningUnit.alsGewichte(
+        LearningUnit.leistung(memory.all()), "HOOK_ARCHETYPE",
+        { faktor: HOOK_LEISTUNG_FAKTOR }),
+      audienceFrame: rahmen || null
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
 
     if (!result.ok) {
@@ -2226,14 +2262,53 @@ async function main() {
     .map((e) => e.packageId).filter(Boolean).map(String));
 
   let neueEintraege = 0;
+  /* Der Eintrag je Paket, damit die FRACHT die Bilddimensionen
+     nachtragen kann, sobald das Bild geplant ist. */
+  const lernEintraege = new Map();
   for (const d of shadowDecisions) {
     if (bekanntePakete.has(String(d.packageId))) continue;
     bekanntePakete.add(String(d.packageId));
     neueEintraege += 1;
-    const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
-    memory.add({
+    const eintragVon = packages.find((e) => e.result.package.packageId === d.packageId);
+    const pkg = eintragVon.result.package;
+
+    /* -----------------------------------------------------------------
+       DIE ZWOELF DIMENSIONEN AUS §38 - AUS EINER TABELLE, NICHT VON HAND
+
+       Hier standen siebzehn Zeilen mit Feldnamen. Sie trugen Thema,
+       Archetyp und Bildform - und von den zwoelf Dimensionen, die §38
+       nennt, kamen zwei an. Nicht weil die uebrigen nicht entschieden
+       wuerden: die Familie entsteht im Publikumsrahmen, der
+       Hook-Archetyp in hook.js, die Visual Family in
+       visual-grammar.js. Sie kamen nur nie im Gedaechtnis an.
+
+       Eine von Hand gefuehrte Feldliste hat in diesem Projekt schon
+       dreimal etwas fallen lassen. Deshalb kommt der Satz jetzt aus
+       learning-unit.js: wer dort eine Dimension eintraegt, schreibt
+       sie damit mit.
+
+       Die Bilddimensionen fehlen an dieser Stelle noch - das Bild
+       entsteht erst in der FRACHT weiter unten. Sie werden dort
+       nachgetragen, und bis dahin stehen sie auf null. Sie hier zu
+       raten waere dasselbe wie sie zu erfinden.
+       ----------------------------------------------------------------- */
+    const dimensionen = LearningUnit.ausKontext({
+      package: pkg,
+      audienceFrame: publikumsRahmen[pkg.topic] || null,
+      structure: eintragVon.result.structure ||
+        (eintragVon.result.stages || []).filter((x) => x.stage === "STRUCTURE")
+          .map((x) => x.data)[0] || null,
+      /* Die Schattenentscheidung traegt Familie, Kernfrage, Hashtags
+         und die geplante Stunde. Sie hier auszulassen und dieselben
+         Werte anderswo zu suchen waere ein zweiter Weg zu denselben
+         Tatsachen. */
+      decision: d,
+      now: NOW
+    }, "PAKET");
+
+    lernEintraege.set(String(pkg.packageId), memory.add(Object.assign({
       publicationId: null, packageId: pkg.packageId, publishedAt: null,
-      platform: "instagram", topic: pkg.topic, entities: pkg.entities || [],
+      platform: "instagram", entities: pkg.entities || [],
       archetype: pkg.archetype, visualType: pkg.visualType,
       hook: pkg.hook, caption: pkg.caption, cta: pkg.cta || null,
       authoringPattern: d.authoringPattern || null,
@@ -2247,7 +2322,7 @@ async function main() {
         strategyVersion: activeStrategy.versionId,
         decidedMode: d.mode
       }
-    });
+    }, dimensionen)));
   }
   log("\nSchatten-Entscheidungen: " + shadowDecisions.length +
       " (entschieden, nicht gesendet)" +
@@ -2398,6 +2473,8 @@ async function main() {
     pkg.visualDirection = richtung;
     pkg.visualDirectionReady = richtungBereit.ok;
     pkg.visualDirectionMissing = richtungBereit.missing;
+
+
     pkg.visualDirectionFailureType = richtungBereit.failureType;
     pkg.visualDirectionNotApplicable = richtungBereit.notApplicable;
     /* Der Rahmen reist mit, weil das Lernen sonst nie fragen koennte,
@@ -2442,6 +2519,22 @@ async function main() {
             aussage: VisualComposition.aussage(kompo, lage.symbol),
             quelle: quelleAus(lage) })
         : AssetRenderer.plan(pkg, {}));
+
+    /* -----------------------------------------------------------------
+       DIE BILDDIMENSIONEN NACHTRAGEN (§38)
+
+       Visual Family, Atlas-Rolle und Textmuster stehen erst fest,
+       wenn ein Renderplan existiert - und der ist genau hier
+       entstanden, nach dem Gedaechtniseintrag. Nachgetragen wird nur,
+       wo noch nichts steht: das Gedaechtnis ist ein Register und kein
+       Arbeitsblatt.
+
+       Ein Plan, der NICHT zeichenbar ist, traegt auch keinen
+       Grammatik-Befund. Dann bleiben die drei Felder null - und das
+       ist die richtige Antwort, nicht eine fehlende.
+       ----------------------------------------------------------------- */
+    const lernEintrag = lernEintraege.get(String(pkg.packageId));
+    if (lernEintrag) LearningUnit.ergaenze(lernEintrag, { plan: bildplan });
 
     d.asset = {
       plannable: bildplan.ok,
