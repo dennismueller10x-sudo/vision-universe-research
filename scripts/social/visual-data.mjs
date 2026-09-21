@@ -31,6 +31,28 @@ export function symbolAus(topic) {
    Schluesselwort, kein Quellenname. */
 export const QUELLENNAME = { tiingo: "Tiingo", "vu.technical": "Vision Universe" };
 
+/* -------------------------------------------------------------------
+   NAMENSRAEUME STATT DREISSIG EINTRAEGE
+
+   Die Discover-Reihen liefern ihre Belege unter Schluesseln wie
+   `discover.card`, `discover.card.return12M` oder
+   `discover.row.bekannte-namen` - im echten Lauf sind es ueber
+   dreissig, und mit jeder neuen Reihe kommt einer dazu. Sie einzeln
+   einzutragen hiesse, ein Register zu fuehren, das der naechste
+   Datenstand ueberholt; genau so geraet ein Schluessel unter ein
+   Bild.
+
+   Ein Namensraum ist eine Aussage ueber Herkunft: `discover.` ist
+   unsere eigene, redaktionell kuratierte Recherche, `vu.` unsere
+   eigene Messung. Beide heissen oeffentlich Vision Universe. Das ist
+   keine Erfindung, sondern die Antwort auf die Frage, wer die Zahl
+   erhoben hat.
+   ------------------------------------------------------------------- */
+export const QUELLEN_NAMENSRAUM = [
+  { praefix: "discover.", name: "Vision Universe" },
+  { praefix: "vu.", name: "Vision Universe" }
+];
+
 /** Die Kursreihe eines Instruments samt Herkunft, oder null. */
 export function kursreihe(symbol, root) {
   if (!symbol) return null;
@@ -141,6 +163,13 @@ export function datenlage(spec, root) {
 
     /* Die Rohdaten fuer visual-composition.js. */
     composition: {
+      /* Kennzahl, Einheit und Herkunft der Vergleichsgruppe. Sie
+         gelten fuer die ACHSE und nicht fuer einen Balken - und sie
+         sind der Grund, warum unter einem Vergleich eine Quelle
+         stehen kann. */
+      metrik: (spec.peerGruppe && spec.peerGruppe.metrik) || null,
+      einheit: (spec.peerGruppe && spec.peerGruppe.einheit) || null,
+      peerQuellen: (spec.peerGruppe && spec.peerGruppe.quellen) || [],
       points: reihe,
       contributions: teile,
       total: (spec.evidence || []).filter((e) => e && e.id === "score")

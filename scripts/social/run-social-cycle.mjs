@@ -856,6 +856,21 @@ function systemischUnmessbar(signals, registry, providerId, memory) {
    nichts zurueck, und der Aufrufer bleibt bei dem, was er sonst
    haette.
    ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   DREI FELDER, DIE HIER VERLOREN GINGEN
+
+   Diese Funktion nahm aus jedem Beleg `entity` und `value` und liess
+   `source`, `unit` und die Schreibweise liegen. Auf dem fertigen Bild
+   war das zu sehen: fuenf Kurse ohne Waehrung, und unter dem roten
+   Strich stand keine Quelle - die Zeile war leer, weil der Beleg
+   seine Herkunft auf dem Weg hierher verloren hatte.
+
+   Dieselbe Fehlerfamilie wie die abgeschriebene Feldliste im
+   Gedaechtnis und wie `normalisiere()`, das `belege` fallen liess:
+   eine von Hand gefuehrte Auswahl, die ein Feld vergisst. Deshalb
+   wird der Beleg hier vollstaendig uebernommen und die Gruppe traegt,
+   was sie gemeinsam hat.
+   ------------------------------------------------------------------- */
 function peersAusThema(thema) {
   const nachKennzahl = new Map();
   for (const e of (thema && thema.evidence) || []) {
@@ -863,14 +878,27 @@ function peersAusThema(thema) {
     if (e.value === null || e.value === undefined) continue;
     const wert = Number(e.value);
     if (!Number.isFinite(wert)) continue;
-    if (!nachKennzahl.has(e.metric)) nachKennzahl.set(e.metric, []);
-    nachKennzahl.get(e.metric).push({ label: e.entity, value: wert, highlight: false });
+    if (!nachKennzahl.has(e.metric)) {
+      nachKennzahl.set(e.metric, { metrik: e.metric, einheit: null,
+        quellen: [], peers: [] });
+    }
+    const g = nachKennzahl.get(e.metric);
+    /* Die Einheit gehoert zur Achse. Zwei Einheiten in einem Vergleich
+       sind keiner - dann bleibt sie unbekannt statt willkuerlich. */
+    if (e.unit) {
+      if (g.einheit === null) g.einheit = String(e.unit);
+      else if (g.einheit !== String(e.unit)) g.einheit = "";
+    }
+    if (e.source && g.quellen.indexOf(e.source) === -1) g.quellen.push(e.source);
+    g.peers.push({ label: e.entity, value: wert,
+      anzeige: typeof e.value === "string" ? e.value.trim() : null,
+      quelle: e.source || null, highlight: false });
   }
-  let beste = [];
-  for (const liste of nachKennzahl.values()) {
-    if (liste.length > beste.length) beste = liste;
+  let beste = null;
+  for (const g of nachKennzahl.values()) {
+    if (!beste || g.peers.length > beste.peers.length) beste = g;
   }
-  return beste.length >= 2 ? beste : [];
+  return (beste && beste.peers.length >= 2) ? beste : null;
 }
 
 function kurzname(thema) {
@@ -1515,10 +1543,13 @@ async function main() {
     const lage = VisualDaten.datenlage({
       topic: opportunity.topic,
       evidence: (evidenzPaket && evidenzPaket.ok) ? (evidenzPaket.evidence || []) : [],
-      peers: (eigeneGruppe && eigeneGruppe.length)
-        ? eigeneGruppe
+      peers: eigeneGruppe
+        ? eigeneGruppe.peers
         : vergleichsgruppe.map((v) => Object.assign({}, v, {
-            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
+            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) })),
+      /* Kennzahl, Einheit und Herkunft der Gruppe - sie gelten fuer
+         die Achse, nicht fuer einen einzelnen Balken. */
+      peerGruppe: eigeneGruppe
     }, ROOT);
     bildDatenlage[opportunity.topic] = lage;
 
@@ -2361,11 +2392,35 @@ async function main() {
     } catch { return null; }
   }
 
+  /* -------------------------------------------------------------------
+     DIE QUELLENZEILE GAB ES NUR FUER EINE KURSREIHE
+
+     Ein Vergleich aus einer Discover-Reihe hat keine Kursreihe - und
+     bekam deshalb gar keine Quelle. Auf dem fertigen Bild standen
+     fuenf Zahlen in Markenoptik unter einem roten Strich, und
+     darunter nichts. Der Kartenpfad weist eine Zahl ohne Quelle seit
+     jeher ab (`noSource`); der Kompositionspfad hat sie gezeichnet.
+
+     Die Belege der Gruppe tragen ihre Herkunft. Sie wird hier auf
+     oeffentliche Namen abgebildet - mit derselben Funktion, die auch
+     der Renderer benutzt, damit es nicht zwei Begriffe davon gibt,
+     wie unsere Quellen heissen.
+     ------------------------------------------------------------------- */
   function quelleAus(lage) {
-    if (!lage || !lage.series || !lage.series.source) return null;
-    return lage.series.asOf
-      ? lage.series.source + ", Stand " + VisualComposition.datumDe(lage.series.asOf)
-      : lage.series.source;
+    if (lage && lage.series && lage.series.source) {
+      return lage.series.asOf
+        ? lage.series.source + ", Stand " + VisualComposition.datumDe(lage.series.asOf)
+        : lage.series.source;
+    }
+    const roh = (lage && lage.composition && lage.composition.peerQuellen) || [];
+    const namen = [];
+    for (const q of roh) {
+      const n = AssetRenderer.quellenName(q);
+      if (n.ok && namen.indexOf(n.name) === -1) namen.push(n.name);
+    }
+    /* Mehrere Herkuenfte auf einer Achse sind kein Fehler - sie
+       werden genannt, nicht zu einer zusammengezogen. */
+    return namen.length ? namen.join(" / ") : null;
   }
 
   log("\n--- FRACHT ---");
@@ -2516,7 +2571,17 @@ async function main() {
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
       : (kompo && kompo.ok
         ? AssetRenderer.planKomposition(pkg, kompo, {
-            entitaet: lage.symbol || null,
+            /* Bei einem Vergleich aus einer Gruppe ist der Gegenstand
+               die KENNZAHL, nicht ein Ticker: fuenf Unternehmen auf
+               einer Achse haben kein gemeinsames Symbol. Die Einheit
+               gehoert dazu - fuenf Kurse ohne Waehrung standen auf
+               dem fertigen Bild. */
+            entitaet: lage.symbol ||
+              (lage.composition && lage.composition.metrik
+                ? (lage.composition.einheit
+                    ? lage.composition.metrik + " in " + lage.composition.einheit
+                    : lage.composition.metrik)
+                : null),
             /* Die Grafik sagt etwas ueber SICH, nicht ueber den Hook.
                Der erste Versuch setzte den Hook darueber - und dann
                stand "65,3 Technical Opportunity Score" ueber einer

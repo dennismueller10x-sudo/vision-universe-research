@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, rmSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { plan, planKomposition, render, messeSeite, seite, textGroessen,
-  hookEbeneAus, seiteKomposition, atlasKasten, chromiumPfad,
+  hookEbeneAus, seiteKomposition, atlasKasten, ausserhalb, chromiumPfad,
   ladeSchrift } from "../../scripts/social/render-asset.mjs";
 
 const require = createRequire(import.meta.url);
@@ -309,32 +309,48 @@ test("SS21c · Auf der Karte gilt dieselbe Regel aus derselben Funktion", () => 
 });
 
 test("SS21d · Ein Systemschluessel kommt nicht unter die Grafik", () => {
-  /* "Quelle: vu.technical" stand unter einem fertigen Bild. Drei
+  /* "Quelle: vu.technical" stand unter einem fertigen Bild. Vier
      Faelle, und jeder hat eine andere richtige Antwort:
 
-       vu.technical   unser Schluessel MIT Eintrag -> der Name
-       vu.sentiment   unser Schluessel OHNE Eintrag -> kein Bild
-       Bloomberg      ein oeffentlicher Name -> unveraendert
+       vu.technical    unser Schluessel MIT Eintrag   -> der Name
+       discover.card   unser Namensraum               -> der Name
+       screener.raw    ein fremder Schluessel         -> kein Bild
+       Bloomberg       ein oeffentlicher Name         -> unveraendert
 
-     Der zweite Fall ist der, der frueher durchrutschte; der dritte
+     Der dritte Fall ist der, der frueher durchrutschte; der vierte
      der, den der erste Entwurf dieses Tors faelschlich abwies. */
-  const bekannt = planKomposition(
-    paket({ visualType: "CHART" }), KOMPO,
-    Object.assign({}, KOMPO_EBENEN, { quelle: "vu.technical" }));
-  assert.equal(bekannt.ok, true, bekannt.message);
-  assert.equal(bekannt.ebenen.quelle, "Vision Universe");
+  const faelle = [
+    ["vu.technical", "Vision Universe"],
+    ["discover.card", "Vision Universe"],
+    ["discover.row.bekannte-namen", "Vision Universe"],
+    ["Bloomberg", "Bloomberg"],
+    ["Tiingo, Stand 17.09.2026", "Tiingo, Stand 17.09.2026"]
+  ];
+  for (const [roh, name] of faelle) {
+    const p = planKomposition(paket({ visualType: "CHART" }), KOMPO,
+      Object.assign({}, KOMPO_EBENEN, { quelle: roh }));
+    assert.equal(p.ok, true, roh + ": " + p.message);
+    assert.equal(p.ebenen.quelle, name, roh);
+  }
 
-  const mitSchluessel = planKomposition(
+  const fremd = planKomposition(
     paket({ visualType: "CHART" }), KOMPO,
-    Object.assign({}, KOMPO_EBENEN, { quelle: "vu.sentiment" }));
-  assert.equal(mitSchluessel.ok, false);
-  assert.equal(mitSchluessel.reason, "unknownSourceName");
+    Object.assign({}, KOMPO_EBENEN, { quelle: "screener.raw" }));
+  assert.equal(fremd.ok, false);
+  assert.equal(fremd.reason, "unknownSourceName");
+});
 
-  const mitName = planKomposition(
-    paket({ visualType: "CHART" }), KOMPO,
-    Object.assign({}, KOMPO_EBENEN, { quelle: "Bloomberg" }));
-  assert.equal(mitName.ok, true, mitName.message);
-  assert.equal(mitName.ebenen.quelle, "Bloomberg");
+test("SS21e · Eine gezeichnete Zahl ohne Herkunft wird nicht gezeichnet", () => {
+  /* Der Kartenpfad weist das seit jeher ab (`noSource`). Der
+     Kompositionspfad hat gezeichnet: im realen Lauf fuenf Kurse unter
+     einem roten Strich, und darunter nichts. Eine Grafik zeigt mehr
+     Zahlen als eine Karte, nicht weniger. */
+  for (const leer of [null, "", "   "]) {
+    const p = planKomposition(paket({ visualType: "CHART" }), KOMPO,
+      Object.assign({}, KOMPO_EBENEN, { quelle: leer }));
+    assert.equal(p.ok, false, JSON.stringify(leer));
+    assert.equal(p.reason, "noSource");
+  }
 });
 
 test("SS22 · Ohne Hook entsteht im Kompositionspfad gar kein Plan", () => {
@@ -443,4 +459,98 @@ test("SS27 · Die Figurenmessung ist von der Textmessung getrennt", () => {
   const figur = /data-vu-figur="ATLAS"[^>]*/.exec(html);
   assert.ok(figur, "Keine Figur im Markup.");
   assert.doesNotMatch(figur[0], /data-vu-rolle=/);
+});
+
+/* ------------------------------------------------------------------ */
+/* DER VORFALL VOM 21.09.: ABGESCHNITTENE HERKUNFT                     */
+/* ------------------------------------------------------------------ */
+
+/* Die ECHTE Messung der Seite, die der reale Zyklus erzeugt hat:
+   fuenf Balken, eine dreizeilige Hook, 1080x1350. `overflow:hidden`
+   hat "Quelle: Tiingo" abgeschnitten, ohne dass irgendetwas es gemerkt
+   hat - fuenf Zahlen in Markenoptik, ohne Herkunft.
+
+   Die Zahlen sind abgelesen, nicht erfunden. Sie bleiben hier stehen,
+   damit der Fall pruefbar ist, auch wenn die Seite ihn nicht mehr
+   erzeugt. */
+const VORFALL = {
+  breite: 1080, hoehe: 1350,
+  texte: [
+    { rolle: "HOOK", oben: 180, unten: 451, links: 88, rechts: 906 },
+    { rolle: "BELEG", oben: 468, unten: 517, links: 88, rechts: 620 },
+    { rolle: "QUELLE", oben: 1346, unten: 1375, links: 88, rechts: 262 }],
+  figuren: [{ figur: "ATLAS", oben: 1191, unten: 1375, links: 854,
+    rechts: 992, breite: 138, hoehe: 184 }]
+};
+
+test("SS28 · Was ueber den Rand ragt, wird benannt statt abgeschnitten", () => {
+  const raus = ausserhalb(VORFALL, 1080, 1350);
+  assert.equal(raus.length, 2, raus.join(" | "));
+  assert.match(raus.join(" "), /QUELLE/);
+  assert.match(raus.join(" "), /FIGUR:ATLAS/);
+});
+
+test("SS29 · Dieselbe Seite, in die Flaeche geholt, ist in Ordnung", () => {
+  /* Die Gegenrichtung: ein Tor, das immer anschlaegt, ist genauso
+     wertlos wie eines, das nie anschlaegt. */
+  const heil = JSON.parse(JSON.stringify(VORFALL));
+  heil.texte[2] = { rolle: "QUELLE", oben: 1225, unten: 1254, links: 88, rechts: 262 };
+  heil.figuren[0] = { figur: "ATLAS", oben: 1070, unten: 1254, links: 854,
+    rechts: 992, breite: 138, hoehe: 184 };
+  assert.deepEqual(ausserhalb(heil, 1080, 1350), []);
+});
+
+test("SS30 · Ohne Messung wird nicht behauptet, alles sei im Bild", () => {
+  /* Eine leere Liste hiesse "nichts ragt heraus". Das waere eine
+     Aussage ueber die Seite, die in Wahrheit eine ueber das Werkzeug
+     ist - dieselbe Verwechslung, die in diesem Projekt schon einen
+     Bericht erfunden hat. render() zeichnet ohne Messung gar nicht
+     erst; hier gilt nur, dass die Funktion nichts erfindet. */
+  assert.deepEqual(ausserhalb(null, 1080, 1350), []);
+  assert.deepEqual(ausserhalb({ texte: [], figuren: [] }, 1080, 1350), []);
+});
+
+test("SS31 · Auch der linke und der obere Rand zaehlen", () => {
+  assert.equal(ausserhalb({ texte: [
+    { rolle: "HOOK", oben: -4, unten: 100, links: 88, rechts: 900 }] },
+    1080, 1350).length, 1);
+  assert.equal(ausserhalb({ texte: [
+    { rolle: "HOOK", oben: 10, unten: 100, links: -2, rechts: 900 }] },
+    1080, 1350).length, 1);
+  /* Der Fall, der das Tor ueberhaupt erst noetig gemacht hat: ein
+     einzelnes langes Wort, rechts 1199 auf 1080 Pixeln Breite. */
+  assert.equal(ausserhalb({ texte: [
+    { rolle: "HOOK", oben: 10, unten: 100, links: 88, rechts: 1199 }] },
+    1080, 1350).length, 1);
+});
+
+test("SS32 · Fuenf Balken und eine lange Hook passen jetzt in die Flaeche", nurMitChromium, () => {
+  /* Das Gegenstueck zum Tor: die Grafik weicht, und deshalb bleibt
+     die Herkunft im Bild. Ohne die nachgebende Grafik stuende die
+     Quellenzeile wieder bei y=1346. */
+  const dir = join(ROOT, "tmp", "ss5-" + process.pid);
+  mkdirSync(dir, { recursive: true });
+  try {
+    const bars = [
+      { label: "Microsoft", value: 497.75, anzeige: "497,75", rank: 1, pixels: 904 },
+      { label: "Valero Energy", value: 412.53, anzeige: "412,53", rank: 2, pixels: 749 },
+      { label: "Adobe", value: 252.67, anzeige: "252,67", rank: 3, pixels: 459 },
+      { label: "Salesforce", value: 242.85, anzeige: "242,85", rank: 4, pixels: 441 },
+      { label: "HP Inc", value: 34.66, anzeige: "34,66", rank: 5, pixels: 63 }];
+    const pkg = paket({ visualType: "COMPARISON",
+      hook: "33 von 5951 geprueften Titeln - Bekannte Namen in Bewegung." });
+    pkg.visualBrief.textLayers = [];
+    const p = planKomposition(pkg,
+      { ok: true, kind: "COMPARISON", width: 904, einheit: null, bars,
+        highlightRank: null, explanation: "5 Werte." },
+      { entitaet: null, aussage: "Microsoft liegt beim 14-fachen von HP Inc.",
+        quelle: "Tiingo" });
+    assert.equal(p.ok, true, p.message);
+    const r = render(p, join(dir, "a.jpg"), { schrift: ladeSchrift(ROOT) });
+    const quelle = r.messung.texte.find((t) => t.rolle === "QUELLE");
+    assert.ok(quelle, "Die Quellenzeile wurde nicht gemessen.");
+    assert.ok(quelle.unten <= 1350,
+      "Die Quellenzeile endet bei " + quelle.unten + " auf 1350 Pixeln.");
+    assert.deepEqual(ausserhalb(r.messung, 1080, 1350), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

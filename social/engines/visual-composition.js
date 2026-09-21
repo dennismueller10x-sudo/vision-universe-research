@@ -403,10 +403,38 @@
           return vorn.label + " liegt " + mass + " vor " + hinten.label + ".";
         }
         var eigener = k.bars.filter(function (b) { return b.highlight; })[0];
-        return eigener
-          ? eigener.label + " auf Rang " + eigener.rank + " von " +
-            k.bars.length + " im Vergleich."
-          : "Die Rangfolge im Vergleich.";
+        if (eigener) {
+          return eigener.label + " auf Rang " + eigener.rank + " von " +
+            k.bars.length + " im Vergleich.";
+        }
+        /* -------------------------------------------------------------
+           "DIE RANGFOLGE IM VERGLEICH."
+
+           Das stand unter fuenf beschrifteten Balken - und sagte dem
+           Leser genau nichts, was er nicht sah. Ein Satz, der nur
+           benennt, was daneben steht, ist keine Aussage; er fuellt
+           eine Zeile.
+
+           Der Abstand zwischen Erstem und Letztem steht in keiner
+           Beschriftung. Er ist das, was eine Rangliste eigentlich
+           zeigt: nicht die Reihenfolge, sondern die Spreizung.
+
+           Ohne positiven kleinsten Wert gibt es kein Vielfaches -
+           dann bleibt der Satz bei dem, was sicher gilt, statt eine
+           Zahl zu erfinden.
+           ------------------------------------------------------------- */
+        var erster = k.bars[0], letzter = k.bars[k.bars.length - 1];
+        if (letzter.value > 0) {
+          var faktor = erster.value / letzter.value;
+          /* "3,0-fache" ist kein deutscher Satz, sondern eine
+             Formatierung, die durchgeschlagen ist. Eine glatte Zahl
+             wird glatt geschrieben. */
+          var mal = wertDe(faktor, faktor >= 10 ? 0 : 1).replace(/,0$/, "");
+          return erster.label + " liegt beim " + mal + "-fachen von " +
+            letzter.label + ".";
+        }
+        return erster.label + " fuehrt ein Feld von " + k.bars.length +
+          " Werten an.";
       }
       default: return null;
     }

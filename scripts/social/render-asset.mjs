@@ -132,7 +132,7 @@ export const LOGO_PFAD = "assets/vision-universe-logo.png";
 /* Die oeffentlichen Namen unserer Quellen. Sie stehen in
    visual-data.mjs und werden von dort uebernommen - ein zweiter
    Begriff davon, wie unsere Quellen heissen, waere einer zu viel. */
-import { QUELLENNAME } from "./visual-data.mjs";
+import { QUELLENNAME, QUELLEN_NAMENSRAUM } from "./visual-data.mjs";
 
 /* Die Masse des kanonischen Assets. Sie stehen NICHT hier als Zahlen,
    sondern werden aus der Datei gelesen - eine zweite Angabe koennte
@@ -373,6 +373,8 @@ export function quellenName(roh) {
   const text = String(roh === null || roh === undefined ? "" : roh).trim();
   if (!text) return { ok: false, grund: "leer", name: null };
   if (QUELLENNAME[text]) return { ok: true, name: QUELLENNAME[text] };
+  const raum = QUELLEN_NAMENSRAUM.find((r) => text.startsWith(r.praefix));
+  if (raum) return { ok: true, name: raum.name };
   if (ContentIntelligence.istSystemschluessel(text)) {
     return { ok: false, grund: "systemschluessel", name: null };
   }
@@ -974,6 +976,29 @@ export function planKomposition(pkg, komposition, ebenen) {
   const beleg = (VisualQuality.overlap(kopf, e.aussage) >= 0.6)
     ? null : e.aussage;
 
+  /* -------------------------------------------------------------------
+     EINE GEZEICHNETE ZAHL OHNE HERKUNFT WIRD NICHT GEZEICHNET
+
+     Der Kartenpfad weist das seit jeher ab: `noSource`, "eine Zahl in
+     Markenoptik ohne Herkunft ist genau das, was das
+     Provenance-Modell verhindern soll". Der Kompositionspfad hat es
+     gezeichnet - im realen Lauf fuenf Kurse unter einem roten Strich,
+     und darunter nichts.
+
+     Dieselbe Regel gilt jetzt fuer beide Wege. Eine Grafik zeigt mehr
+     Zahlen als eine Karte, nicht weniger.
+     ------------------------------------------------------------------- */
+  if (!String(e.quelle || "").trim()) {
+    return { ok: false, reason: "noSource",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "Die Grafik zeigt " +
+        ((komposition.bars && komposition.bars.length) ||
+         (komposition.points && komposition.points.length) || "mehrere") +
+        " Werte und nennt keine Quelle. Zahlen in Markenoptik ohne " +
+        "Herkunft sind genau das, was das Provenance-Modell " +
+        "verhindern soll." };
+  }
+
   /* Dieselbe Pruefung wie im Kartenpfad - und aus demselben Grund. */
   const qn = quellenName(e.quelle);
   if (e.quelle && !qn.ok) {
@@ -1089,7 +1114,7 @@ function svgBalken(k, opts = {}) {
      gezwungen - sonst wuerde ein einzelner Vergleich die halbe Seite
      einnehmen.
      ------------------------------------------------------------------- */
-  const zeile = Math.max(70, Math.min(124, Math.round(620 / k.bars.length)));
+  const zeile = Math.max(70, Math.min(124, Math.round(560 / k.bars.length)));
   const dick = zeile >= 100 ? 18 : 10;
   const hoehe = k.bars.length * zeile;
   const balken = k.bars.map((b, i) => {
@@ -1185,7 +1210,23 @@ body{font-family:${familie};color:${FARBEN.weiss};
   text-transform:uppercase;margin-top:18px}
 .titel{font-size:${g2.aussage}px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:17ch}
 .beleg{font-size:${g2.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:16px}
-.mitte{display:flex;flex-direction:column;gap:22px}
+/* -------------------------------------------------------------------
+   DIE GRAFIK WEICHT, NICHT DIE HERKUNFT
+
+   Fuenf Balken und eine dreizeilige Hook ergaben zusammen 1375 Pixel
+   auf einer 1350 Pixel hohen Flaeche. Gemessen wurde es erst, als
+   jemand hinsah: "Quelle: Tiingo" stand bei y=1346 bis 1375 - unter
+   dem Bildrand, von overflow:hidden stillschweigend abgeschnitten.
+   Fuenf Zahlen in Markenoptik, ohne Herkunft. Genau das soll das
+   Provenance-Modell verhindern.
+
+   Die Grafik ist das Element, das nachgeben kann: ein SVG mit viewBox
+   skaliert und bleibt lesbar. Die Quellenzeile kann nicht nachgeben -
+   sie ist entweder da oder nicht.
+   ------------------------------------------------------------------- */
+.mitte{display:flex;flex-direction:column;gap:22px;flex:1 1 auto;min-height:0}
+.grafik{flex:0 1 auto;min-height:0;display:flex;align-items:flex-start}
+.grafik svg{width:100%;height:auto;max-height:100%}
 .achsen{display:flex;justify-content:space-between;font-size:23px;color:${FARBEN.gedeckt};
   font-weight:500;margin-top:14px}
 .fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
@@ -1203,7 +1244,7 @@ body{font-family:${familie};color:${FARBEN.weiss};
       ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
       ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     </div>
-    ${grafik}
+    <div class="grafik">${grafik}</div>
     ${achsen}
   </div>
   <div class="fuss">
@@ -1295,6 +1336,37 @@ export function messeSeite(htmlPfad, breite, hoehe) {
     if (!Array.isArray(figuren)) return null;
   }
   return { breite, hoehe, texte, figuren };
+}
+
+/**
+ * Was von der gemessenen Seite ueber den Rand ragt.
+ *
+ * Eine eigene Funktion, weil sich der Fall in der Praxis kaum noch
+ * herstellen laesst: die Grafik weicht, und zu langen Text weist
+ * visual-quality.js schon vorher ab. Ein Tor, das man nicht ausloesen
+ * kann, laesst sich auch nicht pruefen - und ungeprueft ist es eine
+ * Behauptung.
+ *
+ * Geprueft wird es deshalb an der ECHTEN Messung des Vorfalls: fuenf
+ * Balken, eine dreizeilige Hook, und "Quelle: Tiingo" bei y=1346..1375
+ * auf einer 1350 Pixel hohen Seite.
+ *
+ * Ohne Messung gibt es NICHTS zurueck - eine leere Liste hiesse "alles
+ * im Bild", und das waere eine Aussage ueber die Seite, die in
+ * Wahrheit eine ueber das Werkzeug ist.
+ */
+export function ausserhalb(messung, breite, hoehe) {
+  if (!messung) return [];
+  const raus = [];
+  const pruefe = (name, r) => {
+    if (r.unten > hoehe || r.oben < 0 || r.rechts > breite || r.links < 0) {
+      raus.push(name + " (" + r.links + "," + r.oben + ")-(" +
+        r.rechts + "," + r.unten + ")");
+    }
+  };
+  (messung.texte || []).forEach((t) => pruefe(t.rolle, t));
+  (messung.figuren || []).forEach((f) => pruefe("FIGUR:" + f.figur, f));
+  return raus;
 }
 
 /** Die DOM-Ausgabe ist HTML-kodiert; das JSON darin will es nicht sein. */
@@ -1430,6 +1502,30 @@ export function render(p, zielPfad, options = {}) {
       fehler.atlas = atlasBefund;
       throw fehler;
     }
+  }
+
+  /* -----------------------------------------------------------------
+     WAS AUSSERHALB DER FLAECHE LIEGT, IST NICHT AUF DEM BILD
+
+     `overflow:hidden` schneidet ab, ohne etwas zu sagen. Beim realen
+     Zyklus stand die Quellenzeile bei y=1346..1375 auf einer 1350
+     Pixel hohen Seite: sie war im Markup, sie war im Plan, sie war im
+     Bericht - und sie war nicht im Bild.
+
+     Die Seite misst sich seit §13 selbst. Bis hierher wurde diese
+     Messung nur nach der Hook gefragt. Jetzt wird sie gefragt, ob
+     ueberhaupt etwas herausragt: jede gemessene Zeile und jede Figur
+     gegen die vier Raender. Ein Tor, das nur EIN Element prueft, ist
+     fuer alle anderen keines.
+     ----------------------------------------------------------------- */
+  const draussen = ausserhalb(messung, p.breite, p.hoehe);
+  if (draussen.length) {
+    const fehler = new Error("Teile der Seite liegen ausserhalb der " +
+      p.breite + "x" + p.hoehe + " Flaeche und werden abgeschnitten: " +
+      draussen.join(", ") + ".");
+    fehler.zustand = "INHALT_AUSSERHALB_DER_FLAECHE";
+    fehler.draussen = draussen;
+    throw fehler;
   }
 
   if (!scrollStop.ok && options.scrollStopPruefen !== false) {
