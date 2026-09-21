@@ -408,6 +408,98 @@ der nur noch ausgeliefert werden muss.
 
 ---
 
+### 12c. Produktionsnachweis der App-Authentifizierung (21.09.2026)
+
+**Der Schlüssel liegt bei Cloudflare.** Zwei unabhängige Belege im selben
+Lauf (`35632934608`): `wrangler secret list` nennt `GITHUB_APP_PRIVATE_KEY`,
+und der Zustandspunkt des Weckers sagt dasselbe — `ausweis: github-app`,
+`appIdHinterlegt: true`, `schluesselHinterlegt: true`, und nichts darüber
+hinaus.
+
+**Der erste Takt, den nicht ich ausgelöst habe.** Um 17:09:11 wurde der bis
+dahin laufende, von Hand gestartete Block abgebrochen. Um **17:10:46** legte
+GitHub Lauf `35630336530` an:
+
+```
+event:            workflow_dispatch
+actor:            vision-universe-automation[bot]   (App ID 332136878)
+triggering_actor: vision-universe-automation[bot]
+```
+
+Nicht `dennismueller10x-sudo`. Damit ist die ganze Kette belegt — ohne
+gültiges JWT gäbe es keine Installation, ohne Installation kein Token, ohne
+Token keinen Dispatch, und ohne Dispatch keinen Lauf.
+
+**Drei aufeinanderfolgende echte Cron-Takte**, mitgehört an der Quelle
+(`wrangler tail`, Lauf `35632934608`, 17:35:46 – 17:52:46):
+
+```
+Ereignisse des Weckers: bereitsWach, ausgeliefert, bereitsWach,
+                        ausgeliefert, bereitsWach, ausgeliefert
+Zeilen mit Cron-Ausloeser: 3   ("cron": "*/5 13-21 * * 1-5")
+Takte: 3 · in Ordnung: 6 · Fehlerereignisse: 0
+BESTANDEN
+```
+
+`bereitsWach` ist dabei mehr, als es klingt: um es überhaupt sagen zu
+können, muss der Wecker ein JWT signiert, die Installation ermittelt, ein
+Token geholt und damit die Actions-API gelesen haben. Drei Takte, drei Mal
+vollständige Kette, null Fehlerereignisse. Dass kein `installationErmittelt`
+mehr auftaucht, ist der Zwischenspeicher: Token und Installation werden
+wiederverwendet, solange sie gelten (WK-15).
+
+**Dreizehn aufeinanderfolgende Zyklen** aus diesem von Cloudflare
+gestarteten Block:
+
+| Zyklus | Beginn (UTC) | Ende | Snapshots | Takt |
+|---|---|---|---|---|
+| 1 | 17:11:18 | 17:16:19 | 498 | — |
+| 2 | 17:16:21 | 17:21:23 | 480 | 5:04 |
+| 3 | 17:21:25 | 17:26:26 | 486 | 5:04 |
+| 4 | 17:26:32 | 17:31:34 | 494 | 5:08 |
+| 5 | 17:31:41 | 17:36:43 | 490 | 5:09 |
+| 6 | 17:36:49 | 17:41:50 | 480 | 5:08 |
+| 7 | 17:41:52 | 17:46:54 | 489 | 5:03 |
+| 8 | 17:46:56 | 17:51:57 | 485 | 5:03 |
+| 9 | 17:51:59 | 17:57:01 | 491 | 5:03 |
+| 10 | 17:57:03 | 18:02:04 | 486 | 5:04 |
+| 11 | 18:02:10 | 18:07:12 | 488 | 5:08 |
+| 12 | 18:07:14 | 18:12:15 | 490 | 5:03 |
+| 13 | 18:12:22 | 18:17:24 | 487 | 5:08 |
+
+**Die Kette, Ende zu Ende:**
+
+```
+17:55:34  PASS      im Repository 6 min alt · letzter Zyklus vor 9 min
+18:06:55  WARNING   "Letzter Taktzyklus vor 10 min"  -> Messfehler, siehe unten
+18:16:26  PASS      im Repository 6 min alt · letzter Zyklus vor 4 min
+```
+
+Die WARNING dazwischen war **kein Produktionsbefund, sondern mein eigener
+Messfehler**: der Wächter zählte ab dem Beginn des letzten Zyklus, verglich
+aber mit dem Abstand zwischen zwei Beginnen. Ein Zyklus beginnt alle 5:04
+und dauert 5:02 — das Alter pendelt dadurch zwischen 0 und gut zehn
+Minuten, die Schwelle liegt bei neun. Etwa jede fünfte Messung hätte
+grundlos angeschlagen. Gemessen wird jetzt ab dem **Ende** eines Zyklus;
+WD-16 bis WD-19 halten die Regel samt Gegenproben fest.
+
+**Browser**, Realtime Production Smoke `35635434172`, 14:00 New York:
+
+```
+PASS · 14 von 14 · realtimeVerified true
+AAPL 28 Ticks   "Heute · Stand 13:45 · nicht aktuell"  ->  "Markt geoeffnet · Live"
+MSFT 16 Ticks   "Heute · Stand 13:55"                  ->  "Markt geoeffnet · Live"
+PANW  8 Ticks   "Heute · Stand 13:50"                  ->  "Markt geoeffnet · Live"
+NVDA 38 Ticks   "Markt geoeffnet · Live"
+VLO   4 Ticks   "Markt geoeffnet · Live"
+```
+
+Die Etiketten sind hier der eigentliche Beleg: „Stand 13:55" bei einem Lauf
+um 14:00 ist ein fünf Minuten alter, ausgelieferter Stand. Am Vormittag, vor
+der Ergänzung, trug dieselbe Seite um 11:23 den Stand von 11:10.
+
+---
+
 ## 13. Recovery
 
 Ein Workflow kann mit `GITHUB_TOKEN` keinen anderen Workflow auslösen — GitHub
@@ -629,12 +721,14 @@ keine geänderten Verträge.
 
 ## 20. Verbleibende echte Risiken
 
-1. **Dem Wecker fehlt das Token.** Er ist ausgerollt und tickt seit 15:59 UTC
-   alle fünf Minuten, aber ohne `GITHUB_APP_PRIVATE_KEY` meldet er
-   `keinSchluessel` und löst nichts aus. Bis dahin hängen sowohl der Rückfall-Wächter als auch
-   die Auslieferungs-Brücke am selben Zeitplanmechanismus, der ausgefallen ist.
-   Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
-   (Eskalation 2)
+1. ~~Dem Wecker fehlt das Token.~~ **Erledigt am 21.09.2026.** Der Eigentümer
+   hat eine GitHub App angelegt und ihren privaten Schlüssel als
+   Cloudflare-Secret hinterlegt; der Wecker startet seither den Takt und stößt
+   die Auslieferung an, beides über `Actions: write`. Nachgewiesen in §12c.
+   Was bleibt: der externe Puls ist jetzt ein **einzelner**. Fällt Cloudflare
+   aus, greift der stündliche GitHub-Zeitplan als Rückfallebene — eine Lücke
+   von bis zu einer Stunde statt einer unbegrenzten.
+
 2. **Der Fünf-Minuten-Takt ist nicht erreichbar**, solange das Providerlimit
    unbelegt ist. Der gemessene ehrliche Takt ist 5:04 bis 5:08 — der Abruf
    allein braucht 5:02 bei 527 Titeln und höchstens 100 Anfragen je Minute.
