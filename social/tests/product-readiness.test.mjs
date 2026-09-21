@@ -183,12 +183,38 @@ test("PR49 · Ein Feld ohne Werte zaehlt nicht als erfasste Dimension", () => {
   assert.ok(e.length, "Kein Gedaechtnis - der Test prueft nichts.");
   assert.ok(e.some((x) => "contentFamily" in x),
     "Das Feld contentFamily gibt es gar nicht mehr.");
-  assert.ok(e.some((x) => x.contentFamily),
-    "contentFamily traegt keine Werte mehr - §38 waere wieder offen.");
   /* Die Altbeitraege bleiben leer, und das ist richtig. */
   assert.ok(e.some((x) => !x.contentFamily),
     "Alle Eintraege tragen eine Familie - dann wurde nachtraeglich " +
     "erfunden, was niemand entschieden hat.");
+
+  /* -------------------------------------------------------------------
+     DASS DAS FELD WERTE TRAEGT, IST EINE FRAGE AN DEN CODE
+
+     Hier stand `e.some(x => x.contentFamily)` gegen die committete
+     Datei - und genau davor warnt der Kommentar oben: ein Test, der
+     eine Datenlage festhaelt, wird von ihr ueberholt. Beim Merge nach
+     main ist es passiert. Auf dem Zweig trugen die letzten fuenf
+     Eintraege eine Familie, weil dort ein Lauf MIT dieser Aenderung
+     geschrieben hatte; main traegt die 63 Eintraege eines Laufs OHNE
+     sie. Derselbe Code, zwei Dateien, zwei Ergebnisse - der Test
+     prueft dann, welcher Zweig zuletzt den Scheduler hatte.
+
+     Die Frage, die er stellen WILL, ist eine an den Weg: kommt eine
+     Content Family, die es gibt, im Gedaechtniseintrag an? Die ist
+     hier entscheidbar, unabhaengig davon, was zuletzt gelaufen ist.
+     ------------------------------------------------------------------- */
+  const Memory = require("../engines/memory.js");
+  const eintrag = Memory.entry({
+    packageId: "pr49", topic: "Kleine gegen grosse Unternehmen",
+    platform: "instagram", contentFamily: "RANKING",
+    hookArchetype: "KONTRAST", publishedAt: "2026-09-21T12:00:00Z"
+  });
+  assert.equal(eintrag.contentFamily, "RANKING",
+    "Eine vorhandene Content Family kommt im Eintrag nicht an - " +
+    "§38 waere wieder offen.");
+  assert.equal(L.erfassung([eintrag]).getragen.includes("CONTENT_FAMILY"), true,
+    "Der Eintrag traegt die Familie, die Zaehlung sieht sie nicht.");
 });
 
 test("PR50 · Dreizehn gruene Bedingungen sind noch kein Produkt (§55)", () => {
