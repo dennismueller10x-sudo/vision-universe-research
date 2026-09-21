@@ -339,3 +339,62 @@ test("AD28 · Der Orchestrator zaehlt die offenen Jobs wirklich", () => {
   assert.match(runner, /allOpenJobs: alleOffen/);
   assert.match(runner, /register\.jobs \|\| \[\]\)\.filter/);
 });
+
+/* =========================================================================
+   AD29 — ROTER CODE SCHREIBT KEINE PRODUKTIONSDATEN
+
+   Zwei Schritte des Workflows haben diese Regel getragen, ohne dass sie
+   je geprueft wurde: die Suite und die Isolationspruefung liefen ganz
+   oben, und wer sie verschiebt, merkt es an nichts.
+
+   Beim Umstellen auf verify-suites.mjs ist genau das aufgefallen: die
+   beiden Schritte liessen sich ersetzen, und keine einzige Zusicherung
+   hat sich geruehrt. Ein Waechter, der nur aus Reihenfolge besteht.
+   ========================================================================= */
+/* Ein Kommentar ist keine Handlung.
+
+   AD29 fand "verify-suites.mjs" beim ersten Versuch im ERKLAERBLOCK
+   ueber dem Schritt - und hielt die Erklaerung fuer die Ausfuehrung.
+   Verschiebt man den Schritt ans Ende, bleibt die Fundstelle oben, und
+   der Test haelt weiter.
+
+   Derselbe Fehler steckte in SCHEDULER_NEVER_PUBLISHES (decide-candidate
+   aus einem YAML-Kommentar) und in OD12 (is-ancestor aus dem eigenen
+   Kommentar). Deshalb steht die Antwort hier EINMAL. */
+function ohneKommentare(yaml) {
+  return yaml.split("\n").map((z) => z.replace(/(^|\s)#.*$/, "")).join("\n");
+}
+
+test("AD29 · Gemessen wird, BEVOR irgendetwas schreibt", () => {
+  const AUSGEFUEHRT = ohneKommentare(WORKFLOW);
+  const messen = AUSGEFUEHRT.indexOf("verify-suites.mjs");
+  assert.ok(messen > 0,
+    "Der Workflow misst Suiten und Isolation gar nicht mehr");
+
+  /* Jeder Schritt, der Zustand veraendert - egal ob im Repository, in
+     der Warteschlange oder beim Creative-Provider. */
+  const schreibend = [
+    "run-social-cycle.mjs",       // baut Pakete
+    "make-publish-candidate.mjs", // erzeugt den Kandidaten
+    "dispatch-creative-job.mjs",  // verbraucht Work-Budget
+    "publish-approval-queue.mjs", // schreibt in den Worker
+    "git commit"                  // schreibt ins Repository
+  ];
+
+  for (const name of schreibend) {
+    const stelle = AUSGEFUEHRT.indexOf(name);
+    if (stelle === -1) continue;   // nicht jeder Schritt muss es geben
+    assert.ok(messen < stelle,
+      name + " steht VOR der Messung. Ein Lauf auf rotem Code wuerde " +
+      "dann Fehler in Produktionsdaten schreiben, bevor jemand es merkt.");
+  }
+});
+
+test("AD30 · Der Reifebericht bekommt keine Behauptung mehr hereingereicht", () => {
+  /* `--suites-green "social/tests (Zeitpunkt)"` war ehrlicher als in der
+     CI - der Schritt brach oben ab, wenn die Suite rot war - aber es
+     blieb eine Behauptung in Textform: keine Zahl, kein Stand, und
+     vierzehn uebersprungene Tests waeren darin unsichtbar geblieben. */
+  assert.ok(!/--suites-green|--isolation-proven/.test(ohneKommentare(WORKFLOW)),
+    "Der Reifebericht bekommt den Suitenzustand wieder als Fahne");
+});
