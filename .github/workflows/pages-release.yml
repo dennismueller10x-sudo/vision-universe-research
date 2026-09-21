@@ -51,12 +51,20 @@ on:
   # Bis dahin diese Bruecke. Sie ist ausdruecklich ein Zeitplan und
   # teilt damit den Failure Mode, der den Vorfall ausgeloest hat - aber
   # sie ist ein ANDERER Workflow als der Taktgeber, faellt also
-  # unabhaengig aus. Ein verpasster Takt kostet hier zehn Minuten
+  # unabhaengig aus. Ein verpasster Takt kostet hier fuenf Minuten
   # Auslieferung, nicht eine Stunde Datenstillstand. Ein Lauf dauert
   # rund 97 Sekunden; das Repository ist oeffentlich, Actions-Minuten
   # sind unbegrenzt.
+  #
+  # Warum die AUSLIEFERUNG schneller wird und nicht der Abruf:
+  # verify-request-limits.mjs hat am 21.09.2026 erneut UNKNOWN /
+  # PROVIDER_CONFIRMATION_REQUIRED ergeben - Tiingo nennt sein
+  # Kontingent weder in einem Kontoendpunkt noch in Antwortkoepfen.
+  # Belegt ist allein eine Untergrenze von 5.000 Anfragen je Stunde
+  # ohne Ablehnung. Die 527 Titel brauchen damit 5:01, und §7 des
+  # Auftrags verbietet, die Drossel ohne Beleg zu lockern.
   schedule:
-    - cron: '*/10 13-21 * * 1-5'
+    - cron: '*/5 13-21 * * 1-5'
 
   workflow_dispatch:
 
