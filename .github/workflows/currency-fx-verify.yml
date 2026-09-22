@@ -45,6 +45,23 @@ on:
         description: 'Berichte in den Zweig committen'
         type: boolean
         default: true
+  # WARUM ZUSAETZLICH PULL_REQUEST OHNE PFADFILTER
+  #
+  # GitHub wertet Pfadfilter nur ueber die ersten 300 geaenderten Dateien
+  # eines Ereignisses aus. Ein Push, der die neu gebauten Discover-Daten
+  # mitbringt, liegt weit darueber - die Currency-Pfade fallen dann aus
+  # der Betrachtung und dieser Workflow laeuft NICHT. Genau das ist
+  # passiert: der letzte Lauf lag auf 654154191, die beiden Pushes danach
+  # (4.009 bzw. ueber 3.000 Dateien) haben ihn stumm uebersprungen.
+  #
+  # Ein Gate, das bei grossen Aenderungen aussetzt, prueft nichts - und
+  # gross sind genau die Aenderungen, bei denen es zaehlt. Der
+  # pull_request-Ausloeser traegt deshalb KEINEN Pfadfilter.
+  #
+  # Er kostet nichts: `measure` haengt an einem Marker aus der
+  # Betreffzeile, und ein pull_request-Ereignis hat keine. Die
+  # Marker-Auswertung setzt sie zusaetzlich ausdruecklich auf false.
+  pull_request:
   push:
     branches:
       - 'claude/**'
@@ -149,6 +166,11 @@ jobs:
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             subject="[fx-probe] [fx-ingest]"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            # Ein Pull Request kauft nie beim Anbieter ein. Er laeuft hier
+            # nur, damit der Vertrag auch bei grossen Aenderungen geprueft
+            # wird - siehe die Begruendung am Ausloeser.
+            subject=""
           else
             subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
           fi
