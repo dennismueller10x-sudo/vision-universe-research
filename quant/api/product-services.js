@@ -293,7 +293,7 @@ function create(options){
      const projected=bucket.issuers?.[instrument.cik];if(!projected)return unavailable('SOURCE_MISSING');
      return History.buildQuarterly(projected,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:'quarterly'});
    }
-   const consumer=await consumerFor(ticker);if(consumer)return History.buildConsumer(consumer,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:selection.period});
+   const consumer=await consumerFor(ticker);if(consumer){const projected=History.buildConsumer(consumer,{...identityModel(instrument),cik:instrument.cik,metric:selection.metric,period:selection.period});if(projected.state==='AVAILABLE'||projected.reason!=='PERIOD_NOT_IN_CONSUMER_ARTIFACT')return projected;}
    const index=await load('/quant/data/sec/inspector_index.json'),entry=index.companies?.find(s=>s.ticker===ticker);if(!entry?.cik||entry.cik!==instrument.cik)return unavailable('SOURCE_MISSING');
    return History.build(await load('/quant/data/sec/inspector/'+ticker+'.json'),{ticker,cik:instrument.cik,metric:selection.metric,period:selection.period});
   }catch{return unavailable('SOURCE_MISSING');}
