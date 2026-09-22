@@ -61,12 +61,50 @@
     return null;
   }
 
-  function geld(v, unit) {
+  /* UMRECHNEN IM VERTRAG, FORMATIEREN HIER.
+
+     Der Vertrag entscheidet, welcher Kurs zu diesem Wert gehoert: fuer
+     eine Flussgroesse das Mittel ihrer Periode, fuer eine
+     Stichtagsgroesse der Kurs des Stichtags. Das Aussehen der Zahl
+     bleibt die Entscheidung dieser Flaeche - ihre fertige Zeichenkette
+     zu uebernehmen wuerde die Tabelle umgestalten.
+
+     Ohne Zeitangabe wird NICHT umgerechnet. Der richtige Dollarbetrag
+     ist besser als ein Euro-Betrag zum falschen Kurs (§39). */
+  function inAnzeigewaehrung(v, unit, zeit, metricId, kontext) {
+    var aus = { value: v, currency: nativeWaehrung(unit) };
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (!L || !zeit || !zeit.end) return aus;
+    var m = kontext
+      /* Ein ausdruecklicher Kontext schlaegt die Kennzahlklasse.
+
+         Die Bewertungszeilen brauchen ihn: Kurs, Gewinn je Aktie und
+         Marktwert bilden zusammen das KGV, und ein Verhaeltnis darf sich
+         unter dem Waehrungswechsel nicht bewegen. Das tut es nur, wenn
+         Zaehler und Nenner mit DEMSELBEN Kurs desselben Tages
+         umgerechnet werden. */
+      ? L.money(v, aus.currency, zeit.end, kontext, { unit: unit })
+      : (metricId
+          ? L.metric({ metricId: metricId, value: v, currency: aus.currency, unit: unit,
+                       periodStart: zeit.start || null, periodEnd: zeit.end })
+          : null);
+    if (m && m.conversionAvailable && m.display && isNum(m.display.value)) {
+      return { value: m.display.value, currency: m.display.currency };
+    }
+    return aus;
+  }
+  function nativeWaehrung(unit) {
+    return (typeof unit === "string" && unit.indexOf("/") > 0) ? unit.split("/")[0] : (unit || "USD");
+  }
+
+  function geld(v, unit, zeit, metricId, kontext) {
     if (!isNum(v)) return "–";
     /* Stueckzahlen sind kein Geld - sie tragen nie ein Waehrungszeichen. */
     if (unit === "shares") return Math.abs(v) >= 1e9 ? (v / 1e9).toFixed(2).replace(".", ",") + " Mrd." : (v / 1e6).toFixed(0) + " Mio.";
 
-    var cur = (typeof unit === "string" && unit.indexOf("/") > 0) ? unit.split("/")[0] : (unit || "USD");
+    var w = inAnzeigewaehrung(v, unit, zeit, metricId, kontext);
+    var cur = w.currency;
+    v = w.value;
     var a = Math.abs(v);
     var zentral = (unit === "USD/shares")
       ? vuFormat("formatPrice", v, cur, { numberLocale: "de-DE", decimals: 2 })
@@ -92,16 +130,34 @@
     return (v * 100).toFixed(digits === undefined ? 1 : digits).replace(".", ",") + " %";
   }
   function ton(v) { return !isNum(v) ? "" : v > 0 ? "up" : v < 0 ? "down" : ""; }
-  function wert(row, seite) {
+  function zeitpunkt(row, seite, index) {
+    var s = row[seite] || {};
+    return { end: s.end || null, start: s.start || (index && s.end ? index[s.end] : null) || null };
+  }
+  function wert(row, seite, index) {
     var v = row[seite].value;
     if (row.kind === "margin") return isNum(v) ? prozentOhneVz(v) : "–";
-    return geld(v, row.unit);
+    return geld(v, row.unit, zeitpunkt(row, seite, index), row.metric || row.id);
   }
-  function aenderung(row) {
+  function aenderung(row, index) {
     var c = row.change || {};
     if (row.kind === "margin") return isNum(c.pp) ? ((c.pp >= 0 ? "+" : "") + c.pp.toFixed(1).replace(".", ",") + " Pp.") : "–";
     if (isNum(c.pct)) return prozent(c.pct);
-    if (isNum(c.abs)) return (c.abs >= 0 ? "+" : "") + geld(c.abs, row.unit);
+    if (isNum(c.abs)) {
+      /* Neu gerechnet, nicht umgerechnet: zwei Perioden, zwei Kurse.
+         Die Differenz mit einem einzigen Kurs umzurechnen ergaebe eine
+         Zahl, die zu keiner der Spalten daneben passt (§41). */
+      var vorher = inAnzeigewaehrung(row.then.value, row.unit, zeitpunkt(row, "then", index), row.metric || row.id);
+      var jetzt = inAnzeigewaehrung(row.now.value, row.unit, zeitpunkt(row, "now", index), row.metric || row.id);
+      if (isNum(vorher.value) && isNum(jetzt.value) && vorher.currency === jetzt.currency) {
+        var d = jetzt.value - vorher.value;
+        var einheit = (row.unit && String(row.unit).indexOf("/") > 0)
+          ? jetzt.currency + String(row.unit).slice(String(row.unit).indexOf("/"))
+          : jetzt.currency;
+        return (d >= 0 ? "+" : "") + geld(d, einheit, null, null);
+      }
+      return (c.abs >= 0 ? "+" : "") + geld(c.abs, row.unit, null, null);
+    }
     return "–";
   }
   function tonAenderung(row) {
@@ -135,6 +191,12 @@
     if (!c || !c.available || !c.rows.length) return null;
     var h = c.horizon;
     var name = detail.companyName || detail.symbol;
+    /* Die Vergleichszeilen tragen nur Periodenenden. Der Anfang - den
+       der Vertrag fuer eine Flussgroesse braucht - kommt aus der Kette
+       der Geschaeftsjahre, die die Journey ohnehin mitbringt. */
+    var index = (typeof VUDiscover !== "undefined" && VUDiscover.Fundamentals &&
+                 typeof VUDiscover.Fundamentals.periodenIndex === "function")
+      ? VUDiscover.Fundamentals.periodenIndex(f.journey) : null;
     var section = el("section", { class: "dx-chapter dx-fade dx-chapter--damals" }, [
       el("p", { class: "dx-kicker", text: "Damals vs. heute" }),
       el("h2", { text: name + " vor " + h.years + " Jahren und heute" }),
@@ -150,12 +212,13 @@
         el("th", { text: "Veränderung" })
       ])]),
       el("tbody", {}, c.rows.map(function (r) {
+        /* index: siehe unten - die Geschaeftsjahreskette der Journey. */
         return el("tr", {}, [
           el("th", { scope: "row" }, [el("b", { text: r.label }), r.kind === "margin" ? el("span", { text: "Operativer Gewinn zu Umsatz" }) : null]),
-          el("td", { class: "num", text: wert(r, "then") }),
-          el("td", { class: "num", text: wert(r, "now") }),
+          el("td", { class: "num", text: wert(r, "then", index) }),
+          el("td", { class: "num", text: wert(r, "now", index) }),
           el("td", { class: "num " + tonAenderung(r) }, [
-            el("b", { text: aenderung(r) }),
+            el("b", { text: aenderung(r, index) }),
             r.change && isNum(r.change.cagr) ? el("span", { text: prozent(r.change.cagr, 1) + " p. a." }) : null
           ])
         ]);
@@ -202,7 +265,7 @@
       rect.setAttribute("rx", Math.min(4, bw / 3));
       rect.setAttribute("class", "dx-journey-bar" + (p.v < 0 ? " down" : "") + (i === n - 1 ? " last" : ""));
       var t = document.createElementNS(ns, "title");
-      t.textContent = "GJ " + p.fy + ": " + (opts.format ? opts.format(p.v) : p.v);
+      t.textContent = "GJ " + p.fy + ": " + (opts.format ? opts.format(p.v, p, opts.index) : p.v);
       rect.appendChild(t);
       svg.appendChild(rect);
       if (n <= 10 || i % 2 === (n - 1) % 2) {
@@ -219,7 +282,7 @@
         var oben = p.v >= 0 ? y0 - hh - 7 : y0 + hh + 14;
         wert.setAttribute("x", x + bw / 2); wert.setAttribute("y", Math.max(12, oben)); wert.setAttribute("text-anchor", i === 0 ? "start" : "end");
         wert.setAttribute("class", "dx-journey-wert" + (i === n - 1 ? " last" : ""));
-        wert.textContent = opts.format(p.v);
+        wert.textContent = opts.format(p.v, p, opts.index);
         svg.appendChild(wert);
       }
     });
@@ -230,7 +293,7 @@
      "von Verlust zu Gewinn", "um 12 Prozentpunkte gestiegen". */
   var VIELFACHE = { 2: "verdoppelt", 3: "verdreifacht", 4: "vervierfacht", 5: "verfünffacht", 6: "versechsfacht", 7: "versiebenfacht", 8: "verachtfacht", 9: "verneunfacht", 10: "verzehnfacht",
                     11: "verelffacht", 12: "verzwölffacht", 13: "verdreizehnfacht", 14: "vervierzehnfacht", 15: "verfünfzehnfacht", 16: "versechzehnfacht", 17: "versiebzehnfacht", 18: "verachtzehnfacht", 19: "verneunzehnfacht", 20: "verzwanzigfacht" };
-  function journeySatz(sp, erst, letzt, jahre) {
+  function journeySatz(sp, erst, letzt, jahre, index) {
     if (!isNum(erst.v) || !isNum(letzt.v)) return null;
     var was = sp.satzName || sp.label;
     if (sp.kind === "margin") {
@@ -238,8 +301,8 @@
       if (Math.abs(pp) < 1) return was + " ist über " + jahre + " Jahre nahezu unverändert (" + prozentOhneVz(letzt.v) + ").";
       return was + " ist in " + jahre + " Jahren um " + Math.abs(pp).toFixed(0).replace(".", ",") + " Prozentpunkte " + (pp > 0 ? "gestiegen" : "gesunken") + " — von " + prozentOhneVz(erst.v) + " auf " + prozentOhneVz(letzt.v) + ".";
     }
-    if (erst.v <= 0 && letzt.v > 0) return was + " war vor " + jahre + " Jahren negativ — heute " + sp.fmt(letzt.v) + ".";
-    if (erst.v > 0 && letzt.v <= 0) return was + " war vor " + jahre + " Jahren positiv (" + sp.fmt(erst.v) + ") — heute negativ.";
+    if (erst.v <= 0 && letzt.v > 0) return was + " war vor " + jahre + " Jahren negativ — heute " + sp.fmt(letzt.v, letzt, index) + ".";
+    if (erst.v > 0 && letzt.v <= 0) return was + " war vor " + jahre + " Jahren positiv (" + sp.fmt(erst.v, erst, index) + ") — heute negativ.";
     if (erst.v <= 0 && letzt.v <= 0) return was + " ist über " + jahre + " Jahre negativ geblieben.";
     var faktor = letzt.v / erst.v;
     if (faktor >= 2) {
@@ -252,18 +315,27 @@
     return was + " ist in " + jahre + " Jahren um " + Math.abs(pct).toFixed(0) + " % " + (pct > 0 ? "gestiegen" : "gesunken") + ".";
   }
 
+  /* `fmt(v, punkt, index)`: der Punkt traegt das Periodenende, der Index
+     den Anfang. Beides braucht der Vertrag, um den richtigen Kurs zu
+     waehlen - ohne sie bleibt der Wert in Originalwaehrung. `metric` ist
+     der Bezeichner, unter dem der Kern die Kennzahl einordnet; er
+     weicht bei "cash" und "debt" vom Spurnamen ab. */
   var SPUREN = [
-    { id: "revenue", label: "Umsatz", satzName: "Der Umsatz", frage: "Wie viel setzt das Unternehmen um?", fmt: function (v) { return geld(v, "USD"); } },
-    { id: "net_income", label: "Gewinn", satzName: "Der Nettogewinn", frage: "Was bleibt unter dem Strich?", fmt: function (v) { return geld(v, "USD"); } },
-    { id: "free_cash_flow", label: "Cashflow", satzName: "Der freie Cashflow", frage: "Wie viel Geld bleibt nach Investitionen?", fmt: function (v) { return geld(v, "USD"); } },
+    { id: "revenue", metric: "revenue", label: "Umsatz", satzName: "Der Umsatz", frage: "Wie viel setzt das Unternehmen um?", fmt: function (v, p, ix) { return geld(v, "USD", zeitAusPunkt(p, ix), "revenue"); } },
+    { id: "net_income", metric: "net_income", label: "Gewinn", satzName: "Der Nettogewinn", frage: "Was bleibt unter dem Strich?", fmt: function (v, p, ix) { return geld(v, "USD", zeitAusPunkt(p, ix), "net_income"); } },
+    { id: "free_cash_flow", metric: "free_cash_flow", label: "Cashflow", satzName: "Der freie Cashflow", frage: "Wie viel Geld bleibt nach Investitionen?", fmt: function (v, p, ix) { return geld(v, "USD", zeitAusPunkt(p, ix), "free_cash_flow"); } },
     { id: "margins.gross", label: "Bruttomarge", satzName: "Die Bruttomarge", kind: "margin", frage: "Wie viel vom Umsatz bleibt nach den direkten Kosten?", fmt: function (v) { return prozentOhneVz(v); } },
     { id: "margins.operating", label: "Op. Marge", satzName: "Die operative Marge", kind: "margin", frage: "Wie viel vom Umsatz bleibt operativ?", fmt: function (v) { return prozentOhneVz(v); } },
     { id: "margins.net", label: "Nettomarge", satzName: "Die Nettomarge", kind: "margin", frage: "Wie viel vom Umsatz bleibt als Gewinn?", fmt: function (v) { return prozentOhneVz(v); } },
-    { id: "eps_diluted", label: "Gewinn je Aktie", satzName: "Der Gewinn je Aktie", frage: "Was verdient eine einzelne Aktie?", fmt: function (v) { return geld(v, "USD/shares"); } },
-    { id: "cash", label: "Kasse", satzName: "Die Kasse", frage: "Wie viel Geld liegt auf dem Konto?", fmt: function (v) { return geld(v, "USD"); } },
-    { id: "debt", label: "Schulden", satzName: "Die Verschuldung", frage: "Wie hoch sind die Schulden?", fmt: function (v) { return geld(v, "USD"); } },
+    { id: "eps_diluted", metric: "eps_diluted", label: "Gewinn je Aktie", satzName: "Der Gewinn je Aktie", frage: "Was verdient eine einzelne Aktie?", fmt: function (v, p, ix) { return geld(v, "USD/shares", zeitAusPunkt(p, ix), "eps_diluted"); } },
+    { id: "cash", metric: "cash_and_equivalents", label: "Kasse", satzName: "Die Kasse", frage: "Wie viel Geld liegt auf dem Konto?", fmt: function (v, p, ix) { return geld(v, "USD", zeitAusPunkt(p, ix), "cash_and_equivalents"); } },
+    { id: "debt", metric: "total_debt", label: "Schulden", satzName: "Die Verschuldung", frage: "Wie hoch sind die Schulden?", fmt: function (v, p, ix) { return geld(v, "USD", zeitAusPunkt(p, ix), "total_debt"); } },
     { id: "shares", label: "Aktien", satzName: "Die Aktienanzahl", frage: "Wird verwässert oder zurückgekauft?", fmt: function (v) { return geld(v, "shares"); } }
   ];
+  function zeitAusPunkt(p, index) {
+    if (!p || !p.end) return null;
+    return { end: p.end, start: (index && index[p.end]) || null };
+  }
   function spurPunkte(tracks, id) {
     if (id.indexOf("margins.") === 0) return (tracks.margins && tracks.margins[id.slice(8)]) || [];
     return tracks[id] || [];
@@ -282,6 +354,12 @@
     var j = f.journey;
     if (!j || !j.available) return null;
     var name = detail.companyName || detail.symbol;
+    /* Einmal je Seite: Periodenende -> Periodenanfang aus der Kette der
+       Geschaeftsjahre. Ohne sie bliebe jede Flussgroesse in
+       Originalwaehrung, weil der Vertrag den Zeitraum nicht kennt. */
+    var jIndex = (typeof VUDiscover !== "undefined" && VUDiscover.Fundamentals &&
+                  typeof VUDiscover.Fundamentals.periodenIndex === "function")
+      ? VUDiscover.Fundamentals.periodenIndex(j) : null;
     var section = el("section", { class: "dx-chapter dx-fade dx-chapter--journey", id: "journey" }, [
       el("p", { class: "dx-kicker", text: "Fundamental Journey" }),
       el("h2", { text: "Wie sich " + name + " entwickelt hat" })
@@ -321,13 +399,13 @@
         if (sp.kind === "margin") delta = { text: ((letzt.v - erst.v) >= 0 ? "+" : "−") + Math.abs((letzt.v - erst.v) * 100).toFixed(1).replace(".", ",") + " Pp.", ton: ton(letzt.v - erst.v) };
         else if (erst.v > 0) delta = { text: prozent(letzt.v / erst.v - 1), ton: ton(letzt.v / erst.v - 1) };
       }
-      kopf.appendChild(el("div", { class: "dx-journey-von" }, [el("b", { class: "num", text: sp.fmt(erst.v) }), el("span", { text: "GJ " + erst.fy })]));
+      kopf.appendChild(el("div", { class: "dx-journey-von" }, [el("b", { class: "num", text: sp.fmt(erst.v, erst, jIndex) }), el("span", { text: "GJ " + erst.fy })]));
       kopf.appendChild(el("span", { class: "dx-journey-pfeil", "aria-hidden": "true", text: "→" }));
-      kopf.appendChild(el("div", { class: "dx-journey-nach" }, [el("b", { class: "num", text: sp.fmt(letzt.v) }), el("span", { text: "GJ " + letzt.fy })]));
+      kopf.appendChild(el("div", { class: "dx-journey-nach" }, [el("b", { class: "num", text: sp.fmt(letzt.v, letzt, jIndex) }), el("span", { text: "GJ " + letzt.fy })]));
       if (delta) kopf.appendChild(el("div", { class: "dx-journey-delta num " + (delta.ton || "") }, [el("b", { text: delta.text }), el("span", { text: jahre + " Jahre" })]));
       var mass = journeyMass(bild);
-      bild.appendChild(balken(p, { label: sp.label + " je Geschäftsjahr", format: sp.fmt, width: mass.w, height: mass.h }));
-      var text = caveat ? null : journeySatz(sp, erst, letzt, jahre);
+      bild.appendChild(balken(p, { label: sp.label + " je Geschäftsjahr", format: sp.fmt, index: jIndex, width: mass.w, height: mass.h }));
+      var text = caveat ? null : journeySatz(sp, erst, letzt, jahre, jIndex);
       satz.textContent = text || sp.frage;
       satz.className = "dx-journey-satz" + (caveat ? " dx-journey-satz--caveat" : "");
       if (caveat) satz.textContent = caveat;
@@ -383,6 +461,35 @@
     var g = detail.geschaeftszahlen || {};
     var name = detail.companyName || detail.symbol;
     var a = l.annual || {}, t = l.ttm || {}, dv = l.derived || {};
+    /* Dieselbe Kette wie in der Journey: Periodenende -> Periodenanfang.
+       Die Jahresabschlusswerte hier sind dieselben Perioden. */
+    var zIndex = (typeof VUDiscover !== "undefined" && VUDiscover.Fundamentals &&
+                  typeof VUDiscover.Fundamentals.periodenIndex === "function")
+      ? VUDiscover.Fundamentals.periodenIndex(f.journey) : null;
+    /* Ein Jahresabschlusswert traegt sein Periodenende mit. Damit weiss
+       der Vertrag, welcher Kurs gilt - und fuer eine Flussgroesse, ueber
+       welche Periode er mitteln muss. */
+    function zahl(eintrag, metricId, einheit) {
+      if (!eintrag) return "–";
+      return geld(eintrag.v, einheit || eintrag.unit,
+                  eintrag.end ? { end: eintrag.end, start: (zIndex && zIndex[eintrag.end]) || null } : null,
+                  metricId);
+    }
+    /* Zwoelf Monate sind zwoelf Monate.
+
+       Ein TTM-Wert endet an einem Quartalsende, das in der Kette der
+       Geschaeftsjahre nicht vorkommt - sein Anfang steht dort also
+       nicht. Er muss aber auch nicht abgeleitet werden: die Periode
+       eines Trailing-Twelve-Months-Wertes ist durch seinen Namen
+       definiert. Das ist keine Annahme ueber den Kalender, sondern die
+       Bedeutung der Kennzahl. */
+    function ttmZahl(eintrag, metricId) {
+      if (!eintrag || !eintrag.end) return zahl(eintrag, metricId);
+      var ende = new Date(Date.parse(eintrag.end + "T00:00:00Z"));
+      var anfang = new Date(Date.UTC(ende.getUTCFullYear() - 1, ende.getUTCMonth(), ende.getUTCDate() + 1))
+        .toISOString().slice(0, 10);
+      return geld(eintrag.v, eintrag.unit, { end: eintrag.end, start: anfang }, metricId);
+    }
     var cats = {}; ((f.health && f.health.categories) || []).forEach(function (c) { cats[c.id] = c; });
     var story = {}; (((f.story || {}).statements) || []).forEach(function (s) { story[s.id] = s; });
     var section = el("section", { class: "dx-chapter dx-fade dx-chapter--zahlen" }, [
@@ -398,30 +505,30 @@
     if (a.revenue) {
       var wachs = cats.growth;
       karten.push({ id: "growth", track: "revenue", label: "Wachstum", grade: wachs ? wachs.grade : null, ton: gradeTon(wachs),
-        zahl: geld(a.revenue.v, a.revenue.unit), einheit: "Umsatz GJ " + l.fiscalYear,
+        zahl: zahl(a.revenue, "revenue"), einheit: "Umsatz GJ " + l.fiscalYear,
         sub: isNum(g.umsatzWachstum) ? prozent(g.umsatzWachstum) + (g.basis === "FY" ? " zum Vorjahr" : " zu den zwölf Monaten davor") : (wachs ? wachs.detail : null),
         satz: satzAus(["revenue_doubled", "revenue_down"], wachs ? wachs.detail : null) });
     }
     if (a.net_income) {
       var prof = cats.profitability;
       karten.push({ id: "profitability", track: "net_income", label: "Profitabilität", grade: prof ? prof.grade : null, ton: gradeTon(prof),
-        zahl: geld(a.net_income.v, a.net_income.unit), einheit: (a.net_income.v < 0 ? "Verlust" : "Gewinn") + " GJ " + l.fiscalYear,
+        zahl: zahl(a.net_income, "net_income"), einheit: (a.net_income.v < 0 ? "Verlust" : "Gewinn") + " GJ " + l.fiscalYear,
         sub: isNum(dv.netMargin) ? "Nettomarge " + prozentOhneVz(dv.netMargin) : (isNum(dv.operatingMargin) ? "Operative Marge " + prozentOhneVz(dv.operatingMargin) : null),
         satz: satzAus(["turned_profitable", "profit_faster", "profit_slower", "margin_up", "margin_down", "turned_loss"], prof ? prof.detail : null) });
     }
     if (a.free_cash_flow) {
       var cf = cats.cashflow;
       karten.push({ id: "cashflow", track: "free_cash_flow", label: "Cashflow", grade: cf ? cf.grade : null, ton: gradeTon(cf),
-        zahl: geld(a.free_cash_flow.v, a.free_cash_flow.unit), einheit: "Free Cashflow GJ " + l.fiscalYear,
+        zahl: zahl(a.free_cash_flow, "free_cash_flow"), einheit: "Free Cashflow GJ " + l.fiscalYear,
         sub: isNum(dv.fcfMargin) ? prozentOhneVz(dv.fcfMargin) + " vom Umsatz bleiben frei" : null,
         satz: satzAus(["fcf_up", "fcf_down", "fcf_negative"], cf ? cf.detail : null) });
     }
     if (a.cash_and_equivalents || a.total_debt) {
       var bal = cats.balance;
-      var kasse = a.cash_and_equivalents ? geld(a.cash_and_equivalents.v, a.cash_and_equivalents.unit) : null;
+      var kasse = a.cash_and_equivalents ? zahl(a.cash_and_equivalents, "cash_and_equivalents") : null;
       karten.push({ id: "balance", track: a.cash_and_equivalents ? "cash" : "debt", label: "Bilanz", grade: bal ? bal.grade : null, ton: gradeTon(bal),
-        zahl: kasse || geld(a.total_debt.v, a.total_debt.unit), einheit: (kasse ? "Kasse" : "Schulden") + " Ende GJ " + l.fiscalYear,
-        sub: a.total_debt ? (kasse ? "Schulden " + geld(a.total_debt.v, a.total_debt.unit) : null) : "Keine Finanzschulden gemeldet",
+        zahl: kasse || zahl(a.total_debt, "total_debt"), einheit: (kasse ? "Kasse" : "Schulden") + " Ende GJ " + l.fiscalYear,
+        sub: a.total_debt ? (kasse ? "Schulden " + zahl(a.total_debt, "total_debt") : null) : "Keine Finanzschulden gemeldet",
         satz: bal ? bal.detail : null });
     }
     if (!karten.length) return null;
@@ -449,16 +556,16 @@
     section.appendChild(gitter);
     /* Alles Weitere - nichts fehlt, es steht nur nicht im Weg. */
     var weitere = [
-      t.revenue ? { label: "Umsatz zwölf Monate (bis " + t.revenue.through.replace("FY", "GJ ").replace("Q", " Q") + ")", wert: geld(t.revenue.v, t.revenue.unit) } : null,
-      t.net_income ? { label: "Nettogewinn zwölf Monate", wert: geld(t.net_income.v, t.net_income.unit), ton: ton(t.net_income.v) } : null,
+      t.revenue ? { label: "Umsatz zwölf Monate (bis " + t.revenue.through.replace("FY", "GJ ").replace("Q", " Q") + ")", wert: ttmZahl(t.revenue, "revenue") } : null,
+      t.net_income ? { label: "Nettogewinn zwölf Monate", wert: ttmZahl(t.net_income, "net_income"), ton: ton(t.net_income.v) } : null,
       isNum(dv.grossMargin) ? { label: "Bruttomarge GJ " + l.fiscalYear, wert: prozentOhneVz(dv.grossMargin) } : null,
       isNum(dv.operatingMargin) ? { label: "Operative Marge GJ " + l.fiscalYear, wert: prozentOhneVz(dv.operatingMargin) } : null,
       isNum(dv.netMargin) ? { label: "Nettomarge GJ " + l.fiscalYear, wert: prozentOhneVz(dv.netMargin) } : null,
       isNum(dv.fcfMargin) ? { label: "Free-Cashflow-Marge GJ " + l.fiscalYear, wert: prozentOhneVz(dv.fcfMargin) } : null,
       isNum(dv.roe) ? { label: "Eigenkapitalrendite GJ " + l.fiscalYear, wert: prozentOhneVz(dv.roe) } : null,
-      a.eps_diluted ? { label: "Gewinn je Aktie GJ " + l.fiscalYear, wert: geld(a.eps_diluted.v, "USD/shares") } : null,
-      a.cash_and_equivalents ? { label: "Kasse (Ende GJ " + l.fiscalYear + ")", wert: geld(a.cash_and_equivalents.v, a.cash_and_equivalents.unit) } : null,
-      a.total_debt ? { label: "Schulden (Ende GJ " + l.fiscalYear + ")", wert: geld(a.total_debt.v, a.total_debt.unit) } : null,
+      a.eps_diluted ? { label: "Gewinn je Aktie GJ " + l.fiscalYear, wert: zahl(a.eps_diluted, "eps_diluted", "USD/shares") } : null,
+      a.cash_and_equivalents ? { label: "Kasse (Ende GJ " + l.fiscalYear + ")", wert: zahl(a.cash_and_equivalents, "cash_and_equivalents") } : null,
+      a.total_debt ? { label: "Schulden (Ende GJ " + l.fiscalYear + ")", wert: zahl(a.total_debt, "total_debt") } : null,
       a.shares_outstanding ? { label: "Aktien (Ende GJ " + l.fiscalYear + ")", wert: geld(a.shares_outstanding.v, "shares") } : null,
       isNum(g.dividendenRendite) ? { label: "Dividendenrendite", wert: prozentOhneVz(g.dividendenRendite) } : null
     ].filter(Boolean);
@@ -568,10 +675,19 @@
       section.appendChild(tabs); section.appendChild(bild);
       zeige(start);
     }
+    /* Marktwert, Gewinn je Aktie und der Kurs der Rechnung gehoeren zum
+       Stichtag der Bewertung - nicht zu einer Periode. `f.asOf` ist
+       genau dieser Tag; ohne ihn bleibt die Zeile in Originalwaehrung. */
+    var bewertungsTag = f.asOf || null;
+    var stichtag = bewertungsTag ? { end: bewertungsTag, start: null } : null;
     var weitere = [
-      v.marketCap ? { label: "Marktwert", wert: geld(v.marketCap.value, "USD"), zusatz: "Kurs × " + geld(v.marketCap.shares, "shares") + " Aktien" } : null,
-      v.pe ? { label: "Gewinn je Aktie (" + v.pe.basis + ")", wert: geld(v.pe.eps, "USD/shares"), zusatz: null } : null,
-      isNum(v.price) ? { label: "Kurs der Rechnung", wert: v.price.toFixed(2).replace(".", ",") + " $", zusatz: "Stand " + (f.asOf || "") } : null
+      v.marketCap ? { label: "Marktwert", wert: geld(v.marketCap.value, "USD", stichtag, null, "MARKET_PRICE"),
+                      zusatz: "Kurs × " + geld(v.marketCap.shares, "shares") + " Aktien" } : null,
+      v.pe ? { label: "Gewinn je Aktie (" + v.pe.basis + ")",
+               wert: geld(v.pe.eps, "USD/shares", stichtag, null, "MARKET_PRICE"), zusatz: null } : null,
+      isNum(v.price) ? { label: "Kurs der Rechnung",
+                         wert: geld(v.price, "USD/shares", stichtag, null, "MARKET_PRICE"),
+                         zusatz: "Stand " + (bewertungsTag || "") } : null
     ].filter(Boolean);
     if (weitere.length) {
       section.appendChild(el("details", { class: "dx-weitere" }, [

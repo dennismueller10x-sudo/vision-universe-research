@@ -85,8 +85,24 @@
     return null;
   }
 
-  function money(v) {
+  /* Die Anzeigewaehrung kommt aus dem Vertrag, nicht aus dieser Datei.
+
+     `when` ist der Tag, den der Wert beschreibt - der Kurs einer Karte
+     ist ein Tagesschluss und kein Jetzt. Ohne ihn wuerde die Karte mit
+     dem heutigen Kurs umrechnen, und genau das untersagt §39.
+
+     Kann nicht umgerechnet werden - keine Kurse geladen, Waehrung ohne
+     Reihe -, bleibt die Originalwaehrung stehen. Das ist der Zustand,
+     den O-13 verlangt: der Titel verschwindet nicht, er sagt die
+     Wahrheit. */
+  function money(v, when) {
     if (!isNum(v)) return "–";
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (L) {
+      var m = L.money(v, "USD", when || null, when ? "MARKET_PRICE" : "CURRENT_VALUE",
+                      { numberLocale: "de-DE", decimals: 2 });
+      if (m.conversionAvailable && m.formatted) return m.formatted;
+    }
     var zentral = vuFormat("formatPrice", v, "USD", { numberLocale: "de-DE", decimals: 2 });
     if (zentral) return zentral;
     return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
@@ -451,7 +467,7 @@
           el("span", { class: "dx-poster-sub" }, [
             el("span", { class: "dx-poster-sym", text: card.symbol }),
             isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
-              document.createTextNode(money(preis)),
+              document.createTextNode(money(preis, card.asOf)),
               isNum(change) ? el("i", { class: toneClass(change),
                                         text: pctPoints(change) }) : null
             ]) : null

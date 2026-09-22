@@ -256,6 +256,50 @@
     { id: "net_debt",           label: "Nettoschulden",     metric: "net_debt",           kind: "money" }
   ];
 
+  /* Ende -> Anfang, einmal je Reihe.
+
+     Faellt der Kern aus (die Seite hat ihn nicht geladen), bleibt die
+     Zuordnung leer - dann rechnet der Vertrag die Flussgroesse nicht um
+     und sagt das auch. Ein geratener Periodenanfang waere schlimmer. */
+  function periodenGrenzen(series) {
+    var E = (typeof VUFx !== "undefined" && VUFx && VUFx.Engine) ? VUFx.Engine : null;
+    if (!E || typeof E.periodIndex !== "function") return {};
+    return E.periodIndex(series || []);
+  }
+
+  /* Dieselbe Zuordnung fuer eine Oberflaeche, die nur die
+     veroeffentlichten Daten vor sich hat.
+
+     Die Vergleichszeilen tragen "damals" und "heute" - zwei Enden, aus
+     denen sich kein Anfang ableiten laesst. Die Jahresreihe daneben
+     traegt alle Enden, und Geschaeftsjahresenden sind fuer ein
+     Unternehmen ueber alle Kennzahlen dieselben. Aus ihrer Vereinigung
+     entsteht die Kette, aus der Kette der Anfang. */
+  function periodenIndex(journeyOderTracks) {
+    var tracks = (journeyOderTracks && journeyOderTracks.tracks) || journeyOderTracks || null;
+    if (!tracks) return {};
+    var enden = {};
+    Object.keys(tracks).forEach(function (k) {
+      var t = tracks[k];
+      if (!t) return;
+      var listen = Array.isArray(t) ? [t] : Object.keys(t).map(function (m) { return t[m]; });
+      listen.forEach(function (liste) {
+        if (!Array.isArray(liste)) return;
+        liste.forEach(function (r) { if (r && r.end) enden[r.end] = true; });
+      });
+    });
+    /* Die erste Periode bekommt ihren Anfang aus der Laenge der
+       folgenden. Ohne sie bliebe der erste Balken einer Jahresreihe in
+       Originalwaehrung, waehrend alle anderen in Euro stuenden - ein
+       Diagramm mit zwei Waehrungen ist schlechter als eines mit einer.
+       Die Ableitung kommt aus den Perioden desselben Unternehmens, nicht
+       aus dem Kalender. */
+    var E = (typeof VUFx !== "undefined" && VUFx && VUFx.Engine) ? VUFx.Engine : null;
+    if (!E || typeof E.periodIndex !== "function") return {};
+    return E.periodIndex(Object.keys(enden).sort().map(function (e) { return { end: e }; }),
+                         { inferFirstFromChain: true });
+  }
+
   function compare(model) {
     var h = model && horizon(model);
     if (!h) return { available: false, reason: "NO_ANNUAL_HISTORY" };
@@ -268,8 +312,20 @@
       var m = byYear(series);
       var a = m[h.from], b = m[h.to];
       if (!a || !b) return;
-      var row = { id: def.id, label: def.label, kind: def.kind, unit: def.kind === "margin" ? "ratio" : (model.units[def.metric] || null),
-                  then: { fy: a.fy, end: a.end, value: a.v }, now: { fy: b.fy, end: b.end, value: b.v } };
+      /* Der Periodenanfang, abgeleitet aus der Vorperiode.
+
+         Eine Flussgroesse wird mit dem Periodenmittel umgerechnet, und
+         dafuer braucht der Currency Contract beide Grenzen. Das
+         Geschaeftsjahr steht nicht im Kalender - Toyota endet im Maerz,
+         Alibaba auch -, also wird es NICHT angenommen, sondern aus dem
+         Ende der Vorperiode abgeleitet. Die Regel dafuer steht im Kern
+         (currency-engine.resolvePeriodChain); hier wird sie benutzt und
+         nicht nachgebaut. */
+      var grenzen = periodenGrenzen(series);
+      var row = { id: def.id, label: def.label, kind: def.kind, metric: def.metric,
+                  unit: def.kind === "margin" ? "ratio" : (model.units[def.metric] || null),
+                  then: { fy: a.fy, end: a.end, start: grenzen[a.end] || null, value: a.v },
+                  now: { fy: b.fy, end: b.end, start: grenzen[b.end] || null, value: b.v } };
       if (def.kind === "margin") {
         row.change = { pp: (b.v - a.v) * 100, calculation: "Marge FY " + b.fy + " minus Marge FY " + a.fy + " in Prozentpunkten" };
         row.evidence = evidence(a, b, model, a.calculation + " vs. " + b.calculation);
@@ -596,7 +652,7 @@
   var api = { PLAUSIBILITY: PLAUSIBILITY, marginCheck: marginCheck, staleness: staleness, VERSION: VERSION, SOURCE: SOURCE, THRESHOLDS: THRESHOLDS, COMPARE_ROWS: COMPARE_ROWS,
               fromBundle: fromBundle, horizon: horizon, compare: compare, journey: journey, story: story,
               health: health, latest: latest, signals: signals, priceVsFundamentals: priceVsFundamentals,
-              capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr };
+              capabilities: capabilities, shareDiscontinuity: shareDiscontinuity, yearsAdjacent: yearsAdjacent, SHARE_JUMP_FACTOR: SHARE_JUMP_FACTOR, marginSeries: marginSeries, cagr: cagr, periodenIndex: periodenIndex };
   if (isNode) module.exports = api;
   else {
     global.VUDiscover = global.VUDiscover || {};

@@ -314,10 +314,17 @@ jobs:
       # Deshalb laeuft dieser Schritt auch ohne Secret, und deshalb
       # duerfen seine Reihen im Unterschied zu den Anbieterreihen im
       # ausgelieferten Pfad liegen (Quellennennung erfolgt).
+      # --publish legt die Reihen in den AUSGELIEFERTEN Pfad.
+      #
+      # Das ist Absicht und der Grund, warum der Browser ueberhaupt in
+      # Euro rechnen kann: die EZB gestattet die Wiedergabe unter
+      # Nennung der Quelle, und die Nennung erfolgt. Anbieterreihen
+      # bleiben davon unberuehrt - sie landen weiter in der
+      # Arbeitsablage, und die Hygienepruefung unten setzt das durch.
       - name: Historischer EZB-Fallback (O-7)
         id: ecb
         continue-on-error: true
-        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish-report
+        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish
 
       - name: Zentraler Intraday-FX-State (O-9)
         id: intraday
@@ -360,13 +367,34 @@ jobs:
         if: always()
         run: node scripts/quality/verify-currency-layer.mjs
 
+      # Der Nachweis in der Oberflaeche. Er braucht die EZB-Reihen im
+      # ausgelieferten Pfad - ohne sie rechnet der Browser nicht um -,
+      # laeuft also erst nach dem EZB-Schritt.
+      - name: Playwright (Chromium)
+        if: always() && steps.ecb.outcome == 'success'
+        run: |
+          npm install --prefix /tmp/fx-ui-qa --no-audit --no-fund playwright@1.63.0
+          /tmp/fx-ui-qa/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Currency Layer in der Oberflaeche (EUR-Vorgabe, Umschalter, Prozente)
+        if: always() && steps.ecb.outcome == 'success'
+        env:
+          NODE_PATH: /tmp/fx-ui-qa/node_modules
+        run: |
+          python3 -m http.server 8899 --directory . > /tmp/fx-ui-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8899/discover/ && break
+            sleep 1
+          done
+          node scripts/quality/verify-currency-ui.mjs --url http://localhost:8899
+
       # Die Abdeckungskarte enthaelt keine Kurse, nur Paarnamen und
       # Gruende - sie darf und soll committet werden. Ohne sie waere
       # nicht sichtbar, welche Berichtswaehrungen dauerhaft ohne FX-Paar
       # bleiben.
       - name: Abdeckungskarte in den Zweig
         if: >-
-          steps.ingest.outcome == 'success' &&
+          (steps.ingest.outcome == 'success' || steps.ecb.outcome == 'success') &&
           (github.event_name != 'workflow_dispatch' || inputs.publish_reports)
         run: |
           if [ -f quant/data/market/fx/pair-availability.json ]; then
@@ -401,6 +429,15 @@ jobs:
             bash scripts/ci/commit-and-push.sh \
               "Historische FX-Abdeckung gemessen (automatischer Lauf)" \
               quant/data/market/fx/historical-coverage.json
+          fi
+          # Die EZB-Reihen gehoeren in den Zweig: ohne sie kann der
+          # Browser nicht in Euro rechnen. Sie tragen als Stand ihren
+          # letzten Beobachtungstag, nicht die Uhrzeit des Laufs -
+          # bleibt die Quelle unveraendert, gibt es nichts zu committen.
+          if ls quant/data/market/fx/ecb/*.json >/dev/null 2>&1; then
+            bash scripts/ci/commit-and-push.sh \
+              "EZB-Referenzkurse fuer die EUR-Anzeige (automatischer Lauf)" \
+              quant/data/market/fx/ecb
           fi
           if [ -f quant/data/market/fx/provider-seam-audit.json ]; then
             node -e '
@@ -449,7 +486,28 @@ jobs:
               esac
             done
           fi
-          echo 'Keine FX-Reihe im veroeffentlichten Pfad.'
+          # Im Unterverzeichnis ecb/ duerfen Reihen liegen - aber nur
+          # solche der EZB. Eine Anbieterreihe, die sich dorthin
+          # verirrt, waere Klasse E aus O-11 und wird hier gestoppt.
+          if ls quant/data/market/fx/ecb/*.json >/dev/null 2>&1; then
+            node -e '
+              const fs = require("fs");
+              const dir = "quant/data/market/fx/ecb";
+              let n = 0;
+              for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+                const d = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8"));
+                if (f === "index.json") { if (d.source !== "ecb") { console.error("ABBRUCH: " + f + " ist keine EZB-Liste."); process.exit(1); } continue; }
+                if (d.source !== "ecb") {
+                  console.error("ABBRUCH: " + dir + "/" + f + " stammt von " + d.source + ", nicht von der EZB.");
+                  process.exit(1);
+                }
+                if (!d.attribution) { console.error("ABBRUCH: " + f + " ohne Quellennennung."); process.exit(1); }
+                n++;
+              }
+              console.log(n + " EZB-Reihe(n) im ausgelieferten Pfad, alle mit Quellennennung.");
+            '
+          fi
+          echo 'Keine Anbieter-FX-Reihe im veroeffentlichten Pfad.'
           ls -la .market-cache/currency/fx 2>/dev/null | head -10 || echo 'Keine Reihen geholt.'
 
       # Das Urteil gilt dem veroeffentlichten Bestand. Ohne Anbieterabruf

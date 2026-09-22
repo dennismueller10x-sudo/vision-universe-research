@@ -246,8 +246,25 @@ vor; es wurde keine eigene Rechtspruefung vorgenommen."*
 Daraus wird **keine** weitergehende Auslegung gemacht.
 
 ```
-LICENSE_DISPLAY_DERIVED_FX = OWNER_CONFIRMATION_REQUIRED
+LICENSE_DISPLAY_DERIVED_FX = OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT
 ```
+
+**Der Owner hat am 2026-09-22 entschieden.** Fuer die Development-/
+Preview-Phase wird das Risiko bewusst getragen; Vision Universe wird
+derzeit nicht kommerziell vermarktet. Was das **nicht** heisst, steht
+maschinenlesbar daneben und wird von `O11-1` geprueft:
+
+| Feld | Wert |
+|---|---|
+| `licenseConfirmed` | **false** |
+| `commercialRedistributionApproved` | **false** |
+| `preCommercialLicenseConfirmationRequired` | **true** |
+| `blocksCommercialLaunch` | **true** |
+| `publicRawDisplayAllowed` (tiingo) | **false** |
+
+> Eine akzeptierte Unsicherheit ist keine Lizenzauskunft. Wer das
+> spaeter verwechselt, verwechselt es teuer - deshalb steht der
+> Unterschied im Code und nicht nur in diesem Dokument.
 
 **Die exakte Frage an Tiingo**, maschinenlesbar in
 `quant/config/fx-license.json#licenseGate.questionForTiingo` und ueber
@@ -1263,6 +1280,117 @@ diesem Workstream und werden hier nicht repariert.
 
 ---
 
+## 16b. Die Aktivierung: was der Nutzer sieht
+
+Bis hierher war der Layer vollstaendig und **unbenutzt**. Die Module
+lagen auf den Seiten, aber niemand hat einen Vertrag gebaut - denn im
+Browser lagen keine Kurse.
+
+### Warum nicht einfach die Kursreihen ausliefern?
+
+Weil das Klasse E aus O-11 waere, und die braucht das Produkt nicht.
+Die Loesung folgt aus O-14: **historisch fuehrt ohnehin die EZB**, und
+deren Reihen duerfen unter Quellennennung wiedergegeben werden.
+
+| | ausgeliefert | Grund |
+|---|---|---|
+| EZB-Tagesreihen | **ja**, `quant/data/market/fx/ecb/` | oeffentliche Statistik, Quelle wird genannt |
+| Anbieterreihen | **nein**, Arbeitsablage | Klasse E wird nicht gebraucht |
+| aktueller Anbieterkurs | **nein** | kommt als fertiger EUR-Wert am Tick, nicht als Kurs |
+
+Der Workflow setzt das durch: eine Reihe im ausgelieferten
+EZB-Verzeichnis, die nicht `source: "ecb"` traegt oder keine
+Quellennennung hat, bricht den Lauf ab.
+
+### Geladen wird, was gebraucht wird
+
+`bootstrap.js` holt zuerst nur EUR/USD - die Waehrung von 10.790 der
+11.202 Titel - und jede weitere erst, wenn eine Flaeche sie anfragt.
+Alle zweiundzwanzig zu laden hiesse, jeder Seite drei Megabyte Kurse
+aufzuladen, von denen sie eine benutzt.
+
+**Vor den Kursen passiert nichts Falsches.** Der Vertrag steht sofort,
+sein Store ist nur leer; eine Umrechnung meldet dann
+`conversionUnavailable` und die Flaeche zeigt die Originalwaehrung
+(Test `A5`).
+
+### Ein Bootstrap, ein Umschalter, kein zweiter
+
+`VUFx.Bootstrap.boot()` baut den Vertrag - einmal, fuer die ganze Seite.
+`VUFx.Switch` liest und schreibt seinen Zustand und **rechnet nichts**.
+Ein Wechsel ist ein Ereignis der Seite (`vu-currency-change`); wer
+zuhoert, zeichnet neu.
+
+Test `A1` liest den Quellcode aller Consumer-Flaechen und faellt durch,
+sobald dort `createLayer`, `createEngine` oder `createStore` auftaucht.
+Test `A3` faellt durch, sobald der Umschalter selbst zu rechnen beginnt.
+
+### Umrechnen im Vertrag, formatieren in der Flaeche
+
+Die beiden Schritte bleiben getrennt. Der Vertrag entscheidet, **welcher
+Kurs** zu einem Wert gehoert - fuer eine Flussgroesse das Mittel ihrer
+Periode, fuer eine Stichtagsgroesse der Kurs des Stichtags. Wie die Zahl
+dann aussieht, bleibt die Entscheidung der Flaeche; ihre fertige
+Zeichenkette zu uebernehmen wuerde die Tabellen umgestalten (§28).
+
+### Zwei Stellen, an denen es beinahe falsch geworden waere
+
+**Der Periodenanfang.** Eine Flussgroesse braucht beide Periodengrenzen.
+Die veroeffentlichten Vergleichszeilen tragen nur das Ende - und ein
+Geschaeftsjahr, das im September endet, hat keinen Januaranfang (§14).
+Der Anfang kommt deshalb aus der **Kette der Geschaeftsjahre daneben**,
+die die Journey ohnehin mitbringt.
+
+Die erste Periode hat keine Vorgaengerin. Streng bliebe sie ohne Anfang
+- mit der haesslichen Folge, dass der erste Balken in Dollar stuende und
+alle anderen in Euro. `inferFirstFromChain` schliesst genau diese eine
+Luecke, und zwar aus den Perioden **desselben Unternehmens**: die erste
+ist so lang wie der Median der folgenden. Test `A4` prueft, dass dabei
+kein Kalenderjahresanfang herauskommt.
+
+**Die doppelte Umrechnung.** Die Chartreihe wird punktweise umgerechnet,
+bevor sie gezeichnet wird. Sie danach noch durch `money()` zu schicken
+hiesse, sie ein zweites Mal mit dem Kurs zu multiplizieren. Dafuer gibt
+es `alsAngezeigt()` - formatiert, rechnet nicht. Beim Tagesverlauf ist
+derselbe Fehler in einer zweiten Gestalt aufgetreten: die Achse war
+umgerechnet, der Vortagesschluss nicht, und der Vergleich stand mit
+einem Euro-Zaehler und einem Dollar-Nenner da. Jetzt wird der
+Schnappschuss **einmal** umgerechnet, und alles rechnet mit derselben
+Kopie.
+
+### Der Nachweis in der Oberflaeche
+
+`scripts/quality/verify-currency-ui.mjs` prueft im echten Browser, was
+keine Testsuite sehen kann. Gemessen an `AAPL`:
+
+| | |
+|---|---|
+| `UI1` EUR ist Vorgabe, Umschalter in der Leiste | **PASS** |
+| `UI2` 93 Geldbetraege geaendert, **0** Prozent- oder Verhaeltniswerte | **PASS** |
+| `UI3` kein Dollarbetrag in der EUR-Ansicht | **PASS** |
+| `UI4` 844 Textknoten in beiden Waehrungen - kein Titel faellt weg | **PASS** |
+| `UI5` 5 Jahre: **+142 % in EUR** gegen **+126 % in USD** | **PASS** |
+| `UI6` MAX-Chart: EUR ab **08.01.1999**, nativ ab **05.01.1990**, mit Hinweis | **PASS** |
+| `UI7` keine Konsolenfehler | **PASS** |
+| `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **PASS** |
+
+Gefuehrt fuer alle neun Nachweistitel: AAPL, NVDA, MSFT, SAP, ASML, NVO,
+TM, BABA, GSK.
+
+> `UI5` ist der Satz, auf den es ankommt. Eine Reihe, die rueckwirkend
+> mit einem einzigen Kurs umgerechnet wird, haette dieselbe Form wie das
+> Original und behauptete damit, der Wechselkurs haette sich nie bewegt.
+> Der Unterschied zwischen 142 und 126 Prozent ist der Beweis, dass
+> punktweise gerechnet wird.
+
+**Ein Fehlschlag, der keiner war.** `UI6` meldete SAP und ASML zuerst
+als Fehler: "Der EUR-Chart beginnt FRUEHER (08.01.1999) als der native
+(22.09.1995)". Der Test verglich `TT.MM.JJJJ` als Zeichenkette. Die
+Seite war richtig, der Test war falsch - und das ist der Grund, warum
+ein Nachweis selbst gegengelesen gehoert.
+
+---
+
 ## 17. Merge Gate
 
 | Kriterium | Zustand | Beleg |
@@ -1271,23 +1399,36 @@ diesem Workstream und werden hier nicht repariert.
 | `HISTORICAL_FX_COVERAGE` | **PASS** — 1J/5J 99,96 %, 10J/15J 99,71 % (Schwelle 99 %); MAX berichtet, nicht beurteilt | `historical-coverage.json` |
 | `FX_PROVIDER_ROLES` | **PASS** — zwei Klassen, je Klasse deterministisch, Uebergang an der Gegenwart. Ursache gemessen: `TIMING_DIFFERENCE` (14 von 15 Paaren; corr(r) = −0,725, Median der Differenz −0,002 %, Inversionsfehler 1,6·10⁻¹⁶) | `provider-seam-audit.json`, Pruefung `PR1`, Tests `O14-1` … `O14-4` |
 | `FX_DATA_PROOF` | **PASS** | `currency-layer-proof.json` |
-| `CURRENCY_CONTRACT` | **PASS** (72 Tests) | `currency-fx-matrix.test.mjs` |
+| `CURRENCY_CONTRACT` | **PASS** (77 Tests) | `currency-fx-matrix.test.mjs` |
 | `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage | `O9-1` … `O9-3` |
 | `FX_FRESHNESS` | **PASS** | `O5-1` … `O5-6` |
 | `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) | plus `O15-1`: getrennte Anfaenge je Anzeigewaehrung |
 | `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; 5 Titel unaufloesbar, alle `conversionAvailable: false`; Verfuegbarkeit zeitpunktbezogen | `O13-1`, `O13-2` |
-| `CURRENCY_DEBT_MIGRATION` | **PASS** — 0 offene Klasse-A-Stellen, Aussehen unveraendert | `currency-debt-register.json`, `O16-1`, `O16-2` |
-| `REGRESSION_GUARD` | **PASS** — 30 Stellen (Grundlinie 30), 2 Konstanten (Grundlinie 2) | `assert-no-local-fx.mjs` |
-| `NEW_REGRESSIONS` | **0** | die fuenf roten Tests der Gesamtsuite bestehen unveraendert auch ohne diesen Zweig |
+| `CURRENCY_DEBT_MIGRATION` | **PASS** — 0 offene Klasse-A-Stellen; Grundlinie von 34 auf 33 gesunken | `currency-debt-register.json`, `O16-1`, `O16-2` |
+| `CURRENCY_UI_PROOF` | **PASS** — EUR-Vorgabe, Umschalter, 0 bewegte Verhaeltniswerte, 9 Titel | `verify-currency-ui.mjs` (`UI1`–`UI8`) |
+| `REGRESSION_GUARD` | **PASS** — 33 Stellen (Grundlinie 33), 2 Konstanten (Grundlinie 2) | `assert-no-local-fx.mjs` |
+| `NEW_REGRESSIONS` | **0** | nach dem Merge von `main`: quant 1.403/1.403, discover 233/233, worker 66/66 - **keine** roten Tests mehr (die fuenf bekannten sind auf `main` behoben worden) |
 | `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
-| `CRITICAL_BLOCKERS` | **0** | die Lizenzfrage ist als `OWNER_CONFIRMATION_REQUIRED` dokumentiert und blockiert keine technische Arbeit |
+| `CRITICAL_BLOCKERS` | **0** | die Lizenzfrage ist dokumentiert und blockiert weder Merge noch Development-Deployment |
 | `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** | wird bei offener US-Sitzung nachgeholt |
-| `LICENSE_DISPLAY_DERIVED_FX` | **OWNER_CONFIRMATION_REQUIRED** | separat dokumentiert; keine nicht freigegebene oeffentliche Aktivierung erfolgt |
+| `LICENSE_DISPLAY_DERIVED_FX` | **OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT** | Owner-Entscheid 2026-09-22; kein Merge- und kein Deployment-Blocker |
+| `PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED` | **true** | dauerhaft dokumentiert; vor kommerzieller Vermarktung zu klaeren |
 
-**Nicht gemergt** — das entscheidet der Owner.
+**Merge freigegeben** durch den Owner-Entscheid vom 2026-09-22.
 
 `FX_PROVIDER_PRIORITY` heisst seit O-14 `FX_PROVIDER_ROLES`: es gibt
 nicht mehr eine Rangfolge, sondern zwei — eine je Art der Frage.
+
+Der Zweig wurde vor dem Merge gegen `main` synchronisiert. Ein Konflikt:
+`vu2/experience.js`, wo `main` einen Verfuegbarkeitswaechter in die
+Chartfunktion gesetzt hatte und dieser Zweig die Zeile darunter zentral
+formatierte. Beide Aenderungen sind erhalten - die eine gehoert `main`,
+die andere hier.
+
+**Und ein Fund beim Zusammenfuehren:** `main` brachte
+`discover-v2/detail.js` mit einer vierten eigenen Skalenleiter mit. Der
+Regression Guard hat sie gemeldet, und sie wurde sofort migriert -
+byte-gleich. Genau dafuer gibt es den Guard.
 
 ### `REALTIME_FX`: der Zeitplan allein holt es nicht nach
 
@@ -1314,12 +1455,18 @@ wird nicht beschoenigt (§58).
 
 ## 18. Was noch offen ist
 
-### Der eine echte Entscheidungspunkt
+### Entschieden, und was daraus folgt
 
 **Die FX-Lizenzfrage.** `LICENSE_DISPLAY_DERIVED_FX =
-OWNER_CONFIRMATION_REQUIRED`. Sie blockiert keine technische Arbeit und
-sie ist kein `CRITICAL_BLOCKER` — sie blockiert genau eine Sache: die
-oeffentliche Anzeige des **aktuellen**, Tiingo-basierten EUR-Werts.
+OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT` (Owner, 2026-09-22). Fuer die
+Development-/Preview-Phase wird das Risiko getragen; das Produkt wird
+derzeit nicht kommerziell vermarktet. Damit ist sie **kein**
+Merge-Blocker und **kein** Deployment-Blocker.
+
+Sie bleibt als Pre-Commercial-Launch-Gate bestehen:
+`PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED = true`. Rohe FX-Reihen
+des Anbieters werden weiterhin nicht ausgeliefert - Klasse E wird nicht
+gebraucht und nicht ausgeuebt.
 
 > **Die exakte Frage an Tiingo:** „Duerfen Tiingo-FX-Daten serverseitig
 > zur Berechnung abgeleiteter EUR-Aktienkurse und EUR-Fundamentalwerte

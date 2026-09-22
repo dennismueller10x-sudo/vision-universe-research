@@ -205,14 +205,27 @@
     ]);
     ensureFloatingNav();
     var schema = themeKnopf();
+    var waehrung = waehrungsKnopf();
 
     return el("div", { class: "dx-bar" }, [
       el("a", { class: "dx-brand", href: "#/" }, [
         document.createTextNode("Discover"),
         el("span", { text: "Vision Universe®" })
       ]),
-      status, switcher, einzeln, suche, schema
+      status, switcher, einzeln, suche, waehrung, schema
     ].filter(Boolean));
+  }
+
+  /* Der Umschalter gehoert dem Currency Layer, nicht Discover.
+
+     Discover baut ihn nicht, es haengt ihn nur auf - und weiss nichts
+     ueber seinen Zustand. Waere er hier gebaut, haette der Screener
+     spaeter einen zweiten, und ein Nutzer, der in Discover auf USD
+     stellt, saehe im Screener wieder Euro. */
+  function waehrungsKnopf() {
+    var FX = global.VUFx;
+    if (!FX || !FX.Switch || !FX.layer) return null;
+    return FX.Switch.create({ layer: FX.layer });
   }
 
   /* V4.1 §4: die Statuszeile fuer den normalen Nutzer - drei Formen.
@@ -910,7 +923,7 @@
         seite.appendChild(D.Daten.render({ meta: state.meta, universe: universeMeta(), calendar: state.calendar }));
         seite.appendChild(footer());
         document.title = "Daten & Quellen — Discover";
-        window.scrollTo(0, 0);
+        if (!state.scrollHalten) window.scrollTo(0, 0);
       } else if (teile[0] === "einzeln") {
         renderFeed(root, teile[1] || state.universeId);
       } else if (teile[0] === "s" && teile.length >= 3) {
@@ -923,7 +936,8 @@
       } else {
         renderHome(root);
       }
-      global.scrollTo({ top: 0, behavior: "auto" });
+      if (state.scrollHalten) state.scrollHalten = false;
+      else global.scrollTo({ top: 0, behavior: "auto" });
     }).catch(function (err) {
       S.clear(root);
       root.appendChild(el("div", { class: "dx-app" }, [
@@ -935,6 +949,33 @@
         ])
       ]));
     });
+  }
+
+  /* --------------------------------------------------------------------
+     Der Currency Layer, angeschaltet
+     --------------------------------------------------------------------
+     Zwei Ereignisse, zwei Gruende neu zu zeichnen:
+
+       vu-fx-ready       die Kurse sind da. Was vorher in
+                         Originalwaehrung stand, kann jetzt in Euro
+                         stehen - und soll es auch, ohne dass der Nutzer
+                         etwas tut.
+       vu-currency-change der Nutzer hat umgeschaltet.
+
+     In beiden Faellen zeichnet dieselbe Route neu. Discover rechnet
+     nichts um; es fragt den Vertrag und stellt dar, was er sagt. */
+  function neuZeichnenFuerWaehrung() {
+    /* Die Seite springt nicht nach oben. Wer in einer langen Liste auf
+       Euro umstellt, will dieselbe Stelle in Euro sehen und nicht den
+       Seitenanfang. */
+    state.scrollHalten = true;
+    route();
+  }
+  document.addEventListener("vu-currency-change", neuZeichnenFuerWaehrung);
+  document.addEventListener("vu-fx-ready", neuZeichnenFuerWaehrung);
+
+  if (global.VUFx && global.VUFx.Bootstrap) {
+    global.VUFx.Bootstrap.boot().catch(function () { /* ohne Kurse bleibt die Originalwaehrung */ });
   }
 
   global.addEventListener("hashchange", route);

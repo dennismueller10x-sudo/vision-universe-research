@@ -961,8 +961,14 @@ test("L1 · Die Anzeigeerlaubnis haengt an der Quelle des Kurses, nicht am Produ
 
   assert.equal(alt.publicDisplayAllowed, true, "EZB-Kurse duerfen gezeigt werden - Quelle wird genannt");
   assert.ok(alt.attribution && alt.attribution.length, "und die Nennung reist mit dem Wert");
-  assert.equal(neu.publicDisplayAllowed, false,
-    "Tiingo-FX: die Vertragsfrage ist offen, also keine oeffentliche Anzeige (O-11 C)");
+  /* Seit dem Owner-Entscheid vom 2026-09-22 auch der Tiingo-Wert - als
+     akzeptiertes Risiko fuer die Development-Phase. Der Mechanismus ist
+     unveraendert: die Erlaubnis haengt weiter am einzelnen Wert und an
+     seiner Quelle, nicht am Produkt. Sie steht jetzt nur fuer beide
+     Quellen auf true. */
+  assert.equal(neu.publicDisplayAllowed, true,
+    "Tiingo-FX: Risiko fuer die Development-Phase akzeptiert (OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT)");
+  assert.equal(neu.fxProvenance.source, "tiingo");
 
   /* Beide sind trotzdem gerechnet - interne Nutzung ist erlaubt. */
   assert.equal(alt.conversionAvailable, true);
@@ -970,15 +976,24 @@ test("L1 · Die Anzeigeerlaubnis haengt an der Quelle des Kurses, nicht am Produ
 });
 
 test("L2 · Ein Kreuz erbt die strengere Bedingung", () => {
-  const frei = Providers.displayPermission("ecb");
-  const gesperrt = Providers.displayPermission("tiingo");
+  const ecb = Providers.displayPermission("ecb");
+  const tiingo = Providers.displayPermission("tiingo");
   const gemischt = Providers.displayPermission("tiingo+ecb");
 
-  assert.equal(frei.publicDerivedDisplayAllowed, true);
-  assert.equal(gesperrt.publicDerivedDisplayAllowed, false);
-  assert.equal(gemischt.publicDerivedDisplayAllowed, false,
-    "Der gesperrte Kurs steckt rechnerisch im Kreuz - also ist das Kreuz gesperrt");
+  /* Die ABGELEITETE Anzeige ist fuer beide Quellen offen. */
+  assert.equal(ecb.publicDerivedDisplayAllowed, true);
+  assert.equal(tiingo.publicDerivedDisplayAllowed, true);
+  assert.equal(gemischt.publicDerivedDisplayAllowed, true);
   assert.equal(gemischt.role, "MIXED");
+
+  /* Die ROHE Reihe nicht - und dort greift die strengere Bedingung
+     weiterhin. Das ist der Teil der Lizenzlage, den der Owner-Entscheid
+     ausdruecklich NICHT aufgehoben hat: Klasse E wird nicht gebraucht
+     und nicht ausgeuebt. */
+  assert.equal(ecb.publicRawDisplayAllowed, true);
+  assert.equal(tiingo.publicRawDisplayAllowed, false);
+  assert.equal(gemischt.publicRawDisplayAllowed, false,
+    "Der gesperrte Kurs steckt rechnerisch im Kreuz - also ist das Kreuz gesperrt");
 });
 
 test("L3 · Der Fast Path braucht keine Lizenz, eine unbekannte Quelle bekommt keine", () => {
@@ -987,7 +1002,7 @@ test("L3 · Der Fast Path braucht keine Lizenz, eine unbekannte Quelle bekommt k
   assert.equal(Providers.displayPermission("irgendein-anbieter").publicDerivedDisplayAllowed, false,
     "Eine Erlaubnis entsteht nicht dadurch, dass niemand widerspricht");
   assert.ok(Providers.escalation(), "Die offene Vertragsfrage ist abrufbar, nicht nur dokumentiert");
-  assert.equal(Providers.escalation().state, "OWNER_CONFIRMATION_REQUIRED");
+  assert.equal(Providers.escalation().state, "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT");
   assert.equal(Providers.escalation().id, "LICENSE_DISPLAY_DERIVED_FX");
   assert.match(Providers.escalation().questionForTiingo, /ohne die rohe FX-Zeitreihe zu redistribuieren/,
     "Die exakte Frage steht im Code-Pfad, nicht nur im Dokument");
@@ -1283,7 +1298,11 @@ test("M12-5 · Die Consumer-Seiten laden den Currency Core in der richtigen Reih
   const soll = [
     "fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry",
     "currency-class", "currency-engine", "money-format", "currency-preference",
-    "currency-contract"
+    "currency-contract",
+    /* Seit der Aktivierung: der Umschalter und der Bootstrap. Der
+       Bootstrap kommt zuletzt - er baut den Vertrag und braucht alles
+       davor. */
+    "currency-switch", "bootstrap"
   ];
   for (const seite of ["discover/index.html", "discover-v2/index.html"]) {
     const src = readFileSync(join(ROOT, seite), "utf8");
@@ -1427,22 +1446,33 @@ test("O13-2 · 'Gibt es nicht' und 'gilt heute nicht mehr' sind verschiedene Aus
   assert.equal(niedagewesen.reason, "pairNotStored");
 });
 
-test("O11-1 · Das Lizenz-Gate traegt die exakte Frage und blockiert nur die Anzeige", () => {
+test("O11-1 · Was der Owner entschieden hat - und was er ausdruecklich nicht entschieden hat", () => {
   const gate = Providers.escalation();
   assert.equal(gate.id, "LICENSE_DISPLAY_DERIVED_FX");
-  assert.equal(gate.state, "OWNER_CONFIRMATION_REQUIRED");
-  assert.deepEqual(gate.needed, ["C", "D"]);
-  assert.deepEqual(gate.notNeeded, ["E"]);
+  assert.equal(gate.state, "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT");
+
+  /* Entschieden: die Development-Phase darf abgeleitete EUR-Werte
+     zeigen. Das ist eine Risikoentscheidung des Eigentuemers. */
   assert.equal(gate.blocksTechnicalWork, false);
-  assert.equal(gate.blocksPublicActivation, true);
+  assert.equal(gate.blocksPublicActivation, false);
+  assert.equal(Providers.displayPermission("tiingo").publicDerivedDisplayAllowed, true);
+
+  /* NICHT entschieden, und das ist der wichtigere Teil dieses Tests.
+     Eine akzeptierte Unsicherheit ist keine Lizenzauskunft; wer das
+     spaeter verwechselt, verwechselt es teuer. */
+  assert.equal(gate.licenseConfirmed, false,
+    "Aus einer Risikoentscheidung folgt keine bestaetigte Lizenz");
+  assert.equal(gate.commercialRedistributionApproved, false);
+  assert.equal(gate.preCommercialLicenseConfirmationRequired, true);
+  assert.equal(gate.blocksCommercialLaunch, true);
+  assert.equal(Providers.displayPermission("tiingo").publicRawDisplayAllowed, false,
+    "Klasse E wird nicht gebraucht und bleibt gesperrt");
+
+  /* Die exakte Frage bleibt im Code-Pfad stehen - sie ist nicht
+     beantwortet, sondern vertagt. */
+  assert.match(gate.questionForTiingo, /ohne die rohe FX-Zeitreihe zu redistribuieren/);
   assert.equal(gate.repositoryEvidence.contractTextPresent, false,
     "Es wird keine Lizenz aus einem Dokument abgeleitet, das es nicht gibt");
-
-  /* Und die Folge je Wert: historisch (EZB) zeigbar, aktuell (Tiingo)
-     gesperrt. Das ist die Trennung, die den technischen Workstream
-     nicht anhaelt. */
-  assert.equal(Providers.displayPermission("ecb").publicDerivedDisplayAllowed, true);
-  assert.equal(Providers.displayPermission("tiingo").publicDerivedDisplayAllowed, false);
 });
 
 test("O16-1 · Keine offene Klasse-A-Stelle mehr, und keine still weggeklassifizierte", () => {
@@ -1527,4 +1557,83 @@ test("O14-4 · Jeder Produktpfad landet in der Klasse, die zu ihm gehoert", () =
   const jetzt = engine.convertMoney(100, "USD", "EUR", null, "CURRENT_VALUE");
   assert.equal(jetzt.fx.source, "tiingo", "Der aktuelle Wert kommt aus der Gegenwartsquelle");
   assert.ok(Math.abs(jetzt.fx.rate - 1 / 1.15) < 1e-12);
+});
+
+/* =========================================================================
+   Die Aktivierung: Bootstrap, Umschalter, Periodenkette
+   ========================================================================= */
+
+test("A1 · Der Bootstrap ist die EINZIGE Stelle, die einen Vertrag baut", () => {
+  /* Zwei Vertraege auf einer Seite hiessen zwei Anzeigezustaende - der
+     Umschalter bewegte dann die Haelfte der Seite. Der Test liest den
+     Quellcode der Consumer-Flaechen: dort darf createLayer nicht
+     vorkommen. */
+  for (const datei of ["discover/app.js", "discover-v2/app.js",
+                       "discover/ui/cards.js", "discover/ui/detail.js",
+                       "discover/ui/detail-fundamentals.js", "discover/ui/surfaces.js",
+                       "discover-v2/detail.js", "vu2/experience.js"]) {
+    const src = readFileSync(join(ROOT, datei), "utf8");
+    assert.ok(!/createLayer\s*\(/.test(src), `${datei} baut einen eigenen Currency Contract`);
+    assert.ok(!/createEngine\s*\(/.test(src), `${datei} baut eine eigene Engine`);
+    assert.ok(!/createStore\s*\(/.test(src), `${datei} baut einen eigenen FX-Store`);
+  }
+  const boot = readFileSync(join(ROOT, "quant", "engines", "fx", "bootstrap.js"), "utf8");
+  assert.match(boot, /Contract\.createLayer/, "Der Bootstrap baut den Vertrag");
+});
+
+test("A2 · Im Browser liegen nur EZB-Kurse - Anbieterreihen bleiben im Arbeitsverzeichnis", () => {
+  /* Die Klasse E aus O-11 wird nicht ausgeuebt. Durchgesetzt wird das
+     an zwei Stellen: der Bootstrap laedt aus dem EZB-Verzeichnis, und
+     der Workflow prueft, dass dort nichts anderes liegt. */
+  const boot = readFileSync(join(ROOT, "quant", "engines", "fx", "bootstrap.js"), "utf8");
+  assert.match(boot, /market\/fx\/ecb\//, "Der Bootstrap laedt aus dem EZB-Verzeichnis");
+
+  const wf = readFileSync(join(ROOT, ".github", "workflows", "currency-fx-verify.yml"), "utf8");
+  assert.match(wf, /stammt von.*nicht von der EZB/,
+    "Der Workflow prueft die Herkunft der ausgelieferten Reihen");
+  assert.match(wf, /build-fx-history\.mjs --max-pairs=80 --start=[\d-]+ --publish-availability/,
+    "Der Anbieterabruf veroeffentlicht nur die Abdeckungskarte, keine Reihen");
+});
+
+test("A3 · Der Umschalter setzt einen Zustand und rechnet nichts um", () => {
+  const src = readFileSync(join(ROOT, "quant", "engines", "fx", "currency-switch.js"), "utf8");
+  assert.match(src, /setDisplayCurrency/, "Er schreibt in den Vertrag");
+  assert.ok(!/rateAt|convertMoney|\*\s*rate|\/\s*rate/.test(src),
+    "Ein Umschalter, der selbst rechnet, waere eine zweite FX-Logik");
+});
+
+test("A4 · Die Periodenkette leitet den ersten Anfang aus der Reihe ab, nicht aus dem Kalender", () => {
+  /* Ein Geschaeftsjahr, das im September endet, hat keinen
+     Januaranfang. Streng bleibt die erste Periode ohne Anfang; mit
+     inferFirstFromChain kommt er aus der LAENGE der folgenden Perioden
+     desselben Unternehmens. */
+  const zeilen = [{ end: "2014-09-27" }, { end: "2015-09-26" }, { end: "2016-09-24" }];
+  const streng = Engine.periodIndex(zeilen);
+  assert.equal(streng["2014-09-27"], undefined, "Ohne Vorgaengerin kein Anfang");
+  assert.equal(streng["2015-09-26"], "2014-09-28");
+
+  const abgeleitet = Engine.periodIndex(zeilen, { inferFirstFromChain: true });
+  assert.ok(abgeleitet["2014-09-27"], "Mit Ableitung bekommt auch die erste Periode einen Anfang");
+  /* Und er liegt rund ein Jahr davor - nicht am 1. Januar. */
+  const tage = (Date.parse("2014-09-27") - Date.parse(abgeleitet["2014-09-27"])) / 86400000;
+  assert.ok(tage > 350 && tage < 380, `Erste Periode ${tage} Tage lang`);
+  assert.ok(!/^\d{4}-01-01$/.test(abgeleitet["2014-09-27"]), "Kein Kalenderjahresanfang");
+
+  /* Eine Kette mit nur einem Eintrag bleibt ohne Anfang: aus nichts
+     laesst sich keine Laenge ableiten. */
+  assert.deepEqual(Engine.periodIndex([{ end: "2014-09-27" }], { inferFirstFromChain: true }), {});
+});
+
+test("A5 · Ohne Kurse zeigt der Vertrag die Originalwaehrung, nicht null", () => {
+  /* Der Zustand zwischen Seitenaufbau und geladenen Kursen. Eine halbe
+     Sekunde ehrliche Originalwaehrung ist besser als ein geratener
+     Euro-Betrag - und besser als eine leere Karte. */
+  const leer = Rates.createStore();
+  const layer = Contract.createLayer({ store: leer, now: NOW, storage: null });
+  const m = layer.money(154.72, "USD", "2026-09-18", "MARKET_PRICE");
+  assert.equal(m.conversionAvailable, false);
+  assert.equal(m.displayState, "NATIVE_CURRENCY");
+  assert.equal(m.native.value, 154.72);
+  assert.equal(m.native.currency, "USD");
+  assert.ok(m.displayNote && m.displayNote.length, "Der Grund steht am Wert");
 });

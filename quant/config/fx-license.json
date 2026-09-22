@@ -1,14 +1,18 @@
 {
   "schemaVersion": "2.0.0",
   "note": "Zwei Dinge in einer Datei, weil sie zusammen entschieden werden muessen: WER liefert den Kurs (Rangfolge, O-7/O-14) und WAS darf mit dem Ergebnis geschehen (Lizenz, O-11). Gelesen von quant/engines/fx/fx-provider-registry.js und display-policy.js#declareFromConfig. Was hier NICHT steht, faellt auf DEFAULT_POLICY zurueck: intern ja, oeffentlich nein.",
-
   "licenseGate": {
     "id": "LICENSE_DISPLAY_DERIVED_FX",
-    "state": "OWNER_CONFIRMATION_REQUIRED",
+    "state": "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
     "raisedAt": "2026-09-22",
     "provider": "tiingo",
-    "needed": ["C", "D"],
-    "notNeeded": ["E"],
+    "needed": [
+      "C",
+      "D"
+    ],
+    "notNeeded": [
+      "E"
+    ],
     "classes": {
       "A": "interne Nutzung von FX-Daten",
       "B": "serverseitiges Caching",
@@ -36,16 +40,21 @@
     },
     "questionForTiingo": "Duerfen Tiingo-FX-Daten serverseitig zur Berechnung abgeleiteter EUR-Aktienkurse und EUR-Fundamentalwerte verwendet und diese abgeleiteten Werte oeffentlich im Vision-Universe-Produkt angezeigt werden, ohne die rohe FX-Zeitreihe zu redistribuieren?",
     "blocksTechnicalWork": false,
-    "blocksPublicActivation": true,
-    "whatStillWorks": "Der Layer rechnet und speichert weiter. Werte, deren Kurs aus einer Quelle mit geklaerten Bedingungen stammt (EZB), tragen publicDisplayAllowed=true. Nach der Rollenverteilung aus O-14 ist die EZB die kanonische historische Tagesquelle - die gesamte historische EUR-Anzeige ist damit freigegeben. Gesperrt bleibt bis zur Antwort ausschliesslich die oeffentliche Anzeige des AKTUELLEN, Tiingo-basierten EUR-Werts."
+    "blocksPublicActivation": false,
+    "whatStillWorks": "Der Layer rechnet, speichert und zeigt an. Die Entscheidung betrifft ausschliesslich die oeffentliche Anzeige ABGELEITETER Werte (Klasse C und D) in der Development-/Preview-Umgebung. Klasse E (Redistribution roher FX-Reihen) wird weiterhin NICHT ausgeuebt: die Erlaubnisliste im Workflow laesst keine FX-Reihe in den ausgelieferten Pfad. Vor einer kommerziellen Vermarktung muss die Frage beantwortet werden.",
+    "decidedBy": "Repository owner, 2026-09-22 (OWNER DECISION - MERGE & DEVELOPMENT PRODUCTION RELEASE).",
+    "decision": "Fuer die DEVELOPMENT-/PREVIEW-Phase wird das Risiko bewusst akzeptiert. Vision Universe wird derzeit nicht kommerziell vermarktet. Die Lizenzfrage bleibt als dokumentiertes Pre-Commercial-Launch-Gate bestehen; sie ist kein Merge-Blocker und kein Development-Deployment-Blocker.",
+    "licenseConfirmed": false,
+    "commercialRedistributionApproved": false,
+    "preCommercialLicenseConfirmationRequired": true,
+    "blocksCommercialLaunch": true,
+    "whatIsNotDecided": "Die Erklaerung des Owners ist eine Risikoentscheidung, keine Lizenzauskunft. Aus ihr folgt NICHT, dass die Nutzung vertraglich gedeckt ist. Es wurde keine Rechtspruefung vorgenommen und es wird keine weitere Lizenzrecherche gefuehrt."
   },
-
   "resolutionClasses": {
     "note": "O-14. Die Rolle haengt an der Art der Frage. Ein historischer Chart soll ueber seine ganze Laenge aus EINER Quelle kommen - sonst legt der Quellenwechsel den Zeitpunktunterschied zwischen Fixing und Tagesschluss als Sprung in die Reihe. Der Uebergang liegt an der Gegenwart: historische Tagesreihe (EZB) -> aktueller Stand (Tiingo).",
     "HISTORICAL_DAILY": "Was war der Kurs am Tag t? Betrifft Charts, Periodenmittel, Stichtagsgroessen.",
     "CURRENT": "Was ist der Kurs jetzt? Betrifft den aktuellen Preis, den Intraday-State und jede Realtime-Anzeige."
   },
-
   "providers": {
     "tiingo": {
       "role": "PRIMARY",
@@ -65,10 +74,11 @@
       "internalUseAllowed": true,
       "storageAllowed": true,
       "storageScope": "Arbeitsablage (.market-cache), nicht der ausgelieferte Pfad.",
-      "publicDerivedDisplayAllowed": false,
+      "publicDerivedDisplayAllowed": true,
       "publicRawDisplayAllowed": false,
-      "basis": "Keine gepruefte FX-Lizenz. Die Freigabe vom 2026-09-13 nennt die Market-Data; FX ist ein eigenes Produkt. Strengster Standard bis zur Antwort auf LICENSE_DISPLAY_DERIVED_FX.",
-      "checkedAt": "2026-09-22"
+      "basis": "Keine gepruefte FX-Lizenz. Die oeffentliche Anzeige ABGELEITETER EUR-Werte ist fuer die Development-/Preview-Phase durch Owner-Entscheid vom 2026-09-22 freigegeben - als akzeptiertes Risiko, nicht als bestaetigte Lizenz (licenseGate.licenseConfirmed = false). Rohe FX-Reihen bleiben gesperrt.",
+      "checkedAt": "2026-09-22",
+      "riskAcceptedForDevelopment": true
     },
     "ecb": {
       "role": "FALLBACK",
@@ -97,15 +107,14 @@
       "ownerConfirmationSuggested": "Die Bedingungen der EZB sind oeffentlich und nicht vertraglich verhandelt. Der Eintrag beruht auf ihnen und nicht auf einer eigenen Rechtspruefung - eine Bestaetigung durch den Eigentuemer ist sinnvoll, blockiert aber nichts, weil die Quellennennung ohnehin erfolgt."
     }
   },
-
   "grants": [
     {
       "providerId": "tiingo",
       "dataClass": "fx",
       "publicRawDisplayAllowed": false,
-      "publicDerivedDisplayAllowed": false,
+      "publicDerivedDisplayAllowed": true,
       "publicRealtimeAllowed": false,
-      "basis": "Keine gepruefte FX-Lizenz; die Freigabe vom 2026-09-13 nennt die Market-Data, nicht FX.",
+      "basis": "Owner-Entscheid 2026-09-22: Risiko fuer die Development-/Preview-Phase akzeptiert. Abgeleitete EUR-Werte duerfen angezeigt werden; rohe FX-Reihen nicht. Keine bestaetigte Lizenz, kein kommerzielles Redistributionsrecht.",
       "checkedAt": "2026-09-22"
     },
     {

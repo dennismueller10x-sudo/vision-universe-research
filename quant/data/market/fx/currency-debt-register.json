@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-09-22T09:49:07.261Z",
+  "generatedAtUtc": "2026-09-22T10:44:58.951Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -32,18 +32,19 @@
       "rule": "von Hand ansehen"
     }
   },
-  "total": 30,
+  "total": 33,
   "byClass": {
     "C": 5,
     "UNCLASSIFIED": 1,
-    "F": 19,
+    "F": 22,
     "B": 4,
     "E": 1
   },
-  "filesAffected": 15,
+  "filesAffected": 16,
   "migrationOrder": [],
   "migratedFiles": [
     "dashboard/app.js",
+    "discover-v2/detail.js",
     "discover/ui/cards.js",
     "discover/ui/detail-fundamentals.js",
     "discover/ui/detail.js",
@@ -66,7 +67,7 @@
     },
     {
       "file": "discover/engines/fundamentals.js",
-      "line": 542,
+      "line": 598,
       "rule": "trailingDollar",
       "class": "UNCLASSIFIED",
       "label": "UNCLASSIFIED",
@@ -77,7 +78,7 @@
     },
     {
       "file": "discover/ui/cards.js",
-      "line": 92,
+      "line": 108,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -110,7 +111,7 @@
     },
     {
       "file": "discover/ui/detail-fundamentals.js",
-      "line": 78,
+      "line": 116,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -121,7 +122,7 @@
     },
     {
       "file": "discover/ui/detail-fundamentals.js",
-      "line": 79,
+      "line": 117,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -132,7 +133,7 @@
     },
     {
       "file": "discover/ui/detail-fundamentals.js",
-      "line": 80,
+      "line": 118,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -143,7 +144,7 @@
     },
     {
       "file": "discover/ui/detail-fundamentals.js",
-      "line": 81,
+      "line": 119,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -151,17 +152,6 @@
       "confidence": "HIGH",
       "declaredReason": null,
       "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
-    },
-    {
-      "file": "discover/ui/detail-fundamentals.js",
-      "line": 574,
-      "rule": "trailingDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "isNum(v.price) ? { label: \"Kurs der Rechnung\", wert: v.price.toFixed(2).replace(\".\", \",\") + \" $\", zusatz: \"Stand \" + (f.asOf || \"\") } : null"
     },
     {
       "file": "discover/ui/detail.js",
@@ -187,7 +177,7 @@
     },
     {
       "file": "discover/ui/surfaces.js",
-      "line": 263,
+      "line": 292,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -198,29 +188,29 @@
     },
     {
       "file": "discover/ui/surfaces.js",
-      "line": 264,
+      "line": 293,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
       "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
       "confidence": "HIGH",
       "declaredReason": null,
-      "text": "if (a >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+      "text": "if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
     },
     {
       "file": "discover/ui/surfaces.js",
-      "line": 265,
+      "line": 294,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
       "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
       "confidence": "HIGH",
       "declaredReason": null,
-      "text": "if (a >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
+      "text": "if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
     },
     {
       "file": "discover/ui/surfaces.js",
-      "line": 266,
+      "line": 295,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -228,6 +218,50 @@
       "confidence": "HIGH",
       "declaredReason": null,
       "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 261,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "var abs = Math.abs(value), scale = 1, suffix = \" $\";"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 262,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (abs >= 1e12) { scale = 1e12; suffix = \" Bio. $\"; }"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 263,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e9) { scale = 1e9; suffix = \" Mrd. $\"; }"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 264,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e6) { scale = 1e6; suffix = \" Mio. $\"; }"
     },
     {
       "file": "discover-v2/home.js",
@@ -253,7 +287,7 @@
     },
     {
       "file": "vu2/experience.js",
-      "line": 100,
+      "line": 101,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",

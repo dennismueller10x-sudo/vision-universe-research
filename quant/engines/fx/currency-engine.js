@@ -603,11 +603,69 @@
     };
   }
 
+  /**
+   * Ende -> Anfang, als Nachschlagewerk.
+   *
+   * Eine Oberflaeche hat oft nur zwei Zeilen vor sich (damals/heute),
+   * aber die ganze Jahresreihe daneben. Aus der Reihe laesst sich der
+   * Periodenanfang exakt ableiten; aus den zwei Zeilen nicht. Damit
+   * niemand versucht ist, dafuer ein Kalenderjahr anzunehmen (§14),
+   * steht die Umkehrung hier neben der Regel selbst.
+   */
+  function periodIndex(rows, opts) {
+    opts = opts || {};
+    var kette = resolvePeriodChain(rows);
+    var out = {};
+    kette.forEach(function (e) {
+      if (e.periodEnd && e.periodStart) out[e.periodEnd] = e.periodStart;
+    });
+
+    /* DIE ERSTE PERIODE HAT KEINE VORGAENGERIN.
+
+       Streng genommen ist ihr Anfang unbekannt, und genau das sagt
+       resolvePeriod. Fuer eine Reihe, die gezeichnet wird, hat das eine
+       haessliche Folge: der erste Balken bliebe in Originalwaehrung,
+       alle anderen stuenden in Euro. Ein Diagramm mit zwei Waehrungen
+       ist schlechter als eines mit einer.
+
+       `inferFirstFromChain` schliesst diese eine Luecke - NICHT aus dem
+       Kalender, sondern aus den Perioden DESSELBEN Unternehmens: die
+       erste Periode ist so lang wie der Median der folgenden. Fuer eine
+       Jahresreihe heisst das 365 oder 364 Tage, je nachdem, was die
+       Firma selbst meldet.
+
+       Es bleibt eine Ableitung und keine Quelle. Sie ist deshalb
+       ausdruecklich zu verlangen, und periodAverage meldet weiterhin
+       seine Abdeckung - ein daneben liegender Anfang faellt dort auf. */
+    if (opts.inferFirstFromChain && kette.length >= 2) {
+      var erste = kette[0];
+      if (erste.periodEnd && !erste.periodStart) {
+        var laengen = [];
+        for (var i = 1; i < kette.length; i++) {
+          var e = kette[i];
+          if (e.periodStart && e.periodEnd) {
+            laengen.push(Math.round((Date.parse(e.periodEnd) - Date.parse(e.periodStart)) / 86400000));
+          }
+        }
+        if (laengen.length) {
+          laengen.sort(function (a, b) { return a - b; });
+          var median = laengen[Math.floor(laengen.length / 2)];
+          if (median > 0) {
+            out[erste.periodEnd] = new Date(Date.parse(erste.periodEnd + "T00:00:00Z") - median * 86400000)
+              .toISOString().slice(0, 10);
+          }
+        }
+      }
+    }
+    return out;
+  }
+
   var api = {
     VERSION: VERSION, CONTRACT_VERSION: CONTRACT_VERSION, CONTEXTS: CONTEXTS,
     createEngine: createEngine,
     resolvePeriod: resolvePeriod,
-    resolvePeriodChain: resolvePeriodChain
+    resolvePeriodChain: resolvePeriodChain,
+    periodIndex: periodIndex
   };
 
   if (isNode) module.exports = api;

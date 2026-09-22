@@ -123,6 +123,16 @@ async function main() {
 
   mkdirSync(OUT_DIR, { recursive: true });
   const asOf = new Date().toISOString();
+  /* DER STAND DER DATEN, NICHT DIE UHRZEIT DES LAUFS.
+
+     Diese Reihen werden ausgeliefert und liegen deshalb im Repository.
+     Traegt jede Datei den Zeitstempel ihres Laufs, erzeugt jeder Lauf
+     neue Blobs - auch wenn die EZB nichts Neues veroeffentlicht hat.
+     Bei 22 Paaren und taeglichen Laeufen waere das Gigabyte an
+     Git-Objekten fuer null Information.
+
+     Mit dem letzten Beobachtungstag als Stand ist eine unveraenderte
+     Reihe byte-gleich, und commit-and-push hat nichts zu tun. */
   const written = [];
 
   for (const s of wanted) {
@@ -132,7 +142,13 @@ async function main() {
       Providers.ingestMeta("ecb", { frequency: "DAILY" }));
     if (!stats.observations) continue;
 
-    writeFileSync(join(OUT_DIR, `${s.base}${s.quote}.json`), JSON.stringify({
+    /* Die Punkte kompakt, der Kopf lesbar.
+
+       Diese Datei wird im Browser geladen, sobald eine Flaeche in einer
+       Fremdwaehrung rechnet. Eingerueckte Punkte waeren dort das
+       Dreifache an Bytes fuer null zusaetzliche Information - und der
+       Kopf, den ein Mensch liest, ist nur ein Dutzend Zeilen. */
+    const kopf = {
       schema: "vu-fx-series-1.0.0",
       base: s.base, quote: s.quote,
       source: "ecb", frequency: "DAILY",
@@ -143,15 +159,42 @@ async function main() {
       priceBasis: "EZB-Referenzkurs, erhoben gegen 14:15 UTC, veroeffentlicht gegen 16:00 MEZ",
       priceInstantUtcApprox: 14.25,
       attribution: "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
-      feed: FEED.id, asOf,
+      feed: FEED.id, asOf: stats.last,
       first: stats.first, last: stats.last,
       observations: stats.observations,
-      rejectedRows: stats.rejectedRows, duplicateDates: stats.duplicateDates,
-      points: s.points
-    }, null, 2) + "\n");
+      rejectedRows: stats.rejectedRows, duplicateDates: stats.duplicateDates
+    };
+    const text = JSON.stringify(kopf, null, 2).replace(/\n\}$/, "") +
+      ",\n  \"points\": " + JSON.stringify(s.points) + "\n}\n";
+    writeFileSync(join(OUT_DIR, `${s.base}${s.quote}.json`), text);
     written.push({ pair: `${s.base}/${s.quote}`, observations: stats.observations,
                    first: stats.first, last: stats.last });
   }
+
+  /* Ein Verzeichnis, damit der Browser nicht raten muss.
+
+     Der Bootstrap im Browser laedt eine Reihe erst, wenn eine Flaeche
+     sie braucht - sonst zoege jede Seite drei Megabyte Kurse, von denen
+     sie eine Reihe benutzt. Dafuer muss er wissen, WELCHE es gibt und
+     ab wann sie reichen; ein 404 als Antwort auf diese Frage waere eine
+     schlechte Auskunft. */
+  writeFileSync(join(OUT_DIR, "index.json"), JSON.stringify({
+    schema: "vu-fx-series-index-1.0.0",
+    source: "ecb",
+    attribution: "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
+    attributionRequired: true,
+    roles: { HISTORICAL_DAILY: "PRIMARY", CURRENT: "FALLBACK" },
+    frequency: "DAILY",
+    priceInstantUtcApprox: 14.25,
+    asOf: written.reduce(function (a, w) { return w.last > a ? w.last : a; }, ""),
+    feed: FEED.id,
+    note: "Je Eintrag liegt die Reihe unter <base><quote>.json im selben Verzeichnis.",
+    pairs: written.map((w) => {
+      const [base, quote] = w.pair.split("/");
+      return { base, quote, file: `${base}${quote}.json`,
+               first: w.first, last: w.last, observations: w.observations };
+    })
+  }, null, 2) + "\n");
 
   /* --------------------------------------------------------------- */
   /* Die Nahtstelle messen                                             */
