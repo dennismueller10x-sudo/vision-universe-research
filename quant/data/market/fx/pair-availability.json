@@ -1,7 +1,7 @@
 {
-  "schema": "vu-fx-pair-availability-1.0.0",
-  "generatedAtUtc": "2026-09-22T07:11:10.343Z",
-  "note": "Welche gebrauchten Waehrungspaare der Anbieter fuehrt. Enthaelt keine Kurse - nur Paarnamen, Beobachtungszahlen und Gruende. Waehrungen ohne Paar bleiben im Produkt in ihrer Originalwaehrung stehen.",
+  "schema": "vu-fx-pair-availability-2.0.0",
+  "generatedAtUtc": "2026-09-22T07:15:17.793Z",
+  "note": "Welche gebrauchten Waehrungspaare der Currency Layer AUFLOESEN kann - direkt, durch Inversion oder ueber das Pivot. Ein Paar, das der Anbieter nicht direkt fuehrt, ist deshalb nicht unbedient. Enthaelt keine Kurse, nur Paarnamen und Zeilenzahlen.",
   "provider": "tiingo",
   "startDate": "2020-03-30",
   "requestedStartDate": "2015-01-01",
@@ -582,23 +582,619 @@
       "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
     }
   ],
-  "unservedCurrencies": [
+  "coverage": [
+    {
+      "pair": "USD/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/USD"
+      ],
+      "securitiesAffected": 10790,
+      "consequence": null
+    },
+    {
+      "pair": "CNY/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/CNY",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 124,
+      "consequence": null
+    },
+    {
+      "pair": "CNY/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/CNY"
+      ],
+      "securitiesAffected": 124,
+      "consequence": null
+    },
+    {
+      "pair": "CAD/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/CAD"
+      ],
+      "securitiesAffected": 83,
+      "consequence": null
+    },
+    {
+      "pair": "CAD/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 83,
+      "consequence": null
+    },
+    {
+      "pair": "EUR/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 68,
+      "consequence": null
+    },
+    {
+      "pair": "BRL/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/BRL",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 26,
+      "consequence": null
+    },
+    {
+      "pair": "BRL/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/BRL"
+      ],
+      "securitiesAffected": 26,
+      "consequence": null
+    },
+    {
+      "pair": "GBP/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/GBP"
+      ],
+      "securitiesAffected": 24,
+      "consequence": null
+    },
+    {
+      "pair": "GBP/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 24,
+      "consequence": null
+    },
+    {
+      "pair": "HKD/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/HKD"
+      ],
+      "securitiesAffected": 19,
+      "consequence": null
+    },
+    {
+      "pair": "HKD/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/HKD"
+      ],
+      "securitiesAffected": 19,
+      "consequence": null
+    },
+    {
+      "pair": "SGD/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/SGD"
+      ],
+      "securitiesAffected": 18,
+      "consequence": null
+    },
+    {
+      "pair": "SGD/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/SGD"
+      ],
+      "securitiesAffected": 18,
+      "consequence": null
+    },
+    {
+      "pair": "JPY/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/JPY"
+      ],
+      "securitiesAffected": 15,
+      "consequence": null
+    },
+    {
+      "pair": "JPY/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 15,
+      "consequence": null
+    },
+    {
+      "pair": "AUD/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/AUD"
+      ],
+      "securitiesAffected": 13,
+      "consequence": null
+    },
+    {
+      "pair": "AUD/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 13,
+      "consequence": null
+    },
+    {
+      "pair": "ARS/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/ARS",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 12,
+      "consequence": null
+    },
+    {
+      "pair": "MXN/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/MXN"
+      ],
+      "securitiesAffected": 12,
+      "consequence": null
+    },
+    {
+      "pair": "ARS/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/ARS"
+      ],
+      "securitiesAffected": 12,
+      "consequence": null
+    },
+    {
+      "pair": "MXN/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 12,
+      "consequence": null
+    },
+    {
+      "pair": "KRW/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/KRW",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 9,
+      "consequence": null
+    },
+    {
+      "pair": "KRW/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/KRW"
+      ],
+      "securitiesAffected": 9,
+      "consequence": null
+    },
+    {
+      "pair": "ILS/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/ILS"
+      ],
+      "securitiesAffected": 7,
+      "consequence": null
+    },
+    {
+      "pair": "ILS/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/ILS"
+      ],
+      "securitiesAffected": 7,
+      "consequence": null
+    },
+    {
+      "pair": "TWD/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/TWD",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "INR/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/INR",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "CHF/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/CHF"
+      ],
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "TWD/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/TWD"
+      ],
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "INR/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/INR"
+      ],
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "CHF/USD",
+      "resolvable": true,
+      "resolution": "DIRECT",
+      "via": null,
+      "securitiesAffected": 6,
+      "consequence": null
+    },
+    {
+      "pair": "ZAR/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/ZAR"
+      ],
+      "securitiesAffected": 5,
+      "consequence": null
+    },
+    {
+      "pair": "CLP/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/CLP",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 5,
+      "consequence": null
+    },
+    {
+      "pair": "ZAR/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/ZAR"
+      ],
+      "securitiesAffected": 5,
+      "consequence": null
+    },
+    {
+      "pair": "CLP/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/CLP"
+      ],
+      "securitiesAffected": 5,
+      "consequence": null
+    },
+    {
+      "pair": "PEN/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/PEN",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 4,
+      "consequence": null
+    },
+    {
+      "pair": "MYR/EUR",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 4,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "PEN/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/PEN"
+      ],
+      "securitiesAffected": 4,
+      "consequence": null
+    },
+    {
+      "pair": "MYR/USD",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 4,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "DKK/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/DKK"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "TRY/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/TRY"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "COP/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/COP",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "DKK/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/DKK"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "TRY/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/TRY"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "COP/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/COP"
+      ],
+      "securitiesAffected": 2,
+      "consequence": null
+    },
+    {
+      "pair": "PHP/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/PHP",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "SEK/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/SEK"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "IDR/EUR",
+      "resolvable": true,
+      "resolution": "TRIANGULATED",
+      "via": [
+        "USD/IDR",
+        "USD/EUR"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "AFN/EUR",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "RUB/EUR",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "EUR/RUB"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "VND/EUR",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "KZT/EUR",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "MOP/EUR",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "PHP/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/PHP"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "SEK/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/SEK"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "IDR/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/IDR"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "AFN/USD",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "RUB/USD",
+      "resolvable": true,
+      "resolution": "INVERSE",
+      "via": [
+        "USD/RUB"
+      ],
+      "securitiesAffected": 1,
+      "consequence": null
+    },
+    {
+      "pair": "VND/USD",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "KZT/USD",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "pair": "MOP/USD",
+      "resolvable": false,
+      "resolution": "NONE",
+      "via": null,
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    }
+  ],
+  "resolvablePairs": 52,
+  "unresolvablePairs": 10,
+  "byResolution": {
+    "INVERSE": 34,
+    "TRIANGULATED": 11,
+    "DIRECT": 7,
+    "NONE": 10
+  },
+  "unresolvableCurrencies": [
     "AFN",
-    "ARS",
-    "BRL",
-    "CLP",
-    "CNY",
-    "COP",
-    "IDR",
-    "INR",
-    "KRW",
     "KZT",
     "MOP",
     "MYR",
-    "PEN",
-    "PHP",
-    "TWD",
     "VND"
   ],
-  "securitiesWithoutPair": 212
+  "securitiesWithoutCoverage": 16
 }
