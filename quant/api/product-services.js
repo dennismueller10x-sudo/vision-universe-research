@@ -23,7 +23,8 @@ function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
  async function compressedJSON(path){
-  if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
+  const loader=options.loadCompressedJSON||g.QuantShell?.loadCompressedJSON;
+  if(loader)return loader(path);
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
