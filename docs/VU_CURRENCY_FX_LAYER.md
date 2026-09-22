@@ -504,14 +504,35 @@ Stichtagsgroessen belegt an echten Wochenend-Geschaeftsjahresenden:
 AAPL 2025-09-27 (Sa) → FX vom 26.09., NVDA 2026-01-25 (So) → FX vom
 23.01., MSFT 2026-06-30 (Di) → `DAILY_AT_DATE`.
 
-### Paarabdeckung: 40 von 61 Richtungen
+### Paarabdeckung: gefuehrt ist nicht dasselbe wie bedient
 
-`pair-availability.json` (committet, enthaelt keine Kurse) haelt fest,
-welche gebrauchten Paare der Anbieter fuehrt. **21 Richtungen fuehrt er
-nicht.** Die Unternehmen, die in diesen Waehrungen berichten, behalten
-ihre Originalwaehrung — dauerhaft, nicht bis zum naechsten Lauf. Das ist
-eine Produktaussage, kein Laufergebnis, und deshalb committet statt in
-der Arbeitsablage.
+`pair-availability.json` (committet, enthaelt keine Kurse) haelt zwei
+verschiedene Zahlen auseinander, und die Verwechslung war ein echter
+Fehler:
+
+* **Geholt**: 40 von 61 Richtungen. Was der Anbieter direkt fuehrt.
+* **Aufloesbar**: was die Engine daraus bilden kann — direkt, durch
+  Inversion oder ueber das Pivot.
+
+Die erste Fassung meldete nur die erste Zahl. Sie fuehrte CNY/EUR als
+„nicht gefuehrt", mit **124 betroffenen Titeln** und dem Zusatz „bleiben
+in der Originalwaehrung". Im selben Lauf rechnete Alibaba korrekt in
+Euro: `USD/CNY` liegt mit 2.030 Zeilen im Store, und `fx-rates.js` bildet
+`CNY/EUR` daraus ueber USD.
+
+> Ein Bericht, der 124 Titel als nicht umrechenbar ausweist, waehrend sie
+> umgerechnet werden, laedt zu genau der Entscheidung ein, die O-2
+> vermeiden soll: eine zweite Datenquelle fuer ein Problem, das es nicht
+> gibt.
+
+Gefragt wird jetzt die Engine selbst — nach dem Import wird jede
+gebrauchte Richtung mit `rateAt()` abgefragt und ihre Aufloesungsart
+gemeldet. Nur `NONE` heisst, dass die Werte nativ bleiben.
+
+**Die Tiefe ist je Paar verschieden, nicht global.** Die Hauptpaare
+reichen bis zum gemessenen Beginn 2020-03-30, andere beginnen spaeter:
+CAD/USD ab 2022-02-10, HKD/EUR ab 2022-01-10, SGD/EUR ab 2021-02-08. Die
+Karte fuehrt `first` und `last` je Paar.
 
 ### Realtime: was gemessen ist und was aussteht
 
@@ -547,7 +568,7 @@ kuenstlich als PASS melden.
 | Fall | Zustand | Grund |
 |---|---|---|
 | TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` | die Periode 2019-04 bis 2020-03 liegt fast vollstaendig **vor** dem Beginn der FX-Historie (2020-02-29). Korrekt verweigert statt genaehert. |
-| 21 Paarrichtungen | `pairNotServed` | der Anbieter fuehrt sie nicht; die Werte bleiben nativ |
+| Richtungen mit `resolution: NONE` | keine Aufloesung | weder direkt noch invers noch ueber das Pivot bildbar; nur diese Werte bleiben nativ |
 
 ### Tests
 
@@ -587,5 +608,5 @@ Die urspruenglichen O-1 bis O-6 sind abgearbeitet. Offen bleibt:
 | **O-9** | Stufe C ist verfuegbar. Bleibt es bei A — und wird FX **intraday** statt taeglich geholt? | Zwei getrennte Fragen. Bei A bleiben ist gemessen guenstig: 500 Ticks ueber 50 Titel auf einen FX-Abruf. Aber solange der Store TAGESKURSE fuehrt, darf keine EUR-Anzeige „Realtime" heissen (`RT1`). Ein Intraday-Ingest — `fxIntraday` ist belegt — traegt die Zusage, ohne Stufe C und ohne zweiten Push-Transport. Das ist vermutlich der eigentliche Hebel. |
 | **O-10** | 258 Datensaetze ohne belegbare Waehrung, davon 76 mit uneinheitlichem Abschluss | Sie werden heute korrekt nicht umgerechnet. Ob die Angabe nachgezogen wird, ist eine Frage an die SEC-Pipeline. |
 | **O-11** | Redistribution der FX-Reihen | Sie liegen in der Arbeitsablage und werden nicht ausgeliefert. Eine oeffentliche EUR-Anzeige braucht einen Eintrag in `display-policy.js` mit Datum und Grundlage. |
-| **O-13** | 21 Paarrichtungen fuehrt Tiingo nicht (`pair-availability.json`) | Die betroffenen Unternehmen bleiben dauerhaft in ihrer Originalwaehrung. Das ist heute korrekt und sichtbar. Ob fuer diese Waehrungen eine Referenzquelle sinnvoll ist, ist dieselbe Frage wie O-2 — und sie ist erst jetzt belegt statt vermutet. |
+| **O-13** | Fuer welche Waehrungen bleibt am Ende **gar keine** Aufloesung? (`pair-availability.json`, `resolution: NONE`) | Diese Unternehmen bleiben dauerhaft in ihrer Originalwaehrung — heute korrekt und sichtbar. Ob dafuer eine Referenzquelle sinnvoll ist, ist dieselbe Frage wie O-2, jetzt aber an der richtigen Zahl belegt statt an der Abrufliste. |
 | **O-12** | Migration der 25 Klasse-A-Stellen | Der Nachweis steht; nach O-6 darf die Migration jetzt beginnen. Discover 2.1 laeuft parallel (§48) — der Abbau gehoert in den Workstream, der die Oberflaeche ohnehin anfasst. |

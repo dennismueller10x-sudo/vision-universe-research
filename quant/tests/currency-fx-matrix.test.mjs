@@ -764,3 +764,62 @@ test("O5-6 · Verfuegbare und gefahrene Realtime-Stufe sind zwei Angaben", () =>
   const ungeprueft = Capability.declareTiingoFx();
   assert.equal(Capability.resolveRealtimeTier(ungeprueft).tier, null);
 });
+
+/* ====================================================================== */
+/* ABDECKUNG: EIN NICHT GEFUEHRTES PAAR IST NICHT UNBEDIENT                */
+/* ====================================================================== */
+
+test("C1 · Ein Paar ohne eigene Reihe gilt als abgedeckt, wenn die Engine es bildet", () => {
+  /* Der Fall aus dem Produktivlauf: der Anbieter fuehrt usdcny und
+     eurusd, aber kein cnyeur. Die Abdeckungskarte meldete CNY/EUR
+     deshalb als unbedient - mit 124 betroffenen Titeln und dem Zusatz
+     "bleiben in der Originalwaehrung". Im selben Lauf rechnete Alibaba
+     korrekt in Euro.
+
+     Die Karte mass das Abrufprotokoll statt der Engine. Dieser Test
+     haelt die Unterscheidung fest. */
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], { source: "tiingo", frequency: "DAILY" });
+  s.ingest("USD", "CNY", [["2026-09-21", 7.0820]], { source: "tiingo", frequency: "DAILY" });
+
+  /* Direkt gefuehrt ist CNY/EUR nicht. */
+  assert.equal(s.has("CNY", "EUR"), false);
+  assert.equal(s.has("EUR", "CNY"), false);
+
+  /* Aufloesbar ist es trotzdem - und genau das ist die Frage, die eine
+     Abdeckungskarte beantworten muss. */
+  const hit = s.rateAt("CNY", "EUR", null);
+  assert.equal(hit.available, true, "CNY/EUR muss ueber das Pivot aufloesen");
+  assert.equal(hit.derivation, "TRIANGULATED");
+  assert.deepEqual(hit.legs, ["USD/CNY", "USD/EUR"]);
+
+  /* Und die Zahl muss stimmen: 1 CNY sind 1/7,0820 USD, und 1 USD sind
+     1/1,1726 EUR. */
+  const erwartet = (1 / 7.0820) / 1.1726;
+  assert.ok(Math.abs(hit.rate - erwartet) < 1e-12,
+    `Kreuzkurs ${hit.rate} weicht von der Handrechnung ${erwartet} ab`);
+
+  /* Ein Betrag geht denselben Weg. */
+  const e = Engine.createEngine({ store: s, now: NOW });
+  const m = e.convertMoney(1_023_670_000_000, "CNY", "EUR", null, "CURRENT_VALUE");
+  assert.equal(m.available, true);
+  assert.equal(m.fx.derivation, "TRIANGULATED");
+  assert.ok(Math.abs(m.display.value - 1_023_670_000_000 * erwartet) < 1e-3);
+});
+
+test("C2 · Eine Waehrung ohne jedes Bein bleibt unbedient - und sagt es", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], { source: "tiingo", frequency: "DAILY" });
+
+  /* Kein USD/AFN, kein AFN/irgendwas: hier hilft auch das Pivot nicht. */
+  const hit = s.rateAt("AFN", "EUR", null);
+  assert.equal(hit.available, false);
+  assert.equal(hit.rate, null);
+
+  const e = Engine.createEngine({ store: s, now: NOW });
+  const m = e.convertMoney(1_000_000, "AFN", "EUR", null, "CURRENT_VALUE");
+  assert.equal(m.available, false);
+  assert.equal(m.display.value, null);
+  assert.equal(m.fallback.currency, "AFN", "Der Wert bleibt in seiner Waehrung");
+  assert.equal(m.fallback.value, 1_000_000);
+});
