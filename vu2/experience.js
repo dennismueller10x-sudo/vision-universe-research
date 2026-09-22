@@ -1,6 +1,23 @@
 (function(){
 'use strict';
 const S=QuantShell,el=S.el,api=VUProductServices.create({loadJSON:S.loadJSON,loadCompressedJSON:S.loadCompressedJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});
+/* O-12: Waehrungsdarstellung kommt aus dem zentralen Contract, nicht aus
+   dieser Datei. Der Rueckfall bleibt stehen - eine zentrale
+   Formatierung, die eine Seite leer laesst, waere schlechter als die
+   verteilte, die sie ersetzt.
+
+   Umgerechnet wird hier NICHT: diese Seite zeigt Originalwaehrung und
+   sagt das auch. Sie konsumiert die Formatierung, nicht die Engine. */
+const vuFormat=(fn,value,unit,opts)=>{
+ const X=(typeof VUFx!=='undefined')?VUFx:null,F=X&&X.Format,R=X&&X.Registry;
+ if(!F||typeof F[fn]!=='function')return null;
+ /* Ob eine Einheit eine Waehrung ist, weiss die Registry - nicht diese
+    Datei. Ein Vergleich gegen 'USD' waere genau die verteilte Kenntnis,
+    die O-6 abbauen soll, und er wuerde ein kuenftiges unit:'EUR' still
+    falsch darstellen. */
+ if(R&&typeof R.isKnown==='function'&&!R.isKnown(unit))return null;
+ return F[fn](value,unit,opts);
+};
 const params=new URLSearchParams(location.search),view=params.get('view')||'home';
 const href=(v,t)=>'/vu2/?view='+v+(t?'&ticker='+encodeURIComponent(t):'');
 const link=(label,url,cls)=>el('a',{text:label,href:url,class:cls});
