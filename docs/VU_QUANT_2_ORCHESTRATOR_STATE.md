@@ -48,6 +48,10 @@ remains closed; Setup, Pattern, Strategy Match, Backtest and Market Regime remai
   security and on read in the browser. No `quantScore`, no `rank`, no score on a closed factor.
 - **Derived input added honestly**: `downsideVolatility252d` computed from the published 270-bar
   series, labelled `SPLIT_ADJUSTED` per component. This is what opened the Risk factor.
+- **Operating income wired into the factors**: `operatingMarginStability`,
+  `operatingMarginExpansion3y` and `operatingMarginTtm` now compute from data that was already
+  in the repository. Profitability opened (0 → 1,154), Growth rose to 3,188 and Quality to 2,732.
+  Six of seven factors are now broadly available; only Revisions is fully closed.
 - **Three input gates closed at the engine**: `market-factors-1.0.0` now computes
   `downsideVolatility252d`, `beta252d` and `relativeStrength12M1M`. Beta pairs security and
   benchmark **by trading date** — a day without a counterpart is dropped, never shifted, because
@@ -66,16 +70,17 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 |---|---:|
 | Product Universe | 6,875 |
 | `FACTOR_EVIDENCE_PUBLISHED` | 6,404 |
-| `FACTOR_QUALITY_AVAILABLE` | 2,514 |
-| `FACTOR_GROWTH_AVAILABLE` | 2,140 |
+| `FACTOR_QUALITY_AVAILABLE` | 2,732 |
+| `FACTOR_GROWTH_AVAILABLE` | 3,188 |
 | `FACTOR_MOMENTUM_AVAILABLE` | 5,582 |
 | `FACTOR_VALUE_AVAILABLE` | 1,999 |
-| `FACTOR_PROFITABILITY_AVAILABLE` | 0 (gate `OPERATING_INCOME`) |
+| `FACTOR_PROFITABILITY_AVAILABLE` | 1,154 |
 | `FACTOR_REVISIONS_AVAILABLE` | 0 (gate `PIT_ANALYST_CONSENSUS`) |
 | `FACTOR_RISK_AVAILABLE` | 5,303 |
 | `FACTOR_NOT_APPLICABLE_INDUSTRY` | 967 (banks, insurers, REITs) |
 | `WITH_PIT_FUNDAMENTALS` | 5,008 |
 | `WITH_MARKET_CAP` | 3,921 |
+| `FACTORS_BROADLY_AVAILABLE` | 6 of 7 (Revisions is the exception) |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |
 | `COMPOSITE_SCORE` | WITHHELD |
 | `QUANT_V2_STATUS` | SPECIFIED_NOT_ACTIVE |
@@ -107,8 +112,8 @@ Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `op
 
 | Gate | Blocks | Owner |
 |---|---|---|
-| `OPERATING_INCOME` | 5 components across Quality, Growth, Profitability | SEC normalization metric registry (mapping 1.5.0) |
-| `EBITDA` | `value.ebitdaYield` | SEC normalization metric registry |
+| `CONSUMER_EXPORT_DEPRECIATION` | `value.ebitdaYield` | `scripts/quant/sec/consumer.py` — the SEC layer already derives `ebitda`; the consumer export does not carry `depreciation_and_amortization` |
+| `CONSUMER_EXPORT_TAX_INPUTS` | `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` — `pretax_income` and `income_tax_expense` are normalized but not exported |
 | `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
 | `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC normalization (stale debt instants are dropped, not mixed) |
@@ -116,8 +121,12 @@ Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `op
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | Quality, Value, Profitability for 967 titles | quant-v2 methodology |
 | `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum` | this materializer, from its first weekly snapshot forward |
 
-`OPERATING_INCOME` is the single highest-leverage gate: it alone closes Profitability entirely
-and holds back one component each in Quality and Growth.
+A correction worth recording: an earlier read of this state named `OPERATING_INCOME` as the
+largest gate. That was wrong — `operating_income` is normalized and exported already, and
+4,021 consumer files carry an annual series. Wiring it opened Profitability (0 → 1,154) and
+lifted Growth (2,140 → 3,188) and Quality (2,514 → 2,732) with no pipeline change at all.
+What remains at the consumer boundary is narrower and precisely named: three metrics that the
+SEC layer normalizes but `consumer.py` does not export.
 
 ## OWNER_DECISIONS
 
@@ -153,10 +162,11 @@ and holds back one component each in Quality and Growth.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-1. **`OPERATING_INCOME` and `EBITDA` into the SEC normalization metric registry.** One change
-   opens six components across three factors and is the only thing standing between the current
-   state and a fully evidenced Profitability factor. Extend the existing mapping; do not add a
-   Fundamentals pipeline.
+1. **Widen the SEC consumer export** (`REPORTED_METRICS` / `DERIVED_METRICS` in
+   `scripts/quant/sec/consumer.py`) by `depreciation_and_amortization`, `pretax_income`,
+   `income_tax_expense` and the already-derived `ebitda`, plus the matching TTM derivation.
+   That opens `value.ebitdaYield` and both ROIC components on the next SEC run. It extends an
+   existing export; it is not a new Fundamentals pipeline.
 2. **Run the market-data workflow** so the three new `market-factors-1.0.0` fields land in
    `factors-FULL_UNIVERSE.json`, then re-materialize factor evidence. This completes Momentum
    (100 % component weight) and Risk (100 %) without any further code.

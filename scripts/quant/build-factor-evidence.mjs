@@ -71,7 +71,7 @@ const FUNDAMENTAL_COMPONENTS = {
     { id: "equityToAssets", weight: 0.15, direction: "higher", label: "Eigenkapitalquote", unit: "ratio" },
     { id: "positiveFcfYears", weight: 0.20, direction: "higher", label: "Jahre mit positivem freien Zahlungsfluss", unit: "count", noWinsor: true },
     { id: "operatingMarginStability", weight: 0.20, direction: "lower", label: "Schwankung der operativen Marge", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten." }
+      note: "Mittlere absolute Abweichung der jährlichen operativen Marge vom eigenen Median, über bis zu fünf Geschäftsjahre und erst ab vier." }
   ],
   growth: [
     { id: "revenueCagr3y", weight: 0.30, direction: "higher", label: "Umsatzwachstum pro Jahr, 3 Jahre", unit: "ratio" },
@@ -79,25 +79,27 @@ const FUNDAMENTAL_COMPONENTS = {
     { id: "fcfCagr3y", weight: 0.15, direction: "higher", label: "Freier Zahlungsfluss, Wachstum pro Jahr, 3 Jahre", unit: "ratio" },
     { id: "revenueGrowthTtmYoy", weight: 0.15, direction: "higher", label: "Umsatzwachstum der letzten 12 Monate", unit: "ratio" },
     { id: "operatingMarginExpansion3y", weight: 0.10, direction: "higher", label: "Ausweitung der operativen Marge, 3 Jahre", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten." },
+      note: "Operative Marge des letzten Geschäftsjahres minus die des Jahres drei Abschlüsse davor." },
     { id: "revenueGrowthAcceleration", weight: 0.10, direction: "higher", label: "Veränderung des Umsatztempos", unit: "ratio" }
   ],
   value: [
     { id: "fcfYield", weight: 0.30, direction: "higher", label: "Freier Zahlungsfluss je Börsenwert", unit: "ratio" },
     { id: "earningsYield", weight: 0.25, direction: "higher", label: "Gewinn je Börsenwert", unit: "ratio" },
     { id: "ebitdaYield", weight: 0.20, direction: "higher", label: "Operatives Ergebnis vor Abschreibungen je Unternehmenswert", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "EBITDA ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten." },
+      unavailable: "INPUT_NOT_MATERIALIZED",
+      note: "EBITDA wird in der SEC-Schicht bereits abgeleitet (operatives Ergebnis plus Abschreibungen), aber die Consumer-Auslieferung führt die Abschreibungen nicht mit. Ohne sie wäre EBITDA das operative Ergebnis unter falschem Namen." },
     { id: "salesYield", weight: 0.10, direction: "higher", label: "Umsatz je Unternehmenswert", unit: "ratio" },
     { id: "bookToMarket", weight: 0.15, direction: "higher", label: "Eigenkapital je Börsenwert", unit: "ratio" }
   ],
   profitability: [
     { id: "roicTtm", weight: 0.25, direction: "higher", label: "Rendite auf das eingesetzte Kapital", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Ohne operatives Ergebnis lässt sich der kanonische ROIC nicht bilden." },
+      unavailable: "INPUT_NOT_MATERIALIZED",
+      note: "Der kanonische ROIC verlangt eine offengelegte Steuerannahme. Vorsteuerergebnis und Steueraufwand stehen in der Metrik-Registry, werden von der Consumer-Auslieferung aber nicht mitgeführt; ein pauschaler Steuersatz wäre eine erfundene Annahme." },
     { id: "roicMedian3y", weight: 0.15, direction: "higher", label: "Rendite auf das eingesetzte Kapital, Median 3 Jahre", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Ohne operatives Ergebnis lässt sich der kanonische ROIC nicht bilden." },
+      unavailable: "INPUT_NOT_MATERIALIZED", note: "Dieselbe Steuerannahme wie bei roicTtm fehlt." },
     { id: "grossProfitabilityTtm", weight: 0.20, direction: "higher", label: "Rohertrag je Bilanzsumme", unit: "ratio" },
     { id: "operatingMarginTtm", weight: 0.15, direction: "higher", label: "Operative Marge", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten." },
+      note: "Operatives Ergebnis der letzten zwölf Monate im Verhältnis zum Umsatz desselben Fensters." },
     { id: "fcfMarginTtm", weight: 0.15, direction: "higher", label: "Marge des freien Zahlungsflusses", unit: "ratio" },
     { id: "roaTtm", weight: 0.10, direction: "higher", label: "Rendite auf die Bilanzsumme", unit: "ratio" }
   ]
@@ -198,6 +200,7 @@ function fundamentalRaws(doc, cutoff, marketCap) {
   const revenueA = annualSeries(doc, "revenue", cutoff),
     epsA = annualSeries(doc, "eps_diluted", cutoff),
     fcfA = annualSeries(doc, "free_cash_flow", cutoff),
+    operatingIncomeA = annualSeries(doc, "operating_income", cutoff),
     assetsA = annualSeries(doc, "total_assets", cutoff),
     equityA = annualSeries(doc, "stockholders_equity", cutoff),
     grossQ = quarterSeries(doc, "gross_profit", cutoff),
@@ -207,7 +210,8 @@ function fundamentalRaws(doc, cutoff, marketCap) {
     netIncomeT = ttmValue(doc, "net_income", cutoff),
     ocfT = ttmValue(doc, "operating_cash_flow", cutoff),
     grossT = ttmValue(doc, "gross_profit", cutoff),
-    fcfT = ttmValue(doc, "free_cash_flow", cutoff);
+    fcfT = ttmValue(doc, "free_cash_flow", cutoff),
+    operatingIncomeT = ttmValue(doc, "operating_income", cutoff);
 
   /* Everything below is read against the period the TTM block reports. */
   const referenceEnd = revenueT?.end || assetsA.at(-1)?.end || null;
@@ -231,6 +235,25 @@ function fundamentalRaws(doc, cutoff, marketCap) {
   if (netDebtT && finite(latestAssets) && latestAssets > 0) raws.netDebtToAssets = netDebtT.value / latestAssets;
   if (finite(latestEquity) && finite(latestAssets) && latestAssets > 0) raws.equityToAssets = latestEquity / latestAssets;
   if (fcfA.length >= 4) raws.positiveFcfYears = fcfA.slice(-5).filter((entry) => entry.value > 0).length;
+
+  /* Operative Marge je Geschaeftsjahr, gepaart ueber das Jahresende: zwei
+     Kennzahlen aus verschiedenen Abschluessen sind keine Marge. */
+  const revenueByEnd = new Map(revenueA.map((entry) => [entry.end, entry.value]));
+  const operatingMargins = operatingIncomeA
+    .map((entry) => {
+      const revenue = revenueByEnd.get(entry.end);
+      return finite(revenue) && revenue > 0 ? { end: entry.end, value: entry.value / revenue } : null;
+    })
+    .filter(Boolean);
+
+  const marginWindow = operatingMargins.slice(-5);
+  if (marginWindow.length >= 4) {
+    const median = medianOf(marginWindow.map((entry) => entry.value));
+    raws.operatingMarginStability = medianOf(marginWindow.map((entry) => Math.abs(entry.value - median)));
+  }
+  if (operatingMargins.length >= 4) {
+    raws.operatingMarginExpansion3y = operatingMargins.at(-1).value - operatingMargins.at(-4).value;
+  }
 
   /* Growth */
   raws.revenueCagr3y = cagr(revenueA, 3);
@@ -263,6 +286,9 @@ function fundamentalRaws(doc, cutoff, marketCap) {
   /* Profitability */
   if (grossT && finite(averageAssets) && averageAssets > 0) raws.grossProfitabilityTtm = grossT.value / averageAssets;
   if (fcfT && revenueT && revenueT.value > 0) raws.fcfMarginTtm = fcfT.value / revenueT.value;
+  if (operatingIncomeT && revenueT && revenueT.value > 0 && operatingIncomeT.end === revenueT.end) {
+    raws.operatingMarginTtm = operatingIncomeT.value / revenueT.value;
+  }
   if (netIncomeT && finite(averageAssets) && averageAssets > 0) raws.roaTtm = netIncomeT.value / averageAssets;
 
   /* Change inputs */
@@ -647,8 +673,8 @@ function main() {
        vague "not ready": this list is the work queue for the next factor
        certification step. */
     openInputGates: [
-      { id: "OPERATING_INCOME", blocks: ["quality.operatingMarginStability", "growth.operatingMarginExpansion3y", "profitability.operatingMarginTtm", "profitability.roicTtm", "profitability.roicMedian3y"], owner: "SEC normalization metric registry (mapping 1.5.0)" },
-      { id: "EBITDA", blocks: ["value.ebitdaYield"], owner: "SEC normalization metric registry (mapping 1.5.0)" },
+      { id: "CONSUMER_EXPORT_DEPRECIATION", blocks: ["value.ebitdaYield"], owner: "scripts/quant/sec/consumer.py", detail: "EBITDA wird in der SEC-Schicht bereits abgeleitet; die Consumer-Auslieferung führt depreciation_and_amortization nicht in REPORTED_METRICS und damit auch ebitda nicht mit." },
+      { id: "CONSUMER_EXPORT_TAX_INPUTS", blocks: ["profitability.roicTtm", "profitability.roicMedian3y"], owner: "scripts/quant/sec/consumer.py", detail: "pretax_income und income_tax_expense stehen in der Metrik-Registry, aber nicht in der Consumer-Auslieferung. Ohne sie gibt es keine offengelegte Steuerannahme und damit keinen kanonischen ROIC." },
       { id: "BETA_252D", blocks: ["risk.beta252d"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer." },
       { id: "RELATIVE_STRENGTH_12M1M_MATERIALIZATION", blocks: ["momentum.relativeStrength12m1m"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt." },
       { id: "NET_DEBT_PERIOD_ALIGNMENT", blocks: ["quality.netDebtToAssets", "value.salesYield"], owner: "SEC normalization", detail: "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt." },
@@ -697,6 +723,13 @@ function downsideVolatility(closes, window) {
   }
   if (valid < 240) return null;
   return round(Math.sqrt(sum / (valid - 1)) * Math.sqrt(252));
+}
+
+function medianOf(values) {
+  const sorted = values.filter(finite).slice().sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
 function mostCommon(values) {

@@ -60,13 +60,16 @@ sonst `universe` ab 200 — mit dokumentiertem Confidence-Abschlag.
 
 | Faktor | Gewicht in V2 | AVAILABLE | UNAVAILABLE | NOT_APPLICABLE | Status |
 |---|---:|---:|---:|---:|---|
-| Quality | 10 % | 2.514 | 2.923 | 967 | breit verfügbar |
-| Growth | 15 % | 2.140 | 4.264 | 0 | breit verfügbar |
+| Quality | 10 % | 2.732 | 2.705 | 967 | breit verfügbar |
+| Growth | 15 % | 3.188 | 3.216 | 0 | breit verfügbar |
 | Momentum | 25 % | 5.582 | 822 | 0 | breit verfügbar |
 | Value | 15 % | 1.999 | 3.438 | 967 | breit verfügbar |
-| Profitability | 15 % | 0 | 5.437 | 967 | **geschlossen** — Gate `OPERATING_INCOME` |
+| Profitability | 15 % | 1.154 | 4.283 | 967 | breit verfügbar |
 | Revisions | 15 % | 0 | 6.404 | 0 | **geschlossen** — Gate `PIT_ANALYST_CONSENSUS` |
 | Risk | 5 % | 5.303 | 1.101 | 0 | breit verfügbar |
+
+Sechs der sieben Faktoren sind breit verfügbar. Nur der Erwartungstrend ist vollständig
+geschlossen, und zwar aus einem Grund, den keine Codeänderung auflöst.
 
 Veröffentlichte Titel: 6.404 von 6.875 des kanonischen Produktuniversums.
 Nicht veröffentlicht: 471 ohne zertifizierte Kursfaktor-Zeile (369 `SOURCE_MISSING`, 102 `FAIL`).
@@ -79,7 +82,7 @@ Nicht veröffentlicht: 471 ohne zertifizierte Kursfaktor-Zeile (369 `SOURCE_MISS
 | `netDebtToAssets` | 20 % | Nettoverschuldung / Bilanzsumme | letzter Abschluss | niedriger | dünn — Gate `NET_DEBT_PERIOD_ALIGNMENT` |
 | `equityToAssets` | 15 % | Eigenkapital / Bilanzsumme | letzter Abschluss | höher | verfügbar |
 | `positiveFcfYears` | 20 % | Anzahl Jahre mit positivem Free Cashflow | 5 Geschäftsjahre | höher | verfügbar, nicht winsorisiert (Zählwert) |
-| `operatingMarginStability` | 20 % | MAD der operativen Marge | 5 Geschäftsjahre | niedriger | **fehlt** — Gate `OPERATING_INCOME` |
+| `operatingMarginStability` | 20 % | mittlere absolute Abweichung der operativen Marge vom eigenen Median | bis 5 Geschäftsjahre, ab 4 | niedriger | verfügbar |
 
 Pflicht: eine aus `accrualRatio`/`positiveFcfYears` **und** eine Bilanzkomponente.
 Mindestens 3 Komponenten, mindestens 60 % Originalgewicht.
@@ -95,7 +98,7 @@ Interpretation: höher = belastbarere Bilanz und Rechnungslegung. Keine Empfehlu
 | `epsCagr3y` | 20 % | verwässertes EPS-CAGR, beide Endpunkte positiv | 3 Geschäftsjahre | höher | verfügbar |
 | `fcfCagr3y` | 15 % | Free-Cashflow-CAGR, beide Endpunkte positiv | 3 Geschäftsjahre | höher | verfügbar |
 | `revenueGrowthTtmYoy` | 15 % | TTM-Umsatz / Vorjahres-TTM − 1, aus acht Einzelquartalen | 1 Jahr | höher | verfügbar |
-| `operatingMarginExpansion3y` | 10 % | Veränderung der operativen Marge in Prozentpunkten | 3 Geschäftsjahre | höher | **fehlt** — Gate `OPERATING_INCOME` |
+| `operatingMarginExpansion3y` | 10 % | Veränderung der operativen Marge in Prozentpunkten | 3 Geschäftsjahre | höher | verfügbar |
 | `revenueGrowthAcceleration` | 10 % | aktuelles YoY-Wachstum − vorheriges YoY-Wachstum | zwei YoY-Intervalle | höher | verfügbar |
 
 Pflicht: `revenueCagr3y` **oder** `revenueGrowthTtmYoy`.
@@ -127,7 +130,7 @@ Kursbasis: `adjustedClose`, in der Semantikleiter `TOTAL_RETURN`, ausgewiesen al
 |---|---:|---|---|---|
 | `fcfYield` | 30 % | Free Cashflow TTM / Börsenwert | höher | verfügbar |
 | `earningsYield` | 25 % | Nettogewinn TTM / Börsenwert | höher | verfügbar |
-| `ebitdaYield` | 20 % | EBITDA TTM / Unternehmenswert | höher | **fehlt** — Gate `EBITDA` |
+| `ebitdaYield` | 20 % | EBITDA TTM / Unternehmenswert | höher | **fehlt** — Gate `CONSUMER_EXPORT_DEPRECIATION` |
 | `salesYield` | 10 % | Umsatz TTM / Unternehmenswert | höher | dünn — Gate `NET_DEBT_PERIOD_ALIGNMENT` |
 | `bookToMarket` | 15 % | Eigenkapital / Börsenwert | höher | verfügbar |
 
@@ -135,13 +138,23 @@ Der Börsenwert entsteht aus der veröffentlichten Aktienzahl des letzten Abschl
 letzten veröffentlichten Schlusskurs: 3.921 Titel. Negative Gewinn- und Cashflow-Renditen sind
 gültige ungünstige Werte und werden nicht abgeschnitten. Branchenausschluss wie bei Quality.
 
-### 3.5 Profitability — geschlossen
+### 3.5 Profitability — „Wie viel bleibt vom Geschäft übrig?“
 
-Verfügbar sind `grossProfitabilityTtm` (20 %), `fcfMarginTtm` (15 %) und `roaTtm` (10 %):
-zusammen 45 % Originalgewicht, unter dem Minimum von 60 %. `roicTtm`, `roicMedian3y` und
-`operatingMarginTtm` benötigen das operative Ergebnis. Der Faktor bleibt `UNAVAILABLE`
-(`INSUFFICIENT_WEIGHTED_COVERAGE`); die drei vorhandenen Kennzahlen bleiben als Evidenz
-sichtbar und werden nicht zu einem Wert zusammengerechnet.
+| Komponente | Gewicht | Eingabe | Richtung | Stand |
+|---|---:|---|---|---|
+| `roicTtm` | 25 % | kanonische Rendite auf das eingesetzte Kapital | höher | **fehlt** — Gate `CONSUMER_EXPORT_TAX_INPUTS` |
+| `roicMedian3y` | 15 % | Median der jährlichen ROIC | höher | **fehlt** — dasselbe Gate |
+| `grossProfitabilityTtm` | 20 % | Rohertrag TTM / ⌀ Bilanzsumme | höher | verfügbar |
+| `operatingMarginTtm` | 15 % | operatives Ergebnis TTM / Umsatz TTM | höher | verfügbar |
+| `fcfMarginTtm` | 15 % | Free Cashflow TTM / Umsatz TTM | höher | verfügbar |
+| `roaTtm` | 10 % | Nettogewinn TTM / ⌀ Bilanzsumme | höher | verfügbar |
+
+Verfügbares Gewicht 60 %, genau auf dem Minimum: der Faktor öffnet sich, sobald alle vier
+vorhandenen Komponenten für einen Titel messbar sind, und fällt sonst geschlossen. Beide ROIC-
+Komponenten bleiben zu, weil der kanonische ROIC eine offengelegte Steuerannahme verlangt;
+Vorsteuerergebnis und Steueraufwand stehen in der Metrik-Registry, werden aber nicht in die
+Consumer-Schicht ausgeliefert. Ein pauschaler Steuersatz wäre eine erfundene Annahme.
+Branchenausschluss wie bei Quality.
 
 ### 3.6 Revisions — extern blockiert
 
@@ -213,8 +226,8 @@ Sie stehen maschinenlesbar in `summary.json` unter `openInputGates`:
 
 | Gate | Blockiert | Eigentümer |
 |---|---|---|
-| `OPERATING_INCOME` | `quality.operatingMarginStability`, `growth.operatingMarginExpansion3y`, `profitability.operatingMarginTtm`, `profitability.roicTtm`, `profitability.roicMedian3y` | SEC-Normalisierung, Metric Registry (mapping 1.5.0) |
-| `EBITDA` | `value.ebitdaYield` | SEC-Normalisierung, Metric Registry |
+| `CONSUMER_EXPORT_DEPRECIATION` | `value.ebitdaYield` | `scripts/quant/sec/consumer.py` |
+| `CONSUMER_EXPORT_TAX_INPUTS` | `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` |
 | `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
 | `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC-Normalisierung |
@@ -222,8 +235,12 @@ Sie stehen maschinenlesbar in `summary.json` unter `openInputGates`:
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | `quality.*`, `value.*`, `profitability.*` für 967 Titel | Quant-V2-Methodik |
 | `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum` | dieser Materializer, ab seinem ersten wöchentlichen Snapshot |
 
-Das größte einzelne Gate ist `OPERATING_INCOME`: es allein blockiert fünf Komponenten über
-drei Faktoren und ist der Grund, warum Profitability vollständig geschlossen ist.
+Die beiden Consumer-Gates sind je eine Zeile weit entfernt: Die SEC-Schicht normalisiert
+`operating_income`, `depreciation_and_amortization`, `pretax_income` und `income_tax_expense`
+bereits, und sie leitet `ebitda` bereits ab — die Consumer-Auslieferung
+(`REPORTED_METRICS` / `DERIVED_METRICS` in `consumer.py`) führt nur die letzten drei nicht mit.
+Das ist eine Erweiterung einer bestehenden Ausspielung, keine neue Pipeline, und sie wirkt
+mit dem nächsten SEC-Lauf.
 
 ## 7. Produktebene
 
