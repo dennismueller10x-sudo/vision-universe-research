@@ -124,6 +124,38 @@ jobs:
         run: node scripts/social/verify-suites.mjs
 
       # =====================================================================
+      # DIE FEHLENDE ERSTE LINIE — DAS ERGEBNIS VOM REQUEST-BRANCH HOLEN
+      #
+      # PR #170 (vu-nvda-20260918) trug seit Stunden ein echtes,
+      # vollstaendig bestaetigtes Creative-Result — Hook-Varianten,
+      # Caption, ein geprueftes Bild. ingest-creative.mjs bestaetigt das
+      # sofort als COMPLETED, sobald man es gegen den Request-Branch
+      # ausfuehrt. Der Job blieb trotzdem auf CREATIVE_JOB_DISPATCHED
+      # stehen und blockierte MAX_OPEN_CREATIVE_JOBS = 1 fuer den
+      # gesamten Betrieb.
+      #
+      # Der naechste Kommentarblock nannte sich "ZWEITE Linie" und
+      # verwies auf eine "erste": ingest-creative.mjs sollte das
+      # Register laengst selbst nachziehen. Es gab diese erste Linie nie
+      # — das Skript wurde in KEINEM Workflow je aufgerufen. Der Agent
+      # committet auf den Request-Branch, nicht auf main, und ohne
+      # diesen Schritt holte niemand diesen Branch.
+      #
+      # ingest-open-creative-jobs.mjs baut keine neue Pruef- oder
+      # Uebernahmelogik: es haengt fuer jeden offenen Job mit
+      # Request-PR-Nummer den bestehenden, bereits getesteten Weg an —
+      # Branch holen, ingest-creative.mjs --write darauf ansetzen.
+      #
+      # VOR dem Abgleich unten, damit der ein frisch eingelesenes
+      # Ergebnis vorfindet und nicht nur seine eigene, schwaechere
+      # zweite Pruefung.
+      # =====================================================================
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        # Kein GH_TOKEN noetig: `git fetch` nutzt die von actions/checkout
+        # hinterlegten Zugangsdaten. Dieser Schritt ruft `gh` nicht auf.
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      # =====================================================================
       # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR DEM ZAEHLEN
       #
       # Ein Creative Job stand 51 Stunden auf CREATIVE_JOB_IN_FLIGHT und
@@ -132,10 +164,12 @@ jobs:
       # denselben Schluessel COMPLETED nannte. Der Abschluss wurde an
       # einer Stelle notiert und an einer anderen gezaehlt.
       #
-      # ingest-creative.mjs zieht das Register seitdem selbst nach. Das
-      # hier ist die ZWEITE Linie: verpasst der Ingest den Rueckweg -
-      # weil ein Lauf abbrach, weil jemand ihn uebersprang -, holt ihn
-      # der naechste Orchestratorlauf nach, bevor er zaehlt.
+      # Der Schritt oben ist seitdem die ERSTE Linie und holt das
+      # Ergebnis wirklich vom Request-Branch. Das hier ist die ZWEITE:
+      # verpasst der Ingest den Rueckweg — weil ein Lauf abbrach, weil
+      # der Branch zwischenzeitlich geloescht wurde —, holt ihn der
+      # naechste Orchestratorlauf aus dem lokal bereits vorliegenden
+      # Ergebnis nach, bevor er zaehlt.
       #
       # Er schliesst NIE einen Job wegen seines Alters. Nur harte
       # Evidenz mit identischem processing_key zaehlt; die Liste steht
