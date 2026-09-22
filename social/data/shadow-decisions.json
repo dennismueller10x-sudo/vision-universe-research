@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-21T20:32:39.216Z",
+  "generatedAt": "2026-09-22T07:54:33.867Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_4ae3e59cd8b77208",
+      "decidedAt": "2026-09-22T07:54:33.867Z",
+      "packageId": "pkg_5254ac7ba4b050e7",
       "topic": "Bekannte Namen in Bewegung",
       "archetype": "RANKING_LIST",
       "entities": [
@@ -23,7 +23,7 @@
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "31 von 5954 geprüften Titeln — Bekannte Namen in Bewegung.",
+      "hook": "31 von 5954 geprüften Titeln - Bekannte Namen in Bewegung.",
       "caption": "Diese Auswahl umfasst 31 von 5954 geprüften Titeln. Was in ihr steht: Valero Energy: Kurs 413,28 USD. Valero Energy: in 12 Monaten 158 %. Salesforce: Kurs 237,92 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
@@ -101,7 +101,7 @@
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_4ae3e59cd8b77208",
+        "topicId": "pkg_5254ac7ba4b050e7",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 31. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Bekannte Namen in Bewegung, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Microsoft steht bei 493,78, HP Inc bei 34,4 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
@@ -116,7 +116,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Bekannte Namen in Bewegung\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -150,7 +151,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -208,8 +210,8 @@
           ],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
           "failureType": "VISUAL_DIRECTION_INCOMPLETE",
@@ -228,7 +230,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
+      "decidedAt": "2026-09-22T07:54:33.867Z",
       "packageId": "pkg_b203d737de9853eb",
       "topic": "Gerade in Bewegung",
       "archetype": "EDUCATIONAL",
@@ -400,7 +402,7 @@
         "imageUrl": null,
         "quality": {
           "passed": false,
-          "score": 60,
+          "score": 52,
           "blocking": [
             {
               "id": "direction-incomplete",
@@ -408,7 +410,12 @@
               "message": "Die Creative Direction traegt nicht (fehlt: coreIdea, oneSecondMessage, mobileFocalPoint, compositionIntent, visualHierarchy, mustShow). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
             }
           ],
-          "warnings": [],
+          "warnings": [
+            {
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
+            }
+          ],
           "failureType": "VISUAL_DIRECTION_INCOMPLETE",
           "neverReportedAs": [
             "CONTENT_FAILED",
@@ -425,12 +432,11 @@
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_0dce16d390adfcaf",
+      "decidedAt": "2026-09-22T07:54:33.867Z",
+      "packageId": "pkg_784077f8af718014",
       "topic": "Comeback?",
       "archetype": "RANKING_LIST",
       "entities": [
-        "Picard Medical",
         "TEN Holdings",
         "RF Acquisition Corp II",
         "Cybin",
@@ -439,14 +445,15 @@
         "Arcturus Therapeutics Holdings",
         "Pulse Biosciences",
         "Amylyx Pharmaceuticals",
-        "Amplitude Class A"
+        "Amplitude Class A",
+        "Xencor"
       ],
       "entityType": null,
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "421 von 5954 geprüften Titeln — Comeback?.",
-      "caption": "Diese Auswahl umfasst 421 von 5954 geprüften Titeln. Was in ihr steht: Picard Medical: Kurs 5,08 USD. Picard Medical: in 3 Monaten 2690 %. TEN Holdings: Kurs 9,84 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
+      "hook": "420 von 5954 geprüften Titeln - Comeback?.",
+      "caption": "Diese Auswahl umfasst 420 von 5954 geprüften Titeln. Was in ihr steht: TEN Holdings: Kurs 9,84 USD. TEN Holdings: in 3 Monaten 681 %. RF Acquisition Corp II: Kurs 40,5 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
@@ -455,19 +462,19 @@
       "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_822392d74a7ea2f3",
+        "briefId": "brief_08131cf84d7d08c4",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "group-count/group-rule-evidence",
-        "variantId": "var_213bcd725b1715be",
+        "variantId": "var_c7a093565e5ed8f2",
         "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
           "compositionScoreChosen": 89,
           "alternatives": [
             {
-              "variantId": "var_86ac916bf7ea0d5f",
+              "variantId": "var_25267acd99ca6d49",
               "pattern": "group-subject/group-method-first",
               "brandScore": 100,
               "compositionScore": 83,
@@ -514,34 +521,35 @@
           }
         ]
       },
-      "opportunityId": "opp_ranking_eb816bdf",
+      "opportunityId": "opp_ranking_008a7eab",
       "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 48 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 26 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_0dce16d390adfcaf",
+        "topicId": "pkg_784077f8af718014",
         "visualStrategy": "DATA_CARD",
-        "story": "von 5954 geprüften Titeln steht bei 421. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: RF Acquisition Corp II steht bei 40,5, Picard Medical bei 5,08 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
+        "story": "von 5954 geprüften Titeln steht bei 420. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Moderna steht bei 154,04, Agenus bei 7,85 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
         "oneSecondMessage": null,
         "mainSubject": "Comeback?",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
-          "Die Leitzahl 421",
+          "Die Leitzahl 420",
           "Der Name Comeback?",
           "Die uebrigen Belege"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Comeback?\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -550,7 +558,7 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "421 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
+        "mobileFocalPoint": "420 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
@@ -575,7 +583,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -602,7 +611,6 @@
         "familyBasis": "TOPIC",
         "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Picard Medical",
           "TEN Holdings",
           "RF Acquisition Corp II",
           "Cybin",
@@ -611,7 +619,8 @@
           "Arcturus Therapeutics Holdings",
           "Pulse Biosciences",
           "Amylyx Pharmaceuticals",
-          "Amplitude Class A"
+          "Amplitude Class A",
+          "Xencor"
         ],
         "basis": "BOOTSTRAP"
       },
@@ -633,8 +642,8 @@
           ],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
           "failureType": "VISUAL_DIRECTION_INCOMPLETE",
@@ -653,7 +662,7 @@
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
+      "decidedAt": "2026-09-22T07:54:33.867Z",
       "packageId": "pkg_5f20ddbcbd87da98",
       "topic": "Stärkste Aktien im Dow Jones",
       "archetype": "RANKING_LIST",
@@ -766,7 +775,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Stärkste Aktien im Dow Jones\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -800,7 +810,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -858,8 +869,8 @@
           ],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
           "failureType": "VISUAL_DIRECTION_INCOMPLETE",
@@ -878,8 +889,8 @@
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_b0e3c5d9d0b07c75",
+      "decidedAt": "2026-09-22T07:54:33.867Z",
+      "packageId": "pkg_4b7f5c825836f1ee",
       "topic": "Fundamentale Turnarounds",
       "archetype": "RANKING_LIST",
       "entities": [
@@ -898,7 +909,7 @@
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "308 von 5954 geprüften Titeln — Fundamentale Turnarounds.",
+      "hook": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
       "caption": "Diese Auswahl umfasst 308 von 5954 geprüften Titeln. Was in ihr steht: RingCentral Class A: Kurs 71,86 USD. Utz Brands Class A: Kurs 14,24 USD. Inspire Medical Systems: Kurs 76,78 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
@@ -979,7 +990,7 @@
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_b0e3c5d9d0b07c75",
+        "topicId": "pkg_4b7f5c825836f1ee",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 308. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Fundamentale Turnarounds, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Inspire Medical Systems steht bei 76,78, Rapid7 bei 11,97 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
@@ -994,7 +1005,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Fundamentale Turnarounds\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -1028,7 +1040,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -1086,8 +1099,8 @@
           ],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
           "failureType": "VISUAL_DIRECTION_INCOMPLETE",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T05:31:57.932Z",
+  "generatedAt": "2026-09-22T07:53:30.831Z",
   "purpose": "BREADTH_PROOF_ONLY",
   "topics": [
     {
@@ -37,7 +37,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 31,
-          "statement": "31 von 5954 geprueften Titeln erfuellen das; bei 184 fehlt die noetige Kennzahl.",
+          "statement": "31 von 5954 geprueften Titeln erfuellen das; bei 200 fehlt die noetige Kennzahl.",
           "source": "discover.row.bekannte-namen",
           "temporal": false
         },
@@ -197,7 +197,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 119,
-          "statement": "119 von 5954 geprueften Titeln erfuellen das; bei 1039 fehlt die noetige Kennzahl.",
+          "statement": "119 von 5954 geprueften Titeln erfuellen das; bei 1053 fehlt die noetige Kennzahl.",
           "source": "discover.row.breakout-watch",
           "temporal": false
         },
@@ -357,7 +357,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 566,
-          "statement": "566 von 5954 geprueften Titeln erfuellen das; bei 3402 fehlt die noetige Kennzahl.",
+          "statement": "566 von 5954 geprueften Titeln erfuellen das; bei 3403 fehlt die noetige Kennzahl.",
           "source": "discover.row.cashflow-maschinen",
           "temporal": false
         },
@@ -463,11 +463,10 @@
       "note": "Reihe mit 30 Titeln, Stand 2026-09-18. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
     {
-      "topicId": "topic_ranking:stock:agenus:amplitude-class-a:amylyx-pharmaceuticals:arcturus-therapeutics-holdings:cybin:moderna:picard-medical:pulse-biosciences:rf-acquisition-corp-ii:ten-holdings:comeback",
+      "topicId": "topic_ranking:stock:agenus:amplitude-class-a:amylyx-pharmaceuticals:arcturus-therapeutics-holdings:cybin:moderna:pulse-biosciences:rf-acquisition-corp-ii:ten-holdings:xencor:comeback",
       "family": "RANKING",
       "entityType": "STOCK",
       "entities": [
-        "Picard Medical",
         "TEN Holdings",
         "RF Acquisition Corp II",
         "Cybin",
@@ -476,7 +475,8 @@
         "Arcturus Therapeutics Holdings",
         "Pulse Biosciences",
         "Amylyx Pharmaceuticals",
-        "Amplitude Class A"
+        "Amplitude Class A",
+        "Xencor"
       ],
       "sources": [
         "VU_DISCOVER"
@@ -496,31 +496,9 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 421,
-          "statement": "421 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "value": 420,
+          "statement": "420 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.comeback",
-          "temporal": false
-        },
-        {
-          "id": "price-PMI",
-          "entity": "Picard Medical",
-          "metric": "Kurs",
-          "value": 5.08,
-          "unit": "USD",
-          "statement": "Picard Medical: Kurs 5,08 USD.",
-          "source": "discover.card",
-          "observedAt": "2026-09-18",
-          "temporal": true
-        },
-        {
-          "id": "metric-PMI",
-          "entity": "Picard Medical",
-          "metric": "in 3 Monaten",
-          "value": 2690,
-          "unit": "%",
-          "statement": "Picard Medical: in 3 Monaten 2690 %.",
-          "source": "discover.card.return3M",
-          "observedAt": "2026-09-18",
           "temporal": false
         },
         {
@@ -610,6 +588,28 @@
           "source": "discover.card.return12M",
           "observedAt": "2026-09-18",
           "temporal": false
+        },
+        {
+          "id": "price-MRNA",
+          "entity": "Moderna",
+          "metric": "Kurs",
+          "value": 154.04,
+          "unit": "USD",
+          "statement": "Moderna: Kurs 154,04 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-18",
+          "temporal": true
+        },
+        {
+          "id": "metric-MRNA",
+          "entity": "Moderna",
+          "metric": "in 12 Monaten",
+          "value": 516,
+          "unit": "%",
+          "statement": "Moderna: in 12 Monaten 516 %.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-18",
+          "temporal": false
         }
       ],
       "evidenceSufficient": true,
@@ -657,7 +657,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 30,
-          "statement": "30 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "30 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.djia-staerkste",
           "temporal": false
         },
@@ -817,7 +817,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 308,
-          "statement": "308 von 5954 geprueften Titeln erfuellen das; bei 2946 fehlt die noetige Kennzahl.",
+          "statement": "308 von 5954 geprueften Titeln erfuellen das; bei 2947 fehlt die noetige Kennzahl.",
           "source": "discover.row.fundamentale-turnarounds",
           "temporal": false
         },
@@ -961,7 +961,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 622,
-          "statement": "622 von 5954 geprueften Titeln erfuellen das; bei 4149 fehlt die noetige Kennzahl.",
+          "statement": "622 von 5954 geprueften Titeln erfuellen das; bei 4150 fehlt die noetige Kennzahl.",
           "source": "discover.row.gewinne-beschleunigen",
           "temporal": false
         },
@@ -1109,7 +1109,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 165,
-          "statement": "165 von 5954 geprueften Titeln erfuellen das; bei 3849 fehlt die noetige Kennzahl.",
+          "statement": "165 von 5954 geprueften Titeln erfuellen das; bei 3850 fehlt die noetige Kennzahl.",
           "source": "discover.row.langfristige-compounder",
           "temporal": false
         },
@@ -1265,7 +1265,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 865,
-          "statement": "865 von 5954 geprueften Titeln erfuellen das; bei 3711 fehlt die noetige Kennzahl.",
+          "statement": "865 von 5954 geprueften Titeln erfuellen das; bei 3712 fehlt die noetige Kennzahl.",
           "source": "discover.row.margen-werden-staerker",
           "temporal": false
         },
@@ -1404,8 +1404,8 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 2636,
-          "statement": "2636 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "value": 2630,
+          "statement": "2630 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.market-leaders",
           "temporal": false
         },
@@ -1531,11 +1531,10 @@
       "note": "Reihe mit 30 Titeln, Stand 2026-09-18. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
     {
-      "topicId": "topic_ranking:stock:crowdstrike-holdings-class-a:dell-technologies-class-c:flotek-industries:frontline:grayscale-investments:illumina:international-seaways:nordic-american-tankers:okeanis-eco-tankers:vince-holding:momentum-leaders",
+      "topicId": "topic_ranking:stock:cmb-tech:crowdstrike-holdings-class-a:dell-technologies-class-c:flotek-industries:frontline:illumina:international-seaways:nordic-american-tankers:okeanis-eco-tankers:vince-holding:momentum-leaders",
       "family": "RANKING",
       "entityType": "STOCK",
       "entities": [
-        "Grayscale Investments",
         "Vince Holding",
         "Dell Technologies Class C",
         "Flotek Industries",
@@ -1544,7 +1543,8 @@
         "Nordic American Tankers",
         "Crowdstrike Holdings Class A",
         "International Seaways",
-        "Illumina"
+        "Illumina",
+        "CMB.TECH"
       ],
       "sources": [
         "VU_DISCOVER"
@@ -1564,31 +1564,9 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 2636,
-          "statement": "2636 von 5954 geprueften Titeln erfuellen das; bei 531 fehlt die noetige Kennzahl.",
+          "value": 2630,
+          "statement": "2630 von 5954 geprueften Titeln erfuellen das; bei 547 fehlt die noetige Kennzahl.",
           "source": "discover.row.momentum-leaders",
-          "temporal": false
-        },
-        {
-          "id": "price-ZCSH",
-          "entity": "Grayscale Investments",
-          "metric": "Kurs",
-          "value": 117.72,
-          "unit": "USD",
-          "statement": "Grayscale Investments: Kurs 117,72 USD.",
-          "source": "discover.card",
-          "observedAt": "2026-09-18",
-          "temporal": true
-        },
-        {
-          "id": "metric-ZCSH",
-          "entity": "Grayscale Investments",
-          "metric": "in 6 Monaten",
-          "value": 543,
-          "unit": "%",
-          "statement": "Grayscale Investments: in 6 Monaten 543 %.",
-          "source": "discover.card.return6M",
-          "observedAt": "2026-09-18",
           "temporal": false
         },
         {
@@ -1678,6 +1656,28 @@
           "source": "discover.card.return6M",
           "observedAt": "2026-09-17",
           "temporal": false
+        },
+        {
+          "id": "price-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "Kurs",
+          "value": 84.95,
+          "unit": "USD",
+          "statement": "Okeanis Eco Tankers: Kurs 84,95 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-18",
+          "temporal": true
+        },
+        {
+          "id": "metric-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "in 6 Monaten",
+          "value": 104,
+          "unit": "%",
+          "statement": "Okeanis Eco Tankers: in 6 Monaten 104 %.",
+          "source": "discover.card.return6M",
+          "observedAt": "2026-09-18",
+          "temporal": false
         }
       ],
       "evidenceSufficient": true,
@@ -1725,7 +1725,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 96,
-          "statement": "96 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "96 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.ndx-staerkste",
           "temporal": false
         },
@@ -1884,8 +1884,8 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 264,
-          "statement": "264 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "value": 263,
+          "statement": "263 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.new-52-week-highs",
           "temporal": false
         },
@@ -2045,7 +2045,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 353,
-          "statement": "353 von 5954 geprueften Titeln erfuellen das; bei 3530 fehlt die noetige Kennzahl.",
+          "statement": "353 von 5954 geprueften Titeln erfuellen das; bei 3531 fehlt die noetige Kennzahl.",
           "source": "discover.row.profitables-wachstum",
           "temporal": false
         },
@@ -2205,7 +2205,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 367,
-          "statement": "367 von 5954 geprueften Titeln erfuellen das; bei 3083 fehlt die noetige Kennzahl.",
+          "statement": "367 von 5954 geprueften Titeln erfuellen das; bei 3084 fehlt die noetige Kennzahl.",
           "source": "discover.row.qualitaet-wachstum",
           "temporal": false
         },
@@ -2357,7 +2357,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 492,
-          "statement": "492 von 5954 geprueften Titeln erfuellen das; bei 3873 fehlt die noetige Kennzahl.",
+          "statement": "492 von 5954 geprueften Titeln erfuellen das; bei 3874 fehlt die noetige Kennzahl.",
           "source": "discover.row.qualitaet-zum-preis",
           "temporal": false
         },
@@ -2463,12 +2463,11 @@
       "note": "Reihe mit 30 Titeln, Stand 2026-09-18. Form aus den Daten: zahlenmaessiger Filter -> RANKING."
     },
     {
-      "topicId": "topic_ranking:stock:cmb-tech:crowdstrike-holdings-class-a:dell-technologies-class-c:flotek-industries:frontline:grayscale-investments:illumina:international-seaways:okeanis-eco-tankers:vince-holding:relative-strength",
+      "topicId": "topic_ranking:stock:cmb-tech:crowdstrike-holdings-class-a:dell-technologies-class-c:flotek-industries:frontline:hf-sinclair:illumina:international-seaways:okeanis-eco-tankers:vince-holding:relative-strength",
       "family": "RANKING",
       "entityType": "STOCK",
       "entities": [
         "Vince Holding",
-        "Grayscale Investments",
         "Dell Technologies Class C",
         "Flotek Industries",
         "Frontline",
@@ -2476,7 +2475,8 @@
         "Crowdstrike Holdings Class A",
         "International Seaways",
         "Illumina",
-        "CMB.TECH"
+        "CMB.TECH",
+        "HF Sinclair"
       ],
       "sources": [
         "VU_DISCOVER"
@@ -2496,8 +2496,8 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 2636,
-          "statement": "2636 von 5954 geprueften Titeln erfuellen das; bei 531 fehlt die noetige Kennzahl.",
+          "value": 2630,
+          "statement": "2630 von 5954 geprueften Titeln erfuellen das; bei 547 fehlt die noetige Kennzahl.",
           "source": "discover.row.relative-strength",
           "temporal": false
         },
@@ -2519,28 +2519,6 @@
           "value": 320,
           "unit": "%",
           "statement": "Vince Holding: in 12 Monaten 320 %.",
-          "source": "discover.card.return12M",
-          "observedAt": "2026-09-18",
-          "temporal": false
-        },
-        {
-          "id": "price-ZCSH",
-          "entity": "Grayscale Investments",
-          "metric": "Kurs",
-          "value": 117.72,
-          "unit": "USD",
-          "statement": "Grayscale Investments: Kurs 117,72 USD.",
-          "source": "discover.card",
-          "observedAt": "2026-09-18",
-          "temporal": true
-        },
-        {
-          "id": "metric-ZCSH",
-          "entity": "Grayscale Investments",
-          "metric": "in 12 Monaten",
-          "value": 2254,
-          "unit": "%",
-          "statement": "Grayscale Investments: in 12 Monaten 2254 %.",
           "source": "discover.card.return12M",
           "observedAt": "2026-09-18",
           "temporal": false
@@ -2610,6 +2588,28 @@
           "source": "discover.card.return12M",
           "observedAt": "2026-09-17",
           "temporal": false
+        },
+        {
+          "id": "price-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "Kurs",
+          "value": 84.95,
+          "unit": "USD",
+          "statement": "Okeanis Eco Tankers: Kurs 84,95 USD.",
+          "source": "discover.card",
+          "observedAt": "2026-09-18",
+          "temporal": true
+        },
+        {
+          "id": "metric-ECO",
+          "entity": "Okeanis Eco Tankers",
+          "metric": "in 12 Monaten",
+          "value": 232,
+          "unit": "%",
+          "statement": "Okeanis Eco Tankers: in 12 Monaten 232 %.",
+          "source": "discover.card.return12M",
+          "observedAt": "2026-09-18",
+          "temporal": false
         }
       ],
       "evidenceSufficient": true,
@@ -2657,7 +2657,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 491,
-          "statement": "491 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "491 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.sp500-staerkste",
           "temporal": false
         },
@@ -2817,7 +2817,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 106,
-          "statement": "106 von 5954 geprueften Titeln erfuellen das; bei 2474 fehlt die noetige Kennzahl.",
+          "statement": "106 von 5954 geprueften Titeln erfuellen das; bei 2475 fehlt die noetige Kennzahl.",
           "source": "discover.row.starke-bilanz-wachstum",
           "temporal": false
         },
@@ -2971,7 +2971,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 24,
-          "statement": "24 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "24 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.thema-ki",
           "temporal": false
         },
@@ -3125,7 +3125,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 16,
-          "statement": "16 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "16 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.thema-mobilitaet",
           "temporal": false
         },
@@ -3279,7 +3279,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 17,
-          "statement": "17 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "statement": "17 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.thema-robotik",
           "temporal": false
         },
@@ -3438,8 +3438,8 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 431,
-          "statement": "431 von 5954 geprueften Titeln erfuellen das; bei 840 fehlt die noetige Kennzahl.",
+          "value": 429,
+          "statement": "429 von 5954 geprueften Titeln erfuellen das; bei 856 fehlt die noetige Kennzahl.",
           "source": "discover.row.trend-quality",
           "temporal": false
         },
@@ -3598,8 +3598,8 @@
         {
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
-          "value": 493,
-          "statement": "493 von 5954 geprueften Titeln erfuellen das; bei 838 fehlt die noetige Kennzahl.",
+          "value": 492,
+          "statement": "492 von 5954 geprueften Titeln erfuellen das; bei 854 fehlt die noetige Kennzahl.",
           "source": "discover.row.ueberraschungen",
           "temporal": false
         },
@@ -3759,7 +3759,7 @@
           "id": "row-coverage",
           "metric": "von 5954 geprueften Titeln",
           "value": 575,
-          "statement": "575 von 5954 geprueften Titeln erfuellen das; bei 2474 fehlt die noetige Kennzahl.",
+          "statement": "575 von 5954 geprueften Titeln erfuellen das; bei 2475 fehlt die noetige Kennzahl.",
           "source": "discover.row.umsatz-waechst-stark",
           "temporal": false
         },
