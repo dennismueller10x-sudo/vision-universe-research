@@ -15,7 +15,17 @@ const allowedPaths=new Set([
   'docs/discover-v2/premium-design-qa.md',
   'discover/config/company-recognition.json',
   'discover/engines/discovery-eligibility.js','discover/tests/discovery-eligibility.test.mjs',
-  'scripts/discover/build-discover-data.mjs'
+  'scripts/discover/build-discover-data.mjs',
+  // Migriert eine Oberflaeche auf den zentralen Currency Contract, muss sie
+  // dessen eigene Nachweise mitfuehren: die Testmatrix bucht die Seite in
+  // M12-5 und O16-1 ein, das Register zaehlt eine Klasse-A-Stelle weniger,
+  // der Oberflaechen-Nachweis prueft UI8 wieder voll. Ohne sie waere die
+  // Migration gruen und die Zusage daneben unwahr.
+  // Das Einfrieren von Discover 1.0 (frozenDiscoverFrontend, unten) bleibt
+  // davon unberuehrt - das ist der Schutz, auf den es ankommt.
+  'quant/tests/currency-fx-matrix.test.mjs','quant/data/market/fx/currency-debt-register.json',
+  'quant/config/currency-formatting-baseline.json','scripts/quality/verify-currency-ui.mjs',
+  'docs/VU_CURRENCY_FX_LAYER.md'
 ]);
 const allowedPrefixes=['discover/data/'];
 const allowed=path=>allowedPaths.has(path)||allowedPrefixes.some(prefix=>path.startsWith(prefix));

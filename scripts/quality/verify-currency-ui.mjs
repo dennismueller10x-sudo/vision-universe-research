@@ -239,15 +239,7 @@ await pruefe("UI8", "Discover 2.1 benutzt denselben Vertrag", async () => {
       return t.slice(0, 3);
     })()
   }));
-  /* Discover 2.1 migriert nach dem Kern-Merge gegen die neue Grundlinie,
-     damit sein Vorschau-Gate scharf bleibt (siehe M12-5). Solange die
-     Seite den Core nicht laedt, ist das kein Fehlschlag, sondern eine
-     offene Zusage - und sobald sie ihn laedt, greift die volle Pruefung
-     wieder, ohne dass jemand daran denken muss. */
-  if (!s.kern) {
-    return { zustand: "SKIP",
-      detail: "Discover 2.1 laedt den Currency Core noch nicht - Migration folgt nach dem Kern-Merge." };
-  }
+  if (!s.kern) throw new Error("Discover 2.1 laedt den Currency Core nicht");
   if (!s.schalter) throw new Error("Discover 2.1 hat keinen Umschalter");
   if (s.waehrung !== "EUR") throw new Error("Discover 2.1 zeigt " + s.waehrung);
   if (s.dollar.length) throw new Error("Dollarbetraege in Discover 2.1: " + JSON.stringify(s.dollar));

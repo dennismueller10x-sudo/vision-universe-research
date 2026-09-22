@@ -900,8 +900,8 @@ die Bruecke `vuFormat()` und der beibehaltene Rueckfall zaehlen beide.
 
 Migriert: `discover/ui/{surfaces,detail-fundamentals,cards,detail}.js`,
 `dashboard/app.js`, `hedgefonds/index.html`, `vu2/experience.js`. Die
-FX-Engines sind in `discover/index.html` eingebunden; `vu2/index.html`
-laedt **nur** Registry und Formatierung —
+FX-Engines sind in `discover/index.html` und `discover-v2/index.html`
+eingebunden; `vu2/index.html` laedt **nur** Registry und Formatierung —
 diese Seite rechnet nichts um, und die Engine gehoert nicht auf eine
 Seite, die sie nicht braucht.
 
@@ -1372,7 +1372,7 @@ keine Testsuite sehen kann. Gemessen an `AAPL`:
 | `UI5` 5 Jahre: **+133 % in EUR** gegen **+126 % in USD** | **PASS** |
 | `UI6` MAX-Chart: EUR ab **08.01.1999**, nativ ab **05.01.1990**, mit Hinweis | **PASS** |
 | `UI7` keine Konsolenfehler | **PASS** |
-| `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **SKIP** — folgt nach dem Kern-Merge, siehe unten |
+| `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **PASS** |
 
 Gefuehrt fuer alle neun Nachweistitel: AAPL, NVDA, MSFT, SAP, ASML, NVO,
 TM, BABA, GSK.
@@ -1422,8 +1422,8 @@ ein Nachweis selbst gegengelesen gehoert.
 | `FX_FRESHNESS` | **PASS** | `O5-1` … `O5-6` |
 | `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) | plus `O15-1`: getrennte Anfaenge je Anzeigewaehrung |
 | `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; 5 Titel unaufloesbar, alle `conversionAvailable: false`; Verfuegbarkeit zeitpunktbezogen | `O13-1`, `O13-2` |
-| `CURRENCY_DEBT_MIGRATION` | **PASS_WITH_PENDING** — 1 offene Klasse-A-Stelle, und sie ist benannt: `discover-v2/detail.js` migriert im Folgeschritt. Grundlinie von 34 auf 33 gesunken | `currency-debt-register.json`, `O16-1`, `O16-2` |
-| `CURRENCY_UI_PROOF` | **PASS_WITH_SKIPS** — EUR-Vorgabe, Umschalter, 0 bewegte Verhaeltniswerte, 9 Titel; `UI8` uebersprungen | `verify-currency-ui.mjs` (`UI1`–`UI8`) |
+| `CURRENCY_DEBT_MIGRATION` | **PASS** — 0 offene Klasse-A-Stellen; Grundlinie von 34 auf 33 gesunken | `currency-debt-register.json`, `O16-1`, `O16-2` |
+| `CURRENCY_UI_PROOF` | **PASS** — EUR-Vorgabe, Umschalter, 0 bewegte Verhaeltniswerte, 9 Titel | `verify-currency-ui.mjs` (`UI1`–`UI8`) |
 | `REGRESSION_GUARD` | **PASS** — 33 Stellen (Grundlinie 33), 2 Konstanten (Grundlinie 2) | `assert-no-local-fx.mjs` |
 | `NEW_REGRESSIONS` | **0** | nach dem Merge von `main`: quant 1.403/1.403, discover 233/233, worker 66/66 - **keine** roten Tests mehr (die fuenf bekannten sind auf `main` behoben worden) |
 | `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
@@ -1475,34 +1475,52 @@ laeuft die Lieferung in zwei Schritten:
    (`discover-v2/{app.js,detail.js,index.html}`) stehen ohnehin in der
    Positivliste des Gates. Der Gate bleibt scharf und sagt trotzdem ja.
 
-Das kostet einen zweiten Merge und weicht keine Zusage auf. Drei Stellen
-halten den Folgeschritt fest, damit er nicht vergessen wird: `M12-5`
-prueft, dass `discover-v2/index.html` den Core noch *nicht* laedt (laedt
-sie ihn, gehoert die Seite in die Pruefung statt in die Ausnahme),
-`O16-1` laesst genau diese eine Klasse-A-Stelle durch und jede andere
-fallen, und `UI8` springt von SKIP auf die volle Pruefung, sobald die
-Seite den Vertrag mitbringt.
+Das kostet einen zweiten Merge und weicht keine Zusage auf.
+
+**Nachgemessen, nicht gehofft.** Auf dem Folgezweig gegen das gemergte
+`main` meldet der Gate `status: PASS` mit `baseline`
+`4ce86705533b82d9f6502040cd189b38d5eb662e`, 33.736 geschuetzten Dateien
+und Discover 1.0 eingefroren auf seinem *neuen*, waehrungsfaehigen
+Stand. Der Guard blieb die ganze Zeit scharf und sagt trotzdem ja —
+genau das war der Zweck der Zweiteilung.
+
+Drei Stellen hielten den Folgeschritt fest, damit er nicht vergessen
+wird, und sind mit ihm wieder auf volle Strenge zurueckgenommen:
+`M12-5` prueft beide Seiten auf die richtige Ladereihenfolge, `O16-1`
+verlangt wieder 0 offene Klasse-A-Stellen, und `UI8` prueft wieder
+vollstaendig statt zu ueberspringen.
 
 ### `REALTIME_FX`: der Zeitplan allein holt es nicht nach
 
 `currency-realtime-proof.yml` traegt einen Zeitplan (15:00 und 18:00 UTC
 an Werktagen, beide Zeiten in der regulaeren Sitzung, Sommer wie
-Winter). **Der Zeitplan feuert nicht.**
+Winter). **Vor dem Merge feuerte er nicht.**
 
 GitHub Actions fuehrt `schedule`-Ausloeser ausschliesslich aus dem
-Standardzweig aus. Der Workflow liegt auf `claude/vu-currency-fx-layer-elrkpp`
-und nicht auf `main` — gegengeprueft. Solange nicht gemergt ist, laeuft
-der Zeitplan also nie.
+Standardzweig aus. Solange der Workflow nur auf
+`claude/vu-currency-fx-layer-elrkpp` lag und nicht auf `main`, lief der
+Zeitplan nie — gegengeprueft.
 
-> Das ist eine Henne-Ei-Lage und sie gehoert benannt: O-8 verlangt den
-> Nachweis am offenen Markt **vor** dem Merge, der Zeitplan liefert ihn
-> erst **nach** dem Merge.
+> Das war eine Henne-Ei-Lage und sie gehoerte benannt: O-8 verlangt den
+> Nachweis am offenen Markt, der Zeitplan liefert ihn erst nach dem
+> Merge.
 
-Aufgeloest wird sie ueber den zweiten Ausloeser: ein Push mit
+**Mit dem Merge von #163 ist sie aufgeloest.** Der Workflow liegt auf
+`main`, der Zeitplan greift, und die Marker-Logik gibt fuer jedes
+Ereignis ausser `push` frei (`if [ "$EVENT_NAME" != "push" ]` →
+`run=true`) — ein geplanter Lauf braucht also keine Betreffzeile und
+fuehrt den Nachweis wirklich aus, statt ihn zu ueberspringen.
+
+Der zweite Ausloeser bleibt als Handgriff bestehen: ein Push mit
 `[rt-proof]` in der **Betreffzeile** waehrend der offenen US-Sitzung
-(13:30–20:00 UTC). Der laeuft auf dem Zweig. Genau so wird der Nachweis
-gefuehrt; bis dahin bleibt `REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und
-wird nicht beschoenigt (§58).
+(13:30–20:00 UTC).
+
+Bis der Lauf am offenen Markt vorliegt, bleibt
+`REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und wird nicht beschoenigt
+(§58). Gegenprobe, dass hier nichts stillschweigend gruen wird: der
+Lauf auf diesem Zweig meldete `success`, weil das `proof`-Job ohne
+Marker uebersprungen wurde — ein uebersprungener Nachweis ist kein
+gefuehrter, und der Status bleibt entsprechend stehen.
 
 ---
 

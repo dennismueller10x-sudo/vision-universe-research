@@ -1304,18 +1304,7 @@ test("M12-5 · Die Consumer-Seiten laden den Currency Core in der richtigen Reih
        davor. */
     "currency-switch", "bootstrap"
   ];
-  /* Discover 2.1 folgt in einem eigenen Schritt. Sein Vorschau-Gate
-     (scripts/discover-v2/regression-gate.mjs) friert Discover 1.0 gegen
-     die Grundlinie ein; ein querliegender Kernumbau kaeme nur durch,
-     wenn man dieses Einfrieren aufweichte. Also wird erst der Kern
-     gemergt, und Discover 2.1 migriert danach gegen die neue
-     Grundlinie - der Gate bleibt scharf. Die ausstehende Seite steht
-     hier namentlich, damit sie nicht vergessen wird. */
-  const ausstehend = ["discover-v2/index.html"];
-  assert.ok(!readFileSync(join(ROOT, ausstehend[0]), "utf8").includes("quant/engines/fx/"),
-    `${ausstehend[0]} laedt den Core bereits - dann gehoert die Seite in die Pruefung und nicht in die Ausnahme`);
-
-  for (const seite of ["discover/index.html"]) {
+  for (const seite of ["discover/index.html", "discover-v2/index.html"]) {
     const src = readFileSync(join(ROOT, seite), "utf8");
     const geladen = [...src.matchAll(/quant\/engines\/fx\/([a-z-]+)\.js/g)].map((m) => m[1]);
     assert.deepEqual(geladen, soll, `${seite}: falsche Ladereihenfolge`);
@@ -1493,18 +1482,12 @@ test("O16-1 · Keine offene Klasse-A-Stelle mehr, und keine still weggeklassifiz
      dafuer gibt es den Marker. */
   const register = JSON.parse(readFileSync(
     join(ROOT, "quant", "data", "market", "fx", "currency-debt-register.json"), "utf8"));
-  /* Genau eine Stelle ist noch offen, und sie ist benannt: Discover 2.1
-     migriert nach dem Kern-Merge, siehe M12-5. Die Pruefung bleibt
-     scharf - jede ANDERE offene Klasse-A-Stelle laesst sie fallen. */
-  const ausstehend = new Set(["discover-v2/detail.js"]);
-  const offen = register.entries.filter((e) => e.class === "A");
-  for (const e of offen) {
-    assert.ok(ausstehend.has(e.file), `${e.file}:${e.line} ist noch offen`);
+  assert.equal(register.openClassA, 0,
+    "Jede produktive Monetary-Display-Stelle konsumiert den zentralen Contract");
+
+  for (const e of register.entries) {
+    if (e.class === "A") assert.fail(`${e.file}:${e.line} ist noch offen`);
   }
-  assert.equal(register.openClassA, offen.length,
-    "Die Zahl im Register und die Liste der Stellen muessen dasselbe sagen");
-  assert.ok(register.openClassA <= ausstehend.size,
-    "Jede produktive Monetary-Display-Stelle ausser der benannten konsumiert den zentralen Contract");
   /* Und der zurueckgestellte Fall ist benannt, nicht verschwunden. */
   const portfolio = readFileSync(join(ROOT, "quant", "api", "portfolio-workspace.js"), "utf8");
   assert.match(portfolio, /DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO/);
