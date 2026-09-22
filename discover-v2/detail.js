@@ -273,6 +273,12 @@
     }
     function enhance() {
       chart.querySelectorAll(".dx-journey-wert").forEach(function (label) { label.remove(); });
+      var svg = chart.querySelector(".dx-journey-svg");
+      if (svg && !svg.hasAttribute("data-year-selection")) {
+        svg.setAttribute("role", "group");
+        svg.setAttribute("aria-label", (svg.getAttribute("aria-label") || "Jahresreihe") + ". Geschäftsjahr auswählen.");
+        svg.setAttribute("data-year-selection", "true");
+      }
       var bars = Array.from(chart.querySelectorAll(".dx-journey-bar"));
       if (!bars.length) return;
       bars.forEach(function (bar, index) {
