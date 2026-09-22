@@ -667,7 +667,8 @@ Fehler:
 | **`NONE`** | **10** |
 
 Ohne jede Abdeckung bleiben **5 Waehrungen** (AFN, KZT, MOP, MYR, VND)
-und **16 Titel**.
+und **16 Titel** — das ist der Stand **vor** dem EZB-Fallback; die
+Nachpruefung dazu steht weiter unten.
 
 Die erste Fassung meldete nur die erste Zahl und kam auf „21 Richtungen
 nicht gefuehrt, 212 Titel betroffen". Sie fuehrte CNY/EUR als „nicht
@@ -687,6 +688,72 @@ Groessenordnung kleiner.
 Gefragt wird jetzt die Engine selbst — nach dem Import wird jede
 gebrauchte Richtung mit `rateAt()` abgefragt und ihre Aufloesungsart
 gemeldet. Nur `NONE` heisst, dass die Werte nativ bleiben.
+
+### Historische Abdeckung: je Horizont, nach Titeln gewichtet
+
+Ein Mittelwert ueber 31 Waehrungen sagt nichts: eine Waehrung mit einem
+Titel und eine mit 10.790 sind nicht gleich wichtig. `HISTORICAL_FX_COVERAGE`
+misst deshalb je Horizont den Anteil der **Titel**, fuer die zum
+Stichtag ein Kurs existiert — nicht den Anteil der Waehrungen.
+
+| Horizont | Stichtag | Titel abgedeckt | Quote | Quellen |
+|---|---|---|---|---|
+| 1J | 2025-09-22 | 11.197 / 11.202 | **99,96 %** | 18 Tiingo, 8 EZB |
+| 5J | 2021-09-22 | 11.198 / 11.202 | **99,96 %** | 19 Tiingo, 8 EZB |
+| 10J | 2016-09-22 | 11.169 / 11.202 | **99,71 %** | 22 EZB |
+| 15J | 2011-09-22 | 11.169 / 11.202 | **99,71 %** | 22 EZB |
+| MAX | 1990-01-05 | 0 / 11.202 | 0 % | keine |
+
+Schwelle 99 %, Ergebnis **PASS**.
+
+Zwei Dinge liest man an dieser Tabelle ab. **10J und 15J stammen
+vollstaendig aus der EZB** — genau der Bereich, fuer den O-7 die zweite
+Quelle verlangt hat; ohne sie waere dort nichts umrechenbar gewesen.
+Und **MAX ist aus einem bekannten Grund null**: die Kursreihen beginnen
+1990-01-05, jede FX-Quelle fruehestens 1999-01-04. Der Layer verweigert
+die Punkte davor mit `beforeSeriesStart`, statt sie zu naehern. Ein
+Gate, das aus einem bekannten und richtigen Grund immer rot waere,
+beurteilt nichts — MAX wird gemessen und berichtet, aber nicht
+bewertet. Was daraus fuer das Produkt folgt, ist **O-15**.
+
+Der laengste EUR-Chart beginnt deshalb fuer die Hauptwaehrung USD
+(10.790 Titel) am **1999-01-04**.
+
+### Die Nachpruefung nach dem Fallback (O-13)
+
+O-13 verlangt ausdruecklich, nach der Integration der offiziellen
+historischen Quelle erneut zu messen, wie viele der 16 Titel tatsaechlich
+unaufloesbar bleiben. Gemessen gegen `historical-coverage.json`
+(2026-09-22):
+
+> **5 Titel in 5 Waehrungen** — AFN, KZT, MOP, RUB, VND, je ein Titel.
+
+Die EZB deckt acht Waehrungen neu ab, die Tiingo im 5-Jahres-Horizont
+nicht traegt: **CNY (124 Titel)**, BRL (26), HKD (19), KRW (9), INR (6),
+MYR (4), IDR (1), PHP (1) — zusammen **190 Titel**.
+
+**RUB ist der lehrreiche Fall.** Die Waehrung ist historisch abgedeckt
+und aktuell nicht:
+
+| Horizont | Zustand |
+|---|---|
+| 1J (2025-09-22) | `pairNotStored` |
+| 5J (2021-09-22) | `tiingo`, PRIMARY, `INVERSE`, `DAILY_AT_DATE` |
+| 10J (2016-09-22) | `ecb`, FALLBACK, `INVERSE`, `DAILY_AT_DATE` |
+| 15J (2011-09-22) | `ecb`, FALLBACK, `INVERSE`, `DAILY_AT_DATE` |
+
+`eurChartStart: 2005-04-01` — die EZB hat die Veroeffentlichung des
+Rubel-Referenzkurses eingestellt. Ein Chart in Euro ist bis zum Ende der
+Reihe richtig und bricht danach ab; er wird nicht mit dem letzten
+bekannten Kurs fortgeschrieben (§39, O-7 VERBOTEN).
+
+> Die naheliegende Annahme — „was historisch geht, geht heute erst
+> recht" — ist hier falsch. Deshalb misst der Bericht je Horizont und
+> nicht einmal global.
+
+Fuer alle fuenf gilt O-13 unveraendert: `conversionAvailable: false`, der
+native Wert und seine Waehrung bleiben sichtbar, der Titel bleibt im
+Company Master und im Vision Universe. Geschaetzt wird nichts.
 
 **Die Tiefe ist je Paar verschieden, nicht global.** Die Hauptpaare
 reichen bis zum gemessenen Beginn 2020-03-30, andere beginnen spaeter:
@@ -726,15 +793,31 @@ kuenstlich als PASS melden.
 
 | Fall | Zustand | Grund |
 |---|---|---|
-| TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` | die Periode 2019-04 bis 2020-03 liegt fast vollstaendig **vor** dem Beginn der FX-Historie (2020-02-29). Korrekt verweigert statt genaehert. |
+| TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` (gemessen vor dem EZB-Fallback) | die Periode 2019-04 bis 2020-03 lag fast vollstaendig **vor** dem Beginn der Tiingo-Historie (2020-02-29). Korrekt verweigert statt genaehert. Mit der EZB-Historie ab 1999 liegt die Periode jetzt im abgedeckten Bereich; der naechste Verifikationslauf misst den Fall neu. |
 | Richtungen mit `resolution: NONE` | keine Aufloesung | weder direkt noch invers noch ueber das Pivot bildbar; nur diese Werte bleiben nativ |
 
 ### Tests
 
-**43 Tests, alle gruen.** M1–M12 sind die zwoelf Faelle aus §59, I1–I16
-die Invarianten, O5-1 bis O5-6 die Realtime-Anforderungen aus O-5
-(Devisenkalender 24/5, Wochenende vs. Luecke, Anbieterausfall in drei
-Stufen, 500 Ticks auf einen FX-Abruf, verfuegbare vs. gefahrene Stufe).
+**60 Tests, alle gruen.**
+
+| Gruppe | Was sie haelt |
+|---|---|
+| M1–M12 | die zwoelf Faelle aus §59 |
+| I1–I16 | die Invarianten (Originaldaten, Look-Ahead, Margen, ehrliche Anzeige) |
+| O5-1 … O5-6 | Devisenkalender 24/5, Wochenende vs. Luecke, Anbieterausfall in drei Stufen, 500 Ticks auf einen FX-Abruf, verfuegbare vs. gefahrene Stufe |
+| C1, C2 | Abdeckung gegen Triangulation |
+| P1–P4 | Anbieterrang, Herkunft je Wert, beide Pivots |
+| L1–L3 | Lizenzerlaubnis je Wert |
+| O9-1 … O9-3 | der zentrale Intraday-Zustand |
+| SW1–SW4 | der EUR\|USD-Umschalter |
+| M12-1 … M12-5 | die Migration: byte-gleiche Ausgabe, Vorzeichen, keine eigene FX-Logik, Ladereihenfolge der Seiten |
+
+`M12-5` ist der juengste und deckt eine Luecke, die kein anderer Test
+sah: die Module bauen aufeinander auf, und eine falsche Ladereihenfolge
+faellt nicht beim Laden auf, sondern erst, wenn ein Produkt den Contract
+benutzt. Derselbe Test haelt fest, dass die Hedgefonds-Seite nur die
+Formatierung laedt und die Engine **nicht** — sie rechnet nichts um, und
+das soll so bleiben.
 
 Die fuenf roten Tests der Gesamtsuite bestehen **unveraendert auch ohne
 diesen Zweig** — mit `git stash` gegengeprueft. Sie gehoeren nicht zu
@@ -747,14 +830,14 @@ diesem Workstream und werden hier nicht repariert.
 | Kriterium | Zustand |
 |---|---|
 | `TIINGO_FX_CAPABILITIES` | **MEASURED** |
-| `HISTORICAL_FX_COVERAGE` | siehe `quant/data/market/fx/historical-coverage.json` |
+| `HISTORICAL_FX_COVERAGE` | **PASS** — 1J/5J 99,96 %, 10J/15J 99,71 % (Schwelle 99 %); MAX berichtet, nicht beurteilt |
 | `FX_PROVIDER_PRIORITY` | **PASS** — deterministisch, je Wert belegt |
 | `FX_DATA_PROOF` | **PASS** |
-| `CURRENCY_CONTRACT` | **PASS** (59 Tests) |
+| `CURRENCY_CONTRACT` | **PASS** (60 Tests) |
 | `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage |
 | `FX_FRESHNESS` | **PASS** |
 | `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) |
-| `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt, Rest `conversionAvailable: false` |
+| `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; nach dem Fallback bleiben 5 Titel unaufloesbar, alle mit `conversionAvailable: false` |
 | `CURRENCY_DEBT_MIGRATION` | **PASS** — 13 migriert, Aussehen unveraendert |
 | `REGRESSION_GUARD` | **PASS** |
 | `NEW_REGRESSIONS` | **0** |

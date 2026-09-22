@@ -1224,3 +1224,31 @@ test("M12-4 · Kein Consumer-Frontend rechnet mehr selbst um", () => {
       `${datei} enthaelt eigene Umrechnungslogik`);
   }
 });
+
+
+test("M12-5 · Die Consumer-Seiten laden den Currency Core in der richtigen Reihenfolge", () => {
+  /* Die Module bauen aufeinander auf: currency-engine braucht
+     fx-rates, currency-contract braucht alles davor. Eine falsche
+     Reihenfolge faellt nicht beim Laden auf, sondern erst, wenn ein
+     Produkt den Contract benutzt - also spaet.
+
+     Der Test haelt zugleich fest, dass die Seiten ihn ueberhaupt
+     laden: ohne die Skripte greift in den migrierten Dateien der
+     Rueckfall, und die Migration waere folgenlos. */
+  const soll = [
+    "fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry",
+    "currency-class", "currency-engine", "money-format", "currency-preference",
+    "currency-contract"
+  ];
+  for (const seite of ["discover/index.html", "discover-v2/index.html"]) {
+    const src = readFileSync(join(ROOT, seite), "utf8");
+    const geladen = [...src.matchAll(/quant\/engines\/fx\/([a-z-]+)\.js/g)].map((m) => m[1]);
+    assert.deepEqual(geladen, soll, `${seite}: falsche Ladereihenfolge`);
+  }
+  /* Die Hedgefonds-Seite braucht nur die Formatierung, nicht die Engine -
+     sie rechnet nichts um. Genau das soll so bleiben. */
+  const hf = readFileSync(join(ROOT, "hedgefonds/index.html"), "utf8");
+  assert.match(hf, /quant\/engines\/fx\/money-format\.js/);
+  assert.ok(!/quant\/engines\/fx\/currency-engine\.js/.test(hf),
+    "Die Hedgefonds-Seite soll nicht umrechnen koennen - sie formatiert nur");
+});
