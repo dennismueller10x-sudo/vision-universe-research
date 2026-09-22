@@ -22,6 +22,24 @@
       corporateActionFlags: sl(series.corporateActionFlags) };
   }
 
+  function isDate(value) {
+    return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value));
+  }
+
+  function validAnnotation(a, bundle) {
+    var historical = { PIVOT: 1, SWING_SEGMENT: 1, WAVE_SEGMENT: 1, STRUCTURE_EVENT: 1,
+      FIB_ANCHOR: 1, STRUCTURE_LABEL: 1, WAVE_LABEL: 1, STATE_LABEL: 1, NOW_DIVIDER: 1 };
+    if (!a || typeof a.type !== "string" || !a.type || ["CONFIRMED", "DEVELOPING", "PROJECTED"].indexOf(a.status) < 0 ||
+        !Array.isArray(a.layers) || a.layers.some(function (v) { return typeof v !== "string"; }) || !Number.isFinite(a.zOrder)) return false;
+    if ([a.startTime, a.endTime].some(function (t) { return t !== null && !isDate(t); }) ||
+        [a.startPrice, a.endPrice].some(function (v) { return v !== null && !Number.isFinite(v); })) return false;
+    if (a.startTime && a.endTime && a.startTime > a.endTime) return false;
+    if (a.status !== "PROJECTED" && historical[a.type] && [a.startTime, a.endTime].some(function (t) { return t && t > bundle.dataCutoff; })) return false;
+    if (a.meta && a.meta.confirmedAt && (!isDate(a.meta.confirmedAt) || a.meta.confirmedAt > bundle.dataCutoff)) return false;
+    if (a.type === "SERIES" && (!a.meta || !Object.prototype.hasOwnProperty.call(bundle.chartSeries || {}, a.meta.seriesRef))) return false;
+    return true;
+  }
+
   function compactBundle(bundle, from, fromTime) {
     var out = Object.assign({}, bundle);
     out.display = { fromIndex: from, from: fromTime,
@@ -52,12 +70,15 @@
       out.chartSeries = {};
       Object.keys(bundle.chartSeries).forEach(function (key) { out.chartSeries[key] = bundle.chartSeries[key].slice(from); });
     }
-    if (bundle.annotations) out.annotations = Object.assign({}, bundle.annotations, {
-      totalAnnotations: bundle.annotations.annotations.length,
-      annotations: bundle.annotations.annotations.filter(function (a) {
+    if (bundle.annotations) {
+      var visible = bundle.annotations.annotations.filter(function (a) {
         return (a.endTime && a.endTime >= fromTime) || (a.startTime && a.startTime >= fromTime) || !a.startTime;
-      })
-    });
+      }), accepted = visible.filter(function (a) { return validAnnotation(a, bundle); });
+      out.annotations = Object.assign({}, bundle.annotations, {
+        totalAnnotations: bundle.annotations.annotations.length, materializedAnnotations: accepted.length,
+        rejectedAnnotations: visible.length - accepted.length, annotations: accepted
+      });
+    }
     return out;
   }
 

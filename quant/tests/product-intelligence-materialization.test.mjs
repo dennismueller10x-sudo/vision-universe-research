@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, copyFileSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
@@ -46,4 +46,19 @@ test("existing canonical histories materialize static Technical, Signals and Ell
   const delivered = await api.getSignals({ lookback: 60 });
   assert.equal(delivered.scope, "CANONICAL_PRODUCT_UNIVERSE");
   assert.equal(delivered.coverage.available, 2);
+});
+
+test("Technical materialization remains independent when the Signals contract rejects provenance", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vu-product-intelligence-independent-"));
+  const work = join(dir, "work", "tiingo", "daily"), out = join(dir, "out");
+  mkdirSync(work, { recursive: true });
+  const source = JSON.parse(readFileSync(join(root, "quant/data/market/golden-preview/daily/ref_MSFT.json"), "utf8"));
+  source.currency = "EUR";
+  writeFileSync(join(work, "ref_MSFT.json"), JSON.stringify(source));
+  const summary = materialize({ workDir: join(dir, "work"), outDir: out, tickers: ["MSFT"] });
+  assert.equal(summary.counts.signalsCapable, 0);
+  assert.equal(summary.counts.technicalFullBundles, 1);
+  assert.equal(summary.reasons.SIGNAL_INVALID_SIGNAL_PROVENANCE, 1);
+  const shard = JSON.parse(gunzipSync(readFileSync(join(out, "MS.json.gz"))));
+  assert.equal(TechnicalWorkspace.build(shard.instruments.MSFT, { ticker: "MSFT" }).state, "AVAILABLE");
 });

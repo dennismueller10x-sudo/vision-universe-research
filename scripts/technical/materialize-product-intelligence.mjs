@@ -23,6 +23,7 @@ const Analysis = require(join(root, "quant/engines/technical/technical-analysis.
 const Product = require(join(root, "quant/engines/technical/product-materialization.js"));
 const MarketSignals = require(join(root, "quant/api/market-signal-contract.js"));
 const TechnicalWorkspace = require(join(root, "quant/api/technical-workspace-contract.js"));
+const MarketHours = require(join(root, "quant/engines/realtime/market-hours.js"));
 const Service = require(join(root, "quant/api/product-services.js"));
 const Policy = require(join(root, "quant/engines/display-policy.js"));
 const Query = require(join(root, "quant/engines/query.js"));
@@ -78,8 +79,17 @@ function validatedInput(payload, member) {
     isMock: false, publishBasis: "CANONICAL_PRODUCT_MATERIALIZATION", currency: payload.currency || "USD",
     adjustmentStatus: "adjusted", updatedAt: observedAt, bars: signalBars, corporateActionReconciliation: reconciled },
     provenance: { observedAt, adjustmentStatus: payload.adjustmentStatus, splitEvents: splits, dividendEvents: dividends,
-      corporateActionReconciliation: reconciled,
-      calendarValidation: { status: "PASS", contract: "quant/config/market-calendar.json", exchange: "XNYS" } } };
+      corporateActionReconciliation: reconciled } };
+}
+
+function validateTechnicalCalendar(series) {
+  const dates = series.timestamps.slice(-Product.DISPLAY_BARS);
+  for (const date of dates) {
+    const session = MarketHours.sessionAt(date + "T12:00:00Z", { calendar, exchange: "XNYS" });
+    if (!session.calendarCoverage || !session.isTradingDay) throw new Error("TECHNICAL_CALENDAR_INVALID");
+  }
+  return { status: "PASS", contract: "quant/config/market-calendar.json", exchange: "XNYS",
+    first: dates[0], last: dates.at(-1), sessions: dates.length };
 }
 
 export function materialize(options = {}) {
@@ -132,26 +142,22 @@ export function materialize(options = {}) {
       if (lookback === 60) signal60 = result;
     }
     if (signal60?.state === "AVAILABLE") { stats.signalsCapable++; stats.calendarValidated++; }
+    else { const reason = "SIGNAL_" + (signal60?.reason || "UNAVAILABLE"); reasons[reason] = (reasons[reason] || 0) + 1; }
 
     if (member.t !== "TECHNICAL_READY" || input.series.length < minTechnicalBars) {
       rows[member.s] = { technical: "INSUFFICIENT_HISTORY", signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
       continue;
     }
-    if (signal60?.state !== "AVAILABLE") {
-      const reason = signal60?.reason || "SIGNAL_CONTRACT_UNAVAILABLE";
-      rows[member.s] = { technical: "CALENDAR_OR_SIGNAL_CONTRACT_UNAVAILABLE", signals: reason, elliott: "NOT_RUN", bars: input.series.length };
-      reasons[reason] = (reasons[reason] || 0) + 1;
-      continue;
-    }
     try {
+      input.provenance.calendarValidation = validateTechnicalCalendar(input.series);
       const bundle = Analysis.analyze({ series: input.series,
         benchmarkSeries: member.s === "SPY" ? null : benchmark,
         methodology, options: { elliott: true, annotations: true, includeChartSeries: true, displayWindow: "1Y" } });
       const required = ["trend", "momentum", "volatility", "volume", "structure", "supportResistance", "confluence", "opportunityScore", "scenarios", "tradeSetup"];
       const missing = required.filter(key => !bundle[key]);
       if (missing.length) throw new Error("TECHNICAL_PARTIAL:" + missing.join(","));
-      const artifact = Product.project({ ticker: member.s, securityId: member.m, series: input.series, bundle,
-        benchmarkId: benchmark && member.s !== "SPY" ? "SPY" : null, provenance: input.provenance });
+      const artifact = JSON.parse(JSON.stringify(Product.project({ ticker: member.s, securityId: member.m, series: input.series, bundle,
+        benchmarkId: benchmark && member.s !== "SPY" ? "SPY" : null, provenance: input.provenance }), roundNumbers));
       const workspace = TechnicalWorkspace.build(artifact, { ticker: member.s, now: now.slice(0, 10) });
       if (workspace.state !== "AVAILABLE") throw new Error("TECHNICAL_CONTRACT_" + (workspace.reason || "UNAVAILABLE"));
       const key = Product.shardKey(member.s);
@@ -160,11 +166,11 @@ export function materialize(options = {}) {
       stats.technicalFullBundles++;
       const elliottCapable = !!bundle.elliott && bundle.elliott.status !== "UNAVAILABLE" && bundle.elliott.status !== "INSUFFICIENT_DATA";
       if (elliottCapable) stats.elliottCapable++;
-      rows[member.s] = { technical: "AVAILABLE", signals: signal60?.state || "UNAVAILABLE",
+      rows[member.s] = { technical: "AVAILABLE", signals: signal60?.state === "AVAILABLE" ? "AVAILABLE" : signal60?.reason || "UNAVAILABLE",
         elliott: elliottCapable ? "AVAILABLE" : "UNAVAILABLE", bars: input.series.length, asOf: bundle.dataCutoff, shard: key };
     } catch (error) {
       const reason = String(error.message).split(":")[0] || "TECHNICAL_FAILED";
-      rows[member.s] = { technical: reason, signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
+      rows[member.s] = { technical: reason, signals: signal60?.state === "AVAILABLE" ? "AVAILABLE" : signal60?.reason || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
       reasons[reason] = (reasons[reason] || 0) + 1;
     }
   }
