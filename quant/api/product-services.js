@@ -276,6 +276,20 @@ function create(options){
   }));const available=results.filter(r=>r.state==='AVAILABLE');return {state:available.length?'AVAILABLE':'UNAVAILABLE',partial:available.length!==results.length,results,events:available.flatMap(r=>r.events).sort((a,b)=>b.asOf.localeCompare(a.asOf)||a.ticker.localeCompare(b.ticker)),scope:'APPROVED_DISPLAY_SET'};
   }catch{return {state:'UNAVAILABLE',events:[],results:[],reason:'SOURCE_MISSING'};}
  }
+ function radarModules(events,limit){
+  const definitions=[
+   ['momentum-entered','positive-momentum','ENTERED','Momentum wieder nicht negativ','Neue belegte Wechsel in eine nicht negative Sechs-Monats-Entwicklung.'],
+   ['trend-entered','above-long-trend','ENTERED','Langfristigen Trendbereich zurückgewonnen','Neue belegte Wechsel an oder über den 200-Tage-Durchschnitt.'],
+   ['momentum-exited','positive-momentum','EXITED','Momentum unter null gefallen','Neue belegte Wechsel in eine negative Sechs-Monats-Entwicklung.'],
+   ['trend-exited','above-long-trend','EXITED','Langfristigen Trendbereich verlassen','Neue belegte Wechsel unter den 200-Tage-Durchschnitt.']
+  ];
+  return definitions.map(([id,definitionId,transition,title,description])=>{const seen=new Set(),items=[];for(const event of events){if(event.definitionId!==definitionId||event.transition!==transition||seen.has(event.ticker))continue;seen.add(event.ticker);items.push(event);if(items.length===limit)break;}return {id,title,description,definitionId,transition,items};});
+ }
+ async function getRadarIntelligence({lookback=20,limit=12}={}){
+  if(![5,20,60].includes(lookback)||!Number.isInteger(limit)||limit<1||limit>50)return {state:'UNAVAILABLE',reason:'INVALID_RADAR_SELECTION',modules:[]};
+  const signals=await getSignals({lookback});if(signals.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:signals.reason||'SIGNAL_EVIDENCE_NOT_PUBLISHED',modules:[],coverage:signals.coverage||null};
+  return {state:'AVAILABLE',version:'1.0.0',scope:signals.scope,lookback,coverage:signals.coverage,materializedAt:signals.materializedAt||null,eventCount:signals.events.length,eventTickerCount:new Set(signals.events.map(e=>e.ticker)).size,modules:radarModules(signals.events,limit),quantScore:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},marketRegime:{state:'UNAVAILABLE',reason:'MARKET_REGIME_NOT_CERTIFIED'}};
+ }
  async function getComparison(tickers){let selected;try{selected=CompareWorkspace.validate(tickers);}catch{return {state:'UNAVAILABLE',reason:'INVALID_COMPARISON',companies:[],families:[]};}return CompareWorkspace.build(selected,await Promise.all(selected.map(async ticker=>{const model=await getQuantWorkspace(ticker);return model.state==='AVAILABLE'?model:{...model,ticker};})));}
  async function getMarketDataHealth(ticker){if(ticker!==undefined)ticker=String(ticker||'').toUpperCase();const data=await getUniverse();return marketHealth(ticker===undefined?data.stocks:data.stocks.filter(s=>s.ticker===ticker));}
  async function marketHealth(stocks){try{const calendar=await load('/quant/config/market-calendar.json');return MarketHealth.build(stocks,calendar);}catch{return MarketHealth.build(stocks,null);}}
@@ -284,13 +298,24 @@ function create(options){
  async function getWatchlistIntelligence(tickers){
   let selected;try{selected=WatchlistWorkspace.validate(tickers);}catch{return {state:'UNAVAILABLE',reason:'INVALID_WATCHLIST',members:[]};}
   if(!selected.length)return WatchlistWorkspace.build([],null);
-  const universe=await getUniverse();
-  try{const c=await init();return WatchlistWorkspace.build(selected,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,price:{value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'}})});}catch{return WatchlistWorkspace.build(selected,null);}
+  const [universe,signals,summary]=await Promise.all([getUniverse(),getSignals({lookback:60}),load('/quant/data/product/technical-signals-v1/summary.json').catch(()=>null)]);
+  try{const c=await init(),signalIndex=new Map((signals.results||[]).map(result=>[result.ticker,result])),technical=await Promise.all(selected.map(ticker=>getTechnicalWorkspace(ticker))),capabilities={};
+   selected.forEach((ticker,index)=>{const signal=signalIndex.get(ticker),workspace=technical[index],elliottAvailable=workspace?.state==='AVAILABLE'&&!['UNAVAILABLE','INSUFFICIENT_DATA'].includes(workspace.elliott?.status);capabilities[ticker]={
+    signals:signal?{state:signal.state,reason:signal.reason||null,asOf:signal.asOf||null,from:signal.from||null,lookback:signal.lookback||60,events:Array.isArray(signal.events)?signal.events:[]}:{state:'UNAVAILABLE',reason:'SIGNAL_EVIDENCE_NOT_PUBLISHED',events:[]},
+    technical:workspace?.state==='AVAILABLE'?{state:'AVAILABLE',asOf:workspace.asOf,methodology:workspace.methodology,workspace:'/vu2/?view=technical&ticker='+encodeURIComponent(ticker)}:{state:'UNAVAILABLE',reason:workspace?.reason||'TECHNICAL_BUNDLE_NOT_PUBLISHED'},
+    elliott:elliottAvailable?{state:'AVAILABLE',status:workspace.elliott.status,workspace:'/vu2/?view=elliott&ticker='+encodeURIComponent(ticker)}:{state:'UNAVAILABLE',reason:workspace?.state==='AVAILABLE'?'ELLIOTT_COUNT_NOT_VALIDATED':workspace?.reason||'ELLIOTT_BUNDLE_NOT_PUBLISHED'}
+   };});
+   const coverage={selectable:universe.productUniverseSize||universe.stocks.length,signalsCapable:signals.coverage?.available||0,technicalCapable:summary?.counts?.technicalFullBundles||0,elliottCapable:summary?.counts?.elliottCapable||0};
+   return WatchlistWorkspace.build(selected,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,price:{value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'}})},{capabilities,coverage});
+  }catch{return WatchlistWorkspace.build(selected,universe);}
  }
  async function getPortfolioIntelligence(positions){try{const universe=await getUniverse(),c=await init();return PortfolioWorkspace.build(positions,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,marketState:'UNAVAILABLE'})});}catch{return unavailable('INVALID_PORTFOLIO');}}
  async function getStrategyContext(){
-  try{const [quant,backtest]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json')]);
-   Methodology.configure({quant,backtest});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
+  try{const [quant,backtest,quantV2,universe]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json'),load('/quant/methodology/quant-v2.json'),getUniverse()]);
+   if(quantV2?.methodologyVersion!=='quant-v2.0.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
+   Methodology.configure({quant,backtest,quantV2});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
+    currentSelection:{state:universe.state,scope:universe.scope,selectable:universe.productUniverseSize||universe.stocks.length,filterEngine:'CANONICAL_QUERY_ENGINE',ranking:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'}},
+    quantV2:{methodologyVersion:quantV2.methodologyVersion,status:quantV2.status,publicationAllowed:false,factorOrder:quantV2.factorOrder.slice(),factorReadiness:Object.fromEntries(quantV2.factorOrder.map(id=>[id,quantV2.factors[id].readiness]))},
     rebalance:backtest.rebalance.allowed,timings:backtest.execution.allowedTimings,costs:backtest.costs,constraints:backtest.constraints,
     methodology:backtest.methodologyVersion,backtest:{state:'UNAVAILABLE',reason:'REAL_BACKTEST_GATE_NOT_VALIDATED',
      checks:[['Historische Fundamentaldaten','Aktuelle Faktorwerte sind kein historischer Point-in-Time-Datensatz.'],['Historisches Universum','Delistings und zeitabhängige Mitgliedschaft sind für diese Vorschau nicht validiert.'],['Kapitalmaßnahmen','Kurse, Splits, Ausschüttungen und Ausführung müssen gemeinsam geprüft sein.'],['Vergleichsindex','Für diese Vorschau ist kein echter Benchmark freigegeben.'],['Ausführung & Reproduktion','Kostenannahmen sind definiert; ein geprüfter historischer Lauf liegt noch nicht vor.']]}};
@@ -395,7 +420,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
