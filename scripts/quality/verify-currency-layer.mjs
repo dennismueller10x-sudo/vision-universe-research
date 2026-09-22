@@ -148,14 +148,18 @@ function loadFxStore() {
     return n;
   }
 
+  /* Die Anbieterreihen, falls build-fx-history.mjs gelaufen ist. Sie
+     koennen fehlen: der Abruf haengt an einem Marker in der
+     Commit-Nachricht, die EZB-Reihen nicht. */
+  let ingested = 0;
+  let fromDir = null;
+  const pairs = [];
   for (const dir of FX_STORE_DIRS) {
     if (!existsSync(dir)) continue;
     const files = readdirSync(dir)
       /* Dateien mit fuehrendem Unterstrich sind Laufprotokolle, keine
          Reihen - _run.json waere sonst ein Paar namens "undefined". */
       .filter((f) => f.endsWith(".json") && !f.startsWith("_"));
-    let ingested = 0;
-    const pairs = [];
     for (const file of files) {
       let data;
       try { data = JSON.parse(readFileSync(join(dir, file), "utf8")); } catch { continue; }
@@ -165,31 +169,44 @@ function loadFxStore() {
       pairs.push(`${data.base}/${data.quote}`);
       ingested++;
     }
-    if (ingested) {
-      /* Der zentrale Intraday-Stand, falls einer vorliegt (O-9).
-         Er gehoert in denselben Store: nur so sieht RT1, ob die
-         EUR-Anzeige den Realtime-Anspruch tragen darf. Ohne ihn
-         rechnet der Nachweis mit Tagesschluessen und meldet
-         folgerichtig, dass "Realtime EUR" nicht zulaessig ist - eine
-         richtige Aussage ueber den falschen Bestand. */
-      const ecbPairs = ingestEcb(store);
-      let intradayPairs = 0;
-      for (const file of INTRADAY_CANDIDATES) {
-        if (!existsSync(file)) continue;
-        let data;
-        try { data = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
-        for (const r of data.rates || []) {
-          const res = store.ingestCurrent(r.base, r.quote, r);
-          if (res.accepted) intradayPairs++;
-        }
-        if (intradayPairs) break;
-      }
-      return { store, kind: "PRODUCTION",
-               note: `${ingested} Paar(e) aus ${dir.replace(ROOT + "/", "")}: ${pairs.slice(0, 8).join(", ")}` +
-                     (pairs.length > 8 ? ` und ${pairs.length - 8} weitere` : "") +
-                     (ecbPairs ? `; ${ecbPairs} EZB-Reihe(n) als Fallback` : "; kein EZB-Fallback") +
-                     (intradayPairs ? `; ${intradayPairs} Intraday-Stand/Staende.` : "; kein Intraday-Stand.") };
+    if (ingested) { fromDir = dir; break; }
+  }
+
+  /* Der Fallback wird unabhaengig geladen.
+
+     Vorher hing er am Vorhandensein der Anbieterreihen: ohne sie fiel
+     der Nachweis auf die Testreihe zurueck, obwohl die EZB-Reihen
+     danebenlagen. Das ist genau verkehrt herum - ein Fallback, der nur
+     dann greift, wenn die Primaerquelle da ist, ist keiner. */
+  const ecbPairs = ingestEcb(store);
+
+  /* Der zentrale Intraday-Stand, falls einer vorliegt (O-9).
+     Er gehoert in denselben Store: nur so sieht RT1, ob die
+     EUR-Anzeige den Realtime-Anspruch tragen darf. Ohne ihn
+     rechnet der Nachweis mit Tagesschluessen und meldet
+     folgerichtig, dass "Realtime EUR" nicht zulaessig ist - eine
+     richtige Aussage ueber den falschen Bestand. */
+  let intradayPairs = 0;
+  for (const file of INTRADAY_CANDIDATES) {
+    if (!existsSync(file)) continue;
+    let data;
+    try { data = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
+    for (const r of data.rates || []) {
+      const res = store.ingestCurrent(r.base, r.quote, r);
+      if (res.accepted) intradayPairs++;
     }
+    if (intradayPairs) break;
+  }
+
+  if (ingested || ecbPairs) {
+    const herkunft = ingested
+      ? `${ingested} Paar(e) aus ${fromDir.replace(ROOT + "/", "")}: ${pairs.slice(0, 8).join(", ")}` +
+        (pairs.length > 8 ? ` und ${pairs.length - 8} weitere` : "")
+      : "Keine Anbieterreihen in diesem Lauf (kein [fx-ingest])";
+    return { store, kind: "PRODUCTION",
+             note: herkunft +
+                   (ecbPairs ? `; ${ecbPairs} EZB-Reihe(n) als Fallback` : "; kein EZB-Fallback") +
+                   (intradayPairs ? `; ${intradayPairs} Intraday-Stand/Staende.` : "; kein Intraday-Stand.") };
   }
 
   const probeFile = PROBE_CANDIDATES.find((f) => existsSync(f));
