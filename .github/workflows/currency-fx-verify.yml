@@ -60,6 +60,11 @@ on:
       - 'providers/ecb/**'
       - 'quant/engines/fx/**'
       - 'quant/config/fx-license.json'
+      - 'quant/methodology/currency-fx-v1.json'
+      - 'quant/tests/currency-fx-matrix.test.mjs'
+      - 'scripts/quality/audit-fx-provider-seam.mjs'
+      - 'scripts/quality/assert-no-local-fx.mjs'
+      - 'scripts/quality/currency-debt-patterns.mjs'
       - '.github/workflows/currency-fx-verify.yml'
 
 permissions:
@@ -70,6 +75,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # DER VERTRAG WIRD IMMER GEPRUEFT, AUCH OHNE MARKER.
+  #
+  # Die Marker unten gehoeren zu Schritten, die beim Anbieter einkaufen.
+  # Tests und Regression Guard tun das nicht - sie an einen Marker zu
+  # haengen hiesse, dass ein Commit ohne Marker ungeprueft durchgeht.
+  # Quant CI laeuft auf diesem Zweig nicht (nur auf main und in PRs),
+  # also waere das hier die einzige Pruefung gewesen.
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testmatrix des Currency Layers
+        run: node --test quant/tests/currency-fx-matrix.test.mjs
+      - name: Regression Guard
+        run: node scripts/quality/assert-no-local-fx.mjs
+      - name: Debt Register ist aktuell
+        # Das Register ist aus dem Quellcode ableitbar. Weicht die
+        # committete Fassung ab, zeigt die Dokumentation auf einen Stand,
+        # den es nicht mehr gibt.
+        #
+        # Verglichen wird ohne den Zeitstempel: er aendert sich bei jedem
+        # Lauf, und ein Gate, das immer rot ist, prueft nichts.
+        run: |
+          cp quant/data/market/fx/currency-debt-register.json /tmp/register-committed.json
+          node scripts/quality/build-currency-debt-register.mjs --publish >/dev/null
+          node -e '
+            const fs = require("fs");
+            const ohneZeit = (f) => {
+              const d = JSON.parse(fs.readFileSync(f, "utf8"));
+              delete d.generatedAtUtc;
+              return JSON.stringify(d);
+            };
+            const alt = ohneZeit("/tmp/register-committed.json");
+            const neu = ohneZeit("quant/data/market/fx/currency-debt-register.json");
+            if (alt !== neu) {
+              console.error("ABBRUCH: Das committete Debt Register weicht vom Quellcode ab.");
+              console.error("Neu erzeugen mit: node scripts/quality/build-currency-debt-register.mjs --publish");
+              process.exit(1);
+            }
+            console.log("Debt Register stimmt mit dem Quellcode ueberein.");
+          '
+
   # DIE MARKER STEHEN IN DER BETREFFZEILE, NICHT IRGENDWO IN DER NACHRICHT.
   #
   # Vorher entschied contains() ueber die ganze Commit-Nachricht. Ein
