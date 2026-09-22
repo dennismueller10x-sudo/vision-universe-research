@@ -1,8 +1,10 @@
 # Discover 2.1 Premium — Datenwahrheit und Vertragsaudit
 
-Stand: 21. September 2026  
-Scope: ausschließlich `/discover-v2/`, dessen QA und Dokumentation  
-Der Isolation-Gate verwendet den aktuellen PR-Merge-Base als Integrations-Baseline (Graph-Start: `32b4796b51bcb95b7ef37bff36e18e34a85ad9c1`) und erzwingt davon unabhängig den geschützten Discover-1.0-Tree `de6baacf4c8c08891f7d4d2dc17ff40459517a8d`.
+Stand: 22. September 2026
+
+Scope: `/discover-v2/` plus die vom Owner freigegebene gemeinsame Consumer-Discovery-Eligibility.
+
+Der Isolation-Gate verwendet den aktuellen PR-Merge-Base als Integrations-Baseline und vergleicht die Discover-1.0-Frontenddateien einzeln. Gemeinsame generierte Daten dürfen sich durch die freigegebene kanonische Regel ändern; Layout, CSS, App-Code und UI-Renderer von `/discover/` bleiben bytegleich.
 
 ## Ergebnis
 
@@ -13,7 +15,8 @@ Der Isolation-Gate verwendet den aktuellen PR-Merge-Base als Integrations-Baseli
 | B3 Structured Captions | PASS | Die sichtbare V2-Caption liest `rendered.range`, `rendered.asOf`, `data-freshness` und `data-session`. Es gibt weder `getAttribute('aria-label')` noch einen Regex auf Screenreader-Text. |
 | B4 Realtime Payload | PASS, keine Änderung | `priceType` und `messageForm` sind ereignisspezifisch und können zwischen Ticks wechseln. Sie dürfen daher nicht in einen einmaligen Handshake verschoben werden. Nur `candlePriceType` ist konstant; dessen isolierte Entfernung rechtfertigt keine Änderung des produktiven Wire Contracts in diesem Frontend-Auftrag. |
 | B5 Preview / Vergleich | PASS | `/discover-v2/` bleibt `noindex, nofollow`; die lokale Vergleichsaktion zu `/discover/` bleibt vorhanden. Kein Preview-Badge wird gezeigt. |
-| B6 Isolation | PASS | `scripts/discover-v2/regression-gate.mjs` schützt 39.643 Baseline-Dateien und erlaubt nur die explizit aufgelisteten V2-, QA- und Dokumentationsdateien. Der Baseline-Tree von `discover/` ist `de6baacf4c8c08891f7d4d2dc17ff40459517a8d`. |
+| B6 Isolation | PASS | `scripts/discover-v2/regression-gate.mjs` schützt alle Dateien außerhalb der exakten Allowlist und prüft `discover/index.html`, `discover/app.js`, `discover/discover.css` sowie sämtliche `discover/ui/*`-Dateien bytegenau gegen die Integrations-Baseline. |
+| Extreme Consumer Discovery | PASS | Die freigegebene Regel nutzt `ranking-hygiene-2.0.0`: Nur `WARNING`-Titel mit bereits kanonisch als `IMPLAUSIBLE_VALUE` bewerteten Renditen werden aus Feed, Rankings und Collections quarantänisiert. Suche und Stock Page bleiben erhalten. |
 | Zero Cost | PASS | Home/Worlds/Feed verwenden 5-Minuten-Snapshots. `meta.realtime.stream.scope` bleibt `stockPage`, `maxSymbolsPerClient` bleibt 5, und der vorhandene `FreeBudget`-Schutz mit `PROTECT/EXHAUSTED` bleibt unverändert. |
 
 ## B1 — zwei bestehende Zustandsverträge, keine neue Ableitung
@@ -65,15 +68,15 @@ Die 100 Bytes Differenz sind nicht vollständig konstant: `priceType` und `messa
 
 ## Plausibilität und extreme Discovery-Ergebnisse
 
-Die vorhandene Hygiene wird nicht umgangen: Feed-Karten sind Mitglieder der kanonischen Feed-Reihenfolge, und die ausgelieferte Eligibility bleibt maßgeblich. Das Audit hat jedoch einen explizit vom Owner genannten Grenzfall bestätigt:
+Die Owner-Entscheidung wurde umgesetzt: Extremwerte sollen nicht als Consumer-Empfehlung inszeniert werden, solange die vorhandene Datenhygiene sie als auffällige Bewegung einstuft. Dafür wurde **keine neue Ranking Engine** gebaut. `discover-eligibility-1.0.0` delegiert die Plausibilitätsprüfung an die vorhandene `ranking-hygiene-2.0.0` und verändert weder Renditen noch Rangberechnung.
 
 | Titel | sichtbarer Wert | kanonischer Status |
 |---|---:|---|
-| PMI | +2.690 % in 3 Monaten | `discoveryEligible: true`, `dataQuality: WARNING`, Grund `large_move` |
+| PMI | +2.690 % in 3 Monaten | `discoveryEligible: false`, `ineligibleReason: DATA_QUALITY_REVIEW`; weiter über Suche und Stock Page erreichbar |
 
-Der Titel hat die bestehende kanonische Qualification durchlaufen und bleibt trotzdem im Feed. Ihn nur in V2.1 auszublenden wäre eine neue frontendseitige Eligibility-Regel und damit außerhalb des Auftrags. **Owner-Entscheidung erforderlich:** Sollen `dataQuality: WARNING`-Titel generell aus Consumer-Discovery entfernt werden, nur bei extremen Performancewerten zurückgehalten werden, oder weiterhin mit klarer Warnkennzeichnung erscheinen? Bis zu dieser Entscheidung bleibt die kanonische Reihenfolge unverändert.
+Der präzise Filter quarantänisiert im aktuellen Build 16 von 5.954 Titeln. Ein pauschaler Ausschluss aller `WARNING`-Titel wurde verworfen, weil er 1.774 Titel entfernt und damit die Consumer-Discovery unverhältnismäßig verengt hätte. Normale Warnungen, etwa begrenzte Historie, bleiben zulässig, solange keine kanonische Renditegrenze verletzt ist.
 
-Dieser Befund blockiert den Premium-Frontend-Build technisch nicht. Er verhindert aber, dass eine neue fachliche Ausschlussregel stillschweigend als Designänderung eingeführt wird.
+Der Contract-Gate prüft für jeden quarantänisierten Titel: nicht in Feed-Karten, nicht in Feed-Reihenfolge, nicht in Collection Rows, weiterhin in der Suche und mit sichtbarem Prüfhinweis auf der Detailseite.
 
 ## Ausführbarer Nachweis
 
@@ -82,4 +85,4 @@ node scripts/discover-v2/contract-qa.mjs
 node scripts/discover-v2/regression-gate.mjs
 ```
 
-Erwartung: `PASS_WITH_OWNER_REVIEW` für den Vertragsaudit und `PASS` für das Isolation-Gate. Der Owner-Review ist ein dokumentierter Datenregel-Befund, kein technischer Fehler und keine stillschweigende Regeländerung.
+Erwartung: `PASS` für Vertragsaudit und Isolation-Gate. Der frühere Owner-Review `EXTREME_DISCOVERY_RESULTS` ist geschlossen.

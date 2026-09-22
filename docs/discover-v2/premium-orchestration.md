@@ -37,8 +37,8 @@ Agents may reject another agent's result. File ownership avoids concurrent edits
 
 ## Quality gates
 
-1. **Freeze gate:** the complete tree outside the explicit 2.1 allowlist is byte-identical to the baseline. `/discover/` and shared navigation are immutable.
-2. **Architecture gate:** no provider, pipeline, ranking, eligibility, SEC, realtime runtime or source-of-truth change.
+1. **Freeze gate:** the complete tree outside the explicit allowlist is byte-identical to the baseline. The Discover 1.0 frontend and shared navigation are immutable; shared generated data may change only through the authorized canonical eligibility build.
+2. **Architecture gate:** no provider, pipeline, SEC, realtime runtime or source-of-truth change. The authorized Consumer-Discovery eligibility refinement reuses the existing Ranking Hygiene engine and is covered by an executable contract gate.
 3. **First-five-seconds gate:** at 320 and 390 px, product purpose, a named stock, performance/timeframe, chart and clear action are visible without instruction text doing the work. This is an expert heuristic unless tested with independent participants.
 4. **Premium gate:** true-white neutral surfaces; no global beige; three visual intensities; restrained adult colour palette; no lime tab block; glass dock remains legible on white, colour and cinema surfaces.
 5. **Diversity gate:** ten consecutive mobile screen heights include materially different composition, density and colour patterns. No run of three identical stock-card compositions.
@@ -59,6 +59,6 @@ Agents may reject another agent's result. File ownership avoids concurrent edits
 
 ## Owner escalation
 
-Escalate only for a canonical ranking/eligibility/research rule change, paid infrastructure, provider/licence decision, new backend/realtime architecture, irreversible release action outside the authorized preview, or replacement of Discover 1.0. Extreme but contract-valid content is documented rather than silently filtered.
+Escalate only for a canonical ranking/eligibility/research rule change, paid infrastructure, provider/licence decision, new backend/realtime architecture, irreversible release action outside the authorized preview, or replacement of Discover 1.0. The extreme-return eligibility decision is resolved: canonical hygiene findings are quarantined from recommendation surfaces while search and stock pages remain available.
 
 `DONE` requires a deployed `/discover-v2/` visibly identified as Discover 2.1, preserved `noindex`, unchanged Discover 1.0, green browser and regression gates, reviewed screenshots after the last product change, and a live smoke test of both versions.

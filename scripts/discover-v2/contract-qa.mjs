@@ -3,7 +3,11 @@
  * It verifies reuse and presentation boundaries. It does not recalculate
  * rankings, freshness, eligibility or realtime semantics. */
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readdirSync,readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+
+const require=createRequire(import.meta.url);
+const Eligibility=require('../../discover/engines/discovery-eligibility.js');
 
 const read=path=>readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
@@ -18,6 +22,7 @@ const freshness=read('quant/engines/realtime/freshness.js');
 const worker=read('worker/src/vu-live.mjs');
 const meta=json('discover/data/meta.json');
 const feed=json('discover/data/feed/US_REAL.json');
+const search=json('discover/data/search/US_REAL.json');
 
 const checks=[];
 function check(name,fn){fn();checks.push({name,status:'PASS'});}
@@ -91,13 +96,32 @@ check('Canonical feed entries remain members of the canonical feed order',()=>{
   for(const card of feed.cards) assert(order.has(card.symbol),card.symbol);
 });
 
-const extreme=feed.cards.filter(card=>{
-  const z=card.plain&&card.plain.zahl;
-  return z&&/^return/.test(z.quelle||'')&&typeof z.roh==='number'&&Math.abs(z.roh)>=10;
-}).map(card=>{
-  const detail=json('discover/data/stocks/US_REAL/'+card.symbol+'.json');
-  return {symbol:card.symbol,value:card.plain.zahl.roh,period:card.plain.zahl.label,
-    discoveryEligible:detail.discoveryEligible,dataQuality:detail.dataQuality,dataQualityReason:detail.dataQualityReason};
+const details=readdirSync('discover/data/stocks/US_REAL').filter(name=>name.endsWith('.json'))
+  .map(name=>json('discover/data/stocks/US_REAL/'+name));
+const rows=readdirSync('discover/data/rows/US_REAL').filter(name=>name.endsWith('.json'))
+  .flatMap(name=>json('discover/data/rows/US_REAL/'+name).cards||[]);
+const feedSymbols=new Set(feed.cards.map(card=>card.symbol));
+const orderSymbols=new Set(feed.order.map(card=>card.s));
+const rowSymbols=new Set(rows.map(card=>card.symbol));
+const searchSymbols=new Set(search.entries.map(entry=>entry.s));
+const quarantined=details.filter(detail=>detail.ineligibleReason==='DATA_QUALITY_REVIEW');
+
+check('Extreme WARNING returns use canonical hygiene and are quarantined from recommendation surfaces',()=>{
+  assert(quarantined.length>0,'Expected at least one canonical data-quality quarantine');
+  for(const detail of details){
+    const assessment=Eligibility.assess(detail);
+    if(assessment.reason==='DATA_QUALITY_REVIEW'){
+      assert.equal(detail.discoveryEligible,false,detail.symbol);
+      assert.equal(detail.ineligibleReason,'DATA_QUALITY_REVIEW',detail.symbol);
+    }
+  }
+  for(const detail of quarantined){
+    assert.equal(feedSymbols.has(detail.symbol),false,detail.symbol+' in feed cards');
+    assert.equal(orderSymbols.has(detail.symbol),false,detail.symbol+' in feed order');
+    assert.equal(rowSymbols.has(detail.symbol),false,detail.symbol+' in collection row');
+    assert.equal(searchSymbols.has(detail.symbol),true,detail.symbol+' missing from search');
+    assert(detail.badges.some(badge=>badge.id==='dataQualityReview'),detail.symbol+' badge');
+  }
 });
 
 const fullFrame={op:'u',t:0,schemaVersion:'vu-live-update-1.1.0',v:[['NVDA',180,0,170,180,170,180,0]],semantics:[{priceType:'TRADE',messageForm:'iexTyped',candlePriceType:'REALTIME_REFERENCE'}]};
@@ -105,4 +129,4 @@ const withoutSemantics={...fullFrame};delete withoutSemantics.semantics;
 const withoutConstant={...fullFrame,semantics:[{priceType:'TRADE',messageForm:'iexTyped'}]};
 const bytes=value=>Buffer.byteLength(JSON.stringify(value));
 
-console.log(JSON.stringify({status:'PASS_WITH_OWNER_REVIEW',checks,b1:'PASS',b2:'PASS',b3:'PASS',b4:'PASS_NO_CHANGE',b5:'PASS',b6:'SEE_REGRESSION_GATE',zeroCost:'PASS',realtimePayloadMeasurement:{singleSymbolBytes:{current:bytes(fullFrame),withoutAllSemantics:bytes(withoutSemantics),withoutConstantCandleSemantic:bytes(withoutConstant)},decision:'priceType and messageForm are event-specific; moving semantics to handshake would lose per-event truth. Constant candlePriceType alone does not justify a wire-contract change in this frontend-only scope.'},ownerReview:{id:'EXTREME_DISCOVERY_RESULTS',items:extreme,reason:'Existing canonical eligibility permits these WARNING entries; frontend must not invent a suppression or ranking rule.'}},null,2));
+console.log(JSON.stringify({status:'PASS',checks,b1:'PASS',b2:'PASS',b3:'PASS',b4:'PASS_NO_CHANGE',b5:'PASS',b6:'SEE_REGRESSION_GATE',zeroCost:'PASS',eligibility:{status:'PASS',policyVersion:Eligibility.VERSION,quarantined:quarantined.map(detail=>detail.symbol).sort(),searchPreserved:true,recommendationSurfacesExcluded:true},realtimePayloadMeasurement:{singleSymbolBytes:{current:bytes(fullFrame),withoutAllSemantics:bytes(withoutSemantics),withoutConstantCandleSemantic:bytes(withoutConstant)},decision:'priceType and messageForm are event-specific; moving semantics to handshake would lose per-event truth. Constant candlePriceType alone does not justify a wire-contract change in this frontend-only scope.'}},null,2));
