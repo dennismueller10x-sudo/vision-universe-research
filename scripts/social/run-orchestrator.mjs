@@ -211,14 +211,42 @@ export function bestesThema(root) {
    das Ergebnis muss ein Bundle auf der Platte haben. Findet sich
    keines, entsteht NICHTS - und der Lauf sagt, dass zu diesem Thema
    keine Evidenz liegt. Einen Gegenstand erfindet kein Knopf (§4).
-   ------------------------------------------------------------------- */
-export function themaDesOwners(text, root) {
+
+   -----------------------------------------------------------------
+   EINE PLATTEN-UEBERSCHRIFT IST KEIN INSTRUMENT - UND TROTZDEM OK
+
+   "Staerkste Aktien im Dow Jones" hat kein Kuerzel und kein Bundle;
+   ohne diese Pruefung meldete diese Funktion KEIN_INSTRUMENT_ERKANNT
+   und der Aufrufer (kWirksam weiter unten) hielt die Warteschlangen-
+   Aufhebung deshalb fuer nicht ausfuehrbar - obwohl run-social-
+   cycle.mjs (themaVomOwner(), dieselbe Reihenfolge) genau so einen
+   Titel laengst als eigenstaendiges, bereits kuratiertes Thema
+   erkennt. Ein realer Lauf mit exakt diesem Titel dispatchte deshalb
+   nichts: VORBEREITEN wurde uebersprungen, WIRKSAM blieb "darf
+   erzeugen nein".
+
+   Die Platte wird deshalb, wie dort, ZUERST auf einen exakten Titel
+   geprueft. Ein Treffer traegt `symbol: null` - es gibt kein
+   Instrument, also keinen Creative-Job-Dispatch dafuer (creativeBedarf()
+   liest ein fehlendes Bundle bereits als "kein Inhaltsobjekt", ohne
+   Sonderfall), aber `ok: true` haelt kWirksam offen: der Auftrag ist
+   ausfuehrbar, run-social-cycle.mjs baut den Kandidaten direkt aus der
+   Platte. */
+export function themaDesOwners(text, root, platteThemen) {
   const r = root || ROOT;
+  const titelTreffer = (platteThemen || []).find((t) =>
+    t && t.title && t.title.trim().toLowerCase() === String(text || "").trim().toLowerCase());
+  if (titelTreffer) {
+    return { ok: true, thema: { symbol: null, topicId: titelTreffer.topicId,
+      score: null, topic: titelTreffer.title, herkunft: "PLATTE" } };
+  }
+
   const symbol = VisualDaten.symbolAus(text);
   if (!symbol) {
     return { ok: false, grund: "KEIN_INSTRUMENT_ERKANNT",
-      erklaerung: "Aus \"" + String(text || "") + "\" laesst sich kein " +
-        "Instrument lesen. Erwartet wird ein Kuerzel am Ende, etwa " +
+      erklaerung: "Aus \"" + String(text || "") + "\" laesst sich weder eine " +
+        "Platten-Ueberschrift noch ein Instrument lesen. Erwartet wird der " +
+        "exakte Titel einer Reihe oder ein Kuerzel am Ende, etwa " +
         "\"Rechenzentren NVDA\"." };
   }
   const bundle = join(r, "quant/data/technical/instruments", symbol + ".json");
@@ -523,11 +551,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const manuell = auftrag && auftrag.ok
     ? ManualMode.anwenden(auftrag.modus, k) : null;
 
-  /* Bei POST ZU THEMA muss der Gegenstand zuerst auf ein Instrument
-     mit Belegen abgebildet werden. Gelingt das nicht, ist der Auftrag
-     nicht ausfuehrbar - und das ist ein Befund, keine Ausrede. */
+  /* Bei POST ZU THEMA muss der Gegenstand zuerst auf eine Platten-
+     Ueberschrift oder ein Instrument mit Belegen abgebildet werden.
+     Gelingt keines von beiden, ist der Auftrag nicht ausfuehrbar - und
+     das ist ein Befund, keine Ausrede. Dieselbe Platte, die
+     run-social-cycle.mjs::themaVomOwner() prueft - hier nur gelesen,
+     nicht neu gebaut. */
+  const platteFuerThema = (auftrag && auftrag.ok && auftrag.thema)
+    ? readJson(join(DATEN, "opportunity-slate.json"), { topics: [] }) : null;
   const ownerThema = (auftrag && auftrag.ok && auftrag.thema)
-    ? themaDesOwners(auftrag.thema) : null;
+    ? themaDesOwners(auftrag.thema, ROOT, platteFuerThema.topics) : null;
 
   const kWirksam = (manuell && manuell.darfErzeugen && !k.darfErzeugen &&
       !(ownerThema && !ownerThema.ok))
