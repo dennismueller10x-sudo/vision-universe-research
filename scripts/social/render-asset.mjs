@@ -47,7 +47,7 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { tmpdir } from "node:os";
+import { homedir } from "node:os";
 import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
@@ -1319,6 +1319,44 @@ export function chromiumPfad() {
   return gefunden;
 }
 
+/* =====================================================================
+   WARUM DIE ARBEITSDATEI NICHT IN os.tmpdir() LIEGT
+
+   Sechs reale Laeufe zeigten denselben Befund, ueber drei grundverschiedene
+   Fixversuche am Mess-Timing hinweg unveraendert: "Atlas nicht gemessen".
+   Die Diagnose (PR #160/#161) hat die Ursache gemessen statt geraten -
+   `--dump-dom` liefert nicht unsere Seite, sondern Chromiums eigene
+   interne Netzwerkfehlerseite zurueck (Titel = der rohe file://-Pfad,
+   Textkoerper = Chromiums "It may have been moved, edited, or deleted.",
+   Script = Chromiums eigenes neterror.js, nicht MESS_SKRIPT). Die
+   DOM-Laenge war bei jedem einzelnen Fehlschlag identisch - dieselbe
+   statische Fehlerseite, nicht elf verschiedene reale Dumps.
+
+   Der CI-Runner installiert nicht das echte apt-Paket, sondern das
+   Uebergangspaket, das intern `snap install chromium` ausfuehrt
+   (`chromium --version` meldet "from Canonical" - das ist Snaps eigene
+   Kennzeichnung). Ein Snap in strikter Sperrung bekommt ein PRIVATES,
+   leeres /tmp in seinem eigenen Mount-Namespace - eine Datei, die dieser
+   Node-Prozess nach os.tmpdir() schreibt, existiert fuer Chromium
+   deshalb schlicht nicht. Die erste Chromium-Anweisung (--screenshot)
+   wirft dabei NICHT: ein Screenshot der leeren Fehlerseite ist immer
+   noch ein gueltiges JPEG in der angeforderten Fenstergroesse, und genau
+   das ist alles, was pruefeJpeg() bisher verlangt hat - der Fehlschlag
+   wurde erst beim zweiten Aufruf sichtbar, weil nur der nach Inhalt
+   fragt.
+
+   Der Home-Ordner ist dagegen kein privater Snap-Mount: das
+   `home`-Interface, das ein Browser-Snap fuer Datei-Downloads und
+   -Uploads ohnehin braucht, ist bei chromium ab Werk verbunden und
+   spiegelt das ECHTE $HOME. Die Arbeitsdatei liegt deshalb dort - kein
+   zweiter Prozess, kein Server, nur ein anderer Pfad fuer dieselbe
+   Datei. */
+export function arbeitsVerzeichnis() {
+  const pfad = join(homedir(), ".vu-render-arbeit");
+  mkdirSync(pfad, { recursive: true });
+  return pfad;
+}
+
 /** Liest Signatur und Groesse aus dem erzeugten JPEG zurueck. */
 export function pruefeJpeg(pfad) {
   const roh = readFileSync(pfad);
@@ -1372,6 +1410,8 @@ export function messeSeite(htmlPfad, breite, hoehe) {
 
      Bis eine echte Ursache gemessen ist, wird sie protokolliert -
      nicht geraten. Das Verhalten bei Erfolg bleibt unveraendert. */
+  console.error("messeSeite: existsSync(htmlPfad)=" + existsSync(htmlPfad) +
+    " htmlPfad=" + htmlPfad);
   let dom;
   try {
     dom = execFileSync(chromiumPfad(), [
@@ -1398,11 +1438,19 @@ export function messeSeite(htmlPfad, breite, hoehe) {
        geht - deshalb hier der naechste, praezisere Ausschnitt statt
        einer weiteren Vermutung. */
     const si = dom.search(/<script/i);
+    const titel = /<title>([^<]*)<\/title>/i.exec(dom);
     console.error("messeSeite: --dump-dom lief durch, aber data-vu-messung " +
       "fehlt. DOM-Laenge=" + dom.length + " enthaelt <script>=" +
       (si !== -1) + " enthaelt messen(): " + /function\s+messen/i.test(dom) +
       " enthaelt data-vu-figur=" + dom.includes("data-vu-figur") +
-      " enthaelt html-Tag=" + /<html[^>]*>/i.test(dom));
+      " enthaelt html-Tag=" + /<html[^>]*>/i.test(dom) +
+      " Titel=" + JSON.stringify(titel ? titel[1] : null) +
+      " ist-Chromium-Fehlerseite=" + dom.includes("neterror") +
+      /* Chromiums eigene "aw, snap"/Datei-nicht-gefunden-Seite traegt
+         den rohen file://-Pfad als <title> und diesen Satz im Text -
+         das genaue Muster aus Lauf 35716917327. */
+      " enthaelt Fehlertext=" + dom.includes("It may have been moved, edited, or deleted.")
+    );
     if (si !== -1) {
       console.error("messeSeite: Ausschnitt um <script> (Position " + si +
         "): " + JSON.stringify(dom.slice(Math.max(0, si - 80), si + 300)));
@@ -1473,7 +1521,7 @@ function entkommen(s) {
 export function render(p, zielPfad, options = {}) {
   if (!p.ok) throw new Error("Kein zeichenbarer Plan: " + p.message);
 
-  const arbeit = join(tmpdir(), `vu-asset-${process.pid}-${Date.now()}.html`);
+  const arbeit = join(arbeitsVerzeichnis(), `vu-asset-${process.pid}-${Date.now()}.html`);
   writeFileSync(arbeit, p.komposition
     ? seiteKomposition(p, options.schrift || null)
     : seite(p, options.schrift || null));
@@ -1800,7 +1848,7 @@ export function uebernimm(p, zielPfad, options = {}) {
     "img{display:block;width:" + p.breite + "px;height:" + p.hoehe + "px;}" +
     "</style></head><body><img src=\"" + daten + "\"></body></html>";
 
-  const arbeit = join(tmpdir(), `vu-uebernahme-${process.pid}-${Date.now()}.html`);
+  const arbeit = join(arbeitsVerzeichnis(), `vu-uebernahme-${process.pid}-${Date.now()}.html`);
   writeFileSync(arbeit, seiteHtml);
   mkdirSync(dirname(zielPfad), { recursive: true });
 
