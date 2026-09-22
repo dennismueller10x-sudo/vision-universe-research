@@ -192,11 +192,44 @@ jobs:
         #
         # Das Startdatum kommt aus der gemessenen Historientiefe; das hier
         # ist die Obergrenze des Wunsches, nicht die des Anbieters.
-        run: node scripts/market/build-fx-history.mjs --max-pairs=80 --start=2015-01-01
+        run: node scripts/market/build-fx-history.mjs --max-pairs=80 --start=2015-01-01 --publish-availability
 
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
         run: node scripts/quality/verify-currency-layer.mjs
+
+      # Die Abdeckungskarte enthaelt keine Kurse, nur Paarnamen und
+      # Gruende - sie darf und soll committet werden. Ohne sie waere
+      # nicht sichtbar, welche Berichtswaehrungen dauerhaft ohne FX-Paar
+      # bleiben.
+      - name: Abdeckungskarte in den Zweig
+        if: >-
+          steps.ingest.outcome == 'success' &&
+          (github.event_name != 'workflow_dispatch' || inputs.publish_reports)
+        run: |
+          if [ -f quant/data/market/fx/pair-availability.json ]; then
+            node -e '
+              const fs = require("fs");
+              const raw = fs.readFileSync("quant/data/market/fx/pair-availability.json", "utf8");
+              const verboten = ["points", "rate", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), "$");
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder in der Abdeckungskarte: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log("Abdeckungskarte frei von Kursen.");
+            '
+            bash scripts/ci/commit-and-push.sh \
+              "FX-Paarabdeckung gemessen (automatischer Lauf)" \
+              quant/data/market/fx/pair-availability.json
+          fi
 
       - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
         if: always()

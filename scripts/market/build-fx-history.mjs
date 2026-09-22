@@ -296,6 +296,63 @@ async function main() {
   };
   writeFileSync(join(OUT_DIR, "_run.json"), JSON.stringify(summary, null, 2) + "\n");
 
+  /* DIE ABDECKUNGSKARTE - OHNE EINEN EINZIGEN KURS.
+
+     Welche Berichtswaehrung ein FX-Paar hat und welche nicht, ist eine
+     Faehigkeitsaussage wie die Sondierung selbst: sie enthaelt
+     Paarnamen, Zeilenzahlen und Gruende, aber keinen Kurswert. Sie darf
+     deshalb committet werden, waehrend die Reihen es nicht duerfen.
+
+     Ohne sie waere der wichtigste Befund dieses Laufs unsichtbar: 21 der
+     61 gebrauchten Richtungen fuehrt der Anbieter nicht. Die
+     Unternehmen, die in diesen Waehrungen berichten, behalten ihre
+     Originalwaehrung - dauerhaft, nicht bis zum naechsten Lauf. Das ist
+     eine Produktaussage und gehoert vor die Augen des Owners, nicht in
+     eine Arbeitsablage, die mit dem Runner stirbt. */
+  const availability = {
+    schema: "vu-fx-pair-availability-1.0.0",
+    generatedAtUtc: asOf,
+    note: "Welche gebrauchten Waehrungspaare der Anbieter fuehrt. Enthaelt keine Kurse - " +
+          "nur Paarnamen, Beobachtungszahlen und Gruende. Waehrungen ohne Paar bleiben im " +
+          "Produkt in ihrer Originalwaehrung stehen.",
+    provider: "tiingo",
+    startDate: START,
+    requestedStartDate: REQUESTED_START,
+    startClampedToMeasuredDepth: startClamped,
+    directionsNeeded: pairs.length,
+    canonicalPairsAttempted: toFetch.length,
+    served: ok.map((r) => ({
+      requested: `${r.pair.base}/${r.pair.quote}`,
+      storedAs: `${r.stored.base}/${r.stored.quote}`,
+      direction: r.servedDirection,
+      observations: r.stats.observations,
+      first: r.stats.first, last: r.stats.last,
+      securitiesServed: r.pair.securities
+    })),
+    notServed: results.filter((r) => !r.ok).map((r) => ({
+      requested: `${r.pair.base}/${r.pair.quote}`,
+      reason: r.reason,
+      triedTickers: (r.attempts || []).map((a) => a.ticker),
+      securitiesAffected: r.pair.securities,
+      consequence: "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    })),
+    unservedCurrencies: [...new Set(results.filter((r) => !r.ok)
+      .flatMap((r) => [r.pair.base, r.pair.quote])
+      .filter((c) => c !== "EUR" && c !== "USD"))].sort(),
+    securitiesWithoutPair: results.filter((r) => !r.ok)
+      .reduce((n, r) => n + (r.pair.securities || 0), 0)
+  };
+
+  const availabilityFile = (PUBLISH || flags.has("--publish-availability"))
+    ? join(ROOT, "quant", "data", "market", "fx", "pair-availability.json")
+    : join(OUT_DIR, "..", "pair-availability.json");
+  mkdirSync(dirname(availabilityFile), { recursive: true });
+  writeFileSync(availabilityFile, JSON.stringify(availability, null, 2) + "\n");
+  console.log(`  Abdeckungskarte: ${availability.served.length} gefuehrt, ${availability.notServed.length} nicht - ` +
+    (availability.unservedCurrencies.length
+      ? `ohne Paar: ${availability.unservedCurrencies.join(", ")}`
+      : "jede gebrauchte Waehrung ist bedient"));
+
   console.log(`\n${ok.length} von ${toFetch.length} Paaren geschrieben, ${summary.totalObservations} Beobachtungen, ${requests} Anfragen.`);
   console.log(`Ziel: ${summary.outputDir}`);
   process.exit(0);
