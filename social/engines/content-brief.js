@@ -57,7 +57,7 @@
   /**
    * Baut den Brief.
    *
-   * @param spec.opportunity        { opportunityId, topic, premise, hasCause, timeSensitivity }
+   * @param spec.opportunity        { opportunityId, topic, question, premise, hasCause, timeSensitivity }
    * @param spec.strategyDecision   { archetype, mode, timingHour, strategyVersion }
    * @param spec.visual             { visualType }
    * @param spec.evidence           die Belege aus RESEARCH (sourceRefs mit Wert)
@@ -159,6 +159,21 @@
 
       /* ------------------------------------------------ Was zu sagen ist */
       topic: opportunity.topic || null,
+      /* -----------------------------------------------------------
+         WARUM DIESES THEMA ZUSAMMENGEHOERT — IN LESERSPRACHE
+
+         Bei einer Discover-Reihe steht das schon woanders bereit:
+         `subtitle` ("Deutlich gefallen — und seit drei Monaten wieder
+         klar im Plus.") statt der internen Filterformel (`rule`,
+         voller Variablennamen wie "maxDrawdown252d" und Verweise wie
+         "V4 §21"). Diese Zeile war bisher der einzige Ort, an dem der
+         Satz verlorenging: er reiste bis zur Gelegenheit mit
+         (`explanation`/`question`), erreichte aber nie den Brief -
+         und damit auch keinen Autor. Ein Gruppen-Hook hatte deshalb
+         nur die rohe Trefferzahl ("420 von 5954 geprueften Titeln")
+         und den nackten Reihennamen ("Comeback?") zur Verfuegung,
+         nie den Satz, der sagt, WAS das bedeutet. */
+      question: opportunity.question || null,
       /* -----------------------------------------------------------
          KLARNAMEN REISEN MIT
 

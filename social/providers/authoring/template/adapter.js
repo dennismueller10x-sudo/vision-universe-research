@@ -248,6 +248,26 @@
       build: function (e, brief) {
         return "Was diese Liste nicht sagt: " + wer(e, brief) + ", " + wert(e) +
                " " + e.metric + ".";
+      } },
+
+    /* -------------------------------------------------------------------
+       DIE BEGRUENDUNG ZUERST, NICHT DIE TREFFERZAHL
+
+       Die drei Muster oben fuehren alle mit der rohen Zaehlung ("420 von
+       5954 geprueften Titeln") und haengen den Reihennamen dahinter an -
+       fuer eine Reihe wie "Comeback?" liest sich das wie ein Auszug aus
+       einem Pruefbericht, nicht wie ein Grund hinzusehen. `brief.question`
+       traegt seit content-brief.js den Satz, den die Reihe selbst schon
+       in Lesersprache mitbringt (ihr `subtitle`, nicht ihre interne
+       Filterformel) - hier fuehrt er, die Zaehlung folgt als Beleg.
+       Ohne `question` faellt das Muster auf den Reihennamen zurueck, wie
+       die drei Muster oben es tun. ------------------------------------- */
+    { id: "group-question",
+      note: "Die Begruendung der Reihe zuerst, in Lesersprache. Die " +
+            "Trefferzahl folgt als Beleg, nicht als Einstieg.",
+      build: function (e, brief) {
+        var frage = (brief && brief.question) || wer(e, brief);
+        return frage + " " + wert(e) + " " + e.metric + " erf" + UE + "llen das.";
       } }
   ];
 

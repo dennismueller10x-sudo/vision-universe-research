@@ -419,3 +419,78 @@ test("AU31 · `production` gehoert dem Autor der GEWAEHLTEN Variante", () => {
   assert.equal(lauf.outputs["mit-bild"], undefined,
     "ein Autor, der nie geschrieben hat, hat auch nichts beigetragen");
 });
+
+/* ------------------------------------------------------------------ */
+/* GRUPPEN-HOOKS: DIE BEGRUENDUNG DER REIHE, NICHT NUR IHRE ZAEHLUNG   */
+/* ------------------------------------------------------------------ */
+
+/* Eine Discover-Reihe wie eine echte: kein `entity` auf der Evidenz
+   (die Reihe spricht ueber sich selbst, nicht ueber einen Titel), eine
+   Trefferzahl und - seit content-brief.js `question` durchreicht -
+   der Satz, den die Reihe selbst schon in Lesersprache mitbringt. */
+function gruppenBrief(over = {}) {
+  return Brief.build(Object.assign({
+    opportunity: { opportunityId: "opp_comeback", topic: "Comeback?",
+      question: "Deutlich gefallen — und seit drei Monaten wieder klar im Plus.",
+      premise: "SECURITY_METRIC", hasCause: false, timeSensitivity: "TIMELY" },
+    strategyDecision: { archetype: "RANKING_LIST", mode: "EXPLOIT",
+      strategyVersion: "strategy_initial" },
+    visual: { visualType: "DATA_CARD" },
+    evidence: [
+      { metric: "von 5954 geprueften Titeln", value: 420,
+        statement: "420 von 5954 geprueften Titeln erfuellen das.",
+        source: { source: "discover.row.comeback", state: "VERIFIED" } },
+      { entity: "TEN Holdings", metric: "Kurs", value: 9.84, unit: "USD",
+        statement: "TEN Holdings: Kurs 9,84 USD.",
+        source: { source: "discover.card", state: "VERIFIED" } },
+      { entity: "TEN Holdings", metric: "in 3 Monaten", value: 681, unit: "%",
+        statement: "TEN Holdings: in 3 Monaten 681 %.",
+        source: { source: "discover.card.return3M", state: "VERIFIED" } }
+    ]
+  }, over));
+}
+
+test("AU32 · content-brief.js reicht die Begruendung der Gelegenheit durch", () => {
+  /* Vorher gab es dieses Feld auf dem Brief nicht - `opportunity.question`
+     erreichte den Autor nie, obwohl die Reihe es laengst mitbrachte
+     (content-ladder.js setzt es aus `subtitle`, nicht aus der internen
+     Filterformel `rule`). */
+  assert.equal(gruppenBrief().question,
+    "Deutlich gefallen — und seit drei Monaten wieder klar im Plus.");
+  assert.equal(brief().question, null,
+    "ohne question im Aufruf bleibt das Feld leer - nichts wird erfunden");
+});
+
+test("AU33 · group-question fuehrt mit der Begruendung, nicht mit der Zaehlung", () => {
+  const r = Template.createTemplateAuthor({}).write(gruppenBrief(), { variants: 8 });
+  const variante = r.variants.find((v) => v.pattern.startsWith("group-question/"));
+  assert.ok(variante, "das Muster group-question muss unter den Kandidaten sein");
+  assert.equal(variante.hook,
+    "Deutlich gefallen — und seit drei Monaten wieder klar im Plus. " +
+    "420 von 5954 geprueften Titeln erfüllen das.");
+});
+
+test("AU34 · Ohne question faellt group-question auf den Reihennamen zurueck", () => {
+  /* Kein Absturz und keine Erfindung: fehlt die Begruendung, gilt
+     dieselbe Regel wie bei den drei aelteren Mustern - der Reihenname
+     traegt den Satz. */
+  const ohneFrage = gruppenBrief({ opportunity: { opportunityId: "opp_comeback",
+    topic: "Comeback?", question: null, premise: "SECURITY_METRIC",
+    hasCause: false, timeSensitivity: "TIMELY" } });
+  const r = Template.createTemplateAuthor({}).write(ohneFrage, { variants: 8 });
+  const variante = r.variants.find((v) => v.pattern.startsWith("group-question/"));
+  assert.ok(variante);
+  assert.ok(variante.hook.startsWith("Comeback?"),
+    "ohne Begruendung fuehrt der Reihenname, wie bei den anderen Mustern");
+});
+
+test("AU35 · Die echte Auswahl gewinnt heute mit group-question, nicht geraten", () => {
+  /* Kein Vorrang eingebaut - dieselbe Bewertung wie fuer jedes andere
+     Muster auch entscheidet. Der Test haelt fest, WAS heute gewinnt,
+     nicht, dass es gewinnen MUSS: aendert sich die Bewertung echt,
+     darf sich auch dieser Befund aendern. */
+  const reg = registry(Template.createTemplateAuthor({}));
+  const lauf = Authoring.run(reg, gruppenBrief(),
+    { authors: ["template"], firstUsable: false });
+  assert.equal(lauf.selection.chosen.variant.pattern, "group-question/group-rule-evidence");
+});

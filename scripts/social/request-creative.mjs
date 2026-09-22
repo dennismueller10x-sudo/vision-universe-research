@@ -46,6 +46,7 @@ const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js")
 const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
+const VisualMotif = require(join(ROOT, "social/engines/visual-motif.js"));
 
 export const LEDGER_DATEI = "social/data/creative-invocations.json";
 
@@ -95,13 +96,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   /* ------------------------------------------------------------ Der Brief */
   const contentId = contentIdFor(SYMBOL, paket.asOf);
 
+  /* -----------------------------------------------------------------
+     DAS MOTIV FOLGT DER STORY (§10)
+
+     Bis hierher bat jede Anfrage um dieselbe abstrakte Future-Tech-
+     Szene, unabhaengig vom Symbol. Die Branche steht bereits im
+     Repository, aus einer amtlichen Klassifikation (SIC-Code aus den
+     SEC-Einreichungen, siehe visual-motif.js) - keine neue
+     Datenquelle, nur eine neue Lesart einer vorhandenen. Passt kein
+     SIC-Code zu einem konkreten Motiv, bleibt es beim bisherigen
+     generischen Rueckfall. */
+  const motiv = VisualMotif.motivFuer(SYMBOL, ROOT);
+  console.log("\n--- MOTIV ---");
+  console.log(motiv.explanation);
+
   const vuBrief = ContentBrief.build({
     opportunity: { opportunityId: "opp_" + contentId, topic:
       SYMBOL + " — technische Lage zum " + paket.asOf,
       premise: "SECURITY_METRIC", hasCause: false, timeSensitivity: "TIMELY" },
     strategyDecision: { archetype: "STOCK_STORY", mode: "EXPLORE",
       strategyVersion: arg("strategy-version", "strategy_initial") },
-    visual: { visualType: "FUTURE_TECH" },
+    visual: { visualType: motiv.strategy },
     evidence: paket.evidence.map((e) => ({
       entity: e.entity, metric: e.metric, value: e.value, unit: e.unit,
       statement: e.statement, temporal: e.temporal === true,
@@ -119,11 +134,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "Formuliere vier deutlich verschiedene Hooks innerhalb dieser Strategie. " +
       "Jede Zahl muss exakt aus `evidence` stammen. Keine Prognose, keine " +
       "Empfehlung, keine Ursachenbehauptung.",
-    visualStrategy: "FUTURE_TECH",
-    visualInstruction:
-      "Eine hochwertige, abstrakte Future-Tech-Szene im Vision-Universe-Register. " +
-      "Sie illustriert Messung und Einordnung — nicht Kursverlauf und nicht Gewinn.",
-    palette: ["deep black", "white", "chrome", "electric cyan", "subtle violet"],
+    visualStrategy: motiv.strategy,
+    visualInstruction: motiv.instruction,
+    palette: motiv.palette,
     visualComposition: "portrait 4:5, centered, generous negative space",
     width: 1080, height: 1350,
     objective:
