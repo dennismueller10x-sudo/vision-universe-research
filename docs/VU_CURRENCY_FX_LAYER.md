@@ -1428,11 +1428,75 @@ ein Nachweis selbst gegengelesen gehoert.
 | `NEW_REGRESSIONS` | **0** | nach dem Merge von `main`: quant 1.403/1.403, discover 233/233, worker 66/66 - **keine** roten Tests mehr (die fuenf bekannten sind auf `main` behoben worden) |
 | `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
 | `CRITICAL_BLOCKERS` | **0** | die Lizenzfrage ist dokumentiert und blockiert weder Merge noch Development-Deployment |
-| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** | wird bei offener US-Sitzung nachgeholt |
+| `CURRENCY_PRODUCTION_PROOF` | **PASS** — alle neun Titel am ausgelieferten Stand; 11 Kernmodule auf beiden Flaechen, `EURUSD.json` HTTP 200 | `currency-production-proof.yml`, Lauf 35725232130 |
+| `REALTIME_FX` | **PENDING_TIME_DEPENDENT_PRODUCTION_PROOF** | der geplante Lauf feuert seit dem Merge wirklich (Workflow auf `main`, Zeitplan 15:00/18:00 UTC werktags) |
 | `LICENSE_DISPLAY_DERIVED_FX` | **OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT** | Owner-Entscheid 2026-09-22; kein Merge- und kein Deployment-Blocker |
 | `PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED` | **true** | dauerhaft dokumentiert; vor kommerzieller Vermarktung zu klaeren |
 
 **Merge freigegeben** durch den Owner-Entscheid vom 2026-09-22.
+
+### Der Nachweis am ausgelieferten Stand
+
+Gemergt in drei Schritten: `4ce867055` (Kern und Discover 1.0),
+`c1f767931` (Discover 2.1), `047e9983c` (dieser Nachweis-Workflow).
+`pages-release.yml` meldet fuer beide Inhalts-Merges `success`.
+
+Der Nachweis selbst konnte **nicht lokal** gefuehrt werden: die
+Ausfuehrungsumgebung erreicht `research.visionuniverse.de` nicht, die
+Egress-Policy beantwortet CONNECT mit 403. Ihn am lokalen Server zu
+fuehren und "Produktion" darueber zu schreiben waere kein Nachweis
+gewesen. Er laeuft deshalb als Workflow dort, wo die Seite erreichbar
+ist — `currency-production-proof.yml`, Lauf **35725232130**,
+2026-09-22 12:07–12:11 UTC, gegen `https://research.visionuniverse.de`.
+
+**Kommt der Vertrag beim Nutzer an?**
+
+```
+/discover/      laedt 11 Kernmodule
+/discover-v2/   laedt 11 Kernmodule
+EURUSD.json: HTTP 200
+```
+
+**Die neun Nachweistitel, am ausgelieferten Stand gemessen:**
+
+| Titel | nativ | Geld geaendert | Verhaeltniswerte | 5 Jahre EUR / USD | MAX-Chart |
+|---|---|---|---|---|---|
+| AAPL | USD | 93 | **0** | 133 % / 126 % | EUR ab 08.01.1999, nativ ab 05.01.1990 |
+| NVDA | USD | 82 | **0** | 922 % / 889 % | beide ab 22.01.1999 — keine Kurse vor FX-Beginn |
+| MSFT | USD | 91 | **0** | 72,5 % / 67 % | EUR ab 08.01.1999, nativ ab 05.01.1990 |
+| SAP | EUR (Fundamentaldaten) | 76 | **0** | 49,2 % / 44,4 % | EUR ab 08.01.1999, nativ ab 22.09.1995 |
+| ASML | EUR (Fundamentaldaten) | 80 | **0** | 102 % / 95,6 % | EUR ab 08.01.1999, nativ ab 17.03.1995 |
+| NVO | DKK | 60 | **0** | 10,2 % / 13,1 % | EUR ab 08.01.1999, nativ ab 05.01.1990 |
+| TM | JPY | 73 | **0** | 12,3 % / 8,64 % | EUR ab 08.01.1999, nativ ab 05.01.1990 |
+| BABA | CNY | 66 | **0** | 30,4 % / 32,6 % | beide ab 19.09.2014 — Boersengang nach FX-Beginn |
+| GSK | GBP | 64 | **0** | 4,43 % / 1,07 % | EUR ab 08.01.1999, nativ ab 05.01.1990 |
+
+Auf jedem der neun Titel: `UI1` EUR ist Vorgabe, `UI3` kein
+Dollarbetrag in der EUR-Ansicht, `UI4` identische Struktur — kein Titel
+faellt weg, `UI7` keine Konsolenfehler, `UI8` Discover 2.1 mit demselben
+Vertrag und demselben Speicher (`vu-currency-preference-v1`).
+
+**Null umgerechnete Verhaeltniswerte auf allen neun Titeln.** Das ist
+die Spalte, auf die es ankommt: Margen, Wachstumsraten, ROE, Drawdown
+und Quant-Scores bewegen sich unter einem Waehrungswechsel nicht.
+
+**`UI5` ist der eigentliche Beleg.** Neun verschiedene Titel, neun
+verschiedene EUR/USD-Renditeabstaende — und bei NVO, BABA und GSK
+laeuft die EUR-Rendite in die andere Richtung als die USD-Rendite. Eine
+Reihe, die rueckwirkend mit dem heutigen Kurs umgerechnet waere, koennte
+das nicht.
+
+**SAP und ASML zeigen beide Pfade in einem Titel.** Ihre
+Fundamentaldaten stehen in EUR und laufen deshalb ueber den
+Identitaetspfad — in der EUR-Ansicht wird nichts umgerechnet. Ihr Kurs
+ist der USD-Kurs der US-Notierung und wird umgerechnet; genau darum
+beginnt ihr EUR-Chart 1999, waehrend die native Reihe schon 1995
+anfaengt. Ein Titel, zwei Pfade, und die Seite haelt sie auseinander.
+
+**Zwei ehrliche SKIPs.** Bei NVDA und BABA beginnen EUR- und native
+Reihe am selben Tag — fuer diese Titel gibt es schlicht keine Kurse vor
+dem FX-Beginn. `UI6` meldet das als SKIP mit Begruendung statt als
+PASS: nicht geprueft ist nicht bestanden.
 
 `FX_PROVIDER_PRIORITY` heisst seit O-14 `FX_PROVIDER_ROLES`: es gibt
 nicht mehr eine Rangfolge, sondern zwei — eine je Art der Frage.
