@@ -31,10 +31,24 @@
    gestern - und der Fehler faellt nie auf, weil das Ergebnis trotzdem
    plausibel aussieht.
 
-   WARTEN schlaegt VORBEREITEN. Liegt ein Kandidat beim Owner, entsteht
-   kein zweiter. Zwei wartende Kandidaten sind keine Auswahl, sondern
-   eine Warteschlange, die der Owner abarbeiten muss - genau das, was
-   dieser Betrieb ihm abnehmen soll.
+   WARTEN schlaegt VORBEREITEN - AUSSER DER OWNER HAT DAS AUSDRUECKLICH
+   AUFGEHOBEN. Liegt ein Kandidat beim Owner, entsteht im automatischen
+   Betrieb kein zweiter. Zwei wartende Kandidaten sind sonst keine
+   Auswahl, sondern eine Warteschlange, die der Owner abarbeiten muss -
+   genau das, was dieser Betrieb ihm abnehmen soll.
+
+   Dieser Satz stand hier, bevor es JETZT POST ERSTELLEN und POST ZU
+   THEMA gab (§29, §30) - und blieb danach unveraendert stehen. Beide
+   Auftraege duerfen ACTIVE_APPROVAL_QUEUE_NOT_EMPTY ausdruecklich
+   aufheben (manual-mode.js, AUFHEBBAR-Tabelle: "Wer ausdruecklich
+   einen weiteren Beitrag bestellt, nimmt den Stapel in Kauf - und es
+   ist sein eigener."). content-cadence.js rechnete diese Aufhebung
+   korrekt in `kadenz.darfErzeugen` ein - aber diese Funktion hier
+   fragte nie danach: sie kannte nur `zustand.awaitingCandidates`,
+   nicht `kadenz`, und stoppte unbedingt. Ein realer POST-ZU-THEMA-
+   Lauf mit einem wartenden Kandidaten erzeugte deshalb schlicht
+   nichts - eine zweite, unsichtbare Frequenzsperre neben der, die der
+   Owner bewusst aufgehoben hatte.
 
    NICHTS schlaegt ALLES. Gibt es nichts zu tun, ist IDLE die Antwort
    und kein Grund, etwas zu erzeugen.
@@ -158,12 +172,25 @@
     }
 
     /* ----------------------------------------------------------------
-       WARTEN SCHLAEGT VORBEREITEN
+       WARTEN SCHLAEGT VORBEREITEN - AUSSER DER OWNER HAT DAS
+       AUSDRUECKLICH AUFGEHOBEN
 
        Zwei wartende Kandidaten sind keine Auswahl, sondern eine
        Warteschlange - genau das, was dieser Betrieb dem Owner
-       abnehmen soll. */
-    if (warten > 0) {
+       abnehmen soll. Das gilt fuer den AUTOMATISCHEN Betrieb.
+
+       manual-mode.js fuehrt ACTIVE_APPROVAL_QUEUE_NOT_EMPTY explizit
+       als AUFHEBBAR: "Wer ausdruecklich einen weiteren Beitrag
+       bestellt, nimmt den Stapel in Kauf." content-cadence.js traegt
+       diese Aufhebung bereits in `kadenz.darfErzeugen`, wenn ein
+       MANUAL_NOW/MANUAL_TOPIC-Auftrag sie ausgeloest hat. Ein
+       unbedingter Rueckfall auf AWAITING_OWNER_GATE HIER, VOR dieser
+       Pruefung, ignoriert diese Aufhebung und sperrt den Owner-Auftrag
+       ein zweites Mal - das ist die "zweite Frequenzsperre", die
+       manual-mode.js bereits benennt, aber diese Funktion bislang
+       nicht respektiert hat. Sie datiert von vor MANUAL_NOW/
+       MANUAL_TOPIC und wurde seither nicht nachgezogen. */
+    if (warten > 0 && !(kadenz && kadenz.darfErzeugen)) {
       return {
         stage: STAGE.AWAITING_OWNER_GATE,
         actions: handlungen,
