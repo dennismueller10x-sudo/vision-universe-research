@@ -56,6 +56,11 @@ const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
 const Hashtags = require(join(ROOT, "social/engines/hashtags.js"));
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
+/* Dieselbe Tabelle, die der Orchestrator schon benutzt: welcher
+   Kadenz-Grund darf durch einen Owner-Auftrag aufgehoben werden? Eine
+   zweite Tabelle hier waere die zweite Source of Truth, die genau
+   diesen Befund verursacht hat. */
+const ManualMode = require(join(ROOT, "social/engines/manual-mode.js"));
 import { ausgabePfad } from "../quality/out-path.mjs";
 
 /* -------------------------------------------------------------------
@@ -94,8 +99,25 @@ function readJson(pfad, fallback) {
  * mitzuzaehlen hiesse, dem System eine Zurueckhaltung zu verordnen, die
  * jemand anders bereits ausgeuebt hat — oder umgekehrt, ihm eine
  * Frequenz anzurechnen, die es nie hatte.
- */
-export function frequenzbefund(eintraege, grenzen, nowIso) {
+ *
+ * -------------------------------------------------------------------
+ * EIN OWNER-AUFTRAG, GEMESSEN AN DERSELBEN TABELLE WIE IM ORCHESTRATOR
+ *
+ * `modus` ist einer der drei Knoepfe aus manual-mode.js (oder null,
+ * fuer AUTO). Diese Funktion trifft dabei KEINE eigene Entscheidung
+ * darueber, was ein Auftrag aufheben darf — sie fragt
+ * `ManualMode.istAufhebbar()`, dieselbe Tabelle, die auch der
+ * Orchestrator fragt. Ein zweites AUFHEBBAR hier waere genau die
+ * zweite Source of Truth, die diesen Befund verursacht hat.
+ *
+ * MINIMUM_SPACING_NOT_REACHED und DAILY_CONTENT_CAP_REACHED sind dort
+ * aufhebbar=true: der Owner darf seinen eigenen Rhythmus ueberstimmen.
+ * Ein Grund, den die Tabelle nicht so fuehrt, bliebe stehen — auch
+ * unter einem Auftrag. JETZT_PRUEFEN hebt nichts auf (istProduktions-
+ * auftrag=false), und ohne `modus` gilt AUTO: unveraendertes
+ * Verhalten, identisch mit jedem bisherigen Aufruf dieser Funktion.
+ * ------------------------------------------------------------------- */
+export function frequenzbefund(eintraege, grenzen, nowIso, modus) {
   const jetzt = Date.parse(nowIso);
   const ausPipeline = (eintraege || []).filter((e) =>
     e.publishedAt && e.lineage && e.lineage.origin &&
@@ -111,23 +133,45 @@ export function frequenzbefund(eintraege, grenzen, nowIso) {
   const in7 = zeiten.filter((t) => jetzt - t <= 7 * 86400000).length;
   const in30 = zeiten.filter((t) => jetzt - t <= 30 * 86400000).length;
 
-  const gruende = [];
+  /* Jeder Grund traegt seine kanonische ID aus manual-mode.js, nicht
+     nur seinen Satz — sonst liesse sich nicht fragen, ob er aufhebbar
+     ist. */
+  const rohGruende = [];
   if (stundenSeither !== null && stundenSeither < grenzen.minHoursBetweenPosts) {
-    gruende.push("Der letzte Pipeline-Beitrag liegt " + stundenSeither + " Stunden zurueck; " +
-      "der Mindestabstand ist " + grenzen.minHoursBetweenPosts + ".");
+    rohGruende.push({ grund: ManualMode.GRUND.MINIMUM_SPACING_NOT_REACHED,
+      satz: "Der letzte Pipeline-Beitrag liegt " + stundenSeither + " Stunden zurueck; " +
+        "der Mindestabstand ist " + grenzen.minHoursBetweenPosts + "." });
   }
   if (in7 >= grenzen.maxPostsPer7Days) {
-    gruende.push(in7 + " Beitraege in sieben Tagen; die Grenze ist " +
-      grenzen.maxPostsPer7Days + ".");
+    rohGruende.push({ grund: ManualMode.GRUND.DAILY_CONTENT_CAP_REACHED,
+      satz: in7 + " Beitraege in sieben Tagen; die Grenze ist " +
+        grenzen.maxPostsPer7Days + "." });
   }
   if (in30 >= grenzen.maxPostsPer30Days) {
-    gruende.push(in30 + " Beitraege in dreissig Tagen; die Grenze ist " +
-      grenzen.maxPostsPer30Days + ".");
+    rohGruende.push({ grund: ManualMode.GRUND.DAILY_CONTENT_CAP_REACHED,
+      satz: in30 + " Beitraege in dreissig Tagen; die Grenze ist " +
+        grenzen.maxPostsPer30Days + "." });
+  }
+
+  const m = modus ? ManualMode.MODI[modus] : null;
+  const produktionsauftrag = !!(m && m.istProduktionsauftrag);
+
+  const gruende = [];
+  const aufgehoben = [];
+  for (const g of rohGruende) {
+    if (produktionsauftrag && ManualMode.istAufhebbar(g.grund)) {
+      aufgehoben.push(g.satz + " (aufgehoben durch " + m.label + ": " +
+        ManualMode.AUFHEBBAR[g.grund].warum + ")");
+    } else {
+      gruende.push(g.satz);
+    }
   }
 
   return {
     erlaubt: gruende.length === 0,
     gruende,
+    aufgehoben,
+    modus: m ? m.id : null,
     letzterPipelineBeitrag: letzter === null ? null : new Date(letzter).toISOString(),
     stundenSeither, in7Tagen: in7, in30Tagen: in30
   };
@@ -189,6 +233,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   /* Der Kandidatenordner folgt dem Datenstand — siehe oben. */
   const KAND_REL = kandidatenDir(DATA);
   const NOW = arg("now", new Date().toISOString());
+  /* Derselbe Umgebungsname, den run-orchestrator.mjs schon liest.
+     Kein zweiter Weg, einen Auftrag hierher zu tragen — und ohne ihn
+     (Scheduler-Lauf, AUTO) bleibt das Verhalten exakt das bisherige. */
+  const MODUS = process.env.VU_SOCIAL_MODUS || null;
   /* `ausgabePfad` und nicht `join(ROOT, ...)`: ein absolut angegebener
      Datenstand wurde sonst still unter das Repository geschoben -
      join(ROOT, "/tmp/probe") ist "<ROOT>/tmp/probe". Das Skript las
@@ -217,12 +265,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const grenzen = readJson(join(ROOT, "social/config/cadence.json"), {
     minHoursBetweenPosts: 20, maxPostsPer7Days: 4, maxPostsPer30Days: 12 });
   const gedaechtnis = readJson(D("content-memory.json"), { entries: [] });
-  const frequenz = frequenzbefund(gedaechtnis.entries || [], grenzen, NOW);
+  const frequenz = frequenzbefund(gedaechtnis.entries || [], grenzen, NOW, MODUS);
 
   console.log("\n--- FREQUENZ ---");
   console.log("Letzter Pipeline-Beitrag: " + (frequenz.letzterPipelineBeitrag || "keiner"));
   console.log("In 7 Tagen: " + frequenz.in7Tagen + " (max " + grenzen.maxPostsPer7Days + ")" +
     " | in 30 Tagen: " + frequenz.in30Tagen + " (max " + grenzen.maxPostsPer30Days + ")");
+  if (frequenz.aufgehoben.length) {
+    console.log("\nDurch Owner-Auftrag aufgehoben:");
+    for (const a of frequenz.aufgehoben) console.log("  " + a);
+  }
   if (!frequenz.erlaubt) {
     console.log("\nKEIN KANDIDAT — die Frequenzgrenze ist erreicht:");
     for (const g of frequenz.gruende) console.log("  " + g);
