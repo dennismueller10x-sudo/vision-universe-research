@@ -223,7 +223,8 @@ body.dv2 .dv2-stock .dx-tf button:hover{background:var(--discover-bg-2);color:va
 body.dv2 .dv2-stock .dx-tf button:active{transform:scale(.96)}
 body.dv2 .dv2-stock .dx-tf button[aria-pressed="true"]{box-shadow:0 3px 16px rgba(0,0,0,.12)}
 body.dv2 .dv2-stock .dx-chart-hero-meta .dx-live-label{font-weight:700}
-body.dv2 .dv2-stock .dx-live-label--stale{color:#8a5a00}
+body.dv2 .dv2-stock .dx-live-label--stale{color:#f2b544}
+html[data-theme="light"] body.dv2 .dv2-stock .dx-live-label--stale{color:#8a5a00}
 
 /* A compact editorial bridge separates market action from company research. */
 body.dv2 .dv2-stock-context{display:grid;grid-template-columns:minmax(140px,.42fr) minmax(0,1fr);gap:32px 64px;padding:46px 0;border-top:1px solid var(--discover-line)}
