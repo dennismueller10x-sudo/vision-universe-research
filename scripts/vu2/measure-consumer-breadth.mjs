@@ -34,7 +34,8 @@ for(const [ticker,cohort] of samples){
   searchable:search.entries.some(e=>e.ticker===ticker),stockDetail:stock.state,history:stock.chart?.state||'UNAVAILABLE',
   fundamentals:fundamentals.state,quantEvidence:quant.state,quantScore:quant.score?.state||'UNAVAILABLE',
   technicalEvidence:technical.state,technicalEvidenceLevel:technical.evidenceLevel||null,
-  fullTechnicalWorkspace:technicalWorkspace.state,elliott:technicalWorkspace.state,
+  fullTechnicalWorkspace:technicalWorkspace.state,
+  elliott:technicalWorkspace.state==='AVAILABLE'&&!['UNAVAILABLE','INSUFFICIENT_DATA'].includes(technicalWorkspace.elliott?.status)?'AVAILABLE':'UNAVAILABLE',
   setupStateContract:stock.setupState?'VISIBLE':'UNAVAILABLE',setupStateActive:stock.setupState?.availability?.state==='AVAILABLE'});
 }
 let canonicalTechnicalBundles=productIntelligence?.counts?.technicalFullBundles??5;

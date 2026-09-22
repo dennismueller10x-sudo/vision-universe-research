@@ -193,12 +193,12 @@ function create(options){
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
  function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
- async function materializedTechnical(ticker){
+ async function materializedTechnical(ticker,securityId){
   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
-  if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!=='ref_'+ticker)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
+  if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!==securityId)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
   return source;
  }
- async function technicalSource(ticker){try{return await materializedTechnical(ticker);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
+ async function technicalSource(ticker,securityId){try{return await materializedTechnical(ticker,securityId);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
@@ -225,13 +225,13 @@ function create(options){
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
-   try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker),b=source.bundle;
+   try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
     if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>new Date().toISOString().slice(0,10)||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
     return {state:'AVAILABLE',ticker,asOf:b.dataCutoff,methodology:b.methodologyVersion,evidenceLevel:'FULL_WORKSPACE',fullWorkspace:true,
      trend:status(b.trend?.direction,{BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}),
      momentum:status(b.momentum?.state,{POSITIVE:'Positiv',NEGATIVE:'Negativ',NEUTRAL:'Neutral'}),
      volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
-     elliott:status(b.elliott?.status,{AMBIGUOUS:'Mehrere mögliche Zählungen',VALID:'Gültige Zählung',INSUFFICIENT_DATA:'Historie reicht nicht aus',NO_VALID_COUNT:'Keine gültige Zählung'}),
+     elliott:status(b.elliott?.status,{OK:'Validierte Zählung',LOW_CONFIDENCE:'Niedriger Method Fit',AMBIGUOUS:'Mehrere mögliche Zählungen',VALID:'Gültige Zählung',INSUFFICIENT_DATA:'Historie reicht nicht aus',NO_VALID_COUNT:'Keine gültige Zählung'}),
      elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,
      workspace:'/vu2/?view=technical&ticker='+encodeURIComponent(ticker),elliottWorkspace:'/vu2/?view=elliott&ticker='+encodeURIComponent(ticker)};
    }catch{
@@ -306,7 +306,7 @@ function create(options){
   try{const c=await hydrateCapabilities(await init());const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_BUNDLE_NOT_PUBLISHED');
    if(!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
    const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const source=await technicalSource(ticker);
+   const source=await technicalSource(ticker,member.m);
    if(source.source!=='tiingo')return unavailable('UNSUPPORTED_MARKET_SOURCE');
    return TechnicalWorkspace.build(source,{ticker});
   }catch{return unavailable('SOURCE_MISSING');}

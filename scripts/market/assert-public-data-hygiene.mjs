@@ -202,6 +202,7 @@ if (existsSync(instruments)) {
 const productTechnical = join(root, "quant", "data", "product", "technical-signals-v1");
 if (existsSync(productTechnical)) {
   let productScope = new Set();
+  const productIds = new Map((json("quant/data/universe/market-capability.json")?.members || []).map((member) => [member.s, member.m]));
   try { productScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set(); }
   catch (err) { findings.push("technical-signals-v1 exists but product scope cannot be resolved: " + err.message); }
   for (const name of readdirSync(productTechnical).filter((n) => /^[A-Z0-9._-]{2}\.json\.gz$/.test(n))) {
@@ -213,7 +214,7 @@ if (existsSync(productTechnical)) {
     }
     for (const [ticker, payload] of Object.entries(shard.instruments || {})) {
       const bars = payload && payload.bars;
-      if (!productScope.has(ticker) || payload.instrumentId !== ticker || payload.securityId !== "ref_" + ticker) {
+      if (!productScope.has(ticker) || payload.instrumentId !== ticker || payload.securityId !== productIds.get(ticker)) {
         findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' outside canonical product scope`);
       }
       if (!bars || !Array.isArray(bars.timestamps) || bars.timestamps.length < 2 || bars.timestamps.length > 270 ||

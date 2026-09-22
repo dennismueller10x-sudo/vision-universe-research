@@ -85,7 +85,7 @@
   function project(input) {
     var ticker = input.ticker, securityId = input.securityId, series = input.series,
         bundle = input.bundle, provenance = input.provenance || {};
-    if (!/^[A-Z0-9.-]{1,12}$/.test(ticker) || securityId !== "ref_" + ticker ||
+    if (!/^[A-Z0-9.-]{1,12}$/.test(ticker) || !/^ref_[A-Z0-9_]{1,32}$/.test(securityId) ||
         !series || series.instrumentId !== ticker || series.priceSeriesType !== "SPLIT_ADJUSTED" ||
         series.length < 300 || !bundle || bundle.instrumentId !== ticker ||
         bundle.methodologyVersion !== "technical-v1.0.0") throw new Error("INVALID_PRODUCT_TECHNICAL_INPUT");
@@ -114,7 +114,7 @@
         !shard.instruments || typeof shard.instruments !== "object") return false;
     return Object.keys(shard.instruments).every(function (ticker) {
       var x = shard.instruments[ticker], b = x && x.bundle, bars = x && x.bars;
-      return shardKey(ticker) === key && x.instrumentId === ticker && x.securityId === "ref_" + ticker &&
+      return shardKey(ticker) === key && x.instrumentId === ticker && /^ref_[A-Z0-9_]{1,32}$/.test(x.securityId) &&
         x.dataMode === "real" && x.isMock === false && x.source === "tiingo" &&
         x.priceSeriesType === "SPLIT_ADJUSTED" && b && b.instrumentId === ticker &&
         b.methodologyVersion === "technical-v1.0.0" && Array.isArray(bars && bars.timestamps) && bars.timestamps.length >= 2;

@@ -62,3 +62,14 @@ test("Technical materialization remains independent when the Signals contract re
   const shard = JSON.parse(gunzipSync(readFileSync(join(out, "MS.json.gz"))));
   assert.equal(TechnicalWorkspace.build(shard.instruments.MSFT, { ticker: "MSFT" }).state, "AVAILABLE");
 });
+
+test("canonical security identity, not ticker punctuation, owns class-share artifacts", () => {
+  const source = JSON.parse(readFileSync(join(root, "quant/data/technical/instruments/NVDA.json"), "utf8"));
+  const ticker = "NVDA-P-A", series = { ...source.bars, instrumentId: ticker,
+    priceSeriesType: "SPLIT_ADJUSTED", length: source.bars.timestamps.length };
+  const bundle = { ...source.bundle, instrumentId: ticker };
+  const artifact = Product.project({ ticker, securityId: "ref_NVDA_P_A", series, bundle,
+    provenance: { observedAt: source.sourceRevision, adjustmentStatus: "adjusted" } });
+  assert.equal(artifact.securityId, "ref_NVDA_P_A");
+  assert.equal(Product.validateShard({ schemaVersion: Product.VERSION, shard: "NV", instruments: { [ticker]: artifact } }, "NV"), true);
+});
