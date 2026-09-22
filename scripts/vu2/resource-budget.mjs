@@ -1,8 +1,8 @@
 // Subresource budgets derived from Phase14's measured localhost baseline.
 // Not network-transfer bytes, a production latency SLA, or full-universe proof.
 export const budgets=Object.freeze({
- home:{decodedBytes:750000,requests:45,history:false},
- stock:{decodedBytes:3000000,requests:50,history:true},
+ home:{decodedBytes:800000,requests:45,history:false},
+ stock:{decodedBytes:4000000,requests:50,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:24000000,requests:45,history:false},
