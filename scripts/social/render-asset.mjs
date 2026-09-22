@@ -1358,6 +1358,20 @@ export function pruefeJpeg(pfad) {
    einen Bericht erfunden.
    ------------------------------------------------------------------- */
 export function messeSeite(htmlPfad, breite, hoehe) {
+  /* -----------------------------------------------------------------
+     DREI REALE LAEUFE SCHEITERTEN AN DERSELBEN MELDUNG, UND KEINER
+     SAGTE WARUM
+
+     "Atlas nicht gemessen" / "MESSUNG_FEHLT" blieb ueber drei
+     verschiedene Fixversuche identisch (Promise, Promise+Timeout,
+     synchron ohne jede Wartezeit) - ein starkes Indiz, dass die
+     Ursache nicht im Timing lag, sondern hier: der catch-Block warf
+     jede Information weg, mit der sich das je haette unterscheiden
+     lassen. War es ein Chromium-Absturz (--dump-dom scheiterte), oder
+     lief die Seite durch und das Attribut fehlte trotzdem?
+
+     Bis eine echte Ursache gemessen ist, wird sie protokolliert -
+     nicht geraten. Das Verhalten bei Erfolg bleibt unveraendert. */
   let dom;
   try {
     dom = execFileSync(chromiumPfad(), [
@@ -1366,13 +1380,28 @@ export function messeSeite(htmlPfad, breite, hoehe) {
       `--window-size=${breite},${hoehe}`,
       "--dump-dom", "file://" + htmlPfad
     ], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024,
-      stdio: ["ignore", "pipe", "ignore"] });
-  } catch { return null; }
+      stdio: ["ignore", "pipe", "pipe"] });
+  } catch (err) {
+    console.error("messeSeite: --dump-dom ist gescheitert. status=" +
+      (err && err.status) + " signal=" + (err && err.signal) +
+      " stderr=" + String((err && err.stderr) || "").slice(0, 2000));
+    return null;
+  }
 
   const treffer = /data-vu-messung="([^"]*)"/.exec(dom);
-  if (!treffer) return null;
+  if (!treffer) {
+    console.error("messeSeite: --dump-dom lief durch, aber data-vu-messung " +
+      "fehlt. DOM-Laenge=" + dom.length + " enthaelt <script>=" +
+      /<script/i.test(dom) + " enthaelt messen(): " +
+      /function\s+messen/i.test(dom));
+    return null;
+  }
   let texte;
-  try { texte = JSON.parse(entkommen(treffer[1])); } catch { return null; }
+  try { texte = JSON.parse(entkommen(treffer[1])); } catch (err) {
+    console.error("messeSeite: data-vu-messung ist kein gueltiges JSON: " +
+      (err && err.message));
+    return null;
+  }
   if (!Array.isArray(texte)) return null;
 
   /* Figuren fehlen duerfen - eine Seite ohne Atlas hat keine. Eine
