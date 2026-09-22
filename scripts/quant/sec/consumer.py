@@ -42,16 +42,25 @@ REPORTED_METRICS = (
     "total_debt", "long_term_debt", "total_assets", "stockholders_equity",
     "shares_outstanding", "diluted_weighted_average_shares",
     "research_and_development", "dividends_paid", "stock_based_compensation",
+    # Three metrics the normalization already produces and this layer used to
+    # keep to itself. Without the depreciation, EBITDA cannot leave the SEC
+    # layer at all; without the two tax figures, a return on invested capital
+    # has no disclosed tax assumption, and a flat rate would be an invented
+    # one. Publishing them costs three series per issuer and closes two
+    # factor components that were otherwise stuck behind a one-line export.
+    "depreciation_and_amortization", "pretax_income", "income_tax_expense",
 )
 # Derived by derived.reconstruct (deterministic, with the inputs' provenance).
-DERIVED_METRICS = ("free_cash_flow", "net_debt")
+DERIVED_METRICS = ("free_cash_flow", "net_debt", "ebitda")
 CONSUMER_METRICS = REPORTED_METRICS + DERIVED_METRICS
 
 # Metrics that get a quarterly and a TTM series (the rest is annual only:
 # a balance-sheet instant has no TTM, and the product reads it annually).
 QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income", "eps_diluted",
                      "operating_cash_flow", "capital_expenditures", "free_cash_flow",
-                     "cash_and_equivalents", "total_debt", "shares_outstanding")
+                     "cash_and_equivalents", "total_debt", "shares_outstanding",
+                     "depreciation_and_amortization", "pretax_income", "income_tax_expense",
+                     "ebitda")
 
 DEFAULT_ANNUAL_YEARS = 13     # ten comparisons need eleven COMPLETE fiscal years;
                               # the factbook's last one or two are usually partial
@@ -148,6 +157,12 @@ def _ttm(resolver, registry, as_of, policy):
         out["free_cash_flow"] = {"fp": "TTM", "end": ocf["end"], "v": ocf["v"] - capex["v"], "unit": ocf["unit"],
                                  "through": ocf.get("through"), "kind": "TTM", "derived": True,
                                  "inputs": ["operating_cash_flow", "capital_expenditures"]}
+    if "operating_income" in out and "depreciation_and_amortization" in out \
+            and out["operating_income"].get("through") == out["depreciation_and_amortization"].get("through"):
+        op, da = out["operating_income"], out["depreciation_and_amortization"]
+        out["ebitda"] = {"fp": "TTM", "end": op["end"], "v": op["v"] + da["v"], "unit": op["unit"],
+                         "through": op.get("through"), "kind": "TTM", "derived": True,
+                         "inputs": ["operating_income", "depreciation_and_amortization"]}
     if "total_debt" in out and "cash_and_equivalents" in out:
         debt, cash = out["total_debt"], out["cash_and_equivalents"]
         out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"], "unit": debt["unit"],

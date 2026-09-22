@@ -27,6 +27,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
+const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
 const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer");
@@ -86,17 +87,15 @@ const FUNDAMENTAL_COMPONENTS = {
     { id: "fcfYield", weight: 0.30, direction: "higher", label: "Freier Zahlungsfluss je Börsenwert", unit: "ratio" },
     { id: "earningsYield", weight: 0.25, direction: "higher", label: "Gewinn je Börsenwert", unit: "ratio" },
     { id: "ebitdaYield", weight: 0.20, direction: "higher", label: "Operatives Ergebnis vor Abschreibungen je Unternehmenswert", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED",
-      note: "EBITDA wird in der SEC-Schicht bereits abgeleitet (operatives Ergebnis plus Abschreibungen), aber die Consumer-Auslieferung führt die Abschreibungen nicht mit. Ohne sie wäre EBITDA das operative Ergebnis unter falschem Namen." },
+      note: "EBITDA der letzten zwölf Monate je Unternehmenswert. EBITDA entsteht in der SEC-Schicht aus operativem Ergebnis plus Abschreibungen; meldet ein Emittent keine Abschreibungen, bleibt es leer statt zum operativen Ergebnis unter falschem Namen zu werden." },
     { id: "salesYield", weight: 0.10, direction: "higher", label: "Umsatz je Unternehmenswert", unit: "ratio" },
     { id: "bookToMarket", weight: 0.15, direction: "higher", label: "Eigenkapital je Börsenwert", unit: "ratio" }
   ],
   profitability: [
     { id: "roicTtm", weight: 0.25, direction: "higher", label: "Rendite auf das eingesetzte Kapital", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED",
-      note: "Der kanonische ROIC verlangt eine offengelegte Steuerannahme. Vorsteuerergebnis und Steueraufwand stehen in der Metrik-Registry, werden von der Consumer-Auslieferung aber nicht mitgeführt; ein pauschaler Steuersatz wäre eine erfundene Annahme." },
+      note: "Operatives Ergebnis nach Steuern je eingesetztem Kapital (Schulden plus Eigenkapital minus Kasse). Der Steuersatz ist der gemeldete effektive Satz des Emittenten; ohne positives Vorsteuerergebnis bleibt der Wert leer, statt einen pauschalen Satz zu unterstellen." },
     { id: "roicMedian3y", weight: 0.15, direction: "higher", label: "Rendite auf das eingesetzte Kapital, Median 3 Jahre", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Dieselbe Steuerannahme wie bei roicTtm fehlt." },
+      note: "Median der jährlichen ROIC über drei Geschäftsjahre, jedes mit dem effektiven Steuersatz desselben Jahres." },
     { id: "grossProfitabilityTtm", weight: 0.20, direction: "higher", label: "Rohertrag je Bilanzsumme", unit: "ratio" },
     { id: "operatingMarginTtm", weight: 0.15, direction: "higher", label: "Operative Marge", unit: "ratio",
       note: "Operatives Ergebnis der letzten zwölf Monate im Verhältnis zum Umsatz desselben Fensters." },
@@ -112,210 +111,6 @@ const isBank = (sic4) => sic4 >= 6020 && sic4 <= 6220;
 const isInsurer = (sic4) => sic4 >= 6300 && sic4 <= 6411;
 const isReit = (sic4) => sic4 === 6798;
 const needsIndustryTemplate = (sic4) => finite(sic4) && (isBank(sic4) || isInsurer(sic4) || isReit(sic4));
-
-/* ---------------------------------------------------------------------------
-   PIT-safe reads over the consumer fundamentals contract.
-   A value is only usable when its filing date is on or before the cutoff.
-   --------------------------------------------------------------------------- */
-const COL = { fy: 0, fp: 1, end: 2, v: 3, filed: 4 };
-
-function annualSeries(doc, metric, cutoff) {
-  const rows = doc?.annual?.[metric];
-  if (!Array.isArray(rows)) return [];
-  return rows
-    .filter((row) => Array.isArray(row) && finite(row[COL.v]) && typeof row[COL.filed] === "string" && row[COL.filed] <= cutoff)
-    .map((row) => ({ fy: row[COL.fy], end: row[COL.end], value: row[COL.v], filed: row[COL.filed] }))
-    .sort((a, b) => (a.end < b.end ? -1 : a.end > b.end ? 1 : 0));
-}
-
-function quarterSeries(doc, metric, cutoff) {
-  const rows = doc?.quarterly?.[metric];
-  if (!Array.isArray(rows)) return [];
-  return rows
-    .filter((row) => Array.isArray(row) && finite(row[COL.v]) && typeof row[COL.filed] === "string" && row[COL.filed] <= cutoff)
-    .map((row) => ({ end: row[COL.end], value: row[COL.v], filed: row[COL.filed] }))
-    .sort((a, b) => (a.end < b.end ? -1 : a.end > b.end ? 1 : 0));
-}
-
-/* Newest filing date the consumer contract carries for a metric. Used to
-   date a derived TTM value, which has no filing of its own: its earliest
-   honest availability is the latest filing among its named inputs. */
-function newestFiled(doc, metric) {
-  const dates = [];
-  for (const block of ["quarterly", "annual"]) {
-    const rows = doc?.[block]?.[metric];
-    if (Array.isArray(rows)) rows.forEach((row) => { if (typeof row[COL.filed] === "string") dates.push(row[COL.filed]); });
-  }
-  const direct = doc?.ttm?.[metric]?.filed;
-  if (typeof direct === "string") dates.push(direct);
-  return dates.length ? dates.sort().at(-1) : null;
-}
-
-function ttmValue(doc, metric, cutoff) {
-  const entry = doc?.ttm?.[metric];
-  if (!entry || !finite(entry.v)) return null;
-  let filed = typeof entry.filed === "string" ? entry.filed : null;
-  if (!filed && entry.derived && Array.isArray(entry.inputs)) {
-    const inputDates = entry.inputs.map((input) => newestFiled(doc, input)).filter(Boolean);
-    filed = inputDates.length === entry.inputs.length ? inputDates.sort().at(-1) : null;
-  }
-  if (!filed || filed > cutoff) return null;
-  return { value: entry.v, end: entry.end, filed, derived: entry.derived === true };
-}
-
-/* A balance-sheet instant that predates the reporting period by more than a
-   year is not a current figure. Combining it with a current TTM would read
-   like one number when it is two, so it is dropped rather than mixed. */
-const STALE_INSTANT_DAYS = 400;
-function periodAligned(entry, referenceEnd) {
-  if (!entry) return null;
-  if (typeof entry.end !== "string" || typeof referenceEnd !== "string") return entry;
-  const gap = (Date.parse(referenceEnd) - Date.parse(entry.end)) / 86400000;
-  if (!Number.isFinite(gap)) return entry;
-  return gap > STALE_INSTANT_DAYS ? null : entry;
-}
-
-function cagr(series, years) {
-  if (series.length < years + 1) return null;
-  const last = series[series.length - 1], first = series[series.length - 1 - years];
-  if (!(first.value > 0) || !(last.value > 0)) return null; /* cross-zero CAGR is null, never zero */
-  return (last.value / first.value) ** (1 / years) - 1;
-}
-
-function sumLast(series, count) {
-  if (series.length < count) return null;
-  return series.slice(-count).reduce((total, entry) => total + entry.value, 0);
-}
-
-function sumWindow(series, from, count) {
-  if (series.length < from + count) return null;
-  const end = series.length - from;
-  return series.slice(end - count, end).reduce((total, entry) => total + entry.value, 0);
-}
-
-/* ---------------------------------------------------------------------------
-   Raw fundamental component values and the change inputs, per issuer.
-   --------------------------------------------------------------------------- */
-function fundamentalRaws(doc, cutoff, marketCap) {
-  const revenueA = annualSeries(doc, "revenue", cutoff),
-    epsA = annualSeries(doc, "eps_diluted", cutoff),
-    fcfA = annualSeries(doc, "free_cash_flow", cutoff),
-    operatingIncomeA = annualSeries(doc, "operating_income", cutoff),
-    assetsA = annualSeries(doc, "total_assets", cutoff),
-    equityA = annualSeries(doc, "stockholders_equity", cutoff),
-    grossQ = quarterSeries(doc, "gross_profit", cutoff),
-    revenueQ = quarterSeries(doc, "revenue", cutoff),
-    fcfQ = quarterSeries(doc, "free_cash_flow", cutoff),
-    revenueT = ttmValue(doc, "revenue", cutoff),
-    netIncomeT = ttmValue(doc, "net_income", cutoff),
-    ocfT = ttmValue(doc, "operating_cash_flow", cutoff),
-    grossT = ttmValue(doc, "gross_profit", cutoff),
-    fcfT = ttmValue(doc, "free_cash_flow", cutoff),
-    operatingIncomeT = ttmValue(doc, "operating_income", cutoff);
-
-  /* Everything below is read against the period the TTM block reports. */
-  const referenceEnd = revenueT?.end || assetsA.at(-1)?.end || null;
-  const netDebtT = periodAligned(ttmValue(doc, "net_debt", cutoff), referenceEnd);
-
-  const latestAssets = periodAligned(assetsA.at(-1), referenceEnd)?.value ?? null,
-    priorAssets = assetsA.at(-2)?.value ?? null,
-    averageAssets = finite(latestAssets) && finite(priorAssets) ? (latestAssets + priorAssets) / 2 : latestAssets,
-    latestEquity = periodAligned(equityA.at(-1), referenceEnd)?.value ?? null;
-
-  const raws = {};
-  const filedDates = [];
-  const note = (entry) => { if (entry?.filed) filedDates.push(entry.filed); };
-  [revenueT, netIncomeT, ocfT, grossT, fcfT, netDebtT].forEach(note);
-  [revenueA.at(-1), assetsA.at(-1), equityA.at(-1)].forEach((entry) => { if (entry?.filed) filedDates.push(entry.filed); });
-
-  /* Quality */
-  if (netIncomeT && ocfT && finite(averageAssets) && averageAssets > 0) {
-    raws.accrualRatio = (netIncomeT.value - ocfT.value) / averageAssets;
-  }
-  if (netDebtT && finite(latestAssets) && latestAssets > 0) raws.netDebtToAssets = netDebtT.value / latestAssets;
-  if (finite(latestEquity) && finite(latestAssets) && latestAssets > 0) raws.equityToAssets = latestEquity / latestAssets;
-  if (fcfA.length >= 4) raws.positiveFcfYears = fcfA.slice(-5).filter((entry) => entry.value > 0).length;
-
-  /* Operative Marge je Geschaeftsjahr, gepaart ueber das Jahresende: zwei
-     Kennzahlen aus verschiedenen Abschluessen sind keine Marge. */
-  const revenueByEnd = new Map(revenueA.map((entry) => [entry.end, entry.value]));
-  const operatingMargins = operatingIncomeA
-    .map((entry) => {
-      const revenue = revenueByEnd.get(entry.end);
-      return finite(revenue) && revenue > 0 ? { end: entry.end, value: entry.value / revenue } : null;
-    })
-    .filter(Boolean);
-
-  const marginWindow = operatingMargins.slice(-5);
-  if (marginWindow.length >= 4) {
-    const median = medianOf(marginWindow.map((entry) => entry.value));
-    raws.operatingMarginStability = medianOf(marginWindow.map((entry) => Math.abs(entry.value - median)));
-  }
-  if (operatingMargins.length >= 4) {
-    raws.operatingMarginExpansion3y = operatingMargins.at(-1).value - operatingMargins.at(-4).value;
-  }
-
-  /* Growth */
-  raws.revenueCagr3y = cagr(revenueA, 3);
-  raws.epsCagr3y = cagr(epsA, 3);
-  raws.fcfCagr3y = cagr(fcfA, 3);
-
-  const currentTtmRevenue = sumWindow(revenueQ, 0, 4), priorTtmRevenue = sumWindow(revenueQ, 4, 4);
-  if (finite(currentTtmRevenue) && finite(priorTtmRevenue) && priorTtmRevenue > 0) {
-    raws.revenueGrowthTtmYoy = currentTtmRevenue / priorTtmRevenue - 1;
-  }
-  if (revenueA.length >= 3) {
-    const [twoBack, oneBack, latest] = revenueA.slice(-3);
-    if (oneBack.value > 0 && twoBack.value > 0) {
-      const current = latest.value / oneBack.value - 1, prior = oneBack.value / twoBack.value - 1;
-      raws.revenueGrowthAcceleration = current - prior;
-      raws._revenueGrowthCurrent = current;
-      raws._revenueGrowthPrior = prior;
-    }
-  }
-
-  /* Value */
-  if (finite(marketCap) && marketCap > 0) {
-    if (fcfT) raws.fcfYield = fcfT.value / marketCap;
-    if (netIncomeT) raws.earningsYield = netIncomeT.value / marketCap;
-    if (finite(latestEquity)) raws.bookToMarket = latestEquity / marketCap;
-    const enterpriseValue = netDebtT ? marketCap + netDebtT.value : null;
-    if (revenueT && finite(enterpriseValue) && enterpriseValue > 0) raws.salesYield = revenueT.value / enterpriseValue;
-  }
-
-  /* Profitability */
-  if (grossT && finite(averageAssets) && averageAssets > 0) raws.grossProfitabilityTtm = grossT.value / averageAssets;
-  if (fcfT && revenueT && revenueT.value > 0) raws.fcfMarginTtm = fcfT.value / revenueT.value;
-  if (operatingIncomeT && revenueT && revenueT.value > 0 && operatingIncomeT.end === revenueT.end) {
-    raws.operatingMarginTtm = operatingIncomeT.value / revenueT.value;
-  }
-  if (netIncomeT && finite(averageAssets) && averageAssets > 0) raws.roaTtm = netIncomeT.value / averageAssets;
-
-  /* Change inputs */
-  const currentTtmGross = sumWindow(grossQ, 0, 4), priorTtmGross = sumWindow(grossQ, 4, 4),
-    currentTtmFcf = sumWindow(fcfQ, 0, 4), priorTtmFcf = sumWindow(fcfQ, 4, 4);
-  const change = {
-    revenueGrowthAcceleration: raws.revenueGrowthAcceleration ?? null,
-    revenueGrowthCurrent: raws._revenueGrowthCurrent ?? null,
-    revenueGrowthPrior: raws._revenueGrowthPrior ?? null,
-    grossMarginTtm: finite(currentTtmGross) && finite(currentTtmRevenue) && currentTtmRevenue > 0 ? currentTtmGross / currentTtmRevenue : null,
-    grossMarginPriorTtm: finite(priorTtmGross) && finite(priorTtmRevenue) && priorTtmRevenue > 0 ? priorTtmGross / priorTtmRevenue : null,
-    fcfMarginTtm: finite(currentTtmFcf) && finite(currentTtmRevenue) && currentTtmRevenue > 0 ? currentTtmFcf / currentTtmRevenue : null,
-    fcfMarginPriorTtm: finite(priorTtmFcf) && finite(priorTtmRevenue) && priorTtmRevenue > 0 ? priorTtmFcf / priorTtmRevenue : null
-  };
-
-  delete raws._revenueGrowthCurrent;
-  delete raws._revenueGrowthPrior;
-
-  return {
-    raws,
-    change,
-    shares: periodAligned(ttmValue(doc, "shares_outstanding", cutoff), referenceEnd),
-    availableAt: filedDates.length ? filedDates.slice().sort().at(-1) : null,
-    fundamentalsAsOf: revenueT?.end || revenueA.at(-1)?.end || null,
-    annualYears: revenueA.length
-  };
-}
 
 /* --------------------------------------------------------------------------- */
 function main() {
@@ -390,16 +185,17 @@ function main() {
       }
       const doc = docCache.get(peer.cik);
       if (doc) {
-        const marketCapShares = null;
-        fundamentals = fundamentalRaws(doc, cutoff, marketCapShares);
-        const shares = fundamentals.shares;
-        const marketCap = shares && quote ? shares.value * quote.close : null;
         /* Market capitalization needs both a PIT-safe share count and a
-           published close; recompute the price-dependent block once it is
-           known rather than guessing it above. */
-        fundamentals = fundamentalRaws(doc, cutoff, marketCap);
-        fundamentals.marketCap = finite(marketCap) ? marketCap : null;
-        fundamentals.priceAsOf = quote?.asOf || null;
+           published close. The first pass resolves the share count; the
+           second computes the price-dependent block from it rather than
+           guessing a capitalization beforehand. */
+        const shares = FundamentalInputs.compute(doc, cutoff, null)?.shares || null;
+        const marketCap = shares && quote ? shares.value * quote.close : null;
+        fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
+        if (fundamentals) {
+          fundamentals.marketCap = finite(marketCap) ? marketCap : null;
+          fundamentals.priceAsOf = quote?.asOf || null;
+        } else countGap("FUNDAMENTALS_DOCUMENT_INVALID");
       } else countGap("FUNDAMENTALS_DOCUMENT_MISSING");
     } else countGap("IDENTITY_UNRESOLVED");
 
@@ -673,8 +469,7 @@ function main() {
        vague "not ready": this list is the work queue for the next factor
        certification step. */
     openInputGates: [
-      { id: "CONSUMER_EXPORT_DEPRECIATION", blocks: ["value.ebitdaYield"], owner: "scripts/quant/sec/consumer.py", detail: "EBITDA wird in der SEC-Schicht bereits abgeleitet; die Consumer-Auslieferung führt depreciation_and_amortization nicht in REPORTED_METRICS und damit auch ebitda nicht mit." },
-      { id: "CONSUMER_EXPORT_TAX_INPUTS", blocks: ["profitability.roicTtm", "profitability.roicMedian3y"], owner: "scripts/quant/sec/consumer.py", detail: "pretax_income und income_tax_expense stehen in der Metrik-Registry, aber nicht in der Consumer-Auslieferung. Ohne sie gibt es keine offengelegte Steuerannahme und damit keinen kanonischen ROIC." },
+      { id: "CONSUMER_EXPORT_MATERIALIZATION", blocks: ["value.ebitdaYield", "profitability.roicTtm", "profitability.roicMedian3y"], owner: "scripts/quant/sec/consumer.py", detail: "Die Consumer-Auslieferung führt depreciation_and_amortization, pretax_income, income_tax_expense und das abgeleitete ebitda jetzt mit. Die Felder erscheinen mit dem nächsten SEC-Lauf in den Consumer-Artefakten; bis dahin bleiben die drei Komponenten hier leer." },
       { id: "BETA_252D", blocks: ["risk.beta252d"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer." },
       { id: "RELATIVE_STRENGTH_12M1M_MATERIALIZATION", blocks: ["momentum.relativeStrength12m1m"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt." },
       { id: "NET_DEBT_PERIOD_ALIGNMENT", blocks: ["quality.netDebtToAssets", "value.salesYield"], owner: "SEC normalization", detail: "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt." },
@@ -723,13 +518,6 @@ function downsideVolatility(closes, window) {
   }
   if (valid < 240) return null;
   return round(Math.sqrt(sum / (valid - 1)) * Math.sqrt(252));
-}
-
-function medianOf(values) {
-  const sorted = values.filter(finite).slice().sort((a, b) => a - b);
-  if (!sorted.length) return null;
-  const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
 function mostCommon(values) {

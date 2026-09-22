@@ -36,6 +36,8 @@ und nicht gerendert.
 
 Keine Provider-Anfrage, kein R2-Schreibvorgang, keine zweite Pipeline. Der Materializer
 (`scripts/quant/build-factor-evidence.mjs`) liest, rechnet und schreibt ein Consumer-Artefakt.
+Die fundamentale Rechnung selbst steht in `quant/engines/fundamental-inputs.js`, damit eine
+Formel, die über das Öffnen eines Faktors entscheidet, für sich testbar bleibt.
 
 ## 2. Verarbeitungskette
 
@@ -130,7 +132,7 @@ Kursbasis: `adjustedClose`, in der Semantikleiter `TOTAL_RETURN`, ausgewiesen al
 |---|---:|---|---|---|
 | `fcfYield` | 30 % | Free Cashflow TTM / Börsenwert | höher | verfügbar |
 | `earningsYield` | 25 % | Nettogewinn TTM / Börsenwert | höher | verfügbar |
-| `ebitdaYield` | 20 % | EBITDA TTM / Unternehmenswert | höher | **fehlt** — Gate `CONSUMER_EXPORT_DEPRECIATION` |
+| `ebitdaYield` | 20 % | EBITDA TTM / Unternehmenswert | höher | verdrahtet, wartet auf den nächsten SEC-Lauf |
 | `salesYield` | 10 % | Umsatz TTM / Unternehmenswert | höher | dünn — Gate `NET_DEBT_PERIOD_ALIGNMENT` |
 | `bookToMarket` | 15 % | Eigenkapital / Börsenwert | höher | verfügbar |
 
@@ -142,18 +144,23 @@ gültige ungünstige Werte und werden nicht abgeschnitten. Branchenausschluss wi
 
 | Komponente | Gewicht | Eingabe | Richtung | Stand |
 |---|---:|---|---|---|
-| `roicTtm` | 25 % | kanonische Rendite auf das eingesetzte Kapital | höher | **fehlt** — Gate `CONSUMER_EXPORT_TAX_INPUTS` |
-| `roicMedian3y` | 15 % | Median der jährlichen ROIC | höher | **fehlt** — dasselbe Gate |
+| `roicTtm` | 25 % | operatives Ergebnis nach Steuern / (Schulden + Eigenkapital − Kasse) | höher | verdrahtet, wartet auf den nächsten SEC-Lauf |
+| `roicMedian3y` | 15 % | Median der jährlichen ROIC | höher | verdrahtet, wartet auf den nächsten SEC-Lauf |
 | `grossProfitabilityTtm` | 20 % | Rohertrag TTM / ⌀ Bilanzsumme | höher | verfügbar |
 | `operatingMarginTtm` | 15 % | operatives Ergebnis TTM / Umsatz TTM | höher | verfügbar |
 | `fcfMarginTtm` | 15 % | Free Cashflow TTM / Umsatz TTM | höher | verfügbar |
 | `roaTtm` | 10 % | Nettogewinn TTM / ⌀ Bilanzsumme | höher | verfügbar |
 
-Verfügbares Gewicht 60 %, genau auf dem Minimum: der Faktor öffnet sich, sobald alle vier
-vorhandenen Komponenten für einen Titel messbar sind, und fällt sonst geschlossen. Beide ROIC-
-Komponenten bleiben zu, weil der kanonische ROIC eine offengelegte Steuerannahme verlangt;
-Vorsteuerergebnis und Steueraufwand stehen in der Metrik-Registry, werden aber nicht in die
-Consumer-Schicht ausgeliefert. Ein pauschaler Steuersatz wäre eine erfundene Annahme.
+Verfügbares Gewicht derzeit 60 %, genau auf dem Minimum: der Faktor öffnet sich, sobald alle
+vier vorhandenen Komponenten für einen Titel messbar sind, und fällt sonst geschlossen.
+
+Der Steuersatz im ROIC ist der **gemeldete effektive Satz** des Emittenten
+(Steueraufwand / Vorsteuerergebnis), nicht ein unterstellter. Ein Verlustjahr, eine
+Steuererstattung oder ein Satz über 100 % sind reale Befunde und machen den kanonischen
+Nachsteuerwert undefiniert statt ungefähr: der Wert bleibt dann leer. Das eingesetzte Kapital
+ist Schulden plus Eigenkapital minus Kasse; ein negatives eingesetztes Kapital ergibt keine
+sinnvolle Rendite und liefert ebenfalls keinen Wert.
+
 Branchenausschluss wie bei Quality.
 
 ### 3.6 Revisions — extern blockiert
@@ -226,8 +233,7 @@ Sie stehen maschinenlesbar in `summary.json` unter `openInputGates`:
 
 | Gate | Blockiert | Eigentümer |
 |---|---|---|
-| `CONSUMER_EXPORT_DEPRECIATION` | `value.ebitdaYield` | `scripts/quant/sec/consumer.py` |
-| `CONSUMER_EXPORT_TAX_INPUTS` | `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` |
+| `CONSUMER_EXPORT_MATERIALIZATION` | `value.ebitdaYield`, `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` — erweitert, wartet auf den nächsten SEC-Lauf |
 | `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
 | `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC-Normalisierung |
@@ -235,12 +241,11 @@ Sie stehen maschinenlesbar in `summary.json` unter `openInputGates`:
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | `quality.*`, `value.*`, `profitability.*` für 967 Titel | Quant-V2-Methodik |
 | `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum` | dieser Materializer, ab seinem ersten wöchentlichen Snapshot |
 
-Die beiden Consumer-Gates sind je eine Zeile weit entfernt: Die SEC-Schicht normalisiert
-`operating_income`, `depreciation_and_amortization`, `pretax_income` und `income_tax_expense`
-bereits, und sie leitet `ebitda` bereits ab — die Consumer-Auslieferung
-(`REPORTED_METRICS` / `DERIVED_METRICS` in `consumer.py`) führt nur die letzten drei nicht mit.
-Das ist eine Erweiterung einer bestehenden Ausspielung, keine neue Pipeline, und sie wirkt
-mit dem nächsten SEC-Lauf.
+Das Consumer-Gate ist inzwischen geschlossen: `consumer.py` führt
+`depreciation_and_amortization`, `pretax_income`, `income_tax_expense` und das bereits in der
+SEC-Schicht abgeleitete `ebitda` jetzt mit, und die drei Komponenten lesen sie. Es war eine
+Erweiterung einer bestehenden Ausspielung, keine neue Pipeline. Die Werte erscheinen mit dem
+nächsten SEC-Lauf in den Consumer-Artefakten; bis dahin bleiben die drei Komponenten leer.
 
 ## 7. Produktebene
 

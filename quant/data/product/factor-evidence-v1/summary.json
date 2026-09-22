@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-1.0.0",
  "derivedFrom": "quant-v2.0.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-22T15:36:47.000Z",
+ "generatedAt": "2026-09-22T15:43:42.000Z",
  "asOf": "2026-09-18",
  "publication": {
   "compositeAllowed": false,
@@ -226,7 +226,7 @@
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
-   "note": "EBITDA wird in der SEC-Schicht bereits abgeleitet (operatives Ergebnis plus Abschreibungen), aber die Consumer-Auslieferung führt die Abschreibungen nicht mit. Ohne sie wäre EBITDA das operative Ergebnis unter falschem Namen.",
+   "note": "EBITDA der letzten zwölf Monate je Unternehmenswert. EBITDA entsteht in der SEC-Schicht aus operativem Ergebnis plus Abschreibungen; meldet ein Emittent keine Abschreibungen, bleibt es leer statt zum operativen Ergebnis unter falschem Namen zu werden.",
    "window": "latest close and PIT-safe TTM",
    "input": "TTM EBITDA/enterprise value"
   },
@@ -256,7 +256,7 @@
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
-   "note": "Der kanonische ROIC verlangt eine offengelegte Steuerannahme. Vorsteuerergebnis und Steueraufwand stehen in der Metrik-Registry, werden von der Consumer-Auslieferung aber nicht mitgeführt; ein pauschaler Steuersatz wäre eine erfundene Annahme.",
+   "note": "Operatives Ergebnis nach Steuern je eingesetztem Kapital (Schulden plus Eigenkapital minus Kasse). Der Steuersatz ist der gemeldete effektive Satz des Emittenten; ohne positives Vorsteuerergebnis bleibt der Wert leer, statt einen pauschalen Satz zu unterstellen.",
    "window": "latest PIT-safe TTM",
    "input": "canonical return on invested capital; tax assumption disclosed"
   },
@@ -266,7 +266,7 @@
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
-   "note": "Dieselbe Steuerannahme wie bei roicTtm fehlt.",
+   "note": "Median der jährlichen ROIC über drei Geschäftsjahre, jedes mit dem effektiven Steuersatz desselben Jahres.",
    "window": "last 3 fiscal years",
    "input": "median annual ROIC"
   },
@@ -461,21 +461,14 @@
  "shards": 637,
  "openInputGates": [
   {
-   "id": "CONSUMER_EXPORT_DEPRECIATION",
+   "id": "CONSUMER_EXPORT_MATERIALIZATION",
    "blocks": [
-    "value.ebitdaYield"
-   ],
-   "owner": "scripts/quant/sec/consumer.py",
-   "detail": "EBITDA wird in der SEC-Schicht bereits abgeleitet; die Consumer-Auslieferung führt depreciation_and_amortization nicht in REPORTED_METRICS und damit auch ebitda nicht mit."
-  },
-  {
-   "id": "CONSUMER_EXPORT_TAX_INPUTS",
-   "blocks": [
+    "value.ebitdaYield",
     "profitability.roicTtm",
     "profitability.roicMedian3y"
    ],
    "owner": "scripts/quant/sec/consumer.py",
-   "detail": "pretax_income und income_tax_expense stehen in der Metrik-Registry, aber nicht in der Consumer-Auslieferung. Ohne sie gibt es keine offengelegte Steuerannahme und damit keinen kanonischen ROIC."
+   "detail": "Die Consumer-Auslieferung führt depreciation_and_amortization, pretax_income, income_tax_expense und das abgeleitete ebitda jetzt mit. Die Felder erscheinen mit dem nächsten SEC-Lauf in den Consumer-Artefakten; bis dahin bleiben die drei Komponenten hier leer."
   },
   {
    "id": "BETA_252D",
@@ -530,6 +523,6 @@
   "IDENTITY_UNRESOLVED": 1049,
   "FUNDAMENTALS_DOCUMENT_MISSING": 347
  },
- "runtimeMs": 17342,
- "contentHash": "b8f7f1e37b8fb84f"
+ "runtimeMs": 17432,
+ "contentHash": "df3a2ebbd7d45e98"
 }

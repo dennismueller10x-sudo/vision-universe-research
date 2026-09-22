@@ -52,6 +52,14 @@ remains closed; Setup, Pattern, Strategy Match, Backtest and Market Regime remai
   `operatingMarginExpansion3y` and `operatingMarginTtm` now compute from data that was already
   in the repository. Profitability opened (0 → 1,154), Growth rose to 3,188 and Quality to 2,732.
   Six of seven factors are now broadly available; only Revisions is fully closed.
+- **SEC consumer export widened**: `depreciation_and_amortization`, `pretax_income`,
+  `income_tax_expense` and the already-derived `ebitda` now leave the SEC layer. The readers for
+  `ebitdaYield`, `roicTtm` and `roicMedian3y` are wired and unit-tested; the ROIC tax rate is the
+  issuer's reported effective rate, and a loss year or a tax benefit leaves the value empty
+  rather than substituting a flat rate.
+- **Fundamental inputs extracted** into `quant/engines/fundamental-inputs.js` so that a formula
+  deciding whether a factor opens is testable on its own. Behaviour-preserving: identical counts
+  before and after.
 - **Three input gates closed at the engine**: `market-factors-1.0.0` now computes
   `downsideVolatility252d`, `beta252d` and `relativeStrength12M1M`. Beta pairs security and
   benchmark **by trading date** — a day without a counterpart is dropped, never shifted, because
@@ -97,7 +105,8 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,432/1,432 passed locally (1,411 before; +17 factor-evidence, +4 market-factors).
+- Full Quant suite: 1,444/1,444 passed locally (1,411 before; +17 factor-evidence, +4 market-factors,
+  +12 fundamental-inputs). SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
 - Public data hygiene guard: passed against the new artifact.
 - Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL) and `explain`:
   one `h1` per page, no horizontal overflow, seven factors in canonical order, change groups
@@ -112,8 +121,7 @@ Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `op
 
 | Gate | Blocks | Owner |
 |---|---|---|
-| `CONSUMER_EXPORT_DEPRECIATION` | `value.ebitdaYield` | `scripts/quant/sec/consumer.py` — the SEC layer already derives `ebitda`; the consumer export does not carry `depreciation_and_amortization` |
-| `CONSUMER_EXPORT_TAX_INPUTS` | `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` — `pretax_income` and `income_tax_expense` are normalized but not exported |
+| `CONSUMER_EXPORT_MATERIALIZATION` | `value.ebitdaYield`, `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` — widened, waiting for the next SEC run |
 | `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
 | `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC normalization (stale debt instants are dropped, not mixed) |
@@ -162,11 +170,10 @@ SEC layer normalizes but `consumer.py` does not export.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-1. **Widen the SEC consumer export** (`REPORTED_METRICS` / `DERIVED_METRICS` in
-   `scripts/quant/sec/consumer.py`) by `depreciation_and_amortization`, `pretax_income`,
-   `income_tax_expense` and the already-derived `ebitda`, plus the matching TTM derivation.
-   That opens `value.ebitdaYield` and both ROIC components on the next SEC run. It extends an
-   existing export; it is not a new Fundamentals pipeline.
+1. **Run the SEC fundamentals workflow and then the market-data workflow.** Both exports have
+   been widened and both sets of readers are wired and unit-tested; the only thing left is for
+   the pipelines to produce the fields. That opens `value.ebitdaYield`, both ROIC components,
+   `risk.beta252d` and `momentum.relativeStrength12m1m` with no further code.
 2. **Run the market-data workflow** so the three new `market-factors-1.0.0` fields land in
    `factors-FULL_UNIVERSE.json`, then re-materialize factor evidence. This completes Momentum
    (100 % component weight) and Risk (100 %) without any further code.
