@@ -51,10 +51,20 @@
 
   var VERSION = "fx-rates-1.0.0";
 
-  /* Die Waehrung, ueber die gekreuzt wird, wenn ein Paar nicht direkt
-     vorliegt. USD, weil praktisch jede Anbieterreihe gegen USD notiert -
-     nicht, weil USD eine besondere Rolle im Produkt haette. */
-  var PIVOT = "USD";
+  /* Die Waehrungen, ueber die gekreuzt wird, wenn ein Paar nicht direkt
+     vorliegt - in dieser Reihenfolge.
+
+     Warum ZWEI und nicht eine: die beiden Quellen notieren
+     verschieden. Tiingo fuehrt ueberwiegend gegen USD (usdcny, usdhkd),
+     die EZB ausschliesslich gegen EUR (EUR/CNY, EUR/CHF). Mit nur einem
+     Pivot bleibt je nach Quelle die Haelfte der Kreuze unbildbar: ein
+     CNY/CHF aus EZB-Daten findet ueber USD kein einziges Bein.
+
+     Die Reihenfolge ist trotzdem fest und nicht "welcher gerade passt" -
+     USD zuerst, EUR danach. Deterministisch heisst: derselbe Tag ergibt
+     morgen dasselbe Kreuz ueber denselben Pivot. */
+  var PIVOTS = ["USD", "EUR"];
+  var PIVOT = PIVOTS[0];
 
   var FREQUENCIES = ["DAILY", "INTRADAY", "REALTIME"];
 
@@ -150,47 +160,112 @@
      Der Store
      -------------------------------------------------------------------- */
 
+  /* Anbieterrollen und ihre Reihenfolge.
+
+     PRIMARY wird zuerst gefragt, FALLBACK nur dort, wo PRIMARY nichts
+     hat. Das ist der Owner-Entscheid O-7 als Code: die offizielle
+     Referenzquelle ist kein zweiter Wahrheitsstand neben Tiingo, sondern
+     der Lueckenfueller fuer die Zeit vor dessen Historienbeginn.
+
+     Die Priorisierung ist deterministisch und nicht "die bessere Zahl
+     gewinnt": zwei Quellen, zwischen denen je Abruf entschieden wird,
+     ergeben eine Reihe, die niemand reproduzieren kann. Wer zuerst
+     antwortet, gewinnt - und wer das ist, steht fest. */
+  var ROLES = { PRIMARY: 10, FALLBACK: 20, UNKNOWN: 99 };
+
   function createStore(options) {
     options = options || {};
+    /* Je Paar eine LISTE von Reihen, nicht eine Reihe. Eine Reihe je
+       Anbieter, sortiert nach Prioritaet. */
     var series = Object.create(null);
+
+    /* DER AKTUELLE STAND, GETRENNT VON DER HISTORIE.
+
+       Die Reihen sind nach Kalendertag geschluesselt - das ist fuer
+       Tagesschlusskurse richtig und fuer Intraday falsch: sechs Bars
+       desselben Tages wuerden auf einen Punkt zusammenfallen, und der
+       letzte gewaenne. Ein Intraday-Stand braucht eine Uhrzeit.
+
+       Deshalb ein zweiter, kleiner Speicher: je Paar EIN aktueller
+       Stand mit vollem Zeitstempel. Das ist genau das, was O-9
+       verlangt - ein zentraler kanonischer FX-State je Waehrungspaar,
+       den alle Titel gemeinsam konsumieren, und nicht eine zweite
+       Historie.
+
+       Er wird ausschliesslich von latest() gelesen. Eine historische
+       Abfrage darf ihn nie sehen: der Kurs von jetzt hat in der
+       Umrechnung eines Bilanzwertes von 2021 nichts zu suchen. */
+    var currentState = Object.create(null);
     /* Wie weit PREVIOUS_AVAILABLE zurueckgreifen darf. Ohne Grenze wuerde
        ein Paar, dessen Reihe vor drei Jahren abgerissen ist, heute noch
        einen Kurs liefern - formal "der letzte verfuegbare", fachlich
        Unsinn. Zehn Kalendertage decken jedes Wochenende und jede
        Feiertagsbruecke ab und fangen einen echten Abriss. */
     var maxCarryDays = typeof options.maxCarryDays === "number" ? options.maxCarryDays : 10;
-    var pivot = normCode(options.pivot) || PIVOT;
+    var pivots = Array.isArray(options.pivots)
+      ? options.pivots.map(normCode).filter(Boolean)
+      : (normCode(options.pivot) ? [normCode(options.pivot)] : PIVOTS.slice());
+    var pivot = pivots[0];
 
     function ingest(base, quote, rows, meta) {
+      meta = meta || {};
       var b = normCode(base), q = normCode(quote);
       if (!b || !q) throw new Error("fx-rates: ungueltiger Waehrungscode " + base + "/" + quote);
       var built = buildSeries(rows, meta);
-      series[pairKey(b, q)] = built;
+      built.role = meta.role || (meta.source === "fixture" ? "PRIMARY" : "UNKNOWN");
+      built.priority = typeof meta.priority === "number" ? meta.priority
+                     : (ROLES[built.role] !== undefined ? ROLES[built.role] : ROLES.UNKNOWN);
+
+      var key = pairKey(b, q);
+      var list = series[key] || (series[key] = []);
+      /* Dieselbe Quelle zweimal ersetzt sich selbst - ein erneuter Import
+         soll nicht zwei Staende nebeneinander legen. */
+      var existing = list.findIndex(function (x) { return x.source === built.source; });
+      if (existing >= 0) list[existing] = built; else list.push(built);
+      /* Stabil sortiert: Prioritaet, dann Quellenname. Zwei Quellen
+         gleicher Prioritaet duerfen nicht je nach Ingest-Reihenfolge
+         gewinnen. */
+      list.sort(function (x, y) {
+        return x.priority - y.priority || String(x.source).localeCompare(String(y.source));
+      });
+
       return {
-        pair: pairKey(b, q), observations: built.dates.length,
+        pair: key, observations: built.dates.length,
         first: built.dates[0] || null, last: built.dates[built.dates.length - 1] || null,
         rejectedRows: built.rejectedRows, duplicateDates: built.duplicateDates,
-        source: built.source, frequency: built.frequency
+        source: built.source, frequency: built.frequency,
+        role: built.role, priority: built.priority,
+        sourcesForPair: list.map(function (x) { return x.source; })
       };
     }
 
-    function has(base, quote) { return !!series[pairKey(normCode(base), normCode(quote))]; }
+    function listFor(base, quote) { return series[pairKey(normCode(base), normCode(quote))] || null; }
+    function has(base, quote) { var l = listFor(base, quote); return !!(l && l.length); }
     function pairs() { return Object.keys(series).sort(); }
-    function seriesFor(base, quote) { return series[pairKey(normCode(base), normCode(quote))] || null; }
+    /** Die hoechstpriorisierte Reihe eines Paares - fuer Aufrufer, die nur eine wollen. */
+    function seriesFor(base, quote) { var l = listFor(base, quote); return (l && l[0]) || null; }
+    function sourcesFor(base, quote) {
+      var l = listFor(base, quote);
+      return l ? l.map(function (x) {
+        return { source: x.source, role: x.role, priority: x.priority,
+                 observations: x.dates.length, first: x.dates[0] || null,
+                 last: x.dates[x.dates.length - 1] || null, frequency: x.frequency };
+      }) : [];
+    }
 
     function daysBetween(a, b) {
       return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000);
     }
 
-    /** Ein Direktabruf auf genau einer gespeicherten Reihe. */
-    function lookupDirect(b, q, date) {
-      var s = series[pairKey(b, q)];
+    /** Ein Abruf auf EINER gespeicherten Reihe. */
+    function lookupInSeries(s, date) {
       if (!s || !s.dates.length) return null;
 
       if (date === null || date === undefined) {
         var lastIdx = s.dates.length - 1;
         return { rate: s.rates[lastIdx], asOf: s.dates[lastIdx], method: METHODS.LATEST_AVAILABLE,
-                 source: s.source, frequency: s.frequency, fallbackReason: null };
+                 source: s.source, role: s.role, priority: s.priority,
+                 frequency: s.frequency, fallbackReason: null };
       }
 
       var i = floorIndex(s.dates, date);
@@ -198,21 +273,58 @@
         /* Vor dem Beginn der Reihe. Der einzige Fall, in dem es keinen
            Ausweg gibt: der naechste Kurs liegt in der Zukunft des
            angefragten Tages, und den zu nehmen waere Look-Ahead. */
-        return { unavailable: "beforeSeriesStart", seriesStart: s.dates[0] };
+        return { unavailable: "beforeSeriesStart", seriesStart: s.dates[0], source: s.source };
       }
       var exact = s.dates[i] === date;
       if (!exact) {
         var gap = daysBetween(s.dates[i], date);
         if (gap > maxCarryDays) {
-          return { unavailable: "carryLimitExceeded", asOf: s.dates[i], gapDays: gap, maxCarryDays: maxCarryDays };
+          return { unavailable: "carryLimitExceeded", asOf: s.dates[i], gapDays: gap,
+                   maxCarryDays: maxCarryDays, source: s.source };
         }
       }
       return {
         rate: s.rates[i], asOf: s.dates[i],
         method: exact ? METHODS.DAILY_AT_DATE : METHODS.PREVIOUS_AVAILABLE,
-        source: s.source, frequency: s.frequency,
+        source: s.source, role: s.role, priority: s.priority, frequency: s.frequency,
         fallbackReason: exact ? null : "Kein Fixing am " + date + "; verwendet wird der letzte vorherige Stand vom " + s.dates[i] + "."
       };
+    }
+
+    /**
+     * Ein Direktabruf ueber ALLE Quellen eines Paares, in Prioritaets-
+     * reihenfolge.
+     *
+     * PRIMARY zuerst. Kommt von dort nichts - weil die Reihe erst spaeter
+     * beginnt, weil die Luecke zu gross ist -, kommt FALLBACK dran. Der
+     * Uebergang ist damit datumsabhaengig und trotzdem deterministisch:
+     * derselbe Tag ergibt morgen dieselbe Quelle.
+     *
+     * Die abgewiesenen Quellen werden mitgefuehrt (`consideredSources`).
+     * Ohne sie waere spaeter nicht nachvollziehbar, WARUM ein Wert aus
+     * der Zweitquelle stammt - und genau das ist die Frage, die bei einem
+     * Sprung in der Reihe als Erstes gestellt wird.
+     */
+    function lookupDirect(b, q, date) {
+      var list = series[pairKey(b, q)];
+      if (!list || !list.length) return null;
+      var considered = [];
+      for (var i = 0; i < list.length; i++) {
+        var hit = lookupInSeries(list[i], date);
+        if (hit && !hit.unavailable) {
+          hit.consideredSources = considered;
+          return hit;
+        }
+        if (hit) considered.push({ source: list[i].source, role: list[i].role, reason: hit.unavailable });
+        else considered.push({ source: list[i].source, role: list[i].role, reason: "emptySeries" });
+      }
+      /* Keine Quelle konnte liefern. Der Grund der HOECHSTPRIORISIERTEN
+         wird zurueckgegeben, damit die Fehlermeldung die Hauptquelle
+         beschreibt und nicht die letzte in der Liste. */
+      var first = considered[0] || {};
+      return { unavailable: first.reason || "noSource", consideredSources: considered,
+               seriesStart: (list[0] && list[0].dates[0]) || null,
+               asOf: null, gapDays: null, maxCarryDays: maxCarryDays };
     }
 
     /**
@@ -238,7 +350,9 @@
           available: true, rate: 1, base: b, quote: q,
           asOf: date || null, requestedDate: date || null,
           method: METHODS.IDENTITY, derivation: DERIVATIONS.DIRECT,
-          source: "identity", frequency: null, fallbackReason: null, reason: null
+          source: "identity", frequency: null, fallbackReason: null, reason: null,
+          provenance: { source: "identity", role: "IDENTITY", priority: 0,
+                        derivation: DERIVATIONS.DIRECT, consideredSources: [] }
         };
       }
 
@@ -248,6 +362,17 @@
           asOf: hit.asOf, requestedDate: date || null,
           method: hit.method, derivation: derivation,
           source: hit.source, frequency: hit.frequency,
+          /* Die Herkunft je Wert (O-7). Nicht "welche Quellen gibt es",
+             sondern: welche hat DIESEN Kurs geliefert, in welcher Rolle,
+             und welche wurden davor mit welchem Grund uebergangen. Bei
+             einem Sprung in der Reihe ist das die erste Frage. */
+          provenance: {
+            source: hit.source || null,
+            role: hit.role || null,
+            priority: hit.priority !== undefined ? hit.priority : null,
+            derivation: derivation,
+            consideredSources: hit.consideredSources || []
+          },
           fallbackReason: hit.fallbackReason, reason: null
         };
         if (extra) Object.keys(extra).forEach(function (k) { out[k] = extra[k]; });
@@ -264,42 +389,80 @@
       if (opts.allowInverse !== false) {
         var inv = lookupDirect(q, b, date);
         if (inv && !inv.unavailable) {
+          /* Rolle und Prioritaet muessen mitgereicht werden. Die erste
+             Fassung baute hier ein frisches Objekt und liess beide weg -
+             die Herkunft meldete dann `role: null` fuer jeden Wert, der
+             ueber die Gegenrichtung kam, und das ist bei EUR-Notierung
+             die Mehrheit. */
           return pack({ rate: 1 / inv.rate, asOf: inv.asOf, method: inv.method,
-                        source: inv.source, frequency: inv.frequency, fallbackReason: inv.fallbackReason },
+                        source: inv.source, role: inv.role, priority: inv.priority,
+                        frequency: inv.frequency, fallbackReason: inv.fallbackReason,
+                        consideredSources: inv.consideredSources },
                       DERIVATIONS.INVERSE, { derivedFrom: pairKey(q, b) });
         }
       }
 
-      /* Triangulation ueber das Pivot. Nur, wenn beide Beine auf
+      /* Triangulation ueber ein Pivot. Nur, wenn beide Beine auf
          demselben asOf stehen: ein USD/EUR von Freitag mit einem
          USD/CHF von Montag ergibt ein EUR/CHF-Kreuz, das an keinem der
-         beiden Tage gegolten hat. */
-      if (opts.allowTriangulation !== false && b !== pivot && q !== pivot) {
-        var legA = resolveLeg(pivot, b, date, opts);
-        var legB = resolveLeg(pivot, q, date, opts);
+         beiden Tage gegolten hat.
+
+         Die Pivots werden der Reihe nach probiert; das erste, das beide
+         Beine am selben Tag liefert, gewinnt. */
+      var mismatch = null;
+      if (opts.allowTriangulation !== false) {
+       for (var pi = 0; pi < pivots.length; pi++) {
+        var pv = pivots[pi];
+        if (b === pv || q === pv) continue;
+        var legA = resolveLeg(pv, b, date, opts);
+        var legB = resolveLeg(pv, q, date, opts);
+        if (legA && legB && legA.asOf !== legB.asOf) {
+          mismatch = mismatch || { pivot: pv, a: legA.asOf, b: legB.asOf };
+          continue;
+        }
         if (legA && legB && legA.asOf === legB.asOf) {
           var method = (legA.method === METHODS.DAILY_AT_DATE && legB.method === METHODS.DAILY_AT_DATE)
             ? METHODS.DAILY_AT_DATE : METHODS.PREVIOUS_AVAILABLE;
           return pack({
             rate: legB.rate / legA.rate, asOf: legA.asOf, method: method,
             source: legA.source === legB.source ? legA.source : (legA.source + "+" + legB.source),
+            /* Bei zwei Quellen gewinnt die SCHWAECHERE Rolle. Ein Kreuz
+               aus einem PRIMARY- und einem FALLBACK-Bein ist nicht
+               PRIMARY - es ist so belastbar wie sein schwaecheres Bein,
+               und die Lizenz richtet sich ebenfalls danach. */
+            role: legA.role === legB.role ? legA.role : "MIXED",
+            priority: Math.max(legA.priority || 0, legB.priority || 0),
             frequency: legA.frequency,
             fallbackReason: method === METHODS.PREVIOUS_AVAILABLE
               ? "Kreuzkurs aus dem letzten gemeinsamen Stand beider Beine vom " + legA.asOf + "."
               : null
-          }, DERIVATIONS.TRIANGULATED, { pivot: pivot, legs: [pairKey(pivot, b), pairKey(pivot, q)] });
+          }, DERIVATIONS.TRIANGULATED, { pivot: pv, legs: [pairKey(pv, b), pairKey(pv, q)] });
         }
-        if (legA && legB) {
-          return unavailable(b, q, date, "triangulationDateMismatch",
-            "Beine stehen auf verschiedenen Staenden (" + legA.asOf + " / " + legB.asOf + "). Ein Kreuz aus zwei Tagen wird nicht gebildet.");
-        }
+       }
+      }
+      if (mismatch) {
+        return unavailable(b, q, date, "triangulationDateMismatch",
+          "Beine ueber " + mismatch.pivot + " stehen auf verschiedenen Staenden (" +
+          mismatch.a + " / " + mismatch.b + "). Ein Kreuz aus zwei Tagen wird nicht gebildet.");
       }
 
+      /* Der Grund nennt JEDE befragte Quelle. Die erste Fassung gab nur
+         den Grund der hoechstpriorisierten zurueck - bei zwei Quellen
+         stand dann "vor dem Beginn der Reihe" da, obwohl die
+         Zweitquelle aus einem ganz anderen Grund nicht liefern konnte.
+         Wer eine Luecke schliessen soll, muss wissen, an welcher Quelle
+         es lag. */
+      var perSource = (direct && direct.consideredSources || [])
+        .map(function (c) { return c.source + " (" + c.role + "): " + c.reason; })
+        .join("; ");
       var detail = direct && direct.unavailable
         ? (direct.unavailable === "beforeSeriesStart"
-            ? "Der angefragte Tag liegt vor dem Beginn der Reihe (" + direct.seriesStart + "). Ein spaeterer Kurs waere Look-Ahead."
-            : "Letzter Stand vom " + direct.asOf + " ist " + direct.gapDays + " Tage alt; die Uebertragsgrenze liegt bei " + direct.maxCarryDays + " Tagen.")
-        : "Kein Paar " + pairKey(b, q) + " im Store, weder direkt noch ueber " + pivot + ".";
+            ? "Der angefragte Tag liegt vor dem Beginn jeder verfuegbaren Reihe" +
+              (direct.seriesStart ? " (fruehester Stand " + direct.seriesStart + ")" : "") +
+              ". Ein spaeterer Kurs waere Look-Ahead." +
+              (perSource ? " Befragt: " + perSource + "." : "")
+            : "Kein verwendbarer Stand." + (perSource ? " Befragt: " + perSource + "." : ""))
+        : "Kein Paar " + pairKey(b, q) + " im Store, weder direkt noch ueber " + pivots.join(" oder ") + ".";
       return unavailable(b, q, date, direct && direct.unavailable ? direct.unavailable : "pairNotStored", detail);
     }
 
@@ -311,12 +474,95 @@
       var inv = lookupDirect(to, from, date);
       if (inv && !inv.unavailable) {
         return { rate: 1 / inv.rate, asOf: inv.asOf, method: inv.method,
-                 source: inv.source, frequency: inv.frequency, fallbackReason: inv.fallbackReason };
+                 source: inv.source, role: inv.role, priority: inv.priority,
+                 frequency: inv.frequency, fallbackReason: inv.fallbackReason };
       }
       return null;
     }
 
-    function latest(base, quote) { return rateAt(base, quote, null); }
+    /**
+     * Traegt den aktuellen Stand eines Paares ein (O-9).
+     *
+     * Anders als ingest() ist das kein Bestand, sondern ein Zustand: ein
+     * Wert, ein Zeitstempel, eine Quelle. Ein erneuter Aufruf ersetzt
+     * ihn - aber nur, wenn der neue Stand JUENGER ist. Ein verspaetet
+     * eintreffender aelterer Tick darf einen neueren nicht
+     * ueberschreiben; das waere ein Ruecksprung, den niemand sieht.
+     */
+    function ingestCurrent(base, quote, state) {
+      var b = normCode(base), q = normCode(quote);
+      if (!b || !q) throw new Error("fx-rates: ungueltiger Waehrungscode " + base + "/" + quote);
+      state = state || {};
+      var rate = Number(state.rate);
+      var asOf = state.asOf;
+      if (!isFinite(rate) || rate <= 0) {
+        return { accepted: false, reason: "invalidRate" };
+      }
+      var ms = Date.parse(asOf);
+      if (!isFinite(ms)) return { accepted: false, reason: "invalidAsOf" };
+
+      var key = pairKey(b, q);
+      var existing = currentState[key];
+      if (existing && Date.parse(existing.asOf) > ms) {
+        return { accepted: false, reason: "olderThanStored", stored: existing.asOf, offered: asOf };
+      }
+      currentState[key] = {
+        base: b, quote: q, rate: rate, asOf: asOf,
+        source: state.source || null,
+        role: state.role || "UNKNOWN",
+        priority: typeof state.priority === "number" ? state.priority : ROLES.UNKNOWN,
+        frequency: state.frequency || "INTRADAY"
+      };
+      return { accepted: true, pair: key, asOf: asOf, frequency: currentState[key].frequency };
+    }
+
+    function currentFor(base, quote) {
+      return currentState[pairKey(normCode(base), normCode(quote))] || null;
+    }
+
+    function currentStates() {
+      return Object.keys(currentState).sort().map(function (k) {
+        var c = currentState[k];
+        return { pair: k, asOf: c.asOf, source: c.source, role: c.role, frequency: c.frequency };
+      });
+    }
+
+    /**
+     * Der juengste Stand eines Paares.
+     *
+     * Zuerst der Intraday-State, wenn einer vorliegt - er ist der
+     * frischere und traegt eine Uhrzeit. Nur wenn keiner da ist, gilt
+     * der letzte Punkt der Tagesreihe.
+     *
+     * Die Inversion gilt auch hier: liegt EUR/USD als State vor, wird
+     * USD/EUR daraus gebildet, statt einen zweiten State zu fuehren.
+     */
+    function latest(base, quote) {
+      var b = normCode(base), q = normCode(quote);
+      if (!b || !q) return rateAt(base, quote, null);
+      if (b === q) return rateAt(b, q, null);
+
+      function fromState(st, derivation, rate, derivedFrom) {
+        return {
+          available: true, rate: rate, base: b, quote: q,
+          asOf: st.asOf, requestedDate: null,
+          method: METHODS.LATEST_AVAILABLE, derivation: derivation,
+          source: st.source, frequency: st.frequency,
+          provenance: { source: st.source, role: st.role, priority: st.priority,
+                        derivation: derivation, consideredSources: [] },
+          fallbackReason: null, reason: null,
+          derivedFrom: derivedFrom || undefined
+        };
+      }
+
+      var direct = currentFor(b, q);
+      if (direct) return fromState(direct, DERIVATIONS.DIRECT, direct.rate);
+
+      var inv = currentFor(q, b);
+      if (inv) return fromState(inv, DERIVATIONS.INVERSE, 1 / inv.rate, pairKey(q, b));
+
+      return rateAt(b, q, null);
+    }
 
     /**
      * §14 PERIOD AVERAGE - der Kurs fuer Flussgroessen.
@@ -412,28 +658,36 @@
 
     /** Ein Bestandsbericht fuer Health-Checks und Tests. */
     function inventory() {
-      return pairs().map(function (key) {
-        var s = series[key];
-        return {
-          pair: key, observations: s.dates.length,
-          first: s.dates[0] || null, last: s.dates[s.dates.length - 1] || null,
-          source: s.source, frequency: s.frequency,
-          rejectedRows: s.rejectedRows, duplicateDates: s.duplicateDates
-        };
+      var out = [];
+      pairs().forEach(function (key) {
+        series[key].forEach(function (s) {
+          out.push({
+            pair: key, source: s.source, role: s.role, priority: s.priority,
+            observations: s.dates.length,
+            first: s.dates[0] || null, last: s.dates[s.dates.length - 1] || null,
+            frequency: s.frequency,
+            rejectedRows: s.rejectedRows, duplicateDates: s.duplicateDates
+          });
+        });
       });
+      return out;
     }
 
     return {
       VERSION: VERSION,
-      ingest: ingest, has: has, pairs: pairs, seriesFor: seriesFor,
+      ingest: ingest, ingestCurrent: ingestCurrent,
+      currentFor: currentFor, currentStates: currentStates,
+      has: has, pairs: pairs, seriesFor: seriesFor,
+      sourcesFor: sourcesFor, listFor: listFor,
       rateAt: rateAt, latest: latest, periodAverage: periodAverage,
-      inventory: inventory, pivot: pivot, maxCarryDays: maxCarryDays
+      inventory: inventory, pivot: pivot, pivots: pivots.slice(), maxCarryDays: maxCarryDays
     };
   }
 
   var api = {
-    VERSION: VERSION, PIVOT: PIVOT, FREQUENCIES: FREQUENCIES,
+    VERSION: VERSION, PIVOT: PIVOT, PIVOTS: PIVOTS, FREQUENCIES: FREQUENCIES,
     METHODS: METHODS, DERIVATIONS: DERIVATIONS,
+    ROLES: ROLES,
     createStore: createStore, buildSeries: buildSeries, floorIndex: floorIndex
   };
 

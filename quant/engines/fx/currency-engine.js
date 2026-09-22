@@ -45,6 +45,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Rates      = isNode ? require("./fx-rates.js")          : (global.VUFx && global.VUFx.Rates);
+  var Providers  = isNode ? require("./fx-provider-registry.js") : (global.VUFx && global.VUFx.Providers);
   var Freshness  = isNode ? require("./fx-freshness.js")       : (global.VUFx && global.VUFx.Freshness);
   var Registry   = isNode ? require("./currency-registry.js")  : (global.VUFx && global.VUFx.Registry);
   var Classifier = isNode ? require("./currency-class.js")     : (global.VUFx && global.VUFx.Class);
@@ -185,22 +186,38 @@
         context: ctx,
         unit: opts.unit || null,
         available: false,
+        /* O-13: die Frage, die ein Produkt stellt, ist nicht "ist ein
+           Fehler aufgetreten", sondern "kann ich diesen Wert in der
+           Anzeigewaehrung zeigen". Sie hat drei Antworten, und `false`
+           ist eine davon - kein Ausfall, sondern eine Eigenschaft dieses
+           Wertes. Der Titel bleibt im Produkt, der Wert bleibt lesbar,
+           nur die Umrechnung entfaellt. */
+        conversionAvailable: false,
+        conversionUnavailableReason: null,
+        /* O-11: darf dieser konkrete Wert oeffentlich gezeigt werden?
+           Haengt an der Quelle des Wechselkurses, nicht am Produkt -
+           deshalb je Wert und nicht global. */
+        publicDisplayAllowed: null,
+        attribution: null,
         reason: null,
         detail: null
       };
 
       if (money.native.value === null) {
         money.reason = "noNativeValue";
+        money.conversionUnavailableReason = "noNativeValue";
         money.detail = "Es liegt kein endlicher Zahlenwert vor. Ein fehlender Wert bleibt fehlend (§54).";
         return money;
       }
       if (!from) {
         money.reason = "unknownSourceCurrency";
+        money.conversionUnavailableReason = "unknownNativeCurrency";
         money.detail = "Die Originalwaehrung ist nicht belegt. Ohne sie wird nicht umgerechnet (§16).";
         return money;
       }
       if (!to) {
         money.reason = "unknownTargetCurrency";
+        money.conversionUnavailableReason = "unknownTargetCurrency";
         money.detail = "Die Zielwaehrung ist ungueltig.";
         return money;
       }
@@ -215,6 +232,10 @@
 
       if (!quote || quote.available !== true) {
         money.reason = (quote && quote.reason) || "fxUnavailable";
+        /* O-13: der maschinenlesbare Zustand, den ein Frontend abfragt.
+           "conversionUnavailable" ist eine Aussage ueber die Daten, kein
+           Fehlerzustand - die Aktie bleibt im Produkt. */
+        money.conversionUnavailableReason = "conversionUnavailable";
         money.detail = (quote && quote.detail) ||
           "Kein verwendbarer Wechselkurs. Angezeigt wird der Originalwert in " + from + " - nicht derselbe Wert mit einem " + to + "-Zeichen (§23).";
         /* Der ehrliche Rueckfall: das Produkt bekommt eine gueltige
@@ -237,8 +258,31 @@
         coverage: quote.coverage !== undefined ? quote.coverage : null,
         fallbackReason: quote.fallbackReason || null
       };
+      /* O-7: die Herkunft reist mit dem Wert. Ein EUR-Betrag, dessen
+         Quelle, Stand, Methode und Frische man nicht ablesen kann, ist
+         eine Behauptung - und bei zwei Quellen ist zusaetzlich die Frage
+         berechtigt, WELCHE ihn geliefert hat. */
+      money.fxProvenance = quote.provenance || {
+        source: quote.source || null, role: null, priority: null,
+        derivation: quote.derivation || null, consideredSources: []
+      };
+
+      /* O-11: die Lizenzfrage je Wert. Sie haengt an der Quelle des
+         Kurses, nicht am Produkt: derselbe Aktienkurs ergibt einen
+         oeffentlich zeigbaren EUR-Wert, wenn der Kurs von der EZB kommt,
+         und einen gesperrten, wenn er vom Anbieter kommt, dessen
+         FX-Vertragslage offen ist. Ein Produkt, das diese Unterscheidung
+         nicht bekommt, kann sie auch nicht treffen. */
+      if (Providers && typeof Providers.displayPermission === "function") {
+        var perm = Providers.displayPermission(money.fxProvenance.source);
+        money.publicDisplayAllowed = perm.publicDerivedDisplayAllowed;
+        money.attribution = perm.attributionText || null;
+        money.licenseBasis = perm.basis || null;
+      }
+
       money.display.value = money.native.value * quote.rate;
       money.available = true;
+      money.conversionAvailable = true;
       return money;
     }
 

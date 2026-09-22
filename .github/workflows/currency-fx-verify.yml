@@ -54,7 +54,11 @@ on:
       - 'scripts/market/build-fx-pair-requirements.mjs'
       - 'scripts/market/build-currency-coverage.mjs'
       - 'scripts/quality/verify-currency-layer.mjs'
+      - 'scripts/market/build-fx-history-ecb.mjs'
+      - 'scripts/market/ingest-fx-intraday.mjs'
+      - 'providers/ecb/**'
       - 'quant/engines/fx/**'
+      - 'quant/config/fx-license.json'
       - '.github/workflows/currency-fx-verify.yml'
 
 permissions:
@@ -203,6 +207,25 @@ jobs:
         # ist die Obergrenze des Wunsches, nicht die des Anbieters.
         run: node scripts/market/build-fx-history.mjs --max-pairs=80 --start=2015-01-01 --publish-availability
 
+      # Die EZB braucht keinen Zugang - sie ist eine oeffentliche Quelle.
+      # Deshalb laeuft dieser Schritt auch ohne Secret, und deshalb
+      # duerfen seine Reihen im Unterschied zu den Anbieterreihen im
+      # ausgelieferten Pfad liegen (Quellennennung erfolgt).
+      - name: Historischer EZB-Fallback (O-7)
+        id: ecb
+        continue-on-error: true
+        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY
+
+      - name: Zentraler Intraday-FX-State (O-9)
+        id: intraday
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fx-ingest]'))
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=12
+
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
         run: node scripts/quality/verify-currency-layer.mjs
@@ -285,6 +308,7 @@ jobs:
           path: |
             .market-cache/currency/*.json
             quant/data/market/capabilities/tiingo-fx-probe.json
+            quant/data/market/fx/ecb-coverage.json
           retention-days: 30
 
       - name: Zusammenfassung

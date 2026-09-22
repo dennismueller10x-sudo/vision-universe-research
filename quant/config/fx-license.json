@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Lizenzlage der FX-Daten je Anbieter (O-11). Gelesen von quant/engines/fx/fx-provider-registry.js und display-policy.js#declareFromConfig. Was hier NICHT steht, faellt auf DEFAULT_POLICY zurueck: intern ja, oeffentlich nein.",
+
+  "openQuestion": {
+    "state": "OWNER_ESCALATION_REQUIRED",
+    "raisedAt": "2026-09-22",
+    "provider": "tiingo",
+    "dataClass": "fx",
+    "exactContractQuestion": "Umfasst die am 2026-09-13 erklaerte Tiingo-Freigabe ('das entsprechend freigegebene grosse Paket' fuer die oeffentliche Anzeige der Market-Data) auch das FX-/Forex-Produkt - und zwar getrennt nach: (a) interner Berechnung, (b) Speicherung/Caching, (c) oeffentlicher Anzeige ABGELEITETER Werte (ein in EUR umgerechneter Aktienkurs; der Wechselkurs ist darin rechnerisch enthalten), (d) oeffentlicher Weitergabe ROHER FX-Zeitreihen?",
+    "whyItMatters": "Die bestehende Freigabe ist als marketData/intraday/realtime eingetragen und nennt die Market-Data. FX ist bei diesem Anbieter ein eigenes Produkt. Ohne Antwort auf (c) darf kein aus Tiingo-FX abgeleiteter EUR-Wert oeffentlich angezeigt werden - das betrifft die gesamte EUR-Consumer-Anzeige.",
+    "evidenceInRepository": "quant/config/development-preview.json: 'Der Vertragstext liegt dem Repository nicht vor; es wurde keine eigene Rechtspruefung vorgenommen - die Grundlage ist die Erklaerung des Eigentuemers.' Der Vertragstext liegt weiterhin nicht vor.",
+    "notBlocking": "(a) und (b) sind vom Standard gedeckt (internalUseAllowed). Der Layer rechnet und speichert intern weiter; nur die oeffentliche Anzeige Tiingo-basierter EUR-Werte ist gesperrt.",
+    "workaroundInPlace": "Werte, deren Wechselkurs aus einer Quelle mit geklaerten Bedingungen stammt (EZB), tragen publicDisplayAllowed=true. Die Sperre wirkt damit je Wert und nicht global - siehe fxProvenance im Money-Vertrag."
+  },
+
+  "providers": {
+    "tiingo": {
+      "role": "PRIMARY",
+      "priority": 10,
+      "internalUseAllowed": true,
+      "storageAllowed": true,
+      "storageScope": "Arbeitsablage (.market-cache), nicht der ausgelieferte Pfad.",
+      "publicDerivedDisplayAllowed": false,
+      "publicRawDisplayAllowed": false,
+      "basis": "Keine gepruefte FX-Lizenz. Die Freigabe vom 2026-09-13 nennt die Market-Data; FX ist ein eigenes Produkt. Strengster Standard bis zur Antwort auf die offene Vertragsfrage.",
+      "checkedAt": "2026-09-22"
+    },
+    "ecb": {
+      "role": "FALLBACK",
+      "priority": 20,
+      "internalUseAllowed": true,
+      "storageAllowed": true,
+      "storageScope": "Darf auch im ausgelieferten Pfad liegen, sofern die Quelle genannt wird.",
+      "publicDerivedDisplayAllowed": true,
+      "publicRawDisplayAllowed": true,
+      "attributionRequired": true,
+      "attributionText": "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
+      "basis": "Die EZB veroeffentlicht ihre Euro-Referenzkurse als oeffentliche Statistik und erlaubt die Wiedergabe unter Nennung der Quelle. Diese Bedingung ist erfuellbar und wird im Produkt erfuellt (attributionText).",
+      "checkedAt": "2026-09-22",
+      "ownerConfirmationSuggested": "Die Bedingungen der EZB sind oeffentlich und nicht vertraglich verhandelt. Der Eintrag beruht auf ihnen und nicht auf einer eigenen Rechtspruefung - eine Bestaetigung durch den Eigentuemer ist sinnvoll, blockiert aber nichts, weil die Quellennennung ohnehin erfolgt."
+    }
+  },
+
+  "grants": [
+    {
+      "providerId": "tiingo",
+      "dataClass": "fx",
+      "publicRawDisplayAllowed": false,
+      "publicDerivedDisplayAllowed": false,
+      "publicRealtimeAllowed": false,
+      "basis": "Keine gepruefte FX-Lizenz; die Freigabe vom 2026-09-13 nennt die Market-Data, nicht FX.",
+      "checkedAt": "2026-09-22"
+    },
+    {
+      "providerId": "ecb",
+      "dataClass": "fx",
+      "publicRawDisplayAllowed": true,
+      "publicDerivedDisplayAllowed": true,
+      "publicRealtimeAllowed": false,
+      "basis": "EZB-Referenzkurse sind oeffentliche Statistik; die Wiedergabe ist unter Quellennennung gestattet, und die Quelle wird genannt. Realtime existiert bei der EZB nicht - sie veroeffentlicht einen Tagesreferenzkurs.",
+      "checkedAt": "2026-09-22"
+    }
+  ]
+}

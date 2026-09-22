@@ -52,7 +52,20 @@
     "publicRealtimeAllowed"
   ];
 
-  var DATA_CLASSES = ["marketData", "intraday", "realtime", "fundamentals", "corporateActions"];
+  /* `fx` ist eine eigene Datenklasse und kein Unterfall von marketData.
+
+     Der Grund steht in quant/config/development-preview.json: die
+     Freigabe des Eigentuemers vom 2026-09-13 nennt ausdruecklich die
+     "Market-Data" und ist als marketData/intraday/realtime eingetragen.
+     Devisenkurse sind bei diesem Anbieter ein anderes Produkt mit einer
+     eigenen Preis- und Lizenzlage.
+
+     Waere fx ein Unterfall von marketData, wuerde die bestehende
+     Aktienfreigabe die EUR-Anzeige stillschweigend mitfreigeben - eine
+     Erlaubnis, die niemand erteilt hat. Als eigene Klasse faellt fx auf
+     DEFAULT_POLICY zurueck: intern ja, oeffentlich nein, bis jemand
+     etwas anderes mit Grundlage eintraegt. */
+  var DATA_CLASSES = ["marketData", "intraday", "realtime", "fundamentals", "corporateActions", "fx"];
 
   /* Der Standard: intern ja, alles andere nein. Gilt fuer jeden Anbieter,
      zu dem nichts eingetragen ist - auch fuer einen, den niemand kennt. */

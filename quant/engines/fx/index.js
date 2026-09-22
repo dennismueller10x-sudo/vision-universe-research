@@ -22,6 +22,7 @@
 
 module.exports = {
   Capability:    require("./fx-capability.js"),
+  Providers:     require("./fx-provider-registry.js"),
   Rates:         require("./fx-rates.js"),
   Freshness:     require("./fx-freshness.js"),
   Registry:      require("./currency-registry.js"),
@@ -34,6 +35,7 @@ module.exports = {
   BROWSER_LOAD_ORDER: [
     "quant/engines/capabilities.js",
     "quant/engines/fx/fx-capability.js",
+    "quant/engines/fx/fx-provider-registry.js",
     "quant/engines/fx/fx-rates.js",
     "quant/engines/fx/fx-freshness.js",
     "quant/engines/fx/currency-registry.js",
