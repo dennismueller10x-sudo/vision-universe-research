@@ -370,16 +370,20 @@ jobs:
       # Der Nachweis in der Oberflaeche. Er braucht die EZB-Reihen im
       # ausgelieferten Pfad - ohne sie rechnet der Browser nicht um -,
       # laeuft also erst nach dem EZB-Schritt.
+      # Installiert in den Projektbaum, nicht in ein Praefix.
+      #
+      # NODE_PATH hilft hier nicht: der ESM-Aufloeser von Node liest es
+      # nicht. Ein `import { chromium } from "playwright"` in einer .mjs
+      # findet das Paket nur, wenn es in node_modules NEBEN dem Skript
+      # liegt - derselbe Weg, den discover-live-smoke.yml geht.
       - name: Playwright (Chromium)
         if: always() && steps.ecb.outcome == 'success'
         run: |
-          npm install --prefix /tmp/fx-ui-qa --no-audit --no-fund playwright@1.63.0
-          /tmp/fx-ui-qa/node_modules/.bin/playwright install --with-deps chromium
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
 
       - name: Currency Layer in der Oberflaeche (EUR-Vorgabe, Umschalter, Prozente)
         if: always() && steps.ecb.outcome == 'success'
-        env:
-          NODE_PATH: /tmp/fx-ui-qa/node_modules
         run: |
           python3 -m http.server 8899 --directory . > /tmp/fx-ui-server.log 2>&1 &
           for i in $(seq 1 20); do
