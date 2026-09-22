@@ -225,6 +225,13 @@ function comparePair(tiingoSeries, ecbSeries) {
   }
   if (rows.length < 60) return null;
 
+  /* Das gemeinsame Fenster: vom ersten bis zum letzten Tag, an dem
+     BEIDE Reihen etwas hatten. Alles davor oder danach ist eine Frage
+     der Historientiefe, nicht der Uebereinstimmung. */
+  const fensterVon = rows[0].date;
+  const fensterBis = rows[rows.length - 1].date;
+  const imFenster = (d) => d >= fensterVon && d <= fensterBis;
+
   /* d_t = EZB(t) / Tiingo(t) - 1, und die Tagesrendite der Tiingo-Reihe
      ueber DENSELBEN Tag. Beide in derselben Notierung, sonst dreht sich
      das Vorzeichen und die ganze Auswertung mit ihm. */
@@ -285,10 +292,22 @@ function comparePair(tiingoSeries, ecbSeries) {
     impliedFixingHourUtc: sameDay.slope === null ? null : 24 * (1 + sameDay.slope),
 
     maxInversionRoundTripError: maxRoundTrip,
-    weekendRowsTiingo: [...tDates].filter(isWeekend).length,
-    weekendRowsEcb: [...eDates].filter(isWeekend).length,
-    daysOnlyTiingo: [...tDates].filter((x) => !eDates.has(x) && !isWeekend(x)).length,
-    daysOnlyEcb: [...eDates].filter((x) => !tDates.has(x) && !isWeekend(x)).length,
+    /* Kalenderbefunde NUR im gemeinsamen Fenster.
+
+       Die erste Fassung zaehlte ueber die ganzen Reihen. Fuer EUR/USD
+       ergab das `daysOnlyEcb: 5438` - eine Zahl, die aussieht wie
+       Luecken und in Wahrheit heisst: die EZB reicht bis 1999 zurueck
+       und Tiingo erst bis 2020. Ein Feld, das neben "overlapDays" steht
+       und etwas anderes misst als das Fenster, wird falsch gelesen. */
+    calendarWindow: { from: fensterVon, to: fensterBis },
+    weekendRowsTiingo: [...tDates].filter((d) => imFenster(d) && isWeekend(d)).length,
+    weekendRowsEcb: [...eDates].filter((d) => imFenster(d) && isWeekend(d)).length,
+    daysOnlyTiingo: [...tDates].filter((d) => imFenster(d) && !eDates.has(d) && !isWeekend(d)).length,
+    daysOnlyEcb: [...eDates].filter((d) => imFenster(d) && !tDates.has(d) && !isWeekend(d)).length,
+    /* Wie weit die Reihen ueber das Fenster hinausreichen - getrennt
+       gefuehrt, weil es eine Tiefenaussage ist und keine Luecke. */
+    ecbReachesBackTo: [...eDates].sort()[0] || null,
+    tiingoReachesBackTo: [...tDates].sort()[0] || null,
     worstDays: rows
       .map((r) => ({ date: r.date, relDiff: r.ecb / r.tiingo - 1 }))
       .sort((a, b) => Math.abs(b.relDiff) - Math.abs(a.relDiff))
