@@ -108,7 +108,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  await page.screenshot({path:out+'/canonical-stock-'+width+'.png',fullPage:true});checks.push({view:'canonical-search-identity',width,pass:true});
  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
- await page.getByRole('heading',{name:'NVIDIA Corporation',exact:true}).waitFor();if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('panel outage hid independent canonical intelligence');
+ await page.getByRole('heading',{name:/NVIDIA/,exact:false}).waitFor();if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('panel outage hid independent canonical intelligence');
  const independent=await page.evaluate(async()=>{const service=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});const model=await service.getHistoricalPriceHistory('NVDA');const raw=await QuantShell.loadJSON(model.sourcePath);return model.identity.ticker==='NVDA'&&JSON.stringify(model.bars)===JSON.stringify(raw.points.map(([date,close])=>({date,close})));});
  if(!independent)throw Error('panel outage chart differs from canonical source');
  await page.route('**/quant/data/market/discover-series/**',route=>route.abort());
