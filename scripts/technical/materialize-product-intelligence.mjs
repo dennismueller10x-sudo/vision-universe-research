@@ -22,6 +22,7 @@ const Canonical = require(join(root, "quant/engines/technical/canonical-bars.js"
 const Analysis = require(join(root, "quant/engines/technical/technical-analysis.js"));
 const Product = require(join(root, "quant/engines/technical/product-materialization.js"));
 const MarketSignals = require(join(root, "quant/api/market-signal-contract.js"));
+const TechnicalWorkspace = require(join(root, "quant/api/technical-workspace-contract.js"));
 const Service = require(join(root, "quant/api/product-services.js"));
 const Policy = require(join(root, "quant/engines/display-policy.js"));
 const Query = require(join(root, "quant/engines/query.js"));
@@ -90,7 +91,8 @@ export function materialize(options = {}) {
   const pathFor = (securityId) => join(sourceDir, "tiingo", "daily", securityId + ".json");
 
   rmSync(target, { recursive: true, force: true }); mkdirSync(target, { recursive: true });
-  const shards = {}, signalPayloads = Object.fromEntries(signalLookbacks.map(n => [n, []]));
+  const signalPayloads = Object.fromEntries(signalLookbacks.map(n => [n, []]));
+  let currentShard = null, currentInstruments = {}, rawBytes = 0, compressedBytes = 0, shardCount = 0;
   const reasons = {}, rows = {}, stats = { productUniverse: members.length, historiesFound: 0, historiesValidated: 0,
     lookbackCovered: 0, adjustedProvenance: 0, splitFactors: 0, corporateActionsValidated: 0,
     calendarValidated: 0, technicalFullBundles: 0, signalsCapable: 0, elliottCapable: 0 };
@@ -103,6 +105,13 @@ export function materialize(options = {}) {
 
   function unavailableSignals(ticker, reason) {
     for (const lookback of signalLookbacks) signalPayloads[lookback].push({ ticker, state: "UNAVAILABLE", reason, events: [] });
+  }
+  function flushShard() {
+    if (!currentShard) return;
+    const result = writeGzip(join(target, currentShard + ".json.gz"), { schemaVersion: Product.VERSION,
+      shard: currentShard, generatedAt: now, instruments: currentInstruments });
+    rawBytes += result.raw; compressedBytes += result.compressed; shardCount++;
+    currentInstruments = {};
   }
 
   for (const member of members) {
@@ -143,8 +152,11 @@ export function materialize(options = {}) {
       if (missing.length) throw new Error("TECHNICAL_PARTIAL:" + missing.join(","));
       const artifact = Product.project({ ticker: member.s, securityId: member.m, series: input.series, bundle,
         benchmarkId: benchmark && member.s !== "SPY" ? "SPY" : null, provenance: input.provenance });
+      const workspace = TechnicalWorkspace.build(artifact, { ticker: member.s, now: now.slice(0, 10) });
+      if (workspace.state !== "AVAILABLE") throw new Error("TECHNICAL_CONTRACT_" + (workspace.reason || "UNAVAILABLE"));
       const key = Product.shardKey(member.s);
-      (shards[key] ||= {})[member.s] = artifact;
+      if (currentShard && key !== currentShard) flushShard();
+      currentShard = key; currentInstruments[member.s] = artifact;
       stats.technicalFullBundles++;
       const elliottCapable = !!bundle.elliott && bundle.elliott.status !== "UNAVAILABLE" && bundle.elliott.status !== "INSUFFICIENT_DATA";
       if (elliottCapable) stats.elliottCapable++;
@@ -156,12 +168,7 @@ export function materialize(options = {}) {
       reasons[reason] = (reasons[reason] || 0) + 1;
     }
   }
-
-  let rawBytes = 0, compressedBytes = 0;
-  for (const key of Object.keys(shards).sort()) {
-    const result = writeGzip(join(target, key + ".json.gz"), { schemaVersion: Product.VERSION, shard: key,
-      generatedAt: now, instruments: shards[key] }); rawBytes += result.raw; compressedBytes += result.compressed;
-  }
+  flushShard();
   for (const lookback of signalLookbacks) {
     const results = signalPayloads[lookback], available = results.filter(r => r.state === "AVAILABLE");
     writeGzip(join(target, "signals-" + lookback + ".json.gz"), { schemaVersion: "market-signals-product-1.0.0",
@@ -174,7 +181,7 @@ export function materialize(options = {}) {
       technicalOwner: "quant/engines/technical/technical-analysis.js", signalOwner: "quant/api/market-signal-contract.js",
       calendar: "quant/config/market-calendar.json", methodology: methodology.technical.methodologyVersion,
       elliottMethodology: methodology.elliott.methodologyVersion }, counts: stats, reasons,
-    artifacts: { shardCount: Object.keys(shards).length, rawBytes, compressedBytes, compression: "gzip", displayBars: Product.DISPLAY_BARS }, rows };
+    artifacts: { shardCount, rawBytes, compressedBytes, compression: "gzip", displayBars: Product.DISPLAY_BARS }, rows };
   writeFileSync(join(target, "summary.json"), JSON.stringify(summary));
   return summary;
 }
