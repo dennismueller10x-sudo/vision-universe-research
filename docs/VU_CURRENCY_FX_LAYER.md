@@ -1494,22 +1494,33 @@ vollstaendig statt zu ueberspringen.
 
 `currency-realtime-proof.yml` traegt einen Zeitplan (15:00 und 18:00 UTC
 an Werktagen, beide Zeiten in der regulaeren Sitzung, Sommer wie
-Winter). **Der Zeitplan feuert nicht.**
+Winter). **Vor dem Merge feuerte er nicht.**
 
 GitHub Actions fuehrt `schedule`-Ausloeser ausschliesslich aus dem
-Standardzweig aus. Der Workflow liegt auf `claude/vu-currency-fx-layer-elrkpp`
-und nicht auf `main` — gegengeprueft. Solange nicht gemergt ist, laeuft
-der Zeitplan also nie.
+Standardzweig aus. Solange der Workflow nur auf
+`claude/vu-currency-fx-layer-elrkpp` lag und nicht auf `main`, lief der
+Zeitplan nie — gegengeprueft.
 
-> Das ist eine Henne-Ei-Lage und sie gehoert benannt: O-8 verlangt den
-> Nachweis am offenen Markt **vor** dem Merge, der Zeitplan liefert ihn
-> erst **nach** dem Merge.
+> Das war eine Henne-Ei-Lage und sie gehoerte benannt: O-8 verlangt den
+> Nachweis am offenen Markt, der Zeitplan liefert ihn erst nach dem
+> Merge.
 
-Aufgeloest wird sie ueber den zweiten Ausloeser: ein Push mit
+**Mit dem Merge von #163 ist sie aufgeloest.** Der Workflow liegt auf
+`main`, der Zeitplan greift, und die Marker-Logik gibt fuer jedes
+Ereignis ausser `push` frei (`if [ "$EVENT_NAME" != "push" ]` →
+`run=true`) — ein geplanter Lauf braucht also keine Betreffzeile und
+fuehrt den Nachweis wirklich aus, statt ihn zu ueberspringen.
+
+Der zweite Ausloeser bleibt als Handgriff bestehen: ein Push mit
 `[rt-proof]` in der **Betreffzeile** waehrend der offenen US-Sitzung
-(13:30–20:00 UTC). Der laeuft auf dem Zweig. Genau so wird der Nachweis
-gefuehrt; bis dahin bleibt `REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und
-wird nicht beschoenigt (§58).
+(13:30–20:00 UTC).
+
+Bis der Lauf am offenen Markt vorliegt, bleibt
+`REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und wird nicht beschoenigt
+(§58). Gegenprobe, dass hier nichts stillschweigend gruen wird: der
+Lauf auf diesem Zweig meldete `success`, weil das `proof`-Job ohne
+Marker uebersprungen wurde — ein uebersprungener Nachweis ist kein
+gefuehrter, und der Status bleibt entsprechend stehen.
 
 ---
 
