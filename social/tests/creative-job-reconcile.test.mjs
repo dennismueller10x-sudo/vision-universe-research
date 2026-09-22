@@ -441,3 +441,90 @@ test("CR23 · Der Abgleich laeuft schreibend — sonst repariert er nichts", () 
   assert.match(zeile, /--write/,
     "Ohne --write zeigt der Pass nur, was er taete.");
 });
+
+/* ------------------------------------------------------------------ */
+/* DER ANLAUF, DER DAS HAUS NIE VERLASSEN HAT                          */
+/* ------------------------------------------------------------------ */
+
+/* Der reale Fall vom 21.09.: Job registriert, Request-PR nie geoeffnet
+   (Actions durfte damals keine PRs oeffnen), danach siebzehn Stunden
+   Stillstand - MAX_OPEN_CREATIVE_JOBS = 1 kennt keinen Knopf, und der
+   Abgleich schliesst zu Recht nichts wegen seines Alters. */
+const NIE_AUSGELIEFERT = {
+  creativeJobId: "job_nie:abc:attempt1",
+  contentId: "vu-nie-20260921",
+  briefId: "brief_nie", briefBlobSha: "abc",
+  processingKey: "brief_nie:vu-nie-20260921:abc:1.0",
+  attempt: 1, revision: null,
+  state: "CREATIVE_JOB_REQUESTED",
+  createdAt: "2026-09-21T12:32:23.651Z",
+  updatedAt: "2026-09-21T12:32:23.651Z",
+  prNumber: null, deliveryIds: [], observedStarts: 0,
+  history: [{ state: "CREATIVE_JOB_REQUESTED", at: "2026-09-21T12:32:23.651Z", note: null }]
+};
+
+const frisch = () => Job.createRegistry([JSON.parse(JSON.stringify(NIE_AUSGELIEFERT))]);
+
+test("CR24 · Ohne die Messung wird nicht geschlossen", () => {
+  /* Die Engine misst nicht. Fehlt die Tatsache ueber die Aussenwelt,
+     bleibt der Job offen - unbekannt ist kein Nein. */
+  const r = frisch().reconcile(NIE_AUSGELIEFERT.creativeJobId, "DISPATCH_NIE_ERFOLGT", {});
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, "inadmissibleEvidence");
+  assert.match(r.message, /keinPullRequest/);
+});
+
+test("CR25 · Mit der Messung schliesst der Anlauf als FAILED", () => {
+  const r = frisch().reconcile(NIE_AUSGELIEFERT.creativeJobId, "DISPATCH_NIE_ERFOLGT",
+    { keinPullRequest: true, now: "2026-09-22T05:30:00.000Z" });
+  assert.equal(r.ok, true);
+  assert.equal(r.geaendert, true);
+  assert.equal(r.to, "CREATIVE_JOB_FAILED");
+});
+
+test("CR26 · Was die Aussenwelt gesehen haben koennte, wird nicht geschlossen", () => {
+  /* Jede dieser drei Tatsachen ist ein Beleg dafuer, dass der Job DOCH
+     ausgeliefert wurde. Eine davon genuegt - auch gegen eine Messung,
+     die "kein PR" sagt: zwei Register, und das eigene ist naeher dran. */
+  const faelle = [
+    ["prNumber", { prNumber: 117 }, /Pull Request #117/],
+    ["deliveryIds", { deliveryIds: ["d1"] }, /Delivery-ID/],
+    ["observedStarts", { observedStarts: 1 }, /Start/]
+  ];
+  for (const [name, patch, muster] of faelle) {
+    const job = Object.assign(JSON.parse(JSON.stringify(NIE_AUSGELIEFERT)), patch);
+    const r = Job.createRegistry([job])
+      .reconcile(job.creativeJobId, "DISPATCH_NIE_ERFOLGT", { keinPullRequest: true });
+    assert.equal(r.ok, false, name);
+    assert.match(r.message, muster, name);
+  }
+});
+
+test("CR27 · Ab DISPATCHED ist der Job gesehen worden", () => {
+  /* "PR geoeffnet - ab hier laeuft die externe Welt." Was sie gesehen
+     hat, kann nicht ungesehen gemacht werden. */
+  const job = Object.assign(JSON.parse(JSON.stringify(NIE_AUSGELIEFERT)),
+    { state: "CREATIVE_JOB_DISPATCHED" });
+  const r = Job.createRegistry([job])
+    .reconcile(job.creativeJobId, "DISPATCH_NIE_ERFOLGT", { keinPullRequest: true });
+  assert.equal(r.ok, false);
+  assert.match(r.message, /CREATIVE_JOB_REQUESTED/);
+});
+
+test("CR28 · Alter bleibt unzulaessig, auch neben der Messung", () => {
+  /* Die Frist im Skript ist ein Abstand, kein Schliessgrund. Die
+     Engine kennt sie gar nicht - und ALTER weist sie weiter ab. */
+  const r = frisch().reconcile(NIE_AUSGELIEFERT.creativeJobId, "ALTER",
+    { keinPullRequest: true });
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, "inadmissibleEvidence");
+});
+
+test("CR29 · Der geschlossene Anlauf blockiert die Gleichzeitigkeitsgrenze nicht mehr", () => {
+  /* Der Zweck der ganzen Uebung: der Slot wird frei. */
+  const reg = frisch();
+  assert.equal(reg.all().filter((j) => Job.OFFEN.includes(j.state)).length, 1);
+  reg.reconcile(NIE_AUSGELIEFERT.creativeJobId, "DISPATCH_NIE_ERFOLGT",
+    { keinPullRequest: true });
+  assert.equal(reg.all().filter((j) => Job.OFFEN.includes(j.state)).length, 0);
+});
