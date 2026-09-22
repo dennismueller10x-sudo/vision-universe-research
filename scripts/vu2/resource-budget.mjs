@@ -3,8 +3,10 @@
 export const budgets=Object.freeze({
  home:{decodedBytes:750000,requests:45,history:false},
  stock:{decodedBytes:3000000,requests:50,history:true},
- screener:{decodedBytes:750000,requests:45,history:false},
- discover:{decodedBytes:750000,requests:45,history:false}
+ // These two workspaces intentionally evaluate the canonical full-universe
+ // factor artifact. Other pages must not pay this cost eagerly.
+ screener:{decodedBytes:24000000,requests:45,history:false},
+ discover:{decodedBytes:24000000,requests:45,history:false}
 });
 export function assessResourceBudget(view,resources){
  const budget=budgets[view];if(!budget)return null;
