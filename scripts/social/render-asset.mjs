@@ -315,29 +315,31 @@ export const MESS_SKRIPT = `<script>
     document.documentElement.setAttribute("data-vu-figuren",JSON.stringify(figuren));
   }
   /* -----------------------------------------------------------------
-     WARTEN AUF DIE SCHRIFT, ABER NICHT UNBEGRENZT
+     NICHT WARTEN — MESSEN
 
-     Unter --virtual-time-budget (messeSeite() faehrt --dump-dom genau
-     so) loest document.fonts.ready in der Chromium-Fassung realer
-     Runner manchmal nie auf, obwohl die Schrift eingebettet ist (kein
-     Netzwerk noetig) - vermutlich, weil das Laden/Rastern der Schrift
-     ausserhalb des Haupt-Threads laeuft und sein Abschluss nicht
-     zuverlaessig in die virtuelle Zeit zurueckgemeldet wird. Ohne
-     Rueckfall lief messen() dann NIE, und Atlas- wie Text-Messung
-     kamen leer zurueck - nicht weil das Bild falsch war, sondern weil
-     niemand je gemessen hat.
+     Zwei reale MANUAL_NOW-Laeufe (35711481190, 35713227403) haben
+     gezeigt: unter --virtual-time-budget (messeSeite() faehrt
+     --dump-dom genau so) kommt in der Chromium-Fassung des Runners
+     WEDER document.fonts.ready NOCH ein setTimeout-Rueckfall jemals
+     zum Zug - messen() lief in beiden Faellen nie, Atlas- wie
+     Textmessung kamen leer zurueck. Ein erster Fix versuchte einen
+     setTimeout-Rueckfall (lokal mit echtem Chromium nachgewiesen,
+     dass er dort zuverlaessig feuert) - im Runner blieb der Befund
+     trotzdem "nicht gemessen": setTimeout wird dort unter
+     --dump-dom ebenso wenig getrieben wie ein haengendes Promise.
 
-     setTimeout wird von --virtual-time-budget selbst getrieben und
-     bleibt deshalb zuverlaessig. Er ersetzt fonts.ready nicht - ist
-     die Schrift rechtzeitig fertig, misst messen() wie bisher an
-     genau dieser Stelle. Er sorgt nur dafuer, dass eine Messung
-     stattfindet, so oder so. */
-  if(document.fonts&&document.fonts.ready){
-    var gemessen=false;
-    var einmal=function(){ if(gemessen) return; gemessen=true; messen(); };
-    document.fonts.ready.then(einmal);
-    setTimeout(einmal, 2000);
-  } else { messen(); }
+     Die Schrift ist als Base64-Data-URI eingebettet - kein Netzwerk,
+     kein Warten noetig, um SIE zu laden. font-display:block versteckt
+     waehrend der Blockphase nur das GEMALTE Bild (unsichtbare
+     Tinte); das LAYOUT steht mit der Fallback-Schrift schon fest,
+     und genau das misst getClientRects()/getBoundingClientRect() -
+     nicht, was gerade gemalt wird. Ein Atlas-<img> mit fester
+     width/height braucht ohnehin keine Schrift.
+
+     Gemessen wird deshalb synchron, sobald das Skript laeuft - ohne
+     jede Abhaengigkeit von einem Versprechen oder einem Timer, die
+     beide in genau diesem Aufruf-Modus nicht zuverlaessig sind. */
+  messen();
 })();
 <\/script>`;
 
