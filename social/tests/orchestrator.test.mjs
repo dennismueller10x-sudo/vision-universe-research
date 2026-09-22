@@ -69,6 +69,46 @@ test("OR3 · Gemessen wird trotzdem, waehrend der Owner entscheidet", () => {
   assert.ok(h.actions.some((a) => a.stage === O.STAGE.MEASURE));
 });
 
+test("OR3b · Ein ausdruecklicher Owner-Auftrag hebt die Warteschlange auf", () => {
+  /* manual-mode.js fuehrt ACTIVE_APPROVAL_QUEUE_NOT_EMPTY als
+     AUFHEBBAR: "Wer ausdruecklich einen weiteren Beitrag bestellt,
+     nimmt den Stapel in Kauf." content-cadence.js traegt diese
+     Aufhebung in `kadenz.darfErzeugen` - genau das simuliert dieser
+     Test, wie run-orchestrator.mjs es fuer MANUAL_NOW/MANUAL_TOPIC
+     tatsaechlich baut. Vorher sperrte naechsteHandlung() hier trotzdem
+     unbedingt: die "zweite Frequenzsperre" aus Aufgabe #101. */
+  const h = O.naechsteHandlung({ now: JETZT,
+    awaitingCandidates: [{ candidateId: "cand_1" }],
+    lastPreparedAt: "2026-09-01T06:00:00Z" },
+    { cadence: {
+      darfErzeugen: true, grund: null,
+      aufgehobenDurch: "MANUAL_TOPIC",
+      aufgehobenerGrund: "ACTIVE_APPROVAL_QUEUE_NOT_EMPTY",
+      erklaerung: "Owner-Auftrag MANUAL_TOPIC hebt die Warteschlangensperre auf."
+    } });
+  assert.equal(h.stage, O.STAGE.PREPARE_CANDIDATE);
+  assert.equal(h.awaitingOwner, false);
+  assert.ok(h.actions.some((a) => a.stage === O.STAGE.PREPARE_CANDIDATE));
+});
+
+test("OR3c · Ohne ausdruecklichen Auftrag sperrt die Warteschlange weiter, auch mit Kadenz", () => {
+  /* Der Normalfall: content-cadence.js sieht dieselbe wartende
+     Warteschlange und sagt deshalb selbst schon "nein"
+     (ACTIVE_APPROVAL_QUEUE_NOT_EMPTY) - keine ausdrueckliche Aufhebung
+     durch einen Owner-Auftrag liegt vor. Der Orchestrator muss dabei
+     bleiben. */
+  const kadenz = darf(JETZT, { activeApprovalQueue: 1 });
+  assert.equal(kadenz.darfErzeugen, false);
+  assert.equal(kadenz.grund, Kadenz.GRUND.ACTIVE_APPROVAL_QUEUE_NOT_EMPTY);
+
+  const h = O.naechsteHandlung({ now: JETZT,
+    awaitingCandidates: [{ candidateId: "cand_1" }],
+    lastPreparedAt: "2026-09-01T06:00:00Z" },
+    { cadence: kadenz });
+  assert.equal(h.stage, O.STAGE.AWAITING_OWNER_GATE);
+  assert.equal(h.awaitingOwner, true);
+});
+
 test("OR4 · Der Abstand wird hereingereicht, nicht hier gerechnet", () => {
   /* Hier stand eine Pruefung auf `minHoursBetweenCandidates` - EINE
      Zahl im Orchestrator fuer eine Frage, die drei Ebenen hat, und
