@@ -74,6 +74,16 @@ jobs:
       - name: Capability Matrix je Instrument
         run: node scripts/market/build-capability-matrix.mjs
 
+      # Die Projektion wird AUS der Matrix gerechnet und danebengelegt. Wer
+      # die Matrix neu baut und die Projektion stehen laesst, hinterlaesst
+      # zwei Staende derselben Aussage - und genau das hat Lauf 35763910366
+      # zu Recht abgebrochen: product-capabilities rechnet die erwartete
+      # Projektion aus der frischen Matrix und vergleicht sie mit der
+      # abgelegten. Der Marktdaten-Refresh macht beides seit jeher; hier
+      # fehlte der zweite Schritt.
+      - name: Kompakte Product-Capability-Projektion fuer Quant 2.0
+        run: node scripts/vu2/build-product-capabilities.mjs
+
       - name: Kein Schluessel in den Artefakten
         run: node scripts/market/assert-no-secrets.mjs
 
@@ -89,7 +99,8 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities
+          git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
+                  quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(c.secAvailable+"/"+c.productUniverse+" Unternehmen, 10J "+c.history10y+", 5J "+c.history5y+", TTM "+c.ttmPossible)')
           git commit -m "SEC Consumer-Fundamentals: $Z"
