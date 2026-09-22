@@ -545,13 +545,20 @@ Code. **38 der 68 waren Fehlalarme. Es sind 30.**
 
 ### Die Migration (O-12)
 
+Registerstand 2026-09-22, 30 Stellen in 15 Dateien:
+
 | Klasse | Anzahl | Bedeutung |
 |---|---|---|
-| **F** `MIGRATED_FALLBACK` | 13 | migriert; Zeile greift nur ohne geladenen Core |
-| **A** `MONETARY_DISPLAY` | 9 | offen (5 davon Archivseiten und Fehlalarme) |
+| **F** `MIGRATED_FALLBACK` | 18 | migriert; Zeile greift nur ohne geladenen Core |
+| **A** `MONETARY_DISPLAY` | 4 | offen — siehe **O-16** |
 | **B** `PERCENTAGE_OR_RATIO` | 4 | darf nie konvertieren |
 | **C** `STATIC_COPY` | 3 | Schwellenwert im Methodiktext, im Code markiert |
-| `UNCLASSIFIED` | 1 | |
+| `UNCLASSIFIED` | 1 | von Hand ansehen |
+
+Eine migrierte Stelle hinterlaesst oft mehr als eine Zeile der Klasse F:
+die Bruecke `vuFormat()` und der beibehaltene Rueckfall zaehlen beide.
+Deshalb stehen 18 F-Zeilen fuer 13 migrierte Darstellungsstellen in
+sechs Dateien.
 
 Migriert: `discover/ui/{surfaces,detail-fundamentals,cards,detail}.js`,
 `dashboard/app.js`, `hedgefonds/index.html`. Die FX-Engines sind in
@@ -793,8 +800,43 @@ kuenstlich als PASS melden.
 
 | Fall | Zustand | Grund |
 |---|---|---|
-| TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` (gemessen vor dem EZB-Fallback) | die Periode 2019-04 bis 2020-03 lag fast vollstaendig **vor** dem Beginn der Tiingo-Historie (2020-02-29). Korrekt verweigert statt genaehert. Mit der EZB-Historie ab 1999 liegt die Periode jetzt im abgedeckten Bereich; der naechste Verifikationslauf misst den Fall neu. |
+| TM/BABA Free Cash Flow FY2020 | **aufgeloest** (Lauf 12, 2026-09-22) | vor O-7: `insufficientPeriodCoverage`, weil die Periode 2019-04 bis 2020-03 fast vollstaendig vor dem Beginn der Tiingo-Historie (2020-02-29) lag — korrekt verweigert statt genaehert. Mit der EZB-Historie rechnet dieselbe Periode jetzt aus **256 Beobachtungen**: TM 990,664 Mrd. JPY → **8,21 Mrd. €**, BABA 155,945 Mrd. CNY → **20,14 Mrd. €**, beide `PERIOD_AVERAGE`. |
 | Richtungen mit `resolution: NONE` | keine Aufloesung | weder direkt noch invers noch ueber das Pivot bildbar; nur diese Werte bleiben nativ |
+
+### Der Fallback allein traegt den Nachweis
+
+Lauf 12 (2026-09-22) lief ohne Anbieterabruf: EZB-Reihen, kein Tiingo,
+kein Intraday-Stand. Das war kein geplanter Versuch, sondern die Folge
+der Marker-Korrektur weiter unten — und es hat eine Frage beantwortet,
+die sonst offen geblieben waere.
+
+> **`FX_DATA_PROOF = PASS`, FX-Quelle `PRODUCTION`** — „Regeln belegt UND
+> mit qualifizierten FX-Kursen gerechnet", allein aus der EZB.
+
+Damit ist O-7 nicht nur theoretisch erfuellt: die Fallback-Quelle traegt
+denselben Nachweis wie die Primaerquelle, ueber alle neun Titel, sechs
+Berichtswaehrungen und fuenf Kennzahlen. Zwei Faelle, die vorher
+verweigert wurden, rechnen jetzt — siehe die Tabelle darunter.
+
+**Und ein Befund, der ohne diesen Lauf nicht sichtbar gewesen waere.**
+Derselbe AAPL-Kurs, derselbe Tag, zwei Quellen:
+
+| Quelle | FX-Stand | 326,57 USD ergeben |
+|---|---|---|
+| Tiingo (PRIMARY) | 2026-09-21, `DIRECT` | **278,50 €** |
+| EZB (FALLBACK) | 2026-09-21, `INVERSE` | **284,22 €** |
+
+Das sind **2,06 %** Unterschied, 5,72 € auf einen Titel. Die
+Nahtanalyse ueber 1.659 Ueberlappungstage nennt fuer EUR/USD einen
+Median von 0,18 %, ein p95 von 0,74 % und ein Maximum von 2,39 % — der
+aktuelle Tag liegt also oberhalb des 95. Perzentils, aber innerhalb des
+Gemessenen. Ursache ist die Definition, nicht ein Fehler: die EZB fixiert
+um 16:00 MEZ, der Anbieter liefert den Tagesschluss.
+
+> Welche Quelle den Kurs stellt, aendert den angezeigten Euro-Betrag
+> sichtbar. Deterministisch ist es, weil die Rangfolge fest ist und jeder
+> Wert seine Quelle nennt. Ob der Sprung an der Naht dem Nutzer gezeigt
+> werden muss, ist **O-14** — und diese Zahl macht die Frage konkret.
 
 ### Ein Schalter, den seine eigene Beschreibung umlegt
 
@@ -912,7 +954,7 @@ Historie vor 2020-02-29 und jede Waehrung, die Tiingo nicht fuehrt.
 
 | # | Frage |
 |---|---|
-| **O-14** | Die Naht zwischen EZB-Fixing und Tiingo-Schluss — die gemessene Abweichung steht in `ecb-coverage.json`. Ab welcher Groesse soll sie sichtbar gemacht werden? |
+| **O-14** | Die Naht zwischen EZB-Fixing und Tiingo-Schluss. Gemessen ueber 1.659 Ueberlappungstage (EUR/USD): Median 0,18 %, p95 0,74 %, Maximum 2,39 %; am 2026-09-21 trennten die beiden Quellen **2,06 %**, also 5,72 € auf einen AAPL-Anteil. Ab welcher Groesse soll der Sprung sichtbar gemacht werden? |
 | **O-15** | Ein MAX-Chart in EUR beginnt spaeter als in der Originalwaehrung (Kurse ab 1990, FX ab 1999). Begrenzen, hinweisen oder auf USD verweisen? |
 | **O-16** | Die **4** verbliebenen Klasse-A-Stellen (Register-Stand 2026-09-22, `openClassA: 4`). Zwei sind Archivseiten unter `morning/` (2026-09-05, 2026-09-08), die niemand mehr anfasst: migrieren oder ausnehmen? `vu2/experience.js:83` ist eine echte Consumer-Stelle und waere eine gewoehnliche Migration. `quant/api/portfolio-workspace.js:16` ist **keine** Formatierung, sondern ein Bewertungs-Gate (`price.unit === 'USD'`): es verweigert Positionen in Fremdwaehrung, statt sie anzunehmen — ehrlich im Sinne von O-13. Sie zu migrieren hiesse, die Depotbewertung in Fremdwaehrung zu **ermoeglichen**; das ist eine Produktentscheidung, keine Migration. |
 | **O-17** | Bestaetigung der EZB-Bedingungen (Wiedergabe unter Quellennennung). Blockiert nichts, weil die Nennung ohnehin erfolgt. |
