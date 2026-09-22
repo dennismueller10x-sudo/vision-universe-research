@@ -540,7 +540,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
           ? microSeries(kompaktDated, kompakt.provider || "tiingo", kompakt.priceSeriesType || "SPLIT_ADJUSTED")
           : withheldSeries("WITHHELD_REDISTRIBUTION",
               "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
-      was: erkannt && erkannt.was ? erkannt.was : (BUSINESS_DESCRIPTIONS[sec.symbol] || null),
+      was: erkannt && erkannt.was ? erkannt.was : (BUSINESS_DESCRIPTIONS[sec.ticker] || null),
       recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
       bars: isNum(sec.bars) ? sec.bars : null,
