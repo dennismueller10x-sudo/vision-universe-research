@@ -212,6 +212,13 @@ async function main() {
   const failures = [];
 
   if (PULL) {
+    /* Der Objektindex traegt den Zeitpunkt, zu dem die jeweilige kanonische
+       Reihe dauerhaft geschrieben wurde. Der Codec bewahrt absichtlich nur
+       Kurssemantik auf; ohne diesen Indexzeitpunkt koennte eine interne
+       Folgeauswertung den abgeschlossenen Handelstag nicht gegen einen
+       beobachteten Snapshot pruefen. Das ist ein bestehender R2-GET, keine
+       neue Serving-Schnittstelle. */
+    const durableIndex = await store.readIndex();
     const results = await pool(members, CONCURRENCY, async (m) => {
       const series = await store.getSeries(m.ticker);
       if (!series) return { missing: true, ticker: m.ticker };
@@ -241,6 +248,7 @@ async function main() {
           adjustmentStatus: existing?.adjustmentStatus ?? series.adjustmentStatus,
           barCount: bars.length, first: bars[0]?.date ?? null, last: bars.at(-1)?.date ?? null,
           updatedAt: existing?.updatedAt ?? null,
+          durableUpdatedAt: existing?.durableUpdatedAt ?? durableIndex.symbols?.[m.ticker]?.updatedAt ?? null,
           restoredAt: new Date().toISOString(), restoredFrom: "history-store", bars
         };
         writeFileSync(file + ".tmp", JSON.stringify(payload));

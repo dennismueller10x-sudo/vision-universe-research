@@ -17,7 +17,8 @@ function build(file,{ticker,now=new Date().toISOString().slice(0,10)}){
  }
  if(times.at(-1)!==b.dataCutoff)return fail('INCOMPLETE_CHART_WINDOW');
  const elliott=b.elliott;
- if(!elliott||elliott.isProbability!==false||elliott.confidenceType!=='method_fit'||elliott.asOf!==b.dataCutoff||!Array.isArray(b.annotations?.annotations)||!Array.isArray(b.scenarios?.scenarios))return fail('INVALID_WORKSPACE_EVIDENCE');
+ const elliottUnavailable=elliott?.status==='UNAVAILABLE'||elliott?.status==='INSUFFICIENT_DATA';
+ if(!elliott||elliott.isProbability!==false||elliott.asOf!==b.dataCutoff||(!elliottUnavailable&&elliott.confidenceType!=='method_fit')||!Array.isArray(b.annotations?.annotations)||!Array.isArray(b.scenarios?.scenarios))return fail('INVALID_WORKSPACE_EVIDENCE');
  const series=b.chartSeries;
  if(!series||typeof series!=='object'||Object.values(series).some(col=>!Array.isArray(col)||col.length!==times.length||col.some(v=>v!==null&&!Number.isFinite(v))))return fail('INVALID_CHART_SERIES');
  const historicalTypes=new Set(['PIVOT','SWING_SEGMENT','WAVE_SEGMENT','STRUCTURE_EVENT','FIB_ANCHOR','STRUCTURE_LABEL','WAVE_LABEL','STATE_LABEL','NOW_DIVIDER']);
@@ -36,7 +37,7 @@ function build(file,{ticker,now=new Date().toISOString().slice(0,10)}){
   priceBasis:b.priceSeriesType,chart:{bars,annotations:b.annotations.annotations,series:b.chartSeries},
   scenarios:b.scenarios.scenarios.map(s=>({id:s.scenarioId,kind:s.type,label:{PRIMARY:'Basisszenario',ALTERNATIVE:'Alternatives Szenario',BEAR:'Abwärtsszenario'}[s.type]||'Weiteres Szenario',status:states[s.status]||'Status prüfen',direction:s.direction,
    invalidation:s.invalidation,targets:s.targetZones||[],confirmation:s.whatMustHappen,expiration:s.expiryRule,support:s.supportingEvidence||[],conflicts:s.conflictingEvidence||[]})),
-  elliott:{status:elliott.status,label:elliott.status==='AMBIGUOUS'?'Mehrere Zählungen sind möglich':'Zählung im Detail prüfen',primary:elliott.primaryCount,alternative:elliott.alternativeCount,methodology:elliott.methodologyVersion,methodFit:elliott.confidence,isProbability:false,disclaimer:elliott.disclaimer},
+  elliott:{status:elliott.status,label:elliottUnavailable?'Keine validierte Zählung verfügbar':elliott.status==='AMBIGUOUS'?'Mehrere Zählungen sind möglich':'Zählung im Detail prüfen',primary:elliott.primaryCount,alternative:elliott.alternativeCount,methodology:elliott.methodologyVersion,methodFit:elliott.confidence,isProbability:false,disclaimer:elliott.disclaimer||'Keine Wahrscheinlichkeit.'},
   legacyHref:'/quant/technical/?symbol='+encodeURIComponent(ticker),priceHistoryHref:'/vu2/?view=stock&ticker='+encodeURIComponent(ticker)};
 }
 const api={build};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUTechnicalWorkspaceContract=api;

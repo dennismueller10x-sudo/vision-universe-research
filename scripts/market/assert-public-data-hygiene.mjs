@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { gunzipSync } from "node:zlib";
 import { resolveScope } from "./preview-scope.mjs";
 
 /* --root=<path> is test-only: it lets DH3/DH4 point this guard at a
@@ -189,6 +190,41 @@ if (existsSync(instruments)) {
       if (!previewScope.has(instrumentId)) {
         findings.push(`quant/data/technical/instruments/${name}: real bars for '${instrumentId}' ` +
                       `outside the declared Golden Five scope (${[...previewScope].join(", ")})`);
+      }
+    }
+  }
+}
+
+/* Quant 2.0 Product Intelligence: keine private Vollhistorie und kein
+   Browser-R2-Pfad. Erlaubt ist ausschliesslich das intern berechnete,
+   komprimierte 1Y-Anzeigefenster fuer denselben aufgeloesten Produktumfang.
+   Die volle Analysehistorie bleibt nur als Anzahlen/Hashes in der Provenienz. */
+const productTechnical = join(root, "quant", "data", "product", "technical-signals-v1");
+if (existsSync(productTechnical)) {
+  let productScope = new Set();
+  const productIds = new Map((json("quant/data/universe/market-capability.json")?.members || []).map((member) => [member.s, member.m]));
+  try { productScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set(); }
+  catch (err) { findings.push("technical-signals-v1 exists but product scope cannot be resolved: " + err.message); }
+  for (const name of readdirSync(productTechnical).filter((n) => /^[A-Z0-9._-]{2}\.json\.gz$/.test(n))) {
+    let shard;
+    try { shard = JSON.parse(gunzipSync(readFileSync(join(productTechnical, name)))); }
+    catch { findings.push(`quant/data/product/technical-signals-v1/${name}: invalid gzip/json`); continue; }
+    if (shard.schemaVersion !== "technical-product-artifact-1.0.0" || shard.shard + ".json.gz" !== name) {
+      findings.push(`quant/data/product/technical-signals-v1/${name}: invalid shard contract`); continue;
+    }
+    for (const [ticker, payload] of Object.entries(shard.instruments || {})) {
+      const bars = payload && payload.bars;
+      if (!productScope.has(ticker) || payload.instrumentId !== ticker || payload.securityId !== productIds.get(ticker)) {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' outside canonical product scope`);
+      }
+      if (!bars || !Array.isArray(bars.timestamps) || bars.timestamps.length < 2 || bars.timestamps.length > 270 ||
+          !["open", "high", "low", "close", "volume"].every((key) => Array.isArray(bars[key]) && bars[key].length === bars.timestamps.length)) {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' is not a bounded display artifact`);
+      }
+      if (payload.provenance?.historyOwner !== "quant/engines/history-store.js" ||
+          payload.provenance?.corporateActionReconciliation?.status !== "PASS" ||
+          payload.provenance?.calendarValidation?.status !== "PASS") {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' lacks materialization provenance`);
       }
     }
   }
