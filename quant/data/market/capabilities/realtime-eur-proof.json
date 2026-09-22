@@ -1,0 +1,144 @@
+{
+  "schema": "vu-realtime-eur-proof-1.0.0",
+  "generatedAtUtc": "2026-09-22T15:16:58.412Z",
+  "finishedAtUtc": "2026-09-22T15:17:29.103Z",
+  "verdict": "PASS",
+  "verdictMeaning": "Realtime-EUR am offenen Markt nachgewiesen: Tick bewegt sich, EUR folgt, Schalter wirkt, ein FX-Stand fuer alle Ticks.",
+  "session": {
+    "open": true,
+    "localTime": "11:16",
+    "weekday": "Tue",
+    "source": "America/New_York"
+  },
+  "fxStore": {
+    "dailyPairs": 0,
+    "intradayStates": 2
+  },
+  "gapSeconds": 30,
+  "tickers": [
+    "AAPL",
+    "NVDA",
+    "MSFT"
+  ],
+  "checks": [
+    {
+      "id": "RT-0",
+      "title": "US-Sitzung offen",
+      "state": "PASS",
+      "detail": "Ortszeit New York 11:16 (Tue).",
+      "rows": null
+    },
+    {
+      "id": "RT-1",
+      "title": "Aktien-Tick aktualisiert sich",
+      "state": "PASS",
+      "detail": "3 von 3 Titeln haben sich in 30 s bewegt.",
+      "rows": null
+    },
+    {
+      "id": "RT-2",
+      "title": "EUR-Anzeigepreis aktualisiert sich",
+      "state": "PASS",
+      "detail": "3 EUR-Preise sind dem Tick gefolgt.",
+      "rows": null
+    },
+    {
+      "id": "RT-3",
+      "title": "USD-Anzeigepreis bleibt der native Wert",
+      "state": "PASS",
+      "detail": "Im USD-Modus steht der Kurs unveraendert.",
+      "rows": null
+    },
+    {
+      "id": "RT-4",
+      "title": "EUR|USD-Umschalter wirkt auf den Wert",
+      "state": "PASS",
+      "detail": "EUR- und USD-Anzeige unterscheiden sich; der Schalter tauscht nicht nur das Symbol.",
+      "rows": null
+    },
+    {
+      "id": "RT-5",
+      "title": "Kein FX-Abruf je Aktien-Tick",
+      "state": "PASS",
+      "detail": "6 Ticks, 1 FX-Abruf(e) (6 Ticks je Abruf).",
+      "rows": null
+    },
+    {
+      "id": "RT-6",
+      "title": "FX-Freshness ist maschinenlesbar",
+      "state": "PASS",
+      "detail": "Zustaende: CURRENT; Frequenz: INTRADAY.",
+      "rows": null
+    },
+    {
+      "id": "RT-7",
+      "title": "Anbieterausfall erzeugt keinen falschen Realtime-Anspruch",
+      "state": "PASS",
+      "detail": "Ohne Kurs: keine EUR-Anzeige, kein Realtime-Anspruch, Zustand UNAVAILABLE.",
+      "rows": [
+        {
+          "display": null,
+          "claim": false,
+          "freshness": "UNAVAILABLE",
+          "outage": "DEGRADED"
+        }
+      ]
+    },
+    {
+      "id": "RT-DATA",
+      "title": "Messwerte",
+      "state": "INFO",
+      "detail": null,
+      "rows": [
+        {
+          "ticker": "AAPL",
+          "usdErst": 343.69,
+          "usdZweit": 343.67,
+          "usdBewegt": true,
+          "eurErst": 300.3863,
+          "eurZweit": 300.3688,
+          "eurBewegt": true,
+          "usdAnzeige": 343.67,
+          "eurAnzeige": 300.3688,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-22T15:16:56.914000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        },
+        {
+          "ticker": "NVDA",
+          "usdErst": 228.675,
+          "usdZweit": 228.65,
+          "usdBewegt": true,
+          "eurErst": 199.8628,
+          "eurZweit": 199.8409,
+          "eurBewegt": true,
+          "usdAnzeige": 228.65,
+          "eurAnzeige": 199.8409,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-22T15:16:56.914000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        },
+        {
+          "ticker": "MSFT",
+          "usdErst": 494.9,
+          "usdZweit": 495.045,
+          "usdBewegt": true,
+          "eurErst": 432.5444,
+          "eurZweit": 432.6711,
+          "eurBewegt": true,
+          "usdAnzeige": 495.045,
+          "eurAnzeige": 432.6711,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-22T15:16:56.914000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        }
+      ]
+    }
+  ]
+}
