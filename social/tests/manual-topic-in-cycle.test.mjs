@@ -1,5 +1,5 @@
 /* =========================================================================
-   VU SOCIAL — POST ZU THEMA im Zyklus (MT1–MT9)
+   VU SOCIAL — POST ZU THEMA im Zyklus (MT1–MT11)
 
    manual-mode.js nennt POST ZU THEMA (§30) ausdruecklich: "der Owner
    nennt das Thema STATT DER GELEGENHEITSBEWERTUNG". Bis zu diesem
@@ -28,6 +28,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { themaDesOwners } from "../../scripts/social/run-orchestrator.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const NOW = "2026-09-22T13:00:00Z";
@@ -177,4 +178,52 @@ test("MT9 · Eine Ablehnung ist kein Absturz - der Lauf schreibt trotzdem einen 
   } finally {
     rmSync(join(ROOT, rel), { recursive: true, force: true });
   }
+});
+
+/* -------------------------------------------------------------------
+   DIE ANDERE HAELFTE: run-orchestrator.mjs::themaDesOwners()
+
+   run-social-cycle.mjs baut den Kandidaten aus einer Platten-
+   Ueberschrift (MT8) - aber run-orchestrator.mjs entscheidet VORHER,
+   ob der Auftrag ueberhaupt als ausfuehrbar gilt (kWirksam). Ein
+   realer Produktionslauf mit thema="Staerkste Aktien im Dow Jones"
+   zeigte: themaDesOwners() kannte nur Instrumente, meldete
+   KEIN_INSTRUMENT_ERKANNT fuer die Ueberschrift, und kWirksam liess
+   die Warteschlangensperre deshalb bestehen - VORBEREITEN wurde
+   uebersprungen, obwohl run-social-cycle.mjs die Ueberschrift laengst
+   verarbeiten konnte. Ohne diese Haelfte war MT8 folgenlos: der Bau-
+   Weg funktionierte, aber der Auftrag erreichte ihn nie.
+   ------------------------------------------------------------------- */
+
+test("MT10 · themaDesOwners() erkennt eine Platten-Ueberschrift als ausfuehrbaren Auftrag", () => {
+  const rel = platz("orch-titel");
+  try {
+    const themen = themenDerPlatte(rel);
+    const kandidat = themen.find((t) => t.family === "RANKING" && t.title !== "Comeback?");
+    assert.ok(kandidat, "Die Platte muss mindestens eine zweite RANKING-Ueberschrift tragen");
+
+    const ergebnis = themaDesOwners(kandidat.title, ROOT, themen);
+    assert.equal(ergebnis.ok, true);
+    assert.equal(ergebnis.thema.herkunft, "PLATTE");
+    assert.equal(ergebnis.thema.symbol, null,
+      "Eine Rangliste hat kein einzelnes Instrument - kein Creative-Job-Dispatch dafuer");
+    assert.equal(ergebnis.thema.topic, kandidat.title);
+  } finally {
+    rmSync(join(ROOT, rel), { recursive: true, force: true });
+  }
+});
+
+test("MT11 · Ohne Platten-Treffer faellt themaDesOwners() weiter auf die Ticker-Erkennung zurueck", () => {
+  /* Regression: die neue Pruefung darf den bestehenden, laengst
+     produktiv genutzten Instrument-Pfad nicht verdraengen. */
+  const ergebnis = themaDesOwners("Halbleiter NVDA", ROOT, []);
+  assert.equal(ergebnis.ok, true);
+  assert.equal(ergebnis.thema.herkunft, "OWNER");
+  assert.equal(ergebnis.thema.symbol, "NVDA");
+});
+
+test("MT11b · Weder Platte noch Instrument erkannt - ausdruecklich nicht ausfuehrbar", () => {
+  const ergebnis = themaDesOwners("irgendein Satz ohne jede Bedeutung", ROOT, []);
+  assert.equal(ergebnis.ok, false);
+  assert.equal(ergebnis.grund, "KEIN_INSTRUMENT_ERKANNT");
 });
