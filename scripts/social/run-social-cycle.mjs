@@ -181,6 +181,15 @@ const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
 const NOW = arg("--now", new Date().toISOString());
 
+/* POST ZU THEMA (§30): der Owner nennt ein Thema statt eine
+   Gelegenheit zu waehlen. Der rohe Text reist unveraendert mit - kein
+   vorab aufgeloestes Symbol wie beim Creative-Job-Dispatch
+   (run-orchestrator.mjs::creativeBedarf), weil der Text auch eine
+   Platten-Ueberschrift treffen kann ("Staerkste Aktien im Dow
+   Jones"), fuer die es kein einzelnes Instrument und damit kein
+   Symbol gibt. Siehe themaVomOwner() weiter unten. */
+const THEMA_FREITEXT = arg("--thema-freitext", null);
+
 /* Woher gelesen wird. Getrennt von --out, weil der Nachweis der
    Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
    braucht, ohne die Produktionsdaten anzufassen. */
@@ -722,6 +731,127 @@ function ladeEvidenzPaket(sources, nowIso) {
 }
 
 /* =====================================================================
+   DAS THEMA DES OWNERS (§30)
+
+   manual-mode.js nennt POST ZU THEMA ausdruecklich: "der Owner nennt
+   das Thema STATT DER GELEGENHEITSBEWERTUNG". Bis hierher wertete
+   dieser Lauf trotzdem immer die normale Leiter aus - das genannte
+   Symbol steuerte nur den Creative-Job-Dispatch
+   (run-orchestrator.mjs::creativeBedarf), nie DIESEN Kandidaten. Ein
+   POST ZU THEMA "Halbleiter NVDA" erzeugte deshalb einen Kandidaten zu
+   einem anderen, von der Leiter gewaehlten Thema - die Warteschlange
+   blieb unveraendert, und das genannte Thema erreichte den Owner nie.
+
+   -------------------------------------------------------------------
+   ZWEI TREFFERARTEN FUER DENSELBEN ROHEN TEXT
+
+   "Halbleiter NVDA" nennt ein einzelnes Instrument - dafuer liefert
+   das technische Bundle Evidenz (themaAusBundle). "Staerkste Aktien
+   im Dow Jones" nennt dagegen eine Platten-Ueberschrift: eine
+   Rangliste ueber zehn Titel hat kein einzelnes Bundle und keinen
+   Ticker. Beide sind legitime Antworten auf dieselbe Frage ("was hat
+   der Owner gemeint"), keine zwei Rechnungen fuer dieselbe Frage: die
+   Platten-Ueberschrift ist bereits redaktionell kuratiert (PR #168:
+   `subtitle`/`question`) und braucht keine der Filterungen, die ein
+   rohes Bundle erst oeffentlich sicher machen (siehe unten).
+
+   Die Ticker-Erkennung (VisualDaten.symbolAus) ist dieselbe Funktion,
+   die run-orchestrator.mjs::themaDesOwners() fuer den Creative-Job-
+   Dispatch benutzt - keine zweite Regel dafuer, was ein Symbol ist.
+   Dass diese Funktion hier zusaetzlich noch den Plattentitel prueft,
+   ist keine Abweichung: die Dispatch-Entscheidung und diese Kandidaten-
+   Auswahl beantworten unterschiedliche Fragen (dispatch: "gibt es ein
+   Instrument, fuer das ein Creative Job Sinn ergibt" - hier: "was baut
+   dieser Lauf als Kandidaten"), und fuer eine Platten-Ueberschrift
+   lautet die ehrliche Antwort auf die erste Frage ohnehin "nein, kein
+   Instrument" (der Dispatch bleibt entsprechend aus - richtig so, eine
+   Rangliste hat kein einzelnes Bundle).
+   ===================================================================== */
+function themaVomOwner(freitext, platteThemen, nowIso) {
+  const text = String(freitext || "").trim();
+  const titelTreffer = (platteThemen || []).find((t) =>
+    t && t.title && t.title.trim().toLowerCase() === text.toLowerCase());
+  if (titelTreffer) {
+    return { ok: true, thema: titelTreffer, herkunft: "PLATTE" };
+  }
+
+  const symbol = VisualDaten.symbolAus(text);
+  if (!symbol) {
+    return { ok: false,
+      erklaerung: "Weder eine Platten-Ueberschrift noch ein erkennbares " +
+        "Instrument in \"" + text + "\"." };
+  }
+  return Object.assign({ herkunft: "BUNDLE" }, themaAusBundle(symbol, nowIso));
+}
+
+function themaAusBundle(symbol, nowIso) {
+  const paket = ladeEvidenzPaket([{ entity: symbol }], nowIso);
+  if (!paket || paket.ok === false) {
+    return { ok: false,
+      erklaerung: (paket && paket.message) || "Kein technisches Bundle fuer " + symbol + "." };
+  }
+  const hinreichend = EvidencePackage.assessSufficiency(paket);
+  if (!hinreichend.sufficient) {
+    return { ok: false, erklaerung: hinreichend.explanation };
+  }
+
+  /* Dieselbe Signalstaerke, die ein STOCK_STORY-Thema aus der Platte
+     traegt (build-opportunity-slate.mjs: `signalStrength: e.strength`,
+     0..1) - hier aus demselben Technical Opportunity Score, den das
+     Bundle ohnehin fuehrt (evidence-package.js, 0..100). Ohne sie
+     bliebe `vuSignal` "nicht gemessen", obwohl ein Messwert vorliegt -
+     und das Thema faende die Schwelle nie, unabhaengig von seiner
+     Guete (dieselbe Lage, die die Notiz zu `editorialBasis` weiter
+     oben beschreibt). */
+  const scoreBeleg = paket.evidence.find((e) => e.id === "score");
+  const signalStrength = scoreBeleg && typeof scoreBeleg.value === "number"
+    ? Math.max(0, Math.min(1, scoreBeleg.value / 100)) : null;
+
+  /* -----------------------------------------------------------------
+     §5 INTERNAL SIGNAL ≠ PUBLIC STORY, GEMESSEN AN DER EIGENEN WACHE
+
+     Ein erster Anlauf reichte `paket.evidence` ungefiltert durch: das
+     Paket wurde [AUDIENCE_SEPARATION] verworfen, mit demselben Satz,
+     den der negative Referenzfall dieses Auftrags schon einmal zeigte
+     ("Technical Opportunity Score" im PUBLIC_HOOK) - und danach, mit
+     der SCORE-Dimension blind herausgefiltert, an "ATR"/"Trendwert"
+     aus TREND/VOLATILITY: derselbe Fehler, andere Dimension.
+
+     Die Woerter, die AUDIENCE_SEPARATION zurueckweist, stehen bereits
+     an EINER Stelle: `AudienceFrame.INTERN_NICHT_IM_HOOK`
+     (audience-frame.js) - derselben Liste, gegen die die Wache selbst
+     prueft (social/engines/content-intelligence.js). Eine zweite,
+     hier neu geratene Liste waere die zweite Wahrheit ueber dieselbe
+     Frage, die dieses Projekt schon mehrfach auseinanderlaufen sah. */
+  const oeffentlicheEvidenz = paket.evidence.filter((e) =>
+    !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
+      (begriff) => String(e.statement || "").includes(begriff)));
+
+  return { ok: true, thema: {
+    topicId: EvidencePackage.contentIdFor(symbol, paket.asOf),
+    /* Dieselbe Familie, die STOCK_STORY-Themen aus internen Signalen
+       schon in der Platte tragen (§12) - kein neuer Begriff. */
+    family: "STOCK_STORY",
+    title: symbol + " — technische Lage zum " + paket.asOf,
+    entities: [symbol],
+    entityType: "SECURITY",
+    timeSensitivity: "TIMELY",
+    evidence: oeffentlicheEvidenz,
+    signalStrength,
+    /* Derselbe Verweis-Mechanismus wie bei einem STOCK_STORY-Thema aus
+       der Platte (dort: signals.json) - hier das technische Bundle
+       selbst, das dieses Thema traegt. Kein erfundener Verweis. */
+    evidenceRefs: ["quant/data/technical/instruments/" + symbol + ".json"],
+    evidenceSufficient: true,
+    premise: "SECURITY_METRIC",
+    cause: null,
+    asOf: paket.asOf,
+    sources: [(paket.evidence[0] && paket.evidence[0].source) || "VU_QUANT"],
+    herkunft: "OWNER"
+  } };
+}
+
+/* =====================================================================
    DIE PLATTE DES LAUFS
 
    Sie liegt als Datei im Repository und wird vom Scheduler-Schritt
@@ -1243,6 +1373,20 @@ async function main() {
   for (const st of leiter.stufen) {
     detail("Stufe " + st.stufe + " " + st.titel + " — " + st.qualifiziert + " belegt" +
       (st.ideation ? " (" + st.ideen + " redaktionelle Fragen offen)" : ""));
+  }
+
+  /* POST ZU THEMA (§30) ersetzt die Gelegenheitsbewertung durch das
+     genannte Thema - siehe themaVomOwner() weiter oben. */
+  if (THEMA_FREITEXT) {
+    const ownerThema = themaVomOwner(THEMA_FREITEXT, platte.themen, NOW);
+    if (ownerThema.ok) {
+      leiter.gefunden = [ownerThema.thema];
+      log("Owner-Thema:   \"" + THEMA_FREITEXT + "\" ersetzt die Gelegenheitsbewertung " +
+          "(POST ZU THEMA, §30; Herkunft " + ownerThema.herkunft + ").");
+    } else {
+      log("Owner-Thema:   \"" + THEMA_FREITEXT + "\" ohne hinreichende Evidenz — " +
+          ownerThema.erklaerung + " Die Ladder-Auswahl bleibt unveraendert.");
+    }
   }
 
   const kontext = {
