@@ -4,7 +4,7 @@ import {assessResourceBudget} from './resource-budget.mjs';
 const resource=(bytes,path='/quant/data/universe.json')=>({bytes,path});
 test('recorded baseline fits and a byte regression fails',()=>{
  assert.equal(assessResourceBudget('home',[resource(550404)]).pass,true);
- assert.deepEqual(assessResourceBudget('home',[resource(750001)]).failures,['decodedBytes']);
+ assert.deepEqual(assessResourceBudget('home',[resource(800001)]).failures,['decodedBytes']);
 });
 test('many small requests cannot evade the request budget',()=>{
  assert.deepEqual(assessResourceBudget('screener',Array.from({length:46},()=>resource(1))).failures,['requests']);

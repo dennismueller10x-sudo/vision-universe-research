@@ -40,12 +40,24 @@
       var row = data.securities.rows.filter(function (r) { return r.ticker === ticker; })[0];
 
       if (!row) {
-        return S.loadJSON(GOLDEN_FIVE_PANEL, { attempts: 1 }).catch(function () { return null; })
-          .then(function (panel) {
-            var sec = panel && panel.securities && panel.securities[ticker];
-            if (sec && sec.available) return renderGoldenFive(root, ticker, sec);
-            return renderNotFound(root, ticker);
-          });
+        /* Canonical product members are served by the capability-first VU2
+           journey. The legacy model-universe loader must never turn a
+           routable product title into a five-title "not found" state. */
+        return S.loadJSON(S.BASE + "data/universe/market-capability.json", { attempts: 1 }).then(function (capabilities) {
+          var member = capabilities && capabilities.members && capabilities.members.filter(function (m) { return m.s === ticker; })[0];
+          if (member) {
+            window.location.assign("/vu2/?view=stock&ticker=" + encodeURIComponent(ticker));
+            return;
+          }
+          return S.loadJSON(GOLDEN_FIVE_PANEL, { attempts: 1 }).catch(function () { return null; })
+            .then(function (panel) {
+              var sec = panel && panel.securities && panel.securities[ticker];
+              if (sec && sec.available) return renderGoldenFive(root, ticker, sec);
+              return renderNotFound(root, ticker);
+            });
+        }).catch(function () {
+          return renderNotFound(root, ticker);
+        });
       }
 
       root.appendChild(S.mockBanner(data.meta));
