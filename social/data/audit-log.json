@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-22T12:40:13.972Z",
+  "generatedAt": "2026-09-22T13:01:26.736Z",
   "entries": [
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-22T12:40:13.972Z",
+      "timestamp": "2026-09-22T13:01:26.736Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
@@ -15,102 +15,27 @@
       "result": "skipped",
       "reason": "Bereits geplant unter pubid_6158d04515a07ce1.",
       "detail": null,
-      "entryId": "aud_ef22c54fa4d1b5cb"
+      "entryId": "aud_d1dde0c31fe8c2f7"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-22T12:40:13.972Z",
+      "timestamp": "2026-09-22T13:01:26.736Z",
       "actor": "system",
       "autonomyLevel": null,
-      "strategyVersion": null,
-      "inputs": [
-        "pkg_510e8ee0dc53e754"
-      ],
-      "output": {
-        "publicationId": "pubid_3564f4262900283a"
-      },
-      "provider": "mock",
-      "result": "succeeded",
-      "reason": null,
-      "detail": null,
-      "entryId": "aud_a97add319f685c8d"
-    },
-    {
-      "decision": "publication.transition",
-      "timestamp": "2026-09-22T12:40:13.972Z",
-      "actor": "system",
-      "autonomyLevel": null,
-      "strategyVersion": null,
-      "inputs": [
-        "pubid_3564f4262900283a"
-      ],
-      "output": {
-        "from": "IDEA",
-        "to": "DRAFT"
-      },
-      "provider": null,
-      "result": "succeeded",
-      "reason": null,
-      "detail": null,
-      "entryId": "aud_143f51dd1b3a4091"
-    },
-    {
-      "decision": "publication.transition",
-      "timestamp": "2026-09-22T12:40:13.972Z",
-      "actor": "system",
-      "autonomyLevel": null,
-      "strategyVersion": null,
-      "inputs": [
-        "pubid_3564f4262900283a"
-      ],
-      "output": {
-        "from": "DRAFT",
-        "to": "VALIDATED"
-      },
-      "provider": null,
-      "result": "succeeded",
-      "reason": null,
-      "detail": null,
-      "entryId": "aud_143f51dd1b3a4091"
-    },
-    {
-      "decision": "publication.transition",
-      "timestamp": "2026-09-22T12:40:13.972Z",
-      "actor": "system",
-      "autonomyLevel": null,
-      "strategyVersion": null,
-      "inputs": [
-        "pubid_3564f4262900283a"
-      ],
-      "output": {
-        "from": "VALIDATED",
-        "to": "READY"
-      },
-      "provider": null,
-      "result": "succeeded",
-      "reason": null,
-      "detail": null,
-      "entryId": "aud_143f51dd1b3a4091"
-    },
-    {
-      "decision": "cycle.hold",
-      "timestamp": "2026-09-22T12:40:14.035Z",
-      "actor": "system",
-      "autonomyLevel": 0,
       "strategyVersion": null,
       "inputs": [
         "pkg_510e8ee0dc53e754"
       ],
       "output": null,
       "provider": "mock",
-      "result": "blocked",
-      "reason": "Globale automatische Veroeffentlichung ist aus. Noch nie freigegeben. Autonome Veroeffentlichung setzt nach §16 voraus: stabiler Provider, korrekte Analytics, stabiles Publishing, geprueft laufende Brand- und Faktenvalidierung, Rollback und Kill Switch. Von diesen Voraussetzungen ist keine im Produktionsbetrieb nachgewiesen - der Meta-Provider ist nicht konfiguriert.",
+      "result": "skipped",
+      "reason": "Bereits geplant unter pubid_3564f4262900283a.",
       "detail": null,
-      "entryId": "aud_8f3eb22db1783349"
+      "entryId": "aud_23097e75ad76de49"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-22T12:40:13.972Z",
+      "timestamp": "2026-09-22T13:01:26.736Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
@@ -122,11 +47,11 @@
       "result": "skipped",
       "reason": "Bereits geplant unter pubid_8f3fb04deb14a509.",
       "detail": null,
-      "entryId": "aud_f855ad3fa10bc49b"
+      "entryId": "aud_adf227b39b01cb47"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-22T12:40:13.972Z",
+      "timestamp": "2026-09-22T13:01:26.736Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
@@ -138,11 +63,11 @@
       "result": "skipped",
       "reason": "Bereits geplant unter pubid_ff435ae4be0cc6f8.",
       "detail": null,
-      "entryId": "aud_33d05971c50aac85"
+      "entryId": "aud_ad5d67b5ba58ea31"
     },
     {
       "decision": "publication.intend",
-      "timestamp": "2026-09-22T12:40:13.972Z",
+      "timestamp": "2026-09-22T13:01:26.736Z",
       "actor": "system",
       "autonomyLevel": null,
       "strategyVersion": null,
@@ -154,7 +79,7 @@
       "result": "skipped",
       "reason": "Bereits geplant unter pubid_000fcbcd26cf7791.",
       "detail": null,
-      "entryId": "aud_711075b0b0b48d44"
+      "entryId": "aud_bb693228483712c4"
     }
   ]
 }

@@ -74,13 +74,20 @@
       "authorId": "template",
       "editorialCorrection": null,
       "textAuthor": null,
-      "pattern": "group-count/group-rule-evidence",
-      "variantId": "var_c7a093565e5ed8f2",
-      "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
+      "pattern": "group-question/group-rule-evidence",
+      "variantId": "var_26b2450aeaebba76",
+      "reason": "Markenwert 100 unter 3 bestandenen von 4 Varianten. Kein Muster hat genug Daten (ab n=5). Gewaehlt wurde das zuletzt am seltensten benutzte (0-mal).",
       "selectionCriteria": {
         "brandScoreChosen": 100,
         "compositionScoreChosen": 89,
         "alternatives": [
+          {
+            "variantId": "var_c7a093565e5ed8f2",
+            "pattern": "group-count/group-rule-evidence",
+            "brandScore": 100,
+            "compositionScore": 89,
+            "recentUses": 0
+          },
           {
             "variantId": "var_25267acd99ca6d49",
             "pattern": "group-subject/group-method-first",
@@ -98,8 +105,8 @@
           "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
         }
       },
-      "considered": 3,
-      "passed": 2,
+      "considered": 4,
+      "passed": 3,
       "rejected": [
         {
           "pattern": "group-limit/group-limit",
@@ -125,7 +132,7 @@
         {
           "authorId": "template",
           "ok": true,
-          "variants": 3
+          "variants": 4
         }
       ]
     },
@@ -259,5 +266,6 @@
     "stundenSeither": 22.2,
     "in7Tagen": 1,
     "in30Tagen": 1
-  }
+  },
+  "provenanceUpdatedAt": "2026-09-22T13:01:39.514Z"
 }
