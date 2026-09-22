@@ -1,11 +1,88 @@
 {
-  "schema": "vu-tiingo-fx-probe-1.0.0",
-  "generatedAtUtc": "2026-09-22T06:27:35.086Z",
+  "schema": "vu-tiingo-fx-probe-2.0.0",
+  "generatedAtUtc": "2026-09-22T06:50:42.038Z",
   "provider": "tiingo",
   "baseUrl": "https://api.tiingo.com",
-  "configured": false,
+  "configured": true,
   "dryRun": false,
-  "probes": [],
+  "pairRequirements": {
+    "source": "quant/data/market/fx/pair-requirements.json",
+    "totalPairs": 62,
+    "probed": [
+      "USD/EUR",
+      "CNY/EUR",
+      "CNY/USD",
+      "CAD/EUR",
+      "CAD/USD",
+      "EUR/USD"
+    ]
+  },
+  "findings": [
+    {
+      "capability": "fxCurrent",
+      "result": null,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "HTTP 200, aber die Antwort traegt kein auswertbares Preisfeld. Kein Beleg.",
+      "httpStatus": 200,
+      "sample": "[]"
+    },
+    {
+      "capability": "fxBulkQuotes",
+      "result": false,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "3 Paare angefragt, 0 zurueck.",
+      "requested": [
+        "usdeur",
+        "cnyeur",
+        "cnyusd"
+      ],
+      "returned": 0
+    },
+    {
+      "capability": "fxCrossPairs",
+      "result": false,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "CNY/EUR: 0 Zeile(n).",
+      "pair": "CNY/EUR"
+    },
+    {
+      "capability": "fxDaily",
+      "result": null,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "HTTP 200, aber keine Tagesschlusskurse in der Antwort.",
+      "sample": "[]"
+    },
+    {
+      "capability": "fxHistoricalDaily",
+      "result": null,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "Kein historisches Fenster lieferte Zeilen. ",
+      "probes": [
+        {
+          "label": "1 Jahr",
+          "days": 365,
+          "from": "2025-09-22",
+          "to": "2025-10-02",
+          "ok": false,
+          "observations": 0,
+          "firstDate": null
+        }
+      ]
+    },
+    {
+      "capability": "fxIntraday",
+      "result": null,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "HTTP 200, aber keine Intraday-Bars.",
+      "sample": "[]"
+    },
+    {
+      "capability": "fxWebsocket",
+      "result": null,
+      "verificationLevel": "NOT_ATTEMPTED",
+      "detail": "Es wurde keine Push-Verbindung aufgebaut. Der WebSocket-Nachweis gehoert in einen eigenen Lauf mit eigenem Betriebszustand."
+    }
+  ],
   "capabilities": {
     "fxCurrent": null,
     "fxDaily": null,
@@ -13,8 +90,8 @@
     "fxIntraday": null,
     "fxRealtime": null,
     "fxWebsocket": null,
-    "fxCrossPairs": null,
-    "fxBulkQuotes": null
+    "fxCrossPairs": false,
+    "fxBulkQuotes": false
   },
   "realtimeTier": {
     "tier": null,
@@ -37,11 +114,222 @@
     "action": "PROBE",
     "reason": "Ungeprueft: fxDaily, fxHistoricalDaily, fxCurrent. Erst messen (scripts/market/probe-tiingo-fx.mjs), dann entscheiden."
   },
+  "timestampSemantics": null,
+  "missingDataBehaviour": {
+    "window": {
+      "from": "2025-12-20",
+      "to": "2026-01-06"
+    },
+    "ok": true,
+    "calendarDays": 18,
+    "observations": 0,
+    "missing": [
+      {
+        "date": "2025-12-20",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2025-12-21",
+        "weekday": "So",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2025-12-22",
+        "weekday": "Mo",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-23",
+        "weekday": "Di",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-24",
+        "weekday": "Mi",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-25",
+        "weekday": "Do",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-26",
+        "weekday": "Fr",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-27",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2025-12-28",
+        "weekday": "So",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2025-12-29",
+        "weekday": "Mo",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-30",
+        "weekday": "Di",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2025-12-31",
+        "weekday": "Mi",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2026-01-01",
+        "weekday": "Do",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2026-01-02",
+        "weekday": "Fr",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2026-01-03",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2026-01-04",
+        "weekday": "So",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2026-01-05",
+        "weekday": "Mo",
+        "kind": "HOLIDAY_OR_GAP"
+      },
+      {
+        "date": "2026-01-06",
+        "weekday": "Di",
+        "kind": "HOLIDAY_OR_GAP"
+      }
+    ],
+    "weekendGaps": 6,
+    "holidayGaps": 12
+  },
+  "directionality": {
+    "directions": [
+      {
+        "pair": "USD/EUR",
+        "ticker": "usdeur",
+        "ok": false,
+        "httpStatus": 200,
+        "observations": 0,
+        "closePresent": false,
+        "lastDate": null
+      },
+      {
+        "pair": "EUR/USD",
+        "ticker": "eurusd",
+        "ok": true,
+        "httpStatus": 200,
+        "observations": 9,
+        "closePresent": true,
+        "lastDate": "2026-09-22"
+      }
+    ],
+    "bothDirectionsServed": false,
+    "inversionRequired": true,
+    "consistency": null
+  },
+  "historicalDepth": {
+    "reached": [
+      {
+        "label": "1 Jahr",
+        "days": 365,
+        "from": "2025-09-22",
+        "to": "2025-10-02",
+        "ok": false,
+        "observations": 0,
+        "firstDate": null
+      }
+    ],
+    "deepest": null
+  },
+  "requests": {
+    "count": 9,
+    "rateLimitHeaders": {}
+  },
   "notMeasured": {
-    "fxRealtime": "Verzoegerung laesst sich nur gegen einen unabhaengigen Referenzkurs messen; ein Abruf allein belegt keine Echtzeit.",
     "fxWebsocket": "Eine Push-Verbindung wird hier nicht aufgebaut - sie haette einen eigenen Betriebszustand und gehoert in einen eigenen Nachweis.",
-    "requestLimits": "Kontingente zeigen sich erst unter Last. run-scale-gate.mjs ist dafuer da, nicht dieses Skript.",
+    "requestLimits": "Kontingente zeigen sich erst unter Last. Dieses Skript zaehlt seine eigenen Anfragen und sammelt Kontingent-Header, es laeuft nicht gegen die Grenze.",
     "license": "Redistribution und oeffentliche Darstellung sind Rechtsfragen. display-policy.js entscheidet sie, nicht ein HTTP-Statuscode."
   },
-  "note": "Kein TIINGO_API_KEY in der Umgebung. Es wurde kein Endpunkt befragt; jede FX-Faehigkeit bleibt ungeprueft (null). Das ist der ehrliche Stand, nicht ein Ausfall."
+  "evidence": {
+    "fxCurrent": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "HTTP 200, aber die Antwort traegt kein auswertbares Preisfeld. Kein Beleg.",
+      "measuredAt": "2026-09-22T06:50:42.387Z",
+      "httpStatus": 200,
+      "sample": "[]"
+    },
+    "fxBulkQuotes": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "3 Paare angefragt, 0 zurueck.",
+      "measuredAt": "2026-09-22T06:50:42.641Z",
+      "requested": [
+        "usdeur",
+        "cnyeur",
+        "cnyusd"
+      ],
+      "returned": 0
+    },
+    "fxCrossPairs": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "CNY/EUR: 0 Zeile(n).",
+      "measuredAt": "2026-09-22T06:50:42.744Z",
+      "pair": "CNY/EUR"
+    },
+    "fxDaily": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "HTTP 200, aber keine Tagesschlusskurse in der Antwort.",
+      "measuredAt": "2026-09-22T06:50:42.844Z",
+      "sample": "[]"
+    },
+    "fxHistoricalDaily": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "Kein historisches Fenster lieferte Zeilen. ",
+      "measuredAt": "2026-09-22T06:50:42.949Z",
+      "probes": [
+        {
+          "label": "1 Jahr",
+          "days": 365,
+          "from": "2025-09-22",
+          "to": "2025-10-02",
+          "ok": false,
+          "observations": 0,
+          "firstDate": null
+        }
+      ]
+    },
+    "fxIntraday": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "HTTP 200, aber keine Intraday-Bars.",
+      "measuredAt": "2026-09-22T06:50:43.049Z",
+      "sample": "[]"
+    },
+    "fxWebsocket": {
+      "verificationLevel": "NOT_ATTEMPTED",
+      "reason": "Es wurde keine Push-Verbindung aufgebaut. Der WebSocket-Nachweis gehoert in einen eigenen Lauf mit eigenem Betriebszustand.",
+      "measuredAt": "2026-09-22T06:50:43.374Z"
+    }
+  },
+  "capabilityState": "UNVERIFIED",
+  "capabilityStateDetail": "Ungeprueft geblieben: fxCurrent, fxDaily, fxHistoricalDaily.",
+  "summary": {
+    "measuredPresent": 0,
+    "measuredAbsent": 2,
+    "unverified": 6
+  }
 }
