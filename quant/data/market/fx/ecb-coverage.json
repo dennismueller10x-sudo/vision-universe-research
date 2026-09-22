@@ -1,0 +1,377 @@
+{
+  "schema": "vu-ecb-coverage-1.0.0",
+  "generatedAtUtc": "2026-09-22T08:01:55.050Z",
+  "provider": "ecb",
+  "role": "FALLBACK",
+  "feed": {
+    "id": "FULL_HISTORY",
+    "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml",
+    "label": "Vollstaendige Historie ab 1999-01-04"
+  },
+  "attribution": "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
+  "durationMs": 1235,
+  "daysParsed": 7097,
+  "rejectedRows": 0,
+  "earliest": "1999-01-04",
+  "latest": "2026-09-21",
+  "currenciesPublished": [
+    "AUD",
+    "BGN",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CNY",
+    "CYP",
+    "CZK",
+    "DKK",
+    "EEK",
+    "GBP",
+    "HKD",
+    "HRK",
+    "HUF",
+    "IDR",
+    "ILS",
+    "INR",
+    "ISK",
+    "JPY",
+    "KRW",
+    "LTL",
+    "LVL",
+    "MTL",
+    "MXN",
+    "MYR",
+    "NOK",
+    "NZD",
+    "PHP",
+    "PLN",
+    "ROL",
+    "RON",
+    "RUB",
+    "SEK",
+    "SGD",
+    "SIT",
+    "SKK",
+    "THB",
+    "TRL",
+    "TRY",
+    "USD",
+    "ZAR"
+  ],
+  "currenciesNeeded": [
+    "AFN",
+    "ARS",
+    "AUD",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CLP",
+    "CNY",
+    "COP",
+    "DKK",
+    "EUR",
+    "GBP",
+    "HKD",
+    "IDR",
+    "ILS",
+    "INR",
+    "JPY",
+    "KRW",
+    "KZT",
+    "MOP",
+    "MXN",
+    "MYR",
+    "PEN",
+    "PHP",
+    "RUB",
+    "SEK",
+    "SGD",
+    "TRY",
+    "TWD",
+    "USD",
+    "VND",
+    "ZAR"
+  ],
+  "currenciesCovered": [
+    "AUD",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CNY",
+    "DKK",
+    "GBP",
+    "HKD",
+    "IDR",
+    "ILS",
+    "INR",
+    "JPY",
+    "KRW",
+    "MXN",
+    "MYR",
+    "PHP",
+    "RUB",
+    "SEK",
+    "SGD",
+    "TRY",
+    "USD",
+    "ZAR"
+  ],
+  "currenciesMissing": [
+    "AFN",
+    "ARS",
+    "CLP",
+    "COP",
+    "KZT",
+    "MOP",
+    "PEN",
+    "TWD",
+    "VND"
+  ],
+  "seriesWritten": [
+    {
+      "pair": "EUR/AUD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/BRL",
+      "observations": 4793,
+      "first": "2008-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CAD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CHF",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CNY",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/DKK",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/GBP",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/HKD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/IDR",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/ILS",
+      "observations": 4023,
+      "first": "2011-01-03",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/INR",
+      "observations": 4537,
+      "first": "2009-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/JPY",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/KRW",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/MXN",
+      "observations": 4793,
+      "first": "2008-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/MYR",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/PHP",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/RUB",
+      "observations": 4333,
+      "first": "2005-04-01",
+      "last": "2022-03-01"
+    },
+    {
+      "pair": "EUR/SEK",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/SGD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/TRY",
+      "observations": 5560,
+      "first": "2005-01-03",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/USD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/ZAR",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    }
+  ],
+  "outputDir": ".market-cache/currency/fx-ecb",
+  "published": false,
+  "seamAnalysis": {
+    "note": "Relative Abweichung zwischen EZB-Fixing (16:00 MEZ) und Tiingo-Tagesschluss auf dem Ueberlappungsbereich. Ein Chart wechselt am Beginn der Tiingo-Historie die Quelle; diese Zahl sagt, wie gross der Sprung an der Naht hoechstens ist.",
+    "pairs": [
+      {
+        "pair": "EUR/AUD",
+        "overlapDays": 1656,
+        "medianRelDiff": 0.001729540042611916,
+        "p95RelDiff": 0.006435674723061385,
+        "maxRelDiff": 0.02915284650100591
+      },
+      {
+        "pair": "EUR/CAD",
+        "overlapDays": 1657,
+        "medianRelDiff": 0.0017333797424294334,
+        "p95RelDiff": 0.006145529554022321,
+        "maxRelDiff": 0.016194407258664195
+      },
+      {
+        "pair": "EUR/CHF",
+        "overlapDays": 1656,
+        "medianRelDiff": 0.0011913591692935108,
+        "p95RelDiff": 0.004365079365079384,
+        "maxRelDiff": 0.013947167652107465
+      },
+      {
+        "pair": "EUR/DKK",
+        "overlapDays": 1436,
+        "medianRelDiff": 0.000048274844782923295,
+        "p95RelDiff": 0.00020978456738650946,
+        "maxRelDiff": 0.0007120668092144248
+      },
+      {
+        "pair": "EUR/GBP",
+        "overlapDays": 1656,
+        "medianRelDiff": 0.0012470605002494067,
+        "p95RelDiff": 0.004536868575666627,
+        "maxRelDiff": 0.016740235793708435
+      },
+      {
+        "pair": "EUR/HKD",
+        "overlapDays": 1199,
+        "medianRelDiff": 0.0018614036344532258,
+        "p95RelDiff": 0.007506814330967754,
+        "maxRelDiff": 0.0234448597173868
+      },
+      {
+        "pair": "EUR/ILS",
+        "overlapDays": 364,
+        "medianRelDiff": 0.0018889044354275235,
+        "p95RelDiff": 0.007067388040676438,
+        "maxRelDiff": 0.014707519341014162
+      },
+      {
+        "pair": "EUR/JPY",
+        "overlapDays": 1657,
+        "medianRelDiff": 0.0017370964030982996,
+        "p95RelDiff": 0.007085130947317232,
+        "maxRelDiff": 0.023592768303628716
+      },
+      {
+        "pair": "EUR/MXN",
+        "overlapDays": 1437,
+        "medianRelDiff": 0.002845202995797718,
+        "p95RelDiff": 0.010727992078015103,
+        "maxRelDiff": 0.03838132618298162
+      },
+      {
+        "pair": "EUR/RUB",
+        "overlapDays": 275,
+        "medianRelDiff": 0.002355651247858396,
+        "p95RelDiff": 0.01109328978449148,
+        "maxRelDiff": 0.077437479202396
+      },
+      {
+        "pair": "EUR/SEK",
+        "overlapDays": 1654,
+        "medianRelDiff": 0.001489644428152423,
+        "p95RelDiff": 0.005185933339454644,
+        "maxRelDiff": 0.014207198663234387
+      },
+      {
+        "pair": "EUR/SGD",
+        "overlapDays": 1437,
+        "medianRelDiff": 0.0010333065810593282,
+        "p95RelDiff": 0.004123851650221133,
+        "maxRelDiff": 0.012322784384868658
+      },
+      {
+        "pair": "EUR/TRY",
+        "overlapDays": 1656,
+        "medianRelDiff": 0.002621703967560582,
+        "p95RelDiff": 0.010595682127342052,
+        "maxRelDiff": 0.24126595288224542
+      },
+      {
+        "pair": "EUR/USD",
+        "overlapDays": 1659,
+        "medianRelDiff": 0.0017895423618232303,
+        "p95RelDiff": 0.00740929994890151,
+        "maxRelDiff": 0.023889893510146698
+      },
+      {
+        "pair": "EUR/ZAR",
+        "overlapDays": 1437,
+        "medianRelDiff": 0.0024701701356374495,
+        "p95RelDiff": 0.009850939209630781,
+        "maxRelDiff": 0.02839108246038155
+      }
+    ],
+    "worstP95": 0.01109328978449148,
+    "verdict": "SEAM_VISIBLE"
+  }
+}
