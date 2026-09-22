@@ -44,6 +44,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ECB = require(join(ROOT, "providers", "ecb", "adapter.js"));
 const Rates = require(join(ROOT, "quant", "engines", "fx", "fx-rates.js"));
 const Registry = require(join(ROOT, "quant", "engines", "fx", "currency-registry.js"));
+const Providers = require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js"));
 
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith("--")));
@@ -128,14 +129,19 @@ async function main() {
     /* Gegenprobe im Store, bevor etwas geschrieben wird. */
     const store = Rates.createStore();
     const stats = store.ingest(s.base, s.quote, s.points,
-      { source: "ecb", role: "FALLBACK", frequency: "DAILY" });
+      Providers.ingestMeta("ecb", { frequency: "DAILY" }));
     if (!stats.observations) continue;
 
     writeFileSync(join(OUT_DIR, `${s.base}${s.quote}.json`), JSON.stringify({
       schema: "vu-fx-series-1.0.0",
       base: s.base, quote: s.quote,
-      source: "ecb", role: "FALLBACK", frequency: "DAILY",
-      priceBasis: "EZB-Referenzkurs, erhoben gegen 16:00 MEZ",
+      source: "ecb", frequency: "DAILY",
+      /* Seit O-14 haengt die Rolle an der Art der Frage: historisch
+         fuehrt die EZB, in der Gegenwart Tiingo. Ein einzelnes Feld
+         "role" waere hier eine Halbwahrheit. */
+      roles: { HISTORICAL_DAILY: "PRIMARY", CURRENT: "FALLBACK" },
+      priceBasis: "EZB-Referenzkurs, erhoben gegen 14:15 UTC, veroeffentlicht gegen 16:00 MEZ",
+      priceInstantUtcApprox: 14.25,
       attribution: "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
       feed: FEED.id, asOf,
       first: stats.first, last: stats.last,
@@ -166,13 +172,13 @@ async function main() {
          wird, was die Engine an denselben Tagen aus beiden macht - nicht
          zwei Rohreihen nebeneinander. */
       const store = Rates.createStore();
-      store.ingest(t.base, t.quote, t.points, { source: "tiingo", role: "PRIMARY", frequency: "DAILY" });
+      store.ingest(t.base, t.quote, t.points, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
       const ecbSeries = allSeries.find((s) => s.quote === t.quote && t.base === "EUR")
         || allSeries.find((s) => s.quote === t.base && t.quote === "EUR");
       if (!ecbSeries) continue;
 
       const ecbStore = Rates.createStore();
-      ecbStore.ingest("EUR", ecbSeries.quote, ecbSeries.points, { source: "ecb", role: "FALLBACK", frequency: "DAILY" });
+      ecbStore.ingest("EUR", ecbSeries.quote, ecbSeries.points, Providers.ingestMeta("ecb", { frequency: "DAILY" }));
 
       const diffs = [];
       for (const [date] of t.points) {
@@ -202,7 +208,7 @@ async function main() {
     schema: "vu-ecb-coverage-1.0.0",
     generatedAtUtc: asOf,
     provider: "ecb",
-    role: "FALLBACK",
+    roles: { HISTORICAL_DAILY: "PRIMARY", CURRENT: "FALLBACK" },
     feed: { id: FEED.id, url: FEED.url, label: FEED.label },
     attribution: "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
     durationMs,

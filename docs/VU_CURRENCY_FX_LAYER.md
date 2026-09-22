@@ -217,42 +217,72 @@ Median, p95 und Maximum je Paar.
 
 ---
 
-## 4c. Die Lizenzfrage ist beantwortbar — und die Antwort ist ein Blocker (O-11)
+## 4c. Die Lizenzfrage: geprueft, benannt, kein Stopp (O-11)
 
-Die vier Stufen aus O-11, gegen die vorhandene Evidenz geprueft:
+Die fuenf Stufen aus O-11, gegen die im Repository vorhandene Evidenz
+geprueft:
 
-| | | |
-|---|---|---|
-| **A** interne Berechnung | **erlaubt** | `DEFAULT_POLICY.internalUseAllowed` |
-| **B** Speicherung / Caching | **erlaubt** | Arbeitsablage, nicht ausgeliefert |
-| **C** Anzeige abgeleiteter EUR-Werte | **NICHT erlaubt** | ← die offene Frage |
-| **D** Weitergabe roher FX-Reihen | nicht erlaubt | wird auch nicht gebraucht |
+| | | Befund | Grundlage |
+|---|---|---|---|
+| **A** | interne Nutzung von FX-Daten | **gedeckt** | `internalUseAllowed` ist der Standard |
+| **B** | serverseitiges Caching | **gedeckt** | Arbeitsablage, nicht ausgeliefert |
+| **C** | Berechnung abgeleiteter EUR-Werte | **nicht eindeutig** | ← gebraucht |
+| **D** | oeffentliche Anzeige abgeleiteter Werte | **nicht eindeutig** | ← gebraucht, setzt C voraus |
+| **E** | Redistribution roher FX-Reihen | **wird nicht gebraucht** | Erlaubnisliste im Workflow schliesst es aus |
 
-Die Freigabe des Eigentuemers vom 2026-09-13 ist als
-`marketData`/`intraday`/`realtime` eingetragen und nennt die
-„Market-Data". FX ist bei diesem Anbieter ein eigenes Produkt. Dieselbe
-Datei sagt: *„Der Vertragstext liegt dem Repository nicht vor; es wurde
-keine eigene Rechtspruefung vorgenommen."*
+### Was im Repository tatsaechlich liegt
 
-`fx` ist deshalb jetzt eine **eigene Datenklasse** in
-`display-policy.js`. Waere es ein Unterfall von `marketData`, wuerde die
-bestehende Aktienfreigabe die EUR-Anzeige stillschweigend mitfreigeben —
-eine Erlaubnis, die niemand erteilt hat.
+Gesucht wurde in `development-preview.json`, `provider-profiles.json`,
+`tiingo-scale.json` und den `providers/*/README.md`.
+
+> **Ein Tiingo-Vertragstext liegt nicht vor.** Es gibt keine Lizenzdatei.
+
+Die einzige Grundlage ist die Erklaerung des Eigentuemers vom
+2026-09-13, eingetragen als `marketData`/`intraday`/`realtime`. Sie
+nennt die „Market-Data"; FX ist bei diesem Anbieter ein eigenes Produkt.
+Dieselbe Datei vermerkt: *„Der Vertragstext liegt dem Repository nicht
+vor; es wurde keine eigene Rechtspruefung vorgenommen."*
+
+Daraus wird **keine** weitergehende Auslegung gemacht.
+
+```
+LICENSE_DISPLAY_DERIVED_FX = OWNER_CONFIRMATION_REQUIRED
+```
+
+**Die exakte Frage an Tiingo**, maschinenlesbar in
+`quant/config/fx-license.json#licenseGate.questionForTiingo` und ueber
+`Providers.escalation()` abrufbar:
+
+> „Duerfen Tiingo-FX-Daten serverseitig zur Berechnung abgeleiteter
+> EUR-Aktienkurse und EUR-Fundamentalwerte verwendet und diese
+> abgeleiteten Werte oeffentlich im Vision-Universe-Produkt angezeigt
+> werden, ohne die rohe FX-Zeitreihe zu redistribuieren?"
+
+### Es haelt den technischen Workstream nicht an
+
+`blocksTechnicalWork: false`, `blocksPublicActivation: true`. Der Layer
+rechnet und speichert weiter; gesperrt ist die oeffentliche Anzeige
+Tiingo-basierter EUR-Werte.
+
+**Und seit O-14 ist das sehr viel weniger.** Die kanonische historische
+Quelle ist die EZB, deren Bedingungen geklaert sind — die gesamte
+historische EUR-Anzeige ist damit freigegeben. Offen ist nur noch der
+**aktuelle** EUR-Wert.
+
+`fx` ist eine **eigene Datenklasse** in `display-policy.js`. Waere es
+ein Unterfall von `marketData`, wuerde die bestehende Aktienfreigabe die
+EUR-Anzeige stillschweigend mitfreigeben — eine Erlaubnis, die niemand
+erteilt hat.
 
 ### Die Erlaubnis haengt am einzelnen Wert
 
 ```
-EUR-Wert aus EZB-Kurs (2018)   publicDisplayAllowed: true   + Quellennennung
-EUR-Wert aus Tiingo-Kurs (2026) publicDisplayAllowed: false
+EUR-Kurs von 2018  (ecb)     publicDisplayAllowed: true   + Quellennennung
+EUR-Kurs von heute (tiingo)  publicDisplayAllowed: false
 ```
 
 Ungewohnt, und richtig. Die Alternative ist eine globale Sperre, die
 entweder die ganze EUR-Anzeige abschaltet oder die Lizenzfrage ignoriert.
-
-Die exakte Vertragsfrage steht maschinenlesbar in
-`quant/config/fx-license.json` und ist ueber `Providers.escalation()`
-abrufbar — ein Produkt, das eine Sperre meldet, soll den Grund
-mitliefern koennen.
 
 ---
 
@@ -283,6 +313,185 @@ eintreffender aelterer Tick darf keinen Ruecksprung erzeugen.
 
 `available: "C"` / `recommended: "A"` — Stufe C bleibt verfuegbar,
 gefahren wird A.
+
+---
+
+## 4e. Die Naht: Ursache gesucht, nicht verdeckt (O-14)
+
+Zwei Kurse fuer denselben Kalendertag, 2,06 Prozent auseinander. Der
+Owner-Entscheid verlangt zu Recht, dass diese Zahl nicht durch die
+Anbieterrangfolge unsichtbar gemacht wird, sondern eine Ursache bekommt.
+
+### Die Frage ist nicht, welche Zahl stimmt
+
+Sie lautet: beschreiben die beiden ueberhaupt denselben oekonomischen
+Zeitpunkt? Wenn nicht, ist die Differenz kein Datenfehler, sondern die
+Definition — und dann waere jede Angleichung eine Faelschung.
+
+**Gemessen, nicht gelesen:**
+
+| | Tiingo | EZB |
+|---|---|---|
+| Feld | `close` der Tagesbar | Referenzkurs (Fixing) |
+| Zeitstempel | `…T00:00:00.000Z`, mit Zone | Handelstag (TARGET) |
+| Tagesgrenze | **UTC-Kalendertag** | TARGET-Geschaeftstag |
+| Zeitpunkt | Tagesende (~24:00 UTC) | ~14:15 UTC |
+| Notierung | je Paar; `eurusd` wird geliefert, `usdeur` nicht | immer EUR-basiert |
+| Inversion | erforderlich | nur fuer Nicht-EUR-Basis |
+
+Der Zeitstempel steht in `tiingo-fx-probe.json#timestampSemantics` und
+ist dort **gemessen** worden, nicht aus einer Dokumentation uebernommen.
+
+> Damit ist die Antwort auf die Kernfrage: **nein.** Die beiden Zahlen
+> beschreiben denselben KALENDERTAG, aber nicht denselben ZEITPUNKT.
+> Rund 9,75 Stunden liegen dazwischen.
+
+### Drei Hypothesen, und eine von ihnen sagt eine Zahl voraus
+
+| | Wenn zutreffend, dann |
+|---|---|
+| **H1 Zeitversatz** | unverzerrt (Median nahe null), kleiner als die Tagesbewegung, und **negativ korreliert mit der Tagesrendite**: an einem steigenden Tag liegt das fruehere Fixing unter dem spaeteren Schluss |
+| **H2 Definition** | systematisches Vorzeichen; der Median liegt sichtbar neben null und bleibt dort |
+| **H3 Fehler** | Steigung nahe −1 (Tagesversatz) oder strukturell (Faktor statt Versatz) |
+
+H1 sagt nicht nur ein Vorzeichen voraus, sondern eine **Zahl**. Wenn die
+EZB 14,25 Stunden in einen 24-Stunden-Tag hinein fixiert, sind noch
+41 Prozent des Tages offen. Die Regression der Differenz auf die
+Tagesrendite muss dann eine Steigung nahe **−0,41** ergeben.
+
+Das misst `scripts/quality/audit-fx-provider-seam.mjs` ueber den
+gesamten Ueberlappungsbereich, je Paar, und schreibt das Ergebnis nach
+`provider-seam-audit.json` — ohne einen einzigen Kursstand, weil
+relative Differenzen und Korrelationen abgeleitete Groessen sind.
+
+**Das Skript gleicht nichts an.** Es verschiebt keine Reihe, es
+interpoliert nicht, es waehlt nicht je Tag den besseren Kurs.
+
+### Die Rollenverteilung, die daraus folgt
+
+Wenn die Differenz aus der Definition stammt, ist sie unvermeidbar —
+aber der **Ort**, an dem sie sichtbar wird, ist waehlbar. Vorher lag er
+mitten im Chart: die Reihe kam bis 2020 aus der EZB und danach aus
+Tiingo, und der Wechsel legte den Zeitpunktunterschied als Sprung in
+eine Reihe, in der kein Sprung hingehoert.
+
+| Klasse | Frage | PRIMARY | FALLBACK |
+|---|---|---|---|
+| `HISTORICAL_DAILY` | Was war der Kurs am Tag t? | **ecb** | tiingo |
+| `CURRENT` | Was ist der Kurs jetzt? | **tiingo** | ecb |
+
+> Der einzige Uebergang liegt jetzt **an der Gegenwart**: historische
+> Tagesreihe → aktueller Stand. Und das ist eine Naht, die ohnehin
+> existiert, weil ein Tagesschluss und ein Jetzt zwei verschiedene Dinge
+> sind.
+
+Die Klasse ergibt sich aus der **Frage**, nicht aus der Datenlage: ein
+Datum fragt nach der Historie, kein Datum nach dem juengsten Stand.
+Damit bleibt die Rangfolge reproduzierbar — es wird nie je Tag zwischen
+zwei vorhandenen Werten gewaehlt (§8).
+
+**Geprueft gegen alle Pfade:**
+
+| Pfad | Klasse | Quelle |
+|---|---|---|
+| Historischer Chart (1J/5J/10J/MAX) | `HISTORICAL_DAILY` | ecb |
+| `PERIOD_AVERAGE` (Fluss) | `HISTORICAL_DAILY` | ecb |
+| `DAILY_AT_PERIOD_END` (Stichtag) | `HISTORICAL_DAILY` | ecb |
+| `MARKET_PRICE` mit Datum | `HISTORICAL_DAILY` | ecb |
+| `LATEST_AVAILABLE` / aktueller Preis | `CURRENT` | tiingo |
+| Realtime-Tick × Intraday-State | `CURRENT` | tiingo |
+
+Wo die EZB nichts veroeffentlicht — ARS, CLP, COP, PEN, TWD — kippt die
+Rangfolge, und Tiingo traegt auch historisch. Das ist kein Sonderfall im
+Code, sondern dieselbe Regel: FALLBACK liefert, wo PRIMARY nichts hat.
+Die Herkunft je Wert sagt es (`role: "FALLBACK"`, `resolutionClass:
+"HISTORICAL_DAILY"`).
+
+**Ein Nebeneffekt, der die Lizenzlage entspannt.** Die historische
+EUR-Anzeige haengt jetzt vollstaendig an der EZB, deren Bedingungen
+geklaert sind. Gesperrt bleibt bis zur Antwort auf O-11 nur noch der
+**aktuelle** Tiingo-basierte EUR-Wert — nicht mehr die halbe Historie.
+
+---
+
+## 4f. Ein Anfang je Anzeigewaehrung (O-15)
+
+Das Produkt kannte bisher **einen** `availableFrom` je Reihe. Das war
+richtig, solange nur die Originalwaehrung gezeigt wurde, und ist falsch,
+seit es einen Umschalter gibt.
+
+| | `availableFrom` | begrenzt durch |
+|---|---|---|
+| USD (nativ) | **1990-01-05** | die Kursreihe |
+| EUR | **1999-01-04** | die FX-Historie |
+
+`layer.availability(nativeCurrency, nativeAvailableFrom)` liefert beide,
+je unterstuetzter Anzeigewaehrung einen Eintrag — damit eine Oberflaeche
+den Zeitraumwaehler richtig zeichnen kann, **bevor** jemand umschaltet,
+statt eine halb leere Reihe zu zeichnen.
+
+Gefragt wird derselbe Weg wie beim Kurs selbst: direkt, invers, ueber
+die Pivots (`store.coverageWindow`). Eine zweite, einfachere Rechnung
+waere ein zweiter Wahrheitsstand — die Zusage muss mit dem
+uebereinstimmen, was `rateAt()` spaeter wirklich liefert.
+
+**Was davor passiert: nichts.** Kein Punkt wird gefuellt, keine
+Extrapolation, kein aeltester Kurs fuer frueherer Jahre, kein heutiger
+Kurs fuer historische Daten. `beforeSeriesStart`, und das Feld
+`limitedBy: "FX_HISTORY"` sagt der Oberflaeche, warum.
+
+---
+
+## 4g. Verfuegbarkeit ist ein Zeitpunkt (O-13)
+
+Der Rubel ist der gemessene Gegenbeweis zur bequemen Annahme, dass eine
+Waehrung entweder umrechenbar ist oder nicht:
+
+| Horizont | Zustand |
+|---|---|
+| 15J / 10J | umrechenbar (ecb) |
+| 5J | umrechenbar (tiingo) |
+| **heute** | **nicht umrechenbar** |
+
+Die EZB hat die Veroeffentlichung des Rubel-Referenzkurses eingestellt.
+Wer Verfuegbarkeit je **Waehrung** fuehrt, muss sich hier fuer eine
+Luege entscheiden — in die eine oder die andere Richtung.
+
+Deshalb trennt der Vertrag:
+
+| Feld | Bedeutung |
+|---|---|
+| `conversionAvailable` | Es gibt ueberhaupt ein Zeitfenster |
+| `availableFrom` / `availableTo` | Wo dieses Fenster liegt |
+| `currentConversionAvailable` | Fuer **heute** gibt es einen Kurs |
+| `currentUnavailableReason` | Warum nicht |
+
+Gefragt wird nach dem Kurs von heute, und damit gilt dieselbe Grenze wie
+ueberall sonst (`maxCarryDays`). `latest()` waere die falsche Frage: es
+gibt den letzten Punkt der Reihe zurueck, auch wenn er vier Jahre alt
+ist — richtig fuer einen Rueckblick, falsch fuer eine Aussage ueber
+heute.
+
+### Zwei Auskuenfte, die nicht dasselbe sind
+
+Beim Bauen fiel auf, dass der Layer sie verwechselte:
+
+```
+RUB/EUR heute  →  "pairNotStored"        ← falsch
+RUB/EUR heute  →  "carryLimitExceeded"   ← richtig
+                   lastAvailable: 2022-03-01, gapDays: 1666
+```
+
+Die angefragte Richtung war nicht gefuehrt, die Gegenrichtung schon —
+und der Grund der Gegenrichtung wurde verworfen. „Gibt es nicht" und
+„gilt heute nicht mehr" sind verschiedene Sachverhalte, und O-13 haengt
+genau daran: eine Oberflaeche kann jetzt „bis 2022 umrechenbar" sagen
+statt nur „nicht verfuegbar".
+
+Fuer alle fuenf unaufloesbaren Waehrungen gilt unveraendert:
+`conversionAvailable: false`, nativer Wert und Waehrung bleiben
+sichtbar, der Titel bleibt im Company Master und im Vision Universe.
+Geschaetzt wird nichts.
 
 ---
 
@@ -549,20 +758,57 @@ Registerstand 2026-09-22, 30 Stellen in 15 Dateien:
 
 | Klasse | Anzahl | Bedeutung |
 |---|---|---|
-| **F** `MIGRATED_FALLBACK` | 18 | migriert; Zeile greift nur ohne geladenen Core |
-| **A** `MONETARY_DISPLAY` | 4 | offen — siehe **O-16** |
+| **F** `MIGRATED_FALLBACK` | 19 | migriert; Zeile greift nur ohne geladenen Core |
+| **A** `MONETARY_DISPLAY` | **0** | keine offene produktive Stelle mehr |
 | **B** `PERCENTAGE_OR_RATIO` | 4 | darf nie konvertieren |
-| **C** `STATIC_COPY` | 3 | Schwellenwert im Methodiktext, im Code markiert |
+| **C** `STATIC_COPY` | 5 | Schwellenwert oder Archivtext, im Code markiert |
+| **E** `INTENTIONAL_NATIVE_CURRENCY` | 1 | Bewertungs-Gate, zurueckgestellt |
 | `UNCLASSIFIED` | 1 | von Hand ansehen |
 
 Eine migrierte Stelle hinterlaesst oft mehr als eine Zeile der Klasse F:
 die Bruecke `vuFormat()` und der beibehaltene Rueckfall zaehlen beide.
-Deshalb stehen 18 F-Zeilen fuer 13 migrierte Darstellungsstellen in
-sechs Dateien.
 
 Migriert: `discover/ui/{surfaces,detail-fundamentals,cards,detail}.js`,
-`dashboard/app.js`, `hedgefonds/index.html`. Die FX-Engines sind in
-`discover/index.html` und `discover-v2/index.html` eingebunden.
+`dashboard/app.js`, `hedgefonds/index.html`, `vu2/experience.js`. Die
+FX-Engines sind in `discover/index.html` und `discover-v2/index.html`
+eingebunden; `vu2/index.html` laedt **nur** Registry und Formatierung —
+diese Seite rechnet nichts um, und die Engine gehoert nicht auf eine
+Seite, die sie nicht braucht.
+
+### Die letzten vier (O-16)
+
+**`vu2/experience.js` — migriert.** Zwei Stellen: die Achsenbeschriftung
+des Charts und die Kennzahlformatierung. Byte-gleiche Ausgabe, geprueft
+gegen die kopierte alte Form.
+
+Die Bruecke fragt dabei nicht `unit === 'USD'`, sondern die Registry
+(`Registry.isKnown(unit)`). Der Vergleich gegen einen Waehrungscode
+waere genau die verteilte Kenntnis, die O-6 abbauen soll — und er wuerde
+ein kuenftiges `unit: 'EUR'` still ohne Symbol darstellen.
+
+**Die zwei Archivseiten unter `morning/` — nicht migriert, und das ist
+die Bedingung aus O-16.** Der Treffer ist die Ueberschrift eines
+datierten Artikels: *„21,7 Milliarden Dollar: …"*. Das ist Fliesstext
+ueber ein Ereignis zu seinem Datum, kein angezeigter Wert. Eine
+Umschaltung waere keine Anzeige, sondern eine Faelschung des Archivs —
+die Schlagzeile hat so gestanden. Rein mechanisch migrierbar ist sie
+damit nicht; sie tragen jetzt einen Marker `C` mit genau dieser
+Begruendung.
+
+**`quant/api/portfolio-workspace.js` — zurueckgestellt, wie verlangt.**
+
+```
+DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO
+```
+
+`stock.price.unit === 'USD'` sieht aus wie eine fest verdrahtete
+Waehrung und ist keine: es ist ein **Bewertungs-Gate**. Eine Position in
+Fremdwaehrung wird nicht bewertet, statt sie mit einer stillschweigenden
+Annahme zu bewerten — genau das verlangt die Kopfzeile der Datei („No FX
+assumption") und genau das verlangt O-13. Sie zu entfernen wuerde die
+Multi-Waehrungs-Depotbewertung **freischalten**, mit allem, was daran
+haengt. Das ist eine Produktentscheidung, keine Formatierung, und kein
+Blocker fuer den Display Layer.
 
 **Das Aussehen aendert sich nicht.** Das war die eigentliche Arbeit.
 Discover zeigt deutsche Zahlen mit Dollarzeichen (`154,72 $`), die
@@ -586,8 +832,9 @@ es richtig machte.
 
 ### Nicht migriert, und warum
 
-Drei Stellen sind Schwellenwerte im Methodiktext („Margen erst ab 50
-Mio. $ Umsatz"). Sie tragen jetzt einen Marker **im Code**:
+Fuenf Stellen tragen einen Marker **im Code**: drei Schwellenwerte im
+Methodiktext („Margen erst ab 50 Mio. $ Umsatz") und die zwei
+Archivueberschriften oben.
 
 ```js
 /* vu-currency: C - Schwellenwert im Methodiktext, kein angezeigter Betrag */
@@ -905,24 +1152,29 @@ diesem Workstream und werden hier nicht repariert.
 
 ## 17. Merge Gate
 
-| Kriterium | Zustand |
-|---|---|
-| `TIINGO_FX_CAPABILITIES` | **MEASURED** |
-| `HISTORICAL_FX_COVERAGE` | **PASS** — 1J/5J 99,96 %, 10J/15J 99,71 % (Schwelle 99 %); MAX berichtet, nicht beurteilt |
-| `FX_PROVIDER_PRIORITY` | **PASS** — deterministisch, je Wert belegt |
-| `FX_DATA_PROOF` | **PASS** |
-| `CURRENCY_CONTRACT` | **PASS** (60 Tests) |
-| `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage |
-| `FX_FRESHNESS` | **PASS** |
-| `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) |
-| `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; nach dem Fallback bleiben 5 Titel unaufloesbar, alle mit `conversionAvailable: false` |
-| `CURRENCY_DEBT_MIGRATION` | **PASS** — 13 migriert, Aussehen unveraendert |
-| `REGRESSION_GUARD` | **PASS** |
-| `NEW_REGRESSIONS` | **0** |
-| `PAID_SERVICES_ENABLED` | **0** |
-| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** |
+| Kriterium | Zustand | Beleg |
+|---|---|---|
+| `TIINGO_FX_CAPABILITIES` | **MEASURED** | `tiingo-fx-probe.json` |
+| `HISTORICAL_FX_COVERAGE` | **PASS** — 1J/5J 99,96 %, 10J/15J 99,71 % (Schwelle 99 %); MAX berichtet, nicht beurteilt | `historical-coverage.json` |
+| `FX_PROVIDER_ROLES` | **PASS** — zwei Klassen, je Klasse deterministisch, Uebergang an der Gegenwart; Ursache gemessen | `provider-seam-audit.json`, Pruefung `PR1` |
+| `FX_DATA_PROOF` | **PASS** | `currency-layer-proof.json` |
+| `CURRENCY_CONTRACT` | **PASS** (71 Tests) | `currency-fx-matrix.test.mjs` |
+| `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage | `O9-1` … `O9-3` |
+| `FX_FRESHNESS` | **PASS** | `O5-1` … `O5-6` |
+| `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) | plus `O15-1`: getrennte Anfaenge je Anzeigewaehrung |
+| `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; 5 Titel unaufloesbar, alle `conversionAvailable: false`; Verfuegbarkeit zeitpunktbezogen | `O13-1`, `O13-2` |
+| `CURRENCY_DEBT_MIGRATION` | **PASS** — 0 offene Klasse-A-Stellen, Aussehen unveraendert | `currency-debt-register.json`, `O16-1`, `O16-2` |
+| `REGRESSION_GUARD` | **PASS** — 30 Stellen (Grundlinie 30), 2 Konstanten (Grundlinie 2) | `assert-no-local-fx.mjs` |
+| `NEW_REGRESSIONS` | **0** | die fuenf roten Tests der Gesamtsuite bestehen unveraendert auch ohne diesen Zweig |
+| `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
+| `CRITICAL_BLOCKERS` | **0** | die Lizenzfrage ist als `OWNER_CONFIRMATION_REQUIRED` dokumentiert und blockiert keine technische Arbeit |
+| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** | wird bei offener US-Sitzung nachgeholt |
+| `LICENSE_DISPLAY_DERIVED_FX` | **OWNER_CONFIRMATION_REQUIRED** | separat dokumentiert; keine nicht freigegebene oeffentliche Aktivierung erfolgt |
 
 **Nicht gemergt** — das entscheidet der Owner.
+
+`FX_PROVIDER_PRIORITY` heisst seit O-14 `FX_PROVIDER_ROLES`: es gibt
+nicht mehr eine Rangfolge, sondern zwei — eine je Art der Frage.
 
 ### `REALTIME_FX`: der Zeitplan allein holt es nicht nach
 
@@ -947,31 +1199,38 @@ wird nicht beschoenigt (§58).
 
 ---
 
-## 18. Der eine Punkt, der eine Owner-Entscheidung braucht
+## 18. Was noch offen ist
 
-**Die FX-Lizenzfrage (O-11 C).** Solange sie offen ist, tragen alle aus
-Tiingo-Kursen abgeleiteten EUR-Werte `publicDisplayAllowed: false`. Der
-Layer rechnet und speichert weiter — nur die oeffentliche Anzeige ist
-gesperrt.
+### Der eine echte Entscheidungspunkt
 
-> **Die exakte Frage:** Umfasst die am 2026-09-13 erklaerte
-> Tiingo-Freigabe („das entsprechend freigegebene grosse Paket" fuer die
-> oeffentliche Anzeige der Market-Data) auch das FX-/Forex-Produkt —
-> getrennt nach (a) interner Berechnung, (b) Speicherung/Caching,
-> (c) oeffentlicher Anzeige **abgeleiteter** Werte, (d) Weitergabe
-> **roher** FX-Zeitreihen?
+**Die FX-Lizenzfrage.** `LICENSE_DISPLAY_DERIVED_FX =
+OWNER_CONFIRMATION_REQUIRED`. Sie blockiert keine technische Arbeit und
+sie ist kein `CRITICAL_BLOCKER` — sie blockiert genau eine Sache: die
+oeffentliche Anzeige des **aktuellen**, Tiingo-basierten EUR-Werts.
 
-Sie steht maschinenlesbar in `quant/config/fx-license.json`.
+> **Die exakte Frage an Tiingo:** „Duerfen Tiingo-FX-Daten serverseitig
+> zur Berechnung abgeleiteter EUR-Aktienkurse und EUR-Fundamentalwerte
+> verwendet und diese abgeleiteten Werte oeffentlich im
+> Vision-Universe-Produkt angezeigt werden, ohne die rohe FX-Zeitreihe
+> zu redistribuieren?"
 
-**Was ohne diese Antwort trotzdem geht:** EUR-Werte, deren Kurs von der
-EZB stammt, sind freigegeben (Quellennennung erfolgt) — also die ganze
-Historie vor 2020-02-29 und jede Waehrung, die Tiingo nicht fuehrt.
+Maschinenlesbar in `quant/config/fx-license.json#licenseGate`, abrufbar
+ueber `Providers.escalation()`.
 
-### Nachrangig
+**Was ohne die Antwort geht:** seit O-14 die gesamte **historische**
+EUR-Anzeige — sie haengt vollstaendig an der EZB, deren Bedingungen
+geklaert sind und deren Quelle genannt wird.
 
-| # | Frage |
+### Der eine ausstehende Nachweis
+
+`REALTIME_FX`. Wird bei offener US-Sitzung nachgeholt, nicht
+beschoenigt.
+
+### Zurueckgestellt, benannt, nicht blockierend
+
+| # | Sache |
 |---|---|
-| **O-14** | Die Naht zwischen EZB-Fixing und Tiingo-Schluss. Gemessen ueber 1.659 Ueberlappungstage (EUR/USD): Median 0,18 %, p95 0,74 %, Maximum 2,39 %; am 2026-09-21 trennten die beiden Quellen **2,06 %**, also 5,72 € auf einen AAPL-Anteil. Ab welcher Groesse soll der Sprung sichtbar gemacht werden? |
-| **O-15** | Ein MAX-Chart in EUR beginnt spaeter als in der Originalwaehrung (Kurse ab 1990, FX ab 1999). Begrenzen, hinweisen oder auf USD verweisen? |
-| **O-16** | Die **4** verbliebenen Klasse-A-Stellen (Register-Stand 2026-09-22, `openClassA: 4`). Zwei sind Archivseiten unter `morning/` (2026-09-05, 2026-09-08), die niemand mehr anfasst: migrieren oder ausnehmen? `vu2/experience.js:83` ist eine echte Consumer-Stelle und waere eine gewoehnliche Migration. `quant/api/portfolio-workspace.js:16` ist **keine** Formatierung, sondern ein Bewertungs-Gate (`price.unit === 'USD'`): es verweigert Positionen in Fremdwaehrung, statt sie anzunehmen — ehrlich im Sinne von O-13. Sie zu migrieren hiesse, die Depotbewertung in Fremdwaehrung zu **ermoeglichen**; das ist eine Produktentscheidung, keine Migration. |
+| `DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO` | Depotbewertung in Fremdwaehrung. Das Gate in `portfolio-workspace.js` bleibt unveraendert, bis der Owner entscheidet. |
+| **O-14 Restfrage** | Die Naht ist jetzt an die Gegenwart verlegt und ihre Ursache gemessen. Bleibt: soll der Sprung zwischen letztem Tagesschluss und aktuellem Kurs dem Nutzer **gezeigt** werden — und ab welcher Groesse? |
+| **O-15 Restfrage** | Die getrennten Anfaenge liefert der Vertrag jetzt (`availability`). Bleibt: wie die Oberflaeche es sagt — Zeitraum begrenzen, Hinweis zeigen oder auf die Originalwaehrung verweisen? |
 | **O-17** | Bestaetigung der EZB-Bedingungen (Wiedergabe unter Quellennennung). Blockiert nichts, weil die Nennung ohnehin erfolgt. |

@@ -489,9 +489,113 @@
       return money;
     }
 
+    /**
+     * §O-15 AB WANN IST DIESE REIHE IN DIESER WAEHRUNG ZEIGBAR?
+     *
+     * Zwei Anfaenge treffen aufeinander: der der Kursreihe und der der
+     * FX-Historie. Der spaetere gewinnt, und welcher das war, gehoert in
+     * die Antwort - eine Oberflaeche, die nur ein Datum bekommt, kann
+     * dem Nutzer nicht sagen, WARUM der EUR-Chart spaeter beginnt als
+     * der in Originalwaehrung.
+     *
+     * Die Originalwaehrung selbst ist nie begrenzt: dort wird nicht
+     * umgerechnet, also fehlt auch nichts.
+     */
+    function availableFrom(nativeCurrency, displayCurrency, nativeAvailableFrom, opts) {
+      opts = opts || {};
+      var from = Registry.normalize(nativeCurrency);
+      var to = Registry.normalize(displayCurrency);
+      var out = {
+        nativeCurrency: from, displayCurrency: to,
+        nativeAvailableFrom: nativeAvailableFrom || null,
+        availableFrom: nativeAvailableFrom || null,
+        availableTo: null,
+        fxAvailableFrom: null,
+        fxAvailableTo: null,
+        limitedBy: "NATIVE_SERIES",
+        conversionAvailable: true,
+        currentConversionAvailable: true,
+        currentUnavailableReason: null,
+        note: null
+      };
+      if (!from || !to) {
+        out.conversionAvailable = false;
+        out.currentConversionAvailable = false;
+        out.currentUnavailableReason = "unknownCurrency";
+        out.limitedBy = "UNKNOWN_CURRENCY";
+        out.availableFrom = null;
+        out.note = "Waehrung unbekannt; es wird nicht geraten.";
+        return out;
+      }
+      if (from === to) {
+        out.note = "Keine Umrechnung - die Reihe beginnt, wo sie beginnt.";
+        return out;
+      }
+
+      var win = store.coverageWindow(from, to, opts);
+      out.fxAvailableFrom = win.from;
+      out.fxAvailableTo = win.to;
+
+      if (win.from === null) {
+        out.conversionAvailable = false;
+        out.currentConversionAvailable = false;
+        out.currentUnavailableReason = "pairNotStored";
+        out.availableFrom = null;
+        out.limitedBy = "NO_FX_SERIES";
+        out.note = "Fuer " + from + "/" + to + " liegt keine Kurshistorie vor. " +
+                   "Die Reihe bleibt in " + from + " verfuegbar.";
+        return out;
+      }
+
+      if (!nativeAvailableFrom || win.from > nativeAvailableFrom) {
+        out.availableFrom = win.from;
+        out.limitedBy = "FX_HISTORY";
+        out.note = "Die Kursreihe reicht weiter zurueck als jede FX-Quelle. " +
+                   "In " + to + " beginnt sie am " + win.from + "; davor wird nichts genaehert.";
+      }
+
+      /* §O-13 VERFUEGBARKEIT IST EIN ZEITPUNKT, KEINE EIGENSCHAFT.
+         Der Rubel ist der gemessene Fall: bis 2022 umrechenbar, seither
+         nicht - die EZB hat die Veroeffentlichung eingestellt. Wer
+         Verfuegbarkeit je WAEHRUNG fuehrt, muss sich hier fuer eine
+         Luege entscheiden. Gefragt wird deshalb der aktuelle Stand
+         selbst, nicht die Reihe. */
+      /* §O-13 VERFUEGBARKEIT IST EIN ZEITPUNKT, KEINE EIGENSCHAFT.
+
+         latest() gibt den letzten Punkt der Reihe zurueck, auch wenn er
+         vier Jahre alt ist - richtig fuer einen Rueckblick, falsch fuer
+         eine Aussage ueber HEUTE. Gefragt wird deshalb nach dem KURS VON
+         HEUTE, und damit gilt dieselbe Grenze wie ueberall sonst
+         (maxCarryDays): ein Kurs, der ueber sie hinaus fortgeschrieben
+         werden muesste, ist keiner mehr.
+
+         Der Rubel ist der gemessene Fall: bis 2022 umrechenbar, seither
+         nicht - die EZB hat die Veroeffentlichung eingestellt. Wer
+         Verfuegbarkeit je WAEHRUNG fuehrt statt je Zeitpunkt, muss sich
+         hier fuer eine Luege entscheiden. */
+      var nowValue = opts.now !== undefined ? opts.now : nowProvider();
+      var today = new Date(typeof nowValue === "number" ? nowValue : Date.parse(nowValue))
+                    .toISOString().slice(0, 10);
+      var current = store.rateAt(from, to, today, { resolutionClass: "CURRENT" });
+      var fresh = (current && current.available)
+        ? Freshness.assess(current, { now: nowValue })
+        : null;
+      out.currentFreshness = fresh ? fresh.state : "UNAVAILABLE";
+      out.currentConversionAvailable = !!(current && current.available);
+      if (!out.currentConversionAvailable) {
+        out.currentUnavailableReason = (current && (current.reason || current.fallbackReason)) || "noCurrentRate";
+        out.availableTo = win.to;
+        out.note = (out.note ? out.note + " " : "") +
+                   "Aktuell gibt es fuer " + from + "/" + to + " keinen belastbaren Kurs; " +
+                   "die Reihe endet am " + win.to + " und wird nicht fortgeschrieben.";
+      }
+      return out;
+    }
+
     return {
       VERSION: VERSION, CONTRACT_VERSION: CONTRACT_VERSION, CONTEXTS: CONTEXTS,
       store: store,
+      availableFrom: availableFrom,
       convertMoney: convertMoney,
       convertSeries: convertSeries,
       convertMetric: convertMetric,

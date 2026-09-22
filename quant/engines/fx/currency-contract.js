@@ -220,12 +220,42 @@
       return Object.keys(seen).sort();
     }
 
+    /**
+     * §O-15 DER VERFUEGBARE ANFANG JE ANZEIGEWAEHRUNG.
+     *
+     * Das Produkt hat bisher EINEN availableFrom je Reihe gekannt. Das
+     * war richtig, solange nur die Originalwaehrung gezeigt wurde, und
+     * ist falsch, seit es einen Umschalter gibt: dieselbe Reihe beginnt
+     * in USD 1990 und in EUR 1999.
+     *
+     * Deshalb gibt der Vertrag beides zurueck - je unterstuetzter
+     * Anzeigewaehrung einen Eintrag, damit eine Oberflaeche den
+     * Zeitraumwaehler richtig zeichnen kann, BEVOR jemand umschaltet.
+     */
+    function availability(nativeCurrency, nativeAvailableFrom, opts) {
+      var per = {};
+      Registry.DISPLAY_CURRENCIES.forEach(function (code) {
+        per[code] = engine.availableFrom(nativeCurrency, code, nativeAvailableFrom, opts);
+      });
+      var current = per[preference.get()] || null;
+      return {
+        nativeCurrency: Registry.normalize(nativeCurrency),
+        nativeAvailableFrom: nativeAvailableFrom || null,
+        displayCurrency: preference.get(),
+        availableFrom: current ? current.availableFrom : (nativeAvailableFrom || null),
+        limitedBy: current ? current.limitedBy : "NATIVE_SERIES",
+        conversionAvailable: current ? current.conversionAvailable : true,
+        note: current ? current.note : null,
+        byDisplayCurrency: per
+      };
+    }
+
     return {
       VERSION: VERSION, CONTRACT_VERSION: CONTRACT_VERSION,
       engine: engine, preference: preference,
       money: money, price: price, series: series, metric: metric,
       format: Format, registry: Registry, classify: Classifier.classify,
-      state: state, attributions: attributions,
+      state: state, attributions: attributions, availability: availability,
       setDisplayCurrency: function (code) { return preference.set(code); },
       toggleDisplayCurrency: function () { return preference.toggle(); },
       onDisplayCurrencyChange: function (fn) { return preference.subscribe(fn); }

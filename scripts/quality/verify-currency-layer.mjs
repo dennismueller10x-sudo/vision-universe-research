@@ -613,6 +613,56 @@ check("F4", "Prozentkennzahlen und Multiples sind unter dem Waehrungswechsel unv
    den richtigen Anspruch - blieb dadurch ungeprueft, obwohl nichts ihn
    hinderte. Ein "nicht nachgewiesen", das auch das Nachweisbare
    verschweigt, ist kein Ergebnis. */
+/* --------------------------------------------------------------------- */
+/* O-14: die Rollenverteilung, gegen den echten Bestand                    */
+/* --------------------------------------------------------------------- */
+check("PR1", "Anbieterrollen: historische Reihe aus einer Quelle, Uebergang an der Gegenwart", () => {
+  const rows = [];
+  const paare = [["USD", "EUR"], ["JPY", "EUR"], ["GBP", "EUR"], ["DKK", "EUR"]];
+  const stichtage = ["2011-09-22", "2016-09-22", "2021-09-22", "2025-09-22"];
+  const wechsel = [];
+
+  for (const [von, nach] of paare) {
+    const quellen = new Set();
+    const punkte = [];
+    for (const datum of stichtage) {
+      const q = fx.store.rateAt(von, nach, datum);
+      if (!q.available) continue;
+      quellen.add(q.provenance.source);
+      punkte.push({ datum, quelle: q.provenance.source, rolle: q.provenance.role,
+                    klasse: q.provenance.resolutionClass });
+    }
+    if (!punkte.length) continue;
+    const jetzt = fx.store.latest(von, nach);
+    /* Der Punkt von O-14: ueber die historischen Stichtage hinweg darf
+       sich die Quelle NICHT aendern. Aendert sie sich, traegt der Chart
+       an dieser Stelle einen Sprung, den kein Markt gemacht hat. */
+    if (quellen.size > 1) wechsel.push(`${von}/${nach}: ${[...quellen].join(" -> ")}`);
+    rows.push({
+      pair: `${von}/${nach}`,
+      historischeQuellen: [...quellen],
+      historischeKlasse: punkte[0].klasse,
+      aktuelleQuelle: jetzt.available ? jetzt.provenance.source : null,
+      aktuelleKlasse: jetzt.available ? jetzt.provenance.resolutionClass : null,
+      uebergangAnDerGegenwart: jetzt.available && quellen.size === 1 &&
+                               jetzt.provenance.source !== [...quellen][0]
+    });
+  }
+
+  if (!rows.length) return { state: "SKIP", detail: "Kein Paar mit Historie im Bestand." };
+  if (wechsel.length) {
+    throw new Error("Quellenwechsel MITTEN in der historischen Reihe: " + wechsel.join("; "));
+  }
+  const gate = Providers.escalation();
+  return {
+    state: "PASS",
+    detail: `${rows.length} Paar(e): historisch je genau eine Quelle. ` +
+            `Der Uebergang liegt an der Gegenwart. ` +
+            `Lizenzlage: ${gate ? gate.id + " = " + gate.state : "kein Eintrag"}.`,
+    rows
+  };
+});
+
 check("RT1", "Realtime-Kette gegen den produktiven FX-Stand", () => {
   const RealtimeState = require(join(FXDIR, "fx-realtime-state.js"));
   const Freshness = require(join(FXDIR, "fx-freshness.js"));

@@ -39,6 +39,10 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Rates = require(join(ROOT, "quant", "engines", "fx", "fx-rates.js"));
+/* Die Rolle kommt aus der Registry und nicht aus dieser Datei. Ein
+   handgeschriebenes Meta-Objekt liess die Reihe ohne Rolle in den Store
+   fallen (UNKNOWN, Prioritaet 99) - und damit hinter den Fallback. */
+const Providers = require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js"));
 const Capabilities = require(join(ROOT, "quant", "engines", "capabilities.js"));
 
 const args = process.argv.slice(2);
@@ -203,7 +207,7 @@ async function fetchPair(pair) {
   /* Gegenprobe im eigenen Store, bevor etwas geschrieben wird: eine
      Reihe, die der Store nicht annimmt, hat hier nichts verloren. */
   const store = Rates.createStore();
-  const stats = store.ingest(stored.base, stored.quote, points, { source: "tiingo", frequency: "DAILY" });
+  const stats = store.ingest(stored.base, stored.quote, points, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
 
   /* Und die Gegenprobe zur Inversion: die angefragte Richtung muss aus
      der gespeicherten herauskommen. Sonst steht die Reihe da, und das
@@ -266,7 +270,16 @@ async function main() {
         ? `Der Anbieter fuehrt ${stored.base}/${stored.quote}; ${pair.base}/${pair.quote} entsteht in fx-rates.js durch Inversion (exakte Identitaet, keine Naeherung).`
         : null,
       source: "tiingo", frequency: "DAILY",
+      /* O-14: historisch die zweite Wahl, in der Gegenwart die erste. */
+      roles: { HISTORICAL_DAILY: "FALLBACK", CURRENT: "PRIMARY" },
       priceBasis: "daily close",
+      /* Gemessen (probe-tiingo-fx.json#timestampSemantics): der Stempel
+         der Bar ist 00:00:00.000Z, die Bar umfasst also einen
+         UTC-Kalendertag und ihr Schluss liegt am Tagesende. Das ist der
+         Grund, warum dieselbe Zahl nicht mit einem Fixing um 14:15 UTC
+         vergleichbar ist - siehe provider-seam-audit.json. */
+      priceInstantUtcApprox: 24.0,
+      dayBoundary: "UTC-Kalendertag",
       asOf,
       first: result.stats.first, last: result.stats.last,
       observations: result.stats.observations,
@@ -326,7 +339,7 @@ async function main() {
      Gefragt wird deshalb die Engine selbst, nicht das Abrufprotokoll. */
   const store = Rates.createStore();
   for (const r of ok) {
-    store.ingest(r.stored.base, r.stored.quote, r.points, { source: "tiingo", frequency: "DAILY" });
+    store.ingest(r.stored.base, r.stored.quote, r.points, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
   }
 
   const coverage = [];

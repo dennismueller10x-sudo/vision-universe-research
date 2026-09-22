@@ -598,6 +598,19 @@ test("I13 · Der Vertrag aus der Methodikdatei und die Engine sagen dasselbe", (
   for (const [freq, spec] of Object.entries(METHODOLOGY.staleAfter)) {
     assert.equal(Freshness.STALE_AFTER[freq], spec.seconds, `staleAfter ${freq} weicht ab`);
   }
+
+  /* O-14: die Aufloesungsklassen und ihre Rangfolge stehen in der
+     Methodik UND im Code. Wer nur eine der beiden aendert, faellt hier
+     durch - und genau dafuer gibt es diesen Test. */
+  const klassen = METHODOLOGY.sourceHierarchy.classes;
+  assert.deepEqual(Object.keys(klassen).sort(), Object.keys(Rates.CLASSES).sort(),
+    "Die Methodik kennt andere Klassen als die Engine");
+  for (const [name, spec] of Object.entries(klassen)) {
+    assert.equal(Providers.roleFor(spec.PRIMARY, name), "PRIMARY",
+      `${name}: ${spec.PRIMARY} ist in der Registry nicht PRIMARY`);
+    assert.equal(Providers.roleFor(spec.FALLBACK, name), "FALLBACK",
+      `${name}: ${spec.FALLBACK} ist in der Registry nicht FALLBACK`);
+  }
 });
 
 test("I14 · Die FX-Faehigkeiten von Tiingo sind ungeprueft und geben sich als solche (§5)", () => {
@@ -830,25 +843,52 @@ test("C2 · Eine Waehrung ohne jedes Bein bleibt unbedient - und sagt es", () =>
 
 const Providers = require(join(FX, "fx-provider-registry.js"));
 
-test("P1 · PRIMARY zuerst, FALLBACK nur wo PRIMARY nichts hat", () => {
+test("P1 · Die historische Reihe kommt aus EINER Quelle, der Uebergang liegt an der Gegenwart", () => {
   const s = Rates.createStore();
-  /* Die EZB reicht weit zurueck, Tiingo erst ab 2020 - genau die Lage
-     aus der Messung. */
-  s.ingest("EUR", "USD", [["2015-06-01", 1.0888], ["2015-06-02", 1.1150], ["2020-03-26", 1.1002], ["2020-03-27", 1.1015]],
+  /* Die Lage aus der Messung: die EZB reicht bis 1999 zurueck und
+     veroeffentlicht bis gestern; Tiingo beginnt 2020 und traegt
+     zusaetzlich den aktuellen Stand. */
+  s.ingest("EUR", "USD", [["2015-06-01", 1.0888], ["2015-06-02", 1.1150],
+                          ["2020-03-30", 1.1005], ["2026-09-19", 1.1490]],
     Providers.ingestMeta("ecb", { frequency: "DAILY" }));
-  s.ingest("EUR", "USD", [["2020-03-30", 1.1010], ["2026-09-21", 1.1726]],
+  s.ingest("EUR", "USD", [["2020-03-30", 1.1010], ["2026-09-19", 1.1726]],
     Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
 
+  /* VOR dem Beginn der Anbieterhistorie: EZB, und zwar als PRIMARY
+     dieser Klasse - nicht als Lueckenfueller. */
   const alt = s.rateAt("EUR", "USD", "2015-06-02");
   assert.equal(alt.provenance.source, "ecb");
-  assert.equal(alt.provenance.role, "FALLBACK");
-  assert.deepEqual(alt.provenance.consideredSources.map((c) => c.source), ["tiingo"],
-    "Die Hauptquelle wurde befragt und hat abgelehnt - das steht in der Herkunft");
+  assert.equal(alt.provenance.role, "PRIMARY");
+  assert.equal(alt.provenance.resolutionClass, "HISTORICAL_DAILY");
 
-  const neu = s.rateAt("EUR", "USD", "2026-09-21");
-  assert.equal(neu.provenance.source, "tiingo");
-  assert.equal(neu.provenance.role, "PRIMARY");
-  assert.deepEqual(neu.provenance.consideredSources, [], "Wo PRIMARY liefert, wird nichts uebergangen");
+  /* NACH dem Beginn der Anbieterhistorie: immer noch EZB. Genau das ist
+     der Punkt von O-14 - haette hier Tiingo uebernommen, laege im Chart
+     an dieser Stelle ein Sprung, der nicht aus dem Markt stammt. */
+  const spaet = s.rateAt("EUR", "USD", "2026-09-19");
+  assert.equal(spaet.provenance.source, "ecb", "Kein Quellenwechsel mitten in der historischen Reihe");
+  assert.equal(spaet.rate, 1.1490);
+  assert.deepEqual(spaet.provenance.consideredSources, [],
+    "Die historische Hauptquelle liefert; es wird nichts uebergangen");
+
+  /* Die Gegenwart gehoert Tiingo. Derselbe Store, dieselben Reihen -
+     nur die FRAGE ist eine andere. */
+  const jetzt = s.latest("EUR", "USD");
+  assert.equal(jetzt.provenance.source, "tiingo");
+  assert.equal(jetzt.provenance.role, "PRIMARY");
+  assert.equal(jetzt.provenance.resolutionClass, "CURRENT");
+  assert.equal(jetzt.rate, 1.1726);
+});
+
+test("P1b · Wo die historische Hauptquelle nichts hat, traegt Tiingo - als FALLBACK", () => {
+  /* ARS, CLP, COP, PEN und TWD veroeffentlicht die EZB nicht. Dort ist
+     die Rangfolge nicht leer, sondern kippt - gemessen an denselben
+     Regeln, nicht als Sonderfall. */
+  const s = Rates.createStore();
+  s.ingest("EUR", "TWD", [["2026-09-19", 37.42]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  const q = s.rateAt("EUR", "TWD", "2026-09-19");
+  assert.equal(q.provenance.source, "tiingo");
+  assert.equal(q.provenance.role, "FALLBACK", "Historisch ist Tiingo die zweite Wahl - auch wenn es die einzige ist");
+  assert.equal(q.provenance.resolutionClass, "HISTORICAL_DAILY");
 });
 
 test("P2 · Die Rangfolge ist deterministisch, nicht von der Ingest-Reihenfolge abhaengig", () => {
@@ -862,8 +902,8 @@ test("P2 · Die Rangfolge ist deterministisch, nicht von der Ingest-Reihenfolge 
   }
   const a = build(["tiingo", "ecb"]);
   const b = build(["ecb", "tiingo"]);
-  assert.equal(a.provenance.source, "tiingo");
-  assert.equal(b.provenance.source, "tiingo", "Wer zuerst eingespielt wurde, darf keine Rolle spielen");
+  assert.equal(a.provenance.source, "ecb", "Historisch fuehrt die EZB");
+  assert.equal(b.provenance.source, "ecb", "Wer zuerst eingespielt wurde, darf keine Rolle spielen");
   assert.equal(a.rate, b.rate);
 });
 
@@ -876,7 +916,9 @@ test("P3 · Die Herkunft ueberlebt Inversion und Triangulation", () => {
   const inv = s.rateAt("USD", "EUR", "2026-09-21");
   assert.equal(inv.derivation, "INVERSE");
   assert.equal(inv.provenance.source, "tiingo");
-  assert.equal(inv.provenance.role, "PRIMARY", "role darf bei der Inversion nicht verlorengehen");
+  assert.equal(inv.provenance.role, "FALLBACK",
+    "role darf bei der Inversion nicht verlorengehen - und sie ist die der ANGEFRAGTEN Klasse");
+  assert.equal(inv.provenance.resolutionClass, "HISTORICAL_DAILY");
 
   /* Trianguliert ueber EUR, mit Beinen aus zwei Quellen. */
   const cross = s.rateAt("USD", "CHF", "2026-09-21");
@@ -945,7 +987,10 @@ test("L3 · Der Fast Path braucht keine Lizenz, eine unbekannte Quelle bekommt k
   assert.equal(Providers.displayPermission("irgendein-anbieter").publicDerivedDisplayAllowed, false,
     "Eine Erlaubnis entsteht nicht dadurch, dass niemand widerspricht");
   assert.ok(Providers.escalation(), "Die offene Vertragsfrage ist abrufbar, nicht nur dokumentiert");
-  assert.equal(Providers.escalation().state, "OWNER_ESCALATION_REQUIRED");
+  assert.equal(Providers.escalation().state, "OWNER_CONFIRMATION_REQUIRED");
+  assert.equal(Providers.escalation().id, "LICENSE_DISPLAY_DERIVED_FX");
+  assert.match(Providers.escalation().questionForTiingo, /ohne die rohe FX-Zeitreihe zu redistribuieren/,
+    "Die exakte Frage steht im Code-Pfad, nicht nur im Dokument");
 });
 
 /* ====================================================================== */
@@ -1251,4 +1296,194 @@ test("M12-5 · Die Consumer-Seiten laden den Currency Core in der richtigen Reih
   assert.match(hf, /quant\/engines\/fx\/money-format\.js/);
   assert.ok(!/quant\/engines\/fx\/currency-engine\.js/.test(hf),
     "Die Hedgefonds-Seite soll nicht umrechnen koennen - sie formatiert nur");
+});
+
+
+/* =========================================================================
+   O-14/O-15/O-13 — die finalen Gates
+   ========================================================================= */
+
+test("O14-1 · Die historische Reihe wechselt die Quelle nicht im Jahr 2020", () => {
+  /* Der Kern des Owner-Entscheids. Vorher lieferte dieselbe Reihe vor
+     2020 EZB-Kurse und danach Tiingo-Kurse; weil die beiden zu
+     verschiedenen Tageszeiten gelten, lag im Chart an dieser Stelle ein
+     Sprung, den der Markt nicht gemacht hat. */
+  const s = Rates.createStore();
+  const ecb = [], tiingo = [];
+  for (let jahr = 2015; jahr <= 2026; jahr++) {
+    ecb.push([`${jahr}-06-01`, 1.10 + (jahr - 2015) * 0.001]);
+    if (jahr >= 2021) tiingo.push([`${jahr}-06-01`, 1.13 + (jahr - 2015) * 0.001]);
+  }
+  s.ingest("EUR", "USD", ecb, Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  s.ingest("EUR", "USD", tiingo, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  const quellen = new Set();
+  for (let jahr = 2015; jahr <= 2026; jahr++) {
+    const q = s.rateAt("EUR", "USD", `${jahr}-06-01`);
+    assert.ok(q.available, `${jahr} fehlt`);
+    quellen.add(q.provenance.source);
+  }
+  assert.deepEqual([...quellen], ["ecb"],
+    "Ein historischer Chart kommt aus genau einer Quelle - sonst traegt er eine Naht");
+});
+
+test("O14-2 · Die Gegenwart kommt aus Tiingo, auch wenn die EZB denselben Tag fuehrt", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1490]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  const historisch = s.rateAt("EUR", "USD", "2026-09-21");
+  assert.equal(historisch.provenance.source, "ecb");
+  assert.equal(historisch.rate, 1.1490);
+
+  const jetzt = s.latest("EUR", "USD");
+  assert.equal(jetzt.provenance.source, "tiingo");
+  assert.equal(jetzt.rate, 1.1726);
+
+  /* Und der Unterschied ist genau die gemessene Naht - er wird nicht
+     wegdefiniert, sondern benannt. */
+  assert.ok(Math.abs(jetzt.rate / historisch.rate - 1) > 0.02);
+});
+
+test("O14-3 · Die Klasse steht in der Herkunft, nicht nur im Ergebnis", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1490]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  assert.equal(s.rateAt("EUR", "USD", "2026-09-21").provenance.resolutionClass, "HISTORICAL_DAILY");
+  assert.equal(s.rateAt("EUR", "USD", null).provenance.resolutionClass, "CURRENT");
+  /* Ein Aufrufer darf die Klasse setzen - etwa ein Nachweis, der
+     ausdruecklich den aktuellen Pfad pruefen will. */
+  assert.equal(s.rateAt("EUR", "USD", "2026-09-21", { resolutionClass: "CURRENT" })
+                .provenance.resolutionClass, "CURRENT");
+});
+
+test("O15-1 · Derselbe Titel beginnt in USD 1990 und in EUR 1999", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["1999-01-04", 1.1789], ["2026-09-19", 1.1490]],
+    Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  const layer = Contract.createLayer({ store: s, now: "2026-09-22T08:00:00Z" });
+
+  const a = layer.availability("USD", "1990-01-05");
+  assert.equal(a.byDisplayCurrency.USD.availableFrom, "1990-01-05");
+  assert.equal(a.byDisplayCurrency.USD.limitedBy, "NATIVE_SERIES");
+  assert.equal(a.byDisplayCurrency.EUR.availableFrom, "1999-01-04");
+  assert.equal(a.byDisplayCurrency.EUR.limitedBy, "FX_HISTORY");
+  assert.match(a.byDisplayCurrency.EUR.note, /davor wird nichts genaehert/);
+});
+
+test("O15-2 · Vor dem Beginn der FX-Historie gibt es keinen Punkt, auch keinen genaeherten", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["1999-01-04", 1.1789], ["1999-01-05", 1.1790]],
+    Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  const engine = Engine.createEngine({ store: s, now: "2026-09-22T08:00:00Z" });
+  const reihe = engine.convertSeries(
+    [{ date: "1990-01-05", value: 1 }, { date: "1999-01-05", value: 2 }], "USD", "EUR");
+  const vorher = reihe.points.find((p) => p.date === "1990-01-05");
+  assert.ok(!vorher || vorher.display === null,
+    "Ein Punkt vor dem Beginn der FX-Historie darf nicht gefuellt werden");
+});
+
+test("O13-1 · Verfuegbarkeit ist ein Zeitpunkt: historisch ja, aktuell nein", () => {
+  /* Der Rubel, wie gemessen: die EZB hat die Veroeffentlichung
+     eingestellt. Wer Verfuegbarkeit je Waehrung fuehrt, muss hier
+     luegen - in die eine oder die andere Richtung. */
+  const s = Rates.createStore();
+  /* Eine durchgehende Reihe bis zum Abriss - sonst misst der Test die
+     Carry-Grenze zwischen zwei weit auseinanderliegenden Stuetzpunkten
+     und nicht den Abriss selbst. */
+  const punkte = [];
+  for (let d = Date.parse("2005-04-01"); d <= Date.parse("2022-03-01"); d += 86400000) {
+    punkte.push([new Date(d).toISOString().slice(0, 10), 35.7 + (d - Date.parse("2005-04-01")) / 2.6e11]);
+  }
+  s.ingest("EUR", "RUB", punkte, Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  const engine = Engine.createEngine({ store: s, now: "2026-09-22T08:00:00Z" });
+  const a = engine.availableFrom("RUB", "EUR", "2005-01-01");
+
+  assert.equal(a.conversionAvailable, true, "Historisch ist der Titel umrechenbar");
+  assert.equal(a.availableFrom, "2005-04-01");
+  assert.equal(a.availableTo, "2022-03-01");
+  assert.equal(a.currentConversionAvailable, false, "Heute ist er es nicht");
+  assert.equal(a.currentUnavailableReason, "carryLimitExceeded");
+
+  /* Und die einzelne Umrechnung sagt dasselbe. */
+  const alt = engine.convertMoney(1000, "RUB", "EUR", "2015-06-01", "MARKET_PRICE");
+  assert.equal(alt.conversionAvailable, true);
+  const neu = engine.convertMoney(1000, "RUB", "EUR", "2026-09-21", "MARKET_PRICE");
+  assert.equal(neu.conversionAvailable, false);
+  assert.equal(neu.native.value, 1000, "Der native Wert bleibt sichtbar (O-13)");
+  assert.equal(neu.native.currency, "RUB");
+});
+
+test("O13-2 · 'Gibt es nicht' und 'gilt heute nicht mehr' sind verschiedene Auskuenfte", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "RUB", [["2022-03-01", 120.0]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+
+  const abgerissen = s.rateAt("RUB", "EUR", "2026-09-22");
+  assert.equal(abgerissen.reason, "carryLimitExceeded",
+    "Die Gegenrichtung ist gefuehrt - 'pairNotStored' waere falsch");
+  assert.equal(abgerissen.lastAvailable, "2022-03-01");
+  assert.ok(abgerissen.gapDays > 1000);
+
+  const niedagewesen = s.rateAt("AFN", "EUR", "2026-09-22");
+  assert.equal(niedagewesen.reason, "pairNotStored");
+});
+
+test("O11-1 · Das Lizenz-Gate traegt die exakte Frage und blockiert nur die Anzeige", () => {
+  const gate = Providers.escalation();
+  assert.equal(gate.id, "LICENSE_DISPLAY_DERIVED_FX");
+  assert.equal(gate.state, "OWNER_CONFIRMATION_REQUIRED");
+  assert.deepEqual(gate.needed, ["C", "D"]);
+  assert.deepEqual(gate.notNeeded, ["E"]);
+  assert.equal(gate.blocksTechnicalWork, false);
+  assert.equal(gate.blocksPublicActivation, true);
+  assert.equal(gate.repositoryEvidence.contractTextPresent, false,
+    "Es wird keine Lizenz aus einem Dokument abgeleitet, das es nicht gibt");
+
+  /* Und die Folge je Wert: historisch (EZB) zeigbar, aktuell (Tiingo)
+     gesperrt. Das ist die Trennung, die den technischen Workstream
+     nicht anhaelt. */
+  assert.equal(Providers.displayPermission("ecb").publicDerivedDisplayAllowed, true);
+  assert.equal(Providers.displayPermission("tiingo").publicDerivedDisplayAllowed, false);
+});
+
+test("O16-1 · Keine offene Klasse-A-Stelle mehr, und keine still weggeklassifizierte", () => {
+  /* Der Registerstand ist die Zusage aus O-12/O-16. Er wird hier
+     geprueft und nicht geglaubt: eine Stelle von A nach C zu schieben
+     ist erlaubt, wenn ein Marker IM CODE den Grund traegt - und genau
+     dafuer gibt es den Marker. */
+  const register = JSON.parse(readFileSync(
+    join(ROOT, "quant", "data", "market", "fx", "currency-debt-register.json"), "utf8"));
+  assert.equal(register.openClassA, 0,
+    "Jede produktive Monetary-Display-Stelle konsumiert den zentralen Contract");
+
+  for (const e of register.entries) {
+    if (e.class === "A") assert.fail(`${e.file}:${e.line} ist noch offen`);
+  }
+  /* Und der zurueckgestellte Fall ist benannt, nicht verschwunden. */
+  const portfolio = readFileSync(join(ROOT, "quant", "api", "portfolio-workspace.js"), "utf8");
+  assert.match(portfolio, /DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO/);
+  assert.match(portfolio, /price\.unit===['"]USD['"]/,
+    "Das Bewertungs-Gate bleibt unveraendert, bis der Owner entscheidet");
+});
+
+test("O16-2 · vu2 formatiert zentral und rechnet weiterhin nicht um", () => {
+  const src = readFileSync(join(ROOT, "vu2", "experience.js"), "utf8");
+  assert.match(src, /VUFx[\s\S]{0,80}Format/, "Die Formatierung kommt aus dem Core");
+  assert.match(src, /vuFormat\(/, "und sie wird auch benutzt, nicht nur geladen");
+  assert.ok(!/usdToEur|toEur\s*\(|\*\s*0\.8[0-9]/.test(src),
+    "Diese Seite darf keine eigene Umrechnung besitzen (O-12)");
+
+  const page = readFileSync(join(ROOT, "vu2", "index.html"), "utf8");
+  const geladen = [...page.matchAll(/quant\/engines\/fx\/([a-z-]+)\.js/g)].map((m) => m[1]);
+  assert.deepEqual(geladen, ["currency-registry", "money-format"],
+    "Nur Registry und Formatierung - die Engine gehoert nicht auf eine Seite, die nichts umrechnet");
+
+  /* Die Ausgabe bleibt Zeichen fuer Zeichen dieselbe. Die alte Form
+     steht hier KOPIERT und nicht importiert: importiert wuerde sie bei
+     einer Aenderung stillschweigend mitwandern. */
+  const alt = (value, d) => value.toLocaleString("de-DE",
+    { maximumFractionDigits: d, minimumFractionDigits: d }) + " $";
+  for (const [wert, d] of [[326.57, 2], [1.5, 2], [0, 2], [-7.25, 2], [12345.678, 0]]) {
+    assert.equal(Format.formatPrice(wert, "USD", { numberLocale: "de-DE", decimals: d }),
+      alt(wert, d), `vu2-Darstellung weicht ab bei ${wert}`);
+  }
 });

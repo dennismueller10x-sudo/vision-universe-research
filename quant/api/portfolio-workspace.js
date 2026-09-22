@@ -1,5 +1,25 @@
 /* Manual holdings, scoped current valuation. No broker, return simulation,
  * synthetic position, FX assumption or aggregate risk score. */
+
+/* DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO  (O-16)
+ *
+ * Die Zeile `stock.price.unit === 'USD'` unten sieht aus wie eine fest
+ * verdrahtete Waehrung und ist keine. Sie ist ein BEWERTUNGS-GATE: eine
+ * Position in Fremdwaehrung wird nicht bewertet, statt sie mit einer
+ * stillschweigenden Annahme zu bewerten. Genau das verlangt die
+ * Kopfzeile dieser Datei ("No FX assumption") und genau das verlangt
+ * O-13.
+ *
+ * Sie zu entfernen waere keine Migration der Darstellung, sondern die
+ * FREISCHALTUNG der Multi-Waehrungs-Depotbewertung - mit allem, was
+ * daran haengt: welcher Kurs zu welchem Zeitpunkt, wie ein Depot aus
+ * drei Waehrungen einen Gesamtwert bekommt, was eine Gewichtung dann
+ * bedeutet. Das ist eine Produktentscheidung und keine Formatierung.
+ *
+ * Sie ist deshalb ausdruecklich zurueckgestellt und KEIN Blocker fuer
+ * den Currency Display Layer. Bis zur Entscheidung bleibt die Zeile
+ * unveraendert.
+ */
 (function(g){
 'use strict';
 const KEY='vu2.portfolio.holdings.v1';
@@ -13,6 +33,9 @@ function build(positions,universe,{now=new Date().toISOString().slice(0,10)}={})
  const clean=validate(positions);if(!clean.length)return {state:'EMPTY',positions:[],total:null,currency:'USD',asOf:null};
  const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d&&d<=now;
  const rows=clean.map(p=>{const stock=universe?.state==='AVAILABLE'?universe.stocks.find(s=>s.ticker===p.ticker):null;
+  /* vu-currency: E - Bewertungs-Gate, keine Anzeige. Verweigert Fremdwaehrung,
+     statt sie anzunehmen (O-13). Migration zurueckgestellt, siehe
+     DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO im Dateikopf. */
   const available=stock?.state==='AVAILABLE'&&stock.marketState==='AVAILABLE'&&stock.price?.state==='AVAILABLE'&&stock.price.unit==='USD'&&Number.isFinite(stock.price.value)&&stock.price.value>0&&validDate(stock.asOf);
   const value=available?p.quantity*stock.price.value:null;
   return {...p,name:stock?.name||p.ticker,state:available&&Number.isFinite(value)?'AVAILABLE':'UNAVAILABLE',price:available?stock.price.value:null,value:available&&Number.isFinite(value)?value:null,asOf:available?stock.asOf:null,weight:null};

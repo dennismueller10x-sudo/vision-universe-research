@@ -2,9 +2,7 @@
   "methodologyVersion": "currency-fx-v1.0.0",
   "label": "VU Currency & FX Semantics V1",
   "purpose": "Legt fest, wie ein monetaerer Wert aus seiner Originalwaehrung in eine Anzeigewaehrung gelangt - und welcher Wechselkurs dabei gilt. Zweck ist nicht Bequemlichkeit, sondern Nachrechenbarkeit: eine EUR-Zahl, deren Kurs, Stichtag und Methode nicht mitgeliefert werden, ist eine Behauptung.",
-
   "northStar": "ONE DATA CORE - MANY EXPERIENCES. Es gibt genau eine FX-Quelle, genau einen Umrechnungsvertrag und genau eine Formatierung. Produkte unterscheiden sich in Experience und Intelligence, nicht in ihrer Source of Truth.",
-
   "invariants": [
     "Originaldaten werden nie veraendert. nativeValue und nativeCurrency bleiben erhalten; display ist additiv.",
     "Eine Anzeigewaehrung ist eine Darstellung, keine neue Originalwaehrung.",
@@ -14,7 +12,6 @@
     "Rundung veraendert niemals den gespeicherten Wert. Berechnung und Formatierung sind getrennt.",
     "Keine Umrechnung fertiger Multiples. Waehrungskonsistenz entsteht vor der Division, nicht danach."
   ],
-
   "currencyRoles": {
     "nativeCurrency": {
       "definition": "Die Waehrung, in der ein einzelner Wert tatsaechlich vorliegt - so wie die Quelle ihn geliefert hat.",
@@ -37,14 +34,15 @@
       "rule": "Eine Nutzerpraeferenz, kein Datenattribut. Sie darf keine kanonische Berechnung veraendern."
     }
   },
-
   "conversionContexts": {
     "MARKET_PRICE": {
       "label": "Historischer Kurs",
       "fxMethod": "DAILY_AT_DATE",
       "definition": "Jeder Kurs eines Handelstags t wird mit dem FX-Stand von t umgerechnet.",
       "formula": "displayPrice(t) = nativePrice(t) x FX(nativeCurrency -> displayCurrency, t)",
-      "forbids": ["whole series x today's rate"],
+      "forbids": [
+        "whole series x today's rate"
+      ],
       "reason": "Eine mit dem heutigen Kurs zurueckgerechnete Reihe erzeugt eine EUR-Rendite, die es nie gegeben hat."
     },
     "CURRENT_VALUE": {
@@ -58,7 +56,16 @@
       "label": "Bilanzstichtag",
       "fxMethod": "DAILY_AT_PERIOD_END",
       "definition": "Stichtagsgroessen werden mit dem FX-Stand des Bilanzstichtags umgerechnet.",
-      "appliesTo": ["cash_and_equivalents", "total_debt", "long_term_debt", "total_assets", "stockholders_equity", "net_debt", "inventory", "receivables"],
+      "appliesTo": [
+        "cash_and_equivalents",
+        "total_debt",
+        "long_term_debt",
+        "total_assets",
+        "stockholders_equity",
+        "net_debt",
+        "inventory",
+        "receivables"
+      ],
       "fallback": "PREVIOUS_AVAILABLE",
       "reason": "Ein Bilanzwert entsteht an einem Tag, nicht ueber einen Zeitraum."
     },
@@ -66,14 +73,26 @@
       "label": "Berichtsperiode (GuV)",
       "fxMethod": "PERIOD_AVERAGE",
       "definition": "Flussgroessen werden mit dem arithmetischen Mittel der taeglichen Referenzkurse ueber die tatsaechliche Berichtsperiode umgerechnet.",
-      "appliesTo": ["revenue", "gross_profit", "operating_income", "net_income", "ebitda", "stock_based_compensation"],
+      "appliesTo": [
+        "revenue",
+        "gross_profit",
+        "operating_income",
+        "net_income",
+        "ebitda",
+        "stock_based_compensation"
+      ],
       "periodSource": "Die Periodengrenzen stammen aus dem kanonischen Fundamental-Fact, nicht aus dem Kalenderjahr.",
       "reason": "Umsatz entsteht ueber zwoelf Monate. Der Kurs des letzten Periodentags beschreibt einen Tag davon."
     },
     "CASH_FLOW": {
       "label": "Berichtsperiode (Cashflow)",
       "fxMethod": "PERIOD_AVERAGE",
-      "appliesTo": ["operating_cash_flow", "free_cash_flow", "capital_expenditures", "dividends_paid"],
+      "appliesTo": [
+        "operating_cash_flow",
+        "free_cash_flow",
+        "capital_expenditures",
+        "dividends_paid"
+      ],
       "periodSource": "Wie INCOME_STATEMENT."
     },
     "PER_SHARE": {
@@ -83,7 +102,6 @@
       "caution": "Nicht alle 'per share'-Kennzahlen sind monetaer. EPS Growth ist ein Prozentwert und wird nie umgerechnet."
     }
   },
-
   "fxMethods": {
     "DAILY_AT_DATE": "Der Referenzkurs des angefragten Kalendertags.",
     "DAILY_AT_PERIOD_END": "Der Referenzkurs des Periodenendes.",
@@ -92,62 +110,192 @@
     "PREVIOUS_AVAILABLE": "Der juengste Referenzkurs mit Datum <= angefragtem Tag. Die deterministische Fallback-Regel fuer Wochenenden, Feiertage und fehlende Fixings.",
     "IDENTITY": "Quell- und Zielwaehrung sind gleich. Rate ist exakt 1, ohne Datenquelle und ohne Rundungsdrift."
   },
-
   "metricClasses": {
-    "MONETARY_STOCK": { "converts": true, "context": "BALANCE_SHEET" },
-    "MONETARY_FLOW": { "converts": true, "context": "INCOME_STATEMENT" },
-    "MONETARY_PRICE": { "converts": true, "context": "MARKET_PRICE" },
-    "MONETARY_PER_SHARE": { "converts": true, "context": "PER_SHARE" },
+    "MONETARY_STOCK": {
+      "converts": true,
+      "context": "BALANCE_SHEET"
+    },
+    "MONETARY_FLOW": {
+      "converts": true,
+      "context": "INCOME_STATEMENT"
+    },
+    "MONETARY_PRICE": {
+      "converts": true,
+      "context": "MARKET_PRICE"
+    },
+    "MONETARY_PER_SHARE": {
+      "converts": true,
+      "context": "PER_SHARE"
+    },
     "RATIO_METRIC": {
       "converts": false,
       "reason": "Zaehler und Nenner tragen dieselbe Waehrung; sie kuerzt sich heraus.",
-      "examples": ["operatingMargin", "grossMargin", "netMargin", "fcfMargin", "roe", "roa", "roic", "revenueGrowth", "epsGrowth", "debtToEquity", "maxDrawdown", "volatility"]
+      "examples": [
+        "operatingMargin",
+        "grossMargin",
+        "netMargin",
+        "fcfMargin",
+        "roe",
+        "roa",
+        "roic",
+        "revenueGrowth",
+        "epsGrowth",
+        "debtToEquity",
+        "maxDrawdown",
+        "volatility"
+      ]
     },
     "MULTIPLE": {
       "converts": false,
       "reason": "Ein Multiple ist dimensionslos, sofern Zaehler und Nenner waehrungskonsistent berechnet wurden. 'KGV in Euro' existiert nicht.",
-      "examples": ["priceToEarnings", "evToEbitda", "priceToSales", "priceToBook", "evToSales"]
+      "examples": [
+        "priceToEarnings",
+        "evToEbitda",
+        "priceToSales",
+        "priceToBook",
+        "evToSales"
+      ]
     },
-    "SCORE": { "converts": false, "examples": ["quantScore", "factorScore", "percentile", "rank", "trustScore"] },
-    "COUNT": { "converts": false, "examples": ["sharesOutstanding", "employees"] },
+    "SCORE": {
+      "converts": false,
+      "examples": [
+        "quantScore",
+        "factorScore",
+        "percentile",
+        "rank",
+        "trustScore"
+      ]
+    },
+    "COUNT": {
+      "converts": false,
+      "examples": [
+        "sharesOutstanding",
+        "employees"
+      ]
+    },
     "PRICE_RETURN": {
       "converts": false,
       "recompute": true,
       "reason": "Der gefaehrlichste Sonderfall. Eine Kursrendite wird NICHT umgerechnet - sie wird aus der Reihe der gewaehlten Anzeigewaehrung NEU berechnet. Die pauschale Regel 'Prozentwerte nie anfassen' waere hier falsch.",
       "formula": "returnDisplay = displaySeries[last] / displaySeries[first] - 1",
-      "examples": ["priceReturn1M", "priceReturn1Y", "priceReturn5Y", "momentum3m", "momentum6m", "momentum12m"]
+      "examples": [
+        "priceReturn1M",
+        "priceReturn1Y",
+        "priceReturn5Y",
+        "momentum3m",
+        "momentum6m",
+        "momentum12m"
+      ]
     }
   },
-
   "freshness": {
-    "CURRENT": { "rank": 3, "definition": "Der FX-Stand liegt innerhalb der fuer seine Frequenz zugesagten Aktualitaet.", "displayAllowed": true },
-    "LAST_AVAILABLE": { "rank": 2, "definition": "Kein Stand fuer den angefragten Zeitpunkt; der juengste zulaessige vorherige Stand wird verwendet. Der Regelfall an Wochenenden und Feiertagen.", "displayAllowed": true },
-    "STALE": { "rank": 1, "definition": "Der Stand ist aelter als die Toleranz seiner Frequenz.", "displayAllowed": true, "caution": "Darf angezeigt, aber nie als aktuell beschriftet werden. 'Realtime EUR' ist bei STALE eine Falschaussage." },
-    "UNAVAILABLE": { "rank": 0, "definition": "Es gibt keinen verwendbaren Stand.", "displayAllowed": false, "consequence": "Es wird die native Waehrung gezeigt. Keine 1:1-Umrechnung, kein EUR-Zeichen an einer USD-Zahl." }
+    "CURRENT": {
+      "rank": 3,
+      "definition": "Der FX-Stand liegt innerhalb der fuer seine Frequenz zugesagten Aktualitaet.",
+      "displayAllowed": true
+    },
+    "LAST_AVAILABLE": {
+      "rank": 2,
+      "definition": "Kein Stand fuer den angefragten Zeitpunkt; der juengste zulaessige vorherige Stand wird verwendet. Der Regelfall an Wochenenden und Feiertagen.",
+      "displayAllowed": true
+    },
+    "STALE": {
+      "rank": 1,
+      "definition": "Der Stand ist aelter als die Toleranz seiner Frequenz.",
+      "displayAllowed": true,
+      "caution": "Darf angezeigt, aber nie als aktuell beschriftet werden. 'Realtime EUR' ist bei STALE eine Falschaussage."
+    },
+    "UNAVAILABLE": {
+      "rank": 0,
+      "definition": "Es gibt keinen verwendbaren Stand.",
+      "displayAllowed": false,
+      "consequence": "Es wird die native Waehrung gezeigt. Keine 1:1-Umrechnung, kein EUR-Zeichen an einer USD-Zahl."
+    }
   },
-
   "staleAfter": {
-    "REALTIME": { "seconds": 120 },
-    "INTRADAY": { "seconds": 3600 },
-    "DAILY": { "seconds": 345600, "note": "Vier Tage - deckt ein langes Wochenende mit Feiertag ab, ohne eine echte Luecke zu verschlucken." }
+    "REALTIME": {
+      "seconds": 120
+    },
+    "INTRADAY": {
+      "seconds": 3600
+    },
+    "DAILY": {
+      "seconds": 345600,
+      "note": "Vier Tage - deckt ein langes Wochenende mit Feiertag ab, ohne eine echte Luecke zu verschlucken."
+    }
   },
-
   "semantics": {
     "convertedPriceIsNotAQuote": "Ein in EUR umgerechneter US-Kurs ist der kanonische US-Marktkurs in EUR ausgedrueckt. Er ist NICHT der an einer deutschen Boerse gehandelte EUR-Kurs. Diese Unterscheidung gehoert auf die Daten-und-Quellen-Seite jedes Produkts, das sie anzeigt.",
     "currencyEffect": "Die Differenz zwischen Rendite in Anzeigewaehrung und Rendite in nativer Waehrung, in Prozentpunkten. Architektonisch vorgesehen, in der Oberflaeche optional.",
     "orderOfTransformations": "kanonische adjustierte native Reihe -> Waehrungsumrechnung. Niemals umgekehrt und niemals ein zweiter Adjustment-Pfad nach der Umrechnung."
   },
-
   "sourceHierarchy": {
-    "PRIMARY": { "providerId": "tiingo", "reason": "Bestehende lizenzierte Infrastruktur. Keine zweite kommerzielle Quelle ohne belegten Bedarf.", "capabilityState": "UNVERIFIED" },
-    "REFERENCE": { "providerId": null, "reason": "Nicht eingefuehrt. Eine zweite Quelle bedarf einer Owner-Entscheidung, nicht einer Bequemlichkeitsentscheidung." },
-    "rule": "Alle Produkte lesen dieselbe Hierarchie. Discover darf nicht Quelle A verwenden, waehrend der Screener Quelle B verwendet."
+    "rule": "Alle Produkte lesen dieselbe Hierarchie. Discover darf nicht Quelle A verwenden, waehrend der Screener Quelle B verwendet.",
+    "classRule": "O-14: Die Rolle haengt an der ART DER FRAGE, nicht an der Quelle allein. Innerhalb einer Klasse gilt PRIMARY zuerst, FALLBACK nur dort, wo PRIMARY nichts hat. Es wird nie je Tag zwischen zwei vorhandenen Werten gewaehlt.",
+    "reason": "Die beiden Quellen beschreiben denselben Kalendertag zu verschiedenen Tageszeiten (Tagesschluss gegen Fixing). Beide Zahlen sind richtig. Ein Quellenwechsel MITTEN in einer Reihe legt diesen Unterschied als Sprung in die Reihe, wo keiner hingehoert - deshalb liegt der einzige Uebergang an der Gegenwart.",
+    "classes": {
+      "HISTORICAL_DAILY": {
+        "question": "Was war der Kurs am Tag t?",
+        "appliesTo": [
+          "Charts",
+          "PERIOD_AVERAGE",
+          "DAILY_AT_PERIOD_END",
+          "MARKET_PRICE mit Datum"
+        ],
+        "PRIMARY": "ecb",
+        "FALLBACK": "tiingo"
+      },
+      "CURRENT": {
+        "question": "Was ist der Kurs jetzt?",
+        "appliesTo": [
+          "LATEST_AVAILABLE",
+          "Intraday-State",
+          "jede Realtime-Anzeige"
+        ],
+        "PRIMARY": "tiingo",
+        "FALLBACK": "ecb"
+      }
+    },
+    "evidence": "quant/data/market/fx/provider-seam-audit.json"
   },
-
   "displayCurrencies": {
-    "supported": ["EUR", "USD"],
+    "supported": [
+      "EUR",
+      "USD"
+    ],
     "default": "EUR",
-    "extensible": ["CHF", "GBP", "JPY"],
-    "rule": "Die Engine ist waehrungsagnostisch. EUR und USD sind die ersten produktiven Faelle, nicht die Architektur."
+    "extensible": [
+      "CHF",
+      "GBP",
+      "JPY"
+    ],
+    "rule": "Die Engine ist waehrungsagnostisch. EUR und USD sind die ersten produktiven Faelle, nicht die Architektur.",
+    "availabilityRule": "O-15: Der verfuegbare Anfang haengt an der Anzeigewaehrung. Die Originalwaehrung ist nie begrenzt (es wird nicht umgerechnet); eine Fremdwaehrung beginnt fruehestens, wo die FX-Historie beginnt. Der Vertrag liefert beide Anfaenge (layer.availability), damit eine Oberflaeche den Zeitraumwaehler richtig zeichnen kann, BEVOR jemand umschaltet. Keine Rueckwaertsextrapolation, kein aeltester Kurs fuer frueherer Jahre, kein heutiger Kurs fuer historische Daten.",
+    "availabilityFields": [
+      "availableFrom",
+      "availableTo",
+      "fxAvailableFrom",
+      "fxAvailableTo",
+      "limitedBy",
+      "conversionAvailable",
+      "currentConversionAvailable",
+      "currentUnavailableReason"
+    ]
+  },
+  "availability": {
+    "rule": "O-13: Verfuegbarkeit ist ein ZEITPUNKT, keine Eigenschaft der Waehrung. Eine historische Umrechnung kann verfuegbar sein, waehrend die aktuelle es nicht ist.",
+    "measuredCase": "RUB: die EZB hat die Veroeffentlichung des Referenzkurses eingestellt. Historisch umrechenbar, aktuell nicht.",
+    "states": {
+      "conversionAvailable": "Es gibt ueberhaupt ein Zeitfenster, in dem umgerechnet werden kann.",
+      "currentConversionAvailable": "Fuer HEUTE gibt es einen Kurs innerhalb der Carry-Grenze.",
+      "carryLimitExceeded": "Die Reihe existiert, endet aber vor dem angefragten Tag. Nicht dasselbe wie pairNotStored.",
+      "pairNotStored": "Es gibt das Paar nicht, weder direkt noch invers noch ueber ein Pivot."
+    },
+    "never": [
+      "schaetzen",
+      "Titel loeschen",
+      "aus dem Company Master entfernen",
+      "stillschweigend USD annehmen"
+    ]
   }
 }

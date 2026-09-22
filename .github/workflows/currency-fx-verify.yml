@@ -297,6 +297,14 @@ jobs:
             node scripts/quality/verify-historical-fx-coverage.mjs
           fi
 
+      # O-14. Nur mit beiden Reihen fuehrbar, also am Anbieterabruf.
+      # Der Bericht enthaelt keine Kursstaende - nur relative
+      # Differenzen, Korrelationen und Kalenderbefunde - und darf
+      # deshalb in den Zweig.
+      - name: Wurzelursache der Anbieter-Naht (O-14)
+        if: always() && steps.ingest.outcome == 'success'
+        run: node scripts/quality/audit-fx-provider-seam.mjs --publish
+
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
         run: node scripts/quality/verify-currency-layer.mjs
@@ -343,6 +351,28 @@ jobs:
               "Historische FX-Abdeckung gemessen (automatischer Lauf)" \
               quant/data/market/fx/historical-coverage.json
           fi
+          if [ -f quant/data/market/fx/provider-seam-audit.json ]; then
+            node -e '
+              const raw = require("fs").readFileSync("quant/data/market/fx/provider-seam-audit.json", "utf8");
+              const verboten = ["points", "rate", "rates", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), "$");
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder im Nahtaudit: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log("Nahtaudit frei von Kursen.");
+            '
+            bash scripts/ci/commit-and-push.sh \
+              "Wurzelursache der FX-Naht gemessen (automatischer Lauf)" \
+              quant/data/market/fx/provider-seam-audit.json
+          fi
 
       - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
         if: always()
@@ -363,7 +393,7 @@ jobs:
           if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
             for f in quant/data/market/fx/*.json; do
               case "$(basename "$f")" in
-                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json|historical-coverage.json) ;;
+                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json|historical-coverage.json|provider-seam-audit.json) ;;
                 *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad und steht nicht auf der Erlaubnisliste."; exit 1 ;;
               esac
             done

@@ -91,13 +91,18 @@
   function pairKey(base, quote) { return base + "/" + quote; }
 
   /** Ein sauberer, immer gleich geformter Misserfolg. */
-  function unavailable(base, quote, date, reason, detail) {
-    return {
+  function unavailable(base, quote, date, reason, detail, extra) {
+    var out = {
       available: false, rate: null, base: base, quote: quote,
       asOf: null, requestedDate: date || null,
       method: null, derivation: null, source: null, frequency: null,
       reason: reason, detail: detail || null
     };
+    /* Wo ein Kurs ABGERISSEN ist statt nie dagewesen, gehoert das
+       Abrissdatum in die Antwort. Eine Oberflaeche kann damit "bis 2022
+       umrechenbar" sagen statt nur "nicht verfuegbar" (O-13). */
+    if (extra) Object.keys(extra).forEach(function (k) { out[k] = extra[k]; });
+    return out;
   }
 
   /* --------------------------------------------------------------------
@@ -173,6 +178,43 @@
      antwortet, gewinnt - und wer das ist, steht fest. */
   var ROLES = { PRIMARY: 10, FALLBACK: 20, UNKNOWN: 99 };
 
+  /* DIE ROLLE HAENGT AN DER ART DER FRAGE, NICHT NUR AN DER QUELLE (O-14).
+
+     Die erste Fassung kannte eine Rangfolge. Sie hatte eine Folge, die
+     erst der Nahtaudit sichtbar gemacht hat: in einem 10-Jahres-Chart
+     wechselte die Quelle mitten in der Reihe - EZB bis zum Beginn der
+     Anbieterhistorie, danach Tiingo. Beide Kurse sind richtig, aber sie
+     gelten zu verschiedenen Tageszeiten, und der Wechsel legt diesen
+     Unterschied als Sprung IN die Reihe.
+
+     Deshalb zwei Klassen:
+
+       HISTORICAL_DAILY  Was war der Kurs am Tag t? Die EZB fuehrt, ueber
+                         den gesamten Zeitraum - eine Quelle, keine Naht.
+       CURRENT           Was ist der Kurs jetzt? Tiingo fuehrt; die EZB
+                         hat hier objektiv nichts (kein Intraday).
+
+     Der Uebergang liegt damit an der Gegenwart und nirgends sonst: die
+     historische Reihe endet, wo der aktuelle Stand beginnt. Das ist die
+     einzige Naht, die ein Nutzer sehen kann - und sie trennt zwei
+     Dinge, die ohnehin verschieden sind (Tagesschluss und Jetzt). */
+  var CLASSES = { HISTORICAL_DAILY: "HISTORICAL_DAILY", CURRENT: "CURRENT" };
+
+  function classRolesFrom(meta, fallbackRole, fallbackPriority) {
+    var given = meta && meta.classRoles;
+    var out = {};
+    Object.keys(CLASSES).forEach(function (k) {
+      var e = given && given[k];
+      out[k] = {
+        role: (e && e.role) || fallbackRole,
+        priority: (e && typeof e.priority === "number") ? e.priority
+                : (ROLES[(e && e.role) || fallbackRole] !== undefined
+                     ? ROLES[(e && e.role) || fallbackRole] : fallbackPriority)
+      };
+    });
+    return out;
+  }
+
   function createStore(options) {
     options = options || {};
     /* Je Paar eine LISTE von Reihen, nicht eine Reihe. Eine Reihe je
@@ -215,6 +257,10 @@
       built.role = meta.role || (meta.source === "fixture" ? "PRIMARY" : "UNKNOWN");
       built.priority = typeof meta.priority === "number" ? meta.priority
                      : (ROLES[built.role] !== undefined ? ROLES[built.role] : ROLES.UNKNOWN);
+      /* Fehlt die klassenweise Angabe, gilt die flache Rolle fuer beide
+         Klassen. Eine Reihe aus einem aelteren Ingest verhaelt sich damit
+         genau wie vorher, statt stillschweigend auf UNKNOWN zu fallen. */
+      built.classRoles = classRolesFrom(meta, built.role, built.priority);
 
       var key = pairKey(b, q);
       var list = series[key] || (series[key] = []);
@@ -239,6 +285,27 @@
       };
     }
 
+    /* Die Liste in der Reihenfolge, die zu DIESER Frage gehoert. Die
+       gespeicherte Sortierung bleibt die historische; fuer eine
+       Gegenwartsfrage wird umsortiert statt umgespeichert, damit es
+       weiterhin nur EINE Reihe je Quelle gibt. */
+    function orderedFor(list, kind) {
+      var k = CLASSES[kind] ? kind : CLASSES.HISTORICAL_DAILY;
+      return list.slice().sort(function (x, y) {
+        var px = (x.classRoles && x.classRoles[k] ? x.classRoles[k].priority : x.priority);
+        var py = (y.classRoles && y.classRoles[k] ? y.classRoles[k].priority : y.priority);
+        return px - py || String(x.source).localeCompare(String(y.source));
+      });
+    }
+    function roleOf(s, kind) {
+      var e = s.classRoles && s.classRoles[kind];
+      return e ? e.role : s.role;
+    }
+    function priorityOf(s, kind) {
+      var e = s.classRoles && s.classRoles[kind];
+      return e ? e.priority : s.priority;
+    }
+
     function listFor(base, quote) { return series[pairKey(normCode(base), normCode(quote))] || null; }
     function has(base, quote) { var l = listFor(base, quote); return !!(l && l.length); }
     function pairs() { return Object.keys(series).sort(); }
@@ -258,13 +325,15 @@
     }
 
     /** Ein Abruf auf EINER gespeicherten Reihe. */
-    function lookupInSeries(s, date) {
+    function lookupInSeries(s, date, kind) {
       if (!s || !s.dates.length) return null;
+      kind = CLASSES[kind] ? kind : CLASSES.HISTORICAL_DAILY;
 
       if (date === null || date === undefined) {
         var lastIdx = s.dates.length - 1;
         return { rate: s.rates[lastIdx], asOf: s.dates[lastIdx], method: METHODS.LATEST_AVAILABLE,
-                 source: s.source, role: s.role, priority: s.priority,
+                 source: s.source, role: roleOf(s, kind), priority: priorityOf(s, kind),
+                 resolutionClass: kind,
                  frequency: s.frequency, fallbackReason: null };
       }
 
@@ -286,7 +355,8 @@
       return {
         rate: s.rates[i], asOf: s.dates[i],
         method: exact ? METHODS.DAILY_AT_DATE : METHODS.PREVIOUS_AVAILABLE,
-        source: s.source, role: s.role, priority: s.priority, frequency: s.frequency,
+        source: s.source, role: roleOf(s, kind), priority: priorityOf(s, kind),
+        resolutionClass: kind, frequency: s.frequency,
         fallbackReason: exact ? null : "Kein Fixing am " + date + "; verwendet wird der letzte vorherige Stand vom " + s.dates[i] + "."
       };
     }
@@ -305,26 +375,38 @@
      * der Zweitquelle stammt - und genau das ist die Frage, die bei einem
      * Sprung in der Reihe als Erstes gestellt wird.
      */
-    function lookupDirect(b, q, date) {
-      var list = series[pairKey(b, q)];
-      if (!list || !list.length) return null;
+    function lookupDirect(b, q, date, kind) {
+      var raw = series[pairKey(b, q)];
+      if (!raw || !raw.length) return null;
+      kind = CLASSES[kind] ? kind : CLASSES.HISTORICAL_DAILY;
+      var list = orderedFor(raw, kind);
       var considered = [];
+      var firstMiss = null;
       for (var i = 0; i < list.length; i++) {
-        var hit = lookupInSeries(list[i], date);
+        var hit = lookupInSeries(list[i], date, kind);
         if (hit && !hit.unavailable) {
           hit.consideredSources = considered;
           return hit;
         }
-        if (hit) considered.push({ source: list[i].source, role: list[i].role, reason: hit.unavailable });
-        else considered.push({ source: list[i].source, role: list[i].role, reason: "emptySeries" });
+        if (hit) {
+          if (!firstMiss) firstMiss = hit;
+          considered.push({ source: list[i].source, role: roleOf(list[i], kind), reason: hit.unavailable });
+        } else {
+          considered.push({ source: list[i].source, role: roleOf(list[i], kind), reason: "emptySeries" });
+        }
       }
       /* Keine Quelle konnte liefern. Der Grund der HOECHSTPRIORISIERTEN
          wird zurueckgegeben, damit die Fehlermeldung die Hauptquelle
          beschreibt und nicht die letzte in der Liste. */
       var first = considered[0] || {};
+      /* Der letzte noch vorhandene Stand gehoert in die Antwort, wenn es
+         ihn gibt: "die Reihe endet am ..." ist eine andere Auskunft als
+         "es gibt nichts". */
       return { unavailable: first.reason || "noSource", consideredSources: considered,
                seriesStart: (list[0] && list[0].dates[0]) || null,
-               asOf: null, gapDays: null, maxCarryDays: maxCarryDays };
+               asOf: (firstMiss && firstMiss.asOf) || null,
+               gapDays: (firstMiss && firstMiss.gapDays) || null,
+               maxCarryDays: maxCarryDays };
     }
 
     /**
@@ -371,6 +453,7 @@
             role: hit.role || null,
             priority: hit.priority !== undefined ? hit.priority : null,
             derivation: derivation,
+            resolutionClass: hit.resolutionClass || null,
             consideredSources: hit.consideredSources || []
           },
           fallbackReason: hit.fallbackReason, reason: null
@@ -379,15 +462,25 @@
         return out;
       }
 
-      var direct = lookupDirect(b, q, date);
+      /* Die Klasse der Frage. Ein Datum fragt nach der Historie, kein
+         Datum nach dem juengsten Stand - und das sind zwei verschiedene
+         Fragen an zwei verschiedene Quellen (O-14). Ein Aufrufer, der es
+         besser weiss, kann sie mit opts.resolutionClass setzen. */
+      var kind = CLASSES[opts.resolutionClass] ? opts.resolutionClass
+               : (date === null || date === undefined ? CLASSES.CURRENT : CLASSES.HISTORICAL_DAILY);
+      opts = Object.assign({}, opts, { resolutionClass: kind });
+
+      var direct = lookupDirect(b, q, date, kind);
       if (direct && !direct.unavailable) return pack(direct, DERIVATIONS.DIRECT);
 
       /* Gegenrichtung. 1/rate ist keine Schaetzung, sondern dieselbe
          Information anders herum - deshalb ohne Vorbehalt erlaubt, aber
          mit Kennzeichnung, damit eine spaetere Abweichung zwischen
          direkt gefuehrtem und invertiertem Paar auffaellt. */
+      var inverseMiss = null;
       if (opts.allowInverse !== false) {
-        var inv = lookupDirect(q, b, date);
+        var inv = lookupDirect(q, b, date, kind);
+        if (inv && inv.unavailable) inverseMiss = inv;
         if (inv && !inv.unavailable) {
           /* Rolle und Prioritaet muessen mitgereicht werden. Die erste
              Fassung baute hier ein frisches Objekt und liess beide weg -
@@ -396,6 +489,7 @@
              die Mehrheit. */
           return pack({ rate: 1 / inv.rate, asOf: inv.asOf, method: inv.method,
                         source: inv.source, role: inv.role, priority: inv.priority,
+                        resolutionClass: inv.resolutionClass,
                         frequency: inv.frequency, fallbackReason: inv.fallbackReason,
                         consideredSources: inv.consideredSources },
                       DERIVATIONS.INVERSE, { derivedFrom: pairKey(q, b) });
@@ -452,29 +546,43 @@
          Zweitquelle aus einem ganz anderen Grund nicht liefern konnte.
          Wer eine Luecke schliessen soll, muss wissen, an welcher Quelle
          es lag. */
-      var perSource = (direct && direct.consideredSources || [])
+      /* Wenn die angefragte Richtung gar nicht gefuehrt wird, die
+         Gegenrichtung aber schon, dann ist "kein Paar im Store" falsch.
+         Der Rubel ist der Fall, an dem es aufgefallen ist: EUR/RUB liegt
+         vor und endet 2022; die Frage nach RUB/EUR fuer heute meldete
+         trotzdem pairNotStored statt carryLimitExceeded. Das ist der
+         Unterschied zwischen "gibt es nicht" und "gilt heute nicht
+         mehr" - und O-13 haengt genau daran. */
+      var missed = (direct && direct.unavailable) ? direct : inverseMiss;
+
+      var perSource = (missed && missed.consideredSources || [])
         .map(function (c) { return c.source + " (" + c.role + "): " + c.reason; })
         .join("; ");
-      var detail = direct && direct.unavailable
-        ? (direct.unavailable === "beforeSeriesStart"
+      var detail = missed
+        ? (missed.unavailable === "beforeSeriesStart"
             ? "Der angefragte Tag liegt vor dem Beginn jeder verfuegbaren Reihe" +
-              (direct.seriesStart ? " (fruehester Stand " + direct.seriesStart + ")" : "") +
+              (missed.seriesStart ? " (fruehester Stand " + missed.seriesStart + ")" : "") +
               ". Ein spaeterer Kurs waere Look-Ahead." +
               (perSource ? " Befragt: " + perSource + "." : "")
             : "Kein verwendbarer Stand." + (perSource ? " Befragt: " + perSource + "." : ""))
         : "Kein Paar " + pairKey(b, q) + " im Store, weder direkt noch ueber " + pivots.join(" oder ") + ".";
-      return unavailable(b, q, date, direct && direct.unavailable ? direct.unavailable : "pairNotStored", detail);
+      var extra = missed && missed.unavailable === "carryLimitExceeded"
+        ? { lastAvailable: missed.asOf, gapDays: missed.gapDays, maxCarryDays: missed.maxCarryDays }
+        : null;
+      return unavailable(b, q, date, missed ? missed.unavailable : "pairNotStored", detail, extra);
     }
 
     /** Ein Bein der Triangulation, direkt oder invertiert. */
     function resolveLeg(from, to, date, opts) {
-      var hit = lookupDirect(from, to, date);
+      var kind = CLASSES[opts && opts.resolutionClass] ? opts.resolutionClass : CLASSES.HISTORICAL_DAILY;
+      var hit = lookupDirect(from, to, date, kind);
       if (hit && !hit.unavailable) return hit;
       if (opts.allowInverse === false) return null;
-      var inv = lookupDirect(to, from, date);
+      var inv = lookupDirect(to, from, date, kind);
       if (inv && !inv.unavailable) {
         return { rate: 1 / inv.rate, asOf: inv.asOf, method: inv.method,
                  source: inv.source, role: inv.role, priority: inv.priority,
+                 resolutionClass: inv.resolutionClass,
                  frequency: inv.frequency, fallbackReason: inv.fallbackReason };
       }
       return null;
@@ -549,7 +657,8 @@
           method: METHODS.LATEST_AVAILABLE, derivation: derivation,
           source: st.source, frequency: st.frequency,
           provenance: { source: st.source, role: st.role, priority: st.priority,
-                        derivation: derivation, consideredSources: [] },
+                        derivation: derivation, resolutionClass: CLASSES.CURRENT,
+                        consideredSources: [] },
           fallbackReason: null, reason: null,
           derivedFrom: derivedFrom || undefined
         };
@@ -657,6 +766,73 @@
     }
 
     /** Ein Bestandsbericht fuer Health-Checks und Tests. */
+    /**
+     * §O-15 AB WANN GIBT ES UEBERHAUPT EINEN KURS?
+     *
+     * Ein MAX-Chart in EUR kann nicht dort beginnen, wo die Kursreihe
+     * beginnt, sondern erst dort, wo die FX-Historie beginnt. Vorher
+     * verweigert der Layer die Punkte (`beforeSeriesStart`) - richtig,
+     * aber fuer eine Oberflaeche zu spaet: sie soll den Beginn NENNEN
+     * koennen, statt eine halb leere Reihe zu zeichnen.
+     *
+     * Gefragt wird derselbe Weg wie beim Kurs selbst: direkt, invers,
+     * ueber die Pivots. Nur so stimmt die Zusage mit dem ueberein, was
+     * rateAt() spaeter wirklich liefert - eine zweite, einfachere
+     * Rechnung waere ein zweiter Wahrheitsstand.
+     */
+    function coverageWindow(base, quote, opts) {
+      opts = opts || {};
+      var b = normCode(base), q = normCode(quote);
+      if (!b || !q) return { from: null, to: null, identity: false };
+      if (b === q) return { from: null, to: null, identity: true };
+
+      var kind = CLASSES[opts.resolutionClass] ? opts.resolutionClass : CLASSES.HISTORICAL_DAILY;
+
+      /* `edge` waehlt, welches Ende gesucht wird: der frueheste Anfang
+         ueber alle Quellen, oder das spaeteste Ende. */
+      function edgeDirect(x, y, wantEnd) {
+        var l = series[pairKey(x, y)];
+        if (!l || !l.length) return null;
+        var best = null;
+        orderedFor(l, kind).forEach(function (sx) {
+          var d = wantEnd ? sx.dates[sx.dates.length - 1] : sx.dates[0];
+          if (!d) return;
+          if (best === null || (wantEnd ? d > best : d < best)) best = d;
+        });
+        return best;
+      }
+      function edgeLeg(x, y, wantEnd) {
+        var a = edgeDirect(x, y, wantEnd);
+        var i = opts.allowInverse === false ? null : edgeDirect(y, x, wantEnd);
+        if (a === null) return i;
+        if (i === null) return a;
+        return (wantEnd ? (a > i) : (a < i)) ? a : i;
+      }
+      function resolve(wantEnd) {
+        var direct = edgeLeg(b, q, wantEnd);
+        if (direct !== null) return direct;
+        if (opts.allowTriangulation === false) return null;
+        var best = null;
+        for (var pi = 0; pi < pivots.length; pi++) {
+          var pv = pivots[pi];
+          if (b === pv || q === pv) continue;
+          var legA = edgeLeg(pv, b, wantEnd);
+          var legB = edgeLeg(pv, q, wantEnd);
+          if (legA === null || legB === null) continue;
+          /* Ein Kreuz gibt es nur, wo BEIDE Beine existieren: erst ab dem
+             spaeteren Anfang und nur bis zum FRUEHEREN Ende. */
+          var both = wantEnd ? (legA < legB ? legA : legB) : (legA > legB ? legA : legB);
+          if (best === null || (wantEnd ? both > best : both < best)) best = both;
+        }
+        return best;
+      }
+      return { from: resolve(false), to: resolve(true), identity: false };
+    }
+
+    function coverageStart(base, quote, opts) {
+      return coverageWindow(base, quote, opts).from;
+    }
+
     function inventory() {
       var out = [];
       pairs().forEach(function (key) {
@@ -680,6 +856,7 @@
       has: has, pairs: pairs, seriesFor: seriesFor,
       sourcesFor: sourcesFor, listFor: listFor,
       rateAt: rateAt, latest: latest, periodAverage: periodAverage,
+      coverageStart: coverageStart, coverageWindow: coverageWindow,
       inventory: inventory, pivot: pivot, pivots: pivots.slice(), maxCarryDays: maxCarryDays
     };
   }
@@ -687,7 +864,7 @@
   var api = {
     VERSION: VERSION, PIVOT: PIVOT, PIVOTS: PIVOTS, FREQUENCIES: FREQUENCIES,
     METHODS: METHODS, DERIVATIONS: DERIVATIONS,
-    ROLES: ROLES,
+    ROLES: ROLES, CLASSES: CLASSES,
     createStore: createStore, buildSeries: buildSeries, floorIndex: floorIndex
   };
 
