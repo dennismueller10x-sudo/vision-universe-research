@@ -132,6 +132,52 @@ test("DE12 · Unbekannt ist nicht 'genuegt'", () => {
   assert.equal(D.genuegt("viele", "Weil ..."), false);
 });
 
+/* -------------------------------------------------------------------
+   DIE EINORDNUNG FUER REIHEN OHNE ZAHLENREGEL (§30, Candidate C)
+
+   "row-rule" hat weder Entitaet noch Zahl und ist deshalb genau die
+   Form, die EvidencePackage.fromTopicEvidence() als "Einordnung"
+   erkennt (assessSufficiency(): "Die Leitzahl hat keine Einordnung").
+   Eine MEGATREND-Reihe (Thema statt Zahlenregel, `r.theme` gesetzt)
+   traegt aber gar kein `r.rule` - und hatte deshalb ueberhaupt keinen
+   entitaets- und zahlenlosen Beleg. Jedes Megatrend-Thema verfehlte
+   EVIDENCE_SUFFICIENCY damit strukturell, unabhaengig von seiner
+   Beleglage - ein realer POST-ZU-THEMA-Lauf mit "Künstliche
+   Intelligenz" zeigte das genau so.
+   ------------------------------------------------------------------- */
+
+const THEMA_REIHE = JSON.parse(readFileSync(
+  new URL("../../discover/data/rows/US_REAL/thema-ki.json", import.meta.url), "utf8"));
+
+test("DE13a · Eine Themen-Reihe ohne Zahlenregel bekommt trotzdem eine Einordnung", () => {
+  assert.equal(THEMA_REIHE.rule, null,
+    "Die Fixture muss tatsaechlich keine Zahlenregel tragen - sonst prueft der Test nichts");
+  assert.ok(THEMA_REIHE.subtitle, "Die Fixture muss einen Untertitel tragen");
+
+  const e = D.fromRow(THEMA_REIHE);
+  const keineRegel = e.evidence.find((x) => x.id === "row-rule");
+  assert.equal(keineRegel, undefined, "Ohne r.rule darf es keinen row-rule-Beleg geben");
+
+  const einordnung = e.evidence.find((x) => x.id === "row-subtitle");
+  assert.ok(einordnung, "Ohne Zahlenregel muss der Untertitel die Einordnung tragen");
+  assert.equal(einordnung.statement, THEMA_REIHE.subtitle);
+  assert.equal(einordnung.entity, undefined,
+    "Die Einordnung darf keine Entitaet tragen - sonst zaehlt sie nicht als Einordnung");
+  assert.equal(einordnung.value, undefined,
+    "Die Einordnung darf keine Zahl tragen - sonst zaehlt sie nicht als Einordnung");
+});
+
+test("DE13b · Eine Reihe MIT Zahlenregel behaelt row-rule und bekommt zusaetzlich row-subtitle", () => {
+  /* Regression: die neue Einordnung darf die bestehende Regel-Evidenz
+     nicht verdraengen - RANKING-Reihen tragen beides. */
+  const e = D.fromRow(REIHE);
+  assert.ok(e.evidence.find((x) => x.id === "row-rule"));
+  assert.ok(REIHE.subtitle, "Die Cashflow-Maschinen-Fixture muss einen Untertitel tragen");
+  const einordnung = e.evidence.find((x) => x.id === "row-subtitle");
+  assert.ok(einordnung);
+  assert.equal(einordnung.statement, REIHE.subtitle);
+});
+
 test("DE13 · fromRow rechnet die Schwelle nicht selbst nach", () => {
   /* Eine zweite Rechnung fuer eine Frage, die schon eine hat, geht
      irgendwann auseinander. Also darf in `fromRow` keine eigene
