@@ -113,8 +113,13 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
   profile on the stock page opens the screener with its rule, and the screener loads a profile's
   rule into the editor. A test checks the two against each other: every title the predicate
   selects must score 100 % on that profile, and no unselected title may.
+- **Watchlist carries the evidence**: a compact seven-factor strip per member in canonical
+  order, plus "x von 7 bewertet" and a link into the Quant analysis. One fetch of the evidence
+  table for the whole list, not one per title. A factor without a value stays visibly empty —
+  six of seven must not look like seven.
 - Browser QA extended to the rebuilt `quant` view, the new `explain` view, the Strategy Match
-  section, the screener methodology switch and the profile round trip, both widths.
+  section, the screener methodology switch, the profile round trip and the watchlist strip,
+  both widths.
 
 ## PRODUCTION_REALITY
 
@@ -142,6 +147,7 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 | `STRATEGY_MATCH_HISTORICAL_EVIDENCE` | UNAVAILABLE / BACKTEST_NOT_CERTIFIED |
 | `SCREENER_METHODOLOGIES` | 2, mixed queries refused |
 | `STRATEGY_RULE_SCREENS` | yes — same predicate hash in both directions |
+| `WATCHLIST_FACTOR_EVIDENCE` | seven-factor strip per member |
 | `SNAPSHOT_HISTORY` | started, 1 snapshot (`2026-09-18`), immutable, per-methodology |
 | `SCORE_MOMENTUM` | closed — history too short for the 30-day window |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |

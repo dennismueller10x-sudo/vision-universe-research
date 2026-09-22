@@ -130,6 +130,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('heading',{name:'Wen möchtest du beobachten?',exact:true}).waitFor();
   for(const ticker of ['NVDA','TSLA']){await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();}
   await page.waitForFunction(()=>document.querySelectorAll('.watchlist-member').length===2);if(await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).count())throw Error('canonical watchlist member remained five-scope gated');
+  // Quant V2 evidence travels with the list: all seven factors per member,
+  // a factor without a value stays visibly empty rather than disappearing.
+  await page.waitForFunction(()=>document.querySelectorAll('.factor-strip').length===2);
+  if(await page.locator('.factor-strip').first().locator('.strip-cell').count()!==7)throw Error('watchlist factor strip incomplete');
+  await page.getByText(/von 7 bewertet/).first().waitFor();
+  if(await page.getByRole('link',{name:'Quant-Analyse'}).count()!==2)throw Error('watchlist quant links missing');
   await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.watchlist-member').count()!==2)throw Error('watchlist selection not preserved');
   await page.getByRole('button',{name:'TSLA aus Watchlist entfernen',exact:true}).click();await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();
   await page.getByRole('link',{name:'Historische Änderungen',exact:true}).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Signals Unternehmen'}).inputValue()!=='NVDA')throw Error('watchlist signal context lost');

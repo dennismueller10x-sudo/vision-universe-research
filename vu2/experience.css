@@ -186,3 +186,25 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
  .screener-method label>span{flex:0 0 100%}
  .screener-method select{flex:1 1 100%;width:100%}
 }
+
+/* Kompakte Faktorlage in Listen. */
+.factor-strip{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.strip-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.strip-head .muted{font-size:12px;white-space:nowrap}
+.strip-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.strip-cell{display:flex;flex-direction:column;gap:5px;min-width:0}
+.strip-label{font-size:11px;color:var(--muted);overflow-wrap:anywhere;line-height:1.3}
+.strip-bar{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.strip-bar>span{display:block;height:100%;border-radius:3px;background:var(--muted)}
+.strip-bar .band-VERY_STRONG{background:#0f5f48}
+.strip-bar .band-STRONG{background:var(--positive)}
+.strip-bar .band-NEUTRAL{background:#8b9297}
+.strip-bar .band-WEAK{background:#c08b3a}
+.strip-bar .band-VERY_WEAK{background:var(--negative)}
+.strip-bar .band-NONE{background:var(--line)}
+.strip-value{font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:650px){
+ .strip-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ .strip-label{font-size:10px}
+ .strip-value{font-size:11px}
+}

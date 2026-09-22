@@ -209,11 +209,41 @@ async function homePage(){
  if(observations.length)markets.append(stockRows(observations.map(o=>o.stock),'momentum6m','6 Monate',true));else markets.append(notice('Marktdaten derzeit nicht verfügbar','Wir zeigen keine Ersatzkurse und leiten daraus keinen Marktstatus ab.'));
  main.append(markets,el('section',{class:'home-research section'},[el('div',{},[el('span',{class:'eyebrow',text:'Dein nächster Schritt'}),el('h2',{text:'Von der Frage zur vollständigen Analyse'}),el('p',{class:'muted',text:'Geführt starten oder direkt in den professionellen Workspace springen.'})]),el('div',{class:'links'},[link('Ideen mit sichtbaren Regeln entdecken',href('discover')),link('Eigene Kriterien im Screener kombinieren',href('screener')),link('Alle Research-Workspaces',href('research')),link('Morning Briefing','/morning/'),link('News','/news/'),link('Weekly Magazine','/magazin/'),link('Ask Atlas',href('atlas'))])]));
 }
+/* Kompakte Faktorlage für Listenansichten: dieselbe kanonische Reihenfolge
+   und dieselben Bänder wie die Factor DNA, nur ohne Aufklappen. Ein Faktor
+   ohne Wert bleibt sichtbar leer statt zu verschwinden - sonst sähen sechs
+   von sieben Faktoren aus wie sieben. */
+function factorStrip(row){
+ if(!row)return null;
+ const cells=VUFactorEvidence.FACTOR_ORDER.map(id=>{
+  const value=row['quantV2.factorEvidence.'+id],
+   meaning=VUFactorEvidence.FACTOR_MEANING[id],
+   band=Number.isFinite(value)?VUFactorEvidence.band(value):null;
+  return el('div',{class:'strip-cell',title:meaning.label+': '+(Number.isFinite(value)?pct(value):'nicht verfügbar')},[
+   el('span',{class:'strip-label',text:meaning.label}),
+   el('span',{class:'strip-bar','aria-hidden':'true'},[el('span',{class:'band-'+(band?band.id:'NONE'),
+    style:'width:'+(Number.isFinite(value)?Math.max(3,Math.min(100,value)):0)+'%'})]),
+   el('span',{class:'strip-value',text:Number.isFinite(value)?pct(value):'–'})]);
+ });
+ const rated=row['quantV2.factorEvidence.availableFactors'];
+ return el('div',{class:'factor-strip'},[
+  el('div',{class:'strip-head'},[el('span',{class:'eyebrow',text:'Quant V2 · Factor Evidence'}),
+   el('span',{class:'muted',text:(Number.isFinite(rated)?rated:0)+' von 7 bewertet'})]),
+  el('div',{class:'strip-grid'},cells)]);
+}
 async function watchlistPage(){
  main.append(heading('Deine Unternehmen im Blick','Beobachte selbst gewählte Titel und vertiefe ihre aktuelle Entwicklung.'));
  let selected;try{selected=VUWatchlistWorkspace.load(localStorage);}catch{main.append(notice('Gespeicherte Watchlist nicht lesbar','Die vorhandenen Einträge bleiben erhalten und werden nicht automatisch überschrieben.'),link('Bisherige Watchlist öffnen','/quant/watchlist/','button secondary'));return;}
  const ticker=el('input',{type:'text',maxlength:'12',placeholder:'z. B. NVDA','aria-label':'Watchlist Ticker'}),message=el('div',{'aria-live':'polite'}),target=el('section',{'aria-live':'polite'});let request=0;
  const changed=()=>S.mount(message,notice('Auswahl noch nicht gespeichert','Speichere deine Watchlist, um sie beim nächsten Öffnen wiederzufinden.'));
+ /* Eine Abfrage für die ganze Liste statt eine je Titel: die Evidenztabelle
+    ist genau dafür da. */
+ let evidenceRows=null;
+ async function evidenceFor(ticker){
+  if(evidenceRows===null){const screening=await api.getFactorEvidenceScreening().catch(()=>null);
+   evidenceRows=new Map((screening?.rows||[]).map(row=>[row.ticker,row]));}
+  return evidenceRows.get(ticker)||null;
+ }
  async function draw(){const id=++request,data=await api.getWatchlistIntelligence(selected);if(id!==request)return;S.clear(target);
   if(data.state==='EMPTY'){target.append(notice('Wen möchtest du beobachten?','Füge deinen ersten Ticker hinzu. Die Watchlist startet ohne Beispielbestände.'));return;}
   if(!Array.isArray(data.members)){target.append(notice('Auswahl derzeit nicht auswertbar','Deine Eingaben bleiben erhalten.'));return;}
@@ -224,9 +254,10 @@ async function watchlistPage(){
     el('h2',{text:!available?'Analyse noch nicht verfügbar':!Number.isFinite(trend)?'Trend noch nicht einordenbar':trend>=0?'Am langfristigen Trendbereich oder darüber':'Unter dem langfristigen Trendbereich'}),
     available?el('p',{class:'muted',text:'Schlusskurs '+n(s.price,2)+' · Kursstand '+s.asOf}):el('p',{class:'muted',text:'Für diesen Ticker fehlen in dieser Ansicht Daten oder die Anzeigefreigabe. Er bleibt auf deiner Liste.'}),
     available?evidence(s):null,
+    factorStrip(await evidenceFor(s.ticker)),
     el('p',{class:'capability-line',text:(signal.state==='AVAILABLE'?'Signals verfügbar · '+recent+' Wechsel in 60 EOD-Beobachtungen':'Signals nicht verfügbar')+' · '+(technical.state==='AVAILABLE'?'Technical verfügbar':'Technical nicht verfügbar')+' · '+(elliott.state==='AVAILABLE'?'Elliott verfügbar':'Elliott nicht verfügbar')}),
     available?el('details',{},[el('summary',{text:'Warum diese Einordnung?'}),el('p',{text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Die Aussage beschreibt den vorhandenen Kursstand, keine Prognose und keinen neuen Zustandswechsel.'}),el('p',{class:'muted',text:'Geschäftsdaten bis '+s.fundamentalsAsOf+' · verfügbar seit '+s.availableAt})]):null,
-    actions(available?[{label:'Aktie untersuchen',href:href('stock',s.ticker)},...(signal.state==='AVAILABLE'?[{label:'Historische Änderungen',href:href('signals',s.ticker)+'&window=60'}]:[]),...(technical.state==='AVAILABLE'?[{label:'Technical',href:technical.workspace}]:[]),...(elliott.state==='AVAILABLE'?[{label:'Elliott',href:elliott.workspace}]:[]),{label:'Fundamental-Historie',href:href('fundamentals',s.ticker)}]:[{label:'Analysebereich öffnen',href:href('research')}])
+    actions(available?[{label:'Aktie untersuchen',href:href('stock',s.ticker)},{label:'Quant-Analyse',href:href('quant',s.ticker)},...(signal.state==='AVAILABLE'?[{label:'Historische Änderungen',href:href('signals',s.ticker)+'&window=60'}]:[]),...(technical.state==='AVAILABLE'?[{label:'Technical',href:technical.workspace}]:[]),...(elliott.state==='AVAILABLE'?[{label:'Elliott',href:elliott.workspace}]:[]),{label:'Fundamental-Historie',href:href('fundamentals',s.ticker)}]:[{label:'Analysebereich öffnen',href:href('research')}])
    ])]));
   }
  }
