@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-22T08:24:10.156Z",
+  "generatedAt": "2026-09-22T09:40:23.564Z",
   "strategyVersion": "strategy_initial",
   "decisions": [
     {
-      "decidedAt": "2026-09-22T08:24:10.156Z",
+      "decidedAt": "2026-09-22T09:40:23.564Z",
       "packageId": "pkg_4ae3e59cd8b77208",
       "topic": "Bekannte Namen in Bewegung",
       "archetype": "RANKING_LIST",
@@ -105,7 +105,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 31. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Bekannte Namen in Bewegung, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Microsoft steht bei 493,78, HP Inc bei 34,4 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "31 von 5954 geprüften Titeln — Bekannte Namen in Bewegung.",
         "mainSubject": "Bekannte Namen in Bewegung",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -172,8 +172,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Bekannte Namen in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -193,28 +193,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4ae3e59cd8b77208.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
               "id": "redundant-hook",
               "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -222,15 +216,16 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-22T08:24:10.156Z",
+      "decidedAt": "2026-09-22T09:40:23.564Z",
       "packageId": "pkg_b203d737de9853eb",
       "topic": "Gerade in Bewegung",
       "archetype": "EDUCATIONAL",
@@ -334,13 +329,17 @@
         "topicId": "pkg_b203d737de9853eb",
         "visualStrategy": "MINIMAL_TYPOGRAPHY",
         "story": "von 5954 geprüften Titeln steht bei 119. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": null,
-        "oneSecondMessage": null,
+        "coreIdea": "Der Satz IST das Bild: \"119 von 5954 geprüften Titeln — Gerade in Bewegung.\" fuer Gerade in Bewegung. Keine Illustration daneben, die dasselbe noch einmal sagt.",
+        "oneSecondMessage": "119 von 5954 geprüften Titeln — Gerade in Bewegung.",
         "mainSubject": "Gerade in Bewegung",
-        "compositionIntent": null,
-        "visualHierarchy": [],
+        "compositionIntent": "Ein Textblock, ruhige Flaeche, keine konkurrierende Grafik. Der Zeilenumbruch folgt dem Sinn, nicht der Kante.",
+        "visualHierarchy": "NOT_APPLICABLE",
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
-        "mustShow": [],
+        "mustShow": [
+          "Den Klarnamen \"Gerade in Bewegung\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
           "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
@@ -348,11 +347,35 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": null,
-        "notApplicable": {},
+        "mobileFocalPoint": "Der Satz selbst, vollstaendig lesbar ohne Zoom. Gerade in Bewegung muss darin vorkommen, sonst weiss der Leser nicht, wovon die Rede ist.",
+        "notApplicable": {
+          "visualHierarchy": "Die Form traegt genau ein Element - den Satz. Eine Rangfolge ueber mehrere Bildelemente existiert nicht und waere hier erfunden."
+        },
         "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
           "brandIntent": [
             "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -362,20 +385,18 @@
         },
         "justifiedGenericMotifs": [],
         "derivation": {
-          "derived": false,
+          "derived": true,
           "strategy": "MINIMAL_TYPOGRAPHY",
-          "missingInputs": [
-            "statement"
-          ],
+          "missingInputs": [],
           "tension": {
             "kind": "PEER_SPREAD",
             "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Die Form MINIMAL_TYPOGRAPHY braucht statement. Das liegt nicht vor, also entsteht keine Idee. Ein Satz, der auch ohne diese Daten entstuende, waere ein Default."
+          "explanation": "Abgeleitet aus MINIMAL_TYPOGRAPHY auf Gerade in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -395,28 +416,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "MINIMAL_TYPOGRAPHY",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_b203d737de9853eb.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: coreIdea, oneSecondMessage, mobileFocalPoint, compositionIntent, visualHierarchy, mustShow). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
               "id": "redundant-hook",
               "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -424,15 +439,16 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "SCROLL_STOP_QUALITY nicht bestanden (MESSUNG_FEHLT): Das Bild wurde nicht vermessen. Ob sein Text traegt, ist damit unbekannt - und unbekannt ist hier nicht bestanden (§15)."
       }
     },
     {
-      "decidedAt": "2026-09-22T08:24:10.156Z",
+      "decidedAt": "2026-09-22T09:40:23.564Z",
       "packageId": "pkg_784077f8af718014",
       "topic": "Comeback?",
       "archetype": "RANKING_LIST",
@@ -537,7 +553,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 420. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Moderna steht bei 154,04, Agenus bei 7,85 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "420 von 5954 geprüften Titeln - Comeback?.",
         "mainSubject": "Comeback?",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -604,8 +620,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Comeback? mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -625,28 +641,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_784077f8af718014.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
               "id": "redundant-hook",
               "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -654,15 +664,16 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-22T08:24:10.156Z",
+      "decidedAt": "2026-09-22T09:40:23.564Z",
       "packageId": "pkg_9ac8fdc7dd8bd5f3",
       "topic": "Stärkste Aktien im Dow Jones",
       "archetype": "RANKING_LIST",
@@ -764,7 +775,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 30. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Stärkste Aktien im Dow Jones, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Travelers Companies steht bei 374,62, Merck & Co bei 146,87 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "30 von 5954 geprüften Titeln - Stärkste Aktien im Dow Jones.",
         "mainSubject": "Stärkste Aktien im Dow Jones",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -831,8 +842,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Stärkste Aktien im Dow Jones mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -852,28 +863,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_9ac8fdc7dd8bd5f3.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
               "id": "redundant-hook",
               "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -881,15 +886,16 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-22T08:24:10.156Z",
+      "decidedAt": "2026-09-22T09:40:23.564Z",
       "packageId": "pkg_4b7f5c825836f1ee",
       "topic": "Fundamentale Turnarounds",
       "archetype": "RANKING_LIST",
@@ -994,7 +1000,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 308. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Fundamentale Turnarounds, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Inspire Medical Systems steht bei 76,78, Rapid7 bei 11,97 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
         "mainSubject": "Fundamentale Turnarounds",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -1061,8 +1067,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Fundamentale Turnarounds mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -1082,28 +1088,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4b7f5c825836f1ee.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
               "id": "redundant-hook",
               "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -1111,11 +1111,12 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     }
   ]
