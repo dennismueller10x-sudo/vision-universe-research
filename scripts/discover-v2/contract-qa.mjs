@@ -23,6 +23,7 @@ const worker=read('worker/src/vu-live.mjs');
 const meta=json('discover/data/meta.json');
 const feed=json('discover/data/feed/US_REAL.json');
 const search=json('discover/data/search/US_REAL.json');
+const recognition=json('discover/config/company-recognition.json');
 
 const checks=[];
 function check(name,fn){fn();checks.push({name,status:'PASS'});}
@@ -94,6 +95,13 @@ check('Canonical feed entries remain members of the canonical feed order',()=>{
   const order=new Set(feed.order.map(entry=>entry.s));
   assert(feed.cards.length>0);
   for(const card of feed.cards) assert(order.has(card.symbol),card.symbol);
+});
+
+check('Business descriptions stay in the canonical editorial metadata contract',()=>{
+  const crwd=json('discover/data/stocks/US_REAL/CRWD.json');
+  assert.equal(crwd.was,recognition.businessDescriptions.CRWD);
+  assert.equal(recognition.companies.CRWD,undefined,'Business copy must not imply name recognition');
+  assert.equal(crwd.recognitionTier,null,'Description-only metadata must not change discovery ranking');
 });
 
 const details=readdirSync('discover/data/stocks/US_REAL').filter(name=>name.endsWith('.json'))

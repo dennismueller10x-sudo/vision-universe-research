@@ -78,6 +78,7 @@ html[data-theme=light] body.dv2{
 html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 .dv2 .v2-bar{position:relative;z-index:310}
 .dv2 .v2-wordmark{font-weight:800;letter-spacing:-.045em}
+.dv2:not(.v2-feed-active) .v2-main{min-height:calc(100dvh - 88px)}
 
 /* Desktop keeps the useful information architecture in the header. */
 @media(min-width:761px){
@@ -117,23 +118,25 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 @media(max-width:760px){
   body.dv2{background:#fff}
   html:not([data-theme=light]) body.dv2{background:var(--v2-bg)}
+  .dv2:not(.v2-feed-active) .v2-main{min-height:calc(100dvh - 70px)}
   .dv2 .v2-main{padding-bottom:118px}.dv2 .v2-footer{padding-bottom:145px}
   .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{
     left:14px;right:14px;bottom:max(12px,env(safe-area-inset-bottom));
     grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;
-    padding:6px;border:1px solid #ffffff94;border-radius:25px;
-    background:#f7f7f4c9;color:#101113;
-    -webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);
-    box-shadow:0 16px 48px #0000002b,0 2px 8px #00000012,inset 0 1px 0 #fff;
+    padding:7px;border:1px solid #ffffffd4;border-radius:36px;
+    background:rgba(255,255,255,.88);color:#101113;
+    -webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);
+    box-shadow:0 18px 55px #00000026,0 2px 9px #00000010,inset 0 1px 0 #fff;
   }
-  html:not([data-theme=light]) .dv2 .v2-dock,html:not([data-theme=light]) .dv2.v2-feed-active .v2-dock{background:#17181bce;color:#fff;border-color:#ffffff24;box-shadow:0 16px 52px #0009,inset 0 1px 0 #ffffff18}
-  .dv2 .v2-dock .v2-nav-item{gap:4px;min-height:54px;padding:7px 2px;border-radius:19px;color:#5f6268;background:transparent;font-size:10px;font-weight:700;transition:transform .16s ease,background-color .16s ease,color .16s ease}
-  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item{color:#b9bbc0}
+  html:not([data-theme=light]) .dv2 .v2-dock,html:not([data-theme=light]) .dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.88);color:#101113;border-color:#ffffffd4;box-shadow:0 18px 55px #0008,inset 0 1px 0 #fff}
+  .dv2 .v2-dock .v2-nav-item{gap:5px;min-height:62px;padding:8px 2px;border-radius:29px;color:#34373c;background:transparent;font-size:10.5px;font-weight:720;transition:transform .16s ease,background-color .16s ease,color .16s ease}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item{color:#34373c}
+  .dv2 .v2-nav-icon{width:22px;height:22px}
   .dv2 .v2-dock .v2-nav-item:active{transform:scale(.96)}
   .dv2 .v2-dock .v2-nav-item[aria-current=page],.dv2 .v2-dock .v2-nav-item.is-active,.dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#101113;color:#fff;box-shadow:0 7px 18px #0003}
-  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#fff;color:#111214;box-shadow:0 7px 20px #0007}
-  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:#5f6268}
-  .dv2 .v2-world-directory{grid-template-columns:1fr;gap:13px}.dv2 .v2-world-door{min-height:210px;padding:22px;border-radius:24px}.dv2 .v2-world-door h2{font-size:clamp(25px,7.2vw,31px);max-width:12ch}.dv2 .v2-world-door p{max-width:35ch}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#101113;color:#fff;box-shadow:0 7px 18px #0003}
+  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:#34373c}
+  .dv2 .v2-world-directory{grid-template-columns:1fr;gap:18px;scroll-snap-type:y proximity}.dv2 .v2-world-door{min-height:calc(100svh - 112px);padding:30px 26px;border-radius:28px;scroll-snap-align:start}.dv2 .v2-world-door h2{font-size:clamp(38px,11vw,52px);line-height:.96;max-width:10ch;margin-top:auto}.dv2 .v2-world-door p{max-width:30ch;font-size:15px;line-height:1.55}.dv2 .v2-world-door-arrow{margin-top:28px;font-size:14px}.dv2 .v2-world-door:before{width:340px;height:340px;right:-125px;bottom:-145px}
   body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 146px - env(safe-area-inset-bottom));padding:0}
 }
 @media(max-width:360px){.dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{left:8px;right:8px}.dv2 .v2-dock .v2-nav-item{font-size:9px}}

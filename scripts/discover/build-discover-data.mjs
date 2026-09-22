@@ -69,7 +69,11 @@ DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
 /* Redaktionelle Metadata (V3). Beides ist Beschriftung, keine Kennzahl:
    die Bekanntheitsliste bestimmt nie, OB ein Titel in einer Reihe steht,
    und ein Thema ist eine Zuordnung, keine Aussage ueber eine Aktie. */
-const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies || {};
+const EDITORIAL_COMPANIES = readJSON(join(root, "discover", "config", "company-recognition.json"));
+const RECOGNITION = EDITORIAL_COMPANIES.companies || {};
+/* Pure business copy is intentionally separate from recognition. Adding a
+   description must never grant a relevance bonus or move a discovery row. */
+const BUSINESS_DESCRIPTIONS = EDITORIAL_COMPANIES.businessDescriptions || {};
 
 /* Kompakte Kursreihen (ein Jahr Tagesschluss) fuer den freigegebenen
    Umfang - quant/data/market/discover-series/, geschrieben von
@@ -536,7 +540,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
           ? microSeries(kompaktDated, kompakt.provider || "tiingo", kompakt.priceSeriesType || "SPLIT_ADJUSTED")
           : withheldSeries("WITHHELD_REDISTRIBUTION",
               "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
-      was: erkannt ? erkannt.was : null,
+      was: erkannt && erkannt.was ? erkannt.was : (BUSINESS_DESCRIPTIONS[sec.ticker] || null),
       recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
       bars: isNum(sec.bars) ? sec.bars : null,
