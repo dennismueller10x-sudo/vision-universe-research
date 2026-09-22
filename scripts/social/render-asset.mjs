@@ -1350,9 +1350,28 @@ export function chromiumPfad() {
    -Uploads ohnehin braucht, ist bei chromium ab Werk verbunden und
    spiegelt das ECHTE $HOME. Die Arbeitsdatei liegt deshalb dort - kein
    zweiter Prozess, kein Server, nur ein anderer Pfad fuer dieselbe
-   Datei. */
+   Datei.
+
+   NACHTRAG — DER ERSTE VERSUCH TRAF EINEN ZWEITEN, ENGEREN ZAUN
+
+   `~/.vu-render-arbeit` (mit fuehrendem Punkt) aenderte den Befund,
+   loeste ihn aber nicht: derselbe Chromium-Build meldete nicht mehr
+   "It may have been moved, edited, or deleted." (ERR_FILE_NOT_FOUND),
+   sondern "is not readable. It may have been removed, moved, or file
+   permissions may be preventing access." - ein ANDERER, spezifischerer
+   Chromium-Fehlertext fuer denselben Build, also ein echter Messwert
+   und keine Formulierungsvariante. `existsSync(htmlPfad)` direkt davor
+   bestaetigte zugleich: aus Sicht dieses Node-Prozesses existierte die
+   Datei zweifelsfrei.
+
+   Das passt zu einer bekannten Einschraenkung von snapd's `home`-
+   Interface: sein AppArmor-Profil gewaehrt zwar Zugriff auf das echte
+   $HOME, aber nicht auf PUNKT-PRAEFIGIERTE Eintraege direkt darunter -
+   dieselbe Regel, die verhindert, dass ein Browser-Snap ~/.ssh oder
+   ~/.aws lesen kann. `.vu-render-arbeit` fiel unter genau dieses
+   Muster. Der Ordner traegt deshalb jetzt keinen fuehrenden Punkt mehr. */
 export function arbeitsVerzeichnis() {
-  const pfad = join(homedir(), ".vu-render-arbeit");
+  const pfad = join(homedir(), "vu-render-arbeit");
   mkdirSync(pfad, { recursive: true });
   return pfad;
 }
@@ -1410,8 +1429,10 @@ export function messeSeite(htmlPfad, breite, hoehe) {
 
      Bis eine echte Ursache gemessen ist, wird sie protokolliert -
      nicht geraten. Das Verhalten bei Erfolg bleibt unveraendert. */
-  console.error("messeSeite: existsSync(htmlPfad)=" + existsSync(htmlPfad) +
-    " htmlPfad=" + htmlPfad);
+  const vorher = existsSync(htmlPfad) ? statSync(htmlPfad) : null;
+  console.error("messeSeite: existsSync(htmlPfad)=" + !!vorher +
+    " htmlPfad=" + htmlPfad +
+    (vorher ? " mode=" + vorher.mode.toString(8) + " groesse=" + vorher.size : ""));
   let dom;
   try {
     dom = execFileSync(chromiumPfad(), [
