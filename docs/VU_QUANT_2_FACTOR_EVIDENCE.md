@@ -110,13 +110,15 @@ Banken, Versicherern und REITs nach derselben Formel definiert.
 | `totalReturn12m1m` | 30 % | Gesamtrendite T−252 bis T−21 | 252/21 Sitzungen | höher | verfügbar, **Pflicht** |
 | `totalReturn6m` | 20 % | Gesamtrendite | 126 Sitzungen | höher | verfügbar |
 | `totalReturn3m` | 10 % | Gesamtrendite | 63 Sitzungen | höher | verfügbar |
-| `relativeStrength12m1m` | 20 % | Titel 12-1 minus Vergleichsindex 12-1 | 252/21 Sitzungen | höher | **fehlt** — Gate `RELATIVE_STRENGTH_12M1M` |
+| `relativeStrength12m1m` | 20 % | Titel 12-1 minus Vergleichsindex 12-1 | 252/21 Sitzungen | höher | in `market-factors-1.0.0` implementiert, erscheint mit dem nächsten Marktdaten-Lauf |
 | `distanceTo52wHigh` | 10 % | (Hoch₂₅₂ − Kurs) / Hoch₂₅₂ | 252 Sitzungen | niedriger | verfügbar |
 | `distanceToSma200` | 10 % | (Kurs − SMA200) / SMA200 | 200 Sitzungen | höher | verfügbar |
 
-Zur relativen Stärke: Das Kursfaktor-Artefakt führt sie über volle 12 Monate, die Methodik
-verlangt das 12-1-Fenster. Das Fenster zu tauschen wäre eine stille Ersetzung; die Komponente
-bleibt deshalb geschlossen. Verfügbares Gewicht damit 80 %, über dem Minimum von 60 %.
+Zur relativen Stärke: Das ausgelieferte Kursfaktor-Artefakt führt sie bisher nur über volle
+12 Monate, die Methodik verlangt das 12-1-Fenster. Das Fenster zu tauschen wäre eine stille
+Ersetzung; stattdessen rechnet `market-factors-1.0.0` die Größe jetzt selbst, und die Komponente
+öffnet sich mit dem nächsten Marktdaten-Lauf. Bis dahin beträgt das verfügbare Gewicht 80 %,
+über dem Minimum von 60 %.
 Kursbasis: `adjustedClose`, in der Semantikleiter `TOTAL_RETURN`, ausgewiesen als solche.
 
 ### 3.4 Value — „Was bezahle ich für das, was das Unternehmen verdient?“
@@ -152,16 +154,19 @@ SEC-Restatements sind ausdrücklich nicht dieser Faktor.
 | Komponente | Gewicht | Eingabe | Fenster | Richtung | Stand |
 |---|---:|---|---|---|---|
 | `realizedVolatility252d` | 35 % | annualisierte Volatilität der Tages-Logrenditen | 252 Sitzungen | niedriger | verfügbar, **Pflicht** |
-| `downsideVolatility252d` | 25 % | annualisierte Halbabweichung der negativen Tages-Logrenditen | 252 Sitzungen | niedriger | **hier berechnet** |
+| `downsideVolatility252d` | 25 % | annualisierte Halbabweichung der negativen Tages-Logrenditen | 252 Sitzungen | niedriger | in `market-factors-1.0.0`, mit Übergangs-Ableitung |
 | `maxDrawdown252d` | 25 % | größter Spitze-zu-Tal-Rückgang, als Betrag | 252 Sitzungen | niedriger | verfügbar |
-| `beta252d` | 15 % | Kovarianz zum Vergleichsindex / Indexvarianz | 252 Sitzungen | niedriger | **fehlt** — Gate `BETA_252D` |
+| `beta252d` | 15 % | Kovarianz zum Vergleichsindex / Indexvarianz | 252 Sitzungen | niedriger | in `market-factors-1.0.0` implementiert, erscheint mit dem nächsten Marktdaten-Lauf |
 
-`downsideVolatility252d` wird aus der veröffentlichten 270-Tage-Reihe berechnet, nach derselben
-Log-Rendite- und √252-Konvention wie `market-factors-1.0.0`, und erst ab 240 gültigen Renditen.
-Ihre Kursbasis ist `SPLIT_ADJUSTED` und wird je Komponente ausdrücklich so ausgewiesen — die
-Methodik verbietet, zwei Basen als eine auszugeben, nicht, sie nebeneinander zu benennen.
-Beta fehlt, weil die Tagesreihe des Vergleichsindex nicht veröffentlicht ist; sein Name steht im
-Kursfaktor-Artefakt, seine Reihe nicht.
+`downsideVolatility252d` und `beta252d` rechnet inzwischen `market-factors-1.0.0` selbst, an
+derselben Stelle wie `volatility252d` und die relative Stärke, auf derselben Reihe und derselben
+Log-Rendite- und √252-Konvention, jeweils erst ab 240 gültigen Renditen. Beta paart Titel und
+Vergleichsindex **über die Handelstage**: ein Tag ohne Gegenstück fällt heraus, statt die Reihe
+zu verschieben — positionsweises Zippen würde bei jedem Feiertag jede weitere Rendite gegen den
+falschen Tag rechnen. Solange das ausgelieferte Artefakt die beiden Felder noch nicht führt,
+leitet der Materializer `downsideVolatility252d` aus der veröffentlichten 270-Tage-Reihe ab und
+weist dafür die Kursbasis `SPLIT_ADJUSTED` je Komponente aus; `beta252d` bleibt bis dahin leer,
+weil die Tagesreihe des Vergleichsindex nicht mit veröffentlicht wird.
 Höher bedeutet **geringeres** beobachtetes Risiko. Vergangene Schwankungen sind keine
 Verlustprognose.
 
@@ -210,8 +215,8 @@ Sie stehen maschinenlesbar in `summary.json` unter `openInputGates`:
 |---|---|---|
 | `OPERATING_INCOME` | `quality.operatingMarginStability`, `growth.operatingMarginExpansion3y`, `profitability.operatingMarginTtm`, `profitability.roicTtm`, `profitability.roicMedian3y` | SEC-Normalisierung, Metric Registry (mapping 1.5.0) |
 | `EBITDA` | `value.ebitdaYield` | SEC-Normalisierung, Metric Registry |
-| `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` |
-| `RELATIVE_STRENGTH_12M1M` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` |
+| `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
+| `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implementiert, wartet auf den nächsten Marktdaten-Lauf |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC-Normalisierung |
 | `PIT_ANALYST_CONSENSUS` | `revisions.*` | externe Lizenz |
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | `quality.*`, `value.*`, `profitability.*` für 967 Titel | Quant-V2-Methodik |

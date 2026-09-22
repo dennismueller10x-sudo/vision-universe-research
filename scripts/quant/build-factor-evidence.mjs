@@ -49,20 +49,18 @@ const PRICE_COMPONENTS = {
     { id: "totalReturn12m1m", weight: 0.30, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
     { id: "totalReturn6m", weight: 0.20, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
     { id: "totalReturn3m", weight: 0.10, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
-    { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED",
-      note: "Das Kursfaktor-Artefakt führt die relative Stärke über volle 12 Monate, nicht über das 12-1-Fenster der Methodik. Ein Fenstertausch wäre eine stille Ersetzung." },
+    { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.relativeStrength12M1M,
+      note: "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle." },
     { id: "distanceTo52wHigh", weight: 0.10, direction: "lower", label: "Abstand zum 52-Wochen-Hoch", unit: "ratio", read: (v) => (finite(v.distanceTo52wHigh) ? -v.distanceTo52wHigh : null) },
     { id: "distanceToSma200", weight: 0.10, direction: "higher", label: "Abstand zur 200-Tage-Linie", unit: "ratio", read: (v) => v.distanceToSMA200 }
   ],
   risk: [
     { id: "realizedVolatility252d", weight: 0.35, direction: "lower", label: "Schwankungsbreite 1 Jahr", unit: "ratio", read: (v) => v.volatility252d },
     { id: "downsideVolatility252d", weight: 0.25, direction: "lower", label: "Schwankungsbreite der Verlusttage", unit: "ratio", read: (v) => v.downsideVolatility252d,
-      basis: "SPLIT_ADJUSTED",
-      note: "Aus der veröffentlichten 270-Tage-Kursreihe berechnet: annualisierte Halbabweichung der negativen Tages-Logrenditen über 252 Sitzungen. Kursbasis splitbereinigt und hier ausdrücklich so ausgewiesen; sie wird nicht als Gesamtrendite ausgegeben." },
+      note: "Annualisierte Halbabweichung der negativen Tages-Logrenditen über 252 Sitzungen. Sie kommt aus dem Kursfaktor-Artefakt, sobald dieses sie führt; bis dahin wird sie aus der veröffentlichten 270-Tage-Reihe abgeleitet und trägt dann die Kursbasis SPLIT_ADJUSTED." },
     { id: "maxDrawdown252d", weight: 0.25, direction: "lower", label: "Größter Rückgang im Jahr", unit: "ratio", read: (v) => (finite(v.maxDrawdown252d) ? Math.abs(v.maxDrawdown252d) : null) },
-    { id: "beta252d", weight: 0.15, direction: "lower", label: "Marktsensitivität (Beta)", unit: "ratio",
-      unavailable: "INPUT_NOT_MATERIALIZED", note: "Beta gegen den zertifizierten Vergleichsindex wird von market-factors-1.0.0 nicht berechnet." }
+    { id: "beta252d", weight: 0.15, direction: "lower", label: "Marktsensitivität (Beta)", unit: "ratio", read: (v) => v.beta252d,
+      note: "Kovarianz der Tagesrenditen zum Vergleichsindex, geteilt durch dessen Varianz, über 252 Sitzungen. Gepaart wird über die Handelstage; ein Tag ohne Gegenstück fällt heraus." }
   ]
 };
 
@@ -353,7 +351,7 @@ function main() {
     const quote = closeByTicker.get(ticker) || null;
     /* The certified price factors plus the one value derived here from the
        published bar series. Derived values keep their own basis label. */
-    const price = finite(quote?.downsideVolatility252d)
+    const price = !finite(security.values?.downsideVolatility252d) && finite(quote?.downsideVolatility252d)
       ? { ...(security.values || {}), downsideVolatility252d: quote.downsideVolatility252d }
       : (security.values || {});
     const priceStatus = security.fieldStatus || {};
@@ -651,9 +649,9 @@ function main() {
     openInputGates: [
       { id: "OPERATING_INCOME", blocks: ["quality.operatingMarginStability", "growth.operatingMarginExpansion3y", "profitability.operatingMarginTtm", "profitability.roicTtm", "profitability.roicMedian3y"], owner: "SEC normalization metric registry (mapping 1.5.0)" },
       { id: "EBITDA", blocks: ["value.ebitdaYield"], owner: "SEC normalization metric registry (mapping 1.5.0)" },
-      { id: "BETA_252D", blocks: ["risk.beta252d"], owner: "market-factors-1.0.0", detail: "Der Vergleichsindex ist im Kursfaktor-Artefakt genannt, seine Tagesreihe ist aber nicht veröffentlicht; Beta lässt sich daraus nicht bilden." },
+      { id: "BETA_252D", blocks: ["risk.beta252d"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer." },
+      { id: "RELATIVE_STRENGTH_12M1M_MATERIALIZATION", blocks: ["momentum.relativeStrength12m1m"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt." },
       { id: "NET_DEBT_PERIOD_ALIGNMENT", blocks: ["quality.netDebtToAssets", "value.salesYield"], owner: "SEC normalization", detail: "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt." },
-      { id: "RELATIVE_STRENGTH_12M1M", blocks: ["momentum.relativeStrength12m1m"], owner: "market-factors-1.0.0" },
       { id: "PIT_ANALYST_CONSENSUS", blocks: ["revisions.*"], owner: "external licence" },
       { id: "INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS", blocks: ["quality.*", "value.*", "profitability.*"], owner: "quant-v2 methodology" },
       { id: "FACTOR_SNAPSHOT_HISTORY", blocks: ["change.scoreMomentum"], owner: "this materializer, from its first weekly snapshot forward" }

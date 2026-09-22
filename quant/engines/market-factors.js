@@ -252,6 +252,26 @@
       fieldStatus[key] = isNum(sd) ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
     });
 
+    /* Abwaerts-Schwankungsbreite: dieselbe Log-Rendite- und
+       Wurzel-252-Konvention wie oben, aber nur die Verlusttage zaehlen.
+       Halbabweichung um null, nicht Standardabweichung der negativen
+       Teilmenge: sonst haette ein Titel mit wenigen, tiefen Verlusttagen
+       dieselbe Zahl wie einer mit vielen flachen.
+
+       Warum hier und nicht erst im Faktor: Quant V2 verlangt diese
+       Groesse als Risikokomponente. Sie an der Stelle zu rechnen, an der
+       auch volatility252d entsteht, haelt beide auf derselben Reihe und
+       derselben Konvention. */
+    if (i + 1 < YEAR_WINDOW + 1) {
+      values.downsideVolatility252d = null;
+      fieldStatus.downsideVolatility252d = STATUS.INSUFFICIENT_HISTORY;
+    } else {
+      var downside = downsideVolatility(logRet, i, YEAR_WINDOW);
+      values.downsideVolatility252d = round(downside, 6);
+      fieldStatus.downsideVolatility252d = isNum(downside)
+        ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
+    }
+
     /* Maximaler Rueckgang ueber ein Jahr. Der Risikofaktor, der ohne
        Fundamentaldaten auskommt (§17). */
     if (i + 1 >= YEAR_WINDOW) {
@@ -352,6 +372,66 @@
       fieldStatus.relativeStrength[h] = STATUS.CALCULATED;
     });
 
+    /* Relative Staerke ueber das 12-1-Fenster.
+
+       Dieselbe Definition wie oben - Differenz der Log-Renditen ueber
+       denselben Horizont -, nur ohne den letzten Monat, passend zu
+       return12M1M. Quant V2 verlangt genau dieses Fenster; die volle
+       Zwoelfmonatsreihe daneben ist eine andere Groesse und darf nicht
+       an ihrer Stelle stehen. */
+    if (!bench) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.SOURCE_MISSING;
+    } else if (benchIndex < 0) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.NOT_APPLICABLE;
+    } else if (i - 252 < 0 || benchIndex - 252 < 0 ||
+               !isNum(close[i - 21]) || !isNum(close[i - 252]) || close[i - 252] <= 0 ||
+               !isNum(bench[benchIndex - 21]) || !isNum(bench[benchIndex - 252]) || bench[benchIndex - 252] <= 0) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.INSUFFICIENT_HISTORY;
+    } else {
+      values.relativeStrength12M1M = round(
+        Math.log(close[i - 21] / close[i - 252]) -
+        Math.log(bench[benchIndex - 21] / bench[benchIndex - 252]), 6);
+      fieldStatus.relativeStrength12M1M = STATUS.CALCULATED;
+    }
+
+    /* ------------------------------------------------------- Beta
+
+       Kovarianz der Tagesrenditen zur Benchmark, geteilt durch deren
+       Varianz, ueber ein Jahr.
+
+       Der heikle Teil ist nicht die Formel, sondern die Paarung: ein
+       Handelstag des Titels und ein Handelstag der Benchmark sind nur
+       dann dasselbe Intervall, wenn beide Enden auf denselben Daten
+       liegen. Positionsweises Zippen waere bequem und wuerde bei jedem
+       Titel mit einem Feiertag oder einer Handelsunterbrechung eine
+       Rendite gegen den falschen Tag rechnen. Deshalb wird ueber die
+       Daten gepaart, und ein Tag ohne Gegenstueck faellt heraus statt
+       verschoben zu werden.
+
+       Quant V2 verlangt mindestens 240 ausgerichtete Renditen; darunter
+       bleibt das Feld leer. */
+    if (!bench || !benchDates) {
+      values.beta252d = null;
+      fieldStatus.beta252d = bench ? STATUS.INSUFFICIENT_HISTORY : STATUS.SOURCE_MISSING;
+    } else {
+      /* Einmal je Benchmarkreihe, nicht einmal je Titel: ueber tausende
+         Titel ist das der Unterschied zwischen Sekunden und Minuten. Der
+         Index liegt neben der Reihe statt in ihr, damit diese Engine die
+         uebergebenen Daten nicht veraendert. */
+      var benchByDate = BENCH_INDEX.get(opts.benchmark);
+      if (!benchByDate) {
+        benchByDate = Object.create(null);
+        for (var bx = 0; bx < benchDates.length; bx++) benchByDate[benchDates[bx]] = bench[bx];
+        BENCH_INDEX.set(opts.benchmark, benchByDate);
+      }
+      var beta = betaAgainst(bars, close, i, YEAR_WINDOW, benchByDate);
+      values.beta252d = round(beta, 6);
+      fieldStatus.beta252d = isNum(beta) ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
+    }
+
     return {
       version: VERSION,
       ticker: payload.ticker || null,
@@ -373,6 +453,64 @@
       values: values,
       fieldStatus: fieldStatus
     };
+  }
+
+  /* Mindestzahl ausgerichteter Tagesrenditen aus quant-v2.0.0
+     (risk.minimumValidReturns und minimumAlignedBenchmarkReturnsForBeta).
+     Hier, damit Berechnung und Schwelle nicht auseinanderlaufen. */
+  var MINIMUM_VALID_RETURNS = 240;
+
+  /* Datumsindex je uebergebener Benchmarkreihe. WeakMap, damit eine nicht
+     mehr benutzte Reihe nicht am Index haengen bleibt. */
+  var BENCH_INDEX = new WeakMap();
+
+  /**
+   * Annualisierte Halbabweichung der negativen Tages-Logrenditen.
+   *
+   * `logRet` ist die bereits gebildete Logrenditenreihe, `i` der
+   * Stichtagsindex, `window` die Fensterlaenge in Sitzungen. Gibt null
+   * zurueck, solange weniger als MINIMUM_VALID_RETURNS gueltige
+   * Renditen im Fenster liegen.
+   */
+  function downsideVolatility(logRet, i, window) {
+    var valid = 0, sum = 0;
+    for (var k = i - window + 1; k <= i; k++) {
+      if (k < 0 || !isNum(logRet[k])) continue;
+      valid += 1;
+      if (logRet[k] < 0) sum += logRet[k] * logRet[k];
+    }
+    if (valid < MINIMUM_VALID_RETURNS || valid < 2) return null;
+    return Math.sqrt(sum / (valid - 1)) * Math.sqrt(252);
+  }
+
+  /**
+   * Beta gegen eine nach Datum ausgerichtete Benchmarkreihe.
+   *
+   * Gepaart wird ueber die Handelstage des Titels: eine Rendite zaehlt
+   * nur, wenn die Benchmark sowohl den Tag als auch den Vortag desselben
+   * Intervalls kennt.
+   */
+  function betaAgainst(bars, close, i, window, benchByDate) {
+    var xs = [], ys = [];
+    for (var k = i - window + 1; k <= i; k++) {
+      if (k < 1 || !bars[k] || !bars[k - 1]) continue;
+      var b1 = benchByDate[bars[k].date], b0 = benchByDate[bars[k - 1].date];
+      if (!isNum(b1) || !isNum(b0) || b0 <= 0) continue;
+      if (!isNum(close[k]) || !isNum(close[k - 1]) || close[k - 1] <= 0) continue;
+      ys.push(Math.log(close[k] / close[k - 1]));
+      xs.push(Math.log(b1 / b0));
+    }
+    if (xs.length < MINIMUM_VALID_RETURNS) return null;
+    var n = xs.length, meanX = 0, meanY = 0, j;
+    for (j = 0; j < n; j++) { meanX += xs[j]; meanY += ys[j]; }
+    meanX /= n; meanY /= n;
+    var covariance = 0, variance = 0;
+    for (j = 0; j < n; j++) {
+      covariance += (xs[j] - meanX) * (ys[j] - meanY);
+      variance += (xs[j] - meanX) * (xs[j] - meanX);
+    }
+    if (!(variance > 0)) return null;
+    return covariance / variance;
   }
 
   /* Felder, die eine Kursgroesse tragen und deshalb nicht in ein
@@ -413,8 +551,11 @@
     YEAR_WINDOW: YEAR_WINDOW,
     STATUS: STATUS,
     PRICE_LEVEL_FIELDS: PRICE_LEVEL_FIELDS,
+    MINIMUM_VALID_RETURNS: MINIMUM_VALID_RETURNS,
     priceBasis: priceBasis,
     computeFactors: computeFactors,
+    downsideVolatility: downsideVolatility,
+    betaAgainst: betaAgainst,
     stripPriceLevels: stripPriceLevels
   };
 

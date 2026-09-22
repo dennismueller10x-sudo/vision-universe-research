@@ -218,6 +218,91 @@ test("MS9 — ohne Benchmark bleibt die relative Staerke leer, mit Grund", () =>
   assert.equal(typeof mit.values.relativeStrength["12M"], "number");
 });
 
+/* Die drei Groessen, die Quant V2 als Risiko- und Momentumkomponenten
+   verlangt und die vorher niemand gerechnet hat. Sie entstehen hier, weil
+   hier auch volatility252d und die relative Staerke entstehen - auf
+   derselben Reihe und derselben Konvention. */
+
+test("MS9a — die Abwaerts-Schwankungsbreite zaehlt nur Verlusttage und verlangt ein volles Jahr", () => {
+  const steigend = MarketFactors.computeFactors(
+    series(400, { prices: new Array(400).fill(0).map((_, i) => 100 * Math.exp(i * 0.0004)) }));
+  assert.equal(steigend.fieldStatus.downsideVolatility252d, "CALCULATED");
+  assert.equal(steigend.values.downsideVolatility252d, 0,
+               "eine Reihe ohne einen einzigen Verlusttag hat keine Abwaertsschwankung");
+
+  const schwankend = MarketFactors.computeFactors(series(400));
+  assert.equal(schwankend.fieldStatus.downsideVolatility252d, "CALCULATED");
+  assert.ok(schwankend.values.downsideVolatility252d > 0);
+  /* Nur die Verlusttage: die Halbabweichung kann die volle Schwankungs-
+     breite nicht uebersteigen. */
+  assert.ok(schwankend.values.downsideVolatility252d <= schwankend.values.volatility252d + 1e-9);
+
+  const kurz = MarketFactors.computeFactors(series(200));
+  assert.equal(kurz.values.downsideVolatility252d, null);
+  assert.equal(kurz.fieldStatus.downsideVolatility252d, "INSUFFICIENT_HISTORY");
+});
+
+test("MS9b — Beta rechnet gegen die Benchmark und bleibt ohne ausgerichtete Reihe leer", () => {
+  const preise = new Array(400).fill(0).map((_, i) => 100 * Math.exp(i * 0.0006 + Math.sin(i / 11) * 0.03));
+  const titel = series(400, { prices: preise });
+  const dates = titel.bars.map((b) => b.date);
+
+  /* Identische Reihe: Beta ist per Definition 1, die relative Staerke 0. */
+  const gleich = MarketFactors.computeFactors(titel, { benchmark: { dates, closes: preise.slice() } });
+  assert.equal(gleich.fieldStatus.beta252d, "CALCULATED");
+  assert.ok(Math.abs(gleich.values.beta252d - 1) < 1e-6, "erhalten: " + gleich.values.beta252d);
+  assert.equal(gleich.fieldStatus.relativeStrength12M1M, "CALCULATED");
+  assert.ok(Math.abs(gleich.values.relativeStrength12M1M) < 1e-6);
+
+  /* Doppelte Log-Renditen: Beta ist 2. */
+  const haelfte = [100];
+  for (let i = 1; i < 400; i += 1) haelfte.push(haelfte[i - 1] * Math.exp(Math.log(preise[i] / preise[i - 1]) / 2));
+  const doppelt = MarketFactors.computeFactors(titel, { benchmark: { dates, closes: haelfte } });
+  assert.ok(Math.abs(doppelt.values.beta252d - 2) < 1e-6, "erhalten: " + doppelt.values.beta252d);
+
+  /* Ohne Datumsreihe laesst sich kein Tag paaren - und ein positions-
+     weiser Notbehelf waere schlimmer als kein Wert. */
+  const ohneDaten = MarketFactors.computeFactors(titel, { benchmark: { closes: preise.slice() } });
+  assert.equal(ohneDaten.values.beta252d, null);
+  assert.equal(ohneDaten.fieldStatus.beta252d, "INSUFFICIENT_HISTORY");
+
+  const ohneBenchmark = MarketFactors.computeFactors(titel);
+  assert.equal(ohneBenchmark.fieldStatus.beta252d, "SOURCE_MISSING");
+  assert.equal(ohneBenchmark.fieldStatus.relativeStrength12M1M, "SOURCE_MISSING");
+});
+
+test("MS9c — ein Benchmarktag ohne Gegenstueck faellt heraus, statt die Reihe zu verschieben", () => {
+  const preise = new Array(420).fill(0).map((_, i) => 100 * Math.exp(i * 0.0005 + Math.sin(i / 13) * 0.02));
+  const titel = series(420, { prices: preise });
+  const dates = titel.bars.map((b) => b.date);
+
+  /* Dieselbe Reihe, aber die Benchmark kennt fuenf Tage nicht. Wer
+     positionsweise zippt, rechnet ab dort jede Rendite gegen den falschen
+     Tag und bekommt ein Beta, das nichts mehr misst. */
+  const luecken = new Set([30, 31, 90, 200, 300]);
+  const benchDates = [], benchCloses = [];
+  dates.forEach((date, i) => { if (luecken.has(i)) return; benchDates.push(date); benchCloses.push(preise[i]); });
+
+  const f = MarketFactors.computeFactors(titel, { benchmark: { dates: benchDates, closes: benchCloses } });
+  assert.equal(f.fieldStatus.beta252d, "CALCULATED");
+  assert.ok(Math.abs(f.values.beta252d - 1) < 1e-6,
+            "bei identischen Kursen muss Beta 1 bleiben, auch mit Luecken; erhalten: " + f.values.beta252d);
+});
+
+test("MS9d — unter der methodischen Mindestzahl ausgerichteter Renditen entsteht kein Beta", () => {
+  const preise = new Array(400).fill(0).map((_, i) => 100 * Math.exp(i * 0.0005));
+  const titel = series(400, { prices: preise });
+  const dates = titel.bars.map((b) => b.date);
+  /* Die Benchmark deckt nur die letzten 100 Handelstage ab. */
+  const von = dates.length - 100;
+  const f = MarketFactors.computeFactors(titel,
+    { benchmark: { dates: dates.slice(von), closes: preise.slice(von) } });
+  assert.equal(f.values.beta252d, null);
+  assert.equal(f.fieldStatus.beta252d, "INSUFFICIENT_HISTORY");
+  assert.equal(MarketFactors.MINIMUM_VALID_RETURNS, 240,
+               "die Schwelle stammt aus quant-v2.0.0 und darf nicht still wandern");
+});
+
 test("MS10 — stripPriceLevels entfernt Kursniveaus und behaelt Abstaende", () => {
   const f = MarketFactors.computeFactors(series(400));
   const s = MarketFactors.stripPriceLevels(f);

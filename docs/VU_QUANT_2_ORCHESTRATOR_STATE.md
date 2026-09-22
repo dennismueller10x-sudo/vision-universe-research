@@ -48,6 +48,12 @@ remains closed; Setup, Pattern, Strategy Match, Backtest and Market Regime remai
   security and on read in the browser. No `quantScore`, no `rank`, no score on a closed factor.
 - **Derived input added honestly**: `downsideVolatility252d` computed from the published 270-bar
   series, labelled `SPLIT_ADJUSTED` per component. This is what opened the Risk factor.
+- **Three input gates closed at the engine**: `market-factors-1.0.0` now computes
+  `downsideVolatility252d`, `beta252d` and `relativeStrength12M1M`. Beta pairs security and
+  benchmark **by trading date** — a day without a counterpart is dropped, never shifted, because
+  positional zipping would misprice every return after the first holiday. The three fields appear
+  in the artifact on the next market-data run; until then the materializer derives downside
+  volatility from the published bar series and leaves the other two typed-closed.
 - CI: factor evidence materialization wired into `product-intelligence-materialization.yml`
   right after the technical bundles it reads; new tests run in Quant CI and in that workflow.
 - Browser QA extended to the rebuilt `quant` view and the new `explain` view, both widths.
@@ -86,7 +92,7 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,428/1,428 passed locally (1,411 before, +17 new factor-evidence tests).
+- Full Quant suite: 1,432/1,432 passed locally (1,411 before; +17 factor-evidence, +4 market-factors).
 - Public data hygiene guard: passed against the new artifact.
 - Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL) and `explain`:
   one `h1` per page, no horizontal overflow, seven factors in canonical order, change groups
@@ -103,8 +109,8 @@ Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `op
 |---|---|---|
 | `OPERATING_INCOME` | 5 components across Quality, Growth, Profitability | SEC normalization metric registry (mapping 1.5.0) |
 | `EBITDA` | `value.ebitdaYield` | SEC normalization metric registry |
-| `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` (benchmark daily series is not published) |
-| `RELATIVE_STRENGTH_12M1M` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` (artifact carries 12M, contract wants 12-1) |
+| `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
+| `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC normalization (stale debt instants are dropped, not mixed) |
 | `PIT_ANALYST_CONSENSUS` | `revisions.*` | external licence |
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | Quality, Value, Profitability for 967 titles | quant-v2 methodology |
@@ -151,8 +157,9 @@ and holds back one component each in Quality and Growth.
    opens six components across three factors and is the only thing standing between the current
    state and a fully evidenced Profitability factor. Extend the existing mapping; do not add a
    Fundamentals pipeline.
-2. **`beta252d` and `relativeStrength12m1m` in `market-factors-1.0.0`**, plus publishing the
-   benchmark daily series alongside the factor artifact. Completes Momentum and Risk.
+2. **Run the market-data workflow** so the three new `market-factors-1.0.0` fields land in
+   `factors-FULL_UNIVERSE.json`, then re-materialize factor evidence. This completes Momentum
+   (100 % component weight) and Risk (100 %) without any further code.
 3. **Weekly factor snapshot** from this materializer, so `change.scoreMomentum` can open from
    real published history rather than reconstruction.
 4. **Setup Engine (M2)**: bind the canonical SetupState contract to rules over the now-available

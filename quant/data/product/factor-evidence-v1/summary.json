@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-1.0.0",
  "derivedFrom": "quant-v2.0.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-22T15:12:39.000Z",
+ "generatedAt": "2026-09-22T15:32:41.000Z",
  "asOf": "2026-09-18",
  "publication": {
   "compositeAllowed": false,
@@ -176,7 +176,7 @@
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
-   "note": "Das Kursfaktor-Artefakt führt die relative Stärke über volle 12 Monate, nicht über das 12-1-Fenster der Methodik. Ein Fenstertausch wäre eine stille Ersetzung.",
+   "note": "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle.",
    "window": "252/21 sessions",
    "input": "security 12-1 total return minus certified broad benchmark 12-1 total return"
   },
@@ -325,8 +325,8 @@
    "weight": 0.25,
    "direction": "lower",
    "unit": "ratio",
-   "basis": "SPLIT_ADJUSTED",
-   "note": "Aus der veröffentlichten 270-Tage-Kursreihe berechnet: annualisierte Halbabweichung der negativen Tages-Logrenditen über 252 Sitzungen. Kursbasis splitbereinigt und hier ausdrücklich so ausgewiesen; sie wird nicht als Gesamtrendite ausgegeben.",
+   "basis": null,
+   "note": "Annualisierte Halbabweichung der negativen Tages-Logrenditen über 252 Sitzungen. Sie kommt aus dem Kursfaktor-Artefakt, sobald dieses sie führt; bis dahin wird sie aus der veröffentlichten 270-Tage-Reihe abgeleitet und trägt dann die Kursbasis SPLIT_ADJUSTED.",
    "window": "252 sessions",
    "input": "annualized volatility of negative daily returns"
   },
@@ -346,7 +346,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Beta gegen den zertifizierten Vergleichsindex wird von market-factors-1.0.0 nicht berechnet.",
+   "note": "Kovarianz der Tagesrenditen zum Vergleichsindex, geteilt durch dessen Varianz, über 252 Sitzungen. Gepaart wird über die Handelstage; ein Tag ohne Gegenstück fällt heraus.",
    "window": "252 sessions",
    "input": "covariance with certified benchmark/benchmark variance"
   }
@@ -480,7 +480,15 @@
     "risk.beta252d"
    ],
    "owner": "market-factors-1.0.0",
-   "detail": "Der Vergleichsindex ist im Kursfaktor-Artefakt genannt, seine Tagesreihe ist aber nicht veröffentlicht; Beta lässt sich daraus nicht bilden."
+   "detail": "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer."
+  },
+  {
+   "id": "RELATIVE_STRENGTH_12M1M_MATERIALIZATION",
+   "blocks": [
+    "momentum.relativeStrength12m1m"
+   ],
+   "owner": "market-factors-1.0.0",
+   "detail": "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt."
   },
   {
    "id": "NET_DEBT_PERIOD_ALIGNMENT",
@@ -490,13 +498,6 @@
    ],
    "owner": "SEC normalization",
    "detail": "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt."
-  },
-  {
-   "id": "RELATIVE_STRENGTH_12M1M",
-   "blocks": [
-    "momentum.relativeStrength12m1m"
-   ],
-   "owner": "market-factors-1.0.0"
   },
   {
    "id": "PIT_ANALYST_CONSENSUS",
@@ -526,6 +527,6 @@
   "IDENTITY_UNRESOLVED": 1049,
   "FUNDAMENTALS_DOCUMENT_MISSING": 347
  },
- "runtimeMs": 17558,
- "contentHash": "21ef1aeb1ca044fa"
+ "runtimeMs": 16993,
+ "contentHash": "aae75ac0e12adb7f"
 }
