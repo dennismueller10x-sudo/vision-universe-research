@@ -6,8 +6,9 @@ const node=typeof module!=='undefined'&&module.exports;
 const Hours=node?require('../engines/realtime/market-hours.js'):g.VURealtime.MarketHours,Calendar=node?require('../config/market-calendar.json'):null;
 const Panel=node?require('../engines/panel-builder.js'):g.VUPanelBuilder,Factors=node?require('../engines/factors.js'):g.VUFactors,Query=node?require('../engines/query.js'):g.VUQuery,Rules=node?require('../engines/rule-contract.js'):g.VURuleContract,Hash=node?require('../engines/hash.js'):g.VUHash;
 function fail(reason){return {state:'UNAVAILABLE',reason,events:[]};}
-function build(source,{ticker,recipes,now=new Date().toISOString(),lookback=20,calendar=Calendar}){
- const bars=source?.bars,id='ref_'+ticker;
+function build(source,{ticker,securityId='ref_'+ticker,recipes,now=new Date().toISOString(),lookback=20,calendar=Calendar}){
+ const bars=source?.bars,id=securityId;
+ if(!/^ref_[A-Z0-9_]{1,32}$/.test(id))return fail('INVALID_SIGNAL_IDENTITY');
  if(source?.securityId!==id||source.ticker!==ticker||source.provider!=='tiingo'||source.isMock===true||source.dataMode==='mock'||!source.publishBasis||source.currency!=='USD'||source.adjustmentStatus!=='adjusted')return fail('INVALID_SIGNAL_PROVENANCE');
  if(!Array.isArray(bars)||bars.length<202)return fail('INSUFFICIENT_HISTORY');
  const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d&&d<=now;

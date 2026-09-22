@@ -137,7 +137,7 @@ export function materialize(options = {}) {
 
     let signal60 = null;
     for (const lookback of signalLookbacks) {
-      const result = MarketSignals.build(input.signalSource, { ticker: member.s, recipes, lookback, calendar, now });
+      const result = MarketSignals.build(input.signalSource, { ticker: member.s, securityId: member.m, recipes, lookback, calendar, now });
       signalPayloads[lookback].push({ ticker: member.s, ...result });
       if (lookback === 60) signal60 = result;
     }
