@@ -14,7 +14,11 @@ function build(source,{ticker,recipes,now=new Date().toISOString(),lookback=20,c
  for(let i=0;i<bars.length;i++){const b=bars[i];if(b.securityId!==id||!validDate(b.date)||(i&&b.date<=bars[i-1].date)||!Number.isFinite(b.close)||b.close<=0||!Number.isFinite(b.adjustedClose)||b.adjustedClose<=0)return fail('INVALID_SIGNAL_HISTORY');}
  if(!Number.isInteger(lookback)||lookback<1||lookback>60)return fail('INVALID_SIGNAL_WINDOW');
  if(bars.length<Factors.WINDOWS.dma200+lookback+1)return fail('INSUFFICIENT_HISTORY');
- if(bars.slice(-(Factors.WINDOWS.dma200+lookback)).some(b=>!Number.isFinite(b.splitFactor)||b.splitFactor!==1))return fail('CORPORATE_ACTION_RECONCILIATION_REQUIRED');
+ const signalWindow=bars.slice(-(Factors.WINDOWS.dma200+lookback));
+ if(signalWindow.some(b=>!Number.isFinite(b.splitFactor)||b.splitFactor<=0))return fail('CORPORATE_ACTION_RECONCILIATION_REQUIRED');
+ const hasSplit=signalWindow.some(b=>b.splitFactor!==1),reconciliation=source.corporateActionReconciliation;
+ if(hasSplit&&(!reconciliation||reconciliation.status!=='PASS'||reconciliation.method!=='CANONICAL_SPLIT_FACTORS_V1'||
+   reconciliation.priceSeriesType!=='SPLIT_ADJUSTED'||!Number.isInteger(reconciliation.events)||reconciliation.events<1))return fail('CORPORATE_ACTION_RECONCILIATION_REQUIRED');
  const observedAt=source.updatedAt||source.fetchedAt;
  if(typeof observedAt!=='string'||!Number.isFinite(Date.parse(observedAt))||observedAt.slice(0,10)<bars.at(-1).date||Date.parse(observedAt)>Date.parse(now))return fail('INVALID_SIGNAL_SNAPSHOT_TIME');
  if(!calendar?.exchanges?.XNYS)return fail('CALENDAR_UNAVAILABLE');
@@ -37,7 +41,7 @@ function build(source,{ticker,recipes,now=new Date().toISOString(),lookback=20,c
     transition,previousAsOf:p.tradingDays[i-1],asOf:p.tradingDays[i],snapshotAsOf:p.tradingDays[last],status:i===last?'LATEST_OBSERVATION':'HISTORICAL',
     expiration:{policy:'SUPERSEDED_BY_NEXT_EOD_OBSERVATION',at:p.tradingDays[i+1]||null},priority:'INFORMATION',priceSemantics:'EOD_OBSERVATION',
     evidence:rule.predicate.filters.map(f=>({metricId:f.field,previous:previous[f.field],current:current[f.field],unit:'percent',owner:'quant/engines/factors.js'})),
-    provenance:{source:'existing approved EOD history',adjustmentStatus:source.adjustmentStatus,calculationOwner:'quant/engines/factors.js',panelOwner:'quant/engines/panel-builder.js',observedAt:source.updatedAt||source.fetchedAt||null}};
+    provenance:{source:'existing approved EOD history',adjustmentStatus:source.adjustmentStatus,corporateActionReconciliation:hasSplit?reconciliation:null,calculationOwner:'quant/engines/factors.js',panelOwner:'quant/engines/panel-builder.js',observedAt:source.updatedAt||source.fetchedAt||null}};
    event.id=Hash.prefixedHash('sig',{ticker,definitionId:event.definitionId,version:event.definitionVersion,predicateHash:event.predicateHash,asOf:event.asOf,transition:event.transition});events.push(event);
   }previous=current;
  }

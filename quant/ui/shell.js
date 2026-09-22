@@ -97,6 +97,24 @@
     return pending;
   }
 
+  /** Statische, gzip-komprimierte Product Data. Die Dekompression geschieht
+   * nach einem Same-Origin-Fetch; private History wird nie angefordert. */
+  function loadCompressedJSON(path) {
+    if (cache[path]) return cache[path];
+    var pending = fetch(path, { cache: "no-cache" }).then(function (res) {
+      if (!res.ok) {
+        var err = new Error("Konnte " + path + " nicht laden (HTTP " + res.status + ")");
+        err.status = res.status; throw err;
+      }
+      return res.arrayBuffer();
+    }).then(function (buffer) {
+      if (typeof DecompressionStream !== "function") throw new Error("GZIP_DECOMPRESSION_UNSUPPORTED");
+      return new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+    }).then(JSON.parse).catch(function (err) { delete cache[path]; throw err; });
+    cache[path] = pending;
+    return pending;
+  }
+
   var DATA_FILES = {
     meta: "data/meta.json",
     securities: "data/securities.json",
@@ -498,7 +516,8 @@
   var api = {
     BASE: BASE, NAV: NAV, DATA_FILES: DATA_FILES,
     $: $, $$: $$, el: el, clear: clear, mount: mount, param: param,
-    loadJSON: loadJSON, loadFactorDna: loadFactorDna, dnaShardKey: dnaShardKey, boot: boot, page: page,
+    loadJSON: loadJSON, loadCompressedJSON: loadCompressedJSON,
+    loadFactorDna: loadFactorDna, dnaShardKey: dnaShardKey, boot: boot, page: page,
     renderNav: renderNav, mockBanner: mockBanner, disclaimer: disclaimer,
     formatDate: formatDate, num: num, signed: signed, fmt: fmt,
     toneFor: toneFor, bandLabel: bandLabel,

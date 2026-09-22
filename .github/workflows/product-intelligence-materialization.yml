@@ -1,0 +1,101 @@
+name: Quant 2.0 Product Intelligence Materialization
+
+# Internal batch only: existing private R2 history -> existing engines ->
+# compressed static Product Data. No Tiingo request and no public R2 endpoint.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'codex/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: product-intelligence-materialization
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[materialize-product-intelligence]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/product-intelligence-preflight.json"
+
+      - name: Restore existing canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/product-intelligence-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/product-intelligence-sync.json"
+
+      - name: Materialize Technical, Signals and Elliott Product Data
+        run: >-
+          node scripts/technical/materialize-product-intelligence.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Contract and regression tests
+        run: |
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs
+          node scripts/vu2/measure-consumer-breadth.mjs
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit materialized Product Data to the current branch
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/product/technical-signals-v1
+          if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
+          node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
+          git commit -m "Materialize Technical, Signals and Elliott Product Data"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Retain metadata evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-intelligence-materialization-evidence
+          path: |
+            ${{ runner.temp }}/product-intelligence-preflight.json
+            ${{ runner.temp }}/product-intelligence-sync.json
+            quant/data/product/technical-signals-v1/summary.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -24,8 +24,9 @@ function create(options){
  const directory=Directory.create({loadJSON:load});
  async function compressedJSON(path){
   if(options.loadCompressedJSON)return options.loadCompressedJSON(path);
-  // Only this service constructs the same-origin canonical issuer path.
-  if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
+  // Only this service constructs these same-origin materialized paths.
+  if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
   if(input[0]!==31||input[1]!==139){if(response.headers.get('content-encoding')==='gzip')return JSON.parse(new TextDecoder().decode(input));throw Error('INVALID_COMPRESSION');}
@@ -85,7 +86,11 @@ function create(options){
    list.forEach(f=>{if(f&&f.ticker)factorIndex[f.ticker]=f;if(f&&f.securityId)factorIndex[f.securityId]=f;});
   c.factors=factors;c.factorIndex=factorIndex;return c;
  }
- function permission(c,ticker,form){return policy.check({providerId:'tiingo',dataClass:'marketData',audience:'development_preview',form:form||'derived',ticker,gates:c.gates});}
+ function permission(c,ticker,form){
+  const args={providerId:'tiingo',dataClass:'marketData',form:form||'derived',ticker,gates:c.gates};
+  const publicGrant=policy.check({...args,audience:'public'});
+  return publicGrant.allowed?publicGrant:policy.check({...args,audience:'development_preview'});
+ }
  function unavailable(reason){return {state:'UNAVAILABLE',reason,stocks:[]};}
  function metric(value,unit){return {value:Number.isFinite(value)?value:null,unit,state:Number.isFinite(value)?'AVAILABLE':'SOURCE_MISSING'};}
  function validDate(d){return typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d;}
@@ -187,6 +192,13 @@ function create(options){
   ['Historische Fundamentals','/vu2/?view=fundamentals&ticker='+q],['Quant','/vu2/?view=quant&ticker='+q],
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
+ function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
+ async function materializedTechnical(ticker){
+  const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
+  if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!=='ref_'+ticker)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
+  return source;
+ }
+ async function technicalSource(ticker){try{return await materializedTechnical(ticker);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
@@ -213,8 +225,8 @@ function create(options){
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
-   try{const source=await load('/quant/data/technical/instruments/'+ticker+'.json'),b=source.bundle;
-    if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>stock.asOf||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
+   try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker),b=source.bundle;
+    if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>new Date().toISOString().slice(0,10)||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
     return {state:'AVAILABLE',ticker,asOf:b.dataCutoff,methodology:b.methodologyVersion,evidenceLevel:'FULL_WORKSPACE',fullWorkspace:true,
      trend:status(b.trend?.direction,{BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}),
      momentum:status(b.momentum?.state,{POSITIVE:'Positiv',NEGATIVE:'Negativ',NEUTRAL:'Neutral'}),
@@ -248,7 +260,16 @@ function create(options){
    stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){
-  try{const c=await init(),calendar=await load('/quant/config/market-calendar.json'),results=await Promise.all((c.preview.scope||[]).map(async ticker=>{
+  if(![5,20,60].includes(lookback))return {state:'UNAVAILABLE',events:[],results:[],reason:'INVALID_SIGNAL_WINDOW'};
+  try{const c=await hydrateCapabilities(await init());
+   try{const artifact=await compressedJSON('/quant/data/product/technical-signals-v1/signals-'+lookback+'.json.gz');
+    if(artifact?.schemaVersion!=='market-signals-product-1.0.0'||artifact.lookback!==lookback||artifact.scope!=='CANONICAL_PRODUCT_UNIVERSE'||!Array.isArray(artifact.results)||!Array.isArray(artifact.events))throw Error('INVALID_SIGNAL_PRODUCT_ARTIFACT');
+    const members=new Set((c.capabilities.members||[]).map(m=>m.s)),results=artifact.results.filter(r=>members.has(r.ticker)&&permission(c,r.ticker).allowed);
+    if(results.length!==artifact.results.length||artifact.events.some(e=>!members.has(e.ticker)))throw Error('INVALID_SIGNAL_PRODUCT_SCOPE');
+    const available=results.filter(r=>r.state==='AVAILABLE'),events=artifact.events.filter(e=>permission(c,e.ticker).allowed);
+    return {state:available.length?'AVAILABLE':'UNAVAILABLE',partial:available.length!==results.length,results,events,coverage:artifact.counts||{requested:results.length,available:available.length,unavailable:results.length-available.length},scope:'CANONICAL_PRODUCT_UNIVERSE',materializedAt:artifact.generatedAt};
+   }catch{}
+   const calendar=await load('/quant/config/market-calendar.json'),results=await Promise.all((c.preview.scope||[]).map(async ticker=>{
    if(!permission(c,ticker,'raw').allowed||!permission(c,ticker).allowed)return {ticker,state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED',events:[]};
    try{const stock=await row(c,ticker);if(!stock)return {ticker,state:'UNAVAILABLE',reason:'INVALID_IDENTITY',events:[]};return {ticker,...MarketSignals.build(await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json'),{ticker,recipes:getRecipes(),lookback,calendar})};}catch{return {ticker,state:'UNAVAILABLE',reason:'SOURCE_MISSING',events:[]};}
   }));const available=results.filter(r=>r.state==='AVAILABLE');return {state:available.length?'AVAILABLE':'UNAVAILABLE',partial:available.length!==results.length,results,events:available.flatMap(r=>r.events).sort((a,b)=>b.asOf.localeCompare(a.asOf)||a.ticker.localeCompare(b.ticker)),scope:'APPROVED_DISPLAY_SET'};
@@ -283,8 +304,9 @@ function create(options){
  async function getTechnicalWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await hydrateCapabilities(await init());const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_BUNDLE_NOT_PUBLISHED');
+   if(!permission(c,ticker,'raw').allowed)return unavailable('DISPLAY_NOT_PERMITTED');
    const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const source=await load('/quant/data/technical/instruments/'+ticker+'.json');
+   const source=await technicalSource(ticker);
    if(source.source!=='tiingo')return unavailable('UNSUPPORTED_MARKET_SOURCE');
    return TechnicalWorkspace.build(source,{ticker});
   }catch{return unavailable('SOURCE_MISSING');}
