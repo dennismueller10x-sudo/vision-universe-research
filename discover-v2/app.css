@@ -127,13 +127,13 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
     box-shadow:0 18px 55px #00000026,0 2px 9px #00000010,inset 0 1px 0 #fff;
   }
   html:not([data-theme=light]) .dv2 .v2-dock,html:not([data-theme=light]) .dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.88);color:#101113;border-color:#ffffffd4;box-shadow:0 18px 55px #0008,inset 0 1px 0 #fff}
-  .dv2 .v2-dock .v2-nav-item{gap:5px;min-height:62px;padding:8px 2px;border-radius:29px;color:#62666d;background:transparent;font-size:10.5px;font-weight:720;transition:transform .16s ease,background-color .16s ease,color .16s ease}
-  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item{color:#62666d}
+  .dv2 .v2-dock .v2-nav-item{gap:5px;min-height:62px;padding:8px 2px;border-radius:29px;color:#34373c;background:transparent;font-size:10.5px;font-weight:720;transition:transform .16s ease,background-color .16s ease,color .16s ease}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item{color:#34373c}
   .dv2 .v2-nav-icon{width:22px;height:22px}
   .dv2 .v2-dock .v2-nav-item:active{transform:scale(.96)}
   .dv2 .v2-dock .v2-nav-item[aria-current=page],.dv2 .v2-dock .v2-nav-item.is-active,.dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#101113;color:#fff;box-shadow:0 7px 18px #0003}
   html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:#101113;color:#fff;box-shadow:0 7px 18px #0003}
-  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:#5f6268}
+  .dv2 .v2-dock .v2-nav-explore{background:transparent;color:#34373c}
   .dv2 .v2-world-directory{grid-template-columns:1fr;gap:18px;scroll-snap-type:y proximity}.dv2 .v2-world-door{min-height:calc(100svh - 112px);padding:30px 26px;border-radius:28px;scroll-snap-align:start}.dv2 .v2-world-door h2{font-size:clamp(38px,11vw,52px);line-height:.96;max-width:10ch;margin-top:auto}.dv2 .v2-world-door p{max-width:30ch;font-size:15px;line-height:1.55}.dv2 .v2-world-door-arrow{margin-top:28px;font-size:14px}.dv2 .v2-world-door:before{width:340px;height:340px;right:-125px;bottom:-145px}
   body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 146px - env(safe-area-inset-bottom));padding:0}
 }
