@@ -397,6 +397,8 @@ function matchCard(profile){
  body.push(el('ul',{class:'match-conditions'},profile.conditions.map(conditionRow)));
  if(profile.mainRisk)body.push(el('p',{class:'muted match-risk',text:'Hauptrisiko: '+profile.mainRisk}));
  body.push(el('p',{class:'muted match-evidence',text:'Historische Evidenz: nicht verfügbar. Wie dieses Profil in der Vergangenheit funktioniert hätte, ist ein Backtest und bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführungsmethodik zertifiziert sind.'}));
+ /* Dieselbe Regel, die das Profil erklärt, selektiert auch. */
+ if(profile.screenHref)body.push(link('Alle Titel mit diesem Profil zeigen',profile.screenHref,'button secondary'));
  return el('article',{class:'match-card'+(profile.state==='AVAILABLE'?'':' is-missing')},[head,...body]);
 }
 function strategyMatchSection(match){
@@ -421,7 +423,16 @@ function strategyMatchSection(match){
  return section;
 }
 async function quantPage(ticker){
- const [data,match]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null)]);
+ const [data,match,profileContract]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null)]);
+ /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
+    wird nicht daneben noch einmal formuliert. */
+ if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
+  for(const profile of match.profiles){
+   const definition=profileContract.contract.profiles.find(p=>p.profileId===profile.profileId);
+   if(!definition)continue;
+   try{profile.screenHref=href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(VUStrategyMatch.screenQuery(definition)));}catch{}
+  }
+ }
  /* Der SetupState-Vertrag sagt selbst, ob ein verfuegbarer Zustand
     ueberhaupt zulaessig ist. Solange er das verneint, waere eine Abfrage
     nur teuer; sie wird geholt, sobald die Methodik aktiv ist. */
@@ -607,8 +618,19 @@ async function screenPage(){
        el('div',{class:'number',text:String(stock.evidence?.['quantV2.factorEvidence.availableFactors']??'–')+' / 7'}),
        el('div',{class:'number',text:Number.isFinite(stock.evidence?.[selected.id])?pct(stock.evidence[selected.id]):'Nicht verfügbar'})]))]));
  }catch{if(current===request){share.hidden=true;strategyLink.hidden=true;method.textContent='';S.mount(out,notice('Kriterium prüfen','Gib für jedes Kriterium einen gültigen Wert ein. Die Regeln wurden nicht angewendet.'));}}};
- methodSelect.onchange=()=>{const next=editor.methodology(methodSelect.value);if(!next||next.id===current.id)return;current=next;rows=[];S.clear(ruleList);fillSort();describeMethod();addRule();sort.value=current.defaultField;S.mount(out,notice('Methodik gewechselt','Die Regeln wurden zurückgesetzt. Eine Regel der anderen Methodik bedeutet hier etwas anderes und wird nicht übernommen.'));share.hidden=true;strategyLink.hidden=true;method.textContent='';};
- main.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ methodSelect.onchange=()=>{const next=editor.methodology(methodSelect.value);if(!next||next.id===current.id)return;current=next;rows=[];S.clear(ruleList);fillSort();describeMethod();addRule();sort.value=current.defaultField;S.mount(out,notice('Methodik gewechselt','Die Regeln wurden zurückgesetzt. Eine Regel der anderen Methodik bedeutet hier etwas anderes und wird nicht übernommen.'));share.hidden=true;strategyLink.hidden=true;method.textContent='';profiles.value='';};
+ /* Ein Strategie-Profil lädt seine eigene Regel in den Editor - dieselbe,
+    die auf der Aktienseite die Übereinstimmung erklärt. */
+ const profiles=el('select',{'aria-label':'Strategie-Profil'},[el('option',{value:'',text:'Kein Profil'})]);
+ const profileSource=await api.getStrategyProfiles().catch(()=>null);
+ if(profileSource?.state==='AVAILABLE'){
+  profileSource.contract.profiles.forEach(p=>profiles.append(el('option',{value:p.profileId,text:p.label})));
+  profiles.onchange=()=>{const definition=profileSource.contract.profiles.find(p=>p.profileId===profiles.value);if(!definition)return;
+   let query;try{query=VUStrategyMatch.screenQuery(definition);}catch{S.mount(out,notice('Profil nicht ladbar','Die Regel dieses Profils konnte nicht in Kriterien übersetzt werden.'));return;}
+   const next=editor.methodologyOf(query);if(next&&next.id!==current.id){current=next;methodSelect.value=next.id;fillSort();describeMethod();}
+   rows=[];S.clear(ruleList);query.filters.forEach(addRule);sort.value=query.sort[0].field;direction.value=query.sort[0].direction;apply();};
+ }else profiles.disabled=true;
+ main.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}

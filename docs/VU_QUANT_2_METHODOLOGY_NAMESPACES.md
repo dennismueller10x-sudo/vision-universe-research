@@ -117,6 +117,25 @@ und nicht gegen historische Ergebnisse optimiert (`fittedToOutcomes: false`).
 Eine an einem Schwellenwert optimierte Regel wäre genau die Überanpassung, die
 Abschnitt 16 der Produktvorgabe ausschließt.
 
+### Dieselbe Regel selektiert auch
+
+`StrategyMatch.screenQuery(profile)` gibt genau dasselbe Prädikat als
+Screener-Abfrage zurück — gleicher `predicateHash`, gleiche Filter. Erklären und
+Selektieren können nicht auseinanderlaufen, weil es dasselbe Objekt ist
+(Abschnitt 20).
+
+Beide Richtungen sind im Produkt verdrahtet:
+
+- Auf der Aktienseite führt jedes Profil zu „Alle Titel mit diesem Profil zeigen“
+  und öffnet den Screener mit dieser Regel.
+- Im Screener lädt ein Strategie-Profil seine Regel in den Editor, setzt die
+  Methodik mit und führt sie aus.
+
+Ein Test prüft beide Seiten gegeneinander: jeder vom Prädikat selektierte Titel
+muss auf diesem Profil 100 % erreichen, und kein nicht selektierter Titel darf
+100 % erreichen. Sortiert wird nach der schwerstgewichteten Bedingung des
+Profils — Darstellungsreihenfolge, kein Rang des Universums.
+
 ### Beobachtetes Verhalten
 
 - **Earnings Revision Leader** ist für jeden Titel `UNAVAILABLE`: der

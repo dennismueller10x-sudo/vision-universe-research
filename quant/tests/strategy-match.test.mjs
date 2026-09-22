@@ -154,6 +154,45 @@ test("no ranking is published, and no profile claims historical evidence", () =>
   });
 });
 
+test("every profile is also a screener query, from the same rule", () => {
+  contract.profiles.forEach((profile) => {
+    const query = StrategyMatch.screenQuery(profile);
+    /* Same predicate in both directions: explaining and selecting cannot
+       drift apart, because they are the same object. */
+    assert.equal(Rules.predicateHash(Rules.fromQuery(query)),
+      Rules.predicateHash(StrategyMatch.predicateOf(profile)), profile.profileId);
+    assert.equal(query.filters.length, profile.conditions.length);
+    /* The screener accepts it, and it stays inside the V2 methodology. */
+    assert.equal(Screener.methodologyOf(query).id, "quantV2Evidence", profile.profileId);
+    assert.equal(Screener.methodologyOf(Screener.decode(Screener.encode(query))).id, "quantV2Evidence");
+    /* Sorted by the profile's own heaviest condition — presentation order. */
+    const heaviest = profile.conditions.slice().sort((a, b) => b.weight - a.weight)[0];
+    assert.equal(query.sort[0].field, heaviest.field, profile.profileId);
+  });
+});
+
+test("a profile query selects the titles that meet every one of its conditions", () => {
+  const payload = JSON.parse(gunzipSync(readFileSync(SCREENING)));
+  const rows = Object.entries(payload.rows)
+    .map(([ticker, values]) => FactorEvidence.screeningRow(ticker, values, payload.fields));
+  const profile = contract.profiles.find((p) => p.profileId === "quality-momentum");
+  const predicate = StrategyMatch.predicateOf(profile);
+  const selected = rows.filter((row) => Rules.matches(row, predicate));
+  assert.ok(selected.length > 0, "the shipped universe should contain some Quality Momentum titles");
+
+  /* A selected title must score 100 % on that profile, and an unselected
+     one must not — otherwise the rule and the match disagree. */
+  selected.slice(0, 20).forEach((row) => {
+    const result = StrategyMatch.evaluateProfile(contract, profile, row);
+    assert.equal(result.match, 100, row.ticker + " was selected but does not fully match");
+  });
+  const rejected = rows.filter((row) => !Rules.matches(row, predicate)).slice(0, 20);
+  rejected.forEach((row) => {
+    const result = StrategyMatch.evaluateProfile(contract, profile, row);
+    if (result.state === "AVAILABLE") assert.notEqual(result.match, 100, row.ticker + " fully matches but was not selected");
+  });
+});
+
 /* ---------------------------------------------------------- the screener */
 
 test("the screener offers the two methodologies separately", () => {

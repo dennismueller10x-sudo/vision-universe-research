@@ -71,6 +71,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(await page.locator('.match-card').count()!==8)throw Error('strategy profiles incomplete');
   await page.getByText(/Historische Evidenz: nicht verfügbar/).first().waitFor();
   if(await page.getByText(/Quant V1/).count())throw Error('Quant V1 must not appear in a Quant V2 match');
+  // The rule that explains a profile also selects with it (section 20).
+  if(await page.getByRole('link',{name:'Alle Titel mit diesem Profil zeigen'}).count()!==8)throw Error('profile screen links missing');
   await page.getByRole('heading',{name:'Worauf diese Analyse beruht',exact:true}).waitFor();
   // A bank keeps its closed industry factors instead of inventing them.
   await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('JPM');await page.locator('main footer').waitFor();
@@ -97,6 +99,13 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('button',{name:'Anwenden',exact:true}).click();
   await page.getByText(/Quant V2 · Factor Evidence · kein Gesamtmarkt-Ranking/).waitFor();
   if(!await page.locator('a.row').count())throw Error('Quant V2 screen returned nothing');
+  // A strategy profile loads its own rule into the editor, and it is the
+  // same rule: same filter count, and it selects.
+  const profileSelect=page.getByRole('combobox',{name:'Strategie-Profil',exact:true});
+  await profileSelect.selectOption('quality-momentum');
+  await page.waitForFunction(()=>document.querySelectorAll('.rule').length===3);
+  if(await page.locator('.screener-method select').first().inputValue()!=='quantV2Evidence')throw Error('profile did not carry its methodology');
+  await page.waitForFunction(()=>document.querySelectorAll('a.row').length>0);
   await page.goto(origin+'/vu2/?view=screener');await page.locator('main footer').waitFor();
  }
  if(view==='strategies'){await page.getByText(/6\.875 kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung/).waitFor();const query=await page.evaluate(()=>VUScreenerWorkspace.build([{field:'momentum6m',operator:'gte',value:10,scale:'raw'},{field:'revenueGrowth',operator:'gte',value:20,scale:'raw'}]));await page.goto(origin+'/vu2/?view=strategies&query='+encodeURIComponent(JSON.stringify(query)));await page.locator('main footer').waitFor();if(await page.locator('.strategy-rules p').count()!==2)throw Error('strategy rules lost');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 1 gespeichert',exact:true}).waitFor();await page.locator('#strategy-slippage').fill('10');await page.locator('#strategy-reason').fill('Konservativere Ausführung');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 2 gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('#strategy-slippage').inputValue()!=='10')throw Error('strategy version not restored');await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Aktuelle Kriterien-Auswahl',exact:true}).waitFor();if(await page.locator('a.row').count()!==1)throw Error('strategy filter mismatch');await page.route('**/quant/data/market/factors/factors-FULL_UNIVERSE.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Auswahl noch nicht auswertbar',exact:true}).waitFor();if(await page.locator('a.row').count())throw Error('unavailable strategy source rendered as selection');await page.unroute('**/quant/data/market/factors/factors-FULL_UNIVERSE.json');await page.reload();await page.locator('main footer').waitFor();}

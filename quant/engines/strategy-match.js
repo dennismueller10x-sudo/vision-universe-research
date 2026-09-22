@@ -104,6 +104,23 @@
     });
   }
 
+  /**
+   * Dieselbe Regel als Screener-Abfrage.
+   *
+   * Das ist der Punkt an §20: eine Regel, die ein Profil erklaert, muss
+   * auch selektieren koennen, ohne zweimal formuliert zu werden. Sortiert
+   * wird nach der schwerstgewichteten Bedingung des Profils - das ist
+   * Darstellungsreihenfolge und kein Rang des Universums.
+   */
+  function screenQuery(profile, presentation) {
+    presentation = presentation || {};
+    var heaviest = profile.conditions.slice().sort(function (a, b) { return b.weight - a.weight; })[0];
+    return Rules.toQuery(predicateOf(profile), {
+      sort: presentation.sort || [{ field: heaviest.field, direction: "desc" }],
+      limit: presentation.limit === undefined ? 50 : presentation.limit
+    });
+  }
+
   function bandOf(contract, percentage) {
     if (!finite(percentage)) return null;
     var bands = contract.bands || [];
@@ -219,6 +236,7 @@
     assertContract: assertContract,
     predicateOf: predicateOf,
     conditionPredicate: conditionPredicate,
+    screenQuery: screenQuery,
     evaluate: evaluate,
     evaluateProfile: evaluateProfile,
     missingConditions: missingConditions

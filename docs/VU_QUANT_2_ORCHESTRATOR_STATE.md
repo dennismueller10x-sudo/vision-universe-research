@@ -108,8 +108,13 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 - **`change.scoreMomentum` wired** to that history with a 30-day velocity window from
   `quant-v2.0.0 temporal.scoreMomentum`. Still closed today with one snapshot, and it now
   distinguishes "no history yet" from "history too short" instead of reporting both as one.
+- **A strategy rule also screens** (§20). `StrategyMatch.screenQuery(profile)` returns the same
+  predicate as a screener query — same `predicateHash`, same filters. Wired both ways: each
+  profile on the stock page opens the screener with its rule, and the screener loads a profile's
+  rule into the editor. A test checks the two against each other: every title the predicate
+  selects must score 100 % on that profile, and no unselected title may.
 - Browser QA extended to the rebuilt `quant` view, the new `explain` view, the Strategy Match
-  section and the screener methodology switch, both widths.
+  section, the screener methodology switch and the profile round trip, both widths.
 
 ## PRODUCTION_REALITY
 
@@ -136,6 +141,7 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 | `STRATEGY_MATCH_RANKING` | WITHHELD |
 | `STRATEGY_MATCH_HISTORICAL_EVIDENCE` | UNAVAILABLE / BACKTEST_NOT_CERTIFIED |
 | `SCREENER_METHODOLOGIES` | 2, mixed queries refused |
+| `STRATEGY_RULE_SCREENS` | yes — same predicate hash in both directions |
 | `SNAPSHOT_HISTORY` | started, 1 snapshot (`2026-09-18`), immutable, per-methodology |
 | `SCORE_MOMENTUM` | closed — history too short for the 30-day window |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |
@@ -154,8 +160,8 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,465/1,465 passed locally (1,411 before; +17 factor-evidence,
-  +4 market-factors, +12 fundamental-inputs, +17 strategy-match/namespace, +4 snapshot history).
+- Full Quant suite: 1,467/1,467 passed locally (1,411 before; +17 factor-evidence,
+  +4 market-factors, +12 fundamental-inputs, +19 strategy-match/namespace, +4 snapshot history).
   SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
 - Public data hygiene guard: passed against the new artifact.
 - Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL), `explain` and `screener`:

@@ -174,7 +174,15 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .match-evidence{border-top:1px solid var(--line);padding-top:12px}
 @media(max-width:900px){.match-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.match-head h3{font-size:17px}.match-card{padding-top:16px}}
-.screener-method{align-items:flex-start;flex-direction:column;gap:10px}
-.screener-method label{display:flex;align-items:center;gap:12px}
-.screener-method select{min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:#fff}
+.screener-method{align-items:flex-start;flex-direction:column;gap:10px;max-width:100%}
+/* Die Auswahltexte sind lang ("Earnings Revision Leader"). Ohne min-width:0
+   waechst das Select ueber die Viewport-Breite hinaus und kippt bei 390px
+   die ganze Seite in den horizontalen Scroll. */
+.screener-method label{display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:100%;min-width:0}
+.screener-method select{min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:#fff;min-width:0;max-width:100%;flex:1 1 180px}
 .screener-method-note{margin:0;font-size:13px;max-width:760px}
+@media(max-width:650px){
+ .screener-method label{width:100%}
+ .screener-method label>span{flex:0 0 100%}
+ .screener-method select{flex:1 1 100%;width:100%}
+}
