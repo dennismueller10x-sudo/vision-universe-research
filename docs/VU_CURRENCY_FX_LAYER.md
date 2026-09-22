@@ -796,6 +796,42 @@ kuenstlich als PASS melden.
 | TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` (gemessen vor dem EZB-Fallback) | die Periode 2019-04 bis 2020-03 lag fast vollstaendig **vor** dem Beginn der Tiingo-Historie (2020-02-29). Korrekt verweigert statt genaehert. Mit der EZB-Historie ab 1999 liegt die Periode jetzt im abgedeckten Bereich; der naechste Verifikationslauf misst den Fall neu. |
 | Richtungen mit `resolution: NONE` | keine Aufloesung | weder direkt noch invers noch ueber das Pivot bildbar; nur diese Werte bleiben nativ |
 
+### Ein Schalter, den seine eigene Beschreibung umlegt
+
+Die teuren Schritte haengen an Markern in der Commit-Nachricht:
+`[fx-probe]` misst die Anbieterfaehigkeiten, `[fx-ingest]` holt die
+Historie. Beide wurden mit `contains()` ueber die **ganze** Nachricht
+geprueft.
+
+Am 2026-09-22 loeste ein Commit, dessen Text die Marker nur *erwaehnte*
+(„Ohne `[fx-ingest]` fiel der Lauf auf die Testreihe zurueck"), einen
+vollstaendigen Anbieterabruf ueber 40 Paare aus. Niemand hatte ihn
+gewollt.
+
+> Ein Schalter, den die Beschreibung des Schalters umlegt, ist kaputt —
+> und er ist genau dann kaputt, wenn man sorgfaeltig dokumentiert,
+> warum man ihn nicht benutzt.
+
+Die Marker werden jetzt in einem vorgelagerten Job aus der
+**Betreffzeile** gelesen und als Job-Ausgaben weitergereicht;
+`currency-realtime-proof.yml` (`[rt-proof]`) ebenso. Dazu kam ein
+dritter Marker `[fx-verify]`: nachrechnen, ohne beim Anbieter
+einzukaufen — die EZB ist oeffentlich, die Berichte liegen im Zweig,
+der Contract ist Code.
+
+Damit ein solcher Lauf nichts verschlechtert, veroeffentlicht und
+beurteilt er die historische Abdeckung **nicht**: gemessen wuerde der
+Fallback allein, und die kleinere Zahl ersetzte im Zweig die groessere,
+auf die dieses Dokument zeigt.
+
+**Was der Lauf trotzdem belegt hat:** er hat die Abdeckungszahlen
+unveraendert reproduziert — dieselben Quoten, dieselben fehlenden
+Waehrungen, nur ein neuer Zeitstempel.
+
+> Derselbe Aufbau (`contains()` ueber die ganze Nachricht) steckt in rund
+> einem Dutzend weiterer Workflows dieses Repositories. Sie gehoeren
+> nicht zu diesem Workstream und wurden hier **nicht** angefasst.
+
 ### Tests
 
 **60 Tests, alle gruen.**
@@ -878,5 +914,5 @@ Historie vor 2020-02-29 und jede Waehrung, die Tiingo nicht fuehrt.
 |---|---|
 | **O-14** | Die Naht zwischen EZB-Fixing und Tiingo-Schluss — die gemessene Abweichung steht in `ecb-coverage.json`. Ab welcher Groesse soll sie sichtbar gemacht werden? |
 | **O-15** | Ein MAX-Chart in EUR beginnt spaeter als in der Originalwaehrung (Kurse ab 1990, FX ab 1999). Begrenzen, hinweisen oder auf USD verweisen? |
-| **O-16** | Die 9 verbliebenen Klasse-A-Stellen — zwei sind Archivseiten unter `morning/`, die niemand mehr anfasst. Migrieren oder ausnehmen? |
+| **O-16** | Die **4** verbliebenen Klasse-A-Stellen (Register-Stand 2026-09-22, `openClassA: 4`). Zwei sind Archivseiten unter `morning/` (2026-09-05, 2026-09-08), die niemand mehr anfasst: migrieren oder ausnehmen? `vu2/experience.js:83` ist eine echte Consumer-Stelle und waere eine gewoehnliche Migration. `quant/api/portfolio-workspace.js:16` ist **keine** Formatierung, sondern ein Bewertungs-Gate (`price.unit === 'USD'`): es verweigert Positionen in Fremdwaehrung, statt sie anzunehmen — ehrlich im Sinne von O-13. Sie zu migrieren hiesse, die Depotbewertung in Fremdwaehrung zu **ermoeglichen**; das ist eine Produktentscheidung, keine Migration. |
 | **O-17** | Bestaetigung der EZB-Bedingungen (Wiedergabe unter Quellennennung). Blockiert nichts, weil die Nennung ohnehin erfolgt. |

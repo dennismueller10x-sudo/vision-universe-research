@@ -164,8 +164,16 @@ function loadFxStore() {
       let data;
       try { data = JSON.parse(readFileSync(join(dir, file), "utf8")); } catch { continue; }
       if (!data.base || !data.quote || !Array.isArray(data.points) || !data.points.length) continue;
+      /* Ueber die Registry, nicht als rohes Meta-Objekt.
+
+         Vorher ging die Reihe ohne Rolle in den Store; fx-rates setzt
+         dann UNKNOWN mit Prioritaet 99 - schlechter als der EZB-Fallback
+         mit 20. Im Nachweis haette damit der Fallback die Primaerquelle
+         geschlagen, also genau die Umkehrung von O-7. Die Reihenfolge
+         darf nicht davon abhaengen, welches Skript den Store fuellt. */
       store.ingest(data.base, data.quote, data.points,
-        { source: data.source || "unknown", frequency: data.frequency || "DAILY", ingestedAt: data.asOf });
+        Providers.ingestMeta(data.source || "unknown",
+          { frequency: data.frequency || "DAILY", ingestedAt: data.asOf }));
       pairs.push(`${data.base}/${data.quote}`);
       ingested++;
     }

@@ -70,13 +70,55 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # DIE MARKER STEHEN IN DER BETREFFZEILE, NICHT IRGENDWO IN DER NACHRICHT.
+  #
+  # Vorher entschied contains() ueber die ganze Commit-Nachricht. Ein
+  # Commit, der in seinem Text ueber die Marker SCHREIBT, loeste sie damit
+  # aus - genau das ist passiert und hat einen vollstaendigen
+  # Anbieterabruf gekostet, den niemand wollte. Ein Schalter, den die
+  # Beschreibung des Schalters umlegt, ist kaputt.
+  #
+  # Drei Marker, drei Kosten:
+  #   [fx-probe]   misst die Anbieterfaehigkeiten  (Anbieterabrufe)
+  #   [fx-ingest]  holt die Anbieterhistorie       (viele Anbieterabrufe)
+  #   [fx-verify]  prueft nur nach                 (keine Anbieterabrufe)
+  marker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      probe:  ${{ steps.read.outputs.probe }}
+      ingest: ${{ steps.read.outputs.ingest }}
+      any:    ${{ steps.read.outputs.any }}
+    steps:
+      - name: Marker aus der Betreffzeile lesen
+        id: read
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            subject="[fx-probe] [fx-ingest]"
+          else
+            subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          fi
+          echo "Betreffzeile: $subject"
+          probe=false; ingest=false; verify=false
+          case "$subject" in *"[fx-probe]"*)  probe=true  ;; esac
+          case "$subject" in *"[fx-ingest]"*) ingest=true ;; esac
+          case "$subject" in *"[fx-verify]"*) verify=true ;; esac
+          any=false
+          if [ "$probe" = true ] || [ "$ingest" = true ] || [ "$verify" = true ]; then any=true; fi
+          {
+            echo "probe=$probe"
+            echo "ingest=$ingest"
+            echo "any=$any"
+          } >> "$GITHUB_OUTPUT"
+
   measure:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      contains(github.event.head_commit.message, '[fx-probe]') ||
-      contains(github.event.head_commit.message, '[fx-ingest]')
+    needs: marker
+    if: needs.marker.outputs.any == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -117,18 +159,27 @@ jobs:
         # Laeufen vergleichbar bleiben.
         run: node scripts/quality/build-currency-debt-register.mjs --publish
 
+      # Die Sondierung haengt jetzt an ihrem eigenen Marker. Vorher lief
+      # sie bei jedem Lauf des Jobs mit - auch bei einem, der nur
+      # nachrechnen wollte. Eine gemessene Matrix erneut zu messen
+      # kostet Abrufe und aendert nichts.
       - name: FX-Faehigkeiten messen (O-1)
-        if: steps.secret.outputs.available == 'true'
+        id: probe
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          needs.marker.outputs.probe == 'true'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/probe-tiingo-fx.mjs --publish
 
       - name: Ohne Zugang bleibt die Matrix ungeprueft
-        if: steps.secret.outputs.available != 'true'
+        if: >-
+          steps.secret.outputs.available != 'true' &&
+          needs.marker.outputs.probe == 'true'
         run: node scripts/market/probe-tiingo-fx.mjs --publish
 
       - name: Die Berichte enthalten keinen Schluessel und keine Kurse
-        if: steps.secret.outputs.available == 'true'
+        if: always()
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         # Zweite Verteidigungslinie hinter redact(). Der Bericht wird
@@ -195,7 +246,7 @@ jobs:
         if: >-
           steps.secret.outputs.available == 'true' &&
           (github.event_name != 'workflow_dispatch' || inputs.run_ingest) &&
-          (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fx-ingest]'))
+          needs.marker.outputs.ingest == 'true'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         continue-on-error: true
@@ -221,7 +272,7 @@ jobs:
         id: intraday
         if: >-
           steps.secret.outputs.available == 'true' &&
-          (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fx-ingest]'))
+          needs.marker.outputs.ingest == 'true'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         continue-on-error: true
@@ -230,9 +281,21 @@ jobs:
       # Messen. Das Urteil faellt weiter unten, NACH dem Commit des
       # Berichts - sonst ist das Gate rot und die Zahl, die es erklaert,
       # nie im Zweig gelandet.
+      # Veroeffentlicht wird nur aus einem vollstaendigen Bestand.
+      #
+      # Ein Lauf ohne Anbieterabruf kann die Abdeckung messen, aber sie
+      # ist dann die des Fallbacks allein. Wuerde er --publish schreiben,
+      # ersetzte die kleinere Zahl die groessere im Zweig - und die
+      # Dokumentation zeigte auf eine Datei, die etwas anderes misst.
       - name: Historische FX-Abdeckung messen (O-7)
         if: always()
-        run: node scripts/quality/verify-historical-fx-coverage.mjs --publish
+        run: |
+          if [ "${{ steps.ingest.outcome }}" = "success" ]; then
+            node scripts/quality/verify-historical-fx-coverage.mjs --publish
+          else
+            echo "Kein Anbieterabruf in diesem Lauf - gemessen wird der Fallback allein, ohne zu veroeffentlichen."
+            node scripts/quality/verify-historical-fx-coverage.mjs
+          fi
 
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
@@ -308,8 +371,10 @@ jobs:
           echo 'Keine FX-Reihe im veroeffentlichten Pfad.'
           ls -la .market-cache/currency/fx 2>/dev/null | head -10 || echo 'Keine Reihen geholt.'
 
+      # Das Urteil gilt dem veroeffentlichten Bestand. Ohne Anbieterabruf
+      # gibt es keinen neuen, also wird auch nicht neu geurteilt.
       - name: Gate - historische FX-Abdeckung
-        if: always()
+        if: always() && steps.ingest.outcome == 'success'
         run: node scripts/quality/verify-historical-fx-coverage.mjs --gate
 
       - name: Keine Zugangsdaten in ausgelieferten Daten
