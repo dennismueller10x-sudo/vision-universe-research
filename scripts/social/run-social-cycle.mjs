@@ -181,12 +181,14 @@ const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
 const NOW = arg("--now", new Date().toISOString());
 
-/* POST ZU THEMA (§30): der Owner nennt ein Instrument statt eine
-   Gelegenheit zu waehlen. Das Symbol reist bereits fuer den Creative-
-   Job-Dispatch mit (run-orchestrator.mjs::creativeBedarf) - dieses
-   Flag ist dieselbe Kennung, nur fuer DIESEN Lauf, siehe
-   themaAusOwnerSymbol() weiter unten. */
-const THEMA_SYMBOL = arg("--thema-symbol", null);
+/* POST ZU THEMA (§30): der Owner nennt ein Thema statt eine
+   Gelegenheit zu waehlen. Der rohe Text reist unveraendert mit - kein
+   vorab aufgeloestes Symbol wie beim Creative-Job-Dispatch
+   (run-orchestrator.mjs::creativeBedarf), weil der Text auch eine
+   Platten-Ueberschrift treffen kann ("Staerkste Aktien im Dow
+   Jones"), fuer die es kein einzelnes Instrument und damit kein
+   Symbol gibt. Siehe themaVomOwner() weiter unten. */
+const THEMA_FREITEXT = arg("--thema-freitext", null);
 
 /* Woher gelesen wird. Getrennt von --out, weil der Nachweis der
    Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
@@ -740,13 +742,49 @@ function ladeEvidenzPaket(sources, nowIso) {
    einem anderen, von der Leiter gewaehlten Thema - die Warteschlange
    blieb unveraendert, und das genannte Thema erreichte den Owner nie.
 
-   Dieselbe Evidenzquelle wie beim Creative-Job-Brief: ladeEvidenzPaket
-   liest dasselbe technische Bundle, das request-creative.mjs fuer den
-   Dispatch nutzt. Keine zweite Datenquelle, nur eine zweite Verwendung
-   derselben - und ohne hinreichende Evidenz entsteht auch hier nichts
-   (§4): ein Knopf erfindet keinen Beleg.
+   -------------------------------------------------------------------
+   ZWEI TREFFERARTEN FUER DENSELBEN ROHEN TEXT
+
+   "Halbleiter NVDA" nennt ein einzelnes Instrument - dafuer liefert
+   das technische Bundle Evidenz (themaAusBundle). "Staerkste Aktien
+   im Dow Jones" nennt dagegen eine Platten-Ueberschrift: eine
+   Rangliste ueber zehn Titel hat kein einzelnes Bundle und keinen
+   Ticker. Beide sind legitime Antworten auf dieselbe Frage ("was hat
+   der Owner gemeint"), keine zwei Rechnungen fuer dieselbe Frage: die
+   Platten-Ueberschrift ist bereits redaktionell kuratiert (PR #168:
+   `subtitle`/`question`) und braucht keine der Filterungen, die ein
+   rohes Bundle erst oeffentlich sicher machen (siehe unten).
+
+   Die Ticker-Erkennung (VisualDaten.symbolAus) ist dieselbe Funktion,
+   die run-orchestrator.mjs::themaDesOwners() fuer den Creative-Job-
+   Dispatch benutzt - keine zweite Regel dafuer, was ein Symbol ist.
+   Dass diese Funktion hier zusaetzlich noch den Plattentitel prueft,
+   ist keine Abweichung: die Dispatch-Entscheidung und diese Kandidaten-
+   Auswahl beantworten unterschiedliche Fragen (dispatch: "gibt es ein
+   Instrument, fuer das ein Creative Job Sinn ergibt" - hier: "was baut
+   dieser Lauf als Kandidaten"), und fuer eine Platten-Ueberschrift
+   lautet die ehrliche Antwort auf die erste Frage ohnehin "nein, kein
+   Instrument" (der Dispatch bleibt entsprechend aus - richtig so, eine
+   Rangliste hat kein einzelnes Bundle).
    ===================================================================== */
-function themaAusOwnerSymbol(symbol, nowIso) {
+function themaVomOwner(freitext, platteThemen, nowIso) {
+  const text = String(freitext || "").trim();
+  const titelTreffer = (platteThemen || []).find((t) =>
+    t && t.title && t.title.trim().toLowerCase() === text.toLowerCase());
+  if (titelTreffer) {
+    return { ok: true, thema: titelTreffer, herkunft: "PLATTE" };
+  }
+
+  const symbol = VisualDaten.symbolAus(text);
+  if (!symbol) {
+    return { ok: false,
+      erklaerung: "Weder eine Platten-Ueberschrift noch ein erkennbares " +
+        "Instrument in \"" + text + "\"." };
+  }
+  return Object.assign({ herkunft: "BUNDLE" }, themaAusBundle(symbol, nowIso));
+}
+
+function themaAusBundle(symbol, nowIso) {
   const paket = ladeEvidenzPaket([{ entity: symbol }], nowIso);
   if (!paket || paket.ok === false) {
     return { ok: false,
@@ -1338,15 +1376,15 @@ async function main() {
   }
 
   /* POST ZU THEMA (§30) ersetzt die Gelegenheitsbewertung durch das
-     genannte Instrument - siehe themaAusOwnerSymbol() weiter oben. */
-  if (THEMA_SYMBOL) {
-    const ownerThema = themaAusOwnerSymbol(THEMA_SYMBOL, NOW);
+     genannte Thema - siehe themaVomOwner() weiter oben. */
+  if (THEMA_FREITEXT) {
+    const ownerThema = themaVomOwner(THEMA_FREITEXT, platte.themen, NOW);
     if (ownerThema.ok) {
       leiter.gefunden = [ownerThema.thema];
-      log("Owner-Thema:   " + THEMA_SYMBOL + " ersetzt die Gelegenheitsbewertung " +
-          "(POST ZU THEMA, §30).");
+      log("Owner-Thema:   \"" + THEMA_FREITEXT + "\" ersetzt die Gelegenheitsbewertung " +
+          "(POST ZU THEMA, §30; Herkunft " + ownerThema.herkunft + ").");
     } else {
-      log("Owner-Thema:   " + THEMA_SYMBOL + " ohne hinreichende Evidenz — " +
+      log("Owner-Thema:   \"" + THEMA_FREITEXT + "\" ohne hinreichende Evidenz — " +
           ownerThema.erklaerung + " Die Ladder-Auswahl bleibt unveraendert.");
     }
   }
