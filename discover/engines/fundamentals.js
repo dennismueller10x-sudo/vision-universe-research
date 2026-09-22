@@ -322,10 +322,19 @@
          (currency-engine.resolvePeriodChain); hier wird sie benutzt und
          nicht nachgebaut. */
       var grenzen = periodenGrenzen(series);
+      /* Der Anfang steht nur dort, wo er bekannt ist. Im Neubau ohne Kern
+         bleibt er weg statt als null dazustehen - ein leeres Feld je Zeile
+         und Titel waere Ballast in der ausgelieferten Datei, und die
+         Oberflaeche leitet ihn ohnehin aus der Jahresreihe ab. */
+      var seite = function (r) {
+        var o = { fy: r.fy, end: r.end };
+        if (grenzen[r.end]) o.start = grenzen[r.end];
+        o.value = r.v;
+        return o;
+      };
       var row = { id: def.id, label: def.label, kind: def.kind, metric: def.metric,
                   unit: def.kind === "margin" ? "ratio" : (model.units[def.metric] || null),
-                  then: { fy: a.fy, end: a.end, start: grenzen[a.end] || null, value: a.v },
-                  now: { fy: b.fy, end: b.end, start: grenzen[b.end] || null, value: b.v } };
+                  then: seite(a), now: seite(b) };
       if (def.kind === "margin") {
         row.change = { pp: (b.v - a.v) * 100, calculation: "Marge FY " + b.fy + " minus Marge FY " + a.fy + " in Prozentpunkten" };
         row.evidence = evidence(a, b, model, a.calculation + " vs. " + b.calculation);

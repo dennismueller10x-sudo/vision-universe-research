@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-formatting-baseline-1.0.0",
-  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag - ausser die Stelle ist der beibehaltene Rueckfall einer migrierten Darstellung (Klasse F im Debt Register). discover-v2/detail.js ist so ein Fall: die Datei kam mit dem Merge aus main, brachte eine eigene Skalenleiter mit, wurde sofort auf den zentralen Contract migriert, und was hier zaehlt, ist nur noch ihr Rueckfall.",
+  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag - ausser die Stelle ist der beibehaltene Rueckfall einer migrierten Darstellung (Klasse F im Debt Register). discover-v2/detail.js kam mit dem Merge aus main und bringt eine eigene Skalenleiter mit; sie wird in einem eigenen Schritt migriert, damit der Discover-2.0-Vorschau-Gate (scripts/discover-v2/regression-gate.mjs) seine Grundlinie behaelt und nicht fuer einen querliegenden Kernumbau aufgeweicht werden muss.",
   "updatedAt": "2026-09-22",
   "total": 33,
   "byFile": {

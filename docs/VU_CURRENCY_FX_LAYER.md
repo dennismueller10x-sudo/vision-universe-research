@@ -900,8 +900,8 @@ die Bruecke `vuFormat()` und der beibehaltene Rueckfall zaehlen beide.
 
 Migriert: `discover/ui/{surfaces,detail-fundamentals,cards,detail}.js`,
 `dashboard/app.js`, `hedgefonds/index.html`, `vu2/experience.js`. Die
-FX-Engines sind in `discover/index.html` und `discover-v2/index.html`
-eingebunden; `vu2/index.html` laedt **nur** Registry und Formatierung —
+FX-Engines sind in `discover/index.html` eingebunden; `vu2/index.html`
+laedt **nur** Registry und Formatierung —
 diese Seite rechnet nichts um, und die Engine gehoert nicht auf eine
 Seite, die sie nicht braucht.
 
@@ -1372,7 +1372,7 @@ keine Testsuite sehen kann. Gemessen an `AAPL`:
 | `UI5` 5 Jahre: **+133 % in EUR** gegen **+126 % in USD** | **PASS** |
 | `UI6` MAX-Chart: EUR ab **08.01.1999**, nativ ab **05.01.1990**, mit Hinweis | **PASS** |
 | `UI7` keine Konsolenfehler | **PASS** |
-| `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **PASS** |
+| `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **SKIP** — folgt nach dem Kern-Merge, siehe unten |
 
 Gefuehrt fuer alle neun Nachweistitel: AAPL, NVDA, MSFT, SAP, ASML, NVO,
 TM, BABA, GSK.
@@ -1422,8 +1422,8 @@ ein Nachweis selbst gegengelesen gehoert.
 | `FX_FRESHNESS` | **PASS** | `O5-1` … `O5-6` |
 | `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) | plus `O15-1`: getrennte Anfaenge je Anzeigewaehrung |
 | `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt; 5 Titel unaufloesbar, alle `conversionAvailable: false`; Verfuegbarkeit zeitpunktbezogen | `O13-1`, `O13-2` |
-| `CURRENCY_DEBT_MIGRATION` | **PASS** — 0 offene Klasse-A-Stellen; Grundlinie von 34 auf 33 gesunken | `currency-debt-register.json`, `O16-1`, `O16-2` |
-| `CURRENCY_UI_PROOF` | **PASS** — EUR-Vorgabe, Umschalter, 0 bewegte Verhaeltniswerte, 9 Titel | `verify-currency-ui.mjs` (`UI1`–`UI8`) |
+| `CURRENCY_DEBT_MIGRATION` | **PASS_WITH_PENDING** — 1 offene Klasse-A-Stelle, und sie ist benannt: `discover-v2/detail.js` migriert im Folgeschritt. Grundlinie von 34 auf 33 gesunken | `currency-debt-register.json`, `O16-1`, `O16-2` |
+| `CURRENCY_UI_PROOF` | **PASS_WITH_SKIPS** — EUR-Vorgabe, Umschalter, 0 bewegte Verhaeltniswerte, 9 Titel; `UI8` uebersprungen | `verify-currency-ui.mjs` (`UI1`–`UI8`) |
 | `REGRESSION_GUARD` | **PASS** — 33 Stellen (Grundlinie 33), 2 Konstanten (Grundlinie 2) | `assert-no-local-fx.mjs` |
 | `NEW_REGRESSIONS` | **0** | nach dem Merge von `main`: quant 1.403/1.403, discover 233/233, worker 66/66 - **keine** roten Tests mehr (die fuenf bekannten sind auf `main` behoben worden) |
 | `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
@@ -1445,8 +1445,43 @@ die andere hier.
 
 **Und ein Fund beim Zusammenfuehren:** `main` brachte
 `discover-v2/detail.js` mit einer vierten eigenen Skalenleiter mit. Der
-Regression Guard hat sie gemeldet, und sie wurde sofort migriert -
-byte-gleich. Genau dafuer gibt es den Guard.
+Regression Guard hat sie gemeldet. Genau dafuer gibt es den Guard.
+
+### Warum Discover 2.1 in einem zweiten Schritt migriert
+
+Discover 2.0 ist eine Vorschau, und `scripts/discover-v2/regression-gate.mjs`
+haelt sie isoliert: sobald ein Zweig eine Datei unter `discover-v2/`
+anfasst, prueft der Gate, dass `discover/index.html`, `discover/app.js`,
+`discover/discover.css` und alles unter `discover/ui/` **byte-gleich**
+zur Grundlinie bleiben, und dass sonst nichts ausserhalb der Vorschau
+sich geaendert hat.
+
+Der Currency Layer ist das Gegenteil davon: ein querliegender Kernumbau,
+der genau diese Dateien anfassen MUSS — die Klasse-A-Migration und der
+EUR-Umschalter leben dort. Beides in einem Zweig heisst: entweder der
+Gate faellt, oder man weicht ihn auf.
+
+Das Einfrieren von Discover 1.0 ist eine Produktionsschutz-Zusage. Sie
+wird nicht aufgeweicht, damit ein eigener Zweig gruen wird. Stattdessen
+laeuft die Lieferung in zwei Schritten:
+
+1. **Dieser Zweig** enthaelt den Kern und Discover 1.0 — und *keine*
+   Datei unter `discover-v2/`. Der Pfadfilter des Vorschau-Workflows
+   greift damit nicht, der Gate laeuft gar nicht erst, und seine
+   Grundlinie bleibt unberuehrt.
+2. **Der Folgeschritt** migriert Discover 2.1 gegen das neue `main`. Die
+   Grundlinie enthaelt dann die Currency-Aenderungen an Discover 1.0,
+   das Einfrieren geht also durch, und die drei geaenderten Dateien
+   (`discover-v2/{app.js,detail.js,index.html}`) stehen ohnehin in der
+   Positivliste des Gates. Der Gate bleibt scharf und sagt trotzdem ja.
+
+Das kostet einen zweiten Merge und weicht keine Zusage auf. Drei Stellen
+halten den Folgeschritt fest, damit er nicht vergessen wird: `M12-5`
+prueft, dass `discover-v2/index.html` den Core noch *nicht* laedt (laedt
+sie ihn, gehoert die Seite in die Pruefung statt in die Ausnahme),
+`O16-1` laesst genau diese eine Klasse-A-Stelle durch und jede andere
+fallen, und `UI8` springt von SKIP auf die volle Pruefung, sobald die
+Seite den Vertrag mitbringt.
 
 ### `REALTIME_FX`: der Zeitplan allein holt es nicht nach
 

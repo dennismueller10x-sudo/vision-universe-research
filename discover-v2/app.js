@@ -46,17 +46,10 @@
     const themeButton=el('button',{type:'button',class:'v2-theme',text:'Darstellung'});
     const label=()=>{themeButton.textContent=theme.label(theme.mode());themeButton.setAttribute('aria-label','Darstellung: '+theme.label(theme.mode()));};
     label();themeButton.onclick=()=>{theme.cycle();label();};
-    /* Derselbe Umschalter wie in Discover 1.0, aus demselben Vertrag.
-       Discover 2.1 baut ihn nicht nach - ein zweiter haette einen
-       zweiten Zustand, und ein Nutzer, der dort auf USD stellt, saehe
-       hier wieder Euro. */
-    const waehrung=(global.VUFx&&global.VUFx.Switch&&global.VUFx.layer)
-      ? global.VUFx.Switch.create({layer:global.VUFx.layer}) : null;
     const bar=el('div',{class:'v2-bar'},[
       el('a',{href:'#/',class:'v2-wordmark',text:'Discover 2.1'}),
-      el('a',{href:'/discover/',class:'v2-compare',text:'Discover 1.0 ↗'}),
-      waehrung,themeButton
-    ].filter(Boolean));
+      el('a',{href:'/discover/',class:'v2-compare',text:'Discover 1.0 ↗'}),themeButton
+    ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
     const dock=navigation();
     host.append(bar,main,footer(),dock); return main;
@@ -187,16 +180,7 @@
       let storage;try{storage=global.localStorage;}catch(_){}
       theme=D.Theme.create({storage,document,matchMedia:q=>global.matchMedia(q)});D.theme=theme;D.memory=D.Memory.create();
       theme.onChange(syncThemeChrome);syncThemeChrome({resolved:theme.resolved()});labelCurrentNavigation();
-      setupSearch();global.addEventListener('hashchange',route);
-      /* Zwei Gruende, neu zu zeichnen: die Kurse sind da, oder der
-         Nutzer hat umgeschaltet. Discover 2.1 rechnet nichts um; es
-         fragt den Vertrag und stellt dar, was er sagt. */
-      document.addEventListener('vu-currency-change',route);
-      document.addEventListener('vu-fx-ready',route);
-      if(global.VUFx&&global.VUFx.Bootstrap){
-        global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
-      }
-      await route();
+      setupSearch();global.addEventListener('hashchange',route);await route();
     }catch(err){message(document.getElementById('v2-shell'),'Discover 2.1 ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}
   }
   boot();

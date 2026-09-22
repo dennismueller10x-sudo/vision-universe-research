@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-09-22T10:57:57.110Z",
+  "generatedAtUtc": "2026-09-22T11:18:48.038Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -35,16 +35,26 @@
   "total": 33,
   "byClass": {
     "C": 5,
-    "UNCLASSIFIED": 1,
-    "F": 22,
+    "UNCLASSIFIED": 4,
+    "F": 18,
+    "A": 1,
     "B": 4,
     "E": 1
   },
   "filesAffected": 16,
-  "migrationOrder": [],
+  "migrationOrder": [
+    {
+      "file": "discover-v2/detail.js",
+      "monetary": 1,
+      "total": 4,
+      "counts": {
+        "A": 1,
+        "UNCLASSIFIED": 3
+      }
+    }
+  ],
   "migratedFiles": [
     "dashboard/app.js",
-    "discover-v2/detail.js",
     "discover/ui/cards.js",
     "discover/ui/detail-fundamentals.js",
     "discover/ui/detail.js",
@@ -52,7 +62,7 @@
     "hedgefonds/index.html",
     "vu2/experience.js"
   ],
-  "openClassA": 0,
+  "openClassA": 1,
   "entries": [
     {
       "file": "discover/engines/fundamentals.js",
@@ -67,7 +77,7 @@
     },
     {
       "file": "discover/engines/fundamentals.js",
-      "line": 598,
+      "line": 607,
       "rule": "trailingDollar",
       "class": "UNCLASSIFIED",
       "label": "UNCLASSIFIED",
@@ -221,45 +231,45 @@
     },
     {
       "file": "discover-v2/detail.js",
-      "line": 261,
+      "line": 232,
       "rule": "trailingDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
       "declaredReason": null,
       "text": "var abs = Math.abs(value), scale = 1, suffix = \" $\";"
     },
     {
       "file": "discover-v2/detail.js",
-      "line": 262,
+      "line": 233,
       "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
       "declaredReason": null,
       "text": "if (abs >= 1e12) { scale = 1e12; suffix = \" Bio. $\"; }"
     },
     {
       "file": "discover-v2/detail.js",
-      "line": 263,
+      "line": 234,
       "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
       "declaredReason": null,
       "text": "else if (abs >= 1e9) { scale = 1e9; suffix = \" Mrd. $\"; }"
     },
     {
       "file": "discover-v2/detail.js",
-      "line": 264,
+      "line": 235,
       "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
       "declaredReason": null,
       "text": "else if (abs >= 1e6) { scale = 1e6; suffix = \" Mio. $\"; }"
     },
