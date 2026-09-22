@@ -13,6 +13,7 @@ const allowedPaths=new Set([
   'scripts/discover-v2/browser-qa.mjs','scripts/discover-v2/contract-qa.mjs','scripts/discover-v2/regression-gate.mjs',
   'docs/discover-v2/premium-orchestration.md','docs/discover-v2/premium-contract-audit.md',
   'docs/discover-v2/premium-design-qa.md',
+  'discover/config/company-recognition.json',
   'discover/engines/discovery-eligibility.js','discover/tests/discovery-eligibility.test.mjs',
   'scripts/discover/build-discover-data.mjs'
 ]);

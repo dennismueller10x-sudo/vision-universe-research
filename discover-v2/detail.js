@@ -154,6 +154,7 @@
       valuation.classList.add("dv2-stock-valuation");
       var valuationKicker = valuation.querySelector(".dx-kicker");
       if (valuationKicker) valuationKicker.textContent = "03 / Bewertung einordnen";
+      addValuationComponents(valuation, detail);
     }
     if (risks) {
       risks.classList.add("dv2-stock-risks");
@@ -217,6 +218,56 @@
       sync();
     });
     return interactiveFundamentalBars(journey, detail);
+  }
+  function number(value, digits) {
+    return value.toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  }
+  function compactMoney(value) {
+    var abs = Math.abs(value), scale = 1, suffix = " $";
+    if (abs >= 1e12) { scale = 1e12; suffix = " Bio. $"; }
+    else if (abs >= 1e9) { scale = 1e9; suffix = " Mrd. $"; }
+    else if (abs >= 1e6) { scale = 1e6; suffix = " Mio. $"; }
+    return number(value / scale, scale === 1 ? 2 : 1) + suffix;
+  }
+  function addValuationComponents(section, detail) {
+    var fundamentals = detail && detail.fundamentals;
+    var valuation = fundamentals && fundamentals.valuation;
+    if (!valuation || !valuation.available || section.querySelector(".dv2-valuation-components")) return;
+    var cards = [];
+    function add(label, value, note) {
+      if (value === null || value === undefined || value === "" || !Number.isFinite(typeof value === "number" ? value : NaN)) return;
+      cards.push({ label: label, value: value, note: note });
+    }
+    if (valuation.marketCap && Number.isFinite(valuation.marketCap.value))
+      cards.push({ label: "Marktkapitalisierung", text: compactMoney(valuation.marketCap.value), note: "Kurs × ausgegebene Aktien" });
+    if (valuation.pe) add("KGV", valuation.pe.value, "Kurs ÷ Gewinn je Aktie · " + valuation.pe.basis);
+    if (valuation.ps) add("KUV", valuation.ps.value, "Marktwert ÷ Umsatz · " + valuation.ps.basis);
+    if (valuation.fcfYield) {
+      var yieldValue = valuation.fcfYield.value;
+      if (Number.isFinite(yieldValue) && yieldValue > 0)
+        add("Marktwert / Free Cashflow", 1 / yieldValue, "Kehrwert der Free-Cashflow-Rendite · " + valuation.fcfYield.basis);
+      if (Number.isFinite(yieldValue))
+        cards.push({ label: "Free-Cashflow-Rendite", text: number(yieldValue * 100, 1) + " %", note: "Free Cashflow ÷ Marktwert · " + valuation.fcfYield.basis });
+    }
+    cards.forEach(function (card) {
+      if (!card.text) card.text = number(card.value, 1) + "×";
+    });
+    if (!cards.length) return;
+    var block = node("section", "dv2-valuation-components");
+    block.setAttribute("aria-label", "Bewertungsbausteine");
+    block.appendChild(node("h3", "", "Bewertungsbausteine"));
+    block.appendChild(node("p", "", "Die wichtigsten Verhältnisse auf einen Blick. Jeder Baustein nutzt dieselben ausgelieferten Unternehmenszahlen wie die Detailanalyse."));
+    var grid = node("div", "dv2-valuation-grid");
+    cards.forEach(function (card) {
+      var item = node("div", "dv2-valuation-card");
+      item.appendChild(node("span", "", card.label));
+      item.appendChild(node("b", "num", card.text));
+      item.appendChild(node("small", "", card.note));
+      grid.appendChild(item);
+    });
+    block.appendChild(grid);
+    var tabs = section.querySelector(".dx-bewertung-tabs");
+    section.insertBefore(block, tabs || section.querySelector(".dx-weitere") || null);
   }
   function journeyTrack(detail, trackId) {
     var tracks = detail && detail.fundamentals && detail.fundamentals.journey && detail.fundamentals.journey.tracks;
@@ -324,11 +375,54 @@
         var wrap = svg.closest(".dx-range-chart-wrap,.dx-intraday");
         if (wrap) wrap.setAttribute("data-direction", "neutral");
       });
+      chart.querySelectorAll("svg.dx-micro--intraday").forEach(scaleIntradayFromPreviousClose);
     }
     var observer = new MutationObserver(update);
     observer.observe(chart, { childList: true, subtree: true });
     update();
     return observer;
+  }
+  function scaleIntradayFromPreviousClose(svg) {
+    if (svg.hasAttribute("data-v2-previous-close-scale")) return;
+    var points = svg.__punkte, basis = svg.__basis;
+    if (!Array.isArray(points) || points.length < 2 || !basis || !Number.isFinite(basis.previousClose)) return;
+    var view = String(svg.getAttribute("viewBox") || "").trim().split(/\s+/).map(Number);
+    if (view.length !== 4 || view.some(function (n) { return !Number.isFinite(n); })) return;
+    var height = view[3], base = basis.previousClose;
+    var values = points.map(function (point) { return point.close; }).filter(Number.isFinite);
+    if (values.length < 2) return;
+    var low = Math.min.apply(null, values.concat([base]));
+    var high = Math.max.apply(null, values.concat([base]));
+    if (low === high) return;
+    /* No artificial range below a wholly positive session (or above a
+       wholly negative one): 0 % is the real previous close and becomes
+       the visual origin. A crossing session still shows both sides. */
+    var span = high - low;
+    if (low < base && high > base) {
+      low -= span * .025; high += span * .025;
+    } else if (high <= base) low -= span * .025;
+    else high += span * .025;
+    var top = basis.padTop, bottom = height - basis.padBottom;
+    var y = function (value) { return bottom - ((value - low) / (high - low)) * (bottom - top); };
+    points.forEach(function (point) { point.y = y(point.close); });
+    var path = points.map(function (point, index) { return (index ? "L" : "M") + point.x.toFixed(1) + " " + point.y.toFixed(1); }).join(" ");
+    var line = svg.querySelector(".dx-art-line");
+    if (line) line.setAttribute("d", path);
+    var fill = svg.querySelector(".dx-art-fill");
+    if (fill) fill.setAttribute("d", path + " L" + points[points.length - 1].x.toFixed(1) + " " + y(base).toFixed(1) + " L" + points[0].x.toFixed(1) + " " + y(base).toFixed(1) + " Z");
+    var baseLine = svg.querySelector(".dx-art-base");
+    if (baseLine) { baseLine.setAttribute("y1", y(base).toFixed(1)); baseLine.setAttribute("y2", y(base).toFixed(1)); }
+    var last = points[points.length - 1];
+    svg.querySelectorAll(".dx-art-node,.dx-art-node-ring").forEach(function (circle) {
+      circle.setAttribute("cy", last.y.toFixed(1));
+    });
+    var lastLabel = svg.querySelector(".dx-micro-price");
+    if (lastLabel) lastLabel.setAttribute("y", (last.y + 3.5).toFixed(1));
+    var baseLabel = svg.querySelector(".dx-micro-base");
+    if (baseLabel) baseLabel.setAttribute("y", (y(base) + 3.5).toFixed(1));
+    svg.setAttribute("data-v2-previous-close-scale", "true");
+    var wrap = svg.closest(".dx-intraday");
+    if (wrap) wrap.setAttribute("data-v2-scale", "previous-close");
   }
   function dispose() { if (cleanup) cleanup(); cleanup = null; }
   V.Detail = { render: render, renderInstrument: renderInstrument, dispose: dispose };
