@@ -1390,10 +1390,25 @@ export function messeSeite(htmlPfad, breite, hoehe) {
 
   const treffer = /data-vu-messung="([^"]*)"/.exec(dom);
   if (!treffer) {
+    /* Erste Runde der Diagnose zeigte: die Seite laedt (DOM-Laenge
+       250KB+, die eingebettete Schrift kommt an), <script> kommt als
+       Zeichenkette vor - aber weder das Attribut noch der Quelltext
+       von messen() sind auffindbar. Das beantwortet nicht, OB das
+       <script>-Element wirklich da ist oder wo genau es verloren
+       geht - deshalb hier der naechste, praezisere Ausschnitt statt
+       einer weiteren Vermutung. */
+    const si = dom.search(/<script/i);
     console.error("messeSeite: --dump-dom lief durch, aber data-vu-messung " +
       "fehlt. DOM-Laenge=" + dom.length + " enthaelt <script>=" +
-      /<script/i.test(dom) + " enthaelt messen(): " +
-      /function\s+messen/i.test(dom));
+      (si !== -1) + " enthaelt messen(): " + /function\s+messen/i.test(dom) +
+      " enthaelt data-vu-figur=" + dom.includes("data-vu-figur") +
+      " enthaelt html-Tag=" + /<html[^>]*>/i.test(dom));
+    if (si !== -1) {
+      console.error("messeSeite: Ausschnitt um <script> (Position " + si +
+        "): " + JSON.stringify(dom.slice(Math.max(0, si - 80), si + 300)));
+    }
+    console.error("messeSeite: Anfang des Dumps: " + JSON.stringify(dom.slice(0, 300)));
+    console.error("messeSeite: Ende des Dumps: " + JSON.stringify(dom.slice(-300)));
     return null;
   }
   let texte;
