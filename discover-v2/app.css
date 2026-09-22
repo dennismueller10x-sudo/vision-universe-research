@@ -78,6 +78,7 @@ html[data-theme=light] body.dv2{
 html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 .dv2 .v2-bar{position:relative;z-index:310}
 .dv2 .v2-wordmark{font-weight:800;letter-spacing:-.045em}
+.dv2:not(.v2-feed-active) .v2-main{min-height:calc(100dvh - 88px)}
 
 /* Desktop keeps the useful information architecture in the header. */
 @media(min-width:761px){
@@ -117,6 +118,7 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 @media(max-width:760px){
   body.dv2{background:#fff}
   html:not([data-theme=light]) body.dv2{background:var(--v2-bg)}
+  .dv2:not(.v2-feed-active) .v2-main{min-height:calc(100dvh - 70px)}
   .dv2 .v2-main{padding-bottom:118px}.dv2 .v2-footer{padding-bottom:145px}
   .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{
     left:14px;right:14px;bottom:max(12px,env(safe-area-inset-bottom));
