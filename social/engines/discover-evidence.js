@@ -224,6 +224,28 @@
           "Regel ist keine Geschichte - nur eine Aufzaehlung." });
     }
 
+    /* 1b. Die Einordnung in Lesersprache - derselbe Satz, den PR #168
+       bereits als `question` an den Autor durchreicht
+       (content-ladder.js::alsGelegenheit(), `explanation`). Ohne
+       Entitaet und ohne Zahl ist er genau das, was
+       EvidencePackage.fromTopicEvidence() als "Einordnung" fuer ein
+       Thema aus der Platte verlangt (assessSufficiency():
+       "Die Leitzahl hat keine Einordnung").
+
+       Fuer eine RANKING-Reihe (Zahlenregel, `r.rule` gesetzt) traegt
+       schon "row-rule" diese Form - aber `r.rule` ist Innensprache
+       ("maxDrawdown252d"), keine Einordnung fuer draussen. Fuer eine
+       MEGATREND-Reihe (Thema statt Zahlenregel, `r.theme` gesetzt,
+       kein `r.rule`) gab es bislang UEBERHAUPT keinen entitaets- und
+       zahlenlosen Beleg - jedes Megatrend-Thema verfehlte
+       EVIDENCE_SUFFICIENCY deshalb strukturell, unabhaengig von der
+       Guete seiner Belege. Kein erfundener Satz: derselbe Untertitel,
+       den die Reihe selbst schon traegt. */
+    if (r.subtitle) {
+      belege.push({ id: "row-subtitle", statement: String(r.subtitle),
+        source: "discover.row." + (r.rowId || "unbekannt"), temporal: false });
+    }
+
     /* 2. Die Abdeckung - mit der ehrlichen Zahl der nicht
        entscheidbaren Titel. Sie gehoert dazu: "596 von 5947" ohne
        "2849 nicht entscheidbar" waere eine schoenere und falschere
