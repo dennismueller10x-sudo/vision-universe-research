@@ -309,12 +309,50 @@ async function main() {
      Originalwaehrung - dauerhaft, nicht bis zum naechsten Lauf. Das ist
      eine Produktaussage und gehoert vor die Augen des Owners, nicht in
      eine Arbeitsablage, die mit dem Runner stirbt. */
+  /* EFFEKTIVE ABDECKUNG, NICHT ABRUFERGEBNIS.
+
+     Die erste Fassung meldete je Paar, ob der ABRUF geklappt hat. Das
+     ergab 21 "nicht gefuehrte" Richtungen - darunter CNY/EUR mit 124
+     betroffenen Titeln. Die Zahl war richtig und die Aussage falsch:
+     USD/CNY liegt mit 2.030 Zeilen im Store, und fx-rates.js bildet
+     CNY/EUR daraus ueber das Pivot. Alibaba rechnet seit Lauf
+     35697879962 korrekt in Euro.
+
+     Ein Bericht, der 124 Titel als nicht umrechenbar fuehrt, waehrend
+     sie umgerechnet werden, laedt zu genau der Entscheidung ein, die
+     O-2 vermeiden soll: eine zweite Quelle fuer ein Problem, das es
+     nicht gibt.
+
+     Gefragt wird deshalb die Engine selbst, nicht das Abrufprotokoll. */
+  const store = Rates.createStore();
+  for (const r of ok) {
+    store.ingest(r.stored.base, r.stored.quote, r.points, { source: "tiingo", frequency: "DAILY" });
+  }
+
+  const coverage = [];
+  for (const p of pairs) {
+    const hit = store.rateAt(p.base, p.quote, null);
+    coverage.push({
+      pair: `${p.base}/${p.quote}`,
+      resolvable: hit.available === true,
+      resolution: hit.available ? hit.derivation : "NONE",
+      via: hit.available && hit.derivation === "TRIANGULATED" ? hit.legs
+         : hit.available && hit.derivation === "INVERSE" ? [hit.derivedFrom]
+         : null,
+      securitiesAffected: p.securities,
+      consequence: hit.available
+        ? null
+        : "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    });
+  }
+  const unresolvable = coverage.filter((c) => !c.resolvable);
+
   const availability = {
-    schema: "vu-fx-pair-availability-1.0.0",
+    schema: "vu-fx-pair-availability-2.0.0",
     generatedAtUtc: asOf,
-    note: "Welche gebrauchten Waehrungspaare der Anbieter fuehrt. Enthaelt keine Kurse - " +
-          "nur Paarnamen, Beobachtungszahlen und Gruende. Waehrungen ohne Paar bleiben im " +
-          "Produkt in ihrer Originalwaehrung stehen.",
+    note: "Welche gebrauchten Waehrungspaare der Currency Layer AUFLOESEN kann - direkt, " +
+          "durch Inversion oder ueber das Pivot. Ein Paar, das der Anbieter nicht direkt fuehrt, " +
+          "ist deshalb nicht unbedient. Enthaelt keine Kurse, nur Paarnamen und Zeilenzahlen.",
     provider: "tiingo",
     startDate: START,
     requestedStartDate: REQUESTED_START,
@@ -336,11 +374,15 @@ async function main() {
       securitiesAffected: r.pair.securities,
       consequence: "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
     })),
-    unservedCurrencies: [...new Set(results.filter((r) => !r.ok)
-      .flatMap((r) => [r.pair.base, r.pair.quote])
+    /* Das ist die Zahl, die zaehlt. */
+    coverage,
+    resolvablePairs: coverage.filter((c) => c.resolvable).length,
+    unresolvablePairs: unresolvable.length,
+    byResolution: coverage.reduce((acc, c) => { acc[c.resolution] = (acc[c.resolution] || 0) + 1; return acc; }, {}),
+    unresolvableCurrencies: [...new Set(unresolvable
+      .flatMap((c) => c.pair.split("/"))
       .filter((c) => c !== "EUR" && c !== "USD"))].sort(),
-    securitiesWithoutPair: results.filter((r) => !r.ok)
-      .reduce((n, r) => n + (r.pair.securities || 0), 0)
+    securitiesWithoutCoverage: unresolvable.reduce((n, c) => n + (c.securitiesAffected || 0), 0)
   };
 
   const availabilityFile = (PUBLISH || flags.has("--publish-availability"))
@@ -348,10 +390,15 @@ async function main() {
     : join(OUT_DIR, "..", "pair-availability.json");
   mkdirSync(dirname(availabilityFile), { recursive: true });
   writeFileSync(availabilityFile, JSON.stringify(availability, null, 2) + "\n");
-  console.log(`  Abdeckungskarte: ${availability.served.length} gefuehrt, ${availability.notServed.length} nicht - ` +
-    (availability.unservedCurrencies.length
-      ? `ohne Paar: ${availability.unservedCurrencies.join(", ")}`
-      : "jede gebrauchte Waehrung ist bedient"));
+  console.log(`  Abrufe:          ${availability.served.length} Paare geholt, ${availability.notServed.length} nicht gefuehrt`);
+  console.log(`  Aufloesbar:      ${availability.resolvablePairs} von ${coverage.length} gebrauchten Richtungen ` +
+    `(${Object.entries(availability.byResolution).map(([k, v]) => `${k}:${v}`).join(", ")})`);
+  if (unresolvable.length) {
+    console.log(`  OHNE ABDECKUNG:  ${unresolvable.length} Richtungen, ${availability.securitiesWithoutCoverage} Titel - ` +
+      `${availability.unresolvableCurrencies.join(", ")}`);
+  } else {
+    console.log(`  OHNE ABDECKUNG:  keine - jede gebrauchte Richtung ist aufloesbar`);
+  }
 
   console.log(`\n${ok.length} von ${toFetch.length} Paaren geschrieben, ${summary.totalObservations} Beobachtungen, ${requests} Anfragen.`);
   console.log(`Ziel: ${summary.outputDir}`);
