@@ -4,12 +4,10 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_MAIN
 
-- GitHub `main`: `2f2beeb3a735f9c696c1c0f1055a26e9a0809e2a`
-- Production release source: `2f2beeb3a735f9c696c1c0f1055a26e9a0809e2a`
-- Production Pages run: `35727489839` — package and deploy succeeded
-- Deployed artifact: `github-pages` / `10693766680`
-- Deployed artifact digest: `sha256:e4a1e615f16770ee4779bc35e6c59839c92c33e181e144319f835b9d228e35f4`
-- Production URL: `https://research.visionuniverse.de`
+- GitHub `main` at rehydration: `751bf9cb3ba084e6d7fc3cf0819c7b515be2a883`.
+- Current Quant candidate: branch `codex/p0-radar-watchlist`, based on that main.
+- Last confirmed Production release source remains PR #157 merge `2f2beeb3a735f9c696c1c0f1055a26e9a0809e2a` until this candidate is merged and Pages completes.
+- Production URL: `https://research.visionuniverse.de`.
 
 ## LAST_MERGED_PR
 
@@ -18,92 +16,91 @@ Updated: 2026-09-22 UTC
 
 ## OPEN_PRS
 
-- No open Quant 2.0 PR is part of this completed P0 gate.
-- Other repository PRs are outside this gate and must be re-audited before the next integration.
+- No open Quant 2.0 PR existed at rehydration.
+- Open repository PRs were Social authoring requests and are outside Quant 2.0.
+- The Radar/Watchlist/Strategy breadth candidate must become the next Quant 2.0 PR.
 
 ## CURRENT_PHASE
 
-`P0_TECHNICAL_SIGNALS_ELLIOTT_BREADTH_COMPLETE`
+`P0_RADAR_WATCHLIST_BREADTH_AND_P1_STRATEGY_CURRENT_SELECTION_CANDIDATE`
 
-The existing canonical R2 history is processed internally by the existing Technical and Signals engines. Contract-compliant, bounded, gzip-compressed Product Data is materialized and deployed for the Quant 2.0 UI. No public R2 history API or browser-side live calculation was introduced.
+Radar and Watchlist now consume the existing materialized Signals/Technical/Elliott Product Data by capability. Strategy Lab current criteria selection is explicitly bound to the canonical Product Universe while ranking and historical execution remain unavailable.
 
 ## COMPLETED_GATES
 
-- Reused the existing Company/Security Master, Product Eligibility, R2 history store, canonical bars, Technical engine, Signals rule contract, corporate-action data and trading calendar.
-- Validated 6,874 existing canonical histories; one product title (`GLMD`) has no restored source object.
-- Validated adjusted provenance and corporate actions for all 6,874 restored histories, including 5,970 split events.
-- Removed derived `ref_<ticker>` identity assumptions from Technical and Signals. Canonical `member.m` owns identity, including punctuation-normalized class/preferred tickers.
-- Technical and Signals eligibility are independent. A stricter Signals rejection no longer suppresses a valid Technical bundle.
-- Elliott availability is independent from Technical availability and remains fail-closed when no valid count exists.
-- Invalid renderer annotations are excluded at the Product Data boundary; the full Technical artifact is validated against the same Workspace Contract used by the UI.
-- Materialized 632 bounded Technical shards with at most 270 display bars and three Signals artifacts for 5/20/60 EOD observations.
-- Final deployed-artifact breadth:
-  - `TECHNICAL_FULL_BUNDLE_UNIVERSE = 5,676`
-  - `SIGNALS_CAPABLE_UNIVERSE = 5,772`
-  - `ELLIOTT_CAPABLE_UNIVERSE = 5,590`
-  - `FIVE_SCOPE_REMAINS = false`
-- TSLA, AMD, MU, MET, O, ASML, BAC, PLAB and CRWV are Technical-, Signals- and Elliott-available in the deployed source artifact.
-- Combined current-main regression: 1,409/1,409 Quant tests PASS.
-- PR CI: Quant CI, SEC Fundamentals, Company Master, Currency/FX, Production Pages and VU2 Browser QA PASS.
-- VU2 Browser QA validates the exact static release artifact, including broad Signals, TSLA Technical and AMD Elliott on desktop/mobile.
-- Signals UI rendering is bounded to 200 events while retaining complete materialized results and explicit coverage counts.
-- GitHub Pages package and deploy completed successfully for the exact merge commit.
-- `QUANT_MODEL_VERSION = quant-v2.0.0`; `QUANT_V2_STATUS = SPECIFIED_NOT_ACTIVE`.
-- Revisions and Market Regime remain fail-closed. No uncertified Quant-V2 score was activated.
-- Discovery product files, UX, navigation, design, collections, product logic and layout were not changed by PR #157.
+- Reused the existing Company/Security Master, Product Eligibility, canonical history, Technical bundles, Signals artifacts, Query Engine and Strategy definition contracts. No new pipeline, R2 API, provider or serving architecture was introduced.
+- The productive Radar route no longer exposes the synthetic legacy Quant-Score radar. `/quant/radar/` and the classic Quant navigation hand off to `/vu2/?view=radar`.
+- Radar projects four bounded modules from contract-valid `ENTERED`/`EXITED` events in `signals-{5,20,60}.json.gz`; it computes no score, recommendation or live signal.
+- Watchlist remains an explicit user selection over all canonical product identities and attaches exact per-title Signals, Technical and Elliott capability states. Missing evidence remains typed and fail-closed.
+- Strategy Lab current criteria checks use the existing canonical Query Engine over the broad Product Universe. Its current ranking state is `UNAVAILABLE / QUANT_V2_NOT_ACTIVE`.
+- Strategy context reads the canonical Quant V2 methodology and verifies `quant-v2.0.0`, seven-factor order, `SPECIFIED_NOT_ACTIVE` and `publication.allowed = false` before rendering.
+- Local candidate coverage:
+  - `RADAR_SIGNALS_CAPABLE_UNIVERSE = 5,888` for the default 20-EOD window.
+  - `RADAR_EVENT_VISIBLE_UNIVERSE = 2,212` and `RADAR_EVENT_COUNT = 8,504` for that window.
+  - `WATCHLIST_SELECTABLE_UNIVERSE = 6,875`.
+  - `WATCHLIST_SIGNALS_CAPABLE_UNIVERSE = 5,772` for the strict 60-EOD member view.
+  - `WATCHLIST_TECHNICAL_CAPABLE_UNIVERSE = 5,676`.
+  - `WATCHLIST_ELLIOTT_CAPABLE_UNIVERSE = 5,590`.
+  - `STRATEGY_CURRENT_SELECTION_UNIVERSE = 6,875`.
+- TSLA, AMD, MU, MET, O, ASML, BAC, PLAB and CRWV all pass Watchlist Signals/Technical/Elliott probes.
+- `FIVE_SCOPE_REMAINS = false`.
+- 1,411/1,411 Quant tests passed before the Strategy context addition; focused post-addition contract tests and the consolidated breadth measurement pass.
+- Exact static release build passes and contains the broad Radar/Watchlist/Strategy consumer code. Local browser execution is deferred to PR CI because the orchestration environment could not download Chromium from the Playwright CDN.
+- Discovery files and product behavior were not changed.
 - `DISCOVERY_CHANGED = false`; `DISCOVERY_REGRESSION = false`.
 
 ## OPEN_GATES
 
-- Re-measure and, where needed, integrate Radar and Watchlist against the accepted broad Signals/Technical artifacts; neither may treat a curated presentation slice as Product Universe breadth.
-- Strategy Lab follows only after the upstream breadth consumers are consistent.
-- Market Regime requires certified evidence and remains fail-closed.
-- Quant-V2 activation requires seven-factor certification, including licensed/reproducible PIT Revisions evidence.
-- Backtesting remains blocked until PIT, historical-universe, corporate-action and execution certifications pass.
+- Merge the candidate only after Quant CI, VU2 Browser QA, Production Pages, SEC Fundamentals, Company Master and Currency/FX checks pass; then measure the deployed artifact.
+- Market Regime requires its methodology, breadth inputs, benchmark/calendar alignment and certification gates to be audited next. It remains fail-closed.
+- Quant-V2 activation requires seven-factor certification. Revisions remains `BLOCKED_EXTERNAL` because no licensed, immutable historical PIT analyst-consensus source is present.
+- Strategy ranking must not migrate from its legacy draft schema to a claimed Quant-V2 rank until Quant V2 is active.
+- Backtesting remains blocked until PIT fundamentals, historical universe membership, corporate actions, benchmark and execution certification all pass.
 
 ## OWNER_DECISIONS
 
-- GitHub/main and deployed artifacts are the source of truth; chat history is not.
+- GitHub/main, release artifacts and Production are the source of truth; chat history is not.
 - Discovery is a separate product and remains a hard no-change gate.
 - No second data pipeline, Fundamentals layer, Tiingo integration, realtime infrastructure, public R2 API or market-data architecture.
-- Private full history is consumed only in the internal batch. Browsers receive bounded materialized Product Data and derived evidence.
-- A title receives intelligence by canonical identity and explicit capabilities, never by Legacy-Five membership or a derived ticker map.
-- Technical, Signals and Elliott have independent fail-closed capability results.
-- Quant V2, Revisions, Market Regime and SetupState activation stay fail-closed until certified.
+- A title receives intelligence by canonical identity and explicit capabilities, never by Legacy-Five membership.
+- Browsers consume bounded materialized Product Data; they do not fetch private full history or calculate broad Technical/Signals live.
+- Quant V2, Revisions, Market Regime, Strategy ranking, SetupState activation and Backtesting stay fail-closed until their own contracts are certified.
 
 ## KNOWN_BLOCKERS
 
-- `GLMD`: the only canonical Product Universe member without a restored history object (`SOURCE_MISSING`). This is the exact remaining missing-input data gap.
-- 897 histories do not meet the Signals comparison-history threshold.
-- 205 histories fail the strict Signals trading-session contract.
-- 208 otherwise Technical-ready histories fail the 270-display-bar trading-calendar validation and are not materialized as full Technical bundles.
-- These typed exclusions are not replaced with fixtures, synthetic data or live browser calculations.
-- This orchestration environment cannot directly read the custom Production domain (browser `ERR_BLOCKED_BY_CLIENT`; documented runner egress restriction). Production acceptance therefore uses the exact release artifact, successful GitHub Pages deployment and pre-deploy browser/service probes. A future environment with direct edge access should repeat the HTTP route check without rebuilding any data.
+- `GLMD` is the only canonical Product Universe member without a restored history object (`SOURCE_MISSING`).
+- 897 histories do not meet the Signals comparison-history threshold; 205 fail the strict Signals trading-session contract.
+- 208 otherwise Technical-ready histories fail the 270-display-bar calendar validation.
+- Revisions has no licensed, certified immutable PIT analyst-consensus source. SEC restatements are explicitly not a substitute.
+- Direct custom-domain reads remain blocked in this orchestration environment; Production acceptance must use the exact Pages artifact, workflow deployment proof and CI browser/service probes unless edge access becomes available.
 
 ## PRODUCTION_REALITY
 
-The GitHub Pages workflow packaged and deployed the exact merge commit `2f2beeb3a735f9c696c1c0f1055a26e9a0809e2a`. Its source artifact was generated at `2026-09-22T11:39:15.118Z`:
+Confirmed deployed Production before this candidate is PR #157. The new values below are measured from the exact current candidate artifacts and services, not yet claimed as deployed Production:
 
-| Measure | Count |
+| Measure | Candidate count/state |
 |---|---:|
 | Product Universe | 6,875 |
-| Histories found/validated | 6,874 |
-| ≥261-bar lookback coverage | 5,977 |
-| `TECHNICAL_FULL_BUNDLE_UNIVERSE` | 5,676 |
-| `SIGNALS_CAPABLE_UNIVERSE` | 5,772 |
-| `ELLIOTT_CAPABLE_UNIVERSE` | 5,590 |
+| `RADAR_SIGNALS_CAPABLE_UNIVERSE` (20 EOD) | 5,888 |
+| `RADAR_EVENT_VISIBLE_UNIVERSE` | 2,212 |
+| `WATCHLIST_SELECTABLE_UNIVERSE` | 6,875 |
+| `WATCHLIST_SIGNALS_CAPABLE_UNIVERSE` (60 EOD) | 5,772 |
+| `WATCHLIST_TECHNICAL_CAPABLE_UNIVERSE` | 5,676 |
+| `WATCHLIST_ELLIOTT_CAPABLE_UNIVERSE` | 5,590 |
+| `STRATEGY_CURRENT_SELECTION_UNIVERSE` | 6,875 |
+| `STRATEGY_RANKING_STATUS` | UNAVAILABLE |
+| `QUANT_V2_STATUS` | SPECIFIED_NOT_ACTIVE |
+| `MARKET_REGIME_STATUS` | FAIL_CLOSED |
 | `FIVE_SCOPE_REMAINS` | false |
-
-The exact release artifact passed browser QA before merge and was then deployed successfully by Pages run `35727489839`. No claim is made that this orchestration environment independently fetched the custom-domain response body after deployment.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-Audit Radar and Watchlist consumers against the deployed broad Technical/Signals artifacts, remove any remaining curated-scope assumptions, measure their real visible universes, and only then continue to Strategy Lab. Market Regime, Quant-V2 certification and Backtesting remain later dependency gates.
+Create and validate the Radar/Watchlist/Strategy breadth PR, deploy its exact merge commit and repeat the coverage measurement against the deployed artifact. Then audit the existing Market Regime methodology and inputs; implement only already-supported certified inputs and report any objective missing input as an Owner/Data gate. Do not activate Quant V2, Revisions, Strategy ranking or Backtesting.
 
 ## RESUME_STATE
 
-1. Read this file and GitHub/main first.
-2. Treat PR #157 and the Technical/Signals/Elliott breadth gate as complete; do not rebuild the history or serving architecture.
-3. If direct Production edge access is available, repeat the HTTP route/body check for `release-delivery.json`, summary, representative shards, Signals, TSLA Technical and AMD Elliott.
-4. Start the next work at Radar/Watchlist breadth and record their measured universes.
+1. Re-read this file and current GitHub/main; rebase only non-overlapping upstream changes.
+2. Treat Technical/Signals/Elliott materialization as accepted and do not rebuild the history or serving architecture.
+3. Finish the Radar/Watchlist/Strategy candidate through PR CI, merge, Pages deployment and deployed-artifact coverage.
+4. Continue at Market Regime input/methodology certification; an external job is a wait-state, not a stop-state.
 5. Preserve `DISCOVERY_CHANGED = false`, `DISCOVERY_REGRESSION = false`, `QUANT_V2_STATUS = SPECIFIED_NOT_ACTIVE`, Revisions fail-closed and Market Regime fail-closed.

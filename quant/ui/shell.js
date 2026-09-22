@@ -166,7 +166,7 @@
     { href: BASE, label: "Quant Home" },
     { href: BASE + "ranking/", label: "Ranking" },
     { href: BASE + "screener/", label: "Screener" },
-    { href: BASE + "radar/", label: "Radar" },
+    { href: "/vu2/?view=radar", label: "Radar" },
     { href: BASE + "strategies/", label: "Strategien" },
     { href: BASE + "backtests/", label: "Backtests" },
     { href: BASE + "watchlist/", label: "Watchlist" },
