@@ -61,10 +61,46 @@ const REPORT = PUBLISH
   : resolve(ROOT, ".market-cache", "currency", "currency-layer-proof.json");
 
 const SERIES_DIR = join(ROOT, "quant", "data", "market", "discover-series-long");
-const FX_STORE_DIR = join(ROOT, "quant", "data", "market", "fx");
-const PROBE = join(ROOT, "quant", "data", "market", "capabilities", "tiingo-fx-probe.json");
+/* Zwei Orte, und die Reihenfolge ist Absicht. Die Arbeitsablage kommt
+   zuerst, weil dort die echten Reihen liegen: solange Redistribution
+   LEGAL_REVIEW_REQUIRED ist, werden Anbieterkurse nicht committet, und
+   der Produktionsnachweis laeuft deshalb IM Lauf, der sie geholt hat. */
+const FX_STORE_DIRS = [
+  join(ROOT, ".market-cache", "currency", "fx"),
+  join(ROOT, "quant", "data", "market", "fx")
+];
+const PROBE_CANDIDATES = [
+  join(ROOT, "quant", "data", "market", "capabilities", "tiingo-fx-probe.json"),
+  join(ROOT, ".market-cache", "currency", "tiingo-fx-probe.json")
+];
 
-const GOLDEN = ["AAPL", "NVDA", "MSFT"];
+/* Die Titel des Produktionsnachweises. Nicht drei amerikanische, sondern
+   die Faelle, an denen der Layer scheitern kann:
+
+     AAPL/NVDA/MSFT   USD berichtet, USD gehandelt - der einfache Fall
+     SAP/ASML         EUR berichtet, USD gehandelt (ADR)
+     NVO              DKK berichtet, USD gehandelt
+     TM               JPY berichtet, USD gehandelt, Geschaeftsjahr bis Maerz
+     BABA             CNY berichtet, USD gehandelt, Geschaeftsjahr bis Maerz
+     GSK              GBP berichtet, USD gehandelt
+
+   SAP im EUR-Modus ist der Fall, den eine naiv gebaute Engine falsch
+   macht: der Umsatz ist bereits EUR und darf NICHT umgerechnet werden
+   (Fast Path), der Kurs ist USD und MUSS umgerechnet werden. Wer die
+   Waehrung je Unternehmen statt je Wert fuehrt, bekommt genau hier zwei
+   Zahlen, von denen eine um den Wechselkurs falsch ist. */
+const PROOF_TITLES = [
+  { ticker: "AAPL", cik: "0000320193", role: "USD berichtet, USD gehandelt" },
+  { ticker: "NVDA", cik: null,         role: "USD berichtet, USD gehandelt" },
+  { ticker: "MSFT", cik: null,         role: "USD berichtet, USD gehandelt" },
+  { ticker: "SAP",  cik: null,         role: "EUR berichtet, USD gehandelt (ADR)" },
+  { ticker: "ASML", cik: null,         role: "EUR berichtet, USD gehandelt (ADR)" },
+  { ticker: "NVO",  cik: null,         role: "DKK berichtet, USD gehandelt" },
+  { ticker: "TM",   cik: null,         role: "JPY berichtet, Geschaeftsjahr bis Maerz" },
+  { ticker: "BABA", cik: null,         role: "CNY berichtet, Geschaeftsjahr bis Maerz" },
+  { ticker: "GSK",  cik: null,         role: "GBP berichtet, USD gehandelt" }
+];
+const GOLDEN = PROOF_TITLES.map((t) => t.ticker);
 
 const checks = [];
 function check(id, title, fn) {
@@ -83,29 +119,41 @@ function loadFxStore() {
   const store = Rates.createStore();
 
   /* Produktionsbestand, falls build-fx-history.mjs bereits gelaufen ist. */
-  if (existsSync(FX_STORE_DIR)) {
-    const files = readdirSync(FX_STORE_DIR).filter((f) => f.endsWith(".json"));
+  for (const dir of FX_STORE_DIRS) {
+    if (!existsSync(dir)) continue;
+    const files = readdirSync(dir)
+      /* Dateien mit fuehrendem Unterstrich sind Laufprotokolle, keine
+         Reihen - _run.json waere sonst ein Paar namens "undefined". */
+      .filter((f) => f.endsWith(".json") && !f.startsWith("_"));
     let ingested = 0;
+    const pairs = [];
     for (const file of files) {
-      const data = JSON.parse(readFileSync(join(FX_STORE_DIR, file), "utf8"));
-      if (!data.base || !data.quote || !Array.isArray(data.points)) continue;
+      let data;
+      try { data = JSON.parse(readFileSync(join(dir, file), "utf8")); } catch { continue; }
+      if (!data.base || !data.quote || !Array.isArray(data.points) || !data.points.length) continue;
       store.ingest(data.base, data.quote, data.points,
         { source: data.source || "unknown", frequency: data.frequency || "DAILY", ingestedAt: data.asOf });
+      pairs.push(`${data.base}/${data.quote}`);
       ingested++;
     }
-    if (ingested) return { store, kind: "PRODUCTION", note: `${ingested} Paar(e) aus ${FX_STORE_DIR}.` };
+    if (ingested) {
+      return { store, kind: "PRODUCTION",
+               note: `${ingested} Paar(e) aus ${dir.replace(ROOT + "/", "")}: ${pairs.slice(0, 8).join(", ")}` +
+                     (pairs.length > 8 ? ` und ${pairs.length - 8} weitere.` : ".") };
+    }
   }
 
-  const probe = existsSync(PROBE) ? JSON.parse(readFileSync(PROBE, "utf8")) : null;
+  const probeFile = PROBE_CANDIDATES.find((f) => existsSync(f));
+  const probe = probeFile ? JSON.parse(readFileSync(probeFile, "utf8")) : null;
   const probeNote = probe
-    ? `Die Faehigkeitssondierung steht auf ${Object.values(probe.capabilities || {}).every((v) => v === null) ? "ungeprueft" : "teilweise gemessen"}.`
+    ? `Die Faehigkeitssondierung steht auf ${probe.capabilityState || "UNVERIFIED"}.`
     : "Es liegt keine Faehigkeitssondierung vor.";
 
   store.ingest("USD", "EUR", buildUsdEurSeries("1990-01-01", "2026-09-21", HOLIDAYS_2021),
     { source: "fixture", frequency: "DAILY" });
   return {
     store, kind: "FIXTURE",
-    note: `Kein qualifizierter FX-Bestand unter ${FX_STORE_DIR}. ${probeNote} ` +
+    note: `Kein qualifizierter FX-Bestand. ${probeNote} ` +
           "Gerechnet wird mit der Testreihe: die Regeln sind damit belegt, die Kursstaende nicht."
   };
 }
@@ -344,6 +392,117 @@ check("F3", "SEC ist NICHT automatisch USD - gemessen am ganzen Universum (§16)
     ]
   };
 });
+
+/* --------------------------------------------------------------------- */
+/* Der Fundamentalnachweis: die fuenf Kennzahlen, die der Owner benennt,   */
+/* ueber alle vorkommenden Berichtswaehrungen                              */
+/* --------------------------------------------------------------------- */
+
+/* Drei Flussgroessen (Periodenmittel) und zwei Stichtagsgroessen. Sie
+   decken beide FX-Kontexte ab, und ihre Verwechslung ist der teuerste
+   Fehler, den dieser Layer machen koennte. */
+const FUNDAMENTAL_PROOF = [
+  { metric: "revenue",             column: "revenue",             context: "INCOME_STATEMENT" },
+  { metric: "net_income",          column: "net_income",          context: "INCOME_STATEMENT" },
+  { metric: "free_cash_flow",      column: "free_cash_flow",      context: "CASH_FLOW" },
+  { metric: "cash_and_equivalents", column: "cash_and_equivalents", context: "BALANCE_SHEET" },
+  { metric: "total_debt",          column: "total_debt",          context: "BALANCE_SHEET" }
+];
+
+function consumerByTicker(ticker) {
+  if (!existsSync(CONSUMER_DIR)) return null;
+  for (const file of readdirSync(CONSUMER_DIR)) {
+    if (!file.endsWith(".json")) continue;
+    const data = JSON.parse(readFileSync(join(CONSUMER_DIR, file), "utf8"));
+    if ((data.tickers || []).includes(ticker)) return data;
+  }
+  return null;
+}
+
+for (const title of PROOF_TITLES) {
+  check(`FD-${title.ticker}`, `${title.ticker}: Revenue, Net Income, FCF, Cash, Debt (${title.role})`, () => {
+    const data = consumerByTicker(title.ticker);
+    if (!data) return { state: "SKIP", detail: `Kein Fundamentaldatensatz fuer ${title.ticker}.` };
+
+    const out = [];
+    for (const spec of FUNDAMENTAL_PROOF) {
+      const unit = data.units && data.units[spec.column];
+      const reporting = Registry.normalize(typeof unit === "string" ? unit.split("/")[0] : null);
+      const rows = (data.annual && data.annual[spec.column]) || [];
+      if (!rows.length) { out.push({ metric: spec.metric, state: "NO_DATA" }); continue; }
+      if (!reporting) { out.push({ metric: spec.metric, state: "NO_CURRENCY",
+        note: "Ohne belegte Berichtswaehrung wird nicht umgerechnet." }); continue; }
+
+      const chain = Engine.resolvePeriodChain(rows.map(([fy, fp, end, v]) => ({ fy, fp, end, v })));
+      const latest = chain[chain.length - 1];
+      const fact = {
+        metricId: spec.metric, value: latest.row.v, unit: reporting, currency: reporting,
+        end: latest.periodEnd
+      };
+      /* Flussgroessen brauchen beide Grenzen; Stichtagsgroessen nur das
+         Ende. Fehlt einer Flussgroesse der Anfang, gibt es keinen
+         Durchschnitt und damit keinen Wert - keine stille Naeherung. */
+      if (spec.context === "INCOME_STATEMENT" || spec.context === "CASH_FLOW") {
+        fact.periodStart = latest.periodStart;
+        fact.periodEnd = latest.periodEnd;
+      }
+
+      const money = engine.convertMetric(fact, "EUR");
+      const expectedContext = spec.context;
+
+      if (!money.available) {
+        out.push({ metric: spec.metric, fy: latest.row.fy, nativeCurrency: reporting,
+                   nativeValue: latest.row.v, state: "NOT_CONVERTED", reason: money.reason,
+                   periodStart: fact.periodStart || null, periodEnd: latest.periodEnd });
+        continue;
+      }
+
+      /* Die drei Gegenproben je Wert. */
+      if (money.context !== expectedContext) {
+        throw new Error(`${title.ticker} ${spec.metric}: Kontext ${money.context}, erwartet ${expectedContext}`);
+      }
+      const expectedMethod = (expectedContext === "BALANCE_SHEET")
+        ? ["DAILY_AT_DATE", "PREVIOUS_AVAILABLE"] : ["PERIOD_AVERAGE", "IDENTITY"];
+      if (reporting !== "EUR" && !expectedMethod.includes(money.fx.method)) {
+        throw new Error(`${title.ticker} ${spec.metric}: FX-Methode ${money.fx.method}, erwartet ${expectedMethod.join("|")}`);
+      }
+      if (money.native.value !== latest.row.v) {
+        throw new Error(`${title.ticker} ${spec.metric}: der Originalwert wurde veraendert`);
+      }
+      if (money.fx.asOf && latest.periodEnd && money.fx.asOf > latest.periodEnd) {
+        throw new Error(`${title.ticker} ${spec.metric}: FX-Stand ${money.fx.asOf} liegt nach dem Periodenende (Look-Ahead)`);
+      }
+      /* §17: eine EUR-Zahl in EUR muss unveraendert durchgehen. */
+      if (reporting === "EUR" && money.display.value !== latest.row.v) {
+        throw new Error(`${title.ticker} ${spec.metric}: EUR->EUR hat den Wert veraendert (${latest.row.v} -> ${money.display.value})`);
+      }
+
+      out.push({
+        metric: spec.metric, fy: latest.row.fy,
+        nativeCurrency: reporting, nativeValue: latest.row.v,
+        context: money.context, fxMethod: money.fx.method, fxAsOf: money.fx.asOf,
+        periodStart: fact.periodStart || null, periodEnd: latest.periodEnd,
+        fxObservations: money.fx.observations,
+        displayEur: Number(money.display.value.toFixed(0)),
+        formatted: Format.formatCompact(money.display.value, "EUR")
+      });
+    }
+
+    const converted = out.filter((r) => r.displayEur !== undefined);
+    const blocked = out.filter((r) => r.state === "NOT_CONVERTED");
+    if (!converted.length) {
+      return { state: "BLOCKED",
+               detail: `${title.ticker}: keine der fuenf Kennzahlen umrechenbar ` +
+                       `(${[...new Set(blocked.map((b) => b.reason))].join(", ") || "keine Daten"}).`,
+               rows: out };
+    }
+    return {
+      detail: `${converted.length} von ${FUNDAMENTAL_PROOF.length} Kennzahlen nachgerechnet` +
+              (blocked.length ? `, ${blocked.length} ohne FX-Paar (bleiben in der Originalwaehrung)` : "") + ".",
+      rows: out
+    };
+  });
+}
 
 check("F4", "Prozentkennzahlen und Multiples sind unter dem Waehrungswechsel unveraendert", () => {
   const layer = Contract.createLayer({ store: fx.store, storage: null });

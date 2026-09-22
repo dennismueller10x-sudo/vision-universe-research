@@ -91,6 +91,24 @@
     UNKNOWN:            null
   };
 
+  /* Feinere Herkunft innerhalb einer Klasse.
+
+     MONETARY_FLOW deckt GuV und Kapitalflussrechnung ab - beide folgen
+     derselben FX-Regel (Periodendurchschnitt), stammen aber aus
+     verschiedenen Rechenwerken. Der Vertrag
+     (quant/methodology/currency-fx-v1.json) fuehrt beide Kontexte
+     getrennt, und ein Money-Objekt, das fuer den Free Cash Flow
+     INCOME_STATEMENT meldet, macht diesen Vertragsteil zu totem Text.
+
+     Die FX-Regel aendert sich dadurch nicht. Die Herkunft schon - und
+     sie steht im Ergebnis, weil sie dort hingehoert. */
+  var METRIC_CONTEXT_OVERRIDES = {
+    operatingCashFlow: "CASH_FLOW", operating_cash_flow: "CASH_FLOW",
+    freeCashFlow: "CASH_FLOW", free_cash_flow: "CASH_FLOW",
+    capex: "CASH_FLOW", capitalExpenditures: "CASH_FLOW", capital_expenditures: "CASH_FLOW",
+    dividendsPaid: "CASH_FLOW", dividends_paid: "CASH_FLOW"
+  };
+
   var CONVERTS = {
     MONETARY_STOCK: true, MONETARY_FLOW: true, MONETARY_PRICE: true, MONETARY_PER_SHARE: true,
     RATIO_METRIC: false, MULTIPLE: false, SCORE: false, COUNT: false,
@@ -231,6 +249,10 @@
   }
 
   function describe(cls, provenance, metricId, note) {
+    var context = CONTEXT_BY_CLASS[cls] || null;
+    if (context && metricId && METRIC_CONTEXT_OVERRIDES[metricId]) {
+      context = METRIC_CONTEXT_OVERRIDES[metricId];
+    }
     return {
       metricId: metricId || null,
       currencyClass: cls,
@@ -238,7 +260,7 @@
       /* Der Sonderfall bekommt ein eigenes Flag, damit ihn niemand
          uebersieht: false bei `converts` und true bei `recompute`. */
       recomputeFromDisplaySeries: cls === "PRICE_RETURN",
-      conversionContext: CONTEXT_BY_CLASS[cls] || null,
+      conversionContext: context,
       provenance: provenance,
       note: note || null
     };
@@ -261,6 +283,7 @@
   var api = {
     VERSION: VERSION,
     CLASSES: CLASSES, CONVERTS: CONVERTS, CONTEXT_BY_CLASS: CONTEXT_BY_CLASS,
+    METRIC_CONTEXT_OVERRIDES: METRIC_CONTEXT_OVERRIDES,
     METRIC_CLASSES: METRIC_CLASSES, UNIT_CLASSES: UNIT_CLASSES,
     classify: classify, converts: converts,
     invariantUnderCurrencySwitch: invariantUnderCurrencySwitch

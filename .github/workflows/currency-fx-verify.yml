@@ -1,0 +1,271 @@
+name: Currency & FX — Capability- und Datennachweis
+
+# Der einzige Ort, an dem der Currency Layer den echten Tiingo-Zugang
+# sieht. Owner-Entscheid O-1: keine FX-Faehigkeit darf aus Dokumentation
+# oder Vermutung als verfuegbar gelten - gemessen wird.
+#
+# DER SCHLUESSELPFAD
+#
+# TIINGO_API_KEY liegt als Repository-Secret vor und wird ausschliesslich
+# als Umgebungsvariable an Node-Skripte gereicht. Er steht im
+# Authorization-Header, nie in einer URL; er erscheint nicht im Protokoll,
+# nicht im Bericht und nicht im Repository. Drei Schritte halten das fest:
+# die Redaktion im Skript selbst, die Gegenprobe auf den Bericht und
+# assert-no-secrets.mjs.
+#
+# WARUM PUSH UND NICHT NUR DISPATCH
+#
+# workflow_dispatch verlangt den Workflow auf dem Default-Branch. Solange
+# dieser Zweig nicht gemergt ist - und das Merge Gate untersagt es, bevor
+# dieser Nachweis vorliegt -, gibt es ihn dort nicht. Der Push-Ausloeser
+# ist eng gefasst: nur claude/**, nur mit einer Marke in der
+# Commit-Nachricht. Ohne Marke laeuft nichts.
+#
+#   [fx-probe]    Faehigkeiten messen (~14 Anfragen)
+#   [fx-ingest]   zusaetzlich die Paar-Historien holen und den
+#                 Produktionsnachweis damit fuehren (~40 Anfragen)
+#
+# WAS COMMITTET WIRD
+#
+# Nur Berichte ohne Anbieterkurse: die Faehigkeitsmatrix, der Paarbedarf
+# und die Waehrungsabdeckung. Die FX-Reihen selbst bleiben im
+# Arbeitsverzeichnis und sterben mit dem Runner - solange Redistribution
+# LEGAL_REVIEW_REQUIRED ist, gehoeren Anbieterreihen nicht in ein
+# oeffentliches Repository. Der Produktionsnachweis laeuft deshalb IM
+# selben Lauf, in dem die Daten existieren.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_ingest:
+        description: 'Zusaetzlich FX-Historien holen und den Datennachweis fuehren (~40 Anfragen)'
+        type: boolean
+        default: true
+      publish_reports:
+        description: 'Berichte in den Zweig committen'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/probe-tiingo-fx.mjs'
+      - 'scripts/market/build-fx-history.mjs'
+      - 'scripts/market/build-fx-pair-requirements.mjs'
+      - 'scripts/market/build-currency-coverage.mjs'
+      - 'scripts/quality/verify-currency-layer.mjs'
+      - 'quant/engines/fx/**'
+      - '.github/workflows/currency-fx-verify.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: currency-fx-verify
+  cancel-in-progress: false
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[fx-probe]') ||
+      contains(github.event.head_commit.message, '[fx-ingest]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo 'Secret vorhanden.'
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY hinterlegt. Es wird nichts gemessen;'
+            echo 'alle FX-Faehigkeiten bleiben ungeprueft. Das ist kein Fehler,'
+            echo 'aber es haelt das Merge Gate geschlossen.'
+          fi
+
+      # -----------------------------------------------------------------
+      # Ohne Zugang: der Bedarf laesst sich trotzdem ableiten. Beide
+      # Schritte lesen nur den eigenen Bestand.
+      # -----------------------------------------------------------------
+      - name: Welche Waehrungspaare braucht der Bestand? (O-3)
+        run: node scripts/market/build-fx-pair-requirements.mjs --publish
+
+      - name: Waehrungsabdeckung des SEC-Bestands (O-4)
+        run: node scripts/market/build-currency-coverage.mjs --publish
+
+      - name: FX-Faehigkeiten messen (O-1)
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-tiingo-fx.mjs --publish
+
+      - name: Ohne Zugang bleibt die Matrix ungeprueft
+        if: steps.secret.outputs.available != 'true'
+        run: node scripts/market/probe-tiingo-fx.mjs --publish
+
+      - name: Die Berichte enthalten keinen Schluessel und keine Kurse
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        # Zweite Verteidigungslinie hinter redact(). Der Bericht wird
+        # committet; ein Schluessel darin waere dauerhaft oeffentlich.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const files = [
+              "quant/data/market/capabilities/tiingo-fx-probe.json",
+              "quant/data/market/fx/pair-requirements.json",
+              "quant/data/market/fx/currency-coverage.json"
+            ].filter(fs.existsSync);
+            const key = process.env.TIINGO_API_KEY;
+            for (const file of files) {
+              const raw = fs.readFileSync(file, "utf8");
+              if (key && key.length >= 8 && raw.includes(key)) {
+                console.error("ABBRUCH: " + file + " enthaelt den Zugangsschluessel.");
+                process.exit(1);
+              }
+              if (/[?&]token=/i.test(raw)) {
+                console.error("ABBRUCH: " + file + " enthaelt eine Anfrage-URL mit Token.");
+                process.exit(1);
+              }
+              const verboten = ["midprice", "bidprice", "askprice", "lastclose", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), file);
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder im Bericht: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log(file + " frei von Zugangsdaten und Kursen (" + Math.round(raw.length/1024) + " KB).");
+            }
+          '
+
+      # Was teuer erkauft ist, wird committet, BEVOR etwas Optionales
+      # laeuft - dieselbe Regel wie in scripts/ci/commit-and-push.sh.
+      - name: Berichte in den Zweig
+        if: github.event_name != 'workflow_dispatch' || inputs.publish_reports
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "FX-Faehigkeiten und Waehrungsbedarf gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/tiingo-fx-probe.json \
+            quant/data/market/fx/pair-requirements.json \
+            quant/data/market/fx/currency-coverage.json
+
+      - name: Faehigkeitsmatrix ins Protokoll
+        run: cat quant/data/market/capabilities/tiingo-fx-probe.json
+
+      # -----------------------------------------------------------------
+      # Der Datennachweis. Laeuft nur mit Zugang und nur, wenn die
+      # Faehigkeiten es hergeben - build-fx-history.mjs bricht sonst von
+      # selbst ab, statt Kontingent gegen HTTP 403 zu verbrauchen.
+      # -----------------------------------------------------------------
+      - name: FX-Historien holen (Arbeitsablage, nicht veroeffentlicht)
+        id: ingest
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          (github.event_name != 'workflow_dispatch' || inputs.run_ingest) &&
+          (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fx-ingest]'))
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        run: node scripts/market/build-fx-history.mjs --max-pairs=40 --start=2015-01-01
+
+      - name: Nachweis des Currency Layers an echten Titeln
+        if: always()
+        run: node scripts/quality/verify-currency-layer.mjs
+
+      - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
+        if: always()
+        # Gegenprobe zur Absicht: waere unter quant/data/market/fx eine
+        # Kursreihe gelandet, wuerde sie im naechsten Commit
+        # veroeffentlicht. Genau das soll dieser Lauf nicht tun.
+        run: |
+          if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
+            for f in quant/data/market/fx/*.json; do
+              case "$(basename "$f")" in
+                pair-requirements.json|currency-coverage.json) ;;
+                *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad."; exit 1 ;;
+              esac
+            done
+          fi
+          echo 'Keine FX-Reihe im veroeffentlichten Pfad.'
+          ls -la .market-cache/currency/fx 2>/dev/null | head -10 || echo 'Keine Reihen geholt.'
+
+      - name: Keine Zugangsdaten in ausgelieferten Daten
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Regression Guard
+        if: always()
+        run: node scripts/quality/assert-no-local-fx.mjs
+
+      - name: Berichte als Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: currency-fx-proof
+          path: |
+            .market-cache/currency/*.json
+            quant/data/market/capabilities/tiingo-fx-probe.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Currency & FX — Nachweis'
+            echo ''
+            if [ "${{ steps.secret.outputs.available }}" != "true" ]; then
+              echo '**Kein `TIINGO_API_KEY` hinterlegt.** Alle FX-Faehigkeiten bleiben ungeprueft.'
+              echo 'Das Merge Gate bleibt geschlossen (`TIINGO_FX_CAPABILITIES != MEASURED`).'
+            else
+              node -e '
+                const r = require("./quant/data/market/capabilities/tiingo-fx-probe.json");
+                console.log("**TIINGO_FX_CAPABILITIES = " + r.capabilityState + "**");
+                console.log("");
+                console.log(r.capabilityStateDetail);
+                console.log("");
+                console.log("| Faehigkeit | Ergebnis | Beleg |");
+                console.log("|---|---|---|");
+                for (const [cap, value] of Object.entries(r.capabilities)) {
+                  const e = (r.evidence || {})[cap] || {};
+                  const symbol = value === true ? "ja" : value === false ? "nein" : "ungeprueft";
+                  console.log("| `" + cap + "` | " + symbol + " | " + (e.verificationLevel || "-") + " |");
+                }
+                console.log("");
+                console.log("Anfragen: " + r.requests.count + ". Realtime-Stufe: " + (r.realtimeTier.tier || "keine") + ".");
+              '
+            fi
+            echo ''
+            if [ -f .market-cache/currency/currency-layer-proof.json ]; then
+              node -e '
+                const p = require("./.market-cache/currency/currency-layer-proof.json");
+                console.log("**FX_DATA_PROOF = " + p.verdict + "** (FX-Quelle: " + p.fxSource + ")");
+                console.log("");
+                console.log(p.verdictMeaning);
+                console.log("");
+                console.log("| Pruefung | Zustand |");
+                console.log("|---|---|");
+                for (const c of p.checks) console.log("| " + c.id + " " + c.title + " | " + c.state + " |");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
