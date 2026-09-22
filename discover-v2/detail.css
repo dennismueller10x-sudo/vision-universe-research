@@ -137,6 +137,11 @@ body.dv2 .dv2-stock .dx-chapter--journey h2{font-size:clamp(30px,4.5vw,52px);let
 body.dv2 .dv2-stock .dx-journey--stage .dx-journey-tab{border-radius:3px;font-size:13px;font-weight:750}
 body.dv2 .dv2-stock .dx-journey-nach b{font-size:clamp(30px,4vw,50px)}
 body.dv2 .dv2-stock .dx-journey-bild{margin-top:20px}
+body.dv2 .dv2-stock .dx-journey-wert{display:none}
+body.dv2 .dv2-stock .dx-journey-bar{cursor:pointer;pointer-events:all;transform-box:fill-box;transform-origin:center;transition:opacity .16s ease,filter .16s ease,stroke .16s ease}
+body.dv2 .dv2-stock .dx-journey-bild.has-bar-selection .dx-journey-bar{opacity:.4}
+body.dv2 .dv2-stock .dx-journey-bild.has-bar-selection .dx-journey-bar.is-selected,
+body.dv2 .dv2-stock .dx-journey-bar:focus-visible{opacity:1;filter:brightness(1.2);stroke:#f7f7f4;stroke-width:3px;vector-effect:non-scaling-stroke;outline:none}
 body.dv2 .dv2-stock .dx-chapter--zahlen{padding-top:42px}
 body.dv2 .dv2-stock .dx-zahlen-karte{border-radius:4px;border-width:0 0 1px;padding:26px 0}
 body.dv2 .dv2-stock .dv2-stock-valuation{padding:45px 28px;background:var(--v2-panel);margin:30px -28px;border:0;border-radius:6px}
@@ -218,12 +223,13 @@ body.dv2 .dv2-stock .dx-intraday{margin:0 -8px;overflow:visible}
 body.dv2 .dv2-stock .dx-range-line{stroke-width:2.65}
 body.dv2 .dv2-stock .dx-range-grid{opacity:.55}
 body.dv2 .dv2-stock .dx-tf{gap:2px;padding-top:12px;border-top:1px solid var(--discover-line)}
-body.dv2 .dv2-stock .dx-tf button{font-weight:680;transition:background-color .18s ease,color .18s ease,transform .18s ease}
+body.dv2 .dv2-stock .dx-tf button{font-weight:680;transition:transform .18s ease}
 body.dv2 .dv2-stock .dx-tf button:hover{background:var(--discover-bg-2);color:var(--discover-text)}
 body.dv2 .dv2-stock .dx-tf button:active{transform:scale(.96)}
 body.dv2 .dv2-stock .dx-tf button[aria-pressed="true"]{box-shadow:0 3px 16px rgba(0,0,0,.12)}
 body.dv2 .dv2-stock .dx-chart-hero-meta .dx-live-label{font-weight:700}
-body.dv2 .dv2-stock .dx-live-label--stale{color:#8a5a00}
+body.dv2 .dv2-stock .dx-live-label--stale{color:#f2b544}
+html[data-theme="light"] body.dv2 .dv2-stock .dx-live-label--stale{color:#8a5a00}
 
 /* A compact editorial bridge separates market action from company research. */
 body.dv2 .dv2-stock-context{display:grid;grid-template-columns:minmax(140px,.42fr) minmax(0,1fr);gap:32px 64px;padding:46px 0;border-top:1px solid var(--discover-line)}
@@ -335,13 +341,30 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#1a1c1f;--disc
 body.dv2 .v2-main{overflow-x:clip}
 @media(min-width:761px){body.dv2 .v2-dock{z-index:320}body.dv2 .v2-journey{min-height:calc(100vh - 280px)}}
 @media(max-width:760px){
-  body.dv2 .v2-dock,body.dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.80)}
+  body.dv2 .v2-dock,body.dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.88)}
   body.dv2 .v2-dock .v2-nav-item[aria-current="page"],body.dv2 .v2-dock .v2-nav-item.is-active,body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#101113!important;color:#fff!important}
-  html:not([data-theme="light"]) body.dv2 .v2-dock,html:not([data-theme="light"]) body.dv2.v2-feed-active .v2-dock{background:rgba(23,24,27,.82)}
-  html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#fff!important;color:#111214!important}
+  html:not([data-theme="light"]) body.dv2 .v2-dock,html:not([data-theme="light"]) body.dv2.v2-feed-active .v2-dock{background:rgba(255,255,255,.88);color:#101113}
+  html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item[aria-current="page"],html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-item.is-active,html:not([data-theme="light"]) body.dv2 .v2-dock .v2-nav-explore[aria-current="page"]{background:#101113!important;color:#fff!important}
   body.dv2 .dv2-stock .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-intraday{margin-inline:-12px}
   body.dv2 .dv2-stock .dx-journey-kopf{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:20px}
   body.dv2 .dv2-stock .dx-journey-von b,body.dv2 .dv2-stock .dx-journey-nach b{font-size:28px;letter-spacing:-.045em;white-space:nowrap}
+}
+
+/* The valuation overview exposes every supplied building block at once.
+   Derived P/FCF is only shown when the canonical FCF yield is positive. */
+body.dv2 .dv2-valuation-components{margin:34px 0 28px;padding-top:28px;border-top:1px solid var(--discover-line)}
+body.dv2 .dv2-valuation-components>h3{font-size:clamp(25px,3vw,38px);letter-spacing:-.04em;margin:0 0 8px}
+body.dv2 .dv2-valuation-components>p{color:var(--discover-muted);max-width:62ch;line-height:1.55;margin:0 0 22px}
+body.dv2 .dv2-valuation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--discover-line);border:1px solid var(--discover-line)}
+body.dv2 .dv2-valuation-card{display:flex;min-height:150px;flex-direction:column;padding:20px;background:#f4f5f6;color:#111315}
+html:not([data-theme="light"]) body.dv2 .dv2-valuation-card{background:#1a1c1f;color:#f7f7f4}
+body.dv2 .dv2-valuation-card span{font-size:12px;color:var(--discover-muted)}
+body.dv2 .dv2-valuation-card b{font-size:clamp(27px,3.4vw,43px);letter-spacing:-.045em;line-height:1;margin-top:auto}
+body.dv2 .dv2-valuation-card small{font-size:11px;line-height:1.4;color:var(--discover-muted);margin-top:10px}
+body.dv2 .dv2-stock .dx-intraday[data-v2-scale="previous-close"] .dx-art-base{stroke-width:1.35;opacity:.68}
+@media(max-width:860px){
+  body.dv2 .dv2-valuation-grid{grid-template-columns:1fr 1fr}
+  body.dv2 .dv2-valuation-card{min-height:132px;padding:17px}
 }
 
 html:not([data-theme="light"]) body.dv2 .v2-intro,html:not([data-theme="light"]) body.dv2 .v2-world-performance,html:not([data-theme="light"]) body.dv2 .v2-world-compact,html:not([data-theme="light"]) body.dv2 .v2-world-split,html:not([data-theme="light"]) body.dv2 .v2-world-sector,html:not([data-theme="light"]) body.dv2 .v2-world-ranking{color:#f7f8fa}

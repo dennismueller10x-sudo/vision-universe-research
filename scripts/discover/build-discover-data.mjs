@@ -57,6 +57,7 @@ const Klartext = require(join(root, "discover", "engines", "klartext.js"));
 const Unternehmen = require(join(root, "discover", "engines", "unternehmen.js"));
 const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"));
 const Relevance = require(join(root, "discover", "engines", "relevance.js"));
+const DiscoveryEligibility = require(join(root, "discover", "engines", "discovery-eligibility.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -68,7 +69,11 @@ DisplayPolicy.declareFromConfig(PREVIEW_CONFIG);
 /* Redaktionelle Metadata (V3). Beides ist Beschriftung, keine Kennzahl:
    die Bekanntheitsliste bestimmt nie, OB ein Titel in einer Reihe steht,
    und ein Thema ist eine Zuordnung, keine Aussage ueber eine Aktie. */
-const RECOGNITION = readJSON(join(root, "discover", "config", "company-recognition.json")).companies || {};
+const EDITORIAL_COMPANIES = readJSON(join(root, "discover", "config", "company-recognition.json"));
+const RECOGNITION = EDITORIAL_COMPANIES.companies || {};
+/* Pure business copy is intentionally separate from recognition. Adding a
+   description must never grant a relevance bonus or move a discovery row. */
+const BUSINESS_DESCRIPTIONS = EDITORIAL_COMPANIES.businessDescriptions || {};
 
 /* Kompakte Kursreihen (ein Jahr Tagesschluss) fuer den freigegebenen
    Umfang - quant/data/market/discover-series/, geschrieben von
@@ -535,7 +540,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
           ? microSeries(kompaktDated, kompakt.provider || "tiingo", kompakt.priceSeriesType || "SPLIT_ADJUSTED")
           : withheldSeries("WITHHELD_REDISTRIBUTION",
               "Die Kursreihe dieses Titels stammt vom Anbieter und wird nicht ausgeliefert."),
-      was: erkannt ? erkannt.was : null,
+      was: erkannt && erkannt.was ? erkannt.was : (BUSINESS_DESCRIPTIONS[sec.ticker] || null),
       recognitionTier: erkannt ? erkannt.tier : null,
       marketCap: null,
       bars: isNum(sec.bars) ? sec.bars : null,
@@ -897,9 +902,12 @@ function applyPercentilesAndSignals(universe) {
     if (!eligibility.eligible) {
       /* Ein stillstehender Kurs traegt kein Signal - auch kein negatives. */
       Object.keys(s.signals).forEach((k) => { s.signals[k] = false; });
-      s.badges = [{ id: "notTrading", label: (Klartext.plakette("notTrading") || {}).label,
-                    tone: "muted",
-                    detail: eligibility.reason === "STALE_SERIES" ? "Reihe steht still" : "Keine Rendite" }];
+      s.badges = eligibility.reason === "DATA_QUALITY_REVIEW"
+        ? [{ id: "dataQualityReview", label: "Daten werden geprüft", tone: "muted",
+             detail: "Nicht in Discovery-Rankings" }]
+        : [{ id: "notTrading", label: (Klartext.plakette("notTrading") || {}).label,
+             tone: "muted",
+             detail: eligibility.reason === "STALE_SERIES" ? "Reihe steht still" : "Keine Rendite" }];
     }
     Contract.assertStock(s);
   }
@@ -988,22 +996,7 @@ function pct(v) {
    sondern eine stehengebliebene Reihe. Sie wird benannt und aus den
    Zeilen genommen, bleibt aber suchbar und behaelt ihre Detailseite:
    "nicht handelbar" ist eine Auskunft, Verschweigen waere keine. */
-function discoveryEligibility(stock) {
-  const m = stock.metrics;
-  const horizons = ["return1M", "return3M", "return6M", "return12M"];
-  const known = horizons.filter((h) => isNum(m[h]));
-  if (!known.length) {
-    return { eligible: false, reason: "NO_RETURNS",
-             message: "Keine Rendite über irgendeinen Horizont berechenbar." };
-  }
-  const allZero = known.every((h) => m[h] === 0);
-  if (allZero && (m.volatility252d === 0 || m.volatility252d === null)) {
-    return { eligible: false, reason: "STALE_SERIES",
-             message: "Die Kursreihe steht seit über einem Jahr still (keine Rendite, keine " +
-                      "Volatilität). Ein Abstand von 0 % zum Jahreshoch ist hier kein Signal." };
-  }
-  return { eligible: true, reason: null, message: null };
-}
+function discoveryEligibility(stock) { return DiscoveryEligibility.assess(stock); }
 
 
 /* Die Basis einer fundamentalen Sammlung: ein Unternehmen, das im letzten

@@ -314,8 +314,32 @@ export const MESS_SKRIPT = `<script>
     }
     document.documentElement.setAttribute("data-vu-figuren",JSON.stringify(figuren));
   }
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(messen);}
-  else{messen();}
+  /* -----------------------------------------------------------------
+     NICHT WARTEN — MESSEN
+
+     Zwei reale MANUAL_NOW-Laeufe (35711481190, 35713227403) haben
+     gezeigt: unter --virtual-time-budget (messeSeite() faehrt
+     --dump-dom genau so) kommt in der Chromium-Fassung des Runners
+     WEDER document.fonts.ready NOCH ein setTimeout-Rueckfall jemals
+     zum Zug - messen() lief in beiden Faellen nie, Atlas- wie
+     Textmessung kamen leer zurueck. Ein erster Fix versuchte einen
+     setTimeout-Rueckfall (lokal mit echtem Chromium nachgewiesen,
+     dass er dort zuverlaessig feuert) - im Runner blieb der Befund
+     trotzdem "nicht gemessen": setTimeout wird dort unter
+     --dump-dom ebenso wenig getrieben wie ein haengendes Promise.
+
+     Die Schrift ist als Base64-Data-URI eingebettet - kein Netzwerk,
+     kein Warten noetig, um SIE zu laden. font-display:block versteckt
+     waehrend der Blockphase nur das GEMALTE Bild (unsichtbare
+     Tinte); das LAYOUT steht mit der Fallback-Schrift schon fest,
+     und genau das misst getClientRects()/getBoundingClientRect() -
+     nicht, was gerade gemalt wird. Ein Atlas-<img> mit fester
+     width/height braucht ohnehin keine Schrift.
+
+     Gemessen wird deshalb synchron, sobald das Skript laeuft - ohne
+     jede Abhaengigkeit von einem Versprechen oder einem Timer, die
+     beide in genau diesem Aufruf-Modus nicht zuverlaessig sind. */
+  messen();
 })();
 <\/script>`;
 
@@ -337,6 +361,35 @@ export function hookEbeneAus(pkg) {
   const ebenen = (pkg && pkg.visualBrief && pkg.visualBrief.textLayers) || [];
   return ebenen.find((l) => l && l.text && String(l.text).trim() &&
     String(l.role || l.rolle || "").toUpperCase() === "HOOK") || null;
+}
+
+/* ---------------------------------------------------------------------
+   DER SATZ, DER IM BILD EINE SEKUNDE LANG ZAEHLT — EINE HERLEITUNG
+
+   plan() brauchte diesen Satz beim Zeichnen und leitete ihn inline her.
+   visual-intelligence.js braucht denselben Satz VOR dem Zeichnen, als
+   `oneSecondMessage` fuer die Visual-Direction-Ableitung - und bekam
+   ihn nicht: run-social-cycle.mjs kannte nur die Herleitung fuer den
+   Kompositionspfad (CHART/SCORE/PERFORMANCE/COMPARISON/RANKING) und
+   fragte fuer den Kartenpfad (DATA_CARD/NUMBER_VISUAL/MINIMAL_
+   TYPOGRAPHY) niemanden. Das Feld blieb leer, obwohl derselbe Satz
+   hier laengst berechnet wird - dieselbe Fehlerfamilie wie beim
+   Quellennamen zwei Funktionen weiter oben: zwei Register fuer eine
+   Tatsache.
+
+   Ab hier gibt es nur noch eines. plan() ruft es jetzt auch auf.
+   --------------------------------------------------------------------- */
+export function textOnVisualAussage(pkg) {
+  const ebene = hookEbeneAus(pkg) || null;
+  const text = String(
+    (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+  return {
+    text: text || null,
+    herkunft: (ebene && ebene.text) ? "visualBrief.textLayers"
+      : pkg.hook ? "pkg.hook"
+        : pkg.thesis ? "pkg.thesis"
+          : pkg.topic ? "pkg.topic" : null
+  };
 }
 
 /* ---------------------------------------------------------------------
@@ -648,9 +701,8 @@ export function plan(pkg, options = {}) {
   const hookEbene_ = hookEbeneAus(pkg);
   const bildzeile = ebenen_.find((l) => l && l.text && String(l.text).trim() &&
     l !== hookEbene_);
-  const ebene = hookEbene_ || null;
-  const aussage = String(
-    (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+  const einSekunde = textOnVisualAussage(pkg);
+  const aussage = einSekunde.text || "";
 
   /* -------------------------------------------------------------------
      WOHER DER SATZ STAMMT, ENTSCHEIDET, WAS ER IST
@@ -664,10 +716,7 @@ export function plan(pkg, options = {}) {
      raten. Ein Satz, der als Hook GILT, ohne je einer gewesen zu
      sein, ist die bequemste Art, §13 zu bestehen, ohne ihm zu
      genuegen. */
-  const aussageHerkunft = (ebene && ebene.text) ? "visualBrief.textLayers"
-    : pkg.hook ? "pkg.hook"
-      : pkg.thesis ? "pkg.thesis"
-        : pkg.topic ? "pkg.topic" : null;
+  const aussageHerkunft = einSekunde.herkunft;
   /* Die Zeile fuers Bild bleibt erhalten - als Beleg, eine Zeile
      tiefer. Sie wegzuwerfen hiesse, eine Aussage zu verlieren, die
      nirgends sonst steht. */

@@ -160,7 +160,36 @@
     /* Ein kanonischer Nachfolger nennt diesen Job ausdruecklich als
        Vorgaenger und ist selbst abgeschlossen. Der Job ist damit
        fertig, ohne geliefert zu haben - und ohne gescheitert zu sein. */
-    SUPERSEDED_BY_VERIFIED_SUCCESSOR: "CREATIVE_JOB_SUPERSEDED"
+    SUPERSEDED_BY_VERIFIED_SUCCESSOR: "CREATIVE_JOB_SUPERSEDED",
+    /* -----------------------------------------------------------------
+       DER ANLAUF, DER DAS HAUS NIE VERLASSEN HAT
+
+       Am 21.09. wurde ein Job registriert, und sein Request-PR entstand
+       nicht: das Repository erlaubte Actions damals nicht, Pull Requests
+       zu oeffnen. Der Job stand danach siebzehn Stunden auf
+       CREATIVE_JOB_REQUESTED - nach OFFEN zu Recht, denn "Brief
+       geschrieben, noch nichts ausgeloest" ist nicht fertig.
+
+       Nur kam nichts nach. Ein Creative Job entsteht, wenn ein Kandidat
+       faellig ist; ein Kandidat wird faellig, wenn kein Job offen ist.
+       Der Zwischenraum, vor dem der Kommentar bei OFFEN warnt, wurde
+       zum Dauerzustand - und weil MAX_OPEN_CREATIVE_JOBS = 1 eine harte
+       Invariante ist, stand danach der ganze Betrieb.
+
+       ALTER schliesst ihn auch hier nicht. Was ihn schliesst, ist eine
+       Tatsache ueber die AUSSENWELT: es gibt keinen Pull Request zu
+       diesem Job. Der PR ist der einzige Weg, auf dem die externe Welt
+       von ihm erfaehrt - CREATIVE_JOB_DISPATCHED sagt es woertlich:
+       "PR geoeffnet - ab hier laeuft die externe Welt". Ohne ihn hat
+       niemand etwas bekommen, niemand etwas begonnen, und es gibt
+       nichts, das zurueckkommen koennte.
+
+       Diese Tatsache wird hier NICHT ermittelt: diese Datei urteilt und
+       misst nicht. Der Aufrufer reicht sie herein, und fehlt sie, wird
+       nicht geschlossen. Eine fehlende Messung ist keine Messung, die
+       "nein" sagt.
+       ----------------------------------------------------------------- */
+    DISPATCH_NIE_ERFOLGT: "CREATIVE_JOB_FAILED"
   };
 
   /* Was ausdruecklich NICHT genuegt. Steht als Liste da, damit ein
@@ -430,6 +459,7 @@
       if (typeof options.observedStarts === "number") {
         job.observedStarts = options.observedStarts;
       }
+      if (options.failureType !== undefined) job.failureType = options.failureType;
       job.history.push({ state: nachher, at: job.updatedAt,
         note: options.note || null });
       return job;
@@ -479,6 +509,17 @@
             : "Unbekannte Evidenzart: " + String(evidenzArt) };
       }
 
+      /* DISPATCH_NIE_ERFOLGT traegt Bedingungen, die die uebrigen
+         Evidenzarten nicht haben: sie sprechen ueber ein ERGEBNIS, sie
+         spricht ueber eine Auslieferung, die nie stattfand. */
+      if (evidenzArt === "DISPATCH_NIE_ERFOLGT") {
+        var einwand = nieErfolgtEinwand(job, options);
+        if (einwand) {
+          return { ok: false, geaendert: false, reason: "inadmissibleEvidence",
+            job: job, message: einwand };
+        }
+      }
+
       if (TERMINAL.indexOf(job.state) !== -1) {
         return { ok: true, geaendert: false,
           reason: job.state === ziel ? "bereitsReconciled" : "bereitsTerminal",
@@ -498,12 +539,24 @@
       var ausgang = job.state;
       var schritte = [];
       for (var k = 0; k < weg.length; k++) {
-        transition(job.creativeJobId, weg[k], {
+        var schrittOptionen = {
           now: options.now,
           note: (options.note ? options.note + " — " : "") +
             "reconciled aus " + evidenzArt +
             (weg.length > 1 ? " (Schritt " + (k + 1) + " von " + weg.length + ")" : "")
-        });
+        };
+        /* DISPATCH_NIE_ERFOLGT schliesst einen Job, der nie gestartet
+           ist — beobachtbar an observedStarts: 0. Ohne failureType
+           saehe dieser Abschluss aus wie ein Job, der lief und
+           scheiterte, und CJ11s reale Invariante (gelaufene
+           Fehlschlaege haben >=5 Starts) würde ihn faelschlich
+           dorthin zaehlen. CONTRACT_MISMATCH ist derselbe Fall aus
+           einem anderen Weg: ein Job, der terminal endet, ohne je
+           beobachtbar gelaufen zu sein. */
+        if (evidenzArt === "DISPATCH_NIE_ERFOLGT" && weg[k] === ziel) {
+          schrittOptionen.failureType = "NEVER_DISPATCHED";
+        }
+        transition(job.creativeJobId, weg[k], schrittOptionen);
         schritte.push(weg[k]);
       }
 
@@ -511,6 +564,42 @@
         from: ausgang,
         to: ziel, steps: schritte, evidence: evidenzArt,
         message: "Ueber " + schritte.join(" -> ") + " aus " + evidenzArt + "." };
+    }
+
+    /**
+     * Was einem "nie ausgeliefert" widerspricht - und was fehlt.
+     *
+     * Gibt den Einwand als Satz zurueck oder null, wenn keiner bleibt.
+     * Jede einzelne dieser Bedingungen ist ein Beleg dafuer, dass die
+     * externe Welt den Job DOCH gesehen haben koennte; eine davon
+     * genuegt, um nicht zu schliessen.
+     */
+    function nieErfolgtEinwand(job, options) {
+      if (job.state !== "CREATIVE_JOB_REQUESTED") {
+        return "DISPATCH_NIE_ERFOLGT gilt nur fuer CREATIVE_JOB_REQUESTED; " +
+          "dieser Job steht auf " + job.state + ". Ab CREATIVE_JOB_DISPATCHED " +
+          "hat die externe Welt ihn gesehen, und was sie gesehen hat, " +
+          "kann nicht ungesehen gemacht werden.";
+      }
+      if (options.keinPullRequest !== true) {
+        return "Zu DISPATCH_NIE_ERFOLGT fehlt die Messung `keinPullRequest`. " +
+          "Ob ein Pull Request existiert, entscheidet diese Datei nicht - " +
+          "und unbekannt ist kein Nein.";
+      }
+      if (job.prNumber !== null && job.prNumber !== undefined) {
+        return "Das Register nennt Pull Request #" + job.prNumber +
+          ". Dann ist der Job ausgeliefert worden, gleich was eine " +
+          "Messung von aussen sagt.";
+      }
+      if (Array.isArray(job.deliveryIds) && job.deliveryIds.length) {
+        return "Der Job hat " + job.deliveryIds.length + " Delivery-ID(s). " +
+          "Etwas ist angekommen.";
+      }
+      if (Number(job.observedStarts) > 0) {
+        return "Es wurden " + job.observedStarts + " Start(s) beobachtet. " +
+          "Jemand hat begonnen.";
+      }
+      return null;
     }
 
     /* Breitensuche ueber UEBERGAENGE. Sie ist hier richtig und nicht

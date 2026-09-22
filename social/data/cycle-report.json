@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-21T20:32:39.216Z",
+  "generatedAt": "2026-09-22T10:12:43.676Z",
   "provider": "mock",
   "creativeProvider": [],
   "health": {
-    "generatedAt": "2026-09-21T20:32:39.216Z",
+    "generatedAt": "2026-09-22T10:12:43.676Z",
     "overall": "WARNING",
     "counts": {
       "PASS": 10,
@@ -58,9 +58,9 @@
         "state": "WARNING",
         "dataSource": "social/data/signals.json",
         "lastSuccessAt": "2026-09-19T15:46:36.650Z",
-        "failureMode": "Letzter Erfolg vor 53 h (Frist 48 h).",
+        "failureMode": "Letzter Erfolg vor 66 h (Frist 48 h).",
         "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-        "detail": "Letzter Erfolg vor 53 h (Frist 48 h)."
+        "detail": "Letzter Erfolg vor 66 h (Frist 48 h)."
       },
       {
         "component": "signals.market",
@@ -107,7 +107,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -117,7 +117,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -127,7 +127,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -137,7 +137,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -147,7 +147,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -177,7 +177,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-21T20:32:39.216Z",
+        "lastSuccessAt": "2026-09-22T10:12:43.676Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -369,7 +369,7 @@
     "ok": true,
     "grund": null,
     "erklaerung": null,
-    "generatedAt": "2026-09-21T20:32:39.094Z",
+    "generatedAt": "2026-09-22T10:11:30.203Z",
     "themen": 32
   },
   "opportunities": [
@@ -390,7 +390,7 @@
       "signalIds": []
     },
     {
-      "opportunityId": "opp_ranking_eb816bdf",
+      "opportunityId": "opp_ranking_008a7eab",
       "topic": "Comeback?",
       "score": 71,
       "proposable": true,
@@ -416,9 +416,9 @@
     {
       "opportunityId": "opp_ranking_d9775c5b",
       "topic": "Gewinne Beschleunigen",
-      "score": 62,
+      "score": 61,
       "proposable": true,
-      "explanation": "Opportunity Score 62 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 100 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: externer Trend, Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema.",
+      "explanation": "Opportunity Score 61 von 100. Wichtigster Grund: vorhandene redaktionelle Grundlage: 100 % Dazu: Plattformpassung: 91 % Das reicht fuer einen Vorschlag, aber nicht fuer eine Veroeffentlichung ohne Freigabe (Schwelle 72). Ungemessen blieb: externer Trend, Interesse des eigenen Publikums, externe Aufmerksamkeit fuer das Thema.",
       "signalIds": []
     },
     {
@@ -446,7 +446,7 @@
       "signalIds": []
     },
     {
-      "opportunityId": "opp_ranking_592eec3f",
+      "opportunityId": "opp_ranking_eeb8ef66",
       "topic": "Seit Monaten im Aufwind",
       "score": 71,
       "proposable": true,
@@ -494,7 +494,7 @@
       "signalIds": []
     },
     {
-      "opportunityId": "opp_ranking_bb0e487c",
+      "opportunityId": "opp_ranking_96037f6a",
       "topic": "Dem Markt Voraus",
       "score": 71,
       "proposable": true,
@@ -663,7 +663,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 31. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Bekannte Namen in Bewegung, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Microsoft steht bei 493,78, HP Inc bei 34,4 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "31 von 5954 geprüften Titeln — Bekannte Namen in Bewegung.",
         "mainSubject": "Bekannte Namen in Bewegung",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -674,7 +674,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Bekannte Namen in Bewegung\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -708,7 +709,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -728,11 +730,9 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Bekannte Namen in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionMissing": [
-        "oneSecondMessage"
-      ],
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionMissing": [],
+      "visualDirectionFailureType": null,
       "visualDirectionNotApplicable": [],
       "audienceFrame": {
         "family": "RANKING",
@@ -875,13 +875,17 @@
         "topicId": "pkg_b203d737de9853eb",
         "visualStrategy": "MINIMAL_TYPOGRAPHY",
         "story": "von 5954 geprüften Titeln steht bei 119. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": null,
-        "oneSecondMessage": null,
+        "coreIdea": "Der Satz IST das Bild: \"119 von 5954 geprüften Titeln — Gerade in Bewegung.\" fuer Gerade in Bewegung. Keine Illustration daneben, die dasselbe noch einmal sagt.",
+        "oneSecondMessage": "119 von 5954 geprüften Titeln — Gerade in Bewegung.",
         "mainSubject": "Gerade in Bewegung",
-        "compositionIntent": null,
-        "visualHierarchy": [],
+        "compositionIntent": "Ein Textblock, ruhige Flaeche, keine konkurrierende Grafik. Der Zeilenumbruch folgt dem Sinn, nicht der Kante.",
+        "visualHierarchy": "NOT_APPLICABLE",
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
-        "mustShow": [],
+        "mustShow": [
+          "Den Klarnamen \"Gerade in Bewegung\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
           "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
@@ -889,11 +893,35 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": null,
-        "notApplicable": {},
+        "mobileFocalPoint": "Der Satz selbst, vollstaendig lesbar ohne Zoom. Gerade in Bewegung muss darin vorkommen, sonst weiss der Leser nicht, wovon die Rede ist.",
+        "notApplicable": {
+          "visualHierarchy": "Die Form traegt genau ein Element - den Satz. Eine Rangfolge ueber mehrere Bildelemente existiert nicht und waere hier erfunden."
+        },
         "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
           "brandIntent": [
             "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -903,29 +931,22 @@
         },
         "justifiedGenericMotifs": [],
         "derivation": {
-          "derived": false,
+          "derived": true,
           "strategy": "MINIMAL_TYPOGRAPHY",
-          "missingInputs": [
-            "statement"
-          ],
+          "missingInputs": [],
           "tension": {
             "kind": "PEER_SPREAD",
             "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Die Form MINIMAL_TYPOGRAPHY braucht statement. Das liegt nicht vor, also entsteht keine Idee. Ein Satz, der auch ohne diese Daten entstuende, waere ein Default."
+          "explanation": "Abgeleitet aus MINIMAL_TYPOGRAPHY auf Gerade in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionMissing": [
-        "coreIdea",
-        "oneSecondMessage",
-        "mobileFocalPoint",
-        "compositionIntent",
-        "visualHierarchy",
-        "mustShow"
+      "visualDirectionReady": true,
+      "visualDirectionMissing": [],
+      "visualDirectionFailureType": null,
+      "visualDirectionNotApplicable": [
+        "visualHierarchy"
       ],
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
-      "visualDirectionNotApplicable": [],
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -946,12 +967,12 @@
       }
     },
     {
-      "packageId": "pkg_0dce16d390adfcaf",
+      "packageId": "pkg_784077f8af718014",
       "topic": "Comeback?",
-      "opportunityId": "opp_ranking_eb816bdf",
+      "opportunityId": "opp_ranking_008a7eab",
       "archetype": "RANKING_LIST",
       "visualType": "DATA_CARD",
-      "hook": "421 von 5954 geprüften Titeln — Comeback?.",
+      "hook": "420 von 5954 geprüften Titeln - Comeback?.",
       "archetypeCandidates": [
         {
           "archetype": "EDUCATIONAL",
@@ -986,7 +1007,7 @@
           "entityType": "STOCK",
           "hookStrategy": "group-count",
           "storyStructure": "group-rule-evidence",
-          "hookVariantId": "var_213bcd725b1715be",
+          "hookVariantId": "var_c7a093565e5ed8f2",
           "visualStrategy": "DATA_CARD",
           "visualVariantId": null,
           "marketContext": null
@@ -1004,19 +1025,19 @@
         }
       },
       "authoring": {
-        "briefId": "brief_822392d74a7ea2f3",
+        "briefId": "brief_08131cf84d7d08c4",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "group-count/group-rule-evidence",
-        "variantId": "var_213bcd725b1715be",
+        "variantId": "var_c7a093565e5ed8f2",
         "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
           "compositionScoreChosen": 89,
           "alternatives": [
             {
-              "variantId": "var_86ac916bf7ea0d5f",
+              "variantId": "var_25267acd99ca6d49",
               "pattern": "group-subject/group-method-first",
               "brandScore": 100,
               "compositionScore": 83,
@@ -1064,22 +1085,23 @@
         ]
       },
       "visualDirection": {
-        "topicId": "pkg_0dce16d390adfcaf",
+        "topicId": "pkg_784077f8af718014",
         "visualStrategy": "DATA_CARD",
-        "story": "von 5954 geprüften Titeln steht bei 421. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: RF Acquisition Corp II steht bei 40,5, Picard Medical bei 5,08 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "story": "von 5954 geprüften Titeln steht bei 420. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Moderna steht bei 154,04, Agenus bei 7,85 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
+        "oneSecondMessage": "420 von 5954 geprüften Titeln - Comeback?.",
         "mainSubject": "Comeback?",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
-          "Die Leitzahl 421",
+          "Die Leitzahl 420",
           "Der Name Comeback?",
           "Die uebrigen Belege"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Comeback?\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -1088,7 +1110,7 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "421 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
+        "mobileFocalPoint": "420 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
@@ -1113,7 +1135,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -1133,18 +1156,15 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Comeback? mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionMissing": [
-        "oneSecondMessage"
-      ],
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionMissing": [],
+      "visualDirectionFailureType": null,
       "visualDirectionNotApplicable": [],
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
         "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Picard Medical",
           "TEN Holdings",
           "RF Acquisition Corp II",
           "Cybin",
@@ -1153,18 +1173,19 @@
           "Arcturus Therapeutics Holdings",
           "Pulse Biosciences",
           "Amylyx Pharmaceuticals",
-          "Amplitude Class A"
+          "Amplitude Class A",
+          "Xencor"
         ],
         "basis": "BOOTSTRAP"
       }
     },
     {
-      "packageId": "pkg_5f20ddbcbd87da98",
+      "packageId": "pkg_9ac8fdc7dd8bd5f3",
       "topic": "Stärkste Aktien im Dow Jones",
       "opportunityId": "opp_ranking_57ff297e",
       "archetype": "RANKING_LIST",
       "visualType": "DATA_CARD",
-      "hook": "30 von 5954 geprüften Titeln — Stärkste Aktien im Dow Jones.",
+      "hook": "30 von 5954 geprüften Titeln - Stärkste Aktien im Dow Jones.",
       "archetypeCandidates": [
         {
           "archetype": "EDUCATIONAL",
@@ -1274,11 +1295,11 @@
         ]
       },
       "visualDirection": {
-        "topicId": "pkg_5f20ddbcbd87da98",
+        "topicId": "pkg_9ac8fdc7dd8bd5f3",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 30. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Stärkste Aktien im Dow Jones, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Travelers Companies steht bei 374,62, Merck & Co bei 146,87 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "30 von 5954 geprüften Titeln - Stärkste Aktien im Dow Jones.",
         "mainSubject": "Stärkste Aktien im Dow Jones",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -1289,7 +1310,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Stärkste Aktien im Dow Jones\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -1323,7 +1345,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -1343,11 +1366,9 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Stärkste Aktien im Dow Jones mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionMissing": [
-        "oneSecondMessage"
-      ],
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionMissing": [],
+      "visualDirectionFailureType": null,
       "visualDirectionNotApplicable": [],
       "audienceFrame": {
         "family": "RANKING",
@@ -1369,12 +1390,12 @@
       }
     },
     {
-      "packageId": "pkg_b0e3c5d9d0b07c75",
+      "packageId": "pkg_4b7f5c825836f1ee",
       "topic": "Fundamentale Turnarounds",
       "opportunityId": "opp_ranking_0f36b811",
       "archetype": "RANKING_LIST",
       "visualType": "DATA_CARD",
-      "hook": "308 von 5954 geprüften Titeln — Fundamentale Turnarounds.",
+      "hook": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
       "archetypeCandidates": [
         {
           "archetype": "EDUCATIONAL",
@@ -1487,11 +1508,11 @@
         ]
       },
       "visualDirection": {
-        "topicId": "pkg_b0e3c5d9d0b07c75",
+        "topicId": "pkg_4b7f5c825836f1ee",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 308. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Fundamentale Turnarounds, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Inspire Medical Systems steht bei 76,78, Rapid7 bei 11,97 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
         "mainSubject": "Fundamentale Turnarounds",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -1502,7 +1523,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Fundamentale Turnarounds\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -1536,7 +1558,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -1556,11 +1579,9 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Fundamentale Turnarounds mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionMissing": [
-        "oneSecondMessage"
-      ],
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionMissing": [],
+      "visualDirectionFailureType": null,
       "visualDirectionNotApplicable": [],
       "audienceFrame": {
         "family": "RANKING",
@@ -1584,7 +1605,7 @@
   ],
   "rejections": [],
   "published": [],
-  "auditEntries": 25,
+  "auditEntries": 5,
   "learning": {
     "measuredPosts": 25,
     "maturePosts": 25,
@@ -1594,7 +1615,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-21T20:32:39.216Z",
+      "assessedAt": "2026-09-22T10:12:43.676Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -1761,17 +1782,17 @@
     "observations": [
       {
         "dimension": "mediaFormat",
-        "value": "REEL",
-        "sampleSize": 10,
-        "sufficient": false,
-        "note": "Das 95-%-Intervall [-0.018, 0.023] enthaelt die Null. Der beobachtete Unterschied von 0.003 ist mit Zufall vereinbar."
-      },
-      {
-        "dimension": "mediaFormat",
         "value": "CAROUSEL",
         "sampleSize": 12,
         "sufficient": false,
-        "note": "Das 95-%-Intervall [-0.023, 0.018] enthaelt die Null. Der beobachtete Unterschied von -0.003 ist mit Zufall vereinbar."
+        "note": "Das 95-%-Intervall [-0.018, 0.025] enthaelt die Null. Der beobachtete Unterschied von 0.003 ist mit Zufall vereinbar."
+      },
+      {
+        "dimension": "mediaFormat",
+        "value": "REEL",
+        "sampleSize": 10,
+        "sufficient": false,
+        "note": "Das 95-%-Intervall [-0.025, 0.018] enthaelt die Null. Der beobachtete Unterschied von -0.003 ist mit Zufall vereinbar."
       }
     ],
     "strategyBefore": "strategy_initial",
@@ -1785,7 +1806,7 @@
         "sampleSize": 2
       },
       "9": {
-        "mean": 46,
+        "mean": 45.5,
         "sampleSize": 2
       },
       "10": {
@@ -1797,19 +1818,19 @@
         "sampleSize": 3
       },
       "12": {
-        "mean": 50.666666666666664,
+        "mean": 50,
         "sampleSize": 3
       },
       "13": {
-        "mean": 51.75,
+        "mean": 51.5,
         "sampleSize": 4
       },
       "14": {
-        "mean": 49.75,
+        "mean": 49.5,
         "sampleSize": 4
       },
       "15": {
-        "mean": 52,
+        "mean": 51.5,
         "sampleSize": 2
       },
       "17": {
@@ -1839,7 +1860,7 @@
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
+      "decidedAt": "2026-09-22T10:12:43.676Z",
       "packageId": "pkg_4ae3e59cd8b77208",
       "topic": "Bekannte Namen in Bewegung",
       "archetype": "RANKING_LIST",
@@ -1941,7 +1962,7 @@
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 31. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Bekannte Namen in Bewegung, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Microsoft steht bei 493,78, HP Inc bei 34,4 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "31 von 5954 geprüften Titeln — Bekannte Namen in Bewegung.",
         "mainSubject": "Bekannte Namen in Bewegung",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -1952,7 +1973,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Bekannte Namen in Bewegung\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -1986,7 +2008,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -2006,8 +2029,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Bekannte Namen in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -2027,28 +2050,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4ae3e59cd8b77208.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -2056,15 +2073,16 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
+      "decidedAt": "2026-09-22T10:12:43.676Z",
       "packageId": "pkg_b203d737de9853eb",
       "topic": "Gerade in Bewegung",
       "archetype": "EDUCATIONAL",
@@ -2168,13 +2186,17 @@
         "topicId": "pkg_b203d737de9853eb",
         "visualStrategy": "MINIMAL_TYPOGRAPHY",
         "story": "von 5954 geprüften Titeln steht bei 119. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": null,
-        "oneSecondMessage": null,
+        "coreIdea": "Der Satz IST das Bild: \"119 von 5954 geprüften Titeln — Gerade in Bewegung.\" fuer Gerade in Bewegung. Keine Illustration daneben, die dasselbe noch einmal sagt.",
+        "oneSecondMessage": "119 von 5954 geprüften Titeln — Gerade in Bewegung.",
         "mainSubject": "Gerade in Bewegung",
-        "compositionIntent": null,
-        "visualHierarchy": [],
+        "compositionIntent": "Ein Textblock, ruhige Flaeche, keine konkurrierende Grafik. Der Zeilenumbruch folgt dem Sinn, nicht der Kante.",
+        "visualHierarchy": "NOT_APPLICABLE",
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
-        "mustShow": [],
+        "mustShow": [
+          "Den Klarnamen \"Gerade in Bewegung\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
+        ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
           "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 5 Belegen ist keiner eine Prognose"
@@ -2182,11 +2204,35 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": null,
-        "notApplicable": {},
+        "mobileFocalPoint": "Der Satz selbst, vollstaendig lesbar ohne Zoom. Gerade in Bewegung muss darin vorkommen, sonst weiss der Leser nicht, wovon die Rede ist.",
+        "notApplicable": {
+          "visualHierarchy": "Die Form traegt genau ein Element - den Satz. Eine Rangfolge ueber mehrere Bildelemente existiert nicht und waere hier erfunden."
+        },
         "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "SOCIAL_OPPORTUNITY/vergleichsgruppe"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
           "brandIntent": [
             "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:MINIMAL_TYPOGRAPHY",
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -2196,20 +2242,18 @@
         },
         "justifiedGenericMotifs": [],
         "derivation": {
-          "derived": false,
+          "derived": true,
           "strategy": "MINIMAL_TYPOGRAPHY",
-          "missingInputs": [
-            "statement"
-          ],
+          "missingInputs": [],
           "tension": {
             "kind": "PEER_SPREAD",
             "from": "SOCIAL_OPPORTUNITY/vergleichsgruppe"
           },
-          "explanation": "Die Form MINIMAL_TYPOGRAPHY braucht statement. Das liegt nicht vor, also entsteht keine Idee. Ein Satz, der auch ohne diese Daten entstuende, waere ein Default."
+          "explanation": "Abgeleitet aus MINIMAL_TYPOGRAPHY auf Gerade in Bewegung mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -2229,23 +2273,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "MINIMAL_TYPOGRAPHY",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_b203d737de9853eb.jpg",
         "quality": {
-          "passed": false,
-          "score": 60,
-          "blocking": [
+          "passed": true,
+          "score": 92,
+          "blocking": [],
+          "warnings": [
             {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: coreIdea, oneSecondMessage, mobileFocalPoint, compositionIntent, visualHierarchy, mustShow). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "warnings": [],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -2253,20 +2296,20 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "SCROLL_STOP_QUALITY nicht bestanden (MESSUNG_FEHLT): Das Bild wurde nicht vermessen. Ob sein Text traegt, ist damit unbekannt - und unbekannt ist hier nicht bestanden (§15)."
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_0dce16d390adfcaf",
+      "decidedAt": "2026-09-22T10:12:43.676Z",
+      "packageId": "pkg_784077f8af718014",
       "topic": "Comeback?",
       "archetype": "RANKING_LIST",
       "entities": [
-        "Picard Medical",
         "TEN Holdings",
         "RF Acquisition Corp II",
         "Cybin",
@@ -2275,14 +2318,15 @@
         "Arcturus Therapeutics Holdings",
         "Pulse Biosciences",
         "Amylyx Pharmaceuticals",
-        "Amplitude Class A"
+        "Amplitude Class A",
+        "Xencor"
       ],
       "entityType": null,
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "421 von 5954 geprüften Titeln — Comeback?.",
-      "caption": "Diese Auswahl umfasst 421 von 5954 geprüften Titeln. Was in ihr steht: Picard Medical: Kurs 5,08 USD. Picard Medical: in 3 Monaten 2690 %. TEN Holdings: Kurs 9,84 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
+      "hook": "420 von 5954 geprüften Titeln - Comeback?.",
+      "caption": "Diese Auswahl umfasst 420 von 5954 geprüften Titeln. Was in ihr steht: TEN Holdings: Kurs 9,84 USD. TEN Holdings: in 3 Monaten 681 %. RF Acquisition Corp II: Kurs 40,5 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
         "Investment",
@@ -2291,19 +2335,19 @@
       "authoringPattern": "group-count/group-rule-evidence",
       "authoringAuthorId": "template",
       "authoring": {
-        "briefId": "brief_822392d74a7ea2f3",
+        "briefId": "brief_08131cf84d7d08c4",
         "authorId": "template",
         "editorialCorrection": null,
         "textAuthor": null,
         "pattern": "group-count/group-rule-evidence",
-        "variantId": "var_213bcd725b1715be",
+        "variantId": "var_c7a093565e5ed8f2",
         "reason": "Markenwert 100 unter 2 bestandenen von 3 Varianten. Entschieden hat die Komposition: Hook, Bildzeile und Caption tragen bei Muster group-count/group-rule-evidence am wenigsten dasselbe bei (89 gegen 83).",
         "selectionCriteria": {
           "brandScoreChosen": 100,
           "compositionScoreChosen": 89,
           "alternatives": [
             {
-              "variantId": "var_86ac916bf7ea0d5f",
+              "variantId": "var_25267acd99ca6d49",
               "pattern": "group-subject/group-method-first",
               "brandScore": 100,
               "compositionScore": 83,
@@ -2350,34 +2394,35 @@
           }
         ]
       },
-      "opportunityId": "opp_ranking_eb816bdf",
+      "opportunityId": "opp_ranking_008a7eab",
       "signalIds": [],
       "plannedHourUtc": 18,
       "timingSource": "Startwert",
       "timingReason": "Zeitfenster 18:00 (Startwert).",
       "mode": "EXPLOIT",
-      "modeReason": "Bewaehrte Wahl (Ziehung 48 >= Rate 25 %).",
+      "modeReason": "Bewaehrte Wahl (Ziehung 26 >= Rate 25 %).",
       "strategyVersion": "strategy_initial",
       "wouldPublish": true,
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_0dce16d390adfcaf",
+        "topicId": "pkg_784077f8af718014",
         "visualStrategy": "DATA_CARD",
-        "story": "von 5954 geprüften Titeln steht bei 421. Das ist eine Lagebeschreibung, keine Prognose.",
-        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: RF Acquisition Corp II steht bei 40,5, Picard Medical bei 5,08 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "story": "von 5954 geprüften Titeln steht bei 420. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Eine Karte fuer Comeback?, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Moderna steht bei 154,04, Agenus bei 7,85 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
+        "oneSecondMessage": "420 von 5954 geprüften Titeln - Comeback?.",
         "mainSubject": "Comeback?",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
-          "Die Leitzahl 421",
+          "Die Leitzahl 420",
           "Der Name Comeback?",
           "Die uebrigen Belege"
         ],
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Comeback?\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -2386,7 +2431,7 @@
         "imageLanguage": null,
         "realism": null,
         "colourWorld": null,
-        "mobileFocalPoint": "421 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
+        "mobileFocalPoint": "420 und der Name Comeback?. Eine Karte, die auf dem Telefon erst nach dem Zoomen etwas sagt, hat nichts gesagt.",
         "notApplicable": {},
         "derivedFrom": {
           "coreIdea": [
@@ -2411,7 +2456,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -2431,14 +2477,13 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Comeback? mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
         "coreQuestion": "Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?",
         "publicEntityNames": [
-          "Picard Medical",
           "TEN Holdings",
           "RF Acquisition Corp II",
           "Cybin",
@@ -2447,33 +2492,28 @@
           "Arcturus Therapeutics Holdings",
           "Pulse Biosciences",
           "Amylyx Pharmaceuticals",
-          "Amplitude Class A"
+          "Amplitude Class A",
+          "Xencor"
         ],
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_784077f8af718014.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -2481,16 +2521,17 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_5f20ddbcbd87da98",
+      "decidedAt": "2026-09-22T10:12:43.676Z",
+      "packageId": "pkg_9ac8fdc7dd8bd5f3",
       "topic": "Stärkste Aktien im Dow Jones",
       "archetype": "RANKING_LIST",
       "entities": [
@@ -2509,7 +2550,7 @@
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "30 von 5954 geprüften Titeln — Stärkste Aktien im Dow Jones.",
+      "hook": "30 von 5954 geprüften Titeln - Stärkste Aktien im Dow Jones.",
       "caption": "Diese Auswahl umfasst 30 von 5954 geprüften Titeln. Was in ihr steht: Merck & Co: Kurs 146,87 USD. Merck & Co: in 12 Monaten 86 %. Johnson & Johnson: Kurs 269,99 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
@@ -2587,11 +2628,11 @@
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_5f20ddbcbd87da98",
+        "topicId": "pkg_9ac8fdc7dd8bd5f3",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 30. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Stärkste Aktien im Dow Jones, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Travelers Companies steht bei 374,62, Merck & Co bei 146,87 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "30 von 5954 geprüften Titeln - Stärkste Aktien im Dow Jones.",
         "mainSubject": "Stärkste Aktien im Dow Jones",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -2602,7 +2643,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Stärkste Aktien im Dow Jones\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -2636,7 +2678,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -2656,8 +2699,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Stärkste Aktien im Dow Jones mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -2677,28 +2720,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_9ac8fdc7dd8bd5f3.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -2706,16 +2743,17 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     },
     {
-      "decidedAt": "2026-09-21T20:32:39.216Z",
-      "packageId": "pkg_b0e3c5d9d0b07c75",
+      "decidedAt": "2026-09-22T10:12:43.676Z",
+      "packageId": "pkg_4b7f5c825836f1ee",
       "topic": "Fundamentale Turnarounds",
       "archetype": "RANKING_LIST",
       "entities": [
@@ -2734,7 +2772,7 @@
       "family": "RANKING",
       "question": null,
       "visualType": "DATA_CARD",
-      "hook": "308 von 5954 geprüften Titeln — Fundamentale Turnarounds.",
+      "hook": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
       "caption": "Diese Auswahl umfasst 308 von 5954 geprüften Titeln. Was in ihr steht: RingCentral Class A: Kurs 71,86 USD. Utz Brands Class A: Kurs 14,24 USD. Inspire Medical Systems: Kurs 76,78 USD. Die Liste sagt, wer die Regel erfüllt — nicht, was daraus folgt. Keine Anlageberatung.",
       "hashtags": [
         "VisionUniverse",
@@ -2815,11 +2853,11 @@
       "published": false,
       "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
       "visualDirection": {
-        "topicId": "pkg_b0e3c5d9d0b07c75",
+        "topicId": "pkg_4b7f5c825836f1ee",
         "visualStrategy": "DATA_CARD",
         "story": "von 5954 geprüften Titeln steht bei 308. Das ist eine Lagebeschreibung, keine Prognose.",
         "coreIdea": "Eine Karte fuer Fundamentale Turnarounds, die genau 4 belegte Zahlen traegt und deren Spannung sichtbar macht: Inspire Medical Systems steht bei 76,78, Rapid7 bei 11,97 - dasselbe Mass, derselbe Stichtag. Was nicht belegt ist, steht nicht auf der Karte.",
-        "oneSecondMessage": null,
+        "oneSecondMessage": "308 von 5954 geprüften Titeln - Fundamentale Turnarounds.",
         "mainSubject": "Fundamentale Turnarounds",
         "compositionIntent": "Eine Aussage oben, ihre Belege darunter in gleicher Gewichtung. Kein zweiter Blickfang neben dem ersten.",
         "visualHierarchy": [
@@ -2830,7 +2868,8 @@
         "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
         "mustShow": [
           "Den Klarnamen \"Fundamentale Turnarounds\" - nicht das Kuerzel",
-          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\""
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Welche Unternehmen erfuellen das gerade — und was haben sie gemeinsam?\"",
+          "Die Quellenzeile \"Vision Universe\" - ein Bild mit Daten ohne Quelle ist eine Behauptung"
         ],
         "mustNotShow": [
           "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
@@ -2864,7 +2903,8 @@
           "mustShow": [
             "AUDIENCE_FRAME:publicEntityNames",
             "VISUAL_STRATEGY:DATA_CARD",
-            "AUDIENCE_FRAME:coreQuestion"
+            "AUDIENCE_FRAME:coreQuestion",
+            "STORY_DIRECTION/evidence:source"
           ],
           "mustNotShow": [
             "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
@@ -2884,8 +2924,8 @@
           "explanation": "Abgeleitet aus DATA_CARD auf Fundamentale Turnarounds mit gemessener Spannung (PEER_SPREAD)."
         }
       },
-      "visualDirectionReady": false,
-      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
       "audienceFrame": {
         "family": "RANKING",
         "familyBasis": "TOPIC",
@@ -2905,28 +2945,22 @@
         "basis": "BOOTSTRAP"
       },
       "asset": {
-        "plannable": false,
+        "plannable": true,
         "visualType": "DATA_CARD",
-        "reason": "visualDirection",
-        "message": "Die Karte laesst sich zeichnen - aber es wurde nie gesagt, was sie zeigen soll: 1 blockierende(r) Befund(e): direction-incomplete.",
-        "imageUrl": null,
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_4b7f5c825836f1ee.jpg",
         "quality": {
-          "passed": false,
-          "score": 52,
-          "blocking": [
-            {
-              "id": "direction-incomplete",
-              "failureType": "VISUAL_DIRECTION_INCOMPLETE",
-              "message": "Die Creative Direction traegt nicht (fehlt: oneSecondMessage). Das ist ein Befund ueber die Vorarbeit, kein Inhalts-, Provider- oder Bildfehler."
-            }
-          ],
+          "passed": true,
+          "score": 92,
+          "blocking": [],
           "warnings": [
             {
-              "id": "number-without-subject",
-              "message": "Die Karte zeigt eine Zahl ohne Gegenstand. Im Feed sieht man das Bild vor dem Text."
+              "id": "redundant-hook",
+              "message": "Die Bildaussage wiederholt den Hook (100 %). Bild und Text sollen zusammen mehr sagen als einzeln."
             }
           ],
-          "failureType": "VISUAL_DIRECTION_INCOMPLETE",
+          "failureType": null,
           "neverReportedAs": [
             "CONTENT_FAILED",
             "PROVIDER_FAILED",
@@ -2934,11 +2968,12 @@
             "ASSET_TRANSPORT_INTEGRITY_FAILED",
             "VISUAL_CREATIVE_QUALITY_FAILED"
           ],
-          "explanation": "1 blockierende(r) Befund(e): direction-incomplete."
+          "explanation": "Bildwert 92; 1 Hinweis(e)."
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false
+        "rendered": false,
+        "renderError": "Atlas-Vertrag nicht bestanden (§17): Atlas nicht gemessen."
       }
     }
   ]

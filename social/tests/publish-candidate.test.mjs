@@ -97,6 +97,74 @@ test("PC6 · Ein ungesendeter Eintrag zaehlt nicht", () => {
 });
 
 /* ------------------------------------------------------------------ */
+/* EIN OWNER-AUFTRAG HEBT DIE UHR AUF, NIE EIN TOR (Owner Correction #101) */
+/*                                                                      */
+/* frequenzbefund() traf frueher eine EIGENE Kadenzentscheidung, die   */
+/* von manual-mode.js nichts wusste — eine zweite Source of Truth      */
+/* fuer dieselbe Regel. JETZT POST ERSTELLEN wirkte deshalb genau in   */
+/* dem Fall nicht, fuer den es existiert: der Orchestrator entschied   */
+/* bereits "prepare = ja", und der Kandidatenbau lehnte trotzdem ab.   */
+/*                                                                      */
+/* Die sechs Faelle aus der Owner-Korrektur, direkt an der Funktion.   */
+/* ------------------------------------------------------------------ */
+
+const SPERRT = [pipelineBeitrag("2026-09-17T02:00:00Z")]; // 10 h her, Sperre 20 h
+
+test("PC15 · Gegenprobe 1 — AUTO (kein Modus) + Spacing nicht erreicht -> kein Kandidat", () => {
+  const b = frequenzbefund(SPERRT, GRENZEN, NOW);
+  assert.equal(b.erlaubt, false);
+  assert.deepEqual(b.aufgehoben, []);
+  assert.match(b.gruende.join(" "), /Mindestabstand ist 20/);
+});
+
+test("PC16 · Gegenprobe 2 — JETZT PRUEFEN + Spacing nicht erreicht -> kein Kandidat", () => {
+  /* §28: JETZT PRUEFEN ist kein Produktionsauftrag. Es hebt nichts auf,
+     obwohl es einer der drei Knoepfe ist. */
+  const b = frequenzbefund(SPERRT, GRENZEN, NOW, "JETZT_PRUEFEN");
+  assert.equal(b.erlaubt, false);
+  assert.deepEqual(b.aufgehoben, []);
+});
+
+test("PC17 · Gegenprobe 3 — MANUAL NOW + Spacing nicht erreicht -> Kandidat erlaubt", () => {
+  const b = frequenzbefund(SPERRT, GRENZEN, NOW, "MANUAL_NOW");
+  assert.equal(b.erlaubt, true);
+  assert.equal(b.gruende.length, 0);
+  assert.equal(b.aufgehoben.length, 1);
+  assert.match(b.aufgehoben[0], /Mindestabstand ist 20/);
+  assert.match(b.aufgehoben[0], /JETZT POST ERSTELLEN/);
+});
+
+test("PC18 · MANUAL NOW hebt auch die Wochen- und Monatsgrenze auf", () => {
+  /* "Daily Cap ... dürfen für die Candidate-Produktion übergangen
+     werden" — dieselbe KLASSE wie die Tagesobergrenze im Orchestrator,
+     hier als Wochen-/Monatsquote. */
+  const tage = ["09-13", "09-14", "09-15", "09-16"].map((d) =>
+    pipelineBeitrag("2026-" + d + "T10:00:00Z"));
+  const b = frequenzbefund(tage, GRENZEN, NOW, "MANUAL_NOW");
+  assert.equal(b.erlaubt, true);
+  assert.equal(b.in7Tagen, 4);
+  assert.equal(b.aufgehoben.length, 1);
+  assert.match(b.aufgehoben[0], /sieben Tagen/);
+});
+
+test("PC19 · POST ZU THEMA hebt dieselben Gruende auf wie JETZT POST ERSTELLEN", () => {
+  /* §30: derselbe Auftrag, nur mit benanntem Thema. Dieselbe Tabelle
+     gilt fuer beide - nicht eine dritte Kopie fuer MANUAL_TOPIC. */
+  const b = frequenzbefund(SPERRT, GRENZEN, NOW, "MANUAL_TOPIC");
+  assert.equal(b.erlaubt, true);
+  assert.match(b.aufgehoben[0], /POST ZU THEMA/);
+});
+
+test("PC19b · Ein unbekannter Modus hebt nichts auf", () => {
+  /* Unbekanntes ist kein Freibrief - derselbe Grundsatz wie in
+     manual-mode.js selbst. Ein Tippfehler in der Umgebungsvariable
+     darf nie zu einer stillschweigend uebergangenen Sperre werden. */
+  const b = frequenzbefund(SPERRT, GRENZEN, NOW, "MANUEL_NOW");
+  assert.equal(b.erlaubt, false);
+  assert.deepEqual(b.aufgehoben, []);
+});
+
+/* ------------------------------------------------------------------ */
 /* DIE ERWARTUNG                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -161,10 +229,11 @@ function stand(abs, decisions, opportunities) {
   writeFileSync(join(abs, "content-memory.json"), JSON.stringify({ entries: [] }));
 }
 
-function lauf(rel, extra = []) {
+function lauf(rel, extra = [], env = {}) {
   return execFileSync(process.execPath,
     [join(ROOT, "scripts/social/make-publish-candidate.mjs"),
-     "--data", rel, "--now", NOW, ...extra], { cwd: ROOT, encoding: "utf8" });
+     "--data", rel, "--now", NOW, ...extra],
+    { cwd: ROOT, encoding: "utf8", env: { ...process.env, ...env } });
 }
 
 test("PC10 · Die Auswahl folgt dem Gelegenheitsscore, nicht der Reihenfolge", () => {
@@ -251,6 +320,62 @@ test("PC14 · Bei erreichter Frequenzgrenze entsteht kein Kandidat", () => {
     assert.match(aus, /Frequenzgrenze/);
     assert.match(aus, /keine Messung an ihm/,
       "und der Grund wird genannt, nicht nur die Regel");
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+test("PC14b · Gegenprobe 3, Ende-zu-Ende — MANUAL NOW erreicht das Schreiben", () => {
+  /* Derselbe Aufbau wie PC14, aber mit dem Owner-Auftrag in der
+     Umgebung — genau der Weg, ueber den run-orchestrator.mjs und die
+     VORBEREITEN-Stufe des Workflows ihn uebergeben. Ohne die Korrektur
+     bliebe dies "KEIN KANDIDAT", trotz JETZT POST ERSTELLEN. */
+  const p = platz("frequenz-manual");
+  try {
+    stand(p.abs, [entscheidung()],
+      [{ opportunityId: "opp_a", score: 80, proposable: true, explanation: "stark" }]);
+    writeFileSync(join(p.abs, "content-memory.json"), JSON.stringify({
+      entries: [pipelineBeitrag("2026-09-17T06:00:00Z")] }));
+
+    const aus = lauf(p.rel, ["--write"], { VU_SOCIAL_MODUS: "MANUAL_NOW" });
+    assert.doesNotMatch(aus, /KEIN KANDIDAT/);
+    assert.match(aus, /Durch Owner-Auftrag aufgehoben/);
+    assert.match(aus, /Geschrieben:/);
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+test("PC14c · Gegenprobe 5 — MANUAL NOW hebt das Quality Gate nicht auf", () => {
+  /* Ein nicht gezeichnetes Bild (PC12) bleibt ein nicht gezeichnetes
+     Bild — unabhaengig davon, dass die Frequenzsperre aufgehoben ist.
+     Der Auftrag beschleunigt die Auswahl, er ersetzt sie nicht. */
+  const p = platz("quality-manual");
+  try {
+    stand(p.abs, [entscheidung({ asset: { plannable: true, rendered: false,
+      imageUrl: "https://x.invalid/a.jpg" } })],
+      [{ opportunityId: "opp_a", score: 80, proposable: true, explanation: "stark" }]);
+    writeFileSync(join(p.abs, "content-memory.json"), JSON.stringify({
+      entries: [pipelineBeitrag("2026-09-17T06:00:00Z")] }));
+
+    const aus = lauf(p.rel, [], { VU_SOCIAL_MODUS: "MANUAL_NOW" });
+    assert.match(aus, /Durch Owner-Auftrag aufgehoben/,
+      "die Frequenzsperre ist aufgehoben —");
+    assert.match(aus, /KEIN KANDIDAT/, "— das Qualitaetstor trotzdem nicht");
+    assert.match(aus, /keine Entscheidung hat ein gezeichnetes Bild/);
+  } finally { rmSync(p.abs, { recursive: true, force: true }); }
+});
+
+test("PC14d · Gegenprobe 6 — MANUAL NOW hebt das Asset-Tor nicht auf", () => {
+  /* Keine sendbare Entscheidung ueberhaupt (kein Kandidat mit Bild und
+     imageUrl in der Fracht) — der Auftrag erfindet keine Fracht, die
+     es nicht gibt. */
+  const p = platz("asset-manual");
+  try {
+    stand(p.abs, [], []);
+    writeFileSync(join(p.abs, "content-memory.json"), JSON.stringify({
+      entries: [pipelineBeitrag("2026-09-17T06:00:00Z")] }));
+
+    const aus = lauf(p.rel, [], { VU_SOCIAL_MODUS: "MANUAL_NOW" });
+    assert.match(aus, /Durch Owner-Auftrag aufgehoben/);
+    assert.match(aus, /KEIN KANDIDAT/);
+    assert.match(aus, /keine Entscheidung hat ein gezeichnetes Bild/);
   } finally { rmSync(p.abs, { recursive: true, force: true }); }
 });
 

@@ -228,25 +228,31 @@ test("CJ11 · Die Vervielfachung haengt am Scheitern, nicht am Ausloesen", () =>
     assert.equal(j.observedStarts, 1,
       "PR " + j.prNumber + " lieferte und zeigt trotzdem " + j.observedStarts + " Starts"));
 
-  /* Gemeint sind Jobs, deren LAUF gescheitert ist. Ein vertragswidriger
-     Auftrag ist nie gelaufen - er wurde abgelehnt, bevor irgendetwas
-     begann, und zeigt deshalb null Starts.
+  /* Gemeint sind Jobs, deren LAUF gescheitert ist. Ein Job, der nie
+     lief, zeigt deshalb null Starts — gleich, auf welchem Weg er dahin
+     kam: CONTRACT_MISMATCH wurde abgelehnt, bevor irgendetwas begann;
+     NEVER_DISPATCHED (aus DISPATCH_NIE_ERFOLGT) wurde geschlossen,
+     weil nie ein Pull Request fuer ihn eroeffnet wurde. Beide sind
+     derselbe Fall — "terminal ohne je beobachtet worden zu sein" —
+     ueber verschiedene Wege dorthin.
 
-     Die beiden zusammenzuwerfen waere derselbe Fehler, der PR 110
-     zwoelf Stunden gekostet hat: aus dem Ausbleiben eines Starts auf
-     einen Fehler IM Lauf zu schliessen, statt auf einen Fehler VOR
-     ihm. */
+     Die mit den gelaufenen zusammenzuwerfen waere derselbe Fehler, der
+     PR 110 zwoelf Stunden gekostet hat: aus dem Ausbleiben eines
+     Starts auf einen Fehler IM Lauf zu schliessen, statt auf einen
+     Fehler VOR ihm. */
+  const NIE_GELAUFEN = ["CONTRACT_MISMATCH", "NEVER_DISPATCHED"];
   const gelaufenUndGescheitert = ECHT.filter((j) =>
-    j.state === "CREATIVE_JOB_FAILED" && j.failureType !== "CONTRACT_MISMATCH");
+    j.state === "CREATIVE_JOB_FAILED" && !NIE_GELAUFEN.includes(j.failureType));
   assert.ok(gelaufenUndGescheitert.length >= 4);
   gelaufenUndGescheitert.forEach((j) =>
     assert.ok(j.observedStarts >= 5,
       "PR " + j.prNumber + " scheiterte mit nur " + j.observedStarts + " Starts"));
 
-  /* Und die Gegenprobe: ein abgelehnter Auftrag zeigt keine Starts. */
-  ECHT.filter((j) => j.failureType === "CONTRACT_MISMATCH").forEach((j) =>
+  /* Und die Gegenprobe: ein Job, der nie lief, zeigt keine Starts —
+     auf keinem der beiden Wege dorthin. */
+  ECHT.filter((j) => NIE_GELAUFEN.includes(j.failureType)).forEach((j) =>
     assert.equal(j.observedStarts, 0,
-      "PR " + j.prNumber + " war vertragswidrig und zeigt trotzdem Starts"));
+      "PR " + j.prNumber + " (" + j.failureType + ") lief nie und zeigt trotzdem Starts"));
 });
 
 test("CJ12 · Der Ergebnis-Commit des Agenten loest keinen neuen Lauf aus", () => {
