@@ -924,9 +924,26 @@ diesem Workstream und werden hier nicht repariert.
 
 **Nicht gemergt** — das entscheidet der Owner.
 
-`REALTIME_FX` holt `currency-realtime-proof.yml` nach: Zeitplan 15:00
-und 18:00 UTC an Werktagen, beide Zeiten in der regulaeren Sitzung,
-Sommer wie Winter.
+### `REALTIME_FX`: der Zeitplan allein holt es nicht nach
+
+`currency-realtime-proof.yml` traegt einen Zeitplan (15:00 und 18:00 UTC
+an Werktagen, beide Zeiten in der regulaeren Sitzung, Sommer wie
+Winter). **Der Zeitplan feuert nicht.**
+
+GitHub Actions fuehrt `schedule`-Ausloeser ausschliesslich aus dem
+Standardzweig aus. Der Workflow liegt auf `claude/vu-currency-fx-layer-elrkpp`
+und nicht auf `main` — gegengeprueft. Solange nicht gemergt ist, laeuft
+der Zeitplan also nie.
+
+> Das ist eine Henne-Ei-Lage und sie gehoert benannt: O-8 verlangt den
+> Nachweis am offenen Markt **vor** dem Merge, der Zeitplan liefert ihn
+> erst **nach** dem Merge.
+
+Aufgeloest wird sie ueber den zweiten Ausloeser: ein Push mit
+`[rt-proof]` in der **Betreffzeile** waehrend der offenen US-Sitzung
+(13:30–20:00 UTC). Der laeuft auf dem Zweig. Genau so wird der Nachweis
+gefuehrt; bis dahin bleibt `REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und
+wird nicht beschoenigt (§58).
 
 ---
 
