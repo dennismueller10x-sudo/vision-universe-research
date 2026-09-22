@@ -92,6 +92,66 @@ const REQUIREMENTS = requiredPairs();
 /* Tiingo notiert FX-Paare als zusammengesetztes Kleinbuchstaben-Symbol. */
 function tiingoTicker(base, quote) { return (base + quote).toLowerCase(); }
 
+/* WELCHE RICHTUNG FUEHRT DER ANBIETER?
+
+   Der erste Produktivlauf (35696630585) hat die Frage beantwortet, bevor
+   sie jemand gestellt hatte: `eurusd` lieferte neun Tageszeilen, `usdeur`
+   lieferte HTTP 200 mit einem LEEREN Array. Tiingo folgt der
+   Marktkonvention - EUR/USD wird mit EUR als Basis notiert, die
+   Gegenrichtung gibt es nicht als eigene Reihe.
+
+   Der Lauf meldete daraufhin jede Faehigkeit als ungeprueft, weil alle
+   Sonden auf `usdeur` liefen. Die Sonden waren richtig; das Symbol war
+   eine Annahme.
+
+   Deshalb wird die Richtung jetzt GEMESSEN, nicht gewaehlt: beide
+   Schreibweisen werden einmal befragt, und die antwortende gewinnt. Was
+   der Store daraus macht, ist ohnehin dasselbe - fx-rates.js invertiert
+   (DERIVATION INVERSE, exakte Identitaet), und genau dafuer gibt es die
+   Inversion.
+
+   Ein leeres Array bei HTTP 200 ist bei diesem Anbieter die Antwort
+   "dieses Paar fuehre ich nicht". Das ist eine Aussage ueber das PAAR,
+   nicht ueber die FAEHIGKEIT - und die beiden auseinanderzuhalten ist
+   der ganze Zweck dieses Schritts. */
+const tickerCache = new Map();
+
+async function resolveTicker(base, quote) {
+  const key = `${base}/${quote}`;
+  if (tickerCache.has(key)) return tickerCache.get(key);
+
+  const window = `resampleFreq=1day&startDate=${isoDaysAgo(12)}`;
+  const candidates = [
+    { ticker: tiingoTicker(base, quote), direction: "DIRECT", base, quote },
+    { ticker: tiingoTicker(quote, base), direction: "INVERSE", base: quote, quote: base }
+  ];
+
+  const attempts = [];
+  for (const candidate of candidates) {
+    const res = await call(`/tiingo/fx/${candidate.ticker}/prices?${window}`);
+    const list = rows(res.body) || [];
+    attempts.push({ ticker: candidate.ticker, direction: candidate.direction,
+                    httpStatus: res.status, observations: list.length,
+                    lastDate: list.length ? String(list[list.length - 1].date).slice(0, 10) : null });
+    if (res.ok && list.length) {
+      const resolved = { ...candidate, served: true, observations: list.length, attempts,
+                         lastDate: attempts[attempts.length - 1].lastDate };
+      tickerCache.set(key, resolved);
+      return resolved;
+    }
+    /* 403/404 ist eine Zugangsaussage und gilt fuer beide Schreibweisen -
+       dann lohnt die zweite Anfrage nicht. */
+    if (res.status === 403 || res.status === 404) break;
+  }
+
+  const resolved = { ticker: null, direction: null, served: false, observations: 0, attempts,
+                     base, quote,
+                     reason: attempts.some((a) => a.httpStatus === 403 || a.httpStatus === 404)
+                       ? "accessDenied" : "pairNotServed" };
+  tickerCache.set(key, resolved);
+  return resolved;
+}
+
 /* Die Paare, die gemessen werden. Bewusst nicht alle 62: jede Anfrage
    geht vom selben Kontingent ab wie die Kursabrufe, und eine
    Faehigkeitsaussage braucht Stichproben, keinen Vollbestand.
@@ -200,12 +260,20 @@ function rows(body) { return Array.isArray(body) ? body : null; }
 /* Die Messungen                                                           */
 /* --------------------------------------------------------------------- */
 
-async function probeQuote() {
-  const ticker = tiingoTicker(PRIMARY.base, PRIMARY.quote);
+async function probeQuote(resolvedPrimary) {
+  if (!resolvedPrimary.served) {
+    note("fxCurrent", resolvedPrimary.reason === "accessDenied" ? false : null,
+      resolvedPrimary.reason === "accessDenied" ? "MEASURED_ABSENT" : "INCONCLUSIVE",
+      `Weder ${resolvedPrimary.attempts.map((a) => a.ticker).join(" noch ")} wird gefuehrt. ` +
+      "Ohne ein antwortendes Symbol laesst sich die Faehigkeit nicht messen.",
+      { attempts: resolvedPrimary.attempts });
+    return null;
+  }
+  const ticker = resolvedPrimary.ticker;
   const res = await call(`/tiingo/fx/top?tickers=${ticker}`);
   if (!res.ok) {
     const f = classifyFailure(res);
-    note("fxCurrent", f.result, f.level, f.detail, { httpStatus: res.status, pair: `${PRIMARY.base}/${PRIMARY.quote}` });
+    note("fxCurrent", f.result, f.level, f.detail, { httpStatus: res.status, ticker });
     return null;
   }
   const list = rows(res.body);
@@ -214,8 +282,9 @@ async function probeQuote() {
                              typeof first.askPrice === "number" || typeof first.last === "number");
   if (!hasPrice) {
     note("fxCurrent", null, "INCONCLUSIVE",
-      "HTTP 200, aber die Antwort traegt kein auswertbares Preisfeld. Kein Beleg.",
-      { httpStatus: 200, sample: res.sample });
+      `HTTP 200 fuer ${ticker}, aber die Antwort traegt kein auswertbares Preisfeld` +
+      `${list && list.length === 0 ? " (leeres Array)" : ""}. Kein Beleg.`,
+      { httpStatus: 200, ticker, returnedRows: list ? list.length : null, sample: res.sample });
     return null;
   }
 
@@ -227,10 +296,10 @@ async function probeQuote() {
     ? Math.round((Date.now() - Date.parse(stamp)) / 1000) : null;
 
   note("fxCurrent", true, "MEASURED_PRESENT",
-    `HTTP 200, Preisfeld vorhanden${stamp ? `, Zeitstempel ${stamp}` : ", ohne Zeitstempel"}` +
+    `HTTP 200 fuer ${ticker}, Preisfeld vorhanden${stamp ? `, Zeitstempel ${stamp}` : ", ohne Zeitstempel"}` +
     `${ageSeconds !== null ? `, Alter ${ageSeconds} s` : ""}.`,
-    { httpStatus: 200, pair: `${PRIMARY.base}/${PRIMARY.quote}`, timestamp: stamp, ageSeconds,
-      fields: Object.keys(first).sort() });
+    { httpStatus: 200, ticker, servedDirection: resolvedPrimary.direction,
+      timestamp: stamp, ageSeconds, fields: Object.keys(first).sort() });
 
   /* Realtime ist NICHT dasselbe wie "ein Quote kam an". Belegt wird sie
      nur durch ein Alter innerhalb der Realtime-Toleranz - und auch dann
@@ -252,8 +321,12 @@ async function probeQuote() {
   return first;
 }
 
-async function probeBulkAndCross() {
-  const many = PROBE_PAIRS.slice(0, 3).map((p) => tiingoTicker(p.base, p.quote));
+async function probeBulkAndCross(resolvedPrimary, pairResolutions) {
+  /* Sammelabfrage nur mit Symbolen, die der Anbieter fuehrt. Eine
+     Sammelanfrage mit zwei ungefuehrten Symbolen misst die Symbole,
+     nicht die Sammelfaehigkeit. */
+  const served = pairResolutions.filter((r) => r.served).map((r) => r.ticker);
+  const many = [...new Set(served)].slice(0, 3);
   if (many.length >= 2) {
     const res = await call(`/tiingo/fx/top?tickers=${many.join(",")}`);
     if (!res.ok) {
@@ -262,33 +335,47 @@ async function probeBulkAndCross() {
     } else {
       const list = rows(res.body) || [];
       note("fxBulkQuotes", list.length >= 2, list.length >= 2 ? "MEASURED_PRESENT" : "INCONCLUSIVE",
-        `${many.length} Paare angefragt, ${list.length} zurueck.`,
+        `${many.length} gefuehrte Symbole angefragt (${many.join(", ")}), ${list.length} zurueck.`,
         { requested: many, returned: list.length });
     }
+  } else {
+    note("fxBulkQuotes", null, "INCONCLUSIVE",
+      `Es sind weniger als zwei gefuehrte Symbole bekannt (${served.length}); eine Sammelabfrage waere nicht aussagekraeftig.`);
   }
 
-  /* Ein Kreuzpaar ohne USD. Wird es direkt gefuehrt, spart das der
-     Engine die Triangulation - wird es nicht gefuehrt, ist die
-     Triangulation nicht Bequemlichkeit, sondern Notwendigkeit. */
+  /* Ein Kreuzpaar ohne USD. Wird es gefuehrt, spart das der Engine die
+     Triangulation - wird es nicht gefuehrt, ist die Triangulation nicht
+     Bequemlichkeit, sondern Notwendigkeit. Beide Schreibweisen werden
+     versucht, sonst misst man wieder nur eine Konvention. */
   const cross = PROBE_PAIRS.find((p) => p.base !== "USD" && p.quote !== "USD");
-  if (cross) {
-    const res = await call(`/tiingo/fx/top?tickers=${tiingoTicker(cross.base, cross.quote)}`);
-    if (!res.ok) {
-      const f = classifyFailure(res);
-      note("fxCrossPairs", f.result, f.level,
-        `${cross.base}/${cross.quote}: ${f.detail} Die Engine muss dieses Paar ueber USD triangulieren.`,
-        { httpStatus: res.status, pair: `${cross.base}/${cross.quote}` });
-    } else {
-      const list = rows(res.body) || [];
-      note("fxCrossPairs", list.length > 0, list.length > 0 ? "MEASURED_PRESENT" : "INCONCLUSIVE",
-        `${cross.base}/${cross.quote}: ${list.length} Zeile(n).`,
-        { pair: `${cross.base}/${cross.quote}` });
-    }
+  if (!cross) {
+    note("fxCrossPairs", null, "NOT_ATTEMPTED", "Kein Kreuzpaar ohne USD im Bedarf.");
+    return;
+  }
+  const resolved = await resolveTicker(cross.base, cross.quote);
+  if (resolved.served) {
+    note("fxCrossPairs", true, "MEASURED_PRESENT",
+      `${cross.base}/${cross.quote} wird als ${resolved.ticker} gefuehrt (${resolved.observations} Zeilen).`,
+      { pair: `${cross.base}/${cross.quote}`, ticker: resolved.ticker, direction: resolved.direction });
+  } else {
+    /* Ein nicht gefuehrtes Kreuzpaar ist ein gemessenes Fehlen - das
+       Symbol antwortet, nur ohne Daten. Das ist etwas anderes als ein
+       unschluessiger Lauf, und es hat eine klare Folge: die Engine MUSS
+       triangulieren. */
+    note("fxCrossPairs", false, resolved.reason === "accessDenied" ? "MEASURED_ABSENT" : "MEASURED_ABSENT",
+      `${cross.base}/${cross.quote} wird weder als ${resolved.attempts.map((a) => a.ticker).join(" noch als ")} gefuehrt. ` +
+      "Die Engine muss dieses Paar ueber USD triangulieren (fx-rates.js DERIVATION TRIANGULATED).",
+      { pair: `${cross.base}/${cross.quote}`, attempts: resolved.attempts, reason: resolved.reason });
   }
 }
 
-async function probeDaily() {
-  const ticker = tiingoTicker(PRIMARY.base, PRIMARY.quote);
+async function probeDaily(resolvedPrimary) {
+  if (!resolvedPrimary.served) {
+    note("fxDaily", null, "INCONCLUSIVE",
+      "Kein gefuehrtes Symbol fuer das Hauptpaar; die Tagesreihe kann nicht gemessen werden.");
+    return null;
+  }
+  const ticker = resolvedPrimary.ticker;
   const start = isoDaysAgo(45);
   const res = await call(`/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${start}`);
   if (!res.ok) {
@@ -298,7 +385,9 @@ async function probeDaily() {
   }
   const list = rows(res.body) || [];
   if (!list.length || typeof list[0].close !== "number") {
-    note("fxDaily", null, "INCONCLUSIVE", "HTTP 200, aber keine Tagesschlusskurse in der Antwort.", { sample: res.sample });
+    note("fxDaily", null, "INCONCLUSIVE",
+      `HTTP 200 fuer ${ticker}, aber keine Tagesschlusskurse in der Antwort.`,
+      { ticker, returnedRows: list.length, sample: res.sample });
     return null;
   }
 
@@ -334,14 +423,19 @@ async function probeDaily() {
   }
 
   note("fxDaily", true, "MEASURED_PRESENT",
-    `${list.length} Tageszeilen von ${first} bis ${last}.`,
-    { observations: list.length, first, last, fields: Object.keys(list[0]).sort() });
+    `${list.length} Tageszeilen fuer ${ticker} von ${first} bis ${last}.`,
+    { ticker, observations: list.length, first, last, fields: Object.keys(list[0]).sort() });
 
   return { list, dates, timestampSemantics, weekendRows, gaps, first, last };
 }
 
-async function probeHistoricalDepth() {
-  const ticker = tiingoTicker(PRIMARY.base, PRIMARY.quote);
+async function probeHistoricalDepth(resolvedPrimary) {
+  if (!resolvedPrimary.served) {
+    note("fxHistoricalDaily", null, "INCONCLUSIVE",
+      "Kein gefuehrtes Symbol fuer das Hauptpaar; die historische Tiefe kann nicht gemessen werden.");
+    return { reached: [], deepest: null };
+  }
+  const ticker = resolvedPrimary.ticker;
   /* Die Tiefe wird nicht erfragt, sondern eingegrenzt: drei Sonden in
      wachsendem Abstand. Ein Vollabruf ueber 20 Jahre kostet Bandbreite
      fuer eine Zahl, die drei kurze Fenster genauso liefern. */
@@ -381,13 +475,18 @@ async function probeHistoricalDepth() {
   }
 
   note("fxHistoricalDaily", true, "MEASURED_PRESENT",
-    `Historie reicht mindestens ${deepest.label} zurueck (Fenster ab ${isoDaysAgo(deepest.days)} lieferte Zeilen).`,
-    { depthAtLeast: deepest.label, probes: reached });
+    `Historie von ${ticker} reicht mindestens ${deepest.label} zurueck (Fenster ab ${isoDaysAgo(deepest.days)} lieferte Zeilen).`,
+    { ticker, depthAtLeast: deepest.label, probes: reached });
   return { reached, deepest };
 }
 
-async function probeIntraday() {
-  const ticker = tiingoTicker(PRIMARY.base, PRIMARY.quote);
+async function probeIntraday(resolvedPrimary) {
+  if (!resolvedPrimary.served) {
+    note("fxIntraday", null, "INCONCLUSIVE",
+      "Kein gefuehrtes Symbol fuer das Hauptpaar; Intraday kann nicht gemessen werden.");
+    return null;
+  }
+  const ticker = resolvedPrimary.ticker;
   const res = await call(`/tiingo/fx/${ticker}/prices?resampleFreq=1hour&startDate=${isoDaysAgo(4)}`);
   if (!res.ok) {
     const f = classifyFailure(res);
@@ -396,7 +495,8 @@ async function probeIntraday() {
   }
   const list = rows(res.body) || [];
   if (!list.length || typeof list[0].close !== "number") {
-    note("fxIntraday", null, "INCONCLUSIVE", "HTTP 200, aber keine Intraday-Bars.", { sample: res.sample });
+    note("fxIntraday", null, "INCONCLUSIVE",
+      `HTTP 200 fuer ${ticker}, aber keine Intraday-Bars.`, { ticker, returnedRows: list.length, sample: res.sample });
     return null;
   }
   const stamps = list.map((r) => String(r.date || ""));
@@ -413,7 +513,12 @@ async function probeIntraday() {
 async function probeDirections() {
   /* Beide Richtungen desselben Paares. Liefert Tiingo nur eine, ist die
      Inversion in fx-rates.js keine Kuer, sondern Voraussetzung - und das
-     soll belegt sein, nicht angenommen. */
+     soll belegt sein, nicht angenommen.
+
+     Diese Messung hat im ersten Produktivlauf den Befund geliefert, der
+     die Symbolaufloesung ueberhaupt noetig machte: eurusd ja, usdeur
+     nein. Sie bleibt deshalb ein eigener Schritt und nicht ein
+     Nebenprodukt der Aufloesung. */
   const out = [];
   const closes = {};   // bleibt lokal, geht nie in den Bericht
   for (const [base, quote] of [["USD", "EUR"], ["EUR", "USD"]]) {
@@ -454,11 +559,12 @@ async function probeDirections() {
   return { directions: out, bothDirectionsServed: both, inversionRequired: !both, consistency };
 }
 
-async function probeMissingData() {
+async function probeMissingData(resolvedPrimary) {
   /* Ein Fenster, das ein Wochenende UND einen breit begangenen Feiertag
      enthaelt. Gemessen wird, welche Kalendertage FEHLEN - nicht, ob der
      Anbieter einen Kurs "richtig" liefert. Die Luecken sind der Befund. */
-  const ticker = tiingoTicker(PRIMARY.base, PRIMARY.quote);
+  if (!resolvedPrimary.served) return { ok: false, reason: "noServedTicker" };
+  const ticker = resolvedPrimary.ticker;
   const year = new Date().getUTCFullYear() - 1;
   const from = `${year}-12-20`, to = `${year + 1}-01-06`;
   const res = await call(`/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${from}&endDate=${to}`);
@@ -533,18 +639,38 @@ async function main() {
     /* Nacheinander und nicht parallel: das Kontingent ist mit den
        Kursabrufen geteilt, und ein Probelauf darf keinen Kursabruf
        verdraengen. */
-    await probeQuote();
-    await probeBulkAndCross();
-    const daily = await probeDaily();
+    /* ZUERST das Symbol klaeren, DANN die Faehigkeiten messen. Der
+       erste Produktivlauf hat in umgekehrter Reihenfolge gemessen und
+       dadurch sieben Faehigkeiten als ungeprueft gemeldet, obwohl der
+       Zugang sie bedient - nur unter dem anderen Symbol. */
+    const resolutions = [];
+    for (const p of PROBE_PAIRS.slice(0, 3)) {
+      resolutions.push(await resolveTicker(p.base, p.quote));
+    }
+    const resolvedPrimary = resolutions[0];
+    report.tickerResolution = {
+      note: "Welche Schreibweise der Anbieter fuehrt, ist gemessen und nicht gewaehlt. " +
+            "Die Gegenrichtung entsteht in fx-rates.js durch Inversion (exakte Identitaet).",
+      primary: { pair: `${PRIMARY.base}/${PRIMARY.quote}`, ticker: resolvedPrimary.ticker,
+                 direction: resolvedPrimary.direction, served: resolvedPrimary.served,
+                 attempts: resolvedPrimary.attempts },
+      all: resolutions.map((r) => ({ pair: `${r.base}/${r.quote}`, ticker: r.ticker,
+                                     direction: r.direction, served: r.served,
+                                     observations: r.observations }))
+    };
+
+    await probeQuote(resolvedPrimary);
+    await probeBulkAndCross(resolvedPrimary, resolutions);
+    const daily = await probeDaily(resolvedPrimary);
     if (daily) {
       report.timestampSemantics = daily.timestampSemantics;
       report.dailyWindow = { first: daily.first, last: daily.last,
                              weekendRows: daily.weekendRows, gaps: daily.gaps };
     }
-    report.historicalDepth = await probeHistoricalDepth();
-    await probeIntraday();
+    report.historicalDepth = await probeHistoricalDepth(resolvedPrimary);
+    await probeIntraday(resolvedPrimary);
     report.directionality = await probeDirections();
-    report.missingDataBehaviour = await probeMissingData();
+    report.missingDataBehaviour = await probeMissingData(resolvedPrimary);
 
     /* fxWebsocket wurde nicht aufgebaut - das ist ein ausdrueckliches
        "nicht gemessen", kein stilles Fehlen. */
