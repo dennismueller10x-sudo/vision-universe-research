@@ -173,11 +173,13 @@
       next = node("section", "dv2-stock-next dx-chapter");
       next.appendChild(node("p", "dv2-detail-eyebrow", "Die nächste Perspektive"));
       next.appendChild(node("h2", "", "Eine Aktie weiter."));
+      var foot = page.querySelector(".dx-foot");
+      page.insertBefore(next, foot || null);
+    }
+    if (!next.querySelector('a[href^="#/einzeln/"]')) {
       var onward = node("a", "dx-btn", "Weiter swipen →");
       onward.href = "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
       next.appendChild(onward);
-      var foot = page.querySelector(".dx-foot");
-      page.insertBefore(next, foot || null);
     }
 
     /* Shared fundamental renderers supply genuine tab controls. Complete
