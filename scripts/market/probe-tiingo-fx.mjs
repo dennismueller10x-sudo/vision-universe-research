@@ -334,9 +334,22 @@ async function probeBulkAndCross(resolvedPrimary, pairResolutions) {
       note("fxBulkQuotes", f.result, f.level, f.detail, { httpStatus: res.status });
     } else {
       const list = rows(res.body) || [];
-      note("fxBulkQuotes", list.length >= 2, list.length >= 2 ? "MEASURED_PRESENT" : "INCONCLUSIVE",
-        `${many.length} gefuehrte Symbole angefragt (${many.join(", ")}), ${list.length} zurueck.`,
-        { requested: many, returned: list.length });
+      /* Weniger Zeilen als Symbole heisst NICHT "keine Sammelabfrage".
+         Es kann auch heissen, dass eines der Symbole gerade keinen
+         aktuellen Quote hat. Ein `false` waere hier eine Aussage ueber
+         die Faehigkeit, die die Messung nicht traegt - also null mit
+         Grund. */
+      if (list.length >= 2) {
+        note("fxBulkQuotes", true, "MEASURED_PRESENT",
+          `${many.length} gefuehrte Symbole angefragt (${many.join(", ")}), ${list.length} zurueck.`,
+          { requested: many, returned: list.length });
+      } else {
+        note("fxBulkQuotes", null, "INCONCLUSIVE",
+          `${many.length} gefuehrte Symbole angefragt (${many.join(", ")}), nur ${list.length} zurueck. ` +
+          "Das kann eine fehlende Sammelfaehigkeit sein oder ein Symbol ohne aktuellen Quote - " +
+          "die Messung unterscheidet das nicht.",
+          { requested: many, returned: list.length });
+      }
     }
   } else {
     note("fxBulkQuotes", null, "INCONCLUSIVE",
@@ -471,13 +484,55 @@ async function probeHistoricalDepth(resolvedPrimary) {
       worst && worst.httpStatus === 403 ? "MEASURED_ABSENT" : "INCONCLUSIVE",
       "Kein historisches Fenster lieferte Zeilen. " + (worst ? worst.detail || "" : ""),
       { probes: reached });
-    return { reached, deepest: null };
+    return { reached, deepest: null, earliestAvailableDate: null };
   }
 
+  /* DIE GRENZE GENAU BESTIMMEN, NICHT NUR EINGRENZEN.
+
+     Der erste Ingest-Lauf (35696957318) hat alle 39 Paare verloren, und
+     zwar an HTTP 400 - fuer jedes Paar, auch fuer eurusd, das die
+     Sondierung Sekunden zuvor erfolgreich gelesen hatte. Der einzige
+     Unterschied war startDate=2015-01-01.
+
+     Tiingo lehnt ein Fenster ab, das vor dem Beginn seiner FX-Historie
+     liegt. Das ist kein Fehler des Zugangs und kein fehlendes Paar - es
+     ist eine Grenze, und sie war messbar, seit die Tiefensonde bei zehn
+     Jahren auf 400 lief. Sie wurde nur nicht ausgelesen.
+
+     Eine Angabe wie "mindestens fuenf Jahre" reicht dem Import nicht: er
+     braucht ein Datum, ab dem er fragen darf. Die Bisektion liefert es
+     mit etwa vier zusaetzlichen Anfragen - billiger als ein Import, der
+     39 Paare gegen 400 laufen laesst. */
+  let lo = deepest.days;                                   // funktioniert
+  let hi = (reached.find((r) => !r.ok) || {}).days || null; // funktioniert nicht
+  const bisection = [];
+
+  if (hi !== null) {
+    for (let step = 0; step < 5 && hi - lo > 120; step++) {
+      const mid = Math.round((lo + hi) / 2);
+      const from = isoDaysAgo(mid);
+      const res = await call(`/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${from}&endDate=${isoDaysAgo(mid - 10)}`);
+      const list = res.ok ? (rows(res.body) || []) : [];
+      bisection.push({ days: mid, from, httpStatus: res.status, observations: list.length });
+      if (res.ok && list.length) lo = mid; else hi = mid;
+    }
+  }
+
+  /* Ein Sicherheitsabstand nach vorn: die Grenze wurde auf etwa vier
+     Monate genau bestimmt, und ein Import, der genau auf ihr sitzt,
+     scheitert beim naechsten Lauf an einem Tag Drift. */
+  const earliestAvailableDate = isoDaysAgo(lo);
+  const safeStartDate = isoDaysAgo(Math.max(0, lo - 30));
+
   note("fxHistoricalDaily", true, "MEASURED_PRESENT",
-    `Historie von ${ticker} reicht mindestens ${deepest.label} zurueck (Fenster ab ${isoDaysAgo(deepest.days)} lieferte Zeilen).`,
-    { ticker, depthAtLeast: deepest.label, probes: reached });
-  return { reached, deepest };
+    `Historie von ${ticker} reicht bis mindestens ${earliestAvailableDate} zurueck` +
+    (hi !== null ? `; ein Fenster ab ${isoDaysAgo(hi)} wird mit HTTP 400 abgelehnt.` : ".") +
+    " Ein Import darf nicht frueher anfragen.",
+    { ticker, earliestAvailableDate, depthAtLeast: deepest.label, probes: reached, bisection });
+
+  return { reached, deepest, bisection, earliestAvailableDate, safeStartDate,
+           note: "safeStartDate ist das Datum, ab dem build-fx-history.mjs anfragen darf. " +
+                 "Frueher liefert der Anbieter HTTP 400 - das ist eine Fenstergrenze, kein fehlendes Paar." };
 }
 
 async function probeIntraday(resolvedPrimary) {
@@ -654,9 +709,17 @@ async function main() {
       primary: { pair: `${PRIMARY.base}/${PRIMARY.quote}`, ticker: resolvedPrimary.ticker,
                  direction: resolvedPrimary.direction, served: resolvedPrimary.served,
                  attempts: resolvedPrimary.attempts },
-      all: resolutions.map((r) => ({ pair: `${r.base}/${r.quote}`, ticker: r.ticker,
-                                     direction: r.direction, served: r.served,
-                                     observations: r.observations }))
+      /* Die ANGEFRAGTE Paarrichtung, nicht die gefuehrte. resolveTicker
+         gibt bei INVERSE base und quote vertauscht zurueck - das ist fuer
+         den Abruf richtig und fuer den Bericht irrefuehrend: er soll
+         sagen, welches Paar gebraucht wurde und womit es bedient wird. */
+      all: resolutions.map((r, i) => ({
+        requestedPair: `${PROBE_PAIRS[i].base}/${PROBE_PAIRS[i].quote}`,
+        servedAs: r.ticker,
+        direction: r.direction,
+        served: r.served,
+        observations: r.observations
+      }))
     };
 
     await probeQuote(resolvedPrimary);

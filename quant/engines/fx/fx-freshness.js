@@ -77,6 +77,79 @@
                       detail: "Es liegt kein verwendbarer Wechselkurs vor. Angezeigt wird der Originalwert in seiner Waehrung." }
   };
 
+  /* --------------------------------------------------------------------
+     DER DEVISENMARKT HAT EINEN ANDEREN KALENDER ALS EINE AKTIENBOERSE
+     -------------------------------------------------------------------- */
+
+  /* realtime/market-hours.js kennt Sitzungen mit Eroeffnung und Schluss.
+     Fuer FX ist das falsch: der Devisenmarkt laeuft durchgehend von
+     Sonntag 22:00 UTC bis Freitag 22:00 UTC. Es gibt keine
+     Mittagspause, keinen Eroeffnungsgong und - je nach Paar - auch keine
+     einheitlichen Feiertage.
+
+     Warum das hier ueberhaupt zaehlt: ohne diesen Kalender ist jeder
+     Samstag ein Stoerfall. Ein Kurs von Freitag 22:00 ist am Sonntag
+     36 Stunden alt und wuerde gegen jede Realtime- oder Intraday-Toleranz
+     als STALE gelten - obwohl er der richtige, aktuelle Kurs ist. Ein
+     System, das am Wochenende verlaesslich Warnungen erzeugt, bringt
+     seinen Nutzern bei, Warnungen zu ueberlesen.
+
+     Die Gegenrichtung ist genauso wichtig und der eigentliche Grund:
+     bleibt der Kurs am Dienstagnachmittag stehen, ist das sehr wohl eine
+     Stoerung, und dieselbe Anzeige muss das dann auch sagen. Der
+     Kalender unterscheidet die beiden Faelle; er verschweigt keinen. */
+  var MARKET_PHASES = ["OPEN", "CLOSED_WEEKEND"];
+
+  var WEEK_OPEN_UTC_HOUR = 22;   // Sonntag 22:00 UTC
+  var WEEK_CLOSE_UTC_HOUR = 22;  // Freitag 22:00 UTC
+
+  /* Wie nah am Marktschluss der letzte Stand liegen muss, damit er als
+     Schlusskurs gilt.
+
+     Eine Stunde, und nicht die Realtime-Toleranz von zwei Minuten: gegen
+     Freitagabend duennt der Handel aus, und der letzte Tick eines Paares
+     kann ohne Weiteres eine halbe Stunde vor Schluss liegen. Mit der
+     Realtime-Toleranz gemessen waere dann jedes Wochenende ein
+     Stoerfall - genau der Fehlalarm, den der Marktkalender verhindern
+     soll.
+
+     Eine Stunde ist zugleich eng genug, dass ein Stand, der schon am
+     Mittwoch stehen blieb, nicht durchrutscht. */
+  var CLOSE_GRACE_SECONDS = 3600;
+
+  /**
+   * Laeuft der Devisenhandel zu diesem Zeitpunkt?
+   *
+   * Bewusst ohne Feiertagskalender: ein Feiertagskalender je Waehrungsraum
+   * waere eine eigene Datenquelle mit eigener Pflege, und ein ungepflegter
+   * waere schlechter als keiner. Feiertage zeigen sich statt dessen als
+   * Luecke in der Reihe und werden von PREVIOUS_AVAILABLE aufgefangen.
+   */
+  function marketPhase(when) {
+    var ms = parseTime(when === undefined ? Date.now() : when);
+    if (!isFinite(ms)) return { phase: "OPEN", isOpen: true, reason: "unknownTimestamp" };
+    var d = new Date(ms);
+    var dow = d.getUTCDay();          // 0 = Sonntag
+    var hour = d.getUTCHours();
+
+    if (dow === 6) return { phase: "CLOSED_WEEKEND", isOpen: false, reason: "saturday" };
+    if (dow === 0 && hour < WEEK_OPEN_UTC_HOUR) {
+      return { phase: "CLOSED_WEEKEND", isOpen: false, reason: "sundayBeforeOpen" };
+    }
+    if (dow === 5 && hour >= WEEK_CLOSE_UTC_HOUR) {
+      return { phase: "CLOSED_WEEKEND", isOpen: false, reason: "fridayAfterClose" };
+    }
+    return { phase: "OPEN", isOpen: true, reason: null };
+  }
+
+  /** Der letzte Freitag 22:00 UTC vor dem Zeitpunkt. */
+  function lastMarketClose(ms) {
+    var d = new Date(ms);
+    var probe = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), WEEK_CLOSE_UTC_HOUR, 0, 0);
+    while (new Date(probe).getUTCDay() !== 5 || probe > ms) probe -= 86400000;
+    return probe;
+  }
+
   function parseTime(v) {
     if (v === null || v === undefined) return NaN;
     if (typeof v === "number") return v;
@@ -152,9 +225,36 @@
     var ageSeconds = Math.max(0, Math.round((reference - asOfMs) / 1000));
 
     if (ageSeconds > limit) {
+      /* Bevor das STALE heisst: laeuft ueberhaupt Handel?
+
+         Am Wochenende ist der Freitagsschluss der aktuelle Kurs, nicht
+         ein veralteter. Er wird LAST_AVAILABLE genannt - derselbe
+         Zustand wie bei einem uebertragenen Feiertagskurs - und traegt
+         den Grund mit. Gemessen wird gegen den Marktschluss, nicht
+         gegen die Uhr: ein Stand, der schon vor Freitagabend stehen
+         blieb, ist auch am Samstag eine Stoerung. */
+      if (opts.marketAware !== false && frequency !== "DAILY") {
+        var phase = marketPhase(reference);
+        if (!phase.isOpen) {
+          var lastClose = lastMarketClose(reference);
+          var ageAtClose = Math.max(0, Math.round((lastClose - asOfMs) / 1000));
+          var closeLimit = Math.max(limit, CLOSE_GRACE_SECONDS);
+          if (ageAtClose <= closeLimit) {
+            return build("LAST_AVAILABLE", ageSeconds, quote.asOf, frequency, null,
+              "Der Devisenhandel ruht (" + phase.reason + "). Der Stand vom " + quote.asOf +
+              " ist der letzte vor Marktschluss und damit der geltende.", referenceRaw, phase);
+          }
+          return build("STALE", ageSeconds, quote.asOf, frequency, "staleBeforeMarketClose",
+            "Der Stand vom " + quote.asOf + " lag schon " + Math.round(ageAtClose / 60) +
+            " Minuten vor dem letzten Marktschluss zurueck (zulaessig sind " + Math.round(closeLimit / 60) +
+            "). Das ist kein Wochenende, das ist eine Luecke.",
+            referenceRaw, phase);
+        }
+      }
       return build("STALE", ageSeconds, quote.asOf, frequency, "ageExceedsLimit",
         "Stand vom " + quote.asOf + " ist gegenueber " + (referenceRaw || "jetzt") +
-        " um mehr als die zulaessigen " + limit + " Sekunden zurueck.", referenceRaw);
+        " um mehr als die zulaessigen " + limit + " Sekunden zurueck.", referenceRaw,
+        marketPhase(reference));
     }
 
     /* Ein Uebertrag ist nicht veraltet, er ist uebertragen. Der
@@ -164,13 +264,13 @@
     if (quote.method === "PREVIOUS_AVAILABLE" ||
         (quote.method === "LATEST_AVAILABLE" && quote.requestedDate)) {
       return build("LAST_AVAILABLE", ageSeconds, quote.asOf, frequency, null,
-        quote.fallbackReason || null, referenceRaw);
+        quote.fallbackReason || null, referenceRaw, marketPhase(reference));
     }
 
-    return build("CURRENT", ageSeconds, quote.asOf, frequency, null, null, referenceRaw);
+    return build("CURRENT", ageSeconds, quote.asOf, frequency, null, null, referenceRaw, marketPhase(reference));
   }
 
-  function build(state, ageSeconds, asOf, frequency, reason, detail, reference) {
+  function build(state, ageSeconds, asOf, frequency, reason, detail, reference, phase) {
     var label = LABELS[state];
     return {
       contractVersion: CONTRACT_VERSION,
@@ -180,11 +280,24 @@
       referencePoint: reference || null,
       ageSeconds: ageSeconds,
       frequency: frequency,
+      marketPhase: phase ? phase.phase : null,
+      marketOpen: phase ? phase.isOpen : null,
       displayAllowed: state !== "UNAVAILABLE",
       /* Die Frage, an der sich §53 entscheidet: darf ueber diesem Wert
-         "Realtime" stehen? Nur bei CURRENT. Alles andere waere eine
-         Behauptung ueber eine Aktualitaet, die der Kurs nicht hat. */
-      realtimeClaimAllowed: state === "CURRENT",
+         "Realtime" stehen?
+
+         Zwei Bedingungen, und die zweite wurde zuerst vergessen. CURRENT
+         allein reicht nicht: ein TAGESKURS ist innerhalb seiner
+         Vier-Tage-Toleranz voellig in Ordnung und damit CURRENT - aber
+         "Realtime EUR" darf ueber einem Ergebnis, das mit dem
+         gestrigen Tagesschluss gerechnet wurde, trotzdem nicht stehen.
+         Der Aktienkurs ist dann realtime, die Umrechnung nicht, und das
+         Produkt daraus ist es erst recht nicht.
+
+         IDENTITY ist der eine Fall ohne Wechselkurs: eine EUR-Zahl in
+         EUR ist so aktuell wie der Wert selbst. */
+      realtimeClaimAllowed: state === "CURRENT" &&
+        (frequency === "REALTIME" || frequency === "INTRADAY" || frequency === "IDENTITY"),
       consumerVisible: label.consumerVisible,
       label: label.de,
       detail: detail || label.detail,
@@ -206,6 +319,8 @@
   var api = {
     VERSION: VERSION, CONTRACT_VERSION: CONTRACT_VERSION,
     STATES: STATES, RANK: RANK, STALE_AFTER: STALE_AFTER, LABELS: LABELS,
+    MARKET_PHASES: MARKET_PHASES, CLOSE_GRACE_SECONDS: CLOSE_GRACE_SECONDS,
+    marketPhase: marketPhase, lastMarketClose: lastMarketClose,
     assess: assess, worst: worst
   };
 

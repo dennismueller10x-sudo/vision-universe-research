@@ -47,7 +47,7 @@ const DRY_RUN = flags.has("--dry-run");
 const PUBLISH = flags.has("--publish");
 const REQUIRED_ONLY = flags.has("--required-only");
 const startArg = args.find((a) => a.startsWith("--start="));
-const START = startArg ? startArg.slice("--start=".length) : "2015-01-01";
+const REQUESTED_START = startArg ? startArg.slice("--start=".length) : "2015-01-01";
 const maxArg = args.find((a) => a.startsWith("--max-pairs="));
 const MAX_PAIRS = maxArg ? Number(maxArg.slice("--max-pairs=".length)) : 40;
 
@@ -78,6 +78,21 @@ if (!requirements) {
 const probe = readFirst(
   resolve(ROOT, "quant", "data", "market", "capabilities", "tiingo-fx-probe.json"),
   resolve(ROOT, ".market-cache", "currency", "tiingo-fx-probe.json"));
+
+/* WIE WEIT ZURUECK DARF GEFRAGT WERDEN?
+
+   Nicht so weit, wie man moechte. Der erste Ingest-Lauf hat alle 39
+   Paare an HTTP 400 verloren, weil er ab 2015 fragte und die FX-Historie
+   des Anbieters spaeter beginnt. Das Fenster war zu gross, nicht der
+   Zugang zu klein - und der Unterschied war teuer: 78 Anfragen fuer
+   nichts.
+
+   Die Sondierung misst die Grenze (historicalDepth.safeStartDate). Liegt
+   sie vor, gilt der spaetere der beiden Werte. Liegt sie nicht vor, wird
+   nicht geraten: der Lauf bricht ab und verlangt die Messung. */
+const measuredStart = probe && probe.data.historicalDepth && probe.data.historicalDepth.safeStartDate;
+const START = measuredStart && measuredStart > REQUESTED_START ? measuredStart : REQUESTED_START;
+const startClamped = START !== REQUESTED_START;
 
 /* Die Sperre: ohne belegte Faehigkeit wird nicht importiert. */
 if (!DRY_RUN) {
@@ -119,9 +134,9 @@ function tiingoTicker(base, quote) { return (base + quote).toLowerCase(); }
 let requests = 0;
 const results = [];
 
-async function get(ticker) {
+async function get(ticker, startDate) {
   requests++;
-  const res = await fetch(`${BASE}/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${START}`,
+  const res = await fetch(`${BASE}/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${startDate}`,
     { headers: { Authorization: `Token ${KEY}`, "Content-Type": "application/json" } });
   if (!res.ok) return { ok: false, httpStatus: res.status, rows: [] };
   const body = await res.json();
@@ -150,16 +165,28 @@ async function fetchPair(pair) {
   const attempts = [];
   let hit = null;
   for (const candidate of candidates) {
-    const res = await get(candidate.ticker);
-    attempts.push({ ticker: candidate.ticker, httpStatus: res.httpStatus, rows: res.rows.length });
+    const res = await get(candidate.ticker, START);
+    attempts.push({ ticker: candidate.ticker, httpStatus: res.httpStatus, rows: res.rows.length, startDate: START });
     if (res.ok && res.rows.length) { hit = { candidate, body: res.rows }; break; }
     if (res.httpStatus === 403 || res.httpStatus === 404) break;
   }
 
   if (!hit) {
-    return { pair, ok: false, attempts,
-             reason: attempts.some((a) => a.httpStatus === 403 || a.httpStatus === 404)
-               ? "accessDenied" : "pairNotServed" };
+    /* HTTP 400 heisst "dieses Fenster nehme ich nicht" und NICHT "dieses
+       Paar fuehre ich nicht". Die beiden zu verwechseln kostet genau
+       einen Ingest-Lauf, und der erste hat es getan: 39 Paare als
+       pairNotServed gemeldet, die alle vorhanden sind. */
+    const rejectedWindow = attempts.some((a) => a.httpStatus === 400);
+    return {
+      pair, ok: false, attempts,
+      reason: attempts.some((a) => a.httpStatus === 403 || a.httpStatus === 404) ? "accessDenied"
+            : rejectedWindow ? "windowRejected"
+            : "pairNotServed",
+      detail: rejectedWindow
+        ? `HTTP 400 ab ${START}. Das Fenster liegt vor dem Beginn der Anbieterhistorie - ` +
+          "erst die Tiefe messen (probe-tiingo-fx.mjs), dann mit dem gemessenen safeStartDate importieren."
+        : null
+    };
   }
 
   const stored = hit.candidate;
@@ -192,6 +219,13 @@ async function fetchPair(pair) {
 }
 
 async function main() {
+  if (startClamped) {
+    console.log(`Startdatum auf ${START} gesetzt (angefragt ${REQUESTED_START}).`);
+    console.log(`  Grund: die gemessene Anbieterhistorie beginnt nicht frueher. Ein groesseres Fenster wird mit HTTP 400 abgelehnt.`);
+  } else if (!measuredStart) {
+    console.log(`Hinweis: keine gemessene Historientiefe in der Sondierung. Startdatum ${START} ist ungeprueft.`);
+  }
+
   if (DRY_RUN) {
     console.log(`--dry-run: ${toFetch.length} kanonische Paare waeren zu holen (aus ${pairs.length} Richtungen).`);
     for (const p of toFetch.slice(0, 15)) {
@@ -249,6 +283,8 @@ async function main() {
     schema: "vu-fx-history-run-1.0.0",
     generatedAtUtc: asOf,
     startDate: START,
+    requestedStartDate: REQUESTED_START,
+    startClampedToMeasuredDepth: startClamped,
     outputDir: OUT_DIR.replace(ROOT + "/", ""),
     published: PUBLISH,
     requests,

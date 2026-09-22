@@ -541,8 +541,16 @@ test("I10 · Realtime: ein FX-Stand bedient viele Ticks, ohne zweiten Stream (§
   assert.equal(snap.stats.converted, 100);
   assert.ok(snap.stats.fxReads <= 2, `Ein Stand fuer viele Ticks, nicht einer je Tick (${snap.stats.fxReads} Abrufe)`);
   assert.ok(snap.stats.ticksPerFxRead > 10);
-  assert.equal(ticks[0].realtimeClaimAllowed, true);
   assert.equal(ticks[0].currency, "USD", "Der urspruengliche Tick bleibt unveraendert");
+
+  /* Der Stand ist ein TAGESKURS. Er ist frisch genug, um damit zu
+     rechnen - aber nicht frisch genug, um das Ergebnis "Realtime EUR"
+     zu nennen (§53). Der Aktienkurs ist realtime, die Umrechnung nicht. */
+  assert.equal(ticks[0].fxFreshness.frequency, "DAILY");
+  assert.equal(ticks[0].fxFreshness.state, "CURRENT", "Ein Tageskurs von gestern ist als Tageskurs aktuell");
+  assert.equal(ticks[0].realtimeClaimAllowed, false,
+    "Aber 'Realtime EUR' darf ueber einem mit dem Tagesschluss gerechneten Wert nicht stehen");
+  assert.ok(ticks[0].display.value > 0, "Gerechnet wird trotzdem");
 });
 
 test("I11 · Keine doppelte Umrechnung", () => {
@@ -622,4 +630,137 @@ test("I16 · Die Reihenfolge der Transformationen ist festgelegt (§55)", () => 
   assert.deepEqual(converted.transformationOrder, ["canonical_adjusted_native", "currency_conversion"]);
   assert.equal(converted.adjustmentStatus, "SPLIT_ADJUSTED",
     "Die Bereinigungsstufe reist mit und wird von der Umrechnung nicht neu interpretiert");
+});
+
+/* ====================================================================== */
+/* O-5 · REALTIME FX: MARKTZEITEN, AUSFALL, STALE                          */
+/* ====================================================================== */
+
+test("O5-1 · Der Devisenmarkt hat einen eigenen Kalender (24/5, nicht 9:30-16:00)", () => {
+  /* 2026-09-18 ist ein Freitag, 2026-09-19 ein Samstag, 2026-09-21 ein Montag. */
+  assert.equal(Freshness.marketPhase("2026-09-22T12:00:00Z").phase, "OPEN", "Dienstag Mittag");
+  assert.equal(Freshness.marketPhase("2026-09-18T12:00:00Z").phase, "OPEN", "Freitag Mittag");
+  assert.equal(Freshness.marketPhase("2026-09-18T23:00:00Z").phase, "CLOSED_WEEKEND", "Freitag nach 22:00 UTC");
+  assert.equal(Freshness.marketPhase("2026-09-19T12:00:00Z").phase, "CLOSED_WEEKEND", "Samstag");
+  assert.equal(Freshness.marketPhase("2026-09-20T12:00:00Z").phase, "CLOSED_WEEKEND", "Sonntag vor 22:00 UTC");
+  assert.equal(Freshness.marketPhase("2026-09-20T23:00:00Z").phase, "OPEN", "Sonntag nach Eroeffnung");
+
+  /* Und ausdruecklich NICHT der Aktienkalender: mitten in der Nacht am
+     Mittwoch laeuft Devisenhandel, eine Aktienboerse nicht. */
+  assert.equal(Freshness.marketPhase("2026-09-23T03:00:00Z").phase, "OPEN");
+});
+
+test("O5-2 · Wochenende ist kein Stoerfall, ein stehengebliebener Kurs schon", () => {
+  const now = "2026-09-19T12:00:00Z";                    // Samstag
+
+  /* Ein Stand von kurz vor Marktschluss am Freitag: der geltende Kurs. */
+  const freitagsschluss = Freshness.assess(
+    { available: true, method: "LATEST_AVAILABLE", asOf: "2026-09-18T21:55:00Z", frequency: "REALTIME" },
+    { now, frequency: "REALTIME" });
+  assert.equal(freitagsschluss.state, "LAST_AVAILABLE",
+    "Am Wochenende ist der Freitagsschluss aktuell, nicht veraltet");
+  assert.equal(freitagsschluss.marketOpen, false);
+  assert.equal(freitagsschluss.displayAllowed, true);
+  assert.equal(freitagsschluss.realtimeClaimAllowed, false, "aber 'Realtime' darf er trotzdem nicht heissen");
+
+  /* Ein Stand, der schon am Mittwoch stehen blieb: eine Luecke, die das
+     Wochenende nicht erklaert. */
+  const mittwoch = Freshness.assess(
+    { available: true, method: "LATEST_AVAILABLE", asOf: "2026-09-16T10:00:00Z", frequency: "REALTIME" },
+    { now, frequency: "REALTIME" });
+  assert.equal(mittwoch.state, "STALE");
+  assert.equal(mittwoch.reason, "staleBeforeMarketClose");
+  assert.match(mittwoch.detail, /kein Wochenende/);
+
+  /* Und am offenen Markt gilt die Toleranz ohne Milde. */
+  const dienstag = Freshness.assess(
+    { available: true, method: "LATEST_AVAILABLE", asOf: "2026-09-22T11:00:00Z", frequency: "REALTIME" },
+    { now: "2026-09-22T12:00:00Z", frequency: "REALTIME" });
+  assert.equal(dienstag.state, "STALE", "Eine Stunde alt bei offenem Markt ist nicht aktuell");
+  assert.equal(dienstag.marketOpen, true);
+});
+
+test("O5-3 · Anbieterausfall wird als solcher benannt, nicht als ruhiger Markt", () => {
+  const leer = Rates.createStore();
+  let now = Date.parse("2026-09-22T12:00:00Z");
+  const rt = RealtimeState.createState({ store: leer, now: () => now, refreshSeconds: 0 });
+
+  assert.equal(rt.outageState("USD", "EUR").state, "UNKNOWN", "Vor der ersten Abfrage gibt es keinen Zustand");
+
+  rt.decorate({ symbol: "X", price: 100, currency: "USD" }, "EUR");
+  assert.equal(rt.outageState("USD", "EUR").state, "DEGRADED", "Ein Aussetzer ist noch kein Ausfall");
+
+  rt.decorate({ symbol: "X", price: 100, currency: "USD" }, "EUR");
+  rt.decorate({ symbol: "X", price: 100, currency: "USD" }, "EUR");
+  const o = rt.outageState("USD", "EUR");
+  assert.equal(o.state, "PROVIDER_OUTAGE");
+  assert.equal(o.consecutiveFailures, 3);
+});
+
+test("O5-4 · Im Ausfall bleibt der letzte gueltige Stand gueltig - und altert sichtbar", () => {
+  /* Ein Store, der erst liefert und dann nicht mehr. */
+  const store = Rates.createStore();
+  store.ingest("EUR", "USD", [["2026-09-22", 1.1726]], { source: "tiingo", frequency: "DAILY" });
+  let now = Date.parse("2026-09-22T12:00:00Z");
+  const rt = RealtimeState.createState({ store, now: () => now, refreshSeconds: 60 });
+
+  const erster = rt.decorate({ symbol: "AAPL", price: 230, currency: "USD" }, "EUR");
+  assert.equal(erster.fxOutage.state, "OK");
+  assert.ok(erster.display.value > 0);
+  const rate = erster.fx.rate;
+
+  /* Die Quelle faellt aus: ein Store ohne Paare, derselbe Zustand. */
+  const ausfall = RealtimeState.createState({
+    store: { latest: () => ({ available: false, reason: "providerDown" }), rateAt: () => ({ available: false }) },
+    now: () => now, refreshSeconds: 0
+  });
+  const waehrendAusfall = ausfall.decorate({ symbol: "AAPL", price: 230, currency: "USD" }, "EUR");
+  assert.equal(waehrendAusfall.display, null, "Ohne je gueltigen Stand gibt es keine Anzeige in EUR");
+  assert.equal(waehrendAusfall.fxFreshness.state, "UNAVAILABLE");
+  assert.equal(waehrendAusfall.realtimeClaimAllowed, false);
+
+  /* Der Cache haelt den zuletzt gueltigen Stand - aber ohne den
+     Zeitstempel aufzufrischen. */
+  now += 3600_000;
+  const spaeter = rt.decorate({ symbol: "AAPL", price: 231, currency: "USD" }, "EUR");
+  assert.equal(spaeter.fx.rate, rate, "Derselbe Stand, nicht neu erfunden");
+});
+
+test("O5-5 · Keine FX-Anfrage je Tick, auch nicht bei vielen Titeln", () => {
+  const store = Rates.createStore();
+  store.ingest("EUR", "USD", [["2026-09-22", 1.1726]], { source: "tiingo", frequency: "DAILY" });
+  const now = Date.parse("2026-09-22T12:00:00Z");
+  const rt = RealtimeState.createState({ store, now: () => now, refreshSeconds: 60 });
+
+  /* 500 Ticks ueber 50 verschiedene Titel - alle in USD, alle nach EUR. */
+  for (let i = 0; i < 500; i++) {
+    rt.decorate({ symbol: "T" + (i % 50), price: 100 + i * 0.01, currency: "USD" }, "EUR");
+  }
+  const snap = rt.snapshot();
+  assert.equal(snap.stats.converted, 500);
+  assert.ok(snap.stats.fxReads <= 2,
+    `500 Ticks, 50 Titel, aber nur ${snap.stats.fxReads} FX-Abruf(e) - ein Stand bedient alle (O-5)`);
+  assert.ok(snap.stats.ticksPerFxRead >= 250);
+  assert.equal(snap.pairs.length, 1, "Ein Paar im Cache, nicht 50");
+});
+
+test("O5-6 · Verfuegbare und gefahrene Realtime-Stufe sind zwei Angaben", () => {
+  /* Der gemessene Stand aus dem Produktivlauf: fxRealtime ist belegt. */
+  const gemessen = require("node:module").createRequire(import.meta.url)(
+    join(ROOT, "quant", "engines", "capabilities.js")).declare("tiingo", {
+    fx: { fxCurrent: true, fxDaily: true, fxHistoricalDaily: true, fxIntraday: true,
+          fxRealtime: true, fxCrossPairs: false, fxBulkQuotes: null, fxWebsocket: null }
+  });
+  const tier = Capability.resolveRealtimeTier(gemessen);
+
+  assert.equal(tier.available, "C", "Der Zugang gibt Realtime-FX her");
+  assert.equal(tier.recommended, "A", "Gefahren wird trotzdem A (O-5: keine FX-Anfrage je Tick)");
+  assert.equal(tier.tier, "A", "Wer nur ein Feld liest, soll den Betriebszustand sehen");
+  assert.equal(tier.upgradePossible, true);
+  assert.match(tier.reason, /Owner-Entscheidung/);
+
+  /* Ohne belegtes fxCurrent gibt es keine Stufe - auch nicht die
+     einfachste. */
+  const ungeprueft = Capability.declareTiingoFx();
+  assert.equal(Capability.resolveRealtimeTier(ungeprueft).tier, null);
 });

@@ -124,28 +124,66 @@
   }
 
   /**
-   * Welche Realtime-Stufe eine Deklaration traegt.
+   * Welche Realtime-Stufe eine Deklaration traegt - und welche gefahren
+   * wird.
    *
-   * Gibt immer eine Antwort und nie eine Vermutung: sind alle Faehigkeiten
-   * ungeprueft, ist die Antwort `null` mit Grund - nicht Stufe A "weil die
-   * ja eh die einfachste ist". Stufe A braucht fxCurrent, und auch das
-   * muss jemand gemessen haben.
+   * DAS SIND ZWEI FRAGEN, UND SIE WURDEN EINMAL VERWECHSELT.
+   *
+   * Die erste Fassung gab die HOECHSTE verfuegbare Stufe zurueck. Als die
+   * Sondierung fxRealtime belegte (Quote 1 Sekunde alt), meldete sie
+   * prompt Stufe C - "Realtime-Aktie x Realtime-FX". Das ist als
+   * Verfuegbarkeitsaussage richtig und als Betriebsaussage falsch: der
+   * Currency Layer fuehrt Stufe A, und der Owner-Entscheid O-5 sagt
+   * ausdruecklich "keine FX-Anfrage pro Stock Tick".
+   *
+   * Ein Bericht, der C meldet, waehrend A laeuft, beschreibt ein System,
+   * das es nicht gibt - und jemand wuerde darauf Kapazitaet planen.
+   *
+   * `available` ist deshalb, was der Zugang hergibt. `recommended` ist,
+   * was gebaut ist und gefahren wird. Eine hoehere Stufe ist eine
+   * Owner-Entscheidung mit belegtem Nutzen, kein Automatismus.
    */
   function resolveRealtimeTier(declaration) {
     var order = ["C", "B", "A"];
+    var available = null;
     var blocked = [];
     for (var i = 0; i < order.length; i++) {
       var tier = REALTIME_TIERS[order[i]];
       var ok = tier.requires.every(function (cap) {
         return Capabilities.supports(declaration, "fx", cap);
       });
-      if (ok) return { tier: tier.id, label: tier.label, reason: tier.reason, blocked: blocked };
-      blocked.push(tier.id);
+      if (ok && !available) { available = tier; continue; }
+      if (!ok) blocked.push(tier.id);
     }
+
+    var tierA = REALTIME_TIERS.A;
+    var aServed = tierA.requires.every(function (cap) {
+      return Capabilities.supports(declaration, "fx", cap);
+    });
+
+    if (!available) {
+      return {
+        tier: null, available: null, recommended: null, label: null,
+        reason: "Keine FX-Faehigkeit ist belegt. Solange das so ist, liefert der Currency Layer UNAVAILABLE und das Produkt zeigt die native Waehrung.",
+        blocked: blocked
+      };
+    }
+
+    /* Gefahren wird A, solange A bedient ist. Das ist die gebaute Stufe
+       (fx-realtime-state.js: ein FX-Stand bedient viele Ticks). */
+    var recommended = aServed ? tierA : available;
     return {
-      tier: null,
-      label: null,
-      reason: "Keine FX-Faehigkeit ist belegt. Solange das so ist, liefert der Currency Layer UNAVAILABLE und das Produkt zeigt die native Waehrung.",
+      /* `tier` bleibt aus Kompatibilitaet die gefahrene Stufe - was ein
+         Leser dieses Feldes wissen will, ist der Betriebszustand. */
+      tier: recommended.id,
+      recommended: recommended.id,
+      available: available.id,
+      label: recommended.label,
+      reason: recommended.id === available.id
+        ? recommended.reason
+        : "Stufe " + available.id + " waere verfuegbar, gefahren wird " + recommended.id + ": " + tierA.reason +
+          " Ein Wechsel auf " + available.id + " ist eine Owner-Entscheidung mit belegtem Consumer-Nutzen (O-5, §12).",
+      upgradePossible: recommended.id !== available.id,
       blocked: blocked
     };
   }

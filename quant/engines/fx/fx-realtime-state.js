@@ -73,17 +73,82 @@
     var cache = Object.create(null);
     var stats = { ticks: 0, converted: 0, skippedAlreadyConverted: 0, fallbackNative: 0, fxReads: 0 };
 
+    /* Der Ausfallzustand je Paar. Getrennt vom Cache, weil er eine andere
+       Frage beantwortet: der Cache sagt "wann haben wir zuletzt gelesen",
+       dieser Zaehler sagt "seit wann kommt nichts mehr".
+
+       Ohne ihn sieht ein Anbieterausfall aus wie ein ruhiger Markt. Der
+       letzte Kurs bleibt im Cache, die Freshness altert langsam, und
+       irgendwann steht STALE da - ohne dass jemand sagen koennte, ob die
+       Quelle schweigt oder der Markt. */
+    var outage = Object.create(null);
+
     function key(from, to) { return from + "/" + to; }
+
+    function outageFor(k) {
+      if (!outage[k]) {
+        outage[k] = { consecutiveFailures: 0, firstFailureAt: null, lastSuccessAt: null, state: "OK" };
+      }
+      return outage[k];
+    }
 
     function currentQuote(from, to) {
       var k = key(from, to);
       var now = nowFn();
       var hit = cache[k];
       if (hit && (now - hit.readAt) < refreshMs) return hit.quote;
+
       var quote = store.latest(from, to);
       stats.fxReads++;
+      var o = outageFor(k);
+
+      if (quote && quote.available) {
+        o.consecutiveFailures = 0;
+        o.firstFailureAt = null;
+        o.lastSuccessAt = now;
+        o.state = "OK";
+        cache[k] = { quote: quote, readAt: now };
+        return quote;
+      }
+
+      /* Ein Fehlschlag. Der ZULETZT erfolgreiche Stand bleibt gueltig -
+         ihn wegzuwerfen, weil eine Abfrage scheiterte, waere der
+         schlechtere Ausgang: die Anzeige verlöre eine Zahl, die noch
+         richtig ist. Er altert dafuer weiter, und der Freshness-Vertrag
+         entscheidet, wann er nicht mehr gezeigt werden darf. */
+      o.consecutiveFailures++;
+      if (o.firstFailureAt === null) o.firstFailureAt = now;
+      o.state = o.consecutiveFailures >= 3 ? "PROVIDER_OUTAGE" : "DEGRADED";
+
+      if (hit && hit.quote && hit.quote.available) {
+        /* Nicht den readAt erneuern: der Stand ist alt, und er soll alt
+           AUSSEHEN. Ein aufgefrischter Zeitstempel auf einem alten Kurs
+           ist genau die stille Behauptung, die §23 verbietet. */
+        cache[k] = { quote: hit.quote, readAt: hit.readAt, servedDuringOutage: true };
+        return hit.quote;
+      }
       cache[k] = { quote: quote, readAt: now };
       return quote;
+    }
+
+    /** Der Ausfallzustand, wie ihn ein Health-Check liest. */
+    function outageState(from, to) {
+      var k = key(Registry.normalize(from), Registry.normalize(to));
+      var o = outage[k];
+      if (!o) return { pair: k, state: "UNKNOWN", consecutiveFailures: 0,
+                       detail: "Dieses Paar wurde noch nicht abgefragt." };
+      return {
+        pair: k, state: o.state,
+        consecutiveFailures: o.consecutiveFailures,
+        firstFailureAt: o.firstFailureAt,
+        lastSuccessAt: o.lastSuccessAt,
+        outageSeconds: o.firstFailureAt ? Math.round((nowFn() - o.firstFailureAt) / 1000) : 0,
+        detail: o.state === "PROVIDER_OUTAGE"
+          ? "Drei aufeinanderfolgende Fehlschlaege. Der letzte gueltige Stand wird weiter ausgeliefert und altert; der Freshness-Vertrag entscheidet, wann er nicht mehr gezeigt werden darf."
+          : o.state === "DEGRADED"
+            ? "Einzelner Fehlschlag. Noch kein Ausfall - ein Aussetzer ist kein Zustand."
+            : "Die Quelle antwortet."
+      };
     }
 
     /**
@@ -132,8 +197,16 @@
       }
 
       var quote = currentQuote(from, to);
+      /* Die Frequenz kommt aus dem Stand selbst, nicht aus einer
+         Annahme dieser Datei. Ein Tagesschluss bleibt ein Tagesschluss,
+         auch wenn er einen Realtime-Tick bedient - und genau daran
+         entscheidet sich, ob das Ergebnis "Realtime EUR" heissen darf. */
       var fresh = Freshness.assess(quote, { now: nowFn(), frequency: opts.frequency });
       tick.fxFreshness = fresh;
+      /* Der Ausfallzustand reist mit dem Tick. Ein Consumer, der nur die
+         Freshness sieht, kann "Markt ruht" nicht von "Quelle schweigt"
+         unterscheiden - und das sind zwei verschiedene Nachrichten. */
+      tick.fxOutage = outageState(from, to);
 
       if (!quote.available) {
         /* Kein Kurs: der Tick behaelt seine native Waehrung. Er wird NICHT
@@ -161,10 +234,14 @@
       return {
         version: VERSION,
         refreshSeconds: refreshMs / 1000,
+        marketPhase: Freshness.marketPhase(nowFn()),
         pairs: Object.keys(cache).map(function (k) {
           var c = cache[k];
+          var o = outage[k] || {};
           return { pair: k, available: c.quote.available, rate: c.quote.rate,
-                   asOf: c.quote.asOf, source: c.quote.source, readAt: c.readAt };
+                   asOf: c.quote.asOf, source: c.quote.source, readAt: c.readAt,
+                   servedDuringOutage: c.servedDuringOutage === true,
+                   outageState: o.state || "OK", consecutiveFailures: o.consecutiveFailures || 0 };
         }),
         stats: {
           ticks: stats.ticks, converted: stats.converted,
@@ -180,7 +257,8 @@
       };
     }
 
-    return { VERSION: VERSION, MARKER: MARKER, decorate: decorate, snapshot: snapshot, currentQuote: currentQuote };
+    return { VERSION: VERSION, MARKER: MARKER, decorate: decorate, snapshot: snapshot,
+             currentQuote: currentQuote, outageState: outageState };
   }
 
   var api = { VERSION: VERSION, MARKER: MARKER, createState: createState };
