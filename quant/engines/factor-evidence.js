@@ -28,6 +28,12 @@
   var DERIVED_FROM = "quant-v2.0.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
+  var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
+
+  /* Der Katalog-Namensraum, unter dem diese Evidenz selektierbar ist.
+     Quant V1 behaelt seine eigenen Felder; keiner der beiden Namensraeume
+     wird je auf den anderen umgedeutet. */
+  var NAMESPACE = "quantV2.factorEvidence";
 
   /* Canonical seven-factor order. Identical to quant-v2.0.0 factorOrder;
      the order is part of the product promise and never sorted by value. */
@@ -261,6 +267,31 @@
     return true;
   }
 
+  /* Zeile fuer die gemeinsame Regel-Engine: Spaltenreihenfolge aus dem
+     Artefakt, Feldnamen aus dem Katalog. Ein Leser, der die Faktorreihen-
+     folge ein zweites Mal annimmt, wuerde genau dann falsch liegen, wenn
+     sie sich einmal aendert. */
+  function screeningRow(ticker, values, fields) {
+    if (!Array.isArray(values) || !Array.isArray(fields) || values.length !== fields.length) return null;
+    var row = { ticker: ticker };
+    fields.forEach(function (fieldId, index) {
+      var value = values[index];
+      row[fieldId] = finite(value) ? value : null;
+    });
+    return row;
+  }
+
+  function validScreening(payload) {
+    if (!payload || payload.schemaVersion !== SCREENING_SCHEMA) return false;
+    if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
+    if (payload.namespace !== NAMESPACE) return false;
+    if (!payload.publication || payload.publication.compositeAllowed !== false || payload.publication.rankingAllowed !== false) return false;
+    if (!Array.isArray(payload.fields) || !payload.fields.length) return false;
+    if (!payload.fields.every(function (id) { return id.indexOf(NAMESPACE + ".") === 0; })) return false;
+    if (!payload.rows || typeof payload.rows !== "object") return false;
+    return true;
+  }
+
   function validSummary(payload) {
     if (!payload || payload.schemaVersion !== SUMMARY_SCHEMA) return false;
     if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
@@ -369,6 +400,8 @@
     DERIVED_FROM: DERIVED_FROM,
     SHARD_SCHEMA: SHARD_SCHEMA,
     SUMMARY_SCHEMA: SUMMARY_SCHEMA,
+    SCREENING_SCHEMA: SCREENING_SCHEMA,
+    NAMESPACE: NAMESPACE,
     FACTOR_ORDER: FACTOR_ORDER.slice(),
     FACTOR_STATES: FACTOR_STATES.slice(),
     FACTOR_REASONS: FACTOR_REASONS.slice(),
@@ -388,6 +421,8 @@
     confidence: confidence,
     validShard: validShard,
     validSummary: validSummary,
+    validScreening: validScreening,
+    screeningRow: screeningRow,
     publicationViolations: publicationViolations,
     hydrate: hydrate,
     ordered: ordered,

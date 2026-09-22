@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-1.0.0",
  "derivedFrom": "quant-v2.0.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-22T15:43:42.000Z",
+ "generatedAt": "2026-09-22T16:50:48.000Z",
  "asOf": "2026-09-18",
  "publication": {
   "compositeAllowed": false,
@@ -459,6 +459,21 @@
   "value:salesYield": 97
  },
  "shards": 637,
+ "screening": {
+  "schemaVersion": "factor-evidence-screening-1.0.0",
+  "namespace": "quantV2.factorEvidence",
+  "rows": 6404,
+  "fields": [
+   "quantV2.factorEvidence.quality",
+   "quantV2.factorEvidence.growth",
+   "quantV2.factorEvidence.momentum",
+   "quantV2.factorEvidence.value",
+   "quantV2.factorEvidence.profitability",
+   "quantV2.factorEvidence.revisions",
+   "quantV2.factorEvidence.risk",
+   "quantV2.factorEvidence.availableFactors"
+  ]
+ },
  "openInputGates": [
   {
    "id": "CONSUMER_EXPORT_MATERIALIZATION",
@@ -523,6 +538,6 @@
   "IDENTITY_UNRESOLVED": 1049,
   "FUNDAMENTALS_DOCUMENT_MISSING": 347
  },
- "runtimeMs": 17432,
- "contentHash": "df3a2ebbd7d45e98"
+ "runtimeMs": 44613,
+ "contentHash": "ed57177e2dec8f49"
 }

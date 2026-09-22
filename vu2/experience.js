@@ -364,8 +364,64 @@ function observableConditions(factors,change){
   {label:'Schwankungsrisiko unter dem Universumsdurchschnitt',detail:risk?.state==='AVAILABLE'?'Position '+pct(risk.score):'Risiko derzeit nicht bewertbar',met:risk?.state==='AVAILABLE'?risk.score>=50:null}
  ];
 }
+/* Strategy Match: zu welchem Anlagestil passt dieser Titel gerade, und was
+   fehlt noch. Gezaehlte Bedingungen, kein Rang und keine Renditeaussage. */
+function conditionRow(c){
+ const mark=c.state==='MET'?'✓':c.state==='NOT_MET'?'○':'–';
+ const cmp={gte:'mindestens',lte:'höchstens',gt:'über',lt:'unter',eq:'genau'}[c.operator]||c.operator;
+ const detail=c.state==='NOT_MEASURABLE'
+  ? 'Für diesen Titel nicht messbar · zählt weder als erfüllt noch als verletzt'
+  : 'Position '+pct(c.value)+' · verlangt '+cmp+' '+pct(c.threshold);
+ return el('li',{class:'match-condition '+(c.state==='MET'?'is-met':c.state==='NOT_MET'?'is-open':'is-missing')},[
+  el('span',{class:'setup-mark','aria-hidden':'true',text:mark}),
+  el('div',{},[el('span',{text:c.label}),el('span',{class:'muted',text:detail}),
+   c.rationale?el('span',{class:'muted match-why',text:c.rationale}):null])]);
+}
+function matchCard(profile){
+ const met=profile.conditions.filter(c=>c.state==='MET').length,
+  measurable=profile.conditions.filter(c=>c.state!=='NOT_MEASURABLE').length;
+ const head=el('div',{class:'match-head'},[
+  el('h3',{text:profile.label}),
+  el('span',{class:'match-score band-'+(profile.band||'NONE'),
+   text:profile.state==='AVAILABLE'?pct(profile.match)+' · '+profile.bandLabel:'Nicht auswertbar'})]);
+ const body=[el('p',{class:'muted',text:profile.plain||''})];
+ if(profile.state==='AVAILABLE'){
+  body.push(el('p',{class:'match-count',text:met+' von '+measurable+' messbaren Bedingungen erfüllt'}));
+ }else{
+  body.push(notice('Für diesen Titel nicht auswertbar',{
+   INSUFFICIENT_MEASURABLE_WEIGHT:'Zu viele Bedingungen dieses Profils sind für diesen Titel nicht messbar. Aus dem Rest wird keine Übereinstimmung gebildet.',
+   INSUFFICIENT_MEASURABLE_CONDITIONS:'Es sind zu wenige Bedingungen messbar, um eine Übereinstimmung zu bilden.',
+   NO_EVIDENCE:'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor.'
+  }[profile.reason]||'Die Bedingungen dieses Profils sind derzeit nicht auswertbar.'));
+ }
+ body.push(el('ul',{class:'match-conditions'},profile.conditions.map(conditionRow)));
+ if(profile.mainRisk)body.push(el('p',{class:'muted match-risk',text:'Hauptrisiko: '+profile.mainRisk}));
+ body.push(el('p',{class:'muted match-evidence',text:'Historische Evidenz: nicht verfügbar. Wie dieses Profil in der Vergangenheit funktioniert hätte, ist ein Backtest und bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführungsmethodik zertifiziert sind.'}));
+ return el('article',{class:'match-card'+(profile.state==='AVAILABLE'?'':' is-missing')},[head,...body]);
+}
+function strategyMatchSection(match){
+ const section=el('section',{class:'section match-section'},[
+  el('span',{class:'eyebrow',text:'Strategy Match'}),
+  el('h2',{text:'Zu welchem Anlagestil passt dieser Titel?'})]);
+ if(!match||match.state!=='AVAILABLE'){
+  section.append(notice('Strategy Match derzeit nicht verfügbar',
+   match?.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'
+    ?'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor, gegen die Profile geprüft werden könnten.'
+    :'Die Profile oder die Faktorevidenz konnten nicht geladen oder nicht geprüft werden. Es werden keine Ersatzprofile gebildet.'));
+  return section;
+ }
+ const ordered=[...match.profiles].sort((a,b)=>(b.state==='AVAILABLE'?b.match:-1)-(a.state==='AVAILABLE'?a.match:-1));
+ section.append(
+  el('p',{class:'muted',text:'Jedes Profil ist ein Satz fester Bedingungen an die Quant-V2-Faktorevidenz. Die Übereinstimmung zählt, wie viele der messbaren Bedingungen dieser Titel erfüllt — sie ist kein Rang, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.'}),
+  el('div',{class:'match-grid'},ordered.map(matchCard)),
+  el('details',{},[el('summary',{text:'Methodik & Grenzen'}),
+   el('p',{text:'Evidenz: '+match.evidenceNamespace+' · '+match.evidenceMethodologyVersion+'. Profile: '+match.methodologyVersion+'. Quant V1 bleibt unverändert und wird hier nicht gelesen.'}),
+   el('p',{text:'Die Schwellen beschreiben, ab welcher Position eine Eigenschaft für ein Profil als erfüllt gilt. Sie sind für jeden Titel gleich und nicht gegen historische Ergebnisse optimiert.'}),
+   el('p',{class:'muted',text:'Eine Bedingung ohne Faktorwert zählt weder als erfüllt noch als verletzt; sie verlässt den Nenner und steht als „nicht messbar“ in der Liste.'})]));
+ return section;
+}
 async function quantPage(ticker){
- const data=await api.getFactorEvidence(ticker);
+ const [data,match]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null)]);
  /* Der SetupState-Vertrag sagt selbst, ob ein verfuegbarer Zustand
     ueberhaupt zulaessig ist. Solange er das verneint, waere eine Abfrage
     nur teuer; sie wird geholt, sobald die Methodik aktiv ist. */
@@ -414,6 +470,7 @@ async function quantPage(ticker){
  if(missing.length)changeSection.append(el('details',{class:'change-missing'},[el('summary',{text:missing.length+' Bereiche sind derzeit nicht messbar'}),...missing.map(x=>el('p',{},[el('strong',{text:x.label+': '}),el('span',{class:'muted',text:x.reasonText})]))]));
  main.append(changeSection);
  /* SETUP */
+ main.append(strategyMatchSection(match));
  main.append(setupJourney(setup,observableConditions(data.factors,change)));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[
@@ -512,26 +569,46 @@ async function screenPage(){
  let initial=recipe?.query||editor.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]),invalidLink=false;
  try{if(params.has('recipe')&&!recipe)throw Error('unknown recipe');if(params.has('query'))initial=editor.decode(params.get('query'));else if(params.has('field')||params.has('threshold'))initial=editor.build([{field:params.get('field')||'momentum6m',operator:'gte',value:Number(params.get('threshold')||0),scale:'raw'}]);}catch{invalidLink=true;main.append(notice('Gespeicherte Regeln konnten nicht geöffnet werden','Die Abfrage enthält ungültige oder in diesem Editor nicht unterstützte Kriterien. Es wurden keine Ersatzregeln ausgeführt. Erstelle hier eine neue Auswahl oder öffne den vollständigen Screener.'));}
  if(recipe)main.append(el('p',{class:'scope-note',text:'Aus Discover: '+recipe.title+'. Alle Kriterien bleiben veränderbar.'}));
- const ruleList=el('div',{class:'rule-list'}),out=el('section',{'aria-live':'polite'}),method=el('pre',{class:'query-code'}),share=link('Diese Auswahl erneut öffnen','#','button secondary'),strategyLink=link('Als Strategie weiterentwickeln','#','button secondary'),sort=el('select',{'aria-label':'Sortieren nach'},editor.sortableFields.map(f=>el('option',{value:f.id,text:f.label}))),direction=el('select',{'aria-label':'Sortierreihenfolge'},[['desc','Absteigend'],['asc','Aufsteigend']].map(([value,text])=>el('option',{value,text})));let rows=[],request=0;strategyLink.hidden=true;
+ const ruleList=el('div',{class:'rule-list'}),out=el('section',{'aria-live':'polite'}),method=el('pre',{class:'query-code'}),share=link('Diese Auswahl erneut öffnen','#','button secondary'),strategyLink=link('Als Strategie weiterentwickeln','#','button secondary'),sort=el('select',{'aria-label':'Sortieren nach'}),direction=el('select',{'aria-label':'Sortierreihenfolge'},[['desc','Absteigend'],['asc','Aufsteigend']].map(([value,text])=>el('option',{value,text})));let rows=[],request=0;strategyLink.hidden=true;
+ /* Eine Abfrage gehoert genau einer Methodik. Der Wechsel setzt die Regeln
+    ausdruecklich zurueck, statt sie stillschweigend mitzunehmen - eine Regel
+    aus der anderen Methodik meint dort etwas anderes. */
+ let current=editor.methodologyOf(initial)||editor.methodologies[0];
+ const methodSelect=el('select',{'aria-label':'Methodik'},editor.methodologies.map(m=>el('option',{value:m.id,text:m.label})));
+ methodSelect.value=current.id;
+ const methodNote=el('p',{class:'muted screener-method-note'});
+ function fieldsOfCurrent(){return current.fields;}
+ function fillSort(){S.clear(sort);fieldsOfCurrent().filter(f=>f.type==='number').forEach(f=>sort.append(el('option',{value:f.id,text:f.label})));}
+ function describeMethod(){methodNote.textContent=current.label+' · '+current.methodologyVersion+'. '+current.note+(current.id==='legacy'?'':' Quant V1 bleibt unverändert und wird in dieser Auswahl nicht gelesen.');}
+ fillSort();describeMethod();
  sort.value=initial.sort[0].field;direction.value=initial.sort[0].direction;
- function addRule(filter={field:'revenueGrowth',operator:'gte',value:0,scale:'raw'}){
+ function addRule(filter){
+  filter=filter||{field:current.defaultField,operator:'gte',value:0,scale:'raw'};
   if(rows.length>=editor.maxFilters)return;
-  const field=el('select',{'aria-label':'Kennzahl'},editor.fields.map(f=>el('option',{value:f.id,text:f.label}))),op=el('select',{'aria-label':'Vergleich'}),unit=el('span',{class:'muted'}),row=el('div',{class:'rule'});let value=el('input',{type:'number',step:'any','aria-label':'Vergleichswert'});
+  const field=el('select',{'aria-label':'Kennzahl'},fieldsOfCurrent().map(f=>el('option',{value:f.id,text:f.label}))),op=el('select',{'aria-label':'Vergleich'}),unit=el('span',{class:'muted'}),row=el('div',{class:'rule'});let value=el('input',{type:'number',step:'any','aria-label':'Vergleichswert'});
   field.value=filter.field;const item={row,field,op,get value(){return value;}};rows.push(item);
-  function configure(raw,preferred){const def=editor.fields.find(f=>f.id===field.value),next=def.type==='number'?el('input',{type:'number',step:'any',value:String(raw??0),'aria-label':'Vergleichswert'}):el('select',{'aria-label':'Vergleichswert'},def.values.map(v=>el('option',{value:v,text:v.replaceAll('_',' ')})));if(def.type!=='number')next.value=def.values.includes(raw)?raw:def.values[0];value.replaceWith(next);value=next;op.replaceChildren(...editor.operators.filter(o=>def.operatorIds.includes(o.id)).map(o=>el('option',{value:o.id,text:o.label})));op.value=def.operatorIds.includes(preferred)?preferred:def.operatorIds[0];unit.textContent=def.unit==='usd'?'USD':def.unit==='pct'||def.unit==='percent'?'%':def.unit==='score'?'Punkte':def.unit==='method_fit'?'Methodenstatus':'';}
+  function configure(raw,preferred){const def=fieldsOfCurrent().find(f=>f.id===field.value)||fieldsOfCurrent()[0],next=def.type==='number'?el('input',{type:'number',step:'any',value:String(raw??0),'aria-label':'Vergleichswert'}):el('select',{'aria-label':'Vergleichswert'},def.values.map(v=>el('option',{value:v,text:v.replaceAll('_',' ')})));if(def.type!=='number')next.value=def.values.includes(raw)?raw:def.values[0];value.replaceWith(next);value=next;op.replaceChildren(...editor.operators.filter(o=>def.operatorIds.includes(o.id)).map(o=>el('option',{value:o.id,text:o.label})));op.value=def.operatorIds.includes(preferred)?preferred:def.operatorIds[0];unit.textContent=def.unit==='usd'?'USD':def.unit==='pct'||def.unit==='percent'?'%':def.unit==='score'?'Punkte':def.unit==='method_fit'?'Methodenstatus':'';}
   field.onchange=()=>configure(undefined,op.value);configure(filter.value,filter.operator);
   row.append(field,op,value,unit,el('button',{text:'Entfernen',class:'remove-rule','aria-label':'Kriterium entfernen',onclick:()=>{rows=rows.filter(r=>r!==item);row.remove();}}));ruleList.append(row);
  }
  initial.filters.forEach(addRule);
  const apply=async()=>{const current=++request;try{
-  const filters=rows.map(r=>{const def=editor.fields.find(f=>f.id===r.field.value),raw=r.value.value;if(!String(raw).trim())throw Error('invalid');const value=def.type==='number'?Number(raw):raw;if(def.type==='number'&&!Number.isFinite(value))throw Error('invalid');return {field:r.field.value,operator:r.op.value,value,scale:'raw'};});
+  const filters=rows.map(r=>{const def=fieldsOfCurrent().find(f=>f.id===r.field.value),raw=r.value.value;if(!String(raw).trim())throw Error('invalid');const value=def.type==='number'?Number(raw):raw;if(def.type==='number'&&!Number.isFinite(value))throw Error('invalid');return {field:r.field.value,operator:r.op.value,value,scale:'raw'};});
   const query=editor.build(filters,[{field:sort.value,direction:direction.value}]);const result=await api.screen(query);if(current!==request)return;S.clear(out);
   share.hidden=false;strategyLink.hidden=false;strategyLink.href=href('strategies')+'&query='+encodeURIComponent(editor.encode(query));method.textContent=JSON.stringify(query,null,2);share.href=href('screener')+'&query='+encodeURIComponent(editor.encode(query));
   if(result.state!=='AVAILABLE'){out.append(notice('Ergebnisse derzeit nicht verfügbar','Die Daten konnten nicht geladen werden. Deine Kriterien bleiben erhalten.'));return;}
-  const selected=editor.fields.find(f=>f.id===sort.value);
-  out.append(el('p',{class:'muted',text:result.stocks.length+' Treffer in '+result.eligible+' verfügbaren Unternehmen · kein Gesamtmarkt-Ranking'}),stockRows(result.stocks,selected.productKey,selected.label));
+  const selected=fieldsOfCurrent().find(f=>f.id===sort.value);
+  out.append(el('p',{class:'muted',text:result.stocks.length+' Treffer in '+result.eligible+' verfügbaren Unternehmen · '+current.label+' · kein Gesamtmarkt-Ranking'}),
+   current.id==='legacy'
+    ?stockRows(result.stocks,selected.productKey,selected.label)
+    :el('div',{},[el('div',{class:'row eyebrow'},[el('span',{text:'Unternehmen'}),el('span',{class:'number',text:'Bewertete Faktoren'}),el('span',{class:'number',text:selected.label})]),
+      ...result.stocks.map(stock=>el('a',{class:'row',href:href('quant',stock.ticker)},[
+       el('div',{},[el('strong',{text:stock.ticker}),el('span',{class:'muted',text:stock.name||''})]),
+       el('div',{class:'number',text:String(stock.evidence?.['quantV2.factorEvidence.availableFactors']??'–')+' / 7'}),
+       el('div',{class:'number',text:Number.isFinite(stock.evidence?.[selected.id])?pct(stock.evidence[selected.id]):'Nicht verfügbar'})]))]));
  }catch{if(current===request){share.hidden=true;strategyLink.hidden=true;method.textContent='';S.mount(out,notice('Kriterium prüfen','Gib für jedes Kriterium einen gültigen Wert ein. Die Regeln wurden nicht angewendet.'));}}};
- main.append(ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ methodSelect.onchange=()=>{const next=editor.methodology(methodSelect.value);if(!next||next.id===current.id)return;current=next;rows=[];S.clear(ruleList);fillSort();describeMethod();addRule();sort.value=current.defaultField;S.mount(out,notice('Methodik gewechselt','Die Regeln wurden zurückgesetzt. Eine Regel der anderen Methodik bedeutet hier etwas anderes und wird nicht übernommen.'));share.hidden=true;strategyLink.hidden=true;method.textContent='';};
+ main.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}

@@ -40,6 +40,45 @@
     between: { label: "between", arity: 2, types: ["number"] }
   };
 
+  /* =======================================================================
+     METHODIK-NAMENSRAEUME
+
+     Quant V1 und Quant V2 sind zwei Methodiken, nicht zwei Versionen
+     derselben Zahl. Ein Konsument waehlt ausdruecklich, welche er liest;
+     ein Feldname gehoert nie beiden.
+
+     Quant V1 ist LEGACY_IMMUTABLE. Seine Felder behalten ihre Namen,
+     ihre Bedeutung und ihre gespeicherten Regel-Hashes. Sie umzudeuten
+     wuerde jede gespeicherte Strategie, jede Screener-Abfrage und jede
+     Signaldefinition still neu interpretieren, die je gegen sie
+     geschrieben wurde.
+
+     Quant V2 bekommt deshalb einen eigenen, ausdruecklich versionierten
+     Namensraum. Er traegt Evidenz je Faktor und ausdruecklich KEINEN
+     Composite Score: der bleibt geschlossen, solange die Zertifizierung
+     nicht vollstaendig ist.
+     ======================================================================= */
+  var NAMESPACES = {
+    quantV1: {
+      id: "quantV1",
+      label: "Quant V1",
+      methodologyVersion: "quant-v1.0.0",
+      status: "LEGACY_IMMUTABLE",
+      compositeAllowed: true,
+      description: "Bestehende Quant-V1-Faktorwerte und der VU Quant Score. Unveraendert erhalten; " +
+        "weder umgedeutet noch durch eine spaetere Methodik ueberschrieben."
+    },
+    "quantV2.factorEvidence": {
+      id: "quantV2.factorEvidence",
+      label: "Quant V2 · Factor Evidence",
+      methodologyVersion: "vu-factor-evidence-1.0.0",
+      status: "ACTIVE_WITHOUT_COMPOSITE",
+      compositeAllowed: false,
+      description: "Position je kanonischem Quant-V2-Faktor im Vergleichsuniversum. " +
+        "Kein Composite Score und kein Rang, solange Quant V2 nicht vollstaendig zertifiziert ist."
+    }
+  };
+
   function f(id, label, type, unit, category, opts) {
     opts = opts || {};
     return {
@@ -58,6 +97,14 @@
       /* factorComponent: dieses Feld ist Bestandteil des genannten Faktors
          und wird von factors.js verwendet. */
       factorComponent: opts.factorComponent || null,
+      /* Methodik-Namensraum. Ein Feld gehoert genau einer Methodik, und
+         das steht hier und nicht in einem Kommentar: zwei Methodiken, die
+         sich denselben Feldnamen teilen, koennen pro Titel nicht mehr
+         eindeutig gelesen werden. `immutable` markiert einen Namensraum,
+         dessen Felder weder umgedeutet noch ueberschrieben werden. */
+      namespace: opts.namespace || null,
+      methodologyVersion: opts.methodologyVersion || null,
+      immutable: opts.immutable === true,
       /* VUQL-Token. Standard ist die abgeleitete SCREAMING_SNAKE_CASE-Form;
          wo diese schlecht lesbar waere (DISTANCE_TO52W_HIGH), steht hier ein
          explizites Token. aliases erlauben zusaetzliche Schreibweisen, damit
@@ -132,12 +179,12 @@
     f("netIncome", "Nettoergebnis TTM", "number", "usd_m", "quality", { higherIsBetter: true, pctl: true }),
 
     /* --- Scores ------------------------------------------------------- */
-    f("quantScore", "VU Quant Score", "number", "score", "score", { higherIsBetter: true, pctl: false }),
-    f("qualityScore", "Quality Score", "number", "score", "score", { higherIsBetter: true }),
-    f("momentumScore", "Momentum Score", "number", "score", "score", { higherIsBetter: true }),
-    f("valueScore", "Value Score", "number", "score", "score", { higherIsBetter: true }),
-    f("growthScore", "Growth Score", "number", "score", "score", { higherIsBetter: true }),
-    f("riskScore", "Risk Score", "number", "score", "score", { higherIsBetter: true, description: "Hoeher = geringeres Risiko" }),
+    f("quantScore", "VU Quant Score (V1)", "number", "score", "score", { higherIsBetter: true, pctl: false, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_SCORE"] }),
+    f("qualityScore", "Quality Score (V1)", "number", "score", "score", { higherIsBetter: true, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_QUALITY"] }),
+    f("momentumScore", "Momentum Score (V1)", "number", "score", "score", { higherIsBetter: true, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_MOMENTUM"] }),
+    f("valueScore", "Value Score (V1)", "number", "score", "score", { higherIsBetter: true, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_VALUE"] }),
+    f("growthScore", "Growth Score (V1)", "number", "score", "score", { higherIsBetter: true, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_GROWTH"] }),
+    f("riskScore", "Risk Score (V1)", "number", "score", "score", { higherIsBetter: true, namespace: "quantV1", methodologyVersion: "quant-v1.0.0", immutable: true, aliases: ["QUANT_V1_RISK"], description: "Hoeher = geringeres Risiko" }),
     f("coverage", "Datenabdeckung", "number", "ratio", "score", { higherIsBetter: true }),
     f("scoreVelocity30d", "Score-Velocity 30T", "number", "score", "score", { higherIsBetter: true, token: "SCORE_VELOCITY_30D", description: "Veraenderung des VU Quant Score ueber 30 Kalendertage" }),
     f("scoreVelocity60d", "Score-Velocity 60T", "number", "score", "score", { higherIsBetter: true, token: "SCORE_VELOCITY_60D" }),
@@ -160,7 +207,26 @@
     f("technicalVolumeState", "Technical Volume State", "enum", null, "technical", { values: ["BREAKOUT_VOLUME_UP", "BREAKOUT_VOLUME_DOWN", "DRY_UP", "EXPANSION", "NORMAL", "UNAVAILABLE"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Aktuell klassifizierter Volumenzustand des Technical-Snapshots" }),
     f("technicalDistanceTo52wHigh", "Technical Distance to 52W High", "number", "ratio", "technical", { higherIsBetter: true, availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Aktueller Abstand zum 52-Wochen-Hoch als Dezimalrendite; Scanner-Snapshot-Semantik, nicht das Faktor-Prozentfeld" }),
     f("technicalMomentum12MReturn", "Technical Momentum 12M Return", "number", "ratio", "technical", { higherIsBetter: true, availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Aktuelle 12-Monats-Rendite des Technical-Snapshots als Dezimalrendite" }),
-    f("elliottCountStatus", "Elliott Count Status", "enum", null, "technical", { values: ["OK", "AMBIGUOUS", "LOW_CONFIDENCE", "UNAVAILABLE"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Methodischer Status des aktuellen Elliott Counts; keine Wahrscheinlichkeit" })
+    f("elliottCountStatus", "Elliott Count Status", "enum", null, "technical", { values: ["OK", "AMBIGUOUS", "LOW_CONFIDENCE", "UNAVAILABLE"], availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Methodischer Status des aktuellen Elliott Counts; keine Wahrscheinlichkeit" }),
+
+    /* -------------------------------------------------------------------
+       QUANT V2 · FACTOR EVIDENCE
+
+       Eigener Namensraum, weil Quant V1 unveraendert bleibt. Die Felder
+       tragen die Position je Faktor im Vergleichsuniversum, nie einen
+       Composite Score: `quantV2.factorEvidence.composite` existiert nicht
+       und darf nicht existieren, solange Quant V2 nicht vollstaendig
+       zertifiziert ist. Wer eine Regel dagegen schreiben wollte, bekommt
+       vom Katalog ein unbekanntes Feld - und das ist das Gate.
+       ------------------------------------------------------------------- */
+    f("quantV2.factorEvidence.quality", "Quant V2 · Qualität", "number", "score", "quality", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_QUALITY", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Qualitaetsevidenz im Vergleichsuniversum. Hoeher = belastbarere Bilanz und Rechnungslegung." }),
+    f("quantV2.factorEvidence.growth", "Quant V2 · Wachstum", "number", "score", "growth", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_GROWTH", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Wachstumsevidenz im Vergleichsuniversum. Hoeher = staerkeres bereits realisiertes Wachstum." }),
+    f("quantV2.factorEvidence.momentum", "Quant V2 · Kursstärke", "number", "score", "momentum", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_MOMENTUM", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Momentumevidenz im Vergleichsuniversum. Hoeher = staerkere bisherige Marktbestaetigung." }),
+    f("quantV2.factorEvidence.value", "Quant V2 · Bewertung", "number", "score", "value", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_VALUE", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Bewertungsevidenz im Vergleichsuniversum. Hoeher = guenstiger relativ zum Universum." }),
+    f("quantV2.factorEvidence.profitability", "Quant V2 · Profitabilität", "number", "score", "quality", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_PROFITABILITY", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Profitabilitaetsevidenz im Vergleichsuniversum. Hoeher = staerkere laufende Ertragskraft." }),
+    f("quantV2.factorEvidence.revisions", "Quant V2 · Erwartungstrend", "number", "score", "growth", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_REVISIONS", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Revisionsevidenz im Vergleichsuniversum. Ohne lizenzierte PIT-Konsensquelle dauerhaft leer." }),
+    f("quantV2.factorEvidence.risk", "Quant V2 · Risiko", "number", "score", "risk", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_RISK", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Position der Quant-V2-Risikoevidenz im Vergleichsuniversum. Hoeher = geringeres beobachtetes Schwankungsrisiko." }),
+    f("quantV2.factorEvidence.availableFactors", "Quant V2 · bewertete Faktoren", "number", "count", "score", { higherIsBetter: true, namespace: "quantV2.factorEvidence", methodologyVersion: "vu-factor-evidence-1.0.0", token: "QUANT_V2_AVAILABLE_FACTORS", availability: "CURRENT_SNAPSHOT_ONLY", backtestEligibility: "NOT_CERTIFIED", isProbability: false, description: "Wie viele der sieben kanonischen Faktoren fuer diesen Titel einen Wert tragen. Kein Qualitaetsurteil, sondern Datenabdeckung." }),
   ];
 
   var FIELDS = Object.create(null);
@@ -182,6 +248,20 @@
   });
 
   function field(id) { return FIELDS[id] || null; }
+  function namespace(id) { return NAMESPACES[id] || null; }
+  function namespaceOf(fieldId) {
+    var fd = FIELDS[fieldId];
+    return fd && fd.namespace ? (NAMESPACES[fd.namespace] || null) : null;
+  }
+  function fieldsByNamespace(namespaceId) {
+    return FIELD_LIST.filter(function (fd) { return fd.namespace === namespaceId; });
+  }
+  /* Feld-Ids eines Namensraums, die ein Konsument ausdruecklich anfordert.
+     Ein Konsument, der sie nicht nennt, bekommt sie nicht - genau darum
+     geht es bei zwei getrennten Methodiken. */
+  function namespaceFieldIds(namespaceId) {
+    return fieldsByNamespace(namespaceId).map(function (fd) { return fd.id; });
+  }
   function fieldByToken(token) {
     var id = TOKEN_TO_FIELD[String(token).toUpperCase()];
     return id ? FIELDS[id] : null;
@@ -236,9 +316,14 @@
 
   var api = {
     OPERATORS: OPERATORS,
+    NAMESPACES: NAMESPACES,
     FIELD_LIST: FIELD_LIST,
     FIELDS: FIELDS,
     field: field,
+    namespace: namespace,
+    namespaceOf: namespaceOf,
+    fieldsByNamespace: fieldsByNamespace,
+    namespaceFieldIds: namespaceFieldIds,
     fieldByToken: fieldByToken,
     tokenOf: tokenOf,
     fieldsByCategory: fieldsByCategory,

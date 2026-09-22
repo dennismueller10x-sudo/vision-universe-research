@@ -148,3 +148,33 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
  .setup-step{min-width:92px}
  .explain-grid,.explain-factors{grid-template-columns:1fr;gap:22px}
 }
+
+/* Strategy Match — gezählte Bedingungen, kein Rang. */
+.match-section h2{max-width:560px}
+.match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:24px}
+.match-card{border-top:2px solid var(--ink);padding:18px 0 4px}
+.match-card.is-missing{border-top-color:var(--line)}
+.match-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.match-head h3{margin:0;font-size:19px}
+.match-score{font-size:14px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.band-STRONG_FIT{color:#0f5f48}
+.band-FIT{color:var(--positive)}
+.band-PARTIAL_FIT{color:#8a5a1d}
+.band-NO_FIT{color:var(--muted)}
+.match-count{font-size:16px;font-weight:600;margin:12px 0 8px}
+.match-conditions{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--line)}
+.match-condition{display:flex;gap:12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.match-condition>div span{display:block}
+.match-condition>div span+span{font-size:12px;margin-top:3px}
+.match-condition.is-met .setup-mark{color:var(--positive)}
+.match-condition.is-open .setup-mark{color:#c08b3a}
+.match-condition.is-missing{color:var(--muted)}
+.match-why{font-style:italic}
+.match-risk,.match-evidence{font-size:13px;margin-top:12px}
+.match-evidence{border-top:1px solid var(--line);padding-top:12px}
+@media(max-width:900px){.match-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.match-head h3{font-size:17px}.match-card{padding-top:16px}}
+.screener-method{align-items:flex-start;flex-direction:column;gap:10px}
+.screener-method label{display:flex;align-items:center;gap:12px}
+.screener-method select{min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:#fff}
+.screener-method-note{margin:0;font-size:13px;max-width:760px}

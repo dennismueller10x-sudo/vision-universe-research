@@ -28,6 +28,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
 const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
+const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
 const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer");
@@ -444,6 +445,36 @@ function main() {
     written += Object.keys(securities).length;
   }
 
+  /* One compact universe-wide table so the Screener and Strategy Match can
+     select on Quant V2 evidence without loading 637 shards. The column
+     names ARE the canonical catalog field ids of the
+     quantV2.factorEvidence namespace: no second naming scheme can drift
+     away from the one a rule is written against. */
+  const screeningFields = Catalog.namespaceFieldIds(FactorEvidence.NAMESPACE);
+  const factorColumns = FactorEvidence.FACTOR_ORDER.map((id) => FactorEvidence.NAMESPACE + "." + id);
+  const coverageColumn = FactorEvidence.NAMESPACE + ".availableFactors";
+  if (screeningFields.length !== factorColumns.length + 1 || !screeningFields.includes(coverageColumn)) {
+    throw new Error("catalog namespace drifted from the published factor set");
+  }
+  const screeningRows = {};
+  for (const securities of out.values()) {
+    for (const [ticker, record] of Object.entries(securities)) {
+      const values = FactorEvidence.FACTOR_ORDER.map((id) =>
+        (record.factors[id].state === "AVAILABLE" ? record.factors[id].score : null));
+      screeningRows[ticker] = values.concat(values.filter((value) => value !== null).length);
+    }
+  }
+  writeFileSync(join(OUT_DIR, "screening.json.gz"), gzipSync(Buffer.from(JSON.stringify({
+    ...head,
+    schemaVersion: FactorEvidence.SCREENING_SCHEMA,
+    scope: "CANONICAL_PRODUCT_UNIVERSE",
+    namespace: FactorEvidence.NAMESPACE,
+    /* Column order is the contract; a reader zips against it rather than
+       assuming the factor order twice. */
+    fields: factorColumns.concat(coverageColumn),
+    rows: screeningRows
+  })), { level: 9 }));
+
   const summary = {
     ...head,
     schemaVersion: FactorEvidence.SUMMARY_SCHEMA,
@@ -465,6 +496,7 @@ function main() {
     reasonCounts,
     componentCoverage,
     shards: out.size,
+    screening: { schemaVersion: FactorEvidence.SCREENING_SCHEMA, namespace: FactorEvidence.NAMESPACE, rows: Object.keys(screeningRows).length, fields: factorColumns.concat(coverageColumn) },
     /* Named, actionable gates. Each one is a concrete missing input, not a
        vague "not ready": this list is the work queue for the next factor
        certification step. */

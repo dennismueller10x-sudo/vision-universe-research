@@ -15,7 +15,14 @@ test('classic synthetic workspaces do not offer current real snapshot fields',()
   'technicalOpportunityScore','technicalOpportunityPercentile','technicalRiskReward','technicalTrend','technicalStructure',
   'technicalMomentumState','technicalRelativeStrengthState','technicalRelativeStrengthPercentile','technicalScenarioConfidence',
   'technicalSetupStatus','technicalEntryStatus','technicalPrimaryDirection','technicalVolatilityRegime','technicalVolumeState',
-  'technicalDistanceTo52wHigh','technicalMomentum12MReturn','elliottCountStatus'
+  'technicalDistanceTo52wHigh','technicalMomentum12MReturn','elliottCountStatus',
+  /* Quant-V2-Faktorevidenz: eine aktuelle Materialisierung, kein
+     backtestfaehiger Verlauf. Dieselbe Verfuegbarkeitsstufe haelt sie
+     damit automatisch aus den klassischen synthetischen Workspaces
+     heraus - die filtern genau darauf. */
+  'quantV2.factorEvidence.quality','quantV2.factorEvidence.growth','quantV2.factorEvidence.momentum',
+  'quantV2.factorEvidence.value','quantV2.factorEvidence.profitability','quantV2.factorEvidence.revisions',
+  'quantV2.factorEvidence.risk','quantV2.factorEvidence.availableFactors'
  ]);
  for(const source of [screener,builder]){
   assert.match(source,/availability\s*!==\s*"CURRENT_SNAPSHOT_ONLY"/);

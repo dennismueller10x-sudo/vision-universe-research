@@ -21,6 +21,7 @@ const Directory=typeof module!=='undefined'&&module.exports?require('../engines/
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
+const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -29,7 +30,7 @@ function create(options){
   if(loader)return loader(path);
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
-     !/^\/quant\/data\/product\/factor-evidence-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -200,6 +201,45 @@ function create(options){
  /* Factor DNA and What-Changed for one title. The artifact carries a
   * withheld composite by construction; this reader refuses anything that
   * claims otherwise rather than rendering a score the gate forbids. */
+ /* Quant-V2-Evidenz als Screening-Zeile. Die Spalten sind kanonische
+  * Katalogfelder des Namensraums quantV2.factorEvidence; Quant V1 bleibt
+  * davon unberuehrt und wird nie in dieselbe Zeile gemischt. */
+ let screeningPromise=null;
+ async function getFactorEvidenceScreening(){
+  if(!screeningPromise)screeningPromise=(async()=>{
+   try{
+    const payload=await compressedJSON('/quant/data/product/factor-evidence-v1/screening.json.gz');
+    if(!FactorEvidence.validScreening(payload))return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
+    const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
+    return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
+     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
+   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
+  })();
+  return screeningPromise;
+ }
+ /* Strategy Match liest ausschliesslich Quant-V2-Evidenz. Der Vertrag
+  * nennt den erlaubten Namensraum, und die Engine weist ein Profil ab,
+  * das darueber hinausgreift - deshalb steht hier keine zweite Pruefung. */
+ let profilesPromise=null;
+ async function getStrategyProfiles(){
+  if(!profilesPromise)profilesPromise=(async()=>{
+   try{
+    const contract=await load('/quant/methodology/strategy-profiles-v1.json');
+    const validation=StrategyMatch.validateContract(contract);
+    return validation.valid?{state:'AVAILABLE',contract}:{state:'UNAVAILABLE',reason:'INVALID_PROFILE_CONTRACT',errors:validation.errors};
+   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+  })();
+  return profilesPromise;
+ }
+ async function getStrategyMatch(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  const [profiles,screening]=await Promise.all([getStrategyProfiles(),getFactorEvidenceScreening()]);
+  if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
+  if(screening.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:screening.reason||'EVIDENCE_UNAVAILABLE',profiles:[]};
+  const row=screening.rows.find(entry=>entry.ticker===ticker);
+  if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
+ }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
@@ -433,7 +473,35 @@ function create(options){
   {id:'above-long-trend',title:'Über dem langfristigen Trend',explanation:'Unternehmen, deren Kurs auf oder über dem 200-Tage-Durchschnitt liegt.',field:'priceTo200dma',threshold:0,rule:'Abstand zum 200-Tage-Durchschnitt ≥ 0 %'}
  ].map(recipe=>{const query=queryEngine.createQuery({filters:[{field:recipe.field,operator:'gte',value:recipe.threshold,scale:'raw'}],sort:[{field:recipe.field,direction:'desc'}],limit:50});const predicate=Rules.fromQuery(query);return {...recipe,version:'1.0.0',query,predicate,predicateHash:Rules.predicateHash(predicate)};});}
  async function getDiscover(){const collections=await Promise.all(getRecipes().map(async recipe=>({...recipe,result:await screen(recipe.query)})));return {collections,scope:'APPROVED_DISPLAY_SET'};}
- async function screen(query){try{const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
+ /* Eine Abfrage gehoert genau einer Methodik. Welche Zeilen sie sieht,
+  * entscheidet deshalb die Methodik und nicht der Aufrufer: Quant V2 liest
+  * die Faktorevidenz-Tabelle, alles andere das bestehende Produktuniversum.
+  * Gemischte Abfragen kommen hier nicht an - der Screener-Vertrag weist sie
+  * schon beim Bauen ab. */
+ async function screenFactorEvidence(query){
+  const [screening,universe]=await Promise.all([getFactorEvidenceScreening(),getUniverse()]);
+  if(screening.state!=='AVAILABLE')return unavailable(screening.reason||'EVIDENCE_UNAVAILABLE');
+  if(universe.state!=='AVAILABLE')return universe;
+  /* Der Handelsstatus gehoert dem Company Master, nicht dieser Tabelle.
+   * Die Evidenzzeile erbt ihn deshalb aus dem kanonischen Universum, und
+   * ein Titel ohne kanonische Bestaetigung erscheint gar nicht - die
+   * Query Engine wuerde ihn sonst still als inaktiv herausfiltern. */
+  const byTicker=new Map((universe.stocks||[]).map(stock=>[stock.ticker,stock]));
+  const rows=screening.rows.filter(row=>byTicker.has(row.ticker)).map(row=>({...row,status:'active'}));
+  const result=queryEngine.execute(query,rows);
+  return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,
+   scope:'CANONICAL_PRODUCT_UNIVERSE',methodologyVersion:screening.methodologyVersion,
+   namespace:screening.namespace,asOf:screening.asOf,publication:screening.publication,
+   eligible:rows.length,
+   stocks:result.rows.map(row=>({...(byTicker.get(row.ticker)||{ticker:row.ticker,name:row.ticker}),evidence:row}))};
+ }
+ async function screen(query){try{
+  const routed=typeof g.VUScreenerWorkspace!=='undefined'||typeof module!=='undefined'
+   ? (options.screenerWorkspace||(typeof module!=='undefined'&&module.exports?require('./screener-workspace.js'):g.VUScreenerWorkspace))
+   : null;
+  const chosen=routed&&typeof routed.methodologyOf==='function'?routed.methodologyOf(query):null;
+  if(chosen&&chosen.source==='FACTOR_EVIDENCE_SCREENING')return await screenFactorEvidence(query);
+  const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
   if(!queryEngine.validate(query).valid)return unavailable('INVALID_SCREEN_RULES');
   const usesPrice=query.filters.some(f=>f.field==='price')||query.sort.some(s=>s.field==='price');
   if(usesPrice&&universe.stocks.some(s=>!permission(c,s.ticker,'raw').allowed))return unavailable('PRICE_DISPLAY_NOT_PERMITTED');
@@ -451,7 +519,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

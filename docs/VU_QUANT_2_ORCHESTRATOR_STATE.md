@@ -11,24 +11,45 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_PHASE
 
-`M1_FACTOR_AND_CHANGE_EXPERIENCE_DELIVERED`
+`M3_STRATEGY_MATCH_DELIVERED_ON_A_SEPARATE_V2_NAMESPACE`
 
-The Factor Engine and the Change Engine exist as versioned product engines over the broad
-canonical universe, and the Quant Experience frontend renders them. The Quant V2 composite
-remains closed; Setup, Pattern, Strategy Match, Backtest and Market Regime remain ahead.
+Factor Evidence, Change and Strategy Match exist as versioned product engines over the broad
+canonical universe, and the Quant Experience frontend renders them. Quant V1 is untouched and
+marked LEGACY_IMMUTABLE; Quant V2 lives in its own catalog namespace with no composite.
+Setup, Pattern, Backtest and Market Regime remain ahead.
 
 ## PRODUCT_MILESTONES
 
 | Milestone | Scope | State |
 |---|---|---|
 | M1 | Factor + Change experience | **DONE** (this section) |
-| M2 | Setup Engine + frontend | OPEN — journey surface exists, state assignment fail-closed |
-| M3 | Strategy Match | OPEN — needs factor certification first |
+| M2 | Setup Engine + frontend | OPEN — journey surface exists; needs materialized snapshot history |
+| M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | BLOCKED in-repo — needs deep canonical history (see KNOWN_BLOCKERS) |
 | M5 | Pattern Match product | OPEN — downstream of M4 |
 | M6 | Backtest integration | OPEN — downstream of PIT/execution gates |
 | M7 | Market Regime | OPEN — Owner methodology gate |
 | M8 | Full Quant experience | OPEN |
+
+## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
+
+Quant V1 stays LEGACY_IMMUTABLE. No silent re-pointing, no ambiguous dual-source behaviour.
+Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
+
+- `quantV1` namespace: `quantScore`, `qualityScore`, `momentumScore`, `valueScore`,
+  `growthScore`, `riskScore` keep their **exact field ids**, gain `immutable: true` and an
+  explicit `QUANT_V1_*` alias token. A test carries the id list as a regression guard —
+  those ids sit inside stored strategy `definitionHash` and signal `predicateHash` values.
+- `quantV2.factorEvidence` namespace: seven factor fields plus `availableFactors`.
+  `quantV2.factorEvidence.composite` **does not exist**; a rule written against it gets an
+  unknown field from the catalog. That is the gate, and a test holds it.
+- Consumers choose explicitly. The Screener has a methodology selector and refuses a query
+  that mixes the two (`methodologyOf(query) === null` → `INVALID_SCREEN_RULES`). Switching
+  resets the rules rather than carrying them across. Saved legacy links resolve unchanged.
+- Row source follows the methodology, not the caller. Trading status comes from the Company
+  Master in both cases; the evidence table never asserts it itself.
+
+Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
@@ -68,7 +89,18 @@ remains closed; Setup, Pattern, Strategy Match, Backtest and Market Regime remai
   volatility from the published bar series and leaves the other two typed-closed.
 - CI: factor evidence materialization wired into `product-intelligence-materialization.yml`
   right after the technical bundles it reads; new tests run in Quant CI and in that workflow.
-- Browser QA extended to the rebuilt `quant` view and the new `explain` view, both widths.
+- **Strategy Match** `strategy-profiles-1.0.0`: `quant/methodology/strategy-profiles-v1.json` +
+  `quant/engines/strategy-match.js`. Eight profiles, each condition a filter of the canonical
+  rule predicate — no second rule engine, and a profile carries a stable `predicateHash`.
+  Match = met weight / measurable weight; an unmeasurable condition leaves the denominator
+  instead of counting as a failure. `ranking.state = WITHHELD` and
+  `historicalEvidence = UNAVAILABLE / BACKTEST_NOT_CERTIFIED` on every profile.
+- **Compact evidence table** `factor-evidence-screening-1.0.0` (6,404 rows, 90 KB gzipped).
+  Its column names ARE the canonical catalog field ids, so no second naming scheme can drift
+  from the one a rule is written against; the materializer aborts if catalog and published
+  factor set disagree.
+- Browser QA extended to the rebuilt `quant` view, the new `explain` view, the Strategy Match
+  section and the screener methodology switch, both widths.
 
 ## PRODUCTION_REALITY
 
@@ -89,6 +121,12 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 | `WITH_PIT_FUNDAMENTALS` | 5,008 |
 | `WITH_MARKET_CAP` | 3,921 |
 | `FACTORS_BROADLY_AVAILABLE` | 6 of 7 (Revisions is the exception) |
+| `QUANT_V1_STATUS` | LEGACY_IMMUTABLE, field ids unchanged |
+| `QUANT_V2_NAMESPACE` | `quantV2.factorEvidence`, 8 fields, no composite field |
+| `STRATEGY_MATCH_PROFILES` | 8 (Earnings Revision Leader permanently UNAVAILABLE) |
+| `STRATEGY_MATCH_RANKING` | WITHHELD |
+| `STRATEGY_MATCH_HISTORICAL_EVIDENCE` | UNAVAILABLE / BACKTEST_NOT_CERTIFIED |
+| `SCREENER_METHODOLOGIES` | 2, mixed queries refused |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |
 | `COMPOSITE_SCORE` | WITHHELD |
 | `QUANT_V2_STATUS` | SPECIFIED_NOT_ACTIVE |
@@ -105,12 +143,14 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,444/1,444 passed locally (1,411 before; +17 factor-evidence, +4 market-factors,
-  +12 fundamental-inputs). SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
+- Full Quant suite: 1,461/1,461 passed locally (1,411 before; +17 factor-evidence,
+  +4 market-factors, +12 fundamental-inputs, +17 strategy-match/namespace).
+  SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
 - Public data hygiene guard: passed against the new artifact.
-- Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL) and `explain`:
+- Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL), `explain` and `screener`:
   one `h1` per page, no horizontal overflow, seven factors in canonical order, change groups
-  rendered, setup conditions rendered, no page errors.
+  rendered, setup conditions rendered, eight Strategy Match profiles rendered, the screener
+  methodology switch offering only Quant V2 fields and returning Quant V2 rows, no page errors.
 - Largest shard: 41 KB gzipped, 0.46 MiB uncompressed — inside the browser artifact caps.
 - Production acceptance for this section is not yet claimed: it needs a merged release and a
   Pages deploy of the exact commit.
@@ -180,7 +220,8 @@ SEC layer normalizes but `consumer.py` does not export.
 3. **Weekly factor snapshot** from this materializer, so `change.scoreMomentum` can open from
    real published history rather than reconstruction.
 4. **Setup Engine (M2)**: bind the canonical SetupState contract to rules over the now-available
-   factor and change evidence, certify, then flip `AVAILABLE_OBSERVATIONS_ALLOWED`.
+   factor and change evidence, certify, then flip `AVAILABLE_OBSERVATIONS_ALLOWED`. Owner
+   cleared this to be prepared in parallel once real snapshot history is materialized.
 5. **Pattern Research (M4)** as a workflow job against the restored canonical history.
 6. Market Regime stays on the Owner gate.
 

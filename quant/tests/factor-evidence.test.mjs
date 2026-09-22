@@ -174,8 +174,10 @@ test("the compact wire format loses no measurement and restores its wording", ()
 
 /* ---------------------------------------------------------------- artifact */
 
+/* The screening table lives in the same directory under its own schema;
+   it is validated by the strategy-match suite, not as a factor shard. */
 const shards = existsSync(ARTIFACT_DIR)
-  ? readdirSync(ARTIFACT_DIR).filter((name) => name.endsWith(".json.gz"))
+  ? readdirSync(ARTIFACT_DIR).filter((name) => name.endsWith(".json.gz") && name !== "screening.json.gz")
   : [];
 
 test("the materialized factor evidence exists and declares its gates", () => {

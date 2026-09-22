@@ -65,6 +65,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('heading',{name:'Entsteht gerade eine Situation?',exact:true}).waitFor();
   await page.getByText('Es wird kein Setup-Zustand behauptet',{exact:true}).waitFor();
   if(!await page.locator('.setup-conditions li').count())throw Error('observable conditions missing');
+  // Strategy Match reads Quant V2 evidence only, counts conditions and
+  // claims no historical result.
+  await page.getByRole('heading',{name:'Zu welchem Anlagestil passt dieser Titel?',exact:true}).waitFor();
+  if(await page.locator('.match-card').count()!==8)throw Error('strategy profiles incomplete');
+  await page.getByText(/Historische Evidenz: nicht verfügbar/).first().waitFor();
+  if(await page.getByText(/Quant V1/).count())throw Error('Quant V1 must not appear in a Quant V2 match');
   await page.getByRole('heading',{name:'Worauf diese Analyse beruht',exact:true}).waitFor();
   // A bank keeps its closed industry factors instead of inventing them.
   await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('JPM');await page.locator('main footer').waitFor();
@@ -76,6 +82,22 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByText('Quant bedeutet: Aktien werden nach festen Daten und klaren Regeln analysiert — statt nach Bauchgefühl.',{exact:true}).waitFor();
   if(await page.locator('.explain-factor').count()!==7)throw Error('beginner factor explanation incomplete');
   await page.getByText('Keine Kursprognose und kein Kursziel.',{exact:true}).waitFor();
+ }
+ if(view==='screener'){
+  // The two methodologies must be separately selectable, and switching
+  // must not carry rules across: a rule means something else over there.
+  const methodology=page.getByRole('combobox',{name:'Methodik',exact:true});
+  await methodology.waitFor();
+  if(await methodology.locator('option').count()!==2)throw Error('screener methodologies missing');
+  if(!await page.locator('a.row').count())throw Error('legacy screen returned nothing');
+  await methodology.selectOption('quantV2Evidence');
+  await page.getByRole('heading',{name:'Methodik gewechselt',exact:true}).waitFor();
+  const fieldNames=await page.locator('.rule select').first().locator('option').allTextContents();
+  if(fieldNames.some(name=>!name.startsWith('Quant V2')))throw Error('legacy field offered under the Quant V2 methodology');
+  await page.getByRole('button',{name:'Anwenden',exact:true}).click();
+  await page.getByText(/Quant V2 · Factor Evidence · kein Gesamtmarkt-Ranking/).waitFor();
+  if(!await page.locator('a.row').count())throw Error('Quant V2 screen returned nothing');
+  await page.goto(origin+'/vu2/?view=screener');await page.locator('main footer').waitFor();
  }
  if(view==='strategies'){await page.getByText(/6\.875 kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung/).waitFor();const query=await page.evaluate(()=>VUScreenerWorkspace.build([{field:'momentum6m',operator:'gte',value:10,scale:'raw'},{field:'revenueGrowth',operator:'gte',value:20,scale:'raw'}]));await page.goto(origin+'/vu2/?view=strategies&query='+encodeURIComponent(JSON.stringify(query)));await page.locator('main footer').waitFor();if(await page.locator('.strategy-rules p').count()!==2)throw Error('strategy rules lost');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 1 gespeichert',exact:true}).waitFor();await page.locator('#strategy-slippage').fill('10');await page.locator('#strategy-reason').fill('Konservativere Ausführung');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 2 gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('#strategy-slippage').inputValue()!=='10')throw Error('strategy version not restored');await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Aktuelle Kriterien-Auswahl',exact:true}).waitFor();if(await page.locator('a.row').count()!==1)throw Error('strategy filter mismatch');await page.route('**/quant/data/market/factors/factors-FULL_UNIVERSE.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Auswahl noch nicht auswertbar',exact:true}).waitFor();if(await page.locator('a.row').count())throw Error('unavailable strategy source rendered as selection');await page.unroute('**/quant/data/market/factors/factors-FULL_UNIVERSE.json');await page.reload();await page.locator('main footer').waitFor();}
  if(view==='portfolio'){await page.getByRole('heading',{name:'Noch keine Positionen',exact:true}).waitFor();await page.getByRole('textbox',{name:'Position Ticker'}).fill('NVDA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('10');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.getByRole('heading',{name:'Bestände gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.holding').count()!==1)throw Error('holdings not restored');await page.getByRole('textbox',{name:'Position Ticker'}).fill('TSLA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('1');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.locator('.portfolio-total .quote').getByText('Nicht verfügbar',{exact:true}).waitFor();await page.getByRole('button',{name:'TSLA entfernen',exact:true}).click();await page.getByRole('button',{name:'Bearbeiten',exact:true}).click();await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('12');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();await page.locator('.portfolio-total .quote').getByText((12*nvda.fundamentals.price).toLocaleString('de-DE',{style:'currency',currency:'USD',maximumFractionDigits:2}),{exact:true}).waitFor();}
