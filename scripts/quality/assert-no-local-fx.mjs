@@ -51,72 +51,16 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  SCAN_DIRS, EXEMPT, EXTENSIONS,
+  FX_MATH, FX_SUSPECT, CURRENCY_CONTEXT, HARDCODED_CURRENCY,
+  codeLines
+} from "./currency-debt-patterns.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const BASELINE = join(root, "quant", "config", "currency-formatting-baseline.json");
 const args = new Set(process.argv.slice(2));
 const UPDATE = args.has("--update-baseline");
-
-/* Produktcode - alles, was eine Oberflaeche beliefert. Der Core selbst
-   ist ausgenommen: dort SOLL FX-Arithmetik stehen. */
-const SCAN_DIRS = [
-  "discover", "discover-v2", "vu2", "quant/ui", "quant/api", "quant/stock",
-  "quant/screener", "quant/markt", "quant/radar", "quant/ranking", "quant/watchlist",
-  "dashboard", "reports", "magazin", "morning", "etf", "hedgefonds", "academy", "macro"
-];
-
-const EXEMPT = [
-  "quant/engines/fx/",
-  "quant/tests/",
-  "scripts/",
-  "node_modules/",
-  "/data/",
-  "/fixtures/"
-];
-
-const EXTENSIONS = [".js", ".mjs", ".html"];
-
-/* --- Befundart 1: FX-Arithmetik ---------------------------------------- */
-const FX_MATH = [
-  { id: "namedConverter",
-    re: /\b(usd_?to_?eur|eur_?to_?usd|usdToEur|eurToUsd|toEuro?\s*\(|convertToEur|umrechnenInEuro)\b/i,
-    why: "Eine benannte Umrechnungsfunktion ausserhalb des Core. Der Vertrag ist convertMoney(value, from, to, when, context)." },
-
-  { id: "localRateVariable",
-    re: /\b(exchangeRate|wechselkurs|fxRate|eurRate|usdRate|kurs_?eur_?usd)\s*[=:]/i,
-    why: "Ein lokal gehaltener Wechselkurs. Der Stand gehoert in den FX-Store, damit es genau einen gibt." },
-
-];
-
-/* --- Befundart 2: verdaechtige Konstanten (gezaehlt, nicht abgebrochen) - */
-const FX_SUSPECT = [
-  { id: "rateLiteralMultiplication",
-    /* Eine Multiplikation mit einer Zahl in der Groessenordnung eines
-       Wechselkurses - ABER nur, wenn auf derselben Zeile auch von
-       Waehrung die Rede ist.
-       
-       Die Zahl allein reicht nicht. Der erste Entwurf dieser Regel
-       meldete dashboard/app.js:24, wo `close * 1.015` eine
-       Szenariogrenze von anderthalb Prozent ist und kein Wechselkurs.
-       Ein Guard, der zwei Fehlalarme je Lauf erzeugt, wird nach dem
-       dritten Lauf mit --no-verify uebergangen und schuetzt dann gar
-       nichts mehr. Deshalb die Zusatzbedingung: eine Zahl wird erst zum
-       Befund, wenn ihr Umfeld sie zu einem Wechselkurs macht. */
-    re: /[*/]\s*(0\.(8|9)\d{1,}|1\.[0-2]\d{2,})\b/,
-    requiresCurrencyContext: true,
-    why: "Multiplikation mit einer Konstanten in der Groessenordnung eines Wechselkurses, auf einer Zeile mit Waehrungsbezug. Wenn es ein Kurs ist, gehoert er in den FX-Store." }
-];
-
-/* Woran eine Zeile als waehrungsbezogen erkannt wird. */
-const CURRENCY_CONTEXT = /\b(eur|usd|chf|gbp|jpy|currency|waehrung|währung|wechselkurs|forex|\bfx\b)\b|[€$£¥]/i;
-
-/* --- Befundart 3: fest verdrahtete Waehrungssymbole -------------------- */
-const HARDCODED_CURRENCY = [
-  { id: "trailingDollar",  re: /["'`]\s*\$["'`]|\+\s*["'`]\s\$["'`]/ },
-  { id: "germanScaleDollar", re: /(Mrd|Mio|Bio|Tsd)\.?\s*\$/ },
-  { id: "dollarPrefixTemplate", re: /["'`]\$\$?\{/ },
-  { id: "currencyEquality", re: /===\s*["'`]USD["'`]\s*\?|unit\s*===\s*["'`]USD["'`]/ }
-];
 
 function walk(dir, out = []) {
   let entries;
@@ -149,31 +93,29 @@ for (const file of files) {
   if (isExempt(rel)) continue;
   let text;
   try { text = readFileSync(file, "utf8"); } catch { continue; }
-  const lines = text.split("\n");
 
-  lines.forEach((line, i) => {
-    /* Kommentarzeilen sind kein Code. Ein Kommentar, der erklaert, warum
-       hier NICHT umgerechnet wird, darf den Guard nicht ausloesen. */
-    const trimmed = line.trim();
-    if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) return;
-
+  /* Kommentare sind kein Code - auch nicht ihre Fortsetzungszeilen.
+     codeLines() fuehrt den Blockzustand mit; die Fassung ohne ihn hat
+     die Schlusszeile eines erklaerenden Kommentars als Waehrungsschuld
+     gezaehlt. */
+  for (const { line, text: code } of codeLines(text)) {
     for (const rule of FX_MATH) {
-      if (rule.re.test(line)) {
-        violations.push({ file: rel, line: i + 1, rule: rule.id, why: rule.why, text: trimmed.slice(0, 160) });
+      if (rule.re.test(code)) {
+        violations.push({ file: rel, line, rule: rule.id, why: rule.why, text: code.slice(0, 160) });
       }
     }
     for (const rule of FX_SUSPECT) {
-      if (!rule.re.test(line)) continue;
-      if (rule.requiresCurrencyContext && !CURRENCY_CONTEXT.test(line)) continue;
-      suspects.push({ file: rel, line: i + 1, rule: rule.id, why: rule.why, text: trimmed.slice(0, 160) });
+      if (!rule.re.test(code)) continue;
+      if (rule.requiresCurrencyContext && !CURRENCY_CONTEXT.test(code)) continue;
+      suspects.push({ file: rel, line, rule: rule.id, why: rule.why, text: code.slice(0, 160) });
     }
     for (const rule of HARDCODED_CURRENCY) {
-      if (rule.re.test(line)) {
-        formatting.push({ file: rel, line: i + 1, rule: rule.id, text: trimmed.slice(0, 160) });
+      if (rule.re.test(code)) {
+        formatting.push({ file: rel, line, rule: rule.id, text: code.slice(0, 160) });
         break;
       }
     }
-  });
+  }
 }
 
 const byFile = {};

@@ -77,35 +77,86 @@ sie nirgends ab. Ein Datensatz ohne Waehrungsangabe wird **nicht** umgerechnet.
 
 ---
 
-## 4. Der Zustand der Tiingo-FX-Faehigkeiten: UNBEKANNT
+## 4. Die Tiingo-FX-Faehigkeiten: GEMESSEN
 
-Der Owner geht davon aus, dass der bestehende Vertrag FX umfasst. **Das wurde
-nicht bestaetigt und nicht widerlegt.** In dieser Session lag kein
-`TIINGO_API_KEY` vor; es wurde kein Endpunkt befragt.
+Der Owner-Entscheid O-1 verlangt Messung statt Annahme. Gemessen wurde in
+GitHub Actions (`currency-fx-verify.yml`) mit dem bestehenden
+Repository-Secret; der Schluessel steht im Authorization-Header, nie in
+einer URL, und drei Stufen halten ihn aus Protokoll, Bericht und
+Repository heraus.
 
-Stand in `quant/engines/fx/fx-capability.js` und
-`quant/data/market/capabilities/tiingo-fx-probe.json`:
+`TIINGO_FX_CAPABILITIES = MEASURED` (Lauf 35697488444, 20 Anfragen)
 
-| Faehigkeit | Zustand |
-|---|---|
-| `fxCurrent` | `null` — ungeprueft |
-| `fxDaily` | `null` — ungeprueft |
-| `fxHistoricalDaily` | `null` — ungeprueft |
-| `fxIntraday` | `null` — ungeprueft |
-| `fxRealtime` | `null` — ungeprueft |
-| `fxWebsocket` | `null` — ungeprueft |
-| `fxCrossPairs` | `null` — ungeprueft |
-| `fxBulkQuotes` | `null` — ungeprueft |
+| Faehigkeit | Ergebnis | Beleg |
+|---|---|---|
+| `fxCurrent` | **ja** | Quote 1 Sekunde alt |
+| `fxDaily` | **ja** | 39 Tageszeilen, aktuell bis heute |
+| `fxHistoricalDaily` | **ja** | zurueck bis **2020-02-29** |
+| `fxIntraday` | **ja** | 79 Stundenbars |
+| `fxRealtime` | **ja** | Zeitstempel 1 s, innerhalb der 120-s-Toleranz |
+| `fxCrossPairs` | **nein** | CNY/EUR in keiner Schreibweise gefuehrt |
+| `fxBulkQuotes` | ungeprueft | 2 Symbole angefragt, 1 zurueck — nicht unterscheidbar |
+| `fxWebsocket` | nicht versucht | gehoert in einen eigenen Lauf |
 
-Ein bestehender Vertrag ist keine Messung. `scripts/market/probe-tiingo-fx.mjs`
-hebt diese Werte, sobald ein Schluessel vorliegt — und zwar aus dem, was
-geantwortet hat, nicht aus dem, was auf einer Tarifseite steht.
+**O-2 ist damit beantwortet:** `secondSource = NO`. Der bestehende Zugang
+deckt den Bedarf. Eine zweite Quelle waere Komfort, kein Erfordernis.
 
-**Folge fuer das Produkt heute:** der Layer liefert `UNAVAILABLE`, die
-Produkte zeigen die native Waehrung. Nicht 1:1 umgerechnet, nicht mit
-Eurozeichen an einer Dollarzahl.
+### Drei Dinge, die erst der Lauf sichtbar gemacht hat
 
----
+**1. Das Symbol war eine Annahme.** Der erste Lauf meldete sieben von acht
+Faehigkeiten als ungeprueft — bei funktionierendem Zugang. Im Bericht stand
+der Grund:
+
+```
+eurusd   HTTP 200, 9 Zeilen, juengste 2026-09-22
+usdeur   HTTP 200, 0 Zeilen
+```
+
+Tiingo folgt der Marktkonvention: EUR/USD wird mit EUR als Basis notiert,
+die Gegenrichtung existiert nicht als eigene Reihe. Alle Sonden liefen auf
+`usdeur`, weil USD/EUR der groesste Bedarf ist. Die Sonden waren richtig,
+das Symbol war geraten.
+
+`resolveTicker()` befragt jetzt beide Schreibweisen und nimmt die
+antwortende — **zuerst klaeren, womit gemessen wird, dann messen**. Die
+Gegenrichtung entsteht in `fx-rates.js` durch Inversion, eine exakte
+Identitaet.
+
+**2. HTTP 400 ist eine Fenstergrenze, kein fehlendes Paar.** Der erste
+Import verlor alle 39 Paare an HTTP 400 — auch `eurusd`, das Sekunden
+zuvor gelesen worden war. Der Unterschied war `startDate=2015-01-01`.
+
+Die Sonde bisektiert jetzt zwischen funktionierendem und abgelehntem
+Fenster:
+
+| Fenster ab | HTTP | Zeilen |
+|---|---|---|
+| 2019-03-24 | 400 | – |
+| 2019-11-07 | 400 | – |
+| **2020-02-29** | **200** | **9** |
+| 2020-06-22 | 200 | 10 |
+
+> **Die FX-Historie des Anbieters beginnt am 2020-02-29.** Ein
+> EUR-Chart ueber 10 Jahre oder MAX kann nicht weiter zurueckreichen.
+> Das ist eine Produktgrenze, keine Einstellung — siehe **O-7**.
+
+**3. Ein Tageskurs lizenziert kein „Realtime EUR".** `realtimeClaimAllowed`
+haing nur an `CURRENT`. Ein Tagesschluss ist innerhalb seiner
+Vier-Tage-Toleranz CURRENT — aber ueber einem damit gerechneten Wert darf
+„Realtime EUR" nicht stehen. Die Zusage verlangt jetzt zusaetzlich eine
+Frequenz, die sie tragen kann.
+
+### Verfuegbar ist nicht gefahren
+
+Mit belegtem `fxRealtime` meldete der Resolver prompt Stufe C. Als
+Verfuegbarkeitsaussage richtig, als Betriebsaussage falsch — O-5 sagt
+ausdruecklich „keine FX-Anfrage pro Stock Tick".
+
+```
+available:       "C"     was der Zugang hergibt
+recommended:     "A"     was gebaut ist und laeuft
+upgradePossible: true    eine Owner-Entscheidung, kein Automatismus
+```
 
 ## 5. Die Architektur
 
@@ -303,87 +354,200 @@ Wert anzeigt.
 
 ---
 
-## 12. Regression Guard
+## 12. Waehrungsabdeckung: 94,9 Prozent belegt (O-4)
 
-`scripts/quality/assert-no-local-fx.mjs`, drei Befundarten, zwei Haertegrade:
+Der erste Nachweis zaehlte 854 Datensaetze ohne Waehrungsangabe und liess
+sie stehen. O-4 verlangt Rekonstruktion mit Provenance — oder UNKNOWN.
 
-1. **FX-Arithmetik ausserhalb von `quant/engines/fx/`** → Abbruch.
-   `usdToEur()`, `exchangeRate = …`, `wechselkurs = …`.
-   Negativ geprueft: eine eingefuegte Verletzung wird gefunden, ihre
-   Entfernung macht den Lauf wieder gruen.
-2. **Verdaechtige Konstanten** → gezaehlt, Grundlinie 2.
-   Bewusst kein Abbruch: `close * 1.015` in `dashboard/app.js:24` ist eine
-   Szenariogrenze von anderthalb Prozent, formatiert mit `usd()`. Jedes
-   Merkmal einer FX-Umrechnung, und trotzdem keine. Ein Guard mit zwei
-   Fehlalarmen je Lauf wird uebergangen und schuetzt dann nichts mehr.
-3. **Fest verdrahtete Waehrungssymbole** → gezaehlt, Grundlinie 68 in 20
-   Dateien. Darf sinken, nicht steigen.
+| Zustand | Anzahl | Herleitung |
+|---|---|---|
+| `KNOWN_NATIVE_CURRENCY` | 4.150 | `units.revenue` |
+| `DERIVED_NATIVE_CURRENCY` | 661 | andere monetaere Spalte, alle einheitlich (660) · kanonische XBRL-Facts (1) |
+| `UNKNOWN_NATIVE_CURRENCY` | 258 | kein Beleg (182) · uneinheitlicher Abschluss (76) |
+| **aufgeloest** | **94,9 %** | |
+
+**Nicht in der Kaskade:** Sitz, Boerse, Land — und der verfuehrerischste
+Fehlgriff, die **Handelswaehrung aus der Kursreihe**. Sie liegt fuer jeden
+Titel vor und beantwortet eine andere Frage: SAP notiert als ADR in USD
+und bilanziert in EUR. Wer sie einsetzt, laesst SAPs Umsatz um den
+Wechselkurs falsch stehen, ohne dass etwas nach einem Fehler aussieht.
+
+76 Unternehmen fuehren **zwei monetaere Waehrungen im selben Abschluss** —
+CRH (EUR und USD), YPF (ARS und USD), Harmony Gold (USD und ZAR),
+Ryanair (EUR und USD). Sie werden als Befund gemeldet, nicht per Mehrheit
+aufgeloest: jeder Wert rechnet mit seiner eigenen Waehrung.
 
 ---
 
-## 13. Was NICHT gemacht wurde
+## 13. Paarbedarf: abgeleitet, nicht gepflegt (O-3)
+
+`build-fx-pair-requirements.mjs` liest den Bestand und leitet **62 Paare
+aus 32 Berichtswaehrungen** ab. Keine Zeile des Skripts nennt eine
+Waehrung beim Namen. Ein neuer Titel mit neuer Berichtswaehrung erzeugt
+beim naechsten Lauf ein neues Paar, ohne dass jemand etwas eintraegt.
+
+| Paar | Titel | Anteil | Prioritaet |
+|---|---|---|---|
+| USD/EUR | 10.858 | 92,4 % | REQUIRED |
+| CNY/EUR · CNY/USD | je 124 | 1,1 % | REQUIRED |
+| CAD, BRL, GBP, HKD, SGD, JPY, AUD … | | | LONG_TAIL |
+
+Der Import holt jedes kanonische Paar **genau einmal** — die
+Gegenrichtung entsteht durch Inversion, nicht durch eine zweite Anfrage.
+Das halbiert das Kontingent, ohne eine Zahl zu verlieren.
+
+---
+
+## 14. Regression Guard und Debt Register (O-6)
+
+### Der Guard
+
+`scripts/quality/assert-no-local-fx.mjs`, drei Befundarten, zwei
+Haertegrade:
+
+1. **FX-Arithmetik ausserhalb von `quant/engines/fx/`** → Abbruch.
+   Negativ geprueft: eine eingefuegte Verletzung wird gefunden, ihre
+   Entfernung macht den Lauf wieder gruen.
+2. **Verdaechtige Konstanten** → gezaehlt, Grundlinie 2. Kein Abbruch:
+   `close * 1.015` in `dashboard/app.js:24` ist eine Szenariogrenze,
+   formatiert mit `usd()`. Jedes Merkmal einer FX-Umrechnung, und
+   trotzdem keine.
+3. **Fest verdrahtete Waehrungsdarstellung** → gezaehlt, Grundlinie 30.
+
+### Die 68 waren nie 68
+
+Guard und Register hatten je eine eigene Kopie der Muster — derselbe
+Fehler, den `price-semantics.js` fuer die Bereinigungsstufen behoben hat.
+Beim Zusammenlegen in `currency-debt-patterns.mjs` fielen zwei
+Fehlerquellen auf:
+
+* Die Regel `/["'`]\$\$?\{/` traf **jedes Template-Literal**, weil ein
+  Backtick gefolgt von `${` dazu passt. `vu2/experience.js:83` ist ein
+  Diagrammtitel, keine Waehrungsschuld.
+* Ohne Blockzustand zaehlte `discover/ui/detail.js:730` als Code. Die
+  Zeile lautet `303 Mrd. $ schon. */` — das Ende eines Kommentars, der
+  erklaert, warum dort gerundet wird.
+
+**Von 68 gemeldeten Stellen waren 38 Fehlalarme.** Es sind 30.
+
+### Das Register
+
+| Klasse | Anzahl | Regel |
+|---|---|---|
+| **A** `MONETARY_DISPLAY` | 25 | muss den Currency Contract konsumieren |
+| **B** `PERCENTAGE_OR_RATIO` | 4 | niemals FX-Konvertierung |
+| `UNCLASSIFIED` | 1 | von Hand ansehen |
+
+Migrationsreihenfolge, je Datei gebuendelt: `detail-fundamentals.js` (5),
+`hedgefonds/index.html` (5), `surfaces.js` (4), `daten.js` (2),
+`detail.js` (2), dann Einzelstellen.
+
+Die Migration beginnt **nach** dem Produktionsnachweis — so steht es in
+O-6.
+
+---
+
+## 15. Was NICHT gemacht wurde
 
 | | Grund |
 |---|---|
 | Discover 1.0 / 2.1 redesignt | §28, §48 — Discover 2.1 ist ein paralleler Workstream |
-| Eine zweite FX-Datenquelle angebunden | §6, §38 — braucht Owner-Entscheidung, nicht Bequemlichkeit |
-| Eine kostenpflichtige Tiingo-Funktion aktiviert | §5 — nichts am Tarif geaendert |
+| Eine zweite FX-Datenquelle angebunden | O-2 — der bestehende Zugang deckt den Bedarf |
+| Eine kostenpflichtige Tiingo-Funktion aktiviert | nichts am Tarif geaendert, `PAID_SERVICES_ENABLED = 0` |
 | Quant-Faktoren auf EUR umgestellt | §25, §50 — EUR ist keine neue Quant-Methodik |
-| Kanonische USD-Werte ueberschrieben | §3 — der Layer ist additiv |
+| Kanonische Werte ueberschrieben | §3 — der Layer ist additiv |
 | Realtime-Transport angefasst | §11, §37 — der bestehende Pfad bleibt kanonisch |
-| FX-Historie je Aktie gespeichert | §8 — Paar-Zeitreihen zentral, nicht dupliziert |
+| FX-Reihen ins Repository committet | Redistribution ist `LEGAL_REVIEW_REQUIRED`; sie bleiben in der Arbeitsablage |
+| Die 30 Waehrungsstellen migriert | O-6 — erst der Nachweis, dann die Migration |
 
 ---
 
-## 14. Nachweisstand
+## 16. Nachweisstand
 
 `node scripts/quality/verify-currency-layer.mjs`
 
-**Befund: `PASS_RULES_ONLY`**
+**`FX_DATA_PROOF = PASS`** — Regeln belegt UND mit qualifizierten
+FX-Kursen gerechnet (Lauf 35697488444).
 
-Belegt an **echten Daten**: Kursreihen (Tiingo, AAPL/NVDA/MSFT, 1990–2026),
-Fundamentals (SEC, echte Geschaeftsjahre, echte Wochenendstichtage),
-Berichtswaehrungen (5.069 Datensaetze).
+### Kurse: neun Titel, punktweise nachgerechnet
 
-**Nicht belegt:** die Wechselkurse selbst. Solange
-`quant/data/market/fx/` leer ist, rechnet der Nachweis mit der Testreihe
-(`source: "fixture"`, sichtbar bis in den Money-Vertrag). Der Befund heisst
-deshalb `PASS_RULES_ONLY` und nicht `PASS` — ein gruener Haken, der zwei
-verschiedene Dinge bedeuten kann, ist kein gruener Haken.
+Fuer jeden Stuetzpunkt (heute, 1 Monat, 1 Jahr, 5 Jahre) wird
+`nativePrice × FX(t)` von Hand gegengerechnet, und jeder FX-Stand muss
+`<= Kurstag` liegen. Die Zerlegung
 
-`RT1` (Realtime am offenen Markt) steht auf `NOT_PROVEN`: kein laufender
-Stream, keine gemessene offene US-Sitzung. Der Pfad ist gegen den Store
-geprueft (I10–I12), der Nachweis am offenen Markt steht aus.
+```
+(1 + r_EUR) = (1 + r_USD) × (FX_Ende / FX_Anfang)
+```
 
-### Testmatrix: 33 Tests, alle gruen
+geht in jedem Lauf exakt auf. Ginge sie nicht auf, waere die Reihe
+irgendwo nicht punktweise umgerechnet worden.
 
-M1–M12 sind die zwoelf Faelle aus §59; I1–I16 die Invarianten
-(Originaldaten unveraendert, kein Look-Ahead, Margen invariant, ehrlicher
-Rueckfall, Vertrag und Engine deckungsgleich).
+### Fundamentals: fuenf Kennzahlen ueber sechs Berichtswaehrungen
+
+| Titel | Waehrung | Revenue (nativ) | → EUR | Methode |
+|---|---|---|---|---|
+| AAPL | USD | 416,2 Mrd. | 352,0 Mrd. € | PERIOD_AVERAGE, 312 Tage |
+| MSFT | USD | 331,8 Mrd. | 284,5 Mrd. € | PERIOD_AVERAGE, 313 Tage |
+| **SAP** | **EUR** | 36,80 Mrd. | **36,80 Mrd. €** | **IDENTITY** — Bit fuer Bit |
+| ASML | EUR | 32,67 Mrd. | 32,67 Mrd. € | IDENTITY |
+| **TM** | **JPY** | 48.036,7 Mrd. | 293,7 Mrd. € | PERIOD_AVERAGE, FY Apr–Mrz |
+| **BABA** | **CNY** | 1.023,7 Mrd. | 124,3 Mrd. € | PERIOD_AVERAGE, FY Apr–Mrz |
+| **GSK** | **GBP** | 32,67 Mrd. | 38,14 Mrd. € | PERIOD_AVERAGE |
+
+SAP ist der Fall, den eine naiv gebaute Engine falsch macht: der Umsatz
+ist bereits EUR und darf **nicht** umgerechnet werden (Fast Path), der
+Kurs ist USD und **muss** umgerechnet werden. Wer die Waehrung je
+Unternehmen statt je Wert fuehrt, bekommt genau hier zwei Zahlen, von
+denen eine falsch ist.
+
+Stichtagsgroessen belegt an echten Wochenend-Geschaeftsjahresenden:
+AAPL 2025-09-27 (Sa) → FX vom 26.09., NVDA 2026-01-25 (So) → FX vom
+23.01., MSFT 2026-06-30 (Di) → `DAILY_AT_DATE`.
+
+### Was der Nachweis ausdruecklich NICHT bestanden meldet
+
+| Pruefung | Zustand | Grund |
+|---|---|---|
+| `RT1` Realtime am offenen Markt | **NOT_PROVEN** | kein laufender Stream, keine gemessene offene US-Sitzung. §58: nicht kuenstlich als PASS melden. |
+| `FD-NVO` (DKK) | BLOCKED → behoben | DKK fiel bei `--max-pairs=40` unter den Schnitt; jetzt 80 |
+| TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` | die Periode 2019-04 bis 2020-03 liegt fast vollstaendig **vor** dem Beginn der FX-Historie (2020-02-29). Korrekt verweigert statt genaehert. |
+
+### Tests
+
+**43 Tests, alle gruen.** M1–M12 sind die zwoelf Faelle aus §59, I1–I16
+die Invarianten, O5-1 bis O5-6 die Realtime-Anforderungen aus O-5
+(Devisenkalender 24/5, Wochenende vs. Luecke, Anbieterausfall in drei
+Stufen, 500 Ticks auf einen FX-Abruf, verfuegbare vs. gefahrene Stufe).
+
+Die fuenf roten Tests der Gesamtsuite bestehen **unveraendert auch ohne
+diesen Zweig** — mit `git stash` gegengeprueft. Sie gehoeren nicht zu
+diesem Workstream und werden hier nicht repariert.
 
 ---
 
-## 15. Owner-Entscheidungen
+## 17. Merge Gate
+
+| Kriterium | Zustand |
+|---|---|
+| `TIINGO_FX_CAPABILITIES` | **MEASURED** |
+| `FX_DATA_PROOF` | **PASS** |
+| `CURRENCY_CONTRACT` | **PASS** (43 Tests) |
+| `REGRESSION_GUARD` | **PASS** |
+| `NEW_REGRESSIONS` | **0** |
+| `PAID_SERVICES_ENABLED` | **0** |
+| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** |
+
+---
+
+## 18. Owner-Entscheidungen
+
+Die urspruenglichen O-1 bis O-6 sind abgearbeitet. Offen bleibt:
 
 | # | Frage | Warum sie offen ist |
 |---|---|---|
-| **O-1** | Tiingo-FX freischalten und `probe-tiingo-fx.mjs` mit Schluessel laufen lassen? | Ohne Messung bleibt jede FX-Faehigkeit `null`, und der Layer liefert `UNAVAILABLE`. Das ist der einzige Schritt, der `PASS_RULES_ONLY` zu `PASS` macht. |
-| **O-2** | Wenn Tiingo FX nicht abdeckt: offizielle Referenzquelle (z. B. EZB-Referenzkurse)? | §6/§38 verbieten eine zweite Quelle aus Komfort. Eine belegte Luecke waere ein anderer Fall — die Entscheidung bleibt beim Owner. |
-| **O-3** | Welche der 28 Berichtswaehrungen sollen FX-Paare bekommen? | 400 Unternehmen berichten nicht in USD. Heute liegt fuer **keine** Fremdwaehrung ein Paar vor; ihre monetaeren Werte bleiben in der Originalwaehrung. CNY, CAD, EUR, GBP, BRL decken den Grossteil. |
-| **O-4** | 854 SEC-Datensaetze ohne Waehrungsangabe — nachziehen oder als „nicht umrechenbar" belassen? | Sie werden heute korrekt nicht umgerechnet. Ob die Angabe nachgezogen werden soll, ist eine Frage an die SEC-Pipeline, nicht an den Currency Layer. |
-| **O-5** | Realtime-Stufe A beibehalten oder B/C pruefen? | A ist die Vorgabe und kostet einen FX-Abruf je Minute. B und C brauchen einen gemessenen Consumer-Nutzen. |
-| **O-6** | Die 68 fest verdrahteten Waehrungsstellen abbauen — in welchem Workstream? | Discover 2.1 laeuft parallel (§48). Der Guard haelt den Stand; der Abbau gehoert in den Workstream, der die Oberflaeche ohnehin anfasst. |
-
----
-
-## 16. Naechste Schritte
-
-**Phase A (fertig)** FX Capability + Store
-**Phase B (fertig)** Currency Engine
-**Phase C (fertig)** Product Contracts
-**Phase D (teilweise)** Proof an Golden Titles — Regeln belegt, Kurse offen (O-1)
-
-Danach, nicht vorher:
-* Anbindung Discover 1.0 / 2.1 (nur Contract konsumieren, keine eigene Logik)
-* Screener: `canonical calculation value` vs. `display value` trennen
-* Waehrungseffekt in der Oberflaeche (Vertrag traegt ihn bereits)
+| **O-7** | Die FX-Historie beginnt **2020-02-29**. Wie sollen 10J- und MAX-Charts in EUR damit umgehen? | Heute verweigert der Layer korrekt (`beforeSeriesStart`), statt zu naehern. Drei Wege: EUR-Chart auf den belegten Zeitraum begrenzen, den Nutzer in USD verweisen, oder eine Referenzquelle fuer die Zeit davor — Letzteres waere eine zweite Quelle und braucht eine Entscheidung. |
+| **O-8** | Realtime-Nachweis bei offener US-Sitzung nachholen | Der einzige Punkt, der `MARKET_CLOSED_NOT_PROVEN` zu `PASS` macht. Braucht einen Lauf zwischen 15:30 und 22:00 MEZ. |
+| **O-9** | Stufe C ist verfuegbar. Bleibt es bei A? | Gemessen: 500 Ticks ueber 50 Titel auf einen FX-Abruf. Ein Wechsel braucht einen belegten Consumer-Nutzen, nicht die blosse Verfuegbarkeit. |
+| **O-10** | 258 Datensaetze ohne belegbare Waehrung, davon 76 mit uneinheitlichem Abschluss | Sie werden heute korrekt nicht umgerechnet. Ob die Angabe nachgezogen wird, ist eine Frage an die SEC-Pipeline. |
+| **O-11** | Redistribution der FX-Reihen | Sie liegen in der Arbeitsablage und werden nicht ausgeliefert. Eine oeffentliche EUR-Anzeige braucht einen Eintrag in `display-policy.js` mit Datum und Grundlage. |
+| **O-12** | Migration der 25 Klasse-A-Stellen | Der Nachweis steht; nach O-6 darf die Migration jetzt beginnen. Discover 2.1 laeuft parallel (§48) — der Abbau gehoert in den Workstream, der die Oberflaeche ohnehin anfasst. |

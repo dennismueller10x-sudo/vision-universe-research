@@ -43,6 +43,11 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  SCAN_DIRS, EXEMPT, EXTENSIONS, HARDCODED_CURRENCY,
+  RATIO_MARKERS, MONETARY_MARKERS, NUMERIC_FORMATTING, TEST_MARKERS, INTENTIONAL_MARKERS,
+  codeLines
+} from "./currency-debt-patterns.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = process.argv.slice(2);
@@ -54,51 +59,9 @@ const OUT = PUBLISH
   ? resolve(ROOT, "quant", "data", "market", "fx", "currency-debt-register.json")
   : resolve(ROOT, ".market-cache", "currency", "currency-debt-register.json");
 
-/* Dieselben Verzeichnisse und Muster wie im Regression Guard - sonst
-   zaehlt das Register etwas anderes als der Guard, und die beiden Zahlen
-   driften auseinander, ohne dass es jemandem auffaellt. */
-const SCAN_DIRS = [
-  "discover", "discover-v2", "vu2", "quant/ui", "quant/api", "quant/stock",
-  "quant/screener", "quant/markt", "quant/radar", "quant/ranking", "quant/watchlist",
-  "dashboard", "reports", "magazin", "morning", "etf", "hedgefonds", "academy", "macro"
-];
-const EXEMPT = ["quant/engines/fx/", "quant/tests/", "scripts/", "node_modules/", "/data/", "/fixtures/"];
-const EXTENSIONS = [".js", ".mjs", ".html"];
-
-const HARDCODED_CURRENCY = [
-  { id: "trailingDollar",       re: /["'`]\s*\$["'`]|\+\s*["'`]\s\$["'`]/ },
-  { id: "germanScaleDollar",    re: /(Mrd|Mio|Bio|Tsd)\.?\s*\$/ },
-  { id: "dollarPrefixTemplate", re: /["'`]\$\$?\{/ },
-  { id: "currencyEquality",     re: /===\s*["'`]USD["'`]\s*\?|unit\s*===\s*["'`]USD["'`]/ }
-];
-
-/* --------------------------------------------------------------------- */
-/* Die Merkmale, aus denen sich eine Klasse ergibt                        */
-/* --------------------------------------------------------------------- */
-
-/* B: die Zeile behandelt eine dimensionslose Groesse. Starkes Merkmal,
-   deshalb zuerst geprueft: eine Prozentzahl mit Dollarzeichen daneben
-   ist fast immer eine Zeile, die beides formatiert - und der
-   Prozentanteil darf auf keinen Fall in die Umrechnung geraten. */
-const RATIO_MARKERS = /\b(pct|percent|prozent|margin|marge|growth|wachstum|ratio|roic|roe|roa|yield|rendite|drawdown|volatil|momentum|score|percentile|perzentil|rank|beta|multiple|kgv)\b/i;
-
-/* A: die Zeile formatiert einen Betrag. */
-const MONETARY_MARKERS = /\b(price|kurs|marketcap|market_cap|marktkapital|boersenwert|revenue|umsatz|income|gewinn|cash|debt|schulden|fcf|cashflow|ebit|ebitda|assets|equity|volume|dollarvolume|eps|dividend|value|betrag|amount)\b/i;
-
-/* D: Testcode. */
-const TEST_MARKERS = /\b(test|spec|fixture|mock|stub|assert|expect|describe\(|it\()\b/i;
-
-/* E: eine ausdrueckliche Aussage ueber die Originalwaehrung. */
-const INTENTIONAL_MARKERS = /\b(nativ|native|original|originalwaehrung|reporting ?currency|berichtswaehrung|quell|source ?currency|as ?reported|handelswaehrung|trading ?currency)\b/i;
-
-/* C: Fliesstext statt Formatierung - eine Zeile, in der das Symbol in
-   einem Satz steht und keine Variable in der Naehe ist. */
-function looksLikeProse(line) {
-  const hasInterpolation = /\$\{|\+\s*[a-zA-Z_$]|toFixed|toLocaleString|format/i.test(line);
-  const wordy = (line.match(/[A-Za-zÄÖÜäöüß]{4,}/g) || []).length >= 6;
-  return !hasInterpolation && wordy;
-}
-
+/* Eine Zeile, die eine Zahl formatiert UND ein Waehrungszeichen anhaengt,
+   ist eine Geldanzeige - unabhaengig davon, ob ein Kennzahlname darin
+   vorkommt. */
 function classify(line, file) {
   const inTestPath = /\/tests?\//.test(file) || /\.test\.|\.spec\./.test(file);
   if (inTestPath || TEST_MARKERS.test(line)) {
@@ -116,12 +79,23 @@ function classify(line, file) {
              action: "Darf bleiben. Semantik im Code dokumentieren, damit sie nicht spaeter als Schuld gelesen wird.",
              confidence: "MEDIUM" };
   }
-  if (MONETARY_MARKERS.test(line)) {
+  /* Der strukturelle Nachweis vor dem namentlichen: die Formatierer in
+     discover/ui/surfaces.js heissen fmt(v, unit) und nennen keine
+     Kennzahl. Sie waren deshalb alle UNCLASSIFIED, obwohl sie die
+     eindeutigsten Faelle im ganzen Register sind. */
+  if (NUMERIC_FORMATTING.test(line)) {
     return { klass: "A", label: "MONETARY_DISPLAY",
              action: "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
              confidence: "HIGH" };
   }
-  if (looksLikeProse(line)) {
+  if (MONETARY_MARKERS.test(line)) {
+    return { klass: "A", label: "MONETARY_DISPLAY",
+             action: "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+             confidence: "MEDIUM" };
+  }
+  const hasInterpolation = /\$\{|\+\s*[a-zA-Z_$]/.test(line);
+  const wordy = (line.match(/[A-Za-zÄÖÜäöüß]{4,}/g) || []).length >= 6;
+  if (!hasInterpolation && wordy) {
     return { klass: "C", label: "STATIC_COPY",
              action: "Pruefen, ob der Text eine dynamische Waehrung braucht. Oft nein.",
              confidence: "MEDIUM" };
@@ -131,7 +105,6 @@ function classify(line, file) {
            confidence: "NONE" };
 }
 
-/* --------------------------------------------------------------------- */
 function walk(dir, out = []) {
   let entries;
   try { entries = readdirSync(dir); } catch { return out; }
@@ -154,18 +127,16 @@ for (const file of SCAN_DIRS.flatMap((d) => walk(join(ROOT, d)))) {
   let text;
   try { text = readFileSync(file, "utf8"); } catch { continue; }
 
-  text.split("\n").forEach((line, i) => {
-    const trimmed = line.trim();
-    if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) return;
-    const rule = HARDCODED_CURRENCY.find((r) => r.re.test(line));
-    if (!rule) return;
-    const c = classify(line, rel);
+  for (const { line, text: code } of codeLines(text)) {
+    const rule = HARDCODED_CURRENCY.find((r) => r.re.test(code));
+    if (!rule) continue;
+    const c = classify(code, rel);
     entries.push({
-      file: rel, line: i + 1, rule: rule.id,
+      file: rel, line, rule: rule.id,
       class: c.klass, label: c.label, action: c.action, confidence: c.confidence,
-      text: trimmed.slice(0, 160)
+      text: code.slice(0, 160)
     });
-  });
+  }
 }
 
 const byClass = {};

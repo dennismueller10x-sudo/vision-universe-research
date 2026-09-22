@@ -185,7 +185,14 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         continue-on-error: true
-        run: node scripts/market/build-fx-history.mjs --max-pairs=40 --start=2015-01-01
+        # Alle abgeleiteten Richtungen, nicht die ersten 40: bei 40 fiel
+        # DKK unter den Schnitt, und Novo Nordisk blieb im Nachweis ohne
+        # FX-Paar. Nach der Kanonisierung (USD/EUR und EUR/USD sind eine
+        # Reihe) bleiben rund 40 Abrufe uebrig.
+        #
+        # Das Startdatum kommt aus der gemessenen Historientiefe; das hier
+        # ist die Obergrenze des Wunsches, nicht die des Anbieters.
+        run: node scripts/market/build-fx-history.mjs --max-pairs=80 --start=2015-01-01
 
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
