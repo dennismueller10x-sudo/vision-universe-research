@@ -2,18 +2,15 @@
   "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-09-21T17:11:18.070Z",
-    "runId": "35630336530",
-    "runNumber": "4",
+    "startedAt": "2026-09-22T13:01:43.940Z",
+    "runId": "35730754370",
+    "runNumber": "30",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
     "blockMaxMs": 20700000,
-    "branch": "main",
-    "endedAt": "2026-09-21T20:03:51.092Z",
-    "reason": "eroeffnungNachBlockEnde",
-    "cycles": 34
+    "branch": "main"
   },
-  "updatedAt": "2026-09-21T20:03:51.093Z",
+  "updatedAt": "2026-09-22T13:36:01.484Z",
   "cycles": [
     {
       "cycle": 1,
@@ -1560,6 +1557,27 @@
       "ok": true,
       "reason": null,
       "snapshotAt": "2026-09-21T20:03:48.363Z"
+    },
+    {
+      "cycle": 1,
+      "runId": "35730754370",
+      "triggerAt": "2026-09-22T13:31:00.115Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "09:31:00",
+      "fetchStartAt": "2026-09-22T13:31:00.116Z",
+      "fetchEndAt": "2026-09-22T13:36:01.482Z",
+      "session": "2026-09-22",
+      "written": 27,
+      "requests": 526,
+      "notPublishable": 499,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-09-22T13:36:01.472Z"
     }
   ]
 }
