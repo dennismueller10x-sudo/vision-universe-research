@@ -264,6 +264,26 @@ pair for 37. The 325 then fall to 58 through period alignment and the positive-i
 check. So `roicTtm` at 58 is not a wiring gap; it is `total_debt` TTM breadth in the SEC
 normalization layer, and that is the next real input gate for Profitability and Value.
 
+The cause is one line of the metric registry. `total_debt` maps to exactly two concepts —
+`us-gaap:DebtLongtermAndShorttermCombinedAmount` and `ifrs-full:Borrowings` — and the first is
+an optional combined disclosure most US filers do not tag. `long_term_debt`, which maps to
+three commonly-used concepts, reaches 3,265 issuers.
+
+**This is an owner decision, not a fix to make in passing.** Falling back to `long_term_debt`
+would be a silent substitution: long-term debt excludes the current portion and short-term
+borrowings, so `total_debt`, `net_debt`, `debt_to_equity` and every factor reading them would
+quietly start meaning something else for 726 issuers — the same shape of change the owner
+rejected for Quant V1. Widening the concept list properly needs to know which tags issuers
+actually use, and that cannot be measured from this checkout: `companyfacts.zip` only exists
+inside the SEC workflow.
+
+So the measurement was built instead of the guess. `python3 scripts/quant/cli.py concept-census`
+counts, per issuer, which mapped and which unmapped debt concepts the product universe tags,
+and writes `quant/data/sec/concept-census.json`. It runs in the SEC workflow off the archive
+already in the runner cache, downloads nothing, is `continue-on-error`, and changes no value,
+no mapping and no metric. The next scheduled SEC run (Monday 07:30 UTC) produces the numbers;
+the mapping decision is then taken against measurement rather than against a plausible guess.
+
 ## OWNER_DECISIONS
 
 - GitHub/main, reviewed release artifacts and Production are the source of truth; chat history is not.

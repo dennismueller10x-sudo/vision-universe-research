@@ -1330,6 +1330,97 @@ def cmd_inspect(args):
     return 0
 
 
+def cmd_concept_census(args):
+    """Measure which XBRL concepts the product universe actually tags.
+
+    WHY THIS EXISTS
+
+    `total_debt` covers 2,645 of 5,068 exported issuers, and that one number
+    holds back `profitability.roicTtm` (58), `profitability.roicMedian3y`
+    (535), `quality.netDebtToAssets` (462) and `value.salesYield` (97) in the
+    Quant 2.0 factor evidence. The registry maps `total_debt` to exactly two
+    concepts, and one of them - DebtLongtermAndShorttermCombinedAmount - is an
+    optional combined disclosure that most US filers simply do not tag.
+
+    The obvious repair is to widen the concept list. The obvious repair is
+    also how a fundamentals layer quietly starts meaning something else, so
+    it is not done by guessing which tags issuers use. This command counts
+    them. It writes a report and changes no published value, no mapping and
+    no metric: what to do with the numbers is a decision, and this only makes
+    sure the decision is taken against measurement.
+
+    Presence is counted per issuer, not per fact - "how many companies could
+    this concept serve", not "how many rows does it have".
+    """
+    import re
+    from quant.sec.consumer import load_product_universe_ciks
+
+    registry = MetricRegistry.load()
+    provider = SECProvider()
+    by_cik, _ = load_product_universe_ciks(Path(args.names))
+    wanted = set(by_cik)
+    if args.limit:
+        wanted = set(sorted(wanted)[:args.limit])
+
+    metrics = [name.strip() for name in args.metrics.split(",") if name.strip()]
+    mapped = {}
+    for name in metrics:
+        metric = registry.get(name)
+        if metric is None:
+            raise SystemExit(f"unknown metric '{name}'")
+        for rule in metric.concepts:
+            mapped.setdefault(rule.qualified, []).append(name)
+
+    pattern = re.compile(args.pattern, re.IGNORECASE)
+    issuers_with_mapped = Counter()
+    issuers_with_concept = Counter()
+    issuers_seen = 0
+
+    source = (provider.iter_bulk_company_facts(ciks=wanted, archive_path=args.archive)
+              if args.bulk or args.archive
+              else ((cik, provider.get_company_facts(cik)) for cik in sorted(wanted)))
+
+    for cik, payload in source:
+        issuers_seen += 1
+        here = set()
+        for taxonomy, concepts in (payload.get("facts") or {}).items():
+            for concept in (concepts or {}):
+                key = f"{taxonomy}:{concept}"
+                if key in mapped:
+                    here.add(("mapped", key))
+                elif pattern.search(concept):
+                    here.add(("candidate", key))
+        for kind, key in here:
+            if kind == "mapped":
+                issuers_with_mapped[key] += 1
+            else:
+                issuers_with_concept[key] += 1
+
+    report = {
+        "schema": "sec-concept-census-1.0.0",
+        "generated_at_utc": _utcnow(),
+        "metrics": metrics,
+        "pattern": args.pattern,
+        "issuers": issuers_seen,
+        "mapped": [{"concept": key, "servesMetrics": mapped[key], "issuers": issuers_with_mapped.get(key, 0)}
+                   for key in sorted(mapped, key=lambda k: -issuers_with_mapped.get(k, 0))],
+        "unmapped": [{"concept": key, "issuers": count}
+                     for key, count in issuers_with_concept.most_common(args.top)],
+        "note": ("Presence per issuer, not per fact. An unmapped concept with high coverage is a "
+                 "candidate, not a decision: adding it changes what an existing published metric "
+                 "means, and that is a methodology change with its own version."),
+    }
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    _write(out, report)
+    print(f"  {issuers_seen} Emittenten gemessen, Bericht: {out}")
+    for row in report["mapped"]:
+        print(f"    mapped    {row['issuers']:>5}  {row['concept']}  -> {', '.join(row['servesMetrics'])}")
+    for row in report["unmapped"][:args.top]:
+        print(f"    candidate {row['issuers']:>5}  {row['concept']}")
+    return 0
+
+
 def cmd_consumer(args):
     """Consumer fundamentals for the product universe from the SEC bulk archive.
 
@@ -1585,6 +1676,20 @@ def build_parser():
     consumer.add_argument("--quarters", type=int, default=consumer_module.DEFAULT_QUARTERS)
     consumer.add_argument("--keep-stale", action="store_true")
     consumer.set_defaults(func=cmd_consumer)
+
+    census = subparsers.add_parser("concept-census",
+                                   help="measure which XBRL concepts the product universe tags (report only)")
+    census.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
+    census.add_argument("--metrics", default="total_debt,long_term_debt",
+                        help="comma-separated registry metrics whose mapped concepts are counted")
+    census.add_argument("--pattern", default=r"debt|borrow|notespayable|capitallease|financelease",
+                        help="regular expression for unmapped concepts worth counting")
+    census.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request)")
+    census.add_argument("--archive", help="local companyfacts.zip instead of fetching")
+    census.add_argument("--limit", type=int)
+    census.add_argument("--top", type=int, default=30)
+    census.add_argument("--out", default=str(DATA_DIR / "concept-census.json"))
+    census.set_defaults(func=cmd_concept_census)
 
     test = subparsers.add_parser("test", help="run the offline test suite")
     test.add_argument("--verbose", action="store_true")

@@ -66,6 +66,23 @@ jobs:
           du -sh quant/data/sec/consumer
           node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'
 
+      # Reine Messung, kein Wert aendert sich. total_debt deckt 2.645 von
+      # 5.068 ausgelieferten Emittenten ab, und genau diese Zahl haelt
+      # roicTtm, roicMedian3y, netDebtToAssets und salesYield in der
+      # Quant-2.0-Faktorevidenz unten. Die Registry bildet total_debt auf
+      # zwei Konzepte ab, eines davon eine optionale Sammelangabe, die die
+      # meisten US-Filer gar nicht taggen. Welche Tags sie stattdessen
+      # benutzen, wird hier gezaehlt statt geraten - was daraus folgt, ist
+      # eine Methodik-Entscheidung und passiert nicht in diesem Schritt.
+      # Das Archiv liegt schon im Cache; der Schritt laedt nichts nach und
+      # darf den Datenlauf nie abbrechen.
+      - name: Konzept-Zensus fuer die Schuldenkennzahlen (nur Messung)
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+        run: python3 scripts/quant/cli.py --log-level WARNING concept-census --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip"
+
       - name: Discover-Daten neu bauen (mit Fundamentals)
         run: |
           node scripts/discover/build-discover-data.mjs
@@ -100,7 +117,8 @@ jobs:
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
           git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
-                  quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
+                  quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json \
+                  quant/data/sec/concept-census.json
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(c.secAvailable+"/"+c.productUniverse+" Unternehmen, 10J "+c.history10y+", 5J "+c.history5y+", TTM "+c.ttmPossible)')
           git commit -m "SEC Consumer-Fundamentals: $Z"
