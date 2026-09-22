@@ -1,6 +1,6 @@
 {
   "schema": "vu-tiingo-fx-probe-2.0.0",
-  "generatedAtUtc": "2026-09-22T08:03:30.858Z",
+  "generatedAtUtc": "2026-09-22T08:05:52.787Z",
   "provider": "tiingo",
   "baseUrl": "https://api.tiingo.com",
   "configured": true,
@@ -22,12 +22,12 @@
       "capability": "fxCurrent",
       "result": true,
       "verificationLevel": "MEASURED_PRESENT",
-      "detail": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:03:31.006000+00:00, Alter 1 s.",
+      "detail": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:05:53.104000+00:00, Alter 0 s.",
       "httpStatus": 200,
       "ticker": "eurusd",
       "servedDirection": "INVERSE",
-      "timestamp": "2026-09-22T08:03:31.006000+00:00",
-      "ageSeconds": 1,
+      "timestamp": "2026-09-22T08:05:53.104000+00:00",
+      "ageSeconds": 0,
       "fields": [
         "askPrice",
         "askSize",
@@ -42,8 +42,8 @@
       "capability": "fxRealtime",
       "result": true,
       "verificationLevel": "MEASURED_PRESENT",
-      "detail": "Der juengste Quote ist 1 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
-      "ageSeconds": 1
+      "detail": "Der juengste Quote ist 0 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
+      "ageSeconds": 0
     },
     {
       "capability": "fxBulkQuotes",
@@ -166,10 +166,10 @@
       "capability": "fxIntraday",
       "result": true,
       "verificationLevel": "MEASURED_PRESENT",
-      "detail": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (213 s alt).",
+      "detail": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (354 s alt).",
       "observations": 81,
       "newest": "2026-09-22T08:00:00.000Z",
-      "ageSeconds": 213
+      "ageSeconds": 354
     },
     {
       "capability": "fxWebsocket",
@@ -432,13 +432,13 @@
   "evidence": {
     "fxCurrent": {
       "verificationLevel": "MEASURED_PRESENT",
-      "reason": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:03:31.006000+00:00, Alter 1 s.",
-      "measuredAt": "2026-09-22T08:03:32.064Z",
+      "reason": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:05:53.104000+00:00, Alter 0 s.",
+      "measuredAt": "2026-09-22T08:05:53.428Z",
       "httpStatus": 200,
       "ticker": "eurusd",
       "servedDirection": "INVERSE",
-      "timestamp": "2026-09-22T08:03:31.006000+00:00",
-      "ageSeconds": 1,
+      "timestamp": "2026-09-22T08:05:53.104000+00:00",
+      "ageSeconds": 0,
       "fields": [
         "askPrice",
         "askSize",
@@ -451,14 +451,14 @@
     },
     "fxRealtime": {
       "verificationLevel": "MEASURED_PRESENT",
-      "reason": "Der juengste Quote ist 1 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
-      "measuredAt": "2026-09-22T08:03:32.064Z",
-      "ageSeconds": 1
+      "reason": "Der juengste Quote ist 0 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
+      "measuredAt": "2026-09-22T08:05:53.428Z",
+      "ageSeconds": 0
     },
     "fxBulkQuotes": {
       "verificationLevel": "INCONCLUSIVE",
       "reason": "2 gefuehrte Symbole angefragt (eurusd, usdcny), nur 1 zurueck. Das kann eine fehlende Sammelfaehigkeit sein oder ein Symbol ohne aktuellen Quote - die Messung unterscheidet das nicht.",
-      "measuredAt": "2026-09-22T08:03:32.163Z",
+      "measuredAt": "2026-09-22T08:05:53.479Z",
       "requested": [
         "eurusd",
         "usdcny"
@@ -468,7 +468,7 @@
     "fxCrossPairs": {
       "verificationLevel": "MEASURED_ABSENT",
       "reason": "pairNotServed",
-      "measuredAt": "2026-09-22T08:03:32.163Z",
+      "measuredAt": "2026-09-22T08:05:53.479Z",
       "pair": "CNY/EUR",
       "attempts": [
         {
@@ -490,7 +490,7 @@
     "fxDaily": {
       "verificationLevel": "MEASURED_PRESENT",
       "reason": "39 Tageszeilen fuer eurusd von 2026-08-09 bis 2026-09-22.",
-      "measuredAt": "2026-09-22T08:03:32.281Z",
+      "measuredAt": "2026-09-22T08:05:53.538Z",
       "ticker": "eurusd",
       "observations": 39,
       "first": "2026-08-09",
@@ -507,7 +507,7 @@
     "fxHistoricalDaily": {
       "verificationLevel": "MEASURED_PRESENT",
       "reason": "Historie von eurusd reicht bis mindestens 2020-02-29 zurueck; ein Fenster ab 2019-11-07 wird mit HTTP 400 abgelehnt. Ein Import darf nicht frueher anfragen.",
-      "measuredAt": "2026-09-22T08:03:33.064Z",
+      "measuredAt": "2026-09-22T08:05:53.947Z",
       "ticker": "eurusd",
       "earliestAvailableDate": "2020-02-29",
       "depthAtLeast": "5 Jahre",
@@ -569,16 +569,16 @@
     },
     "fxIntraday": {
       "verificationLevel": "MEASURED_PRESENT",
-      "reason": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (213 s alt).",
-      "measuredAt": "2026-09-22T08:03:33.317Z",
+      "reason": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (354 s alt).",
+      "measuredAt": "2026-09-22T08:05:54.144Z",
       "observations": 81,
       "newest": "2026-09-22T08:00:00.000Z",
-      "ageSeconds": 213
+      "ageSeconds": 354
     },
     "fxWebsocket": {
       "verificationLevel": "NOT_ATTEMPTED",
       "reason": "Es wurde keine Push-Verbindung aufgebaut. Der WebSocket-Nachweis gehoert in einen eigenen Lauf mit eigenem Betriebszustand.",
-      "measuredAt": "2026-09-22T08:03:33.683Z"
+      "measuredAt": "2026-09-22T08:05:54.323Z"
     }
   },
   "capabilityState": "MEASURED",
