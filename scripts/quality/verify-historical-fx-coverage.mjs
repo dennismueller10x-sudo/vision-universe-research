@@ -195,7 +195,24 @@ const eurChartStartGewichtet = zeilen
    in jedem Horizont, den das Produkt zeigt. Die uebrigen sind durch
    conversionAvailable=false ehrlich abgedeckt (O-13). */
 const SCHWELLE = 0.99;
-const verfehlt = horizonte.filter((h) => proHorizont[h.id].titelquote < SCHWELLE);
+
+/* WELCHE HORIZONTE DAS GATE BEURTEILT - UND WELCHER NICHT.
+
+   MAX ist kein Versprechen in EUR. Die Kursreihen reichen bis 1990, die
+   aelteste FX-Quelle bis 1999; ein MAX-Chart in EUR KANN dort nicht
+   anfangen. Diesen Horizont an derselben Schwelle zu messen hiesse, das
+   Gate dauerhaft an einer Datenlage scheitern zu lassen, die bekannt,
+   dokumentiert und dem Owner als O-15 vorgelegt ist.
+
+   Ein Gate, das aus einem bekannten Grund immer rot ist, wird
+   uebergangen - und schuetzt dann auch dort nicht mehr, wo es
+   gebraucht wird.
+
+   MAX wird deshalb gemessen und BERICHTET, aber nicht beurteilt. Was
+   beurteilt wird, sind die Horizonte, die das Produkt in EUR zusagt. */
+const GATED = ["1J", "5J", "10J", "15J"];
+const beurteilt = horizonte.filter((h) => GATED.includes(h.id));
+const verfehlt = beurteilt.filter((h) => proHorizont[h.id].titelquote < SCHWELLE);
 const verdict = loaded.tiingo + loaded.ecb === 0 ? "NOT_MEASURED"
   : verfehlt.length ? "FAIL" : "PASS";
 
@@ -211,6 +228,10 @@ const report = {
     NOT_MEASURED: "Kein FX-Bestand geladen."
   }[verdict],
   threshold: SCHWELLE,
+  gatedHorizons: GATED,
+  informationalHorizons: horizonte.filter((h) => !GATED.includes(h.id)).map((h) => h.id),
+  gatingNote: "MAX wird gemessen und berichtet, aber nicht beurteilt: die Kursreihen reichen weiter " +
+              "zurueck als jede FX-Quelle. Ein Gate, das aus einem bekannten Grund immer rot ist, wird uebergangen.",
   sourcesLoaded: loaded,
   horizons: horizonte,
   maxSeriesStart: maxBeginn,
@@ -239,7 +260,8 @@ console.log(`  Waehrungen im Universum: ${zeilen.length}, Titel gesamt: ${titelG
 console.log(`  ${"Horizont".padEnd(8)}${"Datum".padEnd(13)}${"Waehrungen".padEnd(13)}${"Titel".padEnd(20)}Quellen`);
 for (const h of horizonte) {
   const p = proHorizont[h.id];
-  console.log(`  ${h.id.padEnd(8)}${h.datum.padEnd(13)}` +
+  const marke = GATED.includes(h.id) ? "  " : "i ";
+  console.log(`  ${marke}${h.id.padEnd(6)}${h.datum.padEnd(13)}` +
     `${(p.waehrungenAbgedeckt + "/" + p.waehrungenGesamt).padEnd(13)}` +
     `${((p.titelquote * 100).toFixed(2) + " %").padEnd(20)}` +
     Object.entries(p.quellen).map(([s, n]) => `${s}:${n}`).join(" "));
@@ -251,4 +273,20 @@ if (report.gapBeforeFx) {
 }
 console.log(`\nHISTORICAL_FX_COVERAGE = ${verdict}`);
 console.log(`Bericht: ${OUT}`);
-process.exit(verdict === "FAIL" ? 1 : 0);
+
+/* MESSEN UND BEURTEILEN SIND ZWEI SCHRITTE.
+
+   Die erste Fassung endete bei FAIL mit Code 1 - und damit brach der
+   Lauf ab, BEVOR der Bericht committet war. Das Ergebnis: ein rotes
+   Gate ohne die Zahl, die erklaert, warum es rot ist. Genau der Fall,
+   fuer den scripts/ci/commit-and-push.sh existiert ("was teuer erkauft
+   ist, wird committet, bevor etwas Optionales laeuft").
+
+   Dieses Skript misst jetzt und endet erfolgreich. Ob der Befund das
+   Gate schliesst, entscheidet ein eigener Schritt NACH dem Commit -
+   `--gate` liest denselben Bericht und faellt das Urteil. */
+if (args.has("--gate") && verdict === "FAIL") {
+  console.error(`\nGATE GESCHLOSSEN: ${verfehlt.map((h) => h.id).join(", ")} unter ${Math.round(SCHWELLE * 100)} %.`);
+  process.exit(1);
+}
+process.exit(0);

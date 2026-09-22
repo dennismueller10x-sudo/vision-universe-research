@@ -227,7 +227,10 @@ jobs:
         continue-on-error: true
         run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=12
 
-      - name: Historische FX-Abdeckung (O-7)
+      # Messen. Das Urteil faellt weiter unten, NACH dem Commit des
+      # Berichts - sonst ist das Gate rot und die Zahl, die es erklaert,
+      # nie im Zweig gelandet.
+      - name: Historische FX-Abdeckung messen (O-7)
         if: always()
         run: node scripts/quality/verify-historical-fx-coverage.mjs --publish
 
@@ -304,6 +307,10 @@ jobs:
           fi
           echo 'Keine FX-Reihe im veroeffentlichten Pfad.'
           ls -la .market-cache/currency/fx 2>/dev/null | head -10 || echo 'Keine Reihen geholt.'
+
+      - name: Gate - historische FX-Abdeckung
+        if: always()
+        run: node scripts/quality/verify-historical-fx-coverage.mjs --gate
 
       - name: Keine Zugangsdaten in ausgelieferten Daten
         if: always()

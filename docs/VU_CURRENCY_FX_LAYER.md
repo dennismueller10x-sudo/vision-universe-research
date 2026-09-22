@@ -158,6 +158,134 @@ recommended:     "A"     was gebaut ist und laeuft
 upgradePossible: true    eine Owner-Entscheidung, kein Automatismus
 ```
 
+## 4b. Die zweite Quelle — und warum sie erst jetzt kommt (O-7)
+
+§6 und §38 lassen eine zweite FX-Quelle nur zu, wenn die Faehigkeit bei
+der ersten **objektiv fehlt**. Diese Bedingung ist jetzt erfuellt und
+gemessen: Tiingos FX-Historie beginnt am **2020-02-29**, und Vision
+Universe braucht EUR-Darstellung fuer 10J, MAX und Fundamentals davor.
+
+**EZB-Referenzkurse ab 1999-01-04**, `providers/ecb/adapter.js`.
+
+```
+TIINGO   PRIMARY    priority 10   zuerst gefragt
+ECB      FALLBACK   priority 20   nur wo PRIMARY nichts hat
+```
+
+Die Rangfolge ist **datumsabhaengig, nicht qualitaetsabhaengig**. Es wird
+nie zwischen zwei vorhandenen Werten „gewaehlt" — eine Reihe, in der je
+Tag entschieden wird, ist nicht reproduzierbar, und §8 verlangt
+Reproduzierbarkeit.
+
+### Jeder Wert weiss, woher er kommt
+
+```json
+"fxProvenance": {
+  "source": "ecb", "role": "FALLBACK", "priority": 20,
+  "derivation": "INVERSE",
+  "consideredSources": [{ "source": "tiingo", "role": "PRIMARY",
+                          "reason": "beforeSeriesStart" }]
+}
+```
+
+`consideredSources` ist der Teil, den man erst vermisst, wenn eine Reihe
+springt: nicht nur *welche* Quelle geliefert hat, sondern welche davor
+mit welchem Grund uebergangen wurde.
+
+### Zwei Korrekturen, die beim Bauen auffielen
+
+**Die Inversion liess `role` fallen.** Bei EUR-Notierung kommt die
+Mehrheit der Werte ueber die Gegenrichtung — die Herkunft meldete also
+fuer die Mehrheit `role: null`.
+
+**Ein Pivot reicht nicht mehr.** Tiingo notiert gegen USD, die EZB gegen
+EUR. Mit nur USD als Pivot findet ein CNY/CHF aus EZB-Daten kein einziges
+Bein. Jetzt `["USD", "EUR"]` — fest in dieser Reihenfolge, nicht „welcher
+gerade passt".
+
+Ein Kreuz aus zwei Quellen traegt `role: "MIXED"` und die **strengere**
+Lizenz: ein Kreuz aus einem freigegebenen und einem gesperrten Kurs ist
+gesperrt, weil der gesperrte rechnerisch darin steckt.
+
+### Die Naht wird gemessen, nicht gehofft
+
+Ein Chart wechselt am Beginn der Tiingo-Historie die Quelle. Ein Fixing
+um 16:00 MEZ und ein Tagesschluss sind nicht dasselbe — die Frage ist
+nicht *ob* sie abweichen, sondern *um wie viel*.
+`build-fx-history-ecb.mjs` misst es auf der Ueberlappung und meldet
+Median, p95 und Maximum je Paar.
+
+---
+
+## 4c. Die Lizenzfrage ist beantwortbar — und die Antwort ist ein Blocker (O-11)
+
+Die vier Stufen aus O-11, gegen die vorhandene Evidenz geprueft:
+
+| | | |
+|---|---|---|
+| **A** interne Berechnung | **erlaubt** | `DEFAULT_POLICY.internalUseAllowed` |
+| **B** Speicherung / Caching | **erlaubt** | Arbeitsablage, nicht ausgeliefert |
+| **C** Anzeige abgeleiteter EUR-Werte | **NICHT erlaubt** | ← die offene Frage |
+| **D** Weitergabe roher FX-Reihen | nicht erlaubt | wird auch nicht gebraucht |
+
+Die Freigabe des Eigentuemers vom 2026-09-13 ist als
+`marketData`/`intraday`/`realtime` eingetragen und nennt die
+„Market-Data". FX ist bei diesem Anbieter ein eigenes Produkt. Dieselbe
+Datei sagt: *„Der Vertragstext liegt dem Repository nicht vor; es wurde
+keine eigene Rechtspruefung vorgenommen."*
+
+`fx` ist deshalb jetzt eine **eigene Datenklasse** in
+`display-policy.js`. Waere es ein Unterfall von `marketData`, wuerde die
+bestehende Aktienfreigabe die EUR-Anzeige stillschweigend mitfreigeben —
+eine Erlaubnis, die niemand erteilt hat.
+
+### Die Erlaubnis haengt am einzelnen Wert
+
+```
+EUR-Wert aus EZB-Kurs (2018)   publicDisplayAllowed: true   + Quellennennung
+EUR-Wert aus Tiingo-Kurs (2026) publicDisplayAllowed: false
+```
+
+Ungewohnt, und richtig. Die Alternative ist eine globale Sperre, die
+entweder die ganze EUR-Anzeige abschaltet oder die Lizenzfrage ignoriert.
+
+Die exakte Vertragsfrage steht maschinenlesbar in
+`quant/config/fx-license.json` und ist ueber `Providers.escalation()`
+abrufbar — ein Produkt, das eine Sperre meldet, soll den Grund
+mitliefern koennen.
+
+---
+
+## 4d. Intraday-FX als zentraler Zustand (O-9)
+
+Die Tagesreihen sind nach Kalendertag geschluesselt. Sechs Intraday-Bars
+desselben Tages fielen darin auf **einen** Punkt zusammen.
+
+Deshalb ein zweiter, kleiner Speicher: je Paar **ein** Stand mit vollem
+Zeitstempel (`ingestCurrent`), den nur `latest()` liest. Eine historische
+Abfrage sieht ihn nie — der Kurs von jetzt hat in der Umrechnung eines
+Bilanzwertes von 2021 nichts zu suchen.
+
+Ein Stand wird nur von einem **juengeren** ersetzt; ein verspaetet
+eintreffender aelterer Tick darf keinen Ruecksprung erzeugen.
+
+**Gemessen: 12 Anfragen bedienen 11.428 Titel — 952 Titel je Anfrage.**
+
+### Die Degradationsleiter
+
+| FX im Store | Zustand | „Realtime EUR"? |
+|---|---|---|
+| Tagesschluss | CURRENT | **nein** |
+| Intraday, 10 Min | CURRENT | **ja** |
+| Intraday, 90 Min | STALE | nein, sichtbar |
+| Intraday, 5 Std | STALE | nein, sichtbar |
+| kein Kurs | UNAVAILABLE | nein, native Waehrung |
+
+`available: "C"` / `recommended: "A"` — Stufe C bleibt verfuegbar,
+gefahren wird A.
+
+---
+
 ## 5. Die Architektur
 
 ```
@@ -398,52 +526,69 @@ Das halbiert das Kontingent, ohne eine Zahl zu verlieren.
 
 ---
 
-## 14. Regression Guard und Debt Register (O-6)
+## 14. Regression Guard und Debt Register (O-6, O-12)
 
 ### Der Guard
 
 `scripts/quality/assert-no-local-fx.mjs`, drei Befundarten, zwei
-Haertegrade:
-
-1. **FX-Arithmetik ausserhalb von `quant/engines/fx/`** → Abbruch.
-   Negativ geprueft: eine eingefuegte Verletzung wird gefunden, ihre
-   Entfernung macht den Lauf wieder gruen.
-2. **Verdaechtige Konstanten** → gezaehlt, Grundlinie 2. Kein Abbruch:
-   `close * 1.015` in `dashboard/app.js:24` ist eine Szenariogrenze,
-   formatiert mit `usd()`. Jedes Merkmal einer FX-Umrechnung, und
-   trotzdem keine.
-3. **Fest verdrahtete Waehrungsdarstellung** → gezaehlt, Grundlinie 30.
+Haertegrade: FX-Arithmetik ausserhalb des Core bricht ab (negativ
+geprueft); verdaechtige Konstanten und fest verdrahtete Darstellung
+werden gezaehlt und gegen eine Grundlinie gehalten.
 
 ### Die 68 waren nie 68
 
 Guard und Register hatten je eine eigene Kopie der Muster — derselbe
 Fehler, den `price-semantics.js` fuer die Bereinigungsstufen behoben hat.
-Beim Zusammenlegen in `currency-debt-patterns.mjs` fielen zwei
-Fehlerquellen auf:
+Beim Zusammenlegen fielen zwei Fehlerquellen auf: eine Regel traf **jedes
+Template-Literal**, und ohne Blockzustand zaehlte ein Kommentarende als
+Code. **38 der 68 waren Fehlalarme. Es sind 30.**
 
-* Die Regel `/["'`]\$\$?\{/` traf **jedes Template-Literal**, weil ein
-  Backtick gefolgt von `${` dazu passt. `vu2/experience.js:83` ist ein
-  Diagrammtitel, keine Waehrungsschuld.
-* Ohne Blockzustand zaehlte `discover/ui/detail.js:730` als Code. Die
-  Zeile lautet `303 Mrd. $ schon. */` — das Ende eines Kommentars, der
-  erklaert, warum dort gerundet wird.
+### Die Migration (O-12)
 
-**Von 68 gemeldeten Stellen waren 38 Fehlalarme.** Es sind 30.
-
-### Das Register
-
-| Klasse | Anzahl | Regel |
+| Klasse | Anzahl | Bedeutung |
 |---|---|---|
-| **A** `MONETARY_DISPLAY` | 25 | muss den Currency Contract konsumieren |
-| **B** `PERCENTAGE_OR_RATIO` | 4 | niemals FX-Konvertierung |
-| `UNCLASSIFIED` | 1 | von Hand ansehen |
+| **F** `MIGRATED_FALLBACK` | 13 | migriert; Zeile greift nur ohne geladenen Core |
+| **A** `MONETARY_DISPLAY` | 9 | offen (5 davon Archivseiten und Fehlalarme) |
+| **B** `PERCENTAGE_OR_RATIO` | 4 | darf nie konvertieren |
+| **C** `STATIC_COPY` | 3 | Schwellenwert im Methodiktext, im Code markiert |
+| `UNCLASSIFIED` | 1 | |
 
-Migrationsreihenfolge, je Datei gebuendelt: `detail-fundamentals.js` (5),
-`hedgefonds/index.html` (5), `surfaces.js` (4), `daten.js` (2),
-`detail.js` (2), dann Einzelstellen.
+Migriert: `discover/ui/{surfaces,detail-fundamentals,cards,detail}.js`,
+`dashboard/app.js`, `hedgefonds/index.html`. Die FX-Engines sind in
+`discover/index.html` und `discover-v2/index.html` eingebunden.
 
-Die Migration beginnt **nach** dem Produktionsnachweis — so steht es in
-O-6.
+**Das Aussehen aendert sich nicht.** Das war die eigentliche Arbeit.
+Discover zeigt deutsche Zahlen mit Dollarzeichen (`154,72 $`), die
+Hedgefonds-Seite amerikanische mit gekuerzten Nullen (`$3.4T`). Beides
+reproduziert der zentrale Formatter jetzt Zeichen fuer Zeichen — dafuer
+kamen `numberLocale` und `trimZeros` dazu. Zwei Tests vergleichen gegen
+die alte Form, die darin **kopiert und nicht importiert** steht:
+importiert wuerde sie bei einer Aenderung stillschweigend mitwandern und
+nichts mehr festhalten.
+
+**Eine beabsichtigte Abweichung, und sie ist eine Korrektur.** Der alte
+Discover-Formatter kannte keine Billionenstufe: 3,42 Bio. erschien als
+`3420,0 Mrd. $` — genau die unleserliche Form, die §52 untersagt. Jetzt
+`3,4 Bio. $`. Das betrifft die groessten Titel des Universums und ist
+sichtbar.
+
+**Ein echter Fehler, gefunden beim Abgleich.** Die Hedgefonds-Seite
+schrieb `-$7.3B`, mein Formatter `$-7.3B`. Das Minus gehoert vor das
+Waehrungszeichen. Aufgefallen ist es nur, weil die zu ersetzende Funktion
+es richtig machte.
+
+### Nicht migriert, und warum
+
+Drei Stellen sind Schwellenwerte im Methodiktext („Margen erst ab 50
+Mio. $ Umsatz"). Sie tragen jetzt einen Marker **im Code**:
+
+```js
+/* vu-currency: C - Schwellenwert im Methodiktext, kein angezeigter Betrag */
+```
+
+Der Marker ist zugleich die von O-6 verlangte Dokumentation und das, was
+der Zaehler liest. Eine Stelle stillschweigend von der Liste zu nehmen
+waere die Alternative, und sie hinterliesse keine Spur.
 
 ---
 
@@ -597,47 +742,58 @@ diesem Workstream und werden hier nicht repariert.
 
 ---
 
-## 17. Merge Gate und Target State
+## 17. Merge Gate
 
-| Kriterium | Zustand | Beleg |
-|---|---|---|
-| `FX_ARCHITECTURE` | **PASS** | 11 Engines, Vertrag `currency-fx-v1.0.0` |
-| `TIINGO_FX_CAPABILITIES` | **MEASURED** | 20 Anfragen, 5 Faehigkeiten belegt, 1 gemessen abwesend |
-| `NATIVE_CURRENCY_PRESERVED` | **PASS** | `native.value` unveraendert; M1, I7, FD-SAP |
-| `SEC_MULTI_CURRENCY` | **PASS** | 5.069 Datensaetze, 30 Waehrungen |
-| `UNKNOWN_CURRENCY_HANDLING` | **PASS** | 94,9 % aufgeloest, 258 ehrlich UNKNOWN |
-| `HISTORICAL_FX` | **PASS** | punktweise; Zerlegung geht exakt auf; Tiefe ab 2020-02-29 |
-| `FUNDAMENTAL_FX` | **PASS** | 5 Kennzahlen x 9 Titel x 6 Berichtswaehrungen |
-| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** | `RT1` Kette belegt, `RT2` Markt-Tick offen |
-| `FX_FRESHNESS` | **PASS** | 4 Zustaende, Devisenkalender 24/5, Ausfall in 3 Stufen |
-| `EUR_USD_DISPLAY_CONTRACT` | **PASS** | ein Praeferenzschluessel, Default EUR |
-| `CURRENCY_DEBT_REGISTER` | **PASS** | 30 Stellen: 25 A, 4 B, 1 offen |
-| `ONE_DATA_CORE` | **PASS** | Guard bricht bei FX-Arithmetik ausserhalb ab |
-| `REGRESSION_GUARD` | **PASS** | negativ geprueft |
-| `NEW_REGRESSIONS` | **0** | 5 rote Tests namentlich identisch zur Baseline |
-| `PAID_SERVICES_ENABLED` | **0** | nichts am Tarif geaendert |
-| `CRITICAL_BLOCKERS` | **0** | |
-| `FX_PAIR_COVERAGE` | **52 / 62** | ohne Abdeckung: AFN, KZT, MOP, MYR, VND (16 Titel) |
-
-Das Merge Gate des Owners verlangt `TIINGO_FX_CAPABILITIES = MEASURED`,
-`FX_DATA_PROOF = PASS`, `CURRENCY_CONTRACT = PASS` und
-`REGRESSION_GUARD = PASS`. Alle vier stehen. `REALTIME_FX` ist im Target
-State ausdruecklich als `PASS oder MARKET_CLOSED_NOT_PROVEN` zugelassen.
+| Kriterium | Zustand |
+|---|---|
+| `TIINGO_FX_CAPABILITIES` | **MEASURED** |
+| `HISTORICAL_FX_COVERAGE` | siehe `quant/data/market/fx/historical-coverage.json` |
+| `FX_PROVIDER_PRIORITY` | **PASS** — deterministisch, je Wert belegt |
+| `FX_DATA_PROOF` | **PASS** |
+| `CURRENCY_CONTRACT` | **PASS** (59 Tests) |
+| `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage |
+| `FX_FRESHNESS` | **PASS** |
+| `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) |
+| `UNKNOWN_CURRENCY_HANDLING` | **PASS** — 94,9 % belegt, Rest `conversionAvailable: false` |
+| `CURRENCY_DEBT_MIGRATION` | **PASS** — 13 migriert, Aussehen unveraendert |
+| `REGRESSION_GUARD` | **PASS** |
+| `NEW_REGRESSIONS` | **0** |
+| `PAID_SERVICES_ENABLED` | **0** |
+| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** |
 
 **Nicht gemergt** — das entscheidet der Owner.
 
+`REALTIME_FX` holt `currency-realtime-proof.yml` nach: Zeitplan 15:00
+und 18:00 UTC an Werktagen, beide Zeiten in der regulaeren Sitzung,
+Sommer wie Winter.
+
 ---
 
-## 18. Owner-Entscheidungen
+## 18. Der eine Punkt, der eine Owner-Entscheidung braucht
 
-Die urspruenglichen O-1 bis O-6 sind abgearbeitet. Offen bleibt:
+**Die FX-Lizenzfrage (O-11 C).** Solange sie offen ist, tragen alle aus
+Tiingo-Kursen abgeleiteten EUR-Werte `publicDisplayAllowed: false`. Der
+Layer rechnet und speichert weiter — nur die oeffentliche Anzeige ist
+gesperrt.
 
-| # | Frage | Warum sie offen ist |
-|---|---|---|
-| **O-7** | Die FX-Historie beginnt **2020-02-29**. Wie sollen 10J- und MAX-Charts in EUR damit umgehen? | Heute verweigert der Layer korrekt (`beforeSeriesStart`), statt zu naehern. Drei Wege: EUR-Chart auf den belegten Zeitraum begrenzen, den Nutzer in USD verweisen, oder eine Referenzquelle fuer die Zeit davor — Letzteres waere eine zweite Quelle und braucht eine Entscheidung. |
-| **O-8** | Realtime-Nachweis bei offener US-Sitzung nachholen | Der einzige Punkt, der `MARKET_CLOSED_NOT_PROVEN` zu `PASS` macht. Braucht einen Lauf zwischen 15:30 und 22:00 MEZ. |
-| **O-9** | Stufe C ist verfuegbar. Bleibt es bei A — und wird FX **intraday** statt taeglich geholt? | Zwei getrennte Fragen. Bei A bleiben ist gemessen guenstig: 500 Ticks ueber 50 Titel auf einen FX-Abruf. Aber solange der Store TAGESKURSE fuehrt, darf keine EUR-Anzeige „Realtime" heissen (`RT1`). Ein Intraday-Ingest — `fxIntraday` ist belegt — traegt die Zusage, ohne Stufe C und ohne zweiten Push-Transport. Das ist vermutlich der eigentliche Hebel. |
-| **O-10** | 258 Datensaetze ohne belegbare Waehrung, davon 76 mit uneinheitlichem Abschluss | Sie werden heute korrekt nicht umgerechnet. Ob die Angabe nachgezogen wird, ist eine Frage an die SEC-Pipeline. |
-| **O-11** | Redistribution der FX-Reihen | Sie liegen in der Arbeitsablage und werden nicht ausgeliefert. Eine oeffentliche EUR-Anzeige braucht einen Eintrag in `display-policy.js` mit Datum und Grundlage. |
-| **O-13** | Fuer welche Waehrungen bleibt am Ende **gar keine** Aufloesung? (`pair-availability.json`, `resolution: NONE`) | Diese Unternehmen bleiben dauerhaft in ihrer Originalwaehrung — heute korrekt und sichtbar. Ob dafuer eine Referenzquelle sinnvoll ist, ist dieselbe Frage wie O-2, jetzt aber an der richtigen Zahl belegt statt an der Abrufliste. |
-| **O-12** | Migration der 25 Klasse-A-Stellen | Der Nachweis steht; nach O-6 darf die Migration jetzt beginnen. Discover 2.1 laeuft parallel (§48) — der Abbau gehoert in den Workstream, der die Oberflaeche ohnehin anfasst. |
+> **Die exakte Frage:** Umfasst die am 2026-09-13 erklaerte
+> Tiingo-Freigabe („das entsprechend freigegebene grosse Paket" fuer die
+> oeffentliche Anzeige der Market-Data) auch das FX-/Forex-Produkt —
+> getrennt nach (a) interner Berechnung, (b) Speicherung/Caching,
+> (c) oeffentlicher Anzeige **abgeleiteter** Werte, (d) Weitergabe
+> **roher** FX-Zeitreihen?
+
+Sie steht maschinenlesbar in `quant/config/fx-license.json`.
+
+**Was ohne diese Antwort trotzdem geht:** EUR-Werte, deren Kurs von der
+EZB stammt, sind freigegeben (Quellennennung erfolgt) — also die ganze
+Historie vor 2020-02-29 und jede Waehrung, die Tiingo nicht fuehrt.
+
+### Nachrangig
+
+| # | Frage |
+|---|---|
+| **O-14** | Die Naht zwischen EZB-Fixing und Tiingo-Schluss — die gemessene Abweichung steht in `ecb-coverage.json`. Ab welcher Groesse soll sie sichtbar gemacht werden? |
+| **O-15** | Ein MAX-Chart in EUR beginnt spaeter als in der Originalwaehrung (Kurse ab 1990, FX ab 1999). Begrenzen, hinweisen oder auf USD verweisen? |
+| **O-16** | Die 9 verbliebenen Klasse-A-Stellen — zwei sind Archivseiten unter `morning/`, die niemand mehr anfasst. Migrieren oder ausnehmen? |
+| **O-17** | Bestaetigung der EZB-Bedingungen (Wiedergabe unter Quellennennung). Blockiert nichts, weil die Nennung ohnehin erfolgt. |
