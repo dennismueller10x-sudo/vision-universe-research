@@ -1487,3 +1487,44 @@ test("O16-2 · vu2 formatiert zentral und rechnet weiterhin nicht um", () => {
       alt(wert, d), `vu2-Darstellung weicht ab bei ${wert}`);
   }
 });
+
+test("O14-4 · Jeder Produktpfad landet in der Klasse, die zu ihm gehoert", () => {
+  /* O-14 verlangt die Pruefung gegen alle Pfade einzeln. Ein Pfad, der
+     versehentlich in der anderen Klasse landet, faellt sonst erst auf,
+     wenn ein Chart einen Sprung zeigt - also beim Nutzer. */
+  const s = Rates.createStore();
+  const ecb = [], tiingo = [];
+  for (let d = Date.parse("2024-01-01"); d <= Date.parse("2026-09-21"); d += 86400000) {
+    const tag = new Date(d).toISOString().slice(0, 10);
+    ecb.push([tag, 1.1000]);
+    tiingo.push([tag, 1.1500]);        /* bewusst verschieden */
+  }
+  s.ingest("EUR", "USD", ecb, Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  s.ingest("EUR", "USD", tiingo, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  const engine = Engine.createEngine({ store: s, now: "2026-09-22T08:00:00Z" });
+
+  const historisch = [
+    ["Chart-Punkt", engine.convertMoney(100, "USD", "EUR", "2025-06-02", "MARKET_PRICE")],
+    ["Bilanzstichtag", engine.convertMoney(100, "USD", "EUR", "2025-06-02", "BALANCE_SHEET")],
+    ["Periodenmittel", engine.convertMoney(100, "USD", "EUR",
+        { periodStart: "2025-01-01", periodEnd: "2025-12-31" }, "INCOME_STATEMENT")],
+    ["Cashflow", engine.convertMoney(100, "USD", "EUR",
+        { periodStart: "2025-01-01", periodEnd: "2025-12-31" }, "CASH_FLOW")]
+  ];
+  for (const [label, money] of historisch) {
+    assert.equal(money.conversionAvailable, true, `${label}: keine Umrechnung`);
+    assert.equal(money.fx.source, "ecb", `${label}: falsche Quelle`);
+  }
+
+  /* Die Reihe als Ganzes ebenso - Punkt fuer Punkt, nicht nur der erste. */
+  const reihe = engine.convertSeries(
+    [{ date: "2024-03-01", value: 1 }, { date: "2025-06-02", value: 2 }, { date: "2026-09-19", value: 3 }],
+    "USD", "EUR");
+  assert.ok(reihe.points.every((p) => Math.abs(p.rate - 1 / 1.1) < 1e-12),
+    "Jeder Punkt der Reihe kommt aus der historischen Quelle");
+
+  /* Und die Gegenwart aus der anderen. */
+  const jetzt = engine.convertMoney(100, "USD", "EUR", null, "CURRENT_VALUE");
+  assert.equal(jetzt.fx.source, "tiingo", "Der aktuelle Wert kommt aus der Gegenwartsquelle");
+  assert.ok(Math.abs(jetzt.fx.rate - 1 / 1.15) < 1e-12);
+});
