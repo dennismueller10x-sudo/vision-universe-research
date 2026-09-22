@@ -1,15 +1,18 @@
 {
   "schema": "vu-ecb-coverage-1.0.0",
-  "generatedAtUtc": "2026-09-22T08:14:22.557Z",
+  "generatedAtUtc": "2026-09-22T09:49:25.621Z",
   "provider": "ecb",
-  "role": "FALLBACK",
+  "roles": {
+    "HISTORICAL_DAILY": "PRIMARY",
+    "CURRENT": "FALLBACK"
+  },
   "feed": {
     "id": "FULL_HISTORY",
     "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml",
     "label": "Vollstaendige Historie ab 1999-01-04"
   },
   "attribution": "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
-  "durationMs": 2112,
+  "durationMs": 1959,
   "daysParsed": 7097,
   "rejectedRows": 0,
   "earliest": "1999-01-04",
