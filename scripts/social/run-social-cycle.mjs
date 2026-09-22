@@ -2471,6 +2471,29 @@ async function main() {
     } catch { return null; }
   }
 
+  /* -----------------------------------------------------------------
+     ZWEI PFADE ZUM BILD, ZWEI HERLEITUNGEN DER AUSSAGE
+
+     kompoAussage() kennt nur den Kompositionspfad (CHART/SCORE/
+     PERFORMANCE/COMPARISON/RANKING). Fuer den Kartenpfad (DATA_CARD/
+     NUMBER_VISUAL/MINIMAL_TYPOGRAPHY) blieb `oneSecondMessage` deshalb
+     leer, obwohl render-asset.mjs denselben Satz laengst berechnet -
+     nur eben erst BEIM Zeichnen, nicht davor bei der Visual-Direction-
+     Ableitung. Funf reale Pakete verloren daran ihr Bild: die Richtung
+     galt als unvollstaendig, nicht weil der Satz fehlte, sondern weil
+     niemand danach gefragt hat.
+
+     `AssetRenderer.GEZEICHNET` ist schon die kanonische Liste, die
+     render-asset.mjs selbst benutzt, um zu wissen, was es zeichnen
+     kann - dieselbe Liste hier ein zweites Mal zu fuehren waere die
+     Art Abweichung, die diesen Fehler erst verursacht hat. */
+  function einSekundenAussage(lage, pkg) {
+    if (AssetRenderer.GEZEICHNET.indexOf(pkg.visualType) !== -1) {
+      return AssetRenderer.textOnVisualAussage(pkg).text;
+    }
+    return kompoAussage(lage, pkg);
+  }
+
   /* -------------------------------------------------------------------
      DIE QUELLENZEILE GAB ES NUR FUER EINE KURSREIHE
 
@@ -2594,7 +2617,7 @@ async function main() {
         totalMax: lage.composition.totalMax,
         source: quelleAus(lage)
       } : {},
-      oneSecondMessage: kompoAussage(lage, pkg)
+      oneSecondMessage: einSekundenAussage(lage, pkg)
     });
     const richtungBereit = VisualIntelligence.ready(richtung);
 

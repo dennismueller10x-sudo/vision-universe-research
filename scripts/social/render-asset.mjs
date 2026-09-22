@@ -340,6 +340,35 @@ export function hookEbeneAus(pkg) {
 }
 
 /* ---------------------------------------------------------------------
+   DER SATZ, DER IM BILD EINE SEKUNDE LANG ZAEHLT — EINE HERLEITUNG
+
+   plan() brauchte diesen Satz beim Zeichnen und leitete ihn inline her.
+   visual-intelligence.js braucht denselben Satz VOR dem Zeichnen, als
+   `oneSecondMessage` fuer die Visual-Direction-Ableitung - und bekam
+   ihn nicht: run-social-cycle.mjs kannte nur die Herleitung fuer den
+   Kompositionspfad (CHART/SCORE/PERFORMANCE/COMPARISON/RANKING) und
+   fragte fuer den Kartenpfad (DATA_CARD/NUMBER_VISUAL/MINIMAL_
+   TYPOGRAPHY) niemanden. Das Feld blieb leer, obwohl derselbe Satz
+   hier laengst berechnet wird - dieselbe Fehlerfamilie wie beim
+   Quellennamen zwei Funktionen weiter oben: zwei Register fuer eine
+   Tatsache.
+
+   Ab hier gibt es nur noch eines. plan() ruft es jetzt auch auf.
+   --------------------------------------------------------------------- */
+export function textOnVisualAussage(pkg) {
+  const ebene = hookEbeneAus(pkg) || null;
+  const text = String(
+    (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+  return {
+    text: text || null,
+    herkunft: (ebene && ebene.text) ? "visualBrief.textLayers"
+      : pkg.hook ? "pkg.hook"
+        : pkg.thesis ? "pkg.thesis"
+          : pkg.topic ? "pkg.topic" : null
+  };
+}
+
+/* ---------------------------------------------------------------------
    DER NAME EINER QUELLE IST KEIN SCHLUESSEL
 
    "Quelle: vu.technical" stand unter einer fertig gezeichneten
@@ -648,9 +677,8 @@ export function plan(pkg, options = {}) {
   const hookEbene_ = hookEbeneAus(pkg);
   const bildzeile = ebenen_.find((l) => l && l.text && String(l.text).trim() &&
     l !== hookEbene_);
-  const ebene = hookEbene_ || null;
-  const aussage = String(
-    (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+  const einSekunde = textOnVisualAussage(pkg);
+  const aussage = einSekunde.text || "";
 
   /* -------------------------------------------------------------------
      WOHER DER SATZ STAMMT, ENTSCHEIDET, WAS ER IST
@@ -664,10 +692,7 @@ export function plan(pkg, options = {}) {
      raten. Ein Satz, der als Hook GILT, ohne je einer gewesen zu
      sein, ist die bequemste Art, §13 zu bestehen, ohne ihm zu
      genuegen. */
-  const aussageHerkunft = (ebene && ebene.text) ? "visualBrief.textLayers"
-    : pkg.hook ? "pkg.hook"
-      : pkg.thesis ? "pkg.thesis"
-        : pkg.topic ? "pkg.topic" : null;
+  const aussageHerkunft = einSekunde.herkunft;
   /* Die Zeile fuers Bild bleibt erhalten - als Beleg, eine Zeile
      tiefer. Sie wegzuwerfen hiesse, eine Aussage zu verlieren, die
      nirgends sonst steht. */
