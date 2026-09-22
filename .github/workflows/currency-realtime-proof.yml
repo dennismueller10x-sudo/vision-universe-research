@@ -1,0 +1,143 @@
+name: Currency — Realtime-EUR-Nachweis bei offener US-Sitzung
+
+# Owner-Entscheid O-8. Der eine Nachweis, der sich nicht vorziehen laesst:
+# er braucht einen echten Aktien-Tick an einem offenen Markt.
+#
+# WARUM EIN EIGENER WORKFLOW
+#
+# currency-fx-verify.yml laeuft, wenn jemand etwas aendert - also meistens
+# dann, wenn die New Yorker Boerse geschlossen ist. Ein Nachweis, der an
+# der Uhrzeit haengt, braucht einen Zeitplan und nicht einen Push.
+#
+# Die regulaere Sitzung laeuft 09:30-16:00 Ortszeit New York. Im Sommer
+# (EDT, UTC-4) sind das 13:30-20:00 UTC, im Winter (EST, UTC-5)
+# 14:30-21:00 UTC. Der Zeitplan deckt mit 15:00 und 18:00 UTC beide Faelle
+# ab - zwei Laeufe je Handelstag, nicht mehr: jeder kostet Kontingent, und
+# ein Nachweis, der einmal gelungen ist, wird durch Wiederholung nicht
+# richtiger.
+#
+# KEIN MOCK ALS ERSATZ
+#
+# O-8 ist an dieser Stelle ausdruecklich. Ist der Markt geschlossen oder
+# fehlt der Zugang, meldet der Lauf MARKET_CLOSED_NOT_PROVEN und endet
+# erfolgreich - er hat dann korrekt festgestellt, dass er nichts
+# feststellen konnte. Was er NICHT tut: einen Tick erfinden.
+
+on:
+  schedule:
+    - cron: '0 15 * * 1-5'
+    - cron: '0 18 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Auch bei geschlossenem Markt laufen (meldet dann NOT_PROVEN)'
+        type: boolean
+        default: false
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/quality/verify-realtime-eur.mjs'
+      - '.github/workflows/currency-realtime-proof.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: currency-realtime-proof
+  cancel-in-progress: false
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >-
+      github.event_name != 'push' ||
+      contains(github.event.head_commit.message, '[rt-proof]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY. Der Nachweis kann nicht gefuehrt werden.'
+          fi
+
+      - name: Zentraler Intraday-FX-State
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=4
+
+      - name: Realtime-EUR-Nachweis
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/quality/verify-realtime-eur.mjs --publish
+
+      - name: Ohne Zugang bleibt der Nachweis offen
+        if: steps.secret.outputs.available != 'true'
+        run: node scripts/quality/verify-realtime-eur.mjs --publish
+
+      - name: Der Bericht enthaelt keinen Schluessel und keine Rohkurse
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/capabilities/realtime-eur-proof.json";
+            if (!fs.existsSync(file)) { console.log("Kein Bericht."); process.exit(0); }
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) {
+              console.error("ABBRUCH: der Bericht enthaelt den Zugangsschluessel."); process.exit(1);
+            }
+            if (/[?&]token=/i.test(raw)) {
+              console.error("ABBRUCH: Anfrage-URL mit Token im Bericht."); process.exit(1);
+            }
+            console.log("Bericht frei von Zugangsdaten.");
+          '
+
+      - name: Bericht in den Zweig
+        if: always()
+        run: |
+          if [ -f quant/data/market/capabilities/realtime-eur-proof.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Realtime-EUR-Nachweis (automatischer Lauf)" \
+              quant/data/market/capabilities/realtime-eur-proof.json
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime-EUR — Nachweis'
+            echo ''
+            if [ -f quant/data/market/capabilities/realtime-eur-proof.json ]; then
+              node -e '
+                const p = require("./quant/data/market/capabilities/realtime-eur-proof.json");
+                console.log("**REALTIME_FX = " + p.verdict + "**");
+                console.log("");
+                console.log(p.verdictMeaning);
+                console.log("");
+                console.log("| Pruefung | Zustand | Detail |");
+                console.log("|---|---|---|");
+                for (const c of p.checks) console.log("| " + c.id + " " + c.title + " | " + c.state + " | " + (c.detail || "").slice(0, 120) + " |");
+              '
+            else
+              echo 'Kein Bericht erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

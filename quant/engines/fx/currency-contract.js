@@ -153,6 +153,24 @@
       m.formattedIsFallback = f.isFallback;
       m.freshnessNote = f.freshnessNote;
       m.formattedTitle = f.title;
+
+      /* O-13: der Zustand, den eine Oberflaeche abfragt, statt aus
+         `display.value === null` zu schliessen.
+
+         Drei Zustaende, nicht zwei. "Nicht umgerechnet" ist keine
+         Fehlermeldung: der Titel bleibt im Produkt, der Originalwert
+         bleibt lesbar, und die Karte sagt, dass fuer diese Waehrung
+         kein Wechselkurs vorliegt. Ein Frontend, das nur "Wert oder
+         kein Wert" kennt, blendet den Titel aus - und genau das
+         untersagt O-13. */
+      m.displayState = m.conversionAvailable ? "CONVERTED"
+        : (m.fallback || (m.native && m.native.currency)) ? "NATIVE_CURRENCY"
+        : "UNAVAILABLE";
+      m.displayNote = m.conversionAvailable ? null
+        : (m.displayState === "NATIVE_CURRENCY"
+            ? "Fuer " + (m.native.currency || "diese Waehrung") + " liegt kein Wechselkurs vor. " +
+              "Angezeigt wird der Originalwert."
+            : "Kein Wert vorhanden.");
       return m;
     }
 
@@ -163,6 +181,8 @@
      */
     function state() {
       var p = preference.state();
+      var Providers = isNode ? require("./fx-provider-registry.js") : (global.VUFx && global.VUFx.Providers);
+      var license = Providers ? Providers.publicDisplaySummary() : null;
       return {
         contractVersion: CONTRACT_VERSION,
         engineVersion: VERSION,
@@ -171,8 +191,33 @@
         allowed: p.allowed,
         defaultCurrency: p.defaultCurrency,
         persisted: p.persisted,
-        note: p.note
+        note: p.note,
+        /* O-11: die Lizenzlage gehoert in den Zustand, den ein Produkt
+           ohnehin liest. Sonst muesste jedes Frontend selbst wissen,
+           dass es sie gibt - und das ist genau die verteilte Kenntnis,
+           die ONE DATA CORE vermeiden soll. */
+        fxLicense: license ? {
+          anyProviderBlocked: license.anyBlocked,
+          blockedProviders: license.blockedProviders,
+          openQuestion: license.openQuestion ? license.openQuestion.state : null
+        } : null
       };
+    }
+
+    /**
+     * Die Attributionen, die auf der Seite stehen muessen.
+     *
+     * Eine Quellennennung, die von jedem Produkt selbst zusammengesucht
+     * wird, fehlt irgendwann auf einer Seite - und dann ist die
+     * Bedingung verletzt, unter der die Kurse ueberhaupt gezeigt werden
+     * duerfen. Deshalb liefert der Contract sie.
+     */
+    function attributions(monies) {
+      var seen = Object.create(null);
+      (monies || []).forEach(function (m) {
+        if (m && m.attribution) seen[m.attribution] = true;
+      });
+      return Object.keys(seen).sort();
     }
 
     return {
@@ -180,7 +225,7 @@
       engine: engine, preference: preference,
       money: money, price: price, series: series, metric: metric,
       format: Format, registry: Registry, classify: Classifier.classify,
-      state: state,
+      state: state, attributions: attributions,
       setDisplayCurrency: function (code) { return preference.set(code); },
       toggleDisplayCurrency: function () { return preference.toggle(); },
       onDisplayCurrencyChange: function (fn) { return preference.subscribe(fn); }

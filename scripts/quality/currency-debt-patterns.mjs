@@ -77,6 +77,28 @@ export const MONETARY_MARKERS = /\b(price|kurs|marketcap|market_cap|marktkapital
    eindeutigsten Faelle im ganzen Register sind. */
 export const NUMERIC_FORMATTING = /\b(toFixed|toLocaleString|Math\.round|Intl\.NumberFormat)\b|\/\s*1e[369]|\/\s*1_?000/;
 
+/* Ein Aufruf des zentralen Formatters. Eine Datei, die ihn enthaelt, hat
+   die Migration hinter sich - ihre verbliebenen fest verdrahteten Zeilen
+   sind der dokumentierte Rueckfall fuer den Fall, dass der Core nicht
+   geladen ist, und keine eigene Waehrungslogik mehr.
+
+   Die Unterscheidung ist noetig, weil der Zaehler sonst nach der
+   Migration dieselbe Zahl meldet wie davor - und damit weder den
+   Fortschritt noch einen Rueckschritt zeigen koennte. */
+/* Eine ausdrueckliche, im Code stehende Einordnung.
+ 
+   O-6 verlangt fuer Klasse E, dass eine bewusst native Darstellung
+   "semantisch dokumentiert" ist. Dieser Marker ist diese Dokumentation -
+   und zugleich das, was der Zaehler liest. Eine Stelle stillschweigend
+   von der Liste zu nehmen waere die Alternative, und sie hinterliesse
+   keine Spur.
+
+   Form:  vu-currency: <KLASSE> - <Begruendung>
+   Er steht im Kommentar ueber der Zeile oder auf ihr. */
+export const CLASS_MARKER = /vu-currency:\s*([A-Z_]+)\s*-\s*(.+)/;
+
+export const CENTRAL_FORMATTER_CALL = /\bvuFormat\s*\(|VUFx\s*\.\s*Format\b/;
+
 export const TEST_MARKERS = /\b(test|spec|fixture|mock|stub|assert|expect|describe\(|it\()\b/i;
 
 export const INTENTIONAL_MARKERS = /\b(nativ|native|original|originalwaehrung|reporting ?currency|berichtswaehrung|quell|source ?currency|as ?reported|handelswaehrung|trading ?currency)\b/i;
@@ -93,7 +115,11 @@ export const INTENTIONAL_MARKERS = /\b(nativ|native|original|originalwaehrung|re
 export function codeLines(text) {
   const out = [];
   let inBlock = false;
+  /* Der Marker gilt fuer die naechste Code-Zeile. */
+  let pendingMarker = null;
   text.split("\n").forEach((line, i) => {
+    const marker = CLASS_MARKER.exec(line);
+    if (marker) pendingMarker = { klass: marker[1], reason: marker[2].trim() };
     const trimmed = line.trim();
     let isComment = false;
 
@@ -115,7 +141,10 @@ export function codeLines(text) {
       if (!trimmed.includes("*/")) inBlock = true;
     } else if (trimmed.startsWith("*")) isComment = true;
 
-    if (!isComment) out.push({ line: i + 1, text: trimmed, raw: line });
+    if (!isComment) {
+      out.push({ line: i + 1, text: trimmed, raw: line, marker: pendingMarker });
+      pendingMarker = null;
+    }
   });
   return out;
 }

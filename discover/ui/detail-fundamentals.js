@@ -31,11 +31,51 @@
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
   /* ----------------------------------------------------------- Format */
+  /* --------------------------------------------------------------------
+     GELDFORMATIERUNG: ZENTRAL, NICHT HIER (O-12)
+     --------------------------------------------------------------------
+
+     Diese Datei formatierte Betraege selbst - mit eigener Skalenleiter
+     und einem fest verdrahteten Dollarzeichen. Sie war damit eine von
+     mehreren Stellen, die dasselbe taten und auseinanderlaufen konnten;
+     der Currency Debt Register fuehrte sie als Klasse A.
+
+     Jetzt ruft sie quant/engines/fx/money-format.js. Was sie NICHT tut:
+     rechnen. Die Umrechnung gehoert in den Core, hier steht nur noch die
+     Darstellung (§49: Presentation Helpers sind erlaubt, Currency
+     Mathematics nicht).
+
+     `numberLocale: "de-DE"` haelt das Aussehen fest, das das Produkt
+     heute hat - deutsche Zahlen mit Dollarzeichen. Eine Migration, die
+     nebenbei die Oberflaeche umgestaltet, ist keine Migration (§28).
+
+     Ist der Core nicht geladen, bleibt die bisherige Darstellung als
+     Rueckfall. Eine zentrale Formatierung, die eine Seite leer laesst,
+     waere schlechter als die verteilte, die sie ersetzt.
+  */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    if (F && typeof F[fn] === "function") {
+      return F[fn](value, currency || "USD", opts);
+    }
+    return null;
+  }
+
   function geld(v, unit) {
     if (!isNum(v)) return "–";
-    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
+    /* Stueckzahlen sind kein Geld - sie tragen nie ein Waehrungszeichen. */
     if (unit === "shares") return Math.abs(v) >= 1e9 ? (v / 1e9).toFixed(2).replace(".", ",") + " Mrd." : (v / 1e6).toFixed(0) + " Mio.";
+
+    var cur = (typeof unit === "string" && unit.indexOf("/") > 0) ? unit.split("/")[0] : (unit || "USD");
     var a = Math.abs(v);
+    var zentral = (unit === "USD/shares")
+      ? vuFormat("formatPrice", v, cur, { numberLocale: "de-DE", decimals: 2 })
+      : (a >= 1e6
+          ? vuFormat("formatCompact", v, cur, { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 })
+          : vuFormat("formatPrice", v, cur, { numberLocale: "de-DE", decimals: 0 }));
+    if (zentral) return zentral;
+
+    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
     if (a >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd. $";
     if (a >= 1e6) return (v / 1e6).toFixed(0) + " Mio. $";
     return Math.round(v).toLocaleString("de-DE") + " $";

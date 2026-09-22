@@ -71,8 +71,29 @@
      amerikanische: der Primaermarkt ist Deutschland. */
   var FALLBACK_LOCALE = { locale: "de-DE", scales: SCALES_DE, symbolPosition: "suffix", spaceBeforeSymbol: true };
 
-  function styleFor(currency) {
-    return LOCALES[Registry.normalize(currency)] || FALLBACK_LOCALE;
+  /**
+   * Der Darstellungsstil einer Waehrung.
+   *
+   * `numberLocale` ueberschreibt die Zahlenkonvention, ohne das Symbol
+   * oder die Skalenleiter anzufassen. Das wird beim Abbau der
+   * Waehrungsschuld gebraucht: Discover 1.0 zeigt heute deutsche
+   * Zahlen mit Dollarzeichen ("154,72 $"). Die Formatierung dorthin zu
+   * verlagern, wo sie hingehoert, darf das Aussehen nicht aendern -
+   * eine Migration, die nebenbei das Produkt umgestaltet, ist keine
+   * Migration, sondern ein Redesign (§28, §48).
+   *
+   * Der Standard bleibt die Konvention der Waehrung; wer die bestehende
+   * Darstellung behalten will, sagt es ausdruecklich.
+   */
+  function styleFor(currency, opts) {
+    var base = LOCALES[Registry.normalize(currency)] || FALLBACK_LOCALE;
+    if (!opts || !opts.numberLocale) return base;
+    return {
+      locale: opts.numberLocale,
+      scales: opts.scales || (opts.numberLocale.indexOf("de") === 0 ? SCALES_DE : base.scales),
+      symbolPosition: opts.symbolPosition || (opts.numberLocale.indexOf("de") === 0 ? "suffix" : base.symbolPosition),
+      spaceBeforeSymbol: opts.numberLocale.indexOf("de") === 0 ? true : base.spaceBeforeSymbol
+    };
   }
 
   function number(value, locale, minDigits, maxDigits) {
@@ -90,7 +111,17 @@
     var meta = Registry.meta(currency);
     var symbol = meta ? meta.symbol : Registry.normalize(currency) || "";
     if (style.symbolPosition === "prefix") {
-      return symbol + (style.spaceBeforeSymbol ? " " : "") + text;
+      /* Das Minus gehoert VOR das Waehrungszeichen: "-$7,3 Mrd.", nicht
+         "$-7,3 Mrd.". Die erste Fassung setzte das Zeichen stur voran
+         und erzeugte damit die zweite Form - beim Abgleich mit der
+         Hedgefonds-Seite fiel es auf, weil deren Formatierer es richtig
+         machte.
+
+         Bei nachgestelltem Zeichen (deutsche Konvention) stellt sich
+         die Frage nicht: "-7,3 Mrd. €" ist ohnehin richtig. */
+      var negative = text.charAt(0) === "-" || text.charAt(0) === "\u2212";
+      var body = negative ? text.slice(1) : text;
+      return (negative ? "-" : "") + symbol + (style.spaceBeforeSymbol ? " " : "") + body;
     }
     return text + " " + symbol;
   }
@@ -107,7 +138,7 @@
   function formatPrice(value, currency, opts) {
     opts = opts || {};
     if (typeof value !== "number" || !isFinite(value)) return opts.placeholder || "–";
-    var style = styleFor(currency);
+    var style = styleFor(currency, opts);
     var meta = Registry.meta(currency);
     var digits = typeof opts.decimals === "number" ? opts.decimals : (meta ? meta.decimals : 2);
     return attach(number(value, style.locale, digits, digits), currency, style);
@@ -128,14 +159,20 @@
   function formatCompact(value, currency, opts) {
     opts = opts || {};
     if (typeof value !== "number" || !isFinite(value)) return opts.placeholder || "–";
-    var style = styleFor(currency);
+    var style = styleFor(currency, opts);
     var abs = Math.abs(value);
     var digits = typeof opts.decimals === "number" ? opts.decimals : 2;
 
     for (var i = 0; i < style.scales.length; i++) {
       var scale = style.scales[i];
       if (abs >= scale.min) {
-        return attach(number(value / scale.div, style.locale, digits, digits) + scale.suffix, currency, style);
+        /* `trimZeros` laesst nachlaufende Nullen weg ("$3.4T" statt
+           "$3.40T"). Gebraucht wird es beim Abbau der Waehrungsschuld:
+           die Hedgefonds-Seite stellt so dar, und die Formatierung
+           dorthin zu verlagern, wo sie hingehoert, darf ihr Aussehen
+           nicht aendern (§28). */
+        var min = opts.trimZeros ? 0 : digits;
+        return attach(number(value / scale.div, style.locale, min, digits) + scale.suffix, currency, style);
       }
     }
     var meta = Registry.meta(currency);
@@ -207,7 +244,7 @@
   function formatPercent(value, currency, opts) {
     opts = opts || {};
     if (typeof value !== "number" || !isFinite(value)) return opts.placeholder || "–";
-    var style = styleFor(currency);
+    var style = styleFor(currency, opts);
     var digits = typeof opts.decimals === "number" ? opts.decimals : 1;
     var text = number(value, style.locale, digits, digits) + " %";
     return (opts.signed && value > 0) ? "+" + text : text;
@@ -217,7 +254,7 @@
   function formatMultiple(value, currency, opts) {
     opts = opts || {};
     if (typeof value !== "number" || !isFinite(value)) return opts.placeholder || "–";
-    var style = styleFor(currency);
+    var style = styleFor(currency, opts);
     var digits = typeof opts.decimals === "number" ? opts.decimals : 1;
     return number(value, style.locale, digits, digits) + (opts.suffix === false ? "" : "x");
   }

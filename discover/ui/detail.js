@@ -728,9 +728,26 @@
 
   /* Millionen, wie man sie ausspricht: 302.969 Mio. $ liest niemand,
      303 Mrd. $ schon. */
+  /* Geldformatierung zentral (O-12) - quant/engines/fx/money-format.js.
+     Hier steht nur Darstellung, keine Umrechnung (§49). numberLocale
+     haelt das heutige Aussehen fest; ohne geladenen Core greift der
+     bisherige Pfad. */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    return (F && typeof F[fn] === "function") ? F[fn](value, currency || "USD", opts) : null;
+  }
+
   function geld(millionen) {
     if (!isNum(millionen)) return "–";
     var v = millionen;
+    /* Der Wert kommt in MILLIONEN herein; der zentrale Formatter
+       erwartet den vollen Betrag. Die Skalierung ist eine
+       Einheitenumrechnung, keine Waehrungsumrechnung - sie darf hier
+       stehen. */
+    var zentral = vuFormat("formatCompact", v * 1e6, "USD",
+      { numberLocale: "de-DE", decimals: Math.abs(v) >= 1000 ? 1 : 0 });
+    if (zentral) return zentral;
+
     if (Math.abs(v) >= 1000) {
       return (Math.round(v / 100) / 10).toFixed(1).replace(".", ",") + " Mrd. $";
     }

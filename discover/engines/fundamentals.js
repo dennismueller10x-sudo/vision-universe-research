@@ -71,6 +71,7 @@
     }
     if (!rev || typeof rev.v !== "number" || rev.v <= 0) { out.omitted.netMargin = out.omitted.fcfMargin = { reason: "NO_REVENUE" }; return out; }
     if (rev.v < PLAUSIBILITY.minRevenueForMargins) {
+      /* vu-currency: C - Diagnosetext einer Auslassung, kein Anzeigewert. Die Schwelle ist in USD definiert */
       out.omitted.netMargin = out.omitted.fcfMargin = { reason: "REVENUE_TOO_SMALL", detail: "Umsatz " + Math.round(rev.v) + " $ unter " + PLAUSIBILITY.minRevenueForMargins + " $" };
       return out;
     }

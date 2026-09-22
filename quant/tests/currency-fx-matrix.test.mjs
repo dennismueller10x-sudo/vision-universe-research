@@ -823,3 +823,404 @@ test("C2 · Eine Waehrung ohne jedes Bein bleibt unbedient - und sagt es", () =>
   assert.equal(m.fallback.currency, "AFN", "Der Wert bleibt in seiner Waehrung");
   assert.equal(m.fallback.value, 1_000_000);
 });
+
+/* ====================================================================== */
+/* PROVIDER-RANGFOLGE UND HERKUNFT (O-7)                                   */
+/* ====================================================================== */
+
+const Providers = require(join(FX, "fx-provider-registry.js"));
+
+test("P1 · PRIMARY zuerst, FALLBACK nur wo PRIMARY nichts hat", () => {
+  const s = Rates.createStore();
+  /* Die EZB reicht weit zurueck, Tiingo erst ab 2020 - genau die Lage
+     aus der Messung. */
+  s.ingest("EUR", "USD", [["2015-06-01", 1.0888], ["2015-06-02", 1.1150], ["2020-03-26", 1.1002], ["2020-03-27", 1.1015]],
+    Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  s.ingest("EUR", "USD", [["2020-03-30", 1.1010], ["2026-09-21", 1.1726]],
+    Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  const alt = s.rateAt("EUR", "USD", "2015-06-02");
+  assert.equal(alt.provenance.source, "ecb");
+  assert.equal(alt.provenance.role, "FALLBACK");
+  assert.deepEqual(alt.provenance.consideredSources.map((c) => c.source), ["tiingo"],
+    "Die Hauptquelle wurde befragt und hat abgelehnt - das steht in der Herkunft");
+
+  const neu = s.rateAt("EUR", "USD", "2026-09-21");
+  assert.equal(neu.provenance.source, "tiingo");
+  assert.equal(neu.provenance.role, "PRIMARY");
+  assert.deepEqual(neu.provenance.consideredSources, [], "Wo PRIMARY liefert, wird nichts uebergangen");
+});
+
+test("P2 · Die Rangfolge ist deterministisch, nicht von der Ingest-Reihenfolge abhaengig", () => {
+  function build(order) {
+    const s = Rates.createStore();
+    for (const src of order) {
+      s.ingest("EUR", "USD", [["2026-09-21", src === "tiingo" ? 1.1726 : 1.1700]],
+        Providers.ingestMeta(src, { frequency: "DAILY" }));
+    }
+    return s.rateAt("EUR", "USD", "2026-09-21");
+  }
+  const a = build(["tiingo", "ecb"]);
+  const b = build(["ecb", "tiingo"]);
+  assert.equal(a.provenance.source, "tiingo");
+  assert.equal(b.provenance.source, "tiingo", "Wer zuerst eingespielt wurde, darf keine Rolle spielen");
+  assert.equal(a.rate, b.rate);
+});
+
+test("P3 · Die Herkunft ueberlebt Inversion und Triangulation", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  s.ingest("EUR", "CHF", [["2026-09-21", 0.9351]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+
+  /* Invers: EUR/USD liegt vor, USD/EUR wird gebildet. */
+  const inv = s.rateAt("USD", "EUR", "2026-09-21");
+  assert.equal(inv.derivation, "INVERSE");
+  assert.equal(inv.provenance.source, "tiingo");
+  assert.equal(inv.provenance.role, "PRIMARY", "role darf bei der Inversion nicht verlorengehen");
+
+  /* Trianguliert ueber EUR, mit Beinen aus zwei Quellen. */
+  const cross = s.rateAt("USD", "CHF", "2026-09-21");
+  assert.equal(cross.derivation, "TRIANGULATED");
+  assert.equal(cross.provenance.role, "MIXED", "Ein Kreuz aus zwei Rollen ist keine davon");
+  assert.match(cross.provenance.source, /tiingo/);
+  assert.match(cross.provenance.source, /ecb/);
+  /* Die Handrechnung: USD/CHF = (EUR/CHF) / (EUR/USD). */
+  assert.ok(Math.abs(cross.rate - 0.9351 / 1.1726) < 1e-12);
+});
+
+test("P4 · Zwei Pivots, weil die Quellen verschieden notieren", () => {
+  /* Tiingo notiert gegen USD, die EZB gegen EUR. Mit nur einem Pivot
+     bliebe je nach Quelle die Haelfte der Kreuze unbildbar. */
+  const nurEur = Rates.createStore();
+  nurEur.ingest("EUR", "CNY", [["2026-09-21", 8.3016]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  nurEur.ingest("EUR", "CHF", [["2026-09-21", 0.9351]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  assert.equal(nurEur.rateAt("CNY", "CHF", "2026-09-21").available, true, "Kreuz ueber EUR");
+
+  const nurUsd = Rates.createStore();
+  nurUsd.ingest("USD", "CNY", [["2026-09-21", 7.0820]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  nurUsd.ingest("USD", "CHF", [["2026-09-21", 0.7975]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  assert.equal(nurUsd.rateAt("CNY", "CHF", "2026-09-21").available, true, "Kreuz ueber USD");
+
+  assert.deepEqual(Rates.PIVOTS, ["USD", "EUR"], "Die Reihenfolge ist fest, nicht 'welcher gerade passt'");
+});
+
+/* ====================================================================== */
+/* LIZENZ JE WERT (O-11)                                                   */
+/* ====================================================================== */
+
+test("L1 · Die Anzeigeerlaubnis haengt an der Quelle des Kurses, nicht am Produkt", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2018-06-01", 1.1660]], Providers.ingestMeta("ecb", { frequency: "DAILY" }));
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  const e = Engine.createEngine({ store: s, now: NOW });
+
+  const alt = e.convertMoney(100, "USD", "EUR", "2018-06-01", "MARKET_PRICE");
+  const neu = e.convertMoney(100, "USD", "EUR", "2026-09-21", "MARKET_PRICE");
+
+  assert.equal(alt.publicDisplayAllowed, true, "EZB-Kurse duerfen gezeigt werden - Quelle wird genannt");
+  assert.ok(alt.attribution && alt.attribution.length, "und die Nennung reist mit dem Wert");
+  assert.equal(neu.publicDisplayAllowed, false,
+    "Tiingo-FX: die Vertragsfrage ist offen, also keine oeffentliche Anzeige (O-11 C)");
+
+  /* Beide sind trotzdem gerechnet - interne Nutzung ist erlaubt. */
+  assert.equal(alt.conversionAvailable, true);
+  assert.equal(neu.conversionAvailable, true);
+});
+
+test("L2 · Ein Kreuz erbt die strengere Bedingung", () => {
+  const frei = Providers.displayPermission("ecb");
+  const gesperrt = Providers.displayPermission("tiingo");
+  const gemischt = Providers.displayPermission("tiingo+ecb");
+
+  assert.equal(frei.publicDerivedDisplayAllowed, true);
+  assert.equal(gesperrt.publicDerivedDisplayAllowed, false);
+  assert.equal(gemischt.publicDerivedDisplayAllowed, false,
+    "Der gesperrte Kurs steckt rechnerisch im Kreuz - also ist das Kreuz gesperrt");
+  assert.equal(gemischt.role, "MIXED");
+});
+
+test("L3 · Der Fast Path braucht keine Lizenz, eine unbekannte Quelle bekommt keine", () => {
+  assert.equal(Providers.displayPermission("identity").publicDerivedDisplayAllowed, true,
+    "Ohne Wechselkurs gibt es nichts zu lizenzieren");
+  assert.equal(Providers.displayPermission("irgendein-anbieter").publicDerivedDisplayAllowed, false,
+    "Eine Erlaubnis entsteht nicht dadurch, dass niemand widerspricht");
+  assert.ok(Providers.escalation(), "Die offene Vertragsfrage ist abrufbar, nicht nur dokumentiert");
+  assert.equal(Providers.escalation().state, "OWNER_ESCALATION_REQUIRED");
+});
+
+/* ====================================================================== */
+/* INTRADAY-FX-STATE (O-9)                                                 */
+/* ====================================================================== */
+
+test("O9-1 · Ein Stand je Paar, nicht je Aktie und nicht je Tick", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  s.ingestCurrent("EUR", "USD", { rate: 1.1731, asOf: "2026-09-22T11:55:00Z",
+    ...Providers.ingestMeta("tiingo", { frequency: "INTRADAY" }) });
+
+  const rt = RealtimeState.createState({ store: s, now: () => Date.parse(NOW), refreshSeconds: 60 });
+  for (let i = 0; i < 300; i++) {
+    rt.decorate({ symbol: "T" + (i % 40), price: 100 + i, currency: "USD" }, "EUR");
+  }
+  const snap = rt.snapshot();
+  assert.equal(snap.stats.converted, 300);
+  assert.ok(snap.stats.fxReads <= 2, `300 Ticks ueber 40 Titel, ${snap.stats.fxReads} FX-Abruf(e)`);
+  assert.equal(snap.pairs.length, 1, "Ein Paar im Cache, nicht 40");
+});
+
+test("O9-2 · Ein Intraday-Stand traegt den Realtime-Anspruch, ein Tageskurs nicht", () => {
+  function claim(stateAsOf) {
+    const s = Rates.createStore();
+    s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+    if (stateAsOf) {
+      s.ingestCurrent("EUR", "USD", { rate: 1.1731, asOf: stateAsOf,
+        ...Providers.ingestMeta("tiingo", { frequency: "INTRADAY" }) });
+    }
+    const rt = RealtimeState.createState({ store: s, now: () => Date.parse(NOW), refreshSeconds: 0 });
+    return rt.decorate({ symbol: "AAPL", price: 230, currency: "USD" }, "EUR");
+  }
+
+  const nurTag = claim(null);
+  assert.equal(nurTag.fxFreshness.frequency, "DAILY");
+  assert.equal(nurTag.realtimeClaimAllowed, false);
+
+  const frisch = claim("2026-09-22T11:50:00Z");       // 10 Minuten
+  assert.equal(frisch.fxFreshness.frequency, "INTRADAY");
+  assert.equal(frisch.fxFreshness.state, "CURRENT");
+  assert.equal(frisch.realtimeClaimAllowed, true, "Frischer Intraday-Stand traegt den Anspruch (O-9)");
+
+  const alt = claim("2026-09-22T10:00:00Z");          // 2 Stunden
+  assert.equal(alt.fxFreshness.state, "STALE");
+  assert.equal(alt.realtimeClaimAllowed, false, "Ein stale FX darf keinen vollstaendig aktuellen EUR-Wert behaupten");
+  assert.equal(alt.fxFreshness.consumerVisible, true, "und der Zustand wird sichtbar");
+  assert.ok(alt.display, "Gerechnet wird trotzdem");
+});
+
+test("O9-3 · Der Stand geht nur vorwaerts, und die Historie sieht ihn nie", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  assert.equal(s.ingestCurrent("EUR", "USD", { rate: 1.1731, asOf: "2026-09-22T11:55:00Z", source: "tiingo" }).accepted, true);
+  const zurueck = s.ingestCurrent("EUR", "USD", { rate: 9.99, asOf: "2026-09-22T09:00:00Z", source: "tiingo" });
+  assert.equal(zurueck.accepted, false, "Ein verspaeteter aelterer Tick darf keinen Ruecksprung erzeugen");
+  assert.equal(zurueck.reason, "olderThanStored");
+
+  /* Und die historische Abfrage bleibt unberuehrt. */
+  const hist = s.rateAt("EUR", "USD", "2026-09-21");
+  assert.equal(hist.rate, 1.1726);
+  assert.equal(hist.frequency, "DAILY");
+  assert.notEqual(hist.asOf, "2026-09-22T11:55:00Z",
+    "Der Kurs von jetzt hat in einer historischen Umrechnung nichts zu suchen");
+
+  /* Ungueltiges wird abgewiesen, nicht gespeichert. */
+  assert.equal(s.ingestCurrent("EUR", "USD", { rate: 0, asOf: "2026-09-22T12:00:00Z" }).accepted, false);
+  assert.equal(s.ingestCurrent("EUR", "USD", { rate: 1.17, asOf: "nicht-datum" }).accepted, false);
+});
+
+/* ====================================================================== */
+/* EUR | USD SWITCH CONTRACT                                               */
+/* ====================================================================== */
+
+test("SW1 · Der Switch tauscht Werte, nicht Symbole - ueber Kurs, Reihe und Kennzahl", () => {
+  const s = Rates.createStore();
+  /* Eine Reihe mit echtem FX-Verlauf: der Kurs bewegt sich, also muessen
+     USD- und EUR-Performance auseinanderlaufen. */
+  s.ingest("EUR", "USD", [
+    ["2021-09-10", 1.1815], ["2023-09-08", 1.0700], ["2026-09-10", 1.1726]
+  ], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  const layer = Contract.createLayer({ store: s, now: NOW, storage: null });
+  const punkte = [["2021-09-10", 148.97], ["2023-09-08", 178.18], ["2026-09-10", 326.57]];
+
+  layer.setDisplayCurrency("EUR");
+  assert.equal(layer.state().displayCurrency, "EUR", "Deutschland: Vorgabe EUR");
+  const eur = layer.series(punkte, "USD");
+  const eurKurs = layer.price(326.57, "USD");
+
+  layer.setDisplayCurrency("USD");
+  const usd = layer.series(punkte, "USD");
+  const usdKurs = layer.price(326.57, "USD");
+
+  /* 1. Der Kurs. */
+  assert.notEqual(eurKurs.display.value, usdKurs.display.value);
+  assert.equal(usdKurs.display.value, 326.57, "Im USD-Modus steht der native Wert");
+
+  /* 2. Jeder Punkt der Reihe mit dem FX SEINES Tages. */
+  const raten = eur.points.map((p) => p.rate);
+  assert.equal(new Set(raten).size, 3, "Drei Punkte, drei verschiedene FX-Staende");
+  for (let i = 0; i < punkte.length; i++) {
+    const erwartet = punkte[i][1] * s.rateAt("USD", "EUR", punkte[i][0]).rate;
+    assert.ok(Math.abs(eur.displaySeries[i] - erwartet) < 1e-9);
+  }
+
+  /* 3. Die Performance weicht ab - und das ist der Punkt. */
+  assert.equal(usd.performance.displayReturnPct, usd.performance.nativeReturnPct);
+  assert.notEqual(eur.performance.displayReturnPct, eur.performance.nativeReturnPct);
+  assert.ok(Math.abs(eur.performance.currencyEffectPp) > 1,
+    `Waehrungseffekt ${eur.performance.currencyEffectPp} - bei 1,18 auf 1,17 und zwischendurch 1,07 muss er spuerbar sein`);
+
+  /* 4. Und die Zerlegung geht auf. */
+  const linke = 1 + eur.performance.displayReturnPct / 100;
+  const rechte = (1 + eur.performance.nativeReturnPct / 100) *
+    (eur.points[eur.points.length - 1].rate / eur.points[0].rate);
+  assert.ok(Math.abs(linke - rechte) < 1e-9);
+});
+
+test("SW2 · Was der Switch NICHT anfasst", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  const layer = Contract.createLayer({ store: s, now: NOW, storage: null });
+
+  const unveraendert = [
+    { metricId: "operatingMargin", value: 31.24, unit: "pct" },
+    { metricId: "roic", value: 29.91, unit: "pct" },
+    { metricId: "revenueGrowth", value: 18.2, unit: "pct" },
+    { metricId: "epsGrowth", value: 21.0, unit: "pct" },
+    { metricId: "evToEbitda", value: 24.3, unit: "x" },
+    { metricId: "priceToBook", value: 8.4, unit: "x" },
+    { metricId: "quantScore", value: 87, unit: "score" },
+    { metricId: "maxDrawdown", value: -34.2, unit: "pct" },
+    { metricId: "sharesOutstanding", value: 24600, unit: "count_m" }
+  ];
+
+  for (const fact of unveraendert) {
+    layer.setDisplayCurrency("EUR");
+    const eur = layer.metric(fact);
+    layer.setDisplayCurrency("USD");
+    const usd = layer.metric(fact);
+    assert.equal(eur.display.value, fact.value, `${fact.metricId} hat sich im EUR-Modus veraendert`);
+    assert.equal(usd.display.value, fact.value, `${fact.metricId} hat sich im USD-Modus veraendert`);
+    assert.equal(eur.converts, false);
+  }
+});
+
+test("SW3 · Die Praeferenz gilt produktuebergreifend und ueberlebt den Neustart", () => {
+  const mem = {};
+  const storage = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; }, removeItem: (k) => { delete mem[k]; } };
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  const discover = Contract.createLayer({ store: s, now: NOW, storage });
+  assert.equal(discover.state().displayCurrency, "EUR");
+  discover.setDisplayCurrency("USD");
+
+  /* Ein zweites Produkt, dieselbe Sitzung. */
+  const screener = Contract.createLayer({ store: s, now: NOW, storage });
+  assert.equal(screener.state().displayCurrency, "USD", "Was Discover merkt, sieht der Screener");
+
+  /* Und ein Neustart. */
+  const spaeter = Contract.createLayer({ store: s, now: NOW, storage });
+  assert.equal(spaeter.state().displayCurrency, "USD");
+  assert.equal(spaeter.state().source, "USER");
+});
+
+test("SW4 · O-13: ein Titel ohne FX-Pfad bleibt im Produkt", () => {
+  const s = Rates.createStore();
+  s.ingest("EUR", "USD", [["2026-09-21", 1.1726]], Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  const layer = Contract.createLayer({ store: s, now: NOW, storage: null });
+
+  const ohne = layer.money(1_000_000, "AFN", null, "CURRENT_VALUE");
+  assert.equal(ohne.conversionAvailable, false);
+  assert.equal(ohne.conversionUnavailableReason, "conversionUnavailable");
+  assert.equal(ohne.displayState, "NATIVE_CURRENCY", "Nicht UNAVAILABLE - der Wert ist da, nur nicht in EUR");
+  assert.equal(ohne.native.value, 1_000_000, "Der Originalwert bleibt vollstaendig erhalten");
+  assert.equal(ohne.native.currency, "AFN");
+  assert.match(ohne.formatted, /1\.000\.000/, "und er wird angezeigt");
+  assert.ok(ohne.displayNote, "mit einem Satz, der sagt warum");
+
+  /* Ausdruecklich NICHT: ein EUR-Zeichen an einer AFN-Zahl. */
+  assert.ok(!ohne.formatted.includes("€"));
+});
+
+/* ====================================================================== */
+/* O-12 · MIGRATION: DIE DARSTELLUNG WANDERT, OHNE SICH ZU AENDERN         */
+/* ====================================================================== */
+
+test("M12-1 · Der zentrale Formatter reproduziert die bisherige Discover-Darstellung", () => {
+  /* Die Migration der Klasse-A-Stellen darf das Aussehen nicht aendern -
+     eine Migration, die nebenbei das Produkt umgestaltet, ist ein
+     Redesign, und das ist ausdruecklich nicht der Auftrag (§28, §48).
+
+     Die alte Formatierung steht hier als Gegenprobe. Sie ist bewusst
+     kopiert und nicht importiert: waere sie importiert, wuerde der Test
+     bei einer Aenderung der Quelle stillschweigend mitwandern und
+     nichts mehr festhalten. */
+  function alteDiscoverForm(v, unit) {
+    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
+    const a = Math.abs(v);
+    if (a >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd. $";
+    if (a >= 1e6) return (v / 1e6).toFixed(0) + " Mio. $";
+    return Math.round(v).toLocaleString("de-DE") + " $";
+  }
+  function neueForm(v, unit) {
+    const cur = (typeof unit === "string" && unit.indexOf("/") > 0) ? unit.split("/")[0] : (unit || "USD");
+    const a = Math.abs(v);
+    return (unit === "USD/shares")
+      ? Format.formatPrice(v, cur, { numberLocale: "de-DE", decimals: 2 })
+      : (a >= 1e6
+          ? Format.formatCompact(v, cur, { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 })
+          : Format.formatPrice(v, cur, { numberLocale: "de-DE", decimals: 0 }));
+  }
+
+  for (const [v, unit] of [[4.2, "USD/shares"], [326.57, "USD"], [1234, "USD"], [45678, "USD"],
+                           [1.186e11, "USD"], [5.4e9, "USD"], [8.42e8, "USD"], [2.5e6, "USD"], [999999, "USD"]]) {
+    assert.equal(neueForm(v, unit), alteDiscoverForm(v, unit), `${v} ${unit} sieht anders aus als vorher`);
+  }
+
+  /* Die EINE beabsichtigte Abweichung, und sie ist eine Korrektur: der
+     alte Formatter kannte keine Billionenstufe und schrieb bei einer
+     Marktkapitalisierung von 3,42 Bio. "3420,0 Mrd. $" - genau die
+     unleserliche Form, die §52 untersagt. */
+    assert.equal(alteDiscoverForm(3.42e12, "USD"), "3420,0 Mrd. $");
+  assert.equal(neueForm(3.42e12, "USD"), "3,4 Bio. $");
+});
+
+test("M12-2 · Der zentrale Formatter reproduziert die Hedgefonds-Darstellung", () => {
+  function alteHedgefondsForm(n) {
+    const s = n < 0 ? "-" : "", a = Math.abs(n);
+    if (a >= 1e12) return s + "$" + (Math.round(a / 1e12 * 100) / 100).toString().replace(/\.?0+$/, "") + "T";
+    if (a >= 1e9) return s + "$" + (Math.round(a / 1e9 * 10) / 10).toString().replace(/\.0$/, "") + "B";
+    if (a >= 1e6) return s + "$" + (Math.round(a / 1e6 * 10) / 10).toString().replace(/\.0$/, "") + "M";
+    if (a >= 1e3) return s + "$" + (Math.round(a / 1e3 * 10) / 10).toString().replace(/\.0$/, "") + "K";
+    return s + "$" + Math.round(a);
+  }
+  function neueForm(n) {
+    const a = Math.abs(n);
+    return a >= 1e3
+      ? Format.formatCompact(n, "USD", { decimals: a >= 1e12 ? 2 : 1, trimZeros: true })
+      : Format.formatPrice(n, "USD", { decimals: 0 });
+  }
+  for (const v of [3.42e12, 3.4e12, 5.4e9, 5e9, 842e6, 2.5e6, 45e3, 999, -7.3e9, -42]) {
+    assert.equal(neueForm(v), alteHedgefondsForm(v), `${v} sieht anders aus als vorher`);
+  }
+});
+
+test("M12-3 · Das Minus steht vor dem Waehrungszeichen", () => {
+  /* Aufgefallen beim Abgleich mit der Hedgefonds-Seite: die erste
+     Fassung setzte das Zeichen stur voran und erzeugte "$-7.3B". */
+  assert.equal(Format.formatCompact(-7.3e9, "USD", { decimals: 1, trimZeros: true }), "-$7.3B");
+  assert.equal(Format.formatPrice(-42.5, "USD"), "-$42.50");
+  assert.equal(Format.formatPrice(42.5, "USD"), "$42.50", "Positive Betraege bleiben unveraendert");
+  /* Bei nachgestelltem Zeichen stellt sich die Frage nicht. */
+  assert.equal(Format.formatPrice(-42.5, "EUR"), "-42,50 €");
+});
+
+test("M12-4 · Kein Consumer-Frontend rechnet mehr selbst um", () => {
+  /* Der Guard prueft das im Lauf; dieser Test haelt die Zusage im
+     Vertrag fest. Was die migrierten Dateien tun duerfen, ist
+     formatieren - was sie nicht duerfen, ist einen Wechselkurs
+     anwenden (§49). */
+  const migrierteDateien = [
+    "discover/ui/surfaces.js", "discover/ui/detail-fundamentals.js",
+    "discover/ui/cards.js", "discover/ui/detail.js",
+    "dashboard/app.js", "hedgefonds/index.html"
+  ];
+  const fs = require("node:fs");
+  for (const datei of migrierteDateien) {
+    const src = fs.readFileSync(join(ROOT, datei), "utf8");
+    assert.match(src, /VUFx\s*\.\s*Format|vuFormat\s*\(/,
+      `${datei} konsumiert den zentralen Formatter nicht`);
+    assert.ok(!/usdToEur|eurToUsd|exchangeRate\s*[=:]|wechselkurs\s*[=:]/i.test(src),
+      `${datei} enthaelt eigene Umrechnungslogik`);
+  }
+});

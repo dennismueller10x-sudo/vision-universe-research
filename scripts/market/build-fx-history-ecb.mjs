@@ -55,7 +55,11 @@ const FEED = ECB.FEEDS[feedArg ? feedArg.slice("--feed=".length) : "FULL_HISTORY
 const OUT_DIR = PUBLISH
   ? resolve(ROOT, "quant", "data", "market", "fx", "ecb")
   : resolve(ROOT, ".market-cache", "currency", "fx-ecb");
-const REPORT = PUBLISH
+/* Der Bericht enthaelt keine Kurse - nur Zaehlungen, Waehrungslisten und
+   die Nahtstatistik. Er darf deshalb committet werden, waehrend die
+   Reihen es (in der Standardeinstellung) nicht werden. */
+const PUBLISH_REPORT = PUBLISH || flags.has("--publish-report");
+const REPORT = PUBLISH_REPORT
   ? resolve(ROOT, "quant", "data", "market", "fx", "ecb-coverage.json")
   : resolve(ROOT, ".market-cache", "currency", "ecb-coverage.json");
 

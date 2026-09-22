@@ -46,8 +46,14 @@ import { fileURLToPath } from "node:url";
 import {
   SCAN_DIRS, EXEMPT, EXTENSIONS, HARDCODED_CURRENCY,
   RATIO_MARKERS, MONETARY_MARKERS, NUMERIC_FORMATTING, TEST_MARKERS, INTENTIONAL_MARKERS,
-  codeLines
+  CENTRAL_FORMATTER_CALL, codeLines
 } from "./currency-debt-patterns.mjs";
+
+const MARKER_ACTIONS = {
+  C: "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+  E: "Bewusst native Waehrung. Bleibt, die Begruendung steht im Code.",
+  D: "Testcode."
+};
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = process.argv.slice(2);
@@ -62,7 +68,21 @@ const OUT = PUBLISH
 /* Eine Zeile, die eine Zahl formatiert UND ein Waehrungszeichen anhaengt,
    ist eine Geldanzeige - unabhaengig davon, ob ein Kennzahlname darin
    vorkommt. */
-function classify(line, file) {
+function classify(line, file, fileMigrated, marker) {
+  /* Eine im Code stehende Einordnung schlaegt jede Heuristik. Sie ist
+     eine Entscheidung mit Begruendung, und genau die verlangt O-6. */
+  if (marker && MARKER_ACTIONS[marker.klass]) {
+    return { klass: marker.klass, label: marker.klass === "C" ? "STATIC_COPY"
+                                      : marker.klass === "E" ? "INTENTIONAL_NATIVE_CURRENCY" : "TEST_FIXTURE",
+             action: MARKER_ACTIONS[marker.klass], confidence: "DECLARED", reason: marker.reason };
+  }
+  /* Zuerst: hat diese Datei die Migration hinter sich? Dann ist jede
+     verbliebene Zeile ein Rueckfallpfad, kein Schuldposten. */
+  if (fileMigrated && !RATIO_MARKERS.test(line)) {
+    return { klass: "F", label: "MIGRATED_FALLBACK",
+             action: "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+             confidence: "HIGH" };
+  }
   const inTestPath = /\/tests?\//.test(file) || /\.test\.|\.spec\./.test(file);
   if (inTestPath || TEST_MARKERS.test(line)) {
     return { klass: "D", label: "TEST_FIXTURE",
@@ -126,14 +146,16 @@ for (const file of SCAN_DIRS.flatMap((d) => walk(join(ROOT, d)))) {
   if (EXEMPT.some((frag) => rel.includes(frag))) continue;
   let text;
   try { text = readFileSync(file, "utf8"); } catch { continue; }
+  const migrated = CENTRAL_FORMATTER_CALL.test(text);
 
-  for (const { line, text: code } of codeLines(text)) {
+  for (const { line, text: code, marker } of codeLines(text)) {
     const rule = HARDCODED_CURRENCY.find((r) => r.re.test(code));
     if (!rule) continue;
-    const c = classify(code, rel);
+    const c = classify(code, rel, migrated, marker);
     entries.push({
       file: rel, line, rule: rule.id,
       class: c.klass, label: c.label, action: c.action, confidence: c.confidence,
+      declaredReason: c.reason || null,
       text: code.slice(0, 160)
     });
   }
@@ -166,12 +188,15 @@ const report = {
     C: { label: "STATIC_COPY", rule: "pruefen, ob dynamische Waehrung erforderlich" },
     D: { label: "TEST_FIXTURE", rule: "nur aendern, wenn der Vertrag es verlangt" },
     E: { label: "INTENTIONAL_NATIVE_CURRENCY", rule: "darf bleiben, Semantik dokumentieren" },
+    F: { label: "MIGRATED_FALLBACK", rule: "migriert; Zeile ist der Rueckfall ohne geladenen Core" },
     UNCLASSIFIED: { label: "UNCLASSIFIED", rule: "von Hand ansehen" }
   },
   total: entries.length,
   byClass,
   filesAffected: Object.keys(byFile).length,
   migrationOrder,
+  migratedFiles: [...new Set(entries.filter((e) => e.class === "F").map((e) => e.file))].sort(),
+  openClassA: byClass.A || 0,
   entries: classFilter ? entries.filter((e) => e.class === classFilter) : entries
 };
 

@@ -42,6 +42,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FXDIR = join(ROOT, "quant", "engines", "fx");
 
 const Rates    = require(join(FXDIR, "fx-rates.js"));
+const Providers = require(join(FXDIR, "fx-provider-registry.js"));
 const Engine   = require(join(FXDIR, "currency-engine.js"));
 const Registry = require(join(FXDIR, "currency-registry.js"));
 const Format   = require(join(FXDIR, "money-format.js"));
@@ -68,6 +69,14 @@ const SERIES_DIR = join(ROOT, "quant", "data", "market", "discover-series-long")
 const FX_STORE_DIRS = [
   join(ROOT, ".market-cache", "currency", "fx"),
   join(ROOT, "quant", "data", "market", "fx")
+];
+const ECB_STORE_DIRS = [
+  join(ROOT, ".market-cache", "currency", "fx-ecb"),
+  join(ROOT, "quant", "data", "market", "fx", "ecb")
+];
+const INTRADAY_CANDIDATES = [
+  join(ROOT, ".market-cache", "currency", "intraday-rates.json"),
+  join(ROOT, "quant", "data", "market", "fx", "intraday-rates.json")
 ];
 const PROBE_CANDIDATES = [
   join(ROOT, "quant", "data", "market", "capabilities", "tiingo-fx-probe.json"),
@@ -119,6 +128,26 @@ function loadFxStore() {
   const store = Rates.createStore();
 
   /* Produktionsbestand, falls build-fx-history.mjs bereits gelaufen ist. */
+  /* Die EZB-Reihen kommen als FALLBACK in denselben Store. Ohne sie
+     endet jeder historische Nachweis am Beginn der Anbieterhistorie -
+     und genau das war der Anlass fuer O-7. */
+  function ingestEcb(store) {
+    let n = 0;
+    for (const dir of ECB_STORE_DIRS) {
+      if (!existsSync(dir)) continue;
+      for (const file of readdirSync(dir).filter((f) => f.endsWith(".json") && !f.startsWith("_"))) {
+        let data;
+        try { data = JSON.parse(readFileSync(join(dir, file), "utf8")); } catch { continue; }
+        if (!data.base || !data.quote || !Array.isArray(data.points) || !data.points.length) continue;
+        store.ingest(data.base, data.quote, data.points,
+          Providers.ingestMeta("ecb", { frequency: data.frequency || "DAILY" }));
+        n++;
+      }
+      if (n) break;
+    }
+    return n;
+  }
+
   for (const dir of FX_STORE_DIRS) {
     if (!existsSync(dir)) continue;
     const files = readdirSync(dir)
@@ -137,9 +166,29 @@ function loadFxStore() {
       ingested++;
     }
     if (ingested) {
+      /* Der zentrale Intraday-Stand, falls einer vorliegt (O-9).
+         Er gehoert in denselben Store: nur so sieht RT1, ob die
+         EUR-Anzeige den Realtime-Anspruch tragen darf. Ohne ihn
+         rechnet der Nachweis mit Tagesschluessen und meldet
+         folgerichtig, dass "Realtime EUR" nicht zulaessig ist - eine
+         richtige Aussage ueber den falschen Bestand. */
+      const ecbPairs = ingestEcb(store);
+      let intradayPairs = 0;
+      for (const file of INTRADAY_CANDIDATES) {
+        if (!existsSync(file)) continue;
+        let data;
+        try { data = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
+        for (const r of data.rates || []) {
+          const res = store.ingestCurrent(r.base, r.quote, r);
+          if (res.accepted) intradayPairs++;
+        }
+        if (intradayPairs) break;
+      }
       return { store, kind: "PRODUCTION",
                note: `${ingested} Paar(e) aus ${dir.replace(ROOT + "/", "")}: ${pairs.slice(0, 8).join(", ")}` +
-                     (pairs.length > 8 ? ` und ${pairs.length - 8} weitere.` : ".") };
+                     (pairs.length > 8 ? ` und ${pairs.length - 8} weitere` : "") +
+                     (ecbPairs ? `; ${ecbPairs} EZB-Reihe(n) als Fallback` : "; kein EZB-Fallback") +
+                     (intradayPairs ? `; ${intradayPairs} Intraday-Stand/Staende.` : "; kein Intraday-Stand.") };
     }
   }
 

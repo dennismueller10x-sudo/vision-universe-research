@@ -214,7 +214,7 @@ jobs:
       - name: Historischer EZB-Fallback (O-7)
         id: ecb
         continue-on-error: true
-        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY
+        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish-report
 
       - name: Zentraler Intraday-FX-State (O-9)
         id: intraday
@@ -262,6 +262,11 @@ jobs:
               "FX-Paarabdeckung gemessen (automatischer Lauf)" \
               quant/data/market/fx/pair-availability.json
           fi
+          if [ -f quant/data/market/fx/ecb-coverage.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "EZB-Abdeckung und Nahtstelle gemessen (automatischer Lauf)" \
+              quant/data/market/fx/ecb-coverage.json
+          fi
 
       - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
         if: always()
@@ -282,7 +287,7 @@ jobs:
           if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
             for f in quant/data/market/fx/*.json; do
               case "$(basename "$f")" in
-                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json) ;;
+                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json) ;;
                 *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad und steht nicht auf der Erlaubnisliste."; exit 1 ;;
               esac
             done
