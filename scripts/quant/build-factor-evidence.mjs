@@ -565,9 +565,17 @@ function main() {
   const summary = {
     ...head,
     schemaVersion: FactorEvidence.SUMMARY_SCHEMA,
+    /* "Open" means a comparison point actually sits inside the velocity
+       window, not merely that a second file exists. Two snapshots three days
+       apart cannot carry a 30-day trajectory, and saying otherwise here
+       would contradict what the engine reports per title. */
     snapshotHistory: { methodologyVersion: FactorEvidence.METHODOLOGY_VERSION, dates: snapshotDates,
       velocityWindowDays: ChangeEngine.SCORE_VELOCITY_DAYS,
-      scoreMomentumOpen: snapshotDates.length > 1 },
+      velocityToleranceDays: ChangeEngine.SCORE_VELOCITY_TOLERANCE_DAYS,
+      scoreMomentumOpen: snapshotDates.some((date) => {
+        const days = (Date.parse(cutoff) - Date.parse(date)) / 86400000;
+        return Math.abs(days - ChangeEngine.SCORE_VELOCITY_DAYS) <= ChangeEngine.SCORE_VELOCITY_TOLERANCE_DAYS;
+      }) },
     scope: "CANONICAL_PRODUCT_UNIVERSE",
     source: {
       priceFactors: { engine: priceFactors.engine, generatedAt: priceFactors.generatedAt, securities: priceFactors.securities.length, benchmark: priceFactors.benchmark },
@@ -589,16 +597,20 @@ function main() {
     screening: { schemaVersion: FactorEvidence.SCREENING_SCHEMA, namespace: FactorEvidence.NAMESPACE, rows: Object.keys(screeningRows).length, fields: factorColumns.concat(coverageColumn) },
     /* Named, actionable gates. Each one is a concrete missing input, not a
        vague "not ready": this list is the work queue for the next factor
-       certification step. */
-    openInputGates: [
-      { id: "CONSUMER_EXPORT_MATERIALIZATION", blocks: ["value.ebitdaYield", "profitability.roicTtm", "profitability.roicMedian3y"], owner: "scripts/quant/sec/consumer.py", detail: "Die Consumer-Auslieferung führt depreciation_and_amortization, pretax_income, income_tax_expense und das abgeleitete ebitda jetzt mit. Die Felder erscheinen mit dem nächsten SEC-Lauf in den Consumer-Artefakten; bis dahin bleiben die drei Komponenten hier leer." },
-      { id: "BETA_252D", blocks: ["risk.beta252d"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer." },
-      { id: "RELATIVE_STRENGTH_12M1M_MATERIALIZATION", blocks: ["momentum.relativeStrength12m1m"], owner: "market-factors-1.0.0", detail: "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt." },
-      { id: "NET_DEBT_PERIOD_ALIGNMENT", blocks: ["quality.netDebtToAssets", "value.salesYield"], owner: "SEC normalization", detail: "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt." },
+       certification step.
+
+       Every entry that a run can settle by itself is MEASURED against the
+       coverage this run produced, never asserted. A gate that names a
+       component which now carries values would otherwise keep claiming a
+       blockade that a workflow has already cleared - and a stale gate is
+       worse than no gate, because someone acts on it. Only the gates that
+       no materialization can close (an external licence, a missing
+       methodology, a history that has to accumulate) are declared. */
+    openInputGates: measuredGates(componentCoverage).concat([
       { id: "PIT_ANALYST_CONSENSUS", blocks: ["revisions.*"], owner: "external licence" },
       { id: "INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS", blocks: ["quality.*", "value.*", "profitability.*"], owner: "quant-v2 methodology" },
       { id: "FACTOR_SNAPSHOT_HISTORY", blocks: ["change.scoreMomentum"], owner: "this materializer, from its first weekly snapshot forward" }
-    ],
+    ]),
     gapCounts: Object.fromEntries(gapCounts),
     runtimeMs: Date.now() - started
   };
@@ -610,6 +622,30 @@ function main() {
     console.log("  " + factorId.padEnd(14) + JSON.stringify(factorStates[factorId]));
   }
   console.log("  reasons " + JSON.stringify(reasonCounts));
+}
+
+/* A component with no coverage at all is a closed input. A component that
+   covers a small part of the universe is a narrow input, and saying so with
+   the measured count is more use than either silence or a blanket "blocked".
+   The threshold is deliberately coarse; it describes breadth, not quality. */
+function measuredGates(componentCoverage) {
+  const NARROW = 0.10;
+  const universe = Math.max(1, ...Object.values(componentCoverage));
+  const closed = [], narrow = [];
+  for (const [id, count] of Object.entries(componentCoverage).sort()) {
+    if (count === 0) closed.push(id);
+    else if (count / universe < NARROW) narrow.push(id + " (" + count + ")");
+  }
+  const gates = [];
+  if (closed.length) {
+    gates.push({ id: "COMPONENT_INPUT_NOT_MATERIALIZED", blocks: closed, owner: "the artifact that feeds the component",
+      detail: "Diese Komponenten stehen in der Methodik, tragen in diesem Lauf aber keinen einzigen Wert. Gemessen, nicht behauptet." });
+  }
+  if (narrow.length) {
+    gates.push({ id: "COMPONENT_INPUT_NARROW", blocks: narrow, owner: "the artifact that feeds the component",
+      detail: "Diese Komponenten sind offen, decken aber weniger als " + Math.round(NARROW * 100) + " % der bewerteten Titel ab. Sie tragen ihren Faktor nicht allein." });
+  }
+  return gates;
 }
 
 /* Hash over everything but the hash itself, so a stored snapshot can be

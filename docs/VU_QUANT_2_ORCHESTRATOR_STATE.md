@@ -11,19 +11,21 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_PHASE
 
-`M3_STRATEGY_MATCH_DELIVERED_ON_A_SEPARATE_V2_NAMESPACE`
+`M2_SETUP_OBSERVATION_BUILT_AWAITING_OWNER_APPROVAL_OF_THE_MAPPING`
 
-Factor Evidence, Change and Strategy Match exist as versioned product engines over the broad
-canonical universe, and the Quant Experience frontend renders them. Quant V1 is untouched and
-marked LEGACY_IMMUTABLE; Quant V2 lives in its own catalog namespace with no composite.
-Setup, Pattern, Backtest and Market Regime remain ahead.
+Factor Evidence, Change, Strategy Match and now the Setup Observation exist as versioned
+product engines over the broad canonical universe, and the Quant Experience frontend renders
+them. Quant V1 is untouched and marked LEGACY_IMMUTABLE; Quant V2 lives in its own catalog
+namespace with no composite. The setup mapping is written, machine-checked and materialized
+over 5,676 titles; its lifecycle waits on one owner gate and one more ordered observation.
+Pattern, Backtest and Market Regime remain ahead.
 
 ## PRODUCT_MILESTONES
 
 | Milestone | Scope | State |
 |---|---|---|
 | M1 | Factor + Change experience | **DONE** (this section) |
-| M2 | Setup Engine + frontend | PREPARED — snapshot history started; needs 30 days of it, then certification |
+| M2 | Setup Engine + frontend | **BUILT** — mapping written, materialized over 5,676 titles; lifecycle awaits owner approval + a second observation |
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | BLOCKED in-repo — needs deep canonical history (see KNOWN_BLOCKERS) |
 | M5 | Pattern Match product | OPEN — downstream of M4 |
@@ -121,23 +123,62 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
   section, the screener methodology switch, the profile round trip and the watchlist strip,
   both widths.
 
+### M2 — Setup Observation (`setup-mapping-1.0.0`, engine `vu-setup-1.0.0`)
+
+- **The mapping is written and machine-checked**, not described. Ten ordered rules, first match
+  wins, ending in a catch-all. `validateMapping()` refuses a cascade that leaves one of the
+  eight states unreachable, that would decide a path-dependent state without a history
+  condition, that names a field the catalog does not have, or that does not end in a rule that
+  always matches. The materializer runs it before evaluating a single title.
+- **Every point-in-time rule IS a screener query.** Each is one canonical rule predicate over
+  catalog fields; a test asserts the predicate and the query carry the same `predicateHash` in
+  both directions. §20 holds here without a second evaluator: the rule that assigns the state
+  screens for it.
+- **Two tiers, never conflated.** `classification` answers "what does today's evidence look
+  like"; `lifecycle` answers "where does this title stand in its course". `ACTIVE`,
+  `RISK_RISING`, `INVALIDATED` and `EXIT` are skipped — reported `NOT_EVALUABLE`, not as a
+  negative — while the ordered observation history is short. They are never reconstructed from
+  a single cutoff.
+- **A repainting input was found and replaced.** The catalog only exposed
+  `technicalStructure`, whose regime counts close breaks a later pivot confirmation can take
+  back; a state built on it would change retroactively. `technicalConfirmedStructure`
+  (`technical.confirmed_structure`) now carries the pivot-confirmed regime the structure engine
+  already computes, and a test asserts no state-deciding rule reads the revisable one.
+- **Invalidation is measured against the level that was published then.** The analysis
+  invalidation price and the first target zone are frozen into each observation; a later run
+  compares today's close against those, never against levels recomputed today.
+- **Immutable observation history** beside the rebuildable artifact, per mapping version, with
+  the same two aborts as the factor snapshots: a stored file that no longer matches its own
+  content hash, and a run that would give a published date different content.
+- **Materialized over the full technical-capable breadth**: 5,676 instruments, 0 without
+  complete evidence — NO_SETUP 4,017 · WATCH 843 · SETUP_FORMING 800 · CONFIRMED 16, path tier
+  0 and closed. Both WATCH paths are used (620 via trend, 223 via confirmed structure near the
+  52-week high). Largest shard 4.6 KB gzipped.
+- **The frontend stopped carrying its own definition.** The Setup section on `/vu2/?view=quant`
+  previously listed seven conditions written in `experience.js`. It now renders the rule that
+  actually decided the state, its conditions, the mapping version and the rule id. The journey
+  steps come from the cascade, not from a hard-coded list.
+- Wired into `product-intelligence-materialization.yml` right after the bundles it reads, with
+  its tests and its summary in the run log and the retained evidence.
+
 ## PRODUCTION_REALITY
 
-Counts measured from the materialized artifact at data cutoff `2026-09-18`.
+Counts measured from the materialized artifact at data cutoff `2026-09-21`, after the
+owner-authorized market-data and SEC consumer-export runs.
 
 | Measure | Count/state |
 |---|---:|
 | Product Universe | 6,875 |
-| `FACTOR_EVIDENCE_PUBLISHED` | 6,404 |
-| `FACTOR_QUALITY_AVAILABLE` | 2,732 |
-| `FACTOR_GROWTH_AVAILABLE` | 3,188 |
-| `FACTOR_MOMENTUM_AVAILABLE` | 5,582 |
-| `FACTOR_VALUE_AVAILABLE` | 1,999 |
-| `FACTOR_PROFITABILITY_AVAILABLE` | 1,154 |
+| `FACTOR_EVIDENCE_PUBLISHED` | 6,403 |
+| `FACTOR_QUALITY_AVAILABLE` | 2,734 |
+| `FACTOR_GROWTH_AVAILABLE` | 3,189 |
+| `FACTOR_MOMENTUM_AVAILABLE` | 5,581 |
+| `FACTOR_VALUE_AVAILABLE` | 2,003 |
+| `FACTOR_PROFITABILITY_AVAILABLE` | 1,188 |
 | `FACTOR_REVISIONS_AVAILABLE` | 0 (gate `PIT_ANALYST_CONSENSUS`) |
-| `FACTOR_RISK_AVAILABLE` | 5,303 |
+| `FACTOR_RISK_AVAILABLE` | 5,581 |
 | `FACTOR_NOT_APPLICABLE_INDUSTRY` | 967 (banks, insurers, REITs) |
-| `WITH_PIT_FUNDAMENTALS` | 5,008 |
+| `WITH_PIT_FUNDAMENTALS` | 5,010 |
 | `WITH_MARKET_CAP` | 3,921 |
 | `FACTORS_BROADLY_AVAILABLE` | 6 of 7 (Revisions is the exception) |
 | `QUANT_V1_STATUS` | LEGACY_IMMUTABLE, field ids unchanged |
@@ -148,13 +189,16 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 | `SCREENER_METHODOLOGIES` | 2, mixed queries refused |
 | `STRATEGY_RULE_SCREENS` | yes — same predicate hash in both directions |
 | `WATCHLIST_FACTOR_EVIDENCE` | seven-factor strip per member |
-| `SNAPSHOT_HISTORY` | started, 1 snapshot (`2026-09-18`), immutable, per-methodology |
-| `SCORE_MOMENTUM` | closed — history too short for the 30-day window |
+| `SNAPSHOT_HISTORY` | 2 snapshots (`2026-09-18`, `2026-09-21`), immutable, per-methodology |
+| `SCORE_MOMENTUM` | closed — the two snapshots are 3 days apart, the window is 30 ± 10 |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |
 | `COMPOSITE_SCORE` | WITHHELD |
 | `QUANT_V2_STATUS` | SPECIFIED_NOT_ACTIVE |
 | `STRATEGY_RANKING_STATUS` | UNAVAILABLE |
-| `SETUP_STATE_STATUS` | FAIL_CLOSED |
+| `SETUP_OBSERVATION_UNIVERSE` | 5,676 observed, 0 without complete evidence |
+| `SETUP_CLASSIFICATION` | NO_SETUP 4,017 · WATCH 843 · SETUP_FORMING 800 · CONFIRMED 16 |
+| `SETUP_LIFECYCLE_STATUS` | FAIL_CLOSED — `SETUP_MAPPING_NOT_APPROVED` (owner gate) |
+| `SETUP_OBSERVATION_HISTORY` | 1 observation (`2026-09-10`), immutable, per mapping version |
 | `MARKET_REGIME_STATUS` | FAIL_CLOSED |
 | `REVISIONS_STATUS` | BLOCKED_EXTERNAL |
 | `RADAR_SIGNALS_CAPABLE_UNIVERSE` (20 EOD) | 5,888 |
@@ -166,10 +210,14 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,467/1,467 passed locally (1,411 before; +17 factor-evidence,
-  +4 market-factors, +12 fundamental-inputs, +19 strategy-match/namespace, +4 snapshot history).
-  SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
+- Full Quant suite: 1,479/1,479 passed locally (1,467 before, +12 setup-engine).
+  SEC Python suite: green in SEC run `35772833294` step 5.
 - Public data hygiene guard: passed against the new artifact.
+- A harness defect was found and fixed while doing this: the local QA server sent
+  `Content-Encoding: gzip` for `.json.gz`, so the browser decompressed transparently and every
+  compressed-artifact read failed. Production serves those files as opaque bytes and the page
+  decompresses itself. The harness now does the same. Worth recording because the symptom
+  looked exactly like a broken Quant page.
 - Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL), `explain` and `screener`:
   one `h1` per page, no horizontal overflow, seven factors in canonical order, change groups
   rendered, setup conditions rendered, eight Strategy Match profiles rendered, the screener
@@ -181,23 +229,40 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 ## OPEN_INPUT_GATES
 
 Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `openInputGates`.
+Every gate a run can settle by itself is now **measured from that run's coverage**, not
+asserted in a hand-written list. Three gates in the previous version of this file
+(`CONSUMER_EXPORT_MATERIALIZATION`, `BETA_252D`, `RELATIVE_STRENGTH_12M1M_MATERIALIZATION`)
+had already been cleared by the workflow runs and would have kept claiming a blockade that no
+longer existed. A stale gate is worse than no gate, because someone acts on it.
 
 | Gate | Blocks | Owner |
 |---|---|---|
-| `CONSUMER_EXPORT_MATERIALIZATION` | `value.ebitdaYield`, `profitability.roicTtm`, `profitability.roicMedian3y` | `scripts/quant/sec/consumer.py` — widened, waiting for the next SEC run |
-| `BETA_252D` | `risk.beta252d` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
-| `RELATIVE_STRENGTH_12M1M_MATERIALIZATION` | `momentum.relativeStrength12m1m` | `market-factors-1.0.0` — implemented, waiting for the next market-data run |
-| `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC normalization (stale debt instants are dropped, not mixed) |
+| `COMPONENT_INPUT_NARROW` | `profitability.roicTtm` (58), `value.ebitdaYield` (83), `value.salesYield` (97), `quality.netDebtToAssets` (462), `profitability.roicMedian3y` (535) | SEC normalization — see below |
 | `PIT_ANALYST_CONSENSUS` | `revisions.*` | external licence |
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | Quality, Value, Profitability for 967 titles | quant-v2 methodology |
-| `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum`, SetupState (M2) | started 2026-09-18; needs a second snapshot ~30 days later |
+| `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum` | this materializer; two snapshots exist, they need to be ~30 days apart |
 
-A correction worth recording: an earlier read of this state named `OPERATING_INCOME` as the
-largest gate. That was wrong — `operating_income` is normalized and exported already, and
-4,021 consumer files carry an annual series. Wiring it opened Profitability (0 → 1,154) and
-lifted Growth (2,140 → 3,188) and Quality (2,514 → 2,732) with no pipeline change at all.
-What remains at the consumer boundary is narrower and precisely named: three metrics that the
-SEC layer normalizes but `consumer.py` does not export.
+No component is fully closed any more. `COMPONENT_INPUT_NOT_MATERIALIZED` is absent from the
+artifact because nothing in the contract is at zero coverage.
+
+### What the narrow components actually trace back to — measured
+
+`total_debt`, not the metrics that were just exported. Across the 5,068 consumer files:
+
+| Metric | annual | quarterly | TTM |
+|---|---:|---:|---:|
+| `operating_income` | 4,021 | 3,213 | 2,969 |
+| `pretax_income` | 4,330 | 3,210 | 2,949 |
+| `income_tax_expense` | 4,492 | 3,397 | 3,008 |
+| `ebitda` | 3,502 | 2,886 | 2,661 |
+| `stockholders_equity` | 4,848 | 0 | 0 (balance-sheet instant) |
+| **`total_debt`** | **2,645** | **2,182** | **854** |
+
+Of 5,068 issuers, exactly **325** carry all six ROIC inputs at once, and `total_debt` is the
+first missing input for **4,214** of the rest — equity for 8, operating income for 484, the tax
+pair for 37. The 325 then fall to 58 through period alignment and the positive-invested-capital
+check. So `roicTtm` at 58 is not a wiring gap; it is `total_debt` TTM breadth in the SEC
+normalization layer, and that is the next real input gate for Profitability and Value.
 
 ## OWNER_DECISIONS
 
@@ -233,21 +298,23 @@ SEC layer normalizes but `consumer.py` does not export.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-1. **Run the SEC fundamentals workflow and then the market-data workflow.** Both exports have
-   been widened and both sets of readers are wired and unit-tested; the only thing left is for
-   the pipelines to produce the fields. That opens `value.ebitdaYield`, both ROIC components,
-   `risk.beta252d` and `momentum.relativeStrength12m1m` with no further code.
-2. **Run the market-data workflow** so the three new `market-factors-1.0.0` fields land in
-   `factors-FULL_UNIVERSE.json`, then re-materialize factor evidence. This completes Momentum
-   (100 % component weight) and Risk (100 %) without any further code.
-3. **Let the snapshot history accumulate.** The first snapshot is published (`2026-09-18`);
-   `scoreMomentum` and the SetupState binding open once a second one sits ~30 days back.
-   Nothing to build — the materialization workflow appends on each run.
-4. **Setup Engine (M2)**: bind the canonical SetupState contract to rules over the now-available
-   factor and change evidence, certify, then flip `AVAILABLE_OBSERVATIONS_ALLOWED`. Owner
-   cleared this to be prepared in parallel once real snapshot history is materialized.
-5. **Pattern Research (M4)** as a workflow job against the restored canonical history.
-6. Market Regime stays on the Owner gate.
+1. **Owner gate: approve `setup-mapping-1.0.0`.** This is the one thing no run can do for
+   itself. The mapping is written, versioned, machine-checked and materialized over 5,676
+   titles; approval is a three-field edit in `quant/methodology/setup-state-v1.json`
+   (`approval.state`, `approvedBy`, `approvedAt`). Nothing else changes, and until then every
+   surface says in a typed reason that no lifecycle state is claimed.
+2. **Let both histories accumulate.** The factor snapshot series has `2026-09-18` and
+   `2026-09-21`; `change.scoreMomentum` opens when one sits ~30 days back. The setup
+   observation series has `2026-09-10`; the path tier (ACTIVE, RISK_RISING, INVALIDATED, EXIT)
+   opens on the second one. Both append by themselves on each materialization run — there is
+   nothing to build.
+3. **`total_debt` TTM breadth in SEC normalization** is the next real input gate, measured:
+   it is the first missing input for 4,214 of 5,068 issuers and is what holds `roicTtm` at 58,
+   `roicMedian3y` at 535, `netDebtToAssets` at 462 and `salesYield` at 97. Widening it lifts
+   Profitability, Value and Quality together. Nothing else in the contract is at zero coverage.
+4. **Pattern Research (M4)** as a workflow job against the restored canonical history — not
+   blocked on a decision, only on being run where the deep history is.
+5. Market Regime stays on the Owner gate.
 
 ## RESUME_STATE
 

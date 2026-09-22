@@ -3,8 +3,8 @@
  "methodologyVersion": "vu-factor-evidence-1.0.0",
  "derivedFrom": "quant-v2.0.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-22T17:08:17.000Z",
- "asOf": "2026-09-18",
+ "generatedAt": "2026-09-22T19:46:17.000Z",
+ "asOf": "2026-09-21",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -354,17 +354,19 @@
  "snapshotHistory": {
   "methodologyVersion": "vu-factor-evidence-1.0.0",
   "dates": [
-   "2026-09-18"
+   "2026-09-18",
+   "2026-09-21"
   ],
   "velocityWindowDays": 30,
+  "velocityToleranceDays": 10,
   "scoreMomentumOpen": false
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-09-21T12:17:48.056Z",
-   "securities": 6404,
+   "generatedAt": "2026-09-22T19:04:38.196Z",
+   "securities": 6403,
    "benchmark": {
     "id": "SPY",
     "bars": 930,
@@ -373,11 +375,11 @@
   },
   "fundamentals": {
    "schema": "vu-consumer-fundamentals-1.0.0",
-   "issuersRead": 4721
+   "issuersRead": 4723
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5355,
+   "rows": 5357,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
@@ -387,90 +389,95 @@
  },
  "counts": {
   "productUniverse": 6875,
-  "priceFactorSecurities": 6404,
-  "published": 6404,
-  "withFundamentals": 5008,
+  "priceFactorSecurities": 6403,
+  "published": 6403,
+  "withFundamentals": 5010,
   "withMarketCap": 3921
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 2732,
-   "UNAVAILABLE": 2705,
+   "AVAILABLE": 2734,
+   "UNAVAILABLE": 2702,
    "NOT_APPLICABLE": 967
   },
   "growth": {
-   "AVAILABLE": 3188,
-   "UNAVAILABLE": 3216,
+   "AVAILABLE": 3189,
+   "UNAVAILABLE": 3214,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
-   "AVAILABLE": 5582,
+   "AVAILABLE": 5581,
    "UNAVAILABLE": 822,
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 1999,
-   "UNAVAILABLE": 3438,
+   "AVAILABLE": 2003,
+   "UNAVAILABLE": 3433,
    "NOT_APPLICABLE": 967
   },
   "profitability": {
-   "AVAILABLE": 1154,
-   "UNAVAILABLE": 4283,
+   "AVAILABLE": 1188,
+   "UNAVAILABLE": 4248,
    "NOT_APPLICABLE": 967
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6404,
+   "UNAVAILABLE": 6403,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5303,
-   "UNAVAILABLE": 1101,
+   "AVAILABLE": 5581,
+   "UNAVAILABLE": 822,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 2027,
-  "BLOCKED_EXTERNAL": 6404,
-  "INSUFFICIENT_COMPONENTS": 4154,
-  "INPUT_NOT_MATERIALIZED": 9363,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2016,
+  "BLOCKED_EXTERNAL": 6403,
+  "INSUFFICIENT_COMPONENTS": 3974,
+  "INPUT_NOT_MATERIALIZED": 9229,
   "SECTOR_TEMPLATE_MISSING": 2901,
-  "MANDATORY_COMPONENT_MISSING": 21
+  "MANDATORY_COMPONENT_MISSING": 22
  },
  "componentCoverage": {
-  "quality:accrualRatio": 2973,
-  "quality:equityToAssets": 3867,
-  "quality:positiveFcfYears": 3144,
-  "quality:operatingMarginStability": 2874,
-  "growth:revenueCagr3y": 3639,
+  "quality:accrualRatio": 2975,
+  "quality:equityToAssets": 3868,
+  "quality:positiveFcfYears": 3145,
+  "quality:operatingMarginStability": 2875,
+  "growth:revenueCagr3y": 3640,
   "growth:epsCagr3y": 2037,
-  "growth:fcfCagr3y": 1927,
-  "growth:revenueGrowthTtmYoy": 3081,
-  "growth:operatingMarginExpansion3y": 3124,
-  "growth:revenueGrowthAcceleration": 3854,
-  "momentum:totalReturn12m1m": 5582,
-  "momentum:totalReturn6m": 5930,
-  "momentum:totalReturn3m": 6302,
-  "momentum:distanceTo52wHigh": 5584,
-  "momentum:distanceToSma200": 5688,
-  "value:fcfYield": 2022,
+  "growth:fcfCagr3y": 1928,
+  "growth:revenueGrowthTtmYoy": 3082,
+  "growth:operatingMarginExpansion3y": 3125,
+  "growth:revenueGrowthAcceleration": 3855,
+  "momentum:totalReturn12m1m": 5581,
+  "momentum:totalReturn6m": 5929,
+  "momentum:totalReturn3m": 6306,
+  "momentum:relativeStrength12m1m": 5581,
+  "momentum:distanceTo52wHigh": 5585,
+  "momentum:distanceToSma200": 5689,
+  "value:fcfYield": 2023,
   "value:earningsYield": 2519,
   "value:bookToMarket": 3076,
-  "profitability:operatingMarginTtm": 2332,
-  "profitability:fcfMarginTtm": 2208,
-  "profitability:roaTtm": 3007,
-  "risk:realizedVolatility252d": 5582,
-  "risk:downsideVolatility252d": 5303,
-  "risk:maxDrawdown252d": 5584,
+  "profitability:roicMedian3y": 535,
+  "profitability:operatingMarginTtm": 2333,
+  "profitability:fcfMarginTtm": 2209,
+  "profitability:roaTtm": 3008,
+  "risk:realizedVolatility252d": 5581,
+  "risk:downsideVolatility252d": 5581,
+  "risk:maxDrawdown252d": 5585,
+  "risk:beta252d": 5604,
   "quality:netDebtToAssets": 462,
-  "profitability:grossProfitabilityTtm": 1350,
-  "value:salesYield": 97
+  "profitability:grossProfitabilityTtm": 1351,
+  "value:ebitdaYield": 83,
+  "value:salesYield": 97,
+  "profitability:roicTtm": 58
  },
- "shards": 637,
+ "shards": 638,
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6404,
+  "rows": 6403,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -484,39 +491,16 @@
  },
  "openInputGates": [
   {
-   "id": "CONSUMER_EXPORT_MATERIALIZATION",
+   "id": "COMPONENT_INPUT_NARROW",
    "blocks": [
-    "value.ebitdaYield",
-    "profitability.roicTtm",
-    "profitability.roicMedian3y"
+    "profitability:roicMedian3y (535)",
+    "profitability:roicTtm (58)",
+    "quality:netDebtToAssets (462)",
+    "value:ebitdaYield (83)",
+    "value:salesYield (97)"
    ],
-   "owner": "scripts/quant/sec/consumer.py",
-   "detail": "Die Consumer-Auslieferung führt depreciation_and_amortization, pretax_income, income_tax_expense und das abgeleitete ebitda jetzt mit. Die Felder erscheinen mit dem nächsten SEC-Lauf in den Consumer-Artefakten; bis dahin bleiben die drei Komponenten hier leer."
-  },
-  {
-   "id": "BETA_252D",
-   "blocks": [
-    "risk.beta252d"
-   ],
-   "owner": "market-factors-1.0.0",
-   "detail": "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt; bis dahin bleibt die Komponente hier leer."
-  },
-  {
-   "id": "RELATIVE_STRENGTH_12M1M_MATERIALIZATION",
-   "blocks": [
-    "momentum.relativeStrength12m1m"
-   ],
-   "owner": "market-factors-1.0.0",
-   "detail": "In market-factors-1.0.0 implementiert. Das Feld erscheint mit dem nächsten Marktdaten-Lauf im Kursfaktor-Artefakt."
-  },
-  {
-   "id": "NET_DEBT_PERIOD_ALIGNMENT",
-   "blocks": [
-    "quality.netDebtToAssets",
-    "value.salesYield"
-   ],
-   "owner": "SEC normalization",
-   "detail": "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt."
+   "owner": "the artifact that feeds the component",
+   "detail": "Diese Komponenten sind offen, decken aber weniger als 10 % der bewerteten Titel ab. Sie tragen ihren Faktor nicht allein."
   },
   {
    "id": "PIT_ANALYST_CONSENSUS",
@@ -543,9 +527,9 @@
   }
  ],
  "gapCounts": {
-  "IDENTITY_UNRESOLVED": 1049,
+  "IDENTITY_UNRESOLVED": 1046,
   "FUNDAMENTALS_DOCUMENT_MISSING": 347
  },
- "runtimeMs": 17876,
- "contentHash": "181398ced349a042"
+ "runtimeMs": 17615,
+ "contentHash": "3f3ff303526f9ff0"
 }

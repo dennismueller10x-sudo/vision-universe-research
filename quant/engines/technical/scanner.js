@@ -77,6 +77,7 @@
     technicalRiskReward: function (r) { return Number.isFinite(r.riskReward) ? r.riskReward : null; },
     technicalTrend: function (r) { return typeof r.trend === "string" ? r.trend : null; },
     technicalStructure: function (r) { return typeof r.structure === "string" ? r.structure : null; },
+    technicalConfirmedStructure: function (r) { return typeof r.confirmedStructure === "string" ? r.confirmedStructure : null; },
     technicalMomentumState: function (r) { return typeof r.momentum === "string" ? r.momentum : null; },
     technicalRelativeStrengthState: function (r) { return typeof r.relativeStrength === "string" ? r.relativeStrength : null; },
     technicalRelativeStrengthPercentile: function (r) { return Number.isFinite(r.rsPercentile) ? r.rsPercentile : null; },

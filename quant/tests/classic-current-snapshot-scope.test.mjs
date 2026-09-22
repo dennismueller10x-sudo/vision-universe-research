@@ -13,7 +13,7 @@ test('classic synthetic workspaces do not offer current real snapshot fields',()
  const current=Catalog.FIELD_LIST.filter(field=>field.availability==='CURRENT_SNAPSHOT_ONLY');
  assert.deepEqual(current.map(field=>field.id),[
   'technicalOpportunityScore','technicalOpportunityPercentile','technicalRiskReward','technicalTrend','technicalStructure',
-  'technicalMomentumState','technicalRelativeStrengthState','technicalRelativeStrengthPercentile','technicalScenarioConfidence',
+  'technicalConfirmedStructure','technicalMomentumState','technicalRelativeStrengthState','technicalRelativeStrengthPercentile','technicalScenarioConfidence',
   'technicalSetupStatus','technicalEntryStatus','technicalPrimaryDirection','technicalVolatilityRegime','technicalVolumeState',
   'technicalDistanceTo52wHigh','technicalMomentum12MReturn','elliottCountStatus',
   /* Quant-V2-Faktorevidenz: eine aktuelle Materialisierung, kein

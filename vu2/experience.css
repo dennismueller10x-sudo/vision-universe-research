@@ -121,6 +121,14 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .setup-conditions .is-met .setup-mark{color:var(--positive)}
 .setup-conditions .is-open .setup-mark{color:var(--muted)}
 .setup-conditions .is-missing{color:var(--muted)}
+.setup-step.is-observed .setup-dot{background:var(--ink);height:6px}
+.setup-step.is-observed{color:var(--ink)}
+.setup-classification{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:18px 0 0}
+.setup-classification .muted{font-size:13px;flex:1 1 220px;min-width:0}
+.setup-badge{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em}
+.setup-badge.state-CONFIRMED{border-color:var(--positive);color:var(--positive)}
+.setup-badge.state-SETUP_FORMING{border-color:#c08b3a;color:#c08b3a}
+.setup-badge.state-NO_SETUP{color:var(--muted)}
 
 /* Evidenz und Erklärfläche */
 .evidence-list{list-style:none;margin:0 0 16px;padding:0;border-top:1px solid var(--line)}

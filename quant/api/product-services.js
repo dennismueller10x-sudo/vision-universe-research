@@ -14,6 +14,7 @@ const Rules=typeof module!=='undefined'&&module.exports?require('../engines/rule
 const Strategy=typeof module!=='undefined'&&module.exports?require('../engines/strategy.js'):g.VUStrategy;
 const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const SetupState=typeof module!=='undefined'&&module.exports?require('../engines/setup-state-contract.js'):g.VUSetupStateContract;
+const SetupEngine=typeof module!=='undefined'&&module.exports?require('../engines/setup-engine.js'):g.VUSetupEngine;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const IntradaySnapshot=typeof module!=='undefined'&&module.exports?require('../engines/realtime/intraday-snapshot.js'):g.VURealtime?.IntradaySnapshot;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
@@ -31,6 +32,7 @@ function create(options){
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/setup-observations-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -239,6 +241,31 @@ function create(options){
   const row=screening.rows.find(entry=>entry.ticker===ticker);
   if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
   return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
+ }
+ /* Die Setup-Beobachtung eines Titels. Was hier zurueckkommt, ist die
+  * Regel, die den Zustand entschieden hat, samt ihrer Bedingungen - nicht
+  * ein Etikett ohne Herleitung. Der Lebenszyklus bleibt getrennt von der
+  * Klassifikation: 'heute sieht es so aus' und 'der Titel steht an dieser
+  * Stelle seines Verlaufs' sind zwei verschiedene Aussagen, und die
+  * zweite verlangt eine geordnete Beobachtungshistorie. */
+ async function getSetupObservation(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!SetupEngine||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/setup-observations-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!==SetupEngine.SHARD_SCHEMA||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
+   const source=shard.instruments?.[ticker];
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_SETUP_OBSERVATION'};
+   const mapping={mappingVersion:shard.mappingVersion,cascade:{rules:shard.cascade}};
+   const observation=SetupEngine.hydrate(source.observation,mapping);
+   if(SetupEngine.publicationViolations(observation).length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   return {state:'AVAILABLE',ticker,engineVersion:shard.engineVersion,mappingVersion:shard.mappingVersion,
+    approval:shard.approval,publication:shard.publication,asOf:source.asOf,dataCutoff:source.dataCutoff,
+    close:source.close,levels:source.levels,previous:source.previous,
+    classification:observation.classification,lifecycle:observation.lifecycle,
+    matchedRule:observation.matchedRule,conditions:observation.conditions,
+    journey:shard.cascade.filter(rule=>rule.always!==true)};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
@@ -519,7 +546,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

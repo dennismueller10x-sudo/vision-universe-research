@@ -362,38 +362,66 @@ function changeCard(entry){
   el('div',{class:'change-head'},[el('span',{class:'change-arrow','aria-hidden':'true',text:entry.state==='AVAILABLE'?arrow:'·'}),
    el('h3',{text:entry.label}),entry.window?el('span',{class:'muted',text:entry.window}):null]),...body]);
 }
-/* Die kanonische Setup-Reise. Kein Zustand wird markiert, solange die
-   Setup-Methodik und ihre Snapshot-Historie nicht zertifiziert sind. Was
-   sichtbar wird, sind die heute beobachtbaren Bedingungen - ausdrücklich
-   als Beobachtung und nicht als Setup bezeichnet. */
-function setupJourney(setup,conditions){
- const states=[['WATCH','Beobachten'],['SETUP_FORMING','Bildet sich'],['CONFIRMED','Bestätigt'],['ACTIVE','Aktiv'],['RISK_RISING','Risiko steigt'],['INVALIDATED','Ungültig']];
- const active=setup?.availability?.state==='AVAILABLE'?setup.setupState:null;
+/* Die kanonische Setup-Reise. Die Zustaende, ihre Reihenfolge und die
+   Bedingungen, die einen Zustand entscheiden, stehen in der versionierten
+   Setup-Methodik - nicht in dieser Datei. Was hier passiert, ist
+   Darstellung: welche Regel gegriffen hat und welche ihrer Bedingungen
+   erfuellt ist. Die Klassifikation ("so sieht es heute aus") und der
+   Lebenszyklus ("an dieser Stelle steht der Titel in seinem Verlauf")
+   bleiben sichtbar getrennt; der zweite verlangt eine geordnete
+   Beobachtungshistorie und bleibt bis dahin ausdruecklich geschlossen. */
+const SETUP_LABELS={NO_SETUP:'Nichts zu sehen',WATCH:'Beobachten',SETUP_FORMING:'Bildet sich',CONFIRMED:'Bestätigt',ACTIVE:'Aktiv',RISK_RISING:'Risiko steigt',INVALIDATED:'Ungültig',EXIT:'Ausstieg'};
+const SETUP_CLOSED={SETUP_MAPPING_NOT_APPROVED:'Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Lebenszyklus-Zustand behauptet.',
+ SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED:'Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. "Wurde bestätigt" oder "wurde ungültig" sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen.',
+ INSUFFICIENT_OBSERVATION_HISTORY:'Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen.',
+ SETUP_INPUTS_INCOMPLETE:'Für diesen Titel fehlt ein Teil der technischen Evidenz, die die Methodik verlangt. Deshalb steht hier kein Zustand - auch nicht "kein Setup".'};
+function setupCondition(condition){
+ const demand=Array.isArray(condition.demand)?condition.demand.join(' oder '):condition.demand;
+ const value=condition.value===null||condition.value===undefined?'nicht verfügbar':String(condition.value);
+ return el('li',{class:'setup-condition '+(condition.met?'is-met':'is-open')},[
+  el('span',{class:'setup-mark','aria-hidden':'true',text:condition.met?'✓':'○'}),
+  el('div',{},[el('span',{text:condition.label||condition.field||condition.input}),
+   el('span',{class:'muted',text:'Wert '+value+' · verlangt '+(condition.operator||'')+' '+demand})])]);
+}
+function setupJourney(setup,observation){
+ const available=observation&&observation.state==='AVAILABLE';
+ const lifecycle=available?observation.lifecycle:null;
+ const classification=available?observation.classification:null;
+ const active=lifecycle&&lifecycle.availability.state==='AVAILABLE'?lifecycle.state:null;
+ /* Die Kaskade ist nach Entscheidungsvorrang geordnet - erst das, was einen
+    frueheren Zustand beendet. Die Reise wird dagegen als Verlauf gelesen,
+    deshalb hier eine reine Darstellungsreihenfolge. Welche Zustaende
+    ueberhaupt vorkommen, sagt weiterhin die Methodik. */
+ const JOURNEY_ORDER=['WATCH','SETUP_FORMING','CONFIRMED','ACTIVE','RISK_RISING','INVALIDATED','EXIT'];
+ const steps=(available?observation.journey.map(rule=>rule.state).filter((state,index,list)=>list.indexOf(state)===index)
+  :JOURNEY_ORDER.slice()).filter(state=>JOURNEY_ORDER.includes(state))
+  .sort((a,b)=>JOURNEY_ORDER.indexOf(a)-JOURNEY_ORDER.indexOf(b));
  const section=el('section',{class:'section setup-section'},[
   el('span',{class:'eyebrow',text:'Setup'}),el('h2',{text:'Entsteht gerade eine Situation?'}),
-  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},states.map(([id,label])=>el('li',{class:'setup-step'+(active===id?' is-active':'')},[el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:label})])))]);
- if(!active)section.append(notice('Es wird kein Setup-Zustand behauptet','Ein Setup-Zustand benötigt die zertifizierte Setup-Methodik und eine geordnete Historie veröffentlichter Zustände. Beides ist noch nicht aktiv. Darunter stehen stattdessen die heute belegbaren Bedingungen.'));
- const met=conditions.filter(c=>c.met===true).length,measurable=conditions.filter(c=>c.met!==null).length;
- section.append(el('p',{class:'setup-count',text:met+' von '+measurable+' beobachtbaren Bedingungen erfüllt'}),
-  el('ul',{class:'setup-conditions'},conditions.map(c=>el('li',{class:c.met===null?'is-missing':c.met?'is-met':'is-open'},[
-   el('span',{class:'setup-mark','aria-hidden':'true',text:c.met===null?'–':c.met?'✓':'○'}),
-   el('div',{},[el('span',{text:c.label}),el('span',{class:'muted',text:c.detail})])]))),
-  el('p',{class:'muted',text:'Diese Bedingungen beschreiben den vorhandenen Datenstand. Sie sind keine Einstiegsregel, kein Signal und kein historisch getesteter Auslöser.'}));
+  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')},[
+   el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:SETUP_LABELS[state]||state})])))]);
+ if(!available){
+  section.append(notice('Für diesen Titel liegt keine Setup-Beobachtung vor',
+   'Die Setup-Beobachtung wird aus der bestehenden technischen Materialisierung gebildet. Dieser Titel ist darin nicht enthalten, deshalb wird hier kein Zustand behauptet.'));
+  return section;
+ }
+ if(classification.state&&classification.state!=='UNAVAILABLE'){
+  section.append(el('p',{class:'setup-classification'},[
+   el('span',{class:'setup-badge state-'+classification.state,text:SETUP_LABELS[classification.state]||classification.state}),
+   el('span',{class:'muted',text:'Beobachtung am '+observation.asOf+' · '+observation.matchedRule.plain})]));
+ }else{
+  section.append(notice('Nicht bewertbar',SETUP_CLOSED[classification.reason]||'Die Methodik verlangt Evidenz, die für diesen Titel nicht vollständig vorliegt.'));
+ }
+ if(!active)section.append(notice('Es wird kein Lebenszyklus-Zustand behauptet',
+  SETUP_CLOSED[lifecycle.availability.reason]||'Der Lebenszyklus bleibt geschlossen.'));
+ const conditions=observation.conditions||[];
+ const met=conditions.filter(c=>c.met).length;
+ if(conditions.length){
+  section.append(el('p',{class:'setup-count',text:met+' von '+conditions.length+' Bedingungen dieser Regel erfüllt'}),
+   el('ul',{class:'setup-conditions'},conditions.map(setupCondition)),
+   el('p',{class:'muted',text:'Regel '+observation.matchedRule.ruleId+' · Methodik '+observation.mappingVersion+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Auslöser.'}));
+ }
  return section;
-}
-function observableConditions(factors,change){
- const factor=id=>factors.find(f=>f.id===id);
- const item=(id,label,detail)=>{const entry=change.items.find(x=>x.id===id);return {label,detail,met:entry&&entry.state==='AVAILABLE'?entry.direction==='IMPROVING':null};};
- const momentum=factor('momentum'),risk=factor('risk'),growth=factor('growth');
- return [
-  {label:'Kursstärke über dem Universumsdurchschnitt',detail:momentum?.state==='AVAILABLE'?'Position '+pct(momentum.score):'Kursstärke derzeit nicht bewertbar',met:momentum?.state==='AVAILABLE'?momentum.score>=50:null},
-  item('trendStructure','Kurs über allen vier Durchschnittslinien','Lage zu 20-, 50-, 100- und 200-Tage-Linie'),
-  item('relativeStrengthPace','Vorsprung gegenüber dem Markt nimmt zu','Letzter Monat gegen das Sechsmonatstempo'),
-  item('highProximity','In Reichweite des Jahreshochs','Abstand zum höchsten Schlusskurs der letzten 52 Wochen'),
-  item('volumeRegime','Handelsaktivität zieht an','20-Tage-Volumen gegen 60-Tage-Volumen'),
-  {label:'Wachstum über dem Universumsdurchschnitt',detail:growth?.state==='AVAILABLE'?'Position '+pct(growth.score):'Wachstum derzeit nicht bewertbar',met:growth?.state==='AVAILABLE'?growth.score>=50:null},
-  {label:'Schwankungsrisiko unter dem Universumsdurchschnitt',detail:risk?.state==='AVAILABLE'?'Position '+pct(risk.score):'Risiko derzeit nicht bewertbar',met:risk?.state==='AVAILABLE'?risk.score>=50:null}
- ];
 }
 /* Strategy Match: zu welchem Anlagestil passt dieser Titel gerade, und was
    fehlt noch. Gezaehlte Bedingungen, kein Rang und keine Renditeaussage. */
@@ -454,7 +482,7 @@ function strategyMatchSection(match){
  return section;
 }
 async function quantPage(ticker){
- const [data,match,profileContract]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null)]);
+ const [data,match,profileContract,observation]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -513,7 +541,7 @@ async function quantPage(ticker){
  main.append(changeSection);
  /* SETUP */
  main.append(strategyMatchSection(match));
- main.append(setupJourney(setup,observableConditions(data.factors,change)));
+ main.append(setupJourney(setup,observation));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[
   el('span',{class:'eyebrow',text:'Datenstand'}),

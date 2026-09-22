@@ -76,9 +76,16 @@ jobs:
       - name: Materialize broad Factor Evidence and Change Product Data
         run: node --max-old-space-size=4096 scripts/quant/build-factor-evidence.mjs
 
+      # The Setup observation is a projection over the bundles written above.
+      # It recomputes nothing and appends one immutable observation per
+      # cutoff; the path-dependent states open only once that history is
+      # ordered and the mapping is approved.
+      - name: Materialize broad Setup Observations
+        run: node scripts/quant/build-setup-observations.mjs
+
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       - name: Public data hygiene
@@ -90,11 +97,12 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
-          git commit -m "Materialize Technical, Signals, Elliott and Factor Evidence Product Data"
+          node -e 'const s=require("./quant/data/product/setup-observations-v1/summary.json"); console.log(s.stateCounts); console.log(s.pathTier); console.log(s.observationHistory)'
+          git commit -m "Materialize Technical, Signals, Elliott, Factor Evidence and Setup Observation Product Data"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Retain metadata evidence only
@@ -108,5 +116,7 @@ jobs:
             quant/data/product/technical-signals-v1/summary.json
             quant/data/product/factor-evidence-v1/summary.json
             quant/data/product/factor-evidence-history/index.json
+            quant/data/product/setup-observations-v1/summary.json
+            quant/data/product/setup-observation-history/index.json
           if-no-files-found: warn
           retention-days: 30
