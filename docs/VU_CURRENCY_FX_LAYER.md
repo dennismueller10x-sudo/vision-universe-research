@@ -597,17 +597,34 @@ diesem Workstream und werden hier nicht repariert.
 
 ---
 
-## 17. Merge Gate
+## 17. Merge Gate und Target State
 
-| Kriterium | Zustand |
-|---|---|
-| `TIINGO_FX_CAPABILITIES` | **MEASURED** |
-| `FX_DATA_PROOF` | **PASS** |
-| `CURRENCY_CONTRACT` | **PASS** (43 Tests) |
-| `REGRESSION_GUARD` | **PASS** |
-| `NEW_REGRESSIONS` | **0** |
-| `PAID_SERVICES_ENABLED` | **0** |
-| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** (Kette in `RT1` belegt, Markt-Tick in `RT2` offen) |
+| Kriterium | Zustand | Beleg |
+|---|---|---|
+| `FX_ARCHITECTURE` | **PASS** | 11 Engines, Vertrag `currency-fx-v1.0.0` |
+| `TIINGO_FX_CAPABILITIES` | **MEASURED** | 20 Anfragen, 5 Faehigkeiten belegt, 1 gemessen abwesend |
+| `NATIVE_CURRENCY_PRESERVED` | **PASS** | `native.value` unveraendert; M1, I7, FD-SAP |
+| `SEC_MULTI_CURRENCY` | **PASS** | 5.069 Datensaetze, 30 Waehrungen |
+| `UNKNOWN_CURRENCY_HANDLING` | **PASS** | 94,9 % aufgeloest, 258 ehrlich UNKNOWN |
+| `HISTORICAL_FX` | **PASS** | punktweise; Zerlegung geht exakt auf; Tiefe ab 2020-02-29 |
+| `FUNDAMENTAL_FX` | **PASS** | 5 Kennzahlen x 9 Titel x 6 Berichtswaehrungen |
+| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** | `RT1` Kette belegt, `RT2` Markt-Tick offen |
+| `FX_FRESHNESS` | **PASS** | 4 Zustaende, Devisenkalender 24/5, Ausfall in 3 Stufen |
+| `EUR_USD_DISPLAY_CONTRACT` | **PASS** | ein Praeferenzschluessel, Default EUR |
+| `CURRENCY_DEBT_REGISTER` | **PASS** | 30 Stellen: 25 A, 4 B, 1 offen |
+| `ONE_DATA_CORE` | **PASS** | Guard bricht bei FX-Arithmetik ausserhalb ab |
+| `REGRESSION_GUARD` | **PASS** | negativ geprueft |
+| `NEW_REGRESSIONS` | **0** | 5 rote Tests namentlich identisch zur Baseline |
+| `PAID_SERVICES_ENABLED` | **0** | nichts am Tarif geaendert |
+| `CRITICAL_BLOCKERS` | **0** | |
+| `FX_PAIR_COVERAGE` | **52 / 62** | ohne Abdeckung: AFN, KZT, MOP, MYR, VND (16 Titel) |
+
+Das Merge Gate des Owners verlangt `TIINGO_FX_CAPABILITIES = MEASURED`,
+`FX_DATA_PROOF = PASS`, `CURRENCY_CONTRACT = PASS` und
+`REGRESSION_GUARD = PASS`. Alle vier stehen. `REALTIME_FX` ist im Target
+State ausdruecklich als `PASS oder MARKET_CLOSED_NOT_PROVEN` zugelassen.
+
+**Nicht gemergt** — das entscheidet der Owner.
 
 ---
 
