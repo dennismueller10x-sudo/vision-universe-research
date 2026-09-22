@@ -181,6 +181,13 @@ const PROVIDER_ID = arg("--provider", null);
 const OUT_DIR = arg("--out", null);
 const NOW = arg("--now", new Date().toISOString());
 
+/* POST ZU THEMA (§30): der Owner nennt ein Instrument statt eine
+   Gelegenheit zu waehlen. Das Symbol reist bereits fuer den Creative-
+   Job-Dispatch mit (run-orchestrator.mjs::creativeBedarf) - dieses
+   Flag ist dieselbe Kennung, nur fuer DIESEN Lauf, siehe
+   themaAusOwnerSymbol() weiter unten. */
+const THEMA_SYMBOL = arg("--thema-symbol", null);
+
 /* Woher gelesen wird. Getrennt von --out, weil der Nachweis der
    Kreislauf-Schliessung zwei Laeufe gegen verschiedene Staende
    braucht, ohne die Produktionsdaten anzufassen. */
@@ -722,6 +729,91 @@ function ladeEvidenzPaket(sources, nowIso) {
 }
 
 /* =====================================================================
+   DAS THEMA DES OWNERS (§30)
+
+   manual-mode.js nennt POST ZU THEMA ausdruecklich: "der Owner nennt
+   das Thema STATT DER GELEGENHEITSBEWERTUNG". Bis hierher wertete
+   dieser Lauf trotzdem immer die normale Leiter aus - das genannte
+   Symbol steuerte nur den Creative-Job-Dispatch
+   (run-orchestrator.mjs::creativeBedarf), nie DIESEN Kandidaten. Ein
+   POST ZU THEMA "Halbleiter NVDA" erzeugte deshalb einen Kandidaten zu
+   einem anderen, von der Leiter gewaehlten Thema - die Warteschlange
+   blieb unveraendert, und das genannte Thema erreichte den Owner nie.
+
+   Dieselbe Evidenzquelle wie beim Creative-Job-Brief: ladeEvidenzPaket
+   liest dasselbe technische Bundle, das request-creative.mjs fuer den
+   Dispatch nutzt. Keine zweite Datenquelle, nur eine zweite Verwendung
+   derselben - und ohne hinreichende Evidenz entsteht auch hier nichts
+   (§4): ein Knopf erfindet keinen Beleg.
+   ===================================================================== */
+function themaAusOwnerSymbol(symbol, nowIso) {
+  const paket = ladeEvidenzPaket([{ entity: symbol }], nowIso);
+  if (!paket || paket.ok === false) {
+    return { ok: false,
+      erklaerung: (paket && paket.message) || "Kein technisches Bundle fuer " + symbol + "." };
+  }
+  const hinreichend = EvidencePackage.assessSufficiency(paket);
+  if (!hinreichend.sufficient) {
+    return { ok: false, erklaerung: hinreichend.explanation };
+  }
+
+  /* Dieselbe Signalstaerke, die ein STOCK_STORY-Thema aus der Platte
+     traegt (build-opportunity-slate.mjs: `signalStrength: e.strength`,
+     0..1) - hier aus demselben Technical Opportunity Score, den das
+     Bundle ohnehin fuehrt (evidence-package.js, 0..100). Ohne sie
+     bliebe `vuSignal` "nicht gemessen", obwohl ein Messwert vorliegt -
+     und das Thema faende die Schwelle nie, unabhaengig von seiner
+     Guete (dieselbe Lage, die die Notiz zu `editorialBasis` weiter
+     oben beschreibt). */
+  const scoreBeleg = paket.evidence.find((e) => e.id === "score");
+  const signalStrength = scoreBeleg && typeof scoreBeleg.value === "number"
+    ? Math.max(0, Math.min(1, scoreBeleg.value / 100)) : null;
+
+  /* -----------------------------------------------------------------
+     §5 INTERNAL SIGNAL ≠ PUBLIC STORY, GEMESSEN AN DER EIGENEN WACHE
+
+     Ein erster Anlauf reichte `paket.evidence` ungefiltert durch: das
+     Paket wurde [AUDIENCE_SEPARATION] verworfen, mit demselben Satz,
+     den der negative Referenzfall dieses Auftrags schon einmal zeigte
+     ("Technical Opportunity Score" im PUBLIC_HOOK) - und danach, mit
+     der SCORE-Dimension blind herausgefiltert, an "ATR"/"Trendwert"
+     aus TREND/VOLATILITY: derselbe Fehler, andere Dimension.
+
+     Die Woerter, die AUDIENCE_SEPARATION zurueckweist, stehen bereits
+     an EINER Stelle: `AudienceFrame.INTERN_NICHT_IM_HOOK`
+     (audience-frame.js) - derselben Liste, gegen die die Wache selbst
+     prueft (social/engines/content-intelligence.js). Eine zweite,
+     hier neu geratene Liste waere die zweite Wahrheit ueber dieselbe
+     Frage, die dieses Projekt schon mehrfach auseinanderlaufen sah. */
+  const oeffentlicheEvidenz = paket.evidence.filter((e) =>
+    !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
+      (begriff) => String(e.statement || "").includes(begriff)));
+
+  return { ok: true, thema: {
+    topicId: EvidencePackage.contentIdFor(symbol, paket.asOf),
+    /* Dieselbe Familie, die STOCK_STORY-Themen aus internen Signalen
+       schon in der Platte tragen (§12) - kein neuer Begriff. */
+    family: "STOCK_STORY",
+    title: symbol + " — technische Lage zum " + paket.asOf,
+    entities: [symbol],
+    entityType: "SECURITY",
+    timeSensitivity: "TIMELY",
+    evidence: oeffentlicheEvidenz,
+    signalStrength,
+    /* Derselbe Verweis-Mechanismus wie bei einem STOCK_STORY-Thema aus
+       der Platte (dort: signals.json) - hier das technische Bundle
+       selbst, das dieses Thema traegt. Kein erfundener Verweis. */
+    evidenceRefs: ["quant/data/technical/instruments/" + symbol + ".json"],
+    evidenceSufficient: true,
+    premise: "SECURITY_METRIC",
+    cause: null,
+    asOf: paket.asOf,
+    sources: [(paket.evidence[0] && paket.evidence[0].source) || "VU_QUANT"],
+    herkunft: "OWNER"
+  } };
+}
+
+/* =====================================================================
    DIE PLATTE DES LAUFS
 
    Sie liegt als Datei im Repository und wird vom Scheduler-Schritt
@@ -1243,6 +1335,20 @@ async function main() {
   for (const st of leiter.stufen) {
     detail("Stufe " + st.stufe + " " + st.titel + " — " + st.qualifiziert + " belegt" +
       (st.ideation ? " (" + st.ideen + " redaktionelle Fragen offen)" : ""));
+  }
+
+  /* POST ZU THEMA (§30) ersetzt die Gelegenheitsbewertung durch das
+     genannte Instrument - siehe themaAusOwnerSymbol() weiter oben. */
+  if (THEMA_SYMBOL) {
+    const ownerThema = themaAusOwnerSymbol(THEMA_SYMBOL, NOW);
+    if (ownerThema.ok) {
+      leiter.gefunden = [ownerThema.thema];
+      log("Owner-Thema:   " + THEMA_SYMBOL + " ersetzt die Gelegenheitsbewertung " +
+          "(POST ZU THEMA, §30).");
+    } else {
+      log("Owner-Thema:   " + THEMA_SYMBOL + " ohne hinreichende Evidenz — " +
+          ownerThema.erklaerung + " Die Ladder-Auswahl bleibt unveraendert.");
+    }
   }
 
   const kontext = {

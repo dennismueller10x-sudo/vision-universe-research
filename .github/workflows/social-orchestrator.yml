@@ -354,8 +354,18 @@ jobs:
         # Orchestrator schon benutzt hat. Fehlt der Auftrag (Zeitplan),
         # ist der Wert "ZEITPLAN" und kein bekannter Modus: das
         # Verhalten bleibt exakt das von AUTO.
+        #
+        # THEMA_SYMBOL nur bei MANUAL_TOPIC: manual-mode.js nennt POST
+        # ZU THEMA ausdruecklich "der Owner nennt das Thema STATT DER
+        # GELEGENHEITSBEWERTUNG". steps.plan.outputs.creative_symbol
+        # steht auch bei AUTO (dort steuert es nur den Creative-Job-
+        # Dispatch, nicht diesen Kandidaten) - deshalb die Modus-
+        # Bedingung, sonst uebernaehme ein automatischer Lauf versehentlich
+        # dieselbe Ersetzung.
         env:
           VU_SOCIAL_MODUS: ${{ steps.plan.outputs.modus }}
+          VU_SOCIAL_THEMA_SYMBOL: >-
+            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && steps.plan.outputs.creative_symbol || '' }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq
@@ -363,7 +373,8 @@ jobs:
           export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
 
           node scripts/social/run-social-cycle.mjs \
-            --provider mock --data social/data --out social/data --render
+            --provider mock --data social/data --out social/data --render \
+            ${VU_SOCIAL_THEMA_SYMBOL:+--thema-symbol "$VU_SOCIAL_THEMA_SYMBOL"}
           node scripts/social/make-publish-candidate.mjs --data social/data --write \
             | tail -40
 
