@@ -181,7 +181,28 @@ export async function baue(kandidaten, options = {}) {
              frei, das niemand abgerufen hat. */
           url: url || null,
           zustand: befund.zustand, grund: befund.grund,
-          satz: befund.satz, gemessenAm: options.now || new Date().toISOString()
+          satz: befund.satz, gemessenAm: options.now || new Date().toISOString(),
+
+          /* -----------------------------------------------------------
+             DER ABDRUCK DER BYTES, UND WARUM ER MITREISEN MUSS
+
+             `beurteile()` rechnet ihn ohnehin: es hat die Bytes in der
+             Hand und haengt `sha256`, `bytes` und `dimensions` an den
+             Befund. Diese Zeilen liessen ihn bis zum 21.09. fallen -
+             kopiert wurden nur Zustand, Grund und Satz.
+
+             Was damit fehlte, ist nicht Zierde. Ohne den Abdruck sagt
+             die Freigabe "unter DIESER ADRESSE lag ein gueltiges Bild",
+             und mehr kann sie nicht sagen. Wird die Datei zwischen
+             Messung und Sendung ausgetauscht, bleibt die Adresse
+             dieselbe, das Urteil gilt weiter, und Meta holt sich etwas
+             anderes als der Owner gesehen hat.
+
+             Preview = Publish laesst sich an einer Zeichenkette nicht
+             beweisen. Nur an den Bytes. */
+          sha256: befund.sha256 || null,
+          bytes: befund.bytes === undefined ? null : befund.bytes,
+          dimensions: befund.dimensions || null
         }
       });
     }

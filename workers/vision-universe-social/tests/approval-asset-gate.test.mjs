@@ -30,7 +30,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import worker, { __internals } from "../src/index.js";
-import { createEnv, request, TEST_ADMIN_KEY } from "./harness.mjs";
+import { createEnv, request, TEST_ADMIN_KEY , JPEG_SHA256} from "./harness.mjs";
 import { contentHash } from "../src/redact.js";
 import { finalerText } from "../src/public-text.js";
 import { QUEUE_KEY, readDecision } from "../src/store.js";
@@ -48,12 +48,14 @@ const CAPTION = finalerText(BASIS, TAGS);
 const ERREICHBAR = {
   zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true, url: BILD,
   satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
-  gemessenAm: "2026-09-21T10:00:00Z"
+  gemessenAm: "2026-09-21T10:00:00Z",
+      sha256: JPEG_SHA256, dimensions: { width: 1080, height: 1350 }
 };
 const WEG = {
   zustand: "ASSET_NOT_REACHABLE", grund: "HTTP_404", erreichbar: false, url: BILD,
   satz: "Unter dieser Adresse liegt kein Bild.",
-  gemessenAm: "2026-09-21T10:00:00Z"
+  gemessenAm: "2026-09-21T10:00:00Z",
+      sha256: JPEG_SHA256, dimensions: { width: 1080, height: 1350 }
 };
 const UNGEPRUEFT = {
   zustand: "ASSET_REACHABILITY_UNVERIFIED", grund: "NOT_ASKED", erreichbar: false, url: BILD,
@@ -458,4 +460,59 @@ test("AG27 · Ein Urteil ohne Adresse gilt fuer gar nichts", async () => {
   const r = await tun(env, cookie, "/approval/" + ID + "/approve",
     { fingerprint: e.contentHash });
   assert.notEqual(r.status, 200);
+});
+
+/* ====================================================== §25: OHNE ABDRUCK NICHTS
+
+   Bis hierher belegen AG1-AG27: unter DIESER Adresse lag ein gueltiges
+   Bild. Was offen blieb, hat am 21.09. einen oeffentlichen Beitrag ohne
+   ladbares Bild erzeugt - zwischen Messung und Sendung kann die Datei
+   ausgetauscht werden, die Adresse bleibt.
+
+   Der Byte-Abdruck ist die einzige Groesse, an der sich das feststellen
+   laesst. Fehlt er, ist "Vorschau = Sendung" nicht pruefbar.
+   ================================================================== */
+
+async function ohneAbdruck() {
+  const a = Object.assign({}, ERREICHBAR);
+  delete a.sha256;
+  return await eintrag({ asset: a });
+}
+
+test("AG28 · Ohne Byte-Abdruck wird nicht freigegeben", async () => {
+  const e = await ohneAbdruck();
+  const { env, cookie } = await aufbauen(projektion([e]));
+  const r = await tun(env, cookie, "/approval/" + ID + "/approve",
+    { fingerprint: e.contentHash });
+  const html = text(await r.text());
+
+  assert.match(html, /nicht belegt, dass die Vorschau das gesendete Bild ist/,
+    "Der Owner bekommt keinen Satz zu dieser Lage: " + html.slice(0, 220));
+  assert.doesNotMatch(html, /Wirklich veroeffentlichen/,
+    "Die Rueckfrage kam, obwohl der Abdruck fehlt.");
+});
+
+test("AG29 · Auch der Sendeknopf selbst ist ohne Abdruck gesperrt", async () => {
+  /* Die Rueckfrage laesst sich ueberspringen. Wer das Formular direkt
+     abschickt, darf trotzdem nicht durchkommen - sonst waere das Tor
+     eine Anzeige und keine Sperre. */
+  const e = await ohneAbdruck();
+  const { env, cookie } = await aufbauen(projektion([e]));
+  const r = await tun(env, cookie, "/approval/" + ID + "/publish",
+    { fingerprint: e.contentHash });
+
+  assert.match(text(await r.text()),
+    /nicht belegt, dass die Vorschau das gesendete Bild ist/);
+});
+
+test("AG30 · Mit Abdruck bleibt die Freigabe moeglich", async () => {
+  /* Die Gegenprobe. Ohne sie waere AG28 von einem Tor, das immer zu
+     ist, nicht zu unterscheiden. */
+  const e = await eintrag({ asset: ERREICHBAR });
+  const { env, cookie } = await aufbauen(projektion([e]));
+  const r = await tun(env, cookie, "/approval/" + ID + "/approve",
+    { fingerprint: e.contentHash });
+
+  assert.match(text(await r.text()), /Wirklich veroeffentlichen/,
+    "Mit vollstaendiger Messung muss der Weg offen sein.");
 });

@@ -33,6 +33,30 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SKRIPT = join(ROOT, "scripts/social/asset-hashtag-done.mjs");
 const quelle = readFileSync(SKRIPT, "utf8");
 
+/* -------------------------------------------------------------------
+   DER STAND VOR DEM ERSTEN LAUF
+
+   AH14/AH15 fragen, ob DIESE Tests Produktionsdaten veraendert haben.
+   Gemessen haben sie etwas anderes: ob im Arbeitsbaum ueberhaupt eine
+   Aenderung an social/data aussteht. Beides faellt zusammen, solange
+   der Baum sauber ist - und genau deshalb ist der Unterschied lange
+   nicht aufgefallen.
+
+   Er faellt auf, sobald jemand eine Datenaenderung vorbereitet: dann
+   meldet der Test "der Bericht hat beim Lesen Produktionsdaten
+   veraendert", obwohl der Bericht nichts getan hat. Ein Befund ueber
+   den Arbeitsbaum, der sich als Befund ueber das Skript ausgibt.
+
+   Also wird der Stand VOR dem ersten Lauf festgehalten und danach
+   dagegen verglichen. Der Test misst dann, was er behauptet.
+   ------------------------------------------------------------------- */
+function datenStand() {
+  return execFileSync("git",
+    ["status", "--porcelain", "--", "social/data", "assets/social"],
+    { cwd: ROOT, encoding: "utf8" }).trim();
+}
+const STAND_VORHER = datenStand();
+
 const Hashtags = require(join(ROOT, "social/engines/hashtags.js"));
 
 /* Ein Worker-Ziel, das sicher niemand beantwortet: der Bericht soll
@@ -271,11 +295,9 @@ test("AH14 · Ohne --out schreibt der Bericht nichts (§23)", () => {
 
      Gemessen am Ergebnis: der Lauf oben (ohne --out) lief bereits,
      und danach darf sich keine Datei geaendert haben. */
-  const stand = execFileSync("git",
-    ["status", "--porcelain", "--", "social/data", "assets/social"],
-    { cwd: ROOT, encoding: "utf8" }).trim();
-  assert.equal(stand, "",
-    "Der Bericht hat beim Lesen Produktionsdaten veraendert:\n" + stand);
+  assert.equal(datenStand(), STAND_VORHER,
+    "Der Bericht hat beim Lesen Produktionsdaten veraendert:\n" +
+    datenStand());
 });
 
 test("AH15 · Mit --out schreibt er genau dorthin — und sonst nirgends", () => {
@@ -289,8 +311,6 @@ test("AH15 · Mit --out schreibt er genau dorthin — und sonst nirgends", () =>
   assert.equal(typeof b.commit, "string");
   assert.ok(Array.isArray(b.blockers) && Array.isArray(b.unverified));
 
-  const stand = execFileSync("git",
-    ["status", "--porcelain", "--", "social/data", "assets/social"],
-    { cwd: ROOT, encoding: "utf8" }).trim();
-  assert.equal(stand, "", "Auch mit --out darf nichts anderes wandern:\n" + stand);
+  assert.equal(datenStand(), STAND_VORHER,
+    "Auch mit --out darf nichts anderes wandern:\n" + datenStand());
 });

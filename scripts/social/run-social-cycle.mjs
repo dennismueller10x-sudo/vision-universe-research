@@ -52,6 +52,37 @@ const Strategy     = require(join(ROOT, "social/engines/strategy.js"));
 const Content      = require(join(ROOT, "social/engines/content.js"));
 const VisualComposition = require(join(ROOT, "social/engines/visual-composition.js"));
 const VisualIntelligence = require(join(ROOT, "social/engines/visual-intelligence.js"));
+const LearningUnit = require(join(ROOT, "social/engines/learning-unit.js"));
+const VisualGrammar = require(join(ROOT, "social/engines/visual-grammar.js"));
+const Hook         = require(join(ROOT, "social/engines/hook.js"));
+
+/* -------------------------------------------------------------------
+   WIE WEIT DAS GEDAECHTNIS FUER ABWECHSLUNG ZURUECKREICHT (§19)
+
+   Nicht alles: ein Archetyp, der vor Monaten haeufig war, sagt
+   nichts darueber, ob der Feed HEUTE ein Einstieg ist. Und nicht zu
+   wenig: unter visual-grammar.FENSTER_MINDEST urteilt die Messung
+   ohnehin nicht, und das ist richtig so.
+
+   Zwanzig ist bei ein bis zwei Beitraegen je Tag (§27) rund zwei
+   Wochen - der Zeitraum, in dem ein Leser den Feed als Feed
+   wahrnimmt.
+   ------------------------------------------------------------------- */
+const FEED_FENSTER = 20;
+
+/* -------------------------------------------------------------------
+   WIE STARK GEMESSENE LEISTUNG DIE HOOK-WAHL VERSCHIEBT
+
+   Die Bewertung in hook.js vergibt hoechstens 100 Punkte aus vier
+   Anteilen. Die Engagement-Rate bewegt sich im Bereich einstelliger
+   Prozentzahlen - unskaliert waere sie ein Rundungsfehler und der
+   Kreis nur auf dem Papier geschlossen.
+
+   Der Faktor macht aus einem Prozentpunkt Unterschied rund 25
+   Punkte: genug, um bei aehnlich guten Kandidaten zu entscheiden, zu
+   wenig, um einen schwachen Kandidaten an einem starken
+   vorbeizuziehen. Eine Zahl mit Begruendung, keine gegriffene. */
+const HOOK_LEISTUNG_FAKTOR = 2500;
 const Memory       = require(join(ROOT, "social/engines/memory.js"));
 const Fatigue      = require(join(ROOT, "social/engines/fatigue.js"));
 const Publishing   = require(join(ROOT, "social/engines/publishing.js"));
@@ -578,6 +609,9 @@ const AUTOR_REIHENFOLGE = ["chatgpt-work", "model", "template"];
  */
 function schreiberAus(variante) {
   return {
+    /* Kein Verhalten, eine Tatsache ueber den Schreiber: in welcher
+       Bauform sein Satz entsteht. */
+    muster: variante.pattern || null,
     thesis: function (opportunity, researchData) {
       var f = researchData.facts[0];
       if (!f) return null;
@@ -841,6 +875,21 @@ function systemischUnmessbar(signals, registry, providerId, memory) {
    nichts zurueck, und der Aufrufer bleibt bei dem, was er sonst
    haette.
    ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   DREI FELDER, DIE HIER VERLOREN GINGEN
+
+   Diese Funktion nahm aus jedem Beleg `entity` und `value` und liess
+   `source`, `unit` und die Schreibweise liegen. Auf dem fertigen Bild
+   war das zu sehen: fuenf Kurse ohne Waehrung, und unter dem roten
+   Strich stand keine Quelle - die Zeile war leer, weil der Beleg
+   seine Herkunft auf dem Weg hierher verloren hatte.
+
+   Dieselbe Fehlerfamilie wie die abgeschriebene Feldliste im
+   Gedaechtnis und wie `normalisiere()`, das `belege` fallen liess:
+   eine von Hand gefuehrte Auswahl, die ein Feld vergisst. Deshalb
+   wird der Beleg hier vollstaendig uebernommen und die Gruppe traegt,
+   was sie gemeinsam hat.
+   ------------------------------------------------------------------- */
 function peersAusThema(thema) {
   const nachKennzahl = new Map();
   for (const e of (thema && thema.evidence) || []) {
@@ -848,14 +897,27 @@ function peersAusThema(thema) {
     if (e.value === null || e.value === undefined) continue;
     const wert = Number(e.value);
     if (!Number.isFinite(wert)) continue;
-    if (!nachKennzahl.has(e.metric)) nachKennzahl.set(e.metric, []);
-    nachKennzahl.get(e.metric).push({ label: e.entity, value: wert, highlight: false });
+    if (!nachKennzahl.has(e.metric)) {
+      nachKennzahl.set(e.metric, { metrik: e.metric, einheit: null,
+        quellen: [], peers: [] });
+    }
+    const g = nachKennzahl.get(e.metric);
+    /* Die Einheit gehoert zur Achse. Zwei Einheiten in einem Vergleich
+       sind keiner - dann bleibt sie unbekannt statt willkuerlich. */
+    if (e.unit) {
+      if (g.einheit === null) g.einheit = String(e.unit);
+      else if (g.einheit !== String(e.unit)) g.einheit = "";
+    }
+    if (e.source && g.quellen.indexOf(e.source) === -1) g.quellen.push(e.source);
+    g.peers.push({ label: e.entity, value: wert,
+      anzeige: typeof e.value === "string" ? e.value.trim() : null,
+      quelle: e.source || null, highlight: false });
   }
-  let beste = [];
-  for (const liste of nachKennzahl.values()) {
-    if (liste.length > beste.length) beste = liste;
+  let beste = null;
+  for (const g of nachKennzahl.values()) {
+    if (!beste || g.peers.length > beste.peers.length) beste = g;
   }
-  return beste.length >= 2 ? beste : [];
+  return (beste && beste.peers.length >= 2) ? beste : null;
 }
 
 function kurzname(thema) {
@@ -1218,6 +1280,47 @@ async function main() {
 
   /* --------------------------------------- 4. Strategie und Content */
   const packages = [];
+
+  /* -------------------------------------------------------------------
+     DAS FENSTER, UEBER DAS ABWECHSLUNG GEMESSEN WIRD (§19)
+
+     Erinnerte Beitraege zuerst, dann die dieses Laufs. Ein Beitrag
+     zaehlt mit seinen erfassten Lerndimensionen (§38) - dieselben
+     Felder, die spaeter gegen die Leistung gehalten werden. Was ein
+     Eintrag NICHT erfasst, bleibt unbekannt und zaehlt in dieser
+     Dimension gar nicht mit.
+     ------------------------------------------------------------------- */
+  function feedFenster() {
+    const erinnert = memory.all().slice(-FEED_FENSTER);
+    /* Die zwoelf Dimensionen aus §38 werden NICHT hier aufgezaehlt -
+       memory.js fuehrt die eine Liste, und sie kommt von dort. Eine
+       zweite Aufzaehlung waere genau der Fehler, den LU21 festhaelt.
+
+       Die Bauform ist keine der zwoelf: sie steht an der
+       Hook-Auswahl und wird einzeln geholt. */
+    const ausLauf = packages.map((p) => {
+      const pk = (p.result && p.result.package) || {};
+      const eintrag = Memory.mitDimensionen({}, pk);
+      eintrag.authoringPattern = (pk.hookSelection && pk.hookSelection.gewaehlt &&
+        pk.hookSelection.gewaehlt.muster) || null;
+      eintrag.form = pk.visualType || null;
+      return eintrag;
+    });
+    return erinnert.concat(ausLauf);
+  }
+
+  /* Zwei Dimensionen, zwei Tabellen. Zusammengerechnet waere nicht
+     mehr zu sehen, ob ein Archetyp oder eine Bauform abgenutzt ist. */
+  function abwechslungAus(fenster) {
+    const befund = VisualGrammar.feedVariation(fenster);
+    return {
+      befund,
+      archetyp: VisualGrammar.alsAbschlag(befund, "hookArchetyp",
+        { staerke: Hook.ABSCHLAG_STAERKE }),
+      muster: VisualGrammar.alsAbschlag(befund, "muster",
+        { staerke: Hook.ABSCHLAG_STAERKE })
+    };
+  }
   const rejections = [];
   /* Die Datenlage je Thema - fuer den Zeichenschritt weiter unten. */
   const bildDatenlage = {};
@@ -1500,10 +1603,13 @@ async function main() {
     const lage = VisualDaten.datenlage({
       topic: opportunity.topic,
       evidence: (evidenzPaket && evidenzPaket.ok) ? (evidenzPaket.evidence || []) : [],
-      peers: (eigeneGruppe && eigeneGruppe.length)
-        ? eigeneGruppe
+      peers: eigeneGruppe
+        ? eigeneGruppe.peers
         : vergleichsgruppe.map((v) => Object.assign({}, v, {
-            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) }))
+            highlight: v.label === VisualDaten.symbolAus(opportunity.topic) })),
+      /* Kennzahl, Einheit und Herkunft der Gruppe - sie gelten fuer
+         die Achse, nicht fuer einen einzelnen Balken. */
+      peerGruppe: eigeneGruppe
     }, ROOT);
     bildDatenlage[opportunity.topic] = lage;
 
@@ -1535,6 +1641,7 @@ async function main() {
       names: FIRMENNAMEN,
       archetype: strategyDecision.archetype || null
     });
+    const rahmen = publikumsRahmen[opportunity.topic] || null;
 
     const result = Content.run({
       opportunity, sources: rechercheBelege, strategyDecision,
@@ -1542,7 +1649,46 @@ async function main() {
         keyNumber: lage.availability.keyNumber ||
           rechercheBelege.some((s) => s.value !== null) }),
       recentVisuals: Object.keys(memory.distribution("visualType", 14, NOW)),
-      writer: schreiberAus(gewaehlteVariante)
+      writer: schreiberAus(gewaehlteVariante),
+      /* Die Bauform des gewaehlten Textes - sie entscheidet, wie der
+         Satz aussieht, und der Feed kollabiert an ihr. */
+      /* -----------------------------------------------------------------
+         §39 — DER KREIS SCHLIESST SICH HIER
+
+         HOOK_ARCHETYPE wird als Lerndimension mitgeschrieben (§38),
+         im Gedaechtnis gegen die gemessene Leistung gehalten, und
+         kommt an dieser Stelle in die naechste Auswahl zurueck.
+
+         `alsGewichte` gibt nur Werte heraus, zu denen es genug
+         Messungen gibt. Steht nichts drin, fliesst nichts ein -
+         hook.js setzt dann keinen Ersatzwert. Eine Dimension, die
+         noch nie gemessen wurde, soll die Wahl nicht beeinflussen und
+         auch nicht so tun.
+
+         `audienceFrame` reist mit, damit AUDIENCE_SEPARATION (§8) die
+         Kernfrage kennt.
+         ----------------------------------------------------------------- */
+      hookPerformance: LearningUnit.alsGewichte(
+        LearningUnit.leistung(memory.all()), "HOOK_ARCHETYPE",
+        { faktor: HOOK_LEISTUNG_FAKTOR }),
+      /* -----------------------------------------------------------------
+         §19 — DER FEED SOLL NICHT EIN EINSTIEG SEIN
+
+         feedVariation() gab es seit dem Brand-Auftrag, und kein
+         Produktionspfad hat es je gefragt. Der reale Lauf hat gezeigt,
+         wozu das fuehrt: fuenf Beitraege, fuenf Hooks derselben
+         Bauform ("N von 5951 geprueften Titeln - <Thema>").
+
+         Das Fenster ist das Gedaechtnis UND was dieser Lauf bereits
+         gewaehlt hat. Nur das Gedaechtnis zu fragen hiesse, die
+         Wiederholung innerhalb eines Laufs nicht zu sehen - und
+         genau dort ist sie entstanden.
+
+         Was daraus wird, entscheidet hook.js: ein benannter Posten
+         neben der gemessenen Leistung, nicht mit ihr verrechnet.
+         ----------------------------------------------------------------- */
+      hookAbwechslung: abwechslungAus(feedFenster()),
+      audienceFrame: rahmen || null
     }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
 
     if (!result.ok) {
@@ -2226,14 +2372,53 @@ async function main() {
     .map((e) => e.packageId).filter(Boolean).map(String));
 
   let neueEintraege = 0;
+  /* Der Eintrag je Paket, damit die FRACHT die Bilddimensionen
+     nachtragen kann, sobald das Bild geplant ist. */
+  const lernEintraege = new Map();
   for (const d of shadowDecisions) {
     if (bekanntePakete.has(String(d.packageId))) continue;
     bekanntePakete.add(String(d.packageId));
     neueEintraege += 1;
-    const pkg = packages.find((e) => e.result.package.packageId === d.packageId).result.package;
-    memory.add({
+    const eintragVon = packages.find((e) => e.result.package.packageId === d.packageId);
+    const pkg = eintragVon.result.package;
+
+    /* -----------------------------------------------------------------
+       DIE ZWOELF DIMENSIONEN AUS §38 - AUS EINER TABELLE, NICHT VON HAND
+
+       Hier standen siebzehn Zeilen mit Feldnamen. Sie trugen Thema,
+       Archetyp und Bildform - und von den zwoelf Dimensionen, die §38
+       nennt, kamen zwei an. Nicht weil die uebrigen nicht entschieden
+       wuerden: die Familie entsteht im Publikumsrahmen, der
+       Hook-Archetyp in hook.js, die Visual Family in
+       visual-grammar.js. Sie kamen nur nie im Gedaechtnis an.
+
+       Eine von Hand gefuehrte Feldliste hat in diesem Projekt schon
+       dreimal etwas fallen lassen. Deshalb kommt der Satz jetzt aus
+       learning-unit.js: wer dort eine Dimension eintraegt, schreibt
+       sie damit mit.
+
+       Die Bilddimensionen fehlen an dieser Stelle noch - das Bild
+       entsteht erst in der FRACHT weiter unten. Sie werden dort
+       nachgetragen, und bis dahin stehen sie auf null. Sie hier zu
+       raten waere dasselbe wie sie zu erfinden.
+       ----------------------------------------------------------------- */
+    const dimensionen = LearningUnit.ausKontext({
+      package: pkg,
+      audienceFrame: publikumsRahmen[pkg.topic] || null,
+      structure: eintragVon.result.structure ||
+        (eintragVon.result.stages || []).filter((x) => x.stage === "STRUCTURE")
+          .map((x) => x.data)[0] || null,
+      /* Die Schattenentscheidung traegt Familie, Kernfrage, Hashtags
+         und die geplante Stunde. Sie hier auszulassen und dieselben
+         Werte anderswo zu suchen waere ein zweiter Weg zu denselben
+         Tatsachen. */
+      decision: d,
+      now: NOW
+    }, "PAKET");
+
+    lernEintraege.set(String(pkg.packageId), memory.add(Object.assign({
       publicationId: null, packageId: pkg.packageId, publishedAt: null,
-      platform: "instagram", topic: pkg.topic, entities: pkg.entities || [],
+      platform: "instagram", entities: pkg.entities || [],
       archetype: pkg.archetype, visualType: pkg.visualType,
       hook: pkg.hook, caption: pkg.caption, cta: pkg.cta || null,
       authoringPattern: d.authoringPattern || null,
@@ -2247,7 +2432,7 @@ async function main() {
         strategyVersion: activeStrategy.versionId,
         decidedMode: d.mode
       }
-    });
+    }, dimensionen)));
   }
   log("\nSchatten-Entscheidungen: " + shadowDecisions.length +
       " (entschieden, nicht gesendet)" +
@@ -2286,11 +2471,35 @@ async function main() {
     } catch { return null; }
   }
 
+  /* -------------------------------------------------------------------
+     DIE QUELLENZEILE GAB ES NUR FUER EINE KURSREIHE
+
+     Ein Vergleich aus einer Discover-Reihe hat keine Kursreihe - und
+     bekam deshalb gar keine Quelle. Auf dem fertigen Bild standen
+     fuenf Zahlen in Markenoptik unter einem roten Strich, und
+     darunter nichts. Der Kartenpfad weist eine Zahl ohne Quelle seit
+     jeher ab (`noSource`); der Kompositionspfad hat sie gezeichnet.
+
+     Die Belege der Gruppe tragen ihre Herkunft. Sie wird hier auf
+     oeffentliche Namen abgebildet - mit derselben Funktion, die auch
+     der Renderer benutzt, damit es nicht zwei Begriffe davon gibt,
+     wie unsere Quellen heissen.
+     ------------------------------------------------------------------- */
   function quelleAus(lage) {
-    if (!lage || !lage.series || !lage.series.source) return null;
-    return lage.series.asOf
-      ? lage.series.source + ", Stand " + VisualComposition.datumDe(lage.series.asOf)
-      : lage.series.source;
+    if (lage && lage.series && lage.series.source) {
+      return lage.series.asOf
+        ? lage.series.source + ", Stand " + VisualComposition.datumDe(lage.series.asOf)
+        : lage.series.source;
+    }
+    const roh = (lage && lage.composition && lage.composition.peerQuellen) || [];
+    const namen = [];
+    for (const q of roh) {
+      const n = AssetRenderer.quellenName(q);
+      if (n.ok && namen.indexOf(n.name) === -1) namen.push(n.name);
+    }
+    /* Mehrere Herkuenfte auf einer Achse sind kein Fehler - sie
+       werden genannt, nicht zu einer zusammengezogen. */
+    return namen.length ? namen.join(" / ") : null;
   }
 
   log("\n--- FRACHT ---");
@@ -2390,7 +2599,14 @@ async function main() {
     const richtungBereit = VisualIntelligence.ready(richtung);
 
     const kompo = (!mitgebracht && lage)
-      ? VisualComposition.compose(pkg.visualType, lage.composition) : null;
+      ? VisualComposition.compose(pkg.visualType,
+        /* Die Einheit der Achse gehoert zur Komposition: der Satz
+           unter einem Vergleich nennt den Abstand, und ohne Einheit
+           muesste er sich eine ausdenken. */
+        Object.assign({}, lage.composition,
+          pkg.visualComparison && pkg.visualComparison.einheit
+            ? { einheit: pkg.visualComparison.einheit } : {}))
+      : null;
 
     /* Die Richtung reist mit dem Paket - sonst waere sie eine
        Zwischenrechnung, die nur in diesem Lauf existiert, und das
@@ -2398,6 +2614,8 @@ async function main() {
     pkg.visualDirection = richtung;
     pkg.visualDirectionReady = richtungBereit.ok;
     pkg.visualDirectionMissing = richtungBereit.missing;
+
+
     pkg.visualDirectionFailureType = richtungBereit.failureType;
     pkg.visualDirectionNotApplicable = richtungBereit.notApplicable;
     /* Der Rahmen reist mit, weil das Lernen sonst nie fragen koennte,
@@ -2432,7 +2650,17 @@ async function main() {
       ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
       : (kompo && kompo.ok
         ? AssetRenderer.planKomposition(pkg, kompo, {
-            entitaet: lage.symbol || null,
+            /* Bei einem Vergleich aus einer Gruppe ist der Gegenstand
+               die KENNZAHL, nicht ein Ticker: fuenf Unternehmen auf
+               einer Achse haben kein gemeinsames Symbol. Die Einheit
+               gehoert dazu - fuenf Kurse ohne Waehrung standen auf
+               dem fertigen Bild. */
+            entitaet: lage.symbol ||
+              (lage.composition && lage.composition.metrik
+                ? (lage.composition.einheit
+                    ? lage.composition.metrik + " in " + lage.composition.einheit
+                    : lage.composition.metrik)
+                : null),
             /* Die Grafik sagt etwas ueber SICH, nicht ueber den Hook.
                Der erste Versuch setzte den Hook darueber - und dann
                stand "65,3 Technical Opportunity Score" ueber einer
@@ -2442,6 +2670,22 @@ async function main() {
             aussage: VisualComposition.aussage(kompo, lage.symbol),
             quelle: quelleAus(lage) })
         : AssetRenderer.plan(pkg, {}));
+
+    /* -----------------------------------------------------------------
+       DIE BILDDIMENSIONEN NACHTRAGEN (§38)
+
+       Visual Family, Atlas-Rolle und Textmuster stehen erst fest,
+       wenn ein Renderplan existiert - und der ist genau hier
+       entstanden, nach dem Gedaechtniseintrag. Nachgetragen wird nur,
+       wo noch nichts steht: das Gedaechtnis ist ein Register und kein
+       Arbeitsblatt.
+
+       Ein Plan, der NICHT zeichenbar ist, traegt auch keinen
+       Grammatik-Befund. Dann bleiben die drei Felder null - und das
+       ist die richtige Antwort, nicht eine fehlende.
+       ----------------------------------------------------------------- */
+    const lernEintrag = lernEintraege.get(String(pkg.packageId));
+    if (lernEintrag) LearningUnit.ergaenze(lernEintrag, { plan: bildplan });
 
     d.asset = {
       plannable: bildplan.ok,

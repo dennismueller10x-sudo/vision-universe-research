@@ -141,3 +141,55 @@ test("VC12 · Fuer eine generative Strategie gibt es hier kein Layout", () => {
   assert.equal(k.ok, false);
   assert.equal(k.reason, "unsupportedStrategy");
 });
+
+/* ------------------------------------------------------------------ */
+/* DER SATZ UNTER EINEM VERGLEICH                                      */
+/* ------------------------------------------------------------------ */
+
+test("VC13 · Zwei Werte bekommen ihren Abstand, keinen Rang", () => {
+  /* Unter der fertigen Grafik stand "Rang 2 von 2 in diesem Lauf."
+     Zwei Maengel in einem Satz: "Lauf" ist ein Begriff aus unserer
+     Maschine, und ein Rang unter zwei Werten sagt nur, welcher der
+     kleinere ist - das zeigen die Balken schon.
+
+     Geprueft wird deshalb beides: dass der interne Begriff weg ist
+     UND dass an seiner Stelle etwas Neues steht. Nur das Wort zu
+     verbieten haette einen leeren Satz zugelassen. */
+  const k = C.comparison({ einheit: "Punkte", peers: [
+    { label: "S&P 500", value: 21.6, anzeige: "21,6" },
+    { label: "Russell 2000", value: 13.4, anzeige: "13,4", highlight: true }] });
+  assert.equal(k.ok, true);
+  const satz = C.aussage(k, "KGV");
+  assert.doesNotMatch(satz, /Lauf/);
+  assert.doesNotMatch(satz, /Rang/);
+  assert.match(satz, /S&P 500/);
+  assert.match(satz, /Russell 2000/);
+  /* 21,6 - 13,4 = 8,2, deutsch geschrieben und mit der Einheit. */
+  assert.match(satz, /8,2 Punkte/);
+});
+
+test("VC14 · Ab drei Werten traegt die Rangfolge wieder, oeffentlich benannt", () => {
+  const k = C.comparison({ peers: [
+    { label: "AAPL", value: 65 }, { label: "XOM", value: 76 },
+    { label: "MSFT", value: 61, highlight: true }] });
+  const satz = C.aussage(k, "Score");
+  assert.match(satz, /MSFT/);
+  assert.match(satz, /Rang 3 von 3/);
+  assert.doesNotMatch(satz, /Lauf/);
+});
+
+test("VC15 · Die Schreibweise der Quelle reist bis an den Balken", () => {
+  /* Auf dem fertigen Bild stand "22" und "13" statt 21,6 und 13,4:
+     der Zeichner rundete, weil die Zahl ohne ihre Schreibweise
+     ankam. Eine gerundete Zahl ist eine andere Zahl - und sie steht
+     unter dem Namen eines Gegenstands als dessen Wert. */
+  const k = C.comparison({ peers: [
+    { label: "S&P 500", value: 21.6, anzeige: "21,6" },
+    { label: "Russell 2000", value: 13.4, anzeige: "13,4" }] });
+  assert.equal(k.bars[0].anzeige, "21,6");
+  assert.equal(k.bars[1].anzeige, "13,4");
+  /* Und ohne Schreibweise: die Stellen aus den Werten, nicht geraten. */
+  assert.equal(C.stellenAus([{ value: 21.6 }, { value: 13.4 }]), 1);
+  assert.equal(C.stellenAus([{ value: 27.35 }, { value: 8 }]), 2);
+  assert.equal(C.stellenAus([{ value: 21 }, { value: 13 }]), 0);
+});

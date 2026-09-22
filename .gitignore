@@ -43,3 +43,8 @@ tmp/
 # Sie gehoeren zu einem Stand, nicht ins Repository: der Bericht misst
 # neu, statt einem eingecheckten "gruen" zu glauben.
 .verification/
+
+# Der Produktnachweis erzeugt ein Bild und einen Befund. Beide gehoeren
+# zu einem Lauf, nicht ins Repository - das Bild ist reproduzierbar,
+# und der Befund gilt fuer genau einen Stand.
+tmp/product-proof/

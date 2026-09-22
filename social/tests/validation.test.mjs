@@ -293,3 +293,39 @@ test("V22 · Die Glaubwuerdigkeitsminderung ist gedeckelt", () => {
   assert.ok(Untrusted.credibilityPenalty(["a"]) > 0);
   assert.equal(Untrusted.credibilityPenalty(new Array(20).fill("a")), 1);
 });
+
+test("V10b · Ein zugesichertes Ergebnis kommt nicht durch das Register", () => {
+  /* Gefunden von einem adversarialen Hook-Test, nicht von einer
+     Regel: "Diese Aktie verdoppelt sich sicher." ging durch alle vier
+     bestehenden Register (Casino, Geheimtipp, Mond, Angst). Fuer
+     einen Finanzabsender ist das der folgenreichste Satz ueberhaupt -
+     folgenreicher als "Jackpot". */
+  for (const satz of [
+    "Diese Aktie verdoppelt sich sicher.",
+    "Garantierte Rendite von 12 Prozent.",
+    "Eine risikolose Anlage.",
+    "Der Kurs kann nicht fallen.",
+    "Das macht dich reich."
+  ]) {
+    const r = Brand.textRegister(satz);
+    assert.ok(r.blocking.some((b) => b.id === "renditeversprechen"),
+      "Nicht geblockt: " + satz);
+  }
+});
+
+test("V10c · Eine Feststellung ueber die Vergangenheit bleibt erlaubt", () => {
+  /* Die Gegenrichtung ist die wichtigere: ein Pruefer, der richtigen
+     Text abweist, ist in diesem Projekt eine eigene Fehlerfamilie.
+     "Hat sich verdoppelt" ist eine Tatsache, keine Zusicherung. */
+  for (const satz of [
+    "Die Aktie hat sich seit 2020 verdoppelt.",
+    "Der Titel verdreifachte sich in zehn Jahren.",
+    "Die Rendite lag bei 8,2 Prozent.",
+    "S&P 500 liegt beim 14-fachen von HP Inc.",
+    "33 von 5951 geprueften Titeln erfuellen das."
+  ]) {
+    const r = Brand.textRegister(satz);
+    assert.equal(r.blocking.some((b) => b.id === "renditeversprechen"), false,
+      "Faelschlich geblockt: " + satz);
+  }
+});

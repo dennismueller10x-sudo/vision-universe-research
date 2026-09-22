@@ -29,7 +29,7 @@ import assert from "node:assert/strict";
 
 import worker from "../src/index.js";
 import {
-  createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY
+  createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY, jpegBytes, bildAntwort
 } from "./harness.mjs";
 import { CONNECTION_KEY, claimKey, readClaim, claimPublish, settleClaim } from "../src/store.js";
 
@@ -80,11 +80,12 @@ function publishGraph(options = {}) {
       headers: new Headers({ "content-type": "application/json" })
     });
 
-    if (methode === "HEAD") {
+    /* An der ADRESSE, nicht an der Methode: sonst faengt dieser Zweig
+       auch die Graph-Abrufe nach dem Senden. */
+    if (!url.hostname.includes("graph.") || methode === "HEAD") {
       if (options.bildFehlt) return { ok: false, status: 404, headers: new Headers() };
-      return { ok: true, status: 200,
-        headers: new Headers({ "content-type": options.bildTyp || "image/jpeg",
-          "content-length": "68000" }) };
+      return bildAntwort(options.bild || jpegBytes(),
+        { typ: options.bildTyp || "image/jpeg" });
     }
 
     if (pfad === `${IG_ID}/media` && methode === "POST") {
