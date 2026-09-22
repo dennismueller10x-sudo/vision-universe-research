@@ -52,6 +52,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -181,7 +182,82 @@ function evidenzFuer(job, ergebnisse, ledger, nachfolger, register) {
     }
   }
 
+  /* -------------------------------------------------------------------
+     DER ANLAUF, DER NIE AUSGELIEFERT WURDE
+
+     Die vier Evidenzarten darueber sprechen ueber ein ERGEBNIS. Diese
+     spricht ueber eine Auslieferung, die nie stattfand - und sie ist
+     die Antwort auf einen realen Stillstand: am 21.09. wurde ein Job
+     registriert, sein Request-PR entstand nicht (Actions durfte damals
+     keine PRs oeffnen), und danach stand der Betrieb siebzehn Stunden.
+     MAX_OPEN_CREATIVE_JOBS = 1 kennt keinen Knopf, und der Abgleich
+     schliesst zu Recht nichts wegen seines Alters.
+
+     GEMESSEN wird hier, GEURTEILT in creative-job.js. Das Skript stellt
+     fest, ob es einen Pull Request gibt; die Engine entscheidet, ob das
+     zusammen mit dem Registerzustand genuegt.
+
+     DIE FRIST IST KEIN SCHLIESSGRUND, SONDERN EIN ABSTAND. Zwischen
+     Registereintrag und PR liegen im gesunden Lauf Sekunden. Ein Job,
+     der eben erst eingetragen wurde, koennte gerade jetzt seinen PR
+     bekommen - ihn zu schliessen hiesse, mit dem eigenen Lauf zu
+     konkurrieren. Was schliesst, ist die Abwesenheit des PR; die Frist
+     sorgt nur dafuer, dass die Messung nicht in die Luecke faellt, die
+     sie messen soll.
+     ------------------------------------------------------------------- */
+  if (job.state === "CREATIVE_JOB_REQUESTED" && !job.prNumber &&
+      !(job.deliveryIds || []).length && !(job.observedStarts > 0)) {
+    const alterMin = (Date.parse(NOW) - Date.parse(job.updatedAt || job.createdAt)) / 60000;
+    if (alterMin >= FRIST_MINUTEN) {
+      const messung = keinPullRequest(job.contentId);
+      if (messung.gemessen && messung.keiner) {
+        belege.push({ art: "DISPATCH_NIE_ERFOLGT", quelle: messung.quelle,
+          detail: "Kein Pull Request zu " + zweigVon(job.contentId) +
+            "; Register ohne PR-Nummer, ohne Delivery und ohne beobachteten " +
+            "Start; " + Math.round(alterMin) + " min alt." });
+      } else if (!messung.gemessen) {
+        belege.push({ art: "UNGEMESSEN", quelle: messung.quelle, ungeeignet: true,
+          detail: "Ob ein Pull Request existiert, liess sich hier nicht " +
+            "feststellen: " + messung.grund + ". Ungeprueft ist kein Nein." });
+      }
+    }
+  }
+
   return belege;
+}
+
+/* Wie lange ein Job ohne PR stehen darf, bevor die Messung ueberhaupt
+   gestellt wird. Zehn Minuten sind grosszuegig gegen Sekunden. */
+const FRIST_MINUTEN = 10;
+
+function zweigVon(contentId) {
+  return "authoring/request/" + contentId;
+}
+
+/**
+ * Gibt es einen Pull Request zu diesem Job?
+ *
+ * Drei Antworten, nicht zwei: es gibt keinen, es gibt einen, oder es
+ * liess sich nicht feststellen. Die dritte als "es gibt keinen" zu
+ * lesen waere die Verwechslung, die in diesem Projekt schon einen
+ * Bericht erfunden hat - ein 403 des Egress-Proxy sieht aus wie ein
+ * Nein des Dienstes.
+ */
+function keinPullRequest(contentId) {
+  const zweig = zweigVon(contentId);
+  try {
+    const roh = execFileSync("gh", ["pr", "list", "--head", zweig,
+      "--state", "all", "--json", "number", "--limit", "5"],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    const liste = JSON.parse(roh);
+    return { gemessen: true, keiner: liste.length === 0,
+      quelle: "gh pr list --head " + zweig,
+      grund: liste.length ? "PR #" + liste[0].number : "keiner" };
+  } catch (err) {
+    return { gemessen: false, keiner: false,
+      quelle: "gh pr list --head " + zweig,
+      grund: String((err && err.message) || err).split("\n")[0].slice(0, 120) };
+  }
 }
 
 /* ------------------------------------------------------------------ Lauf */
@@ -212,9 +288,23 @@ for (const job of offene) {
     continue;
   }
 
-  const erste = belege[0];
+  /* Ein Beleg, der ausdruecklich nicht taugt, macht den Job nicht
+     schliessbar - er erklaert nur, warum nicht. */
+  const brauchbar = belege.filter((b) => !b.ungeeignet);
+  if (!brauchbar.length) {
+    befunde.push({ creativeJobId: job.creativeJobId, contentId: job.contentId,
+      vorher: job.state, nachher: job.state, geaendert: false,
+      grund: "keineEvidenz", belege: belege.map((b) => b.art),
+      satz: belege[0].detail });
+    continue;
+  }
+
+  const erste = brauchbar[0];
   const r = registry.reconcile(job.creativeJobId, erste.art,
-    { now: NOW, note: erste.quelle });
+    { now: NOW, note: erste.quelle,
+      /* Die Messung reist mit. Die Engine verlangt sie ausdruecklich
+         und schliesst ohne sie nicht. */
+      keinPullRequest: erste.art === "DISPATCH_NIE_ERFOLGT" ? true : undefined });
 
   befunde.push({ creativeJobId: job.creativeJobId, contentId: job.contentId,
     vorher: r.from || job.state, nachher: r.geaendert ? r.to : job.state,

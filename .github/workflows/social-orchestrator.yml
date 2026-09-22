@@ -145,6 +145,14 @@ jobs:
       # gezaehlt werden. Danach waere er ein Tor neben dem Weg.
       # =====================================================================
       - name: Creative Jobs gegen die Evidenz abgleichen
+        # GH_TOKEN, weil eine der Evidenzarten eine Tatsache ueber die
+        # AUSSENWELT braucht: gibt es einen Request-PR zu diesem Job?
+        # Ohne Token kann das Skript die Frage nicht stellen und meldet
+        # UNGEMESSEN - und ungeprueft schliesst nichts. Der Abgleich
+        # liest nur; er oeffnet keinen PR und veraendert nichts an
+        # GitHub.
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: node scripts/social/reconcile-creative-jobs.mjs --write
 
       - name: Was ist jetzt dran?
