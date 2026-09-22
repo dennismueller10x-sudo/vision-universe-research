@@ -510,15 +510,29 @@ AAPL 2025-09-27 (Sa) → FX vom 26.09., NVDA 2026-01-25 (So) → FX vom
 verschiedene Zahlen auseinander, und die Verwechslung war ein echter
 Fehler:
 
-* **Geholt**: 40 von 61 Richtungen. Was der Anbieter direkt fuehrt.
-* **Aufloesbar**: was die Engine daraus bilden kann — direkt, durch
-  Inversion oder ueber das Pivot.
+* **Geholt**: 40 Paare. Was der Anbieter direkt fuehrt.
+* **Aufloesbar**: **52 von 62 gebrauchten Richtungen** — was die Engine
+  daraus bilden kann.
 
-Die erste Fassung meldete nur die erste Zahl. Sie fuehrte CNY/EUR als
-„nicht gefuehrt", mit **124 betroffenen Titeln** und dem Zusatz „bleiben
-in der Originalwaehrung". Im selben Lauf rechnete Alibaba korrekt in
-Euro: `USD/CNY` liegt mit 2.030 Zeilen im Store, und `fx-rates.js` bildet
+| Aufloesung | Richtungen |
+|---|---|
+| `INVERSE` (1/rate, exakte Identitaet) | 34 |
+| `TRIANGULATED` (ueber USD, beide Beine am selben Tag) | 11 |
+| `DIRECT` | 7 |
+| **`NONE`** | **10** |
+
+Ohne jede Abdeckung bleiben **5 Waehrungen** (AFN, KZT, MOP, MYR, VND)
+und **16 Titel**.
+
+Die erste Fassung meldete nur die erste Zahl und kam auf „21 Richtungen
+nicht gefuehrt, 212 Titel betroffen". Sie fuehrte CNY/EUR als „nicht
+gefuehrt", mit **124 betroffenen Titeln** und dem Zusatz „bleiben in der
+Originalwaehrung". Im selben Lauf rechnete Alibaba korrekt in Euro:
+`USD/CNY` liegt mit 2.030 Zeilen im Store, und `fx-rates.js` bildet
 `CNY/EUR` daraus ueber USD.
+
+Die richtige Zahl ist **10 Richtungen und 16 Titel** — eine
+Groessenordnung kleiner.
 
 > Ein Bericht, der 124 Titel als nicht umrechenbar ausweist, waehrend sie
 > umgerechnet werden, laedt zu genau der Entscheidung ein, die O-2
