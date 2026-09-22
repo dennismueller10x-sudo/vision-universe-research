@@ -31,7 +31,7 @@ const require = createRequire(import.meta.url);
 
 import {
   plan, render, planUebernahme, uebernimm, ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
-  GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD
+  GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD, textOnVisualAussage
 } from "../../scripts/social/render-asset.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -170,6 +170,51 @@ test("RA11 · Fehlt der Hook, traegt die These, dann das Thema", () => {
     thesis: "Die These." })).ebenen.aussage, "Die These.");
   assert.equal(plan(paket({ visualType: "MINIMAL_TYPOGRAPHY", hook: null,
     thesis: null, topic: "Small Caps" })).ebenen.aussage, "Small Caps");
+});
+
+/* ------------------------------------------------------------------ */
+/* DER SATZ, VOR DEM ZEICHNEN - NICHT NUR DABEI                        */
+/*                                                                      */
+/* Fuenf reale Pakete blieben ohne Bild, weil run-social-cycle.mjs den */
+/* Satz fuer `oneSecondMessage` nur fuer den Kompositionspfad kannte  */
+/* und fuer DATA_CARD/MINIMAL_TYPOGRAPHY nie fragte - obwohl plan()   */
+/* denselben Satz laengst berechnet. textOnVisualAussage() ist jetzt  */
+/* die einzige Herleitung, von beiden benutzt.                        */
+/* ------------------------------------------------------------------ */
+
+test("RA11b · textOnVisualAussage liefert denselben Satz wie der Bildplan", () => {
+  const p = paket({ visualType: "DATA_CARD" });
+  assert.equal(textOnVisualAussage(p).text, plan(p).ebenen.aussage);
+});
+
+test("RA11c · textOnVisualAussage folgt derselben Kette: Hook, dann These, dann Thema", () => {
+  assert.equal(textOnVisualAussage(paket({ hook: "Der Hook." })).text, "Der Hook.");
+  assert.equal(textOnVisualAussage(paket({ hook: null, thesis: "Die These." })).text,
+    "Die These.");
+  assert.equal(textOnVisualAussage(paket({ hook: null, thesis: null,
+    topic: "Small Caps" })).text, "Small Caps");
+});
+
+test("RA11d · Ohne jede Quelle bleibt der Satz leer, nicht erfunden", () => {
+  const leer = textOnVisualAussage(paket({ hook: "", thesis: "", topic: "" }));
+  assert.equal(leer.text, null);
+  assert.equal(leer.herkunft, null);
+});
+
+test("RA11e · Die Herkunft benennt woher der Satz kommt", () => {
+  assert.equal(textOnVisualAussage(paket({ hook: "Der Hook." })).herkunft, "pkg.hook");
+  assert.equal(textOnVisualAussage(paket({ hook: null, thesis: "Die These." })).herkunft,
+    "pkg.thesis");
+  assert.equal(textOnVisualAussage(paket({ hook: null, thesis: null,
+    topic: "Small Caps" })).herkunft, "pkg.topic");
+});
+
+test("RA11f · Eine ausdrueckliche Hook-Textebene fuehrt vor pkg.hook", () => {
+  const p = paket({ hook: "Der Hook.", visualBrief: { textLayers: [
+    { role: "HOOK", text: "Die Textebene." }
+  ] } });
+  assert.equal(textOnVisualAussage(p).text, "Die Textebene.");
+  assert.equal(textOnVisualAussage(p).herkunft, "visualBrief.textLayers");
 });
 
 /* ------------------------------------------------------------------ */

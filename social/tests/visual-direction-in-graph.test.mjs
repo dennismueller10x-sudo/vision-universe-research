@@ -114,6 +114,20 @@ test("VD7 · Das XOM-Visual ist kein Qualitaetsmassstab", () => {
   assert.match(engine, /traegt dieses\s+Bild die Geschichte/);
 });
 
+test("VD9 · oneSecondMessage kennt auch den Kartenpfad, nicht nur die Komposition", () => {
+  /* Fuenf reale Pakete (DATA_CARD/MINIMAL_TYPOGRAPHY) blieben ohne Bild,
+     weil kompoAussage() nur VisualComposition.compose() kannte - eine
+     Funktion, die diese Bildformen gar nicht implementiert
+     (visual-composition.js kennt nur CHART/SCORE/PERFORMANCE/
+     COMPARISON/RANKING). Die Herleitung fuer den Kartenpfad existiert
+     laengst in render-asset.mjs und wird jetzt auch hier gefragt -
+     ueber dieselbe Liste, die render-asset.mjs selbst als "zeichenbar"
+     fuehrt, nicht ueber eine zweite Aufzaehlung derselben Typen. */
+  assert.match(ZYKLUS, /AssetRenderer\.GEZEICHNET\.indexOf\(pkg\.visualType\)/);
+  assert.match(ZYKLUS, /AssetRenderer\.textOnVisualAussage\(pkg\)/);
+  assert.match(ZYKLUS, /oneSecondMessage:\s*einSekundenAussage\(lage,\s*pkg\)/);
+});
+
 test("VD8 · Die Stufen der Bildkette sind vollstaendig", () => {
   for (const stufe of ["VISUAL_STRATEGY", "CREATIVE_DIRECTION", "VISUAL_PROVIDER",
                        "GENERATION", "TECHNICAL_INTEGRITY", "CREATIVE_QUALITY",
