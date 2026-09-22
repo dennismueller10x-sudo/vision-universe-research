@@ -459,6 +459,7 @@
       if (typeof options.observedStarts === "number") {
         job.observedStarts = options.observedStarts;
       }
+      if (options.failureType !== undefined) job.failureType = options.failureType;
       job.history.push({ state: nachher, at: job.updatedAt,
         note: options.note || null });
       return job;
@@ -538,12 +539,24 @@
       var ausgang = job.state;
       var schritte = [];
       for (var k = 0; k < weg.length; k++) {
-        transition(job.creativeJobId, weg[k], {
+        var schrittOptionen = {
           now: options.now,
           note: (options.note ? options.note + " — " : "") +
             "reconciled aus " + evidenzArt +
             (weg.length > 1 ? " (Schritt " + (k + 1) + " von " + weg.length + ")" : "")
-        });
+        };
+        /* DISPATCH_NIE_ERFOLGT schliesst einen Job, der nie gestartet
+           ist — beobachtbar an observedStarts: 0. Ohne failureType
+           saehe dieser Abschluss aus wie ein Job, der lief und
+           scheiterte, und CJ11s reale Invariante (gelaufene
+           Fehlschlaege haben >=5 Starts) würde ihn faelschlich
+           dorthin zaehlen. CONTRACT_MISMATCH ist derselbe Fall aus
+           einem anderen Weg: ein Job, der terminal endet, ohne je
+           beobachtbar gelaufen zu sein. */
+        if (evidenzArt === "DISPATCH_NIE_ERFOLGT" && weg[k] === ziel) {
+          schrittOptionen.failureType = "NEVER_DISPATCHED";
+        }
+        transition(job.creativeJobId, weg[k], schrittOptionen);
         schritte.push(weg[k]);
       }
 

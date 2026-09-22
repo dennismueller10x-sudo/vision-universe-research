@@ -346,6 +346,16 @@ jobs:
           steps.plan.outputs.prepare == 'ja' &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
           inputs.nur_entscheiden != true
+        # VU_SOCIAL_MODUS reist hier weiter, mit demselben Namen, unter
+        # dem run-orchestrator.mjs ihn gelesen und sein Urteil schon
+        # gefaellt hat (steps.plan.outputs.modus). make-publish-
+        # candidate.mjs trifft KEINE zweite Kadenzentscheidung - es
+        # fragt dieselbe AUFHEBBAR-Tabelle aus manual-mode.js, die der
+        # Orchestrator schon benutzt hat. Fehlt der Auftrag (Zeitplan),
+        # ist der Wert "ZEITPLAN" und kein bekannter Modus: das
+        # Verhalten bleibt exakt das von AUTO.
+        env:
+          VU_SOCIAL_MODUS: ${{ steps.plan.outputs.modus }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq

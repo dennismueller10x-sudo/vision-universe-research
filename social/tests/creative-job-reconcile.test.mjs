@@ -482,6 +482,18 @@ test("CR25 · Mit der Messung schliesst der Anlauf als FAILED", () => {
   assert.equal(r.to, "CREATIVE_JOB_FAILED");
 });
 
+test("CR25b · Der Abschluss traegt failureType NEVER_DISPATCHED", () => {
+  /* Ohne diese Markierung sieht ein Job, der nie startete (0 Starts),
+     aus wie ein Job, der lief und scheiterte - und die reale
+     Invariante aus CJ11 (gelaufene Fehlschlaege zeigen >=5 Starts)
+     wuerde ihn faelschlich dorthin zaehlen. Derselbe Fall wie
+     CONTRACT_MISMATCH, ueber einen anderen Weg. */
+  const r = frisch().reconcile(NIE_AUSGELIEFERT.creativeJobId, "DISPATCH_NIE_ERFOLGT",
+    { keinPullRequest: true, now: "2026-09-22T05:30:00.000Z" });
+  assert.equal(r.job.failureType, "NEVER_DISPATCHED");
+  assert.equal(r.job.observedStarts, 0);
+});
+
 test("CR26 · Was die Aussenwelt gesehen haben koennte, wird nicht geschlossen", () => {
   /* Jede dieser drei Tatsachen ist ein Beleg dafuer, dass der Job DOCH
      ausgeliefert wurde. Eine davon genuegt - auch gegen eine Messung,
