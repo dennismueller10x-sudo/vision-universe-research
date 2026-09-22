@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T13:36:53.737Z",
+  "generatedAt": "2026-09-22T16:21:55.900Z",
   "purpose": "NORTH_STAR_SHIFT_PROOF",
   "metaConnectionFromThisRun": "UNKNOWN_FROM_THIS_RUN",
   "ownPerformanceMeasurements": 25,
@@ -841,8 +841,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.0003295331851165745,
-          "reason": "Der Anlass liegt 278 h zurueck."
+          "value": 0.0003043677259516913,
+          "reason": "Der Anlass liegt 280 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -990,6 +990,12 @@
           {
             "id": "row-rule",
             "statement": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)",
+            "source": "discover.row.bekannte-namen",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Marken, die man aus dem Alltag kennt — und deren Kurs gerade etwas tut.",
             "source": "discover.row.bekannte-namen",
             "temporal": false
           },
@@ -1172,8 +1178,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1289,7 +1295,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -1324,6 +1330,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.breakout-watch",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Deutlich mehr Handel als sonst — und der Kurs zieht an.",
             "source": "discover.row.breakout-watch",
             "temporal": false
           },
@@ -1506,8 +1518,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1623,7 +1635,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -1658,6 +1670,12 @@
           {
             "id": "row-rule",
             "statement": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.cashflow-maschinen",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Mindestens 15 Cent freier Cashflow je Dollar Umsatz im letzten Geschäftsjahr.",
             "source": "discover.row.cashflow-maschinen",
             "temporal": false
           },
@@ -1820,8 +1838,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -1937,7 +1955,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 5,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -1972,6 +1990,12 @@
           {
             "id": "row-rule",
             "statement": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.comeback",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Deutlich gefallen — und seit drei Monaten wieder klar im Plus.",
             "source": "discover.row.comeback",
             "temporal": false
           },
@@ -2154,8 +2178,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2271,7 +2295,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -2306,6 +2330,12 @@
           {
             "id": "row-rule",
             "statement": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+            "source": "discover.row.djia-staerkste",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Die 30 Industrie-Klassiker der Wall Street — sortiert nach Kursstärke.",
             "source": "discover.row.djia-staerkste",
             "temporal": false
           },
@@ -2488,8 +2518,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2610,7 +2640,7 @@
         ]
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -2645,6 +2675,12 @@
           {
             "id": "row-rule",
             "statement": "Nettogewinn FY(t−2) < 0 und FY(t) > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.fundamentale-turnarounds",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Vor zwei Jahren Verlust, heute Gewinn.",
             "source": "discover.row.fundamentale-turnarounds",
             "temporal": false
           },
@@ -2811,8 +2847,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -2928,7 +2964,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 4,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -2963,6 +2999,12 @@
           {
             "id": "row-rule",
             "statement": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.langfristige-compounder",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Zehn Jahre Umsatzwachstum von mindestens zehn Prozent pro Jahr, in jedem Jahr profitabel.",
             "source": "discover.row.langfristige-compounder",
             "temporal": false
           },
@@ -3141,8 +3183,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3258,7 +3300,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -3293,6 +3335,12 @@
           {
             "id": "row-rule",
             "statement": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte. Nettomarge ≥ −25 % (eine Marge von −400 % wird nicht „stärker\"). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.margen-werden-staerker",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Die operative Marge ist über drei Geschäftsjahre um mindestens zwei Prozentpunkte gestiegen.",
             "source": "discover.row.margen-werden-staerker",
             "temporal": false
           },
@@ -3455,8 +3503,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3572,7 +3620,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 5,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -3607,6 +3655,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst, Rang danach. Qualifiziert ist ein Titel, wenn (1) die Kursstaerke aus mindestens 80 % der Komponenten gerechnet werden konnte, (2) mindestens 250 Handelstage Kurshistorie vorliegen, (3) der Kurs ueber 5 $ liegt und (4) im Schnitt der letzten 20 Handelstage mindestens 5 Mio. $ am Tag gehandelt wurden. Unter den Qualifizierten entscheidet der Leadership-Score (Abstand zum Jahreshoch, Rendite ueber 3/6/12 Monate, relative Staerke zum Markt, Trendqualitaet, Volumen, Drawdown). Kein Blick in die Zukunft: alle Fenster enden am letzten Handelstag.",
+            "source": "discover.row.market-leaders",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Aktien, die den Markt über Monate anführen — nur liquide, gehandelte Titel mit vollständiger Kurshistorie.",
             "source": "discover.row.market-leaders",
             "temporal": false
           },
@@ -3789,8 +3843,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -3906,7 +3960,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -3941,6 +3995,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.momentum-leaders",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Die stärkste Kursentwicklung der letzten Monate.",
             "source": "discover.row.momentum-leaders",
             "temporal": false
           },
@@ -4123,8 +4183,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4240,7 +4300,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -4275,6 +4335,12 @@
           {
             "id": "row-rule",
             "statement": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+            "source": "discover.row.ndx-staerkste",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Die 100 größten Nasdaq-Titel ohne Finanzwerte — sortiert nach Kursstärke.",
             "source": "discover.row.ndx-staerkste",
             "temporal": false
           },
@@ -4457,8 +4523,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4574,7 +4640,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -4609,6 +4675,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.new-52-week-highs",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Aktien auf dem höchsten Stand seit zwölf Monaten.",
             "source": "discover.row.new-52-week-highs",
             "temporal": false
           },
@@ -4791,8 +4863,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -4908,7 +4980,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -4943,6 +5015,12 @@
           {
             "id": "row-rule",
             "statement": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.profitables-wachstum",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Wächst, verdient Geld und erzeugt freien Cashflow.",
             "source": "discover.row.profitables-wachstum",
             "temporal": false
           },
@@ -5125,8 +5203,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5242,7 +5320,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -5277,6 +5355,12 @@
           {
             "id": "row-rule",
             "statement": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.qualitaet-wachstum",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Zweistelliges Umsatzwachstum und mindestens zehn Prozent Nettomarge.",
             "source": "discover.row.qualitaet-wachstum",
             "temporal": false
           },
@@ -5451,8 +5535,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5568,7 +5652,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 2,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -5603,6 +5687,12 @@
           {
             "id": "row-rule",
             "statement": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.qualitaet-zum-preis",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Mindestens zehn Prozent Nettomarge bei einem Kurs-Gewinn-Verhältnis bis 20.",
             "source": "discover.row.qualitaet-zum-preis",
             "temporal": false
           },
@@ -5765,8 +5855,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -5882,7 +5972,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 5,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -5917,6 +6007,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.relative-strength",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Aktien, die sich besser entwickeln als der Gesamtmarkt.",
             "source": "discover.row.relative-strength",
             "temporal": false
           },
@@ -6099,8 +6195,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6216,7 +6312,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -6251,6 +6347,12 @@
           {
             "id": "row-rule",
             "statement": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+            "source": "discover.row.sp500-staerkste",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Die 500 größten US-Unternehmen — sortiert nach Kursstärke über Monate.",
             "source": "discover.row.sp500-staerkste",
             "temporal": false
           },
@@ -6433,8 +6535,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6550,7 +6652,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -6585,6 +6687,12 @@
           {
             "id": "row-rule",
             "statement": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.starke-bilanz-wachstum",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Mehr Kasse als Schulden und zweistelliges Umsatzwachstum.",
             "source": "discover.row.starke-bilanz-wachstum",
             "temporal": false
           },
@@ -6767,8 +6875,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -6884,7 +6992,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -6916,6 +7024,12 @@
           "discover/data/rows/US_REAL/thema-ki.json"
         ],
         "evidence": [
+          {
+            "id": "row-subtitle",
+            "statement": "Chips, Software und Rechenzentren — die Unternehmen dieses Themas im Universum.",
+            "source": "discover.row.thema-ki",
+            "temporal": false
+          },
           {
             "id": "row-coverage",
             "metric": "von 5954 geprueften Titeln",
@@ -7095,8 +7209,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7212,7 +7326,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 11,
+        "statements": 12,
         "sufficient": false,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -7244,6 +7358,12 @@
           "discover/data/rows/US_REAL/thema-mobilitaet.json"
         ],
         "evidence": [
+          {
+            "id": "row-subtitle",
+            "statement": "Hersteller, Zulieferer und Vermieter — vom Elektroauto bis zum Lkw.",
+            "source": "discover.row.thema-mobilitaet",
+            "temporal": false
+          },
           {
             "id": "row-coverage",
             "metric": "von 5954 geprueften Titeln",
@@ -7423,8 +7543,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7540,7 +7660,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 11,
+        "statements": 12,
         "sufficient": false,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -7572,6 +7692,12 @@
           "discover/data/rows/US_REAL/thema-robotik.json"
         ],
         "evidence": [
+          {
+            "id": "row-subtitle",
+            "statement": "Steuerungen, Antriebe, Sensorik und Maschinen — wer Fabriken automatisiert.",
+            "source": "discover.row.thema-robotik",
+            "temporal": false
+          },
           {
             "id": "row-coverage",
             "metric": "von 5954 geprueften Titeln",
@@ -7751,8 +7877,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -7868,7 +7994,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 11,
+        "statements": 12,
         "sufficient": false,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -7903,6 +8029,12 @@
           {
             "id": "row-rule",
             "statement": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.trend-quality",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Seit Monaten über dem Durchschnittskurs — die ruhigsten zuerst.",
             "source": "discover.row.trend-quality",
             "temporal": false
           },
@@ -8085,8 +8217,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8202,7 +8334,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -8237,6 +8369,12 @@
           {
             "id": "row-rule",
             "statement": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85 Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+            "source": "discover.row.ueberraschungen",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Stark, aber kaum jemandem ein Begriff — Titel ohne bekannten Namen.",
             "source": "discover.row.ueberraschungen",
             "temporal": false
           },
@@ -8419,8 +8557,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8536,7 +8674,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 0,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -8571,6 +8709,12 @@
           {
             "id": "row-rule",
             "statement": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.umsatz-waechst-stark",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Unternehmen, deren Umsatz über drei Geschäftsjahre um mindestens 15 % pro Jahr gewachsen ist.",
             "source": "discover.row.umsatz-waechst-stark",
             "temporal": false
           },
@@ -8749,8 +8893,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -8866,7 +9010,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 1,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
@@ -8959,8 +9103,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.0003295331851165745,
-          "reason": "Der Anlass liegt 278 h zurueck."
+          "value": 0.0003043677259516913,
+          "reason": "Der Anlass liegt 280 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9166,8 +9310,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.0003295331851165745,
-          "reason": "Der Anlass liegt 278 h zurueck."
+          "value": 0.0003043677259516913,
+          "reason": "Der Anlass liegt 280 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9373,8 +9517,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.0003295331851165745,
-          "reason": "Der Anlass liegt 278 h zurueck."
+          "value": 0.0003043677259516913,
+          "reason": "Der Anlass liegt 280 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9522,6 +9666,12 @@
           {
             "id": "row-rule",
             "statement": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+            "source": "discover.row.gewinne-beschleunigen",
+            "temporal": false
+          },
+          {
+            "id": "row-subtitle",
+            "statement": "Der Gewinn wuchs im letzten Geschäftsjahr schneller als im Jahr davor.",
             "source": "discover.row.gewinne-beschleunigen",
             "temporal": false
           },
@@ -9692,8 +9842,8 @@
         },
         "freshness": {
           "available": true,
-          "value": 0.042180247694921506,
-          "reason": "Der Anlass liegt 110 h zurueck."
+          "value": 0.03895906892181651,
+          "reason": "Der Anlass liegt 112 h zurueck."
         },
         "contentGap": {
           "available": true,
@@ -9809,7 +9959,7 @@
         "findings": []
       },
       "evidenceCoverage": {
-        "statements": 12,
+        "statements": 13,
         "sufficient": true,
         "rejectedValues": 3,
         "storyPotential": "TRAEGT_EIGENE_GESCHICHTE"
