@@ -352,9 +352,9 @@
       "processingKey": "brief_d85438b24249dbb6:vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-22T13:00:16.740Z",
-      "updatedAt": "2026-09-22T13:00:16.780Z",
+      "updatedAt": "2026-09-22T18:11:56.856Z",
       "prNumber": 170,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -368,6 +368,16 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-22T13:00:16.780Z",
           "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-22T18:11:56.856Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-22T18:11:56.856Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
         }
       ]
     }
@@ -379,5 +389,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-22T07:53:29.538Z"
+  "reconciledAt": "2026-09-22T18:11:56.856Z"
 }
