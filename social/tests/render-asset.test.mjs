@@ -31,7 +31,7 @@ const require = createRequire(import.meta.url);
 
 import {
   plan, render, planUebernahme, uebernimm, ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
-  GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD, textOnVisualAussage
+  GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD, textOnVisualAussage, messeSeite, MESS_SKRIPT
 } from "../../scripts/social/render-asset.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -446,4 +446,60 @@ test("RA24 · Die Uebernahme wechselt das Format und bearbeitet das Bild nicht",
     assert.equal(b.modus, "uebernahme");
     assert.equal(b.quelle, "a/b.png");
   } finally { rmSync(wurzel, { recursive: true, force: true }); }
+});
+
+/* ------------------------------------------------------------------ */
+/* DIE MESSUNG FINDET STATT, AUCH WENN DIE SCHRIFT NIE "READY" MELDET  */
+/*                                                                      */
+/* Der reale MANUAL_NOW-Lauf 35711481190 zeigte: alle fuenf Pakete     */
+/* liessen sich zeichnen (Chromium schrieb ein korrektes JPEG), aber   */
+/* der Atlas- und der SCROLL_STOP-Vertrag scheiterten mit "nicht       */
+/* gemessen" - document.fonts.ready loeste in der Chromium-Fassung des */
+/* Runners nie auf, obwohl die Schrift eingebettet ist (kein Netzwerk  */
+/* noetig). MESS_SKRIPT wartete davor ausschliesslich auf dieses       */
+/* Versprechen; ohne es lief messen() nie, und --dump-dom erfasste     */
+/* eine Seite ohne jede Messung - nicht weil das Bild falsch war,      */
+/* sondern weil niemand je gemessen hat.                               */
+/* ------------------------------------------------------------------ */
+
+function messseiteMit(zusatzSkript) {
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-messen-"));
+  const pfad = join(wurzel, "seite.html");
+  writeFileSync(pfad, `<!doctype html><html><body>
+<div data-vu-rolle="TEST">Hallo</div>
+<img data-vu-figur="ATLAS" src="data:image/png;base64,${
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+  }" style="width:10px;height:10px">
+${zusatzSkript || ""}
+${MESS_SKRIPT}
+</body></html>`);
+  try { return messeSeite(pfad, 100, 100); } finally { rmSync(wurzel, { recursive: true, force: true }); }
+}
+
+test("RA25 · Die normale Messung liest Text und Figur", { skip: chromiumDa ? false :
+  "Kein Chromium in dieser Umgebung." }, () => {
+  const m = messseiteMit(null);
+  assert.ok(m, "messeSeite haette etwas liefern muessen");
+  assert.equal(m.texte.length, 1);
+  assert.equal(m.texte[0].rolle, "TEST");
+  assert.equal(m.figuren.length, 1);
+  assert.equal(m.figuren[0].figur, "ATLAS");
+});
+
+test("RA26 · Ein fuer immer haengendes fonts.ready blockiert die Messung nicht", { skip: chromiumDa ? false :
+  "Kein Chromium in dieser Umgebung." }, () => {
+  /* Simuliert genau den realen Befund: document.fonts.ready loest nie
+     auf. Ohne den Zeitfallback in MESS_SKRIPT bliebe die Seite
+     ungemessen - mit ihm liefert sie dieselbe Messung wie im
+     Normalfall. */
+  const m = messseiteMit(`<script>
+    try {
+      Object.defineProperty(document.fonts, "ready",
+        { value: new Promise(function(){}), configurable: true });
+    } catch (e) {}
+  </script>`);
+  assert.ok(m, "messeSeite haette trotz haengendem fonts.ready etwas liefern muessen");
+  assert.equal(m.texte.length, 1);
+  assert.equal(m.figuren.length, 1);
+  assert.equal(m.figuren[0].figur, "ATLAS");
 });
