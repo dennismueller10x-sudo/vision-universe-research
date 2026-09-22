@@ -228,7 +228,42 @@
   function number(value, digits) {
     return value.toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
   }
-  function compactMoney(value) {
+  /* O-12: die Waehrungsdarstellung kommt aus dem zentralen Contract.
+
+     Diese Datei ist nach dem Merge des Currency Layers entstanden und
+     brachte eine vierte eigene Skalenleiter mit - genau die Art von
+     Wiederholung, die ONE DATA CORE abbauen soll. Der Regression Guard
+     hat sie beim Zusammenfuehren gemeldet.
+
+     Die Ausgabe bleibt Zeichen fuer Zeichen dieselbe: ueber 1 Mio. die
+     gekuerzte Stufe mit einer Nachkommastelle, darunter der volle
+     Betrag mit zweien. Die Leiter selbst ist zentral, die Anzahl der
+     Nachkommastellen bleibt die Entscheidung dieser Flaeche. */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    return (F && typeof F[fn] === "function") ? F[fn](value, currency || "USD", opts) : null;
+  }
+  /* Umgerechnet wird im Vertrag, formatiert hier.
+
+     `when` ist der Stichtag der Bewertung. Ohne ihn bleibt der Betrag in
+     Originalwaehrung - ein richtiger Dollarbetrag ist besser als ein
+     Euro-Betrag zum falschen Kurs (§39). */
+  function compactMoney(value, when) {
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    var cur = "USD";
+    if (L && when) {
+      var m = L.money(value, "USD", when, "MARKET_PRICE");
+      if (m && m.conversionAvailable && m.display && Number.isFinite(m.display.value)) {
+        value = m.display.value;
+        cur = m.display.currency;
+      }
+    }
+    var zentral = Math.abs(value) >= 1e6
+      ? vuFormat("formatCompact", value, cur, { numberLocale: "de-DE", decimals: 1 })
+      : vuFormat("formatPrice", value, cur, { numberLocale: "de-DE", decimals: 2 });
+    if (zentral) return zentral;
+    /* Rueckfall ohne geladenen Core. Eine zentrale Formatierung, die
+       eine Seite leer laesst, waere schlechter als die verteilte. */
     var abs = Math.abs(value), scale = 1, suffix = " $";
     if (abs >= 1e12) { scale = 1e12; suffix = " Bio. $"; }
     else if (abs >= 1e9) { scale = 1e9; suffix = " Mrd. $"; }
@@ -245,7 +280,9 @@
       cards.push({ label: label, value: value, note: note });
     }
     if (valuation.marketCap && Number.isFinite(valuation.marketCap.value))
-      cards.push({ label: "Marktkapitalisierung", text: compactMoney(valuation.marketCap.value), note: "Kurs × ausgegebene Aktien" });
+      cards.push({ label: "Marktkapitalisierung",
+                   text: compactMoney(valuation.marketCap.value, (detail && detail.asOf) || null),
+                   note: "Kurs × ausgegebene Aktien" });
     if (valuation.pe) add("KGV", valuation.pe.value, "Kurs ÷ Gewinn je Aktie · " + valuation.pe.basis);
     if (valuation.ps) add("KUV", valuation.ps.value, "Marktwert ÷ Umsatz · " + valuation.ps.basis);
     if (valuation.pe && Number.isFinite(valuation.pe.value) && valuation.pe.value > 0)
