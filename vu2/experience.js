@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const S=QuantShell,el=S.el,api=VUProductServices.create({loadJSON:S.loadJSON,loadCompressedJSON:S.loadCompressedJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});
+const S=QuantShell,el=S.el,api=VUProductServices.create({loadJSON:S.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});
 /* O-12: Waehrungsdarstellung kommt aus dem zentralen Contract, nicht aus
    dieser Datei. Der Rueckfall bleibt stehen - eine zentrale
    Formatierung, die eine Seite leer laesst, waere schlechter als die
