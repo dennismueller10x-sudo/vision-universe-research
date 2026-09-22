@@ -5,12 +5,14 @@
    right now". This engine answers that from observations that already
    exist, and only from those.
 
-   Hard rule: change is measured on inputs, never on scores. A score
-   trajectory ("Momentum rose from 68 to 82 over six weeks") requires an
-   ordered history of published factor snapshots. That history does not
-   exist yet, so scoreMomentum stays UNAVAILABLE with a typed reason
-   rather than being reconstructed from today's data — a reconstruction
-   would be look-ahead by another name.
+   Hard rule: change is measured on what was observable at the time. Ten
+   of the eleven positions compare inputs. The eleventh — a score
+   trajectory, "Momentum rose from 68 to 82" — compares only values that
+   were *published* on those dates, taken from the immutable snapshot
+   history. It is never reconstructed by recomputing an old date with
+   today's data or today's methodology; that would be look-ahead under
+   another name. Where the history has not started, or has not yet reached
+   back far enough, the position says which of the two it is.
 
    Every classification threshold below is part of the versioned contract
    vu-change-1.0.0. They describe how a change is *labelled*; they are not
@@ -31,6 +33,7 @@
     "INSUFFICIENT_HISTORY",
     "BLOCKED_EXTERNAL",
     "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED",
+    "INSUFFICIENT_SNAPSHOT_HISTORY",
     "FUNDAMENTALS_UNAVAILABLE"
   ];
 
@@ -45,8 +48,15 @@
     volumeContractionRatio: 0.80,
     highProximityPct: 0.05,            /* within 5 % of the 52-week high */
     marginChangeAbsolute: 0.01,        /* 1 percentage point */
-    growthAccelerationAbsolute: 0.02   /* 2 percentage points of YoY growth */
+    growthAccelerationAbsolute: 0.02,  /* 2 percentage points of YoY growth */
+    scorePointsAbsolute: 3             /* average factor position points over the velocity window */
   };
+
+  /* quant-v2.0.0 temporal.scoreMomentum.velocityDays[0]. Die Toleranz
+     stammt daher, dass Snapshots woechentlich entstehen: ein Fenster auf
+     den Tag genau zu verlangen hiesse, es nie zu treffen. */
+  var SCORE_VELOCITY_DAYS = 30;
+  var SCORE_VELOCITY_TOLERANCE_DAYS = 10;
 
   var WINDOWS = [
     { id: "6W", label: "6 Wochen", sessions: 30 },
@@ -60,6 +70,7 @@
     INSUFFICIENT_HISTORY: "Die vorhandene Beobachtungsreihe ist für diesen Vergleich zu kurz.",
     BLOCKED_EXTERNAL: "Es liegt keine lizenzierte, zeitpunktgenaue Datenquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet.",
     FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED: "Ein Verlauf der Faktorwerte benötigt eine geordnete Historie veröffentlichter Faktor-Snapshots. Diese Historie beginnt erst mit dieser Methodik und wird nicht rückwirkend rekonstruiert.",
+    INSUFFICIENT_SNAPSHOT_HISTORY: "Die Snapshot-Historie hat begonnen, reicht für dieses Vergleichsfenster aber noch nicht zurück. Ein kürzeres Fenster zu nehmen wäre eine andere Aussage unter demselben Namen.",
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegt keine zeitpunktsichere Geschäftszahlen-Beobachtung vor."
   };
 
@@ -150,6 +161,48 @@
   };
 
   function measure(label, value, unit) { return { label: label, value: finite(value) ? round(value, 6) : null, unit: unit }; }
+
+  /**
+   * Verlauf der veroeffentlichten Faktorwerte.
+   *
+   * `history` ist eine aufsteigend nach Datum geordnete Liste
+   * {asOf, factors:{id:score|null}} aus veroeffentlichten Snapshots.
+   * `factors` sind die heutigen Werte.
+   */
+  function scoreMomentumItem(history, factors, asOf) {
+    if (!Array.isArray(history) || !history.length) {
+      return unavailable("scoreMomentum", MEANING.scoreMomentum, "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED");
+    }
+    if (!factors || typeof asOf !== "string") {
+      return unavailable("scoreMomentum", MEANING.scoreMomentum, "INSUFFICIENT_SNAPSHOT_HISTORY");
+    }
+    var target = Date.parse(asOf) - SCORE_VELOCITY_DAYS * 86400000, best = null, bestGap = Infinity;
+    history.forEach(function (entry) {
+      var stamp = Date.parse(entry.asOf);
+      if (!Number.isFinite(stamp) || stamp >= Date.parse(asOf)) return;
+      var gap = Math.abs(stamp - target) / 86400000;
+      if (gap <= SCORE_VELOCITY_TOLERANCE_DAYS && gap < bestGap) { best = entry; bestGap = gap; }
+    });
+    if (!best) return unavailable("scoreMomentum", MEANING.scoreMomentum, "INSUFFICIENT_SNAPSHOT_HISTORY");
+
+    var moved = [], evidence = [];
+    Object.keys(factors).forEach(function (id) {
+      var now = factors[id], before = best.factors ? best.factors[id] : null;
+      if (!finite(now) || !finite(before)) return;
+      moved.push({ id: id, delta: now - before });
+      evidence.push(measure(id, now - before, "points"));
+    });
+    if (!moved.length) return unavailable("scoreMomentum", MEANING.scoreMomentum, "INSUFFICIENT_SNAPSHOT_HISTORY");
+
+    var total = moved.reduce(function (sum, entry) { return sum + entry.delta; }, 0) / moved.length;
+    return item("scoreMomentum", MEANING.scoreMomentum,
+      classify(total, THRESHOLDS.scorePointsAbsolute),
+      measure("Stand " + best.asOf, null, "points"),
+      measure("Stand " + asOf, null, "points"),
+      total, evidence,
+      "Verglichen werden ausschliesslich Werte, die zum jeweiligen Zeitpunkt so veroeffentlicht wurden. " +
+      "Es wird nichts rueckwirkend nachgerechnet.");
+  }
 
   /* ---------------------------------------------------------------------
      build(input) -> change model
@@ -279,8 +332,14 @@
     /* 10. Erwartungstrend bleibt extern blockiert. */
     items.push(unavailable("revisionsTrend", MEANING.revisionsTrend, "BLOCKED_EXTERNAL"));
 
-    /* 11. Verlauf der Faktorwerte. Bewusst geschlossen: siehe Kopf. */
-    items.push(unavailable("scoreMomentum", MEANING.scoreMomentum, "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED"));
+    /* 11. Verlauf der Faktorwerte.
+
+       Erst jetzt moeglich, und nur aus veroeffentlichten Snapshots: der
+       Vergleichspunkt ist ein Wert, der damals so veroeffentlicht wurde,
+       nicht einer, der heute rueckwirkend gerechnet wird. Ohne Historie
+       bleibt die Position geschlossen und sagt welcher der beiden Faelle
+       vorliegt - noch keine Historie, oder Historie zu kurz. */
+    items.push(scoreMomentumItem(input.factorHistory, input.factors, input.asOf));
 
     var available = items.filter(function (entry) { return entry.state === "AVAILABLE"; }),
       improving = available.filter(function (entry) { return entry.direction === "IMPROVING"; }),
@@ -355,10 +414,13 @@
     ITEM_STATES: ITEM_STATES.slice(),
     ITEM_REASONS: ITEM_REASONS.slice(),
     THRESHOLDS: Object.assign({}, THRESHOLDS),
+    SCORE_VELOCITY_DAYS: SCORE_VELOCITY_DAYS,
+    SCORE_VELOCITY_TOLERANCE_DAYS: SCORE_VELOCITY_TOLERANCE_DAYS,
     WINDOWS: WINDOWS.map(function (entry) { return Object.assign({}, entry); }),
     MEANING: JSON.parse(JSON.stringify(MEANING)),
     REASON_TEXT: Object.assign({}, REASON_TEXT),
     build: build,
+    scoreMomentumItem: scoreMomentumItem,
     compact: compact,
     hydrate: hydrate,
     headline: headline

@@ -222,6 +222,78 @@ test("every published security passes the publication gate and the contract mini
   assert.ok(available > 10000, "expected a substantial number of available factors, got " + available);
 });
 
+/* ------------------------------------------------- the snapshot history */
+
+const HISTORY_DIR = join(ROOT, "quant/data/product/factor-evidence-history");
+
+test("the snapshot history has started, is versioned by methodology and is immutable", () => {
+  const index = JSON.parse(readFileSync(join(HISTORY_DIR, "index.json"), "utf8"));
+  assert.equal(index.schemaVersion, FactorEvidence.SNAPSHOT_INDEX_SCHEMA);
+  const dates = index.series[FactorEvidence.METHODOLOGY_VERSION];
+  assert.ok(Array.isArray(dates) && dates.length >= 1, "the history must have at least its first snapshot");
+  assert.deepEqual(dates, dates.slice().sort(), "snapshot dates are kept in order");
+
+  /* A snapshot lives under its methodology, so a later methodology starts
+     its own series instead of rewriting this one. */
+  const dir = join(HISTORY_DIR, FactorEvidence.METHODOLOGY_VERSION);
+  dates.forEach((date) => {
+    const snapshot = JSON.parse(gunzipSync(readFileSync(join(dir, date + ".json.gz"))));
+    assert.equal(snapshot.schemaVersion, FactorEvidence.SNAPSHOT_SCHEMA);
+    assert.equal(snapshot.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+    assert.equal(snapshot.namespace, FactorEvidence.NAMESPACE);
+    assert.equal(snapshot.asOf, date, "the file name and the recorded date must agree");
+    assert.equal(snapshot.fields.length, FactorEvidence.FACTOR_ORDER.length);
+    assert.ok(Object.keys(snapshot.rows).length > 5000);
+    /* Every snapshot carries a hash over its own content. */
+    assert.match(String(snapshot.contentHash), /^[a-f0-9]{16}$/);
+  });
+});
+
+test("the snapshot history is not inside the directory a rebuild deletes", () => {
+  assert.ok(!HISTORY_DIR.startsWith(ARTIFACT_DIR + "/"),
+    "a published snapshot must not be something a rebuild of the current artifact can remove");
+});
+
+test("a score trajectory is only published once the history reaches back far enough", () => {
+  const summary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
+  const dates = summary.snapshotHistory.dates;
+  assert.equal(summary.snapshotHistory.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+  assert.equal(summary.snapshotHistory.velocityWindowDays, ChangeEngine.SCORE_VELOCITY_DAYS);
+
+  /* With one snapshot there is nothing to compare against, and the shipped
+     artifact must say so rather than showing a trajectory of one point. */
+  const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, shards[0]))));
+  const [record] = Object.values(shard.securities);
+  const change = ChangeEngine.hydrate(record.change);
+  const scoreMomentum = change.items.find((entry) => entry.id === "scoreMomentum");
+  if (dates.length < 2) {
+    assert.equal(scoreMomentum.state, "UNAVAILABLE");
+    assert.ok(["FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED", "INSUFFICIENT_SNAPSHOT_HISTORY"].includes(scoreMomentum.reason));
+  }
+});
+
+test("the score trajectory compares published values and names why it is closed", () => {
+  const meaning = ChangeEngine.MEANING.scoreMomentum;
+  assert.equal(ChangeEngine.scoreMomentumItem(null, { momentum: 80 }, "2026-09-18").reason,
+    "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED", "no history at all is its own answer");
+  assert.equal(ChangeEngine.scoreMomentumItem([{ asOf: "2026-09-15", factors: { momentum: 70 } }], { momentum: 80 }, "2026-09-18").reason,
+    "INSUFFICIENT_SNAPSHOT_HISTORY", "a history that is too short is a different answer");
+
+  const open = ChangeEngine.scoreMomentumItem(
+    [{ asOf: "2026-08-19", factors: { momentum: 68, quality: 59 } }],
+    { momentum: 82, quality: 60 }, "2026-09-18");
+  assert.equal(open.state, "AVAILABLE");
+  assert.equal(open.direction, "IMPROVING");
+  assert.equal(open.magnitude, 7.5, "the average move across both factors");
+  assert.ok(open.from.label.includes("2026-08-19"), "the comparison point names its own date");
+  assert.ok(meaning.label.length > 0);
+
+  /* A snapshot dated after the cutoff can never become a comparison point. */
+  const future = ChangeEngine.scoreMomentumItem(
+    [{ asOf: "2026-10-19", factors: { momentum: 68 } }], { momentum: 82 }, "2026-09-18");
+  assert.equal(future.state, "UNAVAILABLE");
+});
+
 test("a hydrated record renders with wording, and never with a composite", () => {
   const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, shards[0]))));
   const [record] = Object.values(shard.securities);

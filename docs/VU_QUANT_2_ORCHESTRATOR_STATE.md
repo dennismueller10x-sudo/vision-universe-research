@@ -23,7 +23,7 @@ Setup, Pattern, Backtest and Market Regime remain ahead.
 | Milestone | Scope | State |
 |---|---|---|
 | M1 | Factor + Change experience | **DONE** (this section) |
-| M2 | Setup Engine + frontend | OPEN — journey surface exists; needs materialized snapshot history |
+| M2 | Setup Engine + frontend | PREPARED — snapshot history started; needs 30 days of it, then certification |
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | BLOCKED in-repo — needs deep canonical history (see KNOWN_BLOCKERS) |
 | M5 | Pattern Match product | OPEN — downstream of M4 |
@@ -99,6 +99,15 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
   Its column names ARE the canonical catalog field ids, so no second naming scheme can drift
   from the one a rule is written against; the materializer aborts if catalog and published
   factor set disagree.
+- **Snapshot history started** (`factor-evidence-snapshot-1.0.0`). It lives beside the
+  rebuildable artifact rather than inside it, is versioned by methodology, and refuses two
+  distinct failures: a stored file that no longer matches its own content hash (corrupt), and
+  a run that would give a published date different content (a changed past). Both abort.
+  This is the precondition the owner named for M2 and the only honest way `scoreMomentum`
+  can open — a comparison point must be a value that was published on that date.
+- **`change.scoreMomentum` wired** to that history with a 30-day velocity window from
+  `quant-v2.0.0 temporal.scoreMomentum`. Still closed today with one snapshot, and it now
+  distinguishes "no history yet" from "history too short" instead of reporting both as one.
 - Browser QA extended to the rebuilt `quant` view, the new `explain` view, the Strategy Match
   section and the screener methodology switch, both widths.
 
@@ -127,6 +136,8 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 | `STRATEGY_MATCH_RANKING` | WITHHELD |
 | `STRATEGY_MATCH_HISTORICAL_EVIDENCE` | UNAVAILABLE / BACKTEST_NOT_CERTIFIED |
 | `SCREENER_METHODOLOGIES` | 2, mixed queries refused |
+| `SNAPSHOT_HISTORY` | started, 1 snapshot (`2026-09-18`), immutable, per-methodology |
+| `SCORE_MOMENTUM` | closed — history too short for the 30-day window |
 | `CHANGE_ENGINE_STATE` | AVAILABLE, 9 of 11 positions measurable for a typical covered title |
 | `COMPOSITE_SCORE` | WITHHELD |
 | `QUANT_V2_STATUS` | SPECIFIED_NOT_ACTIVE |
@@ -143,8 +154,8 @@ Counts measured from the materialized artifact at data cutoff `2026-09-18`.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,461/1,461 passed locally (1,411 before; +17 factor-evidence,
-  +4 market-factors, +12 fundamental-inputs, +17 strategy-match/namespace).
+- Full Quant suite: 1,465/1,465 passed locally (1,411 before; +17 factor-evidence,
+  +4 market-factors, +12 fundamental-inputs, +17 strategy-match/namespace, +4 snapshot history).
   SEC Python suite: 474/474 (471 before, +3 consumer-export tests).
 - Public data hygiene guard: passed against the new artifact.
 - Headless Chromium at 1440 px and 390 px, `quant` (NVDA, JPM, AAPL), `explain` and `screener`:
@@ -167,7 +178,7 @@ Machine-readable in `quant/data/product/factor-evidence-v1/summary.json` → `op
 | `NET_DEBT_PERIOD_ALIGNMENT` | `quality.netDebtToAssets`, `value.salesYield` | SEC normalization (stale debt instants are dropped, not mixed) |
 | `PIT_ANALYST_CONSENSUS` | `revisions.*` | external licence |
 | `INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS` | Quality, Value, Profitability for 967 titles | quant-v2 methodology |
-| `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum` | this materializer, from its first weekly snapshot forward |
+| `FACTOR_SNAPSHOT_HISTORY` | `change.scoreMomentum`, SetupState (M2) | started 2026-09-18; needs a second snapshot ~30 days later |
 
 A correction worth recording: an earlier read of this state named `OPERATING_INCOME` as the
 largest gate. That was wrong — `operating_income` is normalized and exported already, and
@@ -217,8 +228,9 @@ SEC layer normalizes but `consumer.py` does not export.
 2. **Run the market-data workflow** so the three new `market-factors-1.0.0` fields land in
    `factors-FULL_UNIVERSE.json`, then re-materialize factor evidence. This completes Momentum
    (100 % component weight) and Risk (100 %) without any further code.
-3. **Weekly factor snapshot** from this materializer, so `change.scoreMomentum` can open from
-   real published history rather than reconstruction.
+3. **Let the snapshot history accumulate.** The first snapshot is published (`2026-09-18`);
+   `scoreMomentum` and the SetupState binding open once a second one sits ~30 days back.
+   Nothing to build — the materialization workflow appends on each run.
 4. **Setup Engine (M2)**: bind the canonical SetupState contract to rules over the now-available
    factor and change evidence, certify, then flip `AVAILABLE_OBSERVATIONS_ALLOWED`. Owner
    cleared this to be prepared in parallel once real snapshot history is materialized.

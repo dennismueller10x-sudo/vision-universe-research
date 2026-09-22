@@ -31,6 +31,10 @@ const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.j
 const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
+/* Deliberately a sibling of OUT_DIR, not a child: the current artifact is
+   rebuilt from scratch on every run, and a published snapshot must not be
+   something a rebuild can delete. */
+const HISTORY_ROOT = join(ROOT, "quant/data/product/factor-evidence-history");
 const CONSUMER_DIR = join(ROOT, "quant/data/sec/consumer");
 const TECHNICAL_DIR = join(ROOT, "quant/data/product/technical-signals-v1");
 
@@ -162,6 +166,29 @@ function main() {
 
   /* 2. Per-security raw values. Fundamentals are read once per issuer. */
   const cutoff = priceFactors.securities.reduce((latest, row) => (row.asOf > latest ? row.asOf : latest), priceFactors.securities[0].asOf);
+
+  /* Published snapshots of this methodology, oldest first. Only values that
+     were published on those dates become a comparison point; nothing is
+     recomputed for a past date. */
+  const priorDir = join(HISTORY_ROOT, FactorEvidence.METHODOLOGY_VERSION);
+  const historyByTicker = new Map();
+  if (existsSync(priorDir)) {
+    const files = readdirSync(priorDir).filter((name) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(name)).sort();
+    for (const file of files) {
+      const snapshot = JSON.parse(gunzipSync(readFileSync(join(priorDir, file))));
+      if (snapshot.schemaVersion !== FactorEvidence.SNAPSHOT_SCHEMA) continue;
+      if (snapshot.methodologyVersion !== FactorEvidence.METHODOLOGY_VERSION) continue;
+      if (snapshot.asOf >= cutoff) continue;
+      const order = snapshot.fields.map((id) => id.slice((FactorEvidence.NAMESPACE + ".").length));
+      for (const [ticker, values] of Object.entries(snapshot.rows || {})) {
+        if (!historyByTicker.has(ticker)) historyByTicker.set(ticker, []);
+        historyByTicker.get(ticker).push({
+          asOf: snapshot.asOf,
+          factors: Object.fromEntries(order.map((id, index) => [id, values[index]]))
+        });
+      }
+    }
+  }
   const docCache = new Map();
   const records = [];
   const gapCounts = new Map();
@@ -391,7 +418,11 @@ function main() {
     const change = ChangeEngine.build({
       price: record.price, priceStatus: record.priceStatus,
       fundamentals: record.fundamentals?.change || null,
-      asOf: record.security.asOf, basis: record.security.basis
+      asOf: record.security.asOf, basis: record.security.basis,
+      factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER
+        .filter((id) => factors[id].state === "AVAILABLE")
+        .map((id) => [id, factors[id].score])),
+      factorHistory: historyByTicker.get(record.ticker) || null
     });
 
     const published = {
@@ -475,9 +506,68 @@ function main() {
     rows: screeningRows
   })), { level: 9 }));
 
+  /* ---------------------------------------------------------------------
+     The immutable snapshot history.
+
+     This is what opens change.scoreMomentum, and later the SetupState
+     contract, without either of them being reconstructed: a comparison
+     point has to be a value that was published on that date, not one
+     recomputed today.
+
+     Two rules make it immutable in practice. The path carries the
+     methodology version, so a later methodology starts its own series
+     instead of rewriting this one. And a snapshot for a date that already
+     exists is only rewritten when it is byte-identical; anything else
+     aborts the run rather than quietly changing a published past.
+     --------------------------------------------------------------------- */
+  const historyDir = join(HISTORY_ROOT, FactorEvidence.METHODOLOGY_VERSION);
+  mkdirSync(historyDir, { recursive: true });
+  const snapshotPath = join(historyDir, cutoff + ".json.gz");
+  const snapshot = {
+    schemaVersion: FactorEvidence.SNAPSHOT_SCHEMA,
+    methodologyVersion: FactorEvidence.METHODOLOGY_VERSION,
+    derivedFrom: FactorEvidence.DERIVED_FROM,
+    namespace: FactorEvidence.NAMESPACE,
+    asOf: cutoff,
+    fields: factorColumns,
+    rows: Object.fromEntries(Object.entries(screeningRows).map(([ticker, values]) => [ticker, values.slice(0, factorColumns.length)]))
+  };
+  snapshot.contentHash = snapshotHash(snapshot);
+  if (existsSync(snapshotPath)) {
+    const existing = JSON.parse(gunzipSync(readFileSync(snapshotPath)));
+    /* Two different failures, and they need different words. The stored
+       file not matching its own hash is corruption; the new run producing
+       a different hash means the published past would change. Neither is
+       something to write through. */
+    if (existing.contentHash !== snapshotHash(existing)) {
+      throw new Error("the published snapshot " + cutoff + " does not match its own content hash; " +
+        "it is corrupt and this run will not overwrite it.");
+    }
+    if (existing.contentHash !== snapshot.contentHash) {
+      throw new Error("a published snapshot for " + cutoff + " already exists with different content; " +
+        "a published past is not rewritten. Publish a new methodology version instead.");
+    }
+  } else {
+    writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
+  }
+
+  const snapshotDates = readdirSync(historyDir)
+    .filter((name) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(name))
+    .map((name) => name.replace(".json.gz", ""))
+    .sort();
+  writeFileSync(join(HISTORY_ROOT, "index.json"), JSON.stringify({
+    schemaVersion: FactorEvidence.SNAPSHOT_INDEX_SCHEMA,
+    generatedAt,
+    note: "Jede Methodikversion fuehrt ihre eigene Reihe. Ein veroeffentlichter Snapshot wird nie ueberschrieben.",
+    series: { [FactorEvidence.METHODOLOGY_VERSION]: snapshotDates }
+  }, null, 1));
+
   const summary = {
     ...head,
     schemaVersion: FactorEvidence.SUMMARY_SCHEMA,
+    snapshotHistory: { methodologyVersion: FactorEvidence.METHODOLOGY_VERSION, dates: snapshotDates,
+      velocityWindowDays: ChangeEngine.SCORE_VELOCITY_DAYS,
+      scoreMomentumOpen: snapshotDates.length > 1 },
     scope: "CANONICAL_PRODUCT_UNIVERSE",
     source: {
       priceFactors: { engine: priceFactors.engine, generatedAt: priceFactors.generatedAt, securities: priceFactors.securities.length, benchmark: priceFactors.benchmark },
@@ -520,6 +610,14 @@ function main() {
     console.log("  " + factorId.padEnd(14) + JSON.stringify(factorStates[factorId]));
   }
   console.log("  reasons " + JSON.stringify(reasonCounts));
+}
+
+/* Hash over everything but the hash itself, so a stored snapshot can be
+   checked against its own record. */
+function snapshotHash(snapshot) {
+  const body = { ...snapshot };
+  delete body.contentHash;
+  return createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 16);
 }
 
 function mandatoryUnmet(factorId, components) {

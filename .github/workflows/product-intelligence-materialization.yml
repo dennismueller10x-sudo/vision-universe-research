@@ -88,10 +88,12 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1
+          # The snapshot history is append-only; the materializer refuses to
+          # rewrite a published date, so this only ever adds a new file.
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
-          node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates)'
+          node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
           git commit -m "Materialize Technical, Signals, Elliott and Factor Evidence Product Data"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
@@ -105,5 +107,6 @@ jobs:
             ${{ runner.temp }}/product-intelligence-sync.json
             quant/data/product/technical-signals-v1/summary.json
             quant/data/product/factor-evidence-v1/summary.json
+            quant/data/product/factor-evidence-history/index.json
           if-no-files-found: warn
           retention-days: 30

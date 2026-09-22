@@ -29,6 +29,8 @@
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
+  var SNAPSHOT_SCHEMA = "factor-evidence-snapshot-1.0.0";
+  var SNAPSHOT_INDEX_SCHEMA = "factor-evidence-snapshot-index-1.0.0";
 
   /* Der Katalog-Namensraum, unter dem diese Evidenz selektierbar ist.
      Quant V1 behaelt seine eigenen Felder; keiner der beiden Namensraeume
@@ -401,6 +403,8 @@
     SHARD_SCHEMA: SHARD_SCHEMA,
     SUMMARY_SCHEMA: SUMMARY_SCHEMA,
     SCREENING_SCHEMA: SCREENING_SCHEMA,
+    SNAPSHOT_SCHEMA: SNAPSHOT_SCHEMA,
+    SNAPSHOT_INDEX_SCHEMA: SNAPSHOT_INDEX_SCHEMA,
     NAMESPACE: NAMESPACE,
     FACTOR_ORDER: FACTOR_ORDER.slice(),
     FACTOR_STATES: FACTOR_STATES.slice(),

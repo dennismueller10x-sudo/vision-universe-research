@@ -214,12 +214,36 @@ Elf Positionen je Titel, jede mit Bedeutung, Richtung, Von-/Nach-Wert und Fenste
 | Bruttomarge | TTM gegen Vorjahres-TTM | acht Einzelquartale |
 | Free-Cashflow-Marge | TTM gegen Vorjahres-TTM | acht Einzelquartale |
 | Erwartungstrend | — | `BLOCKED_EXTERNAL` |
-| Verlauf der Faktorwerte | — | `FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED` |
+| Verlauf der Faktorwerte | 30 Tage, aus veröffentlichten Snapshots | Snapshot-Historie |
 
-**Die harte Regel:** Veränderung wird an Eingaben gemessen, nie an Scores. Ein Satz wie
-„Momentum stieg in sechs Wochen von 68 auf 82“ braucht eine geordnete Historie
-veröffentlichter Faktor-Snapshots. Diese Historie beginnt mit dieser Methodik und wird nicht
-rückwirkend aus heutigen Daten rekonstruiert — das wäre Look-ahead unter anderem Namen.
+**Die harte Regel:** Veränderung wird an dem gemessen, was damals beobachtbar war. Zehn der elf
+Positionen vergleichen Eingaben. Die elfte — der Verlauf der Faktorwerte — vergleicht
+ausschließlich Werte, die an jenen Tagen **veröffentlicht** wurden, aus der unveränderlichen
+Snapshot-Historie. Ein vergangenes Datum wird nie mit heutigen Daten oder heutiger Methodik
+nachgerechnet; das wäre Look-ahead unter anderem Namen.
+
+## 5.1 Die Snapshot-Historie
+
+`quant/data/product/factor-evidence-history/<methodologyVersion>/<asOf>.json.gz`,
+Schema `factor-evidence-snapshot-1.0.0`, plus `index.json`.
+
+Drei Eigenschaften machen sie belastbar:
+
+1. **Außerhalb des Neubaus.** Das aktuelle Artefakt wird bei jedem Lauf vollständig neu
+   geschrieben. Die Historie liegt bewusst daneben, nicht darin — ein veröffentlichter
+   Snapshot darf nichts sein, das ein Neubau löschen kann.
+2. **Pro Methodik eine eigene Reihe.** Der Pfad trägt die Methodikversion. Eine spätere
+   Methodik beginnt ihre eigene Reihe, statt diese umzuschreiben.
+3. **Zwei getrennte Abbruchgründe.** Stimmt eine gespeicherte Datei nicht mit ihrem eigenen
+   Inhalts-Hash überein, ist sie beschädigt und der Lauf bricht ab. Erzeugt der Lauf für ein
+   bereits veröffentlichtes Datum einen anderen Inhalt, würde sich die veröffentlichte
+   Vergangenheit ändern — auch das bricht ab. Kein Fall wird durchgeschrieben.
+
+Der Verlauf öffnet sich erst, wenn ein Snapshot im 30-Tage-Fenster (±10 Tage Toleranz, weil
+Snapshots wöchentlich entstehen) vorliegt. Bis dahin unterscheidet die Position ausdrücklich
+zwischen `FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED` (noch keine Historie) und
+`INSUFFICIENT_SNAPSHOT_HISTORY` (Historie begonnen, Fenster noch nicht erreicht). Ein
+kürzeres Fenster zu nehmen wäre eine andere Aussage unter demselben Namen.
 
 Die Schwellen, ab denen eine Veränderung als Verbesserung oder Verschlechterung bezeichnet
 wird, stehen versioniert in `quant/engines/change-engine.js` (`THRESHOLDS`) und gelten für jeden
