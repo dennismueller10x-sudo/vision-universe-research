@@ -1,0 +1,33 @@
+{
+  "schema": "vu-currency-formatting-baseline-1.0.0",
+  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag.",
+  "updatedAt": "2026-09-22",
+  "total": 68,
+  "byFile": {
+    "discover/engines/fundamentals.js": 2,
+    "discover/tests/klartext.test.mjs": 4,
+    "discover/tests/v3.test.mjs": 2,
+    "discover/ui/cards.js": 1,
+    "discover/ui/daten.js": 2,
+    "discover/ui/detail-fundamentals.js": 5,
+    "discover/ui/detail.js": 3,
+    "discover/ui/surfaces.js": 4,
+    "discover-v2/home.js": 1,
+    "vu2/experience.js": 2,
+    "quant/api/portfolio-workspace.js": 1,
+    "dashboard/app-rebuild.js": 25,
+    "dashboard/app.js": 1,
+    "dashboard/index_legacy_v63.html": 1,
+    "dashboard/news/news.js": 2,
+    "dashboard/v2.js": 1,
+    "morning/2026-09-05/index.html": 1,
+    "morning/2026-09-08/index.html": 1,
+    "etf/index.html": 4,
+    "hedgefonds/index.html": 5
+  },
+  "suspectTotal": 2,
+  "suspectsByFile": {
+    "dashboard/app.js": 1,
+    "dashboard/index_legacy_v63.html": 1
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "vu-tiingo-fx-probe-1.0.0",
+  "generatedAtUtc": "2026-09-22T06:27:35.086Z",
+  "provider": "tiingo",
+  "baseUrl": "https://api.tiingo.com",
+  "configured": false,
+  "dryRun": false,
+  "probes": [],
+  "capabilities": {
+    "fxCurrent": null,
+    "fxDaily": null,
+    "fxHistoricalDaily": null,
+    "fxIntraday": null,
+    "fxRealtime": null,
+    "fxWebsocket": null,
+    "fxCrossPairs": null,
+    "fxBulkQuotes": null
+  },
+  "realtimeTier": {
+    "tier": null,
+    "label": null,
+    "reason": "Keine FX-Faehigkeit ist belegt. Solange das so ist, liefert der Currency Layer UNAVAILABLE und das Produkt zeigt die native Waehrung.",
+    "blocked": [
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "secondSource": {
+    "answer": "UNKNOWN",
+    "missing": [],
+    "unknown": [
+      "fxDaily",
+      "fxHistoricalDaily",
+      "fxCurrent"
+    ],
+    "action": "PROBE",
+    "reason": "Ungeprueft: fxDaily, fxHistoricalDaily, fxCurrent. Erst messen (scripts/market/probe-tiingo-fx.mjs), dann entscheiden."
+  },
+  "notMeasured": {
+    "fxRealtime": "Verzoegerung laesst sich nur gegen einen unabhaengigen Referenzkurs messen; ein Abruf allein belegt keine Echtzeit.",
+    "fxWebsocket": "Eine Push-Verbindung wird hier nicht aufgebaut - sie haette einen eigenen Betriebszustand und gehoert in einen eigenen Nachweis.",
+    "requestLimits": "Kontingente zeigen sich erst unter Last. run-scale-gate.mjs ist dafuer da, nicht dieses Skript.",
+    "license": "Redistribution und oeffentliche Darstellung sind Rechtsfragen. display-policy.js entscheidet sie, nicht ein HTTP-Statuscode."
+  },
+  "note": "Kein TIINGO_API_KEY in der Umgebung. Es wurde kein Endpunkt befragt; jede FX-Faehigkeit bleibt ungeprueft (null). Das ist der ehrliche Stand, nicht ein Ausfall."
+}

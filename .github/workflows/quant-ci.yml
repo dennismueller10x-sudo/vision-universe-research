@@ -7,7 +7,7 @@ name: Quant CI
 on:
   push:
     branches: [main]
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
@@ -15,7 +15,7 @@ on:
     # Full-universe refresh PRs change well over GitHub's 300-file path-filter
     # window. Keep this workflow file in those PRs so Quant CI cannot be
     # silently omitted while Discover CI still runs.
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
@@ -71,6 +71,34 @@ jobs:
 
       - name: Praekomputierte Technical-Intelligence-Daten stimmen mit den Engines ueberein
         run: node scripts/technical/verify-technical-data.mjs
+
+      - name: Kein Produkt rechnet selbst um (Currency Layer Regression Guard)
+        # Ein zentraler Currency Layer haelt so lange, wie niemand daneben
+        # eine eigene Zeile schreibt. Bricht bei FX-Arithmetik ausserhalb
+        # von quant/engines/fx/ ab und haelt die Zahl der fest verdrahteten
+        # Waehrungsstellen gegen ihre Grundlinie.
+        run: node scripts/quality/assert-no-local-fx.mjs
+
+      - name: Der Currency Layer rechnet an echten Titeln nach
+        # Kursreihen und Fundamentals aus dem Repository, punktweise
+        # nachgerechnet. Meldet ehrlich, ob mit qualifizierten FX-Kursen
+        # oder mit der Testreihe gerechnet wurde (PASS vs PASS_RULES_ONLY).
+        run: node scripts/quality/verify-currency-layer.mjs
+
+      - name: Die FX-Faehigkeitssondierung laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Regel wie beim Marktdatenabruf: ein fehlender Schluessel
+        # ist eine Konfigurationsfrage, kein Baufehler. Ohne Secret muss
+        # jede FX-Faehigkeit ungeprueft (null) bleiben.
+        run: |
+          node scripts/market/probe-tiingo-fx.mjs
+          node -e '
+            const r = require("./.market-cache/currency/tiingo-fx-probe.json");
+            const werte = Object.values(r.capabilities);
+            if (r.configured !== false || !werte.every((v) => v === null)) {
+              throw new Error("Ohne Schluessel muss jede FX-Faehigkeit ungeprueft sein.");
+            }
+            console.log("FX-Faehigkeiten korrekt ungeprueft: " + werte.length + " Eintraege auf null");
+          '
 
       - name: Keine Zugangsdaten in ausgelieferten Marktdaten
         run: node scripts/market/assert-no-secrets.mjs
