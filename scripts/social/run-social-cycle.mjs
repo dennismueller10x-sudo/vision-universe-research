@@ -1476,6 +1476,13 @@ async function main() {
       opportunity: {
         opportunityId: opportunity.opportunityId,
         topic: opportunity.topic,
+        /* Die Reihe traegt ihre Begruendung schon in Lesersprache
+           (content-ladder.js setzt sie als `explanation`, aus dem
+           `subtitle` der Discover-Reihe - nicht aus der internen
+           Filterformel `rule`). Ohne diese Zeile sah der Brief sie
+           nie, und ein Gruppen-Hook hatte nur die rohe Trefferzahl
+           und den nackten Reihennamen. */
+        question: opportunity.explanation || null,
         premise: c.internal.premise || null,
         hasCause: c.internal.hasCause === true,
         timeSensitivity: opportunity.timeSensitivity
