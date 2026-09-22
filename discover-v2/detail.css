@@ -275,10 +275,12 @@ body.dv2 .dv2-stock .dx-story-dot{background:#caa34d}
 
 /* Valuation uses comparison, risk uses editorial columns, and onward
    discovery closes with a black cinema transition. */
-body.dv2 .dv2-stock .dv2-stock-valuation{background:#f4f5f6;color:#111315;--discover-text:#111315;--discover-muted:#626870;--discover-line:#d9dde0;padding:58px 44px;margin:40px -44px;border-radius:18px}
-html:not([data-theme="light"]) body.dv2 .dv2-stock .dv2-stock-valuation{background:#1a1c1f;color:#f7f7f4;--discover-text:#f7f7f4;--discover-muted:#b9bbc0;--discover-line:#34363b}
-body.dv2 .dv2-stock .dv2-stock-valuation>.dx-kicker{color:#8b691d}
-body.dv2 .dv2-stock .dv2-stock-valuation h2{font-size:clamp(36px,4.5vw,58px)}
+body.dv2 .dv2-stock .dv2-stock-valuation{background:linear-gradient(145deg,#f7edcc 0%,#ead58e 100%);color:#15130d;--discover-text:#15130d;--discover-muted:#665829;--discover-line:#c8ad58;padding:64px 44px;margin:48px -44px;border:1px solid #d7bf70;border-radius:24px;box-shadow:0 26px 70px #7457101c}
+html:not([data-theme="light"]) body.dv2 .dv2-stock .dv2-stock-valuation{background:linear-gradient(145deg,#17150f 0%,#262014 100%);color:#f9edc3;--discover-text:#f9edc3;--discover-muted:#cdbd87;--discover-line:#5b4c24;border-color:#4f421f;box-shadow:0 28px 80px #0008}
+body.dv2 .dv2-stock .dv2-stock-valuation>.dx-kicker{color:#765817}
+html:not([data-theme="light"]) body.dv2 .dv2-stock .dv2-stock-valuation>.dx-kicker{color:#e2c270}
+body.dv2 .dv2-stock .dv2-stock-valuation h2{font-size:clamp(54px,7vw,88px);line-height:.9;letter-spacing:-.065em;margin-bottom:16px}
+body.dv2 .dv2-stock .dv2-valuation-question{font-size:clamp(20px,2.4vw,30px);line-height:1.25;font-weight:720;letter-spacing:-.025em;margin:0 0 34px;color:var(--discover-text)}
 body.dv2 .dv2-stock .dx-bewertung-satz{font-size:clamp(20px,2.4vw,28px);line-height:1.45}
 body.dv2 .dv2-stock .dx-bewertung-bild{padding:28px 0 4px;border-top:1px solid var(--discover-line)}
 body.dv2 .dv2-stock .dx-bewertung-balken{height:8px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,var(--discover-text) 8%,transparent)}
@@ -352,12 +354,16 @@ body.dv2 .v2-main{overflow-x:clip}
 
 /* The valuation overview exposes every supplied building block at once.
    Derived P/FCF is only shown when the canonical FCF yield is positive. */
-body.dv2 .dv2-valuation-components{margin:34px 0 28px;padding-top:28px;border-top:1px solid var(--discover-line)}
+body.dv2 .dv2-valuation-components{margin:38px 0 28px;padding-top:34px;border-top:1px solid var(--discover-line)}
 body.dv2 .dv2-valuation-components>h3{font-size:clamp(25px,3vw,38px);letter-spacing:-.04em;margin:0 0 8px}
 body.dv2 .dv2-valuation-components>p{color:var(--discover-muted);max-width:62ch;line-height:1.55;margin:0 0 22px}
 body.dv2 .dv2-valuation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--discover-line);border:1px solid var(--discover-line)}
-body.dv2 .dv2-valuation-card{display:flex;min-height:150px;flex-direction:column;padding:20px;background:#f4f5f6;color:#111315}
-html:not([data-theme="light"]) body.dv2 .dv2-valuation-card{background:#1a1c1f;color:#f7f7f4}
+body.dv2 .dv2-valuation-card{display:flex;min-height:150px;flex-direction:column;padding:20px;background:rgba(255,255,255,.56);color:#111315}
+body.dv2 .dv2-valuation-card:first-child{background:#15130d;color:#fff}
+body.dv2 .dv2-valuation-card:first-child span,body.dv2 .dv2-valuation-card:first-child small{color:#e9ddb8}
+html:not([data-theme="light"]) body.dv2 .dv2-valuation-card{background:#242117;color:#f7f7f4}
+html:not([data-theme="light"]) body.dv2 .dv2-valuation-card:first-child{background:#f0d985;color:#17140c}
+html:not([data-theme="light"]) body.dv2 .dv2-valuation-card:first-child span,html:not([data-theme="light"]) body.dv2 .dv2-valuation-card:first-child small{color:#534719}
 body.dv2 .dv2-valuation-card span{font-size:12px;color:var(--discover-muted)}
 body.dv2 .dv2-valuation-card b{font-size:clamp(27px,3.4vw,43px);letter-spacing:-.045em;line-height:1;margin-top:auto}
 body.dv2 .dv2-valuation-card small{font-size:11px;line-height:1.4;color:var(--discover-muted);margin-top:10px}
