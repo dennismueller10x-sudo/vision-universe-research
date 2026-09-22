@@ -367,6 +367,100 @@ relative Differenzen und Korrelationen abgeleitete Groessen sind.
 **Das Skript gleicht nichts an.** Es verschiebt keine Reihe, es
 interpoliert nicht, es waehlt nicht je Tag den besseren Kurs.
 
+### Das Ergebnis: 15 Paare, 14 eindeutig, eines mit Verzerrung
+
+**`verdict: TIMING_DIFFERENCE`**
+
+| Paar | Tage | Median \|d\| | Median d | corr(r) | Steigung |
+|---|---|---|---|---|---|
+| EUR/USD | 1.649 | 0,179 % | **−0,002 %** | **−0,725** | −0,553 |
+| EUR/CAD | 1.646 | 0,173 % | 0,007 % | −0,748 | −0,556 |
+| EUR/JPY | 1.646 | 0,174 % | −0,028 % | −0,590 | −0,375 |
+| EUR/GBP | 1.645 | 0,124 % | 0,011 % | −0,622 | −0,403 |
+| EUR/CHF | 1.645 | 0,119 % | 0,003 % | −0,632 | −0,442 |
+| EUR/MXN | 1.427 | 0,285 % | −0,002 % | −0,779 | −0,635 |
+| EUR/DKK | 1.426 | **0,005 %** | 0,001 % | −0,609 | −0,455 |
+| EUR/TRY | 1.645 | 0,261 % | **−0,142 %** | −0,643 | −0,564 |
+
+(gekuerzt; die vollen 15 Paare stehen im Bericht)
+
+Drei Befunde, und jeder einzelne schliesst eine Hypothese aus:
+
+**Der Median der vorzeichenbehafteten Differenz liegt bei −0,002 %.**
+Zwei Tausendstel eines Prozents. Ein Definitionsunterschied — Geld
+statt Mitte, andere Zusammensetzung — wuerde hier ein bleibendes
+Vorzeichen hinterlassen. **H2 ist ausgeschlossen.**
+
+**Die Korrelation mit der Tagesrendite betraegt −0,725.** Ueber alle
+Paare liegt sie zwischen −0,45 und −0,78, ausnahmslos negativ. Genau
+das sagt H1 voraus: an einem steigenden Tag liegt das frueher erhobene
+Fixing unter dem spaeteren Schluss.
+
+**Die Inversion ist exakt.** Der groesste Rundreisefehler ueber alle
+Paare betraegt `1,6 · 10⁻¹⁶` — Maschinengenauigkeit. **H3 ist
+ausgeschlossen.**
+
+### Die Steigung ist steiler als vorhergesagt, und das ist die Pointe
+
+Vorhergesagt −0,41, gemessen −0,553. Gleiches Vorzeichen, gleiche
+Groessenordnung, aber deutlich steiler. Das ist kein Treffer, und es
+wird hier nicht als einer verkauft.
+
+Die Vorhersage unterstellt, dass sich Bewegung **gleichmaessig ueber
+die Uhr** verteilt. Das tut sie nicht: EUR/USD bewegt sich
+ueberwiegend in der Ueberlappung von London und New York, also **nach**
+dem Fixing. Vom **Varianz**-Tag ist um 14:15 UTC deshalb mehr uebrig
+als vom **Uhren**-Tag — und die Steigung misst die Varianz.
+
+Der Bericht rechnet die Steigung in eine implizite Fixing-Uhrzeit
+zurueck. Fuer EUR/USD ergibt das **10,7 UTC**. Das heisst **nicht**,
+dass die EZB um 10:45 fixiert; es ist eine Uhrzeit-Ablesung einer
+varianzgewichteten Groesse.
+
+Dass die Lesart stimmt, zeigt die Streuung ueber die Paare:
+
+| | implizite Uhrzeit | Volatilitaet konzentriert in |
+|---|---|---|
+| EUR/MXN | 8,8 | US-Stunden — am spaetesten, also steilste Steigung |
+| EUR/USD | 10,7 | London/New York |
+| EUR/CHF | 13,4 | Europa |
+| EUR/JPY | 15,0 | auch asiatische Stunden — also frueher |
+
+Waere die Steigung ein Uhrzeit-Versatz, muessten alle Paare dieselbe
+Zahl zeigen. Sie zeigen die Tageszeit ihrer eigenen Volatilitaet.
+
+### Die schlimmsten Tage sind die beste Bestaetigung
+
+| Paar | Tag | Differenz | Was an dem Tag war |
+|---|---|---|---|
+| EUR/USD | 2022-11-10 | −2,33 % | US-Inflationsdaten, 13:30 UTC — die Bewegung kam **nach** dem Fixing |
+| EUR/USD | 2022-09-13 | +1,97 % | US-Inflationsdaten, derselbe Mechanismus |
+| EUR/TRY | 2021-12-20 | **+31,8 %** | die Lira-Wende: Ankuendigung am Abend, nach dem Fixing |
+
+> Der 31,8-Prozent-Tag ist kein Datenfehler. Er ist der Tag, an dem sich
+> die Lira nach dem Fixing um fast ein Drittel bewegt hat. Ein Fixing um
+> 14:15 UTC und ein Schluss um 24:00 UTC **muessen** an diesem Tag weit
+> auseinanderliegen — alles andere waere der Fehler.
+
+**Der eine Fall mit Verzerrung** ist EUR/TRY: Median −0,142 %, also
+nicht bei null. Das Urteil lautet dort `TIMING_DIFFERENCE_WITH_BIAS`.
+Eine Waehrung, die ueber Jahre in eine Richtung laeuft, liegt am
+frueheren Zeitpunkt systematisch auf einer Seite. Der Mechanismus ist
+derselbe; er hat hier nur eine Vorzugsrichtung.
+
+### Ein Nebenbefund, der vorher niemandem aufgefallen ist
+
+**Tiingo liefert Wochenendzeilen, die EZB nicht** — rund 325 je Paar
+ueber den Ueberlappungsbereich. Der Devisenmarkt ist von Freitag 22:00
+bis Sonntag 22:00 UTC geschlossen; eine Samstagszeile beschreibt keinen
+Handel.
+
+Der Vergleich oben hat sie nicht benutzt (nur Tage, die in **beiden**
+Reihen stehen). Fuer die Historie sind sie jetzt ohnehin gegenstandslos,
+weil dort die EZB fuehrt. Festgehalten ist es trotzdem: eine
+Wochenendzeile, die als Tageskurs durchgeht, waere genau die Art von
+stillem Fehler, die dieser Layer verhindern soll.
+
 ### Die Rollenverteilung, die daraus folgt
 
 Wenn die Differenz aus der Definition stammt, ist sie unvermeidbar —
@@ -408,9 +502,28 @@ Die Herkunft je Wert sagt es (`role: "FALLBACK"`, `resolutionClass:
 "HISTORICAL_DAILY"`).
 
 **Ein Nebeneffekt, der die Lizenzlage entspannt.** Die historische
-EUR-Anzeige haengt jetzt vollstaendig an der EZB, deren Bedingungen
-geklaert sind. Gesperrt bleibt bis zur Antwort auf O-11 nur noch der
-**aktuelle** Tiingo-basierte EUR-Wert — nicht mehr die halbe Historie.
+EUR-Anzeige haengt jetzt fast vollstaendig an der EZB, deren Bedingungen
+geklaert sind. Gesperrt bleibt bis zur Antwort auf O-11 im Wesentlichen
+nur noch der **aktuelle** Tiingo-basierte EUR-Wert — nicht mehr die
+halbe Historie.
+
+**Fast**, und die Ausnahme ist gemessen. Fuenf Waehrungen fuehrt die EZB
+nicht; ihr Kreuz entsteht aus einem EZB- und einem Tiingo-Bein und traegt
+deshalb `role: "MIXED"` — und damit die **strengere** der beiden
+Erlaubnisse:
+
+| Waehrung | Titel |
+|---|---|
+| ARS | 12 |
+| TWD | 6 |
+| CLP | 5 |
+| PEN | 4 |
+| COP | 2 |
+| **zusammen** | **29** |
+
+29 von 11.202 Titeln zeigen ihre historischen EUR-Werte also erst nach
+der Lizenzantwort. Das ist die ehrliche Zahl, und sie ist klein genug,
+um sie zu nennen statt sie zu glaetten.
 
 ---
 
@@ -1156,9 +1269,9 @@ diesem Workstream und werden hier nicht repariert.
 |---|---|---|
 | `TIINGO_FX_CAPABILITIES` | **MEASURED** | `tiingo-fx-probe.json` |
 | `HISTORICAL_FX_COVERAGE` | **PASS** — 1J/5J 99,96 %, 10J/15J 99,71 % (Schwelle 99 %); MAX berichtet, nicht beurteilt | `historical-coverage.json` |
-| `FX_PROVIDER_ROLES` | **PASS** — zwei Klassen, je Klasse deterministisch, Uebergang an der Gegenwart; Ursache gemessen | `provider-seam-audit.json`, Pruefung `PR1` |
+| `FX_PROVIDER_ROLES` | **PASS** — zwei Klassen, je Klasse deterministisch, Uebergang an der Gegenwart. Ursache gemessen: `TIMING_DIFFERENCE` (14 von 15 Paaren; corr(r) = −0,725, Median der Differenz −0,002 %, Inversionsfehler 1,6·10⁻¹⁶) | `provider-seam-audit.json`, Pruefung `PR1`, Tests `O14-1` … `O14-4` |
 | `FX_DATA_PROOF` | **PASS** | `currency-layer-proof.json` |
-| `CURRENCY_CONTRACT` | **PASS** (71 Tests) | `currency-fx-matrix.test.mjs` |
+| `CURRENCY_CONTRACT` | **PASS** (72 Tests) | `currency-fx-matrix.test.mjs` |
 | `INTRADAY_FX_STATE` | **PASS** — 952 Titel je Anfrage | `O9-1` … `O9-3` |
 | `FX_FRESHNESS` | **PASS** | `O5-1` … `O5-6` |
 | `EUR_USD_SWITCH_CONTRACT` | **PASS** (SW1–SW4) | plus `O15-1`: getrennte Anfaenge je Anzeigewaehrung |
@@ -1217,9 +1330,11 @@ oeffentliche Anzeige des **aktuellen**, Tiingo-basierten EUR-Werts.
 Maschinenlesbar in `quant/config/fx-license.json#licenseGate`, abrufbar
 ueber `Providers.escalation()`.
 
-**Was ohne die Antwort geht:** seit O-14 die gesamte **historische**
-EUR-Anzeige — sie haengt vollstaendig an der EZB, deren Bedingungen
-geklaert sind und deren Quelle genannt wird.
+**Was ohne die Antwort geht:** seit O-14 die **historische**
+EUR-Anzeige fuer 11.173 der 11.202 Titel — sie haengt an der EZB, deren
+Bedingungen geklaert sind und deren Quelle genannt wird. Die
+verbleibenden 29 Titel (ARS, TWD, CLP, PEN, COP) brauchen ein
+Tiingo-Bein im Kreuz und warten mit.
 
 ### Der eine ausstehende Nachweis
 
@@ -1231,6 +1346,6 @@ beschoenigt.
 | # | Sache |
 |---|---|
 | `DEFERRED_PRODUCT_DECISION_MULTI_CURRENCY_PORTFOLIO` | Depotbewertung in Fremdwaehrung. Das Gate in `portfolio-workspace.js` bleibt unveraendert, bis der Owner entscheidet. |
-| **O-14 Restfrage** | Die Naht ist jetzt an die Gegenwart verlegt und ihre Ursache gemessen. Bleibt: soll der Sprung zwischen letztem Tagesschluss und aktuellem Kurs dem Nutzer **gezeigt** werden — und ab welcher Groesse? |
+| **O-14 Restfrage** | Die Ursache ist gemessen (`TIMING_DIFFERENCE`, 14 von 15 Paaren, corr −0,725) und die Naht an die Gegenwart verlegt. Bleibt: soll der Sprung zwischen letztem Tagesschluss und aktuellem Kurs dem Nutzer **gezeigt** werden — und ab welcher Groesse? Der Median liegt bei 0,18 %, das p95 bei 0,73 %; an Tagen mit US-Daten bei ueber 2 %. |
 | **O-15 Restfrage** | Die getrennten Anfaenge liefert der Vertrag jetzt (`availability`). Bleibt: wie die Oberflaeche es sagt — Zeitraum begrenzen, Hinweis zeigen oder auf die Originalwaehrung verweisen? |
 | **O-17** | Bestaetigung der EZB-Bedingungen (Wiedergabe unter Quellennennung). Blockiert nichts, weil die Nennung ohnehin erfolgt. |
