@@ -1,6 +1,6 @@
 {
   "schema": "vu-historical-fx-coverage-1.0.0",
-  "generatedAtUtc": "2026-09-22T08:14:25.635Z",
+  "generatedAtUtc": "2026-09-22T09:49:28.628Z",
   "note": "Fuer jeden Zeitpunkt, den das Produkt zeigt, gegen jede Waehrung, die das Universum fuehrt. Gewichtet nach betroffenen Titeln - eine Waehrung mit einem Titel und eine mit 10.858 sind nicht gleich wichtig.",
   "verdict": "PASS",
   "verdictMeaning": "In jedem geprueften Horizont sind mindestens 99 % der Titel umrechenbar.",
@@ -51,8 +51,8 @@
       "titelGesamt": 11202,
       "titelquote": 0.9995536511337261,
       "quellen": {
-        "tiingo": 18,
-        "ecb": 8
+        "tiingo+ecb": 5,
+        "ecb": 21
       },
       "fehlend": [
         "AFN",
@@ -70,8 +70,8 @@
       "titelGesamt": 11202,
       "titelquote": 0.9996429209069809,
       "quellen": {
-        "tiingo": 19,
-        "ecb": 8
+        "tiingo+ecb": 5,
+        "ecb": 22
       },
       "fehlend": [
         "AFN",
@@ -174,7 +174,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -182,7 +182,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -191,7 +191,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -199,14 +199,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -219,7 +219,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -227,7 +227,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -235,7 +235,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -243,14 +243,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -262,7 +262,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -270,7 +270,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -279,7 +279,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -287,14 +287,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -307,7 +307,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -315,7 +315,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -323,7 +323,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -331,14 +331,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -350,7 +350,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -358,7 +358,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -367,7 +367,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -375,14 +375,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -394,7 +394,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -403,7 +403,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -411,7 +411,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -419,14 +419,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -438,7 +438,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -446,7 +446,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -455,7 +455,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -463,14 +463,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -482,7 +482,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -490,7 +490,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -499,7 +499,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -507,14 +507,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -526,7 +526,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -534,7 +534,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -543,7 +543,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -551,14 +551,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -570,16 +570,16 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -606,7 +606,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -614,7 +614,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -623,7 +623,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -631,14 +631,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -651,7 +651,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -659,7 +659,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -667,7 +667,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -675,14 +675,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -695,14 +695,14 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -711,7 +711,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -719,14 +719,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -738,7 +738,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -746,7 +746,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -755,7 +755,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -763,14 +763,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -783,7 +783,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -791,7 +791,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -799,7 +799,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -807,14 +807,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -826,16 +826,16 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -862,16 +862,16 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -898,7 +898,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -906,7 +906,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -915,7 +915,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -923,14 +923,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -943,7 +943,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -951,7 +951,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -959,7 +959,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -967,14 +967,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -986,16 +986,16 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -1022,16 +1022,16 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
-          "role": "PRIMARY",
+          "source": "tiingo+ecb",
+          "role": "MIXED",
           "derivation": "TRIANGULATED",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -1058,7 +1058,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -1066,7 +1066,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -1075,7 +1075,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1083,14 +1083,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -1102,7 +1102,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -1110,7 +1110,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -1119,7 +1119,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1127,14 +1127,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -1175,7 +1175,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -1183,7 +1183,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -1191,7 +1191,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1199,14 +1199,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -1275,7 +1275,7 @@
         "1J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
           "method": "DAILY_AT_DATE"
@@ -1283,7 +1283,7 @@
         "5J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
           "method": "DAILY_AT_DATE"
@@ -1291,7 +1291,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1299,14 +1299,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -1318,11 +1318,11 @@
       "horizonte": {
         "1J": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "carryLimitExceeded"
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -1331,7 +1331,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1339,14 +1339,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
@@ -1358,7 +1358,7 @@
       "horizonte": {
         "1J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2025-09-22",
@@ -1366,7 +1366,7 @@
         },
         "5J": {
           "ok": true,
-          "source": "tiingo",
+          "source": "ecb",
           "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2021-09-22",
@@ -1375,7 +1375,7 @@
         "10J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2016-09-22",
           "method": "DAILY_AT_DATE"
@@ -1383,14 +1383,14 @@
         "15J": {
           "ok": true,
           "source": "ecb",
-          "role": "FALLBACK",
+          "role": "PRIMARY",
           "derivation": "INVERSE",
           "asOf": "2011-09-22",
           "method": "DAILY_AT_DATE"
         },
         "MAX": {
           "ok": false,
-          "reason": "pairNotStored"
+          "reason": "beforeSeriesStart"
         }
       },
       "tiefsteAbdeckung": "15J",
