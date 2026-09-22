@@ -314,8 +314,30 @@ export const MESS_SKRIPT = `<script>
     }
     document.documentElement.setAttribute("data-vu-figuren",JSON.stringify(figuren));
   }
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(messen);}
-  else{messen();}
+  /* -----------------------------------------------------------------
+     WARTEN AUF DIE SCHRIFT, ABER NICHT UNBEGRENZT
+
+     Unter --virtual-time-budget (messeSeite() faehrt --dump-dom genau
+     so) loest document.fonts.ready in der Chromium-Fassung realer
+     Runner manchmal nie auf, obwohl die Schrift eingebettet ist (kein
+     Netzwerk noetig) - vermutlich, weil das Laden/Rastern der Schrift
+     ausserhalb des Haupt-Threads laeuft und sein Abschluss nicht
+     zuverlaessig in die virtuelle Zeit zurueckgemeldet wird. Ohne
+     Rueckfall lief messen() dann NIE, und Atlas- wie Text-Messung
+     kamen leer zurueck - nicht weil das Bild falsch war, sondern weil
+     niemand je gemessen hat.
+
+     setTimeout wird von --virtual-time-budget selbst getrieben und
+     bleibt deshalb zuverlaessig. Er ersetzt fonts.ready nicht - ist
+     die Schrift rechtzeitig fertig, misst messen() wie bisher an
+     genau dieser Stelle. Er sorgt nur dafuer, dass eine Messung
+     stattfindet, so oder so. */
+  if(document.fonts&&document.fonts.ready){
+    var gemessen=false;
+    var einmal=function(){ if(gemessen) return; gemessen=true; messen(); };
+    document.fonts.ready.then(einmal);
+    setTimeout(einmal, 2000);
+  } else { messen(); }
 })();
 <\/script>`;
 
