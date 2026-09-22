@@ -2,71 +2,16 @@
   "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-09-22T13:01:43.940Z",
-    "runId": "35730754370",
-    "runNumber": "30",
+    "startedAt": "2026-09-22T18:51:19.496Z",
+    "runId": "35769879474",
+    "runNumber": "32",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
     "blockMaxMs": 20700000,
-    "branch": "main",
-    "endedAt": "2026-09-22T18:45:33.785Z",
-    "reason": "blockEnde",
-    "cycles": 62
+    "branch": "main"
   },
-  "updatedAt": "2026-09-22T18:45:33.786Z",
+  "updatedAt": "2026-09-22T18:56:21.231Z",
   "cycles": [
-    {
-      "cycle": 20,
-      "runId": "35630336530",
-      "triggerAt": "2026-09-21T18:47:55.925Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "14:47:55",
-      "fetchStartAt": "2026-09-21T18:47:55.926Z",
-      "fetchEndAt": "2026-09-21T18:52:57.438Z",
-      "session": "2026-09-21",
-      "written": 494,
-      "requests": 527,
-      "notPublishable": 8,
-      "addAt": "2026-09-21T18:52:57.439Z",
-      "commitAt": "2026-09-21T18:52:57.610Z",
-      "pushAt": "2026-09-21T18:52:59.195Z",
-      "sha": "6165f05851",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-09-21T18:52:57.431Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "PASS",
-        "codes": []
-      }
-    },
-    {
-      "cycle": 21,
-      "runId": "35630336530",
-      "triggerAt": "2026-09-21T18:52:59.538Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "14:52:59",
-      "fetchStartAt": "2026-09-21T18:52:59.538Z",
-      "fetchEndAt": "2026-09-21T18:58:00.974Z",
-      "session": "2026-09-21",
-      "written": 490,
-      "requests": 527,
-      "notPublishable": 8,
-      "addAt": "2026-09-21T18:58:00.974Z",
-      "commitAt": "2026-09-21T18:58:01.142Z",
-      "pushAt": "2026-09-21T18:58:02.758Z",
-      "sha": "410ecbb984",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-09-21T18:58:00.967Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "PASS",
-        "codes": []
-      }
-    },
     {
       "cycle": 22,
       "runId": "35630336530",
@@ -2066,6 +2011,27 @@
       "ok": true,
       "reason": null,
       "snapshotAt": "2026-09-22T18:45:30.723Z"
+    },
+    {
+      "cycle": 1,
+      "runId": "35769879474",
+      "triggerAt": "2026-09-22T18:51:19.505Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "14:51:19",
+      "fetchStartAt": "2026-09-22T18:51:19.839Z",
+      "fetchEndAt": "2026-09-22T18:56:21.229Z",
+      "session": "2026-09-22",
+      "written": 502,
+      "requests": 526,
+      "notPublishable": 9,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-09-22T18:56:21.220Z"
     }
   ]
 }
