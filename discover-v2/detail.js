@@ -154,6 +154,12 @@
       valuation.classList.add("dv2-stock-valuation");
       var valuationKicker = valuation.querySelector(".dx-kicker");
       if (valuationKicker) valuationKicker.textContent = "03 / Bewertung einordnen";
+      var valuationTitle = valuation.querySelector("h2");
+      if (valuationTitle) {
+        var valuationQuestion = node("p", "dv2-valuation-question", valuationTitle.textContent);
+        valuationTitle.textContent = "Bewertung";
+        valuationTitle.insertAdjacentElement("afterend", valuationQuestion);
+      }
       addValuationComponents(valuation, detail);
     }
     if (risks) {
@@ -279,6 +285,12 @@
                    note: "Kurs × ausgegebene Aktien" });
     if (valuation.pe) add("KGV", valuation.pe.value, "Kurs ÷ Gewinn je Aktie · " + valuation.pe.basis);
     if (valuation.ps) add("KUV", valuation.ps.value, "Marktwert ÷ Umsatz · " + valuation.ps.basis);
+    if (valuation.pe && Number.isFinite(valuation.pe.value) && valuation.pe.value > 0)
+      cards.push({ label: "Gewinnrendite", text: number(100 / valuation.pe.value, 1) + " %", note: "Gewinn je Aktie ÷ Kurs · " + valuation.pe.basis });
+    if (valuation.context && Number.isFinite(valuation.context.peMedian))
+      add("KGV Marktmedian", valuation.context.peMedian, "Breiter Markt · " + (valuation.context.peCount || 0).toLocaleString("de-DE") + " profitable Unternehmen");
+    if (valuation.relative && Number.isFinite(valuation.relative.peVsMedian))
+      add("KGV / Markt", valuation.relative.peVsMedian, valuation.relative.label || "Verhältnis zum breiten Markt");
     if (valuation.fcfYield) {
       var yieldValue = valuation.fcfYield.value;
       if (Number.isFinite(yieldValue) && yieldValue > 0)
