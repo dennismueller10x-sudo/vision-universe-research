@@ -1369,7 +1369,7 @@ keine Testsuite sehen kann. Gemessen an `AAPL`:
 | `UI2` 93 Geldbetraege geaendert, **0** Prozent- oder Verhaeltniswerte | **PASS** |
 | `UI3` kein Dollarbetrag in der EUR-Ansicht | **PASS** |
 | `UI4` 844 Textknoten in beiden Waehrungen - kein Titel faellt weg | **PASS** |
-| `UI5` 5 Jahre: **+142 % in EUR** gegen **+126 % in USD** | **PASS** |
+| `UI5` 5 Jahre: **+133 % in EUR** gegen **+126 % in USD** | **PASS** |
 | `UI6` MAX-Chart: EUR ab **08.01.1999**, nativ ab **05.01.1990**, mit Hinweis | **PASS** |
 | `UI7` keine Konsolenfehler | **PASS** |
 | `UI8` Discover 2.1 benutzt denselben Vertrag und denselben Speicher | **PASS** |
@@ -1380,8 +1380,26 @@ TM, BABA, GSK.
 > `UI5` ist der Satz, auf den es ankommt. Eine Reihe, die rueckwirkend
 > mit einem einzigen Kurs umgerechnet wird, haette dieselbe Form wie das
 > Original und behauptete damit, der Wechselkurs haette sich nie bewegt.
-> Der Unterschied zwischen 142 und 126 Prozent ist der Beweis, dass
+> Der Unterschied zwischen 133 und 126 Prozent ist der Beweis, dass
 > punktweise gerechnet wird.
+
+### Eine Zahl, von Hand nachgerechnet
+
+Der Nachweis ist erst dann einer, wenn eine einzelne Zahl stimmt.
+AAPL am 2026-09-18, im Browser, mit den ausgelieferten EZB-Reihen:
+
+| | |
+|---|---|
+| Kurs | 336,13 USD |
+| EZB-Referenzkurs EUR/USD am 2026-09-18 | 1,1460 |
+| Handrechnung | 336,13 ÷ 1,1460 = **293,3072** |
+| Anzeige | **293,31 €** |
+| Herkunft | `ecb`, `PRIMARY`, `HISTORICAL_DAILY`, `INVERSE` |
+| Quellennennung | „Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse)." |
+| `publicDisplayAllowed` | `true` |
+
+22 Paare, 7.097 Beobachtungen fuer EUR/USD ab 1999-01-04, 3,0 MB im
+ausgelieferten Pfad - geladen wird davon je Seite eine Reihe.
 
 **Ein Fehlschlag, der keiner war.** `UI6` meldete SAP und ASML zuerst
 als Fehler: "Der EUR-Chart beginnt FRUEHER (08.01.1999) als der native
