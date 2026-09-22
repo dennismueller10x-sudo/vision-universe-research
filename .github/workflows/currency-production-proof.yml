@@ -1,0 +1,105 @@
+# Der Nachweis am AUSGELIEFERTEN Stand, nicht am Arbeitsbaum.
+#
+# Der Owner-Entscheid vom 2026-09-22 verlangt als Schritt 8 ausdruecklich,
+# den tatsaechlich ausgelieferten Stand zu pruefen. Lokal laesst sich das
+# nicht fuehren: die Ausfuehrungsumgebung dieses Agenten erreicht
+# research.visionuniverse.de nicht (Egress-Policy, 403 auf CONNECT).
+# Also laeuft der Nachweis hier, wo die Seite erreichbar ist - nach dem
+# Muster von discover-live-smoke.yml.
+#
+# Nur per Hand startbar. Schreibt nichts ins Repository. Aktiviert keinen
+# kostenpflichtigen Dienst: kein Anbieterabruf, keine Datenpipeline, nur
+# ein Browser gegen eine oeffentliche Seite.
+name: Currency Layer - Nachweis am ausgelieferten Stand
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # In den Projektbaum, nicht in ein Praefix: der ESM-Aufloeser von
+      # Node liest NODE_PATH nicht.
+      - name: Playwright (Chromium)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      # Kommt der Vertrag ueberhaupt aus main beim Nutzer an? Das ist die
+      # erste Frage und die billigste: ohne die Module rechnet der Browser
+      # nichts um, und jeder weitere Nachweis waere Theater.
+      - name: Der Vertrag wird ausgeliefert
+        id: delivered
+        run: |
+          set -o pipefail
+          SITE='${{ inputs.site }}'
+          fehlt=0
+          for seite in /discover/ /discover-v2/; do
+            n=$(curl -sf --max-time 30 "$SITE$seite" | grep -o 'quant/engines/fx/[a-z-]*\.js' | sort -u | wc -l)
+            echo "$seite laedt $n Kernmodule"
+            [ "$n" -ge 11 ] || { echo "ABBRUCH: $seite laedt nur $n von 11"; fehlt=1; }
+          done
+          # Die EZB-Reihe selbst muss abrufbar sein, sonst faellt jede
+          # Umrechnung still auf den nativen Wert zurueck.
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$SITE/quant/data/market/fx/ecb/EURUSD.json")
+          echo "EURUSD.json: HTTP $code"
+          [ "$code" = "200" ] || { echo "ABBRUCH: EZB-Reihe nicht ausgeliefert"; fehlt=1; }
+          exit $fehlt
+
+      # Die neun Nachweistitel des Owners. Jeder deckt einen anderen Pfad
+      # ab: USD->EUR, die Identitaet bei SAP/ASML (EUR ist schon EUR, es
+      # darf NICHTS passieren), und vier Kreuzkurse ueber eine dritte
+      # Waehrung.
+      - name: UI1-UI8 fuer die neun Nachweistitel
+        id: titles
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          fehl=""
+          for t in AAPL NVDA MSFT SAP ASML NVO TM BABA GSK; do
+            echo "::group::$t"
+            if node scripts/quality/verify-currency-ui.mjs --url '${{ inputs.site }}' --ticker "$t" 2>&1 | tee "proof-$t.txt"; then
+              grep -q 'CURRENCY_UI_PROOF = FAIL' "proof-$t.txt" && fehl="$fehl $t"
+            else
+              fehl="$fehl $t"
+            fi
+            echo "::endgroup::"
+          done
+          if [ -n "$fehl" ]; then echo "FEHLGESCHLAGEN:$fehl"; exit 1; fi
+          echo "Alle neun Nachweistitel bestanden."
+
+      - name: Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: currency-production-proof
+          path: proof-*.txt
+          if-no-files-found: ignore
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "## Currency Layer am ausgelieferten Stand"
+            echo ""
+            echo "- Seite: ${{ inputs.site }}"
+            echo "- Vertrag ausgeliefert: ${{ steps.delivered.outcome }}"
+            echo "- Neun Nachweistitel: ${{ steps.titles.outcome }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test '${{ steps.delivered.outcome }}' = 'success'
+          test '${{ steps.titles.outcome }}' = 'success'
