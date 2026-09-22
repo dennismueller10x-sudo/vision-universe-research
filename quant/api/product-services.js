@@ -19,6 +19,8 @@ const IntradaySnapshot=typeof module!=='undefined'&&module.exports?require('../e
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
+const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
+const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -27,6 +29,7 @@ function create(options){
   if(loader)return loader(path);
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/factor-evidence-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -194,6 +197,34 @@ function create(options){
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
  function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
+ /* Factor DNA and What-Changed for one title. The artifact carries a
+  * withheld composite by construction; this reader refuses anything that
+  * claims otherwise rather than rendering a score the gate forbids. */
+ async function getFactorEvidence(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  const i=await identity(ticker);
+  if(!i)return {state:'UNAVAILABLE',reason:'NOT_IN_PRODUCT_UNIVERSE'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
+   if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
+   const source=shard.securities?.[ticker];
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
+   const violations=FactorEvidence.publicationViolations(source);
+   if(violations.length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   const record=FactorEvidence.hydrate(source,shard);
+   return {state:'AVAILABLE',ticker,name:i.companyName||ticker,
+    methodologyVersion:shard.methodologyVersion,derivedFrom:shard.derivedFrom,
+    asOf:record.asOf,dataCutoff:record.dataCutoff,priceBasis:record.priceBasis,
+    fundamentalsAsOf:record.fundamentalsAsOf,fundamentalsAvailableAt:record.fundamentalsAvailableAt,
+    marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
+    publication:shard.publication,composite:record.composite,
+    factors:FactorEvidence.ordered(record),
+    summary:FactorEvidence.summarySentence(record),
+    change:ChangeEngine.hydrate(record.change),
+    changeHeadline:ChangeEngine.headline(ChangeEngine.hydrate(record.change))};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
  async function materializedTechnical(ticker,securityId){
   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
   if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!==securityId)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
@@ -420,7 +451,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

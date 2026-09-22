@@ -1,0 +1,531 @@
+{
+ "schemaVersion": "factor-evidence-summary-1.0.0",
+ "methodologyVersion": "vu-factor-evidence-1.0.0",
+ "derivedFrom": "quant-v2.0.0",
+ "changeMethodologyVersion": "vu-change-1.0.0",
+ "generatedAt": "2026-09-22T15:12:39.000Z",
+ "asOf": "2026-09-18",
+ "publication": {
+  "compositeAllowed": false,
+  "rankingAllowed": false,
+  "reason": "QUANT_V2_NOT_ACTIVE",
+  "explanation": "Der kanonische siebenfaktorige Vertrag ist festgelegt, aber Revisions-, Peer- und breite PIT-Evidenz sind noch nicht produktionsreif."
+ },
+ "factorOrder": [
+  "quality",
+  "growth",
+  "momentum",
+  "value",
+  "profitability",
+  "revisions",
+  "risk"
+ ],
+ "factorWeights": {
+  "quality": 0.1,
+  "growth": 0.15,
+  "momentum": 0.25,
+  "value": 0.15,
+  "profitability": 0.15,
+  "revisions": 0.15,
+  "risk": 0.05
+ },
+ "componentSpecs": {
+  "quality:accrualRatio": {
+   "label": "Abstand zwischen Gewinn und Zahlungsfluss",
+   "weight": 0.25,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "(netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets"
+  },
+  "quality:netDebtToAssets": {
+   "label": "Nettoverschuldung zu Bilanzsumme",
+   "weight": 0.2,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest filing",
+   "input": "(totalDebt-cash-shortTermInvestments)/totalAssets"
+  },
+  "quality:equityToAssets": {
+   "label": "Eigenkapitalquote",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest filing",
+   "input": "stockholdersEquity/totalAssets"
+  },
+  "quality:positiveFcfYears": {
+   "label": "Jahre mit positivem freien Zahlungsfluss",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "count",
+   "basis": null,
+   "note": null,
+   "window": "last 5 fiscal years",
+   "input": "count(annualFreeCashFlow>0)"
+  },
+  "quality:operatingMarginStability": {
+   "label": "Schwankung der operativen Marge",
+   "weight": 0.2,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten.",
+   "window": "last 5 fiscal years; minimum 4",
+   "input": "medianAbsoluteDeviation(annualOperatingMargin)"
+  },
+  "growth:revenueCagr3y": {
+   "label": "Umsatzwachstum pro Jahr, 3 Jahre",
+   "weight": 0.3,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "3 fiscal years",
+   "input": "revenue CAGR"
+  },
+  "growth:epsCagr3y": {
+   "label": "Gewinn je Aktie, Wachstum pro Jahr, 3 Jahre",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "3 fiscal years",
+   "input": "diluted EPS CAGR; both endpoints positive"
+  },
+  "growth:fcfCagr3y": {
+   "label": "Freier Zahlungsfluss, Wachstum pro Jahr, 3 Jahre",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "3 fiscal years",
+   "input": "free cash flow CAGR; both endpoints positive"
+  },
+  "growth:revenueGrowthTtmYoy": {
+   "label": "Umsatzwachstum der letzten 12 Monate",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "1 year",
+   "input": "current TTM revenue/prior-year TTM revenue-1"
+  },
+  "growth:operatingMarginExpansion3y": {
+   "label": "Ausweitung der operativen Marge, 3 Jahre",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten.",
+   "window": "3 fiscal years",
+   "input": "operating-margin percentage-point change"
+  },
+  "growth:revenueGrowthAcceleration": {
+   "label": "Veränderung des Umsatztempos",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "two YoY intervals",
+   "input": "current revenue YoY growth-previous revenue YoY growth"
+  },
+  "momentum:totalReturn12m1m": {
+   "label": "Kursentwicklung 12 Monate ohne letzten Monat",
+   "weight": 0.3,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "252/21 sessions",
+   "input": "total return T-252 to T-21"
+  },
+  "momentum:totalReturn6m": {
+   "label": "Kursentwicklung 6 Monate",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "126 sessions",
+   "input": "total return"
+  },
+  "momentum:totalReturn3m": {
+   "label": "Kursentwicklung 3 Monate",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "63 sessions",
+   "input": "total return"
+  },
+  "momentum:relativeStrength12m1m": {
+   "label": "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Das Kursfaktor-Artefakt führt die relative Stärke über volle 12 Monate, nicht über das 12-1-Fenster der Methodik. Ein Fenstertausch wäre eine stille Ersetzung.",
+   "window": "252/21 sessions",
+   "input": "security 12-1 total return minus certified broad benchmark 12-1 total return"
+  },
+  "momentum:distanceTo52wHigh": {
+   "label": "Abstand zum 52-Wochen-Hoch",
+   "weight": 0.1,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "252 sessions",
+   "input": "(high252-current split-adjusted close)/high252"
+  },
+  "momentum:distanceToSma200": {
+   "label": "Abstand zur 200-Tage-Linie",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "200 sessions",
+   "input": "(split-adjusted close-SMA200)/SMA200"
+  },
+  "value:fcfYield": {
+   "label": "Freier Zahlungsfluss je Börsenwert",
+   "weight": 0.3,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest close and PIT-safe TTM",
+   "input": "TTM free cash flow/market capitalization"
+  },
+  "value:earningsYield": {
+   "label": "Gewinn je Börsenwert",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest close and PIT-safe TTM",
+   "input": "TTM net income/market capitalization"
+  },
+  "value:ebitdaYield": {
+   "label": "Operatives Ergebnis vor Abschreibungen je Unternehmenswert",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "EBITDA ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten.",
+   "window": "latest close and PIT-safe TTM",
+   "input": "TTM EBITDA/enterprise value"
+  },
+  "value:salesYield": {
+   "label": "Umsatz je Unternehmenswert",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest close and PIT-safe TTM",
+   "input": "TTM revenue/enterprise value"
+  },
+  "value:bookToMarket": {
+   "label": "Eigenkapital je Börsenwert",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest filing and close",
+   "input": "stockholders equity/market capitalization"
+  },
+  "profitability:roicTtm": {
+   "label": "Rendite auf das eingesetzte Kapital",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Ohne operatives Ergebnis lässt sich der kanonische ROIC nicht bilden.",
+   "window": "latest PIT-safe TTM",
+   "input": "canonical return on invested capital; tax assumption disclosed"
+  },
+  "profitability:roicMedian3y": {
+   "label": "Rendite auf das eingesetzte Kapital, Median 3 Jahre",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Ohne operatives Ergebnis lässt sich der kanonische ROIC nicht bilden.",
+   "window": "last 3 fiscal years",
+   "input": "median annual ROIC"
+  },
+  "profitability:grossProfitabilityTtm": {
+   "label": "Rohertrag je Bilanzsumme",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "TTM gross profit/average total assets"
+  },
+  "profitability:operatingMarginTtm": {
+   "label": "Operative Marge",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Das operative Ergebnis ist in der bestehenden SEC-Normalisierung (mapping 1.5.0) nicht enthalten.",
+   "window": "TTM",
+   "input": "TTM operating income/TTM revenue"
+  },
+  "profitability:fcfMarginTtm": {
+   "label": "Marge des freien Zahlungsflusses",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "TTM free cash flow/TTM revenue"
+  },
+  "profitability:roaTtm": {
+   "label": "Rendite auf die Bilanzsumme",
+   "weight": 0.1,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "TTM net income/average total assets"
+  },
+  "risk:realizedVolatility252d": {
+   "label": "Schwankungsbreite 1 Jahr",
+   "weight": 0.35,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "252 sessions",
+   "input": "annualized daily total-return volatility"
+  },
+  "risk:downsideVolatility252d": {
+   "label": "Schwankungsbreite der Verlusttage",
+   "weight": 0.25,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": "SPLIT_ADJUSTED",
+   "note": "Aus der veröffentlichten 270-Tage-Kursreihe berechnet: annualisierte Halbabweichung der negativen Tages-Logrenditen über 252 Sitzungen. Kursbasis splitbereinigt und hier ausdrücklich so ausgewiesen; sie wird nicht als Gesamtrendite ausgegeben.",
+   "window": "252 sessions",
+   "input": "annualized volatility of negative daily returns"
+  },
+  "risk:maxDrawdown252d": {
+   "label": "Größter Rückgang im Jahr",
+   "weight": 0.25,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "252 sessions",
+   "input": "peak-to-trough total-return drawdown"
+  },
+  "risk:beta252d": {
+   "label": "Marktsensitivität (Beta)",
+   "weight": 0.15,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Beta gegen den zertifizierten Vergleichsindex wird von market-factors-1.0.0 nicht berechnet.",
+   "window": "252 sessions",
+   "input": "covariance with certified benchmark/benchmark variance"
+  }
+ },
+ "scope": "CANONICAL_PRODUCT_UNIVERSE",
+ "source": {
+  "priceFactors": {
+   "engine": "market-factors-1.0.0",
+   "generatedAt": "2026-09-21T12:17:48.056Z",
+   "securities": 6404,
+   "benchmark": {
+    "id": "SPY",
+    "bars": 930,
+    "last": "2026-09-17"
+   }
+  },
+  "fundamentals": {
+   "schema": "vu-consumer-fundamentals-1.0.0",
+   "issuersRead": 4721
+  },
+  "peerTaxonomy": {
+   "version": "sic-peer-taxonomy-1.0.0",
+   "rows": 5355,
+   "snapshotMode": "CURRENT_ONLY"
+  },
+  "quotes": {
+   "source": "technical-product-artifact-1.0.0",
+   "tickers": 5676
+  }
+ },
+ "counts": {
+  "productUniverse": 6875,
+  "priceFactorSecurities": 6404,
+  "published": 6404,
+  "withFundamentals": 5008,
+  "withMarketCap": 3921
+ },
+ "factorStates": {
+  "quality": {
+   "AVAILABLE": 2514,
+   "UNAVAILABLE": 2923,
+   "NOT_APPLICABLE": 967
+  },
+  "growth": {
+   "AVAILABLE": 2140,
+   "UNAVAILABLE": 4264,
+   "NOT_APPLICABLE": 0
+  },
+  "momentum": {
+   "AVAILABLE": 5582,
+   "UNAVAILABLE": 822,
+   "NOT_APPLICABLE": 0
+  },
+  "value": {
+   "AVAILABLE": 1999,
+   "UNAVAILABLE": 3438,
+   "NOT_APPLICABLE": 967
+  },
+  "profitability": {
+   "AVAILABLE": 0,
+   "UNAVAILABLE": 5437,
+   "NOT_APPLICABLE": 967
+  },
+  "revisions": {
+   "AVAILABLE": 0,
+   "UNAVAILABLE": 6404,
+   "NOT_APPLICABLE": 0
+  },
+  "risk": {
+   "AVAILABLE": 5303,
+   "UNAVAILABLE": 1101,
+   "NOT_APPLICABLE": 0
+  }
+ },
+ "reasonCounts": {
+  "INSUFFICIENT_COMPONENTS": 5928,
+  "BLOCKED_EXTERNAL": 6404,
+  "INPUT_NOT_MATERIALIZED": 9373,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2684,
+  "SECTOR_TEMPLATE_MISSING": 2901
+ },
+ "componentCoverage": {
+  "quality:accrualRatio": 2973,
+  "quality:equityToAssets": 3867,
+  "quality:positiveFcfYears": 3144,
+  "growth:revenueCagr3y": 3639,
+  "growth:epsCagr3y": 2037,
+  "growth:fcfCagr3y": 1927,
+  "growth:revenueGrowthTtmYoy": 3081,
+  "growth:revenueGrowthAcceleration": 3854,
+  "momentum:totalReturn12m1m": 5582,
+  "momentum:totalReturn6m": 5930,
+  "momentum:totalReturn3m": 6302,
+  "momentum:distanceTo52wHigh": 5584,
+  "momentum:distanceToSma200": 5688,
+  "value:fcfYield": 2022,
+  "value:earningsYield": 2519,
+  "value:bookToMarket": 3076,
+  "profitability:fcfMarginTtm": 2208,
+  "profitability:roaTtm": 3007,
+  "risk:realizedVolatility252d": 5582,
+  "risk:downsideVolatility252d": 5303,
+  "risk:maxDrawdown252d": 5584,
+  "quality:netDebtToAssets": 462,
+  "profitability:grossProfitabilityTtm": 1350,
+  "value:salesYield": 97
+ },
+ "shards": 637,
+ "openInputGates": [
+  {
+   "id": "OPERATING_INCOME",
+   "blocks": [
+    "quality.operatingMarginStability",
+    "growth.operatingMarginExpansion3y",
+    "profitability.operatingMarginTtm",
+    "profitability.roicTtm",
+    "profitability.roicMedian3y"
+   ],
+   "owner": "SEC normalization metric registry (mapping 1.5.0)"
+  },
+  {
+   "id": "EBITDA",
+   "blocks": [
+    "value.ebitdaYield"
+   ],
+   "owner": "SEC normalization metric registry (mapping 1.5.0)"
+  },
+  {
+   "id": "BETA_252D",
+   "blocks": [
+    "risk.beta252d"
+   ],
+   "owner": "market-factors-1.0.0",
+   "detail": "Der Vergleichsindex ist im Kursfaktor-Artefakt genannt, seine Tagesreihe ist aber nicht veröffentlicht; Beta lässt sich daraus nicht bilden."
+  },
+  {
+   "id": "NET_DEBT_PERIOD_ALIGNMENT",
+   "blocks": [
+    "quality.netDebtToAssets",
+    "value.salesYield"
+   ],
+   "owner": "SEC normalization",
+   "detail": "Der abgeleitete Nettoverschuldungswert stützt sich häufig auf eine veraltete Schuldenposition; periodenfremde Werte werden hier verworfen statt vermischt."
+  },
+  {
+   "id": "RELATIVE_STRENGTH_12M1M",
+   "blocks": [
+    "momentum.relativeStrength12m1m"
+   ],
+   "owner": "market-factors-1.0.0"
+  },
+  {
+   "id": "PIT_ANALYST_CONSENSUS",
+   "blocks": [
+    "revisions.*"
+   ],
+   "owner": "external licence"
+  },
+  {
+   "id": "INDUSTRY_TEMPLATES_BANKS_INSURERS_REITS",
+   "blocks": [
+    "quality.*",
+    "value.*",
+    "profitability.*"
+   ],
+   "owner": "quant-v2 methodology"
+  },
+  {
+   "id": "FACTOR_SNAPSHOT_HISTORY",
+   "blocks": [
+    "change.scoreMomentum"
+   ],
+   "owner": "this materializer, from its first weekly snapshot forward"
+  }
+ ],
+ "gapCounts": {
+  "IDENTITY_UNRESOLVED": 1049,
+  "FUNDAMENTALS_DOCUMENT_MISSING": 347
+ },
+ "runtimeMs": 17558,
+ "contentHash": "21ef1aeb1ca044fa"
+}

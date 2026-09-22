@@ -44,3 +44,107 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .history-controls+.button{margin-bottom:20px}
 
 .market-freshness{font-size:13px;line-height:1.55;margin:12px 0 18px}.freshness-warning{color:#79520f;border-left:2px solid #a77927;padding-left:12px}
+
+/* =========================================================================
+   QUANT EXPERIENCE — Meaning, Explanation, Evidence, Workspace.
+   Grössere Flächen und stärkere Typografie, aber ruhiger und analytischer
+   als Discovery. Discovery selbst wird von hier aus nicht berührt.
+   ========================================================================= */
+.quant-hero{padding:8px 0 30px;border-bottom:1px solid var(--line)}
+.quant-hero h1{font-size:44px;letter-spacing:-1.8px;margin:10px 0 4px}
+.quant-ticker{font-size:15px;color:var(--muted);margin:0 0 18px;font-variant-numeric:tabular-nums}
+.quant-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:#edf4f1;color:var(--positive);font-size:13px;font-weight:600}
+.chip-muted{background:var(--surface);color:var(--muted)}
+.quant-summary{font-size:21px;line-height:1.5;max-width:780px;margin:0 0 12px;font-weight:450}
+.quant-change{font-size:15px;color:var(--muted);max-width:780px;margin:0}
+
+/* Factor DNA */
+.dna-section h2{max-width:560px}
+.dna-list{margin-top:24px;border-top:1px solid var(--line)}
+.dna-row{border-bottom:1px solid var(--line);padding:4px 0 18px}
+.dna-head{display:flex;width:100%;align-items:baseline;justify-content:space-between;gap:16px;min-height:52px;text-align:left}
+.dna-label{font-size:19px;font-weight:600}
+.dna-band{font-size:13px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.dna-track{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.dna-track span{display:block;height:100%;border-radius:4px;background:var(--muted)}
+.band-VERY_STRONG{color:#0f5f48}.dna-track .band-VERY_STRONG{background:#0f5f48}
+.band-STRONG{color:var(--positive)}.dna-track .band-STRONG{background:var(--positive)}
+.band-NEUTRAL{color:#5a6165}.dna-track .band-NEUTRAL{background:#8b9297}
+.band-WEAK{color:#8a5a1d}.dna-track .band-WEAK{background:#c08b3a}
+.band-VERY_WEAK{color:var(--negative)}.dna-track .band-VERY_WEAK{background:var(--negative)}
+.band-NONE{color:var(--muted)}.dna-track .band-NONE{background:var(--line)}
+.dna-detail{padding:18px 0 4px}
+.dna-plain{font-size:16px;max-width:680px}
+.dna-components{margin-top:16px;border-top:1px solid var(--line)}
+.dna-component{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px 24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.dna-component>div:first-child span{display:block}
+.dna-component>div:first-child span:first-child{font-size:15px}
+.dna-component>div:first-child span+span{font-size:12px;margin-top:3px}
+.dna-component .number{text-align:right}
+.dna-component strong{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.dna-component .number span{display:block;font-size:12px;margin-top:4px}
+.dna-component.is-missing strong{font-size:15px;font-weight:500;color:var(--muted)}
+.dna-note{grid-column:1/-1;font-size:12px;margin:2px 0 0}
+
+/* Was verändert sich gerade? */
+.change-section h2{max-width:560px}
+.change-group{margin:28px 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
+.change-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.change-card{border-top:2px solid var(--line);padding:18px 0 4px}
+.change-card.dir-IMPROVING{border-top-color:var(--positive)}
+.change-card.dir-DETERIORATING{border-top-color:var(--negative)}
+.change-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.change-head h3{margin:0;font-size:18px}
+.change-head .muted{font-size:12px}
+.change-arrow{font-size:20px;font-weight:700}
+.dir-IMPROVING .change-arrow{color:var(--positive)}
+.dir-DETERIORATING .change-arrow{color:var(--negative)}
+.change-values{font-variant-numeric:tabular-nums;font-size:15px;font-weight:550;overflow-wrap:anywhere}
+.change-card p{margin:10px 0 0}
+.change-card details{margin:10px 0 0;padding:0;border:0}
+.change-card summary{min-height:44px;padding:10px 0;font-size:14px}
+.change-missing summary{min-height:44px}
+
+/* Setup */
+.setup-journey{display:flex;list-style:none;margin:22px 0 8px;padding:0;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.setup-step{flex:1 0 auto;min-width:104px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);padding-right:12px}
+.setup-dot{display:block;height:4px;border-radius:2px;background:var(--line)}
+.setup-step.is-active{color:var(--ink);font-weight:700}
+.setup-step.is-active .setup-dot{background:var(--ink);height:6px}
+.setup-count{font-size:17px;font-weight:600;margin:24px 0 12px}
+.setup-conditions{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.setup-conditions li{display:flex;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.setup-conditions li>div span{display:block}
+.setup-conditions li>div span+span{font-size:12px;margin-top:3px}
+.setup-mark{font-size:16px;width:18px;flex-shrink:0}
+.setup-conditions .is-met .setup-mark{color:var(--positive)}
+.setup-conditions .is-open .setup-mark{color:var(--muted)}
+.setup-conditions .is-missing{color:var(--muted)}
+
+/* Evidenz und Erklärfläche */
+.evidence-list{list-style:none;margin:0 0 16px;padding:0;border-top:1px solid var(--line)}
+.evidence-list li{padding:14px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.explain-hero h1{font-size:48px}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.explain-card{border-top:2px solid var(--ink);padding-top:18px}
+.explain-factors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:24px}
+.explain-factor{border-top:1px solid var(--line);padding-top:16px}
+.explain-question{font-weight:600;margin-bottom:8px}
+.explain-steps{margin:18px 0;padding-left:22px}
+.explain-steps li{padding:9px 0;line-height:1.6}
+
+@media(max-width:900px){.change-grid{grid-template-columns:1fr}}
+@media(max-width:650px){
+ .quant-hero h1{font-size:32px;letter-spacing:-1px}
+ .explain-hero h1{font-size:34px}
+ .quant-summary{font-size:18px}
+ .dna-label{font-size:17px}
+ .dna-head{gap:10px}
+ .dna-component{grid-template-columns:1fr;gap:6px}
+ .dna-component .number{text-align:left}
+ .dna-component strong{font-size:18px}
+ .change-head h3{font-size:17px}
+ .setup-step{min-width:92px}
+ .explain-grid,.explain-factors{grid-template-columns:1fr;gap:22px}
+}

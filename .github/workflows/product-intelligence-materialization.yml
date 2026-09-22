@@ -70,9 +70,15 @@ jobs:
           node scripts/technical/materialize-product-intelligence.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # Factor Evidence reads the bundles that were just written, plus the
+      # existing SEC consumer fundamentals and the SIC peer taxonomy. It
+      # calls no provider and needs no history beyond what is already here.
+      - name: Materialize broad Factor Evidence and Change Product Data
+        run: node --max-old-space-size=4096 scripts/quant/build-factor-evidence.mjs
+
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       - name: Public data hygiene
@@ -82,10 +88,11 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/product/technical-signals-v1
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
-          git commit -m "Materialize Technical, Signals and Elliott Product Data"
+          node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates)'
+          git commit -m "Materialize Technical, Signals, Elliott and Factor Evidence Product Data"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Retain metadata evidence only
@@ -97,5 +104,6 @@ jobs:
             ${{ runner.temp }}/product-intelligence-preflight.json
             ${{ runner.temp }}/product-intelligence-sync.json
             quant/data/product/technical-signals-v1/summary.json
+            quant/data/product/factor-evidence-v1/summary.json
           if-no-files-found: warn
           retention-days: 30

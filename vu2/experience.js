@@ -26,14 +26,14 @@ const formatFactor=m=>!Number.isFinite(m.value)?'Nicht verfügbar':m.value.toLoc
 const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
- ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
+ ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
  ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
  ['News','/news/'],['Morning Briefing','/morning/'],['Weekly Magazine','/magazin/'],['Stock Reports','/reports/xpeng/'],['Academy','/academy/'],['Investment Guide','/guide/'],['Strategies',href('strategies')],['Radar',href('radar')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
 ];
 const app=document.getElementById('app');
-const researchViews=new Set(['discover','stocks','stock','fundamentals','technical','elliott','quant','compare','screener']);
+const researchViews=new Set(['discover','stocks','stock','fundamentals','technical','elliott','quant','explain','compare','screener']);
 const activeSection=researchViews.has(view)?'research':view;
 function navLink(id,label){const a=link(label,id==='discover'?'/discover/':href(id),id===activeSection?'active':'');if(id===activeSection)a.setAttribute('aria-current',id===view?'page':'location');return a;}
 const header=el('header',{class:'top'},[link('',href('home'),'brand'),el('nav',{class:'nav','aria-label':'Hauptnavigation'},nav.map(([id,label])=>navLink(id,label))),el('div',{class:'utility'},[link('Watchlist',href('watchlist')),link('Signals',href('signals')),el('button',{text:'Suche',onclick:()=>openSearch()})])]);
@@ -278,17 +278,194 @@ async function strategyPage(){
  fields.name.readOnly=!!saved;
  main.append(el('div',{class:'actions'},[save,inspect]),preview,el('section',{class:'section'},[el('h2',{text:'Vor einem historischen Test'}),el('p',{text:'Ein echter Backtest ist für diese Vorschau noch nicht freigegeben. Diese Prüfungen müssen gemeinsam bestanden sein:'}),...context.backtest.checks.map(([title,text])=>el('div',{class:'trust-row'},[el('strong',{text:title}),el('p',{class:'muted',text})]))]),el('details',{},[el('summary',{text:'Gespeicherte Versionen & Definition'}),history]),actions([{label:'Vollständiger Strategy Builder',href:'/quant/strategies/builder/'},{label:'Bestehende Backtest-Umgebung',href:'/quant/backtests/'}]));
 }
+/* ---------------------------------------------------------------------------
+   QUANT EXPERIENCE
+
+   Vier Ebenen in fester Reihenfolge: Bedeutung, Erklärung, Evidenz,
+   Workspace. Die erste Ebene muss ohne Fachbegriff lesbar sein; die
+   vierte darf nichts weglassen. Ein fehlender Wert bekommt seinen Grund
+   und nie einen Ersatz.
+   --------------------------------------------------------------------------- */
+const pct=v=>Number.isFinite(v)?v.toLocaleString('de-DE',{maximumFractionDigits:1})+' %':'Nicht verfügbar';
+const ratioText=(value,unit)=>{
+ if(!Number.isFinite(value))return 'Nicht verfügbar';
+ if(unit==='count')return value.toLocaleString('de-DE',{maximumFractionDigits:0});
+ if(unit==='boolean')return value?'Ja':'Nein';
+ if(unit==='shares')return value.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})+' Stück';
+ return (value*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
+};
+function factorRow(factor){
+ const open=el('div',{class:'dna-detail',hidden:'hidden'});
+ const head=el('button',{class:'dna-head',type:'button','aria-expanded':'false'},[
+  el('span',{class:'dna-label',text:factor.label}),
+  el('span',{class:'dna-band band-'+(factor.band||'NONE'),text:factor.bandLabel})]);
+ head.onclick=()=>{const hidden=open.hasAttribute('hidden');if(hidden)open.removeAttribute('hidden');else open.setAttribute('hidden','hidden');head.setAttribute('aria-expanded',String(hidden));};
+ const track=el('div',{class:'dna-track','aria-hidden':'true'},[el('span',{class:'band-'+(factor.band||'NONE'),style:'width:'+(Number.isFinite(factor.score)?Math.max(2,Math.min(100,factor.score)):0)+'%'})]);
+ /* Ebene 1 und 2 stehen immer da, auch wenn kein Wert existiert. */
+ open.append(el('p',{class:'dna-plain',text:factor.plain}),el('p',{class:'muted',text:factor.question}));
+ if(factor.state==='AVAILABLE'){
+  open.append(el('p',{text:factor.bandPlain}),el('p',{class:'muted',text:factor.higherMeans}));
+  const peer=factor.peer;
+  open.append(el('p',{class:'muted',text:'Verglichen wird gegen '+(peer?.level==='sic4_industry'?'die Branche':peer?.level==='sic_division'?'den Sektor':'das gesamte Universum')+(peer?.confidencePenalty?' · ohne ausreichend große Vergleichsgruppe, daher mit Abschlag auf die Datensicherheit':'')+'. Datensicherheit: '+(factor.confidenceBand?.label||'nicht angegeben')+' ('+pct(factor.confidence)+'), das ist keine Erfolgswahrscheinlichkeit.'}));
+ }else open.append(notice('Kein Wert für diesen Faktor',factor.reasonText));
+ /* Ebene 3: jede Einzelkennzahl mit Rohwert, Position und Zustand. */
+ const rows=factor.components.map(c=>el('div',{class:'dna-component'+(c.state==='AVAILABLE'?'':' is-missing')},[
+  el('div',{},[el('span',{text:c.label||c.id}),c.window?el('span',{class:'muted',text:c.window}):null]),
+  el('div',{class:'number'},[el('strong',{text:c.state==='AVAILABLE'?ratioText(c.raw,c.unit):'Nicht verfügbar'}),
+   el('span',{class:'muted',text:c.state==='AVAILABLE'?'Position '+pct(c.score)+' · Gewicht '+pct((c.weight||0)*100):(VUFactorEvidence.REASON_TEXT[c.reason]||'Eingabe fehlt')})]),
+  c.note?el('p',{class:'muted dna-note',text:c.note}):null]));
+ open.append(el('div',{class:'dna-components'},rows),
+  el('details',{},[el('summary',{text:'Methodik'}),
+   el('p',{text:'Die Einzelkennzahlen werden zuerst an den Rändern gekappt (2. und 98. Perzentil), dann in eine Rangposition im Universum übersetzt und mit ihren Gewichten zusammengefasst. Fehlende Kennzahlen werden nicht durch andere ersetzt; ihr Gewicht wandert nicht zu einem anderen Faktor.'}),
+   el('p',{class:'muted',text:'Vertrag '+VUFactorEvidence.METHODOLOGY_VERSION+', abgeleitet aus '+VUFactorEvidence.DERIVED_FROM+'. Abgedecktes Gewicht in diesem Faktor: '+pct((factor.coverage||0)*100)+'.'})]));
+ return el('article',{class:'dna-row'},[head,track,open]);
+}
+function changeCard(entry){
+ const arrow=entry.direction==='IMPROVING'?'↑':entry.direction==='DETERIORATING'?'↓':'→';
+ const body=[el('p',{class:'muted',text:entry.plain})];
+ if(entry.state==='AVAILABLE'){
+  if(entry.from&&entry.to)body.push(el('p',{class:'change-values',text:(entry.from.label||'Vorher')+': '+ratioText(entry.from.value,entry.from.unit)+'  →  '+(entry.to.label||'Jetzt')+': '+ratioText(entry.to.value,entry.to.unit)}));
+  if(entry.evidence?.length)body.push(el('details',{},[el('summary',{text:'Weitere Belege'}),...entry.evidence.map(m=>el('p',{class:'muted',text:m.label+': '+ratioText(m.value,m.unit)}))]));
+ }else body.push(el('p',{class:'muted',text:entry.reasonText}));
+ return el('article',{class:'change-card dir-'+(entry.direction||'NONE')+(entry.state==='AVAILABLE'?'':' is-missing')},[
+  el('div',{class:'change-head'},[el('span',{class:'change-arrow','aria-hidden':'true',text:entry.state==='AVAILABLE'?arrow:'·'}),
+   el('h3',{text:entry.label}),entry.window?el('span',{class:'muted',text:entry.window}):null]),...body]);
+}
+/* Die kanonische Setup-Reise. Kein Zustand wird markiert, solange die
+   Setup-Methodik und ihre Snapshot-Historie nicht zertifiziert sind. Was
+   sichtbar wird, sind die heute beobachtbaren Bedingungen - ausdrücklich
+   als Beobachtung und nicht als Setup bezeichnet. */
+function setupJourney(setup,conditions){
+ const states=[['WATCH','Beobachten'],['SETUP_FORMING','Bildet sich'],['CONFIRMED','Bestätigt'],['ACTIVE','Aktiv'],['RISK_RISING','Risiko steigt'],['INVALIDATED','Ungültig']];
+ const active=setup?.availability?.state==='AVAILABLE'?setup.setupState:null;
+ const section=el('section',{class:'section setup-section'},[
+  el('span',{class:'eyebrow',text:'Setup'}),el('h2',{text:'Entsteht gerade eine Situation?'}),
+  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},states.map(([id,label])=>el('li',{class:'setup-step'+(active===id?' is-active':'')},[el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:label})])))]);
+ if(!active)section.append(notice('Es wird kein Setup-Zustand behauptet','Ein Setup-Zustand benötigt die zertifizierte Setup-Methodik und eine geordnete Historie veröffentlichter Zustände. Beides ist noch nicht aktiv. Darunter stehen stattdessen die heute belegbaren Bedingungen.'));
+ const met=conditions.filter(c=>c.met===true).length,measurable=conditions.filter(c=>c.met!==null).length;
+ section.append(el('p',{class:'setup-count',text:met+' von '+measurable+' beobachtbaren Bedingungen erfüllt'}),
+  el('ul',{class:'setup-conditions'},conditions.map(c=>el('li',{class:c.met===null?'is-missing':c.met?'is-met':'is-open'},[
+   el('span',{class:'setup-mark','aria-hidden':'true',text:c.met===null?'–':c.met?'✓':'○'}),
+   el('div',{},[el('span',{text:c.label}),el('span',{class:'muted',text:c.detail})])]))),
+  el('p',{class:'muted',text:'Diese Bedingungen beschreiben den vorhandenen Datenstand. Sie sind keine Einstiegsregel, kein Signal und kein historisch getesteter Auslöser.'}));
+ return section;
+}
+function observableConditions(factors,change){
+ const factor=id=>factors.find(f=>f.id===id);
+ const item=(id,label,detail)=>{const entry=change.items.find(x=>x.id===id);return {label,detail,met:entry&&entry.state==='AVAILABLE'?entry.direction==='IMPROVING':null};};
+ const momentum=factor('momentum'),risk=factor('risk'),growth=factor('growth');
+ return [
+  {label:'Kursstärke über dem Universumsdurchschnitt',detail:momentum?.state==='AVAILABLE'?'Position '+pct(momentum.score):'Kursstärke derzeit nicht bewertbar',met:momentum?.state==='AVAILABLE'?momentum.score>=50:null},
+  item('trendStructure','Kurs über allen vier Durchschnittslinien','Lage zu 20-, 50-, 100- und 200-Tage-Linie'),
+  item('relativeStrengthPace','Vorsprung gegenüber dem Markt nimmt zu','Letzter Monat gegen das Sechsmonatstempo'),
+  item('highProximity','In Reichweite des Jahreshochs','Abstand zum höchsten Schlusskurs der letzten 52 Wochen'),
+  item('volumeRegime','Handelsaktivität zieht an','20-Tage-Volumen gegen 60-Tage-Volumen'),
+  {label:'Wachstum über dem Universumsdurchschnitt',detail:growth?.state==='AVAILABLE'?'Position '+pct(growth.score):'Wachstum derzeit nicht bewertbar',met:growth?.state==='AVAILABLE'?growth.score>=50:null},
+  {label:'Schwankungsrisiko unter dem Universumsdurchschnitt',detail:risk?.state==='AVAILABLE'?'Position '+pct(risk.score):'Risiko derzeit nicht bewertbar',met:risk?.state==='AVAILABLE'?risk.score>=50:null}
+ ];
+}
 async function quantPage(ticker){
- const data=await api.getQuantWorkspace(ticker);main.append(heading('Das Unternehmen in Zahlen',data.name||ticker));
- if(data.state!=='AVAILABLE'){main.append(notice('Kennzahlen derzeit nicht verfügbar','Die vorhandenen Quellen reichen für diese Ansicht nicht aus.'));return;}
- const company=el('select',{'aria-label':'Quant Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name})));company.value=ticker;company.onchange=()=>location.assign(href('quant',company.value));
- const format=formatFactor;
- main.append(el('div',{class:'workspace-controls'},[company]),el('p',{class:'muted',text:'Geschäftsdaten bis '+data.fundamentalsAsOf+' · verfügbar seit '+data.availableAt+' · Kurse bis '+data.asOf}),
- el('nav',{class:'factor-nav','aria-label':'Faktorbereiche'},data.families.map(f=>link(f.label,'#factor-'+f.id))));
- for(const family of data.families){main.append(el('section',{class:'factor-section',id:'factor-'+family.id},[
-  el('div',{},[el('span',{class:'eyebrow',text:family.label}),el('h2',{text:family.question})]),
-  el('div',{class:'factor-evidence'},family.metrics.map(m=>el('div',{class:'factor-metric'},[el('div',{},[el('span',{text:m.label}),el('strong',{text:format(m)})]),el('details',{},[el('summary',{text:'Definition & Datenstand'}),el('p',{text:m.description||'Bestehender Faktor-Rohwert; vollständige Definition und Herkunft im Dateninspektor.'}),el('p',{class:'muted',text:'Stand '+m.asOf+' · Kennzahl '+m.metricId+' · '+m.owner+' · '+m.panelVersion})])])))]));}
- main.append(notice('Kein Quant-V2-Rang veröffentlicht','Die siebenfaktorige Evidenz ist capability-gesteuert sichtbar; Quant-V2-Scores, Analysten-Revisions und Marktperzentile bleiben bis zur Zertifizierung geschlossen.'),el('details',{},[el('summary',{text:'Historischer Kontext & Methodik'}),el('p',{text:'Aktuelle Faktor-Rohwerte sind kein historischer Backtest. Bewertung verbindet Geschäftsdaten mit dem angegebenen Kursstand. Unterschiedliche Berichtsperioden und branchenspezifische Definitionen müssen bei Vergleichen berücksichtigt werden.'})]),actions([{label:'Fundamental-Historie',href:href('fundamentals',ticker)},{label:'Vergleichen',href:href('compare',ticker)},{label:'Dateninspektor',href:data.methodologyHref},{label:'Bestehender Quant Workspace',href:data.legacyHref}]));
+ const data=await api.getFactorEvidence(ticker);
+ /* Der SetupState-Vertrag sagt selbst, ob ein verfuegbarer Zustand
+    ueberhaupt zulaessig ist. Solange er das verneint, waere eine Abfrage
+    nur teuer; sie wird geholt, sobald die Methodik aktiv ist. */
+ const setup=VUSetupStateContract.AVAILABLE_OBSERVATIONS_ALLOWED?(await api.getStockIntelligence(ticker).catch(()=>null))?.setupState||null:null;
+ if(data.state!=='AVAILABLE'){
+  main.append(heading('Quant-Analyse',ticker));
+  main.append(notice('Für diesen Titel liegt keine Faktor-Evidenz vor',data.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'?'Dieser Titel gehört zum Produktuniversum, erfüllt aber die Datenanforderungen der Faktor-Methodik derzeit nicht. Es werden keine Ersatzwerte gebildet.':data.reason==='NOT_IN_PRODUCT_UNIVERSE'?'Dieser Titel ist im kanonischen Produktuniversum nicht enthalten.':'Die Faktor-Evidenz konnte nicht geladen oder nicht geprüft werden.'),
+   actions([{label:'Was ist Quant?',href:href('explain')},{label:'Aktie untersuchen',href:href('stock',ticker)},{label:'Bestehender Quant Workspace',href:'/quant/ranking/'}]));
+  return;
+ }
+ const rated=data.factors.filter(f=>f.state==='AVAILABLE');
+ /* HERO: Name, Zustand, ein Satz - keine zwanzig Kennzahlen. */
+ main.append(el('section',{class:'quant-hero'},[
+  el('span',{class:'eyebrow',text:'Vision Universe® Quant'}),
+  el('h1',{text:data.name}),
+  el('p',{class:'quant-ticker',text:data.ticker+(data.peer?.industry?' · Branchenschlüssel '+data.peer.industry:'')}),
+  el('div',{class:'quant-chips'},[
+   el('span',{class:'chip',text:rated.length+' von 7 Faktoren bewertet'}),
+   el('span',{class:'chip chip-muted',text:'Kein Gesamtscore veröffentlicht'}),
+   el('span',{class:'chip chip-muted',text:'Kursstand '+data.asOf})]),
+  el('p',{class:'quant-summary',text:data.summary}),
+  el('p',{class:'quant-change',text:data.changeHeadline})]));
+ const company=el('select',{'aria-label':'Quant Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name})));
+ if(!universe.stocks.some(s=>s.ticker===data.ticker))company.append(el('option',{value:data.ticker,text:data.ticker+' · '+data.name}));
+ company.value=data.ticker;company.onchange=()=>location.assign(href('quant',company.value));
+ main.append(el('div',{class:'workspace-controls'},[company,link('Was ist Quant?',href('explain'),'button secondary')]));
+ /* FACTOR DNA */
+ main.append(el('section',{class:'section dna-section'},[
+  el('span',{class:'eyebrow',text:'Factor DNA'}),
+  el('h2',{text:'Wie stark ist dieses Unternehmen — und warum?'}),
+  el('p',{class:'muted',text:'Sieben feste Eigenschaften, immer in derselben Reihenfolge. Jede zeigt ihre Position im Vergleich zu anderen Unternehmen. Tippe auf eine Eigenschaft, um ihre Belege zu sehen.'}),
+  el('div',{class:'dna-list'},data.factors.map(factorRow)),
+  el('p',{class:'muted',text:'Ein Gesamtscore wird bewusst nicht gebildet: '+(data.composite?.reason==='QUANT_V2_NOT_ACTIVE'?'die Methodik verlangt alle sieben Faktoren, und der Erwartungstrend fehlt ohne lizenzierte Datenquelle.':'die Methodik ist noch nicht freigegeben.')})]));
+ /* CHANGE */
+ const change=data.change,grouped=[['IMPROVING','Verbessert sich'],['DETERIORATING','Verschlechtert sich'],['STABLE','Weitgehend unverändert']];
+ const changeSection=el('section',{class:'section change-section'},[
+  el('span',{class:'eyebrow',text:'Veränderung'}),
+  el('h2',{text:'Was verändert sich gerade?'}),
+  el('p',{class:'muted',text:'Gemessen werden beobachtbare Größen, nicht die Faktorwerte selbst. Ein Verlauf der Faktorwerte benötigt eine Historie veröffentlichter Snapshots und wird nicht rückwirkend nachgebildet.'})]);
+ for(const [direction,label] of grouped){
+  const entries=change.items.filter(x=>x.state==='AVAILABLE'&&x.direction===direction);
+  if(!entries.length)continue;
+  changeSection.append(el('h3',{class:'change-group',text:label}),el('div',{class:'change-grid'},entries.map(changeCard)));
+ }
+ const missing=change.items.filter(x=>x.state!=='AVAILABLE');
+ if(missing.length)changeSection.append(el('details',{class:'change-missing'},[el('summary',{text:missing.length+' Bereiche sind derzeit nicht messbar'}),...missing.map(x=>el('p',{},[el('strong',{text:x.label+': '}),el('span',{class:'muted',text:x.reasonText})]))]));
+ main.append(changeSection);
+ /* SETUP */
+ main.append(setupJourney(setup,observableConditions(data.factors,change)));
+ /* EVIDENZ & WORKSPACE */
+ main.append(el('section',{class:'section'},[
+  el('span',{class:'eyebrow',text:'Datenstand'}),
+  el('h2',{text:'Worauf diese Analyse beruht'}),
+  el('ul',{class:'evidence-list'},[
+   'Kursdaten bis '+data.asOf+' · Kursbasis '+(data.priceBasis==='adjustedClose'?'bereinigte Schlusskurse':data.priceBasis),
+   data.fundamentalsAsOf?'Geschäftszahlen bis '+data.fundamentalsAsOf+(data.fundamentalsAvailableAt?' · öffentlich bekannt seit '+data.fundamentalsAvailableAt:''):'Keine zeitpunktsicheren Geschäftszahlen verfügbar',
+   Number.isFinite(data.marketCap)?'Börsenwert '+(data.marketCap/1e9).toLocaleString('de-DE',{maximumFractionDigits:1})+' Mrd. USD · aus veröffentlichter Aktienzahl und letztem Schlusskurs':'Kein Börsenwert berechenbar',
+   'Methodik '+data.methodologyVersion+' · abgeleitet aus '+data.derivedFrom,
+   'Datenqualität der Kursreihe: '+(data.dataQuality||'nicht angegeben')
+  ].map(text=>el('li',{text}))),
+  el('p',{class:'muted',text:'Alle Geschäftszahlen werden nur verwendet, wenn ihr Veröffentlichungsdatum vor dem Auswertungsstichtag liegt. Kein Wert aus der Zukunft fließt in eine Aussage über die Vergangenheit.'})]));
+ main.append(actions([{label:'Was ist Quant?',href:href('explain')},{label:'Kursstruktur',href:href('technical',data.ticker)},{label:'Fundamental-Historie',href:href('fundamentals',data.ticker)},{label:'Vergleichen',href:href('compare',data.ticker)},{label:'Aktie untersuchen',href:href('stock',data.ticker)}]));
+}
+/* Die Einsteigerfläche. Erst Bedeutung, dann Beispiele, keine Formel. */
+async function explainPage(){
+ main.append(el('section',{class:'quant-hero explain-hero'},[
+  el('span',{class:'eyebrow',text:'Vision Universe® Quant'}),
+  el('h1',{text:'Was ist Quant?'}),
+  el('p',{class:'quant-summary',text:'Quant bedeutet: Aktien werden nach festen Daten und klaren Regeln analysiert — statt nach Bauchgefühl.'}),
+  el('p',{class:'muted',text:'Jede Aussage hier lässt sich auf eine Zahl, einen Zeitraum und eine Quelle zurückführen. Wo eine Zahl fehlt, steht der Grund und kein Ersatzwert.'})]));
+ main.append(el('section',{class:'section'},[
+  el('h2',{text:'Wozu das gut ist'}),
+  el('div',{class:'explain-grid'},[
+   ['Dein Broker beantwortet','Was kostet die Aktie? Wie kaufe ich sie? Was besitze ich?'],
+   ['Vision Universe beantwortet','Welche Aktie ist interessant? Warum? Was verändert sich gerade? Wo liegt das Risiko?']
+  ].map(([title,text])=>el('article',{class:'explain-card'},[el('h3',{text:title}),el('p',{text})])))]));
+ main.append(el('section',{class:'section'},[
+  el('h2',{text:'Die sieben Eigenschaften'}),
+  el('p',{class:'muted',text:'Jedes Unternehmen wird an denselben sieben Eigenschaften gemessen. Immer in dieser Reihenfolge.'}),
+  el('div',{class:'explain-factors'},VUFactorEvidence.FACTOR_ORDER.map(id=>{const m=VUFactorEvidence.FACTOR_MEANING[id];return el('article',{class:'explain-factor'},[el('h3',{text:m.label}),el('p',{class:'explain-question',text:m.question}),el('p',{text:m.plain}),el('p',{class:'muted',text:m.higherMeans})]);}))]));
+ main.append(el('section',{class:'section'},[
+  el('h2',{text:'Wie eine Position entsteht'}),
+  el('ol',{class:'explain-steps'},[
+   'Für jede Eigenschaft werden mehrere Einzelkennzahlen aus geprüften Quellen berechnet.',
+   'Extreme Ausreißer werden an den Rändern gekappt, damit ein einzelner Sonderfall nicht das ganze Bild verschiebt.',
+   'Jede Kennzahl wird mit allen anderen Unternehmen verglichen — bevorzugt innerhalb derselben Branche.',
+   'Aus diesen Vergleichen entsteht eine Position zwischen 0 und 100. 50 bedeutet Mittelfeld.',
+   'Fehlt eine Kennzahl, bleibt sie fehlend. Sie wird nicht geschätzt und ihr Gewicht wandert nicht zu einer anderen.'
+  ].map(text=>el('li',{text})))]));
+ main.append(el('section',{class:'section'},[
+  el('h2',{text:'Was hier bewusst nicht steht'}),
+  el('ul',{class:'evidence-list'},[
+   'Keine Kursprognose und kein Kursziel.',
+   'Keine Kauf- oder Verkaufsempfehlung.',
+   'Kein Gesamtscore, solange nicht alle sieben Eigenschaften methodisch abgesichert sind.',
+   'Keine historische Rendite ohne offengelegte Methodik und Datenqualität.',
+   'Keine geschätzten Werte anstelle fehlender Daten.'
+  ].map(text=>el('li',{text}))),
+  el('p',{class:'muted',text:'Eine Position von 90 sagt: dieses Unternehmen liegt bei dieser Eigenschaft unter den stärksten zehn Prozent des Vergleichsuniversums. Sie sagt nichts darüber, wie sich der Kurs entwickeln wird.'})]));
+ main.append(actions([{label:'Eine Aktie ansehen',href:href('quant','NVDA')},{label:'Unternehmen suchen',href:href('stocks')},{label:'Methodik im Detail',href:'/quant/methodology/'}]));
 }
 async function fundamentalsPage(){
  main.append(heading('Wie entwickelt sich das Geschäft?','Geschäftszahlen über die Zeit verstehen – mit Berichtszeiträumen und nachvollziehbarer Herkunft.'));
@@ -358,11 +535,12 @@ async function screenPage(){
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}
-async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
+async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas','explain']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
  if(view==='home')await homePage();
  else if(view==='stock')await stockPage(params.get('ticker')||'NVDA');
  else if(view==='technical'||view==='elliott')await technicalWorkspacePage(params.get('ticker')||'NVDA',view==='elliott');
  else if(view==='quant')await quantPage(params.get('ticker')||'NVDA');
+ else if(view==='explain')await explainPage();
  else if(view==='fundamentals')await fundamentalsPage();
  else if(view==='markets')await marketsPage();
  else if(view==='discover')await discoverPage();
