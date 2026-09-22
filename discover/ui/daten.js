@@ -69,6 +69,7 @@
         absatz("Umsatz, Gewinn, Cashflow, Margen und Bilanz kommen aus den bei der SEC eingereichten Jahres- und Quartalsberichten (EDGAR, XBRL-Companyfacts). " +
                "Jede Zahl trägt Geschäftsjahr, Einreichung und Accession-Nummer; Jahres-, Quartals- und Zwölfmonatswerte (TTM) werden nicht gemischt."),
         zeile("Aktualisierung", "täglich (neue Einreichungen), wöchentlich vollständig"),
+        /* vu-currency: C - Schwellenwert im Methodiktext (50 Mio. USD Umsatz), kein angezeigter Betrag */
         zeile("Plausibilität", "Margen erst ab 50 Mio. $ Umsatz; Margen über 150 % oder Gewinne über dem 1,5-fachen Umsatz gelten als Zähler-/Nennerfehler und werden nicht gezeigt; " +
               "für Banken, Versicherer und andere Bilanzgeschäfte gibt es keine Free-Cashflow-Marge; ein Geschäftsjahr älter als zwei Jahre gilt als veraltet. " +
               "Fehlt eine Zahl aus einem dieser Gründe, nennt die Aktienseite den Grund.")
@@ -87,6 +88,7 @@
       abschnitt("methoden", "Methoden", [
         absatz("Die Sammlungen sind Regeln über gerechnete Kennzahlen, keine Meinungen. „Die stärksten Aktien“ heißt: Qualifikation zuerst (" +
                (qual ? "Score-Abdeckung ≥ " + Math.round(qual.minCoverage * 100) + " %, mindestens " + qual.minBars + " Handelstage Historie, Kurs über " + qual.minPrice +
+                       /* vu-currency: C - Schwellenwert im Methodiktext, kein angezeigter Betrag. Die Grenze ist in USD definiert und bleibt es, auch wenn der Nutzer EUR sieht */
                        " $, mindestens " + Math.round(qual.minAvgDollarVolume20d / 1e6) + " Mio. $ Tagesumsatz" : "Liquidität, Historie, Kurs") +
                "), dann Rang nach Kursstärke über drei bis zwölf Monate, relativer Stärke zum Markt, Trendqualität und Abstand zum Jahreshoch. " +
                "Alle Fenster enden am letzten Handelstag — kein Blick in die Zukunft. Jede Karte trägt ihre Begründung maschinenlesbar (rankingReason)."),

@@ -1,0 +1,606 @@
+name: Currency & FX — Capability- und Datennachweis
+
+# Der einzige Ort, an dem der Currency Layer den echten Tiingo-Zugang
+# sieht. Owner-Entscheid O-1: keine FX-Faehigkeit darf aus Dokumentation
+# oder Vermutung als verfuegbar gelten - gemessen wird.
+#
+# DER SCHLUESSELPFAD
+#
+# TIINGO_API_KEY liegt als Repository-Secret vor und wird ausschliesslich
+# als Umgebungsvariable an Node-Skripte gereicht. Er steht im
+# Authorization-Header, nie in einer URL; er erscheint nicht im Protokoll,
+# nicht im Bericht und nicht im Repository. Drei Schritte halten das fest:
+# die Redaktion im Skript selbst, die Gegenprobe auf den Bericht und
+# assert-no-secrets.mjs.
+#
+# WARUM PUSH UND NICHT NUR DISPATCH
+#
+# workflow_dispatch verlangt den Workflow auf dem Default-Branch. Solange
+# dieser Zweig nicht gemergt ist - und das Merge Gate untersagt es, bevor
+# dieser Nachweis vorliegt -, gibt es ihn dort nicht. Der Push-Ausloeser
+# ist eng gefasst: nur claude/**, nur mit einer Marke in der
+# Commit-Nachricht. Ohne Marke laeuft nichts.
+#
+#   [fx-probe]    Faehigkeiten messen (~14 Anfragen)
+#   [fx-ingest]   zusaetzlich die Paar-Historien holen und den
+#                 Produktionsnachweis damit fuehren (~40 Anfragen)
+#
+# WAS COMMITTET WIRD
+#
+# Nur Berichte ohne Anbieterkurse: die Faehigkeitsmatrix, der Paarbedarf
+# und die Waehrungsabdeckung. Die FX-Reihen selbst bleiben im
+# Arbeitsverzeichnis und sterben mit dem Runner - solange Redistribution
+# LEGAL_REVIEW_REQUIRED ist, gehoeren Anbieterreihen nicht in ein
+# oeffentliches Repository. Der Produktionsnachweis laeuft deshalb IM
+# selben Lauf, in dem die Daten existieren.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_ingest:
+        description: 'Zusaetzlich FX-Historien holen und den Datennachweis fuehren (~40 Anfragen)'
+        type: boolean
+        default: true
+      publish_reports:
+        description: 'Berichte in den Zweig committen'
+        type: boolean
+        default: true
+  # WARUM ZUSAETZLICH PULL_REQUEST OHNE PFADFILTER
+  #
+  # GitHub wertet Pfadfilter nur ueber die ersten 300 geaenderten Dateien
+  # eines Ereignisses aus. Ein Push, der die neu gebauten Discover-Daten
+  # mitbringt, liegt weit darueber - die Currency-Pfade fallen dann aus
+  # der Betrachtung und dieser Workflow laeuft NICHT. Genau das ist
+  # passiert: der letzte Lauf lag auf 654154191, die beiden Pushes danach
+  # (4.009 bzw. ueber 3.000 Dateien) haben ihn stumm uebersprungen.
+  #
+  # Ein Gate, das bei grossen Aenderungen aussetzt, prueft nichts - und
+  # gross sind genau die Aenderungen, bei denen es zaehlt. Der
+  # pull_request-Ausloeser traegt deshalb KEINEN Pfadfilter.
+  #
+  # Er kostet nichts: `measure` haengt an einem Marker aus der
+  # Betreffzeile, und ein pull_request-Ereignis hat keine. Die
+  # Marker-Auswertung setzt sie zusaetzlich ausdruecklich auf false.
+  pull_request:
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/market/probe-tiingo-fx.mjs'
+      - 'scripts/market/build-fx-history.mjs'
+      - 'scripts/market/build-fx-pair-requirements.mjs'
+      - 'scripts/market/build-currency-coverage.mjs'
+      - 'scripts/quality/verify-currency-layer.mjs'
+      - 'scripts/quality/verify-historical-fx-coverage.mjs'
+      - 'scripts/market/build-fx-history-ecb.mjs'
+      - 'scripts/market/ingest-fx-intraday.mjs'
+      - 'providers/ecb/**'
+      - 'quant/engines/fx/**'
+      - 'quant/config/fx-license.json'
+      - 'quant/methodology/currency-fx-v1.json'
+      - 'quant/tests/currency-fx-matrix.test.mjs'
+      - 'scripts/quality/audit-fx-provider-seam.mjs'
+      - 'scripts/quality/assert-no-local-fx.mjs'
+      - 'scripts/quality/currency-debt-patterns.mjs'
+      - '.github/workflows/currency-fx-verify.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: currency-fx-verify
+  cancel-in-progress: false
+
+jobs:
+  # DER VERTRAG WIRD IMMER GEPRUEFT, AUCH OHNE MARKER.
+  #
+  # Die Marker unten gehoeren zu Schritten, die beim Anbieter einkaufen.
+  # Tests und Regression Guard tun das nicht - sie an einen Marker zu
+  # haengen hiesse, dass ein Commit ohne Marker ungeprueft durchgeht.
+  # Quant CI laeuft auf diesem Zweig nicht (nur auf main und in PRs),
+  # also waere das hier die einzige Pruefung gewesen.
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testmatrix des Currency Layers
+        run: node --test quant/tests/currency-fx-matrix.test.mjs
+      - name: Regression Guard
+        run: node scripts/quality/assert-no-local-fx.mjs
+      - name: Debt Register ist aktuell
+        # Das Register ist aus dem Quellcode ableitbar. Weicht die
+        # committete Fassung ab, zeigt die Dokumentation auf einen Stand,
+        # den es nicht mehr gibt.
+        #
+        # Verglichen wird ohne den Zeitstempel: er aendert sich bei jedem
+        # Lauf, und ein Gate, das immer rot ist, prueft nichts.
+        run: |
+          cp quant/data/market/fx/currency-debt-register.json /tmp/register-committed.json
+          node scripts/quality/build-currency-debt-register.mjs --publish >/dev/null
+          node -e '
+            const fs = require("fs");
+            const ohneZeit = (f) => {
+              const d = JSON.parse(fs.readFileSync(f, "utf8"));
+              delete d.generatedAtUtc;
+              return JSON.stringify(d);
+            };
+            const alt = ohneZeit("/tmp/register-committed.json");
+            const neu = ohneZeit("quant/data/market/fx/currency-debt-register.json");
+            if (alt !== neu) {
+              console.error("ABBRUCH: Das committete Debt Register weicht vom Quellcode ab.");
+              console.error("Neu erzeugen mit: node scripts/quality/build-currency-debt-register.mjs --publish");
+              process.exit(1);
+            }
+            console.log("Debt Register stimmt mit dem Quellcode ueberein.");
+          '
+
+  # DIE MARKER STEHEN IN DER BETREFFZEILE, NICHT IRGENDWO IN DER NACHRICHT.
+  #
+  # Vorher entschied contains() ueber die ganze Commit-Nachricht. Ein
+  # Commit, der in seinem Text ueber die Marker SCHREIBT, loeste sie damit
+  # aus - genau das ist passiert und hat einen vollstaendigen
+  # Anbieterabruf gekostet, den niemand wollte. Ein Schalter, den die
+  # Beschreibung des Schalters umlegt, ist kaputt.
+  #
+  # Drei Marker, drei Kosten:
+  #   [fx-probe]   misst die Anbieterfaehigkeiten  (Anbieterabrufe)
+  #   [fx-ingest]  holt die Anbieterhistorie       (viele Anbieterabrufe)
+  #   [fx-verify]  prueft nur nach                 (keine Anbieterabrufe)
+  marker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      probe:  ${{ steps.read.outputs.probe }}
+      ingest: ${{ steps.read.outputs.ingest }}
+      any:    ${{ steps.read.outputs.any }}
+    steps:
+      - name: Marker aus der Betreffzeile lesen
+        id: read
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            subject="[fx-probe] [fx-ingest]"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            # Ein Pull Request kauft nie beim Anbieter ein. Er laeuft hier
+            # nur, damit der Vertrag auch bei grossen Aenderungen geprueft
+            # wird - siehe die Begruendung am Ausloeser.
+            subject=""
+          else
+            subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          fi
+          echo "Betreffzeile: $subject"
+          probe=false; ingest=false; verify=false
+          case "$subject" in *"[fx-probe]"*)  probe=true  ;; esac
+          case "$subject" in *"[fx-ingest]"*) ingest=true ;; esac
+          case "$subject" in *"[fx-verify]"*) verify=true ;; esac
+          any=false
+          if [ "$probe" = true ] || [ "$ingest" = true ] || [ "$verify" = true ]; then any=true; fi
+          {
+            echo "probe=$probe"
+            echo "ingest=$ingest"
+            echo "any=$any"
+          } >> "$GITHUB_OUTPUT"
+
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: marker
+    if: needs.marker.outputs.any == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo 'Secret vorhanden.'
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY hinterlegt. Es wird nichts gemessen;'
+            echo 'alle FX-Faehigkeiten bleiben ungeprueft. Das ist kein Fehler,'
+            echo 'aber es haelt das Merge Gate geschlossen.'
+          fi
+
+      # -----------------------------------------------------------------
+      # Ohne Zugang: der Bedarf laesst sich trotzdem ableiten. Beide
+      # Schritte lesen nur den eigenen Bestand.
+      # -----------------------------------------------------------------
+      - name: Welche Waehrungspaare braucht der Bestand? (O-3)
+        run: node scripts/market/build-fx-pair-requirements.mjs --publish
+
+      - name: Waehrungsabdeckung des SEC-Bestands (O-4)
+        run: node scripts/market/build-currency-coverage.mjs --publish
+
+      - name: Currency Debt Register (O-6)
+        # Die Klassifikation der fest verdrahteten Waehrungsstellen
+        # gehoert ins Repository, nicht in eine Arbeitsablage: sie ist
+        # die Arbeitsliste fuer die Migration und muss zwischen zwei
+        # Laeufen vergleichbar bleiben.
+        run: node scripts/quality/build-currency-debt-register.mjs --publish
+
+      # Die Sondierung haengt jetzt an ihrem eigenen Marker. Vorher lief
+      # sie bei jedem Lauf des Jobs mit - auch bei einem, der nur
+      # nachrechnen wollte. Eine gemessene Matrix erneut zu messen
+      # kostet Abrufe und aendert nichts.
+      - name: FX-Faehigkeiten messen (O-1)
+        id: probe
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          needs.marker.outputs.probe == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-tiingo-fx.mjs --publish
+
+      - name: Ohne Zugang bleibt die Matrix ungeprueft
+        if: >-
+          steps.secret.outputs.available != 'true' &&
+          needs.marker.outputs.probe == 'true'
+        run: node scripts/market/probe-tiingo-fx.mjs --publish
+
+      - name: Die Berichte enthalten keinen Schluessel und keine Kurse
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        # Zweite Verteidigungslinie hinter redact(). Der Bericht wird
+        # committet; ein Schluessel darin waere dauerhaft oeffentlich.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const files = [
+              "quant/data/market/capabilities/tiingo-fx-probe.json",
+              "quant/data/market/fx/pair-requirements.json",
+              "quant/data/market/fx/currency-coverage.json",
+              "quant/data/market/fx/currency-debt-register.json"
+            ].filter(fs.existsSync);
+            const key = process.env.TIINGO_API_KEY;
+            for (const file of files) {
+              const raw = fs.readFileSync(file, "utf8");
+              if (key && key.length >= 8 && raw.includes(key)) {
+                console.error("ABBRUCH: " + file + " enthaelt den Zugangsschluessel.");
+                process.exit(1);
+              }
+              if (/[?&]token=/i.test(raw)) {
+                console.error("ABBRUCH: " + file + " enthaelt eine Anfrage-URL mit Token.");
+                process.exit(1);
+              }
+              const verboten = ["midprice", "bidprice", "askprice", "lastclose", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), file);
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder im Bericht: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log(file + " frei von Zugangsdaten und Kursen (" + Math.round(raw.length/1024) + " KB).");
+            }
+          '
+
+      # Was teuer erkauft ist, wird committet, BEVOR etwas Optionales
+      # laeuft - dieselbe Regel wie in scripts/ci/commit-and-push.sh.
+      - name: Berichte in den Zweig
+        if: github.event_name != 'workflow_dispatch' || inputs.publish_reports
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "FX-Faehigkeiten und Waehrungsbedarf gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/tiingo-fx-probe.json \
+            quant/data/market/fx/pair-requirements.json \
+            quant/data/market/fx/currency-coverage.json \
+            quant/data/market/fx/currency-debt-register.json
+
+      - name: Faehigkeitsmatrix ins Protokoll
+        run: cat quant/data/market/capabilities/tiingo-fx-probe.json
+
+      # -----------------------------------------------------------------
+      # Der Datennachweis. Laeuft nur mit Zugang und nur, wenn die
+      # Faehigkeiten es hergeben - build-fx-history.mjs bricht sonst von
+      # selbst ab, statt Kontingent gegen HTTP 403 zu verbrauchen.
+      # -----------------------------------------------------------------
+      - name: FX-Historien holen (Arbeitsablage, nicht veroeffentlicht)
+        id: ingest
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          (github.event_name != 'workflow_dispatch' || inputs.run_ingest) &&
+          needs.marker.outputs.ingest == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        # Alle abgeleiteten Richtungen, nicht die ersten 40: bei 40 fiel
+        # DKK unter den Schnitt, und Novo Nordisk blieb im Nachweis ohne
+        # FX-Paar. Nach der Kanonisierung (USD/EUR und EUR/USD sind eine
+        # Reihe) bleiben rund 40 Abrufe uebrig.
+        #
+        # Das Startdatum kommt aus der gemessenen Historientiefe; das hier
+        # ist die Obergrenze des Wunsches, nicht die des Anbieters.
+        run: node scripts/market/build-fx-history.mjs --max-pairs=80 --start=2015-01-01 --publish-availability
+
+      # Die EZB braucht keinen Zugang - sie ist eine oeffentliche Quelle.
+      # Deshalb laeuft dieser Schritt auch ohne Secret, und deshalb
+      # duerfen seine Reihen im Unterschied zu den Anbieterreihen im
+      # ausgelieferten Pfad liegen (Quellennennung erfolgt).
+      # --publish legt die Reihen in den AUSGELIEFERTEN Pfad.
+      #
+      # Das ist Absicht und der Grund, warum der Browser ueberhaupt in
+      # Euro rechnen kann: die EZB gestattet die Wiedergabe unter
+      # Nennung der Quelle, und die Nennung erfolgt. Anbieterreihen
+      # bleiben davon unberuehrt - sie landen weiter in der
+      # Arbeitsablage, und die Hygienepruefung unten setzt das durch.
+      - name: Historischer EZB-Fallback (O-7)
+        id: ecb
+        continue-on-error: true
+        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish
+
+      - name: Zentraler Intraday-FX-State (O-9)
+        id: intraday
+        if: >-
+          steps.secret.outputs.available == 'true' &&
+          needs.marker.outputs.ingest == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=12
+
+      # Messen. Das Urteil faellt weiter unten, NACH dem Commit des
+      # Berichts - sonst ist das Gate rot und die Zahl, die es erklaert,
+      # nie im Zweig gelandet.
+      # Veroeffentlicht wird nur aus einem vollstaendigen Bestand.
+      #
+      # Ein Lauf ohne Anbieterabruf kann die Abdeckung messen, aber sie
+      # ist dann die des Fallbacks allein. Wuerde er --publish schreiben,
+      # ersetzte die kleinere Zahl die groessere im Zweig - und die
+      # Dokumentation zeigte auf eine Datei, die etwas anderes misst.
+      - name: Historische FX-Abdeckung messen (O-7)
+        if: always()
+        run: |
+          if [ "${{ steps.ingest.outcome }}" = "success" ]; then
+            node scripts/quality/verify-historical-fx-coverage.mjs --publish
+          else
+            echo "Kein Anbieterabruf in diesem Lauf - gemessen wird der Fallback allein, ohne zu veroeffentlichen."
+            node scripts/quality/verify-historical-fx-coverage.mjs
+          fi
+
+      # O-14. Nur mit beiden Reihen fuehrbar, also am Anbieterabruf.
+      # Der Bericht enthaelt keine Kursstaende - nur relative
+      # Differenzen, Korrelationen und Kalenderbefunde - und darf
+      # deshalb in den Zweig.
+      - name: Wurzelursache der Anbieter-Naht (O-14)
+        if: always() && steps.ingest.outcome == 'success'
+        run: node scripts/quality/audit-fx-provider-seam.mjs --publish
+
+      - name: Nachweis des Currency Layers an echten Titeln
+        if: always()
+        run: node scripts/quality/verify-currency-layer.mjs
+
+      # Der Nachweis in der Oberflaeche. Er braucht die EZB-Reihen im
+      # ausgelieferten Pfad - ohne sie rechnet der Browser nicht um -,
+      # laeuft also erst nach dem EZB-Schritt.
+      # Installiert in den Projektbaum, nicht in ein Praefix.
+      #
+      # NODE_PATH hilft hier nicht: der ESM-Aufloeser von Node liest es
+      # nicht. Ein `import { chromium } from "playwright"` in einer .mjs
+      # findet das Paket nur, wenn es in node_modules NEBEN dem Skript
+      # liegt - derselbe Weg, den discover-live-smoke.yml geht.
+      - name: Playwright (Chromium)
+        if: always() && steps.ecb.outcome == 'success'
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Currency Layer in der Oberflaeche (EUR-Vorgabe, Umschalter, Prozente)
+        if: always() && steps.ecb.outcome == 'success'
+        run: |
+          python3 -m http.server 8899 --directory . > /tmp/fx-ui-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8899/discover/ && break
+            sleep 1
+          done
+          node scripts/quality/verify-currency-ui.mjs --url http://localhost:8899
+
+      # Die Abdeckungskarte enthaelt keine Kurse, nur Paarnamen und
+      # Gruende - sie darf und soll committet werden. Ohne sie waere
+      # nicht sichtbar, welche Berichtswaehrungen dauerhaft ohne FX-Paar
+      # bleiben.
+      - name: Abdeckungskarte in den Zweig
+        if: >-
+          (steps.ingest.outcome == 'success' || steps.ecb.outcome == 'success') &&
+          (github.event_name != 'workflow_dispatch' || inputs.publish_reports)
+        run: |
+          if [ -f quant/data/market/fx/pair-availability.json ]; then
+            node -e '
+              const fs = require("fs");
+              const raw = fs.readFileSync("quant/data/market/fx/pair-availability.json", "utf8");
+              const verboten = ["points", "rate", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), "$");
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder in der Abdeckungskarte: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log("Abdeckungskarte frei von Kursen.");
+            '
+            bash scripts/ci/commit-and-push.sh \
+              "FX-Paarabdeckung gemessen (automatischer Lauf)" \
+              quant/data/market/fx/pair-availability.json
+          fi
+          if [ -f quant/data/market/fx/ecb-coverage.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "EZB-Abdeckung und Nahtstelle gemessen (automatischer Lauf)" \
+              quant/data/market/fx/ecb-coverage.json
+          fi
+          if [ -f quant/data/market/fx/historical-coverage.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Historische FX-Abdeckung gemessen (automatischer Lauf)" \
+              quant/data/market/fx/historical-coverage.json
+          fi
+          # Die EZB-Reihen gehoeren in den Zweig: ohne sie kann der
+          # Browser nicht in Euro rechnen. Sie tragen als Stand ihren
+          # letzten Beobachtungstag, nicht die Uhrzeit des Laufs -
+          # bleibt die Quelle unveraendert, gibt es nichts zu committen.
+          if ls quant/data/market/fx/ecb/*.json >/dev/null 2>&1; then
+            bash scripts/ci/commit-and-push.sh \
+              "EZB-Referenzkurse fuer die EUR-Anzeige (automatischer Lauf)" \
+              quant/data/market/fx/ecb
+          fi
+          if [ -f quant/data/market/fx/provider-seam-audit.json ]; then
+            node -e '
+              const raw = require("fs").readFileSync("quant/data/market/fx/provider-seam-audit.json", "utf8");
+              const verboten = ["points", "rate", "rates", "close", "open", "high", "low"];
+              const treffer = [];
+              (function walk(v, p) {
+                if (!v || typeof v !== "object") return;
+                for (const k of Object.keys(v)) {
+                  if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                  walk(v[k], p + "." + k);
+                }
+              })(JSON.parse(raw), "$");
+              if (treffer.length) {
+                console.error("ABBRUCH: Kursfelder im Nahtaudit: " + treffer.join(", "));
+                process.exit(1);
+              }
+              console.log("Nahtaudit frei von Kursen.");
+            '
+            bash scripts/ci/commit-and-push.sh \
+              "Wurzelursache der FX-Naht gemessen (automatischer Lauf)" \
+              quant/data/market/fx/provider-seam-audit.json
+          fi
+
+      - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
+        if: always()
+        # Gegenprobe zur Absicht: waere unter quant/data/market/fx eine
+        # Kursreihe gelandet, wuerde sie im naechsten Commit
+        # veroeffentlicht. Genau das soll dieser Lauf nicht tun.
+        #
+        # Die Liste ist eine ERLAUBNIS, keine Sperre gegen Bekanntes: was
+        # nicht daraufsteht, bricht ab. Lauf 35698296752 hat das gezeigt -
+        # pair-availability.json kam neu hinzu und wurde prompt
+        # abgewiesen, bevor irgendetwas committet war. Eine Liste, die
+        # stattdessen Kursreihen namentlich ausschloesse, haette die neue
+        # Datei durchgelassen und beim naechsten unbekannten Namen wieder.
+        #
+        # Wer hier etwas eintraegt, bestaetigt damit: diese Datei enthaelt
+        # keine Anbieterkurse. Der Schritt darueber prueft das maschinell.
+        run: |
+          if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
+            for f in quant/data/market/fx/*.json; do
+              case "$(basename "$f")" in
+                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json|historical-coverage.json|provider-seam-audit.json) ;;
+                *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad und steht nicht auf der Erlaubnisliste."; exit 1 ;;
+              esac
+            done
+          fi
+          # Im Unterverzeichnis ecb/ duerfen Reihen liegen - aber nur
+          # solche der EZB. Eine Anbieterreihe, die sich dorthin
+          # verirrt, waere Klasse E aus O-11 und wird hier gestoppt.
+          if ls quant/data/market/fx/ecb/*.json >/dev/null 2>&1; then
+            node -e '
+              const fs = require("fs");
+              const dir = "quant/data/market/fx/ecb";
+              let n = 0;
+              for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+                const d = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8"));
+                if (f === "index.json") { if (d.source !== "ecb") { console.error("ABBRUCH: " + f + " ist keine EZB-Liste."); process.exit(1); } continue; }
+                if (d.source !== "ecb") {
+                  console.error("ABBRUCH: " + dir + "/" + f + " stammt von " + d.source + ", nicht von der EZB.");
+                  process.exit(1);
+                }
+                if (!d.attribution) { console.error("ABBRUCH: " + f + " ohne Quellennennung."); process.exit(1); }
+                n++;
+              }
+              console.log(n + " EZB-Reihe(n) im ausgelieferten Pfad, alle mit Quellennennung.");
+            '
+          fi
+          echo 'Keine Anbieter-FX-Reihe im veroeffentlichten Pfad.'
+          ls -la .market-cache/currency/fx 2>/dev/null | head -10 || echo 'Keine Reihen geholt.'
+
+      # Das Urteil gilt dem veroeffentlichten Bestand. Ohne Anbieterabruf
+      # gibt es keinen neuen, also wird auch nicht neu geurteilt.
+      - name: Gate - historische FX-Abdeckung
+        if: always() && steps.ingest.outcome == 'success'
+        run: node scripts/quality/verify-historical-fx-coverage.mjs --gate
+
+      - name: Keine Zugangsdaten in ausgelieferten Daten
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Regression Guard
+        if: always()
+        run: node scripts/quality/assert-no-local-fx.mjs
+
+      - name: Berichte als Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: currency-fx-proof
+          path: |
+            .market-cache/currency/*.json
+            quant/data/market/capabilities/tiingo-fx-probe.json
+            quant/data/market/fx/ecb-coverage.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Currency & FX — Nachweis'
+            echo ''
+            if [ "${{ steps.secret.outputs.available }}" != "true" ]; then
+              echo '**Kein `TIINGO_API_KEY` hinterlegt.** Alle FX-Faehigkeiten bleiben ungeprueft.'
+              echo 'Das Merge Gate bleibt geschlossen (`TIINGO_FX_CAPABILITIES != MEASURED`).'
+            else
+              node -e '
+                const r = require("./quant/data/market/capabilities/tiingo-fx-probe.json");
+                console.log("**TIINGO_FX_CAPABILITIES = " + r.capabilityState + "**");
+                console.log("");
+                console.log(r.capabilityStateDetail);
+                console.log("");
+                console.log("| Faehigkeit | Ergebnis | Beleg |");
+                console.log("|---|---|---|");
+                for (const [cap, value] of Object.entries(r.capabilities)) {
+                  const e = (r.evidence || {})[cap] || {};
+                  const symbol = value === true ? "ja" : value === false ? "nein" : "ungeprueft";
+                  console.log("| `" + cap + "` | " + symbol + " | " + (e.verificationLevel || "-") + " |");
+                }
+                console.log("");
+                console.log("Anfragen: " + r.requests.count + ". Realtime-Stufe: " + (r.realtimeTier.tier || "keine") + ".");
+              '
+            fi
+            echo ''
+            if [ -f .market-cache/currency/currency-layer-proof.json ]; then
+              node -e '
+                const p = require("./.market-cache/currency/currency-layer-proof.json");
+                console.log("**FX_DATA_PROOF = " + p.verdict + "** (FX-Quelle: " + p.fxSource + ")");
+                console.log("");
+                console.log(p.verdictMeaning);
+                console.log("");
+                console.log("| Pruefung | Zustand |");
+                console.log("|---|---|");
+                for (const c of p.checks) console.log("| " + c.id + " " + c.title + " | " + c.state + " |");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

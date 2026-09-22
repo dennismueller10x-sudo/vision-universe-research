@@ -55,8 +55,56 @@
     return t.slice(8, 10) + "." + t.slice(5, 7) + "." + t.slice(0, 4);
   }
 
-  function money(v) {
+  /* --------------------------------------------------------------------
+     GELDFORMATIERUNG: ZENTRAL, NICHT HIER (O-12)
+     --------------------------------------------------------------------
+
+     Diese Datei formatierte Betraege selbst - mit eigener Skalenleiter
+     und einem fest verdrahteten Dollarzeichen. Sie war damit eine von
+     mehreren Stellen, die dasselbe taten und auseinanderlaufen konnten;
+     der Currency Debt Register fuehrte sie als Klasse A.
+
+     Jetzt ruft sie quant/engines/fx/money-format.js. Was sie NICHT tut:
+     rechnen. Die Umrechnung gehoert in den Core, hier steht nur noch die
+     Darstellung (§49: Presentation Helpers sind erlaubt, Currency
+     Mathematics nicht).
+
+     `numberLocale: "de-DE"` haelt das Aussehen fest, das das Produkt
+     heute hat - deutsche Zahlen mit Dollarzeichen. Eine Migration, die
+     nebenbei die Oberflaeche umgestaltet, ist keine Migration (§28).
+
+     Ist der Core nicht geladen, bleibt die bisherige Darstellung als
+     Rueckfall. Eine zentrale Formatierung, die eine Seite leer laesst,
+     waere schlechter als die verteilte, die sie ersetzt.
+  */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    if (F && typeof F[fn] === "function") {
+      return F[fn](value, currency || "USD", opts);
+    }
+    return null;
+  }
+
+  /* Die Anzeigewaehrung kommt aus dem Vertrag, nicht aus dieser Datei.
+
+     `when` ist der Tag, den der Wert beschreibt - der Kurs einer Karte
+     ist ein Tagesschluss und kein Jetzt. Ohne ihn wuerde die Karte mit
+     dem heutigen Kurs umrechnen, und genau das untersagt §39.
+
+     Kann nicht umgerechnet werden - keine Kurse geladen, Waehrung ohne
+     Reihe -, bleibt die Originalwaehrung stehen. Das ist der Zustand,
+     den O-13 verlangt: der Titel verschwindet nicht, er sagt die
+     Wahrheit. */
+  function money(v, when) {
     if (!isNum(v)) return "–";
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (L) {
+      var m = L.money(v, "USD", when || null, when ? "MARKET_PRICE" : "CURRENT_VALUE",
+                      { numberLocale: "de-DE", decimals: 2 });
+      if (m.conversionAvailable && m.formatted) return m.formatted;
+    }
+    var zentral = vuFormat("formatPrice", v, "USD", { numberLocale: "de-DE", decimals: 2 });
+    if (zentral) return zentral;
     return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
   }
   function score(v) { return isNum(v) ? String(Math.round(v)) : "–"; }
@@ -419,7 +467,7 @@
           el("span", { class: "dx-poster-sub" }, [
             el("span", { class: "dx-poster-sym", text: card.symbol }),
             isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
-              document.createTextNode(money(preis)),
+              document.createTextNode(money(preis, card.asOf)),
               isNum(change) ? el("i", { class: toneClass(change),
                                         text: pctPoints(change) }) : null
             ]) : null

@@ -728,9 +728,26 @@
 
   /* Millionen, wie man sie ausspricht: 302.969 Mio. $ liest niemand,
      303 Mrd. $ schon. */
+  /* Geldformatierung zentral (O-12) - quant/engines/fx/money-format.js.
+     Hier steht nur Darstellung, keine Umrechnung (§49). numberLocale
+     haelt das heutige Aussehen fest; ohne geladenen Core greift der
+     bisherige Pfad. */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    return (F && typeof F[fn] === "function") ? F[fn](value, currency || "USD", opts) : null;
+  }
+
   function geld(millionen) {
     if (!isNum(millionen)) return "–";
     var v = millionen;
+    /* Der Wert kommt in MILLIONEN herein; der zentrale Formatter
+       erwartet den vollen Betrag. Die Skalierung ist eine
+       Einheitenumrechnung, keine Waehrungsumrechnung - sie darf hier
+       stehen. */
+    var zentral = vuFormat("formatCompact", v * 1e6, "USD",
+      { numberLocale: "de-DE", decimals: Math.abs(v) >= 1000 ? 1 : 0 });
+    if (zentral) return zentral;
+
     if (Math.abs(v) >= 1000) {
       return (Math.round(v / 100) / 10).toFixed(1).replace(".", ",") + " Mrd. $";
     }
@@ -984,6 +1001,65 @@
   /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
      Zeitraum, das Datum. Kein Rahmen, kein Werkzeugkasten, keine Fachbegriffe.
      Farbe folgt der Welt, aus der man kommt; Gruen und Rot bleiben den Zahlen. */
+  /* Die Reihe in der Anzeigewaehrung - oder unveraendert, wenn nicht
+     umgerechnet werden kann.
+
+     Punkte vor dem Beginn der FX-Historie fallen weg statt genaehert zu
+     werden (O-15). Bleiben dabei zu wenige uebrig, bleibt die
+     Originalreihe stehen: ein halber Chart ist schlechter als ein
+     ehrlicher in Dollar. */
+  /* Ein Wert, der SCHON in der Anzeigewaehrung vorliegt, wird nur noch
+     formatiert - nicht noch einmal umgerechnet.
+
+     Die Unterscheidung ist der leichteste Fehler an dieser Stelle: die
+     Chartreihe ist oben bereits umgerechnet worden, und sie danach durch
+     money() zu schicken hiesse, sie ein zweites Mal mit dem Kurs zu
+     multiplizieren. */
+  function alsAngezeigt(v) {
+    if (!isNum(v)) return "–";
+    var FX = (typeof VUFx !== "undefined") ? VUFx : null;
+    var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
+    if (FX && FX.Format && typeof FX.Format.formatPrice === "function") {
+      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: 2 });
+    }
+    return C().money(v);
+  }
+
+  /* Derselbe Schnappschuss, in der Anzeigewaehrung.
+
+     Das Original bleibt unangetastet - es ist der ausgelieferte Stand,
+     und eine Oberflaeche aendert ihn nicht (§3). Umgerechnet wird eine
+     Kopie: die Punkte des Tages und der Vortagesschluss, mit dem sie
+     verglichen werden. */
+  function inAnzeigewaehrungSnapshot(snap) {
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (!L || !snap || !Array.isArray(snap.points) || !snap.points.length) return snap;
+    var tag = snap.sessionDate || null;
+    var probe = L.money(snap.points[snap.points.length - 1][1], "USD", tag, tag ? "MARKET_PRICE" : "CURRENT_VALUE");
+    if (!probe || !probe.conversionAvailable || probe.display.currency === probe.native.currency) return snap;
+    var kurs = probe.fx && isNum(probe.fx.rate) ? probe.fx.rate : null;
+    if (!isNum(kurs)) return snap;
+    var kopie = {};
+    Object.keys(snap).forEach(function (k) { kopie[k] = snap[k]; });
+    kopie.points = snap.points.map(function (pt) {
+      return Array.isArray(pt) ? [pt[0], pt[1] * kurs] : pt;
+    });
+    if (isNum(snap.previousClose)) kopie.previousClose = snap.previousClose * kurs;
+    return kopie;
+  }
+
+  function inAnzeigewaehrung(punkte) {
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (!L || !punkte || punkte.length < 2) return { punkte: punkte || [], gekuerzt: false };
+    var r = L.series(punkte, "USD");
+    if (!r || !r.available || r.displayCurrency === r.nativeCurrency) return { punkte: punkte, gekuerzt: false };
+    if (!r.points || r.points.length < 2) return { punkte: punkte, gekuerzt: false };
+    return {
+      punkte: r.points.map(function (p) { return [p.date, p.display]; }),
+      gekuerzt: r.points.length < punkte.length
+    };
+  }
+
   function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
     var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
     S.clear(chartBox); S.clear(paneHost); S.clear(controls);
@@ -996,6 +1072,19 @@
     }
     var sel = SS.sliceRange(punkte, z.id, punkte[punkte.length - 1][0]);
     if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
+    /* Der Chart wird in der Anzeigewaehrung gezeichnet, Punkt fuer Punkt
+       mit dem Kurs SEINES Tages. Nicht mit dem heutigen: eine Reihe, die
+       rueckwirkend mit einem einzigen Kurs umgerechnet wird, hat
+       dieselbe Form wie die Originalreihe und behauptet damit, der
+       Wechselkurs haette sich nie bewegt (§39).
+
+       Deshalb ist die EUR-Rendite auch eine andere als die USD-Rendite -
+       und sie wird unten aus DIESER Reihe gerechnet, nicht uebernommen
+       (§41). */
+    var anzeige = inAnzeigewaehrung(sel.points);
+    if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
+                                            to: anzeige.punkte[anzeige.punkte.length - 1][0],
+                                            complete: sel.complete && !anzeige.gekuerzt };
     var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
     var veraenderung = erster > 0 ? (letzter / erster - 1) * 100 : null;
     var mobil = global.innerWidth < 860;
@@ -1003,7 +1092,7 @@
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: C().money(letzter) }),
+        el("b", { class: "num", text: alsAngezeigt(letzter) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: z.wort })
       ]),
@@ -1029,7 +1118,7 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return C().money(pt.close); },
+      preis: function (pt) { return alsAngezeigt(pt.close); },
       delta: function (pt) { return erster > 0 ? (pt.close / erster - 1) * 100 : null; },
       wann: function (pt) { return C().dateShort(pt.date); },
       wort: z.wort
@@ -1119,7 +1208,14 @@
       return;
     }
     var mobil = global.innerWidth < 860;
-    var snap = mitLaufendemKurs(p);
+    var snapNativ = mitLaufendemKurs(p);
+    /* EINMAL UMRECHNEN, DANN NUR NOCH DAMIT RECHNEN.
+
+       Kopf, Achse und Tooltip muessen dieselbe Waehrung benutzen. Die
+       erste Fassung rechnete nur die Achse um, und der Vergleich gegen
+       den Vortagesschluss stand dann mit einem Euro-Zaehler und einem
+       Dollar-Nenner da - eine Zahl, die nichts bedeutet. */
+    var snap = inAnzeigewaehrungSnapshot(snapNativ);
     /* Kopf wie beim Zeitraum-Chart: letzter Kurs, Veraenderung gegen den
        Vortagesschluss, das Wort dazu - eine Sprache fuer alle Zeitraeume. */
     var punkte = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
@@ -1148,17 +1244,23 @@
 
     var kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
-        el("b", { class: "num", text: isNum(letzterKurs) ? C().money(letzterKurs) : "" }),
+        el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
         el("span", { class: "dx-chart-hero-wort", text: eingefroren ? "am " + C().dateShort(snap.sessionDate) : "heute" })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
-        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + C().money(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
+        el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + alsAngezeigt(snap.previousClose) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
         C().liveLabel(etikett, snap)
       ])
     ]);
     chartBox.appendChild(kopf);
     var mass = chartMass(chartBox, mobil);
+    /* Auch der Tagesverlauf wird in der Anzeigewaehrung gezeichnet.
+
+       Die Zahlen an der Achse standen sonst in Dollar, waehrend der Kurs
+       darueber in Euro steht - derselbe Chart mit zwei Waehrungen. Alle
+       Punkte gehoeren zu einem Tag, es gilt also ein Kurs; er kommt
+       trotzdem aus dem Vertrag und nicht aus einer Rechnung hier. */
     var svgNode = MC.renderIntraday(snap, { width: mass.w, height: mass.h,
                                             axis: true, symbol: state.detail.symbol,
                                             label: p.label && p.label.label });
@@ -1178,7 +1280,9 @@
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);
     beruehrung(svgNode, kopf, {
-      preis: function (pt) { return C().money(pt.close); },
+      /* Die Punkte dieses Charts sind bereits umgerechnet (siehe
+         inAnzeigewaehrungSnapshot) - hier wird nur noch formatiert. */
+      preis: function (pt) { return alsAngezeigt(pt.close); },
       delta: function (pt) { return isNum(basis) && basis > 0 ? (pt.close / basis - 1) * 100 : null; },
       wann: function (pt) { return pt.time + " New York"; },
       wort: snap.regularComplete ? "am " + C().dateShort(snap.sessionDate) : "heute"

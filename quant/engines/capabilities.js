@@ -57,13 +57,39 @@
   ];
 
   var REFERENCE_CAPABILITIES = ["securityMaster", "exchanges", "isin", "figi", "delisted", "historicalMembership"];
+
+  /* Waehrungs-/FX-Faehigkeiten (Currency Layer V1).
+
+     Eine eigene Datenklasse und nicht ein paar zusaetzliche Eintraege unter
+     `market`: FX ist ein anderes Produkt mit einem anderen Kontingent, einer
+     anderen Historie und einer anderen Lizenzlage. Wer "der Anbieter kann
+     Intraday" von "der Anbieter kann Intraday-FX" nicht unterscheidet,
+     rechnet irgendwann einen Bilanzwert mit einem Aktienkurs um.
+
+     Der Zustand `null` ist hier der wahrscheinlichste und der wichtigste:
+     ein bestehender Vertrag ist keine Messung. Solange
+     scripts/market/probe-tiingo-fx.mjs nichts belegt hat, steht hier
+     ueberall ungeprueft - auch dann, wenn eine Tarifseite etwas anderes
+     nahelegt. */
+  var FX_CAPABILITIES = [
+    "fxCurrent",           // aktueller Kurs eines Waehrungspaars
+    "fxDaily",             // taeglicher Referenzkurs (Tagesschluss)
+    "fxHistoricalDaily",   // Tageshistorie ueber Jahre
+    "fxIntraday",          // Intraday-Bars eines Paars
+    "fxRealtime",          // Kurse ohne Verzoegerung
+    "fxWebsocket",         // Push-Verbindung fuer FX
+    "fxCrossPairs",        // beliebige Paare, nicht nur gegen USD
+    "fxBulkQuotes"         // mehrere Paare je Anfrage
+  ];
+
   var ESTIMATE_CAPABILITIES = ["consensus", "historicalConsensus", "pointInTime", "revisionHistory"];
 
   var CAPABILITY_SETS = {
     market: MARKET_DATA_CAPABILITIES,
     fundamental: FUNDAMENTAL_CAPABILITIES,
     reference: REFERENCE_CAPABILITIES,
-    estimate: ESTIMATE_CAPABILITIES
+    estimate: ESTIMATE_CAPABILITIES,
+    fx: FX_CAPABILITIES
   };
 
   /**
@@ -156,6 +182,7 @@
     FUNDAMENTAL_CAPABILITIES: FUNDAMENTAL_CAPABILITIES,
     REFERENCE_CAPABILITIES: REFERENCE_CAPABILITIES,
     ESTIMATE_CAPABILITIES: ESTIMATE_CAPABILITIES,
+    FX_CAPABILITIES: FX_CAPABILITIES,
     declare: declare,
     supports: supports,
     explicitlyMissing: explicitlyMissing,

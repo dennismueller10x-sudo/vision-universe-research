@@ -1,10 +1,27 @@
 (function(){
 'use strict';
 const S=QuantShell,el=S.el,api=VUProductServices.create({loadJSON:S.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});
+/* O-12: Waehrungsdarstellung kommt aus dem zentralen Contract, nicht aus
+   dieser Datei. Der Rueckfall bleibt stehen - eine zentrale
+   Formatierung, die eine Seite leer laesst, waere schlechter als die
+   verteilte, die sie ersetzt.
+
+   Umgerechnet wird hier NICHT: diese Seite zeigt Originalwaehrung und
+   sagt das auch. Sie konsumiert die Formatierung, nicht die Engine. */
+const vuFormat=(fn,value,unit,opts)=>{
+ const X=(typeof VUFx!=='undefined')?VUFx:null,F=X&&X.Format,R=X&&X.Registry;
+ if(!F||typeof F[fn]!=='function')return null;
+ /* Ob eine Einheit eine Waehrung ist, weiss die Registry - nicht diese
+    Datei. Ein Vergleich gegen 'USD' waere genau die verteilte Kenntnis,
+    die O-6 abbauen soll, und er wuerde ein kuenftiges unit:'EUR' still
+    falsch darstellen. */
+ if(R&&typeof R.isKnown==='function'&&!R.isKnown(unit))return null;
+ return F[fn](value,unit,opts);
+};
 const params=new URLSearchParams(location.search),view=params.get('view')||'home';
 const href=(v,t)=>'/vu2/?view='+v+(t?'&ticker='+encodeURIComponent(t):'');
 const link=(label,url,cls)=>el('a',{text:label,href:url,class:cls});
-const n=(m,d=1)=>m&&Number.isFinite(m.value)?m.value.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+(m.unit==='percent'?' %':m.unit==='USD'?' $':''):m&&typeof m.value==='string'?m.value.replaceAll('_',' '):'Nicht verfügbar';
+const n=(m,d=1)=>m&&Number.isFinite(m.value)?(vuFormat('formatPrice',m.value,m.unit,{numberLocale:'de-DE',decimals:d})||m.value.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+(m.unit==='percent'?' %':m.unit==='USD'?' $':'')):m&&typeof m.value==='string'?m.value.replaceAll('_',' '):'Nicht verfügbar';
 const formatFactor=m=>!Number.isFinite(m.value)?'Nicht verfügbar':m.value.toLocaleString('de-DE',{maximumFractionDigits:2})+(m.metricId==='marginExpansion'?' Prozentpunkte':m.unit==='pct'?' %':m.unit==='x'?' ×':'');
 const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
 const groups=[
@@ -81,7 +98,7 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  left.append(freshness(s.health,s.ticker));
  const chart=el('div'),ranges=el('div',{class:'ranges','aria-label':'Chart-Zeitraum'});
  function draw(id){S.clear(chart);if(!s.chart||s.chart.state!=='AVAILABLE'){chart.append(notice('Kurshistorie derzeit nicht verfügbar','Für diesen Titel ist noch keine validierte Materialisierung veröffentlicht.'));return;}const data=VUChartRanges.selectRange(id,{eod:s.chart.bars||[],adjustmentStatus:s.chart.adjustmentStatus});ranges.querySelectorAll('button').forEach(b=>{b.classList.toggle('selected',b.dataset.range===id);b.setAttribute('aria-pressed',b.dataset.range===id?'true':'false');});if(!data.ok){chart.append(notice('Dieser Zeitraum ist nicht verfügbar','Tagesverläufe benötigen freigegebene Intraday-Daten. Wähle einen längeren Zeitraum.'));return;}
- chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.date),series:[{values:data.bars.map(b=>b.close)}],yFormat:v=>v.toFixed(0)+' $'}));}
+ chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.date),series:[{values:data.bars.map(b=>b.close)}],yFormat:v=>vuFormat('formatPrice',v,'USD',{numberLocale:'de-DE',decimals:0})||v.toFixed(0)+' $'}));}
  VUChartRanges.RANGES.forEach(r=>ranges.append(el('button',{text:r.label,dataset:{range:r.id},onclick:()=>draw(r.id)})));left.append(chart,ranges,el('p',{class:'muted',text:'Unbereinigte Schlusskurse · USD. Splits können historische Kurssprünge verursachen.'}));draw('1Y');
  const side=el('aside',{},[el('h2',{text:'Was dahintersteht'}),el('p',{text:s.above200.value>0?'Der Kurs liegt über seinem 200-Tage-Durchschnitt. Das beschreibt die bisherige Entwicklung, keine Prognose.':'Die langfristige Kursstruktur verdient einen genaueren Blick.'}),evidence(s),el('details',{},[el('summary',{text:'Evidenz & Methodik'}),el('p',{class:'muted',text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Fundamentaldaten bis '+s.fundamentalsAsOf+', verfügbar seit '+s.availableAt+'. Quelle: SEC EDGAR; Kurskennzahlen: Tiingo EOD / bestehende Quant-Methodik.'}),link('Daten und Berechnung untersuchen','/quant/data-inspector/','button secondary')])]);
  main.append(el('div',{class:'layout'},[left,side]),setupStateSection(s.setupState),actions(s.workspaces));

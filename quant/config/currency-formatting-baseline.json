@@ -1,0 +1,29 @@
+{
+  "schema": "vu-currency-formatting-baseline-1.0.0",
+  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag - ausser die Stelle ist der beibehaltene Rueckfall einer migrierten Darstellung (Klasse F im Debt Register). discover-v2/detail.js kam mit dem Merge aus main und bringt eine eigene Skalenleiter mit; sie wird in einem eigenen Schritt migriert, damit der Discover-2.0-Vorschau-Gate (scripts/discover-v2/regression-gate.mjs) seine Grundlinie behaelt und nicht fuer einen querliegenden Kernumbau aufgeweicht werden muss.",
+  "updatedAt": "2026-09-22",
+  "total": 33,
+  "byFile": {
+    "discover/engines/fundamentals.js": 2,
+    "discover/ui/cards.js": 1,
+    "discover/ui/daten.js": 2,
+    "discover/ui/detail-fundamentals.js": 4,
+    "discover/ui/detail.js": 2,
+    "discover/ui/surfaces.js": 4,
+    "discover-v2/home.js": 1,
+    "vu2/experience.js": 2,
+    "quant/api/portfolio-workspace.js": 1,
+    "dashboard/app.js": 1,
+    "dashboard/index_legacy_v63.html": 1,
+    "dashboard/v2.js": 1,
+    "morning/2026-09-05/index.html": 1,
+    "morning/2026-09-08/index.html": 1,
+    "hedgefonds/index.html": 5,
+    "discover-v2/detail.js": 4
+  },
+  "suspectTotal": 2,
+  "suspectsByFile": {
+    "dashboard/app.js": 1,
+    "dashboard/index_legacy_v63.html": 1
+  }
+}

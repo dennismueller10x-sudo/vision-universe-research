@@ -1,0 +1,274 @@
+{
+  "schema": "vu-ecb-coverage-1.0.0",
+  "generatedAtUtc": "2026-09-22T10:58:00.861Z",
+  "provider": "ecb",
+  "roles": {
+    "HISTORICAL_DAILY": "PRIMARY",
+    "CURRENT": "FALLBACK"
+  },
+  "feed": {
+    "id": "FULL_HISTORY",
+    "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml",
+    "label": "Vollstaendige Historie ab 1999-01-04"
+  },
+  "attribution": "Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).",
+  "durationMs": 1629,
+  "daysParsed": 7097,
+  "rejectedRows": 0,
+  "earliest": "1999-01-04",
+  "latest": "2026-09-21",
+  "currenciesPublished": [
+    "AUD",
+    "BGN",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CNY",
+    "CYP",
+    "CZK",
+    "DKK",
+    "EEK",
+    "GBP",
+    "HKD",
+    "HRK",
+    "HUF",
+    "IDR",
+    "ILS",
+    "INR",
+    "ISK",
+    "JPY",
+    "KRW",
+    "LTL",
+    "LVL",
+    "MTL",
+    "MXN",
+    "MYR",
+    "NOK",
+    "NZD",
+    "PHP",
+    "PLN",
+    "ROL",
+    "RON",
+    "RUB",
+    "SEK",
+    "SGD",
+    "SIT",
+    "SKK",
+    "THB",
+    "TRL",
+    "TRY",
+    "USD",
+    "ZAR"
+  ],
+  "currenciesNeeded": [
+    "AFN",
+    "ARS",
+    "AUD",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CLP",
+    "CNY",
+    "COP",
+    "DKK",
+    "EUR",
+    "GBP",
+    "HKD",
+    "IDR",
+    "ILS",
+    "INR",
+    "JPY",
+    "KRW",
+    "KZT",
+    "MOP",
+    "MXN",
+    "MYR",
+    "PEN",
+    "PHP",
+    "RUB",
+    "SEK",
+    "SGD",
+    "TRY",
+    "TWD",
+    "USD",
+    "VND",
+    "ZAR"
+  ],
+  "currenciesCovered": [
+    "AUD",
+    "BRL",
+    "CAD",
+    "CHF",
+    "CNY",
+    "DKK",
+    "GBP",
+    "HKD",
+    "IDR",
+    "ILS",
+    "INR",
+    "JPY",
+    "KRW",
+    "MXN",
+    "MYR",
+    "PHP",
+    "RUB",
+    "SEK",
+    "SGD",
+    "TRY",
+    "USD",
+    "ZAR"
+  ],
+  "currenciesMissing": [
+    "AFN",
+    "ARS",
+    "CLP",
+    "COP",
+    "KZT",
+    "MOP",
+    "PEN",
+    "TWD",
+    "VND"
+  ],
+  "seriesWritten": [
+    {
+      "pair": "EUR/AUD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/BRL",
+      "observations": 4793,
+      "first": "2008-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CAD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CHF",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/CNY",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/DKK",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/GBP",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/HKD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/IDR",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/ILS",
+      "observations": 4023,
+      "first": "2011-01-03",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/INR",
+      "observations": 4537,
+      "first": "2009-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/JPY",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/KRW",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/MXN",
+      "observations": 4793,
+      "first": "2008-01-02",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/MYR",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/PHP",
+      "observations": 5498,
+      "first": "2005-04-01",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/RUB",
+      "observations": 4333,
+      "first": "2005-04-01",
+      "last": "2022-03-01"
+    },
+    {
+      "pair": "EUR/SEK",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/SGD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/TRY",
+      "observations": 5560,
+      "first": "2005-01-03",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/USD",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    },
+    {
+      "pair": "EUR/ZAR",
+      "observations": 7097,
+      "first": "1999-01-04",
+      "last": "2026-09-21"
+    }
+  ],
+  "outputDir": "quant/data/market/fx/ecb",
+  "published": true,
+  "seamAnalysis": {
+    "note": "Relative Abweichung zwischen EZB-Fixing (16:00 MEZ) und Tiingo-Tagesschluss auf dem Ueberlappungsbereich. Ein Chart wechselt am Beginn der Tiingo-Historie die Quelle; diese Zahl sagt, wie gross der Sprung an der Naht hoechstens ist.",
+    "pairs": [],
+    "worstP95": null,
+    "verdict": "NOT_MEASURED"
+  }
+}

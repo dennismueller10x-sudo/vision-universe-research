@@ -1,0 +1,1473 @@
+{
+  "schema": "vu-historical-fx-coverage-1.0.0",
+  "generatedAtUtc": "2026-09-22T09:49:28.628Z",
+  "note": "Fuer jeden Zeitpunkt, den das Produkt zeigt, gegen jede Waehrung, die das Universum fuehrt. Gewichtet nach betroffenen Titeln - eine Waehrung mit einem Titel und eine mit 10.858 sind nicht gleich wichtig.",
+  "verdict": "PASS",
+  "verdictMeaning": "In jedem geprueften Horizont sind mindestens 99 % der Titel umrechenbar.",
+  "threshold": 0.99,
+  "gatedHorizons": [
+    "1J",
+    "5J",
+    "10J",
+    "15J"
+  ],
+  "informationalHorizons": [
+    "MAX"
+  ],
+  "gatingNote": "MAX wird gemessen und berichtet, aber nicht beurteilt: die Kursreihen reichen weiter zurueck als jede FX-Quelle. Ein Gate, das aus einem bekannten Grund immer rot ist, wird uebergangen.",
+  "sourcesLoaded": {
+    "tiingo": 40,
+    "ecb": 22
+  },
+  "horizons": [
+    {
+      "id": "1J",
+      "datum": "2025-09-22"
+    },
+    {
+      "id": "5J",
+      "datum": "2021-09-22"
+    },
+    {
+      "id": "10J",
+      "datum": "2016-09-22"
+    },
+    {
+      "id": "15J",
+      "datum": "2011-09-22"
+    },
+    {
+      "id": "MAX",
+      "datum": "1990-01-05"
+    }
+  ],
+  "maxSeriesStart": "1990-01-05",
+  "perHorizon": {
+    "1J": {
+      "datum": "2025-09-22",
+      "waehrungenAbgedeckt": 26,
+      "waehrungenGesamt": 31,
+      "titelAbgedeckt": 11197,
+      "titelGesamt": 11202,
+      "titelquote": 0.9995536511337261,
+      "quellen": {
+        "tiingo+ecb": 5,
+        "ecb": 21
+      },
+      "fehlend": [
+        "AFN",
+        "KZT",
+        "MOP",
+        "RUB",
+        "VND"
+      ]
+    },
+    "5J": {
+      "datum": "2021-09-22",
+      "waehrungenAbgedeckt": 27,
+      "waehrungenGesamt": 31,
+      "titelAbgedeckt": 11198,
+      "titelGesamt": 11202,
+      "titelquote": 0.9996429209069809,
+      "quellen": {
+        "tiingo+ecb": 5,
+        "ecb": 22
+      },
+      "fehlend": [
+        "AFN",
+        "KZT",
+        "MOP",
+        "VND"
+      ]
+    },
+    "10J": {
+      "datum": "2016-09-22",
+      "waehrungenAbgedeckt": 22,
+      "waehrungenGesamt": 31,
+      "titelAbgedeckt": 11169,
+      "titelGesamt": 11202,
+      "titelquote": 0.9970540974825924,
+      "quellen": {
+        "ecb": 22
+      },
+      "fehlend": [
+        "AFN",
+        "ARS",
+        "CLP",
+        "COP",
+        "KZT",
+        "MOP",
+        "PEN",
+        "TWD",
+        "VND"
+      ]
+    },
+    "15J": {
+      "datum": "2011-09-22",
+      "waehrungenAbgedeckt": 22,
+      "waehrungenGesamt": 31,
+      "titelAbgedeckt": 11169,
+      "titelGesamt": 11202,
+      "titelquote": 0.9970540974825924,
+      "quellen": {
+        "ecb": 22
+      },
+      "fehlend": [
+        "AFN",
+        "ARS",
+        "CLP",
+        "COP",
+        "KZT",
+        "MOP",
+        "PEN",
+        "TWD",
+        "VND"
+      ]
+    },
+    "MAX": {
+      "datum": "1990-01-05",
+      "waehrungenAbgedeckt": 0,
+      "waehrungenGesamt": 31,
+      "titelAbgedeckt": 0,
+      "titelGesamt": 11202,
+      "titelquote": 0,
+      "quellen": {},
+      "fehlend": [
+        "AFN",
+        "ARS",
+        "AUD",
+        "BRL",
+        "CAD",
+        "CHF",
+        "CLP",
+        "CNY",
+        "COP",
+        "DKK",
+        "GBP",
+        "HKD",
+        "IDR",
+        "ILS",
+        "INR",
+        "JPY",
+        "KRW",
+        "KZT",
+        "MOP",
+        "MXN",
+        "MYR",
+        "PEN",
+        "PHP",
+        "RUB",
+        "SEK",
+        "SGD",
+        "TRY",
+        "TWD",
+        "USD",
+        "VND",
+        "ZAR"
+      ]
+    }
+  },
+  "perCurrency": [
+    {
+      "currency": "USD",
+      "titel": 10790,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "CNY",
+      "titel": 124,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-04-01"
+    },
+    {
+      "currency": "CAD",
+      "titel": 83,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "BRL",
+      "titel": 26,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2008-01-02"
+    },
+    {
+      "currency": "GBP",
+      "titel": 24,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "HKD",
+      "titel": 19,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "SGD",
+      "titel": 18,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "JPY",
+      "titel": 15,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "AUD",
+      "titel": 13,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "ARS",
+      "titel": 12,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": "5J",
+      "eurChartStart": "2020-03-30"
+    },
+    {
+      "currency": "MXN",
+      "titel": 12,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2008-01-02"
+    },
+    {
+      "currency": "KRW",
+      "titel": 9,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "ILS",
+      "titel": 7,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2011-01-03"
+    },
+    {
+      "currency": "CHF",
+      "titel": 6,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "INR",
+      "titel": 6,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2009-01-02"
+    },
+    {
+      "currency": "TWD",
+      "titel": 6,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": "5J",
+      "eurChartStart": "2020-03-30"
+    },
+    {
+      "currency": "CLP",
+      "titel": 5,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": "5J",
+      "eurChartStart": "2020-03-30"
+    },
+    {
+      "currency": "ZAR",
+      "titel": 5,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "MYR",
+      "titel": 4,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-04-01"
+    },
+    {
+      "currency": "PEN",
+      "titel": 4,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": "5J",
+      "eurChartStart": "2020-03-30"
+    },
+    {
+      "currency": "COP",
+      "titel": 2,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "tiingo+ecb",
+          "role": "MIXED",
+          "derivation": "TRIANGULATED",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": "5J",
+      "eurChartStart": "2020-03-30"
+    },
+    {
+      "currency": "DKK",
+      "titel": 2,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "TRY",
+      "titel": 2,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-01-03"
+    },
+    {
+      "currency": "AFN",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "5J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": null,
+      "eurChartStart": null
+    },
+    {
+      "currency": "IDR",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-04-01"
+    },
+    {
+      "currency": "KZT",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "5J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": null,
+      "eurChartStart": null
+    },
+    {
+      "currency": "MOP",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "5J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": null,
+      "eurChartStart": null
+    },
+    {
+      "currency": "PHP",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-04-01"
+    },
+    {
+      "currency": "RUB",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": false,
+          "reason": "carryLimitExceeded"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "2005-04-01"
+    },
+    {
+      "currency": "SEK",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2025-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "5J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2021-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "10J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2016-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "15J": {
+          "ok": true,
+          "source": "ecb",
+          "role": "PRIMARY",
+          "derivation": "INVERSE",
+          "asOf": "2011-09-22",
+          "method": "DAILY_AT_DATE"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "beforeSeriesStart"
+        }
+      },
+      "tiefsteAbdeckung": "15J",
+      "eurChartStart": "1999-01-04"
+    },
+    {
+      "currency": "VND",
+      "titel": 1,
+      "horizonte": {
+        "1J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "5J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "10J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "15J": {
+          "ok": false,
+          "reason": "pairNotStored"
+        },
+        "MAX": {
+          "ok": false,
+          "reason": "pairNotStored"
+        }
+      },
+      "tiefsteAbdeckung": null,
+      "eurChartStart": null
+    }
+  ],
+  "eurChartStart": {
+    "AFN": null,
+    "ARS": "2020-03-30",
+    "AUD": "1999-01-04",
+    "BRL": "2008-01-02",
+    "CAD": "1999-01-04",
+    "CHF": "1999-01-04",
+    "CLP": "2020-03-30",
+    "CNY": "2005-04-01",
+    "COP": "2020-03-30",
+    "DKK": "1999-01-04",
+    "GBP": "1999-01-04",
+    "HKD": "1999-01-04",
+    "IDR": "2005-04-01",
+    "ILS": "2011-01-03",
+    "INR": "2009-01-02",
+    "JPY": "1999-01-04",
+    "KRW": "1999-01-04",
+    "KZT": null,
+    "MOP": null,
+    "MXN": "2008-01-02",
+    "MYR": "2005-04-01",
+    "PEN": "2020-03-30",
+    "PHP": "2005-04-01",
+    "RUB": "2005-04-01",
+    "SEK": "1999-01-04",
+    "SGD": "1999-01-04",
+    "TRY": "2005-01-03",
+    "TWD": "2020-03-30",
+    "USD": "1999-01-04",
+    "VND": null,
+    "ZAR": "1999-01-04"
+  },
+  "eurChartStartMainCurrency": {
+    "currency": "USD",
+    "titel": 10790,
+    "ab": "1999-01-04"
+  },
+  "priceSeriesStart": "1990-01-05",
+  "gapBeforeFx": {
+    "from": "1990-01-05",
+    "to": "1999-01-04",
+    "note": "Kursreihen reichen weiter zurueck als jede FX-Quelle. Ein MAX-Chart in EUR beginnt spaeter als in der Originalwaehrung - der Layer verweigert die Punkte davor (beforeSeriesStart) statt sie zu naehern."
+  },
+  "shortfall": []
+}

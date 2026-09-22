@@ -216,25 +216,126 @@
    * die belegten Saetze der Fundamental Story und DAMALS VS. HEUTE in vier
    * Zeilen. Alles aus dem Build (fundamentals.js); hier wird gezeichnet.
    */
-  function fmtGeld(v, unit) {
+  /* --------------------------------------------------------------------
+     GELDFORMATIERUNG: ZENTRAL, NICHT HIER (O-12)
+     --------------------------------------------------------------------
+
+     Diese Datei formatierte Betraege selbst - mit eigener Skalenleiter
+     und einem fest verdrahteten Dollarzeichen. Sie war damit eine von
+     mehreren Stellen, die dasselbe taten und auseinanderlaufen konnten;
+     der Currency Debt Register fuehrte sie als Klasse A.
+
+     Jetzt ruft sie quant/engines/fx/money-format.js. Was sie NICHT tut:
+     rechnen. Die Umrechnung gehoert in den Core, hier steht nur noch die
+     Darstellung (§49: Presentation Helpers sind erlaubt, Currency
+     Mathematics nicht).
+
+     `numberLocale: "de-DE"` haelt das Aussehen fest, das das Produkt
+     heute hat - deutsche Zahlen mit Dollarzeichen. Eine Migration, die
+     nebenbei die Oberflaeche umgestaltet, ist keine Migration (§28).
+
+     Ist der Core nicht geladen - eine Seite, die ihn nicht einbindet -,
+     bleibt die bisherige Darstellung als Rueckfall. Eine zentrale
+     Formatierung, die eine Seite leer laesst, waere schlechter als die
+     verteilte, die sie ersetzt.
+  */
+  function vuFormat(fn, value, currency, opts) {
+    var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
+    if (F && typeof F[fn] === "function") {
+      return F[fn](value, currency || "USD", opts);
+    }
+    return null;
+  }
+
+  /* UMRECHNEN IM VERTRAG, FORMATIEREN IM ZENTRALEN FORMATTER.
+
+     Die beiden Schritte bleiben getrennt, und das ist Absicht. Der
+     Vertrag entscheidet, WELCHER Kurs zu diesem Wert gehoert - fuer eine
+     Flussgroesse das Periodenmittel, fuer eine Stichtagsgroesse der
+     Kurs des Stichtags. Wie die Zahl dann aussieht, bleibt die
+     Entscheidung dieser Flaeche; ihre fertige Zeichenkette zu nehmen
+     wuerde das Aussehen der Tabelle aendern.
+
+     `zeit` ist die Periode oder der Stichtag des Wertes. Fehlt sie,
+     wird nicht umgerechnet - lieber der richtige Dollarbetrag als ein
+     Euro-Betrag zum falschen Kurs (§39). */
+  function inAnzeigewaehrung(v, unit, zeit, metricId) {
+    var aus = { value: v, currency: nativeWaehrung(unit) };
+    var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
+    if (!L || !zeit || !metricId) return aus;
+    var m = L.metric({
+      metricId: metricId, value: v, currency: aus.currency, unit: unit,
+      periodStart: zeit.start || null, periodEnd: zeit.end || null
+    });
+    if (m && m.conversionAvailable && m.display && isNum(m.display.value)) {
+      return { value: m.display.value, currency: m.display.currency };
+    }
+    return aus;
+  }
+  function nativeWaehrung(unit) {
+    return (typeof unit === "string" && unit.indexOf("/") > 0) ? unit.split("/")[0] : (unit || "USD");
+  }
+
+  function fmtGeld(v, unit, zeit, metricId) {
     if (!isNum(v)) return "–";
-    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
+    /* Stueckzahlen sind kein Geld - sie tragen nie ein Waehrungszeichen. */
     if (unit === "shares") return Math.abs(v) >= 1e9 ? (v / 1e9).toFixed(2).replace(".", ",") + " Mrd." : (v / 1e6).toFixed(0) + " Mio.";
-    var a = Math.abs(v);
-    if (a >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd. $";
-    if (a >= 1e6) return (v / 1e6).toFixed(0) + " Mio. $";
+
+    var w = inAnzeigewaehrung(v, unit, zeit, metricId);
+    var wert = w.value, cur = w.currency;
+    var a = Math.abs(wert);
+    var zentral = (unit === "USD/shares" || a < 1e6)
+      ? vuFormat("formatPrice", wert, cur, { numberLocale: "de-DE", decimals: a < 1e6 && unit !== "USD/shares" ? 0 : 2 })
+      : vuFormat("formatCompact", wert, cur, { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 });
+    if (zentral) return zentral;
+
+    if (unit === "USD/shares") return (Math.round(v * 100) / 100).toFixed(2).replace(".", ",") + " $";
+    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(1).replace(".", ",") + " Mrd. $";
+    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(0) + " Mio. $";
     return Math.round(v).toLocaleString("de-DE") + " $";
   }
-  function fmtWert(row, seite) {
+  function fmtWert(row, seite, index) {
     var v = row[seite].value;
     if (row.kind === "margin") return isNum(v) ? (v * 100).toFixed(1).replace(".", ",") + " %" : "–";
-    return fmtGeld(v, row.unit);
+    return fmtGeld(v, row.unit, zeitpunkt(row, seite, index), row.metric || row.id);
   }
-  function fmtAenderung(row) {
+  /* Der Zeitpunkt eines Wertes: Periodenende und - wo ableitbar - der
+     Anfang. Die veroeffentlichten Vergleichszeilen tragen nur das Ende;
+     der Anfang kommt aus der Kette der Geschaeftsjahre daneben. */
+  /* Die Geschaeftsjahreskette einer Flaeche, falls sie eine mitbringt. */
+  function periodenIndexVon(surface) {
+    var F = (typeof VUDiscover !== "undefined" && VUDiscover.Fundamentals) ? VUDiscover.Fundamentals : null;
+    if (!F || typeof F.periodenIndex !== "function") return null;
+    var journey = surface.journey || (surface.fundamentals && surface.fundamentals.journey) || null;
+    return journey ? F.periodenIndex(journey) : null;
+  }
+  function zeitpunkt(row, seite, index) {
+    var s = row[seite] || {};
+    return { end: s.end || null, start: s.start || (index && s.end ? index[s.end] : null) || null };
+  }
+  function fmtAenderung(row, index) {
     var c = row.change || {};
     if (row.kind === "margin") return isNum(c.pp) ? ((c.pp >= 0 ? "+" : "") + c.pp.toFixed(1).replace(".", ",") + " Pp.") : "–";
     if (isNum(c.pct)) return (c.pct >= 0 ? "+" : "") + Math.round(c.pct * 100) + " %";
-    if (isNum(c.abs)) return (c.abs >= 0 ? "+" : "") + fmtGeld(c.abs, row.unit);
+    if (isNum(c.abs)) {
+      /* Die Veraenderung wird NEU GERECHNET, nicht umgerechnet.
+
+         Zwei Betraege aus zwei Perioden haben zwei Kurse. Ihre Differenz
+         mit einem einzigen Kurs umzurechnen ergaebe eine Zahl, die zu
+         keiner der beiden Spalten daneben passt - dieselbe Falle wie bei
+         der Rendite (§41). Also: beide Seiten umrechnen, dann
+         subtrahieren. */
+      var vorher = inAnzeigewaehrung(row.then.value, row.unit, zeitpunkt(row, "then", index), row.metric || row.id);
+      var jetzt = inAnzeigewaehrung(row.now.value, row.unit, zeitpunkt(row, "now", index), row.metric || row.id);
+      var d = (isNum(vorher.value) && isNum(jetzt.value) && vorher.currency === jetzt.currency)
+        ? jetzt.value - vorher.value : c.abs;
+      var einheit = (isNum(vorher.value) && vorher.currency === jetzt.currency)
+        ? (row.unit && String(row.unit).indexOf("/") > 0
+            ? jetzt.currency + String(row.unit).slice(String(row.unit).indexOf("/"))
+            : jetzt.currency)
+        : row.unit;
+      return (d >= 0 ? "+" : "") + fmtGeld(d, einheit, null, null);
+    }
     return "–";
   }
   function story(surface, ctx) {
@@ -250,6 +351,7 @@
     }));
     var tabelle = null;
     if (surface.compare && surface.compare.rows && surface.compare.rows.length) {
+      var index = periodenIndexVon(surface);
       tabelle = el("table", { class: "dx-damals" }, [
         el("thead", {}, [el("tr", {}, [
           el("th", { text: "" }), el("th", { text: "Vor " + surface.compare.horizon.years + " Jahren" }), el("th", { text: "Heute" }), el("th", { text: "Veränderung" })
@@ -258,9 +360,9 @@
           var ton = r.kind === "margin" ? (r.change.pp > 0 ? "up" : r.change.pp < 0 ? "down" : "") : (isNum(r.change.pct) ? (r.change.pct > 0 ? "up" : r.change.pct < 0 ? "down" : "") : "");
           return el("tr", {}, [
             el("th", { scope: "row", text: r.label }),
-            el("td", { class: "num", text: fmtWert(r, "then") }),
-            el("td", { class: "num", text: fmtWert(r, "now") }),
-            el("td", { class: "num " + ton, text: fmtAenderung(r) })
+            el("td", { class: "num", text: fmtWert(r, "then", index) }),
+            el("td", { class: "num", text: fmtWert(r, "now", index) }),
+            el("td", { class: "num " + ton, text: fmtAenderung(r, index) })
           ]);
         }))
       ]);

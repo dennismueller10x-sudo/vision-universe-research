@@ -1,0 +1,431 @@
+{
+  "schema": "vu-currency-debt-register-1.0.0",
+  "generatedAtUtc": "2026-09-22T11:18:48.038Z",
+  "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
+  "classes": {
+    "A": {
+      "label": "MONETARY_DISPLAY",
+      "rule": "muss Currency Contract konsumieren"
+    },
+    "B": {
+      "label": "PERCENTAGE_OR_RATIO",
+      "rule": "niemals FX-Konvertierung"
+    },
+    "C": {
+      "label": "STATIC_COPY",
+      "rule": "pruefen, ob dynamische Waehrung erforderlich"
+    },
+    "D": {
+      "label": "TEST_FIXTURE",
+      "rule": "nur aendern, wenn der Vertrag es verlangt"
+    },
+    "E": {
+      "label": "INTENTIONAL_NATIVE_CURRENCY",
+      "rule": "darf bleiben, Semantik dokumentieren"
+    },
+    "F": {
+      "label": "MIGRATED_FALLBACK",
+      "rule": "migriert; Zeile ist der Rueckfall ohne geladenen Core"
+    },
+    "UNCLASSIFIED": {
+      "label": "UNCLASSIFIED",
+      "rule": "von Hand ansehen"
+    }
+  },
+  "total": 33,
+  "byClass": {
+    "C": 5,
+    "UNCLASSIFIED": 4,
+    "F": 18,
+    "A": 1,
+    "B": 4,
+    "E": 1
+  },
+  "filesAffected": 16,
+  "migrationOrder": [
+    {
+      "file": "discover-v2/detail.js",
+      "monetary": 1,
+      "total": 4,
+      "counts": {
+        "A": 1,
+        "UNCLASSIFIED": 3
+      }
+    }
+  ],
+  "migratedFiles": [
+    "dashboard/app.js",
+    "discover/ui/cards.js",
+    "discover/ui/detail-fundamentals.js",
+    "discover/ui/detail.js",
+    "discover/ui/surfaces.js",
+    "hedgefonds/index.html",
+    "vu2/experience.js"
+  ],
+  "openClassA": 1,
+  "entries": [
+    {
+      "file": "discover/engines/fundamentals.js",
+      "line": 75,
+      "rule": "trailingDollar",
+      "class": "C",
+      "label": "STATIC_COPY",
+      "action": "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+      "confidence": "DECLARED",
+      "declaredReason": "Diagnosetext einer Auslassung, kein Anzeigewert. Die Schwelle ist in USD definiert */",
+      "text": "out.omitted.netMargin = out.omitted.fcfMargin = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatz \" + Math.round(rev.v) + \" $ unter \" + PLAUSIBILITY.minRevenueForM"
+    },
+    {
+      "file": "discover/engines/fundamentals.js",
+      "line": 607,
+      "rule": "trailingDollar",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
+      "declaredReason": null,
+      "text": "out.omitted.marginExpansion3y = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatzbasis in FY\" + (latest - 3) + \" oder FY\" + latest + \" unter \" + PLAUSIBILITY.minRe"
+    },
+    {
+      "file": "discover/ui/cards.js",
+      "line": 108,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return v.toLocaleString(\"de-DE\", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + \" $\";"
+    },
+    {
+      "file": "discover/ui/daten.js",
+      "line": 73,
+      "rule": "germanScaleDollar",
+      "class": "C",
+      "label": "STATIC_COPY",
+      "action": "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+      "confidence": "DECLARED",
+      "declaredReason": "Schwellenwert im Methodiktext (50 Mio. USD Umsatz), kein angezeigter Betrag */",
+      "text": "zeile(\"Plausibilität\", \"Margen erst ab 50 Mio. $ Umsatz; Margen über 150 % oder Gewinne über dem 1,5-fachen Umsatz gelten als Zähler-/Nennerfehler und werden ni"
+    },
+    {
+      "file": "discover/ui/daten.js",
+      "line": 92,
+      "rule": "germanScaleDollar",
+      "class": "C",
+      "label": "STATIC_COPY",
+      "action": "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+      "confidence": "DECLARED",
+      "declaredReason": "Schwellenwert im Methodiktext, kein angezeigter Betrag. Die Grenze ist in USD definiert und bleibt es, auch wenn der Nutzer EUR sieht */",
+      "text": "\" $, mindestens \" + Math.round(qual.minAvgDollarVolume20d / 1e6) + \" Mio. $ Tagesumsatz\" : \"Liquidität, Historie, Kurs\") +"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 116,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (unit === \"USD/shares\") return (Math.round(v * 100) / 100).toFixed(2).replace(\".\", \",\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 117,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (a >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 118,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (a >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 119,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/detail.js",
+      "line": 752,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return (Math.round(v / 100) / 10).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/detail.js",
+      "line": 754,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return Math.round(v) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 292,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (unit === \"USD/shares\") return (Math.round(v * 100) / 100).toFixed(2).replace(\".\", \",\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 293,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 294,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 295,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 232,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
+      "declaredReason": null,
+      "text": "var abs = Math.abs(value), scale = 1, suffix = \" $\";"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 233,
+      "rule": "germanScaleDollar",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
+      "declaredReason": null,
+      "text": "if (abs >= 1e12) { scale = 1e12; suffix = \" Bio. $\"; }"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 234,
+      "rule": "germanScaleDollar",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e9) { scale = 1e9; suffix = \" Mrd. $\"; }"
+    },
+    {
+      "file": "discover-v2/detail.js",
+      "line": 235,
+      "rule": "germanScaleDollar",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e6) { scale = 1e6; suffix = \" Mio. $\"; }"
+    },
+    {
+      "file": "discover-v2/home.js",
+      "line": 153,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleSt"
+    },
+    {
+      "file": "vu2/experience.js",
+      "line": 24,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "const n=(m,d=1)=>m&&Number.isFinite(m.value)?(vuFormat('formatPrice',m.value,m.unit,{numberLocale:'de-DE',decimals:d})||m.value.toLocaleString('de-DE',{maximumF"
+    },
+    {
+      "file": "vu2/experience.js",
+      "line": 101,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.da"
+    },
+    {
+      "file": "quant/api/portfolio-workspace.js",
+      "line": 39,
+      "rule": "currencyEquality",
+      "class": "E",
+      "label": "INTENTIONAL_NATIVE_CURRENCY",
+      "action": "Bewusst native Waehrung. Bleibt, die Begruendung steht im Code.",
+      "confidence": "DECLARED",
+      "declaredReason": "Bewertungs-Gate, keine Anzeige. Verweigert Fremdwaehrung,",
+      "text": "const available=stock?.state==='AVAILABLE'&&stock.marketState==='AVAILABLE'&&stock.price?.state==='AVAILABLE'&&stock.price.unit==='USD'&&Number.isFinite(stock.p"
+    },
+    {
+      "file": "dashboard/app.js",
+      "line": 10,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return \"$\"+Number(n).toFixed(2);"
+    },
+    {
+      "file": "dashboard/index_legacy_v63.html",
+      "line": 494,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "const metrics=[['Kurs','$'+format(score.close,2)],['RSI 14',format(score.rsi14)],['Momentum β',format(score.momentum_score_beta,0)+'/100'],['Timing β',format(sc"
+    },
+    {
+      "file": "dashboard/v2.js",
+      "line": 1,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "(async()=>{const view=document.body.dataset.view,q=s=>document.querySelector(s),sym=new URLSearchParams(location.search).get(\"symbol\")||\"NVDA\";const [u,f,p,m,t,"
+    },
+    {
+      "file": "morning/2026-09-05/index.html",
+      "line": 1,
+      "rule": "germanScaleDollar",
+      "class": "C",
+      "label": "STATIC_COPY",
+      "action": "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+      "confidence": "DECLARED",
+      "declaredReason": "Ueberschrift eines datierten Archivartikels. Der Betrag ist Fliesstext und beschreibt ein Ereignis zu seinem Datum, keinen aktuellen Wert. Eine Umschaltung waere keine Anzeige, sondern eine Faelschung des Archivs: die Schlagzeile hat so gestanden. Mechanisch migrierbar ist sie deshalb nicht (O-16). --></head><body><vu-navigation></vu-navigation><script src=\"/assets/site-navigation.js\"></script><main class=\"article-shell\"><article><header class=\"article-header\"><a class=\"back\" href=\"/morning/\">← Morning Briefing</a><div class=\"issue-meta\"><span>05. September 2026</span><span>07:00 Uhr</span><span>2 Min. Lesezeit</span></div><p class=\"eyebrow\">Atlas Börsengruß</p><h1>21,7 Milliarden Dollar: Broadcoms KI-Motor schaltet hoch</h1><p class=\"deck\">Custom Chips und Netzwerke werden zum zweiten großen Machtzentrum der KI-Infrastruktur.</p></header><figure class=\"article-hero\"><img src=\"/morning/assets/2026-09-05-broadcom-ai-infrastructure.png\" alt=\"Modernes Rechenzentrum mit unbeschriftetem KI-Chip und roten Datenlinien im Morgenlicht\" width=\"1600\" height=\"900\"><figcaption>KI-generiertes Editorial Visual · Vision Universe Morning</figcaption></figure><section class=\"key-number\"><p>Die Zahl des Tages</p><strong>21,7 Mrd. $</strong><span>Broadcoms erwarteter KI-Halbleiterumsatz im vierten Geschäftsquartal 2026</span></section><div class=\"article-body\"><p>Broadcom hat gerade eine Zahl geliefert, die den KI-Markt neu sortiert.</p>",
+      "text": "<!doctype html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>21,7 Milliarden Dollar: Bro"
+    },
+    {
+      "file": "morning/2026-09-08/index.html",
+      "line": 1,
+      "rule": "germanScaleDollar",
+      "class": "C",
+      "label": "STATIC_COPY",
+      "action": "Fliesstext oder Schwellenwert - keine dynamische Waehrung erforderlich.",
+      "confidence": "DECLARED",
+      "declaredReason": "Ueberschrift eines datierten Archivartikels. Der Betrag ist Fliesstext und beschreibt ein Ereignis zu seinem Datum, keinen aktuellen Wert. Eine Umschaltung waere keine Anzeige, sondern eine Faelschung des Archivs: die Schlagzeile hat so gestanden. Mechanisch migrierbar ist sie deshalb nicht (O-16). --></head><body><vu-navigation></vu-navigation><script src=\"/assets/site-navigation.js\"></script><main class=\"article-shell\"><article><header class=\"article-header\"><a class=\"back\" href=\"/morning/\">← Morning Briefing</a><div class=\"issue-meta\"><span>08. September 2026</span><span>09:00 Uhr</span><span>2 Min. Lesezeit</span></div><p class=\"eyebrow\">Atlas Börsengruß</p><h1>1,34 Milliarden Dollar: Upstarts KI-Kreditmaschine beschleunigt</h1><p class=\"deck\">Das Kreditvolumen wächst kräftig, obwohl das Ausfallrisiko erhöht bleibt.</p></header><figure class=\"article-hero\"><img src=\"/morning/assets/2026-09-08-upstart-ai-credit.png\" alt=\"Abstrakte KI-Kreditinfrastruktur aus Glas und Datenlinien im Morgenlicht\" width=\"1600\" height=\"900\"><figcaption>KI-generiertes Editorial Visual · Vision Universe Morning</figcaption></figure><section class=\"key-number\"><p>Die Zahl des Tages</p><strong>1,34 Mrd. $</strong><span>Von Upstart im August 2026 vermitteltes Kreditvolumen</span></section><div class=\"article-body\"><p>Upstart hat im August Kredite über 1,342 Milliarden Dollar vermittelt. Bei 26,5 Finanzierungstagen entspricht das 50,7 Millionen Dollar pro Tag.</p>",
+      "text": "<!doctype html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>1,34 Milliarden Dollar: Ups"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 533,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if(abs >= 1e12){ var t = abs/1e12; return sign + \"$\" + (Math.round(t*100)/100).toString().replace(/\\.?0+$/,\"\") + \"T\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 534,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if(abs >= 1e9){ var b = abs/1e9; return sign + \"$\" + (Math.round(b*10)/10).toString().replace(/\\.0$/,\"\") + \"B\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 535,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if(abs >= 1e6){ var m = abs/1e6; return sign + \"$\" + (Math.round(m*10)/10).toString().replace(/\\.0$/,\"\") + \"M\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 536,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if(abs >= 1e3){ var k = abs/1e3; return sign + \"$\" + (Math.round(k*10)/10).toString().replace(/\\.0$/,\"\") + \"K\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 537,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "return sign + \"$\" + Math.round(abs);"
+    }
+  ]
+}
