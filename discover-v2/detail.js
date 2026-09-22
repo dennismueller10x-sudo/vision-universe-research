@@ -29,11 +29,11 @@
     var hub = global.VUDiscover.LiveHub;
     var method = hub && (hub.live ? "live" : "subscribe");
     var original = method && hub[method];
-    var unsubscribers = [], observer = null, disposed = false;
+    var unsubscribers = [], observers = [], disposed = false;
     cleanup = function () {
       if (disposed) return;
       disposed = true;
-      if (observer) observer.disconnect();
+      observers.forEach(function (observer) { observer.disconnect(); });
       unsubscribers.forEach(function (unsubscribe) { unsubscribe(); });
     };
     /* The shared renderer subscribes synchronously but exposes no dispose.
@@ -52,8 +52,10 @@
     };
     try {
       global.VUDiscover.Detail.render(page, detail, ctx || {});
-      compose(page, detail);
-      observer = neutralCharts(page);
+      var fundamentalObserver = compose(page, detail);
+      var chartObserver = neutralCharts(page);
+      if (fundamentalObserver) observers.push(fundamentalObserver);
+      if (chartObserver) observers.push(chartObserver);
     } catch (error) {
       dispose();
       throw error;
@@ -111,7 +113,7 @@
       var story = journey.querySelector(".dx-story-list");
       var stage = journey.querySelector(".dx-journey--stage");
       if (story && stage) stage.insertAdjacentElement("afterend", story);
-      var instruction = node("p", "dv2-detail-intro", "Kennzahl wählen. Entwicklung verstehen.");
+      var instruction = node("p", "dv2-detail-intro", "Kennzahl wählen. Balken antippen, Geschäftsjahr vergleichen.");
       if (stage) journey.insertBefore(instruction, stage);
     }
     disclose(page.querySelector(".dx-chapter--damals"), "Damals und heute im direkten Vergleich");
@@ -214,6 +216,95 @@
       });
       sync();
     });
+    return interactiveFundamentalBars(journey, detail);
+  }
+  function journeyTrack(detail, trackId) {
+    var tracks = detail && detail.fundamentals && detail.fundamentals.journey && detail.fundamentals.journey.tracks;
+    if (!tracks || !trackId) return [];
+    if (trackId.indexOf("margins.") === 0) return tracks.margins && tracks.margins[trackId.slice(8)] || [];
+    return tracks[trackId] || [];
+  }
+  function selectedChange(first, current, margin) {
+    if (!first || !current || typeof first.v !== "number" || typeof current.v !== "number") return null;
+    if (margin) {
+      var points = (current.v - first.v) * 100;
+      return { text: (points >= 0 ? "+" : "−") + Math.abs(points).toFixed(1).replace(".", ",") + " Pp.", value: points };
+    }
+    if (first.v <= 0) return null;
+    var change = current.v / first.v - 1;
+    var percent = Math.abs(change * 100);
+    var formatted = percent >= 1000 ? Math.round(percent).toLocaleString("de-DE") : percent.toFixed(0).replace(".", ",");
+    return { text: (change >= 0 ? "+" : "−") + formatted + " %", value: change };
+  }
+  function interactiveFundamentalBars(journey, detail) {
+    if (!journey) return null;
+    var chart = journey.querySelector(".dx-journey-bild");
+    if (!chart) return null;
+    function selectBar(bar) {
+      var bars = Array.from(chart.querySelectorAll(".dx-journey-bar"));
+      var index = bars.indexOf(bar);
+      if (index < 0) return;
+      bars.forEach(function (candidate, candidateIndex) {
+        var selected = candidateIndex === index;
+        candidate.classList.toggle("is-selected", selected);
+        candidate.setAttribute("aria-pressed", String(selected));
+      });
+      chart.classList.add("has-bar-selection");
+      var title = bar.querySelector("title");
+      var match = title && title.textContent.match(/^GJ\s+([^:]+):\s*(.+)$/);
+      var current = journey.querySelector(".dx-journey-nach");
+      if (!match || !current) return;
+      var value = current.querySelector("b"), year = current.querySelector("span");
+      if (value) value.textContent = match[2];
+      if (year) year.textContent = "GJ " + match[1];
+      current.setAttribute("aria-live", "polite");
+      var activeTab = journey.querySelector('.dx-journey-tab[aria-selected="true"]');
+      var trackId = activeTab && activeTab.getAttribute("data-track");
+      var points = journeyTrack(detail, trackId);
+      var point = points[index], first = points[0];
+      var delta = journey.querySelector(".dx-journey-delta");
+      var change = selectedChange(first, point, trackId && trackId.indexOf("margins.") === 0);
+      if (delta && change) {
+        var deltaValue = delta.querySelector("b"), deltaYears = delta.querySelector("span");
+        if (deltaValue) deltaValue.textContent = change.text;
+        if (deltaYears) deltaYears.textContent = Math.max(0, point.fy - first.fy) + " Jahre";
+        delta.className = "dx-journey-delta num " + (change.value > 0 ? "up" : change.value < 0 ? "down" : "");
+      }
+    }
+    function enhance() {
+      chart.querySelectorAll(".dx-journey-wert").forEach(function (label) { label.remove(); });
+      var svg = chart.querySelector(".dx-journey-svg");
+      if (svg && !svg.hasAttribute("data-year-selection")) {
+        svg.setAttribute("role", "group");
+        svg.setAttribute("aria-label", (svg.getAttribute("aria-label") || "Jahresreihe") + ". Geschäftsjahr auswählen.");
+        svg.setAttribute("data-year-selection", "true");
+      }
+      var bars = Array.from(chart.querySelectorAll(".dx-journey-bar"));
+      if (!bars.length) return;
+      bars.forEach(function (bar, index) {
+        var title = bar.querySelector("title");
+        bar.setAttribute("role", "button");
+        bar.setAttribute("tabindex", "0");
+        bar.setAttribute("aria-label", (title ? title.textContent : "Geschäftsjahr " + (index + 1)) + " auswählen");
+      });
+      selectBar(bars.find(function (bar) { return bar.classList.contains("is-selected"); }) || bars[bars.length - 1]);
+    }
+    chart.addEventListener("click", function (event) {
+      var bar = event.target.closest && event.target.closest(".dx-journey-bar");
+      if (!bar || !chart.contains(bar)) return;
+      selectBar(bar);
+      if (bar.focus) bar.focus();
+    });
+    chart.addEventListener("keydown", function (event) {
+      var bar = event.target.closest && event.target.closest(".dx-journey-bar");
+      if (!bar || (event.key !== "Enter" && event.key !== " ")) return;
+      event.preventDefault();
+      selectBar(bar);
+    });
+    var observer = new MutationObserver(enhance);
+    observer.observe(chart, { childList: true, subtree: true });
+    enhance();
+    return observer;
   }
   function neutralCharts(page) {
     var chart = page.querySelector(".dx-chapter--chart");
