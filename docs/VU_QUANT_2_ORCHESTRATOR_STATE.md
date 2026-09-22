@@ -4,7 +4,7 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_MAIN
 
-- GitHub `main` at state capture: `ff393b529d8bd5400d7718acef0db0bdb88f247b`
+- GitHub `main` at latest follow-up audit capture: `f452688fe46eab0360e93b71eb0b100b0dc8b72c`
 - P0 merge commit: `3d850b7176f4ef688047f02919209761e308f537`
 - Production release source at acceptance: `3d850b7176f4ef688047f02919209761e308f537`
 - Production URL: `https://research.visionuniverse.de`
@@ -102,7 +102,13 @@ The counts come from the live Production capability artifact; the adapter states
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-Audit and widen Radar/Signals/Watchlist consumers against the accepted capability matrix. Preserve explicit feature-specific scopes where product intent requires them, but do not reuse them as Stock Intelligence or Product Universe gates.
+The first read-only follow-up audit found:
+
+- Watchlist already resolves arbitrary validated user selections through the canonical universe and is not Five-gated.
+- Radar/Markets consumes the canonical broad market-intelligence service, while the current UI deliberately renders only five observations; this is a presentation/performance slice and must remain explicitly named rather than treated as breadth evidence.
+- Signals still enumerates `development-preview.scope` and reads Golden-Preview histories. Expanding that call to all 6,875 titles would create prohibited history fanout.
+
+Therefore the next implementation is an on-demand, capability-gated Signals consumer for a selected title or bounded user selection, reusing canonical history and the existing Market Signal contract. Do not replace it with an all-universe history fanout. Re-measure Radar and Watchlist after that integration before proceeding to Strategy Lab.
 
 ## RESUME_STATE
 
