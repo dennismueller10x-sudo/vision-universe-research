@@ -504,13 +504,50 @@ Stichtagsgroessen belegt an echten Wochenend-Geschaeftsjahresenden:
 AAPL 2025-09-27 (Sa) → FX vom 26.09., NVDA 2026-01-25 (So) → FX vom
 23.01., MSFT 2026-06-30 (Di) → `DAILY_AT_DATE`.
 
-### Was der Nachweis ausdruecklich NICHT bestanden meldet
+### Paarabdeckung: 40 von 61 Richtungen
 
-| Pruefung | Zustand | Grund |
+`pair-availability.json` (committet, enthaelt keine Kurse) haelt fest,
+welche gebrauchten Paare der Anbieter fuehrt. **21 Richtungen fuehrt er
+nicht.** Die Unternehmen, die in diesen Waehrungen berichten, behalten
+ihre Originalwaehrung — dauerhaft, nicht bis zum naechsten Lauf. Das ist
+eine Produktaussage, kein Laufergebnis, und deshalb committet statt in
+der Arbeitsablage.
+
+### Realtime: was gemessen ist und was aussteht
+
+Die Kette zerfaellt in zwei Nachweise, und nur einer haengt an der New
+Yorker Boerse.
+
+**`RT1` Realtime-Kette gegen den produktiven FX-Stand — bestanden.**
+Drei echte Titel, echte native Waehrung, echter FX-Stand, ein FX-Abruf
+fuer alle drei. Jede Umrechnung von Hand gegengerechnet:
+
+| Titel | nativ | FX-Stand | EUR |
+|---|---|---|---|
+| AAPL | 326,57 USD | 2026-09-21 (DAILY) | 278,50 € |
+| NVDA | 218,36 USD | 2026-09-21 (DAILY) | 186,22 € |
+| MSFT | 492,44 USD | 2026-09-21 (DAILY) | 419,95 € |
+
+Und der Befund, auf den es ankommt:
+
+> `realtimeClaimAllowed: false` — **mit einem TAGESKURS ist „Realtime EUR"
+> nicht zulaessig.** Der Aktienkurs waere realtime, die Umrechnung ist es
+> nicht, und das Produkt daraus erst recht nicht (§53).
+
+Das ist kein Mangel des Layers, sondern seine Aufgabe. Und es ist
+behebbar: `fxIntraday` und `fxRealtime` sind beide **gemessen vorhanden**.
+Ein Intraday-FX-Ingest wuerde die Zusage tragen — siehe **O-9**.
+
+**`RT2` Realtime am offenen US-Markt — NOT_PROVEN.** Der Lauf fiel auf
+07:11 UTC; die regulaere Sitzung laeuft 13:30–20:00 UTC. §58: nicht
+kuenstlich als PASS melden.
+
+### Weitere Grenzen, die der Nachweis offenlegt
+
+| Fall | Zustand | Grund |
 |---|---|---|
-| `RT1` Realtime am offenen Markt | **NOT_PROVEN** | kein laufender Stream, keine gemessene offene US-Sitzung. §58: nicht kuenstlich als PASS melden. |
-| `FD-NVO` (DKK) | BLOCKED → behoben | DKK fiel bei `--max-pairs=40` unter den Schnitt; jetzt 80 |
 | TM/BABA Free Cash Flow FY2020 | `insufficientPeriodCoverage` | die Periode 2019-04 bis 2020-03 liegt fast vollstaendig **vor** dem Beginn der FX-Historie (2020-02-29). Korrekt verweigert statt genaehert. |
+| 21 Paarrichtungen | `pairNotServed` | der Anbieter fuehrt sie nicht; die Werte bleiben nativ |
 
 ### Tests
 
@@ -535,7 +572,7 @@ diesem Workstream und werden hier nicht repariert.
 | `REGRESSION_GUARD` | **PASS** |
 | `NEW_REGRESSIONS` | **0** |
 | `PAID_SERVICES_ENABLED` | **0** |
-| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** |
+| `REALTIME_FX` | **MARKET_CLOSED_NOT_PROVEN** (Kette in `RT1` belegt, Markt-Tick in `RT2` offen) |
 
 ---
 
@@ -547,7 +584,8 @@ Die urspruenglichen O-1 bis O-6 sind abgearbeitet. Offen bleibt:
 |---|---|---|
 | **O-7** | Die FX-Historie beginnt **2020-02-29**. Wie sollen 10J- und MAX-Charts in EUR damit umgehen? | Heute verweigert der Layer korrekt (`beforeSeriesStart`), statt zu naehern. Drei Wege: EUR-Chart auf den belegten Zeitraum begrenzen, den Nutzer in USD verweisen, oder eine Referenzquelle fuer die Zeit davor — Letzteres waere eine zweite Quelle und braucht eine Entscheidung. |
 | **O-8** | Realtime-Nachweis bei offener US-Sitzung nachholen | Der einzige Punkt, der `MARKET_CLOSED_NOT_PROVEN` zu `PASS` macht. Braucht einen Lauf zwischen 15:30 und 22:00 MEZ. |
-| **O-9** | Stufe C ist verfuegbar. Bleibt es bei A? | Gemessen: 500 Ticks ueber 50 Titel auf einen FX-Abruf. Ein Wechsel braucht einen belegten Consumer-Nutzen, nicht die blosse Verfuegbarkeit. |
+| **O-9** | Stufe C ist verfuegbar. Bleibt es bei A — und wird FX **intraday** statt taeglich geholt? | Zwei getrennte Fragen. Bei A bleiben ist gemessen guenstig: 500 Ticks ueber 50 Titel auf einen FX-Abruf. Aber solange der Store TAGESKURSE fuehrt, darf keine EUR-Anzeige „Realtime" heissen (`RT1`). Ein Intraday-Ingest — `fxIntraday` ist belegt — traegt die Zusage, ohne Stufe C und ohne zweiten Push-Transport. Das ist vermutlich der eigentliche Hebel. |
 | **O-10** | 258 Datensaetze ohne belegbare Waehrung, davon 76 mit uneinheitlichem Abschluss | Sie werden heute korrekt nicht umgerechnet. Ob die Angabe nachgezogen wird, ist eine Frage an die SEC-Pipeline. |
 | **O-11** | Redistribution der FX-Reihen | Sie liegen in der Arbeitsablage und werden nicht ausgeliefert. Eine oeffentliche EUR-Anzeige braucht einen Eintrag in `display-policy.js` mit Datum und Grundlage. |
+| **O-13** | 21 Paarrichtungen fuehrt Tiingo nicht (`pair-availability.json`) | Die betroffenen Unternehmen bleiben dauerhaft in ihrer Originalwaehrung. Das ist heute korrekt und sichtbar. Ob fuer diese Waehrungen eine Referenzquelle sinnvoll ist, ist dieselbe Frage wie O-2 — und sie ist erst jetzt belegt statt vermutet. |
 | **O-12** | Migration der 25 Klasse-A-Stellen | Der Nachweis steht; nach O-6 darf die Migration jetzt beginnen. Discover 2.1 laeuft parallel (§48) — der Abbau gehoert in den Workstream, der die Oberflaeche ohnehin anfasst. |

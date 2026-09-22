@@ -530,17 +530,104 @@ check("F4", "Prozentkennzahlen und Multiples sind unter dem Waehrungswechsel unv
 /* --------------------------------------------------------------------- */
 /* §58 Realtime                                                            */
 /* --------------------------------------------------------------------- */
-check("RT1", "Realtime-Nachweis bei offener US-Sitzung", () => {
-  /* Ein Realtime-Nachweis braucht einen laufenden Stream und eine offene
-     Boerse. Beides gibt es in einem CI-Lauf nicht, und §58 ist an dieser
-     Stelle ausdruecklich: fehlender Nachweis wird dokumentiert, nicht als
-     PASS gemeldet. */
+/* Die Realtime-Kette zerfaellt in zwei Nachweise, und nur einer haengt an
+   der New Yorker Boerse.
+
+   Die erste Fassung meldete beide zusammen als NOT_PROVEN. Das war
+   ehrlich und zu grob: der Teil, der jederzeit messbar ist - rechnet die
+   Kette Tick mal produktivem FX-Stand korrekt, und traegt das Ergebnis
+   den richtigen Anspruch - blieb dadurch ungeprueft, obwohl nichts ihn
+   hinderte. Ein "nicht nachgewiesen", das auch das Nachweisbare
+   verschweigt, ist kein Ergebnis. */
+check("RT1", "Realtime-Kette gegen den produktiven FX-Stand", () => {
+  const RealtimeState = require(join(FXDIR, "fx-realtime-state.js"));
+  const Freshness = require(join(FXDIR, "fx-freshness.js"));
+
+  const now = Date.now();
+  const phase = Freshness.marketPhase(now);
+  const rt = RealtimeState.createState({ store: fx.store, now: () => now, refreshSeconds: 60 });
+
+  /* Echte Titel, echte native Waehrung, echter FX-Stand. Die Preise sind
+     die letzten aus der kanonischen Kursreihe - kein Realtime-Tick, aber
+     ein echter Kurs in seiner echten Waehrung, und genau darum geht es
+     hier: die Kette, nicht die Frische des Aktienkurses. */
+  const rows = [];
+  for (const ticker of ["AAPL", "NVDA", "MSFT"]) {
+    const series = loadSeries(ticker);
+    if (!series) continue;
+    const last = series.points[series.points.length - 1];
+    const native = Registry.normalize(series.currency);
+    const tick = rt.decorate({ symbol: ticker, price: last[1], currency: native }, "EUR");
+
+    if (!tick.display) {
+      rows.push({ ticker, state: "NO_FX", freshness: tick.fxFreshness.state });
+      continue;
+    }
+    /* Gegenprobe von Hand gegen denselben Store. */
+    const quote = fx.store.latest(native, "EUR");
+    if (Math.abs(tick.display.value - last[1] * quote.rate) > 1e-9) {
+      throw new Error(`${ticker}: Kette rechnet ${tick.display.value}, Handrechnung ${last[1] * quote.rate}`);
+    }
+    /* Und die Zusage muss zur Frequenz passen (§53). */
+    const expectedClaim = tick.fxFreshness.state === "CURRENT" &&
+      ["REALTIME", "INTRADAY", "IDENTITY"].includes(tick.fxFreshness.frequency);
+    if (tick.realtimeClaimAllowed !== expectedClaim) {
+      throw new Error(`${ticker}: realtimeClaimAllowed=${tick.realtimeClaimAllowed}, erwartet ${expectedClaim}`);
+    }
+    rows.push({
+      ticker, nativePrice: last[1], nativeCurrency: native,
+      fxRateAsOf: tick.fx.asOf, fxDerivation: tick.fx.derivation,
+      fxFrequency: tick.fxFreshness.frequency, fxFreshness: tick.fxFreshness.state,
+      displayEur: Number(tick.display.value.toFixed(4)),
+      formatted: Format.formatPrice(tick.display.value, "EUR"),
+      realtimeClaimAllowed: tick.realtimeClaimAllowed,
+      outage: tick.fxOutage.state
+    });
+  }
+
+  const snap = rt.snapshot();
+  const converted = rows.filter((r) => r.displayEur !== undefined);
+  if (!converted.length) {
+    return { state: "BLOCKED", detail: "Kein Titel umrechenbar; der FX-Store liefert nichts.", rows };
+  }
+
+  const claims = [...new Set(converted.map((r) => r.realtimeClaimAllowed))];
+  const frequencies = [...new Set(converted.map((r) => r.fxFrequency))];
+
+  return {
+    detail: `${converted.length} Titel durch die Kette, ${snap.stats.fxReads} FX-Abruf(e) ` +
+            `(${snap.stats.ticksPerFxRead} Ticks je Abruf). Devisenmarkt: ${phase.phase}. ` +
+            `FX-Frequenz im Store: ${frequencies.join(", ")} -> ` +
+            (claims.length === 1 && claims[0] === false
+              ? "'Realtime EUR' ist mit diesem Bestand NICHT zulaessig; der Aktienkurs waere realtime, die Umrechnung nicht (§53)."
+              : "die Zusage traegt."),
+    rows
+  };
+});
+
+check("RT2", "Realtime-Nachweis bei offener US-Sitzung", () => {
+  /* Der zweite Teil braucht einen laufenden Stream UND eine offene
+     Boerse. §58 ist hier ausdruecklich: fehlender Nachweis wird
+     dokumentiert, nicht als PASS gemeldet. */
+  const Freshness = require(join(FXDIR, "fx-freshness.js"));
+  const now = new Date();
+  const utcHour = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const dow = now.getUTCDay();
+  /* NYSE 09:30-16:00 Ortszeit; im September gilt EDT (UTC-4). */
+  const equityOpen = dow >= 1 && dow <= 5 && utcHour >= 13.5 && utcHour < 20;
+
   return {
     state: "NOT_PROVEN",
-    detail: "Kein laufender Realtime-Stream und keine gemessene offene US-Sitzung in diesem Lauf. " +
-            "Der Pfad ist in quant/tests/currency-fx-matrix.test.mjs (I10-I12) gegen den Store geprueft: " +
-            "ein FX-Stand bedient viele Ticks, doppelte Umrechnung wird verhindert, STALE verbietet den Realtime-Anspruch. " +
-            "Der Nachweis am offenen Markt steht aus und wird nicht als erbracht gemeldet."
+    detail: (equityOpen
+      ? "Die US-Sitzung laeuft, aber in diesem Lauf ist kein Realtime-Stream angebunden. "
+      : `Die US-Sitzung ist geschlossen (jetzt ${now.toISOString().slice(11, 16)} UTC; regulaer 13:30-20:00 UTC). `) +
+      `Der Devisenmarkt ist ${Freshness.marketPhase(now).phase}. ` +
+      "Die Kette selbst ist in RT1 gegen den produktiven FX-Stand nachgerechnet und in " +
+      "quant/tests/currency-fx-matrix.test.mjs (I10-I12, O5-1 bis O5-6) gegen den Store geprueft. " +
+      "Was aussteht, ist ausschliesslich der Nachweis mit einem echten Aktien-Tick am offenen Markt - " +
+      "und der wird nicht als erbracht gemeldet.",
+    rows: [{ utcNow: now.toISOString(), usEquitySessionOpen: equityOpen,
+             fxMarketPhase: Freshness.marketPhase(now).phase }]
   };
 });
 

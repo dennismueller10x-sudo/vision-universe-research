@@ -105,6 +105,13 @@ jobs:
       - name: Waehrungsabdeckung des SEC-Bestands (O-4)
         run: node scripts/market/build-currency-coverage.mjs --publish
 
+      - name: Currency Debt Register (O-6)
+        # Die Klassifikation der fest verdrahteten Waehrungsstellen
+        # gehoert ins Repository, nicht in eine Arbeitsablage: sie ist
+        # die Arbeitsliste fuer die Migration und muss zwischen zwei
+        # Laeufen vergleichbar bleiben.
+        run: node scripts/quality/build-currency-debt-register.mjs --publish
+
       - name: FX-Faehigkeiten messen (O-1)
         if: steps.secret.outputs.available == 'true'
         env:
@@ -127,7 +134,8 @@ jobs:
             const files = [
               "quant/data/market/capabilities/tiingo-fx-probe.json",
               "quant/data/market/fx/pair-requirements.json",
-              "quant/data/market/fx/currency-coverage.json"
+              "quant/data/market/fx/currency-coverage.json",
+              "quant/data/market/fx/currency-debt-register.json"
             ].filter(fs.existsSync);
             const key = process.env.TIINGO_API_KEY;
             for (const file of files) {
@@ -166,7 +174,8 @@ jobs:
             "FX-Faehigkeiten und Waehrungsbedarf gemessen (automatischer Lauf)" \
             quant/data/market/capabilities/tiingo-fx-probe.json \
             quant/data/market/fx/pair-requirements.json \
-            quant/data/market/fx/currency-coverage.json
+            quant/data/market/fx/currency-coverage.json \
+            quant/data/market/fx/currency-debt-register.json
 
       - name: Faehigkeitsmatrix ins Protokoll
         run: cat quant/data/market/capabilities/tiingo-fx-probe.json
@@ -236,12 +245,22 @@ jobs:
         # Gegenprobe zur Absicht: waere unter quant/data/market/fx eine
         # Kursreihe gelandet, wuerde sie im naechsten Commit
         # veroeffentlicht. Genau das soll dieser Lauf nicht tun.
+        #
+        # Die Liste ist eine ERLAUBNIS, keine Sperre gegen Bekanntes: was
+        # nicht daraufsteht, bricht ab. Lauf 35698296752 hat das gezeigt -
+        # pair-availability.json kam neu hinzu und wurde prompt
+        # abgewiesen, bevor irgendetwas committet war. Eine Liste, die
+        # stattdessen Kursreihen namentlich ausschloesse, haette die neue
+        # Datei durchgelassen und beim naechsten unbekannten Namen wieder.
+        #
+        # Wer hier etwas eintraegt, bestaetigt damit: diese Datei enthaelt
+        # keine Anbieterkurse. Der Schritt darueber prueft das maschinell.
         run: |
           if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
             for f in quant/data/market/fx/*.json; do
               case "$(basename "$f")" in
-                pair-requirements.json|currency-coverage.json) ;;
-                *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad."; exit 1 ;;
+                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json) ;;
+                *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad und steht nicht auf der Erlaubnisliste."; exit 1 ;;
               esac
             done
           fi

@@ -1,0 +1,440 @@
+{
+  "schema": "vu-currency-debt-register-1.0.0",
+  "generatedAtUtc": "2026-09-22T07:13:26.212Z",
+  "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
+  "classes": {
+    "A": {
+      "label": "MONETARY_DISPLAY",
+      "rule": "muss Currency Contract konsumieren"
+    },
+    "B": {
+      "label": "PERCENTAGE_OR_RATIO",
+      "rule": "niemals FX-Konvertierung"
+    },
+    "C": {
+      "label": "STATIC_COPY",
+      "rule": "pruefen, ob dynamische Waehrung erforderlich"
+    },
+    "D": {
+      "label": "TEST_FIXTURE",
+      "rule": "nur aendern, wenn der Vertrag es verlangt"
+    },
+    "E": {
+      "label": "INTENTIONAL_NATIVE_CURRENCY",
+      "rule": "darf bleiben, Semantik dokumentieren"
+    },
+    "UNCLASSIFIED": {
+      "label": "UNCLASSIFIED",
+      "rule": "von Hand ansehen"
+    }
+  },
+  "total": 30,
+  "byClass": {
+    "A": 25,
+    "UNCLASSIFIED": 1,
+    "B": 4
+  },
+  "filesAffected": 15,
+  "migrationOrder": [
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "monetary": 5,
+      "total": 5,
+      "counts": {
+        "A": 5
+      }
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "monetary": 5,
+      "total": 5,
+      "counts": {
+        "A": 5
+      }
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "monetary": 4,
+      "total": 4,
+      "counts": {
+        "A": 4
+      }
+    },
+    {
+      "file": "discover/ui/daten.js",
+      "monetary": 2,
+      "total": 2,
+      "counts": {
+        "A": 2
+      }
+    },
+    {
+      "file": "discover/ui/detail.js",
+      "monetary": 2,
+      "total": 2,
+      "counts": {
+        "A": 2
+      }
+    },
+    {
+      "file": "discover/engines/fundamentals.js",
+      "monetary": 1,
+      "total": 2,
+      "counts": {
+        "A": 1,
+        "UNCLASSIFIED": 1
+      }
+    },
+    {
+      "file": "discover/ui/cards.js",
+      "monetary": 1,
+      "total": 1,
+      "counts": {
+        "A": 1
+      }
+    },
+    {
+      "file": "vu2/experience.js",
+      "monetary": 1,
+      "total": 2,
+      "counts": {
+        "B": 1,
+        "A": 1
+      }
+    },
+    {
+      "file": "quant/api/portfolio-workspace.js",
+      "monetary": 1,
+      "total": 1,
+      "counts": {
+        "A": 1
+      }
+    },
+    {
+      "file": "dashboard/app.js",
+      "monetary": 1,
+      "total": 1,
+      "counts": {
+        "A": 1
+      }
+    },
+    {
+      "file": "morning/2026-09-05/index.html",
+      "monetary": 1,
+      "total": 1,
+      "counts": {
+        "A": 1
+      }
+    },
+    {
+      "file": "morning/2026-09-08/index.html",
+      "monetary": 1,
+      "total": 1,
+      "counts": {
+        "A": 1
+      }
+    }
+  ],
+  "entries": [
+    {
+      "file": "discover/engines/fundamentals.js",
+      "line": 74,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "out.omitted.netMargin = out.omitted.fcfMargin = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatz \" + Math.round(rev.v) + \" $ unter \" + PLAUSIBILITY.minRevenueForM"
+    },
+    {
+      "file": "discover/engines/fundamentals.js",
+      "line": 541,
+      "rule": "trailingDollar",
+      "class": "UNCLASSIFIED",
+      "label": "UNCLASSIFIED",
+      "action": "Von Hand ansehen. Die Merkmale reichen nicht; eine geratene Klasse waere schlimmer als keine.",
+      "confidence": "NONE",
+      "text": "out.omitted.marginExpansion3y = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatzbasis in FY\" + (latest - 3) + \" oder FY\" + latest + \" unter \" + PLAUSIBILITY.minRe"
+    },
+    {
+      "file": "discover/ui/cards.js",
+      "line": 60,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return v.toLocaleString(\"de-DE\", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + \" $\";"
+    },
+    {
+      "file": "discover/ui/daten.js",
+      "line": 72,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
+      "text": "zeile(\"Plausibilität\", \"Margen erst ab 50 Mio. $ Umsatz; Margen über 150 % oder Gewinne über dem 1,5-fachen Umsatz gelten als Zähler-/Nennerfehler und werden ni"
+    },
+    {
+      "file": "discover/ui/daten.js",
+      "line": 90,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "\" $, mindestens \" + Math.round(qual.minAvgDollarVolume20d / 1e6) + \" Mio. $ Tagesumsatz\" : \"Liquidität, Historie, Kurs\") +"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 36,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (unit === \"USD/shares\") return (Math.round(v * 100) / 100).toFixed(2).replace(\".\", \",\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 39,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (a >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 40,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (a >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 41,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/detail-fundamentals.js",
+      "line": 534,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "isNum(v.price) ? { label: \"Kurs der Rechnung\", wert: v.price.toFixed(2).replace(\".\", \",\") + \" $\", zusatz: \"Stand \" + (f.asOf || \"\") } : null"
+    },
+    {
+      "file": "discover/ui/detail.js",
+      "line": 735,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return (Math.round(v / 100) / 10).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/detail.js",
+      "line": 737,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return Math.round(v) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 221,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (unit === \"USD/shares\") return (Math.round(v * 100) / 100).toFixed(2).replace(\".\", \",\") + \" $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 224,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (a >= 1e9) return (v / 1e9).toFixed(1).replace(\".\", \",\") + \" Mrd. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 225,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if (a >= 1e6) return (v / 1e6).toFixed(0) + \" Mio. $\";"
+    },
+    {
+      "file": "discover/ui/surfaces.js",
+      "line": 226,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
+    },
+    {
+      "file": "discover-v2/home.js",
+      "line": 153,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "text": "function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleSt"
+    },
+    {
+      "file": "vu2/experience.js",
+      "line": 7,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "text": "const n=(m,d=1)=>m&&Number.isFinite(m.value)?m.value.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+(m.unit==='percent'?' %':m.unit=="
+    },
+    {
+      "file": "vu2/experience.js",
+      "line": 83,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.da"
+    },
+    {
+      "file": "quant/api/portfolio-workspace.js",
+      "line": 16,
+      "rule": "currencyEquality",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
+      "text": "const available=stock?.state==='AVAILABLE'&&stock.marketState==='AVAILABLE'&&stock.price?.state==='AVAILABLE'&&stock.price.unit==='USD'&&Number.isFinite(stock.p"
+    },
+    {
+      "file": "dashboard/app.js",
+      "line": 5,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "function usd(n){return \"$\"+Number(n).toFixed(2)}"
+    },
+    {
+      "file": "dashboard/index_legacy_v63.html",
+      "line": 494,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "text": "const metrics=[['Kurs','$'+format(score.close,2)],['RSI 14',format(score.rsi14)],['Momentum β',format(score.momentum_score_beta,0)+'/100'],['Timing β',format(sc"
+    },
+    {
+      "file": "dashboard/v2.js",
+      "line": 1,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "text": "(async()=>{const view=document.body.dataset.view,q=s=>document.querySelector(s),sym=new URLSearchParams(location.search).get(\"symbol\")||\"NVDA\";const [u,f,p,m,t,"
+    },
+    {
+      "file": "morning/2026-09-05/index.html",
+      "line": 1,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
+      "text": "<!doctype html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>21,7 Milliarden Dollar: Bro"
+    },
+    {
+      "file": "morning/2026-09-08/index.html",
+      "line": 1,
+      "rule": "germanScaleDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "MEDIUM",
+      "text": "<!doctype html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>1,34 Milliarden Dollar: Ups"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 521,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if(abs >= 1e12){ var t = abs/1e12; return sign + \"$\" + (Math.round(t*100)/100).toString().replace(/\\.?0+$/,\"\") + \"T\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 522,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if(abs >= 1e9){ var b = abs/1e9; return sign + \"$\" + (Math.round(b*10)/10).toString().replace(/\\.0$/,\"\") + \"B\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 523,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if(abs >= 1e6){ var m = abs/1e6; return sign + \"$\" + (Math.round(m*10)/10).toString().replace(/\\.0$/,\"\") + \"M\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 524,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "if(abs >= 1e3){ var k = abs/1e3; return sign + \"$\" + (Math.round(k*10)/10).toString().replace(/\\.0$/,\"\") + \"K\"; }"
+    },
+    {
+      "file": "hedgefonds/index.html",
+      "line": 525,
+      "rule": "trailingDollar",
+      "class": "A",
+      "label": "MONETARY_DISPLAY",
+      "action": "Muss den Currency Contract konsumieren (layer.money/price/metric, money-format).",
+      "confidence": "HIGH",
+      "text": "return sign + \"$\" + Math.round(abs);"
+    }
+  ]
+}
