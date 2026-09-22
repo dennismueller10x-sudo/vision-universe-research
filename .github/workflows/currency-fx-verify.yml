@@ -54,6 +54,7 @@ on:
       - 'scripts/market/build-fx-pair-requirements.mjs'
       - 'scripts/market/build-currency-coverage.mjs'
       - 'scripts/quality/verify-currency-layer.mjs'
+      - 'scripts/quality/verify-historical-fx-coverage.mjs'
       - 'scripts/market/build-fx-history-ecb.mjs'
       - 'scripts/market/ingest-fx-intraday.mjs'
       - 'providers/ecb/**'
@@ -226,6 +227,10 @@ jobs:
         continue-on-error: true
         run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=12
 
+      - name: Historische FX-Abdeckung (O-7)
+        if: always()
+        run: node scripts/quality/verify-historical-fx-coverage.mjs --publish
+
       - name: Nachweis des Currency Layers an echten Titeln
         if: always()
         run: node scripts/quality/verify-currency-layer.mjs
@@ -267,6 +272,11 @@ jobs:
               "EZB-Abdeckung und Nahtstelle gemessen (automatischer Lauf)" \
               quant/data/market/fx/ecb-coverage.json
           fi
+          if [ -f quant/data/market/fx/historical-coverage.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Historische FX-Abdeckung gemessen (automatischer Lauf)" \
+              quant/data/market/fx/historical-coverage.json
+          fi
 
       - name: Die FX-Reihen bleiben im Arbeitsverzeichnis
         if: always()
@@ -287,7 +297,7 @@ jobs:
           if ls quant/data/market/fx/*.json >/dev/null 2>&1; then
             for f in quant/data/market/fx/*.json; do
               case "$(basename "$f")" in
-                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json) ;;
+                pair-requirements.json|currency-coverage.json|pair-availability.json|currency-debt-register.json|ecb-coverage.json|historical-coverage.json) ;;
                 *) echo "ABBRUCH: $f liegt im veroeffentlichten Pfad und steht nicht auf der Erlaubnisliste."; exit 1 ;;
               esac
             done
