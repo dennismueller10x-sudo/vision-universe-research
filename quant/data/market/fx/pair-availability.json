@@ -1,0 +1,604 @@
+{
+  "schema": "vu-fx-pair-availability-1.0.0",
+  "generatedAtUtc": "2026-09-22T07:11:10.343Z",
+  "note": "Welche gebrauchten Waehrungspaare der Anbieter fuehrt. Enthaelt keine Kurse - nur Paarnamen, Beobachtungszahlen und Gruende. Waehrungen ohne Paar bleiben im Produkt in ihrer Originalwaehrung stehen.",
+  "provider": "tiingo",
+  "startDate": "2020-03-30",
+  "requestedStartDate": "2015-01-01",
+  "startClampedToMeasuredDepth": true,
+  "directionsNeeded": 62,
+  "canonicalPairsAttempted": 61,
+  "served": [
+    {
+      "requested": "USD/EUR",
+      "storedAs": "EUR/USD",
+      "direction": "INVERSE",
+      "observations": 2017,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 10858
+    },
+    {
+      "requested": "CNY/USD",
+      "storedAs": "USD/CNY",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 124
+    },
+    {
+      "requested": "CAD/EUR",
+      "storedAs": "EUR/CAD",
+      "direction": "INVERSE",
+      "observations": 2014,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 83
+    },
+    {
+      "requested": "CAD/USD",
+      "storedAs": "CAD/USD",
+      "direction": "DIRECT",
+      "observations": 1435,
+      "first": "2022-02-10",
+      "last": "2026-09-22",
+      "securitiesServed": 83
+    },
+    {
+      "requested": "BRL/USD",
+      "storedAs": "USD/BRL",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 26
+    },
+    {
+      "requested": "GBP/EUR",
+      "storedAs": "EUR/GBP",
+      "direction": "INVERSE",
+      "observations": 2013,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 24
+    },
+    {
+      "requested": "GBP/USD",
+      "storedAs": "GBP/USD",
+      "direction": "DIRECT",
+      "observations": 2017,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 24
+    },
+    {
+      "requested": "HKD/EUR",
+      "storedAs": "EUR/HKD",
+      "direction": "INVERSE",
+      "observations": 1459,
+      "first": "2022-01-10",
+      "last": "2026-09-22",
+      "securitiesServed": 19
+    },
+    {
+      "requested": "HKD/USD",
+      "storedAs": "USD/HKD",
+      "direction": "INVERSE",
+      "observations": 2016,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 19
+    },
+    {
+      "requested": "SGD/EUR",
+      "storedAs": "EUR/SGD",
+      "direction": "INVERSE",
+      "observations": 1744,
+      "first": "2021-02-08",
+      "last": "2026-09-22",
+      "securitiesServed": 18
+    },
+    {
+      "requested": "SGD/USD",
+      "storedAs": "USD/SGD",
+      "direction": "INVERSE",
+      "observations": 2016,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 18
+    },
+    {
+      "requested": "JPY/EUR",
+      "storedAs": "EUR/JPY",
+      "direction": "INVERSE",
+      "observations": 2015,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 15
+    },
+    {
+      "requested": "JPY/USD",
+      "storedAs": "JPY/USD",
+      "direction": "DIRECT",
+      "observations": 1434,
+      "first": "2022-02-11",
+      "last": "2026-09-22",
+      "securitiesServed": 15
+    },
+    {
+      "requested": "AUD/EUR",
+      "storedAs": "EUR/AUD",
+      "direction": "INVERSE",
+      "observations": 2012,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 13
+    },
+    {
+      "requested": "AUD/USD",
+      "storedAs": "AUD/USD",
+      "direction": "DIRECT",
+      "observations": 2017,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 13
+    },
+    {
+      "requested": "MXN/EUR",
+      "storedAs": "EUR/MXN",
+      "direction": "INVERSE",
+      "observations": 1745,
+      "first": "2021-02-08",
+      "last": "2026-09-22",
+      "securitiesServed": 12
+    },
+    {
+      "requested": "ARS/USD",
+      "storedAs": "USD/ARS",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 12
+    },
+    {
+      "requested": "MXN/USD",
+      "storedAs": "MXN/USD",
+      "direction": "DIRECT",
+      "observations": 1248,
+      "first": "2022-09-20",
+      "last": "2026-09-22",
+      "securitiesServed": 12
+    },
+    {
+      "requested": "KRW/USD",
+      "storedAs": "USD/KRW",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 9
+    },
+    {
+      "requested": "ILS/EUR",
+      "storedAs": "EUR/ILS",
+      "direction": "INVERSE",
+      "observations": 437,
+      "first": "2021-02-08",
+      "last": "2022-07-07",
+      "securitiesServed": 7
+    },
+    {
+      "requested": "ILS/USD",
+      "storedAs": "USD/ILS",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 7
+    },
+    {
+      "requested": "CHF/EUR",
+      "storedAs": "EUR/CHF",
+      "direction": "INVERSE",
+      "observations": 2013,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 6
+    },
+    {
+      "requested": "TWD/USD",
+      "storedAs": "USD/TWD",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 6
+    },
+    {
+      "requested": "INR/USD",
+      "storedAs": "USD/INR",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 6
+    },
+    {
+      "requested": "CHF/USD",
+      "storedAs": "CHF/USD",
+      "direction": "DIRECT",
+      "observations": 1434,
+      "first": "2022-02-10",
+      "last": "2026-09-22",
+      "securitiesServed": 6
+    },
+    {
+      "requested": "ZAR/EUR",
+      "storedAs": "EUR/ZAR",
+      "direction": "INVERSE",
+      "observations": 1747,
+      "first": "2021-02-08",
+      "last": "2026-09-22",
+      "securitiesServed": 5
+    },
+    {
+      "requested": "ZAR/USD",
+      "storedAs": "USD/ZAR",
+      "direction": "INVERSE",
+      "observations": 2018,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 5
+    },
+    {
+      "requested": "CLP/USD",
+      "storedAs": "USD/CLP",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 5
+    },
+    {
+      "requested": "PEN/USD",
+      "storedAs": "USD/PEN",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 4
+    },
+    {
+      "requested": "DKK/EUR",
+      "storedAs": "EUR/DKK",
+      "direction": "INVERSE",
+      "observations": 1743,
+      "first": "2021-02-08",
+      "last": "2026-09-22",
+      "securitiesServed": 2
+    },
+    {
+      "requested": "TRY/EUR",
+      "storedAs": "EUR/TRY",
+      "direction": "INVERSE",
+      "observations": 2010,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 2
+    },
+    {
+      "requested": "DKK/USD",
+      "storedAs": "USD/DKK",
+      "direction": "INVERSE",
+      "observations": 2017,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 2
+    },
+    {
+      "requested": "TRY/USD",
+      "storedAs": "USD/TRY",
+      "direction": "INVERSE",
+      "observations": 2018,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 2
+    },
+    {
+      "requested": "COP/USD",
+      "storedAs": "USD/COP",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 2
+    },
+    {
+      "requested": "SEK/EUR",
+      "storedAs": "EUR/SEK",
+      "direction": "INVERSE",
+      "observations": 2012,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 1
+    },
+    {
+      "requested": "RUB/EUR",
+      "storedAs": "EUR/RUB",
+      "direction": "INVERSE",
+      "observations": 419,
+      "first": "2021-02-08",
+      "last": "2022-07-22",
+      "securitiesServed": 1
+    },
+    {
+      "requested": "PHP/USD",
+      "storedAs": "USD/PHP",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 1
+    },
+    {
+      "requested": "SEK/USD",
+      "storedAs": "USD/SEK",
+      "direction": "INVERSE",
+      "observations": 2018,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 1
+    },
+    {
+      "requested": "IDR/USD",
+      "storedAs": "USD/IDR",
+      "direction": "INVERSE",
+      "observations": 2030,
+      "first": "2020-03-30",
+      "last": "2026-09-22",
+      "securitiesServed": 1
+    },
+    {
+      "requested": "RUB/USD",
+      "storedAs": "USD/RUB",
+      "direction": "INVERSE",
+      "observations": 682,
+      "first": "2020-03-30",
+      "last": "2022-07-22",
+      "securitiesServed": 1
+    }
+  ],
+  "notServed": [
+    {
+      "requested": "CNY/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "cnyeur",
+        "eurcny"
+      ],
+      "securitiesAffected": 124,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "BRL/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "brleur",
+        "eurbrl"
+      ],
+      "securitiesAffected": 26,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "ARS/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "arseur",
+        "eurars"
+      ],
+      "securitiesAffected": 12,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "KRW/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "krweur",
+        "eurkrw"
+      ],
+      "securitiesAffected": 9,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "TWD/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "twdeur",
+        "eurtwd"
+      ],
+      "securitiesAffected": 6,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "INR/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "inreur",
+        "eurinr"
+      ],
+      "securitiesAffected": 6,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "CLP/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "clpeur",
+        "eurclp"
+      ],
+      "securitiesAffected": 5,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "PEN/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "peneur",
+        "eurpen"
+      ],
+      "securitiesAffected": 4,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "MYR/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "myreur",
+        "eurmyr"
+      ],
+      "securitiesAffected": 4,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "MYR/USD",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "myrusd",
+        "usdmyr"
+      ],
+      "securitiesAffected": 4,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "COP/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "copeur",
+        "eurcop"
+      ],
+      "securitiesAffected": 2,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "PHP/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "phpeur",
+        "eurphp"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "IDR/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "idreur",
+        "euridr"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "AFN/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "afneur",
+        "eurafn"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "VND/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "vndeur",
+        "eurvnd"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "KZT/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "kzteur",
+        "eurkzt"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "MOP/EUR",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "mopeur",
+        "eurmop"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "AFN/USD",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "afnusd",
+        "usdafn"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "VND/USD",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "vndusd",
+        "usdvnd"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "KZT/USD",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "kztusd",
+        "usdkzt"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    },
+    {
+      "requested": "MOP/USD",
+      "reason": "pairNotServed",
+      "triedTickers": [
+        "mopusd",
+        "usdmop"
+      ],
+      "securitiesAffected": 1,
+      "consequence": "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    }
+  ],
+  "unservedCurrencies": [
+    "AFN",
+    "ARS",
+    "BRL",
+    "CLP",
+    "CNY",
+    "COP",
+    "IDR",
+    "INR",
+    "KRW",
+    "KZT",
+    "MOP",
+    "MYR",
+    "PEN",
+    "PHP",
+    "TWD",
+    "VND"
+  ],
+  "securitiesWithoutPair": 212
+}
