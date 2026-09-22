@@ -48,7 +48,8 @@
    *   delivered         { sessionDate, asOfMs }  - der Stand, den der
    *                     Browser bekommt (veroeffentlichte Seite). null,
    *                     wenn nicht gemessen.
-   *   lastCycle         { triggerAt, ok, written } - letzter Taktzyklus
+   *   lastCycle         { triggerAt, fetchEndAt, ok, written } - letzter Taktzyklus
+   *                     Gemessen wird ab fetchEndAt, solange es eines gibt.
    *   intervalMs        Zieltakt
    *   graceMs           Zuschlag fuer Lauf- und Auslieferungszeit
    * @returns {{verdict, findings: Array<{severity, code, text}>, facts}}
@@ -72,7 +73,31 @@
     var zyklus = l.lastCycle || null;
 
     var snapAlter = snap && typeof snap.asOfMs === "number" ? jetzt - snap.asOfMs : null;
-    var zyklusAlter = zyklus && zyklus.triggerAt ? jetzt - Date.parse(zyklus.triggerAt) : null;
+
+    /* GEMESSEN WIRD AB DEM ENDE EINES ZYKLUS, NICHT AB SEINEM BEGINN.
+       Korrektur nach dem Produktionsbefund vom 21.09.2026, 18:06:55.
+
+       Ein Zyklus BEGINNT alle 5:04 und DAUERT 5:02. Das Alter seines
+       Beginns pendelt deshalb zwischen 0 und ~10:06 - und die Schwelle
+       fuer "verspaetet" liegt bei Intervall plus Nachsicht, also 9 min.
+       Der Waechter meldete WARNING, waehrend der Takt voellig stabil
+       lief (Z9 17:51:59, Z10 17:57:03, Z11 18:02:10, Z12 18:07:14).
+
+       Verglichen wurden zwei verschiedene Dinge: die Zeit SEIT
+       Zyklusbeginn gegen den Abstand ZWISCHEN zwei Beginnen. Wer frueh
+       genug im Zyklus misst, bekommt PASS; wer spaet misst, WARNING -
+       bei identischer Produktion. Ein Waechter, der etwa jedes fuenfte
+       Mal grundlos anschlaegt, wird nicht mehr gelesen, und dann
+       uebersieht man den Fall, fuer den er gebaut wurde.
+
+       Das Ende eines Zyklus ist ausserdem der ehrlichere Bezugspunkt:
+       dann sind die Daten da. Laeuft ein Zyklus noch (kein Ende
+       verzeichnet), gilt sein Beginn - waehrend eines laufenden Abrufs
+       soll die Uhr ja weiterlaufen. */
+    var zyklusEnde = zyklus && zyklus.fetchEndAt ? Date.parse(zyklus.fetchEndAt) : NaN;
+    var zyklusStart = zyklus && zyklus.triggerAt ? Date.parse(zyklus.triggerAt) : NaN;
+    var bezug = isFinite(zyklusEnde) ? zyklusEnde : (isFinite(zyklusStart) ? zyklusStart : null);
+    var zyklusAlter = bezug === null ? null : jetzt - bezug;
 
     /* --- 1. Die falsche Sitzung ---------------------------------------
        Der Fall aus dem Auftrag. Bei offener Boerse ist ein Snapshot einer

@@ -66,7 +66,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(view==='watchlist'){
   await page.getByRole('heading',{name:'Wen möchtest du beobachten?',exact:true}).waitFor();
   for(const ticker of ['NVDA','TSLA']){await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();}
-  await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).waitFor();
+  await page.waitForFunction(()=>document.querySelectorAll('.watchlist-member').length===2);if(await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).count())throw Error('canonical watchlist member remained five-scope gated');
   await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.watchlist-member').count()!==2)throw Error('watchlist selection not preserved');
   await page.getByRole('button',{name:'TSLA aus Watchlist entfernen',exact:true}).click();await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();
   await page.getByRole('link',{name:'Historische Änderungen',exact:true}).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Signals Unternehmen'}).inputValue()!=='NVDA')throw Error('watchlist signal context lost');
@@ -83,7 +83,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('button',{name:'Unternehmen hinzufügen',exact:true}).click();await page.getByRole('button',{name:'Unternehmen hinzufügen',exact:true}).click();await page.locator('.compare-controls select').nth(3).waitFor();await page.getByRole('combobox',{name:'Vergleich Bereich'}).selectOption('growth');
   await page.getByRole('rowheader',{name:/Margenausweitung/}).waitFor();await page.waitForFunction(()=>document.querySelectorAll('.compare-table td').length===16);
   const saved=await page.getByRole('link',{name:'Diese Auswahl erneut öffnen',exact:true}).getAttribute('href');await page.goto(origin+saved);await page.locator('main footer').waitFor();if(await page.locator('.compare-controls select').count()!==4)throw Error('comparison link lost selection');
-  await page.goto(origin+'/vu2/?view=compare&tickers=NVDA,TSLA');await page.locator('main footer').waitFor();await page.getByRole('heading',{name:'Nicht alle Unternehmen auswertbar',exact:true}).waitFor();if(await page.locator('.compare-table thead th').count()!==3)throw Error('unavailable comparison column dropped');
+  await page.goto(origin+'/vu2/?view=compare&tickers=NVDA,TSLA');await page.locator('main footer').waitFor();if(await page.getByRole('heading',{name:'Nicht alle Unternehmen auswertbar',exact:true}).count())throw Error('canonical comparison remained five-scope gated');if(await page.locator('.compare-table thead th').count()!==3)throw Error('canonical comparison column dropped');
   await page.goto(origin+'/vu2/?view=compare&tickers=NVDA,NVDA');await page.locator('main footer').waitFor();await page.getByRole('heading',{name:'Vergleichsauswahl prüfen',exact:true}).waitFor();
   await page.goto(origin+saved);await page.locator('main footer').waitFor();await page.getByRole('combobox',{name:'Vergleich Bereich'}).selectOption('quality');await page.getByRole('button',{name:'AAPL aus Vergleich entfernen',exact:true}).click();await page.getByRole('button',{name:'JPM aus Vergleich entfernen',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('.compare-table thead th').length===3);await page.getByText('Definition',{exact:true}).first().click();
  }
@@ -93,7 +93,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('technical');await page.getByRole('heading',{name:'Die Kursstruktur von NVDA',exact:true}).waitFor();
   await page.getByRole('combobox',{name:'Atlas Unternehmen'}).selectOption('JPM');await page.getByRole('heading',{name:'Die Kursstruktur von JPM',exact:true}).waitFor();
   await page.getByRole('combobox',{name:'Atlas Frage'}).selectOption('quality');await page.getByRole('combobox',{name:'Atlas Unternehmen'}).selectOption('NVDA');await page.locator('.atlas-evidence').getByText(pct(nvda.fundamentals.operatingMargin),{exact:true}).waitFor();await page.getByText('Beleg & Definition',{exact:true}).first().click();
-  const calls=await page.evaluate(async()=>{const tools=VUAtlasTools.create(VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery}));return [await tools.call('runBacktest',{}),await tools.call('getQuantEvidence',{ticker:'TSLA'})];});if(calls[0].ok||calls[1].data.state==='AVAILABLE')throw Error('Atlas crossed execution/display scope');
+  const calls=await page.evaluate(async()=>{const tools=VUAtlasTools.create(VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery}));return [await tools.call('runBacktest',{}),await tools.call('getQuantEvidence',{ticker:'TSLA'})];});if(calls[0].ok||calls[1].data.state!=='AVAILABLE'||calls[1].data.score.state!=='UNAVAILABLE')throw Error('Atlas consumer breadth or execution gate changed');
  }
  await auditAccessibility(page,view,width);
  await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}checks.push({view,width,pass:true});
@@ -103,21 +103,22 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).waitFor();await page.screenshot({path:out+'/canonical-search-'+width+'.png',fullPage:true});
  await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).click();await page.locator('main footer').waitFor();
  await page.getByRole('heading',{name:/Tesla/,exact:false}).waitFor();
- if(!await page.locator('.q-chart').count()||await page.locator('.quote').count())throw Error('canonical stock chart missing or inherited another stock quote/date');await page.getByRole('link',{name:'Historische Fundamentals',exact:true}).waitFor();await auditAccessibility(page,'canonical-stock',width);
+ if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('canonical stock intelligence missing or duplicated');await page.getByRole('link',{name:'Historische Fundamentals',exact:true}).waitFor();await page.getByRole('heading',{name:'Technical Intelligence',exact:true}).waitFor();await page.getByText(/Kursfaktor-Evidenz/).waitFor();await auditAccessibility(page,'canonical-stock',width);
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('canonical stock identity overflow');
  await page.screenshot({path:out+'/canonical-stock-'+width+'.png',fullPage:true});checks.push({view:'canonical-search-identity',width,pass:true});
  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
- await page.getByRole('heading',{name:'NVIDIA Corporation',exact:true}).waitFor();await page.getByText(/Die Daten können derzeit nicht geladen werden/).waitFor();
- if(!await page.locator('.q-chart').count()||await page.locator('.quote').count())throw Error('panel outage lost independent history or fabricated quote');
+ await page.getByRole('heading',{name:'NVIDIA Corporation',exact:true}).waitFor();if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('panel outage hid independent canonical intelligence');
  const independent=await page.evaluate(async()=>{const service=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});const model=await service.getHistoricalPriceHistory('NVDA');const raw=await QuantShell.loadJSON(model.sourcePath);return model.identity.ticker==='NVDA'&&JSON.stringify(model.bars)===JSON.stringify(raw.points.map(([date,close])=>({date,close})));});
  if(!independent)throw Error('panel outage chart differs from canonical source');
  await page.route('**/quant/data/market/discover-series/**',route=>route.abort());
+ await page.route('**/quant/data/market/golden-preview/daily/**',route=>route.abort());
  await page.route('**/quant/data/market/intraday/**',route=>route.abort());
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
- if(await page.locator('.q-chart,.quote').count())throw Error('combined source outage fabricated values');
+ if(await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('history outage hid valid quote or fabricated chart');
  await page.getByRole('heading',{name:'Kurshistorie derzeit nicht verfügbar',exact:true}).waitFor();
  await page.unroute('**/quant/data/market/discover-series/**');
+ await page.unroute('**/quant/data/market/golden-preview/daily/**');
  await page.unroute('**/quant/data/market/intraday/**');
  await page.unroute('**/quant/data/sec/quant-factor-inputs.json');checks.push({view:'canonical-identity-panel-outage',width,pass:true});
  await page.goto(origin+'/vu2/?view=does-not-exist');await page.getByRole('heading',{name:'Diese Ansicht wurde nicht gefunden',exact:true}).waitFor();if(await page.locator('h1').count()!==1)throw Error('unknown route kept a misleading view');await page.screenshot({path:out+'/not-found-'+width+'.png',fullPage:true});await page.getByRole('link',{name:'Research öffnen',exact:true}).click();await page.getByRole('heading',{name:'Research ohne Umwege',exact:true}).waitFor();checks.push({view:'unknown-workspace-recovery',width,pass:true});

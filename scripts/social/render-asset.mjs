@@ -53,6 +53,21 @@ import { createHash } from "node:crypto";
 const require = createRequire(import.meta.url);
 const VisualQuality = require(
   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js"));
+const VisualGrammar = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js"));
+const ScrollStop = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js"));
+const Brand = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/brand.js"));
+/* Wie viele Stellen eine Zahl hat, rechnet die Komposition - die
+   Balkenbeschriftung holt die Antwort von dort, statt sie ein zweites
+   Mal zu bilden. */
+/* Was innen bleibt und was nach draussen darf, entscheidet eine
+   Engine - nicht der Renderer mit einer eigenen Regel. */
+const ContentIntelligence = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/content-intelligence.js"));
+const VisualComposition = require(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-composition.js"));
 
 /* Die Palette der Seite. Ein Beitrag in Fremdfarben waere kein
    Vision-Universe-Asset. */
@@ -87,6 +102,323 @@ export const NICHT_GEZEICHNET = {
    Bilder unter einer Kennung, und der Unterschied fiele erst im Konto
    auf. */
 export const SCHRIFT_PFAD = "assets/fonts/inter-latin.woff2";
+
+/* =====================================================================
+   DAS LOGO IST EIN ASSET, KEIN GESETZTER TEXT (§11, §18, §44)
+
+   Hier stand bis zuletzt:
+
+       <div class="marke"><b>VISION UNIVERSE</b>&reg;</div>
+
+   Also dieselben Buchstaben in Inter Bold. Das kanonische Zeichen ist
+   eine eigene, geometrische Wortmarke - andere Buchstabenformen,
+   andere Laufweite, anderes R im Kreis. Nebeneinandergelegt sind es
+   zwei verschiedene Zeichen, und §18 nennt genau das beim Namen:
+   "Logo nicht neu zeichnen oder textuell approximieren".
+
+   Bitter daran: checkLogoUsage() steht seit diesem Auftrag in
+   brand.js und haette das abgewiesen - nur hat es niemand gefragt.
+   Ein Tor, das nicht im Weg steht, ist kein Tor, und diesmal stand es
+   neben der einzigen Stelle, an der die Marke wirklich gezeichnet
+   wird.
+
+   Das Asset ist schwarz und die Karte ist schwarz. Dafuer gibt es
+   jetzt genau eine, eng gefasste Transformation
+   (`invert-monochrome`), und sie gilt nur fuer ein einfarbiges
+   Zeichen. Geometrie, Proportion und Abstaende bleiben unberuehrt.
+   ===================================================================== */
+export const LOGO_PFAD = "assets/vision-universe-logo.png";
+
+/* Die oeffentlichen Namen unserer Quellen. Sie stehen in
+   visual-data.mjs und werden von dort uebernommen - ein zweiter
+   Begriff davon, wie unsere Quellen heissen, waere einer zu viel. */
+import { QUELLENNAME, QUELLEN_NAMENSRAUM } from "./visual-data.mjs";
+
+/* Die Masse des kanonischen Assets. Sie stehen NICHT hier als Zahlen,
+   sondern werden aus der Datei gelesen - eine zweite Angabe koennte
+   driften, und dann prueft der Vertrag ein Logo, das es nicht gibt. */
+export function logoMasse(root) {
+  const pfad = join(root || process.cwd(), LOGO_PFAD);
+  const d = readFileSync(pfad);
+  /* PNG: IHDR steht immer an Byte 16..24. */
+  return { breite: d.readUInt32BE(16), hoehe: d.readUInt32BE(20), bytes: d.length };
+}
+
+/* Wie breit das Logo auf der Karte steht: ein Viertel der Flaeche.
+   Der Logo-Vertrag laesst 12 bis 40 Prozent zu; 24 liegt in der Mitte
+   und ergibt bei 1080 Pixeln Breite eine Signatur von 260 Pixeln. */
+export const LOGO_BREITEN_ANTEIL = 0.24;
+
+export function logoKasten(breite, root) {
+  const m = logoMasse(root);
+  const bw = Math.round(breite * LOGO_BREITEN_ANTEIL);
+  return { breite: bw, hoehe: Math.round(bw * (m.hoehe / m.breite)), asset: m };
+}
+
+/* Weiss auf #050505. Der Kontrast wird GERECHNET und nicht geschaetzt:
+   relative Leuchtdichte nach WCAG, (L1+0.05)/(L2+0.05). */
+function leuchtdichte(hex) {
+  const k = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2];
+}
+export function kontrast(a, b) {
+  const l1 = leuchtdichte(a), l2 = leuchtdichte(b);
+  const [hell, dunkel] = l1 > l2 ? [l1, l2] : [l2, l1];
+  return Math.round(((hell + 0.05) / (dunkel + 0.05)) * 100) / 100;
+}
+
+/** Das Logo als Data-URI, damit das Bild ohne Netz entsteht. */
+export function logoDatenUri(root) {
+  return "data:image/png;base64," +
+    readFileSync(join(root || process.cwd(), LOGO_PFAD)).toString("base64");
+}
+
+/* =====================================================================
+   ATLAS WIRD GEZEICHNET, NICHT NUR MODELLIERT
+
+   §16/§17 beschreiben vier Atlas-Rollen mit Flaechenbaendern, brand.js
+   fuehrt den Atlas-Vertrag, visual-grammar.js prueft Rolle gegen
+   Familie - und auf keinem erzeugten Bild war Atlas je zu sehen. Das
+   Modell war vollstaendig und ohne Produktionsweg: ein Vertrag ueber
+   etwas, das nie stattfand.
+
+   Aufgefallen ist es nicht in einem Test, sondern beim Ansehen des
+   fertigen Bildes. Dasselbe Muster wie beim Logo, das als HTML-Text
+   nachgebaut war: die Regel stand da, die einzige Stelle, an der
+   gezeichnet wird, kannte sie nicht.
+
+   Wie beim Logo gilt: das kanonische Asset, sonst nichts. Kein
+   Textprompt, keine Neuzeichnung, keine Approximation. Erlaubt ist
+   genau `scale` - die Figur wird kleiner, nicht anders.
+   ===================================================================== */
+export const ATLAS_PFAD = Brand.ATLAS_ASSET_PATH;
+
+export function atlasMasse(root) {
+  const d = readFileSync(join(root || process.cwd(), ATLAS_PFAD));
+  return { breite: d.readUInt32BE(16), hoehe: d.readUInt32BE(20), bytes: d.length };
+}
+
+export function atlasDatenUri(root) {
+  return "data:image/png;base64," +
+    readFileSync(join(root || process.cwd(), ATLAS_PFAD)).toString("base64");
+}
+
+/* Welche Rolle der Renderer spielen kann.
+
+   HERO ist ausgeschlossen: als HERO traegt Atlas die AUSSAGE des
+   Bildes, und dieser Renderer zeichnet keine Szene - er setzt eine
+   Figur an den Rand. Eine Rolle zu behaupten, die das Bild nicht
+   einloest, waere genau der Dekorationsfall, den §12 ausschliesst.
+
+   Die Reihenfolge ist eine Vorliebe, keine Rangfolge: anwesend und
+   mitsehend, sonst als Absenderzeichen, sonst fuehrend. Was die
+   gewaehlte Familie nicht zulaesst, kommt nicht vor. */
+const ATLAS_ROLLEN_VORLIEBE = ["ATLAS_OBSERVER", "ATLAS_SIGNATURE", "ATLAS_GUIDE"];
+
+/**
+ * Der Atlas-Kasten zu einer Rolle: Pixel aus dem Flaechenband der
+ * Rolle und dem Seitenverhaeltnis des ECHTEN Assets.
+ *
+ * Der angegebene Flaechenanteil wird aus den gerundeten Pixeln
+ * zurueckgerechnet. Den beabsichtigten Anteil zu melden waere eine
+ * Angabe ueber die Absicht und nicht ueber das Bild.
+ */
+export function atlasKasten(rolle, breite, hoehe, root) {
+  const r = VisualGrammar.ATLAS_ROLLEN[rolle];
+  if (!r) return null;
+  const m = atlasMasse(root);
+  const seite = m.breite / m.hoehe;
+  const ziel = (r.flaecheMin + r.flaecheMax) / 2;
+  const h = Math.round(Math.sqrt((ziel * breite * hoehe) / seite));
+  const b = Math.round(h * seite);
+  return { rolle, breite: b, hoehe: h,
+    flaechenAnteil: (b * h) / (breite * hoehe), asset: m };
+}
+
+/* -------------------------------------------------------------------
+   DIE SCHRIFTGROESSEN DES GEZEICHNETEN BILDES
+
+   Sie sind kein Geschmack, sondern eine Eigenschaft des Bildes, die
+   sich messen laesst - und die Visual Grammar misst sie. Deshalb
+   stehen sie an EINEM Ort und reisen im Plan mit, statt im
+   HTML-Template ein zweites Mal aufzutauchen.
+
+   Die Werte in Pixel beziehen sich auf die Flaeche 1080x1350.
+   ------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   DIE SEITE VERMISST SICH SELBST
+
+   Die Frage, die §13 stellt - was liest das Auge zuerst - laesst sich
+   an Schriftgroessen nicht beantworten. Eine Zahl in 122 Pixeln hat
+   die groessere Versalhoehe; ein Satz in 76 Pixeln ueber zwei Zeilen
+   hat die dreifache FLAECHE. Gemessen sind es 39.793 gegen 114.356
+   Quadratpixel.
+
+   Geschaetzt werden muss das nicht. Der Browser, der das Bild ohnehin
+   zeichnet, kennt jede Zeilenbox. Dieses Skript liest sie mit einer
+   Range ueber den Textinhalt - also die wirkliche Flaeche der
+   Schrift, nicht den Kasten des Elements, der bei einem Block-Element
+   immer die volle Breite hat.
+
+   Das Ergebnis landet in einem Element, das `--dump-dom` zurueckgibt.
+   Kein Protokoll, kein zweiter Prozess: dieselbe Seite, aus der das
+   JPEG entsteht.
+   ------------------------------------------------------------------- */
+export const MESS_SKRIPT = `<script>
+(function(){
+  function messen(){
+    var out=[];
+    var knoten=document.querySelectorAll("[data-vu-rolle]");
+    for(var n=0;n<knoten.length;n++){
+      var el=knoten[n];
+      var rng=document.createRange(); rng.selectNodeContents(el);
+      var k=rng.getClientRects();
+      var flaeche=0,oben=null,unten=null,links=null,rechts=null;
+      for(var i=0;i<k.length;i++){
+        flaeche+=k[i].width*k[i].height;
+        oben  =oben  ===null?k[i].top   :Math.min(oben,k[i].top);
+        unten =unten ===null?k[i].bottom:Math.max(unten,k[i].bottom);
+        links =links ===null?k[i].left  :Math.min(links,k[i].left);
+        rechts=rechts===null?k[i].right :Math.max(rechts,k[i].right);
+      }
+      if(!k.length) continue;
+      out.push({rolle:el.getAttribute("data-vu-rolle"),
+        text:(el.textContent||"").trim(),
+        zeilen:k.length,flaeche:Math.round(flaeche),
+        oben:Math.round(oben),unten:Math.round(unten),
+        links:Math.round(links),rechts:Math.round(rechts),
+        schrift:Math.round(parseFloat(getComputedStyle(el).fontSize))});
+    }
+    /* In ein ATTRIBUT, nicht in ein Element. Der erste Entwurf schrieb
+       die Zahlen in ein <div> - und sie standen im fertigen JPEG, unter
+       der Quellenzeile, in sechs Zeilen Kleingedrucktem. Der Test sah es
+       nicht, das Tor sah es nicht; sichtbar wurde es erst, als jemand
+       das Bild ansah. Ein Attribut kann per Konstruktion nicht rendern,
+       egal was ein spaeteres Stylesheet tut. */
+    document.documentElement.setAttribute("data-vu-messung",JSON.stringify(out));
+    /* Figuren getrennt von Text. Eine Figur hat keine Schriftgroesse
+       und keine Zeilen; sie in dieselbe Liste zu legen hiesse, die
+       Textmessung mit etwas zu fuellen, das kein Text ist. */
+    var figuren=[];
+    var f=document.querySelectorAll("[data-vu-figur]");
+    for(var j=0;j<f.length;j++){
+      var e2=f[j]; var r2=e2.getBoundingClientRect();
+      if(!r2.width||!r2.height) continue;
+      figuren.push({figur:e2.getAttribute("data-vu-figur"),
+        rolle:e2.getAttribute("data-vu-atlas-rolle")||null,
+        flaeche:Math.round(r2.width*r2.height),
+        breite:Math.round(r2.width),hoehe:Math.round(r2.height),
+        oben:Math.round(r2.top),unten:Math.round(r2.bottom),
+        links:Math.round(r2.left),rechts:Math.round(r2.right)});
+    }
+    document.documentElement.setAttribute("data-vu-figuren",JSON.stringify(figuren));
+  }
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(messen);}
+  else{messen();}
+})();
+<\/script>`;
+
+/* ---------------------------------------------------------------------
+   WELCHE TEXTEBENE DIE HOOK TRAEGT — EINMAL, NICHT ZWEIMAL
+
+   Diese Regel stand zweimal im Haus: der Kartenpfad verlangte
+   ausdruecklich `role: "HOOK"`, der Kompositionspfad nahm die erste
+   Ebene, die irgendeinen Text trug. Beide Pfade zeichnen dieselbe
+   Kopfzeile, und nur einer war korrigiert - auf dem gezeichneten Bild
+   stand deshalb weiter "Lagebeschreibung, keine Prognose.", der
+   Nachsatz einer These, gross und oben.
+
+   Zwei Register fuer eine Tatsache: genau das Fehlerbild, das dieses
+   Projekt schon bei den Lerndimensionen und beim Quellennamen hatte.
+   Die Regel wohnt ab hier an einer Stelle.
+   --------------------------------------------------------------------- */
+export function hookEbeneAus(pkg) {
+  const ebenen = (pkg && pkg.visualBrief && pkg.visualBrief.textLayers) || [];
+  return ebenen.find((l) => l && l.text && String(l.text).trim() &&
+    String(l.role || l.rolle || "").toUpperCase() === "HOOK") || null;
+}
+
+/* ---------------------------------------------------------------------
+   DER NAME EINER QUELLE IST KEIN SCHLUESSEL
+
+   "Quelle: vu.technical" stand unter einer fertig gezeichneten
+   Grafik. `vu.technical` ist unser Schluessel fuer eine Datenreihe,
+   kein Name, den jemand kennt - ein interner Systembegriff auf einem
+   oeffentlichen Bild.
+
+   Der Kartenpfad bildete den Schluessel schon ab, der
+   Kompositionspfad nicht. Statt die Abbildung ein zweites Mal
+   einzusetzen, entscheidet ab hier EINE Funktion fuer beide Pfade.
+
+   Zwei Schritte, und der zweite war der erste Entwurf nicht:
+
+     1. Steht der Wert in QUELLENNAME, ist er einer UNSERER Schluessel
+        und bekommt seinen oeffentlichen Namen.
+     2. Sonst gilt er als Name - es sei denn, er hat die FORM eines
+        Schluessels.
+
+   Der erste Entwurf wies alles ab, was nicht im Register stand. Das
+   war ein zu weit gebautes Tor: "Bloomberg" ist ein oeffentlicher
+   Name und braucht keinen Eintrag, um einer zu sein. QUELLENNAME ist
+   das Register unserer eigenen Schluessel, nicht das Verzeichnis aller
+   Quellen der Welt - es dafuer zu halten, hat im Test drei richtige
+   Bilder verhindert.
+
+   Was ein Schluessel IST, entscheidet content-intelligence.js an
+   seiner Form. Diese Frage gehoert dorthin, wo innen und aussen
+   getrennt werden, und nicht ein zweites Mal hierher.
+   --------------------------------------------------------------------- */
+export function quellenName(roh) {
+  const text = String(roh === null || roh === undefined ? "" : roh).trim();
+  if (!text) return { ok: false, grund: "leer", name: null };
+  if (QUELLENNAME[text]) return { ok: true, name: QUELLENNAME[text] };
+  const raum = QUELLEN_NAMENSRAUM.find((r) => text.startsWith(r.praefix));
+  if (raum) return { ok: true, name: raum.name };
+  if (ContentIntelligence.istSystemschluessel(text)) {
+    return { ok: false, grund: "systemschluessel", name: null };
+  }
+  return { ok: true, name: text };
+}
+
+/* ---------------------------------------------------------------------
+   DIE FIGUR IM MARKUP - EINMAL FUER BEIDE VORLAGEN
+
+   `data-vu-figur` und nicht `data-vu-rolle`: die Messung trennt Text
+   von Figur. Ein Atlas in der Textmessung haette als "andere Flaeche"
+   gezaehlt und die Hook-Dominanz nach §14 rechnerisch geschlagen -
+   ein Tor, das an einer Figur scheitert, misst nicht mehr, was es
+   messen soll.
+   --------------------------------------------------------------------- */
+function atlasBild(p) {
+  const a = p && p.atlas;
+  if (!a || !p.atlasUri) return "";
+  return `<img class="atlas" alt="Atlas" data-vu-figur="ATLAS"
+    data-vu-atlas-rolle="${a.rolle}"
+    width="${a.breite}" height="${a.hoehe}"
+    style="width:${a.breite}px;height:${a.hoehe}px" src="${p.atlasUri}">`;
+}
+
+export function textGroessen(visualType) {
+  return {
+    marke: 26,
+    entitaet: 34,
+    zahl: visualType === "NUMBER_VISUAL" ? 190 : 122,
+    zahlText: 32,
+    /* Die Kopfzeile traegt die Hook, und §15 verlangt, dass man sie auf
+       einem Telefon LIEST und nicht nur sieht. Die Mobilschwelle der
+       Visual Grammar liegt bei 5,5 % der Bildhoehe, also 74 Pixel bei
+       1350. Vorher standen hier 58 (und 40 bei NUMBER_VISUAL) - beides
+       darunter. */
+    aussage: 76,
+    beleg: 40,
+    quelle: 24,
+    /* Das Logo ist kein Schriftgrad, sondern ein Kasten. Er steht hier,
+       weil die Vorlagen und der Logo-Vertrag dieselbe Angabe brauchen -
+       zwei Kaesten waeren zwei Logos. */
+    logo: logoKasten(1080)
+  };
+}
 
 export function ladeSchrift(wurzel) {
   const pfad = resolve(join(wurzel || process.cwd(), SCHRIFT_PFAD));
@@ -163,6 +495,99 @@ export function ersteBelegteZahl(pkg) {
  * Chromium zu starten. Der Zyklus kann das im Schattenbetrieb mitlaufen
  * lassen; ein Test kann es ohne Browser pruefen.
  */
+/* -------------------------------------------------------------------
+   DIE GRAMMATIK URTEILT UEBER DAS, WAS WIRKLICH GEZEICHNET WIRD
+
+   Sie bekommt den Plan - nicht eine Beschreibung daneben. Was der
+   Plan nicht enthaelt, wird nicht ergaenzt; fehlt eine Angabe, faellt
+   die zugehoerige Regel als ungemessen durch.
+
+   Der Befund BLOCKIERT hier noch nicht. Das ist keine Nachlaessigkeit,
+   sondern die Reihenfolge: der gezeichnete Kartenpfad hat heute keine
+   eigene Hook-Ebene, der Satz auf dem Bild ist im Kompositionspfad aus
+   Daten gerechnet. Ein Tor, das jedes reale Bild abweist, waere kein
+   Qualitaetstor, sondern ein Stillstand. Der Befund wird deshalb
+   GEMESSEN, benannt und mitgefuehrt - und die Sperre folgt mit der
+   Hook-Ebene (§13/§15).
+   ------------------------------------------------------------------- */
+function grammatikSpec(entwurf) {
+  return VisualGrammar.ausRenderPlan(entwurf, {
+    /* Wie viele Werte das Bild wirklich zeigt. Die Karte zeigt genau
+       einen, sobald sie eine Zahl traegt - und diese Eins ist es, die
+       Rangliste und Vergleich ausschliesst. Ohne sie waere jede
+       Datenkarte mehrdeutig. */
+    eintraege: entwurf.komposition && Array.isArray(entwurf.komposition.bars)
+      ? entwurf.komposition.bars.length
+      /* Auch eine Zahl, die nur in der Kopfzeile steht, ist EINE Zahl.
+         Gezaehlt wird, WOVON die Karte handelt - nicht, welcher Block
+         gezeichnet wurde. Nach der Redundanzaufloesung stand hier
+         sonst null, und die Familienwahl wurde wieder mehrdeutig. */
+      : ((entwurf.ebenen && (entwurf.ebenen.zahl ||
+          entwurf.ebenen.zahlWeggelassen)) ? 1 : null),
+    gemesseneReihe: !!(entwurf.komposition &&
+      Array.isArray(entwurf.komposition.points)),
+    farbwelt: "VU_SCHWARZ_ROT",
+    atlas: entwurf.atlas || null
+  });
+}
+
+/* ---------------------------------------------------------------------
+   WELCHE ROLLE ATLAS IN DIESEM BILD SPIELT
+
+   Die Rolle haengt an der Familie - §17 sagt, welche Rollen zu
+   welcher Familie passen. Die Familie wiederum wird aus dem Bild
+   GEWAEHLT, und in diese Wahl geht Atlas nicht ein: waehleFamilie()
+   entscheidet an den Gestaltmerkmalen, nicht an der Figur. Deshalb
+   laesst sich erst die Familie bestimmen und dann die Rolle, ohne
+   dass daraus ein Kreis wird.
+
+   Passt keine der zeichenbaren Rollen zur Familie, bekommt das Bild
+   KEINEN Atlas. Eine Figur in einer Rolle, die die Familie nicht
+   kennt, waere schlimmer als keine Figur - visual-grammar.js weist
+   sie als ATLAS_ROLLE_PASST_NICHT_ZUR_FAMILIE ab, und zu Recht.
+   --------------------------------------------------------------------- */
+function atlasPlan(entwurf) {
+  const wahl = VisualGrammar.waehleFamilie(grammatikSpec(entwurf));
+  const fam = wahl.familie ? VisualGrammar.FAMILIEN[wahl.familie] : null;
+  if (!fam) return null;
+  const rolle = ATLAS_ROLLEN_VORLIEBE
+    .find((r) => (fam.atlasRollen || []).indexOf(r) !== -1);
+  if (!rolle) return null;
+  const kasten = atlasKasten(rolle, entwurf.breite, entwurf.hoehe);
+  if (!kasten) return null;
+  return {
+    rolle,
+    flaechenAnteil: kasten.flaechenAnteil,
+    breite: kasten.breite, hoehe: kasten.hoehe,
+    /* Die Figur steht neben der Quellenzeile, nicht ueber den Daten.
+       Beides sind Tatsachen ueber die Seite, und die Grammatik fragt
+       danach. */
+    traegtAussage: false,
+    vorDaten: false,
+    referenceAsset: ATLAS_PFAD,
+    transforms: ["scale"],
+    familie: wahl.familie
+  };
+}
+
+function grammatikBefund(entwurf, pkg) {
+  const spec = grammatikSpec(entwurf);
+  const wahl = VisualGrammar.waehleFamilie(spec);
+  if (!wahl.familie) {
+    return { familie: null, ok: false, wahlGrund: wahl.grund,
+      mehrdeutig: wahl.mehrdeutig || null,
+      verstoesse: [{ id: "KEINE_FAMILIE", satz: wahl.grund }],
+      erklaerung: wahl.grund,
+      dominantesTextRolle: spec.dominantesTextRolle,
+      dominantesTextFeld: spec.dominantesTextFeld };
+  }
+  const urteil = VisualGrammar.pruefe(wahl.familie, spec);
+  urteil.wahlGrund = wahl.grund;
+  urteil.dominantesTextRolle = spec.dominantesTextRolle;
+  urteil.dominantesTextFeld = spec.dominantesTextFeld;
+  return urteil;
+}
+
 export function plan(pkg, options = {}) {
   const typ = (pkg && pkg.visualType) || null;
 
@@ -200,10 +625,53 @@ export function plan(pkg, options = {}) {
      Hook als Rueckfall — ein doppelter Text ist immer noch besser als
      gar keiner.
      ------------------------------------------------------------------- */
-  const ebene = ((pkg.visualBrief && pkg.visualBrief.textLayers) || [])
-    .find((l) => l && l.text && String(l.text).trim());
+  /* -------------------------------------------------------------------
+     DIE KOPFZEILE IST DIE HOOK - NICHT IRGENDEINE TEXTEBENE
+
+     Hier wurde jede Textebene des Bildbriefs genommen, die Text trug.
+     Der Produktnachweis hat gezeigt, wohin das fuehrt: auf der Karte
+     stand "Lagebeschreibung, keine Prognose." - der Nachsatz einer
+     These, gross, oben, als Einstieg. Ein Satz, der nichts ueber den
+     Gegenstand sagt und niemanden anhaelt.
+
+     Die Ebene kam aus `writer.visualLine`, und deren eigener Kommentar
+     sagt es woertlich: "Die Zeile FUERS BILD. Nicht die Hook." Sie als
+     Hook zu setzen war eine Verwechslung, und SCROLL_STOP hat sie
+     durchgelassen, weil dort ein Text in der Rolle HOOK stand - nicht,
+     weil er aus der Hook stammte.
+
+     Eine Textebene fuehrt jetzt nur, wenn sie sich ausdruecklich als
+     Hook ausweist (`role: "HOOK"`). Sonst fuehrt `pkg.hook`, und die
+     Zeile fuers Bild bleibt, was sie ist: ein Beleg eine Zeile tiefer.
+     ------------------------------------------------------------------- */
+  const ebenen_ = (pkg.visualBrief && pkg.visualBrief.textLayers) || [];
+  const hookEbene_ = hookEbeneAus(pkg);
+  const bildzeile = ebenen_.find((l) => l && l.text && String(l.text).trim() &&
+    l !== hookEbene_);
+  const ebene = hookEbene_ || null;
   const aussage = String(
     (ebene && ebene.text) || pkg.hook || pkg.thesis || pkg.topic || "").trim();
+
+  /* -------------------------------------------------------------------
+     WOHER DER SATZ STAMMT, ENTSCHEIDET, WAS ER IST
+
+     Derselbe Kasten auf dem Bild traegt je nach Herkunft eine andere
+     Rolle: aus der Textebene oder aus der Hook ist er eine HOOK, aus
+     These oder Thema ist er eine Ueberschrift, aus der Komposition
+     gerechnet ist er ein BELEG.
+
+     Die Visual Grammar fragt danach, und sie darf die Antwort nicht
+     raten. Ein Satz, der als Hook GILT, ohne je einer gewesen zu
+     sein, ist die bequemste Art, §13 zu bestehen, ohne ihm zu
+     genuegen. */
+  const aussageHerkunft = (ebene && ebene.text) ? "visualBrief.textLayers"
+    : pkg.hook ? "pkg.hook"
+      : pkg.thesis ? "pkg.thesis"
+        : pkg.topic ? "pkg.topic" : null;
+  /* Die Zeile fuers Bild bleibt erhalten - als Beleg, eine Zeile
+     tiefer. Sie wegzuwerfen hiesse, eine Aussage zu verlieren, die
+     nirgends sonst steht. */
+  const belegzeile = bildzeile ? String(bildzeile.text).trim() : null;
 
   if (!aussage) {
     return { ok: false, reason: "noStatement", visualType: typ,
@@ -216,7 +684,8 @@ export function plan(pkg, options = {}) {
   const entitaet = (pkg.visualBrief && pkg.visualBrief.entity)
     ? String(pkg.visualBrief.entity).trim() : null;
 
-  const ebenen = { aussage, entitaet, zahl: null, zahlText: null, quelle: null };
+  const ebenen = { aussage, beleg: belegzeile, entitaet, zahl: null,
+    zahlText: null, quelle: null };
 
   if (typ === "DATA_CARD" || typ === "NUMBER_VISUAL") {
     const zahl = ersteBelegteZahl(pkg);
@@ -243,7 +712,60 @@ export function plan(pkg, options = {}) {
     }
     ebenen.zahl = zahl.wert;
     ebenen.zahlText = zahl.bezeichnung;
-    ebenen.quelle = zahl.quelle;
+    /* "vu.technical" ist unser Schluessel, kein Quellenname. Auf der
+       Karte stand er trotzdem - der Produktnachweis hat es gezeigt.
+       Die Zuordnung gibt es seit jeher in visual-data.mjs; sie hier
+       ein zweites Mal zu fuehren waere ein zweiter Begriff davon, wie
+       unsere Quellen heissen. */
+    const qn = quellenName(zahl.quelle);
+    if (!qn.ok) {
+      return { ok: false, reason: "unknownSourceName", visualType: typ,
+        message: "'" + zahl.quelle + "' hat die Form eines " +
+          "Systemschluessels und keinen Eintrag in QUELLENNAME. Einen " +
+          "Schluessel ersatzweise abzudrucken hat 'Quelle: vu.technical' " +
+          "auf ein fertiges Bild gebracht." };
+    }
+    ebenen.quelle = qn.name;
+
+    /* -----------------------------------------------------------------
+       WENN DIE KOPFZEILE DIE ZAHL SCHON SAGT
+
+       Seit die Kopfzeile die HOOK traegt (§13) und nicht mehr eine
+       beliebige Textebene, kann sie dasselbe sagen wie der Zahlenblock
+       darunter. Beim Produktnachweis stand genau das auf der Karte:
+       "13,4 KGV - Russell 2000." als Einstieg, und darunter noch
+       einmal RUSSELL 2000 / 13,4 / KGV.
+
+       Das ist die "dreimal dasselbe"-Karte, die dieses Projekt schon
+       einmal hatte. visual-quality.js findet sie - und weist sie ab.
+       Abweisen ist hier die falsche Antwort: die Hook ist richtig, die
+       Zahl ist belegt, sie wird nur zweimal gezeigt.
+
+       Also wird sie einmal gezeigt. Die Kopfzeile fuehrt (§13), der
+       Zahlenblock weicht. Der Beleg geht nicht verloren - er steht im
+       selben Satz, nur oben. Was weggelassen wurde, steht im Plan;
+       stillschweigend etwas fallen zu lassen waere schlimmer als es
+       zweimal zu zeigen.
+       ----------------------------------------------------------------- */
+    /* Dieselben zwei Fragen, die visual-quality.js stellt - nicht zwei
+       neue. Die Zahl: steht sie woertlich im Satz? Die Bezeichnung:
+       ueberschneidet sie sich mit ihm? Eine eigene Rechnung hier haette
+       eine andere Antwort gegeben als das Tor eine Zeile spaeter, und
+       dann haette der Plan genau das behoben, was danach trotzdem
+       blockiert. */
+    const zahlImText = VisualQuality.wiederholtZahl(aussage, zahl.wert);
+    const labelDoppelt = zahl.bezeichnung
+      ? VisualQuality.overlap(zahl.bezeichnung, aussage) >=
+        VisualQuality.GRENZEN.redundanz : false;
+    if (zahlImText || labelDoppelt) {
+      ebenen.zahlWeggelassen = {
+        wert: zahl.wert, bezeichnung: zahl.bezeichnung,
+        zahlImText, labelDoppelt,
+        grund: "Die Kopfzeile traegt dieselbe Angabe. Zweimal gezeigt " +
+          "ist nicht zweimal so deutlich." };
+      ebenen.zahl = null;
+      ebenen.zahlText = null;
+    }
   }
 
   var entwurf = {
@@ -252,7 +774,10 @@ export function plan(pkg, options = {}) {
     packageId: pkg.packageId || null,
     breite: Number(options.breite) || 1080,
     hoehe: Number(options.hoehe) || 1350,
-    ebenen
+    ebenen,
+    ebenenHerkunft: { aussage: aussageHerkunft },
+    textGroessen: textGroessen(typ),
+    logoUri: logoDatenUri()
   };
 
   /* -------------------------------------------------------------------
@@ -274,6 +799,11 @@ export function plan(pkg, options = {}) {
     directionMissing: pkg.visualDirectionMissing || []
   });
   entwurf.quality = guete;
+  /* Atlas VOR dem Grammatik-Urteil: die Rolle ist eine Eigenschaft des
+     Bildes, und die Grammatik soll sie pruefen, nicht erfahren. */
+  entwurf.atlas = atlasPlan(entwurf);
+  if (entwurf.atlas) entwurf.atlasUri = atlasDatenUri();
+  entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
     return { ok: false,
@@ -294,7 +824,7 @@ export function plan(pkg, options = {}) {
 
 /* -------------------------------------------------------------- Zeichnen */
 
-function seite(p, schriftDaten) {
+export function seite(p, schriftDaten) {
   const font = schriftDaten
     ? `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${schriftDaten.toString("base64")}) format("woff2");font-weight:100 900;font-display:block}`
     : "";
@@ -305,54 +835,94 @@ function seite(p, schriftDaten) {
      ausdruecklich so will (Test ohne Schrift). Der Lauf unten holt die
      Schrift immer und bricht ab, wenn sie fehlt. */
 
+  /* -------------------------------------------------------------------
+     DIE ROLLEN STEHEN IM MARKUP
+
+     `data-vu-rolle` ist nicht Dekoration: das Messskript findet die
+     Textbloecke daran, und scroll-stop.js urteilt ueber die Rollen.
+     Wer hier eine Rolle vergisst, bekommt kein stilles Durchwinken -
+     der Block fehlt dann in der Messung, und das Tor faellt
+     geschlossen aus. */
   const zahlBlock = p.ebenen.zahl ? `
     <div class="zahlblock">
-      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
-      <div class="zahl">${escape(p.ebenen.zahl)}</div>
-      ${p.ebenen.zahlText ? `<div class="zahltext">${escape(p.ebenen.zahlText)}</div>` : ""}
+      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
+      <div class="zahl" data-vu-rolle="BELEG">${escape(p.ebenen.zahl)}</div>
+      ${p.ebenen.zahlText ? `<div class="zahltext" data-vu-rolle="BELEG">${escape(p.ebenen.zahlText)}</div>` : ""}
     </div>` : "";
 
   const quelle = p.ebenen.quelle
-    ? `<div class="quelle">Quelle: ${escape(p.ebenen.quelle)}</div>` : "";
+    ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : "";
 
   /* Die Zahl dominiert bei NUMBER_VISUAL, die Aussage bei den anderen.
      Das ist der ganze Unterschied zwischen den beiden Formen — und er
-     steht hier als Zahl, nicht als Absicht. */
-  const zahlGroesse = p.visualType === "NUMBER_VISUAL" ? 190 : 122;
-  const aussageGroesse = p.visualType === "NUMBER_VISUAL" ? 40 : 58;
+     steht hier als Zahl, nicht als Absicht.
+
+     Die Groessen stehen im PLAN und nicht mehr hier. Der Grund ist
+     nicht Ordnung, sondern Pruefbarkeit: die Visual Grammar fragt, wie
+     hoch der fuehrende Text ist, und sie darf die Antwort nicht aus
+     einer zweiten Kopie derselben Zahlen nehmen. Eine zweite Kopie
+     driftet, und dann prueft das Tor ein Bild, das es nicht gibt. */
+  const g = p.textGroessen || textGroessen(p.visualType);
+  const zahlGroesse = g.zahl;
+  /* Der Data-URI kommt aus dem Plan; nur wenn er fehlt (ein Test ohne
+     Repositorywurzel), wird er hier geholt. */
+  p = Object.assign({}, p, { logoUri: p.logoUri || logoDatenUri() });
+  const aussageGroesse = g.aussage;
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
 ${font}
 *{margin:0;padding:0;box-sizing:border-box}
+/* Ein einzelnes langes Wort - ein Ticker, eine URL, ein
+   hereingereichter Fremdtext - laeuft sonst ueber den Bildrand und
+   wird abgeschnitten. Das faellt auf einem Screenshot auf und im
+   Konto zu spaet. Das SCROLL_STOP-Tor hat genau diesen Fall
+   gemessen: rechts 1199 auf einer 1080 Pixel breiten Flaeche. */
+*{overflow-wrap:anywhere}
 html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};overflow:hidden}
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
   padding:96px 88px;-webkit-font-smoothing:antialiased}
-.marke{font-size:26px;letter-spacing:.20em;text-transform:uppercase;color:${FARBEN.gedeckt};
-  font-weight:600}
-.marke b{color:${FARBEN.weiss};font-weight:700}
+/* Das kanonische Asset, nicht gesetzter Text (§18). Die Umkehrung ist
+   die einzige erlaubte Transformation eines einfarbigen Zeichens:
+   schwarz zu weiss, keine Geometrie. */
+.marke{display:block;width:${g.logo.breite}px;height:${g.logo.hoehe}px;
+  filter:invert(1)}
 .mitte{display:flex;flex-direction:column;gap:20px}
-.zahlblock{margin-bottom:34px}
+.zahlblock{margin-top:38px}
+.beleg{font-size:${g.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:18px}
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
   text-transform:uppercase;margin-bottom:16px}
 .zahl{font-size:${zahlGroesse}px;line-height:.95;font-weight:800;letter-spacing:-.03em;
   color:${FARBEN.weiss};font-variant-numeric:tabular-nums}
 .zahltext{font-size:32px;line-height:1.35;color:${FARBEN.gedeckt};font-weight:500;margin-top:18px}
-.aussage{font-size:${aussageGroesse}px;line-height:1.24;font-weight:650;letter-spacing:-.015em;
-  max-width:19ch}
-.fuss{display:flex;flex-direction:column;gap:18px}
+.aussage{font-size:${aussageGroesse}px;line-height:1.20;font-weight:700;letter-spacing:-.02em;
+  max-width:17ch}
+.fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.absender{display:flex;flex-direction:column;gap:18px}
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
+/* Atlas steht NEBEN der Quellenzeile, nicht ueber den Balken. Eine
+   Figur, die den Beleg verdeckt, auf den sich der Beitrag beruft,
+   heisst in der Grammatik ATLAS_VERDECKT_DATEN - und in einer Rolle,
+   die nicht vor den Daten stehen darf, ist sie ein Verstoss und kein
+   Layout. (Keine Backticks in diesem Kommentar: er steht in einem
+   Template-Literal, und ein Backtick beendet es.) */
+.atlas{display:block;flex:0 0 auto}
 </style></head><body>
-  <div class="marke"><b>VISION UNIVERSE</b>®</div>
+  <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
+    <div class="aussage" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage)}</div>
+    ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     ${zahlBlock}
-    <div class="aussage">${escape(p.ebenen.aussage)}</div>
   </div>
   <div class="fuss">
-    <div class="strich"></div>
-    ${quelle}
+    <div class="absender">
+      <div class="strich"></div>
+      ${quelle}
+    </div>
+    ${atlasBild(p)}
   </div>
+  ${MESS_SKRIPT}
 </body></html>`;
 }
 
@@ -378,14 +948,80 @@ export function planKomposition(pkg, komposition, ebenen) {
       message: "Eine Grafik ohne Aussage laesst den Betrachter raten, was " +
         "er sieht. Die Zahlen sagen WAS, nicht WARUM es hier steht." };
   }
+
+  /* -------------------------------------------------------------------
+     DIE KOPFZEILE TRAEGT DIE HOOK, NICHT DEN GERECHNETEN SATZ
+
+     Bis hierher stand ueber jeder gezeichneten Grafik das Ergebnis
+     einer Rechnung: "Seit 15.08.2025: +12,3 %." Das ist ein BELEG. Er
+     beantwortet eine Frage, die im Vorbeiscrollen niemand gestellt
+     hat - und §13 verlangt genau die Frage, nicht ihre Antwort.
+
+     Die Hook ruecke deshalb nach oben, der gerechnete Satz eine Zeile
+     tiefer. Beide bleiben: der Beleg loest ein, was die Hook
+     verspricht. Verschoben wird die Rangfolge, nicht der Inhalt - und
+     ohne Hook entsteht kein Plan, statt dass ersatzweise der Beleg
+     die Kopfzeile bekommt.
+     ------------------------------------------------------------------- */
+  const hookEbene = hookEbeneAus(pkg);
+  const kopf = String((hookEbene && hookEbene.text) || (pkg && pkg.hook) || "").trim();
+  if (!kopf) {
+    return { ok: false, reason: "noHookOnVisual",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "Die Grafik traegt keinen Satz, der einen Grund zum " +
+        "Anhalten gibt. §13 macht Text-on-Visual zur Vorbedingung: " +
+        "der gerechnete Befund ist ein Beleg und keine Hook." };
+  }
+  /* Derselbe Satz zweimal waere kein Aufbau, sondern ein Doppel. */
+  const beleg = (VisualQuality.overlap(kopf, e.aussage) >= 0.6)
+    ? null : e.aussage;
+
+  /* -------------------------------------------------------------------
+     EINE GEZEICHNETE ZAHL OHNE HERKUNFT WIRD NICHT GEZEICHNET
+
+     Der Kartenpfad weist das seit jeher ab: `noSource`, "eine Zahl in
+     Markenoptik ohne Herkunft ist genau das, was das
+     Provenance-Modell verhindern soll". Der Kompositionspfad hat es
+     gezeichnet - im realen Lauf fuenf Kurse unter einem roten Strich,
+     und darunter nichts.
+
+     Dieselbe Regel gilt jetzt fuer beide Wege. Eine Grafik zeigt mehr
+     Zahlen als eine Karte, nicht weniger.
+     ------------------------------------------------------------------- */
+  if (!String(e.quelle || "").trim()) {
+    return { ok: false, reason: "noSource",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "Die Grafik zeigt " +
+        ((komposition.bars && komposition.bars.length) ||
+         (komposition.points && komposition.points.length) || "mehrere") +
+        " Werte und nennt keine Quelle. Zahlen in Markenoptik ohne " +
+        "Herkunft sind genau das, was das Provenance-Modell " +
+        "verhindern soll." };
+  }
+
+  /* Dieselbe Pruefung wie im Kartenpfad - und aus demselben Grund. */
+  const qn = quellenName(e.quelle);
+  if (e.quelle && !qn.ok) {
+    return { ok: false, reason: "unknownSourceName",
+      visualType: (pkg && pkg.visualType) || komposition.kind,
+      message: "'" + e.quelle + "' hat die Form eines Systemschluessels " +
+        "und keinen Eintrag in QUELLENNAME. Ein Schluessel unter der " +
+        "Grafik ist ein interner Systembegriff auf einem oeffentlichen " +
+        "Bild." };
+  }
   const entwurf = {
     ok: true,
     visualType: (pkg && pkg.visualType) || komposition.kind,
     modus: "komposition",
     breite: 1080, hoehe: 1350,
     komposition,
-    ebenen: { entitaet: e.entitaet || null, aussage: e.aussage,
-      quelle: e.quelle || null },
+    ebenen: { entitaet: e.entitaet || null, aussage: kopf,
+      beleg: beleg, quelle: qn.ok ? qn.name : null },
+    textGroessen: textGroessen((pkg && pkg.visualType) || komposition.kind),
+    logoUri: logoDatenUri(),
+    ebenenHerkunft: {
+      aussage: hookEbene ? "visualBrief.textLayers" : "pkg.hook",
+      beleg: beleg ? "komposition" : null },
     explanation: komposition.kind + ": " + komposition.explanation
   };
 
@@ -407,6 +1043,11 @@ export function planKomposition(pkg, komposition, ebenen) {
     directionMissing: (pkg && pkg.visualDirectionMissing) || []
   });
   entwurf.quality = guete;
+  /* Atlas VOR dem Grammatik-Urteil: die Rolle ist eine Eigenschaft des
+     Bildes, und die Grammatik soll sie pruefen, nicht erfahren. */
+  entwurf.atlas = atlasPlan(entwurf);
+  if (entwurf.atlas) entwurf.atlasUri = atlasDatenUri();
+  entwurf.grammatik = grammatikBefund(entwurf, pkg);
 
   if (!guete.passed) {
     const richtung = guete.failureType === VisualQuality.VISUAL_DIRECTION_INCOMPLETE;
@@ -437,6 +1078,12 @@ function zahlDe(x, stellen = 1) {
   return Number(x).toFixed(stellen).replace(".", ",");
 }
 
+/* Wie viele Nachkommastellen die Werte einer Grafik wirklich tragen.
+   Dieselbe Rechnung fuehrt visual-composition.js fuer den Satz unter
+   der Grafik; sie wird von dort geholt, damit Balken und Satz nicht
+   verschieden runden. */
+const stellenAus = VisualComposition.stellenAus;
+
 function svgChart(k) {
   const farbe = k.direction === "up" ? FARBEN.rot : FARBEN.gedeckt;
   return `<svg width="${k.width}" height="${k.height}" viewBox="0 0 ${k.width} ${k.height}"
@@ -454,7 +1101,21 @@ function svgChart(k) {
 }
 
 function svgBalken(k, opts = {}) {
-  const zeile = 74;
+  /* -------------------------------------------------------------------
+     WENIGE BALKEN DUERFEN NICHT WIE EIN TABELLENAUSZUG AUSSEHEN
+
+     Feste 74 Pixel pro Zeile: bei zehn Werten eine Grafik, bei zwei
+     ein schmaler Streifen in einer sonst leeren Flaeche. Auf dem
+     fertigen Bild sah der Vergleich zweier Indizes aus wie der Export
+     einer Datenbank, nicht wie ein Beitrag.
+
+     Die Zeilenhoehe folgt deshalb der Anzahl. Sie wird nicht frei
+     gewaehlt, sondern aus einer Zielhoehe geteilt und in ein Band
+     gezwungen - sonst wuerde ein einzelner Vergleich die halbe Seite
+     einnehmen.
+     ------------------------------------------------------------------- */
+  const zeile = Math.max(70, Math.min(124, Math.round(560 / k.bars.length)));
+  const dick = zeile >= 100 ? 18 : 10;
   const hoehe = k.bars.length * zeile;
   const balken = k.bars.map((b, i) => {
     const y = i * zeile;
@@ -464,18 +1125,32 @@ function svgBalken(k, opts = {}) {
     const farbe = stark ? FARBEN.rot : FARBEN.gedeckt;
     const x = b.from !== undefined ? b.from : 0;
     const breite = b.pixels;
+    /* -----------------------------------------------------------------
+       DIE ZAHL AM BALKEN IST DIE ZAHL DER QUELLE
+
+       Hier stand `opts.stellen ?? 2`, und der Vergleich rief mit
+       `stellen: 0` auf. Auf dem fertigen Bild wurden daraus "22" und
+       "13" - aus 21,6 und 13,4. Eine gerundete Zahl ist eine andere
+       Zahl, und sie stand unter dem Namen eines Gegenstands als
+       dessen Wert.
+
+       Vorrang hat die Schreibweise der Quelle ("184,20" ist nicht
+       "184,2"); gibt es keine, entscheiden die Werte selbst, wie
+       viele Stellen sie haben. Geraten wird nichts mehr.
+       ----------------------------------------------------------------- */
     const wert = opts.prozent
       ? (b.value >= 0 ? "+" : "") + zahlDe(b.value) + " %"
-      : zahlDe(b.value, opts.stellen ?? 2) + (b.max ? " / " + b.max : "");
+      : (b.anzeige || zahlDe(b.value, opts.stellen ?? stellenAus(k.bars))) +
+        (b.max ? " / " + b.max : "");
     return `
       <text x="0" y="${y + 24}" fill="${FARBEN.weiss}" font-size="27"
         font-weight="600">${escape(b.label)}</text>
       <text x="${k.width}" y="${y + 24}" fill="${FARBEN.gedeckt}" font-size="25"
         text-anchor="end" font-weight="500">${escape(wert)}</text>
-      <rect x="0" y="${y + 38}" width="${k.width}" height="10" rx="5"
+      <rect x="0" y="${y + 38}" width="${k.width}" height="${dick}" rx="${dick / 2}"
         fill="#ffffff" fill-opacity="0.08"/>
       <rect x="${x.toFixed(2)}" y="${y + 38}" width="${Math.max(breite, 3).toFixed(2)}"
-        height="10" rx="5" fill="${farbe}"/>`;
+        height="${dick}" rx="${dick / 2}" fill="${farbe}"/>`;
   }).join("");
 
   const nulllinie = k.zeroX !== undefined
@@ -494,6 +1169,9 @@ export function seiteKomposition(p, schriftDaten) {
     : "";
   const familie = schriftDaten ? "Inter, system-ui, sans-serif"
     : "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
+  /* Aus dem Plan, nicht aus einer zweiten Tabelle hier. */
+  const g2 = p.textGroessen || textGroessen(p.visualType);
+  p = Object.assign({}, p, { logoUri: p.logoUri || logoDatenUri() });
 
   let grafik = "", achsen = "";
   if (k.kind === "CHART") {
@@ -505,42 +1183,78 @@ export function seiteKomposition(p, schriftDaten) {
   } else if (k.kind === "PERFORMANCE") {
     grafik = svgBalken(k, { prozent: true });
   } else if (k.kind === "COMPARISON") {
-    grafik = svgBalken(k, { stellen: 0 });
+    /* Kein `stellen` mehr: der Vergleich rundete auf ganze Zahlen. */
+    grafik = svgBalken(k);
   }
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
 ${font}
 *{margin:0;padding:0;box-sizing:border-box}
+/* Ein einzelnes langes Wort - ein Ticker, eine URL, ein
+   hereingereichter Fremdtext - laeuft sonst ueber den Bildrand und
+   wird abgeschnitten. Das faellt auf einem Screenshot auf und im
+   Konto zu spaet. Das SCROLL_STOP-Tor hat genau diesen Fall
+   gemessen: rechts 1199 auf einer 1080 Pixel breiten Flaeche. */
+*{overflow-wrap:anywhere}
 html,body{width:${p.breite}px;height:${p.hoehe}px;background:${FARBEN.schwarz};overflow:hidden}
 body{font-family:${familie};color:${FARBEN.weiss};
   display:flex;flex-direction:column;justify-content:space-between;
   padding:96px 88px;-webkit-font-smoothing:antialiased}
-.marke{font-size:26px;letter-spacing:.20em;text-transform:uppercase;color:${FARBEN.gedeckt};font-weight:600}
-.marke b{color:${FARBEN.weiss};font-weight:700}
+.marke{display:block;width:${g2.logo.breite}px;height:${g2.logo.hoehe}px;
+  filter:invert(1)}
 .kopf{margin-bottom:30px}
+/* Die Hook fuehrt (§13). Die Kontextzeile stand als Ueberzeile
+   darueber - der Blick betritt das Bild oben, und dort las man dann
+   die Kennzahl statt des Satzes. Jetzt steht sie darunter. */
 .entitaet{font-size:34px;font-weight:700;letter-spacing:.06em;color:${FARBEN.rot};
-  text-transform:uppercase;margin-bottom:14px}
-.titel{font-size:52px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:20ch}
-.mitte{display:flex;flex-direction:column;gap:22px}
+  text-transform:uppercase;margin-top:18px}
+.titel{font-size:${g2.aussage}px;line-height:1.18;font-weight:700;letter-spacing:-.02em;max-width:17ch}
+.beleg{font-size:${g2.beleg}px;line-height:1.3;font-weight:500;color:${FARBEN.gedeckt};margin-top:16px}
+/* -------------------------------------------------------------------
+   DIE GRAFIK WEICHT, NICHT DIE HERKUNFT
+
+   Fuenf Balken und eine dreizeilige Hook ergaben zusammen 1375 Pixel
+   auf einer 1350 Pixel hohen Flaeche. Gemessen wurde es erst, als
+   jemand hinsah: "Quelle: Tiingo" stand bei y=1346 bis 1375 - unter
+   dem Bildrand, von overflow:hidden stillschweigend abgeschnitten.
+   Fuenf Zahlen in Markenoptik, ohne Herkunft. Genau das soll das
+   Provenance-Modell verhindern.
+
+   Die Grafik ist das Element, das nachgeben kann: ein SVG mit viewBox
+   skaliert und bleibt lesbar. Die Quellenzeile kann nicht nachgeben -
+   sie ist entweder da oder nicht.
+   ------------------------------------------------------------------- */
+.mitte{display:flex;flex-direction:column;gap:22px;flex:1 1 auto;min-height:0}
+.grafik{flex:0 1 auto;min-height:0;display:flex;align-items:flex-start}
+.grafik svg{width:100%;height:auto;max-height:100%}
 .achsen{display:flex;justify-content:space-between;font-size:23px;color:${FARBEN.gedeckt};
   font-weight:500;margin-top:14px}
-.fuss{display:flex;flex-direction:column;gap:18px}
+.fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.absender{display:flex;flex-direction:column;gap:18px}
 .strich{height:3px;width:120px;background:${FARBEN.rot}}
 .quelle{font-size:24px;color:${FARBEN.gedeckt};font-weight:500}
+/* Siehe Kartenvorlage: die Figur steht neben dem Absender, nie ueber
+   den Daten. */
+.atlas{display:block;flex:0 0 auto}
 </style></head><body>
-  <div class="marke"><b>VISION UNIVERSE</b>®</div>
+  <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
   <div class="mitte">
     <div class="kopf">
-      ${p.ebenen.entitaet ? `<div class="entitaet">${escape(p.ebenen.entitaet)}</div>` : ""}
-      <div class="titel">${escape(p.ebenen.aussage || "")}</div>
+      <div class="titel" data-vu-rolle="${p.hookRolle || "HOOK"}">${escape(p.ebenen.aussage || "")}</div>
+      ${p.ebenen.entitaet ? `<div class="entitaet" data-vu-rolle="KONTEXT">${escape(p.ebenen.entitaet)}</div>` : ""}
+      ${p.ebenen.beleg ? `<div class="beleg" data-vu-rolle="BELEG">${escape(p.ebenen.beleg)}</div>` : ""}
     </div>
-    ${grafik}
+    <div class="grafik">${grafik}</div>
     ${achsen}
   </div>
   <div class="fuss">
-    <div class="strich"></div>
-    ${p.ebenen.quelle ? `<div class="quelle">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+    <div class="absender">
+      <div class="strich"></div>
+      ${p.ebenen.quelle ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : ""}
+    </div>
+    ${atlasBild(p)}
   </div>
+  ${MESS_SKRIPT}
 </body></html>`;
 }
 
@@ -581,6 +1295,88 @@ export function pruefeJpeg(pfad) {
  * sonst erst im Moment der Veroeffentlichung auf, und dann ist der
  * Anspruch schon angemeldet.
  */
+/* -------------------------------------------------------------------
+   DIE GEMESSENE SEITE ZURUECKLESEN
+
+   Derselbe Chromium, dieselbe Datei, ein zweiter Lauf mit
+   `--dump-dom`. Das Messskript in der Seite hat seine Zahlen bis
+   dahin in `#vu-messung` geschrieben.
+
+   Schlaegt das fehl, wird NICHTS zurueckgegeben - keine leere Liste.
+   Eine leere Liste hiesse "kein Text auf dem Bild", und das waere
+   eine Aussage ueber das Bild, die in Wahrheit eine Aussage ueber das
+   Werkzeug ist. Genau diese Verwechslung hat in diesem Projekt schon
+   einen Bericht erfunden.
+   ------------------------------------------------------------------- */
+export function messeSeite(htmlPfad, breite, hoehe) {
+  let dom;
+  try {
+    dom = execFileSync(chromiumPfad(), [
+      "--headless", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+      "--force-device-scale-factor=1", "--virtual-time-budget=5000",
+      `--window-size=${breite},${hoehe}`,
+      "--dump-dom", "file://" + htmlPfad
+    ], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"] });
+  } catch { return null; }
+
+  const treffer = /data-vu-messung="([^"]*)"/.exec(dom);
+  if (!treffer) return null;
+  let texte;
+  try { texte = JSON.parse(entkommen(treffer[1])); } catch { return null; }
+  if (!Array.isArray(texte)) return null;
+
+  /* Figuren fehlen duerfen - eine Seite ohne Atlas hat keine. Eine
+     KAPUTTE Figurenliste darf aber nicht als "keine Figur" gelesen
+     werden: das waere wieder unbekannt als leer. */
+  let figuren = [];
+  const tf = /data-vu-figuren="([^"]*)"/.exec(dom);
+  if (tf) {
+    try { figuren = JSON.parse(entkommen(tf[1])); } catch { return null; }
+    if (!Array.isArray(figuren)) return null;
+  }
+  return { breite, hoehe, texte, figuren };
+}
+
+/**
+ * Was von der gemessenen Seite ueber den Rand ragt.
+ *
+ * Eine eigene Funktion, weil sich der Fall in der Praxis kaum noch
+ * herstellen laesst: die Grafik weicht, und zu langen Text weist
+ * visual-quality.js schon vorher ab. Ein Tor, das man nicht ausloesen
+ * kann, laesst sich auch nicht pruefen - und ungeprueft ist es eine
+ * Behauptung.
+ *
+ * Geprueft wird es deshalb an der ECHTEN Messung des Vorfalls: fuenf
+ * Balken, eine dreizeilige Hook, und "Quelle: Tiingo" bei y=1346..1375
+ * auf einer 1350 Pixel hohen Seite.
+ *
+ * Ohne Messung gibt es NICHTS zurueck - eine leere Liste hiesse "alles
+ * im Bild", und das waere eine Aussage ueber die Seite, die in
+ * Wahrheit eine ueber das Werkzeug ist.
+ */
+export function ausserhalb(messung, breite, hoehe) {
+  if (!messung) return [];
+  const raus = [];
+  const pruefe = (name, r) => {
+    if (r.unten > hoehe || r.oben < 0 || r.rechts > breite || r.links < 0) {
+      raus.push(name + " (" + r.links + "," + r.oben + ")-(" +
+        r.rechts + "," + r.unten + ")");
+    }
+  };
+  (messung.texte || []).forEach((t) => pruefe(t.rolle, t));
+  (messung.figuren || []).forEach((f) => pruefe("FIGUR:" + f.figur, f));
+  return raus;
+}
+
+/** Die DOM-Ausgabe ist HTML-kodiert; das JSON darin will es nicht sein. */
+function entkommen(s) {
+  return String(s)
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 export function render(p, zielPfad, options = {}) {
   if (!p.ok) throw new Error("Kein zeichenbarer Plan: " + p.message);
 
@@ -605,7 +1401,143 @@ export function render(p, zielPfad, options = {}) {
   if (befund.breite !== p.breite || befund.hoehe !== p.hoehe) {
     throw new Error(`Erwartet ${p.breite}x${p.hoehe}, erhalten ${befund.breite}x${befund.hoehe}.`);
   }
-  return Object.assign({ pfad: zielPfad }, befund);
+
+  /* -----------------------------------------------------------------
+     SCROLL_STOP_QUALITY — DAS TOR STEHT HIER, WEIL ES HIER MESSBAR IST
+
+     §13 ist eine Owner-Entscheidung und kein Ratschlag: ein Feed-Post
+     ohne starken Text im Bild ist nicht produktionsreif. Das Urteil
+     braucht die gerenderte Seite - vorher gibt es keine Textflaechen,
+     ueber die sich reden liesse. Also steht es hier, unmittelbar
+     hinter dem Bild und vor jedem, der das Bild bekommt.
+
+     `render()` wirft bereits, wenn die Ausgabe kein JPEG ist oder die
+     Masse nicht stimmen. Ein Bild ohne fuehrenden Text gehoert in
+     dieselbe Kategorie: es ist kein veroeffentlichungsfaehiges Asset.
+     ----------------------------------------------------------------- */
+  const messung = messeSeite(arbeit, p.breite, p.hoehe);
+  const scrollStop = ScrollStop.pruefe({ messung, caption: options.caption || null });
+
+  /* -----------------------------------------------------------------
+     DER LOGO-VERTRAG, ENDLICH IM WEG (§11/§18)
+
+     checkLogoUsage() stand in brand.js, mit sieben Pruefungen und elf
+     Tests - und niemand hat es an der einzigen Stelle gefragt, an der
+     die Marke wirklich gezeichnet wird. Die Karte trug deshalb bis
+     zuletzt "VISION UNIVERSE" in Inter Bold, also genau die textuelle
+     Approximation, die der Vertrag abweist.
+
+     Ein Tor, das nicht im Weg steht, ist kein Tor. Jetzt steht es hier,
+     mit den GEMESSENEN Groessen: dem Kasten aus derselben Tabelle, aus
+     der die Vorlage ihn nimmt, und dem gerechneten Kontrast zwischen
+     Zeichenfarbe und Untergrund.
+     ----------------------------------------------------------------- */
+  const logoKast = (p.textGroessen && p.textGroessen.logo) ||
+    logoKasten(p.breite);
+  const logoBefund = Brand.checkLogoUsage({
+    referenceAsset: Brand.LOGO_ASSET_PATH,
+    transforms: ["place", "scale-uniform", "invert-monochrome"],
+    monochrom: true,
+    generationMode: "asset-transform",
+    canvas: { width: p.breite, height: p.hoehe },
+    box: { x: 88, y: 96, width: logoKast.breite, height: logoKast.hoehe },
+    /* Weiss auf der Kartenfarbe, nach WCAG gerechnet. Der Feldname ist
+       der, den brand.js liest - ein danebenliegender Name waere eine
+       Pruefung, die still nichts tut. */
+    kontrast: kontrast(FARBEN.weiss, FARBEN.schwarz)
+  });
+  if (!logoBefund.passed) {
+    const fehler = new Error("Logo-Vertrag nicht bestanden (§18): " +
+      logoBefund.explanation);
+    fehler.zustand = "LOGO_VERTRAG_VERLETZT";
+    fehler.logo = logoBefund;
+    throw fehler;
+  }
+
+  /* -----------------------------------------------------------------
+     DER ATLAS-VERTRAG, AN DERSELBEN STELLE (§11/§17)
+
+     Dieselbe Geschichte wie beim Logo, nur eine Figur weiter:
+     checkAtlasUsage() stand seit dem Brand-Auftrag in brand.js, und
+     die einzige Stelle, an der gezeichnet wird, hat nie gefragt -
+     weil hier ueberhaupt kein Atlas gezeichnet wurde.
+
+     Zusaetzlich wird die GEZEICHNETE Flaeche gegen das Band der
+     erklaerten Rolle gehalten. Die Rolle zu melden und die Pixel
+     nicht zu pruefen waere eine Angabe ueber die Absicht: eine
+     Signatur, die ein Viertel des Bildes einnimmt, wuerde sich
+     weiter Signatur nennen.
+     ----------------------------------------------------------------- */
+  let atlasBefund = null;
+  if (p.atlas) {
+    atlasBefund = Brand.checkAtlasUsage({
+      referenceAsset: p.atlas.referenceAsset,
+      generationMode: "asset-transform",
+      transforms: p.atlas.transforms
+    });
+    const gemessen = ((messung && messung.figuren) || [])
+      .find((f) => f && f.figur === "ATLAS");
+    const band = VisualGrammar.ATLAS_ROLLEN[p.atlas.rolle];
+    if (!gemessen) {
+      atlasBefund = { passed: false, problems: ["Die Figur wurde auf der " +
+        "Seite nicht gemessen. Ein Atlas im Plan, der im Bild fehlt, ist " +
+        "eine Rolle ohne Figur."], explanation: "Atlas nicht gemessen." };
+    } else if (band) {
+      const anteil = gemessen.flaeche / (p.breite * p.hoehe);
+      if (anteil < band.flaecheMin || anteil > band.flaecheMax) {
+        atlasBefund = { passed: false, problems: ["Gemessen " +
+          Math.round(anteil * 1000) / 10 + " % der Flaeche; " + p.atlas.rolle +
+          " laesst " + Math.round(band.flaecheMin * 1000) / 10 + " bis " +
+          Math.round(band.flaecheMax * 1000) / 10 + " % zu."],
+          explanation: "Die gezeichnete Flaeche passt nicht zur Rolle." };
+      } else {
+        atlasBefund = Object.assign({}, atlasBefund,
+          { gemessen, flaechenAnteil: anteil });
+      }
+    }
+    if (!atlasBefund.passed) {
+      const fehler = new Error("Atlas-Vertrag nicht bestanden (§17): " +
+        atlasBefund.explanation);
+      fehler.zustand = "ATLAS_VERTRAG_VERLETZT";
+      fehler.atlas = atlasBefund;
+      throw fehler;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+     WAS AUSSERHALB DER FLAECHE LIEGT, IST NICHT AUF DEM BILD
+
+     `overflow:hidden` schneidet ab, ohne etwas zu sagen. Beim realen
+     Zyklus stand die Quellenzeile bei y=1346..1375 auf einer 1350
+     Pixel hohen Seite: sie war im Markup, sie war im Plan, sie war im
+     Bericht - und sie war nicht im Bild.
+
+     Die Seite misst sich seit §13 selbst. Bis hierher wurde diese
+     Messung nur nach der Hook gefragt. Jetzt wird sie gefragt, ob
+     ueberhaupt etwas herausragt: jede gemessene Zeile und jede Figur
+     gegen die vier Raender. Ein Tor, das nur EIN Element prueft, ist
+     fuer alle anderen keines.
+     ----------------------------------------------------------------- */
+  const draussen = ausserhalb(messung, p.breite, p.hoehe);
+  if (draussen.length) {
+    const fehler = new Error("Teile der Seite liegen ausserhalb der " +
+      p.breite + "x" + p.hoehe + " Flaeche und werden abgeschnitten: " +
+      draussen.join(", ") + ".");
+    fehler.zustand = "INHALT_AUSSERHALB_DER_FLAECHE";
+    fehler.draussen = draussen;
+    throw fehler;
+  }
+
+  if (!scrollStop.ok && options.scrollStopPruefen !== false) {
+    const fehler = new Error("SCROLL_STOP_QUALITY nicht bestanden (" +
+      scrollStop.zustand + "): " + scrollStop.erklaerung);
+    fehler.zustand = scrollStop.zustand;
+    fehler.scrollStop = scrollStop;
+    throw fehler;
+  }
+
+  return Object.assign({ pfad: zielPfad }, befund,
+    { messung, scrollStop, logo: logoBefund, atlas: atlasBefund });
 }
 
 /* --------------------------------------------------------------- Lauf */

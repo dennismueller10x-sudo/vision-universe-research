@@ -49,7 +49,14 @@
     statementMaxWords: 16,
     labelMaxChars: 48,
     entityMaxChars: 12,
-    valueMaxChars: 12
+    valueMaxChars: 12,
+    /* Ab wann zwei Texte derselbe Text sind. Die beiden Zahlen standen
+       als Literale an ihren Aufrufstellen. Das genuegte, solange nur
+       diese Datei sie brauchte - scroll-stop.js stellt dieselbe Frage
+       ueber die Grenze zwischen Bild und Caption hinweg, und eine
+       zweite 0.6 daneben waere eine zweite Antwort darauf (§2). */
+    redundanz: 0.6,
+    hookDoppel: 0.7
   };
 
   function normalise(s) {
@@ -61,6 +68,16 @@
   function words(s) { return normalise(s).split(" ").filter(Boolean); }
 
   /** Anteil der Woerter von a, die auch in b vorkommen. */
+  /* Steht die Zahl woertlich im Satz? Die Frage stellte sich bisher nur
+     hier; seit der Renderer sie VOR dem Tor beantworten muss - um die
+     Zahl dann nur einmal zu zeigen -, braucht sie einen Namen. Zwei
+     Rechnungen fuer dieselbe Frage haetten sich widersprochen: der Plan
+     haette etwas behoben, was das Tor danach trotzdem beanstandet. */
+  function wiederholtZahl(aussage, zahl) {
+    if (!zahl || !aussage) return false;
+    return normalise(aussage).indexOf(normalise(zahl)) !== -1;
+  }
+
   function overlap(a, b) {
     var wa = words(a), wb = words(b);
     if (!wa.length || !wb.length) return 0;
@@ -148,7 +165,7 @@
     }
 
     /* ---------------------------------------------------- Redundanz */
-    var zahlImText = e.zahl ? normalise(e.aussage).indexOf(normalise(e.zahl)) !== -1 : false;
+    var zahlImText = wiederholtZahl(e.aussage, e.zahl);
     if (zahlImText) {
       blocking.push({ id: "redundant-number",
         message: "Die Aussage wiederholt die Zahl, die darueber steht. " +
@@ -157,7 +174,7 @@
 
     if (e.zahlText && e.aussage) {
       var ueberschneidung = overlap(e.zahlText, e.aussage);
-      if (ueberschneidung >= 0.6) {
+      if (ueberschneidung >= GRENZEN.redundanz) {
         blocking.push({ id: "redundant-label",
           message: "Die Aussage wiederholt die Bezeichnung (" +
             Math.round(ueberschneidung * 100) + " % derselben Woerter)." });
@@ -166,7 +183,7 @@
 
     if (options.hook && e.aussage) {
       var mitHook = overlap(e.aussage, options.hook);
-      if (mitHook >= 0.7) {
+      if (mitHook >= GRENZEN.hookDoppel) {
         warnings.push({ id: "redundant-hook",
           message: "Die Bildaussage wiederholt den Hook (" + Math.round(mitHook * 100) +
             " %). Bild und Text sollen zusammen mehr sagen als einzeln." });
@@ -225,7 +242,8 @@
     };
   }
 
-  var api = { GRENZEN: GRENZEN, overlap: overlap, check: check,
+  var api = { GRENZEN: GRENZEN, overlap: overlap,
+    wiederholtZahl: wiederholtZahl, check: check,
     VISUAL_DIRECTION_INCOMPLETE: RICHTUNG_UNVOLLSTAENDIG, NIEMALS: NIEMALS };
 
   if (isNode) module.exports = api;

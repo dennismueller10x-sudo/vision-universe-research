@@ -69,7 +69,28 @@ test("S1 · Kein Anbieterschluessel liegt in irgendeiner committeten Datei", () 
     { name: "AWS-Zugriffsschluessel", re: /\bAKIA[0-9A-Z]{16}\b/ },
     { name: "GitHub-Token", re: /\bgh[pousr]_[A-Za-z0-9]{30,}/ },
     { name: "Google-API-Schluessel", re: /\bAIza[0-9A-Za-z_\-]{35}\b/ },
-    { name: "privater Schluessel", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ }
+    /* -----------------------------------------------------------------
+       EIN UMSCHLAG IST NOCH KEIN SCHLUESSEL
+
+       Diese Regel traf bisher die BEGIN-Zeile allein. Am 21.09. kam
+       worker-waker/tests/waker.test.mjs dazu, und darin steht
+
+         "-----BEGIN PRIVATE KEY-----\n-----END PRIVATE KEY-----"
+
+       als absichtlich kaputte Eingabe: ein leerer Umschlag, mit dem
+       der Test beweist, dass der Parser fail-closed abweist. Es ist
+       kein Schluessel darin - es ist die Abwesenheit eines
+       Schluessels, und die Pruefung hat sie als Fund gemeldet.
+
+       Ein Pruefer, der richtigen Text abweist, ist in diesem Projekt
+       eine eigene Fehlerfamilie, und ein Scanner, dem man nicht
+       glaubt, wird ignoriert. Deshalb verlangt die Regel jetzt, was
+       einen Schluessel ausmacht: Nutzlast zwischen den Zeilen. Ein
+       echter PKCS#8-Schluessel bringt hunderte Base64-Zeichen mit,
+       ein leerer Umschlag keines.
+       ----------------------------------------------------------------- */
+    { name: "privater Schluessel",
+      re: /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]{0,40}?[A-Za-z0-9+/=]{40,}/ }
   ];
 
   /* Platzhalter, die ausdruecklich keine Schluessel sind. Tests brauchen
@@ -97,6 +118,43 @@ test("S1 · Kein Anbieterschluessel liegt in irgendeiner committeten Datei", () 
   // Der Fund selbst wird nie ausgegeben — sonst stuende ein echter Schluessel
   // im Testprotokoll, das in der CI oeffentlich sein kann.
   assert.deepEqual(hits, [], "Moegliche Zugangsdaten im Repository:\n  " + hits.join("\n  "));
+});
+
+/* ---------------------------------------------------------------------- */
+test("S1b · Die Schluesselregel trifft Nutzlast, nicht den Umschlag", () => {
+  /* Die Gegenprobe zu S1, in beide Richtungen. Ohne sie waere die
+     Verschaerfung von "BEGIN-Zeile" auf "BEGIN-Zeile mit Nutzlast"
+     eine Behauptung: niemand haette geprueft, ob ein echter
+     Schluessel weiterhin auffaellt.
+
+     DIE NUTZLAST WIRD HIER GEBAUT, NICHT HINGESCHRIEBEN. Der erste
+     Entwurf setzte einen schluesselfoermigen Base64-Block als Literal
+     in diese Datei - und S1 hat ihn gefunden, zu Recht: ein Scanner,
+     der seine eigene Testdatei ausnimmt, hat einen blinden Fleck
+     genau dort, wo jemand etwas verstecken wuerde.
+
+     Also traegt die Datei kein Exemplar. Die Bytes sind eine
+     fortlaufende Zahlenreihe, aus ihr entsteht zur Laufzeit ein
+     Base64-Block, und nur der hat die Form. Geprueft wird die Form,
+     nicht ein Geheimnis - es gibt keines. */
+  const re = /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]{0,40}?[A-Za-z0-9+/=]{40,}/;
+  const nutzlast = Buffer.from(
+    Array.from({ length: 96 }, (_, i) => (i * 7 + 11) % 256)).toString("base64");
+
+  for (const etikett of ["PRIVATE KEY", "RSA PRIVATE KEY", "EC PRIVATE KEY"]) {
+    const pem = "-----BEGIN " + etikett + "-----\n" + nutzlast +
+      "\n-----END " + etikett + "-----";
+    assert.ok(re.test(pem), etikett + " mit Nutzlast faellt nicht auf.");
+  }
+
+  /* Und die leeren Umschlaege, an denen worker-waker beweist, dass
+     sein Parser fail-closed abweist. Sie tragen nichts. */
+  for (const leer of [
+    "-----BEGIN PRIVATE KEY-----\n-----END PRIVATE KEY-----",
+    "-----BEGIN PRIVATE KEY-----\n!!!nichtbase64!!!\n-----END PRIVATE KEY-----"
+  ]) {
+    assert.equal(re.test(leer), false, "Leerer Umschlag gilt als Fund.");
+  }
 });
 
 /* ---------------------------------------------------------------------- */

@@ -37,7 +37,8 @@ import assert from "node:assert/strict";
 
 import worker from "../src/index.js";
 import {
-  createEnv, createGraph, request, PAGE_TOKEN, TEST_ADMIN_KEY, TEST_APP_SECRET
+  createEnv, createGraph, request, PAGE_TOKEN, TEST_ADMIN_KEY, TEST_APP_SECRET,
+  jpegBytes, bildAntwort
 } from "./harness.mjs";
 import { CONNECTION_KEY, SMOKE_KEY } from "../src/store.js";
 
@@ -92,12 +93,12 @@ function publishGraph(options = {}) {
       headers: new Headers({ "content-type": "application/json" })
     });
 
-    /* Der HEAD auf die Bildadresse laeuft ueber denselben fetch. */
+    /* Der Abruf der Bildadresse laeuft ueber denselben fetch - jetzt
+       als GET, weil der Worker die Bytes ansieht. */
     if (rawUrl === BILD || methode === "HEAD") {
       if (options.bildFehlt) return { ok: false, status: 404, headers: new Headers() };
-      return { ok: true, status: 200,
-        headers: new Headers({ "content-type": options.bildTyp || "image/jpeg",
-          "content-length": "68000" }) };
+      return bildAntwort(options.bild || jpegBytes(),
+        { typ: options.bildTyp || "image/jpeg" });
     }
 
     if (pfad === `${IG_ID}/media` && methode === "POST") {

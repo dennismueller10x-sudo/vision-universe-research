@@ -65,6 +65,24 @@ import { contentHash } from "./redact.js";
 
 const MIN_ADMIN_KEY_LENGTH = 32;
 
+/* -------------------------------------------------------------------
+   DIE DREI KNOEPFE - UND NUR IHRE NAMEN
+
+   Der Worker ist ein eigenes Bundle; die Engines des Repositories
+   laufen dort nicht. Was ein Auftrag AUFHEBEN DARF, steht deshalb
+   nicht hier, sondern in social/engines/manual-mode.js - einmal, und
+   dort, wo der Lauf es liest.
+
+   Hier stehen nur die drei Namen, die das Formular ohnehin braucht,
+   um drei Knoepfe zu zeichnen. Ein Test haelt sie gegen die Engine;
+   driften sie auseinander, wird er rot.
+
+   Ohne Angabe bleibt es bei JETZT PRUEFEN. Eine fehlende Angabe darf
+   nie zur weiterreichenden Handlung werden.
+   ------------------------------------------------------------------- */
+const MANUAL_MODI = ["JETZT_PRUEFEN", "MANUAL_NOW", "MANUAL_TOPIC"];
+const MANUAL_THEMA_MAX = 120;
+
 /* ------------------------------------------------------------------ */
 /* Das Tor                                                             */
 /* ------------------------------------------------------------------ */
@@ -525,6 +543,25 @@ const BETRIEB = {
       "veroeffentlicht. Freigegeben wird nur, was jemand gesehen hat — der " +
       "naechste Orchestratorlauf sieht nach."
   },
+  /* Auch das ein eigener Zustand. Das Bild IST erreichbar - nur laesst
+     sich nicht belegen, dass es dasselbe ist, das der Owner sehen
+     wird. "Nicht erreichbar" waere hier eine falsche Auskunft, und
+     "ungeprueft" waere die halbe. */
+  ASSET_FINGERPRINT_UNVERIFIED: {
+    titel: "Es ist nicht belegt, dass die Vorschau das gesendete Bild ist.",
+    text: "Der Beitrag kann noch nicht freigegeben werden. Es wurde nichts " +
+      "veroeffentlicht. Das Bild ist abrufbar — was fehlt, ist der Abdruck " +
+      "seiner Bytes, und ohne ihn koennte hinter derselben Adresse eine andere " +
+      "Datei liegen als die, die du siehst. Der naechste Orchestratorlauf " +
+      "misst ihn mit."
+  },
+  ASSET_CHANGED_SINCE_APPROVAL: {
+    titel: "Das Bild hat sich seit der Freigabe geaendert.",
+    text: "Es wurde nichts veroeffentlicht. Unter derselben Adresse liegt jetzt " +
+      "eine andere Datei als bei der Freigabe. Das ist kein Formfehler: " +
+      "veroeffentlicht wuerde etwas, das du nie gesehen hast. Eine Aenderung " +
+      "nach der Freigabe braucht eine neue Freigabe."
+  },
   AUTH_EXPIRED: {
     titel: "Die Verbindung zu Instagram besteht nicht mehr.",
     text: "Der Beitrag wurde NICHT veroeffentlicht. Die Verbindung muss erneuert " +
@@ -634,6 +671,25 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
     };
   }
 
+  /* -------------------------------------------------------------------
+     OHNE ABDRUCK KEINE FREIGABE (§25)
+
+     Bis hierher ist belegt: unter DIESER ADRESSE lag zum Zeitpunkt der
+     Messung ein gueltiges Bild. Mehr nicht.
+
+     Was dabei offen blieb, hat am 21.09. einen oeffentlichen Beitrag
+     ohne Bild erzeugt: zwischen Messung und Sendung kann die Datei
+     hinter der Adresse ausgetauscht oder entfernt werden. Die Adresse
+     bleibt dieselbe, das Urteil gilt weiter, und niemand sieht hin.
+
+     Der Byte-Abdruck ist die einzige Groesse, an der sich das
+     feststellen laesst. Fehlt er, ist "Vorschau = Sendung" nicht
+     pruefbar - und was nicht pruefbar ist, wird nicht freigegeben.
+     Ablehnen bleibt moeglich. */
+  if (!bild.sha256) {
+    return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
+  }
+
   /* 3. Das Qualitaetstor. NICHT_ANWENDBAR ist kein Durchfallen - die
      Pruefung misst Text auf der Flaeche, und ein generatives Bild
      traegt laut Brief keinen. NICHT_BESTANDEN ist eines. */
@@ -648,7 +704,17 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
 function zustandAus(antwort) {
   if (!antwort || typeof antwort !== "object") return "META_PUBLISH_FAILED";
   if (antwort.uncertain) return "PUBLISH_UNCERTAIN";
-  if (antwort.stage === "imageCheck") return "ASSET_NOT_REACHABLE";
+  /* Der Bildcheck scheitert aus zwei verschiedenen Gruenden, und sie
+     sagen dem Owner Verschiedenes: das Bild fehlt, oder das Bild ist
+     ein anderes geworden. Beides unter "nicht erreichbar" zu fuehren
+     hiesse, den zweiten Fall als Transportproblem auszugeben. */
+  if (antwort.stage === "imageCheck") {
+    if (antwort.error === "imageFingerprintMismatch" ||
+        antwort.error === "imageDimensionsChanged") {
+      return "ASSET_CHANGED_SINCE_APPROVAL";
+    }
+    return "ASSET_NOT_REACHABLE";
+  }
   if (antwort.error === "imageNotReachable" || antwort.error === "imageNotAnImage") {
     return "ASSET_NOT_REACHABLE";
   }
@@ -779,6 +845,12 @@ async function handlePublishDecision(candidateId, request, env, options) {
     contentId: i.payload.contentId,
     imageUrl: i.payload.imageUrl,
     caption: i.payload.caption,
+    /* Der Abdruck dessen, was der Owner gesehen hat. Der
+       Veroeffentlichungspfad holt das Bild gleich selbst und haelt es
+       dagegen - unmittelbar bevor Meta es abholt. Das ist der einzige
+       Zeitpunkt, an dem "Vorschau = Sendung" noch etwas heisst. */
+    assetSha256: i.asset && i.asset.sha256 ? i.asset.sha256 : null,
+    assetDimensions: (i.asset && i.asset.dimensions) || null,
     approval: {
       candidateId,
       approvedBy: "owner",
@@ -996,6 +1068,44 @@ export async function handleManualRun(request, env, options = {}) {
   const jetzt = options.now ? new Date(options.now) : new Date();
   const nowIso = jetzt.toISOString();
 
+  /* -------------------------------------------------------------------
+     WELCHER DER DREI KNOEPFE (§28, §29, §30)
+
+     Ohne Angabe bleibt es bei JETZT PRUEFEN - dem Knopf, den es
+     vorher gab. Eine fehlende Angabe darf nicht zum Auftrag werden:
+     Unbekanntes wird hier nicht zur weitreichenderen Handlung.
+
+     Was ein Auftrag darf, entscheidet manual-mode.js. Der Worker
+     nimmt die Eingabe entgegen und reicht das Urteil weiter; er faellt
+     es nicht selbst, sonst gaebe es die Regel zweimal.
+     ------------------------------------------------------------------- */
+  let modus = "JETZT_PRUEFEN";
+  let thema = "";
+  try {
+    const form = await request.formData();
+    const m = form.get("modus");
+    if (m !== null && String(m).trim()) modus = String(m).trim();
+    const t = form.get("thema");
+    if (t !== null) thema = String(t).trim().slice(0, MANUAL_THEMA_MAX);
+  } catch {
+    /* Kein Formular - dann bleibt es beim Vorgabemodus. */
+  }
+
+  if (!MANUAL_MODI.includes(modus)) {
+    return laufNichtMoeglichSeite({
+      grund: "UNBEKANNTER_MODUS",
+      satz: "'" + modus + "' ist keiner der drei Knoepfe."
+    });
+  }
+  if (modus === "MANUAL_TOPIC" && !thema) {
+    return laufNichtMoeglichSeite({
+      grund: "THEMA_FEHLT",
+      satz: "POST ZU THEMA ohne Thema ist der andere Knopf mit einem leeren " +
+        "Feld. Entweder steht ein Thema da, oder es ist JETZT POST ERSTELLEN."
+    });
+  }
+  const istAuftrag = modus !== "JETZT_PRUEFEN";
+
   const token = env.VU_GITHUB_DISPATCH_TOKEN || null;
   const repo = env.VU_GITHUB_REPO || null;
   const zweig = env.VU_GITHUB_REF || "main";
@@ -1075,7 +1185,17 @@ export async function handleManualRun(request, env, options = {}) {
           "content-type": "application/json",
           "user-agent": "vision-universe-social-worker"
         },
-        body: JSON.stringify({ ref: zweig })
+        /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
+           Workflow und keine zweite Deployment-Architektur (§58):
+           derselbe Lauf, ein anderer Auftrag. */
+        /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
+           Workflow und keine zweite Deployment-Architektur (§58):
+           derselbe Lauf, ein anderer Auftrag. */
+        body: JSON.stringify({ ref: zweig, inputs: {
+          modus: modus,
+          thema: thema,
+          nur_entscheiden: istAuftrag ? "false" : "true"
+        } })
       });
     status = antwort.status;
     ok = antwort.status === 204;
@@ -1088,8 +1208,11 @@ export async function handleManualRun(request, env, options = {}) {
   }
 
   await recordManualRun(env, {
-    requestedAt: nowIso, ok, status,
-    hinweis: ok ? "workflow_dispatch angenommen" : "Dispatch nicht angenommen"
+    requestedAt: nowIso, ok, status, modus: modus,
+    /* Das Thema wird NICHT mitgeschrieben: es ist fremder Text, und der
+       Vermerk ueber den letzten Anstoss ist kein Ort fuer fremden Text. */
+    hinweis: ok ? "workflow_dispatch angenommen (" + modus + ")"
+      : "Dispatch nicht angenommen"
   });
 
   if (!ok) {

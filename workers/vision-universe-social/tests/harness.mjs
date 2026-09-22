@@ -239,6 +239,76 @@ export async function completeConnect(worker, env, options = {}) {
    Tests waeren dann gegen verschiedene Metas gruen.
    ========================================================================= */
 
+/* =========================================================================
+   EIN ECHTES JPEG, WEIL DER WORKER JETZT DIE BYTES ANSIEHT
+
+   Bis zum 21.09. holte die Bildpruefung nur den Kopf der Datei, und
+   dieser Doppelgaenger antwortete entsprechend: Status und Inhaltstyp,
+   kein Koerper. Der Kommentar darueber sagte, das genuege fuer "gibt es
+   das, und ist es ein Bild".
+
+   Es genuegte nicht. Ein Beitrag ging oeffentlich hinaus, dessen Bild
+   sich nicht laden liess - Kopf in Ordnung, Datei nicht.
+
+   Der Worker holt jetzt per GET und sieht die Bytes an: SOI-Marker,
+   Masse aus dem SOF, SHA-256. Ein Doppelgaenger, der weiterhin nur
+   Header liefert, wuerde einen Pfad pruefen, den es nicht mehr gibt.
+   Also liefert er ein Bild.
+
+   Es ist ein MINIMALES, aber echtes JPEG: SOI, APP0, SOF0 mit den
+   angegebenen Massen, ein leerer Scan, EOI. Genug, damit jede
+   Pruefung, die der Worker anstellt, an echten Bytes arbeitet.
+   ========================================================================= */
+export function jpegBytes({ width = 1080, height = 1350, fuellung = 0 } = {}) {
+  const b = [
+    0xFF, 0xD8,                                     /* SOI */
+    0xFF, 0xE0, 0x00, 0x10,                         /* APP0, Laenge 16 */
+    0x4A, 0x46, 0x49, 0x46, 0x00,                   /* "JFIF\0" */
+    0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
+    0xFF, 0xC0, 0x00, 0x11, 0x08,                   /* SOF0, Laenge 17, 8 bit */
+    (height >> 8) & 0xFF, height & 0xFF,
+    (width >> 8) & 0xFF, width & 0xFF,
+    0x03,                                           /* drei Komponenten */
+    0x01, 0x22, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01,
+    0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3F, 0x00,
+    /* Ein Byte, das sich veraendern laesst: zwei Bilder gleicher Masse
+       mit verschiedenem Abdruck - genau der Fall, den §25 trennt. */
+    fuellung & 0xFF,
+    0xFF, 0xD9                                      /* EOI */
+  ];
+  return new Uint8Array(b);
+}
+
+/* Der Abdruck des Standardbilds. Er steht hier als Konstante, weil
+   Fixtures ihn brauchen und `await` dort nicht ueberall geht - und ein
+   Test rechnet ihn gegen jpegBytes(), damit er nicht still veraltet. */
+export const JPEG_SHA256 =
+  "e93ddef91ffedf04c53246ae64b2561c75bf7e8e5ebb1cf197f973944db36fc1";
+
+/** Derselbe Abdruck, den der Worker rechnet - aus denselben Bytes. */
+export async function jpegSha256(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Die Antwort auf ein GET an die Bildadresse.
+ *
+ * `arrayBuffer()` gibt genau die Bytes zurueck, aus denen auch der
+ * Abdruck gerechnet wird. Ein Doppelgaenger, der hier etwas anderes
+ * liefert als er ankuendigt, pruefte die Pruefung nicht.
+ */
+export function bildAntwort(bytes, { typ = "image/jpeg", status = 200 } = {}) {
+  return {
+    ok: status >= 200 && status < 300, status,
+    headers: new Headers({ "content-type": typ,
+      "content-length": String(bytes.byteLength) }),
+    arrayBuffer: () => Promise.resolve(
+      bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength))
+  };
+}
+
 export const PUBLISH_IG_ID = "17841400000000001";
 export const PUBLISH_MEDIA_ID = "media_555";
 export const PUBLISH_PERMALINK = "https://www.instagram.com/p/PU555/";
@@ -258,13 +328,31 @@ export function createPublishGraph(options = {}) {
       headers: new Headers({ "content-type": "application/json" })
     });
 
-    /* Die Bildpruefung. Sie holt den Kopf der Datei und nicht die
-       Datei - das genuegt fuer "gibt es das, und ist es ein Bild". */
-    if (methode === "HEAD") {
+    /* Die Bildpruefung. Sie holt die DATEI, nicht ihren Kopf - siehe
+       jpegBytes() oben. `options.bild` erlaubt einem Test, andere Bytes
+       unterzuschieben als die freigegebenen. */
+    /* -----------------------------------------------------------------
+       DER BILDZWEIG GEHOERT AN DIE ADRESSE, NICHT AN DIE METHODE
+
+       Der erste Anlauf schrieb `methode === "GET"` - und fing damit
+       auch die Graph-Abrufe, mit denen der Worker nach dem Senden
+       nachprueft, was entstanden ist. Die bekamen ein JPEG statt ihrer
+       Antwort, und `permalink` stand plaetzlich auf null.
+
+       Ein Tor, das an der Methode haengt, ist zu weit: gefragt ist
+       nicht "wird gelesen", sondern "wird DAS BILD gelesen". Die
+       Graph-Adresse traegt den Host der Graph API; alles andere ist
+       hier das Bild. */
+    const istGraph = url.hostname.includes("graph.");
+    if (!istGraph || methode === "HEAD") {
       if (options.bildFehlt) return { ok: false, status: 404, headers: new Headers() };
-      return { ok: true, status: 200,
-        headers: new Headers({ "content-type": options.bildTyp || "image/jpeg",
-          "content-length": "68000" }) };
+      if (options.bildLeer) {
+        return { ok: true, status: 200,
+          headers: new Headers({ "content-type": options.bildTyp || "image/jpeg" }),
+          arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) };
+      }
+      return bildAntwort(options.bild || jpegBytes(),
+        { typ: options.bildTyp || "image/jpeg" });
     }
 
     const ig = options.instagramAccountId || PUBLISH_IG_ID;

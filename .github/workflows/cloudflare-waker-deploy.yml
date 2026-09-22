@@ -12,22 +12,26 @@ name: Cloudflare — Intraday-Wecker ausrollen
 #
 # Ein Cron auf Cloudflare, der den bestehenden Taktgeber-Workflow weckt.
 # Er holt keine Kurse, speichert nichts und kennt keine Daten (siehe
-# worker-waker/src/index.mjs und die Tests WK-1 bis WK-10).
+# worker-waker/src/index.mjs und die Tests WK-1 bis WK-18).
 #
-# WAS NOCH FEHLT - OWNER-ENTSCHEIDUNG
+# WARUM DIESER WORKFLOW DEN SCHLUESSEL NICHT ANFASST
 #
-# Ein GitHub-Token mit actions:write. Ohne dieses Token laeuft der Wecker
-# zwar, meldet aber bei jedem Takt "keinToken" und loest nichts aus. Der
-# Workflow rollt ihn dann trotzdem aus und sagt es deutlich - ein Wecker,
-# der stillschweigend nichts tut, waere schlimmer als keiner.
+# Seit der Eigentuemerentscheidung vom 21.09.2026 weist sich der Wecker
+# ueber eine GitHub App aus (App ID 5023229, installiert auf genau
+# diesem Repository, Berechtigung "Actions: read and write"). Ihr
+# privater Schluessel ist das einzige echte Geheimnis der Kette.
 #
-#   Repository -> Settings -> Secrets -> Actions -> New secret
-#   Name:  GH_DISPATCH_TOKEN
-#   Wert:  Fine-grained PAT, NUR dieses Repository,
-#          Berechtigung "Actions: read and write", sonst nichts.
+# Frueher stand hier ein Schritt, der ein PAT aus einem GitHub-Secret
+# nach Cloudflare weiterreichte. Das ist jetzt bewusst weg. Ein
+# Schluessel, der durch einen Actions-Lauf laeuft, existiert danach an
+# drei Orten statt an einem: im GitHub-Secret, im Runner-Speicher und
+# bei Cloudflare. Der private App-Schluessel geht deshalb direkt vom
+# Rechner des Eigentuemers zu Cloudflare und beruehrt GitHub nie.
 #
-# Dieser Workflow reicht ihn als Cloudflare-Secret GITHUB_DISPATCH_TOKEN
-# weiter. Er steht nie in einer Datei und nie in einem Protokoll.
+# Was dieser Workflow stattdessen tut: er rollt den Wecker aus und sieht
+# NACH, ob das Secret dort liegt (`wrangler secret list` nennt Namen,
+# nie Werte). Fehlt es, sagt er das deutlich - ein Wecker, der
+# stillschweigend nichts tut, waere schlimmer als keiner.
 # =============================================================================
 
 on:
@@ -59,21 +63,13 @@ jobs:
       - name: Der Wecker haelt seinen eigenen Vertrag ein
         run: node --test worker-waker/tests/waker.test.mjs
 
-      - name: Liegen die Zugaenge vor?
-        id: zugang
+      - name: Liegt der Cloudflare-Zugang vor?
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             echo "Kein CLOUDFLARE_API_TOKEN. Ohne Cloudflare-Zugang kein Wecker."
             exit 1
-          fi
-          if [ -z "$GH_DISPATCH_TOKEN" ]; then
-            echo "dispatch=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::GH_DISPATCH_TOKEN fehlt. Der Wecker wird ausgerollt, kann aber nichts ausloesen."
-          else
-            echo "dispatch=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Ausrollen
@@ -84,25 +80,29 @@ jobs:
         run: |
           npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
 
-      # Erst der Worker, dann sein Secret: `wrangler secret put` verlangt
-      # ein bestehendes Projekt. Der Wert kommt ueber stdin, nie ueber die
-      # Kommandozeile - Argumente stehen in Prozesslisten.
-      - name: Token hinterlegen
-        if: ${{ !inputs.dryRun && steps.zugang.outputs.dispatch == 'true' }}
+      # `wrangler secret list` gibt Namen und Typen aus, nie Werte. Die
+      # Ausgabe wird trotzdem nicht roh gedruckt - gepruefte Anwesenheit
+      # genuegt, und was nicht gedruckt wird, kann auch nicht versehentlich
+      # in einem Protokoll landen.
+      - name: Liegt der App-Schluessel bei Cloudflare?
+        id: schluessel
+        if: ${{ !inputs.dryRun }}
         working-directory: worker-waker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
         run: |
-          printf '%s' "$GH_DISPATCH_TOKEN" \
-            | npx --yes wrangler@4 secret put GITHUB_DISPATCH_TOKEN 2>&1 \
-            | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tail -3
+          if npx --yes wrangler@4 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
+            echo "vorhanden=true" >> "$GITHUB_OUTPUT"
+            echo "GITHUB_APP_PRIVATE_KEY ist hinterlegt."
+          else
+            echo "vorhanden=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GITHUB_APP_PRIVATE_KEY fehlt bei Cloudflare. Der Wecker laeuft, loest aber nichts aus."
+          fi
 
       - name: Kein Schluessel im Bericht
         if: always()
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
         run: node scripts/market/assert-no-secrets.mjs --all
 
       - name: Zusammenfassung
@@ -111,13 +111,23 @@ jobs:
           {
             echo '### Intraday-Wecker'
             echo ''
-            if [ "${{ steps.zugang.outputs.dispatch }}" = "true" ]; then
-              echo 'Token hinterlegt - der Wecker kann den Taktgeber ausloesen.'
+            echo 'Ausweis: **GitHub App 5023229**, installiert auf diesem Repository,'
+            echo 'Berechtigung Actions read and write. Kein PAT mehr.'
+            echo ''
+            if [ "${{ steps.schluessel.outputs.vorhanden }}" = "true" ]; then
+              echo 'Der private App-Schluessel liegt bei Cloudflare — der Wecker kann'
+              echo 'sich ein Installationstoken holen und den Taktgeber ausloesen.'
             else
-              echo '**GH_DISPATCH_TOKEN fehlt.** Der Wecker laeuft, meldet bei jedem'
-              echo 'Takt `keinToken` und loest nichts aus. Damit bleiben zwei Luecken offen:'
+              echo '**Der private App-Schluessel fehlt bei Cloudflare.** Der Wecker laeuft,'
+              echo 'meldet bei jedem Takt `keinSchluessel` und loest nichts aus.'
               echo ''
-              echo '1. Der Waechter hat keinen von GitHub unabhaengigen Kontrollpfad.'
-              echo '2. Die Auslieferung braucht weiter die Pages-Bruecke (Zeitplan).'
+              echo 'Einmalig auf dem Rechner des Eigentuemers, nicht hier:'
+              echo ''
+              echo '```'
+              echo 'cd worker-waker'
+              echo 'npx wrangler@4 secret put GITHUB_APP_PRIVATE_KEY < /pfad/zur/app.pem'
+              echo '```'
+              echo ''
+              echo 'Der Schluessel geht damit direkt zu Cloudflare und beruehrt GitHub nie.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"

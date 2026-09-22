@@ -1,0 +1,199 @@
+name: "Cloudflare — Intraday-Wecker: Produktionsnachweis"
+
+# =============================================================================
+# EIN MESSINSTRUMENT, KEINE ARCHITEKTUR
+#
+# Dieser Workflow aendert nichts. Er sieht zu. Er gehoert in dieselbe
+# Kategorie wie intraday-delivery-watchdog.yml und der Realtime-Rauchtest:
+# Werkzeuge, die eine Zusage nachrechnen, statt sie zu wiederholen.
+#
+# WAS ER BEANTWORTET
+#
+# Der Wecker laeuft auf Cloudflare. Von aussen sieht man nur seine
+# Wirkung - einen Workflow-Lauf, der entsteht. Bleibt die Wirkung aus,
+# sagt das allein nicht, WO die Kette gerissen ist: fehlender
+# Schluessel, unlesbares PEM, nicht gefundene Installation, verweigertes
+# Token, falsche Berechtigung. Fuenf Moeglichkeiten, ein Symptom.
+#
+# `wrangler tail` holt die Protokollzeilen des Weckers live aus
+# Cloudflare heraus. Der Wecker schreibt je Takt genau ein Ereignis mit
+# Namen (siehe HINWEISE in src/index.mjs), und diese Namen sind der
+# Nachweis - nicht meine Behauptung darueber.
+#
+# WARUM DAS SICHER IST
+#
+# Der Wecker protokolliert grundsaetzlich keine Geheimnisse: keinen
+# Schluessel, kein JWT, kein Token, keinen Authorization-Kopf. WK-6
+# prueft genau das, inklusive abgeschnittener PEM-Zeilen. Die Ausgabe
+# wird hier trotzdem maskiert - eine zweite Schranke kostet nichts.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      minuten:
+        description: 'Wie lange zuhoeren (Minuten). 17 faengt drei Takte.'
+        type: string
+        default: '17'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vu-intraday-waker-proof
+  cancel-in-progress: false
+
+jobs:
+  nachweis:
+    name: Dem Wecker zuhoeren
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 1. Liegt der Schluessel wirklich bei Cloudflare?
+      #    `secret list` nennt Namen und Typen, nie Werte.
+      - name: Der Schluessel liegt bei Cloudflare
+        id: secret
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if npx --yes wrangler@4 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
+            echo "GITHUB_APP_PRIVATE_KEY ist hinterlegt."
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "GITHUB_APP_PRIVATE_KEY fehlt - ohne ihn ist jeder weitere Nachweis sinnlos."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      # 2. Und sagt der Wecker selbst dasselbe? Der Zustandspunkt ist
+      #    oeffentlich und nennt nur, OB etwas hinterlegt ist.
+      - name: Der Wecker sagt dasselbe
+        id: status
+        run: |
+          ANTWORT=$(curl -sS --max-time 20 https://vu-intraday-waker.little-credit-15d3.workers.dev/status)
+          echo "$ANTWORT" | tee /tmp/status.json
+          echo ''
+          node -e '
+            const s = JSON.parse(require("fs").readFileSync("/tmp/status.json","utf8"));
+            const fehler = [];
+            if (s.ausweis !== "github-app") fehler.push("ausweis ist " + s.ausweis);
+            if (s.schluesselHinterlegt !== true) fehler.push("schluesselHinterlegt ist " + s.schluesselHinterlegt);
+            if (s.appIdHinterlegt !== true) fehler.push("appIdHinterlegt ist " + s.appIdHinterlegt);
+            if (/PRIVATE KEY|ghs_|ghp_/.test(JSON.stringify(s))) fehler.push("der Zustandspunkt verraet Schluesselmaterial");
+            if (fehler.length) { console.error("NICHT BESTANDEN: " + fehler.join("; ")); process.exit(1); }
+            console.log("Zustandspunkt in Ordnung: github-app, App ID und Schluessel hinterlegt, nichts verraten.");
+          '
+
+      # 3. Zuhoeren. Jeder Cron-Takt schreibt genau ein Ereignis.
+      #    `timeout` beendet den Strom kontrolliert; 124 ist dabei der
+      #    Erfolgsfall, kein Fehler.
+      #
+      #    ERSTER ANLAUF, ERSTER FEHLER: hier stand `--format=json`, und
+      #    ausgegeben wurde trotzdem das Klartextformat. Der Parser sah
+      #    108 Zeilen und verstand keine - gemeldet wurde nur die Zahl
+      #    108. Eine Zahl ohne Probe ist kein Befund. Deshalb wird jetzt
+      #    immer ein Ausschnitt gedruckt, und gelesen wird formatfrei:
+      #    gesucht werden die Ereignisnamen, die der Wecker selbst
+      #    schreibt - die stehen in beiden Formaten drin.
+      - name: Drei Takte mithoeren
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${{ inputs.minuten }} Minuten."
+          set +e
+          timeout "${{ inputs.minuten }}m" npx --yes wrangler@4 tail --format json \
+            > /tmp/tail-roh.txt 2>/tmp/tail-fehler.txt
+          CODE=$?
+          set -e
+          if [ "$CODE" != "124" ] && [ "$CODE" != "0" ]; then
+            echo "wrangler tail endete mit $CODE:"
+            sed -E 's/[A-Za-z0-9_-]{30,}/<maskiert>/g' /tmp/tail-fehler.txt | tail -20
+          fi
+          # Maskieren, bevor irgendetwas gedruckt wird.
+          sed -E 's/gh[pousr]_[A-Za-z0-9]+/<maskiert>/g; s/[A-Za-z0-9+\/=]{60,}/<maskiert>/g' \
+            /tmp/tail-roh.txt > /tmp/tail.txt
+          echo "Roh-Zeilen: $(wc -l < /tmp/tail.txt)"
+          echo ''
+          echo '--- Probe der ersten 25 Zeilen (maskiert) ---'
+          head -25 /tmp/tail.txt | cut -c1-240
+          echo '--- Ende der Probe ---'
+
+      - name: Was der Wecker gesagt hat
+        id: urteil
+        run: |
+          set -o pipefail   # sonst gewinnt tee, und die Pruefung kann nicht durchfallen
+          node -e '
+            const fs = require("node:fs");
+            const roh = fs.readFileSync("/tmp/tail.txt", "utf8");
+
+            /* Formatfrei lesen. Der Wecker schreibt je Takt eine Zeile
+               JSON mit dem Feld "ereignis" - egal ob wrangler sie als
+               JSON-Ereignis verpackt oder im Klartext durchreicht,
+               dieser Bestandteil steht drin. */
+            const NAMEN = ["geweckt","bereitsWach","lageUnbekannt","installationErmittelt",
+                           "ausgeliefert","auslieferungLaeuft","auslieferungLageUnbekannt"];
+            const FEHLER = ["keinSchluessel","keineAppId","keinRepo","schluesselUnlesbar",
+                            "signaturFehlgeschlagen","keineInstallation","keinZugangstoken",
+                            "weckenFehlgeschlagen","auslieferungFehlgeschlagen"];
+
+            /* Im JSON-Format steckt die Zeile des Weckers als
+               escapter String IN einem JSON-Feld: \"ereignis\". Erst
+               entschaerfen, dann suchen - sonst findet die Suche nur
+               das Klartextformat und meldet beim anderen null Treffer,
+               ohne dass jemand merkt warum. */
+            const flach = roh.replace(/\\"/g, "\"");
+            const gefunden = [];
+            const re = /"ereignis"\s*:\s*"([A-Za-z]+)"/g;
+            let m;
+            while ((m = re.exec(flach)) !== null) gefunden.push(m[1]);
+
+            /* Takte zaehlen: jede Zeile, die einen Cron-Ausloeser nennt.
+               Beide Formate nennen ihn - als "cron" im JSON oder als
+               "scheduled at" im Klartext. */
+            const taktZeilen = roh.split("\n").filter((z) =>
+              /"cron"\s*:/.test(z) || /scheduled at/i.test(z) || /\bTrigger\b.*cron/i.test(z));
+
+            console.log("Ereignisse des Weckers: " + (gefunden.length ? gefunden.join(", ") : "keine"));
+            console.log("Zeilen mit Cron-Ausloeser: " + taktZeilen.length);
+            for (const z of taktZeilen.slice(0, 10)) console.log("  " + z.slice(0, 200));
+
+            const schlecht = gefunden.filter((e) => FEHLER.includes(e));
+            const gut = gefunden.filter((e) => NAMEN.includes(e));
+            const takte = Math.max(taktZeilen.length,
+                                   gefunden.filter((e) => e === "geweckt" || e === "bereitsWach").length);
+
+            console.log("");
+            console.log("Takte:            " + takte);
+            console.log("in Ordnung:       " + gut.length + "  (" + gut.join(", ") + ")");
+            console.log("Fehlerereignisse: " + schlecht.length +
+                        (schlecht.length ? "  -> " + schlecht.join(", ") : ""));
+
+            if (/PRIVATE KEY/.test(roh)) {
+              console.error("NICHT BESTANDEN: Schluesselmaterial im Protokoll."); process.exit(1);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "takte=" + takte + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "fehler=" + schlecht.length + "\n");
+            if (schlecht.length) { console.error("NICHT BESTANDEN: der Wecker meldet Fehler."); process.exit(1); }
+            if (takte < 3) { console.error("NICHT BESTANDEN: weniger als drei Cron-Takte gehoert."); process.exit(1); }
+            console.log("BESTANDEN");
+          ' | tee /tmp/urteil.txt
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Wecker-Nachweis'
+            echo ''
+            echo '```'
+            cat /tmp/status.json 2>/dev/null || echo 'kein Zustandspunkt'
+            echo '```'
+            echo ''
+            cat /tmp/urteil.txt 2>/dev/null || echo 'kein Urteil'
+          } >> "$GITHUB_STEP_SUMMARY"

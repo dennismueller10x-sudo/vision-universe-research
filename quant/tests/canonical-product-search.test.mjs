@@ -41,8 +41,8 @@ test('identity-only stock does not request the unrelated five-company financial 
 test('config and connected-panel failures preserve independent canonical identity with typed availability',async()=>{
  for(const failed of ['/quant/config/development-preview.json','/quant/config/feature-gates.json','/quant/data/sec/quant-factor-inputs.json']){
   const ticker=failed.endsWith('quant-factor-inputs.json')?'NVDA':'TSLA',service=api(p=>{if(p===failed)throw Error('offline');});
-  const stock=await service.getStockIntelligence(ticker);assert.equal(stock.identityState,'AVAILABLE',failed);assert.equal(stock.ticker,ticker);assert.match(stock.securityId,/^vu_/);assert.equal(stock.state,'UNAVAILABLE');assert.equal(stock.reason,'SOURCE_MISSING');
-  for(const status of Object.values(stock.availability)){assert.equal(status.state,'UNAVAILABLE');assert.equal(status.reason,'SOURCE_MISSING');}
-  assert.equal(stock.price,undefined);assert.equal(stock.chart,undefined);
+  const stock=await service.getStockIntelligence(ticker);assert.equal(stock.identityState,'AVAILABLE',failed);assert.equal(stock.ticker,ticker);assert.match(stock.securityId,/^vu_/);
+  if(failed.endsWith('quant-factor-inputs.json')){assert.equal(stock.state,'AVAILABLE');assert.equal(stock.chart.state,'AVAILABLE');assert.equal(stock.quant.state,'AVAILABLE');assert.equal(stock.quant.score.state,'UNAVAILABLE');}
+  else {assert.equal(stock.state,'UNAVAILABLE');assert.equal(stock.reason,'SOURCE_MISSING');for(const status of Object.values(stock.availability)){assert.equal(status.state,'UNAVAILABLE');assert.equal(status.reason,'SOURCE_MISSING');}assert.equal(stock.price,undefined);assert.equal(stock.chart,undefined);}
  }
 });

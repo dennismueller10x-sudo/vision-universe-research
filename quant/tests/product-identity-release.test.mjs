@@ -28,6 +28,6 @@ test('missing, excluded, unknown or mismatched canonical identity fails before m
 test('source aliases and historical issuer evidence cannot be silently reassigned',async()=>{
  const badPanel=api((p,d)=>{if(p.endsWith('quant-factor-inputs.json'))d.securities.NVDA.securityId='sec_MSFT';});
  assert.equal((await badPanel.getStockIntelligence('NVDA')).state,'UNAVAILABLE');
- const badIssuer=api((p,d)=>{if(p.endsWith('inspector_index.json'))d.companies.find(c=>c.ticker==='NVDA').cik='0000789019';});
- assert.equal((await badIssuer.getHistoricalFundamentals('NVDA')).reason,'INVALID_IDENTITY');
+ const badIssuer=api((p,d)=>{if(p.endsWith('/US_REAL/NVDA.json'))d.symbol='MSFT';});
+ assert.equal((await badIssuer.getHistoricalFundamentals('NVDA')).state,'UNAVAILABLE');
 });

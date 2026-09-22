@@ -68,7 +68,26 @@
     FUTURE_TECHNOLOGY:       ["ATLAS", "COMPANY_VISUAL", "MINIMAL_TYPOGRAPHY"],
     STOCK_STORY:             ["CHART", "SCORE", "PERFORMANCE", "COMPARISON",
                               "CAROUSEL", "DATA_CARD"],
-    DATA_STORY:              ["CHART", "SCORE", "MIXED", "DATA_CARD"],
+    /* -----------------------------------------------------------------
+       COMPARISON GEHOERT IN EINE DATA STORY
+
+       Sie fehlte hier. Eine Evidenz mit zwei Werten auf EINER Achse -
+       13,4 und 21,6 im KGV - konnte deshalb nie als Vergleich
+       gezeichnet werden; die Wahl fiel auf DATA_CARD, und eine
+       Datenkarte zeigt EINEN Namen und EINE Zahl. Der zweite Wert
+       verschwand, und ihn in dieselbe Karte zu setzen haette ihn
+       unter dem falschen Namen gezeigt.
+
+       Der Abstand zwischen zwei vergleichbaren Zahlen ist die
+       klassischste Data Story, die es gibt.
+
+       Sie steht NACH Chart und Score: eine echte Zeitreihe erzaehlt
+       eine Entwicklung, und die ist nicht dasselbe wie ein Abstand.
+       Vor MIXED und DATA_CARD, weil beide den zweiten Wert verlieren.
+       Und sie kann ohnehin nur gewinnen, wenn `peerValues` wirklich
+       vorliegt - sonst ist sie schlicht nicht moeglich.
+       ----------------------------------------------------------------- */
+    DATA_STORY:              ["CHART", "SCORE", "COMPARISON", "MIXED", "DATA_CARD"],
     MYTH_VS_REALITY:         ["CAROUSEL", "MINIMAL_TYPOGRAPHY", "DATA_CARD"],
     OPPORTUNITY_RISK:        ["SCORE", "CAROUSEL", "CHART", "DATA_CARD"],
     EDUCATIONAL:             ["CAROUSEL", "ATLAS", "MINIMAL_TYPOGRAPHY"],

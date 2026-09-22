@@ -431,8 +431,30 @@
     }).join("");
   }
 
+  /* -------------------------------------------------------------------
+     EINE ZAHL IM VEROEFFENTLICHTEN TEXT IST DEUTSCH
+
+     Auf der Karte stand "13.4 KGV". Der Wert kam als
+     JavaScript-Zahl aus der Evidenz, und `String(13.4)` ist "13.4" -
+     ein englischer Dezimalpunkt auf einem deutschen Markenkonto,
+     dieselbe Sorte Fehler wie die umschriebenen Umlaute eine Zeile
+     weiter oben.
+
+     Eine ZEICHENKETTE bleibt, wie die Quelle sie geschrieben hat:
+     wer "184,20" liefert, meint 184,20 und nicht 184,2. Nur eine
+     echte Zahl wird gesetzt, und dann deutsch.
+     ------------------------------------------------------------------- */
+  function zahl(x) {
+    if (typeof x === "string") return x.trim();
+    if (typeof x !== "number" || !isFinite(x)) {
+      return x === null || x === undefined ? "" : String(x);
+    }
+    return String(x).replace(".", ",");
+  }
+
   var api = {
     STAEMME: STAEMME,
+    zahl: zahl,
     normalize: normalize,
     residue: residue,
     clean: clean,

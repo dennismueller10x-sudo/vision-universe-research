@@ -298,14 +298,205 @@ sprang korrekt **nicht** an, weil ein Auslieferungsrückstand kein weiterer Abru
 - **(b) eigener Workflow, alle 15 Minuten.** Mit **demselben** Failure Mode wie der
   ausgefallene Zeitplan. Das steht so in der Datei.
 - **(c) Cloudflare-Wecker.** Der einzige wirklich unabhängige Pfad. Gebaut, getestet,
-  nicht ausgerollt.
+  ausgerollt.
 
-> **OWNER-ESKALATION 2:** Ein GitHub-Token mit `actions:write` (fine-grained PAT,
-> nur dieses Repository) als Cloudflare-Secret `GITHUB_DISPATCH_TOKEN`. Damit
-> schließt sich sowohl die Wächter-Lücke als auch die Auslieferungs-Brücke aus §10:
-> ein Zyklus wird dann wieder ein Workflow-Lauf, und Pages feuert wie früher über
-> `workflow_run`. Ohne dieses Token ist keine der beiden Lücken zero-cost
-> schließbar.
+> **OWNER-ESKALATION 2 — beantwortet am 21.09.2026.** Die ursprüngliche Bitte
+> lautete auf ein persönliches Token mit `actions:write`. Der Eigentümer hat
+> stattdessen eine **GitHub App** angelegt (App ID 5023229, installiert auf genau
+> diesem Repository, Berechtigung *Actions: read and write*) — die bessere Antwort:
+> ein PAT hängt an einem Menschen und gilt bis zum Widerruf, ein
+> Installationstoken gehört einer Sache und gilt eine Stunde.
+>
+> Offen bleibt genau ein Schritt, den nur der Eigentümer tun kann: den privaten
+> Schlüssel einmalig als Cloudflare-Secret `GITHUB_APP_PRIVATE_KEY` hinterlegen.
+> Er läuft dabei **nicht** durch GitHub Actions — siehe §12a.
+
+---
+
+### 12a. Wie der Wecker sich ausweist
+
+```
+Privater Schluessel  (Cloudflare-Secret, verlaesst den Worker nie)
+   -> JWT, RS256, gueltig 9 Minuten (iat -60 s gegen Uhrendrift)
+   -> GET  /repos/{repo}/installation          -> Installation ID
+   -> POST /app/installations/{id}/access_tokens -> Token, 1 Stunde
+   -> POST /repos/{repo}/actions/workflows/intraday-pacemaker.yml/dispatches
+   -> die bestehende Pipeline, unveraendert
+```
+
+Drei Entscheidungen, die nicht offensichtlich sind:
+
+**Die Installation ID wird ermittelt, nicht konfiguriert.** Ein Aufruf gegen
+`GET /repos/{repo}/installation` liefert sie. Ein weiterer Wert von Hand wäre
+ein weiterer Wert, der falsch sein kann — und der beim Neuinstallieren der App
+still veraltet. Fällt der Tokentausch fehl, wird die gemerkte ID verworfen,
+statt bei jedem weiteren Takt an demselben alten Wert zu scheitern.
+
+**`workflow_dispatch`, nicht `repository_dispatch`.** Der Taktgeber hört auf
+beides, aber die Wahl fällt nach der Berechtigung, nicht nach Geschmack:
+
+| Eingang | verlangt |
+|---|---|
+| `POST /repos/{repo}/dispatches` | **Contents: write** |
+| `POST /repos/{repo}/actions/workflows/{x}/dispatches` | **Actions: write** |
+
+Die App hat Actions read and write und sonst nichts. Über `repository_dispatch`
+bekäme sie bei jedem Takt ein 403 — ein ausgerollter, tickender Wecker, der
+nichts auslöst. Das fällt in keinem Einheitstest auf, in dem der Dispatch nur
+„ok" antwortet; deshalb steht die Wahl des Eingangs als Test fest (WK-19).
+
+**Beide PEM-Formate werden gelesen.** GitHub liefert PKCS#1
+(`BEGIN RSA PRIVATE KEY`), WebCrypto liest nur PKCS#8. Statt den Eigentümer zu
+einer `openssl`-Umwandlung zu zwingen — ein Schritt mehr, bei dem eine zweite
+Kopie des Schlüssels auf der Platte liegen bleibt — legt der Worker die
+PKCS#8-Hülle selbst herum. Das ist reine DER-Verpackung, keine Kryptografie.
+WK-12 beweist es von der harten Seite: beide Wege, derselbe Zeitstempel,
+**bytegleiche Signatur**.
+
+**Der Schlüssel berührt GitHub nie.** Der frühere Deploy-Workflow reichte ein
+PAT aus einem GitHub-Secret nach Cloudflare weiter. Dieser Schritt ist
+ersatzlos entfernt. Ein Schlüssel, der durch einen Actions-Lauf läuft,
+existiert danach an drei Orten statt an einem. Der Workflow rollt jetzt aus und
+sieht **nach**, ob das Secret bei Cloudflare liegt (`wrangler secret list` nennt
+Namen, nie Werte) — hinterlegt wird es vom Eigentümer direkt.
+
+---
+
+### 12b. Der gemessene Befund zur Auslieferung, und was daraus folgte
+
+Am 21.09.2026 um 17:22:33 UTC, mit dem vom Wecker gestarteten Block im
+Betrieb, urteilte der Wächter gegen die veröffentlichte Seite:
+
+```
+Intraday-Auslieferung · 13:22:33 New York · OPEN
+  erwartete Sitzung   2026-09-21
+  im Repository       2026-09-21  (3 min alt)
+  ausgeliefert        2026-09-21
+  letzter Zyklus      vor 6 min
+
+  FAIL    Die Auslieferung ist 15 min hinter dem Repository.
+```
+
+**Die Daten waren drei Minuten alt. Was der Browser bekam, war fünfzehn
+Minuten alt.** Der Takt war repariert, die Auslieferung nicht — und zwar
+als einziger verbleibender Punkt der Kette.
+
+Warum: ein Push mit `GITHUB_TOKEN` erzeugt keinen Workflow-Lauf
+(Rekursionsschutz), und `workflow_run` feuert erst bei `completed` — ein
+Block, der den Takt fünf Stunden hält, ist fünf Stunden lang nicht
+completed. Die Zwischenlösung war ein `*/5`-Zeitplan, also genau der
+Mechanismus, dessen Ausfall den Vorfall ausgelöst hat; er hat während
+des Nachweises **kein einziges Mal** gefeuert (`event: schedule`,
+`total_count: 0`).
+
+Mit der App lag die Lösung bereits vor: derselbe Wecker, dieselbe
+`Actions: write`-Berechtigung, derselbe `workflow_dispatch` — nur auf
+`pages-release.yml` statt auf den Taktgeber. **Kein neuer Dienst, keine
+zweite Pipeline, kein zusätzliches Recht.** WK-23 prüft das von der
+harten Seite: keine `Contents`-Aufrufe, kein `repository_dispatch` —
+sonst müsste der Eigentümer die App nachkonfigurieren, ohne es zu
+merken.
+
+Gegen den Stau: läuft oder **wartet** schon ein Pages-Lauf, wird nichts
+angestoßen. Die Gruppe `pages-production` lässt ohnehin nur einen
+zugleich zu; ohne diese Prüfung entstünde eine Warteschlange, die den
+Stand älter macht statt frischer — an diesem Tag brauchte ein gestauter
+Pages-Lauf 7:33 statt 97 Sekunden. WK-21 prüft beide Zustände. Und ein
+gescheitertes Wecken hält die Auslieferung nicht auf (WK-22): auch wenn
+der Takt nicht anspringt, kann ein frisch geschriebener Stand dastehen,
+der nur noch ausgeliefert werden muss.
+
+---
+
+### 12c. Produktionsnachweis der App-Authentifizierung (21.09.2026)
+
+**Der Schlüssel liegt bei Cloudflare.** Zwei unabhängige Belege im selben
+Lauf (`35632934608`): `wrangler secret list` nennt `GITHUB_APP_PRIVATE_KEY`,
+und der Zustandspunkt des Weckers sagt dasselbe — `ausweis: github-app`,
+`appIdHinterlegt: true`, `schluesselHinterlegt: true`, und nichts darüber
+hinaus.
+
+**Der erste Takt, den nicht ich ausgelöst habe.** Um 17:09:11 wurde der bis
+dahin laufende, von Hand gestartete Block abgebrochen. Um **17:10:46** legte
+GitHub Lauf `35630336530` an:
+
+```
+event:            workflow_dispatch
+actor:            vision-universe-automation[bot]   (App ID 332136878)
+triggering_actor: vision-universe-automation[bot]
+```
+
+Nicht `dennismueller10x-sudo`. Damit ist die ganze Kette belegt — ohne
+gültiges JWT gäbe es keine Installation, ohne Installation kein Token, ohne
+Token keinen Dispatch, und ohne Dispatch keinen Lauf.
+
+**Drei aufeinanderfolgende echte Cron-Takte**, mitgehört an der Quelle
+(`wrangler tail`, Lauf `35632934608`, 17:35:46 – 17:52:46):
+
+```
+Ereignisse des Weckers: bereitsWach, ausgeliefert, bereitsWach,
+                        ausgeliefert, bereitsWach, ausgeliefert
+Zeilen mit Cron-Ausloeser: 3   ("cron": "*/5 13-21 * * 1-5")
+Takte: 3 · in Ordnung: 6 · Fehlerereignisse: 0
+BESTANDEN
+```
+
+`bereitsWach` ist dabei mehr, als es klingt: um es überhaupt sagen zu
+können, muss der Wecker ein JWT signiert, die Installation ermittelt, ein
+Token geholt und damit die Actions-API gelesen haben. Drei Takte, drei Mal
+vollständige Kette, null Fehlerereignisse. Dass kein `installationErmittelt`
+mehr auftaucht, ist der Zwischenspeicher: Token und Installation werden
+wiederverwendet, solange sie gelten (WK-15).
+
+**Dreizehn aufeinanderfolgende Zyklen** aus diesem von Cloudflare
+gestarteten Block:
+
+| Zyklus | Beginn (UTC) | Ende | Snapshots | Takt |
+|---|---|---|---|---|
+| 1 | 17:11:18 | 17:16:19 | 498 | — |
+| 2 | 17:16:21 | 17:21:23 | 480 | 5:04 |
+| 3 | 17:21:25 | 17:26:26 | 486 | 5:04 |
+| 4 | 17:26:32 | 17:31:34 | 494 | 5:08 |
+| 5 | 17:31:41 | 17:36:43 | 490 | 5:09 |
+| 6 | 17:36:49 | 17:41:50 | 480 | 5:08 |
+| 7 | 17:41:52 | 17:46:54 | 489 | 5:03 |
+| 8 | 17:46:56 | 17:51:57 | 485 | 5:03 |
+| 9 | 17:51:59 | 17:57:01 | 491 | 5:03 |
+| 10 | 17:57:03 | 18:02:04 | 486 | 5:04 |
+| 11 | 18:02:10 | 18:07:12 | 488 | 5:08 |
+| 12 | 18:07:14 | 18:12:15 | 490 | 5:03 |
+| 13 | 18:12:22 | 18:17:24 | 487 | 5:08 |
+
+**Die Kette, Ende zu Ende:**
+
+```
+17:55:34  PASS      im Repository 6 min alt · letzter Zyklus vor 9 min
+18:06:55  WARNING   "Letzter Taktzyklus vor 10 min"  -> Messfehler, siehe unten
+18:16:26  PASS      im Repository 6 min alt · letzter Zyklus vor 4 min
+```
+
+Die WARNING dazwischen war **kein Produktionsbefund, sondern mein eigener
+Messfehler**: der Wächter zählte ab dem Beginn des letzten Zyklus, verglich
+aber mit dem Abstand zwischen zwei Beginnen. Ein Zyklus beginnt alle 5:04
+und dauert 5:02 — das Alter pendelt dadurch zwischen 0 und gut zehn
+Minuten, die Schwelle liegt bei neun. Etwa jede fünfte Messung hätte
+grundlos angeschlagen. Gemessen wird jetzt ab dem **Ende** eines Zyklus;
+WD-16 bis WD-19 halten die Regel samt Gegenproben fest.
+
+**Browser**, Realtime Production Smoke `35635434172`, 14:00 New York:
+
+```
+PASS · 14 von 14 · realtimeVerified true
+AAPL 28 Ticks   "Heute · Stand 13:45 · nicht aktuell"  ->  "Markt geoeffnet · Live"
+MSFT 16 Ticks   "Heute · Stand 13:55"                  ->  "Markt geoeffnet · Live"
+PANW  8 Ticks   "Heute · Stand 13:50"                  ->  "Markt geoeffnet · Live"
+NVDA 38 Ticks   "Markt geoeffnet · Live"
+VLO   4 Ticks   "Markt geoeffnet · Live"
+```
+
+Die Etiketten sind hier der eigentliche Beleg: „Stand 13:55" bei einem Lauf
+um 14:00 ist ein fünf Minuten alter, ausgelieferter Stand. Am Vormittag, vor
+der Ergänzung, trug dieselbe Seite um 11:23 den Stand von 11:10.
 
 ---
 
@@ -342,47 +533,81 @@ denselben Ref.
 
 ## 15. Drei aufeinanderfolgende Produktionszyklen
 
-Block `35618350851`, Lauf per `workflow_dispatch`, gemessen am 21.09.2026
-(Quelle: `quant/data/market/intraday/pacemaker-ledger.json` und die
-git-Commitzeiten auf `main`):
+Der Auftrag verlangt drei. Gemessen wurden fünf, ohne Unterbrechung, in
+einem einzigen Block `35618350851` (`workflow_dispatch`, 21.09.2026).
+Quellen: `quant/data/market/intraday/pacemaker-ledger.json` und die
+git-Commitzeiten auf `main`.
 
-| | Zyklus 1 | Zyklus 2 | Zyklus 3 | Zyklus 4 |
-|---|---|---|---|---|
-| Auslöser (New York) | 11:21:43 | 11:26:51 | 11:31:59 | 11:37:07 |
-| Provider-Abruf Beginn | 15:21:43 | 15:26:51 | 15:31:59 | 15:37:07 |
-| Provider-Abruf Ende | 15:26:44 | 15:31:53 | 15:37:01 | 15:42:06 |
-| **Abrufdauer** | **5:01** | **5:02** | **5:02** | **4:59** |
-| Snapshot geschrieben | 505 | 492 | 489 | 491 |
-| Anfragen | 527 | 527 | 527 | 527 |
-| Commit | 15:26:45 | 15:31:53 | 15:37:01 | 15:42:06 |
-| Push | 15:26:51 | 15:31:59 | — | — |
-| Commit-SHA | `cdf73c142c` | `7d6ece858c` | `6a01740b96` | `8e1b…` |
-| Wächter | FAIL | FAIL | — | — |
+| | Zyklus 1 | Zyklus 2 | Zyklus 3 | Zyklus 4 | Zyklus 5 |
+|---|---|---|---|---|---|
+| Abruf Beginn (UTC) | 15:21:43 | 15:26:51 | 15:31:59 | 15:37:04 | 15:42:08 |
+| New York | 11:21:43 | 11:26:51 | 11:31:59 | 11:37:04 | 11:42:08 |
+| Abruf Ende | 15:26:45 | 15:31:53 | 15:37:02 | 15:42:06 | 15:47:10 |
+| **Abrufdauer** | **5:02** | **5:02** | **5:02** | **5:02** | **5:02** |
+| Snapshots geschrieben | 505 | 492 | 489 | 491 | 488 |
+| Anfragen | 527 | 527 | 527 | 527 | 527 |
+| Commit | 15:26:45 | 15:31:54 | 15:37:02 | 15:42:06 | 15:47:10 |
+| Push | 15:26:51 | 15:31:59 | 15:37:04 | 15:42:08 | 15:47:12 |
+| Commit-SHA | `4104115f79` | `537db1d2bf` | `6a01740b96` | `a0f5b82c5b` | `5e2498a498` |
 
-**Gemessener Takt: 5:08** (15:21:43 → 15:26:51 → 15:31:59 → 15:37:07).
-Kein einziges GitHub-Zeitplan-Ereignis war dafür nötig.
+**Gemessener Takt: 5:08 · 5:08 · 5:05 · 5:04.** Kein einziges
+GitHub-Zeitplan-Ereignis war dafür nötig — ein Lauf hält den Takt selbst.
 
 Zum Vergleich der Takt VOR der Korrektur der Wartezeit-Regel: 14:53:36,
-15:00:01, dann erst 15:10 — **rund zehn Minuten**.
+15:00:01, dann erst 15:10 — **rund zehn Minuten**. Und davor, im alten
+Zustand: zwischen 13:09 und 14:13 UTC überhaupt kein Lauf.
 
-Die leeren Felder in Zyklus 3 und 4 sind kein Fehler: ein Zyklus wird zweimal
-ins Register geschrieben — vor dem Commit (damit er in demselben Commit landet
-wie die Daten, die er beschreibt) und im nächsten Durchgang, wenn Commit-,
-Push- und Wächterzeitpunkt feststehen. Die letzten beiden Zeilen holen das
-beim jeweils folgenden Zyklus nach.
+Der Abstand von 5:08 statt 5:00 ist kein Schlupf, sondern die Rechnung:
+der Abruf braucht 5:02 (527 Titel bei höchstens 100 Anfragen je Minute,
+§8), Commit und Push brauchen die restlichen sechs Sekunden. Die
+Wartezeit-Regel wartet dann null Sekunden, weil der Zyklus länger
+gedauert hat als das Intervall — schneller geht es nicht, solange die
+Anbietergrenze nicht belegt höher liegt (Owner Escalation 1).
 
-### Der Wächter sagt FAIL — und hat recht
+### Die Kette, Ende zu Ende gemessen
+
+Die drei Wächterläufe am Ende des Blocks messen nicht die Daten, sondern
+den Weg vom Repository in den Browser:
 
 ```
-checkedAt 2026-09-21T15:31:59Z · Markt OPEN · 11:31:59 New York
-snapshotSession   2026-09-21   snapshotAgeMinutes   2
-deliveredSession  2026-09-21   generatedAt          15:14:46
-FAIL  auslieferungZuWeitHinterher - Die Auslieferung ist 20 min hinter dem Repository.
+15:42:07  FAIL     auslieferungZuWeitHinterher · 30 min hinter dem Repository
+15:47:52  FAIL     auslieferungZuWeitHinterher · 35 min hinter dem Repository
+15:50:21  WARNING  auslieferungHinterher       · 10 min hinter dem Repository
 ```
 
-Die Daten im Repository sind zwei Minuten alt. Was der Browser bekommt, ist
-zwanzig Minuten alt. **Die Datenfrische ist repariert, die Auslieferung nicht** —
-und der Wächter verschweigt es nicht, sondern meldet es in jedem Zyklus.
+Dazwischen liegt Pages-Lauf `35620629344` (Kopf `6a01740b96`, Zyklus 3),
+angelegt 15:41:19, **fertig 15:48:52** — 7:33 statt der üblichen ~97
+Sekunden, weil die Gruppe `pages-production` verstopft war. Der Wächter
+um 15:47:52 lief sechsundzwanzig Sekunden davor und meldete deshalb noch
+FAIL. Das ist kein Messfehler, sondern genau die Trennschärfe, die §16
+verlangt: der Wächter urteilt über den Zustand, den der Browser in diesem
+Moment sieht, nicht über den, der gleich kommt.
+
+Die letzte Messung, gegen die frisch ausgelieferte Seite:
+
+```
+Intraday-Auslieferung · 11:50:21 New York · OPEN
+  erwartete Sitzung   2026-09-21
+  im Repository       2026-09-21  (5 min alt)
+  ausgeliefert        2026-09-21
+  letzter Zyklus      vor 8 min
+
+  WARNING Die Auslieferung ist 10 min hinter dem Repository.
+
+URTEIL: WARNING
+```
+
+Damit ist die Kette **Provider → Ingest → Commit → Push → Pages →
+Browser** zum ersten Mal an diesem Tag geschlossen und in einer Zahl
+gemessen: zehn Minuten. Die Hälfte davon ist der Takt selbst (ein
+Zyklus ist im Mittel 2:30 alt, wenn man ihn abfragt), die andere Hälfte
+die Pages-Auslieferung.
+
+WARNING statt PASS heißt: die Seite zeigt die richtige Sitzung und einen
+ehrlich datierten Stand, aber sie liegt weiter hinter dem Repository als
+das Ziel von §22. Solange der automatische Auslöser fehlt (Owner
+Escalation 2), bleibt das so — und der Wächter sagt es in jedem Lauf,
+statt es zu verschweigen.
 
 ## 16. Browser-Nachweis
 
@@ -419,6 +644,21 @@ Nebenbei belegt dasselbe Etikett den Befund aus §15 von der anderen Seite: um
 | Wecker-Kontingent | 78 Auslösungen je Sitzung = 0,078 % von 100.000/Tag |
 | Neue kostenpflichtige Dienste | keine |
 
+**Ausgerollt am 21.09.2026, 15:59 UTC** (Lauf `35622518554`):
+
+```
+Uploaded vu-intraday-waker (1.21 sec) · 3,09 KiB · Startzeit 2 ms
+Deployed vu-intraday-waker triggers · schedule: */5 13-21 * * 1-5
+Bindings: env.GITHUB_REPO (Umgebungsvariable)  — mehr nicht
+Schritt "Token hinterlegen": entfernt (der Schluessel laeuft nicht durch Actions)
+Schluesselpruefung: 24.711 Dateien, 0 Funde
+```
+
+Der Wecker läuft und tickt. Er meldet bei jedem Takt `keinSchluessel` und
+löst nichts aus, bis der Eigentümer den App-Schlüssel hinterlegt (§12a) — er
+fällt nicht still aus, sondern laut. Ein zweiter Worker neben `vu-live`;
+`vu-live` selbst wurde nicht angefasst.
+
 Geprüft durch `PM-17`, `PM-18`, `WK-7`, `WK-8`, `WK-10`.
 
 ---
@@ -427,14 +667,40 @@ Geprüft durch `PM-17`, `PM-18`, `WK-7`, `WK-8`, `WK-10`.
 
 | Datei | Fälle | Deckt Auftrag §21 |
 |---|---|---|
-| `quant/tests/pacemaker.test.mjs` | 19 | 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 18 |
+| `quant/tests/pacemaker.test.mjs` | 20 | 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 18 |
 | `quant/tests/delivery-watchdog.test.mjs` | 15 | 8, 11, 12, 13, 17, 19, 20 |
 | `worker-waker/tests/waker.test.mjs` | 10 | 2, 15, 17, 18 |
+| `quant/tests/intraday-delivery-contract.test.mjs` | 12 | 7, 9, 10, 16 — und ID-10 prüft, dass **jeder** der zwanzig Fälle einen benannten Test hat |
+| **Summe neu** | **66** | |
+
+Die neun zusätzlichen Fälle (WK-11 bis WK-19) prüfen die
+GitHub-App-Authentifizierung: JWT-Struktur und **nachgerechnete** Signatur,
+beide PEM-Formate mit bytegleichem Ergebnis, abgewiesener Murks, Ermittlung der
+Installation ID, Wiederverwendung und Erneuerung des Tokens, ein eigener Name
+für jede der sechs Bruchstellen, kein Schlüsselmaterial in Protokoll oder
+Statuspunkt, und der Eingang, der zur vergebenen Berechtigung passt.
 
 Scharfe Regeln mit Gegenprobe: PM-3/PM-4, PM-10/PM-11, PM-12/PM-13,
-WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10.
+WD-1/WD-2, WD-6/WD-7, WD-12/WD-13, WK-2/WK-3, WK-7/WK-10, WK-12/WK-13,
+ID-2/ID-2b.
 
-Bestehende Tests unverändert: 1297 quant-Tests grün.
+**Gesamtlauf `node --test quant/tests/*.test.mjs` auf dem Stand dieses
+Berichts: 1320 Tests, 1315 grün, 5 rot.** Die fünf roten sind nicht aus
+diesem Auftrag und wurden nicht angefasst:
+
+```
+529  real observations reproduce two known MSFT rule transitions …
+534  approved scope is preserved and denied raw display prevents history reads
+535  overflow, insufficient comparison history and pre-close snapshots fail closed
+536  unavailable coverage retains the requested company identity
+637  canonical product universe projects the full capability set …
+```
+
+Sie stammen aus `market-signal-contract.test.mjs` und
+`product-services.test.mjs` und waren bereits auf `2cb2c99062` rot — dem
+letzten Quant-2.0-Commit **vor** dieser Arbeit. Nachgewiesen über einen
+Arbeitsbaum auf genau diesem Commit. Sie gehören dem Quant-2.0-Strang;
+dort zu reparieren wäre ein Eingriff in einen fremden Workstream.
 
 ---
 
@@ -445,7 +711,8 @@ Bestehende Tests unverändert: 1297 quant-Tests grün.
 | `intraday-pacemaker.yml` löschen oder Zeitplan entfernen | Taktgeber aus |
 | in `intraday-snapshots.yml` `- cron: '*/5 13-21 * * 1-5'` wieder eintragen | alter Takt zurück |
 | Zeitplan aus `pages-release.yml` entfernen | Brücke zurück |
-| `worker-waker/` löschen | nie ausgerollt, keine Wirkung |
+| `npx wrangler delete` im Ordner `worker-waker/` | Wecker weg; `vu-live` unberührt |
+| `worker-waker/` löschen | entfernt den Bauplan; der ausgerollte Worker bleibt, bis er geloescht wird |
 
 Alles in einem Commit reversibel. Keine Datenmigration, kein Schemawechsel,
 keine geänderten Verträge.
@@ -454,12 +721,19 @@ keine geänderten Verträge.
 
 ## 20. Verbleibende echte Risiken
 
-1. **Der externe Wecker fehlt.** Ohne ihn hängen sowohl der Rückfall-Wächter als
-   auch die Auslieferungs-Brücke am selben Zeitplanmechanismus, der ausgefallen
-   ist. Sie fallen unabhängig voneinander aus — das ist besser, aber nicht gut.
-   (Eskalation 2)
+1. ~~Dem Wecker fehlt das Token.~~ **Erledigt am 21.09.2026.** Der Eigentümer
+   hat eine GitHub App angelegt und ihren privaten Schlüssel als
+   Cloudflare-Secret hinterlegt; der Wecker startet seither den Takt und stößt
+   die Auslieferung an, beides über `Actions: write`. Nachgewiesen in §12c.
+   Was bleibt: der externe Puls ist jetzt ein **einzelner**. Fällt Cloudflare
+   aus, greift der stündliche GitHub-Zeitplan als Rückfallebene — eine Lücke
+   von bis zu einer Stunde statt einer unbegrenzten.
+
 2. **Der Fünf-Minuten-Takt ist nicht erreichbar**, solange das Providerlimit
-   unbelegt ist. Der ehrliche Takt ist ~6:25. (Eskalation 1)
+   unbelegt ist. Der gemessene ehrliche Takt ist 5:04 bis 5:08 — der Abruf
+   allein braucht 5:02 bei 527 Titeln und höchstens 100 Anfragen je Minute.
+   Näher als acht Sekunden kommt man dem Ziel nicht, ohne die Grenze zu
+   belegen. (Eskalation 1)
 3. **Der Sitzungsbeginn bleibt dünn.** Kein Fix möglich — der Anbieter liefert
    nicht. Die Aktienseite überbrückt es über den Realtime-Strom, die
    Discover-Flächen nicht.

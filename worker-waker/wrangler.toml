@@ -24,13 +24,26 @@
 # Cloudflare Workers Free: 100.000 Anfragen am Tag. Ein Takt alle fuenf
 # Minuten waehrend einer Sitzung sind 78 Ausloesungen - 0,078 % davon.
 #
+# WIE ER SICH AUSWEIST
+#
+# Ueber eine GitHub App (App ID 5023229), installiert auf genau diesem
+# Repository, Berechtigung "Actions: read and write". Die App ID steht
+# hier offen - sie ist oeffentlich und identifiziert nur, wer fragt.
+# Der private Schluessel ist das Geheimnis und steht deshalb NICHT hier,
+# sondern als Worker-Secret.
+#
+# Kein PAT mehr. Ein PAT haengt an einem Menschen und gilt, bis es
+# widerrufen wird; ein Installationstoken gilt eine Stunde und gehoert
+# einer Sache mit genau einer Berechtigung.
+#
 # WAS NOCH FEHLT (Owner-Entscheidung)
 #
-#   wrangler secret put GITHUB_DISPATCH_TOKEN   (Fine-grained PAT,
-#     nur dieses Repository, Berechtigung "Actions: read and write")
+#   wrangler secret put GITHUB_APP_PRIVATE_KEY   (der .pem-Inhalt,
+#     ueber stdin, nie als Argument - Argumente stehen in Prozesslisten)
 #
-# Ohne dieses Secret laeuft der Wecker, sagt bei jedem Takt "keinToken"
-# ins Protokoll und loest nichts aus. Er faellt nicht still aus.
+# Ohne dieses Secret laeuft der Wecker, sagt bei jedem Takt
+# "keinSchluessel" ins Protokoll und loest nichts aus. Er faellt nicht
+# still aus.
 # =============================================================================
 
 name = "vu-intraday-waker"
@@ -50,3 +63,10 @@ crons = ["*/5 13-21 * * 1-5"]
 
 [vars]
 GITHUB_REPO = "dennismueller10x-sudo/vision-universe-research"
+
+# Oeffentlich, kein Geheimnis: die App ID sagt, WER fragt, nicht, ob er
+# darf. Das Duerfen haengt an der Signatur mit dem privaten Schluessel.
+# Die Installation ID steht bewusst NICHT hier - sie wird bei jedem
+# Kaltstart ueber GET /repos/{repo}/installation ermittelt. Ein Wert
+# weniger, den jemand von Hand richtig abschreiben muss.
+GITHUB_APP_ID = "5023229"

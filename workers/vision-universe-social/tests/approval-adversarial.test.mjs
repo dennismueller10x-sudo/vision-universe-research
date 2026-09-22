@@ -30,7 +30,7 @@ import assert from "node:assert/strict";
 import worker, { __internals } from "../src/index.js";
 import {
   createEnv, request, TEST_ADMIN_KEY, TEST_APP_SECRET, PAGE_TOKEN,
-  createPublishGraph, verbinde, PUBLISH_MEDIA_ID
+  createPublishGraph, verbinde, PUBLISH_MEDIA_ID, JPEG_SHA256
 } from "./harness.mjs";
 import { contentHash } from "../src/redact.js";
 import { CLAIM_PREFIX, DECISION_PREFIX, QUEUE_KEY } from "../src/store.js";
@@ -66,7 +66,8 @@ async function lager(options = {}) {
       asset: { zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true,
       url: BILD,
         satz: "Das Bild liegt unter genau dieser Adresse und ist abrufbar.",
-        gemessenAm: "2026-09-21T10:00:00Z" },
+        gemessenAm: "2026-09-21T10:00:00Z",
+      sha256: JPEG_SHA256, dimensions: { width: 1080, height: 1350 } },
       anzeige: { thema: { value: "Geheimes Thema", basis: "presentation.topic" },
         hook: { value: "Ein geheimer Hook.", basis: "presentation.hook" } },
       guete: { zustand: "BESTANDEN", score: 80, erklaerung: null, warnungen: [] },

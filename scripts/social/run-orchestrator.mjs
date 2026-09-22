@@ -33,6 +33,7 @@ const Leiter = require(join(ROOT, "social/engines/content-ladder.js"));
 const Harte = require(join(ROOT, "social/engines/hard-invariants.js"));
 const RunLease = require(join(ROOT, "social/engines/run-lease.js"));
 const FrequenzLernen = require(join(ROOT, "social/engines/frequency-learning.js"));
+const ManualMode = require(join(ROOT, "social/engines/manual-mode.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 import * as VisualDaten from "./visual-data.mjs";
 import { ausgabePfad } from "../quality/out-path.mjs";
@@ -198,6 +199,38 @@ export function bestesThema(root) {
  * Gibt die Entscheidung von orchestrator.js zurueck, angereichert um
  * das, was der Dispatch danach braucht (Symbol, content_id).
  */
+/* -------------------------------------------------------------------
+   DAS THEMA DES OWNERS AUF EIN INSTRUMENT ABBILDEN (§30)
+
+   `bestesThema()` liefert kein Wort, sondern ein Instrument mit
+   Belegen: {symbol, topicId, score, topic}. Der freie Text aus dem
+   Formular ist etwas anderes, und ihn einfach durchzureichen haette
+   einen Auftrag erzeugt, der an `thema.symbol` ins Leere laeuft.
+
+   Abgebildet wird mit derselben Funktion, die der Zyklus benutzt, und
+   das Ergebnis muss ein Bundle auf der Platte haben. Findet sich
+   keines, entsteht NICHTS - und der Lauf sagt, dass zu diesem Thema
+   keine Evidenz liegt. Einen Gegenstand erfindet kein Knopf (§4).
+   ------------------------------------------------------------------- */
+export function themaDesOwners(text, root) {
+  const r = root || ROOT;
+  const symbol = VisualDaten.symbolAus(text);
+  if (!symbol) {
+    return { ok: false, grund: "KEIN_INSTRUMENT_ERKANNT",
+      erklaerung: "Aus \"" + String(text || "") + "\" laesst sich kein " +
+        "Instrument lesen. Erwartet wird ein Kuerzel am Ende, etwa " +
+        "\"Rechenzentren NVDA\"." };
+  }
+  const bundle = join(r, "quant/data/technical/instruments", symbol + ".json");
+  if (!existsSync(bundle)) {
+    return { ok: false, grund: "KEINE_EVIDENZ_ZU_DIESEM_THEMA", symbol,
+      erklaerung: "Zu " + symbol + " liegt kein technisches Bundle vor. Ohne " +
+        "Beleg entsteht kein Beitrag - auf Knopfdruck genauso wenig." };
+  }
+  return { ok: true, thema: { symbol, topicId: null, score: null,
+    topic: String(text), herkunft: "OWNER" } };
+}
+
 export function creativeBedarf(z, options) {
   options = options || {};
   const r = options.root || ROOT;
@@ -460,7 +493,52 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const z = zustand({});
   const k = kadenz(z);
-  const h = Orchestrator.naechsteHandlung(z, { cadence: k });
+
+  /* -------------------------------------------------------------------
+     §28-§30 — WELCHER DER DREI KNOEPFE DIESEN LAUF ANGESTOSSEN HAT
+
+     Der Scheduler nennt keinen Modus; dann ist es der Zeitplan, und
+     der hebt nichts auf. Ein Owner-Auftrag hebt die UHR auf - die
+     Tagesobergrenze, den Mindestabstand, die eigene Warteschlange -
+     und kein Tor. Was aufhebbar ist, steht in manual-mode.js, und nur
+     dort: der Worker kennt nur die Namen der drei Knoepfe, damit die
+     Regel nicht zweimal existiert.
+
+     Das Urteil steht HIER und nicht weiter unten im Bericht. Ein
+     aufgehobener Grund, den `naechsteHandlung()` nie zu sehen bekommt,
+     waere ein Knopf, der meldet "ich darf" und nichts tut - genau die
+     Sorte Tor, die in diesem Projekt schon mehrfach neben dem Weg
+     stand.
+
+     `k` selbst bleibt unveraendert: die Kadenz hat gesagt, was sie zu
+     sagen hat, und ein Auftrag schreibt ihre Antwort nicht um. Was
+     weiterreist, ist eine ABGELEITETE Lage, die mitfuehrt, wodurch sie
+     abgeleitet wurde.
+     ------------------------------------------------------------------- */
+  const modusRoh = process.env.VU_SOCIAL_MODUS || "";
+  const themaRoh = process.env.VU_SOCIAL_THEMA || "";
+  const auftrag = modusRoh
+    ? ManualMode.auftrag({ modus: modusRoh, thema: themaRoh || null })
+    : null;
+  const manuell = auftrag && auftrag.ok
+    ? ManualMode.anwenden(auftrag.modus, k) : null;
+
+  /* Bei POST ZU THEMA muss der Gegenstand zuerst auf ein Instrument
+     mit Belegen abgebildet werden. Gelingt das nicht, ist der Auftrag
+     nicht ausfuehrbar - und das ist ein Befund, keine Ausrede. */
+  const ownerThema = (auftrag && auftrag.ok && auftrag.thema)
+    ? themaDesOwners(auftrag.thema) : null;
+
+  const kWirksam = (manuell && manuell.darfErzeugen && !k.darfErzeugen &&
+      !(ownerThema && !ownerThema.ok))
+    ? Object.assign({}, k, {
+        darfErzeugen: true, grund: null,
+        aufgehobenDurch: manuell.modus,
+        aufgehobenerGrund: manuell.aufgehoben,
+        erklaerung: manuell.erklaerung })
+    : k;
+
+  const h = Orchestrator.naechsteHandlung(z, { cadence: kWirksam });
   const quellen = Registry.status(
     readJson(join(DATEN, "external-sources.json"), null));
   const modell = Orchestrator.betriebsmodell(quellen);
@@ -478,7 +556,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     " (" + quellen.dormantCount + " ruhend, " + quellen.activeCount + " aktiv)");
 
   const creative = creativeBedarf(z, {
-    candidateDue: h.stage === "PREPARE_CANDIDATE" });
+    candidateDue: h.stage === "PREPARE_CANDIDATE",
+    /* Bei POST ZU THEMA nennt der Owner den Gegenstand. Sonst waehlt
+       die Gelegenheitsbewertung wie bisher - `undefined` heisst hier
+       ausdruecklich "wie immer" und nicht "kein Thema". */
+    thema: ownerThema ? (ownerThema.ok ? ownerThema.thema : null) : undefined });
 
   console.log("\n--- CONTENT CADENCE (§8/§17) ---");
   console.log("Tag              : " + k.lage.tag +
@@ -495,6 +577,33 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (k.naechsteFruehestens) {
     console.log("Fruehestens      : " + k.naechsteFruehestens);
   }
+
+  console.log("\n--- ANLASS DIESES LAUFS (§28-§30) ---");
+  if (!modusRoh) {
+    console.log("Anlass           : ZEITPLAN — kein Owner-Auftrag, die Uhr gilt.");
+  } else if (!auftrag.ok) {
+    console.log("Anlass           : ABGELEHNT (" + auftrag.grund + ")");
+    console.log("Warum            : " + auftrag.erklaerung);
+  } else {
+    console.log("Anlass           : " + auftrag.label +
+      (auftrag.thema ? "  — Thema: " + auftrag.thema : ""));
+    console.log("Auftrag          : " +
+      (auftrag.istProduktionsauftrag ? "ja" : "nein (§28)"));
+    console.log("Wirkung          : " + manuell.erklaerung);
+    if (manuell.aufgehoben) {
+      console.log("Aufgehoben       : " + manuell.aufgehoben +
+        "   (nur die Uhr; kein Tor, keine Freigabe)");
+    }
+  }
+  if (ownerThema) {
+    console.log("Thema abgebildet : " + (ownerThema.ok
+      ? ownerThema.thema.symbol + "  (Bundle vorhanden)"
+      : "NEIN — " + ownerThema.grund + ": " + ownerThema.erklaerung));
+  }
+  console.log("Wirksam          : darf erzeugen " +
+    (kWirksam.darfErzeugen ? "ja" : "nein") +
+    (kWirksam.aufgehobenDurch ? "  (durch " + kWirksam.aufgehobenDurch + ")" : ""));
+
 
   /* --------------------------------------------------- §13–§16 */
   const nachweis = keinBeitragNachweis(z, k);
@@ -622,6 +731,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
          Scheduler-Lauf erzeugt keinen Creative Job, nur weil er
          laeuft. */
       "creative=" + (creative.required ? "ja" : "nein"),
+      /* Der Anlass reist bis in die Workflow-Ausgabe: ohne ihn liesse
+         sich hinterher nicht unterscheiden, ob ein Beitrag aus dem
+         Zeitplan oder aus einem Auftrag entstanden ist. */
+      "modus=" + (auftrag && auftrag.ok ? auftrag.modus : "ZEITPLAN"),
+      "auftrag=" + (auftrag && auftrag.ok && auftrag.istProduktionsauftrag ? "ja" : "nein"),
+      "darf_erzeugen=" + (kWirksam.darfErzeugen ? "ja" : "nein"),
+      "uhr_aufgehoben=" + (kWirksam.aufgehobenerGrund || ""),
       "creative_symbol=" + (creative.symbol || ""),
       "creative_content_id=" + (creative.contentId || ""),
       "creative_reason=" + (creative.code || "REQUIRED")

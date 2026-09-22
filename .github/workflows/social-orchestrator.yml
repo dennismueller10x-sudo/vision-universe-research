@@ -58,6 +58,22 @@ on:
         description: 'Nur sagen, was dran waere (nichts ausfuehren)'
         type: boolean
         default: false
+      # -----------------------------------------------------------------
+      # DREI KNOEPFE, EIN WORKFLOW (§28, §29, §30, §58)
+      #
+      # Kein zweiter Workflow und keine zweite Deployment-Architektur:
+      # derselbe Lauf, ein anderer Auftrag. Was ein Auftrag aufheben
+      # darf, entscheidet social/engines/manual-mode.js - nicht diese
+      # Datei und nicht der Worker.
+      # -----------------------------------------------------------------
+      modus:
+        description: 'JETZT_PRUEFEN | MANUAL_NOW | MANUAL_TOPIC'
+        type: string
+        default: 'JETZT_PRUEFEN'
+      thema:
+        description: 'Nur fuer MANUAL_TOPIC: der Gegenstand des Beitrags'
+        type: string
+        default: ''
 
 concurrency:
   group: social-orchestrator
@@ -133,6 +149,13 @@ jobs:
 
       - name: Was ist jetzt dran?
         id: plan
+        # Der Anlass des Laufs reist als Umgebung mit. Beim Scheduler ist
+        # er leer - dann gilt die Uhr, wie bisher. Das Thema ist fremder
+        # Text und wird NICHT in die Shell interpoliert, sondern nur ueber
+        # die Umgebung gereicht; die Reinigung macht manual-mode.js.
+        env:
+          VU_SOCIAL_MODUS: ${{ inputs.modus || '' }}
+          VU_SOCIAL_THEMA: ${{ inputs.thema || '' }}
         run: |
           set -euo pipefail
           node scripts/social/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
