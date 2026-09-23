@@ -58,6 +58,33 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **Two stale gates found and corrected, both by measuring rather than trusting the text.**
+  The lesson had already cost one wrong blocker entry (M4), so the reasons the product gives
+  were swept against current reality:
+  - `setup-state-contract.js` returned `SETUP_STATE_HISTORY_NOT_MATERIALIZED`. That stopped
+    being true on 2026-09-23 — the mapping is approved and 5,676 titles carry a published state
+    with an ordered history behind them. It now says `SETUP_STATE_MAPPING_NOT_ACTIVE`, which is
+    true of *its own* setup-state-1.0.0 mapping and was already in its vocabulary, so no enum
+    changed. `AVAILABLE_OBSERVATIONS_ALLOWED` stays false.
+  - **The stock page**, the more visited surface, told users "Dafür braucht es eine geordnete
+    Historie veröffentlichter Beobachtungen und eine freigegebene Methodik; beides ist noch
+    nicht aktiv" — while the state stood one click away on the quant page. It now reads the
+    same published observation, with the same peer list.
+- **The backtest gate explains rather than only refuses.** Five checks said "nicht validiert";
+  two are now the measured facts (one membership snapshot per index; split-adjusted series with
+  no distributions), and the other three say why too. The benchmark line claimed none was
+  "freigegeben"; what is actually the case is that the repository publishes equity price series
+  and no index levels at all — `ref_SPXC` is SPX Technologies, an equity, not the S&P 500. A
+  test holds the bar and caught that line on its first run.
+- **The ten rule texts are spelled in German.** They were ASCII-only and rendered straight at a
+  reader, so "Der Trend traegt" sat beside the dictionary's "Die Rahmenlage trägt". Seven were
+  rewritten; `setup.watch.bullish-trend` still hashes to `rule_5c480d3b784b077f`, because a
+  predicate is built from filters and not from prose. A test rejects ASCII shorthand in copy a
+  reader sees; ids, versions and enum values stay ASCII on purpose.
+- **The `total_debt` concept census had never run.** The step was committed 2026-09-22 19:53;
+  the last SEC run started 19:17 and its job list does not contain the step. The owner gate was
+  waiting on a measurement nothing had produced. Dispatched as run `35862972083`.
+
 - **Setup screening (M9)** — the other half of the same question, with no new engine and no new
   pipeline. `SetupEngine.screenIndex()` publishes the cascade's assignment per state;
   `reconcile()` / `assertParity()` run each rule's predicate over the very rows the cascade saw
