@@ -216,3 +216,24 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
  .strip-label{font-size:10px}
  .strip-value{font-size:11px}
 }
+.pattern-count{font-size:17px;font-weight:600;margin:22px 0 12px}
+.pattern-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.pattern-card{border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.pattern-card.is-tilted{border-color:var(--positive)}
+.pattern-card h3{font-size:16px;margin:0 0 14px;line-height:1.35}
+.pattern-sides{display:flex;gap:18px;flex-wrap:wrap}
+.pattern-side{flex:1 1 120px;min-width:0}
+.pattern-side span{display:block}
+.pattern-side strong{display:block;font-size:22px;line-height:1.2;margin:2px 0}
+.pattern-side-label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pattern-side.is-down strong{color:var(--negative,#b4483a)}
+.pattern-side .muted{font-size:12px}
+.pattern-tilt{font-size:13px;margin:14px 0 0;font-weight:600}
+.pattern-facts{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.pattern-facts li{margin:4px 0}
+.pattern-caveat{margin-top:20px;font-size:12px}
+@media (max-width:650px){
+ .pattern-grid{grid-template-columns:1fr}
+ .pattern-sides{gap:12px}
+ .pattern-side{flex:1 1 100%}
+}

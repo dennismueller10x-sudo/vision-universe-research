@@ -423,6 +423,57 @@ function setupJourney(setup,observation){
  }
  return section;
 }
+/* VU Pattern Match. Was HISTORISCH in der Grundgesamtheit passiert ist,
+   wenn eine Konfiguration wie diese vorlag - und ausdruecklich nicht, was
+   mit diesem Titel passieren wird. Jede Zeile traegt die Verlustseite
+   neben der Gewinnseite; eine Quote ohne ihre Kehrseite waere genau die
+   halbe Wahrheit, die aus Forschung eine Erzaehlung macht. */
+function pct1(value){return Number.isFinite(value)?(value*100).toFixed(1).replace('.',',')+' %':'–';}
+function patternRow(row,baseRate,lossThreshold){
+ const up=el('div',{class:'pattern-side'},[
+  el('span',{class:'pattern-side-label',text:'verdoppelt'}),
+  el('strong',{text:pct1(row.conditionalRate)}),
+  el('span',{class:'muted',text:'statt '+pct1(row.baseRate)+' · '+row.lift.toFixed(2).replace('.',',')+'×'})]);
+ const down=el('div',{class:'pattern-side is-down'},[
+  el('span',{class:'pattern-side-label',text:'halbiert'}),
+  el('strong',{text:pct1(row.conditionalLossRate)}),
+  el('span',{class:'muted',text:'statt '+pct1(row.baseLossRate)+' · '+row.lossLift.toFixed(2).replace('.',',')+'×'})]);
+ const tilt=row.asymmetry>=1.1?'kippt nach oben':row.asymmetry<=0.9?'kippt nach unten':'beide Seiten gleich stark';
+ return el('article',{class:'pattern-card'+(row.asymmetry>=1.1?' is-tilted':'')},[
+  el('h3',{text:row.plain}),
+  el('div',{class:'pattern-sides'},[up,down]),
+  el('p',{class:'pattern-tilt',text:'Verhältnis '+row.asymmetry.toFixed(2).replace('.',',')+' · '+tilt}),
+  el('ul',{class:'pattern-facts'},[
+   'Typischer Fall: '+pct1(row.medianForwardReturn)+' (Gesamtheit '+pct1(row.medianForwardReturnPopulation)+')',
+   'Tiefster Rücksetzer unterwegs, im Median: '+pct1(row.medianMaxDrawdownWithinHorizon),
+   row.support.toLocaleString('de-DE')+' Fälle · '+row.winners.toLocaleString('de-DE')+' davon verdoppelt',
+   'Out-of-Sample '+(Number.isFinite(row.outOfSampleLift)?row.outOfSampleLift.toFixed(2).replace('.',','):'–')+'×'
+  ].map(text=>el('li',{text})))]);
+}
+function patternMatchSection(patterns){
+ const section=el('section',{class:'section pattern-section'},[
+  el('span',{class:'eyebrow',text:'Muster'}),
+  el('h2',{text:'Was ist historisch passiert, wenn es so aussah?'})]);
+ if(!patterns||patterns.state!=='AVAILABLE'){
+  section.append(notice('Für diesen Titel liegt kein Musterabgleich vor',
+   'Der Musterabgleich braucht eine ausreichend lange kanonische Wochenreihe. Für diesen Titel liegt sie nicht vor, deshalb wird hier nichts behauptet.'));
+  return section;
+ }
+ section.append(el('p',{class:'muted',text:'Zeitraum '+patterns.horizonMonths+' Monate. „Verdoppelt" heißt: der Kurs stand am Ende mindestens '+
+  ((patterns.winnerMinReturn+1))+'-mal so hoch. „Halbiert" heißt: mindestens '+pct1(Math.abs(patterns.lossThreshold))+' tiefer. Gezeigt werden nur Muster, die out-of-sample und über den Schwellenwert-Test hinweg gehalten haben.'}));
+ if(!patterns.holds.length){
+  section.append(notice('Dieser Titel erfüllt derzeit keines der geprüften Muster',
+   'Das ist eine vollwertige Antwort. Es bedeutet nicht, dass nichts passiert – nur, dass keine der vorregistrierten Konfigurationen vorliegt.'));
+ }else{
+  section.append(el('p',{class:'pattern-count',text:patterns.holds.length+' von '+(patterns.holds.length+patterns.others.length)+' geprüften Mustern liegen derzeit vor'}),
+   el('div',{class:'pattern-grid'},patterns.holds
+    .slice().sort((a,b)=>(b.asymmetry||0)-(a.asymmetry||0))
+    .map(row=>patternRow(row,patterns.baseRate,patterns.lossThreshold))));
+ }
+ section.append(el('p',{class:'muted pattern-caveat',text:patterns.caveats.statement+
+  ' Die Reihen sind splitbereinigt und ohne Dividenden; die Grundgesamtheit enthält nur Titel, die es heute noch gibt, was absolute Quoten nach oben zieht. Kein Backtest, keine Prognose.'}));
+ return section;
+}
 /* Strategy Match: zu welchem Anlagestil passt dieser Titel gerade, und was
    fehlt noch. Gezaehlte Bedingungen, kein Rang und keine Renditeaussage. */
 function conditionRow(c){
@@ -482,7 +533,7 @@ function strategyMatchSection(match){
  return section;
 }
 async function quantPage(ticker){
- const [data,match,profileContract,observation]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null)]);
+ const [data,match,profileContract,observation,patterns]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -542,6 +593,7 @@ async function quantPage(ticker){
  /* SETUP */
  main.append(strategyMatchSection(match));
  main.append(setupJourney(setup,observation));
+ main.append(patternMatchSection(patterns));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[
   el('span',{class:'eyebrow',text:'Datenstand'}),

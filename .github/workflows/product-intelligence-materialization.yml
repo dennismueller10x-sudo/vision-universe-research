@@ -83,9 +83,28 @@ jobs:
       - name: Materialize broad Setup Observations
         run: node scripts/quant/build-setup-observations.mjs
 
+      # Pattern Research liest ausschliesslich die kanonischen Wochenreihen
+      # aus quant/data/market/discover-series-long, die der Discovery-Workstream
+      # bereits veroeffentlicht. Es wird nichts daran geschrieben, kein Provider
+      # angefragt und keine Historie geholt - die Reihen liegen im Repository.
+      - name: Materialize Pattern Research study
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+
+      # Die zweite Hypothesenfamilie: dieselbe Maschinerie, aber die Frage
+      # nach dem Unternehmen statt nach dem Chart. Liest die bestehenden
+      # SEC-Consumer-Bundles zeitpunktgenau nach Einreichungsdatum.
+      - name: Materialize Pattern Research fundamental overlay
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research-fundamentals.mjs
+
+      # VU Pattern Match projiziert die beiden Studien auf je einen Titel:
+      # welche vorregistrierten Muster er heute erfuellt. Liest die soeben
+      # geschriebenen Studien und die kanonischen Wochenreihen.
+      - name: Materialize VU Pattern Match
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
+
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       - name: Public data hygiene
@@ -97,12 +116,14 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
           node -e 'const s=require("./quant/data/product/setup-observations-v1/summary.json"); console.log(s.stateCounts); console.log(s.pathTier); console.log(s.observationHistory)'
-          git commit -m "Materialize Technical, Signals, Elliott, Factor Evidence and Setup Observation Product Data"
+          node -e 'const s=require("./quant/data/product/pattern-research-v1/study.json"); console.log({series:s.population.seriesUsed,observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
+          node -e 'const s=require("./quant/data/product/pattern-research-fundamentals-v1/study.json"); console.log({observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
+          git commit -m "Materialize Technical, Signals, Elliott, Factor Evidence, Setup Observation and Pattern Research Product Data"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Retain metadata evidence only
@@ -118,5 +139,8 @@ jobs:
             quant/data/product/factor-evidence-history/index.json
             quant/data/product/setup-observations-v1/summary.json
             quant/data/product/setup-observation-history/index.json
+            quant/data/product/pattern-research-v1/study.json
+            quant/data/product/pattern-research-fundamentals-v1/study.json
+            quant/data/product/pattern-match-v1/summary.json
           if-no-files-found: warn
           retention-days: 30

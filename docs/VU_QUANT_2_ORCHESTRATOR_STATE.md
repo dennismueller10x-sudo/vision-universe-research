@@ -28,7 +28,7 @@ Pattern, Backtest and Market Regime remain ahead.
 | M2 | Setup Engine + frontend | **BUILT** — mapping written, materialized over 5,676 titles; lifecycle awaits owner approval + a second observation |
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
-| M5 | Pattern Match product | OPEN — downstream of M4 |
+| M5 | Pattern Match product | **DONE** — 249 robuste Muster je Titel, Verlustseite neben Gewinnseite |
 | M6 | Backtest integration | OPEN — downstream of PIT/execution gates |
 | M7 | Market Regime | OPEN — Owner methodology gate |
 | M8 | Full Quant experience | OPEN |
@@ -195,6 +195,23 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 - Wired into `product-intelligence-materialization.yml` with both studies, their tests and their
   summaries in the run log and the retained evidence.
 
+### M5 — VU Pattern Match (`pattern-match-1.0.0`)
+
+- Per title: which of the 249 `ROBUST` patterns its current configuration satisfies, with the
+  population statistics for those patterns. 5,569 titles, 1,496 of them without a visible
+  filing (published as such, not silently treated as failing the fundamental conditions).
+- **Only `ROBUST` findings appear beside an instrument.** A pattern that did not hold out of
+  sample would read as evidence about that title. What was withheld is published as counts
+  rather than disappearing.
+- Every card shows the loss side beside the win side and the tilt ratio. A pattern under which
+  titles double more often and halve more often renders as "beide Seiten gleich stark", not as
+  a finding.
+- A title satisfying none of them gets that as a full answer, not an empty section.
+- Product copy is derived from the pre-registration rather than copied out of the study, so the
+  wording a reader sees has one home; the materializer throws if a pattern names a candidate
+  that has none.
+- Largest browser shard 17.8 KB gzipped / 0.17 MiB uncompressed, inside the artifact caps.
+
 ## PRODUCTION_REALITY
 
 Counts measured from the materialized artifact at data cutoff `2026-09-21`, after the
@@ -244,8 +261,11 @@ owner-authorized market-data and SEC consumer-export runs.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,479/1,479 passed locally (1,467 before, +12 setup-engine).
-  SEC Python suite: green in SEC run `35772833294` step 5.
+- Full Quant suite: 1,501/1,501 passed locally (1,479 before; +16 pattern-research,
+  +6 pit-fundamental-history). SEC Python suite: 474/474 locally.
+- The shared study runner refactor was verified, not assumed: 1,482 fields across 114 findings
+  compared against the pre-refactor run, zero differences. The only intended change was three
+  boolean-only patterns moving from "stable" to `NOT_APPLICABLE_NO_THRESHOLD`.
 - Public data hygiene guard: passed against the new artifact.
 - A harness defect was found and fixed while doing this: the local QA server sent
   `Content-Encoding: gzip` for `.json.gz`, so the browser decompressed transparently and every

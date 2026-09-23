@@ -243,10 +243,51 @@ Only a handful of robust patterns have `asymmetry` meaningfully above 1, and the
 - `weak-12m-momentum + six-month-thrust` and `+ three-month-thrust` — lift ≈ 2.05, loss lift
   ≈ 1.80, median +12 % to +14 %.
 
-In the fundamental overlay the same shape appears with a business condition attached, and there
-the cross pairs genuinely add: `weak-12m-momentum + very-high-revenue-growth` and
-`deep-drawdown + high-revenue-growth` beat their own better halves by 1.19× and 1.25×. Revenue
-growth is carrying information the chart does not.
+## What the fundamental overlay says — and a correction
+
+An early smoke run over 400 series suggested that revenue growth was what the cross pairs were
+picking up. **At full scale that is not what the data says, and the smoke run was never a
+result.** It is recorded here because the difference is the point: a limited run is a check that
+the code works, not a finding.
+
+Over 4,209 issuers and 323,360 observations from 2018, base rate 11.56 % and base loss rate
+14.62 %, the fundamental singles rank like this by asymmetry:
+
+| Condition | lift | loss lift | asymmetry | median 24M |
+|---|---|---|---|---|
+| `profitable` | 0.83 | 0.52 | **1.60** | +9 % |
+| `positive-free-cash-flow` | 0.88 | 0.59 | 1.49 | +9 % |
+| `no-dilution` | 0.91 | 0.73 | 1.25 | +10 % |
+| `shrinking-revenue` | 1.17 | 1.14 | 1.02 | +3 % |
+| `high-revenue-growth` | 1.13 | 1.73 | 0.65 | −9 % |
+| `heavy-dilution` | 1.13 | 1.77 | 0.64 | −9 % |
+| `burning-cash` | 1.27 | 2.25 | 0.56 | −22 % |
+| `cash-rich` | 1.21 | 2.16 | 0.56 | −23 % |
+| **`very-high-revenue-growth`** | 1.17 | **2.14** | **0.55** | **−15 %** |
+
+Revenue growth above 40 % a year raises the chance of a double barely at all and **doubles** the
+chance of losing half, with a median two-year outcome of −15 %. Cash burn and a large cash pile
+relative to the balance sheet — the profile of a company funding growth rather than earning it —
+sit at −22 % and −23 %. That is the sharpest thing in the whole study, and it is the opposite of
+the story a single famous name tells.
+
+What does tilt up is the dull half of the ledger. `profitable` and `positive-free-cash-flow`
+make a title double *less* often than average — and lose half far less often still.
+
+**The best combinations are beaten down AND earning.** The chart signal doubles both the
+doubling rate and the halving rate; adding profitability keeps most of the upside and collapses
+the downside back toward the base rate:
+
+| Pattern | lift | loss lift | asymmetry | vs. better half | median 24M |
+|---|---|---|---|---|---|
+| `far-below-52w-high + profitable` | 1.78 | 1.13 | 1.58 | ×1.14 | +15 % |
+| `deep-drawdown + profitable` | 1.72 | 1.06 | 1.62 | ×1.10 | +12 % |
+| `far-below-52w-high + positive-free-cash-flow` | 1.72 | 1.18 | 1.45 | ×1.10 | +12 % |
+| `deep-drawdown + positive-free-cash-flow` | 1.68 | 1.09 | 1.54 | ×1.07 | +10 % |
+| `low-gross-margin + profitable` | 1.07 | 0.45 | **2.38** | — | +15 % |
+
+Each of the cross pairs beats its own better half, so the business condition is carrying
+information the chart does not — just not the information the growth story predicted.
 
 ## What none of this licenses
 

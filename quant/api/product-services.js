@@ -33,6 +33,7 @@ function create(options){
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/setup-observations-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -265,6 +266,35 @@ function create(options){
     classification:observation.classification,lifecycle:observation.lifecycle,
     matchedRule:observation.matchedRule,conditions:observation.conditions,
     journey:shard.cascade.filter(rule=>rule.always!==true)};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* VU Pattern Match. Welche der vorregistrierten Muster dieser Titel
+  * heute erfuellt - und was die Muster in der Grundgesamtheit gezeigt
+  * haben. Die Zahlen gehoeren dem Muster, nicht dem Titel: sie werden
+  * nicht dadurch zu einer Aussage ueber ihn, dass sie neben seinem Namen
+  * stehen. Deshalb traegt jede Zeile die Verlustseite und die Asymmetrie
+  * neben dem Lift, und der Kopf traegt die Vorbehalte der Studie. */
+ async function getPatternMatch(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/pattern-match-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!=='pattern-match-1.0.0'||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_PATTERN_MATCH_ARTIFACT'};
+   const source=shard.instruments?.[ticker];
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_PATTERN_MATCH'};
+   const holds=new Set(source.holds),unmeasurable=new Set(source.unmeasurable);
+   const rows=shard.findings.map(finding=>{
+    const terms=finding.terms.map((term,index)=>({...term,id:(finding.id.split('+')[index]||finding.id)}));
+    const ids=finding.id.split('+');
+    const state=ids.some(id=>unmeasurable.has(id))?'NOT_MEASURABLE':(ids.every(id=>holds.has(id))?'HOLDS':'DOES_NOT_HOLD');
+    return {...finding,terms,state};
+   });
+   return {state:'AVAILABLE',ticker,asOf:source.asOf,hasFundamentals:source.hasFundamentals,
+    horizon:shard.horizon,horizonMonths:shard.horizonMonths,winnerMinReturn:shard.winnerMinReturn,
+    lossThreshold:shard.lossThreshold,baseRate:shard.baseRate,caveats:shard.caveats,
+    withheld:shard.withheld,studies:shard.studies,
+    holds:rows.filter(row=>row.state==='HOLDS'),
+    others:rows.filter(row=>row.state!=='HOLDS')};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  async function getFactorEvidence(ticker){
@@ -546,7 +576,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
