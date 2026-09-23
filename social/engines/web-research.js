@@ -78,12 +78,26 @@
         "goldenem Licht, Massstab und Zukunftskraft" }
   ];
 
+  /* Wortgrenzen-sicherer Begriffs-Treffer. Ein reiner indexOf() traf im
+     realen Betrieb "ki" (Kuenstliche Intelligenz) mitten in "marKIng"
+     (Treasury-Meldung, 23.09.) - ein falscher Themen-/Hashtag-Treffer
+     ohne jeden inhaltlichen Bezug. Kurze Begriffe (Abkuerzungen wie
+     "ki", "kfz", "ki-") brauchen echte Wortgrenzen; Begriffe, die
+     selbst schon mit Leerzeichen/Bindestrich umschlossen sind (" ai ",
+     "ai-"), behalten ihre eigene Grenze. */
+  function enthaeltBegriff(haystackKlein, begriffKlein) {
+    var vorGrenze = /^\s/.test(begriffKlein) ? "" : "\\b";
+    var nachGrenze = /[\s-]$/.test(begriffKlein) ? "" : "\\b";
+    var muster = vorGrenze + begriffKlein.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + nachGrenze;
+    return new RegExp(muster).test(haystackKlein);
+  }
+
   function themaFuer(t) {
     var l = text(t).toLowerCase();
     for (var i = 0; i < THEMENWELTEN.length; i += 1) {
       var w = THEMENWELTEN[i];
       for (var j = 0; j < w.begriffe.length; j += 1) {
-        if (l.indexOf(w.begriffe[j]) !== -1) return w;
+        if (enthaeltBegriff(l, w.begriffe[j])) return w;
       }
     }
     return null;
@@ -123,10 +137,22 @@
      Treffer traegt den Satz, in dem er steht — die spaetere Hook-/
      Caption-Bildung darf NUR aus diesen Saetzen zitieren/umformulieren,
      nie eine eigene Zahl erfinden. */
-  var ZAHL_MUSTER = /(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?)\s*(%|prozent|mrd\.?|mio\.?|milliarden|millionen|usd|eur|dollar|euro|\$|€)?/gi;
+  /* \d{4,} zuerst: eine zusammenhaengende Ziffernfolge ohne
+     Tausendertrennzeichen (z.B. eine Jahreszahl "2007") darf nicht an
+     der \d{1,3}-Alternative in "200"+"7" zerbrechen - die kuerzere
+     Alternative wuerde sonst zuerst greifen und nur die ersten drei
+     Ziffern verbrauchen. */
+  var ZAHL_MUSTER = /(\d{4,}(?:[.,]\d+)?|\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?)\s*(%|prozent|mrd\.?|mio\.?|milliarden|millionen|usd|eur|dollar|euro|\$|€)?/gi;
 
+  /* Kein Satzende direkt nach einem einzelnen Grossbuchstaben ("U.S.",
+     "U.K.") - ein realer Treasury-Titel ("10-year U.S. Treasury yield
+     tops 5.1%...") zerbrach sonst an "U.S." in zwei Fragmente, und die
+     Caption zitierte beide, das zweite als sinnlosen Rest ("10-year
+     U.S."). Deckt keine laengeren Abkuerzungen ("Inc.", "Corp.") ab -
+     baueCaption()s Substring-Deduplizierung faengt einen dadurch
+     entstehenden Rest zusaetzlich ab. */
   function saetze(t) {
-    return text(t).split(/(?<=[.!?])\s+/).map(function (s) { return s.trim(); })
+    return text(t).split(/(?<!\b[A-Z]\.)(?<=[.!?])\s+/).map(function (s) { return s.trim(); })
       .filter(function (s) { return s.length > 0; });
   }
 
@@ -172,6 +198,12 @@
     "debuet", "vorstellung", "launch"];
   var KONTRAST_BEGRIFFE = ["aber", "doch", "trotzdem", "obwohl", "waehrend", "dennoch"];
 
+  /* Bewusst PLAIN indexOf(), nicht enthaeltBegriff(): diese Begriffslisten
+     (NEUHEIT/INVESTOR/UEBERRASCHUNG/KONTRAST) sind kurze deutsche
+     Wortstaemme, die absichtlich auch flektierte Formen treffen sollen
+     ("neu" in "neuen", "neue", "neues"). Der reale "ki"-in-"marKIng"-Fund
+     betraf ausschliesslich THEMENWELTEN/themaFuer() (Fremdwort-Abkuerzung
+     als isoliertes Akronym) - nicht diese Stamm-Listen. */
   function zaehleTreffer(t, begriffe) {
     var l = text(t).toLowerCase();
     var n = 0;
@@ -371,6 +403,15 @@
          erste Caption-Satz den Bildtext (SCROLL_STOP_QUALITYs
          HOOK_WIEDERHOLT_CAPTION-Pruefung). Kein Satz doppelt. */
       if (schluessel === hookKlein || gesehen[schluessel]) return;
+      /* Sicherheitsnetz gegen einen fehlerhaften Satzsplitter (z.B. an
+         "U.S."): ein Fragment, das bereits Teilstring eines schon
+         aufgenommenen Satzes ist - oder ihn selbst enthaelt -, traegt
+         keine neue Information und wuerde nur eine sichtbare
+         Wiederholung erzeugen. */
+      for (var i = 0; i < koerper.length; i += 1) {
+        var vorhanden = koerper[i].toLowerCase().replace(/[.!?]+$/, "");
+        if (vorhanden.indexOf(schluessel) !== -1 || schluessel.indexOf(vorhanden) !== -1) return;
+      }
       gesehen[schluessel] = true;
       koerper.push(sauber);
     }

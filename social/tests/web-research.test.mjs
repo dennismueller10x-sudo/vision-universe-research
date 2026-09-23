@@ -221,3 +221,56 @@ test("WR25 · waehle() bricht fail-closed ab, wenn alle Items die Negative-Hook-
   assert.equal(r.ok, false);
   assert.equal(r.grund, "KEIN_GROUNDED_HOOK");
 });
+
+/* --------------------------------------------------------------------
+   WR26-WR29: echte Produktionsfunde vom 23.09. (Lauf 35898390148) —
+   "10-year U.S. Treasury yield tops 5.1%, marking its highest level
+   since 2007", Seeking Alpha Market Currents, description leer.
+   Drei reale Fehler in einem einzigen Titel: "ki" mitten in "marKIng"
+   (falsches KI-Thema/Hashtag), "2007" ohne Tausendertrennzeichen
+   (zerbrach an \d{1,3} zu "200"+"7"), "U.S." als vermeintliches
+   Satzende (Caption duplizierte den Titel-Rest). Fixiert als
+   dauerhafte Regression-Fixture nach diesem Codebase-Muster (siehe
+   §26/§52 zum Vorfall vom 21.09.). -------------------------------- */
+function treasuryItem(overrides) {
+  return Object.assign({
+    title: "10-year U.S. Treasury yield tops 5.1%, marking its highest level since 2007",
+    description: "",
+    link: "https://seekingalpha.com/market-currents/treasury-5-1",
+    pubDate: "2026-09-23T12:00:00.000Z",
+    source: "Seeking Alpha Market Currents"
+  }, overrides || {});
+}
+
+test("WR26 · enthaeltBegriff()/themaFuer() treffen 'ki' nicht mitten in 'marking'", () => {
+  const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
+  assert.equal(storyWahl.gewaehlt.thema, null,
+    "'marking' darf keine KI-Themenwelt ausloesen");
+});
+
+test("WR27 · hashtagsAbleiten() liefert kein 'KuenstlicheIntelligenz' fuer die Treasury-Story", () => {
+  const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
+  const h = WR.hashtagsAbleiten(storyWahl.gewaehlt);
+  assert.ok(!h.hashtags.includes("KuenstlicheIntelligenz"),
+    "falscher KI-Hashtag aus 'marKIng' darf nicht wieder auftreten");
+});
+
+test("WR28 · sammleFakten() zerlegt eine Jahreszahl ohne Trennzeichen nicht in Fragmente", () => {
+  const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
+  const werte = storyWahl.gewaehlt.fakten.map((f) => f.value);
+  assert.ok(werte.includes("2007"), "die Jahreszahl 2007 muss als ganze Zahl erscheinen");
+  assert.ok(!werte.includes("200"), "'2007' darf nicht in '200' zerbrechen");
+  assert.ok(!werte.includes("7") || werte.filter((w) => w === "7").length === 0,
+    "'2007' darf keinen '7'-Rest hinterlassen");
+});
+
+test("WR29 · baueCaption() dupliziert den Titel nicht an 'U.S.' als falschem Satzende", () => {
+  const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
+  const hookWahl = WR.waehleHook(storyWahl.gewaehlt);
+  assert.equal(hookWahl.ok, true);
+  const caption = WR.baueCaption(storyWahl.gewaehlt, hookWahl.gewaehlt.text);
+  assert.ok(!/10-year U\.S\.\s+Treasury/i.test(caption) || caption.indexOf("10-year U.S.") ===
+    caption.lastIndexOf("10-year U.S."), "der Titel-Anfang darf nicht doppelt vorkommen");
+  const vorkommen = caption.split("10-year U.S.").length - 1;
+  assert.ok(vorkommen <= 1, "'10-year U.S.' darf hoechstens einmal in der Caption stehen");
+});
