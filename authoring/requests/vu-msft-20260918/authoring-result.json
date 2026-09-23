@@ -1,0 +1,209 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_3c400c1a56587e7e",
+  "content_id": "vu-msft-20260918",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-stock-story-value-first-v1",
+    "hook_type": "value_first",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:value_first:01",
+      "hook_type": "value_first",
+      "text": "61,1 von 100: Der MSFT-Score ordnet ein – er prognostiziert nicht.",
+      "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+      "evidence_refs": [
+        "score",
+        "score-meaning",
+        "score-not-probability"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:value_first:02",
+      "hook_type": "value_first",
+      "text": "493,78 USD Schlusskurs: Ein Datenpunkt vom 18.09.2026, keine Handlungsaufforderung.",
+      "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+      "evidence_refs": [
+        "price-close"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:value_first:03",
+      "hook_type": "value_first",
+      "text": "26,76 von 30 Punkten: So hoch ist der ausgewiesene TREND_STRUCTURE-Beitrag im MSFT-Score.",
+      "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+      "evidence_refs": [
+        "score-contribution-trend_structure"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:value_first:04",
+      "hook_type": "value_first",
+      "text": "30,2 % in 3 Monaten: Rückblickender Messwert statt Ausblick.",
+      "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+      "evidence_refs": [
+        "momentum-3m"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:value_first:01",
+    "recommendation_reason": "Die Variante stellt die belegte Leitzahl voran und grenzt ihre Aussagekraft unmittelbar ein, ohne Prognose oder Empfehlung.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Die technische Einordnung zu MSFT beschreibt den Stand vom 18.09.2026. Der Technical Opportunity Score liegt bei 61,1 von 100; das Band „Konstruktiv“ beginnt bei 60. Der Score ist ein methodischer Setup-Rang – keine Wahrscheinlichkeit und keine Renditeerwartung.\n\nZur Zusammensetzung: TREND_STRUCTURE trägt 26,76 von 30 Punkten bei, MOMENTUM 14,08 von 20. Die 3M-Entwicklung lag bei 30,2 %, das relative Volumen bei 2,03× zum Median. Diese Messwerte beschreiben den damaligen Zustand, nicht seine Ursache oder die Zukunft. Quelle: Tiingo. Keine Kauf- oder Verkaufsempfehlung; keine Anlageberatung.",
+  "visual_brief": {
+    "purpose": "KI- und Rechenzentrumsinfrastruktur als kontrolliertes, präzises technisches System visualisieren.",
+    "visual_strategy": "AI_INFRASTRUCTURE",
+    "motif": "Eine symmetrische, abstrakte Rechenzentrumsarchitektur mit Serverreihen, Interkonnektivität und sichtbar geführten Datenströmen.",
+    "composition": "Hochformat 4:5, zentrierte Perspektive, starke Tiefenwirkung, ausgewogene Symmetrie und großzügiger Negativraum.",
+    "style": "Premium cinematic 3D technology visualization, editorial, hochwertig und analytisch statt spektakulär.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "lighting": "Kühles, kontrolliertes Licht mit hohem Kontrast und dezenten volumetrischen Akzenten.",
+    "materials": [
+      "brushed metal",
+      "dark glass",
+      "polished technical surfaces",
+      "luminous data conduits"
+    ],
+    "narrative": "Die Infrastruktur selbst steht für geordnete Rechenleistung und Datenfluss, ohne Marke oder Leistungsversprechen.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine erkennbare Drittmarke"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:visual:AI_INFRASTRUCTURE:01",
+      "visual_strategy": "AI_INFRASTRUCTURE",
+      "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+      "asset_path": "authoring/requests/vu-msft-20260918/assets/visual-01.png",
+      "asset_sha256": "68ba4d8783bd921e70cdb9f99a1aa8e6926b2bc753e1458b86b0a3e154db80cb",
+      "asset_byte_size": 2483658,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "score",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Technical Opportunity Score und Band"
+    },
+    {
+      "ref_id": "score-meaning",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Methodische Einordnung"
+    },
+    {
+      "ref_id": "score-not-probability",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/2",
+      "supports": "Keine Wahrscheinlichkeit oder Renditeerwartung"
+    },
+    {
+      "ref_id": "score-contribution-trend_structure",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/3",
+      "supports": "Beitrag TREND_STRUCTURE"
+    },
+    {
+      "ref_id": "score-contribution-momentum",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/4",
+      "supports": "Beitrag MOMENTUM"
+    },
+    {
+      "ref_id": "price-close",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/10",
+      "supports": "Schlusskurs und Datum"
+    },
+    {
+      "ref_id": "momentum-3m",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/18",
+      "supports": "3M-Entwicklung"
+    },
+    {
+      "ref_id": "volume",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/21",
+      "supports": "Relatives Volumen"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy und Bildrestriktionen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "hook_variant_count_met": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "390d74d595807d8efc385e41843ed080731ff18b",
+    "brief_revision": "390d74d595807d8efc385e41843ed080731ff18b",
+    "processing_key": "brief_3c400c1a56587e7e:vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
