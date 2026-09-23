@@ -11,7 +11,7 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_PHASE
 
-`M2_SETUP_OBSERVATION_BUILT_AWAITING_OWNER_APPROVAL_OF_THE_MAPPING`
+`M4_PATTERN_RESEARCH_DELIVERED_TWO_OWNER_GATES_OPEN_IN_PARALLEL`
 
 Factor Evidence, Change, Strategy Match and now the Setup Observation exist as versioned
 product engines over the broad canonical universe, and the Quant Experience frontend renders
@@ -27,7 +27,7 @@ Pattern, Backtest and Market Regime remain ahead.
 | M1 | Factor + Change experience | **DONE** (this section) |
 | M2 | Setup Engine + frontend | **BUILT** — mapping written, materialized over 5,676 titles; lifecycle awaits owner approval + a second observation |
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
-| M4 | Pattern Research Engine | BLOCKED in-repo — needs deep canonical history (see KNOWN_BLOCKERS) |
+| M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
 | M5 | Pattern Match product | OPEN — downstream of M4 |
 | M6 | Backtest integration | OPEN — downstream of PIT/execution gates |
 | M7 | Market Regime | OPEN — Owner methodology gate |
@@ -160,6 +160,40 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
   steps come from the cascade, not from a hard-coded list.
 - Wired into `product-intelligence-materialization.yml` right after the bundles it reads, with
   its tests and its summary in the run log and the retained evidence.
+
+### M4 — Pattern Research (`pattern-research-1.0.0` + `pattern-research-fundamentals-1.0.0`)
+
+- **The blocker entry was wrong, and measuring beat assuming.** M4 was recorded as needing deep
+  canonical history from private R2. `quant/data/market/discover-series-long/` already held
+  **6,308 titles of weekly split-adjusted closes at MAX range** — 618 starting in 1990, average
+  763 weekly points, up to 1,915. No R2 restore, no credentials, no new pipeline. Discovery's
+  artifacts are read and never written.
+- **Two pre-registered hypothesis families, separately versioned and separately corrected.** The
+  price family (15 candidates + their pairs) and the PIT fundamental family (15 candidates +
+  pairs + cross pairs with the price family). The fundamental family is a separate file and a
+  separate version precisely so the price study's hypothesis count was not changed after it had
+  been measured — a correction over a retroactively changed count is not a correction.
+- **Leakage is a check, not a comment.** Truncating the series after `t`, poisoning everything
+  after `t` with `1e9`, and poisoning everything before `t` must each leave the numbers
+  untouched; three tests hold it. There is deliberately **no size feature**, because market cap
+  at a historical `t` needs that date's share count and no such series exists here.
+- **A missing outcome is not a loss.** A series ending before the horizon closes is
+  `OUTCOME_UNAVAILABLE` — neither winner nor non-winner — and its count is published.
+- **Walk-forward folds are purged**: an observation whose outcome window still runs when the test
+  block opens leaves the training block. A test asserts the embargo actually removed something.
+- **Point-in-time means the filing date.** `pit-fundamental-history-1.0.0` reads a fiscal year
+  only once it was filed, keeps the newest filing at or before `t`, and selects growth pairs
+  **by fiscal year rather than list position** — a gap in a filed history would otherwise turn a
+  three-year growth rate into a four-year one. A test caught exactly that during development.
+- **Every finding carries its downside.** `conditionalLossRate`, `lossLift`, `asymmetry`
+  (lift ÷ loss lift), the median outcome and the median worst drawdown. This is not decoration:
+  the highest-lift patterns raise the chance of a double *and* of a halving by the same factor.
+- **The fast path proves itself against the readable one** on real published series, field by
+  field, for every candidate and an interaction. A boolean-only pattern is recorded as
+  `NOT_APPLICABLE_NO_THRESHOLD` rather than "stable", because an absent test and a passed test
+  must not look alike.
+- Wired into `product-intelligence-materialization.yml` with both studies, their tests and their
+  summaries in the run log and the retained evidence.
 
 ## PRODUCTION_REALITY
 
@@ -306,18 +340,23 @@ the mapping decision is then taken against measurement rather than against a pla
 - Revisions: no licensed, immutable historical PIT analyst-consensus source.
 - Backtesting: blocked until PIT fundamentals, historical universe membership, corporate actions,
   benchmark and execution methodology are certified.
-- **Pattern Research (M4)**: outcome labels over 12–60 months need deep canonical price history.
-  The repository publishes 270 bars per title; the deep history lives in private R2 and is only
-  reachable from a workflow with the `VU_HISTORY_S3_*` credentials. Pattern research is therefore
-  a workflow-side job (`product-intelligence-materialization.yml` already restores that history),
-  not something this checkout can compute. It is not blocked on a decision, only on being run
-  where the data is.
+- ~~**Pattern Research (M4)**: needs deep canonical history from private R2.~~ **This entry was
+  wrong and is corrected.** It reasoned from the 270-bar technical bundles and never checked
+  what else the repository holds. `quant/data/market/discover-series-long/` carries **6,308
+  titles of weekly split-adjusted closes at MAX range** — 618 of them starting in 1990, an
+  average of 763 weekly points (about 14.7 years) and up to 1,915 (about 36.8 years). That is
+  the Discovery workstream's canonical output, committed and read-only here. M4 needed no R2
+  restore and no credentials; it needed someone to measure what was already there. Built this
+  section.
 - `GLMD` is the only canonical Product Universe member without a restored history object.
 - Direct custom-domain reads remain blocked in this orchestration environment; production
   acceptance uses the exact Pages artifact, deploy job and CI probes.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
+0. **Two owner gates are open and neither blocks the next build.** They are stated here so
+   nothing waits silently on them: `VERSIONED_STATE_MAPPING_APPROVED` (below) and the
+   `total_debt` concept mapping, which waits on the measurement the SEC workflow now produces.
 1. **Owner gate: approve `setup-mapping-1.0.0`.** This is the one thing no run can do for
    itself. The mapping is written, versioned, machine-checked and materialized over 5,676
    titles; approval is a three-field edit in `quant/methodology/setup-state-v1.json`

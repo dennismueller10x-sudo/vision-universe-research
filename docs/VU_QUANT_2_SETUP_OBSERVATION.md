@@ -147,3 +147,41 @@ structure near the 52-week high. `CONFIRMED` is deliberately rare — it asks st
 complete setup and volume participation to agree on the same day.
 
 Largest shard: 4.6 KB gzipped, 0.03 MiB uncompressed — far inside the browser artifact caps.
+
+---
+
+# Die zehn Regeln, zur Owner-Freigabe
+
+Vorgelegt vor der Freigabe von `VERSIONED_STATE_MAPPING_APPROVED`. Nichts ist auf `APPROVED`
+gesetzt; `approval.state` steht weiterhin auf `PENDING_OWNER`.
+
+**PIT-stabil** heißt hier: Die Regel entscheidet ausschließlich aus dem Datenstand *eines*
+Stichtags und ändert ihr Urteil über diesen Stichtag später nicht mehr. Alle Eingaben sind
+nicht-repaintende Felder; insbesondere liest keine Regel `technicalStructure` (dessen Regime
+Close-Brüche mitzählt, die eine spätere Pivot-Bestätigung zurücknimmt), sondern
+`technicalConfirmedStructure`.
+
+Die vier pfadabhängigen Regeln sind **nicht** PIT-stabil und sollen es nicht sein: sie sind
+Aussagen über einen Verlauf und verlangen eine frühere, tatsächlich veröffentlichte Beobachtung.
+
+| # | Zustand | Bedingung (alle Teile müssen zutreffen) | Inputs | Warum dieser Zustand | Wichtigste Invalidation | PIT-stabil |
+|---|---|---|---|---|---|---|
+| 1 | `INVALIDATED` | Vorzustand ∈ {SETUP_FORMING, CONFIRMED, ACTIVE, RISK_RISING} · Schlusskurs **unter** der in der früheren Beobachtung festgehaltenen Invalidationsgrenze | `previous.setupState`, `previous.invalidationPrice`, Schlusskurs | Die Lage, die zuletzt beobachtet wurde, ist gebrochen — gemessen an der Grenze von damals, nicht an einer heute neu gerechneten | *Ist* die Invalidation. Sie endet nur, wenn ein späterer Lauf wieder einen der Punkt-in-der-Zeit-Zustände erreicht | nein (Verlauf) |
+| 2 | `EXIT` | Vorzustand ∈ {ACTIVE, RISK_RISING} · frühere Zielzone vorhanden · Schlusskurs **erreicht oder über** dieser Zone | `previous.setupState`, `previous.exitPrice`, Schlusskurs | Die damals dokumentierte Ausstiegsbedingung ist eingetreten. Kein Urteil über Erfolg | Ohne festgehaltene Zielzone entsteht `EXIT` nie | nein (Verlauf) |
+| 3 | `RISK_RISING` | Vorzustand ∈ {CONFIRMED, ACTIVE, RISK_RISING} · Trend ≠ BEARISH · Volatilitätsregime = HIGH | `previous.setupState`, `technicalTrend`, `technicalVolatilityRegime` | Eine bestehende konstruktive Lage läuft in hohe Volatilität | Trend kippt auf BEARISH → Regel greift nicht mehr; Bruch der Grenze → Regel 1 | nein (Verlauf) |
+| 4 | `RISK_RISING` | Vorzustand ∈ {CONFIRMED, ACTIVE, RISK_RISING} · Trend ≠ BEARISH · Momentum ∈ {NEGATIVE, STRONG_NEGATIVE} | `previous.setupState`, `technicalTrend`, `technicalMomentumState` | Dieselbe Lage verliert ihr Momentum. Zwei Regeln statt einer ODER-Bedingung, damit im Ergebnis steht, welcher Weg zutraf | wie 3 | nein (Verlauf) |
+| 5 | `ACTIVE` | Vorzustand ∈ {CONFIRMED, ACTIVE} · Szenario-Richtung = BULLISH · Entry-Status = ACTIVE | `previous.setupState`, `technicalPrimaryDirection`, `technicalEntryStatus` | Die zuvor beobachtete Bestätigung läuft; der Kurs steht in der dokumentierten Einstiegszone | Entry-Status verlässt ACTIVE → Rückfall in die Kaskade; Grenzbruch → Regel 1 | nein (Verlauf) |
+| 6 | `CONFIRMED` | bestätigte Struktur = BULLISH · Trend = BULLISH · Setup-Status = COMPLETE · Szenario-Richtung = BULLISH · Volumen ∈ {BREAKOUT_VOLUME_UP, EXPANSION} | `technicalConfirmedStructure`, `technicalTrend`, `technicalSetupStatus`, `technicalPrimaryDirection`, `technicalVolumeState` | Vier unabhängige Familien sagen am selben Stichtag dasselbe. Die Volumenbedingung verhindert, dass eine reine Kursbewegung ohne Beteiligung als Bestätigung zählt | Jede der fünf Bedingungen fällt weg → der Titel fällt in Regel 7 oder tiefer | **ja** |
+| 7 | `SETUP_FORMING` | Trend = BULLISH · Setup-Status ∈ {COMPLETE, COMPLETE_LOW_RR} · Szenario-Richtung = BULLISH · Entry-Status ∈ {AWAITING_TRIGGER, AWAITING_PULLBACK} | `technicalTrend`, `technicalSetupStatus`, `technicalPrimaryDirection`, `technicalEntryStatus` | Ein vollständiges Long-Setup liegt vor, der Auslöser steht aus. `technicalSetupStatus` ist ausdrücklich **nicht** der Setup-Zustand — er ist eine von vier Bedingungen | Setup-Status fällt auf INCOMPLETE oder der Trend kippt → Regel 8/9 oder `NO_SETUP` | **ja** |
+| 8 | `WATCH` | Trend = BULLISH | `technicalTrend` | Die Rahmenlage trägt, eine konkrete Situation gibt es noch nicht | Trend nicht mehr BULLISH → Regel 9 oder `NO_SETUP` | **ja** |
+| 9 | `WATCH` | bestätigte Struktur = BULLISH · Abstand zum 52-Wochen-Hoch ≥ −15 % | `technicalConfirmedStructure`, `technicalDistanceTo52wHigh` | Zweiter Weg für Titel, deren Trendklassifikation noch NEUTRAL ist, deren bestätigte Struktur aber höher läuft | Struktur nicht mehr BULLISH oder Abstand > 15 % → `NO_SETUP` | **ja** |
+| 10 | `NO_SETUP` | trifft immer zu | — | Auffangzustand. Eine vollwertige Antwort, keine Lücke | — | **ja** |
+
+Reihenfolge ist Teil der Methodik: **erste passende Regel gewinnt**, ein Titel erhält genau einen
+Zustand. Ein Titel ohne vollständige technische Evidenz erhält **keinen** Zustand und
+insbesondere nicht `NO_SETUP` — „kein Setup" und „nicht bewertbar" sind zwei verschiedene
+Aussagen.
+
+Gemessene Verteilung über 5.676 Titel (Stichtag 2026-09-10, 0 ohne vollständige Evidenz):
+`NO_SETUP` 4.017 · `WATCH` 843 (620 über Regel 8, 223 über Regel 9) · `SETUP_FORMING` 800 ·
+`CONFIRMED` 16. Die vier pfadabhängigen Zustände stehen bei 0 und sind geschlossen.

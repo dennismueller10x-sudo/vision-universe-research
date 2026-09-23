@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "1.0.0",
+  "methodologyVersion": "pattern-research-1.0.0",
+  "status": "ACTIVE_RESEARCH_ONLY",
+  "publication": {
+    "predictionAllowed": false,
+    "backtestAllowed": false,
+    "rankingAllowed": false,
+    "reason": "Diese Methodik misst bedingte Haeufigkeiten in der Vergangenheit. Sie ist keine Prognose, kein Backtest und keine Strategie. Ein Backtest verlangt PIT-Universum, Kapitalmassnahmen und Ausfuehrungsmethodik und bleibt bis zu deren Zertifizierung geschlossen."
+  },
+
+  "question": "Sahen Titel, die spaeter sehr stark gestiegen sind, VORHER anders aus als Titel, die es nicht taten - und zwar messbar, ueber viele Faelle, ohne Rueckschau?",
+
+  "notAQuestion": [
+    "Wird dieser Titel steigen?",
+    "Wie haette eine Strategie auf dieses Muster abgeschnitten?",
+    "Welcher Titel ist der naechste Superwinner?"
+  ],
+
+  "population": {
+    "source": "quant/data/market/discover-series-long (discover-series-long-1.0.0)",
+    "rebuilt": false,
+    "grain": "weekly",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "totalReturn": false,
+    "totalReturnNote": "Split-, nicht dividendenbereinigt. Ein Titel mit hoher Ausschuettung ist hier systematisch schwaecher als seine Gesamtrendite. Das betrifft Gewinner und Nicht-Gewinner gleichermassen und wird nicht durch einen Schaetzwert ersetzt.",
+    "cohorts": ["WINNER", "NON_WINNER", "OUTCOME_UNAVAILABLE"],
+    "cohortRule": "Jeder Titel mit ausreichender Vorgeschichte am Stichtag gehoert zur Grundgesamtheit. Es wird keine Liste bekannter Gewinner ausgewaehlt und daran erzaehlt.",
+    "outcomeUnavailablePolicy": "EXCLUDED_AND_REPORTED",
+    "outcomeUnavailableNote": "Endet die Reihe vor dem Horizontende, ist der Ausgang unbekannt. Solche Beobachtungen zaehlen weder als Gewinner noch als Nicht-Gewinner; ihre Zahl wird ausgewiesen. Sie stillschweigend zu den Nicht-Gewinnern zu schlagen waere eine erfundene Beobachtung."
+  },
+
+  "survivorshipBias": {
+    "state": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+    "cause": "Die Langreihen existieren nur fuer Titel, die der Provider heute fuehrt. Ein 2011 dekotierter Titel hat keine Datei und taucht in keinem historischen Querschnitt auf.",
+    "measurable": "Der Wertpapierstamm fuehrt 224 INACTIVE-Titel; wie viele Emittenten vor dem Aufbau des Stamms verschwanden, steht in diesem Repository nirgends.",
+    "effectOnAbsoluteRates": "UPWARD",
+    "effectOnLift": "LARGELY_CANCELLING",
+    "consequence": "Deshalb ist die berichtete Leitgroesse der LIFT und nicht die absolute Gewinnerquote. Der Verzerrer wirkt auf Zaehler und Nenner zugleich; eine absolute Quote aus dieser Grundgesamtheit ist keine historische Wahrheit und wird nicht als solche ausgewiesen.",
+    "publishAbsoluteRates": true,
+    "publishAbsoluteRatesNote": "Sie werden gezeigt, aber jede einzelne traegt dieses Feld mit. Verschweigen waere schlimmer als beziffern und einordnen."
+  },
+
+  "observationGrid": {
+    "spacing": "MONTHLY",
+    "alignment": "letzter Wochenschluss je Kalendermonat",
+    "minimumHistoryWeeks": 104,
+    "minimumHistoryNote": "Zwei Jahre Vorgeschichte, damit jedes Merkmal am Stichtag wirklich berechenbar ist und nicht aus einer kurzen Reihe extrapoliert wird."
+  },
+
+  "horizons": [
+    { "id": "H12", "months": 12, "weeks": 52 },
+    { "id": "H24", "months": 24, "weeks": 104 },
+    { "id": "H36", "months": 36, "weeks": 156 },
+    { "id": "H60", "months": 60, "weeks": 260 }
+  ],
+
+  "winnerThresholds": [
+    { "id": "W100", "minReturn": 1.0, "label": "Verdoppelung" },
+    { "id": "W200", "minReturn": 2.0, "label": "Verdreifachung" },
+    { "id": "W400", "minReturn": 4.0, "label": "Verfuenffachung" }
+  ],
+  "primary": { "horizon": "H24", "winner": "W100" },
+
+  "leakage": {
+    "featureWindowEndsAt": "t",
+    "outcomeWindowStartsAfter": "t",
+    "enforced": "IN_CODE",
+    "enforcedNote": "Die Engine prueft fuer jede Beobachtung, dass kein Merkmalsindex groesser als t ist und kein Ausgangsindex kleiner oder gleich t. Ein Verstoss wirft, er wird nicht geloggt.",
+    "forbiddenFeatures": [
+      "marketCap",
+      "sharesOutstanding",
+      "sector",
+      "industry",
+      "indexMembership",
+      "anyCurrentUniverseAttribute"
+    ],
+    "forbiddenFeaturesNote": "Heutige Stammdaten an einem historischen Stichtag sind Zukunftswissen. Boersenwert braucht die Aktienzahl von damals; die liegt hier nicht als Reihe vor, also gibt es kein Groessenmerkmal statt eines falschen."
+  },
+
+  "features": [
+    { "id": "return12m1m", "label": "Kursentwicklung 12 Monate ohne den letzten Monat", "window": 52, "kind": "ratio" },
+    { "id": "return6m", "label": "Kursentwicklung 6 Monate", "window": 26, "kind": "ratio" },
+    { "id": "return3m", "label": "Kursentwicklung 3 Monate", "window": 13, "kind": "ratio" },
+    { "id": "distanceTo52wHigh", "label": "Abstand zum 52-Wochen-Hoch", "window": 52, "kind": "ratio" },
+    { "id": "drawdownFromPeak", "label": "Abstand zum bisherigen Hoechststand", "window": 0, "kind": "ratio" },
+    { "id": "volatility52w", "label": "Schwankung 52 Wochen", "window": 52, "kind": "ratio" },
+    { "id": "aboveSma40w", "label": "Kurs ueber der 40-Wochen-Linie", "window": 40, "kind": "boolean" },
+    { "id": "sma10wAboveSma40w", "label": "10-Wochen-Linie ueber 40-Wochen-Linie", "window": 40, "kind": "boolean" },
+    { "id": "rangeCompression52w", "label": "Enge der 52-Wochen-Spanne", "window": 52, "kind": "ratio" },
+    { "id": "priceToAllTimeHigh", "label": "Kurs zum Allzeithoch", "window": 0, "kind": "ratio" }
+  ],
+
+  "preRegistration": {
+    "state": "FIXED_BEFORE_MEASUREMENT",
+    "note": "Die Kandidatenliste steht in dieser Datei und wird nicht aus dem Ergebnis heraus erweitert. Ein Muster, das nachtraeglich hinzugefuegt wird, ist eine neue Methodikversion - sonst ist die Mehrfachtestkorrektur eine Zahl ohne Bedeutung.",
+    "hypothesisCount": "singles + pairs, in der Engine gezaehlt und im Artefakt ausgewiesen",
+    "multipleTesting": "BENJAMINI_HOCHBERG",
+    "alpha": 0.05
+  },
+
+  "candidates": [
+    { "id": "strong-12m-momentum", "plain": "War im letzten Jahr deutlich staerker als der Durchschnitt", "feature": "return12m1m", "operator": "gte", "value": 0.30 },
+    { "id": "very-strong-12m-momentum", "plain": "War im letzten Jahr ausserordentlich stark", "feature": "return12m1m", "operator": "gte", "value": 1.00 },
+    { "id": "weak-12m-momentum", "plain": "War im letzten Jahr schwach", "feature": "return12m1m", "operator": "lte", "value": -0.20 },
+    { "id": "near-52w-high", "plain": "Stand nah am Jahreshoch", "feature": "distanceTo52wHigh", "operator": "gte", "value": -0.05 },
+    { "id": "far-below-52w-high", "plain": "Stand weit unter dem Jahreshoch", "feature": "distanceTo52wHigh", "operator": "lte", "value": -0.40 },
+    { "id": "deep-drawdown", "plain": "Stand weit unter dem bisherigen Hoechststand", "feature": "drawdownFromPeak", "operator": "lte", "value": -0.70 },
+    { "id": "at-all-time-high", "plain": "Stand auf oder nahe dem Allzeithoch", "feature": "priceToAllTimeHigh", "operator": "gte", "value": 0.95 },
+    { "id": "above-40w-line", "plain": "Stand ueber der 40-Wochen-Linie", "feature": "aboveSma40w", "operator": "eq", "value": true },
+    { "id": "trend-stacked", "plain": "10-Wochen-Linie ueber 40-Wochen-Linie", "feature": "sma10wAboveSma40w", "operator": "eq", "value": true },
+    { "id": "quiet-range", "plain": "Die Jahresspanne war eng", "feature": "rangeCompression52w", "operator": "lte", "value": 0.50 },
+    { "id": "wide-range", "plain": "Die Jahresspanne war weit", "feature": "rangeCompression52w", "operator": "gte", "value": 1.50 },
+    { "id": "high-volatility", "plain": "Der Titel schwankte stark", "feature": "volatility52w", "operator": "gte", "value": 0.60 },
+    { "id": "low-volatility", "plain": "Der Titel schwankte wenig", "feature": "volatility52w", "operator": "lte", "value": 0.25 },
+    { "id": "six-month-thrust", "plain": "Hat in sechs Monaten kraeftig zugelegt", "feature": "return6m", "operator": "gte", "value": 0.50 },
+    { "id": "three-month-thrust", "plain": "Hat in drei Monaten kraeftig zugelegt", "feature": "return3m", "operator": "gte", "value": 0.30 }
+  ],
+
+  "interactions": {
+    "mode": "PAIRS_OF_PRE_REGISTERED_CANDIDATES",
+    "note": "Nur Paare aus der Liste oben. Kein freies Absuchen des Merkmalsraums: wer lange genug sucht, findet in jedem Datensatz ein Muster, und die Mehrfachtestkorrektur kann nur korrigieren, was vorher gezaehlt wurde.",
+    "minimumSupport": 200
+  },
+
+  "robustness": {
+    "walkForward": {
+      "folds": 5,
+      "split": "TIME_BLOCKS",
+      "trainIsStrictlyBefore": true,
+      "embargoWeeks": "= Horizontlaenge",
+      "embargoNote": "Beobachtungen, deren Ausgangsfenster in den Testblock hineinreicht, verlassen den Trainingsblock. Ohne diese Sperre teilen Training und Test dieselbe Zukunft und jede Out-of-Sample-Aussage waere eine Selbstbestaetigung."
+    },
+    "outOfSample": {
+      "required": true,
+      "reportTrainAndTestSeparately": true,
+      "flagIfTestLiftBelow": 1.0
+    },
+    "parameterStability": {
+      "required": true,
+      "sweep": [0.8, 0.9, 1.0, 1.1, 1.25],
+      "sweepNote": "Jeder Schwellenwert eines Kandidaten wird mit diesen Faktoren skaliert. Ein Muster, dessen Lift nur bei genau einem Schwellenwert haelt, ist an den Datensatz angepasst und wird als instabil gekennzeichnet.",
+      "unstableIfRelativeSpreadAbove": 0.5
+    },
+    "minimumSupport": 200,
+    "minimumWinners": 20
+  },
+
+  "frictions": {
+    "roundTripBps": 20,
+    "slippageBps": 10,
+    "note": "Diese Methodik berichtet Haeufigkeiten, keine Strategierenditen. Die Vorwaertsrendite wird zusaetzlich abzueglich einer Runde Kosten ausgewiesen, damit eine spaetere Backtest-Stufe nicht mit einer brutto gerechneten Zahl argumentiert. Sie ist keine Ausfuehrungsmethodik und ersetzt keine.",
+    "isExecutionMethodology": false
+  },
+
+  "reporting": {
+    "primaryStatistic": "LIFT",
+    "alsoReported": ["baseRate", "conditionalRate", "support", "winners", "wilsonInterval", "medianForwardReturn", "medianForwardReturnNetOfFrictions", "medianMaxDrawdownWithinHorizon"],
+    "forbiddenPhrasings": [
+      "wird steigen",
+      "Erfolgswahrscheinlichkeit",
+      "Renditeerwartung",
+      "der naechste <Titel>"
+    ],
+    "cherryPickingGuard": "Kein Einzeltitel traegt eine Aussage. Ein Muster wird nur berichtet, wenn es die Mindestzahl an Faellen und Gewinnern erreicht; eine Erzaehlung entlang eines einzelnen beruehmten Titels ist ausdruecklich kein Ergebnis dieser Methodik."
+  }
+}
