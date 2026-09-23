@@ -17,9 +17,9 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 07 | Robotik & Automation | `07-robotik-automation` | ✅ |
 | 08 | Drohnen & autonome Systeme | `08-drohnen-autonome-systeme` | ✅ |
 | 09 | Elektromobilität | `09-elektromobilitaet` | ✅ |
-| 10 | Autonomes Fahren | `10-autonomes-fahren` | offen |
-| 11 | Batterien & Energiespeicher | `11-batterien-energiespeicher` | offen |
-| 12 | Erneuerbare Energien | `12-erneuerbare-energien` | offen |
+| 10 | Autonomes Fahren | `10-autonomes-fahren` | ✅ |
+| 11 | Batterien & Energiespeicher | `11-batterien-energiespeicher` | ✅ |
+| 12 | Erneuerbare Energien | `12-erneuerbare-energien` | ✅ |
 | 13 | Wasserstoff | `13-wasserstoff` | offen |
 | 14 | Kernenergie & Uran | `14-kernenergie-uran` | offen |
 | 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | offen |
