@@ -479,9 +479,16 @@ jobs:
             ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
         run: |
           set -uo pipefail
+          # `cmd; rc=$?` ist UNTER DEM VON GITHUB ACTIONS ERZWUNGENEN
+          # `bash -e` UNSICHER: ein nichtnullwertiger Exit bricht die
+          # Shell ab, BEVOR `rc=$?` ueberhaupt laeuft - `set -uo pipefail`
+          # hebt das ererbte `-e` nicht auf. `cmd || rc=$?` ist die
+          # sichere Form (derselbe `tor()`-Kniff wie im Schritt daneben):
+          # die gesamte Liste endet auf die IMMER erfolgreiche Zuweisung,
+          # `-e` sieht keinen Grund zum Abbruch.
+          rc=0
           node scripts/social/research-web-story.mjs --write \
-            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"}
-          rc=$?
+            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"} || rc=$?
           if [ "$rc" -eq 4 ]; then
             echo "::notice::Keine aktuelle, grounded Web-Story gefunden. Das ist eine " \
               "begruendete Verweigerung, kein Ausfall - es entsteht nichts."
@@ -561,8 +568,14 @@ jobs:
           sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
           export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
 
-          node scripts/social/manual-now-web-candidate.mjs --data social/data --write
-          rc=$?
+          # Siehe Kommentar im WEB-RESEARCH-Schritt: `cmd || rc=$?`, nicht
+          # `cmd; rc=$?` - sonst bricht `set -e` (von GitHub Actions
+          # erzwungen) die Shell schon vor der Auswertung ab. Genau das
+          # geschah im realen Lauf 35896139660: NOCH_NICHT_VERIFIZIERT
+          # wurde korrekt gemeldet, aber der Schritt endete trotzdem als
+          # FAILURE statt als geplantes, begruendetes Exit 0.
+          rc=0
+          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
           if [ "$rc" -eq 4 ]; then
             echo "::notice::Kein Kandidat aus der Web-Story (begruendete Verweigerung, " \
               "z.B. noch nicht VERIFIED oder das Hard Final Creative Gate). Der naechste " \

@@ -485,3 +485,42 @@ test("OR18 · Der Web-First-Pfad liest quant/ nirgends", () => {
       datei + " darf quant/ nicht requiren.");
   }
 });
+
+/* ------------------------------------------------------------------ */
+/* REGRESSION: `cmd; rc=$?` IST UNTER GITHUB ACTIONS' `bash -e`        */
+/* UNSICHER (realer Befund, Lauf 35896139660, 23.09.)                  */
+/*                                                                      */
+/* VORBEREITEN (WEB) meldete im echten Lauf korrekt NOCH_NICHT_        */
+/* VERIFIZIERT und beendete sich mit Exit 4 - aber der WORKFLOW-        */
+/* SCHRITT selbst endete trotzdem als FAILURE statt als geplantes       */
+/* Exit 0: GitHub Actions fuehrt `run:`-Bloecke mit `-e` aus, und ein   */
+/* alleinstehendes `node ...; rc=$?` bricht die Shell schon VOR der     */
+/* Auswertung von `rc` ab - `set -uo pipefail` hebt das ererbte `-e`    */
+/* nicht auf. Die sichere Form ist `node ... || rc=$?` (derselbe        */
+/* Kniff wie die bestehende `tor()`-Funktion im Schritt daneben).       */
+/* ------------------------------------------------------------------ */
+test("OR19 · WEB RESEARCH und VORBEREITEN (WEB) werten Exit 4 sicher unter " +
+  "GitHub Actions' bash -e aus", () => {
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+
+  for (const [marker, skript] of [
+    ["WEB RESEARCH — aktuelle Story finden", "research-web-story.mjs"],
+    ["VORBEREITEN (WEB) — bis zum Publishing Gate", "manual-now-web-candidate.mjs"]
+  ]) {
+    const start = yml.indexOf(marker);
+    assert.ok(start !== -1, "Schritt fehlt: " + marker);
+    const block = yml.slice(start, start + 2000);
+
+    assert.match(block, new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
+      "[\\s\\S]{0,220}?\\|\\|\\s*rc=\\$\\?"),
+      marker + " muss `... || rc=$?` verwenden, nicht `...; rc=$?` - sonst bricht " +
+      "GitHub Actions' `bash -e` die Shell vor der Auswertung von Exit 4 ab.");
+
+    /* Der Fehlerfall aus dem realen Lauf: ein alleinstehendes `rc=$?`
+       DIREKT nach dem node-Aufruf (ohne `||` auf demselben Fortsetzungs-
+       block) darf nicht mehr vorkommen. */
+    assert.ok(!new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
+      "[\\s\\S]{0,220}?[^|]\\n\\s*rc=\\$\\?").test(block),
+      marker + " enthaelt noch das unsichere `cmd; rc=$?`-Muster.");
+  }
+});
