@@ -1330,6 +1330,59 @@ def cmd_inspect(args):
     return 0
 
 
+# Ein Konzept zu zaehlen beantwortet nicht die Frage, die entschieden werden
+# muss. Die lautet nicht "wie viele Emittenten tragen Tag X", sondern "wie
+# viele wuerde Zusammensetzung Y bedienen" - und dafuer braucht es das
+# gemeinsame Vorkommen je Emittent, nicht die Summe der Einzelzaehlungen.
+# Zwei Tags mit je 1.300 Emittenten koennen dieselben 1.300 meinen oder
+# 2.600 verschiedene.
+#
+# Ein Fach ist ODER-verknuepft, eine Zusammensetzung UND-verknuepft ueber
+# ihre Faecher. Gemessen wird nur: was aus den Zahlen folgt, ist eine
+# Methodikentscheidung mit eigener Version.
+DEBT_SLOTS = {
+    "LT": ["us-gaap:LongTermDebtNoncurrent", "us-gaap:LongTermDebt",
+           "ifrs-full:LongtermBorrowings"],
+    "ST": ["us-gaap:LongTermDebtCurrent", "us-gaap:ShortTermBorrowings",
+           "us-gaap:DebtCurrent", "us-gaap:OtherShortTermBorrowings",
+           "ifrs-full:ShorttermBorrowings"],
+    "FL": ["us-gaap:FinanceLeaseLiabilityNoncurrent",
+           "us-gaap:FinanceLeaseLiabilityCurrent",
+           "us-gaap:FinanceLeaseLiability"],
+    "COMBINED": ["us-gaap:DebtLongtermAndShorttermCombinedAmount",
+                 "ifrs-full:Borrowings"],
+}
+
+DEBT_COMPOSITIONS = [
+    ("A_heute_nur_gemeldet", ["COMBINED"],
+     "Nur die gemeldete Sammelangabe. Der heutige Registry-Stand ohne Ableitung."),
+    ("B_heute_mit_ableitung", ["COMBINED|LT+ST"],
+     "Sammelangabe, sonst long_term_debt + short_term_debt. Das ist der heutige Zustand."),
+    ("C_langfrist_allein", ["LT"],
+     "Nur die langfristige Schuld. Weitere Reichweite, aber eine ANDERE Kennzahl: "
+     "kurzfristige Schulden fehlen darin, und das ist keine Abdeckungsluecke, sondern "
+     "eine andere Aussage."),
+    ("D_mit_finanzierungsleasing", ["COMBINED|LT+ST", "FL"],
+     "Wie heute, zusaetzlich Finanzierungsleasing-Verbindlichkeiten. Nach ASC 842 "
+     "schuldaehnlich; ob sie in 'Gesamtverschuldung' gehoeren, ist eine "
+     "Methodikentscheidung und keine Messung."),
+    ("E_heute_oder_finanzierungsleasing", ["COMBINED|LT+ST|FL"],
+     "Wie heute, und wo das nicht traegt, ersatzweise Finanzierungsleasing allein. "
+     "Zur Vollstaendigkeit gemessen; semantisch am wenigsten sauber."),
+]
+
+
+def slot_present(present, slot):
+    """Ein Fach ist erfuellt, sobald EINES seiner Konzepte vorliegt."""
+    return any(concept in present for concept in DEBT_SLOTS[slot])
+
+
+def satisfies(present, term):
+    """"A|B+C" liest sich als A ODER (B UND C)."""
+    return any(all(slot_present(present, slot) for slot in option.split("+"))
+               for option in term.split("|"))
+
+
 def cmd_concept_census(args):
     """Measure which XBRL concepts the product universe actually tags.
 
@@ -1375,6 +1428,9 @@ def cmd_concept_census(args):
     issuers_with_mapped = Counter()
     issuers_with_concept = Counter()
     issuers_seen = 0
+    composition_hits = Counter()
+    slot_hits = Counter()
+
 
     source = (provider.iter_bulk_company_facts(ciks=wanted, archive_path=args.archive)
               if args.bulk or args.archive
@@ -1396,9 +1452,25 @@ def cmd_concept_census(args):
             else:
                 issuers_with_concept[key] += 1
 
+        present = {key for _, key in here}
+        for slot in DEBT_SLOTS:
+            if slot_present(present, slot):
+                slot_hits[slot] += 1
+        for name, terms, _ in DEBT_COMPOSITIONS:
+            if all(satisfies(present, term) for term in terms):
+                composition_hits[name] += 1
+
     report = {
         "schema": "sec-concept-census-1.0.0",
         "generated_at_utc": _utcnow(),
+        # Welche Konzepte als "gemappt" gelten, entscheidet die Registry.
+        # Eine andere Mapping-Version misst etwas anderes, und ein Bericht
+        # ohne diese Angabe laesst sich spaeter nicht mehr einordnen.
+        "versions": {
+            "census_logic": "1.1.0",
+            "metric_registry": {"schema_version": registry.schema_version,
+                                "mapping_version": registry.mapping_version},
+        },
         "metrics": metrics,
         "pattern": args.pattern,
         "issuers": issuers_seen,
@@ -1406,6 +1478,10 @@ def cmd_concept_census(args):
                    for key in sorted(mapped, key=lambda k: -issuers_with_mapped.get(k, 0))],
         "unmapped": [{"concept": key, "issuers": count}
                      for key, count in issuers_with_concept.most_common(args.top)],
+        "slots": [{"slot": slot, "concepts": DEBT_SLOTS[slot], "issuers": slot_hits.get(slot, 0)}
+                  for slot in DEBT_SLOTS],
+        "compositions": [{"id": name, "requires": terms, "issuers": composition_hits.get(name, 0),
+                          "semantics": note} for name, terms, note in DEBT_COMPOSITIONS],
         "note": ("Presence per issuer, not per fact. An unmapped concept with high coverage is a "
                  "candidate, not a decision: adding it changes what an existing published metric "
                  "means, and that is a methodology change with its own version."),
@@ -1418,6 +1494,12 @@ def cmd_concept_census(args):
         print(f"    mapped    {row['issuers']:>5}  {row['concept']}  -> {', '.join(row['servesMetrics'])}")
     for row in report["unmapped"][:args.top]:
         print(f"    candidate {row['issuers']:>5}  {row['concept']}")
+    print("  Faecher (ODER je Fach):")
+    for row in report["slots"]:
+        print(f"    slot      {row['issuers']:>5}  {row['slot']}")
+    print("  Zusammensetzungen (UND ueber die Faecher) - gemessen, nicht entschieden:")
+    for row in report["compositions"]:
+        print(f"    {row['id']:<32} {row['issuers']:>5}  {' & '.join(row['requires'])}")
     return 0
 
 
