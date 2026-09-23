@@ -389,20 +389,35 @@ jobs:
         # ist der Wert "ZEITPLAN" und kein bekannter Modus: das
         # Verhalten bleibt exakt das von AUTO.
         #
-        # THEMA_FREITEXT nur bei MANUAL_TOPIC: manual-mode.js nennt POST
-        # ZU THEMA ausdruecklich "der Owner nennt das Thema STATT DER
-        # GELEGENHEITSBEWERTUNG". Der rohe Text aus inputs.thema reist
-        # unveraendert mit (run-social-cycle.mjs::themaVomOwner() prueft
-        # zuerst eine Platten-Ueberschrift, dann ein Instrumentensymbol -
-        # dieselbe Ticker-Erkennung wie beim Creative-Job-Dispatch, siehe
-        # dort). Die Modus-Bedingung verhindert, dass ein automatischer
-        # Lauf dieselbe Ersetzung versehentlich uebernimmt. Wie beim
-        # "Was ist jetzt dran?"-Schritt: fremder Text nur ueber die
-        # Umgebung, nie in die Shell interpoliert.
+        # THEMA_FREITEXT bei MANUAL_TOPIC UND MANUAL_NOW: manual-mode.js
+        # nennt POST ZU THEMA ausdruecklich "der Owner nennt das Thema
+        # STATT DER GELEGENHEITSBEWERTUNG". Der rohe Text aus inputs.thema
+        # reist unveraendert mit (run-social-cycle.mjs::themaVomOwner()
+        # prueft zuerst eine Platten-Ueberschrift, dann ein
+        # Instrumentensymbol - dieselbe Ticker-Erkennung wie beim
+        # Creative-Job-Dispatch, siehe dort). Die Modus-Bedingung
+        # verhindert, dass ein automatischer Lauf dieselbe Ersetzung
+        # versehentlich uebernimmt. Wie beim "Was ist jetzt dran?"-Schritt:
+        # fremder Text nur ueber die Umgebung, nie in die Shell
+        # interpoliert.
+        #
+        # JETZT POST ERSTELLEN OHNE THEMA (MANUAL_NOW): "Was ist jetzt
+        # dran?" hat storyBestesThema() bereits berechnet und als
+        # steps.plan.outputs.manual_now_thema ausgegeben - dasselbe
+        # Instrument, das dort schon den Creative-Job-Dispatch entschied
+        # (Owner-Direktive "FINAL GOLDEN PATH SIMPLIFICATION", 23.09.,
+        # §2/§17: MANUAL_NOW haengt nicht an der internen
+        # Gelegenheitsbewertung). Ohne diese Zeile liest VORBEREITEN kein
+        # Thema, faellt auf die Ladder (ContentLadder, Opportunity.score)
+        # zurueck und kann ein Ranglisten-/Screener-Thema waehlen - genau
+        # der real beobachtete Rueckfall auf die vom Owner benannte
+        # NEGATIVE HOOK FIXTURE "420 von 5954 geprueften Titeln".
         env:
           VU_SOCIAL_MODUS: ${{ steps.plan.outputs.modus }}
           VU_SOCIAL_THEMA_FREITEXT: >-
-            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
+            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema
+                || (steps.plan.outputs.modus == 'MANUAL_NOW' && steps.plan.outputs.manual_now_thema)
+                || '' }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq
