@@ -1,31 +1,29 @@
 {
   "schema_version": 1,
   "RUN_DATE": "2026-09-23",
-  "RUN_STARTED_AT": "2026-09-23T13:35:06+00:00",
+  "RUN_STARTED_AT": "2026-09-23T14:15:12+00:00",
   "STATUS": "SUCCESS",
   "DRY_RUN": false,
-  "LAST_SUCCESSFUL_RUN": "2026-09-23T13:35:06+00:00",
+  "LAST_SUCCESSFUL_RUN": "2026-09-23T14:15:12+00:00",
   "LAST_SEC_CHECK": "2026-09-23",
   "SEC_INDEX": {
-    "daysChecked": [
-      "2026-09-22"
-    ],
+    "daysChecked": [],
     "daysWithoutIndex": [
       "2026-09-23"
     ],
-    "indexRows": 3407
+    "indexRows": 0
   },
-  "SEC_CHANGES_FOUND": 7,
-  "NEW_FILINGS": 5,
-  "AMENDMENTS_FOUND": 2,
+  "SEC_CHANGES_FOUND": 0,
+  "NEW_FILINGS": 0,
+  "AMENDMENTS_FOUND": 0,
   "ISSUERS_CHECKED": 5479,
-  "ISSUERS_CHANGED": 7,
+  "ISSUERS_CHANGED": 0,
   "NEW_ISSUERS": 0,
   "RETRIED": 0,
   "ISSUERS_UPDATED": 0,
   "NO_CHANGE": 5479,
   "UNCHANGED_ISSUERS_REPROCESSED": 0,
-  "UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC": 7,
+  "UNCHANGED_ISSUERS_CHECKED_AGAINST_SEC": 0,
   "FAILED_ISSUERS": 0,
   "RETRY_QUEUE": 0,
   "FACTBOOKS_UPDATED": 0,
@@ -47,24 +45,16 @@
     }
   },
   "updated": [],
-  "unchanged": [
-    "0000730263",
-    "0000796343",
-    "0001372920",
-    "0001385818",
-    "0001674440",
-    "0001814215",
-    "0002030522"
-  ],
+  "unchanged": [],
   "failed": [],
   "retryQueue": [],
   "requests": {
-    "requests": 8,
-    "cache_hits": 4,
+    "requests": 1,
+    "cache_hits": 1,
     "retries": 0,
     "deduplicated": 0
   },
-  "TOTAL_RUNTIME_SECONDS": 5.2,
+  "TOTAL_RUNTIME_SECONDS": 0.3,
   "UNIVERSE_SKIPPED_WITHOUT_CIK": 0,
   "R2_OBJECTS_WRITTEN": 0,
   "R2_OBJECTS_UNCHANGED": 5480,
@@ -88,6 +78,6 @@
     "Backtesting Data",
     "Atlas / AI"
   ],
-  "DOWNSTREAM_RUNTIME_SECONDS": 2.6,
-  "TOTAL_RUNTIME": 7.8
+  "DOWNSTREAM_RUNTIME_SECONDS": 2.1,
+  "TOTAL_RUNTIME": 2.4
 }
