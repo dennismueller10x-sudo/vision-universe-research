@@ -81,8 +81,10 @@
       ctx.artworkDisposers.push(function () { observer.disconnect(); });
     }
   }
+  var tones = ['green', 'blue', 'violet', 'amber', 'teal', 'rose'];
   function stock(card, ctx, options) {
     options = options || {};
+    if (!options.hero) return tile(card, ctx, options);
     var plain = D.Cards.klartext(card, options.rowId) || card.plain || {};
     var a = link('', '#/s/' + ctx.universeId + '/' + encodeURIComponent(card.symbol), 'v2-stock' + (options.hero ? ' v2-stock-hero' : ''));
     a.setAttribute('data-symbol', card.symbol);
@@ -108,6 +110,124 @@
     if (!options.hero) a.appendChild(node('span', 'v2-stock-cta', 'Entdecken ↗'));
     return a;
   }
+  /* Kompakte Aktien-Kachel: mehrere pro Bildschirm, seitlich wischbar.
+     Werte, Klartext, Kursverlauf und Frische stammen unveraendert aus den
+     kanonischen Renderern; die Kachel ordnet sie nur dichter an. */
+  function tile(card, ctx, options) {
+    options = options || {};
+    var plain = D.Cards.klartext(card, options.rowId) || card.plain || {};
+    var a = link('', '#/s/' + ctx.universeId + '/' + encodeURIComponent(card.symbol), 'v2-stock v2-tile' + (options.large ? ' v2-tile-lg' : ''));
+    a.setAttribute('data-symbol', card.symbol);
+    a.setAttribute('data-tone', tones[(options.position || 0) % tones.length]);
+    var head = node('div', 'v2-tile-head'), copy = node('div', 'v2-stock-copy');
+    var id = node('div', 'v2-tile-id');
+    id.appendChild(node('span', 'v2-stock-symbol', card.symbol + (card.was ? ' · ' + card.was : '')));
+    id.appendChild(node(options.large ? 'h2' : 'h3', 'v2-stock-name', card.companyName || card.symbol));
+    head.appendChild(id);
+    if (options.rank) { var rank = node('span', 'v2-stock-rank', String(options.rank).padStart(2, '0')); rank.setAttribute('aria-label', 'Rang ' + options.rank); head.appendChild(rank); }
+    copy.appendChild(head);
+    if (plain.zahl) {
+      var number = node('div', 'v2-stock-performance');
+      number.appendChild(node('strong', plain.zahl.ton || '', plain.zahl.wert));
+      number.appendChild(node('span', '', plain.zahl.label)); copy.appendChild(number);
+    }
+    if (plain.story) copy.appendChild(node('p', 'v2-stock-why', plain.story));
+    a.appendChild(copy);
+    var chartRange = options.range || '1J';
+    var media = D.Cards.lazyArtwork(card, { width: options.large ? 420 : 300, height: options.large ? 120 : 90, range: chartRange, live: options.live !== false, ticker: false, scale: 'hero' });
+    a.appendChild(media);
+    var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
+    bindArtworkCaption(media, caption, card, ctx, chartRange);
+    var price = D.Cards.valueOf(card.price), change = D.Cards.valueOf(card.changePercent);
+    var foot = node('div', 'v2-tile-foot');
+    if (typeof price === 'number' && Number.isFinite(price)) {
+      foot.appendChild(node('span', 'v2-tile-price', D.Cards.money(price, card.asOf)));
+      if (typeof change === 'number' && Number.isFinite(change)) { var ch = node('span', 'v2-tile-change ' + D.Cards.toneClass(change), D.Cards.pctPoints(change)); ch.setAttribute('aria-label', 'Tagesveränderung ' + D.Cards.pctPoints(change)); foot.appendChild(ch); }
+    }
+    foot.appendChild(node('span', 'v2-stock-cta', options.large ? 'Aktie entdecken ↗' : '↗'));
+    a.appendChild(foot);
+    return a;
+  }
+  /* ---------- Themenwelten ---------- */
+  var T = function () { return V.Themes; };
+  function themeVisual(theme, cls) {
+    var art = node('div', cls || 'v2-theme-art');
+    art.style.setProperty('--tone', theme.tone);
+    if (theme.photo) {
+      var img = el('img', { src: theme.photo, alt: '', loading: 'lazy', decoding: 'async', width: '1672', height: '941' });
+      img.addEventListener('error', function () { img.remove(); art.classList.add('is-empty'); });
+      art.appendChild(img);
+    } else art.classList.add('is-empty');
+    art.setAttribute('aria-hidden', 'true');
+    return art;
+  }
+  function themeTile(theme, ctx) {
+    var count = T().count(theme, ctx.meta, ctx.universeId);
+    var a = link('', T().href(theme), 'v2-theme-tile');
+    a.dataset.group = theme.group; a.dataset.theme = theme.slug;
+    a.style.setProperty('--tone', theme.tone);
+    a.appendChild(themeVisual(theme));
+    var copy = node('div', 'v2-theme-tile-copy');
+    copy.appendChild(node('h3', '', theme.title));
+    copy.appendChild(node('p', '', theme.line));
+    var foot = node('div', 'v2-theme-tile-foot');
+    foot.appendChild(node('span', 'v2-theme-count', count ? count + ' Aktien' : 'In Vorbereitung'));
+    foot.appendChild(node('span', 'v2-theme-go', '→'));
+    copy.appendChild(foot); a.appendChild(copy);
+    a.setAttribute('aria-label', theme.title + ' – ' + theme.short + (count ? ', ' + count + ' Aktien' : ', in Vorbereitung'));
+    return a;
+  }
+  function themeBanner(theme, options) {
+    options = options || {};
+    var box = node(options.tag || 'div', 'v2-theme-banner' + (options.page ? ' v2-theme-banner-page' : ''));
+    box.style.setProperty('--tone', theme.tone);
+    box.appendChild(themeVisual(theme, 'v2-theme-banner-art'));
+    var copy = node('div', 'v2-theme-banner-copy');
+    copy.appendChild(node('span', 'v2-eyebrow', options.eyebrow || 'Themenwelt'));
+    copy.appendChild(node(options.page ? 'h1' : 'h2', '', options.title || theme.title));
+    copy.appendChild(node('p', 'v2-theme-banner-lead', options.subtitle || (theme.short + ' — ' + theme.line)));
+    if (options.evidence) copy.appendChild(node('p', 'v2-world-evidence', options.evidence));
+    if (options.href) copy.appendChild(link(options.cta || 'Themenwelt entdecken →', options.href, 'v2-pill v2-pill-light'));
+    box.appendChild(copy);
+    box.appendChild(node('p', 'v2-theme-banner-tag', theme.tagline));
+    return box;
+  }
+  function themesRail(ctx) {
+    var section = node('section', 'v2-world v2-themes');
+    section.dataset.archetype = 'themes'; section.dataset.block = 'themenwelten';
+    section.dataset.groups = 'themen tech health energy finance consumer industry';
+    var header = node('div', 'v2-world-head'), intro = node('div', '');
+    intro.appendChild(node('h2', '', 'Themenwelten'));
+    intro.appendChild(node('p', 'v2-world-subtitle', 'Megatrends heute. Chancen für morgen. ' + T().all.length + ' Welten zum Entdecken.'));
+    header.appendChild(intro); header.appendChild(link('Alle Themenwelten →', '#/welten', 'v2-world-more'));
+    section.appendChild(header);
+    var track = el('div', { class: 'v2-track v2-theme-track', role: 'list', 'aria-label': 'Themenwelten' });
+    T().all.forEach(function (theme) { var item = node('div', 'v2-track-item v2-theme-item'); item.setAttribute('role', 'listitem'); item.dataset.group = theme.group; item.appendChild(themeTile(theme, ctx)); track.appendChild(item); });
+    section.appendChild(D.Cards.withRailNav(track, { label: 'Themenwelten', universeId: ctx.universeId }));
+    return section;
+  }
+  /* Filter-Chips: blenden Welten nach Bereich ein/aus. Reihenfolge und
+     Inhalt der Reihen bleiben unberuehrt. */
+  var chips = [['alle', 'Alle'], ['themen', 'Themenwelten'], ['tech', 'Technologie'], ['health', 'Gesundheit'], ['energy', 'Energie'], ['finance', 'Finanzen'], ['consumer', 'Konsum'], ['industry', 'Industrie'], ['wachstum', 'Wachstum'], ['momentum', 'Momentum'], ['qualitaet', 'Qualität'], ['indizes', 'Indizes']];
+  var worldGroups = { tech: 'tech', health: 'health', energy: 'energy', finance: 'finance', consumer: 'consumer', industry: 'industry', growth: 'wachstum', cashflow: 'qualitaet', quality: 'qualitaet', compounder: 'qualitaet', fundamentals: 'qualitaet', momentum: 'momentum', highs: 'momentum', breakout: 'momentum', strength: 'momentum', comeback: 'momentum', leadership: 'indizes' };
+  function groupsOf(surface) {
+    var g = [];
+    if (surface.type === 'theme') g.push('themen');
+    if (surface.index || /^top-(sp500|ndx|djia)$/.test(surface.id || '')) g.push('indizes');
+    if (surface.type === 'sectors') g.push('tech', 'health', 'energy', 'finance', 'consumer');
+    if (worldGroups[surface.world]) g.push(worldGroups[surface.world]);
+    return g.join(' ');
+  }
+  function chipBar(onPick) {
+    var bar = el('div', { class: 'v2-chips', role: 'toolbar', 'aria-label': 'Welten filtern' });
+    chips.forEach(function (c, i) {
+      var b = el('button', { type: 'button', class: 'v2-chip', 'data-chip': c[0], 'aria-pressed': String(i === 0) }, [node('i', 'v2-chip-dot', ''), node('span', '', c[1])]);
+      b.firstChild.setAttribute('aria-hidden', 'true');
+      b.addEventListener('click', function () { Array.from(bar.children).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); onPick(c[0]); });
+      bar.appendChild(b);
+    });
+    return bar;
+  }
   function archetypeFor(surface, index) {
     if (surface.index) return 'index';
     if (surface.type === 'theme') return 'theme';
@@ -126,17 +246,24 @@
     section.dataset.archetype = archetype;
     section.dataset.surface = surface.id; section.dataset.surfaceType = surface.type;
     section.dataset.world = surface.world || 'default'; section.dataset.sequence = String(index + 1);
-    var header = node('div', 'v2-world-head'), intro = node('div', '');
-    intro.appendChild(node('span', 'v2-eyebrow', surface.type === 'theme' ? 'Themenwelt' : surface.index ? 'Die großen Indizes' : surface.type === 'ranking' ? 'Das Ranking entdecken' : 'Neue Perspektiven'));
-    intro.appendChild(node('h2', '', title(surface.title)));
-    if (surface.subtitle) intro.appendChild(node('p', 'v2-world-subtitle', surface.subtitle));
-    if (surface.editorial) intro.appendChild(node('p', 'v2-world-evidence', 'Redaktionelle Themenzuordnung'));
-    if (surface.index && surface.index.asOf) intro.appendChild(node('p', 'v2-world-evidence', 'Mitglieder laut ' + (surface.index.proxy && surface.index.proxy.etf ? 'ETF-Bestand ' + surface.index.proxy.etf : 'Indexeigentümer') + ' · ' + D.Cards.dateShort(surface.index.asOf)));
-    header.appendChild(intro);
-    if (surface.href) header.appendChild(link('Alle ansehen ↗', surface.href, 'v2-world-more'));
-    section.appendChild(header);
-    var track = el('div', { class: 'v2-track' + (surface.type === 'ranking' ? ' v2-track-ranking' : '') + (index % 4 === 2 ? ' v2-track-wide' : ''), role: 'list', 'aria-label': title(surface.title) });
-    (surface.cards || []).forEach(function (card, i) { var item = node('div', 'v2-track-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { rowId: surface.rowId, rank: surface.type === 'ranking' ? i + 1 : null, range: surface.microRange || '1J' })); track.appendChild(item); });
+    section.dataset.groups = groupsOf(surface);
+    var theme = surface.type === 'theme' && T() ? T().byRow(surface.rowId) : null;
+    if (theme) {
+      section.appendChild(themeBanner(theme, { title: title(surface.title), subtitle: surface.subtitle || theme.line, href: T().href(theme),
+        evidence: surface.editorial ? 'Redaktionelle Themenzuordnung' : null }));
+    } else {
+      var header = node('div', 'v2-world-head'), intro = node('div', '');
+      if (surface.type === 'theme') intro.appendChild(node('span', 'v2-eyebrow', 'Themenwelt'));
+      intro.appendChild(node('h2', '', title(surface.title)));
+      if (surface.subtitle) intro.appendChild(node('p', 'v2-world-subtitle', surface.subtitle));
+      if (surface.editorial) intro.appendChild(node('p', 'v2-world-evidence', 'Redaktionelle Themenzuordnung'));
+      if (surface.index && surface.index.asOf) intro.appendChild(node('p', 'v2-world-evidence', 'Mitglieder laut ' + (surface.index.proxy && surface.index.proxy.etf ? 'ETF-Bestand ' + surface.index.proxy.etf : 'Indexeigentümer') + ' · ' + D.Cards.dateShort(surface.index.asOf)));
+      header.appendChild(intro);
+      if (surface.href) header.appendChild(link('Alle ansehen →', surface.href, 'v2-world-more'));
+      section.appendChild(header);
+    }
+    var track = el('div', { class: 'v2-track' + (surface.type === 'ranking' ? ' v2-track-ranking' : ''), role: 'list', 'aria-label': title(surface.title) });
+    (surface.cards || []).forEach(function (card, i) { var item = node('div', 'v2-track-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { rowId: surface.rowId, rank: surface.type === 'ranking' ? i + 1 : null, range: surface.microRange || '1J', position: i })); track.appendChild(item); });
     section.appendChild(D.Cards.withRailNav(track, { label: surface.title, universeId: ctx.universeId }));
     return section;
   }
@@ -171,30 +298,59 @@
     ctx = Object.assign({}, ctx, { artworkDisposers: [] });
     var page = node('div', 'v2-home'); root.appendChild(page);
     var intro = node('header', 'v2-intro');
-    intro.appendChild(el('h1', {}, [document.createTextNode('Aktien entdecken.'), node('span', '', 'Mehr sehen. Mehr verstehen.')]));
+    var introCopy = node('div', 'v2-intro-copy');
+    introCopy.appendChild(node('p', 'v2-intro-kicker', 'Entdecken. Verstehen. Investieren.'));
+    introCopy.appendChild(el('h1', {}, [el('span', { class: 'v2-intro-brand' }, [document.createTextNode('VISION UNIVERSE'), el('sup', { text: '®' })]), document.createTextNode(' '), node('span', 'v2-intro-product', 'Discovery')]));
+    introCopy.appendChild(el('p', { class: 'v2-intro-lead' }, [document.createTextNode('Neue Perspektiven. Starke Unternehmen. '), el('br'), document.createTextNode('Aktien entdecken und die Märkte von morgen klarer sehen.')]));
+    var actions = node('div', 'v2-intro-actions');
+    actions.appendChild(link('Jetzt entdecken →', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-dark v2-intro-cta'));
+    actions.appendChild(link('Themenwelten', '#/welten', 'v2-pill v2-pill-ghost'));
+    introCopy.appendChild(actions);
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
-    search.addEventListener('click', ctx.openSearch); intro.appendChild(search); page.appendChild(intro);
+    search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
+    intro.appendChild(introCopy);
+    var orb = node('div', 'v2-intro-visual'); orb.setAttribute('aria-hidden', 'true');
+    orb.appendChild(node('span', 'v2-orb', '')); orb.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
+    intro.appendChild(orb);
+    page.appendChild(intro);
+    var filter = 'alle';
+    function applyFilter() {
+      Array.from(body.children).forEach(function (n) {
+        if (!n.dataset || n.dataset.groups === undefined) return;
+        var show = filter === 'alle' || n.dataset.groups.split(' ').indexOf(filter) >= 0;
+        n.hidden = !show;
+      });
+      Array.from(body.querySelectorAll('.v2-theme-item')).forEach(function (item) {
+        item.hidden = !(filter === 'alle' || filter === 'themen' || item.dataset.group === filter);
+      });
+    }
+    page.appendChild(chipBar(function (key) { filter = key; applyFilter(); }));
     var body = node('div', 'v2-journey'); page.appendChild(body);
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
-    var seen = new Set(), count = 0, observer;
+    var seen = new Set(), count = 0, drawn = 0, themesShown = false, observer;
     function active() { return page.isConnected; }
     function draw(surface) {
       var view;
       if (surface.type === 'hero') {
-        view = node('section', 'v2-spotlight'); view.dataset.archetype = 'cinematic';
-        view.appendChild(node('p', 'v2-eyebrow', 'Im Blick · Discover-Auswahl' + ((surface.cards || [])[0] && surface.cards[0].asOf ? ' · ' + D.Cards.dateShort(surface.cards[0].asOf) : '')));
-        var track = el('div', { class: 'v2-hero-track', role: 'list', 'aria-label': 'Aktien im Blick' });
-        (surface.cards || []).forEach(function (card) { var item = node('div', 'v2-hero-item'); item.setAttribute('role', 'listitem'); item.appendChild(stock(card, ctx, { hero: true })); track.appendChild(item); });
+        view = node('section', 'v2-spotlight v2-world'); view.dataset.archetype = 'cinematic'; view.dataset.groups = 'momentum';
+        var head = node('div', 'v2-world-head'), hi = node('div', '');
+        hi.appendChild(node('h2', '', 'Im Blick'));
+        hi.appendChild(node('p', 'v2-world-subtitle', 'Die Discover-Auswahl' + ((surface.cards || [])[0] && surface.cards[0].asOf ? ' · Stand ' + D.Cards.dateShort(surface.cards[0].asOf) : '') + ' · Wischen für die nächste Aktie'));
+        head.appendChild(hi); head.appendChild(link('Vollbild entdecken →', '#/einzeln/' + ctx.universeId, 'v2-world-more v2-feed-entry'));
+        view.appendChild(head);
+        var track = el('div', { class: 'v2-hero-track v2-track', role: 'list', 'aria-label': 'Aktien im Blick' });
+        (surface.cards || []).forEach(function (card, i) { var item = node('div', 'v2-hero-item v2-track-item'); item.setAttribute('role', 'listitem'); item.appendChild(tile(card, ctx, { large: true, position: i + 1 })); track.appendChild(item); });
         view.appendChild(D.Cards.withRailNav(track, { label: 'Aktien im Blick', universeId: ctx.universeId }));
-        var flow = node('div', 'v2-discovery-flow'); flow.appendChild(node('p', 'v2-swipe-hint', '← Wischen. Nächste Aktie. →')); flow.appendChild(link('Vollbild entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-feed-entry')); view.appendChild(flow);
       } else if (['row', 'ranking', 'theme'].indexOf(surface.type) >= 0 && (surface.cards || []).length) view = rail(surface, ctx, count++);
       else if (surface.type === 'featured-card' && (surface.cards || []).length) {
-        view = node('section', 'v2-feature'); view.appendChild(node('p', 'v2-eyebrow', title(surface.kicker || surface.title))); view.appendChild(stock(surface.cards[0], ctx, { hero: true, rowId: surface.rowId }));
-      } else if (surface.type === 'story' && (surface.cards || []).length) view = story(surface, ctx);
-      else view = D.Surfaces.render(surface, ctx);
-      if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); }
+        view = node('section', 'v2-feature'); view.dataset.groups = groupsOf(surface); view.appendChild(node('p', 'v2-eyebrow', title(surface.kicker || surface.title))); view.appendChild(stock(surface.cards[0], ctx, { hero: true, rowId: surface.rowId }));
+      } else if (surface.type === 'story' && (surface.cards || []).length) { view = story(surface, ctx); if (view) view.dataset.groups = 'qualitaet'; }
+      else { view = D.Surfaces.render(surface, ctx); if (view && surface.type === 'sectors') view.dataset.groups = groupsOf(surface); }
+      if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); drawn++; }
+      if (!themesShown && drawn === 4 && T()) { themesShown = true; body.appendChild(themesRail(ctx)); }
+      applyFilter();
     }
     function finish() {
       var end = node('section', 'v2-finish'); end.appendChild(node('p', 'v2-eyebrow', 'Die nächste Perspektive wartet'));
@@ -223,5 +379,5 @@
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
     return function () { if (observer) observer.disconnect(); ctx.artworkDisposers.forEach(function (dispose) { dispose(); }); ctx.artworkDisposers.length = 0; };
   }
-  V.Home = { render: render };
+  V.Home = { render: render, title: title, tile: tile, themeTile: themeTile, themeBanner: themeBanner };
 })(window);

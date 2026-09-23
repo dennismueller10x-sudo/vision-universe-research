@@ -3,6 +3,9 @@
 Ein Foto pro Themenwelt, schwarzer Hintergrund, Querformat 16:9 (ideal 1672×941 oder größer).
 Dateiname = `NN-slug` (PNG/JPG hochladen ist ok — wird zu `.webp` konvertiert).
 
+Aktiviert wird ein Foto in `discover-v2/themes.js` (letzter Wert `true` in der Zeile der Themenwelt).
+Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
+
 | Nr | Themenwelt | Datei | Status |
 |----|------------|-------|--------|
 | 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | offen |
