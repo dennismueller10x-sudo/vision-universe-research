@@ -347,3 +347,59 @@ test("CJ14 · Auch Revisionen sind begrenzt — aber eigenstaendig", () => {
   assert.equal(r.mayDispatch({ contentId: "vu-d-20260918", attempt: 5,
     processingKey: "b:vu-d-20260918:a1:1.0" }).ok, true);
 });
+
+/* ------------------------------------------------------------------ */
+/* VERIFIED CREATIVE RESULTS ALS DAUERHAFTE PRODUKTIONSARTEFAKTE       */
+/*                                                                      */
+/* Owner-Entscheidung vom 23.09.: ein VERIFIED Job ist ein dauerhaftes  */
+/* Artefakt, kein Vermerk ueber einen einzelnen Lauf. Realer Befund:    */
+/* der MSFT-Job (job_vu-msft-20260918:390d74d5...) stand VERIFIED im    */
+/* Register, aber ein frischer Checkout fand keine Bytes dazu — weil    */
+/* keine Provenance gespeichert war, ueber die sie sich zurueckholen    */
+/* liessen. Diese Tests halten fest, dass reconcile() sie jetzt         */
+/* traegt — und NUR am Schritt, der VERIFIED tatsaechlich erreicht.     */
+/* ------------------------------------------------------------------ */
+
+test("CJ15 · reconcile() nach VERIFIED traegt die Ergebnis-Provenance", () => {
+  const r = J.createRegistry([]);
+  const job = r.dispatch(SPEC);
+  r.transition(job.creativeJobId, "CREATIVE_JOB_DISPATCHED", {});
+
+  const befund = r.reconcile(job.creativeJobId, "LEDGER_COMPLETED", {
+    resultCommitSha: "c".repeat(40),
+    resultRef: "origin/authoring/request/" + SPEC.contentId,
+    resultBlobSha: "d".repeat(40),
+    evidencePackageId: "evp_test123"
+  });
+
+  assert.equal(befund.ok, true);
+  assert.equal(befund.job.state, "CREATIVE_JOB_VERIFIED");
+  assert.equal(befund.job.resultCommitSha, "c".repeat(40));
+  assert.equal(befund.job.resultRef, "origin/authoring/request/" + SPEC.contentId);
+  assert.equal(befund.job.resultBlobSha, "d".repeat(40));
+  assert.equal(befund.job.evidencePackageId, "evp_test123");
+});
+
+test("CJ16 · Ohne Provenance in den Optionen bleiben die Felder leer, kein Absturz", () => {
+  /* Alte, bereits verifizierte Jobs (NVDA/MSFT von vor dieser Owner-
+     Entscheidung) tragen diese Felder nicht - reconcile() darf daran
+     nicht scheitern, wenn sie fehlen. */
+  const r = J.createRegistry([]);
+  const job = r.dispatch(SPEC);
+  r.transition(job.creativeJobId, "CREATIVE_JOB_DISPATCHED", {});
+  const befund = r.reconcile(job.creativeJobId, "LEDGER_COMPLETED", {});
+  assert.equal(befund.ok, true);
+  assert.equal(befund.job.resultCommitSha, undefined);
+});
+
+test("CJ17 · Ein Zwischenschritt traegt keine Ergebnis-Provenance", () => {
+  /* Die Provenance beschreibt bestaetigte Bytes - ein Job, der ueber
+     mehrere Schritte zu FAILED geht, hat keine. */
+  const r = J.createRegistry([]);
+  const job = r.dispatch(SPEC);
+  const befund = r.reconcile(job.creativeJobId, "LEDGER_REJECTED", {
+    resultCommitSha: "c".repeat(40)
+  });
+  assert.equal(befund.job.state, "CREATIVE_JOB_FAILED");
+  assert.equal(befund.job.resultCommitSha, undefined);
+});

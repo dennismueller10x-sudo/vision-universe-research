@@ -91,6 +91,21 @@ export function blobShaImRef(ref, pfad, repoRoot) {
   }
 }
 
+/** Der Commit, der diese Datei zuletzt in diesem Ref beruehrt hat — die
+    Provenance, die ein VERIFIED Ergebnis spaeter wiederauffindbar macht,
+    auch wenn der Request-Branch selbst einmal nicht mehr existiert. */
+export function commitShaImRef(ref, pfad, repoRoot) {
+  try {
+    const aus = execFileSync("git",
+      ["log", "-1", "--format=%H", ref, "--", pfad],
+      { cwd: repoRoot || ROOT, encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"] }).trim();
+    return aus || null;
+  } catch (err) {
+    return null;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* DIE PRUEFUNG                                                        */
 /* ------------------------------------------------------------------ */
@@ -209,7 +224,16 @@ export function pruefeErgebnis(ref, contentId, options) {
     brief: brief,
     result: ergebnis,
     resultRaw: ergebnisRoh,
-    briefRaw: briefRoh
+    briefRaw: briefRoh,
+    /* Die Provenance, die dieses Ergebnis spaeter — in einem anderen,
+       frischen Checkout — wiederauffindbar macht. resultCommitSha ist
+       der Commit, der ergebnisPfad zuletzt in diesem Ref schrieb; er
+       bleibt gueltig, auch wenn der Request-Branch selbst spaeter
+       geloescht wird. */
+    resultRef: ref,
+    resultCommitSha: commitShaImRef(ref, ergebnisPfad, repoRoot),
+    resultBlobSha: blobShaImRef(ref, ergebnisPfad, repoRoot),
+    evidencePackageId: (brief.evidence_package && brief.evidence_package.package_id) || null
   };
 }
 
@@ -296,7 +320,11 @@ export function registerNachziehen(bericht, options = {}) {
   let geaendert = false;
   for (const j of betroffen) {
     const r = registry.reconcile(j.creativeJobId, art,
-      { now: options.now, note: "ingest-creative" });
+      { now: options.now, note: "ingest-creative",
+        resultRef: bericht.resultRef || null,
+        resultCommitSha: bericht.resultCommitSha || null,
+        resultBlobSha: bericht.resultBlobSha || null,
+        evidencePackageId: bericht.evidencePackageId || null });
     befunde.push({ creativeJobId: j.creativeJobId, contentId: j.contentId,
       from: r.from || j.state, to: r.geaendert ? r.to : j.state,
       geaendert: !!r.geaendert, reason: r.reason });
@@ -318,7 +346,22 @@ export function registerNachziehen(bericht, options = {}) {
 /* DAS ABLEGEN                                                         */
 /* ------------------------------------------------------------------ */
 
-/** Schreibt Ergebnis und Assets ins Arbeitsverzeichnis. Erst nach der Pruefung. */
+/** Schreibt Brief, Ergebnis und Assets ins Arbeitsverzeichnis. Erst nach
+    der Pruefung.
+
+    DER BRIEF GEHOERT DAZU (Owner-Entscheidung, 23.09.): bis hierher
+    schrieb legeAb nur das Ergebnis. Das blieb folgenlos, solange
+    request-creative.mjs im SELBEN Lauf zuvor schon einen Brief an
+    denselben Pfad geschrieben hatte — creativeZustand()
+    (run-social-cycle.mjs) verlangt aber ZUERST einen lesbaren Brief,
+    um daraus den processing_key zu rechnen, gegen den es das Ledger
+    prueft. Beim Hydrieren eines VERIFIED Jobs in einem frischen
+    Checkout gibt es diesen vorherigen Schritt nicht — REUSE_VERIFIED_
+    CREATIVE schreibt bewusst KEINEN neuen Brief. Ohne den archivierten
+    Brief hier blieb "chatgpt-work" ohne verwertbares Ergebnis, und der
+    Zyklus fiel auf den Template-Autor zurueck — dieselbe Regression,
+    die diese ganze Owner-Entscheidung ausloeste, nur eine Ebene
+    tiefer. */
 export function legeAb(ref, contentId, bericht) {
   if (!bericht.ok) {
     throw new Error("legeAb: ein nicht bestaetigtes Ergebnis wird nicht abgelegt.");
@@ -326,6 +369,10 @@ export function legeAb(ref, contentId, bericht) {
   const verzeichnis = join(ROOT, ChatGptWork.requestDir(contentId));
   mkdirSync(verzeichnis, { recursive: true });
   const geschrieben = [];
+
+  const briefZiel = join(verzeichnis, "authoring-brief.json");
+  writeFileSync(briefZiel, bericht.briefRaw);
+  geschrieben.push(briefZiel);
 
   const ziel = join(verzeichnis, "authoring-result.json");
   writeFileSync(ziel, bericht.resultRaw);
@@ -365,6 +412,77 @@ export function legeAb(ref, contentId, bericht) {
   }
 
   return geschrieben;
+}
+
+/* ------------------------------------------------------------------ */
+/* HYDRATE: EIN VERIFIED JOB IN EINEM FRISCHEN CHECKOUT                */
+/*                                                                      */
+/* Owner-Entscheidung (23.09., "VERIFIED CREATIVE RESULTS ARE DURABLE  */
+/* PRODUCTION ARTIFACTS"): ein VERIFIED Ergebnis lebte bis hierher nur  */
+/* im Arbeitsbaum DESSELBEN Laufs, der es zuerst ingestierte (legeAb   */
+/* schreibt lokal, committet aber nichts). Ein spaeterer, frischer      */
+/* Checkout fand im Register VERIFIED, aber keine Bytes dazu — und      */
+/* fiel auf den Template-Autor zurueck. Realer Fall: MSFT, 23.09.,      */
+/* Lauf #44.                                                            */
+/*                                                                      */
+/* Diese Funktion holt die Bytes zurueck, BEVOR irgendetwas entscheidet,*/
+/* dass sie fehlen. Sie erfindet nichts: sie ruft `pruefeErgebnis`      */
+/* erneut auf — dieselbe Pruefung, die beim ersten Ingest galt — und    */
+/* legt erst danach ab. Ein Job, der die Pruefung nicht mehr besteht,   */
+/* wird nicht stillschweigend als verfuegbar gemeldet (Fail Closed).    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Materialisiert ein VERIFIED Ergebnis erneut in den Arbeitsbaum.
+ *
+ * Versucht zuerst den am Job hinterlegten `resultCommitSha` (die
+ * dauerhafteste Spur — gueltig, auch wenn der Request-Branch geloescht
+ * wird), dann den Request-Branch selbst (fuer Jobs von vor dieser
+ * Owner-Entscheidung, die noch keine Commit-Provenance tragen, aber
+ * deren Branch — wie im realen MSFT-Fall — noch existiert).
+ *
+ * @param contentId  string
+ * @param jobEintrag Der Registereintrag (aus creative-jobs.json)
+ * @returns { ok: true, ref, bericht, dateien } oder
+ *          { ok: false, state: "VERIFIED_RESULT_UNAVAILABLE", explanation, versucht }
+ */
+export function hydrateVerifiedJob(contentId, jobEintrag, options) {
+  options = options || {};
+  const repoRoot = options.repoRoot || ROOT;
+  const zweig = "authoring/request/" + contentId;
+
+  const kandidaten = [];
+  if (jobEintrag && jobEintrag.resultCommitSha) {
+    kandidaten.push({ ref: jobEintrag.resultCommitSha, holen: false });
+  }
+  kandidaten.push({ ref: "origin/" + zweig, holen: true });
+
+  const versucht = [];
+  for (const k of kandidaten) {
+    if (k.holen) {
+      try {
+        execFileSync("git", ["fetch", "origin", zweig],
+          { cwd: repoRoot, stdio: ["ignore", "pipe", "pipe"] });
+      } catch (err) {
+        /* pruefeErgebnis meldet das gleich selbst als NO_BRIEF/PENDING —
+           ein fehlgeschlagenes fetch ist kein Absturz dieser Funktion. */
+      }
+    }
+    const bericht = pruefeErgebnis(k.ref, contentId, { repoRoot });
+    versucht.push({ ref: k.ref, state: bericht.state });
+    if (bericht.ok) {
+      const dateien = legeAb(k.ref, contentId, bericht);
+      return { ok: true, ref: k.ref, bericht, dateien };
+    }
+  }
+
+  return { ok: false, state: "VERIFIED_RESULT_UNAVAILABLE",
+    explanation: "Das Register nennt " +
+      (jobEintrag && jobEintrag.creativeJobId || contentId) +
+      " als VERIFIED, aber unter keinem bekannten Ref liess sich das " +
+      "Ergebnis erneut bestaetigen: " +
+      versucht.map((v) => v.ref + " (" + v.state + ")").join(", ") + ".",
+    versucht };
 }
 
 /* ------------------------------------------------------------------ */

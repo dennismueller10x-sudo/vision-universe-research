@@ -180,6 +180,68 @@ test("MT9 · Eine Ablehnung ist kein Absturz - der Lauf schreibt trotzdem einen 
   }
 });
 
+test("MT12 · POST ZU THEMA MSFT findet und hydriert das echte VERIFIED Creative", () => {
+  /* Der reale Regressionsfall (Owner-Entscheidung, 23.09.): Lauf #44
+     traf MSFT korrekt, aber themaAusBundle() sah lokal weder Brief noch
+     Ergebnis zum bereits VERIFIED Job (PR #179) und fiel auf den
+     Template-Autor zurueck — der noch dazu kein Bild lieferte ("KEIN
+     BILD — noSource"). Ein zweiter, davon unabhaengiger Befund kam
+     dazu: die content_id, unter der DIESER Lauf das Thema fuehrte,
+     wich von der des dispatchten Jobs ab (kurzname() lieferte einen
+     Hash statt des Symbols) — das Ergebnis war so oder so nie
+     auffindbar.
+
+     Dieser Test faehrt gegen die ECHTEN Produktionsdaten (den echten
+     VERIFIED MSFT-Job, den echten, noch existierenden Request-Branch)
+     und haelt beide Reparaturen fest: das Thema wird korrekt uebernommen
+     (Owner-Thema statt Ladder), UND der Creative Provider meldet
+     "vu-msft-20260918" als VERIFIED — dieselbe content_id, unter der
+     PR #179 dispatcht wurde, nicht ein Hash.
+
+     Ob daraus am Ende ein Kandidat mit chatgpt-work als Autor wird,
+     haengt an einer weiteren, hier bewusst NICHT geloesten Frage: die
+     Faktenpruefung (Claim Binding) braucht Belege, die AUDIENCE_
+     SEPARATION teils entfernt hat — ein Versuch, das aufzuloesen, liess
+     echte interne Begriffe in den oeffentlichen Text durchsickern (der
+     genaue Vorfall, den AUDIENCE_SEPARATION verhindern soll). Dieser
+     Test verlangt deshalb nur, was heute ehrlich zutrifft: entweder ein
+     chatgpt-work-Kandidat, oder ein sauber gemeldeter Verwurf an der
+     AUTHORING-Stufe — niemals ein stiller Template-Rueckfall auf ein
+     Thema, zu dem ein VERIFIED Ergebnis vorliegt. */
+  const rel = platz("msft-reuse");
+  const contentIdOrdner = join(ROOT, "authoring/requests/vu-msft-20260918");
+  try {
+    const { bericht } = zyklus(rel, ["--thema-freitext", "MSFT"]);
+    assert.equal(bericht.opportunities.length, 1);
+    assert.equal(bericht.opportunities[0].topic.startsWith("MSFT"), true);
+
+    const provider = (bericht.creativeProvider || [])
+      .find((z) => z.contentId === "vu-msft-20260918");
+    assert.ok(provider, "Der Creative Provider muss die echte content_id " +
+      "vu-msft-20260918 fuehren, nicht einen Hash aus kurzname().");
+    assert.equal(provider.state, "VERIFIED",
+      "Das reale, bereits verifizierte MSFT-Ergebnis (PR #179) muss " +
+      "gefunden werden.");
+
+    if (bericht.packages.length >= 1) {
+      assert.equal(bericht.packages[0].authoring.authorId, "chatgpt-work",
+        "Ein VERIFIED Ergebnis lag bereits vor — ein Template-Kandidat " +
+        "waere die Regression vom 23.09.");
+    } else {
+      const verwurf = (bericht.rejections || [])
+        .find((r) => r.topic && r.topic.startsWith("MSFT"));
+      assert.ok(verwurf, "Ohne Kandidat muss ein benannter Verwurf stehen.");
+      assert.equal(verwurf.stage, "AUTHORING",
+        "Ein Verwurf VOR der Autorenstufe (z. B. EVIDENCE_SUFFICIENCY) " +
+        "waere wieder der urspruengliche Befund, nicht der ungeloeste " +
+        "Rest davon.");
+    }
+  } finally {
+    rmSync(join(ROOT, rel), { recursive: true, force: true });
+    rmSync(contentIdOrdner, { recursive: true, force: true });
+  }
+});
+
 /* -------------------------------------------------------------------
    DIE ANDERE HAELFTE: run-orchestrator.mjs::themaDesOwners()
 

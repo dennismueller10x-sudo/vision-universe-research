@@ -135,6 +135,8 @@ const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js
    Engines. */
 import * as AssetRenderer from "./render-asset.mjs";
 import * as VisualDaten from "./visual-data.mjs";
+import { hydrateVerifiedJob } from "./ingest-creative.mjs";
+const CreativeJob = require(join(ROOT, "social/engines/creative-job.js"));
 
 
 /* ---------------------------------------------------------------- CLI */
@@ -790,6 +792,40 @@ function themaAusBundle(symbol, nowIso) {
     return { ok: false,
       erklaerung: (paket && paket.message) || "Kein technisches Bundle fuer " + symbol + "." };
   }
+
+  /* -----------------------------------------------------------------
+     HYDRATE BEFORE REGENERATE / FAIL CLOSED (Owner-Entscheidung, 23.09.)
+
+     Dieselbe Pruefung wie in request-creative.mjs, hier noetig, weil
+     dieser Pfad auch OHNE einen vorangegangenen request-creative.mjs-
+     Lauf erreicht wird (Idempotenz, isolierte Testlaeufe, ein Zyklus,
+     der VORBEREITEN allein wiederholt) - "Hydrate first. Dann
+     entscheiden." darf nicht an einer einzigen Stelle allein haengen,
+     sonst faellt genau der Lauf, der sie auslaesst, auf den Template-
+     Autor zurueck (der reale MSFT-Fall, Lauf #44).
+
+     Ein Treffer bedeutet: fuer GENAU dieses Inhaltsobjekt (Entitaet +
+     Datenstand) existiert bereits ein VERIFIED Ergebnis. Gelingt die
+     Rueckgewinnung, liegen die Bytes danach im Arbeitsbaum, wo
+     creativeZustand() (weiter unten in diesem Modul) sie ohnehin
+     erwartet - kein zweiter Mechanismus, nur derselbe Fund frueher
+     verfuegbar gemacht. Gelingt sie NICHT, wird nicht stillschweigend
+     weitergemacht: Fail Closed statt Template-Rueckfall (§7/§8). */
+  const contentIdVorab = EvidencePackage.contentIdFor(symbol, paket.asOf);
+  const registerDatei = readJson("social/data/creative-jobs.json", { jobs: [] });
+  const jobRegistry = CreativeJob.createRegistry(registerDatei.jobs || []);
+  const verifizierteJobs = jobRegistry.byContent(contentIdVorab)
+    .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+  if (verifizierteJobs.length) {
+    const jobEintrag = verifizierteJobs[verifizierteJobs.length - 1];
+    const hydriert = hydrateVerifiedJob(contentIdVorab, jobEintrag);
+    if (!hydriert.ok) {
+      return { ok: false,
+        erklaerung: "VERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation,
+        grund: "VERIFIED_RESULT_UNAVAILABLE" };
+    }
+  }
+
   const hinreichend = EvidencePackage.assessSufficiency(paket);
   if (!hinreichend.sufficient) {
     return { ok: false, erklaerung: hinreichend.explanation };
@@ -1574,10 +1610,49 @@ async function main() {
        halten. Beide Wege enden im selben Paketformat und werden von
        demselben Sufficiency-Tor geprueft - die Schwelle ist fuer
        keinen der beiden eine andere. */
+    /* -----------------------------------------------------------------
+       DIE ENTITAET, GEGEN DIE DER CREATIVE-JOB DISPATCHT WURDE
+       (Owner-Entscheidung, 23.09.)
+
+       kurzname(c.thema) liefert "stock_story_<hash>" — den Abdruck
+       ueber topicId (content-ladder.js::alsGelegenheit), gedacht fuer
+       Themen OHNE eigene Instrumentenkennung (eine Rangliste hat keine
+       "eine" Entitaet). Fuer ein STOCK_STORY-Thema mit GENAU EINEM
+       Instrument (themaAusBundle(): entityType "SECURITY", entities:
+       [symbol]) erzeugte dieser Abdruck eine content_id, die mit der
+       des dispatchten Creative Jobs NIE uebereinstimmt — vu-<hash>-...
+       statt vu-<symbol>-... Ein VERIFIED Ergebnis blieb dadurch fuer
+       JEDES Bare-Ticker-Thema strukturell unauffindbar, ob frisch
+       hydriert oder nicht (der reale MSFT-Fall, Lauf #44). Traegt das
+       Thema genau EIN Instrument, gilt deshalb dessen echtes Symbol
+       als Entitaet.
+
+       BEWUSST NICHT WEITER GEGANGEN: ein zweiter Versuch ersetzte
+       fromTopicEvidence() hier komplett durch das ungefilterte
+       technische Bundle, um der Faktenpruefung auch die durch
+       AUDIENCE_SEPARATION entfernten Belege zuruecklzugeben (der
+       reale ChatGPT-Work-Hook "61,1 von 100: Der MSFT-Score ordnet
+       ein" bleibt sonst ungedeckt, weil genau der Beleg mit "61.1"
+       wegen "Technical Opportunity Score" im Text entfernt wurde).
+       Das oeffnete einen ECHTEN Leck: dieselben ungefilterten Belege
+       fliessen an anderer Stelle direkt in PUBLIC_HOOK/PUBLIC_STORY
+       (die Wache aus content-intelligence.js schlug zu Recht mit
+       "Technical Opportunity Score, Setup-Rang, TREND_STRUCTURE,
+       MOMENTUM" im oeffentlichen Text an — der Vorfall, den dieses
+       System verhindern soll). oeffentlicheEvidenz() ist also nicht
+       nur der Faktenpruefung vorgeschaltet, sondern mindestens einer
+       weiteren, hier nicht vollstaendig nachvollzogenen Stelle. Diese
+       Trennung sauber aufzuloesen (welche Belege duerfen eine Zahl
+       DECKEN, ohne dass ihr TEXT je oeffentlich zitiert werden darf)
+       ist eine echte Architekturfrage und keine Verdrahtung mehr -
+       genau der Fall, in dem angehalten und der Owner einbezogen
+       werden soll, statt selbst zu entscheiden. */
     const evidenzPaket = c.thema
       ? EvidencePackage.fromTopicEvidence(c.thema, {
           now: NOW,
-          entity: kurzname(c.thema),
+          entity: (c.thema.entityType === "SECURITY" &&
+            Array.isArray(c.thema.entities) && c.thema.entities.length === 1)
+            ? c.thema.entities[0] : kurzname(c.thema),
           source: (c.thema.sources || [])[0] || null
         })
       : ladeEvidenzPaket(sources, NOW);

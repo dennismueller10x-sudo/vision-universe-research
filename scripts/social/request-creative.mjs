@@ -38,6 +38,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { hydrateVerifiedJob } from "./ingest-creative.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -47,6 +48,44 @@ const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 const VisualMotif = require(join(ROOT, "social/engines/visual-motif.js"));
+const CreativeJob = require(join(ROOT, "social/engines/creative-job.js"));
+
+/** Die VERIFIED Jobs zu einem Inhaltsobjekt — aus dem echten
+    Produktionsregister, nicht aus einer Kopie. */
+export function verifizierteJobsFuer(contentId, root) {
+  const pfad = join(root || ROOT, "social/data/creative-jobs.json");
+  if (!existsSync(pfad)) return [];
+  let datei;
+  try { datei = JSON.parse(readFileSync(pfad, "utf8")); }
+  catch (err) { return []; }
+  const registry = CreativeJob.createRegistry(datei.jobs || []);
+  return registry.byContent(contentId)
+    .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+}
+
+/* -------------------------------------------------------------------
+   CURRENT EVIDENCE REVALIDATION — DIE REINE ENTSCHEIDUNG
+
+   Getrennt von hydrateVerifiedJob() (das I/O macht: git fetch, git
+   show) genau damit sich DIESE Entscheidung ohne Netz und ohne
+   Fixture testen laesst. package_id traegt Entitaet + Datenstand +
+   jede Beleg-ID:Wert-Paarung (evidence-package.js) — er aendert sich
+   NICHT durch eine Wortlautkorrektur (der AUDIENCE_SEPARATION-Fix vom
+   21.09. liess ihn fuer MSFT unveraendert), aber SEHR WOHL, wenn sich
+   ein tatsaechlicher Wert geaendert haette. Das ist §4 der Owner-
+   Entscheidung: CREATIVE PRODUCTION IDENTITY (briefBlobSha/
+   processingKey — haengt an der Wortwahl) gegen CURRENT EVIDENCE
+   VALIDATION (package_id — haengt an den Fakten). */
+export function entscheideWiederverwendung(archivierterBrief, aktuellePackageId) {
+  const archivierteEvidenz = (archivierterBrief && archivierterBrief.evidence_package) || {};
+  const archiviertePackageId = archivierteEvidenz.package_id || null;
+
+  if (archiviertePackageId && archiviertePackageId === aktuellePackageId) {
+    return { action: "REUSE_VERIFIED_CREATIVE", packageId: archiviertePackageId };
+  }
+  return { action: "NEW_CREATIVE_JOB_REQUIRED",
+    from: archiviertePackageId, to: aktuellePackageId };
+}
 
 export const LEDGER_DATEI = "social/data/creative-invocations.json";
 
@@ -84,6 +123,57 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log("            nicht verfuegbar: " + u.dimension + " — " + u.reason);
   }
 
+  /* -----------------------------------------------------------------
+     HYDRATE BEFORE REGENERATE (Owner-Entscheidung, 23.09.)
+
+     VOR jedem neuen Brief: traegt das Register schon ein VERIFIED
+     Ergebnis zu genau diesem Inhaltsobjekt? Ein VERIFIED Job ist ein
+     dauerhaftes Produktionsartefakt — kein neuer Brief, kein neuer
+     Creative Job, nur weil der heutige Checkout frisch ist.
+
+     contentId haengt allein an SYMBOL + paket.asOf (EvidencePackage.
+     contentIdFor) — unabhaengig davon, ob heute ueberhaupt ein neuer
+     Brief entstuende. Ein Treffer hier bedeutet: dieselbe Entitaet,
+     derselbe Datenstand wie beim verifizierten Lauf. Ist der Datenstand
+     weitergelaufen, aendert sich contentId von selbst — dann greift
+     dieser Block nicht, und der normale Weg unten baut den neuen,
+     tatsaechlich neuen Inhalt. */
+  const contentIdVorab = contentIdFor(SYMBOL, paket.asOf);
+  const bestehendeVerified = verifizierteJobsFuer(contentIdVorab);
+
+  if (bestehendeVerified.length) {
+    const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
+    console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
+    console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
+
+    const hydriert = hydrateVerifiedJob(contentIdVorab, jobEintrag);
+    if (!hydriert.ok) {
+      /* FAIL CLOSED (§7 der Owner-Entscheidung): das Register sagt
+         VERIFIED, aber keine bekannte Quelle bestaetigt das Ergebnis
+         erneut. Kein stiller neuer Brief, kein Template-Rueckfall -
+         diese Luecke gehoert gemeldet, nicht uebermalt. */
+      console.error("\nVERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation);
+      process.exit(4);
+    }
+
+    const entscheidung = entscheideWiederverwendung(hydriert.bericht.brief, paket.packageId);
+
+    if (entscheidung.action === "REUSE_VERIFIED_CREATIVE") {
+      console.log("\nREUSE_VERIFIED_CREATIVE: aktuelle Evidenz unveraendert " +
+        "seit der Verifizierung (package_id " + entscheidung.packageId + "). " +
+        "Kein neuer Creative Job, kein neuer Request-PR.");
+      console.log("Ergebnis materialisiert unter " +
+        ChatGptWork.requestDir(contentIdVorab) + "/.");
+      process.exit(0);
+    }
+
+    console.log("\nNEW_CREATIVE_JOB_REQUIRED: aktuelle Evidenz weicht vom " +
+      "verifizierten Stand ab (package_id " + entscheidung.from + " -> " +
+      entscheidung.to + "). Kein stilles Wiederverwenden - ein neuer Brief " +
+      "wird ueber den bestehenden Lifecycle erzeugt.");
+    /* Faellt bewusst durch in den normalen Brief-Bau-Pfad unten. */
+  }
+
   /* ---------------------------------------------------- Die Hinlaenglichkeit */
   const hinreichend = EvidencePackage.assessSufficiency(paket);
   console.log("\n--- STORY SUFFICIENCY ---");
@@ -94,7 +184,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   /* ------------------------------------------------------------ Der Brief */
-  const contentId = contentIdFor(SYMBOL, paket.asOf);
+  const contentId = contentIdVorab;
 
   /* -----------------------------------------------------------------
      DAS MOTIV FOLGT DER STORY (§10)
