@@ -401,8 +401,11 @@
       "createdAt": "2026-09-23T04:00:23.888Z",
       "updatedAt": "2026-09-23T04:13:10.024Z",
       "prNumber": 179,
-      "deliveryIds": [],
-      "observedStarts": 0,
+      "deliveryIds": [
+        "51237860-b703-11f1-9065-551cd2a35ab9"
+      ],
+      "observedStarts": 1,
+      "deliveryCount": 1,
       "history": [
         {
           "state": "CREATIVE_JOB_REQUESTED",
@@ -423,6 +426,11 @@
           "state": "CREATIVE_JOB_VERIFIED",
           "at": "2026-09-23T04:13:10.024Z",
           "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-23T04:20:00.000Z",
+          "note": "Hand nachgetragen aus PR-179-Kommentar #5788799194 (VU_CREATIVE_AGENT_INVOCATION, delivery_id 51237860-b703-11f1-9065-551cd2a35ab9, status STARTED, 2026-09-23T04:02:58Z): deliveryIds/observedStarts/deliveryCount waren beim automatischen Abgleich leer, weil sync-creative-invocations.mjs — wie ingest-creative.mjs vor PR #177 — in keinem Workflow aufgerufen wird. Reale, bereits am PR sichtbare Meldung nachgetragen, nichts erfunden."
         }
       ]
     }
