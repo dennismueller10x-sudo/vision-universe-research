@@ -1,0 +1,56 @@
+/* Produktions-Smoke gegen das GEBAUTE Release, nicht gegen den Quelltext.
+   Der Unterschied ist real: die Seite laeuft dort als ein gebuendeltes
+   Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und die
+   .gz-Dateien werden undurchsichtig ausgeliefert - der Browser entpackt
+   sie NICHT transparent. Ein Smoke gegen das Repository wuerde einen Pfad
+   testen, den es in Produktion nicht gibt. */
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {resolve,extname,sep} from 'node:path';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {chromium}=require('playwright');
+const root=resolve(process.argv[2]);
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png'};
+const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://l').pathname);if(p.endsWith('/'))p+='index.html';const file=resolve(root,'.'+p);if(!file.startsWith(root+sep))throw Error('path');
+ if(file.endsWith('.gz')){res.setHeader('Content-Type','application/octet-stream');res.end(await readFile(file));return;}
+ res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.statusCode=404;res.end('nf');}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const origin='http://127.0.0.1:'+server.address().port;
+const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
+ /* Lokal liegt Chromium an einem festen Pfad, auf dem Runner sucht
+    Playwright selbst. Ein hart verdrahteter Pfad wuerde genau dort
+    scheitern, wo der Smoke gebraucht wird. */
+ ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
+const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
+let failures=0;
+for(const width of [1440,390]){
+ const page=await browser.newPage({viewport:{width,height:900}});
+ const errors=[];
+ page.on('pageerror',e=>errors.push('pageerror: '+e.message));
+ page.on('console',m=>{const t=m.text();if(m.type()==='error'&&!t.includes('favicon')&&!t.includes('404'))errors.push('console: '+t);});
+ for(const view of VIEWS){
+  await page.goto(origin+view);
+  await page.waitForTimeout(2200);
+  const text=await page.locator('main').innerText().catch(()=>'');
+  const recovered=text.includes('Ansicht derzeit nicht verfügbar')||text.includes('Diese Ansicht wurde nicht gefunden');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
+  const h1=await page.locator('h1').count();
+  const primary=await page.evaluate(()=>[...document.querySelectorAll('h1,h2,h3,.eyebrow,[class*=chip],[class*=badge]')].map(n=>n.textContent.trim()));
+  const hits=primary.filter(t=>FORBIDDEN.some(f=>t.includes(f)));
+  const bad=[];
+  if(recovered)bad.push('RECOVER');
+  if(overflow)bad.push('OVERFLOW');
+  if(h1!==1)bad.push('H1='+h1);
+  if(hits.length)bad.push('FORBIDDEN:'+hits.join('|'));
+  if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
+  console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
+  if(bad.length)failures++;
+  errors.length=0;
+ }
+ await page.close();
+}
+await browser.close();server.close();
+console.log(failures?'PRODUCTION SMOKE FAILURES '+failures:'PRODUCTION SMOKE CLEAN');
+process.exit(failures?1:0);

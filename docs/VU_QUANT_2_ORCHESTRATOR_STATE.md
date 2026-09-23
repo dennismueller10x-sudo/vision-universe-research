@@ -58,6 +58,18 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **Production smoke over the built release, in the release workflow.** The previous browser QA
+  ran against the repository. Production is a different thing: the page runs there as one
+  bundled script, the artifacts sit under their delivery paths, and `.gz` is served opaquely —
+  the browser does *not* transparently decompress it. A smoke against the repository tests a
+  path that does not exist in production. `scripts/vu2/production-smoke.mjs` runs 15 views at
+  1440px and 390px against `$RUNNER_TEMP/site` and fails on a recover page, a missing or
+  duplicated `h1`, horizontal overflow, a forbidden term in primary copy, or any page error.
+  Measured on this branch's build: **30/30 clean**.
+  It also confirmed the release bundle picks up new engines automatically — it reads the
+  `<script>` tags out of `vu2/index.html`, so there is no second list to keep in step — and that
+  `market-regime-v1.json` and `strategy-index-v1.json.gz` are actually delivered.
+
 - **`CRITICAL_PRODUCT_GAPS = 0`, measured rather than asserted.**
   `scripts/quant/assert-product-completeness.mjs` checks the published artifacts and exits
   non-zero while a critical gap stands; it runs in the materialization workflow. Three

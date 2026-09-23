@@ -102,6 +102,20 @@ jobs:
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/vu2/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/vu2/release-bundle.js"
+      # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
+      # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
+      # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und
+      # .gz wird undurchsichtig ausgeliefert - der Browser entpackt es
+      # NICHT transparent. Ein Smoke gegen das Repository pruefte einen
+      # Pfad, den es in Produktion nicht gibt.
+      - name: Production smoke over the built release
+        env:
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          npm install --prefix /tmp/vu2-smoke playwright@1.55.0
+          NODE_PATH=/tmp/vu2-smoke/node_modules node -e "require('playwright').chromium.executablePath()" >/dev/null 2>&1 || npx --yes playwright@1.55.0 install --with-deps chromium
+          NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
+
       - name: Enforce delivery contract
         env:
           EVENT_SHA: ${{ github.sha }}
