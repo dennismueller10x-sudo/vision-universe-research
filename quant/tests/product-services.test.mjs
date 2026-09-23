@@ -201,3 +201,20 @@ test('a broken or unapproved index is refused rather than shown',async()=>{
  const offline=Service.create({loadJSON:async()=>{throw Error('offline')},loadCompressedJSON:async()=>{throw Error('offline')},displayPolicy:Policy,queryEngine:Query});
  assert.equal((await offline.getSetupScreenIndex()).reason,'SOURCE_MISSING');
 });
+test('the backtest gate stays shut and says what is actually missing',async()=>{
+ const context=await api.getStrategyContext();
+ assert.equal(context.backtest.state,'UNAVAILABLE');
+ assert.equal(context.backtest.reason,'REAL_BACKTEST_GATE_NOT_VALIDATED');
+ const named=Object.fromEntries(context.backtest.checks);
+ /* Zwei der fuenf Punkte sind gemessen, nicht behauptet: von jedem Index
+    gibt es genau eine Mitgliedschafts-Momentaufnahme, und die Kursreihen
+    sind splitbereinigt ohne Ausschuettungen. Ein Nutzer, dem nur 'nicht
+    validiert' gesagt wird, kann nicht einschaetzen, ob das eine Formalie
+    ist oder ein echtes Hindernis - hier sind es echte Hindernisse. */
+ assert.match(named['Historisches Universum'],/genau eine Mitgliedschafts-Momentaufnahme/);
+ assert.match(named['Kapitalmaßnahmen'],/splitbereinigt/);
+ for(const [label,why] of context.backtest.checks){
+  assert.ok(why.length>60,label+': die Begruendung erklaert nichts');
+  assert.equal(/[A-Z_]{6,}/.test(why),false,label+': ein Code steht in der Nutzertext-Begruendung');
+ }
+});
