@@ -134,7 +134,7 @@ test("the stock experience answers its questions in the order a person asks them
   const order = ["Wie stark ist diese Aktie?", "sectionHead('Stärken & Schwächen','factorDna')",
     "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation,setupIndex)",
     "prosAndCons(data,change,patterns)", "patternMatchSection(patterns)",
-    "strategyMatchSection(match)", "evidenceTrustSection(patterns)"];
+    "strategyMatchSection(match,strategyIndex,ticker)", "evidenceTrustSection(patterns)"];
   let cursor = -1;
   for (const marker of order) {
     const at = experience.indexOf(marker, cursor + 1);

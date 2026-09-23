@@ -148,7 +148,15 @@ test("no ranking is published, and no profile claims historical evidence", () =>
   assert.equal(result.ranking.state, "WITHHELD");
   result.profiles.forEach((profile) => {
     assert.equal(profile.historicalEvidence.state, "UNAVAILABLE");
-    assert.equal(profile.historicalEvidence.reason, "BACKTEST_NOT_CERTIFIED");
+    /* BACKTEST_NOT_CERTIFIED until 2026-09-23, and it was too coarse: it
+       says a backtest is missing, leaving open whether somebody merely has
+       to run one. What is actually missing is narrower and not a
+       certification step at all - the conditions are stated on percentile
+       scores of today's comparison universe, and there is no historical
+       factor panel against which "quality >= 75" could be evaluated at a
+       past date. No historical statement is possible, backtest or not. */
+    assert.equal(profile.historicalEvidence.reason, "FACTOR_HISTORY_NOT_AVAILABLE");
+    assert.ok(StrategyMatch.EVIDENCE_CLOSED_REASONS.includes(profile.historicalEvidence.reason));
     assert.equal(profile.percentile, undefined);
     assert.equal(profile.rank, undefined);
   });

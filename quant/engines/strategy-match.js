@@ -33,9 +33,26 @@
   var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
 
   var METHODOLOGY_VERSION = "strategy-profiles-1.0.0";
+  var INDEX_SCHEMA = "strategy-screen-index-1.0.0";
   var CONDITION_STATES = ["MET", "NOT_MET", "NOT_MEASURABLE"];
   var PROFILE_STATES = ["AVAILABLE", "UNAVAILABLE"];
   var UNAVAILABLE_REASONS = ["INSUFFICIENT_MEASURABLE_WEIGHT", "INSUFFICIENT_MEASURABLE_CONDITIONS", "NO_EVIDENCE"];
+
+  /* Warum ein Profil keine historische Evidenz traegt. Bis hierher stand
+     dort BACKTEST_NOT_CERTIFIED, und das war zu grob: es sagt, ein
+     Backtest fehle, und laesst offen, ob jemand nur einen rechnen muesste.
+
+     Tatsaechlich fehlt etwas Anderes und Konkreteres. Die Bedingungen
+     eines Profils stehen auf Perzentil-Scores der Faktorevidenz, und die
+     beschreiben den HEUTIGEN Stand des Vergleichsuniversums. Es gibt
+     keinen historischen Faktorpanel, gegen den sich "Qualitaet >= 75" zu
+     einem vergangenen Stichtag ueberhaupt auswerten liesse. Ohne den ist
+     keine historische Aussage moeglich - auch keine, die kein Backtest
+     ist. Das ist eine Datenluecke, kein Zertifizierungsschritt. */
+  var EVIDENCE_CLOSED_REASONS = ["FACTOR_HISTORY_NOT_AVAILABLE"];
+
+  /* Warum ein Profil im Zustandsindex geschlossen bleibt. */
+  var INDEX_CLOSED_REASONS = ["PROFILE_INPUT_NOT_COVERED"];
 
   var UNIVERSE = { universeId: "US_EQUITIES", region: "US", assetType: "equity" };
 
@@ -121,6 +138,83 @@
     });
   }
 
+  /* ---------------------------------------------------------------------
+     DIE SCREENING-SEITE DESSELBEN PROFILS.
+
+     Ein Profil beantwortet "passt diese Aktie zu diesem Stil". Die andere
+     Haelfte derselben Frage ist "welche Aktien passen dazu", und das ist
+     dasselbe Praedikat, andersherum gelesen - gleicher predicateHash,
+     keine zweite Formulierung.
+
+     Anders als bei der Setup-Kaskade gibt es hier keine Rangfolge: ein
+     Titel darf zu mehreren Profilen passen, und die Liste eines Profils
+     ist genau die Treffermenge seines Praedikats. Was hier stattdessen
+     getrennt werden muss, sind zwei Nullen: ein Profil, auf das kein
+     Titel passt, und ein Profil, dessen Eingabe im Universum gar nicht
+     erhoben ist. Das erste ist ein Befund, das zweite eine Luecke, und
+     sie duerfen nicht gleich aussehen.
+     --------------------------------------------------------------------- */
+  function fieldCoverage(rows, field) {
+    var n = 0;
+    for (var i = 0; i < rows.length; i++) if (finite(rows[i][field])) n += 1;
+    return n;
+  }
+
+  function screenIndex(contract, rows, options) {
+    var methodology = assertContract(contract);
+    options = options || {};
+    var profiles = methodology.profiles.map(function (profile) {
+      /* Gemessen, nicht angenommen: ein Feld ohne einen einzigen Wert im
+         Universum macht das Profil unauswertbar. Ein hartkodierter
+         Ausschluss wuerde weiter greifen, wenn die Daten laengst da sind. */
+      var uncovered = profile.conditions.filter(function (condition) {
+        return fieldCoverage(rows, condition.field) === 0;
+      }).map(function (condition) { return condition.field; });
+
+      var query = screenQuery(profile, { limit: 50 });
+      var open = uncovered.length === 0;
+      var matched = [];
+      if (open) {
+        for (var i = 0; i < rows.length; i++) {
+          if (Query.matches(rows[i], query.filters)) matched.push(rows[i]);
+        }
+        var sort = query.sort[0];
+        matched.sort(function (a, b) {
+          var av = finite(a[sort.field]) ? a[sort.field] : -Infinity;
+          var bv = finite(b[sort.field]) ? b[sort.field] : -Infinity;
+          if (av !== bv) return bv - av;
+          return a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0;
+        });
+      }
+
+      return {
+        profileId: profile.profileId,
+        label: profile.label,
+        plain: profile.plain || null,
+        predicateHash: Rules.predicateHash(predicateOf(profile)),
+        conditions: profile.conditions.map(function (c) {
+          return { field: c.field, operator: c.operator, threshold: c.threshold, label: c.label };
+        }),
+        availability: open
+          ? { state: "AVAILABLE", reason: null }
+          : { state: "UNAVAILABLE", reason: "PROFILE_INPUT_NOT_COVERED", fields: uncovered },
+        /* Null, nie 0, solange eine Eingabe fehlt. "0 Titel passen" liest
+           sich als Befund ueber den Markt; hier ist es eine Aussage
+           darueber, dass nicht gemessen werden konnte. */
+        count: open ? matched.length : null,
+        tickers: open ? matched.map(function (row) { return row.ticker; }) : null
+      };
+    });
+
+    return {
+      schemaVersion: INDEX_SCHEMA,
+      methodologyVersion: methodology.methodologyVersion || METHODOLOGY_VERSION,
+      evidenceNamespace: options.evidenceNamespace || null,
+      universe: rows.length,
+      profiles: profiles
+    };
+  }
+
   function bandOf(contract, percentage) {
     if (!finite(percentage)) return null;
     var bands = contract.bands || [];
@@ -171,8 +265,10 @@
       measurableConditions: measurable.length,
       predicateHash: Rules.predicateHash(predicateOf(profile)),
       /* Stated in the model, not left to a caption: no surface may imply
-         a historical result that this layer does not compute. */
-      historicalEvidence: { state: "UNAVAILABLE", reason: "BACKTEST_NOT_CERTIFIED" }
+         a historical result that this layer does not compute. The reason
+         names the missing input rather than a missing certification -
+         see EVIDENCE_CLOSED_REASONS. */
+      historicalEvidence: { state: "UNAVAILABLE", reason: "FACTOR_HISTORY_NOT_AVAILABLE" }
     };
 
     if (!measurable.length) {
@@ -231,12 +327,16 @@
     CONDITION_STATES: CONDITION_STATES.slice(),
     PROFILE_STATES: PROFILE_STATES.slice(),
     UNAVAILABLE_REASONS: UNAVAILABLE_REASONS.slice(),
+    EVIDENCE_CLOSED_REASONS: EVIDENCE_CLOSED_REASONS.slice(),
+    INDEX_CLOSED_REASONS: INDEX_CLOSED_REASONS.slice(),
+    INDEX_SCHEMA: INDEX_SCHEMA,
     UNIVERSE: JSON.parse(JSON.stringify(UNIVERSE)),
     validateContract: validateContract,
     assertContract: assertContract,
     predicateOf: predicateOf,
     conditionPredicate: conditionPredicate,
     screenQuery: screenQuery,
+    screenIndex: screenIndex,
     evaluate: evaluate,
     evaluateProfile: evaluateProfile,
     missingConditions: missingConditions

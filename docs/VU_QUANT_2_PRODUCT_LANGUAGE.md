@@ -268,6 +268,20 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | In den geprüften Mustern stand das Risiko höher als die Chance. |
 | Nicht verfügbar | Für diesen Titel lässt sich keine historische Ähnlichkeit belegen. |
 
+### Aktien, die zu diesem Stil passen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `StrategyMatch.screenIndex / strategy-screen-index-1.0.0` |
+| Schlüssel | `strategyScreen` |
+| **User Label** | **Aktien, die zu diesem Stil passen** |
+| Als Frage | Welche Aktien passen zu diesem Stil? |
+| Erklärung für Einsteiger | Dieselbe Regel, die einen Anlagestil beschreibt, sucht auch alle Aktien, die ihn heute erfüllen. |
+| Professional Label | Profilindex · kanonisches Regelprädikat |
+| Tooltip | Eine Aktie darf zu mehreren Stilen passen. Die Liste ist eine Auswahl nach Regel, keine Empfehlung und keine Rangfolge. |
+| Negativer Zustand | Zurzeit erfüllt kein Titel alle Bedingungen dieses Stils. |
+| Nicht verfügbar | Für diesen Stil lässt sich derzeit keine Auswahl bilden. |
+
 ## Die sieben Eigenschaften
 
 ### Unternehmensqualität
@@ -898,6 +912,32 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Tooltip | Ein Zustand, der sich von selbst auflöst — nicht durch eine Entscheidung, sondern durch Beobachtungen. |
 | Negativer Zustand | Es fehlt noch Historie. |
 | Nicht verfügbar | Es fehlt noch Historie. Das ist kein Fehler, sondern der normale Verlauf beim Aufbau einer Beobachtungsreihe. |
+
+### Keine historische Vergleichsbasis
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `historicalEvidence.reason` |
+| Schlüssel | `FACTOR_HISTORY_NOT_AVAILABLE` |
+| **User Label** | **Keine historische Vergleichsbasis** |
+| Erklärung für Einsteiger | Die Eigenschaften einer Aktie werden im Vergleich zum heutigen Markt gemessen. Für vergangene Stichtage gibt es diesen Vergleich nicht, deshalb lässt sich nicht sagen, wie ein Stil früher abgeschnitten hätte. |
+| Professional Label | Kein historischer Faktorpanel |
+| Tooltip | Es fehlt nicht die Auswertung, sondern die Datengrundlage: ohne Faktorwerte je vergangenem Stichtag ist keine historische Aussage möglich. |
+| Negativer Zustand | Für diesen Stil liegt keine historische Aussage vor. |
+| Nicht verfügbar | Eine historische Einordnung dieses Stils ist mit den vorhandenen Daten nicht möglich. |
+
+### Eine Eigenschaft fehlt im gesamten Markt
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `screenIndex availability.reason` |
+| Schlüssel | `PROFILE_INPUT_NOT_COVERED` |
+| **User Label** | **Eine Eigenschaft fehlt im gesamten Markt** |
+| Erklärung für Einsteiger | Dieser Stil verlangt eine Eigenschaft, die für keinen einzigen Titel erhoben ist. Deshalb wird hier keine Zahl genannt. |
+| Professional Label | Profil-Eingabefeld ohne Abdeckung |
+| Tooltip | Nicht zu verwechseln mit null Treffern: hier konnte gar nicht gemessen werden. |
+| Negativer Zustand | Dieser Stil lässt sich derzeit nicht auswerten. |
+| Nicht verfügbar | Für diesen Stil fehlt eine Eigenschaft, die im gesamten Markt nicht erhoben ist. |
 
 ## Begriffe, die nicht an den Anfang gehören
 

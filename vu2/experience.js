@@ -283,7 +283,7 @@ function setupDistribution(index){
 async function radarPage(){
  main.append(heading(LQ('radar'),LB('radar')));
  const lookback=[5,20,60].includes(Number(params.get('window')))?Number(params.get('window')):20;
- const [data,setupIndex]=await Promise.all([api.getRadarIntelligence({lookback,limit:12}),api.getSetupScreenIndex().catch(()=>null)]);
+ const [data,setupIndex]=await Promise.all([api.getRadarIntelligence({lookback,limit:12}),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null)]);
  if(data.state!=='AVAILABLE'){
   /* Der Bestand haengt nicht an den Wechseln. Faellt die eine Quelle aus,
      bleibt die andere sichtbar, statt die Seite leer zu lassen. */
@@ -420,6 +420,12 @@ async function portfolioPage(){
 }
 async function strategyPage(){
  main.append(heading('Aus Überzeugung werden Regeln','Definiere Auswahl, Gewichtung und Kosten. Bewahre jede Änderung nachvollziehbar auf.'));
+ /* Bevor jemand eine eigene Regel baut: welche Stile es gibt und wie
+    besetzt sie heute sind. Dieselbe Regel, die auf einer Aktienseite
+    erklaert, warum ein Titel passt, waehlt hier die Titel aus. */
+ const strategyIndex=await api.getStrategyIndex().catch(()=>null);
+ const distribution=strategyDistribution(strategyIndex);
+ if(distribution)main.append(distribution);
  const context=await api.getStrategyContext();if(context.state!=='AVAILABLE'){main.append(notice('Methodik derzeit nicht verfügbar','Der bestehende Strategy Builder bleibt erreichbar.'),actions([{label:'Strategy Builder öffnen',href:'/quant/strategies/builder/'}]));return;}
  main.append(el('p',{class:'scope-note',text:(context.currentSelection?.selectable||0).toLocaleString('de-DE')+' kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung. Ranking, Quant-V2-Score und historischer Test bleiben bis zur jeweiligen Zertifizierung geschlossen.'}));
  let saved,definition=context.definition;try{saved=VUStrategyWorkspace.load(localStorage);if(saved)definition=VUStrategy.getVersion(saved).definition;if(params.has('query'))definition=VUStrategy.createDefinition({...definition,filters:VUScreenerWorkspace.decode(params.get('query')).filters});}catch{main.append(notice('Gespeicherte Strategie prüfen','Der Entwurf oder die übergebenen Regeln sind nicht gültig. Vorhandene Daten werden nicht überschrieben.'));return;}
@@ -701,7 +707,7 @@ function matchCard(profile){
  if(profile.screenHref)body.push(link('Alle Titel mit diesem Profil zeigen',profile.screenHref,'button secondary'));
  return el('article',{class:'match-card'+(profile.state==='AVAILABLE'?'':' is-missing')},[head,...body]);
 }
-function strategyMatchSection(match){
+function strategyMatchSection(match,index,ticker){
  const section=el('section',{class:'section match-section'},[
   el('span',{class:'eyebrow',text:'Anlagestil'}),
   el('h2',{text:LQ('strategyMatch')}),
@@ -727,7 +733,63 @@ function strategyMatchSection(match){
   el('details',{},[el('summary',{text:'Methodik & Grenzen'}),
    el('p',{text:'Evidenz: '+match.evidenceNamespace+' · '+match.evidenceMethodologyVersion+'. Profile: '+match.methodologyVersion+'. Quant V1 bleibt unverändert und wird hier nicht gelesen.'}),
    el('p',{text:'Die Schwellen beschreiben, ab welcher Position eine Eigenschaft für ein Profil als erfüllt gilt. Sie sind für jeden Titel gleich und nicht gegen historische Ergebnisse optimiert.'}),
-   el('p',{class:'muted',text:'Eine Bedingung ohne Faktorwert zählt weder als erfüllt noch als verletzt; sie verlässt den Nenner und steht als „nicht messbar“ in der Liste.'})]));
+   el('p',{class:'muted',text:'Eine Bedingung ohne Faktorwert zählt weder als erfüllt noch als verletzt; sie verlässt den Nenner und steht als „nicht messbar“ in der Liste.'}),
+   /* Die Grenze gehoert neben die Profile und nicht in eine Fussnote. Der
+      Grund nennt die fehlende Datengrundlage und nicht einen fehlenden
+      Zertifizierungsschritt - sonst liest es sich, als muesste nur noch
+      jemand etwas freigeben. */
+   el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')})]));
+ if(best&&best.state==='AVAILABLE')section.append(strategyPeers(index,best.profileId,ticker));
+ return section;
+}
+/* Dasselbe Profil, andersherum gelesen. Anders als bei der Setup-Kaskade
+   gibt es hier keinen Vorrang: ein Titel darf zu mehreren Stilen passen,
+   und die Liste eines Profils ist genau die Treffermenge seines
+   Praedikats. Getrennt bleiben muessen zwei Nullen - kein Titel passt
+   (ein Befund) und die Eigenschaft ist gar nicht erhoben (eine Luecke). */
+function strategyPeers(index,profileId,self){
+ if(!index||index.state!=='AVAILABLE')return null;
+ const entry=index.profiles.find(p=>p.profileId===profileId);
+ if(!entry)return null;
+ const block=el('details',{class:'setup-peers'},[el('summary',{text:LQ('strategyScreen')})]);
+ if(entry.availability.state!=='AVAILABLE'){
+  block.append(el('p',{class:'muted',text:LU('strategyScreen')}),
+   el('p',{class:'muted',text:LB(entry.availability.reason)}));
+  return block;
+ }
+ const peers=(entry.tickers||[]).filter(t=>t!==self);
+ block.append(el('p',{text:peers.length
+  ? (peers.length===1?'Ein weiterer Titel erfüllt am '+index.asOf+' dieselben Bedingungen.'
+                     :peers.length.toLocaleString('de-DE')+' weitere Titel erfüllen am '+index.asOf+' dieselben Bedingungen.')
+  : LN('strategyScreen')}));
+ if(peers.length)block.append(el('p',{class:'peer-tickers'},peers.slice(0,24).map(t=>link(t,href('quant',t),'peer-chip'))));
+ if(peers.length>24)block.append(el('p',{class:'muted',text:'Gezeigt werden 24 von '+peers.length.toLocaleString('de-DE')+'.'}));
+ block.append(el('p',{class:'muted',text:'Auswahl nach Regel, keine Rangfolge und keine Empfehlung. Ein Titel darf zu mehreren Stilen passen.'}));
+ return block;
+}
+/* Die Besetzung aller Stile auf einen Blick. */
+function strategyDistribution(index){
+ if(!index||index.state!=='AVAILABLE')return null;
+ const section=el('section',{class:'section setup-distribution'},[
+  ...sectionHead('Stile im Markt','strategyScreen'),
+  el('p',{class:'muted',text:'Stand '+index.asOf+' · '+index.universe.toLocaleString('de-DE')+' ausgewertete Titel. Ein Titel darf zu mehreren Stilen passen; die Zahlen addieren sich deshalb nicht zum Universum.'})]);
+ for(const entry of index.profiles){
+  const open=entry.availability.state==='AVAILABLE';
+  const row=el('article',{class:'distribution-row'+(open?'':' is-pending')});
+  row.append(el('div',{class:'distribution-head'},[
+   el('span',{class:'chip',text:entry.label}),
+   el('strong',{class:'distribution-count',text:entry.count===null?'–':entry.count.toLocaleString('de-DE')})]));
+  row.append(el('p',{class:'muted',text:open?entry.plain:LB(entry.availability.reason)}));
+  if(open&&entry.tickers&&entry.tickers.length){
+   row.append(el('p',{class:'peer-tickers'},entry.tickers.slice(0,12).map(t=>link(t,href('quant',t),'peer-chip'))));
+  }else if(open){
+   row.append(el('p',{class:'muted',text:LN('strategyScreen')}));
+  }
+  section.append(row);
+ }
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{class:'muted',text:'Profile '+index.methodologyVersion+' über '+index.evidenceNamespace+'. Die Liste eines Stils ist die Treffermenge seiner eigenen Regel — dieselbe Regel, die auf einer Aktienseite erklärt, warum ein Titel passt.'}),
+  el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')})]));
  return section;
 }
 /* WAS SPRICHT DAFÜR, WAS DAGEGEN.
@@ -819,7 +881,7 @@ function evidenceTrustSection(patterns){
 }
 
 async function quantPage(ticker){
- const [data,match,profileContract,observation,patterns,setupIndex]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null)]);
+ const [data,match,profileContract,observation,patterns,setupIndex,strategyIndex]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -880,7 +942,7 @@ async function quantPage(ticker){
  main.append(setupJourney(setup,observation,setupIndex));
  main.append(prosAndCons(data,change,patterns));
  main.append(patternMatchSection(patterns));
- main.append(strategyMatchSection(match));
+ main.append(strategyMatchSection(match,strategyIndex,ticker));
  main.append(evidenceTrustSection(patterns));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[

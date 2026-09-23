@@ -58,6 +58,23 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **M11 — strategy profiles screen, and the reason they carry no history is now the true one.**
+  `BACKTEST_NOT_CERTIFIED` stood on every profile. It is too coarse: it says a backtest is
+  missing and leaves open whether somebody merely has to run one. What is actually missing is
+  narrower and not a certification step — profile conditions are stated on percentile scores of
+  *today's* comparison universe, and there is no historical factor panel against which
+  "Qualität ≥ 75" could be evaluated at a past date. Now `FACTOR_HISTORY_NOT_AVAILABLE`, with a
+  user-facing sentence that names the missing data rather than a missing approval.
+  What *is* possible today needed no new data at all: a profile is a canonical predicate, so it
+  screens. `strategy-index-v1.json.gz` (2.7 KB) publishes profile → titles, and the materializer
+  re-runs each predicate through the query engine and refuses to write a list that is not its
+  answer. Measured over 6,403 titles: quality-compounder 5, momentum-leader 163,
+  quality-momentum 18, garp 99, future-leader 10, defensive-quality 12, value-momentum 119 —
+  374 titles match at least one, 42 match several. `earnings-revision-leader` publishes
+  `count: null` with `PROFILE_INPUT_NOT_COVERED` and names the field: Revisions is 0 of 6,403,
+  so that zero is a data gap and not a finding about the market. Surfaces: the strategies page
+  (all eight, closed ones dimmed with their reason) and the strategy section of a stock.
+
 - **M10 — the entry page answers its own headline questions.** Measured gap: `view=stock` is
   where a person lands, and it carried no answer to *"Wie stark ist diese Aktie?"* and none to
   *"Chance gegen Risiko"*. Both sat one click away on `view=quant`; somebody who did not click

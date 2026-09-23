@@ -34,6 +34,7 @@ function create(options){
      !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
+     path!=='/quant/data/product/strategy-index-v1.json.gz'&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -266,6 +267,28 @@ function create(options){
     classification:observation.classification,lifecycle:observation.lifecycle,
     matchedRule:observation.matchedRule,conditions:observation.conditions,
     journey:shard.cascade.filter(rule=>rule.always!==true)};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* Dasselbe Profil, andersherum gelesen: nicht "passt diese Aktie zu
+  * diesem Stil", sondern "welche Aktien passen dazu". Gleiches Praedikat,
+  * gleicher predicateHash, keine zweite Formulierung.
+  *
+  * Zwei Nullen bleiben getrennt: ein Profil, auf das kein Titel passt,
+  * ist ein Befund ueber den Markt. Ein Profil, dessen Eingabe im
+  * Universum gar nicht erhoben ist, ist eine Datenluecke. Das zweite
+  * traegt count null und seinen Grund, nicht die Zahl 0. */
+ async function getStrategyIndex(){
+  if(!StrategyMatch)return {state:'UNAVAILABLE',reason:'SOURCE_OR_METHODOLOGY_UNAVAILABLE'};
+  try{
+   const index=await compressedJSON('/quant/data/product/strategy-index-v1.json.gz');
+   if(index?.schemaVersion!==StrategyMatch.INDEX_SCHEMA)return {state:'UNAVAILABLE',reason:'INVALID_STRATEGY_INDEX_ARTIFACT'};
+   return {state:'AVAILABLE',asOf:index.asOf,universe:index.universe,
+    methodologyVersion:index.methodologyVersion,evidenceNamespace:index.evidenceNamespace,
+    evidenceMethodologyVersion:index.evidenceMethodologyVersion,
+    historicalEvidence:index.historicalEvidence,
+    profiles:(index.profiles||[]).map(p=>({profileId:p.profileId,label:p.label,plain:p.plain,
+     predicateHash:p.predicateHash,conditions:p.conditions,availability:p.availability,
+     count:p.count,tickers:Array.isArray(p.tickers)?p.tickers.slice():null}))};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  /* Dieselbe Regel, andersherum gelesen: nicht 'wo steht dieser Titel',
@@ -609,7 +632,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

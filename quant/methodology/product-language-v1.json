@@ -225,6 +225,17 @@
      "tooltip": "Gezählt wird je Muster einzeln. Die Muster überlappen sich, deshalb werden sie nicht zu einer Zahl verrechnet.",
      "negative": "In den geprüften Mustern stand das Risiko höher als die Chance.",
      "unavailable": "Für diesen Titel lässt sich keine historische Ähnlichkeit belegen."
+    },
+    {
+     "id": "strategyScreen",
+     "internal": "StrategyMatch.screenIndex / strategy-screen-index-1.0.0",
+     "userLabel": "Aktien, die zu diesem Stil passen",
+     "question": "Welche Aktien passen zu diesem Stil?",
+     "beginner": "Dieselbe Regel, die einen Anlagestil beschreibt, sucht auch alle Aktien, die ihn heute erfüllen.",
+     "professionalLabel": "Profilindex · kanonisches Regelprädikat",
+     "tooltip": "Eine Aktie darf zu mehreren Stilen passen. Die Liste ist eine Auswahl nach Regel, keine Empfehlung und keine Rangfolge.",
+     "negative": "Zurzeit erfüllt kein Titel alle Bedingungen dieses Stils.",
+     "unavailable": "Für diesen Stil lässt sich derzeit keine Auswahl bilden."
     }
    ]
   },
@@ -739,6 +750,26 @@
      "tooltip": "Ein Zustand, der sich von selbst auflöst — nicht durch eine Entscheidung, sondern durch Beobachtungen.",
      "negative": "Es fehlt noch Historie.",
      "unavailable": "Es fehlt noch Historie. Das ist kein Fehler, sondern der normale Verlauf beim Aufbau einer Beobachtungsreihe."
+    },
+    {
+     "id": "FACTOR_HISTORY_NOT_AVAILABLE",
+     "internal": "historicalEvidence.reason",
+     "userLabel": "Keine historische Vergleichsbasis",
+     "beginner": "Die Eigenschaften einer Aktie werden im Vergleich zum heutigen Markt gemessen. Für vergangene Stichtage gibt es diesen Vergleich nicht, deshalb lässt sich nicht sagen, wie ein Stil früher abgeschnitten hätte.",
+     "professionalLabel": "Kein historischer Faktorpanel",
+     "tooltip": "Es fehlt nicht die Auswertung, sondern die Datengrundlage: ohne Faktorwerte je vergangenem Stichtag ist keine historische Aussage möglich.",
+     "negative": "Für diesen Stil liegt keine historische Aussage vor.",
+     "unavailable": "Eine historische Einordnung dieses Stils ist mit den vorhandenen Daten nicht möglich."
+    },
+    {
+     "id": "PROFILE_INPUT_NOT_COVERED",
+     "internal": "screenIndex availability.reason",
+     "userLabel": "Eine Eigenschaft fehlt im gesamten Markt",
+     "beginner": "Dieser Stil verlangt eine Eigenschaft, die für keinen einzigen Titel erhoben ist. Deshalb wird hier keine Zahl genannt.",
+     "professionalLabel": "Profil-Eingabefeld ohne Abdeckung",
+     "tooltip": "Nicht zu verwechseln mit null Treffern: hier konnte gar nicht gemessen werden.",
+     "negative": "Dieser Stil lässt sich derzeit nicht auswerten.",
+     "unavailable": "Für diesen Stil fehlt eine Eigenschaft, die im gesamten Markt nicht erhoben ist."
     }
    ]
   }

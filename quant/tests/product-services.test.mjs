@@ -218,3 +218,50 @@ test('the backtest gate stays shut and says what is actually missing',async()=>{
   assert.equal(/[A-Z_]{6,}/.test(why),false,label+': ein Code steht in der Nutzertext-Begruendung');
  }
 });
+test('the strategy index is the predicate answer, and an unmeasurable profile carries no zero',async()=>{
+ const StrategyMatch=require('../engines/strategy-match.js');
+ const contract=JSON.parse(await readFile(new URL('quant/methodology/strategy-profiles-v1.json',root),'utf8'));
+ const index=await materializedApi.getStrategyIndex();
+ assert.equal(index.state,'AVAILABLE');
+ assert.equal(index.profiles.length,contract.profiles.length);
+
+ /* Die veroeffentlichte Liste ist die Treffermenge des Praedikats - hier
+    ohne Vorrangregel, weil ein Titel zu mehreren Stilen passen darf.
+    Nachgerechnet ueber dieselbe Screening-Tabelle, die der Screener liest. */
+ const screening=await materializedApi.getFactorEvidenceScreening();
+ for(const entry of index.profiles){
+  const profile=contract.profiles.find(p=>p.profileId===entry.profileId);
+  assert.equal(entry.predicateHash,StrategyMatch.screenQuery(profile)&&
+   require('../engines/rule-contract.js').predicateHash(StrategyMatch.predicateOf(profile)),entry.profileId);
+  if(entry.availability.state!=='AVAILABLE'){
+   assert.equal(entry.count,null,entry.profileId+' nennt eine Zahl, obwohl eine Eingabe fehlt');
+   assert.equal(entry.tickers,null);
+   assert.ok(StrategyMatch.INDEX_CLOSED_REASONS.includes(entry.availability.reason));
+   assert.ok((entry.availability.fields||[]).length>0,entry.profileId+' nennt das fehlende Feld nicht');
+   continue;
+  }
+  const expected=screening.rows.filter(r=>Query.matches(r,StrategyMatch.screenQuery(profile).filters)).map(r=>r.ticker);
+  assert.equal(entry.count,expected.length,entry.profileId);
+  assert.deepEqual(entry.tickers.slice().sort(),expected.slice().sort(),entry.profileId);
+ }
+ /* Genau ein Profil ist heute unauswertbar, und zwar wegen Revisions -
+    dem Faktor, der ohne lizenzierte Konsensdaten fail-closed bleibt. */
+ const closed=index.profiles.filter(p=>p.availability.state!=='AVAILABLE');
+ assert.equal(closed.length,1);
+ assert.deepEqual(closed[0].availability.fields,['quantV2.factorEvidence.revisions']);
+ assert.ok(index.profiles.some(p=>p.count>0),'kein einziger Stil hat Treffer');
+});
+test('a strategy profile never claims a historical result, and says which data is missing',async()=>{
+ const index=await materializedApi.getStrategyIndex();
+ assert.equal(index.historicalEvidence.state,'UNAVAILABLE');
+ /* Nicht BACKTEST_NOT_CERTIFIED: das liest sich, als muesste nur noch
+    jemand etwas freigeben. Fehlend ist ein historischer Faktorpanel -
+    eine Datenluecke, kein Zertifizierungsschritt. */
+ assert.equal(index.historicalEvidence.reason,'FACTOR_HISTORY_NOT_AVAILABLE');
+ const match=await materializedApi.getStrategyMatch('NVDA');
+ for(const profile of match.profiles){
+  assert.equal(profile.historicalEvidence.state,'UNAVAILABLE');
+  assert.equal(profile.historicalEvidence.reason,'FACTOR_HISTORY_NOT_AVAILABLE');
+ }
+ assert.equal(match.ranking.state,'WITHHELD');
+});
