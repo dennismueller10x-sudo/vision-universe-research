@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-23T12:52:44.822Z",
+  "generatedAt": "2026-09-23T13:39:09.701Z",
   "provider": "mock",
   "creativeProvider": [
     {
@@ -21,17 +21,17 @@
       },
       "blocking": false,
       "terminal": true,
-      "observedAt": "2026-09-23T12:52:44.822Z"
+      "observedAt": "2026-09-23T13:39:09.701Z"
     }
   ],
   "health": {
-    "generatedAt": "2026-09-23T12:52:44.822Z",
-    "overall": "UNAVAILABLE",
+    "generatedAt": "2026-09-23T13:39:09.701Z",
+    "overall": "WARNING",
     "counts": {
-      "PASS": 7,
+      "PASS": 10,
       "WARNING": 1,
       "FAIL": 0,
-      "UNAVAILABLE": 9
+      "UNAVAILABLE": 6
     },
     "rows": [
       {
@@ -80,9 +80,9 @@
         "state": "WARNING",
         "dataSource": "social/data/signals.json",
         "lastSuccessAt": "2026-09-19T15:46:36.650Z",
-        "failureMode": "Letzter Erfolg vor 93 h (Frist 48 h).",
+        "failureMode": "Letzter Erfolg vor 94 h (Frist 48 h).",
         "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-        "detail": "Letzter Erfolg vor 93 h (Frist 48 h)."
+        "detail": "Letzter Erfolg vor 94 h (Frist 48 h)."
       },
       {
         "component": "signals.market",
@@ -129,7 +129,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T12:52:44.822Z",
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -137,39 +137,39 @@
       {
         "component": "content.pipeline",
         "label": "Content-Pipeline",
-        "state": "UNAVAILABLE",
+        "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": null,
-        "failureMode": "Alle Kandidaten sind an einer Pruefstufe gescheitert.",
-        "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
-        "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
+        "failureMode": null,
+        "nextAction": null,
+        "detail": "Letzter Erfolg vor 0 h."
       },
       {
         "component": "content.validation",
         "label": "Fakten- und Markenpruefung",
-        "state": "UNAVAILABLE",
+        "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": null,
-        "failureMode": "Keine Pakete zu pruefen.",
-        "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
-        "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
+        "failureMode": null,
+        "nextAction": null,
+        "detail": "Letzter Erfolg vor 0 h."
       },
       {
         "component": "scheduler",
         "label": "Terminierung",
-        "state": "UNAVAILABLE",
+        "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": null,
-        "failureMode": "Nichts zu terminieren.",
-        "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
-        "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
+        "failureMode": null,
+        "nextAction": null,
+        "detail": "Letzter Erfolg vor 0 h."
       },
       {
         "component": "queue",
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T12:52:44.822Z",
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -199,13 +199,13 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-23T12:52:44.822Z",
+        "lastSuccessAt": "2026-09-23T13:39:09.701Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
       }
     ],
-    "explanation": "Gesamtzustand UNAVAILABLE: 7 PASS, 1 WARNING, 0 FAIL, 9 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (9): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Content-Pipeline, Fakten- und Markenpruefung, Terminierung, Learning Engine, Experimente."
+    "explanation": "Gesamtzustand WARNING: 10 PASS, 1 WARNING, 0 FAIL, 6 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (6): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente."
   },
   "autonomy": {
     "desired": 0,
@@ -391,7 +391,7 @@
     "ok": true,
     "grund": null,
     "erklaerung": null,
-    "generatedAt": "2026-09-23T12:51:36.970Z",
+    "generatedAt": "2026-09-23T13:37:54.359Z",
     "themen": 32
   },
   "opportunities": [
@@ -404,16 +404,234 @@
       "signalIds": []
     }
   ],
-  "packages": [],
-  "rejections": [
+  "packages": [
     {
+      "packageId": "pkg_d2c7d77f744f1bf3",
       "topic": "MSFT — technische Lage zum 2026-09-18",
-      "stage": "AUTHORING",
-      "reason": "Keine von 4 Varianten hat die Tore bestanden."
+      "opportunityId": "opp_stock_story_c2507e90",
+      "archetype": "STOCK_STORY",
+      "visualType": "GENERATIVE",
+      "hook": "493,78 USD Schlusskurs - MSFT.",
+      "archetypeCandidates": [
+        {
+          "archetype": "STOCK_STORY",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "DATA_STORY",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "OPPORTUNITY_RISK",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "MARKET_CONTEXT",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "CONTRARIAN_INSIGHT",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "VISUAL_DATA_STORY",
+          "sampleSize": 0,
+          "proven": false
+        },
+        {
+          "archetype": "RANKING_LIST",
+          "sampleSize": 0,
+          "proven": false
+        }
+      ],
+      "learningDimensions": {
+        "werte": {
+          "contentFamily": "STOCK_STORY",
+          "audienceFrameBasis": "TOPIC",
+          "entityType": "SECURITY",
+          "hookStrategy": "metric-frame",
+          "storyStructure": "evidence-led",
+          "hookVariantId": "var_d8ea404433612160",
+          "visualStrategy": "GENERATIVE",
+          "visualVariantId": null,
+          "marketContext": null
+        },
+        "herkunft": {
+          "contentFamily": "audienceFrame.family",
+          "audienceFrameBasis": "audienceFrame.familyBasis",
+          "entityType": "thema.entityType",
+          "hookStrategy": "authoring.pattern (Einstieg)",
+          "storyStructure": "authoring.pattern (Aufbau)",
+          "hookVariantId": "authoring.variantId",
+          "visualStrategy": "visualType",
+          "visualVariantId": "Keine Bildvariante vermerkt.",
+          "marketContext": "Keine Quelle beschreibt die Marktlage; sie wird nicht geschaetzt."
+        }
+      },
+      "authoring": {
+        "briefId": "brief_2ef7697bfad3a827",
+        "authorId": "template",
+        "editorialCorrection": {
+          "by": "vision-universe",
+          "reason": "AUDIENCE_SEPARATION: der urspruengliche Text des Autors chatgpt-work nannte interne Begriffe im oeffentlichen Text (Die Ebenen aus §8 sind nicht getrennt: Im oeffentlichen Text (PUBLIC_STORY) steht ein interner Begriff: Technical Opportunity Score, Setup-Rang, TREND_STRUCTURE, MOMENTUM, SETUP. Wer ihn nicht kennt - und das ist das Publikum - liest eine Zahl ohne Bedeutung. Genau dieser Satz stand auf dem ersten Kandidaten dieses Systems.). Ersetzt durch eine aus denselben oeffentlich zulaessigen Belegen komponierte Fassung.",
+          "originalAuthorId": "chatgpt-work"
+        },
+        "textAuthor": {
+          "hook": "template",
+          "caption": "vision-universe"
+        },
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_d8ea404433612160",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Erkundung: Muster chatgpt-work/value_first wurde zuletzt 0-mal benutzt und hat damit die duennste Datenlage.",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 100,
+          "alternatives": [],
+          "discriminatedBy": [
+            "einzige bestandene Variante"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
+        "considered": 4,
+        "passed": 1,
+        "rejected": [
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "audience-fit",
+                "message": "Der Einstieg nennt MSFT, ohne den Namen zu nennen. Wer das Kuerzel nicht kennt, weiss nicht, wovon die Rede ist - und liest nicht weiter, um es herauszufinden. Bekannt waere: MSFT = Microsoft Corporation."
+              }
+            ]
+          },
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 60 %."
+              }
+            ]
+          },
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "audience-fit",
+                "message": "Der Einstieg nennt MSFT, ohne den Namen zu nennen. Wer das Kuerzel nicht kennt, weiss nicht, wovon die Rede ist - und liest nicht weiter, um es herauszufinden. Bekannt waere: MSFT = Microsoft Corporation."
+              }
+            ]
+          }
+        ],
+        "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
+      "visualDirection": {
+        "topicId": "pkg_d2c7d77f744f1bf3",
+        "visualStrategy": "GENERATIVE",
+        "story": "MSFT: Schlusskurs steht bei 493.78 USD. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "EIN Bild fuer das Ungleichgewicht bei Microsoft Corporation: Trendstruktur traegt 26,76 von 30, Setup nur 2,45 von 20. Gezeigt wird dieses Verhaeltnis - nicht die Branche von Microsoft Corporation, nicht ein Sinnbild fuer \"Analyse\".",
+        "oneSecondMessage": null,
+        "mainSubject": "Microsoft Corporation",
+        "compositionIntent": "Zwei ungleiche Gewichte in einer Flaeche, das Verhaeltnis sichtbar - Trendstruktur gegen Setup. Symmetrie waere die falsche Aussage.",
+        "visualHierarchy": [
+          "Das Ungleichgewicht",
+          "Der Name Microsoft Corporation",
+          "Die Einordnung"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Microsoft Corporation\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Das Verhaeltnis Trendstruktur traegt 26,76 von 30, Setup nur 2,45 von 20 als Bildgegenstand, nicht als Bildunterschrift"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie, VOLUME, SETUP, PROJECTION_AUXILIARY - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 6 Belegen ist keiner eine Prognose",
+          "Generische KI-Bildsprache ohne Storybezug (neon, glaskugel, kristallkugel, wuerfel, cyberpunk, serverraum u. a.) - kein Verbot, aber begruendungspflichtig"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Das Verhaeltnis der beiden Seiten zueinander und der Name Microsoft Corporation. Wenn auf dem Telefon nur eine huebsche Flaeche ankommt, ist die Idee nicht angekommen.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:GENERATIVE"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:coreQuestion"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:GENERATIVE"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "GENERATIVE",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus GENERATIVE auf Microsoft Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": false,
+      "visualDirectionMissing": [
+        "oneSecondMessage"
+      ],
+      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "visualDirectionNotApplicable": [],
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Microsoft Corporation"
+        ],
+        "basis": "BOOTSTRAP"
+      }
     }
   ],
+  "rejections": [],
   "published": [],
-  "auditEntries": 0,
+  "auditEntries": 5,
   "learning": {
     "measuredPosts": 25,
     "maturePosts": 25,
@@ -423,7 +641,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-23T12:52:44.822Z",
+      "assessedAt": "2026-09-23T13:39:09.701Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -666,5 +884,210 @@
       }
     ]
   },
-  "shadowDecisions": []
+  "shadowDecisions": [
+    {
+      "decidedAt": "2026-09-23T13:39:09.701Z",
+      "packageId": "pkg_d2c7d77f744f1bf3",
+      "topic": "MSFT — technische Lage zum 2026-09-18",
+      "archetype": "STOCK_STORY",
+      "entities": [
+        "MSFT"
+      ],
+      "entityType": null,
+      "family": "STOCK_STORY",
+      "question": null,
+      "visualType": "GENERATIVE",
+      "hook": "493,78 USD Schlusskurs - MSFT.",
+      "caption": "Unsere technische Auswertung bewertet Microsoft mit 493.78 USD im Schlusskurs. Was dahintersteht: 1M-Entwicklung 2 % (z=0.167). 3M-Entwicklung 30.2 % (z=1.308). 12M-Entwicklung -3.2 % (z=-0.08). Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "authoringPattern": "metric-frame/evidence-led",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_2ef7697bfad3a827",
+        "authorId": "template",
+        "editorialCorrection": {
+          "by": "vision-universe",
+          "reason": "AUDIENCE_SEPARATION: der urspruengliche Text des Autors chatgpt-work nannte interne Begriffe im oeffentlichen Text (Die Ebenen aus §8 sind nicht getrennt: Im oeffentlichen Text (PUBLIC_STORY) steht ein interner Begriff: Technical Opportunity Score, Setup-Rang, TREND_STRUCTURE, MOMENTUM, SETUP. Wer ihn nicht kennt - und das ist das Publikum - liest eine Zahl ohne Bedeutung. Genau dieser Satz stand auf dem ersten Kandidaten dieses Systems.). Ersetzt durch eine aus denselben oeffentlich zulaessigen Belegen komponierte Fassung.",
+          "originalAuthorId": "chatgpt-work"
+        },
+        "textAuthor": {
+          "hook": "template",
+          "caption": "vision-universe"
+        },
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_d8ea404433612160",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Erkundung: Muster chatgpt-work/value_first wurde zuletzt 0-mal benutzt und hat damit die duennste Datenlage.",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 100,
+          "alternatives": [],
+          "discriminatedBy": [
+            "einzige bestandene Variante"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
+        "considered": 4,
+        "passed": 1,
+        "rejected": [
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "audience-fit",
+                "message": "Der Einstieg nennt MSFT, ohne den Namen zu nennen. Wer das Kuerzel nicht kennt, weiss nicht, wovon die Rede ist - und liest nicht weiter, um es herauszufinden. Bekannt waere: MSFT = Microsoft Corporation."
+              }
+            ]
+          },
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 60 %."
+              }
+            ]
+          },
+          {
+            "pattern": "chatgpt-work/value_first",
+            "reasons": [
+              {
+                "gate": "audience-fit",
+                "message": "Der Einstieg nennt MSFT, ohne den Namen zu nennen. Wer das Kuerzel nicht kennt, weiss nicht, wovon die Rede ist - und liest nicht weiter, um es herauszufinden. Bekannt waere: MSFT = Microsoft Corporation."
+              }
+            ]
+          }
+        ],
+        "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
+      "opportunityId": "opp_stock_story_c2507e90",
+      "signalIds": [],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLORE",
+      "modeReason": "Erkundung (Ziehung 9 < Rate 25 %). Ein Teil der Beitraege muss bewusst anders sein, sonst lernt das System nur noch, was es ohnehin glaubt.",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_d2c7d77f744f1bf3",
+        "visualStrategy": "GENERATIVE",
+        "story": "MSFT: Schlusskurs steht bei 493.78 USD. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "EIN Bild fuer das Ungleichgewicht bei Microsoft Corporation: Trendstruktur traegt 26,76 von 30, Setup nur 2,45 von 20. Gezeigt wird dieses Verhaeltnis - nicht die Branche von Microsoft Corporation, nicht ein Sinnbild fuer \"Analyse\".",
+        "oneSecondMessage": null,
+        "mainSubject": "Microsoft Corporation",
+        "compositionIntent": "Zwei ungleiche Gewichte in einer Flaeche, das Verhaeltnis sichtbar - Trendstruktur gegen Setup. Symmetrie waere die falsche Aussage.",
+        "visualHierarchy": [
+          "Das Ungleichgewicht",
+          "Der Name Microsoft Corporation",
+          "Die Einordnung"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Microsoft Corporation\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Das Verhaeltnis Trendstruktur traegt 26,76 von 30, Setup nur 2,45 von 20 als Bildgegenstand, nicht als Bildunterschrift"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie, VOLUME, SETUP, PROJECTION_AUXILIARY - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 6 Belegen ist keiner eine Prognose",
+          "Generische KI-Bildsprache ohne Storybezug (neon, glaskugel, kristallkugel, wuerfel, cyberpunk, serverraum u. a.) - kein Verbot, aber begruendungspflichtig"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Das Verhaeltnis der beiden Seiten zueinander und der Name Microsoft Corporation. Wenn auf dem Telefon nur eine huebsche Flaeche ankommt, ist die Idee nicht angekommen.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:GENERATIVE"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:GENERATIVE",
+            "AUDIENCE_FRAME:coreQuestion"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:GENERATIVE"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "GENERATIVE",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus GENERATIVE auf Microsoft Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": false,
+      "visualDirectionFailureType": "VISUAL_DIRECTION_INCOMPLETE",
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Microsoft Corporation"
+        ],
+        "basis": "BOOTSTRAP"
+      },
+      "asset": {
+        "plannable": true,
+        "visualType": "GENERATIVE",
+        "reason": null,
+        "message": null,
+        "imageUrl": "https://research.visionuniverse.de/assets/social/pkg_d2c7d77f744f1bf3.jpg",
+        "quality": {
+          "applicable": false,
+          "explanation": "Generatives Bild ohne Textebene. Die Kartenpruefung misst Redundanz, Vollstaendigkeit und Lesbarkeit von Text und trifft hier auf nichts."
+        },
+        "origin": "generative",
+        "sourceAsset": {
+          "path": "authoring/requests/vu-msft-20260918/assets/visual-01.png",
+          "sha256": "68ba4d8783bd921e70cdb9f99a1aa8e6926b2bc753e1458b86b0a3e154db80cb",
+          "mimeType": "image/png",
+          "variantId": "vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:visual:AI_INFRASTRUCTURE:01",
+          "strategy": "AI_INFRASTRUCTURE"
+        },
+        "rendered": true,
+        "bytes": 313265
+      }
+    }
+  ]
 }
