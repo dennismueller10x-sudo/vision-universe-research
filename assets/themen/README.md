@@ -9,14 +9,14 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | Nr | Themenwelt | Datei | Status |
 |----|------------|-------|--------|
 | 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | offen |
-| 02 | Halbleiter & Chips | `02-halbleiter-chips` | offen |
-| 03 | Rechenzentren & Cloud | `03-rechenzentren-cloud` | offen |
-| 04 | Cybersecurity | `04-cybersecurity` | offen |
-| 05 | Quantencomputing | `05-quantencomputing` | offen |
+| 02 | Halbleiter & Chips | `02-halbleiter-chips` | ✅ |
+| 03 | Rechenzentren & Cloud | `03-rechenzentren-cloud` | ✅ |
+| 04 | Cybersecurity | `04-cybersecurity` | ✅ |
+| 05 | Quantencomputing | `05-quantencomputing` | ✅ |
 | 06 | Humanoide Robotik | `06-humanoide-robotik` | ✅ |
 | 07 | Robotik & Automation | `07-robotik-automation` | ✅ |
 | 08 | Drohnen & autonome Systeme | `08-drohnen-autonome-systeme` | ✅ |
-| 09 | Elektromobilität | `09-elektromobilitaet` | offen |
+| 09 | Elektromobilität | `09-elektromobilitaet` | ✅ |
 | 10 | Autonomes Fahren | `10-autonomes-fahren` | offen |
 | 11 | Batterien & Energiespeicher | `11-batterien-energiespeicher` | offen |
 | 12 | Erneuerbare Energien | `12-erneuerbare-energien` | offen |
