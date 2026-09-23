@@ -182,15 +182,26 @@
           statement: os.disclaimer
         }));
       }
+      /* Dieser Satz traegt allein die Einordnung, wenn `score-meaning`
+         (os.disclaimer, Bundle-Text) an AUDIENCE_SEPARATION scheitert -
+         was er zuverlaessig tut, weil das Bundle dort "Setup-Rang"
+         schreibt (INTERN_NICHT_IM_HOOK, audience-frame.js). Die alte
+         Fassung hier scheiterte am selben Filter aus demselben Grund
+         ("methodischer Rang"): ein Bare-Ticker-Thema (themaAusBundle())
+         blieb damit strukturell ohne jede ueberlebende Einordnung, und
+         EVIDENCE_SUFFICIENCY verwarf jedes solche Thema, unabhaengig
+         von der Guete des Bundles. "Ordnet ein, prognostiziert nicht"
+         ist keine neue Wortwahl - es ist die Stimme, die der reale
+         MSFT-Hook (PR #179) bereits fuer denselben Sachverhalt traegt. */
       if (os.isProbability === false) {
         evidence.push(ev({
           id: "score-not-probability", dimension: "SCORE", entity: entity,
           interpretation: true,
           metric: "Interpretation", value: null,
           source: source, observedAt: asOf, pointer: "/opportunityScore/interpretation",
-          statement: "Der Wert ist ein methodischer Rang (" +
+          statement: "Der Wert ordnet ein, er prognostiziert nicht (" +
             (os.interpretation || "methodology_rank") +
-            "), keine Wahrscheinlichkeit und keine Renditeerwartung."
+            "): keine Wahrscheinlichkeit und keine Renditeerwartung."
         }));
       }
 
