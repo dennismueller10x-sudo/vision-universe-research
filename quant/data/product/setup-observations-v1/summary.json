@@ -3,18 +3,20 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-09-22T19:45:58.000Z",
+ "generatedAt": "2026-09-23T12:22:17.000Z",
  "asOf": "2026-09-10",
  "approval": {
-  "state": "PENDING_OWNER",
-  "approvedBy": null,
-  "approvedAt": null,
+  "state": "APPROVED",
+  "approvedBy": "info@visionuniverse.de",
+  "approvedAt": "2026-09-23",
+  "approvedVersion": "setup-mapping-1.0.0",
   "gate": "VERSIONED_STATE_MAPPING_APPROVED",
-  "note": "Diese Zuordnung ist geschrieben, versioniert und nachrechenbar, aber noch nicht freigegeben. Solange dieser Zustand PENDING_OWNER ist, veroeffentlicht die Setup Engine keinen Lebenszyklus-Zustand, unabhaengig davon wie viel Beobachtungshistorie vorliegt."
+  "scope": "Freigegeben ist die Methodik als Version 1. Freigegeben ist damit die Veroeffentlichung der vier Punkt-in-der-Zeit-Zustaende. Die vier pfadabhaengigen Zustaende sind von dieser Freigabe ausdruecklich NICHT umfasst; sie haengen an pathDependentActivation.",
+  "note": "Die Zuordnung ist geschrieben, versioniert, maschinell geprueft und ueber die volle Breite materialisiert. Die Freigabe bezieht sich auf die Zustandssemantik, nicht auf eine Ergebniserwartung."
  },
  "publication": {
-  "lifecycleAllowed": false,
-  "reason": "SETUP_MAPPING_NOT_APPROVED",
+  "lifecycleAllowed": true,
+  "reason": null,
   "explanation": "Ein Zustand beschreibt, was am Stichtag beobachtbar ist. Er ist keine Einstiegsempfehlung, keine Erfolgswahrscheinlichkeit und keine Renditeaussage."
  },
  "cascade": [
@@ -349,7 +351,11 @@
    "EXIT"
   ],
   "open": false,
-  "reason": "SETUP_MAPPING_NOT_APPROVED"
+  "reason": "PATH_DEPENDENT_STATES_NOT_ACTIVATED"
+ },
+ "pathDependentActivation": {
+  "state": "PENDING_HISTORY",
+  "gate": "PATH_DEPENDENT_STATES_ACTIVATION"
  },
  "observationHistory": {
   "mappingVersion": "setup-mapping-1.0.0",

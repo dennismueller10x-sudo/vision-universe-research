@@ -397,10 +397,21 @@ function setupJourney(setup,observation){
  const steps=(available?observation.journey.map(rule=>rule.state).filter((state,index,list)=>list.indexOf(state)===index)
   :JOURNEY_ORDER.slice()).filter(state=>JOURNEY_ORDER.includes(state))
   .sort((a,b)=>JOURNEY_ORDER.indexOf(a)-JOURNEY_ORDER.indexOf(b));
+ /* Die vier Verlaufszustaende sind methodisch freigegeben, operativ aber
+    noch geschlossen. Sie verschwinden deshalb nicht aus der Reise - sie
+    stehen sichtbar als noch nicht freigeschaltet da. Ein Nutzer soll
+    sehen, dass es sie gibt und warum sie noch nichts sagen. */
+ const pathOpen=available&&observation.pathTier&&observation.pathTier.state==='OPEN';
+ const PATH=['ACTIVE','RISK_RISING','INVALIDATED','EXIT'];
  const section=el('section',{class:'section setup-section'},[
   el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}),
-  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')},[
-   el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:L(state)})])))]);
+  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>{
+   const pending=PATH.includes(state)&&!pathOpen;
+   return el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')+(pending?' is-pending':''),
+    title:pending?LT('PATH_DEPENDENT_STATES_NOT_ACTIVATED'):LB(state)},[
+    el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:L(state)}),
+    pending?el('span',{class:'setup-pending',text:'noch nicht freigeschaltet'}):null]);
+  }))]);
  if(!available){
   section.append(notice('Für diesen Titel liegt keine Setup-Beobachtung vor',
    'Die Setup-Beobachtung wird aus der bestehenden technischen Materialisierung gebildet. Dieser Titel ist darin nicht enthalten, deshalb wird hier kein Zustand behauptet.'));
@@ -414,8 +425,13 @@ function setupJourney(setup,observation){
  }else{
   section.append(notice(L('UNAVAILABLE'),SETUP_CLOSED[classification.reason]||'Die Methodik verlangt Evidenz, die für diesen Titel nicht vollständig vorliegt.'));
  }
- if(!active)section.append(notice('Es wird kein Lebenszyklus-Zustand behauptet',
-  SETUP_CLOSED[lifecycle.availability.reason]||'Der Lebenszyklus bleibt geschlossen.'));
+ if(!active)section.append(notice(LU('setupState'),
+  SETUP_CLOSED[lifecycle.availability.reason]||VUProductLanguage.beginner('UNAVAILABLE')));
+ /* Auch wenn ein Zustand veroeffentlicht ist: was NICHT geprueft wurde,
+    gehoert danebengesagt. Sonst liest sich 'Beobachten' so, als waere
+    'Trend laeuft' ausgeschlossen worden. */
+ if(active&&!pathOpen)section.append(notice(L('PATH_DEPENDENT_STATES_NOT_ACTIVATED'),
+  LB('PATH_DEPENDENT_STATES_NOT_ACTIVATED')));
  const conditions=observation.conditions||[];
  const met=conditions.filter(c=>c.met).length;
  if(conditions.length){

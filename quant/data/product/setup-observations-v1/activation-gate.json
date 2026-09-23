@@ -1,0 +1,89 @@
+{
+ "gate": "PATH_DEPENDENT_STATES_ACTIVATION",
+ "mappingVersion": "setup-mapping-1.0.0",
+ "contractState": "PENDING_HISTORY",
+ "states": [
+  "ACTIVE",
+  "RISK_RISING",
+  "INVALIDATED",
+  "EXIT"
+ ],
+ "checks": [
+  {
+   "id": "SUFFICIENT_OBSERVATION_DURATION",
+   "label": "Ausreichende Beobachtungsdauer",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "observations": 1,
+    "spanDays": 0,
+    "minimumObservations": 12,
+    "minimumSpanDays": 90
+   }
+  },
+  {
+   "id": "NO_RETROACTIVE_STATE_CHANGE",
+   "label": "Keine rueckwirkende Zustandsaenderung",
+   "state": "PASS",
+   "measured": {
+    "snapshots": 1,
+    "corrupt": 0
+   }
+  },
+  {
+   "id": "TRANSITION_MATRIX",
+   "label": "Uebergangsmatrix",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "orderedObservations": 1,
+    "needed": 2
+   }
+  },
+  {
+   "id": "STATE_PERSISTENCE",
+   "label": "Zustandsdauer",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "orderedObservations": 1,
+    "needed": 2
+   }
+  },
+  {
+   "id": "REVERSAL_BEHAVIOUR",
+   "label": "Rueckschlagverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "orderedObservations": 1,
+    "needed": 2
+   }
+  },
+  {
+   "id": "INVALIDATION_BEHAVIOUR",
+   "label": "Invalidationsverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "orderedObservations": 1,
+    "needed": 2
+   }
+  },
+  {
+   "id": "EXIT_BEHAVIOUR",
+   "label": "Ausstiegsverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "orderedObservations": 1,
+    "needed": 2
+   }
+  }
+ ],
+ "measuredReadiness": "PENDING_HISTORY",
+ "active": false,
+ "blockedBy": [
+  "SUFFICIENT_OBSERVATION_DURATION",
+  "TRANSITION_MATRIX",
+  "STATE_PERSISTENCE",
+  "REVERSAL_BEHAVIOUR",
+  "INVALIDATION_BEHAVIOUR",
+  "EXIT_BEHAVIOUR"
+ ],
+ "note": "Das Gate bleibt geschlossen. Eine nicht auswertbare Pruefung zaehlt nicht als bestanden."
+}

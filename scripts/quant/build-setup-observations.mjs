@@ -133,6 +133,7 @@ function main() {
   const previousByTicker = new Map();
   const depthByTicker = new Map();
   let historyDates = [];
+  const publishedSeries = [];
   if (existsSync(historyDir)) {
     historyDates = readdirSync(historyDir)
       .filter((file) => file.endsWith(".json.gz"))
@@ -143,6 +144,11 @@ function main() {
       const snapshot = JSON.parse(gunzipSync(readFileSync(join(historyDir, date + ".json.gz"))));
       if (snapshot.schemaVersion !== SetupEngine.OBSERVATION_SCHEMA) continue;
       if (snapshot.mappingVersion !== mapping.mappingVersion) continue;
+      /* The gate's integrity check needs to know whether a stored file still
+         matches its own hash, so that is established here rather than
+         assumed there. */
+      publishedSeries.push({ asOf: snapshot.asOf, rows: snapshot.rows || {},
+        contentHashValid: snapshot.contentHash === snapshotHash(snapshot) });
       for (const [ticker, entry] of Object.entries(snapshot.rows || {})) {
         previousByTicker.set(ticker, { setupState: entry[0], asOf: snapshot.asOf, invalidationPrice: entry[1], exitPrice: entry[2] });
         depthByTicker.set(ticker, (depthByTicker.get(ticker) || 0) + 1);
@@ -237,11 +243,15 @@ function main() {
     ruleCounts: rules,
     pathTier: {
       states: SetupEngine.PATH_STATES,
-      open: historyDates.length + 1 >= (mapping.tiers.PATH_DEPENDENT.minimumOrderedObservations || 2) && mapping.approval.state === "APPROVED",
-      reason: mapping.approval.state !== "APPROVED"
-        ? "SETUP_MAPPING_NOT_APPROVED"
+      open: mapping.approval.state === "APPROVED" &&
+        (mapping.pathDependentActivation || {}).state === "ACTIVE" &&
+        historyDates.length + 1 >= (mapping.tiers.PATH_DEPENDENT.minimumOrderedObservations || 2),
+      reason: mapping.approval.state !== "APPROVED" ? "SETUP_MAPPING_NOT_APPROVED"
+        : (mapping.pathDependentActivation || {}).state !== "ACTIVE" ? "PATH_DEPENDENT_STATES_NOT_ACTIVATED"
         : (historyDates.length ? null : "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED")
     },
+    approval: mapping.approval,
+    pathDependentActivation: { state: (mapping.pathDependentActivation || {}).state, gate: "PATH_DEPENDENT_STATES_ACTIVATION" },
     observationHistory: {
       mappingVersion: mapping.mappingVersion,
       dates: historyDates.concat(cutoff),
@@ -251,6 +261,13 @@ function main() {
     shards: [...shards.keys()].sort()
   };
   writeFileSync(join(OUT_DIR, "summary.json"), JSON.stringify(summary, null, 1) + "\n");
+
+  /* The activation gate for the path-dependent tier, measured against the
+     history that exists rather than asserted. It never opens the gate: that
+     needs this report AND the owner's switch in the contract. */
+  const gate = SetupEngine.activationGate(
+    publishedSeries.concat([{ asOf: cutoff, rows: historyRows, contentHashValid: true }]), methodology);
+  writeFileSync(join(OUT_DIR, "activation-gate.json"), JSON.stringify(gate, null, 1) + "\n");
 
   /* 5. Append to the immutable history. */
   mkdirSync(historyDir, { recursive: true });
@@ -297,7 +314,9 @@ function main() {
     "  " + instruments.size + " instruments, " + unavailable + " without complete evidence\n" +
     "  " + line + "\n" +
     "  history: " + dates.join(", ") + " (path tier needs " + summary.observationHistory.minimumRequired + ")\n" +
-    "  lifecycle: " + (summary.pathTier.open ? "open" : "closed · " + summary.pathTier.reason) + "\n"
+    "  lifecycle: " + (summary.pathTier.open ? "open" : "closed · " + summary.pathTier.reason) + "\n" +
+    "  Aktivierungs-Gate " + gate.contractState + " · gemessen " + gate.measuredReadiness +
+    " · offen: " + (gate.blockedBy.join(", ") || "nichts") + "\n"
   );
 }
 

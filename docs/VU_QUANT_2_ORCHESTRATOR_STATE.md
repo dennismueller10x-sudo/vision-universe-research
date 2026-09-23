@@ -25,7 +25,7 @@ Pattern, Backtest and Market Regime remain ahead.
 | Milestone | Scope | State |
 |---|---|---|
 | M1 | Factor + Change experience | **DONE** (this section) |
-| M2 | Setup Engine + frontend | **BUILT** — mapping written, materialized over 5,676 titles; lifecycle awaits owner approval + a second observation |
+| M2 | Setup Engine + frontend | **LIVE (point-in-time tier)** — approved 2026-09-23; four course-of-events states behind their own gate |
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
 | M5 | Pattern Match product | **DONE** — 249 robuste Muster je Titel, Verlustseite neben Gewinnseite |
@@ -409,14 +409,12 @@ the mapping decision is then taken against measurement rather than against a pla
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-0. **Two owner gates are open and neither blocks the next build.** They are stated here so
-   nothing waits silently on them: `VERSIONED_STATE_MAPPING_APPROVED` (below) and the
-   `total_debt` concept mapping, which waits on the measurement the SEC workflow now produces.
-1. **Owner gate: approve `setup-mapping-1.0.0`.** This is the one thing no run can do for
-   itself. The mapping is written, versioned, machine-checked and materialized over 5,676
-   titles; approval is a three-field edit in `quant/methodology/setup-state-v1.json`
-   (`approval.state`, `approvedBy`, `approvedAt`). Nothing else changes, and until then every
-   surface says in a typed reason that no lifecycle state is claimed.
+0. **One owner gate is open** and it does not block the next build: the `total_debt` concept
+   mapping, which waits on the measurement the SEC workflow now produces.
+1. **`setup-mapping-1.0.0` was approved on 2026-09-23** for the point-in-time tier; the four
+   course-of-events states sit behind `PATH_DEPENDENT_STATES_ACTIVATION`, which opens only when
+   its seven measured checks pass **and** the owner flips the contract. Nothing here waits on a
+   person: the checks resolve as observations accumulate.
 2. **Let both histories accumulate.** The factor snapshot series has `2026-09-18` and
    `2026-09-21`; `change.scoreMomentum` opens when one sits ~30 days back. The setup
    observation series has `2026-09-10`; the path tier (ACTIVE, RISK_RISING, INVALIDATED, EXIT)

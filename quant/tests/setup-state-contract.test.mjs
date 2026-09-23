@@ -15,12 +15,23 @@ const base = {
   provenance: { dataMode: "real", isMock: false, source: "existing-technical-materialization", dataVersion: "dv_0123456789abcdef", methodologyVersions: { technical: "technical-v1.0.0", setupState: "setup-state-v1.0.0" }, parametersHash: "0123456789abcdef" }
 };
 
-test("methodology fixes the exact lifecycle but remains inactive", () => {
-  assert.equal(methodology.status, "SPECIFIED_NOT_ACTIVE");
-  assert.equal(methodology.publication.enabled, false);
+test("methodology fixes the exact lifecycle and is approved for the point-in-time tier only", () => {
+  assert.equal(methodology.status, "ACTIVE_POINT_IN_TIME_ONLY");
+  assert.equal(methodology.publication.enabled, true);
+  assert.equal(methodology.publication.scope, "POINT_IN_TIME_STATES_ONLY");
   assert.deepEqual(methodology.states, Setup.STATES);
   assert.equal(methodology.requirements.orderedSnapshots, 2);
   assert.equal(methodology.semanticBoundaries.elliottRole, "EVIDENCE_ONLY");
+  /* The four gate flags, machine-readable so no consumer has to infer the
+     state from prose. */
+  assert.equal(methodology.gateStatus.SETUP_MAPPING_V1_APPROVED, "PASS");
+  assert.equal(methodology.gateStatus.SNAPSHOT_STATES_ACTIVE, "PASS");
+  assert.equal(methodology.gateStatus.PATH_DEPENDENT_STATES_ACTIVE, false);
+  assert.equal(methodology.gateStatus.PATH_DEPENDENT_STATES_GATE, "PENDING_HISTORY");
+  /* This older contract predates the two tiers; it still refuses to carry
+     an available lifecycle of its own, and the Setup Engine is what
+     publishes one now. The two are not in conflict - they answer different
+     questions - but the flag must not quietly drift to true. */
   assert.equal(Setup.AVAILABLE_OBSERVATIONS_ALLOWED, false);
 });
 

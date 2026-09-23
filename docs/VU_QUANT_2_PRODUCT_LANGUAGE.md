@@ -817,6 +817,32 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Diese Bedingung lässt sich hier nicht prüfen. |
 | Nicht verfügbar | Diese Bedingung lässt sich hier nicht prüfen. |
 
+### Verlauf noch nicht freigeschaltet
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `PATH_DEPENDENT_STATES_NOT_ACTIVATED` |
+| Schlüssel | `PATH_DEPENDENT_STATES_NOT_ACTIVATED` |
+| **User Label** | **Verlauf noch nicht freigeschaltet** |
+| Erklärung für Einsteiger | Ob eine Situation läuft, sich verschlechtert, gebrochen ist oder ihr Ziel erreicht hat, wird noch nicht gezeigt. Dafür braucht es eine Reihe echter Beobachtungen über Zeit, und die wird gerade erst aufgebaut. |
+| Professional Label | PATH_DEPENDENT_STATES_NOT_ACTIVATED |
+| Tooltip | Die Methodik ist freigegeben. Die vier Verlaufszustände haben ein eigenes Gate, das erst öffnet, wenn geordnete Historie vorliegt und sich darin wie beschrieben verhält. |
+| Negativer Zustand | Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen. |
+| Nicht verfügbar | Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen. Dafür braucht es eine geordnete Reihe echter Beobachtungen über Zeit. |
+
+### Wartet auf Historie
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `PENDING_HISTORY` |
+| Schlüssel | `PENDING_HISTORY` |
+| **User Label** | **Wartet auf Historie** |
+| Erklärung für Einsteiger | Alles ist gebaut und geprüft; was fehlt, ist schlicht Zeit. Mit jeder weiteren Beobachtung wächst die Reihe, die dafür nötig ist. |
+| Professional Label | PENDING_HISTORY |
+| Tooltip | Ein Zustand, der sich von selbst auflöst — nicht durch eine Entscheidung, sondern durch Beobachtungen. |
+| Negativer Zustand | Es fehlt noch Historie. |
+| Nicht verfügbar | Es fehlt noch Historie. Das ist kein Fehler, sondern der normale Verlauf beim Aufbau einer Beobachtungsreihe. |
+
 ## Begriffe, die nicht an den Anfang gehören
 
 Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können.

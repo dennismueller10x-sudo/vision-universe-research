@@ -102,32 +102,64 @@ Two distinct failures abort a run rather than write:
 - a run that would give an already-published date different content — a published past is not
   rewritten. Publish a new mapping version instead.
 
-## Publication is gated three ways
+## Two locks, held separately
 
-The lifecycle is `AVAILABLE` only when all three hold:
+The owner approved the methodology as version 1 on **2026-09-23** and, in the same decision,
+kept the four course-of-events states shut. Those are two different questions, so they are two
+different locks — and the second one is not "the methodology is still unapproved".
 
-1. `stateMapping.approval.state === "APPROVED"` — **currently `PENDING_OWNER`**;
-2. at least two ordered observations exist for that title;
-3. the required technical evidence is complete.
+| Lock | Covers | State |
+|---|---|---|
+| `stateMapping.approval` | the methodology, and with it the four point-in-time states | **`APPROVED`** |
+| `stateMapping.pathDependentActivation` | `ACTIVE`, `RISK_RISING`, `INVALIDATED`, `EXIT` | **`PENDING_HISTORY`** |
 
-Otherwise the lifecycle is `UNAVAILABLE` with one of four typed reasons:
-`SETUP_MAPPING_NOT_APPROVED`, `SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED`,
-`INSUFFICIENT_OBSERVATION_HISTORY`, `SETUP_INPUTS_INCOMPLETE`. A title without complete
-technical evidence gets *no* state — and specifically not `NO_SETUP`. "No setup" and "not
-assessable" are two different statements.
+Machine-readable in `methodology.gateStatus`, so no consumer has to read prose:
 
-## The open owner gate
-
-`VERSIONED_STATE_MAPPING_APPROVED` is the one gate a run cannot clear by itself. The mapping
-above is written, versioned, machine-checked and materialized over the full breadth; what it
-still needs is the owner's approval of the state semantics. Approval is one edit:
-
-```json
-"approval": { "state": "APPROVED", "approvedBy": "<owner>", "approvedAt": "<ISO timestamp>" }
+```
+SETUP_MAPPING_V1_APPROVED   = PASS
+SNAPSHOT_STATES_ACTIVE      = PASS
+PATH_DEPENDENT_STATES_ACTIVE = false
+PATH_DEPENDENT_STATES_GATE   = PENDING_HISTORY
 ```
 
-Nothing else changes. Until then every surface says, in a typed reason rather than in prose,
-that no lifecycle state is being claimed.
+**A point-in-time state now publishes on its own evidence.** It needs no history, because it
+makes no claim about one. The only remaining reason a lifecycle is `UNAVAILABLE` is
+`SETUP_INPUTS_INCOMPLETE` — a title without complete technical evidence gets *no* state, and
+specifically not `NO_SETUP`.
+
+**A published point-in-time state never implies the other four were considered.** The
+observation carries `pathTier` as its own field — `{ state: "CLOSED", reason:
+"PATH_DEPENDENT_STATES_NOT_ACTIVATED" }` — and the publication gate throws if a path-dependent
+state is published while that tier is closed. In the interface the four states stay visible in
+the journey, greyed and labelled *noch nicht freigeschaltet*, so a reader can see they exist and
+why they say nothing yet.
+
+## The activation gate, measured rather than asserted
+
+`quant/data/product/setup-observations-v1/activation-gate.json`, rebuilt on every
+materialization. Seven checks, each `PASS`, `FAIL` or `NOT_EVALUABLE`:
+
+| Check | Asks | Passes when |
+|---|---|---|
+| `TRANSITION_MATRIX` | which state-to-state transitions actually occur | every path state is reached from a valid predecessor, and no transition appears that the cascade cannot produce |
+| `STATE_PERSISTENCE` | how long a state holds before it changes | the median run of each path state is at least two observations — one means noise, not a course of events |
+| `REVERSAL_BEHAVIOUR` | how often a title snaps straight back | fewer than a fifth of transitions are immediate reversals |
+| `INVALIDATION_BEHAVIOUR` | is `INVALIDATED` backed by the level stored then | every observed case is recomputable against the stored level; none without one |
+| `EXIT_BEHAVIOUR` | is `EXIT` backed by the zone stored then | same, against the stored target zone |
+| `NO_RETROACTIVE_STATE_CHANGE` | did a published state change afterwards | every stored observation still matches its own content hash |
+| `SUFFICIENT_OBSERVATION_DURATION` | is there enough ordered history to say anything | at least 12 ordered observations over at least 90 days |
+
+Too little history is reported as `NOT_EVALUABLE`, never `FAIL`: it is a "not yet", not a "no",
+and it resolves by itself as observations accumulate. **An unmeasured check never counts as
+passed.**
+
+**The report never opens the gate.** Opening needs the report *and* the owner setting
+`pathDependentActivation.state` to `ACTIVE`. Measured evidence alone would be self-approval; a
+switch alone would be blind. `validateMapping()` refuses a contract that stands the tier open
+while any check is not `PASS`, so the two locks cannot be short-circuited from either side.
+
+Today, with one published observation: `NO_RETROACTIVE_STATE_CHANGE` passes, the other six read
+`NOT_EVALUABLE`, measured readiness is `PENDING_HISTORY`.
 
 ## Measured breadth
 
@@ -140,7 +172,7 @@ with **0** titles missing required evidence:
 | `WATCH` | 843 |
 | `SETUP_FORMING` | 800 |
 | `CONFIRMED` | 16 |
-| `ACTIVE` / `RISK_RISING` / `INVALIDATED` / `EXIT` | 0 — path tier closed |
+| `ACTIVE` / `RISK_RISING` / `INVALIDATED` / `EXIT` | 0 — path tier closed by its own gate |
 
 Both `WATCH` paths earn their place: 620 titles via the trend rule, 223 via confirmed
 structure near the 52-week high. `CONFIRMED` is deliberately rare — it asks structure, trend, a

@@ -261,3 +261,6 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 }
 .trust-backtest{margin-top:16px}
 .trust-pending{font-style:italic}
+.setup-step.is-pending{opacity:.55}
+.setup-step.is-pending .setup-dot{background:transparent;border-top:2px dashed var(--line);height:0}
+.setup-pending{font-size:11px;font-style:italic}

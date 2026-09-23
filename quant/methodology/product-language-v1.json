@@ -675,6 +675,26 @@
           "tooltip": "Verlässt den Nenner, statt als Fehlschlag gezählt zu werden.",
           "negative": "Diese Bedingung lässt sich hier nicht prüfen.",
           "unavailable": "Diese Bedingung lässt sich hier nicht prüfen."
+        },
+        {
+          "id": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "internal": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "userLabel": "Verlauf noch nicht freigeschaltet",
+          "beginner": "Ob eine Situation läuft, sich verschlechtert, gebrochen ist oder ihr Ziel erreicht hat, wird noch nicht gezeigt. Dafür braucht es eine Reihe echter Beobachtungen über Zeit, und die wird gerade erst aufgebaut.",
+          "professionalLabel": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "tooltip": "Die Methodik ist freigegeben. Die vier Verlaufszustände haben ein eigenes Gate, das erst öffnet, wenn geordnete Historie vorliegt und sich darin wie beschrieben verhält.",
+          "negative": "Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen.",
+          "unavailable": "Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen. Dafür braucht es eine geordnete Reihe echter Beobachtungen über Zeit."
+        },
+        {
+          "id": "PENDING_HISTORY",
+          "internal": "PENDING_HISTORY",
+          "userLabel": "Wartet auf Historie",
+          "beginner": "Alles ist gebaut und geprüft; was fehlt, ist schlicht Zeit. Mit jeder weiteren Beobachtung wächst die Reihe, die dafür nötig ist.",
+          "professionalLabel": "PENDING_HISTORY",
+          "tooltip": "Ein Zustand, der sich von selbst auflöst — nicht durch eine Entscheidung, sondern durch Beobachtungen.",
+          "negative": "Es fehlt noch Historie.",
+          "unavailable": "Es fehlt noch Historie. Das ist kein Fehler, sondern der normale Verlauf beim Aufbau einer Beobachtungsreihe."
         }
       ]
     }

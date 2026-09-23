@@ -24,10 +24,20 @@
      reconstructed from today's data, because a reconstruction would be
      hindsight wearing a lifecycle's clothes.
 
-   The lifecycle is therefore only AVAILABLE when the mapping is
-   approved, the observation history carries the required ordered
-   observations and the inputs are complete. A classification alone is
-   never presented as a lifecycle state.
+   TWO LOCKS, held separately:
+
+   - the methodology approval covers the four states decidable from one
+     cutoff. Once given, they publish; they need no history because they
+     make no claim about one.
+   - the activation of the path-dependent tier is its own gate. Approving a
+     methodology does not make a course of events observable - that needs
+     real ordered history and evidence that the states behave in it the way
+     the methodology describes. Holding it separately means the methodology
+     never has to sit unapproved just to keep four states shut.
+
+   A classification alone is never presented as a lifecycle state, and a
+   published point-in-time state never implies the path tier was even
+   considered: `pathTier` says so in its own field.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -46,9 +56,21 @@
   var PIT_STATES = ["NO_SETUP", "WATCH", "SETUP_FORMING", "CONFIRMED"];
   var PATH_STATES = ["ACTIVE", "RISK_RISING", "INVALIDATED", "EXIT"];
 
+  /* Why a lifecycle state is not published. Two of these went away when the
+     mapping was approved for the point-in-time tier: a title with complete
+     evidence now always carries one of the four decidable states. */
   var UNAVAILABLE_REASONS = [
     "SETUP_INPUTS_INCOMPLETE",
+    "SETUP_MAPPING_NOT_APPROVED"
+  ];
+
+  /* Why the path-dependent tier is closed. This is a SEPARATE statement from
+     the lifecycle above: a title can carry a published point-in-time state
+     while the four course-of-events states were never even considered, and a
+     reader has to be able to tell those two apart. */
+  var PATH_CLOSED_REASONS = [
     "SETUP_MAPPING_NOT_APPROVED",
+    "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
     "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED",
     "INSUFFICIENT_OBSERVATION_HISTORY"
   ];
@@ -68,6 +90,25 @@
     if (!mapping || typeof mapping !== "object") return { valid: false, errors: ["stateMapping missing"] };
     if (typeof mapping.mappingVersion !== "string" || !mapping.mappingVersion) errors.push("mappingVersion missing");
     if (!mapping.approval || ["PENDING_OWNER", "APPROVED"].indexOf(mapping.approval.state) === -1) errors.push("invalid approval state");
+    var activation = mapping.pathDependentActivation;
+    if (!activation || ["PENDING_HISTORY", "ACTIVE"].indexOf(activation.state) === -1) {
+      errors.push("pathDependentActivation is missing or carries an unknown state");
+    } else {
+      if (!Array.isArray(activation.states) || activation.states.slice().sort().join(",") !== PATH_STATES.slice().sort().join(",")) {
+        errors.push("pathDependentActivation must name exactly the four path-dependent states");
+      }
+      if (!Array.isArray(activation.checks) || activation.checks.length < 7) {
+        errors.push("pathDependentActivation must carry its checks; a gate without them is a promise");
+      }
+      /* The gate may not stand open while a check it names has not passed.
+         Measured evidence and the owner's switch are both required, and
+         this is the half that cannot be argued with. */
+      if (activation.state === "ACTIVE") {
+        (activation.checks || []).forEach(function (check) {
+          if (check.state !== "PASS") errors.push("path tier is ACTIVE while check '" + check.id + "' is " + check.state);
+        });
+      }
+    }
     if (!mapping.cascade || mapping.cascade.semantics !== "FIRST_MATCH_WINS") errors.push("cascade must be first-match-wins");
     if (!mapping.cascade || !Array.isArray(mapping.cascade.rules) || !mapping.cascade.rules.length) errors.push("cascade has no rules");
     if (errors.length) return { valid: false, errors: errors };
@@ -205,8 +246,30 @@
     });
     if (!finite(input.close)) missing.push("close");
 
-    var historyOpen = !!input.previous && (input.historyDepth || 0) >= (mapping.tiers.PATH_DEPENDENT.minimumOrderedObservations || 2);
+    /* TWO LOCKS, not one.
+
+       The first is the methodology approval. It covers the four states that
+       are decidable from a single cutoff, and once it is given those states
+       publish - they need no history, because they make no claim about one.
+
+       The second is the activation of the path-dependent tier. A methodology
+       approval does not make a course of events observable: that needs real
+       ordered history AND evidence that the states behave in it the way the
+       methodology describes. The owner holds that lock separately, so the
+       methodology never has to sit unapproved just to keep four states shut. */
     var approved = mapping.approval.state === "APPROVED";
+    var activation = mapping.pathDependentActivation || { state: "PENDING_HISTORY" };
+    var historyOpen = !!input.previous && (input.historyDepth || 0) >= (mapping.tiers.PATH_DEPENDENT.minimumOrderedObservations || 2);
+
+    var pathClosedReason = !approved ? "SETUP_MAPPING_NOT_APPROVED"
+      : activation.state !== "ACTIVE" ? "PATH_DEPENDENT_STATES_NOT_ACTIVATED"
+      : !input.previous ? "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED"
+      : !historyOpen ? "INSUFFICIENT_OBSERVATION_HISTORY"
+      : null;
+    var pathTierOpen = pathClosedReason === null;
+    var pathTier = pathTierOpen
+      ? { state: "OPEN", reason: null }
+      : { state: "CLOSED", reason: pathClosedReason };
 
     if (missing.length) {
       return {
@@ -214,6 +277,7 @@
         mappingVersion: mapping.mappingVersion,
         classification: { state: "UNAVAILABLE", reason: "SETUP_INPUTS_INCOMPLETE", missing: missing },
         lifecycle: { state: null, availability: { state: "UNAVAILABLE", reason: "SETUP_INPUTS_INCOMPLETE" } },
+        pathTier: pathTier,
         matchedRule: null, direction: null, conditions: [], pathTierOpen: false
       };
     }
@@ -223,7 +287,7 @@
     for (var i = 0; i < mapping.cascade.rules.length; i++) {
       var rule = mapping.cascade.rules[i];
       var pathRule = rule.tier === "PATH_DEPENDENT";
-      if (pathRule && !historyOpen) { evaluated.push({ ruleId: rule.ruleId, state: rule.state, result: "NOT_EVALUABLE" }); continue; }
+      if (pathRule && !pathTierOpen) { evaluated.push({ ruleId: rule.ruleId, state: rule.state, result: "NOT_EVALUABLE" }); continue; }
       var hit = ruleMatches(rule, row, context);
       evaluated.push({ ruleId: rule.ruleId, state: rule.state, result: hit ? "MATCHED" : "NOT_MATCHED" });
       if (hit) { matched = rule; break; }
@@ -235,11 +299,13 @@
       ? { state: matched.state, reason: null, missing: [] }
       : { state: null, reason: "PATH_STATE_IS_NOT_A_CLASSIFICATION", missing: [] };
 
-    var lifecycle;
-    if (!approved) lifecycle = { state: null, availability: { state: "UNAVAILABLE", reason: "SETUP_MAPPING_NOT_APPROVED" } };
-    else if (!input.previous) lifecycle = { state: null, availability: { state: "UNAVAILABLE", reason: "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED" } };
-    else if (!historyOpen) lifecycle = { state: null, availability: { state: "UNAVAILABLE", reason: "INSUFFICIENT_OBSERVATION_HISTORY" } };
-    else lifecycle = { state: matched.state, availability: { state: "AVAILABLE", reason: null } };
+    /* With the mapping approved, a point-in-time state publishes on its own
+       evidence. A path-dependent state can only have been matched at all
+       when the second lock was open, so reaching here with one means it is
+       publishable too. */
+    var lifecycle = !approved
+      ? { state: null, availability: { state: "UNAVAILABLE", reason: "SETUP_MAPPING_NOT_APPROVED" } }
+      : { state: matched.state, availability: { state: "AVAILABLE", reason: null }, tier: matched.tier };
 
     return {
       engineVersion: ENGINE_VERSION,
@@ -249,7 +315,8 @@
       matchedRule: { ruleId: matched.ruleId, order: matched.order, state: matched.state, tier: matched.tier, plain: matched.plain, predicateHash: ruleHash(matched) },
       direction: matched.state === "NO_SETUP" ? "NEUTRAL" : "BULLISH",
       conditions: conditionsOf(matched, row, context),
-      pathTierOpen: historyOpen,
+      pathTier: pathTier,
+      pathTierOpen: pathTierOpen,
       evaluatedRules: evaluated
     };
   }
@@ -299,14 +366,25 @@
       if (Object.prototype.hasOwnProperty.call(observation, key)) errors.push("forbidden field '" + key + "'");
     });
     var lifecycle = observation.lifecycle || {};
+    var pathTier = observation.pathTier || {};
     if (lifecycle.availability && lifecycle.availability.state === "AVAILABLE") {
       if (STATES.indexOf(lifecycle.state) === -1) errors.push("available lifecycle without a canonical state");
-      if (!observation.pathTierOpen) errors.push("available lifecycle without ordered observation history");
       if (!observation.matchedRule || !observation.matchedRule.ruleId) errors.push("available lifecycle without the rule that decided it");
+      /* The point that matters: a course-of-events state may only be
+         published while the second lock is open. A point-in-time state may
+         be published without it, and must not be mistaken for one. */
+      if (PATH_STATES.indexOf(lifecycle.state) !== -1 && pathTier.state !== "OPEN") {
+        errors.push("path-dependent state '" + lifecycle.state + "' published while the path tier is closed");
+      }
     } else {
       if (lifecycle.state !== null) errors.push("unavailable lifecycle must not carry a state");
       if (UNAVAILABLE_REASONS.indexOf(lifecycle.availability && lifecycle.availability.reason) === -1) errors.push("unavailable lifecycle without a typed reason");
     }
+    if (["OPEN", "CLOSED"].indexOf(pathTier.state) === -1) errors.push("the path tier must say whether it is open");
+    if (pathTier.state === "CLOSED" && PATH_CLOSED_REASONS.indexOf(pathTier.reason) === -1) {
+      errors.push("a closed path tier without a typed reason");
+    }
+    if (pathTier.state === "OPEN" && pathTier.reason !== null) errors.push("an open path tier carries no reason");
     var classification = observation.classification || {};
     if (classification.state !== null && classification.state !== "UNAVAILABLE" && PIT_STATES.indexOf(classification.state) === -1) {
       errors.push("classification may only carry a point-in-time state");
@@ -324,6 +402,172 @@
   }
 
   /* ---------------------------------------------------------------------
+     THE ACTIVATION GATE FOR THE PATH-DEPENDENT TIER.
+
+     The owner approved the methodology and kept these four states shut
+     until the history exists and behaves. This measures the seven named
+     checks against the published observation history and reports each one
+     as PASS, FAIL or NOT_EVALUABLE.
+
+     It never opens the gate. Opening needs this report AND the owner
+     setting pathDependentActivation.state - measured evidence alone would
+     be self-approval, and a switch alone would be blind. While the history
+     is missing, every check reads NOT_EVALUABLE rather than PASS: an
+     unmeasured check that reports success is worse than no check at all.
+
+     `series` is the ordered observation history, oldest first:
+       [{ asOf, rows: { ticker: [state, invalidationPrice, exitPrice] } }]
+     --------------------------------------------------------------------- */
+  function activationGate(series, methodology) {
+    var mapping = methodology.stateMapping;
+    var activation = mapping.pathDependentActivation || {};
+    var spec = {};
+    (activation.checks || []).forEach(function (check) { spec[check.id] = check; });
+
+    var ordered = (series || []).slice().sort(function (a, b) { return a.asOf < b.asOf ? -1 : 1; });
+    var observations = ordered.length;
+    var spanDays = observations > 1
+      ? Math.round((Date.parse(ordered[observations - 1].asOf) - Date.parse(ordered[0].asOf)) / 86400000)
+      : 0;
+    var minimumObservations = (spec.SUFFICIENT_OBSERVATION_DURATION || {}).minimumObservations || 12;
+    var minimumSpanDays = (spec.SUFFICIENT_OBSERVATION_DURATION || {}).minimumSpanDays || 90;
+
+    var results = {};
+    function record(id, state, measured) {
+      results[id] = { id: id, label: (spec[id] || {}).label || id, state: state, measured: measured || null };
+    }
+
+    /* Duration first: it decides whether anything else can be said at all. */
+    /* Too little history is a "not yet", never a "no": it cannot fail
+       permanently, so calling it FAIL would misdescribe a gate that opens by
+       itself as time passes. */
+    var enough = observations >= minimumObservations && spanDays >= minimumSpanDays;
+    record("SUFFICIENT_OBSERVATION_DURATION", enough ? "PASS" : "NOT_EVALUABLE",
+      { observations: observations, spanDays: spanDays, minimumObservations: minimumObservations, minimumSpanDays: minimumSpanDays });
+
+    /* Integrity is checkable from the first observation onward: a stored
+       file either matches its own hash or it does not. */
+    var corrupt = ordered.filter(function (entry) { return entry.contentHashValid === false; }).length;
+    record("NO_RETROACTIVE_STATE_CHANGE", observations === 0 ? "NOT_EVALUABLE" : (corrupt ? "FAIL" : "PASS"),
+      { snapshots: observations, corrupt: corrupt });
+
+    if (observations < 2) {
+      ["TRANSITION_MATRIX", "STATE_PERSISTENCE", "REVERSAL_BEHAVIOUR",
+       "INVALIDATION_BEHAVIOUR", "EXIT_BEHAVIOUR"].forEach(function (id) {
+        record(id, "NOT_EVALUABLE", { orderedObservations: observations, needed: 2 });
+      });
+      return summarise(results, activation, mapping);
+    }
+
+    /* Transitions between consecutive observations of the same title. */
+    var matrix = {}, transitions = 0, impossible = [];
+    var runs = {}, open = {}, reversals = 0, reversalCandidates = 0;
+    var invalidationChecked = 0, invalidationUnbacked = 0;
+    var exitChecked = 0, exitUnbacked = 0;
+    var previousRows = ordered[0].rows || {};
+    var previousState = {}, priorState = {};
+    Object.keys(previousRows).forEach(function (ticker) { previousState[ticker] = previousRows[ticker][0]; open[ticker] = 1; });
+
+    for (var i = 1; i < observations; i++) {
+      var rows = ordered[i].rows || {};
+      Object.keys(rows).forEach(function (ticker) {
+        var to = rows[ticker][0];
+        var from = previousState[ticker];
+        if (!from) { previousState[ticker] = to; open[ticker] = 1; return; }
+        if (from === to) { open[ticker] = (open[ticker] || 0) + 1; }
+        else {
+          transitions += 1;
+          var key = from + ">" + to;
+          matrix[key] = (matrix[key] || 0) + 1;
+          if (!reachableTransition(from, to, mapping)) impossible.push(key);
+          (runs[from] = runs[from] || []).push(open[ticker] || 1);
+          if (priorState[ticker] === to) reversals += 1;
+          if (priorState[ticker]) reversalCandidates += 1;
+          /* A path state must be backed by the level stored in the row it
+             came from - otherwise it was reached without its evidence. */
+          if (to === "INVALIDATED") {
+            invalidationChecked += 1;
+            if (!finite(previousRows[ticker] && previousRows[ticker][1])) invalidationUnbacked += 1;
+          }
+          if (to === "EXIT") {
+            exitChecked += 1;
+            if (!finite(previousRows[ticker] && previousRows[ticker][2])) exitUnbacked += 1;
+          }
+          priorState[ticker] = from;
+          previousState[ticker] = to;
+          open[ticker] = 1;
+        }
+      });
+      previousRows = rows;
+    }
+
+    record("TRANSITION_MATRIX", impossible.length ? "FAIL" : (transitions ? "PASS" : "NOT_EVALUABLE"),
+      { transitions: transitions, distinct: Object.keys(matrix).length, matrix: matrix, impossible: impossible.slice(0, 10) });
+
+    var persistence = {}, persistenceOk = true, persistenceSeen = false;
+    PATH_STATES.forEach(function (state) {
+      var lengths = runs[state] || [];
+      if (!lengths.length) { persistence[state] = null; return; }
+      persistenceSeen = true;
+      var sorted = lengths.slice().sort(function (a, b) { return a - b; });
+      var median = sorted[Math.floor(sorted.length / 2)];
+      persistence[state] = { runs: lengths.length, medianObservations: median };
+      if (median < 2) persistenceOk = false;
+    });
+    record("STATE_PERSISTENCE", !persistenceSeen ? "NOT_EVALUABLE" : (persistenceOk ? "PASS" : "FAIL"), persistence);
+
+    var reversalShare = reversalCandidates ? reversals / reversalCandidates : null;
+    record("REVERSAL_BEHAVIOUR", reversalCandidates === 0 ? "NOT_EVALUABLE" : (reversalShare < 0.2 ? "PASS" : "FAIL"),
+      { reversals: reversals, candidates: reversalCandidates, share: reversalShare });
+
+    record("INVALIDATION_BEHAVIOUR", invalidationChecked === 0 ? "NOT_EVALUABLE" : (invalidationUnbacked ? "FAIL" : "PASS"),
+      { observed: invalidationChecked, withoutStoredLevel: invalidationUnbacked });
+    record("EXIT_BEHAVIOUR", exitChecked === 0 ? "NOT_EVALUABLE" : (exitUnbacked ? "FAIL" : "PASS"),
+      { observed: exitChecked, withoutStoredZone: exitUnbacked });
+
+    return summarise(results, activation, mapping);
+  }
+
+  /* Can the cascade produce this transition at all? Every state is
+     reachable from every other except where a path rule names the states it
+     may follow - a transition outside those is evidence that something
+     other than the mapping produced it. */
+  function reachableTransition(from, to, mapping) {
+    if (PATH_STATES.indexOf(to) === -1) return true;
+    var allowed = [];
+    (mapping.cascade.rules || []).forEach(function (rule) {
+      if (rule.state !== to) return;
+      (rule.historyConditions || []).forEach(function (condition) {
+        if (condition.input === "previous.setupState" && condition.operator === "in") {
+          allowed = allowed.concat(condition.value);
+        }
+      });
+    });
+    return allowed.length === 0 || allowed.indexOf(from) !== -1;
+  }
+
+  function summarise(results, activation, mapping) {
+    var checks = Object.keys(results).map(function (id) { return results[id]; });
+    var failed = checks.filter(function (check) { return check.state === "FAIL"; });
+    var pending = checks.filter(function (check) { return check.state === "NOT_EVALUABLE"; });
+    var allPass = checks.length > 0 && failed.length === 0 && pending.length === 0;
+    return {
+      gate: "PATH_DEPENDENT_STATES_ACTIVATION",
+      mappingVersion: mapping.mappingVersion,
+      contractState: activation.state || "PENDING_HISTORY",
+      states: PATH_STATES.slice(),
+      checks: checks,
+      measuredReadiness: allPass ? "READY" : (failed.length ? "FAILED" : "PENDING_HISTORY"),
+      /* Two locks. This report is only one of them, and it says so. */
+      active: allPass && activation.state === "ACTIVE",
+      blockedBy: failed.map(function (c) { return c.id; }).concat(pending.map(function (c) { return c.id; })),
+      note: allPass
+        ? "Alle Pruefungen bestanden. Die Aktivierung verlangt zusaetzlich, dass der Owner pathDependentActivation.state auf ACTIVE setzt."
+        : "Das Gate bleibt geschlossen. Eine nicht auswertbare Pruefung zaehlt nicht als bestanden."
+    };
+  }
+
+  /* ---------------------------------------------------------------------
      Wire format. The static part of a rule lives once per shard; a title
      carries only what is true about that title.
      --------------------------------------------------------------------- */
@@ -333,6 +577,8 @@
       cr: observation.classification.reason,
       l: observation.lifecycle.state,
       lr: observation.lifecycle.availability.reason,
+      p: observation.pathTier ? observation.pathTier.state : "CLOSED",
+      pr: observation.pathTier ? observation.pathTier.reason : "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
       r: observation.matchedRule ? observation.matchedRule.ruleId : null,
       d: observation.direction,
       k: (observation.conditions || []).map(function (condition) {
@@ -347,10 +593,11 @@
       engineVersion: ENGINE_VERSION,
       mappingVersion: mapping.mappingVersion,
       classification: { state: compacted.c, reason: compacted.cr, missing: [] },
-      lifecycle: { state: compacted.l, availability: { state: compacted.l === null ? "UNAVAILABLE" : "AVAILABLE", reason: compacted.lr } },
+      lifecycle: { state: compacted.l, availability: { state: compacted.l === null ? "UNAVAILABLE" : "AVAILABLE", reason: compacted.lr }, tier: rule ? rule.tier : null },
+      pathTier: { state: compacted.p || "CLOSED", reason: compacted.p === "OPEN" ? null : (compacted.pr || "PATH_DEPENDENT_STATES_NOT_ACTIVATED") },
       matchedRule: rule ? { ruleId: rule.ruleId, order: rule.order, state: rule.state, tier: rule.tier, plain: rule.plain, predicateHash: null } : null,
       direction: compacted.d,
-      pathTierOpen: compacted.l !== null,
+      pathTierOpen: compacted.p === "OPEN",
       conditions: (compacted.k || []).map(function (entry, index) {
         var source = rule ? (rule.historyConditions || []).concat(rule.filters || [])[index] : null;
         var field = source && source.field ? Catalog.field(source.field) : null;
@@ -374,8 +621,10 @@
     PIT_STATES: PIT_STATES.slice(),
     PATH_STATES: PATH_STATES.slice(),
     UNAVAILABLE_REASONS: UNAVAILABLE_REASONS.slice(),
+    PATH_CLOSED_REASONS: PATH_CLOSED_REASONS.slice(),
     UNIVERSE: UNIVERSE,
     validateMapping: validateMapping,
+    activationGate: activationGate,
     assertMapping: assertMapping,
     predicateOfRule: predicateOfRule,
     ruleHash: ruleHash,
