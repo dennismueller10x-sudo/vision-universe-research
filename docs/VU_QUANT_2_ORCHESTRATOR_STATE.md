@@ -419,6 +419,39 @@ the mapping decision is then taken against measurement rather than against a pla
 
 ## OWNER_DECISIONS
 
+### 2026-09-23 — `total_debt` = OPTION_B
+
+```
+TOTAL_DEBT_METHOD          = OPTION_B
+LONG_TERM_DEBT_FALLBACK    = false
+FINANCE_LEASE_SILENT_MERGE = false
+```
+
+Machine-readable in `quant/methodology/fundamentals-debt-v1.json` (`gateStatus`), enforced by
+`quant/tests/fundamentals-debt-contract.test.mjs`. Option B was already the code's behaviour;
+what was missing was a written, versioned, machine-checked decision. Without one a later
+registry edit drifts the metric into a different meaning under the same name, and nobody
+notices, because the name does not change. The test reads the registry and `derived.py`
+directly and was verified against both forbidden edits — adding `us-gaap:LongTermDebt` to
+`total_debt`, and adding a finance lease concept to `short_term_debt` — each of which fails it.
+
+Each prohibition carries its measured price, so it can be revisited against evidence rather
+than re-argued: refusing the long-term substitution costs 527 issuers; requiring finance leases
+would cost 1,648.
+
+Finance leases stay `NOT_MODELLED` (measured reach 1,753) — the owner permitted a separately
+named metric, did not commission one. The 1,692 issuers with no debt concept at all are
+recorded as an open measurement with `blocksProduct: false`.
+
+### 2026-09-23 — Setup State V1
+
+Already in place from the previous section and re-verified against the owner's wording, not
+re-applied: `SETUP_MAPPING_V1_APPROVED = PASS`, `SNAPSHOT_STATES_ACTIVE = PASS`,
+`PATH_DEPENDENT_STATES_ACTIVE = false`, `PATH_DEPENDENT_STATES_GATE = PENDING_HISTORY`;
+`approval.state = APPROVED`, owner `info@visionuniverse.de`, `2026-09-23`; the seven named
+checks are the ones the activation gate measures.
+
+
 - GitHub/main, reviewed release artifacts and Production are the source of truth; chat history is not.
 - Discovery is a separate product and remains a hard no-change gate.
 - No second data pipeline, Fundamentals layer, Tiingo integration, realtime infrastructure,
