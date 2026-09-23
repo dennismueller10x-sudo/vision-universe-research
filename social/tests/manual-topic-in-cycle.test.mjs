@@ -198,16 +198,26 @@ test("MT12 · POST ZU THEMA MSFT findet und hydriert das echte VERIFIED Creative
      "vu-msft-20260918" als VERIFIED — dieselbe content_id, unter der
      PR #179 dispatcht wurde, nicht ein Hash.
 
-     Ob daraus am Ende ein Kandidat mit chatgpt-work als Autor wird,
-     haengt an einer weiteren, hier bewusst NICHT geloesten Frage: die
-     Faktenpruefung (Claim Binding) braucht Belege, die AUDIENCE_
-     SEPARATION teils entfernt hat — ein Versuch, das aufzuloesen, liess
-     echte interne Begriffe in den oeffentlichen Text durchsickern (der
-     genaue Vorfall, den AUDIENCE_SEPARATION verhindern soll). Dieser
-     Test verlangt deshalb nur, was heute ehrlich zutrifft: entweder ein
-     chatgpt-work-Kandidat, oder ein sauber gemeldeter Verwurf an der
-     AUTHORING-Stufe — niemals ein stiller Template-Rueckfall auf ein
-     Thema, zu dem ein VERIFIED Ergebnis vorliegt. */
+     Ob daraus am Ende ein Kandidat mit chatgpt-work als Autor wird, war
+     lange offen: die reale, archivierte PR #179-Caption nennt woertlich
+     interne Begriffe ("Technical Opportunity Score", "TREND_STRUCTURE",
+     "MOMENTUM") und scheitert deshalb zuverlaessig an AUDIENCE_
+     SEPARATION — nicht an einem Fehler dieses Codes, sondern am Text
+     selbst (Owner-Befund "MSFT NEGATIVE HOOK FIXTURE", 23.09.).
+
+     Die Owner-Entscheidung "CLAIM BINDING VS AUDIENCE SEPARATION"
+     (23.09.) loeste das ausdruecklich NICHT durch Erfinden eines neuen
+     Textes und NICHT durch einen neuen ChatGPT-Work-Auftrag, sondern
+     durch redaktionelle Korrektur: scheitert der gewaehlte Autor an
+     AUDIENCE_SEPARATION, versucht run-social-cycle.mjs TEMPLATE (der
+     ausschliesslich aus oeffentlich zulaessigen Belegen komponiert)
+     als Ersatz — und traegt das ehrlich in `editorialCorrection` ein,
+     mit dem verdraengten Autor beim Namen. Das bestehende Bild/die
+     Produktion aus PR #179 bleibt dabei unveraendert erhalten
+     (`production`/`visualType`). Ein ERFOLGREICHER Template-Kandidat
+     OHNE diese Kennzeichnung waere der stille Rueckfall, den dieser
+     Test seit dem 21.09.-Vorfall verhindern soll — mit ihr ist er die
+     vom Owner angeordnete Reparatur. */
   const rel = platz("msft-reuse");
   const contentIdOrdner = join(ROOT, "authoring/requests/vu-msft-20260918");
   try {
@@ -224,17 +234,36 @@ test("MT12 · POST ZU THEMA MSFT findet und hydriert das echte VERIFIED Creative
       "gefunden werden.");
 
     if (bericht.packages.length >= 1) {
-      assert.equal(bericht.packages[0].authoring.authorId, "chatgpt-work",
-        "Ein VERIFIED Ergebnis lag bereits vor — ein Template-Kandidat " +
-        "waere die Regression vom 23.09.");
+      const authoring = bericht.packages[0].authoring;
+      if (authoring.authorId === "chatgpt-work") {
+        assert.equal(authoring.editorialCorrection, null,
+          "chatgpt-work als Autor ohne redaktionelle Korrektur heisst: " +
+          "der Originaltext hat AUDIENCE_SEPARATION diesmal bestanden.");
+      } else {
+        assert.equal(authoring.authorId, "template",
+          "Nur TEMPLATE ist als redaktioneller Ersatzautor vorgesehen.");
+        assert.ok(authoring.editorialCorrection,
+          "Ein Template-Kandidat auf einem Thema mit VERIFIED-Ergebnis " +
+          "MUSS als redaktionelle Korrektur gekennzeichnet sein — sonst " +
+          "ist es der stille Rueckfall, den dieser Test verhindern soll.");
+        assert.equal(authoring.editorialCorrection.originalAuthorId,
+          "chatgpt-work",
+          "Die Korrektur muss den verdraengten Autor ehrlich benennen.");
+      }
+      assert.equal(bericht.packages[0].visualType, "GENERATIVE",
+        "Das Bild aus PR #179 muss erhalten bleiben, auch wenn der " +
+        "Text redaktionell ersetzt wurde — kein neuer ChatGPT-Work-Auftrag.");
     } else {
       const verwurf = (bericht.rejections || [])
         .find((r) => r.topic && r.topic.startsWith("MSFT"));
       assert.ok(verwurf, "Ohne Kandidat muss ein benannter Verwurf stehen.");
-      assert.equal(verwurf.stage, "AUTHORING",
-        "Ein Verwurf VOR der Autorenstufe (z. B. EVIDENCE_SUFFICIENCY) " +
-        "waere wieder der urspruengliche Befund, nicht der ungeloeste " +
-        "Rest davon.");
+      assert.equal(verwurf.stage, "CREATIVE_REVISION_REQUIRED",
+        "Scheitern sowohl chatgpt-work ALS AUCH die redaktionelle " +
+        "TEMPLATE-Korrektur an AUDIENCE_SEPARATION, ist das kein neuer " +
+        "Fehler, sondern der Fall aus Abschnitt 6 der Owner-Entscheidung: " +
+        "nicht erfinden, sondern den Kandidaten als ueberarbeitungs- " +
+        "bedueftig kennzeichnen. Ein Verwurf VOR der Autorenstufe (z. B. " +
+        "EVIDENCE_SUFFICIENCY) waere wieder der urspruengliche Befund.");
     }
   } finally {
     rmSync(join(ROOT, rel), { recursive: true, force: true });

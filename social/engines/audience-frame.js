@@ -64,7 +64,20 @@
   var INTERN_NICHT_IM_HOOK = [
     "Technical Opportunity Score", "Setup-Rang", "Perzentil", "z-Score",
     "TREND_STRUCTURE", "VOLATILITY", "MOMENTUM", "ATR", "SMA",
-    "methodischer Rang", "Trendwert", "Faktorprämie"
+    "methodischer Rang", "Trendwert", "Faktorprämie",
+    /* -----------------------------------------------------------------
+       Owner-Entscheidung "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.):
+       TREND_STRUCTURE/VOLATILITY/MOMENTUM standen bereits hier, aber
+       drei der sechs Score-Beitragsfamilien fehlten
+       (quant/engines/technical/technical-score.js DEFAULTS.maxContribution:
+       TREND_STRUCTURE, MOMENTUM, VOLUME, VOLATILITY, SETUP,
+       PROJECTION_AUXILIARY). "Beitrag VOLUME"/"Beitrag SETUP"/"Beitrag
+       PROJECTION_AUXILIARY" sind dieselbe Wortart wie die bereits
+       gesperrten drei und rutschten deshalb unveraendert durch
+       AUDIENCE_SEPARATION - genau der Fehler, den die vorhandene Liste
+       verhindern soll, nur an einer Stelle, die niemand nachgetragen
+       hatte. */
+    "VOLUME", "SETUP", "PROJECTION_AUXILIARY"
   ];
 
   /* -------------------------------------------------------------------

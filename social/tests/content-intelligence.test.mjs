@@ -300,3 +300,40 @@ test("CI23 · Im Satz wird der Schluessel gefunden, der Satzpunkt nicht", () => 
   assert.deepEqual(
     CI.schluesselImText("So weit lagen sie seit 1999 nicht auseinander."), []);
 });
+
+/* ------------------------------------------------------------------ */
+/* OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)  */
+/* ------------------------------------------------------------------ */
+
+test("CI24 · interneTreffer() erkennt einen Begriff unabhaengig von Gross-/Kleinschreibung", () => {
+  /* Der reale Vorfall: evidence-package.js schreibt den Momentum-
+     Belegsatz als "Momentum POSITIV, Wert 70.4." - mit grossem M,
+     kleinem Rest. Die Sperrliste fuehrt "MOMENTUM" (Grossschreibung,
+     die Score-Beitragsfamilie). Diese Wache prueft mit dem "i"-Flag
+     und faengt den Satz trotzdem - Filter, die VOR dieser Wache
+     sitzen (TEMPLATE-Autor, hook.js-Kandidaten, schreiberAus()
+     thesis()), muessen deshalb ebenfalls gross-/kleinschreibungs-
+     unabhaengig pruefen, sonst lassen sie durch, was hier trotzdem
+     scheitert. */
+  const treffer = CI.interneTreffer(
+    "Momentum POSITIV, Wert 70.4.", AF.INTERN_NICHT_IM_HOOK);
+  assert.ok(treffer.indexOf("MOMENTUM") !== -1,
+    "'Momentum' (Belegtext) muss 'MOMENTUM' (Sperrliste) treffen.");
+});
+
+test("CI25 · Alle sechs Score-Beitragsfamilien stehen auf der Sperrliste", () => {
+  /* quant/engines/technical/technical-score.js DEFAULTS.maxContribution
+     nennt sechs Familien; evidence-package.js schreibt daraus
+     "Beitrag <FAMILIE>"-Belegsaetze woertlich mit dem internen
+     Codenamen. Vor der Owner-Entscheidung standen nur drei der sechs
+     auf der Sperrliste (TREND_STRUCTURE, VOLATILITY, MOMENTUM) - die
+     anderen drei (VOLUME, SETUP, PROJECTION_AUXILIARY) rutschten in
+     genau derselben Wortform durch. */
+  ["TREND_STRUCTURE", "MOMENTUM", "VOLUME", "VOLATILITY", "SETUP",
+    "PROJECTION_AUXILIARY"].forEach((fam) => {
+    const treffer = CI.interneTreffer(
+      "Beitrag " + fam, AF.INTERN_NICHT_IM_HOOK);
+    assert.ok(treffer.length > 0,
+      "'Beitrag " + fam + "' muss als interner Begriff erkannt werden.");
+  });
+});

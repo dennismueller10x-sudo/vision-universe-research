@@ -52,6 +52,8 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
+  var AudienceFrame = isNode ? require("../../../engines/audience-frame.js")
+    : global.VUSocialAudienceFrame;
 
   /* Ein Wert in der Form, in der er im Text steht. */
   function wert(e) {
@@ -379,6 +381,44 @@
 
       write: function (brief, opts) {
         opts = opts || {};
+
+        /* -----------------------------------------------------------------
+           PUBLIC CLAIM ELIGIBILITY (Owner-Entscheidung, 23.09.)
+
+           Dieser Autor zitiert Belegsaetze WOERTLICH (belegsaetze(),
+           auswahl(), jedes HOOK_PATTERN/CAPTION_PATTERN ueber e.metric/
+           e.statement) - er ist im Sinn der Owner-Architektur die
+           EINZIGE Stelle, die TRUSTED_EVIDENCE in PUBLIC_COPY uebersetzt.
+           `brief.evidence` traegt seit der Trennung von Faktenpruefung
+           und AUDIENCE_SEPARATION die volle, ungefilterte Evidenz (sonst
+           kaeme die Faktenpruefung nicht an reale ChatGPT-Work-Zahlen
+           heran, die ein audience-gefilterter Beleg nicht mehr trug -
+           der reale MSFT-Fall). Ein Autor, der Belegtext direkt zitiert,
+           darf diese ungefilterte Liste nicht bekommen: genau das liess
+           interne Begriffe ("Technical Opportunity Score", "Setup-Rang",
+           "TREND_STRUCTURE", "MOMENTUM") woertlich in PUBLIC_HOOK/
+           PUBLIC_STORY durchsickern - der Vorfall, den AUDIENCE_
+           SEPARATION verhindern soll.
+
+           Gefiltert wird deshalb HIER, am Ort des Zitierens, nicht
+           stromaufwaerts: die Faktenpruefung (claim-binding,
+           content.js::FACT_CHECK) sieht weiterhin die volle Evidenz -
+           nur was dieser Autor tatsaechlich in einen Satz uebernimmt,
+           ist auf oeffentlich zulaessige Belege beschraenkt. */
+        /* Gross-/Kleinschreibung ignoriert: die Wache in content-
+           intelligence.js (interneTreffer) prueft selbst case-insensitiv
+           ("i"-Flag). Ein Beleg, dessen Satz "Momentum" (nicht
+           "MOMENTUM") schreibt, waere an dieser Stelle sonst nicht
+           herausgefiltert worden und wuerde trotzdem an der Wache
+           scheitern - genau der reale MSFT-Befund. */
+        var oeffentlicheEvidenz = (brief.evidence || []).filter(function (e) {
+          var satz = String((e && e.statement) || "").toLowerCase();
+          return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(function (begriff) {
+            return satz.indexOf(String(begriff).toLowerCase()) !== -1;
+          });
+        });
+        brief = Object.assign({}, brief, { evidence: oeffentlicheEvidenz });
+
         var e = leitbeleg(brief);
         if (!e) {
           return { variants: [], reason: "Kein Beleg im Brief. Ohne Beleg kein Satz." };
