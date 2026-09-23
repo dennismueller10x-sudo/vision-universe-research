@@ -879,7 +879,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "uhr_aufgehoben=" + (kWirksam.aufgehobenerGrund || ""),
       "creative_symbol=" + (creative.symbol || ""),
       "creative_content_id=" + (creative.contentId || ""),
-      "creative_reason=" + (creative.code || "REQUIRED")
+      "creative_reason=" + (creative.code || "REQUIRED"),
+      /* JETZT POST ERSTELLEN ohne Thema (MANUAL_NOW) waehlt storyBestesThema()
+         weiter oben, aber nur fuer den Creative-Job-Dispatch (creativeBedarf()).
+         run-social-cycle.mjs (VORBEREITEN) ist ein eigener Prozess und kennt
+         dieses Urteil nicht - ohne diese Zeile faellt VORBEREITEN fuer
+         MANUAL_NOW auf die Ladder (Opportunity.score) zurueck, genau die
+         Abhaengigkeit, die die Owner-Direktive §2/§17 verbietet. Der Text
+         reist ueber denselben Kanal wie POST ZU THEMA (--thema-freitext,
+         themaVomOwner()) und wird dort ueber VisualDaten.symbolAus() auf
+         dasselbe Instrument abgebildet, das storyBestesThema() schon fand. */
+      "manual_now_thema=" + (manualNowThema ? manualNowThema.topic : "")
     ].join("\n") + "\n";
     appendFileSync(process.env.GITHUB_OUTPUT, zeilen);
   }

@@ -386,3 +386,35 @@ test("OR14 · storyBestesThema() waehlt nach Story, nicht nach Opportunity.score
     rmSync(wurzel, { recursive: true, force: true });
   }
 });
+
+/* ------------------------------------------------------------------ */
+/* REGRESSION: storyBestesThema() MUSS BIS ZUR KANDIDATENBILDUNG       */
+/* REISEN, NICHT NUR BIS ZUM CREATIVE-JOB-DISPATCH                     */
+/*                                                                      */
+/* Realer Befund (23.09., Lauf 35879671695): der erste produktive      */
+/* MANUAL_NOW-Lauf nach der Golden-Path-Integration waehlte storyBestes-*/
+/* Thema() korrekt fuer creativeBedarf() (Creative Job), aber          */
+/* VORBEREITEN (run-social-cycle.mjs, ein eigener Prozess) kannte      */
+/* dieses Urteil nicht und fiel auf die Ladder (Opportunity.score)     */
+/* zurueck - der Kandidat wurde aus "Comeback?" gebaut, dem Ranking-    */
+/* Thema, DATA_CARD statt GENERATIVE, mit dem Hook "420 von 5954       */
+/* geprueften Titeln" - der vom Owner ausdruecklich benannten NEGATIVE  */
+/* HOOK FIXTURE. Das Hard Final Creative Gate griff nicht, weil es nur */
+/* fuer visualType===GENERATIVE gilt.                                  */
+/* ------------------------------------------------------------------ */
+test("OR15 · MANUAL_NOW reicht storyBestesThema() bis zu VORBEREITEN durch", () => {
+  const skript = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "..", "..",
+      "scripts/social/run-orchestrator.mjs"), "utf8");
+  assert.match(skript, /manual_now_thema=.*manualNowThema/,
+    "run-orchestrator.mjs muss manualNowThema im --github-output ausgeben - " +
+    "sonst kennt VORBEREITEN (ein eigener Prozess) die Story-Auswahl nicht.");
+
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+  const vorbereitenBlock = yml.slice(yml.indexOf("VORBEREITEN — bis zum Publishing Gate"));
+  assert.match(vorbereitenBlock.slice(0, 3000),
+    /MANUAL_NOW['"]?\s*&&\s*steps\.plan\.outputs\.manual_now_thema/,
+    "VORBEREITEN muss VU_SOCIAL_THEMA_FREITEXT bei MANUAL_NOW aus " +
+    "steps.plan.outputs.manual_now_thema setzen - sonst waehlt run-social-cycle.mjs " +
+    "wieder ueber die Ladder (Opportunity.score) statt ueber die Story.");
+});
