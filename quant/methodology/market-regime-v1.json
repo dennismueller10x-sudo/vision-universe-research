@@ -1,0 +1,84 @@
+{
+ "schemaVersion": "market-regime-1.0.0",
+ "methodologyVersion": "market-regime-v1.0.0",
+ "status": "APPROVED",
+ "effectiveFrom": "2026-09-23",
+ "purpose": "Beschreibt, wie breit der gemessene Markt an einem Stichtag getragen ist. Nicht, wohin er geht. Die Kennzahl beantwortet die Frage 'wie viele Titel stehen gerade gut da' und keine einzige Frage über die Zukunft.",
+ "notAForecast": "Dies ist eine Zustandsbeschreibung der Gegenwart. Es ist kein Timing-Signal, keine Empfehlung, keine Prognose und keine Aussage darüber, ob ein Einstieg jetzt günstig ist. Wer daraus eine Handlung ableitet, tut das ohne Grundlage in dieser Methodik.",
+ "scope": {
+  "universe": "Die Titel der veröffentlichten technischen Materialisierung. Das ist NICHT der Gesamtmarkt und kein Index: es ist das gemessene Produktuniversum, und die Zahlen beziehen sich ausschließlich darauf.",
+  "source": "quant/data/product/technical-signals-v1",
+  "cutoff": "Der dataCutoff der technischen Materialisierung. Kein Wert aus der Zukunft."
+ },
+ "tiers": {
+  "POINT_IN_TIME": {
+   "states": ["BROAD_STRENGTH", "MIXED", "BROAD_WEAKNESS"],
+   "decidableFromOneCutoff": true,
+   "note": "Aus einem einzigen Stichtag entscheidbar. Bewusst OHNE Hysterese: ein geglätteter Zustand wäre eine Aussage über einen Verlauf, und die gehört in die zweite Stufe. Der Zustand darf deshalb zwischen zwei Läufen wechseln, und das ist kein Fehler, sondern die ehrliche Form einer Momentaufnahme."
+  },
+  "PATH_DEPENDENT": {
+   "states": ["REGIME_SHIFT", "REGIME_PERSISTING", "REGIME_WEAKENING"],
+   "decidableFromOneCutoff": false,
+   "minimumOrderedObservations": 12,
+   "minimumObservationDays": 90,
+   "note": "Übergänge, Hysterese und Beharrung sind Aussagen über einen Verlauf. Sie verlangen eine echte, geordnete Beobachtungshistorie und werden nie aus heutigen Daten rekonstruiert."
+  }
+ },
+ "measures": [
+  {"id": "above200", "label": "Anteil über der 200-Tage-Linie", "input": "close > featuresAtCutoff.sma200", "minimumCoverage": 0.8,
+   "why": "Die breiteste und langsamste der sechs. Sie sagt, wie viele Titel überhaupt in einem langfristig aufwärts gerichteten Kursbild stehen."},
+  {"id": "above50", "label": "Anteil über der 50-Tage-Linie", "input": "close > featuresAtCutoff.sma50", "minimumCoverage": 0.8,
+   "why": "Dieselbe Frage auf kürzerer Sicht. Weicht sie stark von above200 ab, ist die Lage im Umbruch - was hier beschrieben, aber nicht bewertet wird."},
+  {"id": "trendBullish", "label": "Anteil mit aufwärts gerichtetem Trend", "input": "bundle.trend.direction === BULLISH", "minimumCoverage": 0.8,
+   "why": "Die Trendklassifikation der bestehenden technischen Engine, nicht neu gerechnet."},
+  {"id": "trendBearish", "label": "Anteil mit abwärts gerichtetem Trend", "input": "bundle.trend.direction === BEARISH", "minimumCoverage": 0.8, "why": "Die Gegenseite, immer mitveröffentlicht."},
+  {"id": "near52wHigh", "label": "Anteil höchstens 10 % unter dem 52-Wochen-Hoch", "input": "featuresAtCutoff.distanceTo52wHigh >= -0.10", "minimumCoverage": 0.8,
+   "why": "Misst, ob die Stärke von vielen Titeln getragen wird oder von wenigen."},
+  {"id": "volatilityHigh", "label": "Anteil in hohem Volatilitätsregime", "input": "bundle.volatility.regime === HIGH", "minimumCoverage": 0.8,
+   "why": "Steht neben den Trendmaßen, weil eine breite Aufwärtslage bei hoher Volatilität etwas anderes ist als bei ruhiger."}
+ ],
+ "cascade": {
+  "semantics": "FIRST_MATCH_WINS",
+  "exhaustive": true,
+  "note": "Die Reihenfolge ist Teil der Methodik. Genau ein Zustand je Stichtag.",
+  "rules": [
+   {"ruleId": "regime.broad-weakness", "order": 1, "state": "BROAD_WEAKNESS", "tier": "POINT_IN_TIME",
+    "all": [{"measure": "above200", "operator": "lte", "value": 0.40}, {"measure": "trendBearish", "operator": "gte", "value": 0.35}],
+    "plain": "Weniger als zwei von fünf Titeln stehen über ihrer langfristigen Durchschnittslinie, und mehr als ein Drittel ist abwärts gerichtet.",
+    "rationale": "Beide Maße müssen zutreffen. Ein niedriger Anteil über der 200-Tage-Linie allein kann eine Seitwärtsphase sein; erst zusammen mit einem breiten Abwärtstrend beschreibt es eine schwache Lage."},
+   {"ruleId": "regime.broad-strength", "order": 2, "state": "BROAD_STRENGTH", "tier": "POINT_IN_TIME",
+    "all": [{"measure": "above200", "operator": "gte", "value": 0.60}, {"measure": "trendBullish", "operator": "gte", "value": 0.40}],
+    "plain": "Mindestens drei von fünf Titeln stehen über ihrer langfristigen Durchschnittslinie, und mindestens zwei von fünf sind aufwärts gerichtet.",
+    "rationale": "Bewusst strenger als die Umkehrung der Schwächeregel. Eine breite Stärke zu behaupten verlangt mehr Beleg als sie zu verneinen."},
+   {"ruleId": "regime.mixed", "order": 3, "state": "MIXED", "tier": "POINT_IN_TIME", "always": true,
+    "plain": "Ein Teil des Marktes trägt, ein anderer nicht.",
+    "rationale": "Auffangzustand und eine vollwertige Antwort. Der häufigste Fall ist, dass ein Markt weder breit stark noch breit schwach ist, und das zu benennen ist ehrlicher, als eine der beiden Seiten zu erzwingen."}
+  ]
+ },
+ "thresholdPolicy": {
+  "kind": "DESCRIPTIVE_ONLY",
+  "fittedToOutcomes": false,
+  "note": "Die Schwellen sind runde, vorab gesetzte Anteile (40 %, 60 %, 35 %, 40 %). Sie sind NICHT gegen historische Marktergebnisse optimiert - eine an Ergebnissen justierte Schwelle wäre genau die Überanpassung, die hier ausgeschlossen bleibt, und sie würde aus einer Beschreibung eine Behauptung machen."
+ },
+ "unavailableReasons": ["MARKET_REGIME_INPUT_COVERAGE_TOO_LOW", "MARKET_REGIME_UNIVERSE_TOO_SMALL"],
+ "minimumUniverse": 500,
+ "pathDependentActivation": {
+  "state": "PENDING_HISTORY",
+  "states": ["REGIME_SHIFT", "REGIME_PERSISTING", "REGIME_WEAKENING"],
+  "twoLocks": "Die Methodik dieser Stufe ist geschrieben, aber nicht aktiviert. Aktivierung verlangt die gemessenen Prüfungen UND eine ausdrückliche Freigabe im Vertrag - gemessene Evidenz allein wäre Selbstfreigabe, eine Freigabe allein wäre blind.",
+  "checks": [
+   {"id": "SUFFICIENT_OBSERVATION_DURATION", "state": "NOT_EVALUABLE", "requires": "12 geordnete Beobachtungen über mindestens 90 Tage"},
+   {"id": "TRANSITION_MATRIX", "state": "NOT_EVALUABLE", "requires": "Beobachtete Übergänge zwischen allen drei Zuständen"},
+   {"id": "STATE_PERSISTENCE", "state": "NOT_EVALUABLE", "requires": "Belegte mittlere Verweildauer je Zustand"},
+   {"id": "NO_RETROACTIVE_STATE_CHANGE", "state": "NOT_EVALUABLE", "requires": "Keine veröffentlichte Beobachtung wurde nachträglich geändert"},
+   {"id": "HYSTERESIS_BEHAVIOUR", "state": "NOT_EVALUABLE", "requires": "Belegtes Verhalten an den Schwellen, ohne Flattern"}
+  ],
+  "report": "quant/data/product/market-regime-v1.json"
+ },
+ "gateStatus": {
+  "MARKET_REGIME_POINT_IN_TIME_ACTIVE": "PASS",
+  "MARKET_REGIME_TRANSITIONS_ACTIVE": false,
+  "MARKET_REGIME_TRANSITIONS_GATE": "PENDING_HISTORY",
+  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss."
+ }
+}

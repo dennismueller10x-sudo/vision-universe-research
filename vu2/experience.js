@@ -280,20 +280,65 @@ function setupDistribution(index){
   el('p',{class:'muted',text:'Der Auffangzustand trägt keine Titelliste: er ist kein Merkmal, sondern das, was keine andere Regel genommen hat.'})]));
  return section;
 }
+/* Wie breit der gemessene Markt heute getragen ist. Ausdruecklich eine
+   Beschreibung der Gegenwart: kein Timing-Signal, keine Prognose, keine
+   Empfehlung. Die Uebergangsstufe steht sichtbar daneben als noch nicht
+   freigeschaltet, damit ihre Abwesenheit nicht wie ein Befund aussieht. */
+function marketRegimeSection(regime){
+ const section=el('section',{class:'section regime-section'},[...sectionHead('Marktumfeld','marketRegime')]);
+ if(!regime||regime.state!=='AVAILABLE'){
+  section.append(notice(LU('marketRegime'),
+   regime&&regime.reason&&VUProductLanguage.has(regime.reason)?LB(regime.reason):LB('marketRegime')));
+  return section;
+ }
+ section.append(el('p',{class:'regime-lead'},[
+  el('span',{class:'setup-badge state-'+regime.regime,text:L(regime.regime)}),
+  el('span',{class:'muted',text:LB(regime.regime)})]));
+ /* Der Regeltext stand hier einmal direkt unter der Einsteigererklaerung
+    und sagte fast dasselbe - zwei fast gleiche Saetze untereinander lesen
+    sich wie ein Fehler. Er gehoert ohnehin zur Methodik und steht jetzt
+    dort, zusammen mit seiner Begruendung. */
+ section.append(el('div',{class:'regime-grid'},(regime.measures||[]).map(m=>el('div',{class:'regime-measure'},[
+  el('strong',{text:(m.share*100).toFixed(1).replace('.',',')+' %'}),
+  el('span',{text:m.label}),
+  el('span',{class:'muted',text:m.hits.toLocaleString('de-DE')+' von '+m.observed.toLocaleString('de-DE')+' Titeln'})]))));
+ /* Dass es die drei Verlaufszustaende gibt und warum sie noch nichts
+    sagen, steht daneben - sonst liest sich ihre Abwesenheit wie ein
+    Befund. */
+ if(regime.transitions&&regime.transitions.state!=='OPEN'){
+  section.append(notice(L('MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED'),LB('MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED')));
+ }
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{},[el('strong',{text:regime.matchedRule.ruleId+': '}),el('span',{text:regime.matchedRule.plain})]),
+  el('p',{class:'muted',text:regime.matchedRule.rationale}),
+  el('p',{class:'muted',text:'Stand '+regime.asOf+' · '+regime.methodologyVersion+' über '+regime.universe.toLocaleString('de-DE')+' ausgewertete Titel. '+regime.scope.universe}),
+  el('p',{class:'muted',text:regime.thresholdPolicy.note}),
+  el('p',{class:'muted',text:regime.notAForecast})]));
+ return section;
+}
 async function radarPage(){
  main.append(heading(LQ('radar'),LB('radar')));
  const lookback=[5,20,60].includes(Number(params.get('window')))?Number(params.get('window')):20;
- const [data,setupIndex]=await Promise.all([api.getRadarIntelligence({lookback,limit:12}),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null)]);
+ /* Der Strategie-Index stand hier einmal versehentlich mit im Abruf und
+    wurde nie gelesen - ein Abruf, den niemand braucht, faellt beim Lesen
+    des Codes nicht auf, beim Nutzer aber als Wartezeit. Hier stehen genau
+    die drei Quellen, die diese Seite zeigt. */
+ const [data,setupIndex,regime]=await Promise.all([
+  api.getRadarIntelligence({lookback,limit:12}),
+  api.getSetupScreenIndex().catch(()=>null),
+  api.getMarketRegime().catch(()=>null)]);
+ const regimeSection=marketRegimeSection(regime);
  if(data.state!=='AVAILABLE'){
   /* Der Bestand haengt nicht an den Wechseln. Faellt die eine Quelle aus,
      bleibt die andere sichtbar, statt die Seite leer zu lassen. */
   main.append(notice('Hier ist gerade nichts belegbar',LU('radar')));
+  if(regimeSection)main.append(regimeSection);
   const standalone=setupDistribution(setupIndex);if(standalone)main.append(standalone);
   return;
  }
  const select=el('select',{'aria-label':'Radar-Zeitraum'},[5,20,60].map(value=>el('option',{value:String(value),text:value+' EOD-Beobachtungen'})));select.value=String(lookback);select.onchange=()=>location.assign(href('radar')+'&window='+select.value);
- main.append(el('div',{class:'workspace-controls'},[select]),el('p',{class:'scope-note',text:data.coverage.available+' von '+data.coverage.requested+' Produkttiteln contract-konform auswertbar · '+data.eventTickerCount+' Titel mit belegtem Wechsel · '+data.eventCount+' Wechsel im Zeitraum'}),el('p',{class:'muted',text:'Jedes Element ist ein retrospektiver EOD-Zustandswechsel. Es ist weder Echtzeit- noch Handels- oder Ranking-Signal. Quant V2 und Market Regime bleiben geschlossen.'}));
- const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}main.append(grid);const distribution=setupDistribution(setupIndex);if(distribution)main.append(distribution);main.append(actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
+ main.append(el('div',{class:'workspace-controls'},[select]),el('p',{class:'scope-note',text:data.coverage.available+' von '+data.coverage.requested+' Produkttiteln contract-konform auswertbar · '+data.eventTickerCount+' Titel mit belegtem Wechsel · '+data.eventCount+' Wechsel im Zeitraum'}),el('p',{class:'muted',text:'Jedes Element ist ein retrospektiver EOD-Zustandswechsel. Es ist weder Echtzeit- noch Handels- oder Ranking-Signal. Ein Gesamtscore wird weiterhin nicht gebildet.'}));
+ const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}if(regimeSection)main.append(regimeSection);main.append(grid);const distribution=setupDistribution(setupIndex);if(distribution)main.append(distribution);main.append(actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
 }
 async function comparePage(){
  main.append(heading('Unternehmen im direkten Vergleich','Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis.'));
@@ -1190,5 +1235,5 @@ async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','te
  const footerQuote=view==='stock'?universe.stocks.find(s=>s.ticker===(params.get('ticker')||'NVDA').toUpperCase()):universe.stocks[0];
  main.append(el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau · Bestehender freigegebener Analysebereich. '+(view==='stock'?'Historische Kennzahlen: EOD. Intraday und Live nennen ihren Stand separat. ':'Kurse: letzter verfügbarer EOD-Stand, nicht realtime. ')+(footerQuote?.asOf?'Kursstand: '+footerQuote.asOf+'. ':'')+'Keine Anlageempfehlung.'}));
 }
-render().catch(()=>recover('Ansicht derzeit nicht verfügbar','Die Ansicht konnte nicht vollständig geladen werden. Versuche es erneut oder öffne einen anderen Workspace.',true));
+render().catch(e=>{console.error("RENDER FAILED:",e&&e.stack||e);return recover('Ansicht derzeit nicht verfügbar','Die Ansicht konnte nicht vollständig geladen werden. Versuche es erneut oder öffne einen anderen Workspace.',true);});
 })();

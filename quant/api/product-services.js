@@ -23,6 +23,7 @@ const Master=typeof module!=='undefined'&&module.exports?require('../engines/com
 const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
+const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -269,6 +270,22 @@ function create(options){
     journey:shard.cascade.filter(rule=>rule.always!==true)};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
+ /* Wie breit der gemessene Markt heute getragen ist - und ausdruecklich
+  * nicht, wohin er geht. Die Punkt-in-der-Zeit-Stufe ist entscheidbar und
+  * wird veroeffentlicht; Uebergaenge, Hysterese und Beharrung sind
+  * Aussagen ueber einen Verlauf und bleiben hinter ihrem eigenen Gate.
+  *
+  * Das Artefakt ist unkomprimiertes JSON und klein: sechs Anteile, ein
+  * Zustand, die Regel dazu. */
+ async function getMarketRegime(){
+  if(!MarketRegime)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  try{
+   const payload=await load('/quant/data/product/market-regime-v1.json');
+   if(payload?.schemaVersion!=='market-regime-1.0.0')return {state:'UNAVAILABLE',reason:'INVALID_MARKET_REGIME_ARTIFACT'};
+   if(MarketRegime.publicationViolations(payload).length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   return payload;
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
  /* Dasselbe Profil, andersherum gelesen: nicht "passt diese Aktie zu
   * diesem Stil", sondern "welche Aktien passen dazu". Gleiches Praedikat,
   * gleicher predicateHash, keine zweite Formulierung.
@@ -468,7 +485,7 @@ function create(options){
  async function getRadarIntelligence({lookback=20,limit=12}={}){
   if(![5,20,60].includes(lookback)||!Number.isInteger(limit)||limit<1||limit>50)return {state:'UNAVAILABLE',reason:'INVALID_RADAR_SELECTION',modules:[]};
   const signals=await getSignals({lookback});if(signals.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:signals.reason||'SIGNAL_EVIDENCE_NOT_PUBLISHED',modules:[],coverage:signals.coverage||null};
-  return {state:'AVAILABLE',version:'1.0.0',scope:signals.scope,lookback,coverage:signals.coverage,materializedAt:signals.materializedAt||null,eventCount:signals.events.length,eventTickerCount:new Set(signals.events.map(e=>e.ticker)).size,modules:radarModules(signals.events,limit),quantScore:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},marketRegime:{state:'UNAVAILABLE',reason:'MARKET_REGIME_NOT_CERTIFIED'}};
+  return {state:'AVAILABLE',version:'1.0.0',scope:signals.scope,lookback,coverage:signals.coverage,materializedAt:signals.materializedAt||null,eventCount:signals.events.length,eventTickerCount:new Set(signals.events.map(e=>e.ticker)).size,modules:radarModules(signals.events,limit),quantScore:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},marketRegime:await getMarketRegime()};
  }
  async function getComparison(tickers){let selected;try{selected=CompareWorkspace.validate(tickers);}catch{return {state:'UNAVAILABLE',reason:'INVALID_COMPARISON',companies:[],families:[]};}return CompareWorkspace.build(selected,await Promise.all(selected.map(async ticker=>{const model=await getQuantWorkspace(ticker);return model.state==='AVAILABLE'?model:{...model,ticker};})));}
  async function getMarketDataHealth(ticker){if(ticker!==undefined)ticker=String(ticker||'').toUpperCase();const data=await getUniverse();return marketHealth(ticker===undefined?data.stocks:data.stocks.filter(s=>s.ticker===ticker));}
@@ -632,7 +649,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

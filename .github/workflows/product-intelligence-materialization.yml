@@ -102,6 +102,18 @@ jobs:
       - name: Materialize VU Pattern Match
         run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
 
+      # Dieselben Profile, andersherum gelesen. Der Materializer rechnet
+      # jedes Praedikat ueber die Query-Engine nach und schreibt keine
+      # Liste, die nicht seine Antwort ist.
+      - name: Materialize Strategy Screening Index
+        run: node scripts/quant/build-strategy-index.mjs
+
+      # Beschreibt die Breite des gemessenen Marktes an einem Stichtag und
+      # haengt die Beobachtung an die unveraenderliche Reihe an. Uebergaenge
+      # bleiben hinter ihrem eigenen Gate.
+      - name: Materialize Market Regime
+        run: node scripts/quant/build-market-regime.mjs
+
       - name: Contract and regression tests
         run: |
           node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs
@@ -116,7 +128,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

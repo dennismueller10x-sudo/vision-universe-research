@@ -281,3 +281,39 @@ test("counted copy is written for one as well as for many", () => {
   assert.match(balance, /favourable\.length===1/);
   assert.match(balance, /adverse\.length===1/);
 });
+
+test("every engine the interface calls is actually loaded by the page", () => {
+  /* A real defect this catches: market-regime.js was written, wired into
+     product-services and covered by unit tests, and the script tag was
+     never added. The service then returned SOURCE_MISSING because its
+     engine was undefined, and the page rendered the unavailable copy - a
+     failure that looks exactly like missing data. Only browser QA found
+     it, and only because somebody looked at the rendered text. */
+  const html = readFileSync(new URL("vu2/index.html", ROOT), "utf8");
+  const globals = {
+    VUProductServices: "quant/api/product-services.js",
+    VUSetupEngine: "quant/engines/setup-engine.js",
+    VUStrategyMatch: "quant/engines/strategy-match.js",
+    VUMarketRegime: "quant/engines/market-regime.js",
+    VUProductLanguage: "quant/engines/product-language.js",
+    VUFactorEvidence: "quant/engines/factor-evidence.js",
+    VUQuery: "quant/engines/query.js",
+    VURuleContract: "quant/engines/rule-contract.js"
+  };
+  const services = readFileSync(new URL("quant/api/product-services.js", ROOT), "utf8");
+  for (const [name, path] of Object.entries(globals)) {
+    /* Only demand a tag for engines the frontend or the services reach for. */
+    if (!experience.includes(name) && !services.includes(name)) continue;
+    assert.ok(html.includes('src="/' + path + '"'),
+      name + " is used but " + path + " is never loaded by vu2/index.html");
+  }
+  /* And the order matters: product-services reads the engines at load time,
+     so every engine tag must come before it. */
+  const servicesAt = html.indexOf('src="/quant/api/product-services.js"');
+  for (const path of Object.values(globals)) {
+    if (path.endsWith("product-services.js")) continue;
+    const at = html.indexOf('src="/' + path + '"');
+    if (at === -1) continue;
+    assert.ok(at < servicesAt, path + " is loaded after product-services.js");
+  }
+});

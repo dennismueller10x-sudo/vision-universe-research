@@ -130,13 +130,13 @@
     {
      "id": "marketRegime",
      "internal": "Market Regime",
-     "userLabel": "Wie gut ist das Marktumfeld?",
-     "question": "Wie gut ist das Marktumfeld?",
-     "beginner": "Ob der Gesamtmarkt gerade Rückenwind oder Gegenwind gibt.",
-     "professionalLabel": "Market Regime",
-     "tooltip": "Ein Marktumfeld braucht feste Schwellen, eine Mindestbreite und Regeln für Zustandswechsel. Solange die nicht freigegeben sind, wird keines behauptet.",
-     "negative": "Das Marktumfeld gibt derzeit Gegenwind.",
-     "unavailable": "Das Marktumfeld wird nicht bewertet: die Methodik dafür ist noch nicht freigegeben."
+     "userLabel": "Wie breit der Markt getragen ist",
+     "question": "Wie breit ist der Markt gerade getragen?",
+     "beginner": "Wie viele Titel im ausgewerteten Universum gerade gut dastehen — und wie viele nicht. Eine Beschreibung der Gegenwart, keine Aussage über die Zukunft.",
+     "professionalLabel": "Marktbreite · Punkt-in-der-Zeit",
+     "tooltip": "Bezieht sich auf das gemessene Produktuniversum, nicht auf den Gesamtmarkt oder einen Index. Kein Timing-Signal.",
+     "negative": "Der Markt wird gerade nur von einem Teil der Titel getragen.",
+     "unavailable": "Für eine Aussage zur Marktbreite sind derzeit zu wenige Titel auswertbar."
     },
     {
      "id": "compositeScore",
@@ -770,6 +770,66 @@
      "tooltip": "Nicht zu verwechseln mit null Treffern: hier konnte gar nicht gemessen werden.",
      "negative": "Dieser Stil lässt sich derzeit nicht auswerten.",
      "unavailable": "Für diesen Stil fehlt eine Eigenschaft, die im gesamten Markt nicht erhoben ist."
+    },
+    {
+     "id": "MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED",
+     "internal": "transitions.reason",
+     "userLabel": "Veränderung des Marktumfelds noch nicht belegbar",
+     "beginner": "Ob sich das Marktumfeld gerade dreht, lässt sich erst sagen, wenn es über längere Zeit beobachtet wurde. Diese Beobachtung läuft noch.",
+     "professionalLabel": "Übergangsstufe nicht aktiviert",
+     "tooltip": "Der heutige Zustand steht fest. Wie er sich zum vorherigen verhält, ist eine andere Frage und braucht geordnete Historie.",
+     "negative": "Über eine Veränderung des Marktumfelds wird nichts behauptet.",
+     "unavailable": "Zu Übergängen im Marktumfeld liegt noch keine belastbare Beobachtung vor."
+    },
+    {
+     "id": "MARKET_REGIME_INPUT_COVERAGE_TOO_LOW",
+     "internal": "marketRegime.reason",
+     "userLabel": "Zu wenige Titel messbar",
+     "beginner": "Für zu viele Titel fehlen die Eingaben, aus denen sich das Marktumfeld ablesen lässt. Deshalb wird kein Zustand genannt.",
+     "professionalLabel": "Eingabeabdeckung unter Mindestschwelle",
+     "tooltip": "Ein Anteil, der auf zu wenigen Titeln beruht, wäre eine Zahl ohne Aussagekraft.",
+     "negative": "Das Marktumfeld lässt sich derzeit nicht beschreiben.",
+     "unavailable": "Für eine Aussage zum Marktumfeld sind zu wenige Titel auswertbar."
+    },
+    {
+     "id": "BROAD_STRENGTH",
+     "internal": "MarketRegime.regime",
+     "userLabel": "Breit getragen",
+     "beginner": "Die meisten Titel stehen über ihrer langfristigen Durchschnittslinie, und viele sind aufwärts gerichtet.",
+     "professionalLabel": "Breite Stärke · Punkt-in-der-Zeit",
+     "tooltip": "Beschreibt heute. Kein Timing-Signal und keine Prognose.",
+     "negative": "Der Markt wird derzeit nicht breit getragen.",
+     "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+    },
+    {
+     "id": "MIXED",
+     "internal": "MarketRegime.regime",
+     "userLabel": "Geteiltes Bild",
+     "beginner": "Ein Teil des Marktes trägt, ein anderer nicht. Das ist der häufigste Fall.",
+     "professionalLabel": "Gemischt · Punkt-in-der-Zeit",
+     "tooltip": "Eine vollwertige Antwort und keine Lücke: weder breite Stärke noch breite Schwäche.",
+     "negative": "Das Bild ist uneinheitlich.",
+     "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+    },
+    {
+     "id": "BROAD_WEAKNESS",
+     "internal": "MarketRegime.regime",
+     "userLabel": "Breit schwach",
+     "beginner": "Die meisten Titel stehen unter ihrer langfristigen Durchschnittslinie, und viele sind abwärts gerichtet.",
+     "professionalLabel": "Breite Schwäche · Punkt-in-der-Zeit",
+     "tooltip": "Beschreibt heute. Keine Aussage darüber, ob es so bleibt.",
+     "negative": "Der Markt ist derzeit nicht breit schwach.",
+     "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+    },
+    {
+     "id": "MARKET_REGIME_UNIVERSE_TOO_SMALL",
+     "internal": "marketRegime.reason",
+     "userLabel": "Zu wenige Titel im Ausschnitt",
+     "beginner": "Der ausgewertete Ausschnitt umfasst zu wenige Titel, als dass sich daraus etwas über die Breite des Marktes sagen ließe.",
+     "professionalLabel": "Universum unter Mindestgröße",
+     "tooltip": "Ein Anteil über eine Handvoll Titel beschreibt diese Titel, nicht den Markt.",
+     "negative": "Über die Breite dieses Ausschnitts wird nichts behauptet.",
+     "unavailable": "Der ausgewertete Ausschnitt ist zu klein für eine Aussage zum Marktumfeld."
     }
    ]
   }

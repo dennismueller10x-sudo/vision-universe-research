@@ -142,19 +142,19 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Diese historische Evidenz ist dünn. |
 | Nicht verfügbar | Ohne zertifizierten Backtest gibt es keine Belastbarkeitsnote. |
 
-### Wie gut ist das Marktumfeld?
+### Wie breit der Markt getragen ist
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `Market Regime` |
 | Schlüssel | `marketRegime` |
-| **User Label** | **Wie gut ist das Marktumfeld?** |
-| Als Frage | Wie gut ist das Marktumfeld? |
-| Erklärung für Einsteiger | Ob der Gesamtmarkt gerade Rückenwind oder Gegenwind gibt. |
-| Professional Label | Market Regime |
-| Tooltip | Ein Marktumfeld braucht feste Schwellen, eine Mindestbreite und Regeln für Zustandswechsel. Solange die nicht freigegeben sind, wird keines behauptet. |
-| Negativer Zustand | Das Marktumfeld gibt derzeit Gegenwind. |
-| Nicht verfügbar | Das Marktumfeld wird nicht bewertet: die Methodik dafür ist noch nicht freigegeben. |
+| **User Label** | **Wie breit der Markt getragen ist** |
+| Als Frage | Wie breit ist der Markt gerade getragen? |
+| Erklärung für Einsteiger | Wie viele Titel im ausgewerteten Universum gerade gut dastehen — und wie viele nicht. Eine Beschreibung der Gegenwart, keine Aussage über die Zukunft. |
+| Professional Label | Marktbreite · Punkt-in-der-Zeit |
+| Tooltip | Bezieht sich auf das gemessene Produktuniversum, nicht auf den Gesamtmarkt oder einen Index. Kein Timing-Signal. |
+| Negativer Zustand | Der Markt wird gerade nur von einem Teil der Titel getragen. |
+| Nicht verfügbar | Für eine Aussage zur Marktbreite sind derzeit zu wenige Titel auswertbar. |
 
 ### Gesamtnote
 
@@ -938,6 +938,84 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Tooltip | Nicht zu verwechseln mit null Treffern: hier konnte gar nicht gemessen werden. |
 | Negativer Zustand | Dieser Stil lässt sich derzeit nicht auswerten. |
 | Nicht verfügbar | Für diesen Stil fehlt eine Eigenschaft, die im gesamten Markt nicht erhoben ist. |
+
+### Veränderung des Marktumfelds noch nicht belegbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `transitions.reason` |
+| Schlüssel | `MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED` |
+| **User Label** | **Veränderung des Marktumfelds noch nicht belegbar** |
+| Erklärung für Einsteiger | Ob sich das Marktumfeld gerade dreht, lässt sich erst sagen, wenn es über längere Zeit beobachtet wurde. Diese Beobachtung läuft noch. |
+| Professional Label | Übergangsstufe nicht aktiviert |
+| Tooltip | Der heutige Zustand steht fest. Wie er sich zum vorherigen verhält, ist eine andere Frage und braucht geordnete Historie. |
+| Negativer Zustand | Über eine Veränderung des Marktumfelds wird nichts behauptet. |
+| Nicht verfügbar | Zu Übergängen im Marktumfeld liegt noch keine belastbare Beobachtung vor. |
+
+### Zu wenige Titel messbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `marketRegime.reason` |
+| Schlüssel | `MARKET_REGIME_INPUT_COVERAGE_TOO_LOW` |
+| **User Label** | **Zu wenige Titel messbar** |
+| Erklärung für Einsteiger | Für zu viele Titel fehlen die Eingaben, aus denen sich das Marktumfeld ablesen lässt. Deshalb wird kein Zustand genannt. |
+| Professional Label | Eingabeabdeckung unter Mindestschwelle |
+| Tooltip | Ein Anteil, der auf zu wenigen Titeln beruht, wäre eine Zahl ohne Aussagekraft. |
+| Negativer Zustand | Das Marktumfeld lässt sich derzeit nicht beschreiben. |
+| Nicht verfügbar | Für eine Aussage zum Marktumfeld sind zu wenige Titel auswertbar. |
+
+### Breit getragen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `MarketRegime.regime` |
+| Schlüssel | `BROAD_STRENGTH` |
+| **User Label** | **Breit getragen** |
+| Erklärung für Einsteiger | Die meisten Titel stehen über ihrer langfristigen Durchschnittslinie, und viele sind aufwärts gerichtet. |
+| Professional Label | Breite Stärke · Punkt-in-der-Zeit |
+| Tooltip | Beschreibt heute. Kein Timing-Signal und keine Prognose. |
+| Negativer Zustand | Der Markt wird derzeit nicht breit getragen. |
+| Nicht verfügbar | Zur Breite des Marktes liegt keine auswertbare Messung vor. |
+
+### Geteiltes Bild
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `MarketRegime.regime` |
+| Schlüssel | `MIXED` |
+| **User Label** | **Geteiltes Bild** |
+| Erklärung für Einsteiger | Ein Teil des Marktes trägt, ein anderer nicht. Das ist der häufigste Fall. |
+| Professional Label | Gemischt · Punkt-in-der-Zeit |
+| Tooltip | Eine vollwertige Antwort und keine Lücke: weder breite Stärke noch breite Schwäche. |
+| Negativer Zustand | Das Bild ist uneinheitlich. |
+| Nicht verfügbar | Zur Breite des Marktes liegt keine auswertbare Messung vor. |
+
+### Breit schwach
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `MarketRegime.regime` |
+| Schlüssel | `BROAD_WEAKNESS` |
+| **User Label** | **Breit schwach** |
+| Erklärung für Einsteiger | Die meisten Titel stehen unter ihrer langfristigen Durchschnittslinie, und viele sind abwärts gerichtet. |
+| Professional Label | Breite Schwäche · Punkt-in-der-Zeit |
+| Tooltip | Beschreibt heute. Keine Aussage darüber, ob es so bleibt. |
+| Negativer Zustand | Der Markt ist derzeit nicht breit schwach. |
+| Nicht verfügbar | Zur Breite des Marktes liegt keine auswertbare Messung vor. |
+
+### Zu wenige Titel im Ausschnitt
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `marketRegime.reason` |
+| Schlüssel | `MARKET_REGIME_UNIVERSE_TOO_SMALL` |
+| **User Label** | **Zu wenige Titel im Ausschnitt** |
+| Erklärung für Einsteiger | Der ausgewertete Ausschnitt umfasst zu wenige Titel, als dass sich daraus etwas über die Breite des Marktes sagen ließe. |
+| Professional Label | Universum unter Mindestgröße |
+| Tooltip | Ein Anteil über eine Handvoll Titel beschreibt diese Titel, nicht den Markt. |
+| Negativer Zustand | Über die Breite dieses Ausschnitts wird nichts behauptet. |
+| Nicht verfügbar | Der ausgewertete Ausschnitt ist zu klein für eine Aussage zum Marktumfeld. |
 
 ## Begriffe, die nicht an den Anfang gehören
 

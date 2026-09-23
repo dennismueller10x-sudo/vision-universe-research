@@ -32,7 +32,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
 | M5 | Pattern Match product | **DONE** — 249 robuste Muster je Titel, Verlustseite neben Gewinnseite |
 | M6 | Backtest integration | **BLOCKED, measured** — no total-return series, no historical index membership (see KNOWN_BLOCKERS) |
-| M7 | Market Regime | OPEN — Owner methodology gate |
+| M7 | Market Regime | **LIVE (point-in-time tier)** — six breadth measures, exact pre-set thresholds; transitions behind their own gate |
 | M8 | Full Quant experience | OPEN |
 | M9 | Setup screening (state index + parity) | **DONE** (this section) — one artifact, 6.8 KB, Aktienseite/Radar/Screener |
 
@@ -57,6 +57,33 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
+
+- **M12 — Market Regime, as far as it is certifiable.** It had stood as a blanket owner gate
+  (`MARKET_REGIME_NOT_CERTIFIED`). Measured, the split is the same one the setup engine already
+  proved: a point-in-time description of market breadth **is** decidable from one cutoff; only
+  transitions, hysteresis and persistence need ordered history. So the methodology is written
+  with two tiers and the first one is live. Six measures over 5,676 titles, each published with
+  its own denominator: 44.0 % above the 200-day line, 34.8 % above the 50-day, 25.3 % in an
+  up-trend, 36.3 % down, 23.2 % within 10 % of the 52-week high, 16.5 % in a high volatility
+  regime — today `MIXED`. Thresholds are round pre-set shares and deliberately asymmetric
+  (strength needs 60 % above the line, weakness triggers at 40 %): claiming breadth is held to a
+  higher bar than denying it, and the gap between them is where `MIXED` lives instead of a coin
+  flip. A test pins both directions and the exact boundary. A thin input is named, never counted
+  as a zero share. The observation history appends immutably; `REGIME_SHIFT`,
+  `REGIME_PERSISTING` and `REGIME_WEAKENING` stay closed behind their own activation gate.
+- **A defect only browser QA could find, and the guard that now catches it.** `market-regime.js`
+  was written, wired into the services and covered by unit tests — and its `<script>` tag was
+  never added to `vu2/index.html`. The service returned `SOURCE_MISSING` because its engine was
+  `undefined`, and the page rendered the unavailable copy, which looks exactly like missing data.
+  A test now checks that every engine the frontend or the services reach for is loaded by the
+  page, and in an order that puts it before `product-services.js`; verified by removing the tag
+  and watching it fail.
+- **Two pieces of copy that had become false** were corrected with the change that made them
+  false: the radar's "Quant V2 und Market Regime bleiben geschlossen", and the dictionary's
+  "die Methodik dafür ist noch nicht freigegeben". The regime term also stopped saying
+  "Gesamtmarkt" — the scope is the measured product universe, and saying otherwise oversells it.
+- **A stray fetch I had introduced in M11** was removed: the radar was fetching the strategy
+  index and discarding it. Invisible when reading the code, a wait for the user.
 
 - **M11 — strategy profiles screen, and the reason they carry no history is now the true one.**
   `BACKTEST_NOT_CERTIFIED` stood on every profile. It is too coarse: it says a backtest is
