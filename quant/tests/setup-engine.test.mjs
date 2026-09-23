@@ -310,3 +310,117 @@ test("the wire format survives a round trip without gaining or losing meaning", 
   assert.deepEqual(restored.conditions.map((c) => [c.field, c.value, c.met]), observation.conditions.map((c) => [c.field, c.value, c.met]));
   assert.deepEqual(Setup.publicationViolations(restored), []);
 });
+
+/* =========================================================================
+   The screening side: which titles stand in a state, and the proof that
+   the answer is the cascade's own.
+   ========================================================================= */
+
+/* Three rows that separate the cascade from the raw predicate. `confirmed`
+   satisfies the CONFIRMED rule AND the WATCH rule; `watching` satisfies only
+   WATCH; `quiet` satisfies neither. */
+const screenRows = [
+  { ticker: "CONF", ...confirmedRow },
+  { ticker: "WTCH", ...confirmedRow, technicalSetupStatus: "NONE", technicalEntryStatus: "NO_TRIGGER", technicalVolumeState: "CONTRACTION" },
+  { ticker: "QUIET", ...confirmedRow, technicalTrend: "BEARISH", technicalConfirmedStructure: "BEARISH", technicalStructure: "BEARISH", technicalSetupStatus: "NONE", technicalEntryStatus: "NO_TRIGGER", technicalVolumeState: "CONTRACTION" }
+];
+const assignmentsFor = (rows) => rows.map((row) => {
+  const observation = evaluate(row);
+  return { ticker: row.ticker, ruleId: observation.matchedRule.ruleId, state: observation.matchedRule.state, sort: row.technicalDistanceTo52wHigh };
+});
+
+test("the state index publishes the cascade's assignment, not the raw predicate", () => {
+  /* This is the whole point. CONF satisfies the WATCH predicate too, but it
+     is CONFIRMED - a screener that shipped the predicate would list it in
+     both, and one of the two listings would be a lie. */
+  const assignments = assignmentsFor(screenRows);
+  const index = Setup.screenIndex(assignments, methodology, { pathTierOpen: false, pathClosedReason: "PATH_DEPENDENT_STATES_NOT_ACTIVATED" });
+  const stateOf = (name) => index.states.find((entry) => entry.state === name);
+  const listed = (name) => stateOf(name).rules.flatMap((rule) => rule.tickers || []);
+
+  assert.deepEqual(listed("CONFIRMED"), ["CONF"]);
+  assert.deepEqual(listed("WATCH"), ["WTCH"]);
+  assert.equal(listed("WATCH").includes("CONF"), false, "a confirmed title is listed as merely watched");
+  assert.equal(stateOf("NO_SETUP").count, 1);
+  /* The fallback has no predicate, so it has no published list. */
+  assert.equal(stateOf("NO_SETUP").rules[0].tickers, null);
+  assert.equal(stateOf("NO_SETUP").rules[0].screenable, false);
+
+  /* Every published rule carries the predicate hash of the rule that
+     assigned the state, so a screener can prove the list came from it. */
+  for (const state of Setup.PIT_STATES) {
+    for (const rule of stateOf(state).rules) {
+      if (!rule.screenable) continue;
+      assert.equal(rule.predicateHash, Setup.ruleHash(ruleOf(rule.ruleId)));
+      assert.equal(rule.predicateHash, Rules.predicateHash(Rules.fromQuery(Setup.screenQuery(ruleOf(rule.ruleId)))));
+    }
+  }
+});
+
+test("a closed tier publishes no count, not a count of zero", () => {
+  /* "INVALIDATED: 0" reads as "no title has been invalidated". That is a
+     claim about the universe, and the engine has not earned it while the
+     tier is shut. */
+  const index = Setup.screenIndex(assignmentsFor(screenRows), methodology, { pathTierOpen: false, pathClosedReason: "INSUFFICIENT_OBSERVATION_HISTORY" });
+  for (const state of Setup.PATH_STATES) {
+    const entry = index.states.find((s) => s.state === state);
+    assert.equal(entry.count, null, state + " publishes a count while its tier is closed");
+    assert.equal(entry.availability.state, "UNAVAILABLE");
+    assert.equal(entry.availability.reason, "INSUFFICIENT_OBSERVATION_HISTORY");
+    assert.ok(Setup.PATH_CLOSED_REASONS.includes(entry.availability.reason));
+    for (const rule of entry.rules) assert.equal(rule.tickers, null);
+  }
+  for (const state of Setup.PIT_STATES) {
+    const entry = index.states.find((s) => s.state === state);
+    assert.equal(entry.availability.state, "AVAILABLE");
+    assert.equal(typeof entry.count, "number");
+  }
+});
+
+test("an index that disagrees with the cascade is refused rather than published", () => {
+  const wrong = assignmentsFor(screenRows);
+  wrong[0].state = "WATCH";
+  assert.throws(() => Setup.screenIndex(wrong, methodology), /is filed as WATCH under rule/);
+  assert.throws(() => Setup.screenIndex([{ ticker: "X", ruleId: "setup.invented", state: "WATCH" }], methodology), /unknown ruleId/);
+});
+
+test("every difference between the predicate and the assignment is explained by cascade priority", () => {
+  const assignments = assignmentsFor(screenRows);
+  const report = Setup.reconcile(screenRows, assignments, methodology, { unclassified: [] });
+  assert.equal(report.parity, true);
+
+  const watch = report.rules.find((rule) => rule.ruleId === "setup.watch.bullish-trend");
+  /* The predicate reaches further than the state does, and by exactly the
+     titles a higher-priority rule took. */
+  assert.ok(watch.predicateMatched > watch.assigned);
+  assert.equal(watch.predicateMatched, watch.assigned + watch.claimedByHigherPriority + watch.inputsIncomplete);
+  for (const rule of report.rules) {
+    assert.deepEqual(rule.assignedNotMatched, [], rule.ruleId + ": assigned a state its own predicate rejects");
+    assert.deepEqual(rule.unexplained, [], rule.ruleId + ": a matched title no rule accounts for");
+  }
+});
+
+test("a drifted cascade is caught, in both directions", () => {
+  const assignments = assignmentsFor(screenRows);
+
+  /* Direction one: a title filed under a rule whose predicate rejects it.
+     That is a second evaluator having reached a different answer. */
+  const forged = assignments.map((a) => a.ticker === "QUIET" ? { ...a, ruleId: "setup.confirmed.structure-trend-volume", state: "CONFIRMED" } : a);
+  const one = Setup.reconcile(screenRows, forged, methodology, { unclassified: [] });
+  assert.equal(one.parity, false);
+  assert.ok(one.rules.find((r) => r.ruleId === "setup.confirmed.structure-trend-volume").assignedNotMatched.includes("QUIET"));
+  assert.throws(() => Setup.assertParity(one), /disagree/);
+
+  /* Direction two: a title the predicate matches that is filed under a
+     LOWER-priority rule. Cascade priority cannot explain that one. */
+  const demoted = assignments.map((a) => a.ticker === "CONF" ? { ...a, ruleId: "setup.watch.bullish-trend", state: "WATCH" } : a);
+  const two = Setup.reconcile(screenRows, demoted, methodology, { unclassified: [] });
+  assert.equal(two.parity, false);
+  assert.ok(two.rules.find((r) => r.ruleId === "setup.confirmed.structure-trend-volume").unexplained.includes("CONF"));
+
+  /* And a title with incomplete inputs is neither: it is named as such. */
+  const partial = screenRows.concat([{ ticker: "PART", ...confirmedRow }]);
+  const three = Setup.reconcile(partial, assignments, methodology, { unclassified: ["PART"] });
+  assert.equal(three.parity, true);
+  assert.equal(three.rules.find((r) => r.ruleId === "setup.confirmed.structure-trend-volume").inputsIncomplete, 1);
+});

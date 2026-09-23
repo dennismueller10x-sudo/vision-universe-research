@@ -217,3 +217,80 @@ Aussagen.
 Gemessene Verteilung über 5.676 Titel (Stichtag 2026-09-10, 0 ohne vollständige Evidenz):
 `NO_SETUP` 4.017 · `WATCH` 843 (620 über Regel 8, 223 über Regel 9) · `SETUP_FORMING` 800 ·
 `CONFIRMED` 16. Die vier pfadabhängigen Zustände stehen bei 0 und sind geschlossen.
+
+---
+
+# Die Screening-Seite derselben Regel
+
+Eine Beobachtung beantwortet „wo steht dieser Titel". Die andere Hälfte derselben Produktfrage
+ist „welche Titel stehen dort" — und das ist dieselbe Regel, andersherum gelesen. Jede
+Punkt-in-der-Zeit-Regel ist ein kanonisches Regelprädikat (§20), trägt denselben
+`predicateHash` und ist damit bereits eine Screener-Abfrage. Es entsteht keine zweite Engine,
+kein zweites Vokabular und kein zweiter Schwellenwert.
+
+## Warum das Prädikat allein die falsche Liste ergibt
+
+Die Kaskade ist **erste passende Regel gewinnt**. Ein Titel, der das WATCH-Prädikat erfüllt,
+aber bereits von CONFIRMED genommen wurde, ist CONFIRMED — nicht WATCH. Wer das Prädikat
+direkt als Zustandsliste ausliefert, zeigt also weiter fortgeschrittene Titel als
+zurückliegende. Gemessen am Stichtag 2026-09-10:
+
+| Regel | Treffer des Prädikats | tatsächlich zugeordnet | von vorrangiger Regel belegt |
+|---|---:|---:|---:|
+| `setup.confirmed.structure-trend-volume` | 16 | 16 | 0 |
+| `setup.forming.complete-setup-awaiting-trigger` | 808 | 800 | 8 |
+| `setup.watch.bullish-trend` | 1.436 | 620 | 816 |
+| `setup.watch.confirmed-structure-near-high` | 867 | 223 | 644 |
+
+Beim Zustand *Beobachten* wäre die Liste um Faktor 2,3 zu lang gewesen, und jeder der 816
+zusätzlichen Titel steht in Wahrheit weiter vorn. Deshalb kommt die veröffentlichte Liste aus
+der **Zuordnung** der Kaskade, nicht aus dem Prädikat.
+
+## Der Abgleich, der beides zusammenhält
+
+`SetupEngine.reconcile()` führt für jede screenbare Regel das Prädikat über genau die Zeilen
+aus, die die Kaskade gesehen hat, und ordnet jede Differenz einem Grund zu:
+
+- **zugeordnet, aber vom Prädikat abgelehnt** — muss leer sein. Ein Eintrag hier hieße, dass
+  zwei Auswerter zu verschiedenen Antworten gekommen sind.
+- **vom Prädikat getroffen, von vorrangiger Regel belegt** — erwartet und gezählt.
+- **unvollständige Eingaben** — der Titel hat gar keinen Zustand; er wird namentlich als
+  solcher geführt und nicht stillschweigend weggelassen.
+- **unerklärt** — muss leer sein.
+
+`assertParity()` wirft, sobald eine der beiden Pflichtmengen nicht leer ist. Der Materializer
+ruft sie **vor** dem Schreiben: ein abgedrifteter Index wird nicht mit einer Warnung
+veröffentlicht, sondern gar nicht. Die Workflow-Zusammenfassung trägt den Bericht
+(`screen-parity.json`) mit.
+
+## Was veröffentlicht wird
+
+`quant/data/product/setup-observations-v1/screen-index.json.gz` — 6,8 KB komprimiert, also weit
+innerhalb der Browser-Grenzen (128 KiB komprimiert / 1 MiB entpackt), und in **einem** Abruf
+statt über 634 Shards.
+
+Zwei Dinge stehen bewusst nicht darin:
+
+- **Der Auffangzustand trägt keine Titelliste.** `NO_SETUP` hat kein Prädikat; „alles, was keine
+  andere Regel genommen hat" ist keine Eigenschaft eines Titels. Die Zahl bleibt, damit die
+  Besetzungen zusammen das Universum ergeben.
+- **Eine geschlossene Stufe trägt keine Null, sondern ihren Grund.** `count` ist `null`, solange
+  `pathDependentActivation` nicht `ACTIVE` ist. Ein veröffentlichtes „INVALIDATED: 0" läse sich
+  als „kein Titel ist invalidiert" — eine Aussage über das Universum, die diese Engine sich
+  nicht verdient hat, solange die vier Verlaufszustände nie ausgewertet wurden.
+
+## Wo es in der Oberfläche steht
+
+| Fläche | Was sie zeigt |
+|---|---|
+| Aktienseite, Abschnitt *Situation* | „Welche Aktien stehen gerade an derselben Stelle?" — Anzahl und Titel in der Lage dieser Aktie |
+| Radar | *Lage im Markt* — die Besetzung aller acht Zustände, geschlossene Stufen gedämpft mit Begründung statt Zahl |
+| Screener, `?setupRule=…` | Die Trefferliste einer einzelnen Regel, als **Ergebnis** und nicht als bearbeitbare Abfrage |
+
+Der letzte Punkt ist Absicht und kein fehlendes Feature: Würde die Regel in den Regeleditor
+geladen, liefe dort das Prädikat — und damit exakt die Liste, die oben um 816 Titel zu lang ist.
+Das Ergebnisfeld nennt stattdessen den `predicateHash` der Regel, aus der die Liste stammt.
+
+Alle Nutzertexte dieser Flächen stammen aus dem Product-Language-Wörterbuch
+(`setupScreen`, `setupStateCount`); ein Test prüft, dass keine Fläche die Regel selbst auswertet
+und dass kein Zustandscode als Text auf die Seite gelangt.

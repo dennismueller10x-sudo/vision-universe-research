@@ -122,6 +122,7 @@ jobs:
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
           node -e 'const s=require("./quant/data/product/setup-observations-v1/summary.json"); console.log(s.stateCounts); console.log(s.pathTier); console.log(s.observationHistory)'
           node -e 'const g=require("./quant/data/product/setup-observations-v1/activation-gate.json"); console.log({contractState:g.contractState,measured:g.measuredReadiness,active:g.active}); console.log(g.checks.map(c=>c.id+"="+c.state).join(" "))'
+          node -e 'const p=require("./quant/data/product/setup-observations-v1/screen-parity.json"); if(!p.parity)process.exit(1); console.log("Zustandsindex deckungsgleich mit der Kaskade:"); for(const r of p.rules)console.log("  "+r.ruleId+" Praedikat "+r.predicateMatched+" -> zugeordnet "+r.assigned+" (vorrangig belegt "+r.claimedByHigherPriority+")")'
           node -e 'const s=require("./quant/data/product/pattern-research-v1/study.json"); console.log({series:s.population.seriesUsed,observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
           node -e 'const s=require("./quant/data/product/pattern-research-fundamentals-v1/study.json"); console.log({observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
           git commit -m "Materialize Technical, Signals, Elliott, Factor Evidence, Setup Observation and Pattern Research Product Data"
@@ -141,6 +142,7 @@ jobs:
             quant/data/product/setup-observations-v1/summary.json
             quant/data/product/setup-observation-history/index.json
             quant/data/product/setup-observations-v1/activation-gate.json
+            quant/data/product/setup-observations-v1/screen-parity.json
             quant/data/product/pattern-research-v1/study.json
             quant/data/product/pattern-research-fundamentals-v1/study.json
             quant/data/product/pattern-match-v1/summary.json

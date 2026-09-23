@@ -1,6 +1,6 @@
 # Vision Universe® Quant 2.0 — Orchestrator State
 
-Updated: 2026-09-22 UTC
+Updated: 2026-09-23 UTC
 
 ## CURRENT_MAIN
 
@@ -11,14 +11,16 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_PHASE
 
-`PRODUCT_LANGUAGE_TRANSLATED_TWO_OWNER_GATES_OPEN_IN_PARALLEL`
+`SETUP_TIER_LIVE_AND_SCREENABLE_ONE_OWNER_GATE_OPEN`
 
 Factor Evidence, Change, Strategy Match and now the Setup Observation exist as versioned
 product engines over the broad canonical universe, and the Quant Experience frontend renders
 them. Quant V1 is untouched and marked LEGACY_IMMUTABLE; Quant V2 lives in its own catalog
-namespace with no composite. The setup mapping is written, machine-checked and materialized
-over 5,676 titles; its lifecycle waits on one owner gate and one more ordered observation.
-Pattern, Backtest and Market Regime remain ahead.
+namespace with no composite. The setup mapping is approved for the point-in-time
+tier and materialized over 5,676 titles; the four course-of-events states sit behind their own
+activation gate. Since this section the setup rules also *screen*: the published state index
+answers "which titles stand here" from the cascade's own assignment, proven against each rule's
+predicate. Backtest and Market Regime remain ahead, both for measured reasons recorded below.
 
 ## PRODUCT_MILESTONES
 
@@ -29,9 +31,10 @@ Pattern, Backtest and Market Regime remain ahead.
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
 | M5 | Pattern Match product | **DONE** — 249 robuste Muster je Titel, Verlustseite neben Gewinnseite |
-| M6 | Backtest integration | OPEN — downstream of PIT/execution gates |
+| M6 | Backtest integration | **BLOCKED, measured** — no total-return series, no historical index membership (see KNOWN_BLOCKERS) |
 | M7 | Market Regime | OPEN — Owner methodology gate |
 | M8 | Full Quant experience | OPEN |
+| M9 | Setup screening (state index + parity) | **DONE** (this section) — one artifact, 6.8 KB, Aktienseite/Radar/Screener |
 
 ## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
 
@@ -54,6 +57,20 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
+
+- **Setup screening (M9)** — the other half of the same question, with no new engine and no new
+  pipeline. `SetupEngine.screenIndex()` publishes the cascade's assignment per state;
+  `reconcile()` / `assertParity()` run each rule's predicate over the very rows the cascade saw
+  and account for every difference. Measured at 2026-09-10: the `setup.watch.bullish-trend`
+  predicate matches **1,436** titles while the state holds **620** — 816 were claimed by a
+  higher-priority rule. Shipping the predicate as the state list would have been wrong by a
+  factor of 2.3, and every extra title is one that is actually further along. Artifacts:
+  `screen-index.json.gz` (6.8 KB, one fetch instead of 634 shards) and `screen-parity.json`.
+  A drifted index throws in the materializer rather than publishing with a warning. Surfaces:
+  Aktienseite (*Situation*), Radar (*Lage im Markt*), Screener `?setupRule=`. The screener link
+  opens a **result**, not an editable query — loading the rule into the editor would run the
+  predicate and reproduce exactly the 816-title error. A closed tier publishes `null`, never a
+  count of zero, because "INVALIDATED: 0" is a claim about the universe.
 
 - **Factor Evidence Engine** `vu-factor-evidence-1.0.0`, derived from `quant-v2.0.0`:
   `quant/engines/factor-evidence.js` (normalization, assembly, bands, confidence, publication gate).
@@ -393,8 +410,20 @@ the mapping decision is then taken against measurement rather than against a pla
 - Market Regime: no certified versioned method with exact thresholds, minimum breadth, state
   transitions/hysteresis, missing-data behaviour, benchmark/calendar rules.
 - Revisions: no licensed, immutable historical PIT analyst-consensus source.
-- Backtesting: blocked until PIT fundamentals, historical universe membership, corporate actions,
-  benchmark and execution methodology are certified.
+- **Backtesting (M6): blocked, and this time the blockade was measured rather than inherited.**
+  Two of the required inputs do not exist in this repository at all:
+  - **No total-return series.** The consumer price series carry
+    `priceSeriesType: "SPLIT_ADJUSTED"` and no dividend-adjusted or total-return field. 615 of
+    800 sampled SEC consumer bundles do carry `dividends_paid`, but that is an annual cash-flow
+    figure, not a per-share dividend series aligned to price dates; deriving one from it would
+    be a fabrication, not a reconstruction.
+  - **No point-in-time universe.** `quant/data/market/index-membership/history/{DJIA,NDX,SP500}/`
+    each hold **exactly one** file (`2026-09-15.json`; 498 members for SP500). A backtest over a
+    single membership snapshot applies today's constituents to the whole past — the textbook
+    survivorship and look-ahead error §40 forbids.
+  Corporate actions, benchmark and execution methodology remain uncertified on top of that.
+  A backtest built on this basis would be exactly the "falsche Backtests" the hard-safety rule
+  names, so M6 stays shut on evidence, not on caution.
 - ~~**Pattern Research (M4)**: needs deep canonical history from private R2.~~ **This entry was
   wrong and is corrected.** It reasoned from the 270-bar technical bundles and never checked
   what else the repository holds. `quant/data/market/discover-series-long/` carries **6,308
@@ -424,9 +453,14 @@ the mapping decision is then taken against measurement rather than against a pla
    it is the first missing input for 4,214 of 5,068 issuers and is what holds `roicTtm` at 58,
    `roicMedian3y` at 535, `netDebtToAssets` at 462 and `salesYield` at 97. Widening it lifts
    Profitability, Value and Quality together. Nothing else in the contract is at zero coverage.
-4. **Pattern Research (M4)** as a workflow job against the restored canonical history — not
-   blocked on a decision, only on being run where the deep history is.
-5. Market Regime stays on the Owner gate.
+4. **Setup screening (M9) is built** — the point-in-time rules now answer both directions of
+   the same question. Next in the same §20 direction and needing no new data: the same
+   assignment as a watchlist filter and as an alert predicate, since a state change on a
+   `predicateHash` is already what the alert contract describes.
+5. **M6 (Backtest) is shut on measured grounds** (see KNOWN_BLOCKERS) and is not the next step.
+   Two inputs would have to be acquired first: a dividend-adjusted price series and a historical
+   index-membership series. Neither is a build task.
+6. Market Regime stays on the Owner gate.
 
 ## RESUME_STATE
 

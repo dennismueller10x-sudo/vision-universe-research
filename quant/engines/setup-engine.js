@@ -51,6 +51,7 @@
   var OBSERVATION_SCHEMA = "setup-observation-1.0.0";
   var OBSERVATION_INDEX_SCHEMA = "setup-observation-index-1.0.0";
   var SHARD_SCHEMA = "setup-observation-product-1.0.0";
+  var SCREEN_INDEX_SCHEMA = "setup-screen-index-1.0.0";
 
   var STATES = ["NO_SETUP", "WATCH", "SETUP_FORMING", "CONFIRMED", "ACTIVE", "RISK_RISING", "INVALIDATED", "EXIT"];
   var PIT_STATES = ["NO_SETUP", "WATCH", "SETUP_FORMING", "CONFIRMED"];
@@ -188,6 +189,228 @@
       sort: presentation.sort || [{ field: "technicalDistanceTo52wHigh", direction: "desc" }],
       limit: presentation.limit === undefined ? 50 : presentation.limit
     });
+  }
+
+  /* ---------------------------------------------------------------------
+     THE SCREENING SIDE OF THE SAME RULE.
+
+     A per-title observation answers "where does this one title stand".
+     The other half of the same product question is "which titles stand
+     there", and that is the same rule read the other way round: every
+     point-in-time rule is a canonical predicate, so the screener query
+     for a state already exists and carries the same predicateHash. No
+     second engine, no second vocabulary, no second threshold.
+
+     One thing does NOT follow, and publishing it would publish a wrong
+     list: a rule's predicate matches MORE titles than the rule assigns.
+     The cascade is first-match-wins, so a title that satisfies the WATCH
+     predicate but was already taken by CONFIRMED is CONFIRMED, not
+     WATCH. "Show me everything in this state" must therefore be answered
+     from the cascade's assignment; the raw predicate is wrong by exactly
+     the titles a higher-priority rule claimed.
+
+     screenIndex() publishes the assignment. reconcile() proves the two
+     sides still agree: the assignment is always a subset of the
+     predicate, and every title in the difference is accounted for by
+     cascade priority or by incomplete inputs. Anything left over means
+     the two halves have drifted, which is the whole reason this pair
+     exists.
+     --------------------------------------------------------------------- */
+  function sortAssignments(a, b) {
+    var av = finite(a.sort) ? a.sort : -Infinity;
+    var bv = finite(b.sort) ? b.sort : -Infinity;
+    if (av !== bv) return bv - av;
+    return a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0;
+  }
+
+  function ruleIndexOf(mapping) {
+    var byId = {};
+    for (var i = 0; i < mapping.cascade.rules.length; i++) {
+      byId[mapping.cascade.rules[i].ruleId] = mapping.cascade.rules[i];
+    }
+    return byId;
+  }
+
+  /**
+   * assignments: [{ ticker, ruleId, state, sort }] - one per classified title,
+   * exactly as the cascade decided it. options.pathTierOpen says whether the
+   * second lock is open; options.pathClosedReason names why when it is not.
+   */
+  function screenIndex(assignments, methodology, options) {
+    var mapping = assertMapping(methodology).stateMapping;
+    options = options || {};
+    var approved = mapping.approval.state === "APPROVED";
+    var pathOpen = approved && options.pathTierOpen === true;
+    var byId = ruleIndexOf(mapping);
+    var byRule = {};
+
+    for (var j = 0; j < assignments.length; j++) {
+      var a = assignments[j];
+      var rule = byId[a.ruleId];
+      if (!rule) throw new Error("screenIndex: unknown ruleId '" + a.ruleId + "'");
+      if (rule.state !== a.state) {
+        throw new Error("screenIndex: '" + a.ticker + "' is filed as " + a.state +
+          " under rule " + a.ruleId + ", which assigns " + rule.state);
+      }
+      (byRule[a.ruleId] || (byRule[a.ruleId] = [])).push(a);
+    }
+
+    var states = [];
+    for (var k = 0; k < STATES.length; k++) {
+      var state = STATES[k];
+      var tier = PIT_STATES.indexOf(state) !== -1 ? "POINT_IN_TIME" : "PATH_DEPENDENT";
+      var open = tier === "POINT_IN_TIME" ? approved : pathOpen;
+      var reason = open ? null
+        : !approved ? "SETUP_MAPPING_NOT_APPROVED"
+        : options.pathClosedReason || "PATH_DEPENDENT_STATES_NOT_ACTIVATED";
+
+      var ruleEntries = [];
+      var total = 0;
+      for (var r = 0; r < mapping.cascade.rules.length; r++) {
+        var cascadeRule = mapping.cascade.rules[r];
+        if (cascadeRule.state !== state) continue;
+        var hits = (byRule[cascadeRule.ruleId] || []).slice().sort(sortAssignments);
+        total += hits.length;
+        ruleEntries.push({
+          ruleId: cascadeRule.ruleId,
+          order: cascadeRule.order,
+          screenable: cascadeRule.screenable === true,
+          predicateHash: ruleHash(cascadeRule),
+          plain: cascadeRule.plain,
+          /* A rule without filters has no predicate and therefore no
+             screener query. The fallback is "whatever the other rules did
+             not take", which is not a property of a title and must not be
+             published as a list that reads like one. */
+          matched: open ? hits.length : null,
+          tickers: open && cascadeRule.screenable === true
+            ? hits.map(function (h) { return h.ticker; })
+            : null
+        });
+      }
+
+      states.push({
+        state: state,
+        tier: tier,
+        /* Null, never 0, while the tier is shut. A published "INVALIDATED: 0"
+           reads as "no title is invalidated", and that is a claim this
+           engine has not earned the right to make. */
+        count: open ? total : null,
+        availability: open
+          ? { state: "AVAILABLE", reason: null }
+          : { state: "UNAVAILABLE", reason: reason },
+        rules: ruleEntries
+      });
+    }
+
+    return {
+      schemaVersion: SCREEN_INDEX_SCHEMA,
+      engineVersion: ENGINE_VERSION,
+      mappingVersion: mapping.mappingVersion,
+      classified: assignments.length,
+      states: states
+    };
+  }
+
+  /**
+   * rows: the canonical catalog rows the cascade was evaluated over, keyed by
+   * ticker. assignments: the cascade's answer. unclassified: tickers whose
+   * inputs were incomplete, so the cascade never reached a rule for them.
+   */
+  function reconcile(rows, assignments, methodology, options) {
+    var mapping = assertMapping(methodology).stateMapping;
+    options = options || {};
+    var assignedRule = {};
+    var i;
+    for (i = 0; i < assignments.length; i++) assignedRule[assignments[i].ticker] = assignments[i].ruleId;
+    var byId = ruleIndexOf(mapping);
+    var unclassified = {};
+    for (i = 0; i < (options.unclassified || []).length; i++) unclassified[options.unclassified[i]] = true;
+
+    var reports = [];
+    var parity = true;
+    for (var r = 0; r < mapping.cascade.rules.length; r++) {
+      var rule = mapping.cascade.rules[r];
+      if (rule.screenable !== true) continue;
+
+      /* Deliberately the screener path and not ruleMatches(): the claim
+         under test is that the two evaluators agree, so one side has to be
+         the one a screener runs. Query.matches is the function Query.execute
+         itself filters with; it is used directly because execute() also
+         applies a page limit and a listing status filter, and neither is
+         part of the predicate. Paging a parity check would let a
+         disagreement past row 500 go unnoticed. */
+      var query = screenQuery(rule);
+      var matched = {};
+      var matchedCount = 0;
+      for (var q = 0; q < rows.length; q++) {
+        if (!Query.matches(rows[q], query.filters)) continue;
+        matched[rows[q].ticker] = true;
+        matchedCount += 1;
+      }
+
+      var assignedNotMatched = [];
+      for (i = 0; i < assignments.length; i++) {
+        if (assignments[i].ruleId === rule.ruleId && !matched[assignments[i].ticker]) {
+          assignedNotMatched.push(assignments[i].ticker);
+        }
+      }
+
+      var claimedByHigherPriority = [];
+      var inputsIncomplete = [];
+      var unexplained = [];
+      for (var ticker in matched) {
+        if (!Object.prototype.hasOwnProperty.call(matched, ticker)) continue;
+        var own = assignedRule[ticker];
+        if (own === rule.ruleId) continue;
+        if (own === undefined) {
+          (unclassified[ticker] ? inputsIncomplete : unexplained).push(ticker);
+        } else if (byId[own] && byId[own].order < rule.order) {
+          claimedByHigherPriority.push(ticker);
+        } else {
+          unexplained.push(ticker);
+        }
+      }
+
+      var ok = assignedNotMatched.length === 0 && unexplained.length === 0;
+      if (!ok) parity = false;
+      reports.push({
+        ruleId: rule.ruleId,
+        state: rule.state,
+        predicateHash: ruleHash(rule),
+        predicateMatched: matchedCount,
+        assigned: countAssigned(assignments, rule.ruleId),
+        claimedByHigherPriority: claimedByHigherPriority.length,
+        inputsIncomplete: inputsIncomplete.length,
+        assignedNotMatched: assignedNotMatched.sort().slice(0, 25),
+        unexplained: unexplained.sort().slice(0, 25),
+        parity: ok
+      });
+    }
+
+    return {
+      engineVersion: ENGINE_VERSION,
+      mappingVersion: mapping.mappingVersion,
+      universe: rows.length,
+      classified: assignments.length,
+      unclassified: (options.unclassified || []).length,
+      parity: parity,
+      rules: reports
+    };
+  }
+
+  function countAssigned(assignments, ruleId) {
+    var n = 0;
+    for (var i = 0; i < assignments.length; i++) if (assignments[i].ruleId === ruleId) n++;
+    return n;
+  }
+
+  function assertParity(report) {
+    if (report.parity) return report;
+    var broken = report.rules.filter(function (r) { return !r.parity; }).map(function (r) {
+      return r.ruleId + " (assigned but not matched: " + r.assignedNotMatched.join(",") +
+        "; unexplained: " + r.unexplained.join(",") + ")";
+    });
+    throw new Error("the setup cascade and its screener queries disagree: " + broken.join(" | "));
   }
 
   /* ---------------------------------------------------------------------
@@ -617,6 +840,7 @@
     OBSERVATION_SCHEMA: OBSERVATION_SCHEMA,
     OBSERVATION_INDEX_SCHEMA: OBSERVATION_INDEX_SCHEMA,
     SHARD_SCHEMA: SHARD_SCHEMA,
+    SCREEN_INDEX_SCHEMA: SCREEN_INDEX_SCHEMA,
     STATES: STATES.slice(),
     PIT_STATES: PIT_STATES.slice(),
     PATH_STATES: PATH_STATES.slice(),
@@ -629,6 +853,9 @@
     predicateOfRule: predicateOfRule,
     ruleHash: ruleHash,
     screenQuery: screenQuery,
+    screenIndex: screenIndex,
+    reconcile: reconcile,
+    assertParity: assertParity,
     evaluate: evaluate,
     publicationViolations: publicationViolations,
     assertPublishable: assertPublishable,

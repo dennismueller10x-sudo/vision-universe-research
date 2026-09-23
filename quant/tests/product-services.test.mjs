@@ -136,3 +136,68 @@ test('ordinary fundamental views remain materialized and never require a PIT API
   assert.deepEqual(calls,[]);
  }finally{globalThis.fetch=original;}
 });
+test('the setup state index is served from the cascade assignment, and a closed tier carries a reason instead of a zero',async()=>{
+ const SetupEngine=require('../engines/setup-engine.js');
+ const index=await materializedApi.getSetupScreenIndex();
+ assert.equal(index.state,'AVAILABLE');
+ assert.equal(index.approval.state,'APPROVED');
+ assert.deepEqual(index.states.map(s=>s.state),SetupEngine.STATES);
+
+ /* Jeder Titel steht in genau einer Lage: die Besetzungen der offenen
+    Stufe ergeben zusammen die ausgewerteten Titel. */
+ const open=index.states.filter(s=>s.availability.state==='AVAILABLE');
+ assert.equal(open.length,SetupEngine.PIT_STATES.length);
+ assert.equal(open.reduce((sum,s)=>sum+s.count,0),index.classified);
+ assert.equal(index.classified+index.unclassified,index.universe);
+
+ const seen=new Set();
+ for(const entry of open)for(const rule of entry.rules){
+  if(!Array.isArray(rule.tickers))continue;
+  for(const ticker of rule.tickers){assert.equal(seen.has(ticker),false,ticker+' steht in zwei Lagen');seen.add(ticker);}
+ }
+
+ /* Und die veroeffentlichte Liste ist NICHT die Treffermenge des
+    Praedikats: die Kaskade hat vorrangige Regeln zuerst bedient. Das ist
+    der Fehler, den dieser Index verhindert. */
+ const watch=index.states.find(s=>s.state==='WATCH');
+ const confirmed=index.states.find(s=>s.state==='CONFIRMED');
+ for(const ticker of confirmed.rules.flatMap(r=>r.tickers||[])){
+  assert.equal(watch.rules.some(r=>(r.tickers||[]).includes(ticker)),false,ticker+' waere doppelt gelistet');
+ }
+
+ for(const entry of index.states.filter(s=>SetupEngine.PATH_STATES.includes(s.state))){
+  assert.equal(entry.count,null,entry.state+' nennt eine Zahl, obwohl die Stufe geschlossen ist');
+  assert.ok(SetupEngine.PATH_CLOSED_REASONS.includes(entry.availability.reason));
+  for(const rule of entry.rules)assert.equal(rule.tickers,null);
+ }
+
+ /* Der Auffangzustand traegt eine Zahl, aber keine Liste. */
+ const none=index.states.find(s=>s.state==='NO_SETUP');
+ assert.ok(none.count>0);
+ for(const rule of none.rules){assert.equal(rule.screenable,false);assert.equal(rule.tickers,null);}
+});
+test('the state index and the per-title observation cannot disagree',async()=>{
+ const index=await materializedApi.getSetupScreenIndex();
+ const listed=index.states.filter(s=>s.availability.state==='AVAILABLE')
+  .flatMap(entry=>entry.rules.flatMap(rule=>(rule.tickers||[]).map(ticker=>({ticker,state:entry.state,ruleId:rule.ruleId}))));
+ assert.ok(listed.length>100);
+ /* Eine Stichprobe ueber beide Enden jeder Liste - die Shards einzeln zu
+    lesen ist der teure Weg, und ein Widerspruch zeigt sich an den
+    Raendern der Sortierung genauso wie in der Mitte. */
+ const sample=[...listed.slice(0,20),...listed.slice(-20)];
+ for(const entry of sample){
+  const observation=await materializedApi.getSetupObservation(entry.ticker);
+  assert.equal(observation.state,'AVAILABLE',entry.ticker);
+  assert.equal(observation.classification.state,entry.state,entry.ticker);
+  assert.equal(observation.matchedRule.ruleId,entry.ruleId,entry.ticker);
+ }
+});
+test('a broken or unapproved index is refused rather than shown',async()=>{
+ const wrongSchema=Service.create({loadJSON:async()=>({}),loadCompressedJSON:async()=>({schemaVersion:'something-else',states:[]}),displayPolicy:Policy,queryEngine:Query});
+ assert.equal((await wrongSchema.getSetupScreenIndex()).reason,'INVALID_SETUP_ARTIFACT');
+ const SetupEngine=require('../engines/setup-engine.js');
+ const unapproved=Service.create({loadJSON:async()=>({}),loadCompressedJSON:async()=>({schemaVersion:SetupEngine.SCREEN_INDEX_SCHEMA,approval:{state:'PENDING_OWNER'},states:[]}),displayPolicy:Policy,queryEngine:Query});
+ assert.equal((await unapproved.getSetupScreenIndex()).reason,'SETUP_MAPPING_NOT_APPROVED');
+ const offline=Service.create({loadJSON:async()=>{throw Error('offline')},loadCompressedJSON:async()=>{throw Error('offline')},displayPolicy:Policy,queryEngine:Query});
+ assert.equal((await offline.getSetupScreenIndex()).reason,'SOURCE_MISSING');
+});

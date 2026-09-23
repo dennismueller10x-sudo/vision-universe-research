@@ -32,7 +32,7 @@ function create(options){
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
-     !/^\/quant\/data\/product\/setup-observations-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
@@ -266,6 +266,35 @@ function create(options){
     classification:observation.classification,lifecycle:observation.lifecycle,
     matchedRule:observation.matchedRule,conditions:observation.conditions,
     journey:shard.cascade.filter(rule=>rule.always!==true)};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* Dieselbe Regel, andersherum gelesen: nicht 'wo steht dieser Titel',
+  * sondern 'welche Titel stehen dort'. Die Liste kommt aus der Zuordnung
+  * der Kaskade und nicht aus dem Regelpraedikat allein - das Praedikat
+  * einer Regel trifft mehr Titel, als die Regel zuordnet, weil eine
+  * hoeher priorisierte Regel sie vorher genommen hat. Wer das Praedikat
+  * direkt ausliefert, zeigt beobachtete Titel als 'beobachtet', obwohl
+  * sie laengst bestaetigt sind. Ein Zustand, dessen Stufe geschlossen
+  * ist, traegt hier keine Liste und keine Null, sondern seinen Grund. */
+ async function getSetupScreenIndex(){
+  if(!SetupEngine)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  try{
+   const index=await compressedJSON('/quant/data/product/setup-observations-v1/screen-index.json.gz');
+   if(index?.schemaVersion!==SetupEngine.SCREEN_INDEX_SCHEMA)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
+   if(index.approval?.state!=='APPROVED')return {state:'UNAVAILABLE',reason:'SETUP_MAPPING_NOT_APPROVED'};
+   const states=(index.states||[]).filter(entry=>SetupEngine.STATES.includes(entry.state)).map(entry=>({
+    state:entry.state,tier:entry.tier,count:entry.count,availability:entry.availability,
+    /* NO_SETUP ist der Auffangzustand: er traegt kein Praedikat und
+       deshalb keine Liste. Er bleibt als Zahl sichtbar, damit die
+       Besetzungen zusammen das Universum ergeben. */
+    rules:(entry.rules||[]).map(rule=>({ruleId:rule.ruleId,order:rule.order,screenable:rule.screenable,
+     predicateHash:rule.predicateHash,plain:rule.plain,matched:rule.matched,
+     tickers:Array.isArray(rule.tickers)?rule.tickers.slice():null}))
+   }));
+   return {state:'AVAILABLE',asOf:index.asOf,engineVersion:index.engineVersion,
+    mappingVersion:index.mappingVersion,methodologyVersion:index.methodologyVersion,
+    approval:index.approval,universe:index.universe,classified:index.classified,
+    unclassified:index.unclassified,states};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  /* VU Pattern Match. Welche der vorregistrierten Muster dieser Titel
@@ -576,7 +605,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

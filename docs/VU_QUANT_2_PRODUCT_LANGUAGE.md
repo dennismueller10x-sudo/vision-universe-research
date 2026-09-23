@@ -212,6 +212,34 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Kein Titel erfüllt diese Regel. |
 | Nicht verfügbar | Diese Regel lässt sich derzeit nicht auswerten. |
 
+### Aktien in dieser Lage
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `SetupEngine.screenIndex / setup-screen-index-1.0.0` |
+| Schlüssel | `setupScreen` |
+| **User Label** | **Aktien in dieser Lage** |
+| Als Frage | Welche Aktien stehen gerade an derselben Stelle? |
+| Erklärung für Einsteiger | Dieselbe Regel, die den Zustand einer Aktie beschreibt, sucht auch alle anderen Aktien, auf die sie zutrifft. |
+| Professional Label | Zustandsindex · kanonisches Regelprädikat der Kaskade |
+| Tooltip | Die Liste kommt aus der Zuordnung der Kaskade, nicht aus der Regel allein. Eine Aktie steht in genau einem Zustand. |
+| Negativer Zustand | Zurzeit steht kein Titel in dieser Lage. |
+| Nicht verfügbar | Für diese Lage wird derzeit keine Liste veröffentlicht. |
+
+### So viele Titel stehen hier
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `screenIndex.states[].count` |
+| Schlüssel | `setupStateCount` |
+| **User Label** | **So viele Titel stehen hier** |
+| Als Frage | Wie viele Aktien stehen gerade an dieser Stelle? |
+| Erklärung für Einsteiger | Die Anzahl der Titel, denen die Auswertung heute genau diesen Zustand zuordnet. |
+| Professional Label | Zustandsbesetzung zum Stichtag |
+| Tooltip | Eine Zahl zum Stichtag, keine Aussage darüber, wie sich die Besetzung entwickelt hat. |
+| Negativer Zustand | Kein Titel steht heute an dieser Stelle. |
+| Nicht verfügbar | Es wird keine Anzahl genannt, solange dieser Zustand nicht veröffentlicht wird. |
+
 ## Die sieben Eigenschaften
 
 ### Unternehmensqualität

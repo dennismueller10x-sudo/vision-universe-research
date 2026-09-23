@@ -132,7 +132,7 @@ test("the four layers are actually used: a section leads with meaning and folds 
 
 test("the stock experience answers its questions in the order a person asks them", () => {
   const order = ["Wie stark ist diese Aktie?", "sectionHead('Stärken & Schwächen','factorDna')",
-    "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation)",
+    "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation,setupIndex)",
     "prosAndCons(data,change,patterns)", "patternMatchSection(patterns)",
     "strategyMatchSection(match)", "evidenceTrustSection(patterns)"];
   let cursor = -1;
@@ -165,4 +165,45 @@ test("unavailable copy is a sentence, never a code", () => {
       assert.ok(/[.!?]$/.test(term.beginner.trim()), term.id + ": beginner copy is not a sentence");
     }
   }
+});
+
+test("the state list is read from the published assignment, never re-derived in the page", () => {
+  /* The trap this guards: a rule's predicate matches more titles than the
+     rule assigns, because the cascade serves higher-priority rules first.
+     A page that ran the predicate itself would list confirmed titles as
+     merely watched. So the frontend may read the index and must not carry
+     a query engine call of its own for it. */
+  assert.match(experience, /getSetupScreenIndex\(\)/);
+  const surfaces = [
+    experience.slice(experience.indexOf("function setupPeers("), experience.indexOf("function pct1(")),
+    experience.slice(experience.indexOf("function setupDistribution("), experience.indexOf("async function radarPage(")),
+    experience.slice(experience.indexOf("async function setupRuleResult("), experience.indexOf("async function screenPage("))
+  ];
+  for (const source of surfaces) {
+    assert.ok(source.length > 200, "a setup screening surface was not found");
+    assert.equal(/screenQuery|predicateOfRule|VUQuery|queryEngine\.execute/.test(source), false,
+      "a screening surface evaluates the rule itself instead of reading the assignment");
+    /* And each one goes through the dictionary rather than naming a state. */
+    for (const state of SetupEngine.STATES) {
+      assert.equal(new RegExp("text:'[^']*\\b" + state + "\\b").test(source), false, state + " is written into the page");
+    }
+  }
+  /* The screener link opens a result, not an editable query: loading the
+     rule into the editor would run the predicate and produce the wrong
+     list. A regression would show up as the rule reaching editor.decode. */
+  const screener = experience.slice(experience.indexOf("async function screenPage("), experience.indexOf("async function screenPage(") + 2500);
+  assert.match(screener, /params\.has\('setupRule'\)/);
+  assert.equal(/setupRule[^\n]*editor\.(decode|build)/.test(screener), false);
+});
+
+test("a state whose tier is closed shows its reason, and never a count", () => {
+  const distribution = experience.slice(experience.indexOf("function setupDistribution("), experience.indexOf("async function radarPage("));
+  /* Null is rendered as a dash, not as a zero. */
+  assert.match(distribution, /entry\.count===null\?'–'/);
+  assert.match(distribution, /LB\(entry\.availability\.reason\)/);
+  assert.match(distribution, /LU\('setupStateCount'\)/);
+  /* The closed states stay visible rather than being filtered away: that
+     they exist and why they say nothing yet is itself information. */
+  assert.equal(/states\.filter\([^)]*availability[^)]*\)/.test(distribution), false,
+    "closed states are hidden instead of explained");
 });

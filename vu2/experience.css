@@ -264,3 +264,24 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .setup-step.is-pending{opacity:.55}
 .setup-step.is-pending .setup-dot{background:transparent;border-top:2px dashed var(--line);height:0}
 .setup-pending{font-size:11px;font-style:italic}
+
+/* Lage im Markt. Die Titelliste ist bewusst eine Chip-Reihe und keine
+   Tabelle: sie traegt genau eine Information - welcher Titel steht hier
+   auch - und eine Tabelle wuerde auf 390px Spalten versprechen, die es
+   nicht gibt. */
+.setup-peers{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+.setup-peers>summary{cursor:pointer;font-weight:650}
+.peer-tickers{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.peer-chip{display:inline-block;padding:4px 10px;border:1px solid var(--line);border-radius:999px;
+ font-size:13px;font-variant-numeric:tabular-nums;text-decoration:none;color:inherit}
+.peer-chip:hover,.peer-chip:focus-visible{border-color:var(--accent,currentColor)}
+.distribution-row{padding:14px 0;border-top:1px solid var(--line)}
+.distribution-row:first-of-type{border-top:0}
+.distribution-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.distribution-count{font-size:20px;font-variant-numeric:tabular-nums}
+/* Eine geschlossene Stufe wird gedaempft gezeigt und nicht ausgeblendet:
+   dass es diese Lagen gibt und warum sie noch nichts sagen, ist selbst
+   eine Information. */
+.distribution-row.is-pending{opacity:.62}
+.distribution-row.is-pending .distribution-count{color:var(--muted)}
+.setup-rule-result{margin-bottom:24px}

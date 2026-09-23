@@ -152,13 +152,51 @@ async function signalsPage(){
  target.append(el('article',{class:'signal-event'},[el('div',{class:'signal-date'},[el('span',{class:'eyebrow',text:e.asOf}),link(e.ticker,href('stock',e.ticker))]),el('div',{},[el('h2',{text:title}),el('p',{class:'muted',text:'Regel: '+e.rule+'. Vergleich '+e.previousAsOf+' → '+e.asOf+'.'}),el('details',{},[el('summary',{text:'Warum wurde der Wechsel erkannt?'}),...e.evidence.map(m=>el('p',{text:(VUCatalog.field(m.metricId)?.label||m.metricId)+': '+m.previous.toLocaleString('de-DE',{maximumFractionDigits:3})+' % → '+m.current.toLocaleString('de-DE',{maximumFractionDigits:3})+' %'})),el('p',{class:'muted',text:'Historische Beobachtung, keine Kauf- oder Verkaufsempfehlung. '+(e.expiration.at?'Abgelöst durch die nächste vorhandene Beobachtung vom '+e.expiration.at+'.':'Letzte Beobachtung dieses Datensatzes. Keine laufende Überwachung behauptet.')}),el('p',{class:'muted',text:'Definition '+e.definitionId+' · v'+e.definitionVersion+' · Daten bis '+e.snapshotAsOf})]),link('Regel im Screener untersuchen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(e.query)),'button secondary')])]));
  }if(matching.length>events.length)target.append(el('p',{class:'muted',text:'Gezeigt werden 200 von '+matching.length+' belegten Wechseln. Bitte ein Unternehmen auswählen, um die Ansicht einzugrenzen.'}));}if(data.results.some(r=>r.state==='AVAILABLE'&&r.ticker===params.get('ticker')))company.value=params.get('ticker');company.onchange=draw;main.append(target,actions([{label:'Radar',href:href('radar')},{label:'Discover',href:href('discover')},{label:'Watchlist',href:href('watchlist')}]));draw();
 }
+/* Die Besetzung der Lagen zum Stichtag. Der Radar zeigt sonst WECHSEL;
+   das hier ist der Bestand - wie viele Titel gerade wo stehen. Beides
+   nebeneinander, weil 'was hat sich bewegt' und 'wo steht gerade wie
+   viel' zwei verschiedene Fragen sind und eine Zahl die andere nicht
+   beantwortet. Geschlossene Stufen tragen ihren Grund statt einer Null. */
+function setupDistribution(index){
+ if(!index||index.state!=='AVAILABLE')return null;
+ const section=el('section',{class:'section setup-distribution'},[
+  ...sectionHead('Lage im Markt','setupScreen'),
+  el('p',{class:'muted',text:'Stand '+index.asOf+' · '+index.universe.toLocaleString('de-DE')+' ausgewertete Titel. Jeder Titel steht in genau einer Lage.'})]);
+ for(const entry of index.states){
+  const row=el('article',{class:'distribution-row'+(entry.availability.state==='AVAILABLE'?'':' is-pending')});
+  row.append(el('div',{class:'distribution-head'},[
+   el('span',{class:'setup-badge state-'+entry.state,text:L(entry.state)}),
+   el('strong',{class:'distribution-count',text:entry.count===null?'–':entry.count.toLocaleString('de-DE')})]));
+  row.append(el('p',{class:'muted',text:entry.availability.state==='AVAILABLE'?LB(entry.state):LB(entry.availability.reason)}));
+  if(entry.availability.state!=='AVAILABLE'){
+   row.append(el('p',{class:'muted',text:LU('setupStateCount')}));
+  }else{
+   for(const rule of entry.rules.filter(rule=>Array.isArray(rule.tickers)&&rule.tickers.length)){
+    row.append(el('p',{class:'peer-tickers'},rule.tickers.slice(0,12).map(ticker=>link(ticker,href('quant',ticker),'peer-chip'))));
+    row.append(link('Regel prüfen · '+rule.plain,href('screener')+'&setupRule='+encodeURIComponent(rule.ruleId),'button secondary'));
+   }
+  }
+  section.append(row);
+ }
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{class:'muted',text:'Zuordnung '+index.mappingVersion+' · '+index.methodologyVersion+'. Die Listen entstehen aus derselben Regel, die den Zustand eines einzelnen Titels bestimmt, und werden gegen sie geprüft. Ein Titel, auf den mehrere Regeln zutreffen, zählt bei der weitesten, deshalb ist eine Liste kürzer als die Treffermenge ihrer Regel allein.'}),
+  el('p',{class:'muted',text:'Der Auffangzustand trägt keine Titelliste: er ist kein Merkmal, sondern das, was keine andere Regel genommen hat.'})]));
+ return section;
+}
 async function radarPage(){
  main.append(heading(LQ('radar'),LB('radar')));
- const lookback=[5,20,60].includes(Number(params.get('window')))?Number(params.get('window')):20,data=await api.getRadarIntelligence({lookback,limit:12});
- if(data.state!=='AVAILABLE'){main.append(notice('Hier ist gerade nichts belegbar',LU('radar')));return;}
+ const lookback=[5,20,60].includes(Number(params.get('window')))?Number(params.get('window')):20;
+ const [data,setupIndex]=await Promise.all([api.getRadarIntelligence({lookback,limit:12}),api.getSetupScreenIndex().catch(()=>null)]);
+ if(data.state!=='AVAILABLE'){
+  /* Der Bestand haengt nicht an den Wechseln. Faellt die eine Quelle aus,
+     bleibt die andere sichtbar, statt die Seite leer zu lassen. */
+  main.append(notice('Hier ist gerade nichts belegbar',LU('radar')));
+  const standalone=setupDistribution(setupIndex);if(standalone)main.append(standalone);
+  return;
+ }
  const select=el('select',{'aria-label':'Radar-Zeitraum'},[5,20,60].map(value=>el('option',{value:String(value),text:value+' EOD-Beobachtungen'})));select.value=String(lookback);select.onchange=()=>location.assign(href('radar')+'&window='+select.value);
  main.append(el('div',{class:'workspace-controls'},[select]),el('p',{class:'scope-note',text:data.coverage.available+' von '+data.coverage.requested+' Produkttiteln contract-konform auswertbar · '+data.eventTickerCount+' Titel mit belegtem Wechsel · '+data.eventCount+' Wechsel im Zeitraum'}),el('p',{class:'muted',text:'Jedes Element ist ein retrospektiver EOD-Zustandswechsel. Es ist weder Echtzeit- noch Handels- oder Ranking-Signal. Quant V2 und Market Regime bleiben geschlossen.'}));
- const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}main.append(grid,actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
+ const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}main.append(grid);const distribution=setupDistribution(setupIndex);if(distribution)main.append(distribution);main.append(actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
 }
 async function comparePage(){
  main.append(heading('Unternehmen im direkten Vergleich','Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis.'));
@@ -384,7 +422,7 @@ function setupCondition(condition){
   el('div',{},[el('span',{text:condition.label||condition.field||condition.input}),
    el('span',{class:'muted',text:'Wert '+value+' · verlangt '+(condition.operator||'')+' '+demand})])]);
 }
-function setupJourney(setup,observation){
+function setupJourney(setup,observation,index){
  const available=observation&&observation.state==='AVAILABLE';
  const lifecycle=available?observation.lifecycle:null;
  const classification=available?observation.classification:null;
@@ -439,7 +477,40 @@ function setupJourney(setup,observation){
    el('ul',{class:'setup-conditions'},conditions.map(setupCondition)),
    el('p',{class:'muted',text:'Regel '+observation.matchedRule.ruleId+' · Methodik '+observation.mappingVersion+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Auslöser.'}));
  }
+ section.append(setupPeers(index,classification&&classification.state,observation.ticker));
  return section;
+}
+/* Dieselbe Regel, andersherum gelesen. Die Liste kommt aus der Zuordnung
+   der Kaskade: wer statt dessen das Regelpraedikat ausliefert, zeigt
+   Titel als 'beobachtet', die laengst bestaetigt sind - beim Zustand
+   Beobachten waeren das ueber achthundert von rund vierzehnhundert. */
+function setupPeers(index,state,self){
+ if(!index||index.state!=='AVAILABLE'||!state||state==='UNAVAILABLE')return null;
+ const entry=index.states.find(row=>row.state===state);
+ if(!entry)return null;
+ const block=el('details',{class:'setup-peers'},[el('summary',{text:LQ('setupScreen')})]);
+ if(entry.availability.state!=='AVAILABLE'){
+  block.append(el('p',{class:'muted',text:LU('setupScreen')}),
+   el('p',{class:'muted',text:LB(entry.availability.reason)}));
+  return block;
+ }
+ const listed=entry.rules.filter(rule=>Array.isArray(rule.tickers));
+ const peers=listed.flatMap(rule=>rule.tickers).filter(ticker=>ticker!==self);
+ if(!listed.length){
+  /* Der Auffangzustand traegt kein Praedikat. 'Alles, was keine andere
+     Regel genommen hat' ist keine Eigenschaft eines Titels und wird
+     deshalb nicht als Liste ausgegeben - die Zahl steht trotzdem da. */
+  block.append(el('p',{text:entry.count.toLocaleString('de-DE')+' Titel stehen am '+index.asOf+' an derselben Stelle.'}),
+   el('p',{class:'muted',text:'Für diese Lage wird keine Titelliste gebildet: sie ist der Auffangzustand und damit keine eigene Eigenschaft, nach der sich suchen ließe.'}));
+  return block;
+ }
+ block.append(el('p',{text:peers.length?peers.length.toLocaleString('de-DE')+' weitere Titel stehen am '+index.asOf+' an derselben Stelle.':LN('setupScreen')}));
+ if(peers.length)block.append(el('p',{class:'peer-tickers'},peers.slice(0,24).map(ticker=>link(ticker,href('quant',ticker),'peer-chip'))));
+ if(peers.length>24)block.append(el('p',{class:'muted',text:'Gezeigt werden 24 von '+peers.length.toLocaleString('de-DE')+'. Die vollständige Liste entsteht aus derselben Regel im Screener.'}));
+ block.append(...listed.map(rule=>link('Regel prüfen · '+rule.plain,
+  href('screener')+'&setupRule='+encodeURIComponent(rule.ruleId),'button secondary')));
+ block.append(el('p',{class:'muted',text:'Stand '+index.asOf+' · Zuordnung '+index.mappingVersion+'. Jeder Titel steht in genau einer Lage; eine Aktie, auf die mehrere Regeln zutreffen, zählt bei der weitesten.'}));
+ return block;
 }
 /* VU Pattern Match. Was HISTORISCH in der Grundgesamtheit passiert ist,
    wenn eine Konfiguration wie diese vorlag - und ausdruecklich nicht, was
@@ -651,7 +722,7 @@ function evidenceTrustSection(patterns){
 }
 
 async function quantPage(ticker){
- const [data,match,profileContract,observation,patterns]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null)]);
+ const [data,match,profileContract,observation,patterns,setupIndex]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -709,7 +780,7 @@ async function quantPage(ticker){
     wie stark - warum - was aendert sich - baut sich etwas auf - was
     spricht dafuer und dagegen - wie sah das frueher aus - welcher Stil
     passt - wie belastbar ist das alles. */
- main.append(setupJourney(setup,observation));
+ main.append(setupJourney(setup,observation,setupIndex));
  main.append(prosAndCons(data,change,patterns));
  main.append(patternMatchSection(patterns));
  main.append(strategyMatchSection(match));
@@ -814,8 +885,37 @@ async function discoverPage(){
   main.append(el('section',{class:'collection'},[title,el('div',{},[evidence])]));
  }
 }
+/* Eine Regel aus der Lagen-Zuordnung wird hier als ERGEBNIS gezeigt und
+   nicht als bearbeitbare Abfrage geoeffnet. Das ist kein fehlendes
+   Feature: das Praedikat einer Regel trifft mehr Titel, als die Regel
+   zuordnet, weil die Kaskade vorrangige Regeln zuerst bedient. Wer die
+   Regel im Editor laufen laesst, bekaeme die Treffermenge statt der Lage
+   - beim Zustand Beobachten rund 1.400 statt 620 Titeln. Deshalb kommt
+   die Liste aus der veroeffentlichten Zuordnung und traegt den
+   Praedikat-Fingerabdruck der Regel, die sie erzeugt hat. */
+async function setupRuleResult(ruleId){
+ const index=await api.getSetupScreenIndex().catch(()=>null);
+ const section=el('section',{class:'section setup-rule-result'},[...sectionHead('Lage im Markt','setupScreen')]);
+ if(!index||index.state!=='AVAILABLE'){section.append(notice(LU('setupScreen'),LB('setupScreen')));return section;}
+ let found=null,owner=null;
+ for(const entry of index.states)for(const rule of entry.rules)if(rule.ruleId===ruleId){found=rule;owner=entry;}
+ if(!found){section.append(notice('Diese Regel gibt es in der veröffentlichten Zuordnung nicht',
+  'Es wurde keine Ersatzregel ausgeführt. Die Lagen im Markt sind über den Radar erreichbar.'));return section;}
+ section.append(el('p',{class:'scope-note'},[el('span',{class:'setup-badge state-'+owner.state,text:L(owner.state)}),
+  el('span',{text:' '+found.plain})]));
+ if(owner.availability.state!=='AVAILABLE'||!Array.isArray(found.tickers)){
+  section.append(notice(LU('setupScreen'),owner.availability.reason?LB(owner.availability.reason):LB('setupScreen')));
+  return section;
+ }
+ section.append(el('p',{text:found.tickers.length?found.tickers.length.toLocaleString('de-DE')+' Titel stehen am '+index.asOf+' in dieser Lage.':LN('setupScreen')}));
+ if(found.tickers.length)section.append(el('p',{class:'peer-tickers'},found.tickers.map(ticker=>link(ticker,href('quant',ticker),'peer-chip'))));
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{class:'muted',text:'Regel '+found.ruleId+' · '+found.predicateHash+' · Zuordnung '+index.mappingVersion+'. Die Liste ist die Zuordnung der Kaskade und nicht die Treffermenge des Prädikats allein: ein Titel, auf den auch eine vorrangige Regel zutrifft, steht dort und nicht hier. Deshalb ist diese Regel unten nicht als bearbeitbare Abfrage geladen.'})]));
+ return section;
+}
 async function screenPage(){
  main.append(heading('Aus einer Idee wird deine Auswahl','Kombiniere Geschäftsentwicklung und Kursstruktur. Alle Kriterien müssen gleichzeitig erfüllt sein.'));
+ if(params.has('setupRule'))main.append(await setupRuleResult(params.get('setupRule')));
  const editor=VUScreenerWorkspace,recipe=api.getRecipes().find(r=>r.id===params.get('recipe'));
  let initial=recipe?.query||editor.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]),invalidLink=false;
  try{if(params.has('recipe')&&!recipe)throw Error('unknown recipe');if(params.has('query'))initial=editor.decode(params.get('query'));else if(params.has('field')||params.has('threshold'))initial=editor.build([{field:params.get('field')||'momentum6m',operator:'gte',value:Number(params.get('threshold')||0),scale:'raw'}]);}catch{invalidLink=true;main.append(notice('Gespeicherte Regeln konnten nicht geöffnet werden','Die Abfrage enthält ungültige oder in diesem Editor nicht unterstützte Kriterien. Es wurden keine Ersatzregeln ausgeführt. Erstelle hier eine neue Auswahl oder öffne den vollständigen Screener.'));}
@@ -892,6 +992,7 @@ const LQ=id=>VUProductLanguage.question(id);
 const LB=id=>VUProductLanguage.beginner(id);
 const LT=id=>VUProductLanguage.tooltip(id);
 const LU=id=>VUProductLanguage.unavailable(id);
+const LN=id=>VUProductLanguage.negative(id);
 /* Eine Sektionsueberschrift besteht immer aus Nutzerbegriff und Frage -
    nie aus dem internen Namen. Der steht, wenn er gebraucht wird, in der
    eingeklappten Methodik darunter. */
@@ -903,7 +1004,7 @@ function sectionHead(eyebrow,termId,intro){
 async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas','explain']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
  /* Die Quant-Familie lebt von diesen Texten. Ohne sie wird nicht
     halbfertig gezeichnet, sondern gesagt, was fehlt. */
- const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals']);
+ const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener']);
  if(needsLanguage.has(view)&&!await loadLanguage()){
   recover('Die Texte dieser Ansicht konnten nicht geladen werden','Diese Ansicht beschreibt Fachbegriffe in Alltagssprache. Ohne die Textquelle werden keine Ersatzformulierungen erfunden. Bitte lade die Seite neu.',true);
   return;

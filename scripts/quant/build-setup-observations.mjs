@@ -162,6 +162,12 @@ function main() {
   const rules = {};
   let unavailable = 0;
   const historyRows = {};
+  /* The other half of the same question. A per-title observation says where
+     one title stands; these two collect what is needed to say which titles
+     stand there, and to prove that answer is the cascade's own. */
+  const assignments = [];
+  const unclassified = [];
+  const screenRows = [];
 
   for (const entry of [...instruments.values()].sort((a, b) => a.ticker.localeCompare(b.ticker))) {
     const previous = previousByTicker.get(entry.ticker) || null;
@@ -182,9 +188,19 @@ function main() {
       counts[recorded] = (counts[recorded] || 0) + 1;
       rules[observation.matchedRule.ruleId] = (rules[observation.matchedRule.ruleId] || 0) + 1;
       historyRows[entry.ticker] = [recorded, entry.levels.invalidationPrice, entry.levels.exitPrice];
+      assignments.push({
+        ticker: entry.ticker,
+        ruleId: observation.matchedRule.ruleId,
+        state: recorded,
+        /* The rule's own sort field, so a published list arrives in the
+           order its screener query would have produced. */
+        sort: entry.row.technicalDistanceTo52wHigh
+      });
     } else {
       unavailable += 1;
+      unclassified.push(entry.ticker);
     }
+    screenRows.push({ ticker: entry.ticker, ...entry.row });
 
     const published = {
       ticker: entry.ticker,
@@ -268,6 +284,30 @@ function main() {
   const gate = SetupEngine.activationGate(
     publishedSeries.concat([{ asOf: cutoff, rows: historyRows, contentHashValid: true }]), methodology);
   writeFileSync(join(OUT_DIR, "activation-gate.json"), JSON.stringify(gate, null, 1) + "\n");
+
+  /* The screening side of the same rules, and the proof that it is the same
+     rules. reconcile() runs each state's screener query through the query
+     engine over the very rows the cascade saw; assertParity throws if the
+     two answers cannot be reconciled by cascade priority alone. A drifted
+     index is not published with a warning - it is not published. */
+  const parity = SetupEngine.assertParity(
+    SetupEngine.reconcile(screenRows, assignments, methodology, { unclassified }));
+  writeFileSync(join(OUT_DIR, "screen-parity.json"), JSON.stringify(parity, null, 1) + "\n");
+
+  const screenIndex = SetupEngine.screenIndex(assignments, methodology, {
+    pathTierOpen: summary.pathTier.open,
+    pathClosedReason: summary.pathTier.reason
+  });
+  const screenIndexBytes = gzipSync(Buffer.from(JSON.stringify({
+    ...screenIndex, asOf: cutoff, generatedAt, methodologyVersion: methodology.methodologyVersion,
+    approval: mapping.approval, universe: instruments.size, unclassified: unclassified.length
+  })), { level: 9 });
+  /* A screener list is only useful if a phone can actually fetch it. */
+  if (screenIndexBytes.length > 128 * 1024) {
+    throw new Error("the setup screen index is " + screenIndexBytes.length +
+      " compressed bytes, past the 128 KiB browser artifact cap");
+  }
+  writeFileSync(join(OUT_DIR, "screen-index.json.gz"), screenIndexBytes);
 
   /* 5. Append to the immutable history. */
   mkdirSync(historyDir, { recursive: true });
