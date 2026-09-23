@@ -476,10 +476,28 @@ the mapping decision is then taken against measurement rather than against a pla
    observation series has `2026-09-10`; the path tier (ACTIVE, RISK_RISING, INVALIDATED, EXIT)
    opens on the second one. Both append by themselves on each materialization run — there is
    nothing to build.
-3. **`total_debt` TTM breadth in SEC normalization** is the next real input gate, measured:
-   it is the first missing input for 4,214 of 5,068 issuers and is what holds `roicTtm` at 58,
-   `roicMedian3y` at 535, `netDebtToAssets` at 462 and `salesYield` at 97. Widening it lifts
-   Profitability, Value and Quality together. Nothing else in the contract is at zero coverage.
+3. **`total_debt` is measured and lies with the owner.** The earlier entry here was wrong twice
+   over and is corrected: there is no silent substitution to undo — `derived.py` already
+   reconstructs `total_debt = long_term_debt + short_term_debt` with a per-row `derived` flag —
+   and the concept census (5,148 issuers, `census_logic 1.1.0`, registry mapping `1.5.0`) shows
+   there is **no composition that materially widens the metric without changing what it means**:
+
+   | Option | Coverage | Δ | |
+   |---|---:|---:|---|
+   | A combined amount only | 864 | −2,065 | not the current state |
+   | **B combined, else LT+ST** | **2,929** | — | **the current state** |
+   | C long-term alone | 3,456 | +527 | a DIFFERENT metric under the same name |
+   | D B and finance leases | 1,281 | −1,648 | requiring leases COSTS coverage |
+   | E B, else leases alone | 3,401 | +472 | semantically weakest |
+
+   Refusing the forbidden substitution C costs exactly 527 issuers — a measured price, not a
+   guess. The five highest-coverage unmapped concepts are maturity schedules, cash-flow items
+   and per-instrument disclosures: more reach than today's mapping and none of them a balance
+   sheet total. Full write-up: `docs/VU_QUANT_2_TOTAL_DEBT_CENSUS.md`.
+
+   1,692 issuers tag no long-term debt concept at all. That cohort is not only financials —
+   Lumen Technologies and MasTec carry no debt metric in the export either. Which concepts that
+   cohort does use is the one open measurement, and it is not blocking.
 4. **Setup screening (M9) is built** — the point-in-time rules now answer both directions of
    the same question. Next in the same §20 direction and needing no new data: the same
    assignment as a watchlist filter and as an alert predicate, since a state change on a
