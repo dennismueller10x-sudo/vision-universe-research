@@ -58,6 +58,24 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **`CRITICAL_PRODUCT_GAPS = 0`, measured rather than asserted.**
+  `scripts/quant/assert-product-completeness.mjs` checks the published artifacts and exits
+  non-zero while a critical gap stands; it runs in the materialization workflow. Three
+  severities, and the difference is the point: **CRITICAL** is a defect (a surface reads an
+  artifact that is missing, a published state has no user label), **BLOCKED** is a capability
+  deliberately shut because an input does not exist — measured, named, and not a defect —
+  and **OPEN** is informational. Each BLOCKED entry re-measures its own blocker rather than
+  trusting a flag, and flips to an OPEN "this entry is stale" the moment the blocker clears.
+  That guard exists because this section hit a stale gate twice before catching it.
+  It found five real CRITICAL gaps on its first run: five setup reason codes had no user label.
+  Four of them were only in a local `SETUP_CLOSED` map in the frontend — a second text source
+  beside the dictionary — and the newer stock-page section bypassed it and called `LB(reason)`
+  directly. A title with incomplete technical evidence would have crashed that page. Today no
+  title has incomplete evidence, which is exactly what kept the defect invisible. The map is
+  gone and the four reasons live in the dictionary.
+  Standing state: 0 CRITICAL, 4 BLOCKED (backtest, revisions, regime transitions, setup path
+  states), each with its missing input named.
+
 - **M12 — Market Regime, as far as it is certifiable.** It had stood as a blanket owner gate
   (`MARKET_REGIME_NOT_CERTIFIED`). Measured, the split is the same one the setup engine already
   proved: a point-in-time description of market breadth **is** decidable from one cutoff; only

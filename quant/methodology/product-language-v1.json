@@ -830,6 +830,46 @@
      "tooltip": "Ein Anteil über eine Handvoll Titel beschreibt diese Titel, nicht den Markt.",
      "negative": "Über die Breite dieses Ausschnitts wird nichts behauptet.",
      "unavailable": "Der ausgewertete Ausschnitt ist zu klein für eine Aussage zum Marktumfeld."
+    },
+    {
+     "id": "SETUP_MAPPING_NOT_APPROVED",
+     "internal": "setup availability.reason",
+     "userLabel": "Methodik noch nicht freigegeben",
+     "beginner": "Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Zustand behauptet.",
+     "professionalLabel": "Zuordnungsversion ohne Freigabe",
+     "tooltip": "Die Regeln stehen fest und sind prüfbar; es fehlt die ausdrückliche Freigabe.",
+     "negative": "Zu dieser Aktie wird kein Setup-Zustand behauptet.",
+     "unavailable": "Solange die Methodik nicht freigegeben ist, wird kein Setup-Zustand veröffentlicht."
+    },
+    {
+     "id": "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED",
+     "internal": "setup pathTier.reason",
+     "userLabel": "Noch keine frühere Beobachtung",
+     "beginner": "Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. „Wurde bestätigt“ oder „wurde ungültig“ sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen.",
+     "professionalLabel": "Keine materialisierte Beobachtungsreihe",
+     "tooltip": "Ein Verlauf braucht mindestens zwei veröffentlichte Stichtage.",
+     "negative": "Über den bisherigen Verlauf wird nichts behauptet.",
+     "unavailable": "Zum Verlauf dieses Titels liegt noch keine veröffentlichte Beobachtung vor."
+    },
+    {
+     "id": "INSUFFICIENT_OBSERVATION_HISTORY",
+     "internal": "setup pathTier.reason",
+     "userLabel": "Beobachtung läuft noch",
+     "beginner": "Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen. Das klärt sich von selbst, während weiter beobachtet wird.",
+     "professionalLabel": "Beobachtungstiefe unter Mindestanforderung",
+     "tooltip": "Kein „Nein“, sondern ein „noch nicht“: es fehlt Zeit, keine Entscheidung.",
+     "negative": "Über den bisherigen Verlauf wird noch nichts behauptet.",
+     "unavailable": "Für eine Aussage über den Verlauf reicht die bisherige Beobachtungsdauer nicht."
+    },
+    {
+     "id": "SETUP_INPUTS_INCOMPLETE",
+     "internal": "setup classification.reason",
+     "userLabel": "Technische Evidenz unvollständig",
+     "beginner": "Für diesen Titel fehlt ein Teil der technischen Auswertung, die die Methodik verlangt. Deshalb steht hier kein Zustand — auch nicht „kein Setup“.",
+     "professionalLabel": "Pflichtfelder der Zuordnung nicht vollständig",
+     "tooltip": "„Kein Setup“ und „nicht bewertbar“ sind zwei verschiedene Aussagen und werden nicht vermischt.",
+     "negative": "Zu dieser Aktie lässt sich derzeit kein Setup-Zustand sagen.",
+     "unavailable": "Für diesen Titel liegt nicht die vollständige technische Evidenz vor, die die Methodik verlangt."
     }
    ]
   }

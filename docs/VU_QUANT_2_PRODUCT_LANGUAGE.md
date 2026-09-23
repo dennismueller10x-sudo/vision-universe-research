@@ -1017,6 +1017,58 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Über die Breite dieses Ausschnitts wird nichts behauptet. |
 | Nicht verfügbar | Der ausgewertete Ausschnitt ist zu klein für eine Aussage zum Marktumfeld. |
 
+### Methodik noch nicht freigegeben
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `setup availability.reason` |
+| Schlüssel | `SETUP_MAPPING_NOT_APPROVED` |
+| **User Label** | **Methodik noch nicht freigegeben** |
+| Erklärung für Einsteiger | Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Zustand behauptet. |
+| Professional Label | Zuordnungsversion ohne Freigabe |
+| Tooltip | Die Regeln stehen fest und sind prüfbar; es fehlt die ausdrückliche Freigabe. |
+| Negativer Zustand | Zu dieser Aktie wird kein Setup-Zustand behauptet. |
+| Nicht verfügbar | Solange die Methodik nicht freigegeben ist, wird kein Setup-Zustand veröffentlicht. |
+
+### Noch keine frühere Beobachtung
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `setup pathTier.reason` |
+| Schlüssel | `SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED` |
+| **User Label** | **Noch keine frühere Beobachtung** |
+| Erklärung für Einsteiger | Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. „Wurde bestätigt“ oder „wurde ungültig“ sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen. |
+| Professional Label | Keine materialisierte Beobachtungsreihe |
+| Tooltip | Ein Verlauf braucht mindestens zwei veröffentlichte Stichtage. |
+| Negativer Zustand | Über den bisherigen Verlauf wird nichts behauptet. |
+| Nicht verfügbar | Zum Verlauf dieses Titels liegt noch keine veröffentlichte Beobachtung vor. |
+
+### Beobachtung läuft noch
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `setup pathTier.reason` |
+| Schlüssel | `INSUFFICIENT_OBSERVATION_HISTORY` |
+| **User Label** | **Beobachtung läuft noch** |
+| Erklärung für Einsteiger | Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen. Das klärt sich von selbst, während weiter beobachtet wird. |
+| Professional Label | Beobachtungstiefe unter Mindestanforderung |
+| Tooltip | Kein „Nein“, sondern ein „noch nicht“: es fehlt Zeit, keine Entscheidung. |
+| Negativer Zustand | Über den bisherigen Verlauf wird noch nichts behauptet. |
+| Nicht verfügbar | Für eine Aussage über den Verlauf reicht die bisherige Beobachtungsdauer nicht. |
+
+### Technische Evidenz unvollständig
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `setup classification.reason` |
+| Schlüssel | `SETUP_INPUTS_INCOMPLETE` |
+| **User Label** | **Technische Evidenz unvollständig** |
+| Erklärung für Einsteiger | Für diesen Titel fehlt ein Teil der technischen Auswertung, die die Methodik verlangt. Deshalb steht hier kein Zustand — auch nicht „kein Setup“. |
+| Professional Label | Pflichtfelder der Zuordnung nicht vollständig |
+| Tooltip | „Kein Setup“ und „nicht bewertbar“ sind zwei verschiedene Aussagen und werden nicht vermischt. |
+| Negativer Zustand | Zu dieser Aktie lässt sich derzeit kein Setup-Zustand sagen. |
+| Nicht verfügbar | Für diesen Titel liegt nicht die vollständige technische Evidenz vor, die die Methodik verlangt. |
+
 ## Begriffe, die nicht an den Anfang gehören
 
 Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können.

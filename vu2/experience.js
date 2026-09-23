@@ -558,10 +558,13 @@ function changeCard(entry){
    Beobachtungshistorie und bleibt bis dahin ausdruecklich geschlossen. */
 /* Die Zustandsnamen kommen aus dem Woerterbuch. Ein Enum-Wert erreicht
    die Oberflaeche nie roh - er wird uebersetzt oder gar nicht gezeigt. */
-const SETUP_CLOSED={SETUP_MAPPING_NOT_APPROVED:'Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Lebenszyklus-Zustand behauptet.',
- SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED:'Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. "Wurde bestätigt" oder "wurde ungültig" sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen.',
- INSUFFICIENT_OBSERVATION_HISTORY:'Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen.',
- SETUP_INPUTS_INCOMPLETE:'Für diesen Titel fehlt ein Teil der technischen Evidenz, die die Methodik verlangt. Deshalb steht hier kein Zustand - auch nicht "kein Setup".'};
+/* Die lokale Gruende-Tabelle ist weg. Sie war eine zweite Textquelle
+   neben dem Woerterbuch - genau die Doppelsprache, die das Woerterbuch
+   abschafft - und die neue Aktienseiten-Sektion umging sie ohnehin und
+   rief LB(reason) direkt auf. Fuer vier der Gruende gab es dort gar
+   keinen Eintrag: ein Titel mit unvollstaendiger technischer Evidenz
+   haette die Seite zum Absturz gebracht, sobald es einen gibt. Heute gibt
+   es keinen, was den Fehler unsichtbar hielt. */
 function setupCondition(condition){
  const demand=Array.isArray(condition.demand)?condition.demand.join(' oder '):condition.demand;
  const value=condition.value===null||condition.value===undefined?'nicht verfügbar':String(condition.value);
@@ -609,10 +612,10 @@ function setupJourney(setup,observation,index){
    el('span',{class:'muted',text:LB(classification.state)})]),
    el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
  }else{
-  section.append(notice(L('UNAVAILABLE'),SETUP_CLOSED[classification.reason]||'Die Methodik verlangt Evidenz, die für diesen Titel nicht vollständig vorliegt.'));
+  section.append(notice(L('UNAVAILABLE'),VUProductLanguage.has(classification.reason)?LB(classification.reason):LB('UNAVAILABLE')));
  }
  if(!active)section.append(notice(LU('setupState'),
-  SETUP_CLOSED[lifecycle.availability.reason]||VUProductLanguage.beginner('UNAVAILABLE')));
+  VUProductLanguage.has(lifecycle.availability.reason)?LB(lifecycle.availability.reason):LB('UNAVAILABLE')));
  /* Auch wenn ein Zustand veroeffentlicht ist: was NICHT geprueft wurde,
     gehoert danebengesagt. Sonst liest sich 'Beobachten' so, als waere
     'Trend laeuft' ausgeschlossen worden. */
