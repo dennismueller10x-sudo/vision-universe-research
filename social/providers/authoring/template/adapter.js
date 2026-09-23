@@ -304,6 +304,41 @@
      anderem Schwerpunkt. Keines fuegt eine Aussage hinzu.
      ------------------------------------------------------------------- */
   var CAPTION_PATTERNS = [
+    /* -----------------------------------------------------------------
+       SOCIAL-FIRST STATT SYSTEMAUSGABE (Owner-Direktive "FINAL GOLDEN
+       PATH SIMPLIFICATION", 23.09., §13)
+
+       Die drei Muster darunter beschreiben alle dieselbe Bauform:
+       "Unsere technische Auswertung bewertet X mit Y im Z." - eine
+       Systemausgabe in Prosa, keine Story. Genau das war der reale
+       MSFT-Befund, den der Owner ablehnte.
+
+       Dieses Muster folgt stattdessen Hook / kurze Story / warum das
+       fuer Anleger zaehlt / belegte Fakten / knappe Einordnung - ohne
+       die Hook zu wiederholen (sie steht bereits im Bild und im
+       ersten Feld des Kandidaten; HOOK_WIEDERHOLT_CAPTION prueft
+       genau das). Erfunden wird nichts: jeder Satz kommt aus
+       `auswahl()`, denselben fertig formulierten Belegen wie in jedem
+       anderen Muster hier. Es steht an erster Stelle, damit es beim
+       Bauen zuerst versucht wird - gewinnen muss es trotzdem ueber
+       Authoring.select() wie jede andere Variante. */
+    { id: "social-first",
+      note: "Hook/Story/Warum/Fakten/Einordnung statt Systemausgabe.",
+      needs: 2,
+      build: function (e, brief) {
+        var belege = auswahl(brief, e, 2);
+        var einordnung = belege[0] || null;
+        var zweiterBeleg = belege.slice(1);
+        return (einordnung ? einordnung + " " : "") +
+          "Genau darin steckt die eigentliche Frage bei " + wer(e, brief) + ": " +
+          wert(e) + " im " + e.metric + " ist die Oberfl" + AE + "che, nicht die " +
+          "ganze Geschichte. " +
+          (zweiterBeleg.length ? satzreihe(zweiterBeleg) + " " : "") +
+          "F" + UE + "r alle, die " + wer(e, brief) + " beobachten, z" + AE + "hlt " +
+          "diese Einordnung mehr als der einzelne Wert. " +
+          "Stand von heute " + STRICH + " keine Kauf- oder Verkaufsempfehlung.";
+      } },
+
     { id: "state-limit-reason",
       note: "Stand, Grenze, Begruendung fuers Zeigen.",
       build: function (e, brief) {

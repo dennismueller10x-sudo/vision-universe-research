@@ -3000,8 +3000,28 @@ async function main() {
     d.visualDirectionFailureType = pkg.visualDirectionFailureType || null;
     d.audienceFrame = pkg.audienceFrame || null;
 
+    /* -----------------------------------------------------------------
+       GOLDEN PATH — STUFE A TRIFFT STUFE B (Owner-Direktive "FINAL
+       GOLDEN PATH SIMPLIFICATION", 23.09.)
+
+       Bis hierher wurde ein mitgebrachtes Agenten-Bild UNVERAENDERT
+       uebernommen (planUebernahme/uebernimm): Formatwechsel, keine
+       Bearbeitung. Der reale MSFT-Befund zeigte, wohin das fuehrt -
+       kein Text, kein Logo, kein Atlas, weil der eigene Brief an den
+       Agenten genau das verbietet (chatgpt-work/adapter.js) und
+       niemand danach etwas aufgetragen hat.
+
+       planGeschichte() haelt Stufe A unveraendert (das Agenten-Bild
+       bleibt Motiv, Licht, Tiefe) und komponiert Stufe B darueber -
+       mit demselben Chromium-Renderer und denselben Vertraegen wie
+       der gezeichnete Kartenpfad: Logo, Atlas (Rolle ATLAS_GUIDE),
+       der gewaehlte Hook als Text-on-Visual. render() prueft das
+       Ergebnis mit denselben vier harten Toren; ein Bild, das eines
+       davon nicht besteht, wird - wie jedes andere - nicht
+       geschrieben (siehe try/catch unten: kein Fallback auf ein
+       schwaecheres Bild, sondern ZEICHNEN GESCHEITERT). */
     const bildplan = mitgebracht
-      ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
+      ? AssetRenderer.planGeschichte(pkg, eintrag.production.asset, { root: ROOT })
       : (kompo && kompo.ok
         ? AssetRenderer.planKomposition(pkg, kompo, {
             /* Bei einem Vergleich aus einer Gruppe ist der Gegenstand
@@ -3057,13 +3077,23 @@ async function main() {
       /* Woher das Bild stammt. Ein uebernommenes und ein gezeichnetes
          Bild sind verschiedene Dinge, und der Unterschied gehoert in
          die Provenance und nicht in eine Fussnote. */
-      origin: bildplan.modus === "uebernahme" ? "generative" : "rendered",
-      sourceAsset: bildplan.modus === "uebernahme" ? {
+      origin: (bildplan.modus === "uebernahme" || bildplan.generiert)
+        ? "generative" : "rendered",
+      sourceAsset: bildplan.generiert ? {
+        path: bildplan.quelleAsset, sha256: bildplan.sha256,
+        mimeType: (eintrag.production.asset && eintrag.production.asset.mime_type) || null,
+        variantId: (mitgebracht && mitgebracht.visual_variant_id) || null,
+        strategy: (mitgebracht && mitgebracht.visual_strategy) || null,
+        /* Stufe B liegt darueber - anders als bei planUebernahme() ist
+           das veroeffentlichte Bild NICHT byte-identisch mit dem
+           Agenten-Asset, sondern traegt Logo/Atlas/Hook zusaetzlich. */
+        komposition: "STORY_WELT_STUFE_B"
+      } : (bildplan.modus === "uebernahme" ? {
         path: bildplan.quelle, sha256: bildplan.sha256,
         mimeType: bildplan.mimeType,
         variantId: (mitgebracht && mitgebracht.visual_variant_id) || null,
         strategy: (mitgebracht && mitgebracht.visual_strategy) || null
-      } : null,
+      } : null),
       rendered: false
     };
 
@@ -3080,12 +3110,27 @@ async function main() {
         const befund = bildplan.modus === "uebernahme"
           ? AssetRenderer.uebernimm(bildplan, ziel, { root: ROOT })
           : AssetRenderer.render(bildplan, ziel,
-              { schrift: AssetRenderer.ladeSchrift(ROOT) });
+              { schrift: AssetRenderer.ladeSchrift(ROOT), caption: pkg.caption || null });
         d.asset.rendered = true;
         d.asset.bytes = befund.bytes;
+        /* -----------------------------------------------------------------
+           WAS DIE HARTEN TORE GEMESSEN HABEN, REIST MIT (§15 Hard Final
+           Creative Gate)
+
+           render() hat bereits geworfen, wenn Logo, Atlas, Flaeche oder
+           SCROLL_STOP_QUALITY nicht bestanden - bis hierher zu kommen
+           heisst, alle vier haben bestanden. Der Befund selbst reist
+           trotzdem mit: das Gate in make-publish-candidate.mjs soll
+           MESSEN, nicht "rendered=true" als Ersatz fuer eine eigene
+           Pruefung nehmen. */
+        if (befund.scrollStop) d.asset.scrollStop = befund.scrollStop;
+        if (befund.logo) d.asset.logoBefund = befund.logo;
+        if (befund.atlas) d.asset.atlasBefund = befund.atlas;
         log("  " + pkg.packageId + ": " +
           (bildplan.modus === "uebernahme"
             ? "uebernommen aus " + bildplan.quelle + ", "
+            : bildplan.generiert
+            ? "Story-Welt komponiert (Logo, Atlas, Hook auf " + bildplan.quelleAsset + "), "
             : "gezeichnet, ") + befund.breite + "x" + befund.hoehe);
       } catch (err) {
         /* Ein gescheitertes Zeichnen macht den Plan nicht falsch — es

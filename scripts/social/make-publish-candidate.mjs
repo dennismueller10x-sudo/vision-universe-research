@@ -56,6 +56,7 @@ const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
 const Hashtags = require(join(ROOT, "social/engines/hashtags.js"));
 const OwnerDecision = require(join(ROOT, "social/engines/owner-decision.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
+const CreativeGate = require(join(ROOT, "social/engines/creative-gate.js"));
 /* Dieselbe Tabelle, die der Orchestrator schon benutzt: welcher
    Kadenz-Grund darf durch einen Owner-Auftrag aufgehoben werden? Eine
    zweite Tabelle hier waere die zweite Source of Truth, die genau
@@ -641,6 +642,39 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Bild:       " + inhalt.imageUrl);
   console.log("Abdruck:    " + abdruck);
   console.log("\nCaption:\n" + inhalt.caption);
+
+  /* -------------------------------------------------------------------
+     HARD FINAL CREATIVE GATE (Owner-Direktive "FINAL GOLDEN PATH
+     SIMPLIFICATION", 23.09., §15/§16)
+
+     Gilt fuer den Golden Path (Bildherkunft "generative" - der
+     Creative Agent lieferte das Motiv, Stufe B komponierte Logo,
+     Atlas und Hook darueber). Der gezeichnete Kartenpfad
+     (DATA_CARD/NUMBER_VISUAL/COMPARISON) ist nicht Gegenstand dieser
+     Direktive und bleibt unveraendert - kein Big-Bang-Refactor der
+     bestehenden Formen.
+
+     Scheitert das Tor, wird NICHTS geschrieben: kein technisch
+     gueltiger, aber schwacher Kandidat (§16). */
+  if (d.visualType === "GENERATIVE") {
+    const assetPfad = join(ROOT, "assets/social", d.packageId + ".jpg");
+    const gate = CreativeGate.pruefe(kandidat, {
+      rendered: d.asset.rendered === true,
+      atlasBefund: d.asset.atlasBefund || null,
+      logoBefund: d.asset.logoBefund || null,
+      assetExists: existsSync(assetPfad)
+    });
+    console.log("\n--- HARD FINAL CREATIVE GATE (§15) ---");
+    console.log(gate.erklaerung);
+    if (!gate.ok) {
+      console.log("\nKEIN KANDIDAT GESCHRIEBEN — CREATIVE_GENERATION_FAILED:");
+      for (const v of gate.verstoesse) console.log("  " + v.id + ": " + v.satz);
+      console.log("\nKein schlechter Fallback (§16): das System ueberarbeitet");
+      console.log("das Creative intern oder meldet den Fehler, statt einen");
+      console.log("schwachen Kandidaten vorzulegen.");
+      process.exit(4);
+    }
+  }
 
   if (!WRITE) {
     console.log("\n(Kein --write: es wurde nichts geschrieben.)");

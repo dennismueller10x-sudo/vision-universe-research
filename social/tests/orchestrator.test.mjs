@@ -16,6 +16,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const O = require("../engines/orchestrator.js");
@@ -320,4 +322,67 @@ test("OR13 · Der Zeitplan laeuft erst im Standardzweig — und sagt das", () =>
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
   assert.match(yml, /schedule/);
   assert.match(yml, /NUR im Standardzweig/);
+});
+
+/* ------------------------------------------------------------------ */
+/* JETZT POST ERSTELLEN WAEHLT DIE STORY, NICHT DIE INTERNE            */
+/* GELEGENHEITSBEWERTUNG (Owner-Direktive "FINAL GOLDEN PATH           */
+/* SIMPLIFICATION", 23.09., §2)                                        */
+/* ------------------------------------------------------------------ */
+
+test("OR14 · storyBestesThema() waehlt nach Story, nicht nach Opportunity.score", () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } = require("node:fs");
+  const { tmpdir } = require("node:os");
+  const { execFileSync } = require("node:child_process");
+
+  const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-storybest-"));
+  try {
+    mkdirSync(join(wurzel, "quant/data/technical/instruments"), { recursive: true });
+    /* Echte Bundles, keine Fixtures von Hand - eine handgebaute
+       Evidenz haette genau die Frage entschieden, die dieser Test
+       stellen soll: ob echte Evidenz eine echte Story traegt. */
+    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/MSFT.json"),
+      join(wurzel, "quant/data/technical/instruments/MSFT.json"));
+    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/AAPL.json"),
+      join(wurzel, "quant/data/technical/instruments/AAPL.json"));
+    mkdirSync(join(wurzel, "social/data"), { recursive: true });
+    writeFileSync(join(wurzel, "social/data/cycle-report.json"), JSON.stringify({
+      generatedAt: "2026-09-23T12:00:00Z",
+      opportunities: [
+        { opportunityId: "opp_low", topic: "Niedrige interne Gelegenheit MSFT",
+          score: 10, proposable: true },
+        { opportunityId: "opp_high", topic: "Hohe interne Gelegenheit AAPL",
+          score: 90, proposable: true }
+      ]
+    }));
+
+    /* run-orchestrator.mjs ist ein ESM-Skript, hier ohne eigenen ESM-
+       Testlauf erreichbar - ein kleines Kindskript ruft dynamic
+       import() auf und gibt das Ergebnis als JSON zurueck. */
+    const modulPfad = join(REPO_ROOT, "scripts/social/run-orchestrator.mjs")
+      .replace(/\\/g, "/");
+    const skript = `
+      import(${JSON.stringify("file://" + modulPfad)}).then((O) => {
+        const alt = O.bestesThema(${JSON.stringify(wurzel)});
+        const neu = O.storyBestesThema(${JSON.stringify(wurzel)});
+        console.log(JSON.stringify({ alt, neu }));
+      });
+    `;
+    const kindPfad = join(wurzel, "probe.mjs");
+    writeFileSync(kindPfad, skript);
+    const ausgabe = execFileSync("node", [kindPfad], { encoding: "utf8" });
+    const { alt, neu } = JSON.parse(ausgabe.trim().split("\n").pop());
+
+    assert.equal(alt.symbol, "AAPL",
+      "bestesThema() (score-basiert) haette die hoehere Gelegenheitsbewertung waehlen muessen.");
+    assert.equal(neu.symbol, "MSFT",
+      "storyBestesThema() haette das Instrument mit der staerkeren Story waehlen " +
+      "muessen - unabhaengig davon, dass seine interne Gelegenheitsbewertung " +
+      "(10) weit unter der von AAPL (90) liegt.");
+    assert.ok(neu.storyScore > 0);
+    assert.ok(neu.storyHook, "storyBestesThema() muss den gewaehlten Hook mitfuehren.");
+  } finally {
+    rmSync(wurzel, { recursive: true, force: true });
+  }
 });
