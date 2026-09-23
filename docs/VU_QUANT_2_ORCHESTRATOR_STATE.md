@@ -58,6 +58,26 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **The materialization pipeline was blocked by its own immutability guard, and the guard was
+  right about the principle and wrong about the consequence.** Run `35898992415` failed at the
+  factor evidence step. Reproduced locally: `a published snapshot for 2026-09-21 already exists
+  with different content`.
+  The cause is worth recording. The snapshot is keyed by the **market data cutoff**, but its
+  values also depend on the **fundamentals vintage**, which the SEC export refreshes on its own
+  schedule — and the factors are *percentiles*, so when anyone's inputs move, everyone's rank
+  moves with them. Measured: 2,653 of 6,403 rows differed, by hundredths (50.38 → 50.33).
+  So a later run recomputing a past cutoff differently is the normal case, not a defect. The
+  module's own rule already said what to do with it: *"a comparison point has to be a value that
+  was published on that date, not one recomputed today."* The published snapshot now stands
+  untouched and the recomputation is simply not a snapshot. Corruption — a stored file failing
+  its own hash — still stops the run, because writing past that would launder it.
+  It does not pass in silence either: the drift is measured and carried into
+  `summary.snapshotHistory.recomputationDrift`, because a line in a CI log is not somewhere
+  anybody looks. Two tests pin it, verified against the aborting version.
+- **A second finding from the same failure:** the materializer writes its artifacts *before* the
+  immutability check, so the failed run left `factor-evidence-v1/` half-written — 640 modified
+  shards and no `summary.json`. Restored rather than committed.
+
 - **Production smoke over the built release, in the release workflow.** The previous browser QA
   ran against the repository. Production is a different thing: the page runs there as one
   bundled script, the artifacts sit under their delivery paths, and `.gz` is served opaquely —

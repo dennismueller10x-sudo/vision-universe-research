@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -309,4 +310,58 @@ test("a hydrated record renders with wording, and never with a composite", () =>
   });
   assert.equal(hydrated.composite.state, "WITHHELD");
   assert.ok(FactorEvidence.summarySentence(hydrated).length > 20);
+});
+
+test("a published snapshot survives a later run that would compute it differently", async () => {
+  /* The defect this pins, which cost a whole materialization run before it
+     was measured: the snapshot is keyed by the MARKET data cutoff, but its
+     values also depend on the fundamentals vintage, which the SEC export
+     refreshes on its own schedule. The factors are percentiles, so when
+     anyone's inputs move, everyone's rank moves with them - 2,653 of 6,403
+     rows differed on 2026-09-21, by hundredths.
+     
+     A later run recomputing a past cutoff differently is therefore the
+     normal case. The materializer's own rule already says what to do with
+     it: a comparison point has to be a value that was PUBLISHED on that
+     date, not one recomputed today. So the published file stands and the
+     recomputation is simply not a snapshot - it must not abort the run,
+     and it must not pass in silence either. */
+  const source = await readFile(new URL("../../scripts/quant/build-factor-evidence.mjs", import.meta.url), "utf8");
+  const guard = source.slice(source.indexOf("snapshot.contentHash = snapshotHash(snapshot);"),
+    source.indexOf("const snapshotDates"));
+  assert.ok(guard.length > 400);
+
+  /* Corruption still stops the run: a file that does not match its own
+     hash is not evidence, and writing past it would launder it. */
+  assert.match(guard, /does not match its own content hash/);
+  assert.match(guard, /throw new Error\("the published snapshot/);
+
+  /* A differing recomputation does not. */
+  assert.equal(/a published past is not rewritten/.test(guard), false,
+    "a legitimate recomputation still aborts the run");
+  assert.match(guard, /recomputationDrift = \{/);
+  assert.match(guard, /rowsDiffering/);
+
+  /* And the published file is only ever written when none exists. */
+  const writes = guard.match(/writeFileSync\(snapshotPath/g) || [];
+  assert.equal(writes.length, 1, "the snapshot is written on more than one path");
+  assert.match(guard, /\} else \{\s*\n\s*writeFileSync\(snapshotPath/);
+});
+
+test("the drift, when it happens, reaches the summary rather than the log", async () => {
+  /* Silent is the one thing it must not be: that the inputs behind an
+     already-published date have moved is worth knowing, and a line in a
+     CI log is not somewhere anybody looks. */
+  const summary = JSON.parse(await readFile(
+    new URL("../data/product/factor-evidence-v1/summary.json", import.meta.url), "utf8"));
+  assert.ok("recomputationDrift" in summary.snapshotHistory,
+    "the summary does not carry the drift field at all");
+  const drift = summary.snapshotHistory.recomputationDrift;
+  if (drift === null) return;
+  assert.match(drift.asOf, /^\d{4}-\d{2}-\d{2}$/);
+  assert.notEqual(drift.publishedHash, drift.recomputedHash);
+  assert.ok(drift.rowsDiffering > 0 && drift.rowsDiffering <= drift.rowsTotal);
+  assert.ok(drift.note.length > 40);
+  /* The published date stays in the series exactly once. */
+  assert.equal(summary.snapshotHistory.dates.filter((d) => d === drift.asOf).length, 1);
 });

@@ -533,19 +533,49 @@ function main() {
     rows: Object.fromEntries(Object.entries(screeningRows).map(([ticker, values]) => [ticker, values.slice(0, factorColumns.length)]))
   };
   snapshot.contentHash = snapshotHash(snapshot);
+  let recomputationDrift = null;
   if (existsSync(snapshotPath)) {
     const existing = JSON.parse(gunzipSync(readFileSync(snapshotPath)));
-    /* Two different failures, and they need different words. The stored
-       file not matching its own hash is corruption; the new run producing
-       a different hash means the published past would change. Neither is
-       something to write through. */
+    /* Corruption is the one case that must stop the run: a stored file
+       that does not match its own hash is not evidence of anything, and
+       writing past it would launder it. */
     if (existing.contentHash !== snapshotHash(existing)) {
       throw new Error("the published snapshot " + cutoff + " does not match its own content hash; " +
         "it is corrupt and this run will not overwrite it.");
     }
     if (existing.contentHash !== snapshot.contentHash) {
-      throw new Error("a published snapshot for " + cutoff + " already exists with different content; " +
-        "a published past is not rewritten. Publish a new methodology version instead.");
+      /* NOT an error, and treating it as one cost a whole materialization
+         run before this was measured.
+      
+         The cutoff is the market data date. The values also depend on the
+         fundamentals vintage, which the SEC export refreshes on its own
+         schedule - and the factors are PERCENTILES, so when anyone's
+         inputs move, everyone's rank moves with them. Measured on
+         2026-09-21: 2,653 of 6,403 rows differed, by hundredths.
+      
+         So a later run recomputing a past cutoff differently is the normal
+         case, not a defect. This module's own rule already says what to do
+         with it: a comparison point has to be a value that was PUBLISHED on
+         that date, not one recomputed today. The published snapshot stands
+         untouched; today's recomputation is simply not a snapshot.
+      
+         What must not happen is that this passes silently: that the inputs
+         behind an already-published date have moved is worth knowing, so it
+         is measured and carried into the summary. */
+      let changed = 0;
+      for (const [ticker, values] of Object.entries(snapshot.rows)) {
+        const before = existing.rows[ticker];
+        if (!before || JSON.stringify(before) !== JSON.stringify(values)) changed += 1;
+      }
+      recomputationDrift = {
+        asOf: cutoff,
+        publishedHash: existing.contentHash,
+        recomputedHash: snapshot.contentHash,
+        rowsDiffering: changed,
+        rowsTotal: Object.keys(snapshot.rows).length,
+        note: "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag " +
+          "veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+      };
     }
   } else {
     writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
@@ -575,7 +605,12 @@ function main() {
       scoreMomentumOpen: snapshotDates.some((date) => {
         const days = (Date.parse(cutoff) - Date.parse(date)) / 86400000;
         return Math.abs(days - ChangeEngine.SCORE_VELOCITY_DAYS) <= ChangeEngine.SCORE_VELOCITY_TOLERANCE_DAYS;
-      }) },
+      }),
+      /* Null im Normalfall. Steht hier etwas, hat eine spaetere Rechnung
+         fuer einen bereits veroeffentlichten Stichtag andere Werte
+         ergeben - die veroeffentlichte Beobachtung bleibt trotzdem
+         stehen. Sichtbar, damit es niemand fuer Rauschen haelt. */
+      recomputationDrift },
     scope: "CANONICAL_PRODUCT_UNIVERSE",
     source: {
       priceFactors: { engine: priceFactors.engine, generatedAt: priceFactors.generatedAt, securities: priceFactors.securities.length, benchmark: priceFactors.benchmark },
