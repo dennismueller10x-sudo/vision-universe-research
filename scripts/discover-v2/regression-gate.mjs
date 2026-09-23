@@ -9,7 +9,7 @@ const fixedBaseline='c84caa38382022a6bd65fc00df0ec20389bc96e1';
 const baseline=process.env.DISCOVER_BASELINE||(()=>{try{return git('merge-base','HEAD','origin/main').toString().trim();}catch{return fixedBaseline;}})();
 const allowedPaths=new Set([
   'discover-v2/app.css','discover-v2/app.js','discover-v2/detail.css','discover-v2/detail.js',
-  'discover-v2/home.css','discover-v2/home.js','discover-v2/index.html',
+  'discover-v2/home.css','discover-v2/home.js','discover-v2/index.html','discover-v2/themes.js',
   'scripts/discover-v2/browser-qa.mjs','scripts/discover-v2/contract-qa.mjs','scripts/discover-v2/regression-gate.mjs',
   'docs/discover-v2/premium-orchestration.md','docs/discover-v2/premium-contract-audit.md',
   'docs/discover-v2/premium-design-qa.md',
@@ -27,7 +27,7 @@ const allowedPaths=new Set([
   'quant/config/currency-formatting-baseline.json','scripts/quality/verify-currency-ui.mjs',
   'docs/VU_CURRENCY_FX_LAYER.md'
 ]);
-const allowedPrefixes=['discover/data/'];
+const allowedPrefixes=['discover/data/','assets/themen/'];
 const allowed=path=>allowedPaths.has(path)||allowedPrefixes.some(prefix=>path.startsWith(prefix));
 const frozenDiscoverFrontend=[
   'discover/index.html','discover/app.js','discover/discover.css',
