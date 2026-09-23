@@ -372,11 +372,18 @@ async function atlasPage(){
 }
 async function homePage(){
  let tickers=[],storageUnavailable=false;try{tickers=VUWatchlistWorkspace.load(localStorage);}catch{storageUnavailable=true;}
- const data=await api.getHomeIntelligence(tickers),observations=data.market.observations;
+ /* Die Reise beginnt beim Markt und endet bei einer Aktie: erst wie breit
+    getragen die Lage ist, dann die eigenen Titel, dann die Analyse. Ohne
+    den ersten Schritt liest sich jede Einzelbewegung, als stuende sie fuer
+    sich - und die Startseite trug die Rubrik "Maerkte einordnen", ohne den
+    Markt einzuordnen. */
+ const [data,regime]=await Promise.all([api.getHomeIntelligence(tickers),api.getMarketRegime().catch(()=>null)]);
+ const observations=data.market.observations;
  main.append(heading('Was ist für dich wichtig?','Unternehmen beobachten. Veränderungen verstehen. Deine nächste Analyse finden.'));
  const session=el('div',{class:'home-session'});
  function showSession(s){S.clear(session);session.append(el('div',{},[el('strong',{text:s.label}),el('span',{class:'muted',text:s.state==='AVAILABLE'?' · Kalenderstand '+s.localDate+' '+s.localTime.slice(0,5)+' New York':' · Kalender derzeit nicht verfügbar'})]),el('span',{class:'pill',text:'Kurse: letzter verfügbarer Tagesstand'}));}
  showSession(data.session);main.append(session,freshness(data.health),el('p',{class:'muted home-session-note',text:'Die Handelsphase folgt dem Börsenkalender. Diese Vorschau zeigt keine Echtzeitkurse; eine geöffnete Börse bedeutet keinen aktiven Datenstream.'}));
+ main.append(marketRegimeSection(regime));
  let refreshing=false;const timer=setInterval(async()=>{if(document.hidden||refreshing)return;refreshing=true;try{showSession(await api.getMarketSession());}finally{refreshing=false;}},60000);addEventListener('pagehide',()=>clearInterval(timer),{once:true});
  const personal=el('section',{class:'home-personal'},[el('span',{class:'eyebrow',text:'Deine Perspektive'}),el('h2',{text:'Unternehmen, die dich interessieren'})]);
  if(storageUnavailable)personal.append(notice('Deine Auswahl bleibt geschützt','Die gespeicherte Watchlist ist derzeit nicht lesbar. Sie wird nicht zurückgesetzt.'));
@@ -1211,7 +1218,7 @@ function sectionHead(eyebrow,termId,intro){
 async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas','explain']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
  /* Die Quant-Familie lebt von diesen Texten. Ohne sie wird nicht
     halbfertig gezeichnet, sondern gesagt, was fehlt. */
- const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener','technical']);
+ const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener','technical','home']);
  if(needsLanguage.has(view)&&!await loadLanguage()){
   recover('Die Texte dieser Ansicht konnten nicht geladen werden','Diese Ansicht beschreibt Fachbegriffe in Alltagssprache. Ohne die Textquelle werden keine Ersatzformulierungen erfunden. Bitte lade die Seite neu.',true);
   return;

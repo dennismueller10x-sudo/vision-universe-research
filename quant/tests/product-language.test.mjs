@@ -317,3 +317,23 @@ test("every engine the interface calls is actually loaded by the page", () => {
     assert.ok(at < servicesAt, path + " is loaded after product-services.js");
   }
 });
+
+test("the journey starts with the market and ends at a share", () => {
+  /* Market -> own titles -> analysis. Without the first step every single
+     movement reads as if it stood on its own, and the home page carried the
+     heading "Märkte einordnen" without placing the market anywhere. */
+  const from = experience.indexOf("async function homePage(");
+  const home = experience.slice(from, experience.indexOf("\nasync function ", from + 10));
+  assert.ok(home.length > 500);
+  assert.match(home, /marketRegimeSection\(regime\)/, "the home page does not place the market");
+  /* The market state is fetched alongside, not after: a second round trip
+     before the first paint is a wait the reader pays for nothing. */
+  assert.match(home, /Promise\.all\(\[api\.getHomeIntelligence/);
+  /* And it appears before the watchlist and the curated companies. */
+  const regimeAt = home.indexOf("marketRegimeSection(regime)");
+  for (const later of ["Unternehmen, die dich interessieren", "Märkte einordnen"]) {
+    const at = home.indexOf(later);
+    if (at === -1) continue;
+    assert.ok(regimeAt < at, "the market is placed after '" + later + "'");
+  }
+});
