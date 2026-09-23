@@ -84,7 +84,37 @@ async function liveStockSection(ticker){
  const timer=setInterval(checkSession,30000);addEventListener('pagehide',()=>{disposed=true;clearInterval(timer);document.removeEventListener('visibilitychange',hide);client?.stop('PAGE_HIDDEN');},{once:true});
  await checkSession();
 }
-function setupStateSection(setup){const section=el('section',{class:'section','aria-label':'Situation'});section.append(el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}));if(!setup||setup.availability?.state!=='AVAILABLE'){section.append(notice(LU('setupState'),LB('setupState')+' Dafür braucht es eine geordnete Historie veröffentlichter Beobachtungen und eine freigegebene Methodik; beides ist noch nicht aktiv.'));return section;}section.append(el('p',{class:'setup-badge state-'+setup.setupState,text:L(setup.setupState)}),el('p',{class:'muted',text:LB(setup.setupState)}),el('details',{},[el('summary',{text:'Methodik'}),el('p',{class:'muted',text:'Interner Zustand '+setup.setupState+' · Evidenzstand '+setup.asOf+' · Backtest-Zertifizierung: '+setup.backtestCertification})]));return section;}
+/* Die Aktienseite zeigt denselben Zustand wie die Quant-Seite, aus
+   derselben veroeffentlichten Beobachtung. Bis 2026-09-23 stand hier der
+   Platzhalter des aelteren Vertrags mit dem Satz, es brauche dafuer noch
+   eine geordnete Historie und eine freigegebene Methodik - beides gibt es
+   seitdem, und 5.676 Titel tragen einen Zustand. Ein Nutzer bekam auf der
+   meistbesuchten Flaeche gesagt, es gebe die Aussage nicht, waehrend sie
+   einen Klick weiter stand. Kein zweiter Auswerter: die Beobachtung wird
+   gelesen, nicht neu gerechnet. */
+function setupStateSection(observation,index,ticker){
+ const section=el('section',{class:'section','aria-label':'Situation'});
+ section.append(el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}));
+ const state=observation&&observation.state==='AVAILABLE'?observation.classification.state:null;
+ if(!state||state==='UNAVAILABLE'){
+  section.append(notice(LU('setupState'),LB('setupState')));
+  return section;
+ }
+ section.append(el('p',{class:'setup-badge state-'+state,text:L(state)}),
+  el('p',{class:'muted',text:LB(state)}),
+  el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
+ /* Die vier Verlaufszustaende sind hier genauso geschlossen wie auf der
+    Quant-Seite; das steht daneben, statt es durch Weglassen so aussehen
+    zu lassen, als waeren sie geprueft und ausgeschlossen worden. */
+ if(observation.lifecycle&&observation.lifecycle.availability.state!=='AVAILABLE'){
+  section.append(notice(LU('setupState'),LB(observation.lifecycle.availability.reason)));
+ }
+ section.append(setupPeers(index,state,ticker));
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{class:'muted',text:'Interner Zustand '+state+' · Regel '+observation.matchedRule.ruleId+' · Zuordnung '+observation.mappingVersion+' · Evidenzstand '+observation.asOf+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Ausloeser.'}),
+  link('Vollständige Analyse',href('quant',ticker),'button secondary')]));
+ return section;
+}
 async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
@@ -101,7 +131,8 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.date),series:[{values:data.bars.map(b=>b.close)}],yFormat:v=>vuFormat('formatPrice',v,'USD',{numberLocale:'de-DE',decimals:0})||v.toFixed(0)+' $'}));}
  VUChartRanges.RANGES.forEach(r=>ranges.append(el('button',{text:r.label,dataset:{range:r.id},onclick:()=>draw(r.id)})));left.append(chart,ranges,el('p',{class:'muted',text:'Unbereinigte Schlusskurse · USD. Splits können historische Kurssprünge verursachen.'}));draw('1Y');
  const side=el('aside',{},[el('h2',{text:'Was dahintersteht'}),el('p',{text:s.above200.value>0?'Der Kurs liegt über seinem 200-Tage-Durchschnitt. Das beschreibt die bisherige Entwicklung, keine Prognose.':'Die langfristige Kursstruktur verdient einen genaueren Blick.'}),evidence(s),el('details',{},[el('summary',{text:'Evidenz & Methodik'}),el('p',{class:'muted',text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Fundamentaldaten bis '+s.fundamentalsAsOf+', verfügbar seit '+s.availableAt+'. Quelle: SEC EDGAR; Kurskennzahlen: Tiingo EOD / bestehende Quant-Methodik.'}),link('Daten und Berechnung untersuchen','/quant/data-inspector/','button secondary')])]);
- main.append(el('div',{class:'layout'},[left,side]),setupStateSection(s.setupState),actions(s.workspaces));
+ const [setupObservation,setupIndex]=await Promise.all([api.getSetupObservation(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null)]);
+ main.append(el('div',{class:'layout'},[left,side]),setupStateSection(setupObservation,setupIndex,ticker),actions(s.workspaces));
  const business=el('section',{class:'section stock-business'},[el('span',{class:'eyebrow',text:'Geschäft, Bewertung und Risiko'}),el('h2',{text:'Was zeigen die Unternehmenszahlen?'}),el('p',{class:'muted',text:'Ergebnisse verstehen, den Preis einordnen und Schwankungen prüfen. Jede Kennzahl führt zu ihrer Definition und zur vollständigen Analyse.'})]);
  if(s.quant?.state==='AVAILABLE'){
   const selected={quality:['operatingMargin','fcfMargin'],growth:['revenueGrowth','epsGrowth'],value:['earningsYield','priceToFcf'],risk:['volatility','maxDrawdown']};

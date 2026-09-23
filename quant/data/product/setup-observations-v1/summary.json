@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-09-23T12:36:17.000Z",
+ "generatedAt": "2026-09-23T13:00:49.000Z",
  "asOf": "2026-09-10",
  "approval": {
   "state": "APPROVED",
@@ -85,7 +85,7 @@
    "order": 3,
    "state": "RISK_RISING",
    "tier": "PATH_DEPENDENT",
-   "plain": "Eine bestehende konstruktive Lage laeuft in ein hohes Volatilitaetsregime.",
+   "plain": "Eine bestehende konstruktive Lage läuft in ein hohes Volatilitätsregime.",
    "rationale": "Steigendes Risiko ist eine Verlaufsaussage. Ohne frueher beobachteten konstruktiven Zustand gibt es nichts, das sich verschlechtern koennte.",
    "screenable": false,
    "filters": [
@@ -156,7 +156,7 @@
    "order": 5,
    "state": "ACTIVE",
    "tier": "PATH_DEPENDENT",
-   "plain": "Die bestaetigte Lage laeuft; der Kurs steht in der dokumentierten Einstiegszone.",
+   "plain": "Die bestätigte Lage läuft; der Kurs steht in der dokumentierten Einstiegszone.",
    "rationale": "ACTIVE setzt eine zuvor beobachtete Bestaetigung voraus. Ein Titel springt nicht ohne beobachtete Bestaetigung nach ACTIVE.",
    "screenable": false,
    "filters": [
@@ -189,7 +189,7 @@
    "order": 6,
    "state": "CONFIRMED",
    "tier": "POINT_IN_TIME",
-   "plain": "Struktur, Trend und Volumen bestaetigen am selben Stichtag dieselbe Lage.",
+   "plain": "Struktur, Trend und Volumen bestätigen am selben Stichtag dieselbe Lage.",
    "rationale": "Bestaetigung verlangt Uebereinstimmung mehrerer unabhaengiger Familien am selben Stichtag. Die Volumenbedingung verhindert, dass eine reine Kursbewegung ohne Beteiligung als Bestaetigung zaehlt. Die Strukturbedingung liest das rein pivot-bestaetigte Regime, nicht das durch Close-Brueche revidierbare.",
    "screenable": true,
    "filters": [
@@ -231,7 +231,7 @@
    "order": 7,
    "state": "SETUP_FORMING",
    "tier": "POINT_IN_TIME",
-   "plain": "Ein vollstaendiges Long-Setup liegt vor, der Ausloeser steht noch aus.",
+   "plain": "Ein vollständiges Long-Setup liegt vor, der Auslöser steht noch aus.",
    "rationale": "technicalSetupStatus ist ausdruecklich nicht der Setup-Zustand (semanticBoundaries.tradeSetupStatusIsSetupState = false). Er ist hier eine von vier Bedingungen und traegt den Zustand nicht allein.",
    "screenable": true,
    "filters": [
@@ -271,7 +271,7 @@
    "order": 8,
    "state": "WATCH",
    "tier": "POINT_IN_TIME",
-   "plain": "Der Trend traegt, eine konkrete Situation gibt es noch nicht.",
+   "plain": "Der Trend trägt, eine konkrete Situation gibt es noch nicht.",
    "rationale": "WATCH sagt genau so viel aus, wie belegbar ist.",
    "screenable": true,
    "filters": [
@@ -290,7 +290,7 @@
    "order": 9,
    "state": "WATCH",
    "tier": "POINT_IN_TIME",
-   "plain": "Die bestaetigte Struktur traegt und der Kurs steht in Reichweite des Jahreshochs.",
+   "plain": "Die bestätigte Struktur trägt und der Kurs steht in Reichweite des Jahreshochs.",
    "rationale": "Zweiter Weg nach WATCH fuer Titel, deren Trendklassifikation noch NEUTRAL ist, deren Struktur aber bereits bestaetigt hoeher laeuft.",
    "screenable": true,
    "filters": [
@@ -314,7 +314,7 @@
    "order": 10,
    "state": "NO_SETUP",
    "tier": "POINT_IN_TIME",
-   "plain": "Es ist nichts zu sehen.",
+   "plain": "Es ist gerade nichts zu sehen.",
    "rationale": "NO_SETUP ist eine vollwertige Antwort und keine Luecke. Ein Titel ohne Technical-Bundle erhaelt ihn ausdruecklich nicht.",
    "screenable": false,
    "filters": [],

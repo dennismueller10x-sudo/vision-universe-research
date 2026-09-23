@@ -207,3 +207,26 @@ test("a state whose tier is closed shows its reason, and never a count", () => {
   assert.equal(/states\.filter\([^)]*availability[^)]*\)/.test(distribution), false,
     "closed states are hidden instead of explained");
 });
+
+test("methodology prose that reaches a reader is written in German, not in ASCII shorthand", () => {
+  /* rule.plain is rendered on the stock page, the quant page, the radar and
+     the screener result. It was written ASCII-only and stood next to properly
+     spelled dictionary copy - "Der Trend traegt" beside "Die Rahmenlage
+     trägt" in the same paragraph. Internal ids, versions and enum values stay
+     ASCII on purpose; what a reader reads does not. */
+  const methodology = JSON.parse(readFileSync(new URL("quant/methodology/setup-state-v1.json", ROOT), "utf8"));
+  const shorthand = /\b\w*(?:ae|oe|ue|ss)\w*\b/;
+  const allowed = /^(?:aus|aussen|der|die|das|dass|muss|mussten|essen|gross|lassen|dessen|wessen|unser|user|prozess|adresse|klasse|masse|messen|passen|status|plus|minus|bonus|fokus|modus|kurs|kurse|kursen|analyse|basis|these|serie|premisse)$/i;
+  const offences = [];
+  for (const rule of methodology.stateMapping.cascade.rules) {
+    for (const word of String(rule.plain).split(/[^A-Za-zÄÖÜäöüß]+/).filter(Boolean)) {
+      if (shorthand.test(word) && !allowed.test(word)) offences.push(rule.ruleId + ": " + word);
+    }
+  }
+  assert.deepEqual(offences, [], "umlaut shorthand in copy a reader sees");
+  /* And every rule still says something. */
+  for (const rule of methodology.stateMapping.cascade.rules) {
+    assert.ok(rule.plain.length > 15, rule.ruleId + ": plain text is too short to explain anything");
+    assert.ok(/[.!?]$/.test(rule.plain.trim()), rule.ruleId + ": plain text is not a sentence");
+  }
+});

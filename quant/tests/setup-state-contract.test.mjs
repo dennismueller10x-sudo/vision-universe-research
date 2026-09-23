@@ -35,10 +35,17 @@ test("methodology fixes the exact lifecycle and is approved for the point-in-tim
   assert.equal(Setup.AVAILABLE_OBSERVATIONS_ALLOWED, false);
 });
 
-test("one real current snapshot fails closed without inventing a lifecycle", () => {
+test("one real current snapshot fails closed, and names the reason that is actually the case", () => {
   const result = Setup.fromCurrentSnapshot(base);
   assert.equal(result.availability.state, "UNAVAILABLE");
-  assert.equal(result.availability.reason, "SETUP_STATE_HISTORY_NOT_MATERIALIZED");
+  /* SETUP_STATE_HISTORY_NOT_MATERIALIZED until 2026-09-23, and it stopped
+     being true that day: the mapping is approved and 5,676 titles carry a
+     published state with an ordered observation history behind them. What
+     is still true is that THIS contract's own mapping, setup-state-1.0.0,
+     was never activated - and that was already in its vocabulary. A gate
+     that keeps naming a cleared blockade is worse than no gate. */
+  assert.equal(result.availability.reason, "SETUP_STATE_MAPPING_NOT_ACTIVE");
+  assert.ok(Setup.UNAVAILABLE_REASONS.includes(result.availability.reason));
   assert.equal(result.setupState, null);
   assert.equal(result.backtestCertification, "NOT_CERTIFIED");
   assert.equal(Setup.validate(result).valid, true);
