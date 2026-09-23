@@ -56,6 +56,7 @@
   var Visual     = isNode ? require("./visual.js")     : global.VUSocialVisual;
   var Untrusted  = isNode ? require("./untrusted.js")  : global.VUSocialUntrusted;
   var Hash       = isNode ? require("../../quant/engines/hash.js") : global.VUHash;
+  var AudienceFrame = isNode ? require("./audience-frame.js") : global.VUSocialAudienceFrame;
 
   var STAGES = ["RESEARCH", "THESIS", "HOOK", "STRUCTURE", "DRAFT",
                 "FACT_CHECK", "AUDIENCE_SEPARATION", "BRAND_CHECK",
@@ -154,9 +155,44 @@
       ? writer.hook(opportunity, thesisData, researchData)
       : null;
 
+    /* -----------------------------------------------------------------
+       OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)
+
+       Hook.ableiten() liest `erstes.metric` (das ERSTE Faktum mit Wert)
+       und setzt es WOERTLICH in den ZAHL_MIT_BEZUG/KONTRAST-Kandidaten
+       ein - unabhaengig vom Autor. Fuer ein Einzelinstrument steht an
+       Position 0 der Score-Beleg (fromTechnicalBundle() draengt ihn
+       zuerst), und sein `metric`-Feld heisst woertlich "Technical
+       Opportunity Score". Ein archetypischer Hook-Kandidat konnte damit
+       genau den internen Begriff veroeffentlichen, den AUDIENCE_
+       SEPARATION verhindern soll - AUCH DANN, wenn der Autor selbst
+       (etwa TEMPLATE nach einer redaktionellen Korrektur) einen
+       sauberen Satz geliefert hatte, weil Hook.waehle() zwischen allen
+       Kandidaten waehlt, nicht nur dem des Autors.
+
+       researchData.facts bleibt fuer FACT_CHECK und die Bildseite die
+       TRUSTED_EVIDENCE (voll, ungefiltert - siehe run-social-cycle.mjs,
+       "EINE EVIDENZ, NICHT ZWEI"). Nur was hier zur Kandidaten-
+       Formulierung wird, ist auf PUBLIC_CLAIM_ELIGIBILITY beschraenkt -
+       dieselbe Filterung wie im TEMPLATE-Autor und in audience-frame.js. */
+    /* Gross-/Kleinschreibung ignoriert: die Wache (content-
+       intelligence.js::interneTreffer) prueft selbst case-insensitiv.
+       "Momentum" (Belegtext) vs. "MOMENTUM" (Sperrliste) waeren sonst
+       zwei verschiedene Zeichenketten - der Filter liesse durch, was
+       die Wache dennoch zurueckweist. */
+    var oeffentlicheFakten = ((researchData && researchData.facts) || [])
+      .filter(function (f) {
+        var metrik = String((f && f.metric) || "").toLowerCase();
+        var satz = String((f && f.statement) || "").toLowerCase();
+        return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(function (begriff) {
+          var b = String(begriff).toLowerCase();
+          return metrik.indexOf(b) !== -1 || satz.indexOf(b) !== -1;
+        });
+      });
+
     var kontext = Hook.ableiten({
       opportunity: opportunity,
-      facts: (researchData && researchData.facts) || [],
+      facts: oeffentlicheFakten,
       thesis: thesisData && thesisData.text
     });
     kontext.zusaetzlich = autorText

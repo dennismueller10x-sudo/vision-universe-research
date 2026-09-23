@@ -624,7 +624,34 @@ function schreiberAus(variante) {
        Bauform sein Satz entsteht. */
     muster: variante.pattern || null,
     thesis: function (opportunity, researchData) {
-      var f = researchData.facts[0];
+      /* OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)
+
+         content-intelligence.js zaehlt `pkg.thesis` ausdruecklich zur
+         PUBLIC_STORY ("das Content Package: Caption UND These"). Diese
+         Funktion griff bisher blind auf `facts[0]` zu - fuer ein
+         Einzelinstrument der zuerst gebaute Beleg, der Score
+         (fromTechnicalBundle() draengt ihn zuerst), dessen `metric`-
+         Feld woertlich "Technical Opportunity Score" heisst. Damit
+         landete der interne Begriff in der PUBLIC_STORY, unabhaengig
+         vom gewaehlten Autor - AUCH nach einer redaktionellen
+         TEMPLATE-Korrektur, weil diese Funktion die Autorentexte fuer
+         `thesis()` ohnehin nie benutzt.
+
+         `facts` bleibt fuer FACT_CHECK/die Bildseite die volle,
+         ungefilterte TRUSTED_EVIDENCE (researchData wird unveraendert
+         weitergereicht). Nur die Auswahl DES ERSTEN FAKTUMS fuer
+         diesen oeffentlichen Satz ist auf PUBLIC_CLAIM_ELIGIBILITY
+         beschraenkt - dieselbe Liste wie im TEMPLATE-Autor und in
+         hook.js (AudienceFrame.INTERN_NICHT_IM_HOOK). */
+      var oeffentlich = (researchData.facts || []).filter(function (x) {
+        var metrik = String((x && x.metric) || "").toLowerCase();
+        var satz = String((x && x.statement) || "").toLowerCase();
+        return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(function (begriff) {
+          var b = String(begriff).toLowerCase();
+          return metrik.indexOf(b) !== -1 || satz.indexOf(b) !== -1;
+        });
+      });
+      var f = oeffentlich[0];
       if (!f) return null;
       return (f.entity ? f.entity + ": " : "") + f.metric + " steht bei " +
              String(f.value) + (f.unit ? " " + f.unit : "") +
@@ -859,9 +886,11 @@ function themaAusBundle(symbol, nowIso) {
      prueft (social/engines/content-intelligence.js). Eine zweite,
      hier neu geratene Liste waere die zweite Wahrheit ueber dieselbe
      Frage, die dieses Projekt schon mehrfach auseinanderlaufen sah. */
-  const oeffentlicheEvidenz = paket.evidence.filter((e) =>
-    !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
-      (begriff) => String(e.statement || "").includes(begriff)));
+  const oeffentlicheEvidenz = paket.evidence.filter((e) => {
+    const satz = String(e.statement || "").toLowerCase();
+    return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
+      (begriff) => satz.includes(String(begriff).toLowerCase()));
+  });
 
   return { ok: true, thema: {
     topicId: EvidencePackage.contentIdFor(symbol, paket.asOf),
@@ -1611,48 +1640,57 @@ async function main() {
        demselben Sufficiency-Tor geprueft - die Schwelle ist fuer
        keinen der beiden eine andere. */
     /* -----------------------------------------------------------------
-       DIE ENTITAET, GEGEN DIE DER CREATIVE-JOB DISPATCHT WURDE
-       (Owner-Entscheidung, 23.09.)
+       TRUSTED_EVIDENCE VS. PUBLIC_CLAIM_ELIGIBILITY (Owner-Entscheidung,
+       23.09., "CLAIM BINDING VS AUDIENCE SEPARATION")
 
-       kurzname(c.thema) liefert "stock_story_<hash>" — den Abdruck
-       ueber topicId (content-ladder.js::alsGelegenheit), gedacht fuer
-       Themen OHNE eigene Instrumentenkennung (eine Rangliste hat keine
-       "eine" Entitaet). Fuer ein STOCK_STORY-Thema mit GENAU EINEM
-       Instrument (themaAusBundle(): entityType "SECURITY", entities:
-       [symbol]) erzeugte dieser Abdruck eine content_id, die mit der
-       des dispatchten Creative Jobs NIE uebereinstimmt — vu-<hash>-...
-       statt vu-<symbol>-... Ein VERIFIED Ergebnis blieb dadurch fuer
-       JEDES Bare-Ticker-Thema strukturell unauffindbar, ob frisch
-       hydriert oder nicht (der reale MSFT-Fall, Lauf #44). Traegt das
-       Thema genau EIN Instrument, gilt deshalb dessen echtes Symbol
-       als Entitaet.
+       Zwei getrennte Befunde fuehren hierher:
 
-       BEWUSST NICHT WEITER GEGANGEN: ein zweiter Versuch ersetzte
-       fromTopicEvidence() hier komplett durch das ungefilterte
-       technische Bundle, um der Faktenpruefung auch die durch
-       AUDIENCE_SEPARATION entfernten Belege zuruecklzugeben (der
-       reale ChatGPT-Work-Hook "61,1 von 100: Der MSFT-Score ordnet
-       ein" bleibt sonst ungedeckt, weil genau der Beleg mit "61.1"
-       wegen "Technical Opportunity Score" im Text entfernt wurde).
-       Das oeffnete einen ECHTEN Leck: dieselben ungefilterten Belege
-       fliessen an anderer Stelle direkt in PUBLIC_HOOK/PUBLIC_STORY
-       (die Wache aus content-intelligence.js schlug zu Recht mit
-       "Technical Opportunity Score, Setup-Rang, TREND_STRUCTURE,
-       MOMENTUM" im oeffentlichen Text an — der Vorfall, den dieses
-       System verhindern soll). oeffentlicheEvidenz() ist also nicht
-       nur der Faktenpruefung vorgeschaltet, sondern mindestens einer
-       weiteren, hier nicht vollstaendig nachvollzogenen Stelle. Diese
-       Trennung sauber aufzuloesen (welche Belege duerfen eine Zahl
-       DECKEN, ohne dass ihr TEXT je oeffentlich zitiert werden darf)
-       ist eine echte Architekturfrage und keine Verdrahtung mehr -
-       genau der Fall, in dem angehalten und der Owner einbezogen
-       werden soll, statt selbst zu entscheiden. */
-    const evidenzPaket = c.thema
+       1) kurzname(c.thema) liefert "stock_story_<hash>" — den Abdruck
+          ueber topicId (content-ladder.js::alsGelegenheit), gedacht
+          fuer Themen OHNE eigene Instrumentenkennung (eine Rangliste
+          hat keine "eine" Entitaet). Fuer ein STOCK_STORY-Thema mit
+          GENAU EINEM Instrument (themaAusBundle(): entityType
+          "SECURITY", entities: [symbol]) erzeugte dieser Abdruck eine
+          content_id, die mit der des dispatchten Creative Jobs nie
+          uebereinstimmt — ein VERIFIED Ergebnis blieb dadurch
+          strukturell unauffindbar (der reale MSFT-Fall, Lauf #44).
+
+       2) fromTopicEvidence() liest c.thema.evidence — bereits durch
+          AUDIENCE_SEPARATION gefiltert (themaAusBundle():
+          oeffentlicheEvidenz). Das ist richtig fuer PUBLIC_CLAIM_
+          ELIGIBILITY (welcher Satz darf woertlich zitiert werden),
+          aber falsch fuer TRUSTED_EVIDENCE (Fakten-/Claim-Validierung):
+          der reale ChatGPT-Work-Hook "61,1 von 100: Der MSFT-Score
+          ordnet ein" blieb ungedeckt, weil genau der Beleg mit "61.1"
+          wegen "Technical Opportunity Score" im Text entfernt war.
+
+       Fuer GENAU EIN Instrument gilt deshalb das technische Bundle
+       DIREKT, ungefiltert — dieselbe Funktion, die themaAusBundle()
+       selbst zur Verifizierung aufruft. Das ist jetzt sicher: die
+       EINZIGE Stelle, die Belegtext woertlich in PUBLIC_HOOK/
+       PUBLIC_STORY uebernimmt, ist der Template-Autor (belegsaetze(),
+       auswahl(), jedes HOOK_/CAPTION_PATTERN in
+       providers/authoring/template/adapter.js) — und der filtert seine
+       Evidenz jetzt selbst, am Ort des Zitierens (PUBLIC_CLAIM_
+       ELIGIBILITY dort, nicht hier). ChatGPT-Work schreibt eigene
+       Saetze und zitiert nie e.statement woertlich; seine Variante
+       durchlaeuft ohnehin die `audience`-/`brand`-Tore (Authoring.
+       evaluate) auf dem FERTIGEN Text. "EINE EVIDENZ, NICHT ZWEI"
+       (siehe unten bei rechercheBelege) bleibt gewahrt: Autorenschicht
+       UND content.js sehen dieselbe, jetzt volle Evidenz — sonst kehrt
+       die historische Regression zurueck ("eine spaetere Stufe hat
+       Zahlen eingefuehrt, die die Recherche nicht kennt"). Eine
+       Rangliste (kein einzelnes Instrument) bleibt bei
+       fromTopicEvidence(), unveraendert audience-gefiltert. */
+    const einzelinstrument = c.thema && c.thema.entityType === "SECURITY" &&
+      Array.isArray(c.thema.entities) && c.thema.entities.length === 1;
+
+    const evidenzPaket = einzelinstrument
+      ? ladeEvidenzPaket([{ entity: c.thema.entities[0] }], NOW)
+      : c.thema
       ? EvidencePackage.fromTopicEvidence(c.thema, {
           now: NOW,
-          entity: (c.thema.entityType === "SECURITY" &&
-            Array.isArray(c.thema.entities) && c.thema.entities.length === 1)
-            ? c.thema.entities[0] : kurzname(c.thema),
+          entity: kurzname(c.thema),
           source: (c.thema.sources || [])[0] || null
         })
       : ladeEvidenzPaket(sources, NOW);
@@ -1772,7 +1810,7 @@ async function main() {
       continue;
     }
 
-    const gewaehlteVariante = geschrieben.selection.chosen.variant;
+    let gewaehlteVariante = geschrieben.selection.chosen.variant;
 
     /* -----------------------------------------------------------------
        EINE EVIDENZ, NICHT ZWEI
@@ -1869,7 +1907,7 @@ async function main() {
     });
     const rahmen = publikumsRahmen[opportunity.topic] || null;
 
-    const result = Content.run({
+    const inhaltEingabe = {
       opportunity, sources: rechercheBelege, strategyDecision,
       visualAvailability: Object.assign({}, lage.availability, {
         keyNumber: lage.availability.keyNumber ||
@@ -1915,10 +1953,77 @@ async function main() {
          ----------------------------------------------------------------- */
       hookAbwechslung: abwechslungAus(feedFenster()),
       audienceFrame: rahmen || null
-    }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+    };
+    let result = Content.run(inhaltEingabe,
+      { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+
+    /* -----------------------------------------------------------------
+       OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)
+
+       AUDIENCE_SEPARATION (§8) darf niemals weich gestellt werden - sie
+       ist die letzte Schranke gegen interne Begriffe im oeffentlichen
+       Text. Faellt ein Autor dort durch, ist sein TEXT das Problem,
+       nicht die Schranke.
+
+       Das bereits verifizierte Creative (Bild, Verarbeitungsnachweis)
+       bleibt dabei erhalten: nur Hook/Story/Public Copy werden neu
+       verfasst, mit TEMPLATE - dem Autor, der ausschliesslich aus
+       oeffentlich zulaessigen Belegen komponiert (siehe
+       social/providers/authoring/template/adapter.js, dieselbe
+       PUBLIC_CLAIM_ELIGIBILITY-Filterung wie audience-frame.js).
+       Kein neuer ChatGPT-Work-Auftrag, kein neues Bild - "Hydrate
+       Before Regenerate" gilt auch hier.
+
+       Besteht auch TEMPLATE nicht, wird NICHT erfunden (§6 der
+       Entscheidung): der Kandidat faellt durch, mit einer eigenen
+       Ablehnungsstufe statt der generischen AUDIENCE_SEPARATION, damit
+       sichtbar bleibt, dass ein Ersatzversuch stattfand. */
+    if (!result.ok && result.failedStage === "AUDIENCE_SEPARATION" &&
+        gewaehlteVariante.authorId !== "template") {
+      const urspruenglicherAutor = gewaehlteVariante.authorId;
+      const urspruenglicheErklaerung = result.explanation;
+
+      const templateVersuch = Authoring.run(autorenRegistry, brief, {
+        authors: ["template"],
+        contentId: creativeContentId,
+        mode: strategyDecision.mode,
+        patternKnowledge: musterWissen.knowledge,
+        patternUsage: musterWissen.usage,
+        gates: {
+          brand: (v) => Brand.check({ hook: v.hook, caption: v.caption, cta: v.cta,
+            hashtags: v.hashtags }),
+          audience: (v) => AudienceFit.check({ hook: v.hook, caption: v.caption,
+            names: FIRMENNAMEN })
+        }
+      });
+
+      if (templateVersuch.selection.chosen) {
+        const templateVariante = templateVersuch.selection.chosen.variant;
+        const zweiterVersuch = Content.run(
+          Object.assign({}, inhaltEingabe, { writer: schreiberAus(templateVariante) }),
+          { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+
+        if (zweiterVersuch.ok) {
+          result = zweiterVersuch;
+          gewaehlteVariante = Object.assign({}, templateVariante, {
+            editorialCorrection: {
+              by: "vision-universe",
+              reason: "AUDIENCE_SEPARATION: der urspruengliche Text des Autors " +
+                urspruenglicherAutor + " nannte interne Begriffe im oeffentlichen " +
+                "Text (" + urspruenglicheErklaerung + "). Ersetzt durch eine " +
+                "aus denselben oeffentlich zulaessigen Belegen komponierte Fassung.",
+              originalAuthorId: urspruenglicherAutor
+            }
+          });
+        }
+      }
+    }
 
     if (!result.ok) {
-      rejections.push({ topic: opportunity.topic, stage: result.failedStage, reason: result.explanation });
+      rejections.push({ topic: opportunity.topic,
+        stage: result.failedStage === "AUDIENCE_SEPARATION"
+          ? "CREATIVE_REVISION_REQUIRED" : result.failedStage,
+        reason: result.explanation });
       continue;
     }
 
