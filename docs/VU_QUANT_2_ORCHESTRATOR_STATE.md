@@ -11,7 +11,7 @@ Updated: 2026-09-22 UTC
 
 ## CURRENT_PHASE
 
-`M4_PATTERN_RESEARCH_DELIVERED_TWO_OWNER_GATES_OPEN_IN_PARALLEL`
+`PRODUCT_LANGUAGE_TRANSLATED_TWO_OWNER_GATES_OPEN_IN_PARALLEL`
 
 Factor Evidence, Change, Strategy Match and now the Setup Observation exist as versioned
 product engines over the broad canonical universe, and the Quant Experience frontend renders
@@ -212,6 +212,37 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
   that has none.
 - Largest browser shard 17.8 KB gzipped / 0.17 MiB uncompressed, inside the artifact caps.
 
+### Product Language (`product-language-1.0.0`)
+
+- **Ein Wörterbuch, das die Oberfläche wirklich liest.** 58 Begriffe in sieben Kategorien in
+  `quant/methodology/product-language-v1.json`, gelesen über `quant/engines/product-language.js`.
+  `docs/VU_QUANT_2_PRODUCT_LANGUAGE.md` wird daraus **erzeugt**; ein Test regeneriert das
+  Dokument und vergleicht es. Eine handgepflegte Kopie eines Wörterbuchs ist ein zweites
+  Wörterbuch, und zwei Wörterbücher widersprechen sich binnen eines Monats.
+- **Fail-closed statt Slug.** Ein fehlender Begriff wirft, statt seine eigene id vor einem
+  Leser auszugeben. Lädt die Textquelle nicht, sagen die betroffenen Ansichten das — es werden
+  keine Ersatzworte erfunden.
+- **Drei parallele Beschriftungslisten sind verschwunden.** `SETUP_LABELS` in `experience.js`,
+  die Faktornamen der Strategie-Seite (`momentum: 'Momentum'`) und die Faktorlabel der Engine
+  liefen nebeneinander. Jetzt gibt es eine Quelle; ein Test hält Engine und Wörterbuch auf
+  demselben Wort, und `quality` heißt überall „Unternehmensqualität".
+- **Der Guard ist ein Test, keine Konvention.** Er liest die Primärpositionen aus
+  `vu2/experience.js` — h1/h2/h3, Eyebrow, Chip, Badge — und schlägt fehl, sobald einer der 30
+  internen Begriffe dort steht. Ein zweiter Test verbietet jeden rohen Enum-Wert als Copy. Die
+  Browser-QA prüft dasselbe am gerenderten DOM.
+- **Die Lesereihenfolge folgt der Frage, die ein Nutzer stellt**: wie stark → warum → was
+  ändert sich → baut sich etwas auf → was spricht dafür und dagegen → wie sah das früher aus →
+  welcher Anlagestil passt → wie belastbar ist das alles. Ein Test hält die Reihenfolge fest.
+- **Zwei neue Sektionen, kein neuer Motor.** „Was spricht dafür, was dagegen?" sortiert
+  ausschließlich, was Faktorevidenz, Veränderungsmessung und Musterabgleich bereits berechnet
+  haben, und zeigt nie eine Seite ohne die andere. „Wie belastbar ist die historische Evidenz?"
+  benennt Herkunft, Out-of-Sample-Prüfung, Überlebende-Verzerrung und Kursbasis und führt die
+  Backtest-Schicht bereits in Einsteigersprache — fünf Größen oben, die Fachwerte eingeklappt,
+  ohne eine einzige erfundene Zahl, weil das Gate geschlossen ist.
+- **Interne Begriffe bleiben auffindbar.** Sie stehen in der eingeklappten Methodik-Ebene und
+  als Beisatz — ein Profi soll `setup-mapping-1.0.0` oder `quantV2.factorEvidence` finden
+  können, ein Anfänger soll nicht damit anfangen müssen.
+
 ## PRODUCTION_REALITY
 
 Counts measured from the materialized artifact at data cutoff `2026-09-21`, after the
@@ -261,8 +292,12 @@ owner-authorized market-data and SEC consumer-export runs.
 
 ## VERIFICATION
 
-- Full Quant suite: 1,501/1,501 passed locally (1,479 before; +16 pattern-research,
-  +6 pit-fundamental-history). SEC Python suite: 474/474 locally.
+- Full Quant suite: 1,513/1,513 passed locally (1,501 before, +12 product-language).
+  SEC Python suite: 474/474 locally.
+- Browser-QA über `quant` (NVDA, JPM, AAPL), `explain`, `strategies`, `watchlist` (mit
+  gesetzter Auswahl) und `radar` bei 1440 px und 390 px: kein interner Begriff in einer
+  Überschrift, einem Eyebrow, einem Chip oder einem Badge, kein horizontaler Überlauf, keine
+  Seitenfehler.
 - The shared study runner refactor was verified, not assumed: 1,482 fields across 114 findings
   compared against the pre-refactor run, zero differences. The only intended change was three
   boolean-only patterns moving from "stable" to `NOT_APPLICABLE_NO_THRESHOLD`.

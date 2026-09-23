@@ -84,7 +84,7 @@ async function liveStockSection(ticker){
  const timer=setInterval(checkSession,30000);addEventListener('pagehide',()=>{disposed=true;clearInterval(timer);document.removeEventListener('visibilitychange',hide);client?.stop('PAGE_HIDDEN');},{once:true});
  await checkSession();
 }
-function setupStateSection(setup){const section=el('section',{class:'section','aria-label':'SetupState'});section.append(el('span',{class:'eyebrow',text:'SetupState'}),el('h2',{text:'Setup-Zustand'}));if(!setup||setup.availability?.state!=='AVAILABLE'){section.append(notice('SetupState derzeit nicht verfügbar','Es wird kein Setup-Zustand behauptet: die historische Setup-State-Materialisierung und zertifizierte Regelbindung sind noch nicht aktiv.'));return section;}section.append(el('p',{text:setup.setupState}),el('p',{class:'muted',text:'Evidenzstand '+setup.asOf+' · Backtest-Zertifizierung: '+setup.backtestCertification}));return section;}
+function setupStateSection(setup){const section=el('section',{class:'section','aria-label':'Situation'});section.append(el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}));if(!setup||setup.availability?.state!=='AVAILABLE'){section.append(notice(LU('setupState'),LB('setupState')+' Dafür braucht es eine geordnete Historie veröffentlichter Beobachtungen und eine freigegebene Methodik; beides ist noch nicht aktiv.'));return section;}section.append(el('p',{class:'setup-badge state-'+setup.setupState,text:L(setup.setupState)}),el('p',{class:'muted',text:LB(setup.setupState)}),el('details',{},[el('summary',{text:'Methodik'}),el('p',{class:'muted',text:'Interner Zustand '+setup.setupState+' · Evidenzstand '+setup.asOf+' · Backtest-Zertifizierung: '+setup.backtestCertification})]));return section;}
 async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
@@ -153,9 +153,9 @@ async function signalsPage(){
  }if(matching.length>events.length)target.append(el('p',{class:'muted',text:'Gezeigt werden 200 von '+matching.length+' belegten Wechseln. Bitte ein Unternehmen auswählen, um die Ansicht einzugrenzen.'}));}if(data.results.some(r=>r.state==='AVAILABLE'&&r.ticker===params.get('ticker')))company.value=params.get('ticker');company.onchange=draw;main.append(target,actions([{label:'Radar',href:href('radar')},{label:'Discover',href:href('discover')},{label:'Watchlist',href:href('watchlist')}]));draw();
 }
 async function radarPage(){
- main.append(heading('Radar · belegte Kurswechsel','Capability-gesteuerte Übersicht aus den materialisierten Signals-Artefakten. Ohne Quant-Score und ohne Marktregime.'));
+ main.append(heading(LQ('radar'),LB('radar')));
  const lookback=[5,20,60].includes(Number(params.get('window')))?Number(params.get('window')):20,data=await api.getRadarIntelligence({lookback,limit:12});
- if(data.state!=='AVAILABLE'){main.append(notice('Radar derzeit nicht auswertbar','Ohne contract-konforme materialisierte Signals werden keine Ersatzlisten erzeugt.'));return;}
+ if(data.state!=='AVAILABLE'){main.append(notice('Hier ist gerade nichts belegbar',LU('radar')));return;}
  const select=el('select',{'aria-label':'Radar-Zeitraum'},[5,20,60].map(value=>el('option',{value:String(value),text:value+' EOD-Beobachtungen'})));select.value=String(lookback);select.onchange=()=>location.assign(href('radar')+'&window='+select.value);
  main.append(el('div',{class:'workspace-controls'},[select]),el('p',{class:'scope-note',text:data.coverage.available+' von '+data.coverage.requested+' Produkttiteln contract-konform auswertbar · '+data.eventTickerCount+' Titel mit belegtem Wechsel · '+data.eventCount+' Wechsel im Zeitraum'}),el('p',{class:'muted',text:'Jedes Element ist ein retrospektiver EOD-Zustandswechsel. Es ist weder Echtzeit- noch Handels- oder Ranking-Signal. Quant V2 und Market Regime bleiben geschlossen.'}));
  const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}main.append(grid,actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
@@ -227,7 +227,7 @@ function factorStrip(row){
  });
  const rated=row['quantV2.factorEvidence.availableFactors'];
  return el('div',{class:'factor-strip'},[
-  el('div',{class:'strip-head'},[el('span',{class:'eyebrow',text:'Quant V2 · Factor Evidence'}),
+  el('div',{class:'strip-head'},[el('span',{class:'eyebrow',text:'Stärken & Schwächen'}),
    el('span',{class:'muted',text:(Number.isFinite(rated)?rated:0)+' von 7 bewertet'})]),
   el('div',{class:'strip-grid'},cells)]);
 }
@@ -292,15 +292,15 @@ async function strategyPage(){
  function select(id,label,value,options){const control=el('select',{'aria-label':label},options.map(([value,text])=>el('option',{value,text})));control.value=value;fields[id]=control;return el('label',{class:'strategy-field'},[el('span',{text:label}),control]);}
  const filters=el('div',{class:'strategy-rules'},definition.filters.length?definition.filters.map(f=>el('p',{text:(VUCatalog.field(f.field)?.label||f.field)+' '+(VUCatalog.operator(f.operator)?.label||f.operator)+' '+f.value+(f.scale==='percentile'?' · Perzentil':VUCatalog.field(f.field)?.unit==='pct'?' %':VUCatalog.field(f.field)?.unit==='usd'?' USD':'')})):[el('p',{text:'Noch keine Auswahlkriterien. Beginne im Screener und übernimm deine Regeln.'})]);
  let editHref=href('screener');try{editHref+='&query='+encodeURIComponent(VUScreenerWorkspace.encode(VUScreenerWorkspace.build(definition.filters)));}catch{}
- const names={quality:'Qualität',momentum:'Momentum',value:'Bewertung',growth:'Wachstum',risk:'Risiko'},status=el('div',{'aria-live':'polite'}),preview=el('section',{'aria-live':'polite'}),history=el('pre',{class:'query-code',text:saved?JSON.stringify(saved,null,2):'Noch keine gespeicherte Version.'});
+ const names=Object.fromEntries(['quality','momentum','value','growth','risk'].map(id=>[id,L(id)])),status=el('div',{'aria-live':'polite'}),preview=el('section',{'aria-live':'polite'}),history=el('pre',{class:'query-code',text:saved?JSON.stringify(saved,null,2):'Noch keine gespeicherte Version.'});
  main.append(input('name','Name des Entwurfs',saved?.strategy.name||'Meine Investmentidee',{maxlength:'120'}),el('section',{class:'section'},[el('h2',{text:'1 · Welche Unternehmen kommen infrage?'}),filters,link('Kriterien im Screener bearbeiten',editHref,'button secondary')]),el('section',{class:'section'},[el('h2',{text:'2 · Was soll bei der Auswahl zählen?'}),el('p',{class:'muted',text:'Die Faktoranteile müssen zusammen 100 % ergeben. Sie definieren ein späteres Ranking; ein Quant-V2-Rang wird bis zur Zertifizierung nicht berechnet.'}),el('div',{class:'strategy-grid'},context.factors.map(f=>input(f,names[f]+' · Anteil in %',(definition.ranking.factors.find(r=>r.factor===f)?.weight||0)*100,{type:'number',min:'0',max:'100',step:'1'})))]),
  el('section',{class:'section'},[el('h2',{text:'3 · Portfolio und Ausführung'}),el('div',{class:'strategy-grid'},[
  input('positions','Anzahl Positionen',definition.portfolio.positions,{type:'number',min:context.constraints.minPositions,max:context.constraints.maxPositions,step:'1'}),
  select('weighting','Positionsgewichtung',definition.portfolio.weighting,context.weightings.map(v=>[v,{equal:'Gleichgewichtet',score:'Nach Faktorwert',volatility:'Nach Volatilität'}[v]])),
  select('rebalance','Umschichten',definition.rebalance,context.rebalance.map(v=>[v,{monthly:'Monatlich',quarterly:'Quartalsweise'}[v]])),
  select('timing','Ausführungszeitpunkt',definition.execution.timing,context.timings.map(v=>[v,{next_open:'Nächste Eröffnung',next_close:'Nächster Schlusskurs'}[v]])),
- input('cost','Transaktionskosten · Basispunkte',definition.execution.transactionCostsBps,{type:'number',min:'0',max:context.costs.maxTransactionCostsBps,step:'any'}),input('slippage','Slippage · Basispunkte',definition.execution.slippageBps,{type:'number',min:'0',max:context.costs.maxSlippageBps,step:'any'})]),
- el('p',{class:'muted',text:'1 Basispunkt = 0,01 %. Kosten gelten beim Kauf und Verkauf. Entscheidungen werden frühestens am nächsten Handelszeitpunkt ausgeführt.'}),
+ input('cost','Transaktionskosten · Basispunkte',definition.execution.transactionCostsBps,{type:'number',min:'0',max:context.costs.maxTransactionCostsBps,step:'any'}),input('slippage',L('slippage')+' · Basispunkte',definition.execution.slippageBps,{type:'number',min:'0',max:context.costs.maxSlippageBps,step:'any'})]),
+ el('p',{class:'muted',text:'1 Basispunkt = 0,01 %. Kosten gelten beim Kauf und Verkauf. Entscheidungen werden frühestens am nächsten Handelszeitpunkt ausgeführt. '+LT('slippage')}),
  el('details',{},[el('summary',{text:'Konzentration & Handelbarkeit'}),el('div',{class:'strategy-grid'},[input('maxPosition','Maximales Positionsgewicht · %',definition.portfolio.maxPositionWeight*100,{type:'number',step:'any'}),input('maxSector','Maximales Sektorgewicht · %',definition.portfolio.maxSectorWeight*100,{type:'number',step:'any'}),input('minVolume','Mindest-Handelsvolumen · Mio. USD',definition.portfolio.minDollarVolumeM,{type:'number',step:'any'}),input('minCap','Mindest-Marktkapitalisierung · Mio. USD',definition.portfolio.minMarketCapM,{type:'number',step:'any'})])])]),
  input('reason','Grund der Änderung',saved?'':'Erster Entwurf',{maxlength:'500'}),status);
  function build(){for(const [key,control] of Object.entries(fields))if(control.type==='number'&&(!control.value.trim()||!Number.isFinite(Number(control.value))||!control.checkValidity()))throw Error('Bitte alle Zahlenfelder gültig ausfüllen.');const number=id=>Number(fields[id].value);return VUStrategy.assertValid(VUStrategy.createDefinition({...definition,ranking:{factors:context.factors.filter(f=>number(f)>0).map(f=>({factor:f,weight:number(f)/100}))},portfolio:{...definition.portfolio,positions:number('positions'),weighting:fields.weighting.value,maxPositionWeight:number('maxPosition')/100,maxSectorWeight:number('maxSector')/100,minDollarVolumeM:number('minVolume'),minMarketCapM:number('minCap')},rebalance:fields.rebalance.value,execution:{timing:fields.timing.value,transactionCostsBps:number('cost'),slippageBps:number('slippage')}}));}
@@ -370,7 +370,8 @@ function changeCard(entry){
    Lebenszyklus ("an dieser Stelle steht der Titel in seinem Verlauf")
    bleiben sichtbar getrennt; der zweite verlangt eine geordnete
    Beobachtungshistorie und bleibt bis dahin ausdruecklich geschlossen. */
-const SETUP_LABELS={NO_SETUP:'Nichts zu sehen',WATCH:'Beobachten',SETUP_FORMING:'Bildet sich',CONFIRMED:'Bestätigt',ACTIVE:'Aktiv',RISK_RISING:'Risiko steigt',INVALIDATED:'Ungültig',EXIT:'Ausstieg'};
+/* Die Zustandsnamen kommen aus dem Woerterbuch. Ein Enum-Wert erreicht
+   die Oberflaeche nie roh - er wird uebersetzt oder gar nicht gezeigt. */
 const SETUP_CLOSED={SETUP_MAPPING_NOT_APPROVED:'Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Lebenszyklus-Zustand behauptet.',
  SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED:'Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. "Wurde bestätigt" oder "wurde ungültig" sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen.',
  INSUFFICIENT_OBSERVATION_HISTORY:'Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen.',
@@ -397,9 +398,9 @@ function setupJourney(setup,observation){
   :JOURNEY_ORDER.slice()).filter(state=>JOURNEY_ORDER.includes(state))
   .sort((a,b)=>JOURNEY_ORDER.indexOf(a)-JOURNEY_ORDER.indexOf(b));
  const section=el('section',{class:'section setup-section'},[
-  el('span',{class:'eyebrow',text:'Setup'}),el('h2',{text:'Entsteht gerade eine Situation?'}),
+  el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}),
   el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')},[
-   el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:SETUP_LABELS[state]||state})])))]);
+   el('span',{class:'setup-dot','aria-hidden':'true'}),el('span',{text:L(state)})])))]);
  if(!available){
   section.append(notice('Für diesen Titel liegt keine Setup-Beobachtung vor',
    'Die Setup-Beobachtung wird aus der bestehenden technischen Materialisierung gebildet. Dieser Titel ist darin nicht enthalten, deshalb wird hier kein Zustand behauptet.'));
@@ -407,10 +408,11 @@ function setupJourney(setup,observation){
  }
  if(classification.state&&classification.state!=='UNAVAILABLE'){
   section.append(el('p',{class:'setup-classification'},[
-   el('span',{class:'setup-badge state-'+classification.state,text:SETUP_LABELS[classification.state]||classification.state}),
-   el('span',{class:'muted',text:'Beobachtung am '+observation.asOf+' · '+observation.matchedRule.plain})]));
+   el('span',{class:'setup-badge state-'+classification.state,text:L(classification.state)}),
+   el('span',{class:'muted',text:LB(classification.state)})]),
+   el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
  }else{
-  section.append(notice('Nicht bewertbar',SETUP_CLOSED[classification.reason]||'Die Methodik verlangt Evidenz, die für diesen Titel nicht vollständig vorliegt.'));
+  section.append(notice(L('UNAVAILABLE'),SETUP_CLOSED[classification.reason]||'Die Methodik verlangt Evidenz, die für diesen Titel nicht vollständig vorliegt.'));
  }
  if(!active)section.append(notice('Es wird kein Lebenszyklus-Zustand behauptet',
   SETUP_CLOSED[lifecycle.availability.reason]||'Der Lebenszyklus bleibt geschlossen.'));
@@ -438,32 +440,36 @@ function patternRow(row,baseRate,lossThreshold){
   el('span',{class:'pattern-side-label',text:'halbiert'}),
   el('strong',{text:pct1(row.conditionalLossRate)}),
   el('span',{class:'muted',text:'statt '+pct1(row.baseLossRate)+' · '+row.lossLift.toFixed(2).replace('.',',')+'×'})]);
- const tilt=row.asymmetry>=1.1?'kippt nach oben':row.asymmetry<=0.9?'kippt nach unten':'beide Seiten gleich stark';
+ /* Chance und Risiko stehen nebeneinander und werden in einem Satz
+    eingeordnet. Eine Quote ohne ihre Kehrseite waere die halbe Wahrheit. */
+ const tilt=row.asymmetry>=1.1?'Die Chance war stärker erhöht als das Verlustrisiko.'
+  :row.asymmetry<=0.9?'Das Verlustrisiko war stärker erhöht als die Chance.'
+  :'Chance und Verlustrisiko waren gleich stark erhöht.';
  return el('article',{class:'pattern-card'+(row.asymmetry>=1.1?' is-tilted':'')},[
   el('h3',{text:row.plain}),
   el('div',{class:'pattern-sides'},[up,down]),
-  el('p',{class:'pattern-tilt',text:'Verhältnis '+row.asymmetry.toFixed(2).replace('.',',')+' · '+tilt}),
+  el('p',{class:'pattern-tilt',title:LT('asymmetry'),text:L('asymmetry')+': '+tilt}),
   el('ul',{class:'pattern-facts'},[
-   'Typischer Fall: '+pct1(row.medianForwardReturn)+' (Gesamtheit '+pct1(row.medianForwardReturnPopulation)+')',
-   'Tiefster Rücksetzer unterwegs, im Median: '+pct1(row.medianMaxDrawdownWithinHorizon),
+   L('medianOutcome')+': '+pct1(row.medianForwardReturn)+' (alle Titel: '+pct1(row.medianForwardReturnPopulation)+')',
+   L('medianDrawdown')+': '+pct1(row.medianMaxDrawdownWithinHorizon),
    row.support.toLocaleString('de-DE')+' Fälle · '+row.winners.toLocaleString('de-DE')+' davon verdoppelt',
-   'Out-of-Sample '+(Number.isFinite(row.outOfSampleLift)?row.outOfSampleLift.toFixed(2).replace('.',','):'–')+'×'
+   L('outOfSample')+': '+(Number.isFinite(row.outOfSampleLift)?row.outOfSampleLift.toFixed(2).replace('.',',')+'×':'–')
   ].map(text=>el('li',{text})))]);
 }
 function patternMatchSection(patterns){
  const section=el('section',{class:'section pattern-section'},[
-  el('span',{class:'eyebrow',text:'Muster'}),
-  el('h2',{text:'Was ist historisch passiert, wenn es so aussah?'})]);
+  el('span',{class:'eyebrow',text:'Vergangenheit'}),
+  el('h2',{text:LQ('patternEngine')}),
+  el('p',{class:'muted',text:LB('patternEngine')})]);
  if(!patterns||patterns.state!=='AVAILABLE'){
-  section.append(notice('Für diesen Titel liegt kein Musterabgleich vor',
-   'Der Musterabgleich braucht eine ausreichend lange kanonische Wochenreihe. Für diesen Titel liegt sie nicht vor, deshalb wird hier nichts behauptet.'));
+  section.append(notice(L('UNAVAILABLE'),LU('patternEngine')));
   return section;
  }
  section.append(el('p',{class:'muted',text:'Zeitraum '+patterns.horizonMonths+' Monate. „Verdoppelt" heißt: der Kurs stand am Ende mindestens '+
-  ((patterns.winnerMinReturn+1))+'-mal so hoch. „Halbiert" heißt: mindestens '+pct1(Math.abs(patterns.lossThreshold))+' tiefer. Gezeigt werden nur Muster, die out-of-sample und über den Schwellenwert-Test hinweg gehalten haben.'}));
+  ((patterns.winnerMinReturn+1))+'-mal so hoch. „Halbiert" heißt: mindestens '+pct1(Math.abs(patterns.lossThreshold))+' tiefer. Gezeigt werden nur Situationen, die auch in Jahren hielten, die bei ihrer Prüfung nicht mitgezählt wurden.'}));
  if(!patterns.holds.length){
-  section.append(notice('Dieser Titel erfüllt derzeit keines der geprüften Muster',
-   'Das ist eine vollwertige Antwort. Es bedeutet nicht, dass nichts passiert – nur, dass keine der vorregistrierten Konfigurationen vorliegt.'));
+  section.append(notice('Dieser Titel sieht derzeit keiner der geprüften Situationen ähnlich',
+   'Das ist eine vollständige Antwort, keine Lücke. Es heißt nicht, dass nichts passiert — nur, dass keine der im Voraus festgelegten Konstellationen vorliegt.'));
  }else{
   section.append(el('p',{class:'pattern-count',text:patterns.holds.length+' von '+(patterns.holds.length+patterns.others.length)+' geprüften Mustern liegen derzeit vor'}),
    el('div',{class:'pattern-grid'},patterns.holds
@@ -498,33 +504,41 @@ function matchCard(profile){
  if(profile.state==='AVAILABLE'){
   body.push(el('p',{class:'match-count',text:met+' von '+measurable+' messbaren Bedingungen erfüllt'}));
  }else{
-  body.push(notice('Für diesen Titel nicht auswertbar',{
+  body.push(notice(L('NOT_MEASURABLE'),{
    INSUFFICIENT_MEASURABLE_WEIGHT:'Zu viele Bedingungen dieses Profils sind für diesen Titel nicht messbar. Aus dem Rest wird keine Übereinstimmung gebildet.',
    INSUFFICIENT_MEASURABLE_CONDITIONS:'Es sind zu wenige Bedingungen messbar, um eine Übereinstimmung zu bilden.',
-   NO_EVIDENCE:'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor.'
+   NO_EVIDENCE:LU('factorDna')
   }[profile.reason]||'Die Bedingungen dieses Profils sind derzeit nicht auswertbar.'));
  }
  body.push(el('ul',{class:'match-conditions'},profile.conditions.map(conditionRow)));
  if(profile.mainRisk)body.push(el('p',{class:'muted match-risk',text:'Hauptrisiko: '+profile.mainRisk}));
- body.push(el('p',{class:'muted match-evidence',text:'Historische Evidenz: nicht verfügbar. Wie dieses Profil in der Vergangenheit funktioniert hätte, ist ein Backtest und bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführungsmethodik zertifiziert sind.'}));
+ body.push(el('p',{class:'muted match-evidence',title:LT('backtest'),text:LQ('backtest')+' '+LU('backtest')}));
  /* Dieselbe Regel, die das Profil erklärt, selektiert auch. */
  if(profile.screenHref)body.push(link('Alle Titel mit diesem Profil zeigen',profile.screenHref,'button secondary'));
  return el('article',{class:'match-card'+(profile.state==='AVAILABLE'?'':' is-missing')},[head,...body]);
 }
 function strategyMatchSection(match){
  const section=el('section',{class:'section match-section'},[
-  el('span',{class:'eyebrow',text:'Strategy Match'}),
-  el('h2',{text:'Zu welchem Anlagestil passt dieser Titel?'})]);
+  el('span',{class:'eyebrow',text:'Anlagestil'}),
+  el('h2',{text:LQ('strategyMatch')}),
+  el('p',{class:'muted',text:LB('strategyMatch')})]);
  if(!match||match.state!=='AVAILABLE'){
-  section.append(notice('Strategy Match derzeit nicht verfügbar',
+  section.append(notice(LU('strategyMatch'),
    match?.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'
     ?'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor, gegen die Profile geprüft werden könnten.'
     :'Die Profile oder die Faktorevidenz konnten nicht geladen oder nicht geprüft werden. Es werden keine Ersatzprofile gebildet.'));
   return section;
  }
  const ordered=[...match.profiles].sort((a,b)=>(b.state==='AVAILABLE'?b.match:-1)-(a.state==='AVAILABLE'?a.match:-1));
+ /* Zuerst die Antwort in einem Satz, dann erst die Tabelle. */
+ const best=ordered.find(profile=>profile.state==='AVAILABLE');
+ section.append(best&&best.match>=40
+  ?el('p',{class:'match-lead'},[el('span',{text:'Diese Aktie passt aktuell am besten zu: '}),el('strong',{text:best.label}),
+    el('span',{class:'muted',text:' — '+best.conditions.filter(c=>c.state==='MET').length+' von '+
+     best.conditions.filter(c=>c.state!=='NOT_MEASURABLE').length+' Bedingungen erfüllt.'})])
+  :notice('Zu keinem Anlagestil passt dieser Titel derzeit gut',VUProductLanguage.negative('strategyMatch')+' Das ist eine Antwort, keine Lücke.'));
  section.append(
-  el('p',{class:'muted',text:'Jedes Profil ist ein Satz fester Bedingungen an die Quant-V2-Faktorevidenz. Die Übereinstimmung zählt, wie viele der messbaren Bedingungen dieser Titel erfüllt — sie ist kein Rang, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.'}),
+  el('p',{class:'muted',text:'Ein Anlagestil ist ein Satz fester Bedingungen. Gezählt wird, wie viele davon dieser Titel erfüllt — das ist kein Rang, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.'}),
   el('div',{class:'match-grid'},ordered.map(matchCard)),
   el('details',{},[el('summary',{text:'Methodik & Grenzen'}),
    el('p',{text:'Evidenz: '+match.evidenceNamespace+' · '+match.evidenceMethodologyVersion+'. Profile: '+match.methodologyVersion+'. Quant V1 bleibt unverändert und wird hier nicht gelesen.'}),
@@ -532,6 +546,94 @@ function strategyMatchSection(match){
    el('p',{class:'muted',text:'Eine Bedingung ohne Faktorwert zählt weder als erfüllt noch als verletzt; sie verlässt den Nenner und steht als „nicht messbar“ in der Liste.'})]));
  return section;
 }
+/* WAS SPRICHT DAFÜR, WAS DAGEGEN.
+
+   Kein neuer Motor und keine neue Zahl: gelesen wird ausschliesslich, was
+   die Faktorevidenz, die Veraenderungsmessung und der Musterabgleich
+   ohnehin schon berechnet haben. Was hier entsteht, ist die Sortierung -
+   und die Regel, dass keine Seite ohne die andere gezeigt wird. */
+function prosAndCons(data,change,patterns){
+ const pros=[],cons=[];
+ for(const factor of data.factors){
+  if(factor.state!=='AVAILABLE'||!Number.isFinite(factor.score))continue;
+  if(factor.score>=65)pros.push({text:L(factor.id)+' liegt über dem Vergleich: Position '+pct(factor.score)+'.',why:VUProductLanguage.beginner(factor.id)});
+  else if(factor.score<=35)cons.push({text:VUProductLanguage.negative(factor.id),why:L(factor.id)+' steht bei Position '+pct(factor.score)+'.'});
+ }
+ for(const item of (change?.items||[])){
+  if(item.state!=='AVAILABLE')continue;
+  if(item.direction==='IMPROVING')pros.push({text:item.label+' verbessert sich.',why:item.plain});
+  else if(item.direction==='DETERIORATING')cons.push({text:item.label+' verschlechtert sich.',why:item.plain});
+ }
+ if(patterns?.state==='AVAILABLE'&&patterns.holds.length){
+  const tilted=patterns.holds.filter(row=>row.asymmetry>=1.1).length;
+  const risky=patterns.holds.filter(row=>row.asymmetry<=0.9).length;
+  if(tilted)pros.push({text:'Bei '+tilted+' von '+patterns.holds.length+' ähnlichen Situationen war die Chance historisch stärker erhöht als das Verlustrisiko.',why:LT('asymmetry')});
+  if(risky)cons.push({text:'Bei '+risky+' von '+patterns.holds.length+' ähnlichen Situationen war das Verlustrisiko historisch stärker erhöht als die Chance.',why:LT('asymmetry')});
+ }
+ const column=(title,items,cls)=>el('div',{class:'balance-column '+cls},[
+  el('h3',{text:title}),
+  items.length?el('ul',{class:'balance-list'},items.slice(0,6).map(entry=>el('li',{},[
+   el('span',{text:entry.text}),el('span',{class:'muted',text:entry.why})]))) 
+   :el('p',{class:'muted',text:'Hier steht derzeit nichts Belegbares.'})]);
+ return el('section',{class:'section balance-section'},[
+  el('span',{class:'eyebrow',text:'Abwägung'}),
+  el('h2',{text:'Was spricht dafür, was dagegen?'}),
+  el('p',{class:'muted',text:'Beide Seiten aus denselben Messungen. Keine Empfehlung und keine Gewichtung — nur, was belegt dafür und was belegt dagegen spricht.'}),
+  el('div',{class:'balance-grid'},[column('Dafür',pros,'is-pro'),column('Dagegen',cons,'is-con')])]);
+}
+
+/* WIE BELASTBAR IST DIE HISTORISCHE EVIDENZ.
+
+   Die Belastbarkeit ist keine Rendite. Sie sagt, wie viel man auf die
+   historischen Zahlen daneben geben kann - und nennt beim Namen, was an
+   ihnen schieflaeuft. */
+function evidenceTrustSection(patterns){
+ const section=el('section',{class:'section trust-section'},[
+  el('span',{class:'eyebrow',text:'Belastbarkeit'}),
+  el('h2',{text:LQ('backtestTrustScore')}),
+  el('p',{class:'muted',text:LB('backtestTrustScore')})]);
+ if(!patterns||patterns.state!=='AVAILABLE'){
+  section.append(notice(L('UNAVAILABLE'),LU('patternEngine')));
+  return section;
+ }
+ const withheld=Object.entries({...(patterns.withheld?.price||{}),...(patterns.withheld?.fundamental||{})});
+ const facts=[
+  ['Woraus die Zahlen stammen','Gezählte Fälle aus der Vergangenheit über hunderttausende Beobachtungen, nicht aus einem einzelnen Beispiel.'],
+  ['Was geprüft wurde',LB('outOfSample')],
+  [L('survivorship'),LB('survivorship')],
+  ['Kursbasis','Splitbereinigt und ohne Dividenden. Das trifft Gewinner und Nicht-Gewinner gleichermaßen und wird nicht geschätzt.'],
+  [LQ('backtest'),LU('backtest')]
+ ];
+ section.append(el('ul',{class:'trust-list'},facts.map(([title,text])=>el('li',{},[
+  el('strong',{text:title}),el('span',{class:'muted',text})]))));
+ if(withheld.length){
+  const total=withheld.reduce((sum,[,count])=>sum+count,0);
+  section.append(el('details',{class:'trust-withheld'},[
+   el('summary',{text:total+' geprüfte Situationen werden hier bewusst nicht gezeigt'}),
+   ...withheld.map(([verdict,count])=>el('p',{},[
+    el('strong',{text:count+' × '+L(verdict)+': '}),el('span',{class:'muted',text:LB(verdict)})]))]));
+ }
+ /* Die Backtest-Schicht steht schon in der Sprache bereit, in der sie
+    gelesen werden soll: erst die fünf Größen, die ein Einsteiger braucht,
+    die Fachwerte darunter eingeklappt. Zahlen stehen keine drin - das Gate
+    ist geschlossen, und jede Zahl hier wäre erfunden. Die Struktur jetzt
+    zu haben heißt, dass sie später nicht in Fachsprache aufgeht. */
+ const backtestRow=id=>el('li',{},[el('strong',{text:L(id)}),
+  el('span',{class:'muted',text:LB(id)}),
+  el('span',{class:'muted trust-pending',text:LU(id)})]);
+ section.append(el('details',{class:'trust-backtest'},[
+  el('summary',{text:LQ('backtest')}),
+  el('p',{class:'muted',text:LB('backtest')}),
+  el('ul',{class:'trust-list'},['totalReturn','maxDrawdown','hitRate','situationCount','benchmarkDelta'].map(backtestRow)),
+  el('details',{},[el('summary',{text:'Fachwerte'}),
+   el('ul',{class:'trust-list'},['sharpe','sortino','exposure','turnover','slippage'].map(backtestRow))])]));
+ section.append(el('details',{},[el('summary',{text:'Methodik'}),
+  el('p',{class:'muted',text:'Musterforschung '+(patterns.studies?.price?.methodologyVersion||'—')+
+   (patterns.studies?.fundamental?' · Fundamentalfamilie '+patterns.studies.fundamental.methodologyVersion:'')+
+   '. Backtest-Zertifizierung: '+patterns.caveats.backtest+'. Prognose: '+patterns.caveats.prediction+'.'})]));
+ return section;
+}
+
 async function quantPage(ticker){
  const [data,match,profileContract,observation,patterns]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
@@ -556,32 +658,29 @@ async function quantPage(ticker){
  const rated=data.factors.filter(f=>f.state==='AVAILABLE');
  /* HERO: Name, Zustand, ein Satz - keine zwanzig Kennzahlen. */
  main.append(el('section',{class:'quant-hero'},[
-  el('span',{class:'eyebrow',text:'Vision Universe® Quant'}),
+  el('span',{class:'eyebrow',text:'Wie stark ist diese Aktie?'}),
   el('h1',{text:data.name}),
   el('p',{class:'quant-ticker',text:data.ticker+(data.peer?.industry?' · Branchenschlüssel '+data.peer.industry:'')}),
-  el('div',{class:'quant-chips'},[
-   el('span',{class:'chip',text:rated.length+' von 7 Faktoren bewertet'}),
-   el('span',{class:'chip chip-muted',text:'Kein Gesamtscore veröffentlicht'}),
-   el('span',{class:'chip chip-muted',text:'Kursstand '+data.asOf})]),
   el('p',{class:'quant-summary',text:data.summary}),
-  el('p',{class:'quant-change',text:data.changeHeadline})]));
+  el('p',{class:'quant-change',text:data.changeHeadline}),
+  el('div',{class:'quant-chips'},[
+   el('span',{class:'chip',title:LT('factorDna'),text:rated.length+' von 7 Eigenschaften bewertet'}),
+   el('span',{class:'chip chip-muted',title:LT('compositeScore'),text:L('compositeScore')+': '+L('WITHHELD').toLowerCase()}),
+   el('span',{class:'chip chip-muted',text:'Kursstand '+data.asOf})]),
+  el('p',{class:'quant-orientation',text:'Darunter der Reihe nach: warum das so ist, was sich gerade ändert, ob sich eine Situation aufbaut, was dafür und dagegen spricht, wie ähnliche Situationen früher ausgingen, welcher Anlagestil passt — und wie belastbar das alles ist.'})]));
  const company=el('select',{'aria-label':'Quant Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name})));
  if(!universe.stocks.some(s=>s.ticker===data.ticker))company.append(el('option',{value:data.ticker,text:data.ticker+' · '+data.name}));
  company.value=data.ticker;company.onchange=()=>location.assign(href('quant',company.value));
  main.append(el('div',{class:'workspace-controls'},[company,link('Was ist Quant?',href('explain'),'button secondary')]));
  /* FACTOR DNA */
  main.append(el('section',{class:'section dna-section'},[
-  el('span',{class:'eyebrow',text:'Factor DNA'}),
-  el('h2',{text:'Wie stark ist dieses Unternehmen — und warum?'}),
-  el('p',{class:'muted',text:'Sieben feste Eigenschaften, immer in derselben Reihenfolge. Jede zeigt ihre Position im Vergleich zu anderen Unternehmen. Tippe auf eine Eigenschaft, um ihre Belege zu sehen.'}),
+  ...sectionHead('Stärken & Schwächen','factorDna'),
+  el('p',{class:'muted',text:'Tippe auf eine Eigenschaft, um zu sehen, woran sie gemessen wurde.'}),
   el('div',{class:'dna-list'},data.factors.map(factorRow)),
   el('p',{class:'muted',text:'Ein Gesamtscore wird bewusst nicht gebildet: '+(data.composite?.reason==='QUANT_V2_NOT_ACTIVE'?'die Methodik verlangt alle sieben Faktoren, und der Erwartungstrend fehlt ohne lizenzierte Datenquelle.':'die Methodik ist noch nicht freigegeben.')})]));
  /* CHANGE */
- const change=data.change,grouped=[['IMPROVING','Verbessert sich'],['DETERIORATING','Verschlechtert sich'],['STABLE','Weitgehend unverändert']];
- const changeSection=el('section',{class:'section change-section'},[
-  el('span',{class:'eyebrow',text:'Veränderung'}),
-  el('h2',{text:'Was verändert sich gerade?'}),
-  el('p',{class:'muted',text:'Gemessen werden beobachtbare Größen, nicht die Faktorwerte selbst. Ein Verlauf der Faktorwerte benötigt eine Historie veröffentlichter Snapshots und wird nicht rückwirkend nachgebildet.'})]);
+ const change=data.change,grouped=['IMPROVING','DETERIORATING','STABLE'].map(id=>[id,L(id)]);
+ const changeSection=el('section',{class:'section change-section'},sectionHead('Bewegung','changeEngine'));
  for(const [direction,label] of grouped){
   const entries=change.items.filter(x=>x.state==='AVAILABLE'&&x.direction===direction);
   if(!entries.length)continue;
@@ -590,10 +689,15 @@ async function quantPage(ticker){
  const missing=change.items.filter(x=>x.state!=='AVAILABLE');
  if(missing.length)changeSection.append(el('details',{class:'change-missing'},[el('summary',{text:missing.length+' Bereiche sind derzeit nicht messbar'}),...missing.map(x=>el('p',{},[el('strong',{text:x.label+': '}),el('span',{class:'muted',text:x.reasonText})]))]));
  main.append(changeSection);
- /* SETUP */
- main.append(strategyMatchSection(match));
+ /* Die Lesereihenfolge folgt der Frage, die ein Nutzer wirklich stellt:
+    wie stark - warum - was aendert sich - baut sich etwas auf - was
+    spricht dafuer und dagegen - wie sah das frueher aus - welcher Stil
+    passt - wie belastbar ist das alles. */
  main.append(setupJourney(setup,observation));
+ main.append(prosAndCons(data,change,patterns));
  main.append(patternMatchSection(patterns));
+ main.append(strategyMatchSection(match));
+ main.append(evidenceTrustSection(patterns));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[
   el('span',{class:'eyebrow',text:'Datenstand'}),
@@ -611,9 +715,9 @@ async function quantPage(ticker){
 /* Die Einsteigerfläche. Erst Bedeutung, dann Beispiele, keine Formel. */
 async function explainPage(){
  main.append(el('section',{class:'quant-hero explain-hero'},[
-  el('span',{class:'eyebrow',text:'Vision Universe® Quant'}),
-  el('h1',{text:'Was ist Quant?'}),
-  el('p',{class:'quant-summary',text:'Quant bedeutet: Aktien werden nach festen Daten und klaren Regeln analysiert — statt nach Bauchgefühl.'}),
+  el('span',{class:'eyebrow',text:'Einstieg'}),
+  el('h1',{text:LQ('quant')}),
+  el('p',{class:'quant-summary',text:LB('quant')}),
   el('p',{class:'muted',text:'Jede Aussage hier lässt sich auf eine Zahl, einen Zeitraum und eine Quelle zurückführen. Wo eine Zahl fehlt, steht der Grund und kein Ersatzwert.'})]));
  main.append(el('section',{class:'section'},[
   el('h2',{text:'Wozu das gut ist'}),
@@ -625,6 +729,15 @@ async function explainPage(){
   el('h2',{text:'Die sieben Eigenschaften'}),
   el('p',{class:'muted',text:'Jedes Unternehmen wird an denselben sieben Eigenschaften gemessen. Immer in dieser Reihenfolge.'}),
   el('div',{class:'explain-factors'},VUFactorEvidence.FACTOR_ORDER.map(id=>{const m=VUFactorEvidence.FACTOR_MEANING[id];return el('article',{class:'explain-factor'},[el('h3',{text:m.label}),el('p',{class:'explain-question',text:m.question}),el('p',{text:m.plain}),el('p',{class:'muted',text:m.higherMeans})]);}))]));
+ main.append(el('section',{class:'section'},[
+  el('h2',{text:'Welche Fragen Quant beantwortet'}),
+  el('p',{class:'muted',text:'Jede Ansicht beantwortet genau eine Frage. Hier stehen sie alle nebeneinander.'}),
+  el('div',{class:'explain-factors'},['factorDna','changeEngine','setupState','patternEngine','strategyMatch','backtestTrustScore','marketRegime'].map(id=>
+   el('article',{class:'explain-factor'},[
+    el('h3',{text:LQ(id)}),
+    el('p',{text:LB(id)}),
+    el('p',{class:'muted',text:LT(id)}),
+    el('details',{},[el('summary',{text:'Fachbegriff'}),el('p',{class:'muted',text:VUProductLanguage.pro(id)+' · intern: '+VUProductLanguage.internal(id)})])])))]));
  main.append(el('section',{class:'section'},[
   el('h2',{text:'Wie eine Position entsteht'}),
   el('ol',{class:'explain-steps'},[
@@ -745,7 +858,40 @@ async function screenPage(){
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}
+/* Die Produktsprache wird einmal geladen, bevor irgendetwas gezeichnet
+   wird. Sie ist Daten, keine Konstantensammlung in dieser Datei: zwei
+   Ansichten koennen denselben Begriff nicht unterschiedlich nennen, weil
+   es nur eine Stelle gibt, an der die Worte stehen. Schlaegt das Laden
+   fehl, erfindet diese Datei keine Ersatzworte - die betroffenen
+   Ansichten sagen, dass die Texte fehlen. */
+let languageReady=false;
+async function loadLanguage(){
+ if(languageReady)return true;
+ try{VUProductLanguage.load(await S.loadJSON('/quant/methodology/product-language-v1.json'));languageReady=true;}
+ catch{languageReady=false;}
+ return languageReady;
+}
+const L=id=>VUProductLanguage.label(id);
+const LQ=id=>VUProductLanguage.question(id);
+const LB=id=>VUProductLanguage.beginner(id);
+const LT=id=>VUProductLanguage.tooltip(id);
+const LU=id=>VUProductLanguage.unavailable(id);
+/* Eine Sektionsueberschrift besteht immer aus Nutzerbegriff und Frage -
+   nie aus dem internen Namen. Der steht, wenn er gebraucht wird, in der
+   eingeklappten Methodik darunter. */
+function sectionHead(eyebrow,termId,intro){
+ const parts=[el('span',{class:'eyebrow',text:eyebrow}),el('h2',{text:LQ(termId)})];
+ if(intro!==false)parts.push(el('p',{class:'muted',text:intro||LB(termId)}));
+ return parts;
+}
 async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas','explain']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
+ /* Die Quant-Familie lebt von diesen Texten. Ohne sie wird nicht
+    halbfertig gezeichnet, sondern gesagt, was fehlt. */
+ const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals']);
+ if(needsLanguage.has(view)&&!await loadLanguage()){
+  recover('Die Texte dieser Ansicht konnten nicht geladen werden','Diese Ansicht beschreibt Fachbegriffe in Alltagssprache. Ohne die Textquelle werden keine Ersatzformulierungen erfunden. Bitte lade die Seite neu.',true);
+  return;
+ }
  if(view==='home')await homePage();
  else if(view==='stock')await stockPage(params.get('ticker')||'NVDA');
  else if(view==='technical'||view==='elliott')await technicalWorkspacePage(params.get('ticker')||'NVDA',view==='elliott');

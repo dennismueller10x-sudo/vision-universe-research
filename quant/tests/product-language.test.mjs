@@ -1,0 +1,168 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import dictionary from "../methodology/product-language-v1.json" with { type: "json" };
+
+const require = createRequire(import.meta.url);
+const Language = require("../engines/product-language.js");
+const FactorEvidence = require("../engines/factor-evidence.js");
+const SetupEngine = require("../engines/setup-engine.js");
+const ChangeEngine = require("../engines/change-engine.js");
+
+const ROOT = new URL("../../", import.meta.url);
+const experience = readFileSync(new URL("vu2/experience.js", ROOT), "utf8");
+
+test("every term is complete, and a user label never doubles as the professional one", () => {
+  assert.deepEqual(Language.validate(), { valid: true, errors: [] });
+  assert.equal(Language.version(), "product-language-1.0.0");
+  assert.deepEqual(Language.LAYERS, ["MEANING", "EXPLANATION", "EVIDENCE", "METHODOLOGY"]);
+  /* Ids are unique across categories, because the accessor is flat and a
+     duplicate would silently shadow one of the two. */
+  const ids = dictionary.categories.flatMap((c) => c.terms.map((t) => t.id));
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test("a missing term throws rather than printing its own id to a reader", () => {
+  assert.throws(() => Language.label("doesNotExist"), /no term/);
+  assert.equal(Language.has("doesNotExist"), false);
+  assert.equal(Language.has("asymmetry"), true);
+  /* The fallback from question to label is deliberate, not an omission. */
+  assert.equal(Language.question("NO_SETUP"), Language.label("NO_SETUP"));
+  assert.notEqual(Language.question("patternEngine"), Language.label("patternEngine").replace(/\?$/, ""));
+});
+
+test("every enum the engines can produce has a user label", () => {
+  for (const state of SetupEngine.STATES) {
+    assert.ok(Language.has(state), "setup state " + state + " has no user label");
+    assert.notEqual(Language.label(state), state);
+  }
+  for (const factor of FactorEvidence.FACTOR_ORDER) {
+    assert.ok(Language.has(factor), "factor " + factor + " has no user label");
+  }
+  for (const direction of ["IMPROVING", "DETERIORATING", "STABLE"]) {
+    assert.ok(Language.has(direction), direction + " has no user label");
+  }
+  for (const verdict of ["ROBUST", "IN_SAMPLE_ONLY", "PARAMETER_SENSITIVE", "NOT_SIGNIFICANT", "INSUFFICIENT_SUPPORT"]) {
+    assert.ok(Language.has(verdict), verdict + " has no user label");
+  }
+  /* The change engine's own directions must be exactly the three that are
+     translated - a fourth would reach the page untranslated. */
+  assert.ok(ChangeEngine.METHODOLOGY_VERSION);
+});
+
+test("the factor labels in the engine and in the dictionary are the same words", () => {
+  /* Two sources for one label is how a page ends up calling the same thing
+     two things in two places. They are asserted equal rather than one being
+     quietly preferred at render time. */
+  for (const id of FactorEvidence.FACTOR_ORDER) {
+    assert.equal(FactorEvidence.FACTOR_MEANING[id].label, Language.label(id), id);
+  }
+});
+
+test("the generated document matches the dictionary", () => {
+  /* A hand-edited copy of a dictionary is a second dictionary. */
+  execFileSync(process.execPath, ["scripts/quant/build-product-language-doc.mjs", "--check"],
+    { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
+});
+
+test("no internal term stands in a heading, eyebrow, chip or badge", () => {
+  /* The rule is about where a term stands, not whether it may appear: a
+     folded methodology section is exactly where the internal name belongs.
+     This reads the primary positions out of the frontend source and checks
+     only those. */
+  const primary = [];
+  const patterns = [
+    /el\('h1',\{[^}]*text:'([^']*)'/g,
+    /el\('h2',\{[^}]*text:'([^']*)'/g,
+    /el\('h3',\{[^}]*text:'([^']*)'/g,
+    /class:'eyebrow'[^}]*text:'([^']*)'/g,
+    /class:'chip[^']*'[^}]*text:'([^']*)'/g,
+    /class:'[^']*badge[^']*'[^}]*text:'([^']*)'/g
+  ];
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(experience)) !== null) primary.push(match[1]);
+  }
+  assert.ok(primary.length > 15, "the scan found too little primary copy to be meaningful");
+
+  const offences = [];
+  for (const text of primary) {
+    const hit = Language.violatesPrimaryCopy(text);
+    if (hit) offences.push(hit + " in: " + text);
+  }
+  assert.deepEqual(offences, [], "internal terms in primary copy");
+});
+
+test("no raw enum value is rendered as a label", () => {
+  /* A bare SETUP_FORMING or IMPROVING in a text position means a state
+     reached the page without passing through the dictionary. */
+  const enums = SetupEngine.STATES.concat(["IMPROVING", "DETERIORATING", "STABLE", "ROBUST",
+    "IN_SAMPLE_ONLY", "PARAMETER_SENSITIVE", "NOT_SIGNIFICANT", "INSUFFICIENT_SUPPORT"]);
+  for (const value of enums) {
+    const rendered = new RegExp("text:'[^']*\\b" + value + "\\b[^']*'");
+    assert.equal(rendered.test(experience), false, value + " is rendered as literal copy");
+  }
+});
+
+test("the frontend reads the dictionary rather than carrying its own word list", () => {
+  assert.match(experience, /VUProductLanguage\.load\(/, "the dictionary is never loaded");
+  assert.match(experience, /product-language-v1\.json/, "the dictionary path is not referenced");
+  /* The old hard-coded label maps must be gone, not merely unused. */
+  assert.equal(/const SETUP_LABELS\s*=/.test(experience), false, "a second setup label map still exists");
+  /* And a failed load must not fall back to invented words. */
+  assert.match(experience, /languageReady/, "there is no guard for a failed dictionary load");
+});
+
+test("the four layers are actually used: a section leads with meaning and folds the methodology", () => {
+  /* sectionHead() is the shape that enforces it; every quant section head
+     goes through it or through an explicit question from the dictionary. */
+  assert.match(experience, /function sectionHead\(/);
+  assert.match(experience, /LQ\('factorDna'\)|sectionHead\('[^']*','factorDna'/);
+  assert.match(experience, /sectionHead\('[^']*','changeEngine'/);
+  assert.match(experience, /LQ\('setupState'\)/);
+  assert.match(experience, /LQ\('patternEngine'\)/);
+  assert.match(experience, /LQ\('strategyMatch'\)/);
+  assert.match(experience, /LQ\('backtestTrustScore'\)/);
+  assert.match(experience, /LQ\('radar'\)/);
+  /* Methodology stays folded. */
+  assert.match(experience, /el\('details',\{\},\[el\('summary',\{text:'Methodik'\}\)/);
+});
+
+test("the stock experience answers its questions in the order a person asks them", () => {
+  const order = ["Wie stark ist diese Aktie?", "sectionHead('Stärken & Schwächen','factorDna')",
+    "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation)",
+    "prosAndCons(data,change,patterns)", "patternMatchSection(patterns)",
+    "strategyMatchSection(match)", "evidenceTrustSection(patterns)"];
+  let cursor = -1;
+  for (const marker of order) {
+    const at = experience.indexOf(marker, cursor + 1);
+    assert.ok(at > cursor, "out of order or missing: " + marker);
+    cursor = at;
+  }
+});
+
+test("both sides are always shown: no upside without its downside", () => {
+  /* The pattern card must render the loss side and the tilt sentence in the
+     same component as the win side. */
+  const card = experience.slice(experience.indexOf("function patternRow("), experience.indexOf("function patternMatchSection("));
+  assert.match(card, /conditionalLossRate/);
+  assert.match(card, /L\('asymmetry'\)/);
+  assert.match(card, /medianDrawdown/);
+  /* And the balance section renders both columns unconditionally. */
+  const balance = experience.slice(experience.indexOf("function prosAndCons("), experience.indexOf("/* WIE BELASTBAR"));
+  assert.match(balance, /column\('Dafür',pros/);
+  assert.match(balance, /column\('Dagegen',cons/);
+});
+
+test("unavailable copy is a sentence, never a code", () => {
+  for (const category of dictionary.categories) {
+    for (const term of category.terms) {
+      assert.ok(term.unavailable.length > 20, term.id + ": unavailable copy is too short to explain anything");
+      assert.equal(/[A-Z_]{6,}/.test(term.unavailable), false, term.id + ": unavailable copy contains a raw code");
+      assert.ok(/[.!?]$/.test(term.unavailable.trim()), term.id + ": unavailable copy is not a sentence");
+      assert.ok(/[.!?]$/.test(term.beginner.trim()), term.id + ": beginner copy is not a sentence");
+    }
+  }
+});

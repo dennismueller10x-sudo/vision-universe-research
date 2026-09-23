@@ -83,7 +83,7 @@
      be understandable before any formula is shown. */
   var FACTOR_MEANING = {
     quality: {
-      label: "Qualität",
+      label: "Unternehmensqualität",
       question: "Wie solide ist das Unternehmen aufgestellt?",
       plain: "Qualität fragt, ob ein Unternehmen stabil finanziert ist und ob die ausgewiesenen Gewinne durch echten Zahlungsfluss gedeckt sind.",
       higherMeans: "Höher bedeutet solidere Bilanz und belastbarere Rechnungslegung. Es ist keine Empfehlung."

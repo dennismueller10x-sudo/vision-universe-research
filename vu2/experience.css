@@ -237,3 +237,27 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
  .pattern-sides{gap:12px}
  .pattern-side{flex:1 1 100%}
 }
+.quant-orientation{margin:18px 0 0;font-size:13px;color:var(--muted);max-width:60ch}
+.balance-grid{display:grid;gap:18px;grid-template-columns:1fr 1fr;margin-top:20px}
+.balance-column{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.balance-column h3{margin:0 0 12px;font-size:15px}
+.balance-column.is-pro{border-color:var(--positive)}
+.balance-column.is-con{border-color:var(--negative,#b4483a)}
+.balance-list{list-style:none;margin:0;padding:0}
+.balance-list li{padding:10px 0;border-top:1px solid var(--line)}
+.balance-list li:first-child{border-top:0}
+.balance-list li span{display:block}
+.balance-list li span+span{font-size:12px;margin-top:3px}
+.match-lead{font-size:18px;line-height:1.4;margin:18px 0 0}
+.match-lead .muted{font-size:14px}
+.trust-list{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
+.trust-list li{padding:14px 0;border-bottom:1px solid var(--line)}
+.trust-list li strong{display:block;font-size:14px}
+.trust-list li span{display:block;font-size:13px;margin-top:3px}
+.trust-withheld{margin-top:16px}
+@media (max-width:650px){
+ .balance-grid{grid-template-columns:1fr}
+ .match-lead{font-size:16px}
+}
+.trust-backtest{margin-top:16px}
+.trust-pending{font-style:italic}
