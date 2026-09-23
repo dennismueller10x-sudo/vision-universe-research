@@ -285,3 +285,14 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .distribution-row.is-pending{opacity:.62}
 .distribution-row.is-pending .distribution-count{color:var(--muted)}
 .setup-rule-result{margin-bottom:24px}
+
+/* Chance gegen Risiko auf der Einstiegsflaeche. Zwei Saeulen
+   nebeneinander, nie eine allein: eine Chancenzahl ohne ihre Kehrseite
+   ist die halbe Wahrheit, die aus Forschung eine Erzaehlung macht. */
+.balance-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.balance-side{padding:12px 14px;border:1px solid var(--line);border-radius:10px}
+.balance-side strong{display:block;font-size:26px;font-variant-numeric:tabular-nums;color:var(--positive)}
+.balance-side.is-down strong{color:var(--negative)}
+.balance-side .muted{display:block;font-size:13px;line-height:1.35;margin-top:2px}
+.strength-section .factor-strip{margin-top:4px}
+@media (max-width:420px){.balance-pair{grid-template-columns:1fr}}

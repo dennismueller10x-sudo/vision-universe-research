@@ -58,6 +58,25 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **M10 — the entry page answers its own headline questions.** Measured gap: `view=stock` is
+  where a person lands, and it carried no answer to *"Wie stark ist diese Aktie?"* and none to
+  *"Chance gegen Risiko"*. Both sat one click away on `view=quant`; somebody who did not click
+  saw a price and some figures. The page now carries the seven-factor strip — **the watchlist's
+  component, reused**, because a second set of factor names is the double language the
+  dictionary exists to remove — and a both-sided pattern balance read from the published
+  artifact. NVDA: 12 of 249 patterns hold, 4 where the chance was historically larger than the
+  risk, 8 where it was not. AAPL matches none, which renders as a statement rather than an empty
+  box. The patterns overlap, so they are counted separately and never combined into one rate; a
+  test rejects an aggregation. Depth stays on the quant page.
+- **Two untranslated terms in primary copy, and the guard that missed them.** `Technical
+  Intelligence` stood as an `h2` on the entry page and `vollständiger Intelligence` on the home
+  page. Both passed the forbidden-term test because the list did not contain them — a guard is
+  only as wide as its list. The list now carries `Intelligence`, `Technical Intelligence`,
+  `Pattern Match` and `Setup State V1`, and it rejected both on the first run after widening.
+- **A singular/plural defect in counted copy**, found by browser QA rather than by reading:
+  JPM matches exactly one pattern and the page said *"1 von 249 Mustern **treffen** zu"*. Fixed
+  for the lead sentence and both column captions, with a test.
+
 - **Two stale gates found and corrected, both by measuring rather than trusting the text.**
   The lesson had already cost one wrong blocker entry (M4), so the reasons the product gives
   were swept against current reality:

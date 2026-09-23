@@ -230,3 +230,54 @@ test("methodology prose that reaches a reader is written in German, not in ASCII
     assert.ok(/[.!?]$/.test(rule.plain.trim()), rule.ruleId + ": plain text is not a sentence");
   }
 });
+
+test("the entry page answers the two headline questions itself", () => {
+  /* The measured reason this exists: view=stock is where a person lands,
+     and it carried no answer to "how strong is this share" and none to
+     "opportunity against risk" - both sat one click away on view=quant.
+     Somebody who does not click saw a price and some figures. */
+  /* The slice ends at the next top-level function, so factorStrip's own
+     body cannot satisfy an assertion about the page that calls it. */
+  const from = experience.indexOf("async function stockPage(");
+  const stock = experience.slice(from, experience.indexOf("\nfunction ", from));
+  assert.ok(stock.length > 500);
+  assert.match(stock, /LQ\('factorDna'\)/, "the entry page does not ask the strength question");
+  assert.match(stock, /patternBalance\(patterns,ticker\)/, "the entry page carries no opportunity-against-risk answer");
+  assert.match(stock, /factorStrip\(evidenceRow\)/, "the entry page does not reuse the shared factor strip");
+  /* Reused, not reimplemented: a second set of factor names is exactly the
+     double language the dictionary exists to remove. */
+  assert.equal(stock.includes("FACTOR_ORDER"), false, "the entry page builds its own factor list");
+  /* And the depth stays on the quant page rather than being duplicated. */
+  assert.match(stock, /href\('quant',ticker\)/);
+});
+
+test("the opportunity-against-risk answer never shows one side alone", () => {
+  const balance = experience.slice(experience.indexOf("function patternBalance("), experience.indexOf("async function stockPage("));
+  assert.ok(balance.length > 500);
+  /* Both columns are appended in the same call, so one cannot ship without
+     the other. */
+  assert.match(balance, /class:'balance-side'/);
+  assert.match(balance, /class:'balance-side is-down'/);
+  /* The patterns overlap, so they are counted separately and never
+     combined into one rate - a combined figure would be invented. */
+  assert.match(balance, /NICHT zu einer Zahl verrechnet/);
+  assert.equal(/holds\.reduce\(/.test(balance), false, "the patterns are aggregated into one number");
+  /* No forecast, and the population caveat travels with the figures. */
+  assert.match(balance, /keine Prognose/);
+  assert.match(balance, /Grundgesamtheit/);
+  /* Zero matches is a statement, not an empty box. */
+  assert.match(balance, /trifft heute keines auf diesen Titel zu/);
+  assert.match(balance, /kein fehlender Wert/);
+});
+
+test("counted copy is written for one as well as for many", () => {
+  /* "1 von 249 Mustern treffen zu" is the sentence a reader notices nobody
+     proof-read. Caught by browser QA on JPM, which matches exactly one. */
+  const balance = experience.slice(experience.indexOf("function patternBalance("), experience.indexOf("async function stockPage("));
+  assert.match(balance, /holds\.length===1/, "the lead sentence has no singular form");
+  assert.match(balance, /trifft heute zu/);
+  assert.match(balance, /treffen heute zu/);
+  /* The two column captions decline too. */
+  assert.match(balance, /favourable\.length===1/);
+  assert.match(balance, /adverse\.length===1/);
+});

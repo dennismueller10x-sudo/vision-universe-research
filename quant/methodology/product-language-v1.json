@@ -203,6 +203,28 @@
      "tooltip": "Eine Zahl zum Stichtag, keine Aussage darüber, wie sich die Besetzung entwickelt hat.",
      "negative": "Kein Titel steht heute an dieser Stelle.",
      "unavailable": "Es wird keine Anzahl genannt, solange dieser Zustand nicht veröffentlicht wird."
+    },
+    {
+     "id": "technicalIntelligence",
+     "internal": "Technical Intelligence / technical-signals-v1",
+     "userLabel": "Was der Kursverlauf zeigt",
+     "question": "Was zeigt der Kursverlauf?",
+     "beginner": "Trend, Struktur und Handelsvolumen, abgelesen am bisherigen Kursverlauf.",
+     "professionalLabel": "Technische Struktur · nicht-repaintende Felder",
+     "tooltip": "Beschreibt, was im Kurs bereits passiert ist. Keine Aussage darüber, was als Nächstes passiert.",
+     "negative": "Der Kursverlauf zeigt derzeit kein klares Bild.",
+     "unavailable": "Für diesen Titel liegt keine ausgewertete Kursstruktur vor."
+    },
+    {
+     "id": "patternBalance",
+     "internal": "PatternMatch.holds · asymmetry",
+     "userLabel": "Chance gegen Risiko",
+     "question": "Wie standen Chance und Risiko in ähnlichen Lagen?",
+     "beginner": "Wie oft sich ein Kurs in vergleichbaren Situationen verdoppelt hat — und wie oft er sich halbiert hat. Immer beide Seiten.",
+     "professionalLabel": "Asymmetrie je vorregistriertem Muster",
+     "tooltip": "Gezählt wird je Muster einzeln. Die Muster überlappen sich, deshalb werden sie nicht zu einer Zahl verrechnet.",
+     "negative": "In den geprüften Mustern stand das Risiko höher als die Chance.",
+     "unavailable": "Für diesen Titel lässt sich keine historische Ähnlichkeit belegen."
     }
    ]
   },
@@ -750,7 +772,11 @@
   "DETERIORATING",
   "ROBUST",
   "quantV2",
-  "predicateHash"
+  "predicateHash",
+  "Technical Intelligence",
+  "Intelligence",
+  "Pattern Match",
+  "Setup State V1"
  ],
  "forbiddenNote": "Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können."
 }

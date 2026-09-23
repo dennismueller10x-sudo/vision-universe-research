@@ -26,7 +26,7 @@ const formatFactor=m=>!Number.isFinite(m.value)?'Nicht verfügbar':m.value.toLoc
 const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
- ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Technical Intelligence',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
+ ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Kursstruktur',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
  ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
@@ -115,6 +115,56 @@ function setupStateSection(observation,index,ticker){
   link('Vollständige Analyse',href('quant',ticker),'button secondary')]));
  return section;
 }
+/* Die Einstiegsflaeche beantwortet die beiden Kopffragen selbst.
+
+   Gemessener Anlass: die Aktienseite ist die Seite, auf der ein Nutzer
+   landet, und sie sagte bisher nichts zu "wie stark ist diese Aktie" und
+   nichts zu "Chance gegen Risiko" - beides stand einen Klick weiter auf der
+   Quant-Seite. Wer nicht klickt, sieht Kurs und Kennzahlen und geht wieder.
+
+   Keine zweite Engine und keine Kopie der Quant-Seite: die
+   Sieben-Faktoren-Leiste ist dieselbe Komponente wie in der Watchlist, und
+   die Musterbilanz liest das veroeffentlichte Pattern-Match-Artefakt. Die
+   Tiefe bleibt drueben; hier steht die Antwort. */
+function patternBalance(patterns,ticker){
+ const section=el('section',{class:'section pattern-balance'},[
+  el('span',{class:'eyebrow',text:'Einordnung'}),el('h2',{text:LQ('patternBalance')})]);
+ if(!patterns||patterns.state!=='AVAILABLE'){
+  section.append(notice(LU('patternBalance'),LB('patternBalance')));
+  return section;
+ }
+ const holds=patterns.holds||[];
+ const total=holds.length+(patterns.others||[]).length;
+ if(!holds.length){
+  /* Null Treffer ist eine Aussage und keine leere Flaeche. Ein Titel, auf
+     den kein vorregistriertes Muster zutrifft, ist nicht unbewertet - er
+     ist unauffaellig, und das gehoert hingeschrieben. */
+  section.append(el('p',{text:'Von '+total+' vorregistrierten Mustern trifft heute keines auf diesen Titel zu.'}),
+   el('p',{class:'muted',text:'Das ist kein fehlender Wert: die Lage dieses Titels gleicht keiner der untersuchten Konstellationen deutlich genug.'}));
+  section.append(link('Alle Muster ansehen',href('quant',ticker),'button secondary'));
+  return section;
+ }
+ /* Je Muster einzeln gezaehlt und NICHT zu einer Zahl verrechnet: die
+    Muster ueberlappen sich, eine kombinierte Quote waere erfunden. */
+ const favourable=holds.filter(row=>row.asymmetry>1);
+ const adverse=holds.filter(row=>!(row.asymmetry>1));
+ /* Einzahl und Mehrzahl getrennt: "1 von 249 Mustern treffen zu" ist der
+    Satz, an dem ein Nutzer merkt, dass hier niemand mitgelesen hat. */
+ section.append(el('p',{text:holds.length===1
+  ? 'Eines von '+total+' vorregistrierten Mustern trifft heute zu.'
+  : holds.length+' von '+total+' vorregistrierten Mustern treffen heute zu.'}));
+ section.append(el('div',{class:'balance-pair'},[
+  el('div',{class:'balance-side'},[el('strong',{text:String(favourable.length)}),
+   el('span',{class:'muted',text:favourable.length===1?'Muster, bei dem die Chance historisch größer war als das Risiko':'Muster, bei denen die Chance historisch größer war als das Risiko'})]),
+  el('div',{class:'balance-side is-down'},[el('strong',{text:String(adverse.length)}),
+   el('span',{class:'muted',text:adverse.length===1?'Muster, bei dem das Risiko mindestens so groß war':'Muster, bei denen das Risiko mindestens so groß war'})])]));
+ if(!favourable.length)section.append(el('p',{class:'muted',text:LN('patternBalance')}));
+ const best=holds.slice().sort((a,b)=>b.asymmetry-a.asymmetry)[0];
+ section.append(el('p',{class:'muted',text:'Deutlichste Neigung: '+best.plain+' · Chance-Risiko-Verhältnis '+best.asymmetry.toFixed(2).replace('.',',')+' bei '+best.support.toLocaleString('de-DE')+' historischen Beobachtungen.'}));
+ section.append(el('p',{class:'muted',text:'Historische Häufigkeiten über '+patterns.horizonMonths+' Monate, gemessen an der gesamten Grundgesamtheit. Keine Aussage über diesen Titel und keine Prognose.'}));
+ section.append(link('Chance und Risiko im Detail',href('quant',ticker),'button secondary'));
+ return section;
+}
 async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
@@ -131,8 +181,24 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.date),series:[{values:data.bars.map(b=>b.close)}],yFormat:v=>vuFormat('formatPrice',v,'USD',{numberLocale:'de-DE',decimals:0})||v.toFixed(0)+' $'}));}
  VUChartRanges.RANGES.forEach(r=>ranges.append(el('button',{text:r.label,dataset:{range:r.id},onclick:()=>draw(r.id)})));left.append(chart,ranges,el('p',{class:'muted',text:'Unbereinigte Schlusskurse · USD. Splits können historische Kurssprünge verursachen.'}));draw('1Y');
  const side=el('aside',{},[el('h2',{text:'Was dahintersteht'}),el('p',{text:s.above200.value>0?'Der Kurs liegt über seinem 200-Tage-Durchschnitt. Das beschreibt die bisherige Entwicklung, keine Prognose.':'Die langfristige Kursstruktur verdient einen genaueren Blick.'}),evidence(s),el('details',{},[el('summary',{text:'Evidenz & Methodik'}),el('p',{class:'muted',text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Fundamentaldaten bis '+s.fundamentalsAsOf+', verfügbar seit '+s.availableAt+'. Quelle: SEC EDGAR; Kurskennzahlen: Tiingo EOD / bestehende Quant-Methodik.'}),link('Daten und Berechnung untersuchen','/quant/data-inspector/','button secondary')])]);
- const [setupObservation,setupIndex]=await Promise.all([api.getSetupObservation(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null)]);
- main.append(el('div',{class:'layout'},[left,side]),setupStateSection(setupObservation,setupIndex,ticker),actions(s.workspaces));
+ const [setupObservation,setupIndex,evidenceRow,patterns]=await Promise.all([
+  api.getSetupObservation(ticker).catch(()=>null),
+  api.getSetupScreenIndex().catch(()=>null),
+  api.getFactorEvidenceScreening().then(r=>(r?.rows||[]).find(x=>x.ticker===ticker)||null).catch(()=>null),
+  api.getPatternMatch(ticker).catch(()=>null)]);
+ main.append(el('div',{class:'layout'},[left,side]));
+ /* Zuerst die Frage, die jeder zuerst stellt. Die Leiste ist dieselbe
+    Komponente wie in der Watchlist - ein zweiter Satz Faktornamen waere
+    genau die Doppelsprache, die das Woerterbuch abschafft. */
+ const strength=el('section',{class:'section strength-section'},[
+  el('span',{class:'eyebrow',text:'Einordnung'}),el('h2',{text:LQ('factorDna')})]);
+ const strip=factorStrip(evidenceRow);
+ if(strip){strength.append(strip);strength.append(link('Woran das gemessen wurde',href('quant',ticker),'button secondary'));}
+ else strength.append(notice(LU('factorDna'),LB('factorDna')));
+ main.append(strength);
+ main.append(setupStateSection(setupObservation,setupIndex,ticker));
+ main.append(patternBalance(patterns,ticker));
+ main.append(actions(s.workspaces));
  const business=el('section',{class:'section stock-business'},[el('span',{class:'eyebrow',text:'Geschäft, Bewertung und Risiko'}),el('h2',{text:'Was zeigen die Unternehmenszahlen?'}),el('p',{class:'muted',text:'Ergebnisse verstehen, den Preis einordnen und Schwankungen prüfen. Jede Kennzahl führt zu ihrer Definition und zur vollständigen Analyse.'})]);
  if(s.quant?.state==='AVAILABLE'){
   const selected={quality:['operatingMargin','fcfMargin'],growth:['revenueGrowth','epsGrowth'],value:['earningsYield','priceToFcf'],risk:['volatility','maxDrawdown']};
@@ -141,7 +207,7 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  }else business.append(notice('Unternehmenskennzahlen derzeit nicht auswertbar','Die professionellen Analysezugänge bleiben erreichbar. Fehlende Kennzahlen werden nicht ersetzt.'));
  main.append(business);
  const technical=await api.getTechnicalIntelligence(ticker);
- const section=el('section',{class:'section'},[el('span',{class:'eyebrow',text:'Kursstruktur verstehen'}),el('h2',{text:'Technical Intelligence'})]);
+ const section=el('section',{class:'section'},[el('span',{class:'eyebrow',text:'Kursstruktur verstehen'}),el('h2',{text:LQ('technicalIntelligence')})]);
  if(technical.state==='AVAILABLE'){
   const detail=technical.fullWorkspace?[el('p',{text:'Elliott Wave: '+technical.elliott.label+'. Die Szenarien sind keine Wahrscheinlichkeitsprognose.'}),actions([{label:'Vollständige Technical-Analyse',href:technical.workspace},{label:'Elliott: Szenarien & Invalidation',href:technical.elliottWorkspace}])]:[el('p',{class:'muted',text:'Vorhandene Kursfaktor-Evidenz. Ein vollständiges Technical- oder Elliott-Bundle ist für diesen Titel noch nicht publiziert.'}),actions([{label:'Vollständige Kursgeschichte',href:'/quant/stock/?ticker='+encodeURIComponent(ticker)}])];
   section.append(el('div',{class:'technical-summary'},[['Trend',technical.trend],['Momentum',technical.momentum],['Volatilität',technical.volatility]].map(([label,state])=>el('div',{},[el('span',{class:'muted',text:label}),el('h3',{text:state.label})]))),el('p',{class:'muted',text:'Analyse bis '+technical.asOf+' · '+technical.methodology}),...detail);
@@ -156,7 +222,7 @@ async function technicalWorkspacePage(ticker,elliottMode){
  if(elliottMode&&['UNAVAILABLE','INSUFFICIENT_DATA'].includes(data.elliott?.status)){main.append(notice('Elliott-Zählung derzeit nicht verfügbar','Das Technical-Bundle ist gültig, enthält für diesen Titel aber keine validierte Elliott-Zählung.'),actions([{label:'Technical öffnen',href:href('technical',ticker)},{label:'Vollständige Kursgeschichte',href:href('stock',ticker)}]));return;}
  const root=el('section',{class:'technical-workspace'}),chart=el('div',{class:'technical-chart-host'}),select=el('select',{'aria-label':'Unternehmen'},universe.stocks.map(s=>el('option',{value:s.ticker,text:s.ticker+' · '+s.name}))),layer=el('select',{'aria-label':'Chart-Ebene'},[['AUTO','Übersicht'],['STRUCTURE','Marktstruktur'],['TREND','Trend'],['MOMENTUM','Momentum'],['SUPPORT_RESISTANCE','Support / Resistance'],['FIBONACCI','Fibonacci'],['ELLIOTT','Elliott Wave']].map(([value,text])=>el('option',{value,text}))),range=el('select',{'aria-label':'Chart-Zeitraum'},[['1M','1 Monat'],['3M','3 Monate'],['6M','6 Monate'],['YTD','Seit Jahresbeginn'],['1Y','1 Jahr'],['5Y','5 Jahre'],['MAX','Max · vorhandenes Analysefenster']].map(([value,text])=>el('option',{value,text}))),mode=el('select',{'aria-label':'Chart-Darstellung'},[['candles','Kerzen'],['line','Linie']].map(([value,text])=>el('option',{value,text}))),alt=el('input',{type:'checkbox','aria-label':'Alternativen im Chart'}),labels=el('input',{type:'checkbox','aria-label':'Chart-Beschriftungen'});labels.checked=innerWidth>=650;
  select.value=ticker;select.onchange=()=>location.assign(href(elliottMode?'elliott':'technical',select.value));layer.value=elliottMode?'ELLIOTT':'AUTO';range.value='1Y';
- const draw=()=>{const annotations=data.chart.annotations.filter(a=>(a.layers||[]).includes(layer.value)||(alt.checked&&((a.layers||[]).includes('ALTERNATIVE')||(layer.value==='ELLIOTT'&&(a.layers||[]).includes('ELLIOTT_ALT')))));S.mount(chart,QuantCharts.technicalChart({bars:data.chart.bars,series:data.chart.series,annotations,annotationLabels:labels.checked,range:range.value,mode:mode.value,width:Math.max(300,Math.min(1168,main.clientWidth-40)),height:innerWidth<650?340:460,title:ticker+' · '+(elliottMode?'Elliott Wave':'Technical Intelligence'),description:'Historische Kurse und ausdrücklich gekennzeichnete Projektionen. Keine Zukunftsdaten im Kursverlauf.'}));};
+ const draw=()=>{const annotations=data.chart.annotations.filter(a=>(a.layers||[]).includes(layer.value)||(alt.checked&&((a.layers||[]).includes('ALTERNATIVE')||(layer.value==='ELLIOTT'&&(a.layers||[]).includes('ELLIOTT_ALT')))));S.mount(chart,QuantCharts.technicalChart({bars:data.chart.bars,series:data.chart.series,annotations,annotationLabels:labels.checked,range:range.value,mode:mode.value,width:Math.max(300,Math.min(1168,main.clientWidth-40)),height:innerWidth<650?340:460,title:ticker+' · '+(elliottMode?'Elliott Wave':'Kursstruktur'),description:'Historische Kurse und ausdrücklich gekennzeichnete Projektionen. Keine Zukunftsdaten im Kursverlauf.'}));};
  layer.onchange=range.onchange=mode.onchange=alt.onchange=labels.onchange=draw;
  const primary=data.scenarios.find(s=>s.kind==='PRIMARY');
  root.append(el('div',{class:'workspace-toolbar'},[select,layer,range,mode,el('label',{class:'toggle'},[alt,el('span',{text:'Alternativen'})]),el('label',{class:'toggle'},[labels,el('span',{text:'Chart-Texte'})])]),el('div',{class:'workspace-meaning'},[el('h2',{text:elliottMode?data.elliott.label:(primary?primary.label+' · '+primary.status:'Kursstruktur im Detail')}),el('p',{class:'muted',text:'Analysestand: '+data.asOf+' · Szenarien beschreiben Bedingungen, keine gesicherten Vorhersagen.'})]),chart,el('p',{class:'chart-key',text:'Durchgezogen: Historie · farbig: laufende Struktur · gestrichelt: Projektion. Der Jetzt-Marker trennt Daten und Szenarien. Chart-Texte lassen sich einblenden; vollständige Zählungen und Bedingungen stehen darunter.'}),el('p',{class:'muted',text:'Analysefenster: '+data.chart.bars.timestamps[0]+' bis '+data.asOf+'. Kursbasis: '+(data.priceBasis==='SPLIT_ADJUSTED'?'splitbereinigt':data.priceBasis)+'. Max zeigt das vorhandene Analysefenster; weitere Kursgeschichte findest du in der Aktienanalyse.'}));main.append(root);draw();
@@ -274,7 +340,7 @@ async function homePage(){
  personal.append(link(tickers.length?'Deine Watchlist öffnen':'Watchlist zusammenstellen',href('watchlist'),'button'));
  const changes=el('section',{},[el('span',{class:'eyebrow',text:'Was sich verändert hat'}),el('h2',{text:'Nicht jede Bewegung ist ein neues Signal'}),el('p',{class:'muted',text:'Untersuche belegte Wechsel über Trendgrenzen und in der Kursentwicklung. Mit Datum, Vergleichswert und derselben Regel im Screener.'}),link('Historische Änderungen untersuchen',href('signals')+'&window=60','button secondary')]);
  main.append(el('div',{class:'home-priorities'},[personal,changes]));
- const markets=el('section',{class:'section'},[el('div',{class:'home-section-heading'},[el('div',{},[el('span',{class:'eyebrow',text:'Märkte einordnen'}),el('h2',{text:'Ausgewählte Unternehmen mit vollständiger Intelligence'})]),link('Markets öffnen',href('markets'),'button secondary')]),el('p',{class:'scope-note',text:observations.length+' kuratierte Unternehmen. Das kanonische Produktuniversum bleibt über Suche und Aktienansichten erreichbar; diese Auswahl ist kein Gesamtmarktbild und kein Produkt-Gate.'})]);
+ const markets=el('section',{class:'section'},[el('div',{class:'home-section-heading'},[el('div',{},[el('span',{class:'eyebrow',text:'Märkte einordnen'}),el('h2',{text:'Ausgewählte Unternehmen mit vollständiger Analyse'})]),link('Markets öffnen',href('markets'),'button secondary')]),el('p',{class:'scope-note',text:observations.length+' kuratierte Unternehmen. Das kanonische Produktuniversum bleibt über Suche und Aktienansichten erreichbar; diese Auswahl ist kein Gesamtmarktbild und kein Produkt-Gate.'})]);
  if(observations.length)markets.append(stockRows(observations.map(o=>o.stock),'momentum6m','6 Monate',true));else markets.append(notice('Marktdaten derzeit nicht verfügbar','Wir zeigen keine Ersatzkurse und leiten daraus keinen Marktstatus ab.'));
  main.append(markets,el('section',{class:'home-research section'},[el('div',{},[el('span',{class:'eyebrow',text:'Dein nächster Schritt'}),el('h2',{text:'Von der Frage zur vollständigen Analyse'}),el('p',{class:'muted',text:'Geführt starten oder direkt in den professionellen Workspace springen.'})]),el('div',{class:'links'},[link('Ideen mit sichtbaren Regeln entdecken',href('discover')),link('Eigene Kriterien im Screener kombinieren',href('screener')),link('Alle Research-Workspaces',href('research')),link('Morning Briefing','/morning/'),link('News','/news/'),link('Weekly Magazine','/magazin/'),link('Ask Atlas',href('atlas'))])]));
 }
@@ -1035,7 +1101,7 @@ function sectionHead(eyebrow,termId,intro){
 async function render(){if(!new Set([...nav.map(([id])=>id),'stocks','stock','technical','elliott','quant','fundamentals','screener','compare','watchlist','signals','radar','atlas','explain']).has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen verfügbaren Workspace über Research oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
  /* Die Quant-Familie lebt von diesen Texten. Ohne sie wird nicht
     halbfertig gezeichnet, sondern gesagt, was fehlt. */
- const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener']);
+ const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener','technical']);
  if(needsLanguage.has(view)&&!await loadLanguage()){
   recover('Die Texte dieser Ansicht konnten nicht geladen werden','Diese Ansicht beschreibt Fachbegriffe in Alltagssprache. Ohne die Textquelle werden keine Ersatzformulierungen erfunden. Bitte lade die Seite neu.',true);
   return;

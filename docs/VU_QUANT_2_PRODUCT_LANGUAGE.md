@@ -240,6 +240,34 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Kein Titel steht heute an dieser Stelle. |
 | Nicht verfügbar | Es wird keine Anzahl genannt, solange dieser Zustand nicht veröffentlicht wird. |
 
+### Was der Kursverlauf zeigt
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `Technical Intelligence / technical-signals-v1` |
+| Schlüssel | `technicalIntelligence` |
+| **User Label** | **Was der Kursverlauf zeigt** |
+| Als Frage | Was zeigt der Kursverlauf? |
+| Erklärung für Einsteiger | Trend, Struktur und Handelsvolumen, abgelesen am bisherigen Kursverlauf. |
+| Professional Label | Technische Struktur · nicht-repaintende Felder |
+| Tooltip | Beschreibt, was im Kurs bereits passiert ist. Keine Aussage darüber, was als Nächstes passiert. |
+| Negativer Zustand | Der Kursverlauf zeigt derzeit kein klares Bild. |
+| Nicht verfügbar | Für diesen Titel liegt keine ausgewertete Kursstruktur vor. |
+
+### Chance gegen Risiko
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `PatternMatch.holds · asymmetry` |
+| Schlüssel | `patternBalance` |
+| **User Label** | **Chance gegen Risiko** |
+| Als Frage | Wie standen Chance und Risiko in ähnlichen Lagen? |
+| Erklärung für Einsteiger | Wie oft sich ein Kurs in vergleichbaren Situationen verdoppelt hat — und wie oft er sich halbiert hat. Immer beide Seiten. |
+| Professional Label | Asymmetrie je vorregistriertem Muster |
+| Tooltip | Gezählt wird je Muster einzeln. Die Muster überlappen sich, deshalb werden sie nicht zu einer Zahl verrechnet. |
+| Negativer Zustand | In den geprüften Mustern stand das Risiko höher als die Chance. |
+| Nicht verfügbar | Für diesen Titel lässt sich keine historische Ähnlichkeit belegen. |
+
 ## Die sieben Eigenschaften
 
 ### Unternehmensqualität
@@ -904,6 +932,10 @@ Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip od
 - `ROBUST`
 - `quantV2`
 - `predicateHash`
+- `Technical Intelligence`
+- `Intelligence`
+- `Pattern Match`
+- `Setup State V1`
 
 Ein Test prüft `vu2/experience.js` gegen diese Liste: keiner dieser Begriffe darf in einer
 Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen.
