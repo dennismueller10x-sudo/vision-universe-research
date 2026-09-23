@@ -58,6 +58,19 @@ Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## COMPLETED_THIS_SECTION
 
+- **The backtest blocker was half wrong, for the third time in this pattern.** Two inputs were
+  recorded missing; only one is. Historical index membership genuinely does not exist (1
+  snapshot per index, and no measurement creates it retroactively). Total-return prices *do* —
+  the provider delivers `adjClose` and `divCash`, the adapter nulls `adjustedClose` only because
+  the capability was never verified, and the qualification file said so in plain words:
+  `"Nicht geprueft."` Verified arithmetically from committed files: **234/234 dividend events
+  across five series, 2015–2026, worst error 0.051 %**. The check is reproducible, reads only
+  committed data, makes no provider call, and writes nothing but its own report — a test asserts
+  that by inspecting what it writes rather than what it mentions, because the first version of
+  that assertion matched the script's own comment and proved nothing.
+  The user-facing backtest copy and the completeness check were corrected with it. Switching the
+  published price basis is now an OPEN decision with its consequence stated, not a BLOCKED gap.
+
 - **The materialization pipeline was blocked by its own immutability guard, and the guard was
   right about the principle and wrong about the consequence.** Run `35898992415` failed at the
   factor evidence step. Reproduced locally: `a published snapshot for 2026-09-21 already exists
@@ -585,11 +598,20 @@ checks are the ones the activation gate measures.
 - Revisions: no licensed, immutable historical PIT analyst-consensus source.
 - **Backtesting (M6): blocked, and this time the blockade was measured rather than inherited.**
   Two of the required inputs do not exist in this repository at all:
-  - **No total-return series.** The consumer price series carry
-    `priceSeriesType: "SPLIT_ADJUSTED"` and no dividend-adjusted or total-return field. 615 of
-    800 sampled SEC consumer bundles do carry `dividends_paid`, but that is an annual cash-flow
-    figure, not a per-share dividend series aligned to price dates; deriving one from it would
-    be a fabrication, not a reconstruction.
+  - ~~**No total-return series.**~~ **This half was wrong and is corrected.** The published
+    product series are `SPLIT_ADJUSTED`, which is true — but "no total-return series exists"
+    was not. `quant/data/providers/qualification.json` carried `"Nicht geprueft."` for both
+    `dividends` and `totalReturnPrices`, so the capability stood at UNKNOWN, so the adapter
+    nulled `adjustedClose`, so the pipeline only ever published a split-adjusted basis. The
+    question had never been asked. Every bar carries `splitFactor` and `dividend` precisely so
+    it can be settled from evidence, and the adapter says so itself.
+    Measured (`scripts/market/verify-total-return-capability.mjs`): on an ex-dividend day the
+    ratio `adjClose/close` must step by exactly `1 − dividend/previousClose` if the series is
+    total-return adjusted, and stay flat if it is split-only. **234 of 234 dividend events
+    across five series, 2015–2026, match — worst relative error 0.051 %.** Verdict:
+    `TOTAL_RETURN_CONFIRMED`. A dividend-adjusted basis is therefore *obtainable*; switching the
+    published basis changes every momentum and drawdown figure the product shows, so that is a
+    versioned decision, **not a missing input**. It no longer counts against M6.
   - **No point-in-time universe.** `quant/data/market/index-membership/history/{DJIA,NDX,SP500}/`
     each hold **exactly one** file (`2026-09-15.json`; 498 members for SP500). A backtest over a
     single membership snapshot applies today's constituents to the whole past — the textbook

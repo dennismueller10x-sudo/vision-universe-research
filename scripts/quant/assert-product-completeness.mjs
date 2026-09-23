@@ -91,7 +91,11 @@ function membershipSnapshots() {
     try { return readdirSync(dir).filter((f) => f.endsWith(".json")).length; } catch { return 0; }
   }), 0);
 }
-function totalReturnSeries() {
+/* The published product series and whether a total-return basis is
+   OBTAINABLE are two different questions, and conflating them is how this
+   entry was wrong for a while: it read "no total-return price series" as a
+   missing input when the data had simply never been checked. */
+function publishedTotalReturnSeries() {
   const dir = join(ROOT, "quant/data/market/discover-series-long");
   if (!existsSync(dir)) return 0;
   const sample = readdirSync(dir).filter((f) => f.endsWith(".json")).slice(0, 50);
@@ -100,16 +104,37 @@ function totalReturnSeries() {
     catch { return false; }
   }).length;
 }
+function totalReturnVerdict() {
+  const path = join(ROOT, "quant/data/providers/total-return-verification.json");
+  if (!existsSync(path)) return "NOT_MEASURED";
+  try { return readJSON("quant/data/providers/total-return-verification.json").verdict; }
+  catch { return "NOT_MEASURED"; }
+}
 const snapshots = membershipSnapshots();
-const totalReturn = totalReturnSeries();
-if (snapshots > 1 && totalReturn > 0) {
-  add("OPEN", "BACKTEST_BLOCKER_CLEARED",
-    "Both backtest inputs now exist (" + snapshots + " membership snapshots, total-return series present). " +
-    "The BLOCKED entry for M6 is stale and must be revisited.");
+const publishedTR = publishedTotalReturnSeries();
+const trVerdict = totalReturnVerdict();
+
+if (snapshots > 1) {
+  add("OPEN", "MEMBERSHIP_BLOCKER_CLEARED",
+    snapshots + " membership snapshots now exist per index; the point-in-time universe entry is stale.");
 } else {
   add("BLOCKED", "BACKTEST", "Backtest integration stays shut",
-    [snapshots <= 1 ? "historical index membership (" + snapshots + " snapshot per index)" : null,
-     totalReturn === 0 ? "total-return price series (all sampled are SPLIT_ADJUSTED)" : null].filter(Boolean).join("; "));
+    "historical index membership (" + snapshots + " snapshot per index). No measurement creates it " +
+    "retroactively; the series only grows forward from here.");
+}
+
+/* Measured, and deliberately NOT folded into the backtest blocker: the
+   provider's adjusted series is confirmed total-return, so this is a
+   published-basis decision rather than a missing input. */
+if (trVerdict === "TOTAL_RETURN_CONFIRMED" && publishedTR === 0) {
+  add("OPEN", "TOTAL_RETURN_AVAILABLE_BUT_NOT_PUBLISHED",
+    "The provider's adjusted series is verified total-return, while the published product series " +
+    "remain SPLIT_ADJUSTED. Switching the published basis changes every momentum and drawdown " +
+    "figure, so it is a versioned decision - not a missing input.");
+} else if (trVerdict === "NOT_MEASURED") {
+  add("OPEN", "TOTAL_RETURN_NOT_MEASURED",
+    "Whether the provider's adjusted series is total-return has not been measured. " +
+    "Run scripts/market/verify-total-return-capability.mjs before recording it as missing.");
 }
 
 const screening = readGZ("quant/data/product/factor-evidence-v1/screening.json.gz");
