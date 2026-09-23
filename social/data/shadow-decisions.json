@@ -1,5 +1,202 @@
 {
-  "generatedAt": "2026-09-23T09:02:47.766Z",
+  "generatedAt": "2026-09-23T09:19:29.020Z",
   "strategyVersion": "strategy_initial",
-  "decisions": []
+  "decisions": [
+    {
+      "decidedAt": "2026-09-23T09:19:29.020Z",
+      "packageId": "pkg_a067cea527968ec1",
+      "topic": "MSFT — technische Lage zum 2026-09-18",
+      "archetype": "STOCK_STORY",
+      "entities": [
+        "MSFT"
+      ],
+      "entityType": null,
+      "family": "STOCK_STORY",
+      "question": null,
+      "visualType": "SCORE",
+      "hook": "6,12 Punkte Beitrag VOLUME - MSFT.",
+      "caption": "Unsere technische Auswertung bewertet Microsoft mit 6.12 Punkte im Beitrag VOLUME. Was dahintersteht: SETUP trägt 2.45 von 20 Punkten bei. PROJECTION_AUXILIARY trägt 6.7 von 10 Punkten bei. Schlusskurs 493.78 USD am 2026-09-18. Der Wert beschreibt die Lage — nicht ihre Ursache und nicht, was als nächstes passiert. Keine Anlageberatung.",
+      "hashtags": [
+        "VisionUniverse",
+        "Investment",
+        "Daten"
+      ],
+      "authoringPattern": "metric-frame/evidence-led",
+      "authoringAuthorId": "template",
+      "authoring": {
+        "briefId": "brief_914014f0cb3b02cc",
+        "authorId": "template",
+        "editorialCorrection": null,
+        "textAuthor": null,
+        "pattern": "metric-frame/evidence-led",
+        "variantId": "var_d2c2053c3512f590",
+        "reason": "Markenwert 100 unter 1 bestandenen von 4 Varianten. Erkundung: Muster metric-frame/evidence-led wurde zuletzt 0-mal benutzt und hat damit die duennste Datenlage.",
+        "selectionCriteria": {
+          "brandScoreChosen": 100,
+          "compositionScoreChosen": 56,
+          "alternatives": [],
+          "discriminatedBy": [
+            "einzige bestandene Variante"
+          ],
+          "predictsPerformance": false,
+          "performanceLearnings": {
+            "sampleSize": 0,
+            "note": "Keine gemessene Leistung vorhanden. Die Auswahl beruht ausschliesslich auf Toren, nicht auf Wirkung."
+          }
+        },
+        "considered": 4,
+        "passed": 1,
+        "rejected": [
+          {
+            "pattern": "value-first/state-limit-reason",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "subject-first/method-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          },
+          {
+            "pattern": "limit-first/limit-first",
+            "reasons": [
+              {
+                "gate": "composition",
+                "message": "hook und caption ueberschneiden sich zu 100 %."
+              }
+            ]
+          }
+        ],
+        "attempts": [
+          {
+            "authorId": "chatgpt-work",
+            "ok": true,
+            "variants": 0
+          },
+          {
+            "authorId": "model",
+            "ok": false,
+            "reason": "Kein Modell-Client angebunden. Im Repository existiert kein Anbieter und kein Schluessel; das Anbinden kostet laufend Geld und ist deshalb eine Owner-Entscheidung. Bis dahin schreibt der deterministische Autor."
+          },
+          {
+            "authorId": "template",
+            "ok": true,
+            "variants": 4
+          }
+        ]
+      },
+      "opportunityId": "opp_stock_story_c2507e90",
+      "signalIds": [],
+      "plannedHourUtc": 18,
+      "timingSource": "Startwert",
+      "timingReason": "Zeitfenster 18:00 (Startwert).",
+      "mode": "EXPLORE",
+      "modeReason": "Erkundung (Ziehung 9 < Rate 25 %). Ein Teil der Beitraege muss bewusst anders sein, sonst lernt das System nur noch, was es ohnehin glaubt.",
+      "strategyVersion": "strategy_initial",
+      "wouldPublish": true,
+      "published": false,
+      "withheldBecause": "Shadow-Modus: GLOBAL_AUTOPUBLISH ist aus. Der Loop entscheidet, er sendet nicht.",
+      "visualDirection": {
+        "topicId": "pkg_a067cea527968ec1",
+        "visualStrategy": "SCORE",
+        "story": "MSFT: Beitrag VOLUME steht bei 6.12 Punkte. Das ist eine Lagebeschreibung, keine Prognose.",
+        "coreIdea": "Woraus sich der Wert fuer Microsoft Corporation ergibt: 3 Beitraege nebeneinander, und darin Projektion traegt 6,7 von 10, Setup nur 2,45 von 20. Die Zusammensetzung ist das Motiv, nicht die Summe.",
+        "oneSecondMessage": "Woraus sich der Wert zusammensetzt.",
+        "mainSubject": "Microsoft Corporation",
+        "compositionIntent": "Die Beitraege als Balken in einer Reihe, gleiche Breite, gleiche Achse. Ungleiche Achsen machen aus einem Vergleich eine Behauptung.",
+        "visualHierarchy": [
+          "Die Beitraege im Verhaeltnis zueinander",
+          "Der Name Microsoft Corporation",
+          "Die Achse, gegen die gemessen wird"
+        ],
+        "brandIntent": "Sachlich und belegt. Das Bild macht dieselbe Zusage wie der Text: eine Einordnung, keine Empfehlung. Casino-, Geheimtipp-, Moon- und Angstregister gelten fuer die Flaeche wie fuer den Satz.",
+        "mustShow": [
+          "Den Klarnamen \"Microsoft Corporation\" - nicht das Kuerzel",
+          "Eine sichtbare Antwort auf die Frage, mit der jemand hinsieht: \"Was ist bei diesem Unternehmen gerade los?\"",
+          "Die Bezugsgroesse jedes Beitrags - ein Balken ohne Skala ist eine Form ohne Aussage"
+        ],
+        "mustNotShow": [
+          "Interne Begriffe auf der Flaeche: Technical Opportunity Score, Setup-Rang, Perzentil, z-Score, TREND_STRUCTURE, VOLATILITY, MOMENTUM, ATR, SMA, methodischer Rang, Trendwert, Faktorprämie - eine Bildflaeche ist nicht weniger oeffentlich als ein Satz",
+          "Keine in die Zukunft verlaengerte Linie und keinen Pfeil als Prognose: von 6 Belegen ist keiner eine Prognose"
+        ],
+        "imageLanguage": null,
+        "realism": null,
+        "colourWorld": null,
+        "mobileFocalPoint": "Der groesste und der kleinste Beitrag, und der Name Microsoft Corporation. Wer eine Sekunde hinsieht, muss sehen, was traegt und was bremst.",
+        "notApplicable": {},
+        "derivedFrom": {
+          "coreIdea": [
+            "VISUAL_STRATEGY:SCORE",
+            "AUDIENCE_FRAME:publicEntityNames",
+            "STORY_DIRECTION/evidence:contributions"
+          ],
+          "mobileFocalPoint": [
+            "VISUAL_STRATEGY:SCORE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "compositionIntent": [
+            "VISUAL_STRATEGY:SCORE"
+          ],
+          "visualHierarchy": [
+            "VISUAL_STRATEGY:SCORE",
+            "AUDIENCE_FRAME:publicEntityNames"
+          ],
+          "brandIntent": [
+            "BRAND:BLOCKING_TERMS"
+          ],
+          "mustShow": [
+            "AUDIENCE_FRAME:publicEntityNames",
+            "VISUAL_STRATEGY:SCORE",
+            "AUDIENCE_FRAME:coreQuestion"
+          ],
+          "mustNotShow": [
+            "AUDIENCE_FRAME:internalTermsNotSuitableForHook",
+            "STORY_DIRECTION:claims",
+            "VISUAL_STRATEGY:SCORE"
+          ]
+        },
+        "justifiedGenericMotifs": [],
+        "derivation": {
+          "derived": true,
+          "strategy": "SCORE",
+          "missingInputs": [],
+          "tension": {
+            "kind": "CONTRIBUTION_GAP",
+            "from": "STORY_DIRECTION/evidence:contributions"
+          },
+          "explanation": "Abgeleitet aus SCORE auf Microsoft Corporation mit gemessener Spannung (CONTRIBUTION_GAP)."
+        }
+      },
+      "visualDirectionReady": true,
+      "visualDirectionFailureType": null,
+      "audienceFrame": {
+        "family": "STOCK_STORY",
+        "familyBasis": "TOPIC",
+        "coreQuestion": "Was ist bei diesem Unternehmen gerade los?",
+        "publicEntityNames": [
+          "Microsoft Corporation"
+        ],
+        "basis": "BOOTSTRAP"
+      },
+      "asset": {
+        "plannable": false,
+        "visualType": "SCORE",
+        "reason": "noSource",
+        "message": "Die Grafik zeigt 3 Werte und nennt keine Quelle. Zahlen in Markenoptik ohne Herkunft sind genau das, was das Provenance-Modell verhindern soll.",
+        "imageUrl": null,
+        "quality": null,
+        "origin": "rendered",
+        "sourceAsset": null,
+        "rendered": false
+      }
+    }
+  ]
 }
