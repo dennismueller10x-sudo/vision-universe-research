@@ -30,7 +30,7 @@
   var ENGINE_VERSION = "vu-market-regime-1.0.0";
   var PIT_STATES = ["BROAD_STRENGTH", "MIXED", "BROAD_WEAKNESS"];
   var PATH_STATES = ["REGIME_SHIFT", "REGIME_PERSISTING", "REGIME_WEAKENING"];
-  var UNAVAILABLE_REASONS = ["MARKET_REGIME_INPUT_COVERAGE_TOO_LOW", "MARKET_REGIME_UNIVERSE_TOO_SMALL"];
+  var UNAVAILABLE_REASONS = ["MARKET_REGIME_INPUT_COVERAGE_TOO_LOW", "MARKET_REGIME_UNIVERSE_TOO_SMALL", "MARKET_REGIME_INPUT_INCONSISTENT"];
   var PATH_CLOSED_REASONS = ["MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED", "INSUFFICIENT_REGIME_HISTORY"];
 
   function finite(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -110,8 +110,19 @@
 
     var shares = {};
     var thin = [];
+    var broken = [];
     methodology.measures.forEach(function (measure) {
       var entry = counts[measure.id] || { hits: 0, observed: 0 };
+      /* A counter that reports more hits than observations, or observations
+         beyond the universe, is broken. Published, it becomes "199,8 % of
+         titles are above the line" - a number no reader can interpret and
+         nobody would think to check. It refuses instead: a nonsensical
+         share is a defect in the count, not a finding about the market. */
+      if (!finite(entry.hits) || !finite(entry.observed) || entry.hits < 0 ||
+          entry.observed < 0 || entry.hits > entry.observed || entry.observed > universe) {
+        broken.push(measure.id);
+        return;
+      }
       var coverage = universe > 0 ? entry.observed / universe : 0;
       if (coverage < (measure.minimumCoverage || 0)) { thin.push(measure.id); return; }
       shares[measure.id] = {
@@ -121,6 +132,10 @@
         coverage: Math.round(coverage * 1e4) / 1e4
       };
     });
+    /* Checked before coverage: a broken count would otherwise be reported
+       as merely thin, which reads as a data gap rather than as the defect
+       it is. */
+    if (broken.length) return unavailable(methodology, "MARKET_REGIME_INPUT_INCONSISTENT", universe, broken);
     /* A measure whose coverage is too thin is named, never silently treated
        as zero. A zero share and an unmeasured share are different claims. */
     if (thin.length) return unavailable(methodology, "MARKET_REGIME_INPUT_COVERAGE_TOO_LOW", universe, thin);

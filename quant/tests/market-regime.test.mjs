@@ -118,3 +118,37 @@ test("every regime and every reason has a user label", () => {
     assert.ok(Language.has(reason), reason + " has no user label");
   }
 });
+
+test("a nonsensical count refuses rather than publishing a share above 100 %", () => {
+  /* Found by probing the engine rather than by a test written to pass:
+     hits > observed produced a share of 1.9998 and published it happily.
+     On the page that is "199,8 % der Titel stehen über ihrer Linie" - a
+     number no reader can interpret and nobody would think to check. It is
+     a defect in the count, not a finding about the market, so it fails
+     closed and names the measure. */
+  const broken = {
+    "more hits than observations": { hits: 9999, observed: 5000 },
+    "a negative count": { hits: -1, observed: 5000 },
+    "more observations than the universe": { hits: 10, observed: 99999 },
+    "a count that is not a number": { hits: NaN, observed: 5000 }
+  };
+  for (const [what, entry] of Object.entries(broken)) {
+    const c = counts({});
+    c.above200 = entry;
+    const result = Regime.evaluate({ methodology, universe: 5000, counts: c });
+    assert.equal(result.state, "UNAVAILABLE", what);
+    assert.equal(result.reason, "MARKET_REGIME_INPUT_INCONSISTENT", what);
+    assert.deepEqual(result.fields, ["above200"], what);
+    assert.equal(result.regime, null, what);
+    assert.deepEqual(Regime.publicationViolations(result), [], what);
+  }
+  /* And it is checked BEFORE coverage: a broken count reported as merely
+     thin would read as a data gap rather than as the defect it is. */
+  const both = counts({});
+  both.above200 = { hits: 9999, observed: 5000 };
+  both.above50 = { hits: 10, observed: 200 };
+  assert.equal(Regime.evaluate({ methodology, universe: 5000, counts: both }).reason,
+    "MARKET_REGIME_INPUT_INCONSISTENT");
+  /* A healthy universe still classifies. */
+  assert.equal(Regime.evaluate({ methodology, universe: 5000, counts: counts({ above200: 0.7, trendBullish: 0.5 }) }).state, "AVAILABLE");
+});

@@ -1069,6 +1069,19 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Zu dieser Aktie lässt sich derzeit kein Setup-Zustand sagen. |
 | Nicht verfügbar | Für diesen Titel liegt nicht die vollständige technische Evidenz vor, die die Methodik verlangt. |
 
+### Zählung nicht schlüssig
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `marketRegime.reason` |
+| Schlüssel | `MARKET_REGIME_INPUT_INCONSISTENT` |
+| **User Label** | **Zählung nicht schlüssig** |
+| Erklärung für Einsteiger | Eine der Zählungen ergibt keinen sinnvollen Anteil. Statt eine Zahl zu zeigen, die niemand einordnen kann, wird hier nichts behauptet. |
+| Professional Label | Eingabezählung außerhalb des gültigen Bereichs |
+| Tooltip | Mehr Treffer als Beobachtungen wäre ein Fehler in der Zählung, kein Befund über den Markt. |
+| Negativer Zustand | Zur Marktbreite wird derzeit nichts behauptet. |
+| Nicht verfügbar | Eine der zugrunde liegenden Zählungen ist nicht schlüssig; deshalb wird kein Marktumfeld genannt. |
+
 ## Begriffe, die nicht an den Anfang gehören
 
 Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können.
