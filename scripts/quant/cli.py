@@ -1446,8 +1446,13 @@ def cmd_consumer(args):
     print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
 
     index_rows, seen, failures = [], set(), []
-    if args.bulk:
-        source = provider.iter_bulk_company_facts(ciks=wanted)
+    if args.bulk or args.archive:
+        # --archive liest eine lokale Kopie, statt das mehrere Gigabyte
+        # grosse Sammelarchiv ein zweites Mal zu holen. Ohne sie streamt
+        # dieser Lauf es und legt nichts ab; ein nachfolgender Schritt, der
+        # dieselben Daten messen will, faende dann keine Datei vor - genau
+        # das liess den Konzept-Zensus in Lauf 35862972083 auflaufen.
+        source = provider.iter_bulk_company_facts(ciks=wanted, archive_path=args.archive)
     else:
         source = ((cik, provider.get_company_facts(cik)) for cik in sorted(wanted))
     written = set()
@@ -1670,6 +1675,7 @@ def build_parser():
     consumer.add_argument("--out", default=str(DATA_DIR / "consumer"))
     consumer.add_argument("--as-of")
     consumer.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request) instead of per-company calls")
+    consumer.add_argument("--archive", help="local companyfacts.zip instead of fetching; implies --bulk")
     consumer.add_argument("--ciks", help="comma-separated CIK subset")
     consumer.add_argument("--limit", type=int)
     consumer.add_argument("--annual-years", type=int, default=consumer_module.DEFAULT_ANNUAL_YEARS)

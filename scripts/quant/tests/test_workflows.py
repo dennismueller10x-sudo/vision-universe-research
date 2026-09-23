@@ -386,3 +386,82 @@ class BackfillOrderTests(unittest.TestCase):
         for script in set(re.findall(r"bash\s+(scripts/[\w./-]+\.sh)", self.text)):
             with self.subTest(script=script):
                 self.assertTrue((ROOT / script).exists(), f"{script} fehlt")
+
+
+class BulkArchiveHandoffTests(unittest.TestCase):
+    """Ein Schritt, der das Sammelarchiv LIEST, braucht einen vor ihm, der es SCHREIBT.
+
+    Wieder ein echter Defekt, und ein teurer: der Consumer-Schritt streamte
+    companyfacts.zip und legte nichts ab, waehrend der Konzept-Zensus danach
+    genau diese Datei oeffnen wollte. Er lief auf FileNotFoundError auf,
+    `continue-on-error` meldete ihn trotzdem als success, und der folgende
+    `git add` auf die nie geschriebene Datei brach mit exit 128 ab - und nahm
+    zwanzig Minuten fertig gerechneter Fundamentaldaten mit, die deshalb nie
+    committet wurden. Das Owner-Gate wartete anschliessend auf eine Messung,
+    die es nie geben konnte.
+
+    Kein Test haette das gefangen, weil beide Schritte fuer sich korrekt sind.
+    Falsch ist nur ihre Reihenfolge, und die steht in der YAML-Datei.
+    """
+
+    ARCHIVE = "bulk/companyfacts.zip"
+
+    def _jobs(self, name):
+        import yaml
+        return yaml.safe_load(workflow_text(name)).get("jobs", {})
+
+    def test_every_reader_of_the_bulk_archive_has_a_writer_before_it(self):
+        for path in sorted(WORKFLOWS.glob("*.yml")):
+            for job_name, job in self._jobs(path.name).items():
+                written = False
+                for step in job.get("steps") or []:
+                    run = step.get("run") or ""
+                    if self.ARCHIVE not in run:
+                        continue
+                    # download_to legt die Datei an; alles andere liest sie.
+                    if "download_to" in run:
+                        written = True
+                        continue
+                    self.assertTrue(
+                        written,
+                        f"{path.name}:{job_name} step '{step.get('name')}' liest "
+                        f"{self.ARCHIVE}, aber kein Schritt davor schreibt es")
+
+    def test_the_census_does_not_hide_its_own_failure(self):
+        """`continue-on-error` auf einem Messschritt verbirgt genau den Fall,
+        fuer den man ihn liest: dass die Messung nicht stattgefunden hat."""
+        for job in self._jobs("sec-consumer-fundamentals.yml").values():
+            for step in job.get("steps") or []:
+                if "concept-census" in (step.get("run") or ""):
+                    self.assertNotEqual(
+                        step.get("continue-on-error"), True,
+                        "der Zensus-Schritt meldet ein Scheitern als Erfolg")
+
+    def test_the_commit_step_never_adds_a_path_that_may_not_exist(self):
+        """Ein optionales Artefakt gehoert hinter eine Existenzpruefung.
+        `git add` bricht sonst mit exit 128 ab und reisst den Lauf mit."""
+        for job in self._jobs("sec-consumer-fundamentals.yml").values():
+            for step in job.get("steps") or []:
+                run = step.get("run") or ""
+                if "git add" not in run:
+                    continue
+                # Erst die Zeilenfortsetzungen zusammenziehen. Der defekte
+                # Stand verteilte `git add` und den Pfad ueber ein `\` auf
+                # zwei physische Zeilen - eine zeilenweise Pruefung haette
+                # genau den Fall uebersehen, fuer den dieser Test da ist.
+                for line in run.replace("\\\n", " ").splitlines():
+                    if "concept-census.json" in line and "git add" in line:
+                        self.assertIn("-s quant/data/sec/concept-census.json", line,
+                                      "der Zensus wird ungeprueft zum Commit hinzugefuegt")
+
+
+class ConsumerArchiveArgumentTests(unittest.TestCase):
+    """Die Argumente, die ein Workflow uebergibt, muessen der Parser kennen."""
+
+    def test_the_consumer_command_accepts_the_archive_it_is_given(self):
+        from quant.cli import build_parser
+        parser = build_parser()
+        parsed = parser.parse_args(["consumer", "--archive", "/tmp/companyfacts.zip"])
+        self.assertEqual(parsed.archive, "/tmp/companyfacts.zip")
+        census = parser.parse_args(["concept-census", "--archive", "/tmp/companyfacts.zip"])
+        self.assertEqual(census.archive, "/tmp/companyfacts.zip")

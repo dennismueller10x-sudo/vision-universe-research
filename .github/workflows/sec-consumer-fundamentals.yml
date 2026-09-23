@@ -56,13 +56,31 @@ jobs:
       - name: Universumsquelle
         run: node scripts/market/universe-source.mjs
 
+      # Ein Download, zwei Leser. Der Consumer-Schritt streamte das Archiv
+      # bisher und legte nichts ab; der Konzept-Zensus danach suchte genau
+      # diese Datei und lief auf FileNotFoundError auf - unsichtbar, weil
+      # continue-on-error einen gescheiterten Schritt als success meldet.
+      # Deshalb wird es hier einmal in den Cache geholt und von beiden
+      # Schritten ueber --archive gelesen, statt es zweimal zu ziehen.
+      - name: Sammelarchiv einmal in den Cache holen
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+        run: |
+          python3 -c 'import os, pathlib, sys; sys.path.insert(0, "scripts");
+          from quant.sec.provider import SECProvider, BULK_COMPANY_FACTS_URL;
+          cache = pathlib.Path(os.environ["SEC_CACHE_DIR"]) / "bulk" / "companyfacts.zip";
+          path, size, cached = SECProvider().client.download_to(BULK_COMPANY_FACTS_URL, cache);
+          print("companyfacts.zip %.2f GB %s -> %s" % (size/1e9, "aus dem Cache" if cached else "geladen", path))'
+          test -s "$SEC_CACHE_DIR/bulk/companyfacts.zip"
+
       - name: Consumer-Fundamentals aus companyfacts.zip
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
           SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
         run: |
           LIMIT="${{ github.event.inputs.limit }}"
-          python3 scripts/quant/cli.py --log-level WARNING consumer --bulk --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
+          python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
           du -sh quant/data/sec/consumer
           node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'
 
@@ -76,12 +94,21 @@ jobs:
       # eine Methodik-Entscheidung und passiert nicht in diesem Schritt.
       # Das Archiv liegt schon im Cache; der Schritt laedt nichts nach und
       # darf den Datenlauf nie abbrechen.
+      # Nicht mehr continue-on-error: das hat den echten Fehler als
+      # 'success' getarnt und ein Owner-Gate auf eine Messung warten
+      # lassen, die nie entstand. Der Schritt darf den Datenlauf trotzdem
+      # nicht mitreissen - deshalb faengt er selbst und sagt es laut.
       - name: Konzept-Zensus fuer die Schuldenkennzahlen (nur Messung)
-        continue-on-error: true
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
           SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
-        run: python3 scripts/quant/cli.py --log-level WARNING concept-census --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip"
+        run: |
+          if ! python3 scripts/quant/cli.py --log-level WARNING concept-census --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip"; then
+            echo "::warning::Konzept-Zensus fehlgeschlagen - es wird keine Messung veroeffentlicht."
+            exit 0
+          fi
+          test -s quant/data/sec/concept-census.json || { echo "::warning::Konzept-Zensus lief durch, schrieb aber nichts."; exit 0; }
+          node -e 'const c=require("./quant/data/sec/concept-census.json"); console.log("Emittenten:",c.issuers); console.log("gemappt:"); for(const m of c.mapped)console.log("  "+m.concept+" "+m.issuers+" ("+m.servesMetrics.join(",")+")"); console.log("ungemappte Kandidaten (Top 10):"); for(const u of c.unmapped.slice(0,10))console.log("  "+u.concept+" "+u.issuers)'
 
       - name: Discover-Daten neu bauen (mit Fundamentals)
         run: |
@@ -117,8 +144,12 @@ jobs:
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
           git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
-                  quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json \
-                  quant/data/sec/concept-census.json
+                  quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
+          # Nur wenn die Messung wirklich entstand. 'git add' auf einen
+          # fehlenden Pfad bricht mit exit 128 ab und nahm in Lauf
+          # 35862972083 den gesamten Datenlauf mit - die Fundamentaldaten
+          # von 20 Minuten Arbeit wurden deshalb nie committet.
+          if [ -s quant/data/sec/concept-census.json ]; then git add quant/data/sec/concept-census.json; fi
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(c.secAvailable+"/"+c.productUniverse+" Unternehmen, 10J "+c.history10y+", 5J "+c.history5y+", TTM "+c.ttmPossible)')
           git commit -m "SEC Consumer-Fundamentals: $Z"
