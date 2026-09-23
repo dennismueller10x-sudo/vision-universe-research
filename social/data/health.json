@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-22T19:52:57.284Z",
-  "overall": "WARNING",
+  "generatedAt": "2026-09-23T04:01:38.793Z",
+  "overall": "UNAVAILABLE",
   "counts": {
-    "PASS": 10,
+    "PASS": 7,
     "WARNING": 1,
     "FAIL": 0,
-    "UNAVAILABLE": 6
+    "UNAVAILABLE": 9
   },
   "rows": [
     {
@@ -54,9 +54,9 @@
       "state": "WARNING",
       "dataSource": "social/data/signals.json",
       "lastSuccessAt": "2026-09-19T15:46:36.650Z",
-      "failureMode": "Letzter Erfolg vor 76 h (Frist 48 h).",
+      "failureMode": "Letzter Erfolg vor 84 h (Frist 48 h).",
       "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-      "detail": "Letzter Erfolg vor 76 h (Frist 48 h)."
+      "detail": "Letzter Erfolg vor 84 h (Frist 48 h)."
     },
     {
       "component": "signals.market",
@@ -103,7 +103,7 @@
       "label": "Opportunity Engine",
       "state": "PASS",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
+      "lastSuccessAt": "2026-09-23T04:01:38.793Z",
       "failureMode": null,
       "nextAction": null,
       "detail": "Letzter Erfolg vor 0 h."
@@ -111,39 +111,39 @@
     {
       "component": "content.pipeline",
       "label": "Content-Pipeline",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Alle Kandidaten sind an einer Pruefstufe gescheitert.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "content.validation",
       "label": "Fakten- und Markenpruefung",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Keine Pakete zu pruefen.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "scheduler",
       "label": "Terminierung",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Nichts zu terminieren.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "queue",
       "label": "Warteschlange",
       "state": "PASS",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
+      "lastSuccessAt": "2026-09-23T04:01:38.793Z",
       "failureMode": null,
       "nextAction": null,
       "detail": "Letzter Erfolg vor 0 h."
@@ -173,11 +173,11 @@
       "label": "Kill Switch",
       "state": "PASS",
       "dataSource": "social/config/kill-switch.json",
-      "lastSuccessAt": "2026-09-22T19:52:57.284Z",
+      "lastSuccessAt": "2026-09-23T04:01:38.793Z",
       "failureMode": null,
       "nextAction": null,
       "detail": "Letzter Erfolg vor 0 h."
     }
   ],
-  "explanation": "Gesamtzustand WARNING: 10 PASS, 1 WARNING, 0 FAIL, 6 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (6): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente."
+  "explanation": "Gesamtzustand UNAVAILABLE: 7 PASS, 1 WARNING, 0 FAIL, 9 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (9): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Content-Pipeline, Fakten- und Markenpruefung, Terminierung, Learning Engine, Experimente."
 }
