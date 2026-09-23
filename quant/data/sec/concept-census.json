@@ -1,0 +1,170 @@
+{
+  "schema": "sec-concept-census-1.0.0",
+  "generated_at_utc": "2026-09-23T13:52:08+00:00",
+  "metrics": [
+    "total_debt",
+    "long_term_debt"
+  ],
+  "pattern": "debt|borrow|notespayable|capitallease|financelease",
+  "issuers": 5148,
+  "mapped": [
+    {
+      "concept": "us-gaap:LongTermDebt",
+      "servesMetrics": [
+        "long_term_debt"
+      ],
+      "issuers": 2875
+    },
+    {
+      "concept": "us-gaap:LongTermDebtNoncurrent",
+      "servesMetrics": [
+        "long_term_debt"
+      ],
+      "issuers": 2250
+    },
+    {
+      "concept": "us-gaap:DebtLongtermAndShorttermCombinedAmount",
+      "servesMetrics": [
+        "total_debt"
+      ],
+      "issuers": 513
+    },
+    {
+      "concept": "ifrs-full:Borrowings",
+      "servesMetrics": [
+        "total_debt"
+      ],
+      "issuers": 354
+    },
+    {
+      "concept": "ifrs-full:LongtermBorrowings",
+      "servesMetrics": [
+        "long_term_debt"
+      ],
+      "issuers": 320
+    }
+  ],
+  "unmapped": [
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
+      "issuers": 2347
+    },
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+      "issuers": 2337
+    },
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
+      "issuers": 2296
+    },
+    {
+      "concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt",
+      "issuers": 2291
+    },
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
+      "issuers": 2215
+    },
+    {
+      "concept": "us-gaap:LongTermDebtCurrent",
+      "issuers": 2088
+    },
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive",
+      "issuers": 2050
+    },
+    {
+      "concept": "us-gaap:RepaymentsOfLongTermDebt",
+      "issuers": 2040
+    },
+    {
+      "concept": "us-gaap:PaymentsOfDebtIssuanceCosts",
+      "issuers": 1973
+    },
+    {
+      "concept": "us-gaap:ProceedsFromIssuanceOfLongTermDebt",
+      "issuers": 1955
+    },
+    {
+      "concept": "us-gaap:DebtInstrumentCarryingAmount",
+      "issuers": 1840
+    },
+    {
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive",
+      "issuers": 1707
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiability",
+      "issuers": 1622
+    },
+    {
+      "concept": "us-gaap:FinanceLeasePrincipalPayments",
+      "issuers": 1481
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDue",
+      "issuers": 1442
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseWeightedAverageDiscountRatePercent",
+      "issuers": 1387
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
+      "issuers": 1384
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseRightOfUseAsset",
+      "issuers": 1384
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearTwo",
+      "issuers": 1382
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityUndiscountedExcessAmount",
+      "issuers": 1379
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseRightOfUseAssetAmortization",
+      "issuers": 1379
+    },
+    {
+      "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecurities",
+      "issuers": 1364
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearThree",
+      "issuers": 1358
+    },
+    {
+      "concept": "us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity",
+      "issuers": 1353
+    },
+    {
+      "concept": "us-gaap:ShortTermBorrowings",
+      "issuers": 1345
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityNoncurrent",
+      "issuers": 1327
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityCurrent",
+      "issuers": 1325
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearFour",
+      "issuers": 1316
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseInterestExpense",
+      "issuers": 1274
+    },
+    {
+      "concept": "us-gaap:DebtInstrumentFaceAmount",
+      "issuers": 1268
+    }
+  ],
+  "note": "Presence per issuer, not per fact. An unmapped concept with high coverage is a candidate, not a decision: adding it changes what an existing published metric means, and that is a methodology change with its own version."
+}
