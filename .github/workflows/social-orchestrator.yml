@@ -275,15 +275,31 @@ jobs:
       # VOR dem Messen, weil die Platte den Datenstand beschreibt, auf
       # dem dieser Lauf entscheidet - nicht den von gestern.
       # =====================================================================
+      # DIRECT CREATIVE GOLDEN PATH (Owner-Direktive "DIRECT CREATIVE
+      # GOLDEN PATH — FINAL GO/NO-GO", 23.09.): JETZT POST ERSTELLEN und
+      # POST ZU THEMA laufen NICHT mehr ueber die Platte, den Quant-
+      # gestuetzten Zyklus oder die alte CREATIVE JOB/VORBEREITEN-Kette -
+      # diese Schritte werden fuer diese zwei Modi uebersprungen, nicht
+      # umgebaut (§1/§20/§23 der Direktive: Discovery/Quant/Opportunity
+      # Slate NICHT anfassen, NICHT als Fallback benutzen). Ihr eigener
+      # Weg steht weiter unten ("WEB RESEARCH" / "CREATIVE JOB (WEB)" /
+      # "VORBEREITEN (WEB)"). AUTO und JETZT PRUEFEN bleiben unveraendert
+      # auf diesem, bestehenden Pfad (§22: AUTO jetzt nicht umbauen).
       - name: DIE PLATTE — Content Universe in voller Breite
-        if: inputs.nur_entscheiden != true
+        if: >-
+          inputs.nur_entscheiden != true &&
+          steps.plan.outputs.modus != 'MANUAL_NOW' &&
+          steps.plan.outputs.modus != 'MANUAL_TOPIC'
         run: |
           set -euo pipefail
           node scripts/social/build-opportunity-slate.mjs \
             --data social/data --out social/data | tail -25
 
       - name: MESSEN — Zahlen holen, lernen, anpassen
-        if: steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true
+        if: >-
+          steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true &&
+          steps.plan.outputs.modus != 'MANUAL_NOW' &&
+          steps.plan.outputs.modus != 'MANUAL_TOPIC'
         env:
           VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
@@ -322,7 +338,9 @@ jobs:
         if: >-
           steps.plan.outputs.creative == 'ja' &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
+          inputs.nur_entscheiden != true &&
+          steps.plan.outputs.modus != 'MANUAL_NOW' &&
+          steps.plan.outputs.modus != 'MANUAL_TOPIC'
         env:
           GH_TOKEN: ${{ github.token }}
           SYMBOL: ${{ steps.plan.outputs.creative_symbol }}
@@ -379,7 +397,9 @@ jobs:
         if: >-
           steps.plan.outputs.prepare == 'ja' &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
+          inputs.nur_entscheiden != true &&
+          steps.plan.outputs.modus != 'MANUAL_NOW' &&
+          steps.plan.outputs.modus != 'MANUAL_TOPIC'
         # VU_SOCIAL_MODUS reist hier weiter, mit demselben Namen, unter
         # dem run-orchestrator.mjs ihn gelesen und sein Urteil schon
         # gefaellt hat (steps.plan.outputs.modus). make-publish-
@@ -429,6 +449,130 @@ jobs:
             ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"}
           node scripts/social/make-publish-candidate.mjs --data social/data --write \
             | tail -40
+
+      # =====================================================================
+      # DIRECT CREATIVE GOLDEN PATH — WEB-FIRST CONTENT RESEARCH
+      # (Owner-Direktive "DIRECT CREATIVE GOLDEN PATH — FINAL GO/NO-GO",
+      # 23.09.)
+      #
+      # Der einzige Themenpfad fuer JETZT POST ERSTELLEN und POST ZU
+      # THEMA. Kein Discovery, kein Quant, kein Opportunity Slate, kein
+      # Screener - research-web-story.mjs kennt quant/ nicht und liest
+      # es nicht. Themen kommen ausschliesslich aus oeffentlichen,
+      # schluessellosen Nachrichten-Feeds (social/engines/web-research.js
+      # waehlt Story, Hook, Caption und Hashtags rein und ohne Netz;
+      # das Skript hier macht nur den Netzabruf).
+      #
+      # FAIL CLOSED: findet sich keine aktuelle, grounded Story, endet
+      # das Skript mit 4 (begruendete Verweigerung) und es entsteht
+      # nichts - kein Rueckfall auf die Ladder oder die Platte.
+      # =====================================================================
+      - name: WEB RESEARCH — aktuelle Story finden
+        id: webresearch
+        if: >-
+          (steps.plan.outputs.modus == 'MANUAL_NOW' ||
+           steps.plan.outputs.modus == 'MANUAL_TOPIC') &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
+        env:
+          VU_SOCIAL_THEMA_FREITEXT: >-
+            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
+        run: |
+          set -uo pipefail
+          node scripts/social/research-web-story.mjs --write \
+            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"}
+          rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Keine aktuelle, grounded Web-Story gefunden. Das ist eine " \
+              "begruendete Verweigerung, kein Ausfall - es entsteht nichts."
+            echo "gefunden=nein" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in research-web-story.mjs"
+            exit "$rc"
+          fi
+          echo "gefunden=ja" >> "$GITHUB_OUTPUT"
+          node -e "console.log('content_id=' + JSON.parse(require('fs').readFileSync('social/data/web-story-selection.json','utf8')).contentId)" \
+            >> "$GITHUB_OUTPUT"
+
+      # Dieselben DREI bestehenden Skripte wie im Quant-Pfad
+      # (dispatch-creative-job.mjs, open-creative-request.mjs,
+      # verify-creative-dispatch.mjs sind bereits generisch auf
+      # contentId - unveraendert wiederverwendet) - nur der Brief
+      # entsteht aus der Web-Story statt aus einem technischen Bundle
+      # (request-creative-web.mjs statt request-creative.mjs).
+      - name: CREATIVE JOB (WEB) — Brief, Register, Request-PR
+        if: >-
+          steps.webresearch.outputs.gefunden == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTENT_ID: ${{ steps.webresearch.outputs.content_id }}
+        run: |
+          set -uo pipefail
+
+          tor() {
+            "$@"
+            rc=$?
+            if [ "$rc" -eq 4 ]; then
+              echo "::notice::Tor verweigert ($*). Das ist eine Antwort, kein Ausfall."
+              return 1
+            fi
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::Unerwarteter Abbruch ($rc) in: $*"
+              exit "$rc"
+            fi
+            return 0
+          }
+
+          tor node scripts/social/request-creative-web.mjs --write || exit 0
+
+          tor node scripts/social/dispatch-creative-job.mjs \
+                --content-id "$CONTENT_ID" --write || exit 0
+
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+
+          tor node scripts/social/open-creative-request.mjs \
+                --content-id "$CONTENT_ID" --write \
+                --reason "Direct Creative Editor: aktuelle Web-Story, kein Ergebnis und kein offener Job zu diesem Inhalt." \
+            || exit 0
+
+          node scripts/social/verify-creative-dispatch.mjs \
+            --branch "authoring/request/$CONTENT_ID"
+
+      # VERIFIED oder nicht - chatgpt-work arbeitet asynchron (siehe
+      # dessen Adapter). Liegt noch kein Ergebnis vor, endet dieses
+      # Skript mit 4: kein Kandidat, kein schlechter Rueckfall (§16 der
+      # frueheren, weiterhin gueltigen Golden-Path-Direktive). Der
+      # naechste Lauf (JETZT PRUEFEN oder Zeitplan) holt das Ergebnis,
+      # sobald es da ist, ueber denselben bestehenden Weg ("Creative-
+      # Ergebnisse von offenen Request-PRs holen", weiter oben).
+      - name: VORBEREITEN (WEB) — bis zum Publishing Gate, nicht darueber hinaus
+        if: >-
+          steps.webresearch.outputs.gefunden == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
+        run: |
+          set -uo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
+          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
+
+          node scripts/social/manual-now-web-candidate.mjs --data social/data --write
+          rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Kein Kandidat aus der Web-Story (begruendete Verweigerung, " \
+              "z.B. noch nicht VERIFIED oder das Hard Final Creative Gate). Der naechste " \
+              "Lauf versucht es erneut."
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in manual-now-web-candidate.mjs"
+            exit "$rc"
+          fi
 
       # =====================================================================
       # DIE WARTESCHLANGE ZUM OWNER
@@ -526,7 +670,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ steps.plan.outputs.creative }}" = "ja" ] || \
-             [ "${{ steps.plan.outputs.prepare }}" = "ja" ]; then
+             [ "${{ steps.plan.outputs.prepare }}" = "ja" ] || \
+             [ "${{ steps.webresearch.outputs.gefunden }}" = "ja" ]; then
             node scripts/social/run-orchestrator.mjs \
               --lease-release "${{ github.run_id }}" --produktiv
           else
