@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_37b60028316a1f1c",
+  "content_id": "vu-web-c23118efc7199b43-20260923",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "10-year U.S. Treasury yield tops 5.1%, marking its highest level since 2007",
+  "objective": "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, thematisch passende Bildwelt erzeugen — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker.",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-fixed-hook-v1",
+    "hook_type": "web_story_fixed",
+    "instruction": "Der Hook-Text steht bereits fest und wird NICHT vom Agenten formuliert (siehe `fixed_hook`). Liefere ausschliesslich die Bildwelt gemaess `visual_instruction`."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "monumentale, futuristische KI-Recheninfrastruktur: Serverreihen, Lichtlinien, gewaltige Skalierung, kuehles Blau/Violett, cineastische Tiefe. Keine Schrift, kein Logo, kein Wasserzeichen, generoese Freiflaeche fuer eine spaeter aufgesetzte Kopfzeile. Fotorealistisch, hochwertig, kein Diagramm, kein Bildschirmfoto, kein Dashboard.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": "dark, premium editorial, cinematic light",
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5, centered, generous negative space for a headline",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "10-year U.S.",
+      "value": "10",
+      "unit": null,
+      "entity": "AI",
+      "metric": "Web-Beleg 1",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-23T17:19:34.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "Treasury yield tops 5.1%, marking its highest level since 2007.",
+      "value": "5.1",
+      "unit": "%",
+      "entity": "AI",
+      "metric": "Web-Beleg 2",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-23T17:19:34.000Z"
+    },
+    {
+      "id": "ev3",
+      "statement": "Treasury yield tops 5.1%, marking its highest level since 2007.",
+      "value": "200",
+      "unit": null,
+      "entity": "AI",
+      "metric": "Web-Beleg 3",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-23T17:19:34.000Z"
+    },
+    {
+      "id": "ev4",
+      "statement": "Treasury yield tops 5.1%, marking its highest level since 2007.",
+      "value": "7",
+      "unit": null,
+      "entity": "AI",
+      "metric": "Web-Beleg 4",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-23T17:19:34.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-c23118efc7199b43-20260923/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "fixed_hook": "Treasury yield tops 5.1%, marking its highest level since 2007.",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-c23118efc7199b43-20260923",
+    "as_of": "2026-09-23T17:19:34.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "10-year U.S. Treasury yield tops 5.1%, marking its highest level since 2007",
+    "link": "https://seekingalpha.com/news/4646208-us10y-tops-5_1-percent-marking-its-highest-level-since-2007?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "source": "Seeking Alpha Market Currents",
+    "publishedAt": "2026-09-23T17:19:34.000Z"
+  }
+}
