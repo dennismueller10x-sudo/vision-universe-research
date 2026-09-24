@@ -1,15 +1,15 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-22T19:07:21.979Z",
+  "checkedAt": "2026-09-24T17:42:09.185Z",
   "target": "repository",
   "market": {
     "state": "OPEN",
-    "localDate": "2026-09-22",
-    "localTime": "15:07:21",
-    "lastCompletedSession": "2026-09-21",
-    "currentSession": "2026-09-22",
-    "expectedIntradaySession": "2026-09-22"
+    "localDate": "2026-09-24",
+    "localTime": "13:42:09",
+    "lastCompletedSession": "2026-09-23",
+    "currentSession": "2026-09-24",
+    "expectedIntradaySession": "2026-09-24"
   },
   "intraday": {
     "indexGeneratedAt": "2026-09-22T14:52:12.683Z",
@@ -29,8 +29,8 @@
       "universe": false
     },
     "dataState": "STALE",
-    "dataReason": "runningSessionStaleAsOf",
-    "dataLabel": "Heute · Stand 10:50 · nicht aktuell",
+    "dataReason": "olderThanLastSession",
+    "dataLabel": "Stand Di., 22.09. · nicht aktuell",
     "entries": 520,
     "byState": {
       "LIVE": 0,
@@ -39,8 +39,7 @@
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "runningSessionStaleAsOf": 508,
-      "currentSessionMissing": 12
+      "olderThanLastSession": 520
     },
     "staleSample": [
       "AAPL",
@@ -72,16 +71,16 @@
     "universeSessions": [
       "2026-09-21"
     ],
-    "universeCoversLastSession": true,
+    "universeCoversLastSession": false,
     "state": "STALE"
   },
   "daily": {
-    "universeAsOf": "2026-09-21",
-    "generatedAt": "2026-09-22T19:07:16.217Z",
+    "universeAsOf": "2026-09-23",
+    "generatedAt": "2026-09-24T17:42:03.404Z",
     "state": "LAST_SESSION",
     "reason": "lastCompletedSession",
-    "label": "Schluss Montag",
-    "expectedSession": "2026-09-21",
+    "label": "Schluss Mittwoch",
+    "expectedSession": "2026-09-23",
     "sample": {
       "sample": 40,
       "byState": {
@@ -94,12 +93,12 @@
         "lastCompletedSession": 40
       },
       "staleSample": [],
-      "seriesIndexCount": 6449
+      "seriesIndexCount": 6458
     }
   },
   "overall": "STALE",
   "findings": [
-    "Intraday STALE: Datenstand 2026-09-22, erwartet 2026-09-22 (runningSessionStaleAsOf)"
+    "Intraday STALE: Datenstand 2026-09-22, erwartet 2026-09-24 (olderThanLastSession)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
