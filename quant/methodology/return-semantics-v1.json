@@ -17,7 +17,10 @@
    "id": "SPLIT_ADJUSTED_PRICE",
    "label": "Splitbereinigter Kurs",
    "column": "adjustedClose",
-   "requiresAdjustmentStatus": ["splitAdjusted", "SPLIT_ADJUSTED"],
+   "requiresAdjustmentStatus": [
+    "splitAdjusted",
+    "SPLIT_ADJUSTED"
+   ],
    "includesDistributions": false,
    "plain": "Der Kursverlauf, bereinigt um Aktiensplits. Ausschüttungen sind nicht enthalten.",
    "why": "Ein Split ist eine Umbenennung derselben Beteiligung; ihn nicht zu bereinigen erzeugt einen Sprung, den es nie gab. Eine Dividende dagegen IST eine echte Kurslücke am Ex-Tag, und sie herauszurechnen würde eine Bewegung erfinden, die der Markt nicht gezeigt hat."
@@ -26,7 +29,10 @@
    "id": "TOTAL_RETURN",
    "label": "Gesamtrendite",
    "column": "adjustedClose",
-   "requiresAdjustmentStatus": ["adjusted", "TOTAL_RETURN"],
+   "requiresAdjustmentStatus": [
+    "adjusted",
+    "TOTAL_RETURN"
+   ],
    "includesDistributions": true,
    "plain": "Kursentwicklung einschließlich wiederangelegter Ausschüttungen.",
    "why": "Was ein Anleger tatsächlich verdient hat. Bei einem Dividendentitel über zehn Jahre ist der Unterschied zum reinen Kurs kein Detail."
@@ -47,35 +53,47 @@
    "label": "Kursdarstellung",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "why": "Gezeigt wird, wie sich der Kurs bewegt hat. Eine dividendenbereinigte Linie zeigt einen Verlauf, den es am Markt so nie gab.",
-   "surfaces": ["vu2 stock chart", "technical chart"]
+   "surfaces": [
+    "vu2 stock chart",
+    "technical chart"
+   ]
   },
   {
    "id": "technical",
    "label": "Technische Struktur",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "why": "Trend, Struktur, Volumen und gleitende Durchschnitte beschreiben Kursbewegung. Eine Ausschüttung darf hier keine technische Bewegung erzeugen, die kein Marktteilnehmer gesehen hat.",
-   "surfaces": ["technical-signals-v1", "technical chart"]
+   "surfaces": [
+    "technical-signals-v1",
+    "technical chart"
+   ]
   },
   {
    "id": "setup",
    "label": "Setup-Zustand",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "why": "Die Setup-Kaskade liest ausschließlich Felder der technischen Materialisierung. Eine andere Basis unter demselben Zustand wäre eine stille Umdefinition.",
-   "surfaces": ["setup-observations-v1"]
+   "surfaces": [
+    "setup-observations-v1"
+   ]
   },
   {
    "id": "elliott",
    "label": "Elliott-Wellen",
    "basis": "SPLIT_ADJUSTED_PRICE",
    "why": "Wellenzählung ist Strukturanalyse am Kursverlauf. Ein durch Dividenden verschobener Pivot wäre ein erfundener Pivot.",
-   "surfaces": ["elliott"]
+   "surfaces": [
+    "elliott"
+   ]
   },
   {
    "id": "backtest",
    "label": "Backtest",
    "basis": "TOTAL_RETURN",
    "why": "Ein Backtest behauptet, was eine Strategie erwirtschaftet hätte. Ohne Ausschüttungen ist das bei Dividendentiteln systematisch zu niedrig.",
-   "surfaces": ["backtest"],
+   "surfaces": [
+    "backtest"
+   ],
    "activation": {
     "state": "CLOSED",
     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
@@ -87,23 +105,48 @@
    "label": "Portfolioentwicklung",
    "basis": "TOTAL_RETURN",
    "why": "Dieselbe Frage wie beim Backtest: was ein Anleger gehalten hätte.",
-   "surfaces": ["portfolio"],
-   "activation": {"state": "CLOSED", "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"}
+   "surfaces": [
+    "portfolio"
+   ],
+   "activation": {
+    "state": "CLOSED",
+    "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+   }
   },
   {
    "id": "benchmark",
    "label": "Vergleichsindex",
    "basis": "TOTAL_RETURN",
    "why": "Ein Vergleich ist nur dann einer, wenn beide Seiten dieselbe Basis haben. Eine Strategie auf Gesamtrendite gegen einen Index auf Kursbasis zu stellen, schlägt den Index durch Buchführung.",
-   "surfaces": ["benchmark"],
-   "activation": {"state": "CLOSED", "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"}
+   "surfaces": [
+    "benchmark"
+   ],
+   "activation": {
+    "state": "CLOSED",
+    "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+   }
+  },
+  {
+   "id": "relativeStrengthBenchmark",
+   "label": "Vergleichsreihe der relativen Stärke",
+   "basis": "SPLIT_ADJUSTED_PRICE",
+   "why": "Relative Stärke vergleicht Kursbewegung mit Kursbewegung. Sie gehört zur technischen Seite und nicht zur Performanceseite, auch wenn beide das Wort Vergleichsindex benutzen — und beim Verdrahten des Vertrags fiel auf, dass genau diese Unterscheidung noch fehlte.",
+   "surfaces": [
+    "market-factors relativeStrength"
+   ],
+   "notToBeConfusedWith": "benchmark",
+   "distinction": "benchmark misst, was ein Anleger verdient hätte, und rechnet deshalb auf Gesamtrendite. Diese Reihe misst, ob sich ein Kurs besser bewegt hat als ein anderer Kurs. Dieselbe Reihe für beides zu nehmen wäre genau die Vermischung, die dieser Vertrag trennt.",
+   "boundToContract": false,
+   "whyNotBound": "Dieselbe offene Messung wie beim Momentumfaktor: beide lesen denselben Barstore."
   },
   {
    "id": "quantV1",
    "label": "Quant V1",
    "basis": "LEGACY_IMMUTABLE",
    "why": "Unverändert. Eine rückwirkende Änderung an veröffentlichten V1-Zahlen findet nicht statt, gleich welche Basis heute besser begründbar wäre.",
-   "surfaces": ["quant v1"],
+   "surfaces": [
+    "quant v1"
+   ],
    "immutable": true
   },
   {
@@ -111,14 +154,18 @@
    "label": "Quant V2 · Momentum",
    "basis": "PENDING_METHODOLOGY_DECISION",
    "why": "Momentum ist der eine Faktor, bei dem die Basis das Ergebnis verändern KANN und die Antwort nicht vorab feststeht. Er wird deshalb nicht stillschweigend mitentschieden.",
-   "surfaces": ["factor-evidence-v1"],
+   "surfaces": [
+    "factor-evidence-v1"
+   ],
    "decision": {
     "state": "PENDING_EVIDENCE",
     "question": "Ist der Quant-V2-Momentumfaktor auf Kursbasis oder auf Gesamtrendite zu rechnen?",
-    "currentPublishedBasis": "SPLIT_ADJUSTED_PRICE",
+    "currentPublishedBasis": "UNKNOWN_UNTIL_MEASURED",
     "requiresEmpiricalComparison": true,
     "report": "quant/data/providers/momentum-return-basis-study.json",
-    "note": "Bis zur Entscheidung bleibt die veröffentlichte Basis unverändert. Eine Entscheidung ohne Messung wäre genau die stille Umdefinition, die dieser Vertrag ausschließt."
+    "note": "Bis zur Entscheidung bleibt die veroeffentlichte Basis unveraendert. Welche das HEUTE ist, war nicht gemessen: das Faktorartefakt hielt nur die Spalte (adjustedClose) fest, nicht ihren Inhalt - und adjustedClose kann splitbereinigt oder total-return-bereinigt sein. Die einzigen eingecheckten Kursreihen melden 'adjusted', die Commercial-Plan-Faehigkeiten melden adjustedPrices: true. Der Produktions-Barstore liegt in R2 und ist hier nicht einsehbar. Seit 2026-09-24 schreibt build-market-factors den Stand je Titel mit; danach ist die Frage beantwortbar und das Modul bindbar.",
+    "boundToContract": false,
+    "whyNotBound": "Eine Bindung wuerde die Basis festlegen. Ob das nichts aendert oder jede veroeffentlichte Momentumzahl umstellt, haengt an einer Messung, die es noch nicht gibt - und ohne sie waere die Bindung genau die stille Umdefinition, die dieser Vertrag ausschliesst, nur in die andere Richtung."
    }
   }
  ],

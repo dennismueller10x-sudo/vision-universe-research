@@ -30,10 +30,10 @@ test("price modules take a price, performance modules take a total return", () =
   /* The two halves of the decision, asserted as membership rather than
      restated as prose that can drift from the contract. */
   assert.deepEqual(Semantics.modulesByBasis("SPLIT_ADJUSTED_PRICE").sort(),
-    ["chart", "elliott", "setup", "technical"]);
+    ["chart", "elliott", "relativeStrengthBenchmark", "setup", "technical"]);
   assert.deepEqual(Semantics.modulesByBasis("TOTAL_RETURN").sort(),
     ["backtest", "benchmark", "portfolioPerformance"]);
-  for (const id of ["chart", "technical", "setup", "elliott"]) {
+  for (const id of ["chart", "technical", "setup", "elliott", "relativeStrengthBenchmark"]) {
     assert.equal(Semantics.basisEntry(Semantics.requiredBasis(id)).includesDistributions, false, id);
   }
   for (const id of ["backtest", "portfolioPerformance", "benchmark"]) {
@@ -81,16 +81,41 @@ test("Quant V1 is refused any basis at all", () => {
   assert.equal(resolved.reason, "MODULE_IS_LEGACY_IMMUTABLE");
 });
 
-test("Quant V2 momentum stays undecided, and keeps publishing what it publishes today", () => {
-  /* Undecided must not mean unresolved at the call site: leaving it open
-     would make every caller invent an answer, which is the silent
-     redefinition by a different route. */
+test("Quant V2 momentum is undecided AND its current basis is unmeasured, and neither is guessed", () => {
+  /* Two different unknowns, and merging them was the mistake this test now
+     pins. The future decision is open - that is PENDING. What is published
+     TODAY was simply never measured: the factor artifact recorded the
+     column (adjustedClose) and not its content, and adjustedClose can be
+     split-adjusted or total-return adjusted. The only committed price
+     series report "adjusted"; the commercial plan reports
+     adjustedPrices: true; the production bar store lives in R2.
+     
+     So asking for a basis here refuses rather than returning one. A caller
+     that gets a basis back computes on it, and handing one out for a module
+     nobody has measured is exactly how an assumption becomes a published
+     number. */
   assert.equal(Semantics.isPending("quantV2Momentum"), true);
-  assert.equal(Semantics.requiredBasis("quantV2Momentum"), "SPLIT_ADJUSTED_PRICE");
+  assert.equal(Semantics.isUnmeasured("quantV2Momentum"), true);
+  assert.throws(() => Semantics.requiredBasis("quantV2Momentum"), /has not been measured/);
   const entry = Semantics.moduleEntry("quantV2Momentum");
   assert.equal(entry.decision.state, "PENDING_EVIDENCE");
-  assert.equal(entry.decision.requiresEmpiricalComparison, true);
+  assert.equal(entry.decision.currentPublishedBasis, Semantics.UNMEASURED);
+  assert.equal(entry.decision.boundToContract, false);
+  assert.ok(entry.decision.whyNotBound.length > 60);
   assert.ok(entry.decision.report);
+});
+
+test("an unmeasured module cannot be bound, and the contract refuses one that is", () => {
+  /* Binding imposes a basis. Doing that before measuring which one is
+     published would change every momentum figure or none - and which, is
+     exactly the thing not yet known. */
+  const broken = structuredClone(contract);
+  const entry = broken.modules.find((m) => m.id === "quantV2Momentum");
+  entry.decision.boundToContract = true;
+  assert.match(Semantics.validate(broken).errors.join("; "), /must not be bound/);
+  delete entry.decision.whyNotBound;
+  entry.decision.boundToContract = false;
+  assert.match(Semantics.validate(broken).errors.join("; "), /without saying why/);
 });
 
 test("the empirical comparison exists, and is honest about what it cannot decide", () => {
@@ -142,4 +167,52 @@ test("an existing caller that names no module keeps computing what it computed",
   assert.equal(MarketFactors.priceBasis(bars, "splitAdjusted"), "adjustedClose");
   assert.equal(MarketFactors.priceBasis(bars, "adjusted"), "adjustedClose");
   assert.equal(MarketFactors.priceBasis([{ close: 100 }], "unknown"), "close");
+});
+
+test("the factor build records which basis it actually used, and binds nothing yet", () => {
+  /* A contract nobody calls is a document. It binds at the two call sites
+     that matter - the momentum factor and the relative-strength
+     comparison series - and the point of naming them is what happens if
+     the provider capability is ever raised: a refusal instead of a silent
+     switch. */
+  const build = readFileSync(new URL("scripts/market/build-market-factors.mjs", ROOT), "utf8");
+  /* Deliberately NOT bound yet - see the unmeasured-basis test above. What
+     it does now is record the adjustment status per title, which is what
+     makes the question answerable at all. */
+  assert.equal(/module: "quantV2Momentum"/.test(build), false,
+    "momentum is bound before its current basis was measured");
+  assert.match(build, /adjustmentStatus: payload\.adjustmentStatus/);
+  assert.match(build, /returnBasis: Semantics\.basisOfAdjustmentStatus/);
+
+  /* Nothing is redefined: an unnamed caller computes exactly what it
+     computed before, over a real series. */
+  const series = JSON.parse(readFileSync(new URL("quant/data/market/golden-preview/daily/ref_MSFT.json", ROOT), "utf8"));
+  const before = MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "splitAdjusted" }, {});
+  assert.equal(before.status, "OK");
+  assert.ok(Object.keys(before.values).length > 20);
+  assert.equal(before.basis, "adjustedClose");
+
+  /* The mechanism works where a module IS named and measured - shown on a
+     price module, so the refusal is demonstrated without binding the one
+     whose basis is still unknown. */
+  assert.throws(() => MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "adjusted" }, { module: "technical" }),
+    (error) => error.reason === "RETURN_BASIS_MISMATCH");
+  assert.equal(
+    MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "splitAdjusted" }, { module: "technical" }).basis,
+    "adjustedClose");
+});
+
+test("the relative-strength series is not the performance benchmark", () => {
+  /* Both are called "Vergleichsindex" and they mean different things.
+     Relative strength compares price movement with price movement;
+     the performance benchmark compares what an investor earned. Using one
+     series for both is exactly the confusion this contract separates -
+     and the distinction was missing from the contract until wiring it up
+     surfaced the gap. */
+  assert.equal(Semantics.requiredBasis("relativeStrengthBenchmark"), "SPLIT_ADJUSTED_PRICE");
+  assert.equal(Semantics.moduleEntry("relativeStrengthBenchmark").boundToContract, false);
+  assert.equal(Semantics.requiredBasis("benchmark"), "TOTAL_RETURN");
+  const entry = Semantics.moduleEntry("relativeStrengthBenchmark");
+  assert.equal(entry.notToBeConfusedWith, "benchmark");
+  assert.ok(entry.distinction.length > 80);
 });

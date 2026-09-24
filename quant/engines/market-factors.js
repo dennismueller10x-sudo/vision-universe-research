@@ -144,7 +144,10 @@
       };
     }
 
-    var basis = priceBasis(bars, payload.adjustmentStatus);
+    /* opts.module bindet den Return-Semantics-Vertrag an diesen Lauf.
+       Ohne ihn bleibt das alte Verhalten - ein Aufrufer, der sich nicht
+       benennt, rechnet weiter genau das, was er bisher rechnete. */
+    var basis = priceBasis(bars, payload.adjustmentStatus, opts.module);
     var close = column(bars, basis, basis === "adjustedClose" ? "close" : null);
     var high = column(bars, basis === "adjustedClose" ? "adjustedHigh" : "high", "high");
     var low = column(bars, basis === "adjustedClose" ? "adjustedLow" : "low", "low");

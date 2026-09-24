@@ -1,6 +1,12 @@
 {
-  "generatedAt": "2026-09-09T09:58:04.910Z",
+  "generatedAt": "2026-09-24T07:29:22.517Z",
   "gate": "GATE_100",
+  "universeSource": {
+    "file": ".market-cache/tiingo/universe/universe.json",
+    "generatedAt": "2026-09-09T16:07:59.170Z",
+    "rows": 108573
+  },
+  "universeFile": null,
   "provider": "tiingo",
   "engine": "market-factors-1.0.0",
   "benchmark": {
@@ -9,11 +15,11 @@
     "note": "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke bleibt fuer alle Titel leer."
   },
   "run": {
-    "source": "github-actions",
-    "runId": "34337535547",
-    "commit": "6619a7634c43440d5ce85caea105ab21d3800dfd",
-    "runtimeMs": 2205,
-    "msPerSymbol": 22
+    "source": "local",
+    "runId": null,
+    "commit": null,
+    "runtimeMs": 4,
+    "msPerSymbol": null
   },
   "redistribution": {
     "priceLevels": "WITHHELD",
@@ -21,256 +27,519 @@
   },
   "coverage": {
     "requested": 100,
-    "computed": 100,
-    "skipped": 0,
-    "skippedByReason": {},
-    "fieldCoverage": {
-      "sma20": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "priceAboveSMA20": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceToSMA20": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "sma50": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "priceAboveSMA50": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceToSMA50": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "sma100": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "priceAboveSMA100": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceToSMA100": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "sma200": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "priceAboveSMA200": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceToSMA200": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "aboveAllSMA": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "aboveSMA20And50And200": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "high52w": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "low52w": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceTo52wHigh": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "distanceTo52wLow": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "newHigh52w": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "closeAtHigh52w": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "within5PctOf52wHigh": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "returns.1M": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "returns.3M": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "returns.6M": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "returns.12M": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "return12M1M": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "momentumAcceleration": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volatility20d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volatility60d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volatility252d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "maxDrawdown252d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "avgVolume20d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "avgVolume60d": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volumeRatio20over60": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volumeSpikeRatio": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "volumeBreakout": {
-        "CALCULATED": 100,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0
-      },
-      "relativeStrength.1M": {
-        "CALCULATED": 0,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 100,
-        "NOT_APPLICABLE": 0
-      },
-      "relativeStrength.3M": {
-        "CALCULATED": 0,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 100,
-        "NOT_APPLICABLE": 0
-      },
-      "relativeStrength.6M": {
-        "CALCULATED": 0,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 100,
-        "NOT_APPLICABLE": 0
-      },
-      "relativeStrength.12M": {
-        "CALCULATED": 0,
-        "INSUFFICIENT_HISTORY": 0,
-        "SOURCE_MISSING": 100,
-        "NOT_APPLICABLE": 0
-      }
-    }
+    "computed": 0,
+    "skipped": 100,
+    "skippedByReason": {
+      "SOURCE_MISSING": 100
+    },
+    "fieldCoverage": {}
   },
-  "skipped": [],
+  "skipped": [
+    {
+      "ticker": "AAPL",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MSFT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "NVDA",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AVGO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CSCO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "ORCL",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CRM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "ADBE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AMD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "INTC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "TXN",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "QCOM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "IBM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "ACN",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "NOW",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "INTU",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AMAT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MU",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "JPM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "BAC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "WFC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "GS",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MS",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "C",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "BLK",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "SCHW",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AXP",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "USB",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PNC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "TFC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CB",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AON",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "JNJ",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "UNH",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PFE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MRK",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "ABBV",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "LLY",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "TMO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "ABT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AMGN",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "GILD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "BMY",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CVS",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MDT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AMZN",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "TSLA",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "HD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MCD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "NKE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "LOW",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "SBUX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "TJX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "BKNG",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "GM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "F",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PG",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "KO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PEP",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "WMT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "COST",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CL",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "GIS",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CAT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "BA",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "HON",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "UNP",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "GE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "MMM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "LMT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "RTX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "DE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "UPS",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "FDX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "EMR",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "XOM",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CVX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "COP",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "SLB",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "EOG",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PSX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "VLO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "OXY",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "NEE",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "DUK",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "SO",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "D",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AEP",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "EXC",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "XEL",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "AMT",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PLD",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "CCI",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "EQIX",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "SPG",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "PSA",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "O",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    },
+    {
+      "ticker": "WELL",
+      "reason": "SOURCE_MISSING",
+      "message": "Keine Kursreihe in der Arbeitsablage."
+    }
+  ],
   "detail": {
     "location": "repository",
     "file": "quant/data/market/factors/factors-GATE_100.json",
-    "symbols": 100
-  }
+    "symbols": 0
+  },
+  "canary": []
 }

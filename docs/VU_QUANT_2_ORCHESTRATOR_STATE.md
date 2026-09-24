@@ -570,7 +570,22 @@ its basis and a series that cannot serve it is refused. Verified in both directi
 breaking the contract three separate ways — flipping `technical` to total return, deciding
 momentum silently, disabling the enforcement — each caught.
 
-**Quant V2 momentum stays undecided, with the evidence gathered**
+**Quant V2 momentum: two unknowns, and neither is guessed.** The future decision is open
+(`PENDING_EVIDENCE`). What is published *today* turned out to be **unmeasured**: the factor
+artifact recorded the column (`adjustedClose`) and not its content, and `adjustedClose` can be
+split-adjusted or total-return adjusted. The only committed price series report `"adjusted"`,
+the commercial plan reports `adjustedPrices: true`, and the production bar store lives in R2.
+So `currentPublishedBasis` is `UNKNOWN_UNTIL_MEASURED`, asking for the basis **throws** rather
+than returning one, and the module is explicitly `boundToContract: false` — binding it would
+impose the answer, changing either every momentum figure or none, and which of the two is
+precisely what is not yet known. `build-market-factors` now records `adjustmentStatus` and
+`returnBasis` per title, which is what makes the question answerable at all.
+
+I had bound it before measuring. The scale-gate tests caught it — the stub provider reports
+`adjusted`, so the binding refused and the pipeline stopped, which is the contract working and
+the binding being wrong. Withdrawn.
+
+**The evidence gathered for the eventual decision**
 (`quant/data/providers/momentum-return-basis-study.json`). Measured over the five series that
 carry both columns: every one is higher on total return, and the gap follows the payout —
 Spearman ρ = 0.90 between dividend yield and the 12m1m difference; XOM (2.20 % yield) +4.44

@@ -37,6 +37,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const engines = join(root, "quant", "engines");
 
 const MarketFactors = require(join(engines, "market-factors.js"));
+const Semantics = require(join(engines, "return-semantics.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
@@ -109,6 +110,21 @@ console.log(`  Titel: ${universe.securities.length}`);
 let benchmark = null;
 const benchPayload = store.readBars("ref_" + BENCHMARK, "working");
 if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length) {
+  /* NOCH NICHT an den Vertrag gebunden, und das ist Absicht.
+  
+     Der Vertrag wuerde hier SPLIT_ADJUSTED_PRICE verlangen. Ob die
+     Produktionsreihen das liefern, ist NICHT gemessen: der Barstore liegt
+     in R2, und die einzigen eingecheckten Reihen - die Golden Preview -
+     melden adjustmentStatus "adjusted", also Gesamtrendite. Die
+     Commercial-Plan-Faehigkeiten melden adjustedPrices: true, was
+     dieselbe Richtung nahelegt.
+  
+     Eine Bindung wuerde also entweder nichts aendern oder die
+     veroeffentlichten Zahlen umstellen - und welches von beidem, weiss
+     hier niemand. Deshalb wird erst der tatsaechliche Stand mitgeschrieben
+     (siehe adjustmentStatus unten) und danach gebunden. Zu binden, bevor
+     das gemessen ist, waere genau die stille Umdefinition, die der
+     Vertrag ausschliesst - nur in die andere Richtung. */
   const basis = MarketFactors.priceBasis(benchPayload.bars, benchPayload.adjustmentStatus);
   benchmark = {
     id: BENCHMARK,
@@ -160,6 +176,9 @@ for (const sec of universe.securities) {
     continue;
   }
 
+  /* Ebenfalls noch nicht gebunden, aus demselben Grund: welche Basis der
+     Momentumfaktor heute tatsaechlich benutzt, ist unmessbar, solange der
+     Stand nicht mitgeschrieben wird. Er wird es ab jetzt. */
   const factors = MarketFactors.computeFactors(
     Object.assign({ ticker: sec.ticker }, payload),
     { benchmark: benchmark });
@@ -190,6 +209,14 @@ for (const sec of universe.securities) {
     bars: factors.bars,
     asOf: factors.asOf,
     basis: factors.basis,
+    /* Die Spalte allein sagt nicht, WAS in ihr steht: adjustedClose kann
+       splitbereinigt oder total-return-bereinigt sein, und das ist der
+       Unterschied, um den der Return-Semantics-Vertrag sich dreht. Ohne
+       diesen Stand im Artefakt laesst sich die heutige Basis des
+       Momentumfaktors nicht nachtraeglich feststellen - was genau die
+       Luecke war, die eine voreilige Bindung beinahe verdeckt haette. */
+    adjustmentStatus: payload.adjustmentStatus || null,
+    returnBasis: Semantics.basisOfAdjustmentStatus(payload.adjustmentStatus),
     values: publicFactors.values,
     fieldStatus: publicFactors.fieldStatus
   });

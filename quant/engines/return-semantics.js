@@ -30,6 +30,11 @@
      contract, and for two different reasons that must not be merged. */
   var LEGACY = "LEGACY_IMMUTABLE";
   var PENDING = "PENDING_METHODOLOGY_DECISION";
+  /* A module whose CURRENT basis has not been measured. Different from
+     PENDING, which is about the future decision: this is about not
+     knowing what is published today. Naming a basis here would be a
+     guess wearing a contract's clothes. */
+  var UNMEASURED = "UNKNOWN_UNTIL_MEASURED";
 
   var contract = null;
 
@@ -74,8 +79,17 @@
       if (!entry.why || entry.why.length < 40) errors.push(where + ": no reason given");
       if (entry.basis === PENDING) {
         if (!entry.decision || !entry.decision.report) errors.push(where + ": pending without a report to decide from");
-        if (entry.decision && !byId[entry.decision.currentPublishedBasis]) {
+        var current = entry.decision && entry.decision.currentPublishedBasis;
+        if (current !== UNMEASURED && !byId[current]) {
           errors.push(where + ": pending without a valid published basis to keep meanwhile");
+        }
+        /* If the current basis is unmeasured the module must not be bound,
+           or the binding would impose the answer it is waiting for. */
+        if (current === UNMEASURED && entry.decision.boundToContract !== false) {
+          errors.push(where + ": the current basis is unmeasured, so it must not be bound to the contract");
+        }
+        if (current === UNMEASURED && !entry.decision.whyNotBound) {
+          errors.push(where + ": unmeasured without saying why it is not bound");
         }
       }
     });
@@ -106,8 +120,23 @@
   function requiredBasis(moduleId) {
     var entry = moduleEntry(moduleId);
     if (entry.basis === LEGACY) return LEGACY;
-    if (entry.basis === PENDING) return entry.decision.currentPublishedBasis;
+    if (entry.basis === PENDING) {
+      var current = entry.decision.currentPublishedBasis;
+      /* Refused, not guessed. A caller that gets a basis back will compute
+         on it; handing one out for a module whose published basis nobody
+         has measured is how an assumption becomes a published number. */
+      if (current === UNMEASURED) {
+        throw new Error("return-semantics: the current basis of '" + moduleId +
+          "' has not been measured; it must not be bound until it is");
+      }
+      return current;
+    }
     return entry.basis;
+  }
+
+  function isUnmeasured(moduleId) {
+    var entry = moduleEntry(moduleId);
+    return entry.basis === PENDING && entry.decision.currentPublishedBasis === UNMEASURED;
   }
 
   function isPending(moduleId) { return moduleEntry(moduleId).basis === PENDING; }
@@ -169,12 +198,14 @@
     MISMATCH: MISMATCH,
     LEGACY: LEGACY,
     PENDING: PENDING,
+    UNMEASURED: UNMEASURED,
     load: load,
     validate: validate,
     moduleEntry: moduleEntry,
     basisEntry: basisEntry,
     requiredBasis: requiredBasis,
     isPending: isPending,
+    isUnmeasured: isUnmeasured,
     isLegacy: isLegacy,
     basisOfAdjustmentStatus: basisOfAdjustmentStatus,
     resolveColumn: resolveColumn,
