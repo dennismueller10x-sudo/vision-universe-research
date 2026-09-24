@@ -37,6 +37,10 @@ on:
         description: 'Daten holen und veroeffentlichen'
         type: boolean
         default: true
+      run_index_probe:
+        description: 'Index-Quellen sondieren (Twelve Data + offizielle Quellen, ~60 Anfragen)'
+        type: boolean
+        default: false
       proof_site:
         description: 'Production Proof gegen die ausgelieferte Seite (z. B. https://research.visionuniverse.de) - leer = kein Proof'
         type: string
@@ -68,6 +72,7 @@ on:
       - 'quant/config/multi-asset*.json'
       - 'quant/tests/multi-asset-*.test.mjs'
       - 'scripts/market/probe-multi-asset.mjs'
+      - 'scripts/market/probe-index-sources.mjs'
       - 'scripts/market/ingest-multi-asset.mjs'
       - 'scripts/market/eia-xls-to-csv.py'
       - 'scripts/quality/verify-multi-asset.mjs'
@@ -107,6 +112,7 @@ jobs:
     outputs:
       probe:  ${{ steps.read.outputs.probe }}
       ingest: ${{ steps.read.outputs.ingest }}
+      index_probe: ${{ steps.read.outputs.index_probe }}
     steps:
       - name: Marker aus der Betreffzeile lesen
         id: read
@@ -115,11 +121,13 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           IN_PROBE: ${{ inputs.run_probe }}
           IN_INGEST: ${{ inputs.run_ingest }}
+          IN_INDEX: ${{ inputs.run_index_probe }}
         run: |
-          probe=false; ingest=false
+          probe=false; ingest=false; index_probe=false
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             [ "$IN_PROBE" = "true" ] && probe=true
             [ "$IN_INGEST" = "true" ] && ingest=true
+            [ "$IN_INDEX" = "true" ] && index_probe=true
           elif [ "$EVENT_NAME" = "schedule" ]; then
             ingest=true
           elif [ "$EVENT_NAME" = "push" ]; then
@@ -127,10 +135,12 @@ jobs:
             echo "Betreffzeile: $subject"
             case "$subject" in *"[ma-probe]"*)  probe=true  ;; esac
             case "$subject" in *"[ma-ingest]"*) ingest=true ;; esac
+            case "$subject" in *"[ma-index-probe]"*) index_probe=true ;; esac
           fi
           echo "probe=$probe"   >> "$GITHUB_OUTPUT"
           echo "ingest=$ingest" >> "$GITHUB_OUTPUT"
-          echo "probe=$probe ingest=$ingest"
+          echo "index_probe=$index_probe" >> "$GITHUB_OUTPUT"
+          echo "probe=$probe ingest=$ingest index_probe=$index_probe"
 
   measure:
     runs-on: ubuntu-latest
@@ -185,6 +195,48 @@ jobs:
             quant/data/market/capabilities/multi-asset-probe.json
       - name: Matrix ins Protokoll
         run: node -e 'const r=require("./quant/data/market/capabilities/multi-asset-probe.json"); console.log(JSON.stringify({tiingo:r.tiingo.matrix, instruments:r.instruments, requests:r.requests}, null, 1))'
+
+  # INDEX COVERAGE (P0): echte Indexstaende je Quelle messen - vorhandene
+  # Provider zuerst (Twelve Data), dann offizielle Quellen, FRED als
+  # Spiegel, Stooq nur gemessen. Keine Werte im Bericht.
+  measure-indices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [contract, marker]
+    if: needs.marker.outputs.index_probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Index-Quellen sondieren
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+        run: node scripts/market/probe-index-sources.mjs --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Indexstaende
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("quant/data/market/capabilities/index-source-probe.json", "utf8");
+            const key = process.env.TWELVE_DATA_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            if (/apikey=(?!\[REDACTED\])/i.test(raw)) { console.error("ABBRUCH: apikey in einer URL."); process.exit(1); }
+            const verboten = ["close","open","high","low","value","price","level","level_eod","indexvalue","lastsaleprice"];
+            const treffer = [];
+            (function walk(v, p) { if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) { if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k); walk(v[k], p + "." + k); } })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht sauber (" + Math.round(raw.length / 1024) + " KB).");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Index-Quellen gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/index-source-probe.json
 
   ingest:
     runs-on: ubuntu-latest
