@@ -1304,7 +1304,7 @@ test("M12-5 · Die Consumer-Seiten laden den Currency Core in der richtigen Reih
        davor. */
     "currency-switch", "bootstrap"
   ];
-  for (const seite of ["discover/index.html", "discover-v2/index.html"]) {
+  for (const seite of ["discover/index.html"]) {
     const src = readFileSync(join(ROOT, seite), "utf8");
     const geladen = [...src.matchAll(/quant\/engines\/fx\/([a-z-]+)\.js/g)].map((m) => m[1]);
     assert.deepEqual(geladen, soll, `${seite}: falsche Ladereihenfolge`);
@@ -1568,10 +1568,10 @@ test("A1 · Der Bootstrap ist die EINZIGE Stelle, die einen Vertrag baut", () =>
      Umschalter bewegte dann die Haelfte der Seite. Der Test liest den
      Quellcode der Consumer-Flaechen: dort darf createLayer nicht
      vorkommen. */
-  for (const datei of ["discover/app.js", "discover-v2/app.js",
+  for (const datei of ["discover/app.js", "discover/home.js",
                        "discover/ui/cards.js", "discover/ui/detail.js",
                        "discover/ui/detail-fundamentals.js", "discover/ui/surfaces.js",
-                       "discover-v2/detail.js", "vu2/experience.js"]) {
+                       "discover/detail.js", "vu2/experience.js"]) {
     const src = readFileSync(join(ROOT, datei), "utf8");
     assert.ok(!/createLayer\s*\(/.test(src), `${datei} baut einen eigenen Currency Contract`);
     assert.ok(!/createEngine\s*\(/.test(src), `${datei} baut eine eigene Engine`);

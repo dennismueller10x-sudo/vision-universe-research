@@ -1,1231 +1,225 @@
-/* =========================================================================
-   VISION UNIVERSE DISCOVER — browser-qa.mjs
-
-   Die Prüfungen, die sich in Node nicht nachstellen lassen: Eingangsfläche,
-   Reihen, Poster-Varianten, Hover, Suche, Kategorie, Detail, Chart,
-   Zustände ohne ausgelieferte Kursreihe, Modelluniversum, Telefon,
-   reduzierte Bewegung und horizontaler Überlauf.
-
-   Warum das hier steht und nicht in der CI: dieses Repository hat keinen
-   Paketmanager-Stand und keine Browser-Abhängigkeit. Eine hinzuzufügen,
-   nur damit eine Prüfung automatisch läuft, wäre ein größerer Eingriff in
-   das bestehende System als das ganze Modul. Das Skript ist deshalb
-   ausführbar, wo Playwright vorhanden ist - und es ist genau der Ablauf,
-   mit dem diese Fassung visuell abgenommen wurde.
-
-   Voraussetzung:  npm i playwright   (oder ein vorhandener Chromium)
-   Ausführen:      node scripts/discover/browser-qa.mjs [--url http://localhost:8765]
-                   [--shots verzeichnis]
-
-   Einen lokalen Server startet man vorher mit:
-                   python3 -m http.server 8765
-   ========================================================================= */
-import { mkdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-
-const args = process.argv.slice(2);
-function arg(name, fallback) {
-  const i = args.indexOf("--" + name);
-  return i === -1 ? fallback : args[i + 1];
+#!/usr/bin/env node
+// Real-browser checks; no fixture interception and no simulated market data.
+// Browser QA of the one canonical Discover (/discover/, formerly served as /discover-v2/).
+// Usage: node scripts/discover/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/discover-qa
+import {createRequire} from 'node:module';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url);
+let playwright;
+try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
+const arg=(key,otherwise)=>{const i=process.argv.indexOf('--'+key);return i<0?otherwise:process.argv[i+1];};
+const base=arg('url','http://127.0.0.1:8765').replace(/\/$/,'');
+const out=arg('out','/tmp/discover-qa');await mkdir(out,{recursive:true});
+const engine=arg('engine','chromium');assert(['chromium','webkit'].includes(engine));
+const browser=await playwright[engine].launch({headless:true,...(engine==='chromium'?{executablePath:process.env.CHROMIUM_PATH||undefined}:{})});
+const checks=[],errors=[],shots=[],performance=[],accessibility=[],firstScreenEvidence=[],interactionEvidence=[],screenshotEvidence=[],designEvidence=[];
+let axePath;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
+async function a11y(page,key){if(!axePath)throw Error('axe-core required for accessibility gate');await page.addScriptTag({path:axePath});const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));accessibility.push({key,violations:result.violations,incomplete:result.incomplete});assert.deepEqual(result.violations.filter(v=>['critical','serious'].includes(v.impact)).map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);}
+async function check(name,fn){const started=Date.now();try{await fn();checks.push({name,pass:true,milliseconds:Date.now()-started});}catch(e){checks.push({name,pass:false,milliseconds:Date.now()-started,error:e.message});}}
+async function screenshot(page,name){
+ // Use the same actual clipping semantics as the canonical lazy loader.
+ // Bounding boxes alone count cards hidden above a scroll container as visible.
+ let readinessError=null;
+ try{
+  await page.evaluate(()=>document.fonts.ready);
+  await page.waitForFunction(()=>!Array.from(document.querySelectorAll('.dx-lazy-media[data-loading]')).some(node=>{
+   let r=node.getBoundingClientRect(),left=Math.max(0,r.left),right=Math.min(innerWidth,r.right),top=Math.max(0,r.top),bottom=Math.min(innerHeight,r.bottom);
+   for(let p=node.parentElement;p&&right>left&&bottom>top;p=p.parentElement){const s=getComputedStyle(p);if(s.overflowX!=='visible'||s.overflowY!=='visible'){r=p.getBoundingClientRect();left=Math.max(left,r.left);right=Math.min(right,r.right);top=Math.max(top,r.top);bottom=Math.min(bottom,r.bottom);}}
+   return right>left&&bottom>top;
+  }),{},{timeout:15000});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ }catch(error){readinessError=error.message;checks.push({name:name+' screenshot visible artwork readiness',pass:false,error:readinessError});}
+ const pending=await page.evaluate(()=>Array.from(document.querySelectorAll('.dx-lazy-media[data-loading]')).map(node=>({symbol:node.dataset.symbol,bounds:node.getBoundingClientRect().toJSON(),clippingAncestors:Array.from((function*(n){for(let p=n.parentElement;p;p=p.parentElement)yield p;})(node)).filter(parent=>{const style=getComputedStyle(parent);return style.overflowX!=='visible'||style.overflowY!=='visible';}).map(parent=>({className:parent.className,bounds:parent.getBoundingClientRect().toJSON(),overflow:getComputedStyle(parent).overflow}))})));
+ screenshotEvidence.push({name,readinessError,pending});
+ const path=out+'/'+name+'.png';try{await page.screenshot({path,fullPage:false});shots.push(path);}catch(error){checks.push({name:name+' screenshot capture',pass:false,error:error.message});}
 }
-const BASE = arg("url", "http://localhost:8765");
-const SHOTS = arg("shots", null);
-if (SHOTS) mkdirSync(SHOTS, { recursive: true });
-
-let chromium;
-try {
-  ({ chromium } = await import("playwright"));
-} catch (err) {
-  console.error("Playwright ist nicht installiert. 'npm i playwright' und erneut versuchen.");
-  process.exit(2);
+async function waitCounter(page,index){await page.waitForFunction(i=>new RegExp('^'+i+'\\s+von\\s','i').test(document.querySelector('.dx-feed-zaehler')?.textContent?.trim()||''),index);}
+async function visibleFeedStock(page){return page.locator('.dx-feed-spur').evaluate(n=>{const b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {index:Number(c.dataset.index),symbol:c.dataset.symbol,height:Math.max(0,Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top))};}).sort((a,b)=>b.height-a.height)[0];});}
+async function loadCompleteHome(page){
+ for(let attempt=0;attempt<8&&await page.locator('.v2-load-more').count();attempt++){
+  const before=await page.locator('.v2-journey > [data-surface]').count();
+  await page.locator('.v2-load-more').scrollIntoViewIfNeeded();
+  await page.waitForFunction(count=>document.querySelectorAll('.v2-journey > [data-surface]').length>count||document.querySelector('.v2-finish'),before);
+ }
+ assert.equal(await page.locator('.v2-load-more').count(),0,'Discovery journey still has an unloaded chunk');
 }
+async function premiumMobileAudit(page,key){
+ await loadCompleteHome(page);
+ const material=await page.evaluate(()=>{
+  const css=n=>getComputedStyle(n),rgb=value=>(value.match(/[\d.]+/g)||[]).slice(0,4).map(Number);
+  const luminance=value=>{const c=rgb(value);return c.length<3?null:(c[0]+c[1]+c[2])/3;};
+  const body=css(document.body),main=css(document.querySelector('.v2-main')),bar=css(document.querySelector('.v2-bar'));
+  const dock=document.querySelector('.v2-dock'),ds=css(dock),db=dock.getBoundingClientRect();
+  const active=dock.querySelector('[aria-current=page]'),as=active&&css(active);
+  return {bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
+   pureWhite:[body.backgroundColor,bar.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;}),
+   dock:{box:db.toJSON(),position:ds.position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),background:ds.backgroundColor,backdropFilter:ds.backdropFilter||ds.webkitBackdropFilter,boxShadow:ds.boxShadow,borderWidth:parseFloat(ds.borderTopWidth)},
+   active:{background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.backgroundColor)}};
+ });
+ designEvidence.push({key,type:'premium-material',...material});
+ assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance<45,'Active state must be a deep monochrome capsule');
 
-const results = [];
-let failures = 0;
+ const surfaces=page.locator('.v2-journey > [data-surface]');
+ const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
+ const pick={white:intensity.find(x=>x.lum!==null&&x.lum>245),color:intensity.find(x=>x.saturation>55&&x.lum>45),cinema:intensity.find(x=>x.lum!==null&&x.lum<55)};
+ for(const [tone,entry] of Object.entries(pick)){assert(entry,'Missing '+tone+' surface for three-intensity rhythm');const target=surfaces.nth(entry.index);await target.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await screenshot(page,key+'-dock-over-'+tone);}
 
-async function check(name, fn) {
-  try {
-    await fn();
-    results.push(["ok  ", name]);
-  } catch (err) {
-    failures++;
-    results.push(["FAIL", name + " — " + (err && err.message ? err.message : err)]);
-  }
+ const rhythm=[];const maxY=await surfaces.last().evaluate(n=>Math.max(0,n.getBoundingClientRect().bottom+scrollY-innerHeight*.8));
+ for(let i=0;i<12;i++){
+  const y=Math.round(maxY*i/11);await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(r)));
+  rhythm.push(await page.evaluate(index=>{
+   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map(n=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
+   const hit=candidates[0],n=hit&&hit.n;if(!n)return {index,empty:true};const charts=Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>c.getBoundingClientRect().height).filter(Boolean);
+   return {index,y:scrollY,id:n.dataset.surface,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-story-bars'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
+  },i));
+  await screenshot(page,key+'-rhythm-'+String(i+1).padStart(2,'0'));
+ }
+ const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
+ for(const chart of semanticCharts){const c=(chart.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(chart.direction==='up')assert(c[1]>c[0]&&c[1]>c[2],'Positive discovery chart is not green: '+chart.color);else assert(c[0]>c[1]&&c[0]>c[2],'Negative discovery chart is not red: '+chart.color);}
+ const semanticTokens=await page.evaluate(()=>{const root=document.querySelector('.v2-home'),probe=value=>{const n=document.createElement('i');n.style.color=value;root.append(n);const color=getComputedStyle(n).color;n.remove();return color;};return {positive:probe('var(--v2-green)'),negative:probe('var(--v2-red)'),neutral:probe('var(--v2-muted)')};});
+ const positive=(semanticTokens.positive.match(/[\d.]+/g)||[]).slice(0,3).map(Number),negative=(semanticTokens.negative.match(/[\d.]+/g)||[]).slice(0,3).map(Number);assert(semanticCharts.length>0,'Canonical journey exposes no directional chart');assert(positive[1]>positive[0]&&positive[1]>positive[2],'Positive system token is not green');assert(negative[0]>negative[1]&&negative[0]>negative[2],'Negative system token is not red');designEvidence.push({key,type:'semantic-chart-colours',charts:semanticCharts,tokens:semanticTokens});
+ const signatures=rhythm.filter(x=>!x.empty).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
+ const archetypes=new Set(rhythm.map(x=>x.archetype).filter(Boolean)),unique=new Set(signatures);
+ let longest=1,run=1;for(let i=1;i<signatures.length;i++){run=signatures[i]===signatures[i-1]?run+1:1;longest=Math.max(longest,run);}
+ const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-story-bars')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
+ const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
+ assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports');assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=8&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats');
 }
-function assert(condition, message) { if (!condition) throw new Error(message); }
-
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
-
-/* Konsolenfehler gelten als Fehlschlag - ausser den beiden, die nichts mit
-   der Anwendung zu tun haben. Geprüft wird die HERKUNFT der Meldung, nicht
-   ihr Text: der Browser meldet einen fehlgeschlagenen Abruf als "Failed to
-   load resource" ohne URL, und ein Textfilter darauf würde auch echte
-   Fehler verschlucken. */
-const IGNORE = /fonts\.googleapis|fonts\.gstatic|favicon\.ico/;
-
-/* Der Strom, der in dieser Umgebung nicht erreichbar ist.
- *
- * Seit V2 steht in der Auslieferung eine Realtime-Adresse bei
- * Cloudflare. Diese Entwicklungsumgebung erreicht sie nicht (der
- * Egress-Filter lehnt den Tunnel ab), und ein fehlgeschlagener
- * WebSocket-Aufbau schreibt eine Zeile in die Konsole, die kein
- * Skript verhindern kann - auch nicht der Hub, der den Fehler selbst
- * korrekt behandelt und auf den Snapshot zurueckfaellt.
- *
- * Die Ausnahme ist eng gefasst: sie greift nur fuer GENAU die Adresse
- * aus der Auslieferung und nur fuer Meldungen ueber den
- * Verbindungsaufbau. Ein Fehler im Hub, eine falsche Adresse oder eine
- * Ausnahme im Chart faellt weiterhin auf. Gezaehlt wird trotzdem, und
- * am Ende steht die Zahl im Protokoll.
- *
- * Dass der Strom laeuft, weist diese Suite ohnehin nicht nach; das tut
- * scripts/discover/browser-qa-realtime.mjs in GitHub Actions, wo der
- * Weg offen ist - dort gilt "keine Konsolenfehler" ohne Ausnahme. */
-const STROM_URL = (() => {
-  try {
-    const meta = JSON.parse(readFileSync(join(process.cwd(), "discover/data/meta.json"), "utf8"));
-    return (meta.realtime && meta.realtime.stream && meta.realtime.stream.url) || null;
-  } catch (err) { return null; }
-})();
-const STROM_UNERREICHBAR = STROM_URL
-  ? new RegExp("WebSocket connection to '" + STROM_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
-               "' failed: (Establishing a tunnel|Error during WebSocket handshake|.*ERR_)")
-  : /$^/;
-let stromUnerreichbar = 0;
-
-async function openPage(options) {
-  const page = await browser.newPage(options);
-  const errors = [];
-  page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
-  page.on("console", (m) => {
-    if (m.type() !== "error") return;
-    const herkunft = (m.location && m.location().url) || "";
-    if (IGNORE.test(herkunft) || IGNORE.test(m.text())) return;
-    if (STROM_UNERREICHBAR.test(m.text())) { stromUnerreichbar++; return; }
-    errors.push("CONSOLE " + m.text() + " (" + herkunft + ")");
-  });
-  page.on("requestfailed", (r) => {
-    if (IGNORE.test(r.url())) return;
-    const grund = (r.failure() && r.failure().errorText) || "";
-    /* Ein abgebrochener Vorlade-Versuch ist kein Fehler, sondern sein
-       Lebenszyklus: die Karte wird sichtbar, der Browser holt schon mal
-       die naechste Detailseite, der Nutzer klickt vorher weiter - und der
-       Browser bricht ab. Ignoriert wird deshalb genau diese Kombination:
-       abgebrochen UND eine Discover-Datendatei. Jede andere
-       fehlgeschlagene Anfrage faellt weiterhin auf. */
-    if (grund === "net::ERR_ABORTED" && /\/discover\/data\//.test(r.url())) return;
-    errors.push("REQUEST " + r.url() + " " + grund);
-  });
-  page.__errors = errors;
-  return page;
+try{
+await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
+for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorScheme of (engine==='webkit'?['dark']:['light','dark'])){
+ const ctx=await browser.newContext({viewport:{width,height:width<500?844:900},colorScheme,hasTouch:width<500,isMobile:width<500,deviceScaleFactor:1});
+ await ctx.addInitScript(()=>{window.__dv2Vitals={cls:0,longTasks:0,longTaskMs:0,shiftSources:[]};try{new PerformanceObserver(list=>list.getEntries().forEach(e=>{if(!e.hadRecentInput){window.__dv2Vitals.cls+=e.value;window.__dv2Vitals.shiftSources.push({value:e.value,sources:(e.sources||[]).map(s=>({node:s.node?.className||s.node?.tagName,previousRect:s.previousRect,currentRect:s.currentRect}))});}})).observe({type:'layout-shift',buffered:true});new PerformanceObserver(list=>list.getEntries().forEach(e=>{window.__dv2Vitals.longTasks++;window.__dv2Vitals.longTaskMs+=e.duration;})).observe({type:'longtask',buffered:true});}catch{}});
+ const page=await ctx.newPage();const key=width+'-'+colorScheme+(engine==='webkit'?'-webkit':'');
+ page.on('pageerror',e=>errors.push({key,message:e.message}));
+ const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
+ const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
+ await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
+ await check(key+' no horizontal page overflow',async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)));
+ await check(key+' stock discovery links',async()=>assert(await page.locator('main a[href*="/s/"]').count()>=4));
+ await check(key+' visible controls named',async()=>{const missing=await page.locator('main button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length&&!((n.getAttribute('aria-label')||n.textContent||'').trim())).map(n=>n.outerHTML));assert.deepEqual(missing,[]);});
+ await check(key+' document structure',async()=>{assert.equal(await page.locator('main').count(),1);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('html').getAttribute('lang'),'de');});
+ await page.waitForLoadState('networkidle');
+ performance.push({view:'home',key,...await page.evaluate(()=>({resources:performance.getEntriesByType('resource').map(r=>({url:r.name,bytes:r.decodedBodySize,duration:r.duration})),navigation:performance.getEntriesByType('navigation').map(r=>({domContentLoaded:r.domContentLoadedEventEnd,load:r.loadEventEnd})),domNodes:document.querySelectorAll('*').length}))});
+ // Discovery 2.1 redesign: +themes.js (Katalog der 40 Themenwelten) and the compact tile layer.
+ await check(key+' incremental view resource budget',async()=>{const resources=performance.at(-1).resources.filter(r=>/^\/discover\/(app|home|detail|themes)\.(js|css)$/.test(new URL(r.url).pathname));assert(resources.reduce((n,r)=>n+r.bytes,0)<=180000,'New view scripts/styles exceed 180 KB decoded');assert(resources.length<=12,'New view adds more than 12 requests');});
+ await check(key+' stable first render performance',async()=>{const metrics=await page.evaluate(()=>({...window.__dv2Vitals,domNodes:document.querySelectorAll('*').length}));performance.at(-1).vitals=metrics;assert(metrics.cls<=.15,'Cumulative layout shift exceeds 0.15: '+metrics.cls);assert(metrics.domNodes<=3000,'Initial home DOM is too large: '+metrics.domNodes);assert(metrics.longTaskMs<=1800,'First render accumulated excessive long tasks: '+metrics.longTaskMs);});
+ await check(key+' home accessibility',()=>a11y(page,key+'-home'));
+ await check(key+' navigation shows one Discover',async()=>{const nav=page.locator('vu-navigation');assert.equal(await nav.locator('a[href="/discover/"]').count(),1);assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);assert.equal(await nav.locator('a',{hasText:/Discover\s*(1\.0|2\.0|2\.1)/}).count(),0);});
+ await screenshot(page,key+'-home');
+ await check(key+' hero horizontal exploration',async()=>{
+  const track=page.locator('.v2-hero-track');assert(await track.locator('[data-symbol]').count()>=2,'Hero needs another canonical stock');
+  // Discovery 2.1: the hero image sits above the rail, so the rail may start below the first mobile viewport.
+  await track.scrollIntoViewIfNeeded();
+  const evidence=()=>track.evaluate(n=>{const b=n.getBoundingClientRect();return {scrollLeft:n.scrollLeft,clientWidth:n.clientWidth,cards:Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visibleWidth:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visibleWidth-a.visibleWidth)};});
+  const before=await evidence();
+  if(width<500&&engine==='chromium'){
+   const box=await track.boundingBox();const y=Math.min(box.y+box.height*.55,page.viewportSize().height-140);const start=box.x+box.width*.85,end=box.x+box.width*.15;
+   const touch=await ctx.newCDPSession(page);await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:start,y}]});
+   for(let step=1;step<=10;step++)await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start+(end-start)*step/10,y}]});
+   await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await touch.detach();
+  }else await track.evaluate(n=>{const cards=n.querySelectorAll('.v2-hero-item');n.scrollTo({left:cards[1].offsetLeft-cards[0].offsetLeft,behavior:'instant'});});
+  await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
+  const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});await screenshot(page,key+'-hero-next');
+ });
+ await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
+ await check(key+' responsive navigation remains reachable',async()=>{
+  const nav=page.locator('.v2-dock');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
+  assert(state.labels.length>=4,'Navigation needs named home/world/feed/search destinations');assert(state.labels.every(i=>i.label),'Navigation contains an unlabeled action');assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  if(width<500){assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=8&&gap<=80,'Mobile navigation must float above the safe-area edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Mobile targets smaller than 44px');assert(state.paddingBottom>=0);}
+  else assert.notEqual(state.position,'fixed','Desktop must use its distinct header navigation');interactionEvidence.push({key,type:'responsive-navigation',...state});
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='light'){
+  await check(key+' premium mobile material and diversity',()=>premiumMobileAudit(page,key));
+  await check(key+' compact worlds lead to compact multi-card collections',async()=>{await page.goto(base+'/discover/#/welten',{waitUntil:'networkidle'});const themeTiles=page.locator('.v2-theme-grid .v2-theme-tile');assert(await themeTiles.count()>=40,'All 40 Themenwelten must be listed');assert(await page.locator('.v2-theme-grid .v2-theme-tile img').count()>=1,'Themenwelten need their photos');const t1=await themeTiles.nth(0).boundingBox(),t2=await themeTiles.nth(1).boundingBox();assert(t1&&t2&&Math.abs(t1.y-t2.y)<4,'Mobile Themenwelten must form a compact two-column grid');const doors=page.locator('.v2-world-directory .v2-world-door');assert(await doors.count()>=8,'World directory needs multiple data-backed entrances');const styles=await doors.evaluateAll(nodes=>nodes.slice(0,4).map(n=>getComputedStyle(n).backgroundImage||getComputedStyle(n).backgroundColor));assert(new Set(styles).size>=3,'World entrances lack visual differentiation');const first=await doors.nth(0).boundingBox(),second=await doors.nth(1).boundingBox();assert(first&&second&&first.height<=page.viewportSize().height*.42,'World choice is still oversized: '+(first&&first.height));assert(Math.abs(first.y-second.y)<4&&first.width<page.viewportSize().width*.55,'Mobile worlds must form a compact two-column directory');await screenshot(page,key+'-worlds');const href=await doors.first().getAttribute('href');await page.goto(base+'/discover-v2/'+href,{waitUntil:'networkidle'});const stock=page.locator('.v2-main>.dx-grid .dx-poster').first();await stock.waitFor({state:'visible'});const card=await stock.boundingBox(),neighbour=await page.locator('.v2-main>.dx-grid .dx-poster').nth(1).boundingBox();assert(card&&neighbour&&Math.abs(card.y-neighbour.y)<4,'Collection must show several stocks side by side');assert(card.width<page.viewportSize().width*.55&&card.height<page.viewportSize().height*.7,'World stock card is still oversized: '+JSON.stringify(card));await screenshot(page,key+'-world-stocks');await page.goto(base+'/discover-v2/',{waitUntil:'networkidle'});await page.locator('.v2-hero-track .v2-stock').first().waitFor();});
+  await check(key+' home freshness contract is visible',async()=>{await page.locator('.v2-hero-track .dx-lazy-media').first().scrollIntoViewIfNeeded();await page.waitForTimeout(250);const live=page.locator('.v2-stock .dx-lazy-media[data-live]');assert(await live.count()>0,'Home does not consume canonical snapshot/intraday artwork');const invalid=await live.evaluateAll(nodes=>nodes.filter(n=>!['LIVE','LAST_SESSION','STALE','UNAVAILABLE'].includes(n.dataset.freshness||'')).map(n=>({symbol:n.dataset.symbol,freshness:n.dataset.freshness})));assert.deepEqual(invalid,[]);const caption=await page.locator('.v2-hero-track .v2-stock-caption').first().innerText();assert(/Tagesverlauf|Kursverlauf|nicht verfügbar|Keine Kursreihe/i.test(caption),'Structured period/source caption is missing: '+caption);});
+ }
+ await check(key+' search opens traps focus and restores it',async()=>{const opener=page.locator('.v2-dock-search:visible').first();await opener.click();const input=page.locator('input[type=search]').first();await input.waitFor({state:'visible'});await input.fill('AAPL');await page.waitForFunction(()=>Array.from(document.querySelectorAll('.dx-search .dx-result')).some(n=>/Apple|AAPL/.test(n.textContent)));for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');assert(await page.locator('.dx-search').evaluate(n=>n.contains(document.activeElement)),'Focus escaped search');}await screenshot(page,key+'-search');if(width===390)await check(key+' search accessibility',()=>a11y(page,key+'-search'));await page.keyboard.press('Escape');await input.waitFor({state:'hidden'});assert(await opener.evaluate(n=>n===document.activeElement),'Search opener focus not restored');});
+ await page.goto(base+'/discover/#/s/US_REAL/AAPL',{waitUntil:'networkidle'});await page.waitForTimeout(1000);
+ await check(key+' stock identity and chart',async()=>{assert(/Apple|AAPL/.test(await page.locator('main').innerText()));assert(await page.locator('main svg').count()>0,'No visual chart');});
+ await check(key+' stock overflow',async()=>{const overflow=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth,culprits:Array.from(document.querySelectorAll('main *')).map(n=>({node:n.className||n.tagName,right:n.getBoundingClientRect().right,left:n.getBoundingClientRect().left})).filter(x=>x.right>innerWidth+1||x.left<-1).slice(0,20)}));assert(overflow.page<=overflow.viewport+1,'Stock page overflows: '+JSON.stringify(overflow));});
+ await screenshot(page,key+'-stock');
+ await check(key+' dominant consumer chart and semantic colour',async()=>{const evidence=await page.evaluate(()=>{const svg=document.querySelector('.dx-chapter--chart svg.dx-range-chart,.dx-chapter--chart svg.dx-micro--intraday'),chapter=document.querySelector('.dx-chapter--chart'),direction=svg&&svg.getAttribute('data-direction'),color=svg&&getComputedStyle(svg).color;return {svg:svg&&svg.getBoundingClientRect().toJSON(),chapter:chapter&&chapter.getBoundingClientRect().toJSON(),viewport:{width:innerWidth,height:innerHeight},direction,color};});assert(evidence.svg,'Stock page has no primary price chart');assert(evidence.svg.width>=Math.min(330,evidence.viewport.width*.84),'Primary chart is too narrow');if(width<500)assert(evidence.svg.height>=180,'Primary mobile chart is too small: '+evidence.svg.height);if(evidence.direction==='up'){const c=(evidence.color.match(/[\d.]+/g)||[]).map(Number);assert(c[1]>c[0]&&c[1]>c[2],'Positive chart is not semantically green: '+evidence.color);}if(evidence.direction==='down'){const c=(evidence.color.match(/[\d.]+/g)||[]).map(Number);assert(c[0]>c[1]&&c[0]>c[2],'Negative chart is not semantically red: '+evidence.color);}designEvidence.push({key,type:'stock-chart',...evidence});});
+ await check(key+' chart price and source visible early',async()=>{const hero=page.locator('.dx-chart-hero').first();const bounds=await hero.boundingBox();assert(bounds,'Missing chart price hero');if(width<500)assert(bounds.y<=420,'Mobile chart price starts below 420px: '+bounds.y);const text=await hero.innerText();assert(/\d/.test(text)&&/Kurs|Schluss|Stand|Heute|Handelstag/i.test(text),'Missing source/session evidence: '+text);interactionEvidence.push({key,type:'chart-hero',bounds,text});});
+ await check(key+' unavailable chart ranges disabled',async()=>{const wrong=await page.locator('.dx-tf button').evaluateAll(nodes=>nodes.filter(n=>n.getAttribute('aria-disabled')==='true'&&!n.disabled).map(n=>n.textContent));assert.deepEqual(wrong,[]);assert(await page.locator('.dx-tf button').count()>0);});
+ await check(key+' chart range updates evidence',async()=>{const samples=[];for(const [label,range,word] of [['1M','1M','Monat'],['1J','1Y','Jahr']]){const button=page.locator('.dx-tf').getByRole('button',{name:label,exact:true});assert(await button.isEnabled(),'AAPL range unavailable: '+label);await button.click();await page.locator('.dx-range-chart-wrap[data-range="'+range+'"]').waitFor();assert.equal(await button.getAttribute('aria-pressed'),'true');const evidence=await page.locator('.dx-chart-hero').innerText();assert(evidence.includes(word),'Range context missing: '+evidence);samples.push({label,evidence});}assert.notEqual(samples[0].evidence,samples[1].evidence,'Range data did not update');interactionEvidence.push({key,type:'chart-range',samples});});
+ await check(key+' stock accessibility',()=>a11y(page,key+'-stock'));
+ await check(key+' fundamental metric and year selection update visual evidence',async()=>{const journey=page.locator('#journey');await journey.scrollIntoViewIfNeeded();const tabs=journey.getByRole('tab');assert(await tabs.count()>=2,'AAPL needs multiple canonical metrics');const first=await journey.locator('.dx-journey-kopf').innerText();const svgBefore=await journey.locator('.dx-journey-bild').innerHTML();await tabs.nth(1).click();assert.equal(await tabs.nth(1).getAttribute('aria-selected'),'true');assert.equal(await tabs.nth(0).getAttribute('aria-selected'),'false');const second=await journey.locator('.dx-journey-kopf').innerText();assert(first!==second&&svgBefore!==await journey.locator('.dx-journey-bild').innerHTML(),'Fundamental visual did not change');const bars=journey.locator('.dx-journey-bar');assert(await bars.count()>=3,'Fundamental chart needs selectable fiscal years');assert.equal(await journey.locator('.dx-journey-wert').count(),0,'Loose values must not cover the chart');const target=bars.nth(1);const title=await target.locator('title').textContent();await target.click();assert.equal(await target.getAttribute('aria-pressed'),'true');assert(await target.evaluate(n=>n.classList.contains('is-selected')),'Selected fiscal year is not visually active');const active=await journey.locator('.dx-journey-nach').innerText();const match=title&&title.match(/^GJ\s+([^:]+):\s*(.+)$/);assert(match&&active.includes(match[1])&&active.includes(match[2]),'Selected fiscal year and value did not move to the chart header');interactionEvidence.push({key,type:'fundamental-metric-year',metric:await tabs.nth(1).innerText(),before:first,after:second,selected:title,active});await journey.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-fundamentals');});
+ await check(key+' valuation is a distinct canonical metric module',async()=>{const section=page.locator('.dv2-stock-valuation');assert.equal((await section.locator('h2').first().innerText()).toLocaleLowerCase('de-DE'),'bewertung');const block=section.locator('.dv2-valuation-components');assert(await block.count()===1,'Valuation building-block module missing');const labels=await block.locator('.dv2-valuation-card span').allTextContents();assert(labels.length>=7&&labels.includes('KGV')&&labels.includes('KUV')&&labels.includes('Gewinnrendite')&&labels.includes('KGV / Markt')&&labels.includes('Free-Cashflow-Rendite'),'Expected AAPL valuation components missing: '+labels.join(', '));await section.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');});
+ await check(key+' stock offers onward company exploration',async()=>{
+  const next=page.locator('.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
+  const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');await next.click();await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
+  assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='light')await check(key+' CrowdStrike business copy and zero-line chart scale',async()=>{
+  await page.goto(base+'/discover/#/s/US_REAL/CRWD',{waitUntil:'networkidle'});await page.locator('.dv2-stock-business').waitFor();
+  const copy=await page.locator('.dv2-stock-business .dx-chapter-lead').innerText();assert(/Cloud-Plattform/.test(copy)&&/Sicherheit/.test(copy),'CrowdStrike business description still empty: '+copy);
+  const chart=page.locator('.dx-chapter--chart svg.dx-micro--intraday');if(await chart.count()){
+   await page.waitForFunction(()=>document.querySelector('.dx-chapter--chart svg.dx-micro--intraday')?.dataset.v2PreviousCloseScale==='true');
+   const scale=await chart.evaluate(svg=>{const base=svg.querySelector('.dx-art-base'),view=svg.viewBox.baseVal;return {mode:svg.dataset.v2PreviousCloseScale,baseY:Number(base?.getAttribute('y1')),bottom:view.height-svg.__basis.padBottom,height:view.height};});
+   assert.equal(scale.mode,'true');assert(Math.abs(scale.baseY-scale.bottom)<1,'Positive session no longer starts at the actual 0% line: '+JSON.stringify(scale));
+  }
+  await page.locator('.dv2-stock-business').scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
+ });
+ await page.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});
+ await check(key+' feed is bounded and swipes one screen',async()=>{
+  const track=page.locator('.dx-feed-spur');await track.waitFor();
+  const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
+  const visible=()=>track.evaluate(n=>{const bounds=n.getBoundingClientRect();const cards=Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(card=>{const box=card.getBoundingClientRect();return {symbol:card.dataset.symbol,index:card.dataset.index,visibleHeight:Math.max(0,Math.min(box.bottom,bounds.bottom)-Math.max(box.top,bounds.top))};}).sort((a,b)=>b.visibleHeight-a.visibleHeight);return {height:n.clientHeight,viewport:innerHeight,scrollTop:n.scrollTop,card:cards[0]};});
+  const before=await visible();assert(before.height>100&&before.height<=before.viewport,'Feed track is not viewport-bounded');
+  const counterBefore=await page.locator('.dx-feed-zaehler').innerText();
+  await track.evaluate(n=>{n.scrollTop=n.clientHeight;});await waitCounter(page,2);
+  const after=await visible(),counterAfter=await page.locator('.dx-feed-zaehler').innerText();
+  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','One screen scroll did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /i.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
+  interactionEvidence.push({key,type:'feed-single-screen',initialCards:count,before,after,counterBefore,counterAfter});
+  await screenshot(page,key+'-feed-second-stock');
+ });
+ await check(key+' feed continues beyond first batch',async()=>{await page.locator('.dx-feed-spur').waitFor();await page.locator('.dx-feed-spur').evaluate(n=>{n.scrollTop=n.scrollHeight;});await page.waitForFunction(()=>document.querySelectorAll('.dx-feed-screen[data-symbol]').length>12);const symbols=await page.locator('.dx-feed-screen[data-symbol]').evaluateAll(nodes=>nodes.map(n=>n.dataset.symbol));assert(symbols.length>12,'Feed stopped after first batch');assert.equal(symbols.length,new Set(symbols).size,'Feed contains duplicate symbols');});
+ await screenshot(page,key+'-feed');
+ if(width===390)await check(key+' feed accessibility',()=>a11y(page,key+'-feed'));
+ const savedCounter=await page.locator('.dx-feed-zaehler').innerText(),savedStock=await visibleFeedStock(page);
+ await check(key+' feed exit cleanup',async()=>{await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});assert(!await page.locator('body').evaluate(n=>n.classList.contains('dx-feed-aktiv')||n.classList.contains('v2-feed-active')));assert.equal(await page.locator('.dx-feed').count(),0);});
+ await check(key+' feed session resumes exploration',async()=>{
+  await page.locator('.v2-nav-explore').click();await waitCounter(page,1);await page.locator('.v2-feed-resume').waitFor();
+  const resumed=await visibleFeedStock(page);assert.equal(resumed.symbol,savedStock.symbol,'Session must resume at the same canonical company');assert.equal(resumed.index,0,'Resumed suffix must start at its first screen');assert(await page.locator('.dx-feed-screen[data-symbol]').count()<=24,'Resume eagerly mounted predecessor stocks');interactionEvidence.push({key,type:'feed-resume',savedCounter,savedStock,resumed});await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' deep session resume loads a bounded canonical suffix',async()=>{
+  const feed=await (await page.request.get(base+'/discover/data/feed/US_REAL.json')).json();const position=Math.min(120,feed.order.length-24);assert(position>84,'Need a genuine deep feed position');
+  await page.evaluate(index=>window.VUDiscover.memory.setPosition('feed:US_REAL',index),position);
+  const deep=await ctx.newPage(),requests=[];deep.on('pageerror',error=>errors.push({key:key+'-deep-resume',message:error.message}));deep.on('response',response=>{if(response.url().startsWith(base)&&response.status()>=400)bad.push({status:response.status(),url:response.url()});});deep.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/discover/data/stocks/US_REAL/'))requests.push(request.url());});
+  try{await deep.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});await deep.locator('.v2-feed-resume').waitFor();const visible=await visibleFeedStock(deep),count=await deep.locator('.dx-feed-screen[data-symbol]').count();assert.equal(visible.symbol,feed.order[position].s);assert(count>0&&count<=24,'Deep resume mounted '+count+' stocks');assert(requests.length<=24,'Deep resume fetched '+requests.length+' stock bundles');const allowed=new Set(feed.order.slice(position,position+24).map(entry=>entry.s));assert(requests.every(url=>allowed.has(decodeURIComponent(new URL(url).pathname.split('/').at(-1).replace(/\.json$/,'')))),'Deep resume requested predecessor or unrelated stocks');interactionEvidence.push({key,type:'deep-feed-resume',position,visible,mounted:count,stockRequests:requests.length});await screenshot(deep,key+'-feed-deep-resume');await deep.locator('.v2-feed-restart').click();await deep.locator('.v2-feed-resume').waitFor({state:'hidden'});await waitCounter(deep,1);assert.equal((await visibleFeedStock(deep)).symbol,feed.order[0].s,'Restart did not restore the canonical beginning');}finally{await deep.close();}
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' complete canonical home journey',async()=>{
+  const meta=await (await page.request.get(base+'/discover/data/meta.json')).json();
+  const contract=meta.home.find(h=>h.universeId==='US_REAL');
+  const chunks=await Promise.all(contract.chunks.map(async path=>(await (await page.request.get(base+path)).json())));
+  const expected=chunks.reduce((n,chunk)=>n+chunk.surfaces.length,0);
+  for(let attempt=0;attempt<chunks.length&&await page.locator('.v2-finish').count()===0;attempt++){
+   const before=await page.locator('.v2-journey > [data-surface]').count();
+   await page.locator('.v2-load-more').scrollIntoViewIfNeeded();
+   await page.waitForFunction(count=>document.querySelectorAll('.v2-journey > [data-surface]').length>count||document.querySelector('.v2-finish'),before);
+  }
+  assert.equal(await page.locator('.v2-finish').count(),1,'Journey must end once');
+  assert.equal(await page.locator('.v2-load-more').count(),0,'Unloaded chunk remains');
+  const surfaces=await page.locator('.v2-journey > :not(.v2-finish):not([data-block])').evaluateAll(nodes=>nodes.map(n=>({id:n.getAttribute('data-surface'),archetype:n.getAttribute('data-archetype'),className:n.className,title:n.querySelector('h2')?.textContent||''})));
+  assert(surfaces.length>=30,'Discovery journey is prematurely short');assert.equal(surfaces.length,expected,'Not every canonical surface was rendered');
+  const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
+  interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
+  const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');
+  for(const archetype of archetypes){const surface=page.locator('.v2-journey > [data-archetype="'+archetype+'"]').first();await surface.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-world-'+archetype);}
+  await page.locator('.v2-journey > :not(.v2-finish)').nth(Math.max(0,surfaces.length-4)).scrollIntoViewIfNeeded();await screenshot(page,key+'-late-discovery');
+  await page.locator('.v2-finish').scrollIntoViewIfNeeded();await screenshot(page,key+'-journey-finish');
+ });
+ await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
+ await ctx.close();
 }
-async function shot(page, name) {
-  if (SHOTS) await page.screenshot({ path: join(SHOTS, name + ".png") });
-}
-async function ueberstand(page) {
-  return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-}
-
-/* Die benannten Aufnahmen sollen zeigen, was ihr Name sagt. Ohne diesen
-   Schritt steht auf jedem Bild die Eingangsflaeche, weil die Seite beim
-   Pruefen nie gescrollt wird. */
-async function hinScrollen(page, sel, nummer, versatz) {
-  const gefunden = await page.evaluate(([s, i, v]) => {
-    /* Ueber den Index statt ueber :nth-of-type: jede Reihe steckt in
-       ihrem eigenen Platzhalter, weshalb sie alle das erste Element ihres
-       Typs sind - ein Selektor mit nth-of-type trifft nie etwas und die
-       Aufnahme zeigte stillschweigend die Eingangsflaeche. */
-    const alle = document.querySelectorAll(s);
-    const n = alle[i];
-    if (!n) return false;
-    window.scrollTo(0, window.scrollY + n.getBoundingClientRect().top - v);
-    return true;
-  }, [sel, nummer, versatz || 90]);
-  await page.waitForTimeout(700);
-  assert(gefunden, "fuer die Aufnahme fehlt das Element " + sel + " [" + nummer + "]");
-  const oben = await page.evaluate(() => window.scrollY);
-  assert(nummer === 0 || oben > 40, "die Seite wurde fuer die Aufnahme nicht gescrollt");
-}
-
-/* Eine zweite Seite in Telefongroesse, die schon waehrend der
-   Desktop-Pruefungen zur Verfuegung steht: Swipe und Einzelmodus sind
-   Telefonthemen und gehoeren dort geprueft, wo sie gebaut wurden. */
-const mobilVorschau = await openPage({ viewport: { width: 390, height: 844 },
-                                       isMobile: true, hasTouch: true });
-
-/* =============================================================== DESKTOP */
-const desktop = await openPage({ viewport: { width: 1440, height: 900 } });
-await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-await desktop.waitForTimeout(3200);
-
-await check("Eingangsfläche erzählt: Einordnung, Name, eine Zahl, ein Satz", async () => {
-  await desktop.waitForSelector(".dx-hero-title", { timeout: 10000 });
-  const titel = (await desktop.textContent(".dx-hero-title")).trim();
-  const kicker = (await desktop.textContent(".dx-kicker")).trim();
-  const zahl = (await desktop.textContent(".dx-hero-zahl b")).trim();
-  const satz = (await desktop.textContent(".dx-hero-line")).trim();
-  const belege = await desktop.$$(".dx-hero-belege li");
-  assert(titel.length > 1, "kein Titel in der Eingangsfläche");
-  assert(kicker.length > 3, "keine Einordnung in der Eingangsfläche");
-  assert(/[0-9]/.test(zahl) && /%|\$|€/.test(zahl),
-    "die grosse Zahl ist keine verstaendliche Zahl: " + zahl);
-  assert(satz.length > 8 && !/[A-Z]{3,}|Score|Perzentil/.test(satz),
-    "der Satz spricht Fachsprache: " + satz);
-  assert(belege.length >= 2, "weniger als zwei Belege");
-  const cta = await desktop.getAttribute(".dx-cta .dx-btn", "href");
-  assert(/#\/s\//.test(cta || ""), "die Eingangsfläche führt nicht auf einen Titel");
-  await shot(desktop, "01-hero");
-});
-
-await check("Eingangsfläche zeigt ein Datenbild aus echten Werten", async () => {
-  const pfade = await desktop.$$eval(".dx-hero-chart path", (ns) => ns.length);
-  /* V3: ein Datenbild ist eine echte Linie (Kursreihe) ODER die
-     Renditeleiter - nie mehr ein Renditepfad als Kurve. */
-  const art = await desktop.getAttribute(".dx-hero-chart", "data-art");
-  assert(art === "price" || art === "ladder", "kein Datenbild in der Eingangsfläche");
-  const bildunterschrift = await desktop.textContent(".dx-hero-caption");
-  assert(/Rendite über|Kursverlauf/.test(bildunterschrift), "das Datenbild ist nicht benannt");
-});
-
-await check("Featured-Wechsel über die Striche", async () => {
-  const striche = await desktop.$$(".dx-hero-nav button");
-  assert(striche.length >= 2, "nur ein Featured-Titel");
-  /* V4 §16: alle Flaechen liegen auf einer Spur; sichtbar ist die mit
-     aria-hidden="false". */
-  const aktiv = '.dx-hero-slide[aria-hidden="false"] .dx-hero-title';
-  const vorher = await desktop.textContent(aktiv);
-  await striche[1].click();
-  await desktop.waitForTimeout(600);
-  const nachher = await desktop.textContent(aktiv);
-  assert(vorher !== nachher, "der Wechsel ändert die Eingangsfläche nicht");
-  const sichtbar = await desktop.$$eval('.dx-hero-slide[aria-hidden="false"]', (ns) => ns.length);
-  assert(sichtbar === 1, sichtbar + " Flaechen gleichzeitig sichtbar");
-});
-
-await check("Eingangsfläche: Wischen mit dem Finger wechselt die Fläche (Pointer Events)", async () => {
-  /* Die Geste selbst, nicht der Knopf: pointerdown, Bewegung nach links,
-     pointerup - wie ein Daumen auf dem Telefon. Vertikales Ziehen darf
-     nichts wechseln. */
-  const box = await (await desktop.$(".dx-hero-viewport")).boundingBox();
-  const aktiv = '.dx-hero-slide[aria-hidden="false"]';
-  const vorher = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
-  const y = box.y + box.height / 2, x0 = box.x + box.width * 0.8;
-  await desktop.mouse.move(x0, y); await desktop.mouse.down();
-  for (let i = 1; i <= 8; i++) await desktop.mouse.move(x0 - i * (box.width * 0.06), y + i);
-  await desktop.mouse.up();
-  await desktop.waitForTimeout(600);
-  const nachher = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
-  assert(Number(nachher) === Number(vorher) + 1, "Wischen nach links wechselt nicht zur naechsten Flaeche (" + vorher + " -> " + nachher + ")");
-  /* Zurueck nach rechts. */
-  await desktop.mouse.move(box.x + box.width * 0.2, y); await desktop.mouse.down();
-  for (let i = 1; i <= 8; i++) await desktop.mouse.move(box.x + box.width * 0.2 + i * (box.width * 0.06), y);
-  await desktop.mouse.up();
-  await desktop.waitForTimeout(600);
-  const zurueck = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
-  assert(Number(zurueck) === Number(vorher), "Wischen nach rechts geht nicht zurueck");
-  /* Vertikal: kein Wechsel, kein Klick. */
-  await desktop.mouse.move(x0, y - 60); await desktop.mouse.down();
-  for (let i = 1; i <= 6; i++) await desktop.mouse.move(x0 - i * 2, y - 60 + i * 25);
-  await desktop.mouse.up();
-  await desktop.waitForTimeout(400);
-  const nachVertikal = await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"));
-  assert(Number(nachVertikal) === Number(vorher), "vertikales Ziehen hat die Flaeche gewechselt");
-  assert((await desktop.evaluate(() => location.hash)) === "" || /^#\/?$/.test(await desktop.evaluate(() => location.hash)), "eine Geste hat die Aktienseite geoeffnet");
-  /* Tastatur. */
-  await desktop.focus(".dx-hero"); await desktop.keyboard.press("ArrowRight"); await desktop.waitForTimeout(500);
-  assert(Number(await desktop.$eval(aktiv, (n) => n.getAttribute("data-index"))) === Number(vorher) + 1, "Pfeil rechts wechselt nicht");
-  await desktop.keyboard.press("ArrowLeft"); await desktop.waitForTimeout(500);
-});
-
-await check("Signature-Reihe: TOP 10 mit Rangziffern", async () => {
-  /* V4: mehrere Ranglisten (Top 10, S&P 500, NASDAQ-100, Dow Jones) - die
-     Signature-Reihe ist die mit der Kennung top-10. */
-  const ziffern = await desktop.$$eval('[data-surface="top-10"] .dx-rank-num',
-    (ns) => ns.map((n) => n.textContent.trim()));
-  assert(ziffern.length === 10, "TOP 10 zeigt " + ziffern.length + " Titel");
-  assert(ziffern[0] === "01" && ziffern[9] === "10", "Rangziffern stimmen nicht: " + ziffern.join(","));
-  await hinScrollen(desktop, '[data-surface="top-10"]', 0, 150);
-  await shot(desktop, "02-top10");
-});
-
-await check("Die Reihen haben verschiedene Formen (§6)", async () => {
-  /* V3 laedt die Startseite in Stuecken: erst bis unten scrollen. */
-  for (let i = 0; i < 14; i++) { await desktop.mouse.wheel(0, 1600); await desktop.waitForTimeout(250); }
-  await desktop.waitForLoadState("networkidle");
-  await desktop.waitForTimeout(400);
-  const formen = await desktop.evaluate(() => ({
-    rang: document.querySelectorAll(".dx-rank").length,
-    poster: document.querySelectorAll(".dx-poster:not(.dx-poster--compact)").length,
-    kompakt: document.querySelectorAll(".dx-poster--compact").length,
-    sektor: document.querySelectorAll(".dx-sector").length,
-    thema: document.querySelectorAll(".dx-theme").length,
-    gross: document.querySelectorAll(".dx-featured").length,
-    einzeln: document.querySelectorAll(".dx-immersive").length
-  }));
-  assert(formen.rang >= 10, "keine Rang-Poster");
-  assert(formen.poster > 0, "keine Standard-Poster");
-  assert(formen.kompakt > 0, "keine kompakten Poster");
-  assert(formen.sektor > 0, "keine Sektorkacheln");
-  assert(formen.thema >= 2, "keine Themenwelten");
-  assert(formen.gross === 1, "keine grosse Karte");
-  assert(formen.einzeln === 1, "kein Einstieg in den Einzelmodus");
-  await desktop.evaluate(() => window.scrollTo(0, 0));
-});
-
-await check("Jedes Poster zeigt Symbol, Signal und ein Datenbild", async () => {
-  /* V3: das Datenbild ist eine Linie (nur mit Kursreihe) oder die
-     Renditeleiter - beides sind Daten, keines davon ein Fake-Chart. */
-  const befund = await desktop.$$eval(".dx-poster", (posters) => posters.slice(0, 24).map((p) => ({
-    sym: (p.querySelector(".dx-poster-sym") || {}).textContent || "",
-    /* Seit der Price-Data-Schicht laedt eine Karte ihre Reihe erst, wenn
-       sie sichtbar wird. Der Platzhalter dafuer ("Kurs laedt") ist ein
-       gueltiger Zustand - das geladene Bild prueft browser-qa-v3.mjs. */
-    media: p.querySelectorAll(".dx-poster-media svg path, .dx-poster-media svg .dx-ladder-bar, " +
-                              ".dx-poster-media .dx-art-skeleton").length,
-    text: p.textContent
-  })));
-  for (const p of befund) {
-    assert(p.sym.trim().length > 0, "Poster ohne Symbol");
-    assert(p.media > 0, p.sym + ": kein Datenbild gezeichnet");
-    assert(!/\b(NaN|undefined|null)\b/.test(p.text), p.sym + ": Platzhalterwert auf der Karte");
-  }
-});
-
-/* Diese Pruefung hat frueher "jeder Titel genau einmal" verlangt. Die
-   Regel war zu streng: dass ein Marktfuehrer zugleich ein neues
-   Jahreshoch macht, ist der Befund, den man sehen will - ihn zu
-   verstecken, damit die Seite abwechslungsreicher wirkt, verschweigt
-   etwas. Geprueft wird jetzt das, was wirklich schadet: dass dieselben
-   Namen die Seite beherrschen. Die Grenzen stehen in discover/app.js
-   (DEDUP) und werden weiter unten einzeln nachgemessen. */
-await check("kein Titel beherrscht die Startseite (§16)", async () => {
-  /* V4: Ranglisten sind Wahrheit (Top 10, S&P 500, NASDAQ-100, Dow Jones) -
-     ein Titel, der in mehreren Indizes vorn steht, steht dort mehrfach. Die
-     Regel "hoechstens zweimal" gilt fuer die redaktionell sortierten Reihen. */
-  const symbole = await desktop.$$eval('.dx-rail-section:not([data-surface-type="ranking"]) .dx-poster .dx-poster-sym',
-    (ns) => ns.map((n) => n.textContent.trim()));
-  const zaehler = {};
-  symbole.forEach((s) => { zaehler[s] = (zaehler[s] || 0) + 1; });
-  const zuoft = Object.keys(zaehler).filter((s) => zaehler[s] > 2);
-  assert(zuoft.length === 0, "oefter als zweimal: " + zuoft.join(", "));
-  const anteil = symbole.length / Object.keys(zaehler).length;
-  assert(anteil < 1.5,
-    "im Schnitt steht jeder Titel " + anteil.toFixed(2) + "-mal auf der Seite");
-});
-
-await check("Hover zeigt zusätzliche Intelligence", async () => {
-  const poster = desktop.locator(".dx-rail-section .dx-poster").nth(11);
-  await poster.hover();
-  await desktop.waitForTimeout(600);
-  const sichtbar = await poster.evaluate((node) => {
-    const reveal = node.querySelector(".dx-reveal");
-    return reveal ? Number(getComputedStyle(reveal).opacity) : -1;
-  });
-  assert(sichtbar > 0.7, "der Hover-Vorhang bleibt unsichtbar (" + sichtbar + ")");
-  const skaliert = await poster.evaluate((node) => getComputedStyle(node).transform);
-  assert(skaliert !== "none", "das Poster reagiert nicht auf den Zeiger");
-  await shot(desktop, "05-hover");
-});
-
-await check("Kartennavigation führt auf die Detailseite", async () => {
-  const sym = await desktop.$eval(".dx-rail-section .dx-poster .dx-poster-sym", (n) => n.textContent.trim());
-  await desktop.click(".dx-rail-section .dx-poster");
-  await desktop.waitForSelector(".dx-dhero h1", { timeout: 8000 });
-  assert(desktop.url().indexOf("#/s/") !== -1, "der Hash wurde nicht gesetzt");
-  const kopf = await desktop.textContent(".dx-dhero-meta");
-  assert(kopf.indexOf(sym) !== -1, "die Detailseite zeigt ein anderes Symbol");
-});
-
-/* ------------------------------------------------------------- Suche */
-await check("Suche öffnet über die Tastatur und findet einen Titel", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2800);
-  await desktop.keyboard.press("/");
-  await desktop.waitForTimeout(500);
-  const offen = await desktop.$eval(".dx-search", (n) => n.classList.contains("on"));
-  assert(offen, "das Such-Overlay öffnet nicht über die Tastatur");
-  await desktop.fill(".dx-search input", "NV");
-  await desktop.waitForTimeout(700);
-  const treffer = await desktop.$$(".dx-result");
-  assert(treffer.length > 0, "kein Treffer für NV");
-  await shot(desktop, "06-suche");
-});
-
-await check("Suche: Pfeiltasten wählen, Enter öffnet", async () => {
-  await desktop.keyboard.press("ArrowDown");
-  await desktop.waitForTimeout(250);
-  const markiert = await desktop.$$eval(".dx-result[aria-selected='true']", (ns) => ns.length);
-  assert(markiert === 1, "kein Treffer markiert");
-  await desktop.keyboard.press("Enter");
-  await desktop.waitForTimeout(1800);
-  assert(/#\/s\//.test(desktop.url()), "Enter öffnet keinen Titel: " + desktop.url());
-});
-
-await check("Suche ohne Treffer sagt das, statt leer zu bleiben", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2800);
-  await desktop.keyboard.press("/");
-  await desktop.waitForTimeout(400);
-  await desktop.fill(".dx-search input", "ZZZQQQ");
-  await desktop.waitForTimeout(700);
-  const hinweis = await desktop.textContent(".dx-search-hint");
-  assert(/passt zu/.test(hinweis), "kein Hinweis auf das leere Ergebnis");
-  await desktop.keyboard.press("Escape");
-  await desktop.waitForTimeout(400);
-  const offen = await desktop.$eval(".dx-search", (n) => n.classList.contains("on"));
-  assert(!offen, "Escape schliesst das Overlay nicht");
-});
-
-/* -------------------------------------------------------- Kategorie */
-await check("Kategorieseite: Gitter, Filter und Abdeckung", async () => {
-  const start = Date.now();
-  await desktop.goto(BASE + "/discover/#/c/US_REAL/market-leaders", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-poster", { timeout: 9000 });
-  await desktop.waitForTimeout(500);
-  const karten = await desktop.$$(".dx-poster");
-  assert(karten.length >= 20, "nur " + karten.length + " Karten");
-  assert(Date.now() - start < 4000, "die Kategorie baut zu langsam auf");
-  const filter = await desktop.$$(".dx-filters button");
-  assert(filter.length > 1, "keine Filter");
-  await filter[1].click();
-  await desktop.waitForTimeout(500);
-  const danach = await desktop.$$(".dx-poster");
-  const leer = await desktop.$(".dx-empty");
-  assert(danach.length <= karten.length, "der Filter vergrössert die Liste");
-  assert(danach.length > 0 || leer, "der Filter liefert nichts und sagt nichts");
-  await shot(desktop, "07-kategorie");
-});
-
-/* ----------------------------------------------------------- Detail */
-await check("Detail: Kopf, Begründung und Chart", async () => {
-  /* Ein Titel mit Discovery-Signal - der erste der Rangliste, nicht ein
-     fest gewaehlter: im grossen Universum hat nicht jeder Titel eine
-     Begruendung, und geprueft wird die Seite eines Titels, der eine hat. */
-  const home = await (await desktop.request.get(BASE + "/discover/data/home/US_REAL.json")).json();
-  const rang = (home.surfaces || []).find((x) => x.type === "ranking" && x.cards && x.cards.length);
-  const sym = rang ? rang.cards[0].symbol : "NVDA";
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-chart svg", { timeout: 12000 });
-  /* Ebene 2: oben steht, was man ohne Vorkenntnisse lesen kann. */
-  const gross = await desktop.textContent(".dx-dhero-right .num");
-  assert(/[0-9]/.test(gross), "keine grosse Zahl im Kopf");
-  const story = await desktop.textContent(".dx-dhero-story");
-  assert(story.trim().length > 8, "keine Aussage im Kopf");
-  const achse = await desktop.$$(".dx-zeitachse > div");
-  assert(achse.length >= 3, "die Zeitachse fehlt oder ist unvollstaendig");
-  const spanne = await desktop.textContent(".dx-spanne p");
-  assert(/Kurs/.test(spanne), "die Jahresspanne wird nicht in Worten erklaert");
-  const warum = await desktop.textContent(".dx-why");
-  assert(/Warum/.test(warum), "keine Begründung");
-  const satz = (await desktop.textContent(".dx-why-lead")).trim();
-  assert(satz.length > 20 && /\.$/.test(satz), "die Begruendung ist kein Satz: " + satz);
-  /* Ebene 3: die Einzelbefunde stehen weiter unten, nicht im Kopf. */
-  const gruende = await desktop.$$(".dx-chapter .dx-why-item");
-  assert(gruende.length > 0, "keine Einzelbefunde im Kapitel \"Die Belege\"");
-  const obenText = await desktop.evaluate(() =>
-    document.querySelector(".dx-dhero").innerText + document.querySelector(".dx-why").innerText);
-  assert(!/Leadership Score|Perzentil|RS \d/.test(obenText),
-    "im Kopf steht noch eine Kennzahl aus der Analyseebene");
-  const pfade = await desktop.$$eval(".dx-chart svg path", (ns) => ns.length);
-  assert(pfade > 0, "der Chart enthält keine Linie");
-  await shot(desktop, "08-detail-kopf");
-});
-
-await check("Detail: Zeitraumwechsel zeichnet neu", async () => {
-  const vorher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
-  await desktop.click('.dx-tf button:text-is("6M")');
-  await desktop.waitForTimeout(900);
-  const nachher = await desktop.$eval(".dx-chart svg", (s) => s.innerHTML.length);
-  const aktiv = await desktop.$eval('.dx-tf button:text-is("6M")', (b) => b.getAttribute("aria-pressed"));
-  assert(aktiv === "true", "der gewählte Zeitraum ist nicht markiert");
-  assert(vorher !== nachher, "der Chart hat sich nicht verändert");
-});
-
-await check("Detail: gesperrte Zeiträume sind abgeblendet und begründet", async () => {
-  /* 1T ist entweder verfuegbar (ein Intraday-Snapshot liegt vor) oder
-     gesperrt mit Grund - am Knopf (title) oder im Kapitel. */
-  const eintag = await desktop.$('.dx-tf button:text-is("1T")');
-  assert(eintag, "kein 1T-Knopf");
-  if ((await eintag.getAttribute("disabled")) !== null) {
-    const grund = ((await eintag.getAttribute("title")) || "") + (await desktop.textContent(".dx-chapter"));
-    assert(/Intraday|Tagesverlauf/.test(grund), "der gesperrte Zeitraum nennt keinen Grund");
-  } else {
-    assert(await desktop.$(".dx-intraday-chart, .q-tchart, .dx-range-chart"), "1T verfuegbar, aber kein Chart");
-  }
-});
-
-await check("Detail: Chart-Werkzeuge sind verstaut und vollstaendig", async () => {
-  /* Frisch geladen, denn eine vorherige Pruefung koennte die Schublade
-     schon geoeffnet haben. Geprueft wird der Zustand, den ein Besucher
-     vorfindet. */
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-chart svg", { timeout: 12000 });
-  await desktop.waitForTimeout(600);
-  /* Die Werkzeuge gehoeren zur Tagesreihe: steht die Seite auf 1T
-     (Tagesverlauf), zuerst auf 1J wechseln. */
-  const jahr = await desktop.$('.dx-tf button:text-is("1J")');
-  if (jahr && !(await jahr.isDisabled())) { await jahr.click(); await desktop.waitForTimeout(700); }
-  /* checkVisibility statt offsetParent: der Inhalt eines geschlossenen
-     <details> bleibt in diesem Chromium im Layout (content-visibility),
-     hat also weiterhin einen offsetParent und sogar eine Groesse - er
-     wird nur nicht gezeichnet. Wer hier offsetParent fragt, bekommt
-     "sichtbar" und prueft damit das Gegenteil dessen, was er meint. */
-  const offenVorher = await desktop.$$eval(".dx-ctrl",
-    (ns) => ns.filter((n) => n.checkVisibility({ checkVisibilityCSS: true,
-                                                 contentVisibilityAuto: true })).length);
-  assert(offenVorher === 0, offenVorher + " Chart-Werkzeuge liegen ungefragt offen");
-  /* V4 §15: der Verbraucher-Chart ist Standard; Kerzen, Volumen, Overlays
-     und Indikatoren sind ein Werkzeug hinter einem Schalter. */
-  assert(await desktop.$(".dx-range-chart"), "der Verbraucher-Chart ist nicht der Standard");
-  await desktop.click(".dx-werkzeuge summary");
-  await desktop.waitForTimeout(400);
-  assert(await desktop.$(".dx-pro-toggle input"), "kein Schalter fuer den Analyse-Chart");
-  await desktop.click(".dx-pro-toggle input");
-  await desktop.waitForTimeout(800);
-  assert(await desktop.$(".q-tchart"), "der Analyse-Chart erscheint nicht");
-  await desktop.click('.dx-ctrl:text-is("EMA 20")');
-  await desktop.waitForTimeout(700);
-  assert(/EMA 20/.test(await desktop.textContent(".dx-legend")), "die Legende kennt die Serie nicht");
-  await desktop.click('.dx-ctrl:text-is("Struktur")');
-  await desktop.waitForTimeout(800);
-  const zonen = await desktop.$$eval(".dx-chart svg .ann-zone", (ns) => ns.length);
-  assert(zonen > 0, "keine Struktur-Zonen gezeichnet");
-  const erweitert = await desktop.$('.dx-ctrl[aria-expanded]');
-  await erweitert.click();
-  await desktop.waitForTimeout(400);
-  const sichtbar = await desktop.$$eval(".dx-more-controls .dx-ctrl", (ns) => ns.length);
-  assert(sichtbar > 3, "die erweiterte Technik bleibt verborgen");
-  await shot(desktop, "09-detail-chart");
-});
-
-await check("Detail: weiter entdecken (Zugehörigkeit und Nachbarn)", async () => {
-  const chips = await desktop.$$(".dx-chips .dx-chip");
-  assert(chips.length > 0, "keine Zugehörigkeiten");
-  const ziel = await chips[0].getAttribute("href");
-  assert(/#\/c\//.test(ziel || ""), "die Zugehörigkeit führt nirgendwohin");
-  const nachbarn = await desktop.$$(".dx-chapter .dx-rail .dx-poster");
-  assert(nachbarn.length >= 4, "keine ähnlichen Titel");
-});
-
-await check("Titel ohne ausgelieferte Kursreihe bleibt hochwertig (§23)", async () => {
-  /* Ein Titel ohne ausgelieferte Kursreihe - welcher, sagen die Daten.
-     Gibt es keinen mehr (volle Abdeckung), ist hier nichts zu pruefen. */
-  const meta = await (await desktop.request.get(BASE + "/discover/data/meta.json")).json();
-  const real = meta.universes.find((u) => u.universeId === "US_REAL");
-  if (real && real.withPriceSeries >= real.securities) return;
-  const suche = await (await desktop.request.get(BASE + "/discover/data/search/US_REAL.json")).json();
-  let ohne = null;
-  for (const e of suche.entries) { const d = await (await desktop.request.get(BASE + "/discover/data/stocks/US_REAL/" + e.s + ".json")).json(); if (!d.series.available && !d.priceSeries.path) { ohne = e.s; break; } }
-  if (!ohne) return;
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/" + ohne, { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2600);
-  const text = await desktop.textContent(".dx-detail");
-  assert(/Kursreihe/.test(text), "kein Hinweis auf die fehlende Kursreihe");
-  /* V3: ohne Kursreihe steht die Renditeleiter - keine Kurve. */
-  const balken = await desktop.$$eval(".dx-chart .dx-ladder-bar", (ns) => ns.length);
-  assert(balken >= 4, "ohne Kursreihe fehlt die Renditeleiter");
-  const kurve = await desktop.$$eval(".dx-chart .dx-spark", (ns) => ns.length);
-  assert(kurve === 0, "ohne Kursreihe wird trotzdem eine Kurve gezeichnet");
-  const preis = await desktop.textContent(".dx-price");
-  assert(!/NaN|0,00/.test(preis), "erfundener Kurs statt Begründung");
-  await shot(desktop, "11-ohne-kursreihe");
-});
-
-await check("Elliott wird nie als Ergebnis gezeigt, wenn keines vorliegt", async () => {
-  const zustand = (await desktop.textContent(".dx-ti-state")).trim();
-  assert(["Verfügbar", "Geringe Konfidenz", "Wird berechnet", "Nicht verfügbar"].indexOf(zustand) !== -1,
-    "unbekannter Elliott-Zustand: " + zustand);
-  if (zustand === "Nicht verfügbar") {
-    assert(!/Welle \d/.test(await desktop.textContent(".dx-ti")),
-      "eine Welle wird genannt, obwohl keine vorliegt");
-  }
-});
-
-
-/* =============================================== VISUELLE SPRACHE (§3-§8) */
-await check("jede Reihe traegt ihre eigene Farbwelt", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(3000);
-  const welten = await desktop.$$eval(".dx-rail-section[data-world]", (ns) =>
-    ns.map((n) => ({ welt: n.getAttribute("data-world"),
-                     farbe: getComputedStyle(n).getPropertyValue("--w").trim() })));
-  assert(welten.length >= 4, "weniger als vier Reihen tragen eine Welt");
-  const farben = new Set(welten.map((w) => w.farbe));
-  assert(farben.size >= 3, "die Reihen unterscheiden sich farblich nicht (" +
-    [...farben].join(", ") + ")");
-  assert(![...farben].some((f) => !f), "eine Reihe hat keine aufgeloeste Weltfarbe");
-  /* Zwei Welten in einem Bild - sonst zeigt die Aufnahme keinen Uebergang. */
-  await hinScrollen(desktop, ".dx-rail-section", 2, 120);
-  await shot(desktop, "03-reihen-welten");
-});
-
-await check("die Atmosphaere ist Flaeche, kein Kasten", async () => {
-  /* Ein sichtbares Rechteck haette scharfe Kanten: Maske UND Verlauf
-     muessen gesetzt sein, sonst steht die Kategorie als Block auf der
-     Seite - genau das, was der Auftrag ausschliesst. */
-  const atmo = await desktop.$eval(".dx-rail-section", (n) => {
-    const cs = getComputedStyle(n, "::before");
-    return { bg: cs.backgroundImage, maske: cs.maskImage || cs.webkitMaskImage,
-             rand: cs.borderTopWidth, radius: cs.borderRadius };
-  });
-  assert(/radial-gradient/.test(atmo.bg), "die Atmosphaere ist kein Verlauf");
-  assert(/gradient/.test(atmo.maske || ""), "die Atmosphaere hat harte Kanten (keine Maske)");
-  assert(parseFloat(atmo.rand) === 0, "die Atmosphaere hat einen sichtbaren Rahmen");
-});
-
-await check("das Datenbild folgt den Zahlen, nicht dem Zufall", async () => {
-  /* V3: Linie oder Leiter - die Form entsteht aus den Zahlen. Zwei Titel
-     sehen nur gleich aus, wenn ihre Zahlen gleich sind. */
-  /* V4: sichtbare Karten tragen den Tagesverlauf (Live-Hub); die
-     Tagesreihe (.dx-art) zeichnet, wo kein Snapshot vorliegt. Beide sind
-     Datenbilder: die Form entsteht aus den Kursen, nie aus dem Zufall. */
-  const bilder = await desktop.$$eval(".dx-rail-section .dx-poster .dx-art, .dx-rail-section .dx-poster [data-art='intraday']", (ns) =>
-    ns.slice(0, 8).map((n) => ({
-      form: n.getAttribute("data-art") === "price" || n.getAttribute("data-art") === "intraday"
-        ? (n.querySelector(".dx-art-line") || { getAttribute: () => "" }).getAttribute("d")
-        : [...n.querySelectorAll(".dx-ladder-bar")].map((b) => b.getAttribute("height")).join(","),
-      glanz: !!n.querySelector(".dx-art-glow"),
-      intraday: n.getAttribute("data-art") === "intraday",
-      label: n.getAttribute("aria-label") || (n.querySelector("title") ? n.querySelector("title").textContent : "")
-    })));
-  assert(bilder.length >= 4, "zu wenige Datenbilder");
-  const formen = new Set(bilder.map((b) => b.form));
-  assert(formen.size === bilder.length, "zwei Titel haben dasselbe Datenbild");
-  assert(bilder.every((b) => b.intraday ? /Tagesverlauf/.test(b.label) : (/Prozent/.test(b.label) && /Balken|Kursverlauf/i.test(b.label))),
-    "das Datenbild traegt keine Beschreibung aus seinen eigenen Zahlen");
-  await hinScrollen(desktop, ".dx-rail-section .dx-rail", 1, 200);
-  await shot(desktop, "04-poster-artwork");
-});
-
-await check("die Renditeleiter ist als solche benannt - kein Kursverlauf", async () => {
-  const text = await desktop.textContent(".dx-hero-caption");
-  assert(/Rendite über 1, 3, 6 und 12 Monate/.test(text) && /nicht als Kurskurve/.test(text) ||
-         /Echter Kursverlauf/.test(text),
-    "die Bildunterschrift sagt nicht, was man sieht: " + text);
-  const zahlen = await desktop.$$eval(".dx-poster .num", (ns) => ns.map((n) => n.textContent));
-  assert(!zahlen.some((z) => /^\s*\$/.test(z) && false), "unerwartete Kursangabe");
-});
-
-/* ================================ VERSTÄNDLICHKEIT (25-EURO-SPARPLAN-TEST) */
-
-/* Die Frage, an der sich diese Ausbaustufe messen lassen muss: kann ein
-   Mensch, der noch nie einen Screener benutzt hat, die Startseite lesen?
-   Geprüft wird deshalb nicht, ob etwas schön aussieht, sondern ob auf der
-   ersten Ebene Fachsprache steht. */
-const FACHSPRACHE = /\bRS\s?\d|\bRVOL\b|Leadership\s?\d|Momentum Score|Relative Volume|\bPerzentil\b|Breakout|[0-9]+[.,]?[0-9]*x Volumen|\bScore\s?\d/;
-
-await check("auf der Startseite steht keine Fachsprache", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(3000);
-  const text = await desktop.evaluate(() => {
-    /* Nur das, was man wirklich sieht: der Fussnotenapparat mit der
-       Methodik darf und soll die Fachbegriffe nennen. */
-    const teile = [document.querySelector(".dx-hero"),
-                   ...document.querySelectorAll(".dx-rail-section")];
-    return teile.filter(Boolean).map((n) => n.innerText).join("\n");
-  });
-  const treffer = text.split("\n").filter((z) => FACHSPRACHE.test(z));
-  assert(treffer.length === 0, "Fachsprache auf der Startseite: " + treffer.slice(0, 4).join(" | "));
-});
-
-await check("jede Karte beantwortet: welche Firma, warum, wie viel", async () => {
-  const karten = await desktop.$$eval(".dx-rail-section .dx-poster", (ns) =>
-    ns.slice(0, 24).map((n) => ({
-      name: (n.querySelector(".dx-poster-name") || {}).textContent || "",
-      sym: (n.querySelector(".dx-poster-sym") || {}).textContent || "",
-      story: (n.querySelector(".dx-story") || {}).textContent || "",
-      zahl: (n.querySelector(".dx-zahl b") || {}).textContent || "",
-      /* Datenbild oder der Platzhalter, der es laedt - beides ist eine
-         Antwort; ein leeres Feld waere keine. */
-      /* V4: der Tagesverlauf (Live-Hub) ist ein Verlauf wie die Tagesreihe. */
-      bild: !!n.querySelector(".dx-art, .dx-art-skeleton, [data-art='intraday']")
-    })));
-  assert(karten.length >= 12, "zu wenige Karten");
-  for (const k of karten) {
-    /* Name oder - wo keiner ausgeliefert ist - das Kuerzel als Ueberschrift. */
-    assert(k.name.trim().length > 0, "Karte ohne Ueberschrift: " + k.sym);
-    assert(k.story.trim().length > 6, "Karte ohne Aussage: " + (k.name || k.sym));
-    assert(/[0-9]/.test(k.zahl) && /%|\$|€/.test(k.zahl),
-      "Karte ohne verstaendliche Zahl: " + (k.name || k.sym) + " zeigt \"" + k.zahl + "\"");
-    assert(k.bild, "Karte ohne Verlauf: " + (k.name || k.sym));
-  }
-  /* Die meisten Karten sollen eine Firma nennen, nicht nur ein Kürzel. */
-  /* Firmennamen liegen nur fuer kuratierte und SEC-bekannte Titel vor; das
-     grosse Universum (Anbieter-Tickerliste ohne Namen) traegt sie erst mit
-     dem Company Master. Bis dahin: mindestens ein Teil der Karten nennt
-     eine Firma, keine Karte bleibt ohne Ueberschrift. */
-  const mitNamen = karten.filter((k) => k.name.trim() !== k.sym.trim()).length;
-  assert(mitNamen >= 3,
-    "nur " + mitNamen + " von " + karten.length + " Karten nennen eine Firma");
-});
-
-await check("die Sammlungen heissen, wie ein Mensch sie nennen wuerde", async () => {
-  const titel = await desktop.$$eval(".dx-rail-head h2", (ns) =>
-    ns.map((n) => n.textContent.trim()));
-  assert(titel.length >= 5, "zu wenige Sammlungen");
-  const englisch = /\b(LEADERS?|BREAKING|MOMENTUM|RELATIVE|STRENGTH|WATCH|SCREEN)\b/i;
-  for (const t of titel) {
-    assert(!englisch.test(t), "Screener-Begriff als Sammlung: " + t);
-    assert(t.length >= 8, "Sammlung ohne Aussage: " + t);
-  }
-});
-
-await check("keine Aussage widerspricht ihrer Zahl", async () => {
-  const paare = await desktop.$$eval(".dx-rail-section .dx-poster", (ns) =>
-    ns.map((n) => ({
-      story: (n.querySelector(".dx-story") || {}).textContent || "",
-      zahl: (n.querySelector(".dx-zahl b") || {}).textContent || ""
-    })));
-  const stark = /(stärksten|Marktführ|Aufwärtstrend|im Plus|davon|Aufwind|Bewegung)/;
-  const benennt = /^(Zuletzt schwächer|Etwas unter|Deutlich unter|Nach schwachen)/;
-  for (const p of paare) {
-    if (!/^−/.test(p.zahl.trim())) continue;
-    assert(!stark.test(p.story) || benennt.test(p.story),
-      "\"" + p.story + "\" ueber " + p.zahl);
-  }
-});
-
-await check("die Suche zeigt Firmen, keine Kuerzelliste", async () => {
-  await desktop.keyboard.press("/");
-  await desktop.waitForTimeout(500);
-  await desktop.fill(".dx-search input", "ener");
-  await desktop.waitForTimeout(800);
-  const treffer = await desktop.$$eval(".dx-result", (ns) => ns.slice(0, 8).map((n) => ({
-    name: (n.querySelector(".nm") || {}).childNodes ? n.querySelector(".nm").childNodes[0].textContent : "",
-    wert: (n.querySelector(".val") || {}).textContent || ""
-  })));
-  assert(treffer.length > 0, "keine Treffer");
-  for (const t of treffer) {
-    assert(t.name.trim().length > 2, "Treffer ohne Namen");
-    assert(!/LEAD/.test(t.wert), "die Trefferliste zeigt noch einen Score: " + t.wert);
-  }
-  await desktop.keyboard.press("Escape");
-  await desktop.waitForTimeout(400);
-});
-
-/* ========================================== MEHRFACHNENNUNGEN (§16) */
-function zaehlerWerte(z) { return Object.keys(z || {}); }
-await check("ein Titel steht hoechstens zweimal auf der Startseite", async () => {
-  const zaehler = await desktop.$$eval('.dx-rail-section:not([data-surface-type="ranking"])', (ns) => {
-    const out = {};
-    ns.forEach((sec) => sec.querySelectorAll(".dx-poster-sym").forEach((s) => {
-      out[s.textContent] = (out[s.textContent] || 0) + 1;
-    }));
-    return out;
-  });
-  const zuoft = Object.keys(zaehler).filter((k) => zaehler[k] > 2);
-  assert(zuoft.length === 0, "zu oft genannt: " + zuoft.join(", "));
-  const mehrfach = Object.keys(zaehler).filter((k) => zaehler[k] === 2);
-  /* Im grossen Universum wiederholt sich ein Titel selten - die Regel
-     "hoechstens zweimal" ist dann erfuellt, nicht "zu streng". */
-  if (mehrfach.length === 0) return;
-  assert(mehrfach.length > 0,
-    "kein einziger Titel erscheint zweimal - die Regel ist zu streng geraten");
-});
-
-await check("keine Reihe besteht aus Wiederholungen", async () => {
-  const reihen = await desktop.$$eval(".dx-rail-section", (ns) =>
-    ns.map((sec) => ({
-      titel: (sec.querySelector("h2") || {}).textContent || "",
-      karten: sec.querySelectorAll(".dx-poster-sym").length,
-      echos: sec.querySelectorAll(".dx-echo").length
-    })).filter((r) => r.karten > 0));
-  reihen.forEach((r) => {
-    assert(r.echos <= 3, r.titel + " zeigt " + r.echos + " Zweitnennungen");
-    assert(r.echos * 2 <= r.karten, r.titel + " besteht ueberwiegend aus Zweitnennungen");
-  });
-});
-
-await check("jede Zweitnennung sagt, woher man den Titel kennt", async () => {
-  const texte = await desktop.$$eval(".dx-echo", (ns) => ns.map((n) => n.textContent.trim()));
-  assert(texte.every((t) => /^auch in \S/.test(t)), "eine Zweitnennung bleibt unerklaert");
-});
-
-await check("TOP 10 zeigt die echte Rangliste, ungefiltert", async () => {
-  const gezeigt = await desktop.$$eval('[data-surface="top-10"] .dx-poster-sym',
-    (ns) => ns.map((n) => n.textContent));
-  const echt = await desktop.evaluate(async () => {
-    const r = await fetch("/discover/data/rows/US_REAL/market-leaders.json");
-    const j = await r.json();
-    return j.cards.slice(0, 10).map((c) => c.symbol);
-  });
-  assert(gezeigt.length === 10, "TOP 10 zeigt " + gezeigt.length + " Titel");
-  assert(gezeigt.join(",") === echt.join(","),
-    "die Signature-Reihe weicht von der Rangliste ab:\n    " + gezeigt.join(",") +
-    "\n    " + echt.join(","));
-});
-
-/* ============================================ DETAILSEITE ZWEI TEMPERATUREN (§20) */
-await check("die Detailseite traegt oben die Welt und wird unten ruhig", async () => {
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-dhero", { timeout: 12000 });
-  await desktop.waitForTimeout(1200);
-  const welt = await desktop.getAttribute(".dx-detail", "data-world");
-  assert(welt, "die Detailseite kennt ihre Farbwelt nicht");
-  const kopf = await desktop.$eval(".dx-dhero", (n) => getComputedStyle(n).getPropertyValue("--w").trim());
-  const unten = await desktop.$eval(".dx-detail .dx-chapter",
-    (n) => getComputedStyle(n).getPropertyValue("--w").trim());
-  assert(kopf && unten, "die Farbwelt loest sich nicht auf");
-  assert(kopf !== unten, "die Analyse traegt dieselbe Kategoriefarbe wie der Kopf");
-  /* Die Aufnahme soll den ruhigen Teil zeigen, nicht den Kopf. */
-  await hinScrollen(desktop, ".dx-detail .dx-chapter", 2, 80);
-  await shot(desktop, "10-detail-analyse");
-});
-
-/* ================================================= DUNKLER HEADER (§18) */
-await check("der dunkle Header betrifft ausschliesslich Discover", async () => {
-  const lese = async (pfad) => {
-    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
-    await seite.goto(BASE + pfad, { waitUntil: "domcontentloaded" });
-    await seite.waitForTimeout(700);
-    const wert = await seite.evaluate(() => {
-      const nav = document.querySelector("vu-navigation");
-      if (!nav || !nav.shadowRoot) return null;
-      const h = nav.shadowRoot.querySelector("header");
-      const a = nav.shadowRoot.querySelector("nav a");
-      return { bg: getComputedStyle(h).backgroundColor,
-               ink: getComputedStyle(a).color,
-               ziele: [...nav.shadowRoot.querySelectorAll("nav a")]
-                 .map((x) => x.getAttribute("href")).join(",") };
-    });
-    await seite.close();
-    return wert;
-  };
-  /* V4.1 §12: Discover hat ein Farbschema (System, Hell, Dunkel). Der
-     Header folgt ihm - dunkel, wenn Discover dunkel ist, hell, wenn hell.
-     Gemessen wird beides: die Kopplung (Attribut = Schema der Seite) und
-     der dunkle Fall mit gespeicherter Wahl. */
-  const gekoppelt = await (async () => {
-    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
-    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
-    await seite.waitForTimeout(700);
-    const w = await seite.evaluate(() => ({
-      schema: document.documentElement.getAttribute("data-theme"),
-      nav: document.querySelector("vu-navigation").getAttribute("theme"),
-      bg: getComputedStyle(document.querySelector("vu-navigation").shadowRoot.querySelector("header")).backgroundColor }));
-    await seite.close();
-    return w;
-  })();
-  assert(gekoppelt.schema === "light" || gekoppelt.schema === "dark", "Discover traegt kein Farbschema: " + gekoppelt.schema);
-  assert(gekoppelt.nav === gekoppelt.schema, "der Header folgt dem Schema nicht: " + JSON.stringify(gekoppelt));
-  assert(gekoppelt.schema === "dark" ? /rgba?\(8, 8, 10/.test(gekoppelt.bg) : /rgba?\(255, 255, 255/.test(gekoppelt.bg),
-    "Header und Schema passen nicht zusammen: " + JSON.stringify(gekoppelt));
-  const dunkel = await (async () => {
-    const seite = await openPage({ viewport: { width: 1440, height: 900 } });
-    await seite.addInitScript(() => { try { localStorage.setItem("vu-discover-theme-v1", "dark"); } catch (e) {} });
-    await seite.goto(BASE + "/discover/", { waitUntil: "domcontentloaded" });
-    await seite.waitForTimeout(700);
-    const w = await seite.evaluate(() => {
-      const nav = document.querySelector("vu-navigation");
-      return { bg: getComputedStyle(nav.shadowRoot.querySelector("header")).backgroundColor,
-               badge: !!nav.shadowRoot.querySelector(".preview"),
-               ink: getComputedStyle(nav.shadowRoot.querySelector("nav a")).color,
-               ziele: [...nav.shadowRoot.querySelectorAll("nav a")]
-                 .map((x) => x.getAttribute("href")).join(",") };
-    });
-    await seite.close();
-    return w;
-  })();
-  assert(dunkel, "auf /discover/ fehlt die Navigation");
-  assert(/rgba?\(8, 8, 10/.test(dunkel.bg), "der Discover-Header ist nicht dunkel: " + dunkel.bg);
-  assert(!dunkel.badge, "die Plakette 'Development Preview' steht noch im Discover-Kopf");
-  /* /quant/ leitet seit dem Quant-2.0-Release (17.09.2026) auf /vu2/ um und
-     traegt die gemeinsame Navigation nicht mehr. Das ist eine Entscheidung
-     des anderen Arbeitsstrangs, keine Regression dieser Fassung - geprueft
-     wird der Header deshalb auf den Seiten, die ihn weiterhin einbinden.
-     Dass Discover als einzige Flaeche ein eigenes Schema hat, ist der Punkt
-     dieser Pruefung, und der bleibt. */
-  for (const pfad of ["/dashboard/", "/news/", "/macro/", "/academy/"]) {
-    const hell = await lese(pfad);
-    assert(hell, "auf " + pfad + " fehlt die Navigation");
-    assert(/rgba?\(255, 255, 255/.test(hell.bg),
-      pfad + " hat einen veraenderten Header bekommen: " + hell.bg);
-    assert(hell.ziele === dunkel.ziele,
-      pfad + " hat andere Navigationsziele als Discover - die Logik wurde veraendert");
-  }
-});
-
-/* ============================================ AKTIENSEITE ALS EBENE 2 */
-
-await check("die Aktienseite erklaert in vier Worten, worum es geht", async () => {
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-30", { timeout: 12000 });
-  const zellen = await desktop.$$eval(".dx-30-zelle", (ns) => ns.map((n) => ({
-    label: (n.querySelector(".dx-30-label") || {}).textContent || "",
-    wert: (n.querySelector(".dx-30-wert") || {}).textContent || "",
-    beleg: (n.querySelector(".dx-30-beleg") || {}).textContent || ""
-  })));
-  assert(zellen.length >= 4, "weniger als vier Einordnungen");
-  const labels = zellen.map((z) => z.label.trim()).join(",");
-  assert(/Wachstum/.test(labels) && /Bewertung/.test(labels) &&
-         /Trend/.test(labels) && /Risiko/.test(labels), "es fehlt eine Einordnung: " + labels);
-  for (const z of zellen) {
-    assert(z.wert.trim().length > 2, z.label + " ohne Antwort");
-    assert(z.beleg.trim().length > 4, z.label + " ohne Beleg");
-    assert(!/RSI|RVOL|Perzentil|Score\s?\d/.test(z.wert), z.label + " antwortet in Fachsprache");
-  }
-});
-
-await check("jede Einordnung laesst sich erklaeren, ohne die Seite zu verlassen", async () => {
-  const auf = await desktop.$$(".dx-was summary");
-  assert(auf.length >= 3, "zu wenige Erklaerungen");
-  await auf[1].click();
-  await desktop.waitForTimeout(300);
-  const text = await desktop.$eval(".dx-was[open] p", (n) => n.textContent);
-  assert(text.length > 40, "die Erklaerung ist leer");
-  assert(!/RSI|Perzentil/.test(text), "die Erklaerung erklaert mit Fachsprache: " + text);
-});
-
-await check("die Waage zeigt beide Seiten", async () => {
-  const pro = await desktop.$$(".dx-waage-spalte--pro li");
-  const contra = await desktop.$$(".dx-waage-spalte--contra li");
-  assert(pro.length > 0, "keine Gruende dafuer");
-  assert(contra.length > 0, "keine Gegenpunkte — eine Seite ohne Risiko ist Werbung");
-  /* Der Fuss des Waage-Kapitels - nicht der erste Kapitelfuss der Seite
-     (Damals vs. heute und Journey stehen jetzt davor). */
-  const fuss = await desktop.$eval(".dx-waage", (n) => { const k = n.closest(".dx-chapter") || n.parentElement; const f = k.querySelector(".dx-kapitel-fuss"); return f ? f.textContent : ""; });
-  assert(/keine Anlageempfehlung/.test(fuss || ""),
-    "der Seite fehlt die Klarstellung, dass sie nicht empfiehlt");
-});
-
-await check("Geschaeftszahlen erscheinen nur, wo es welche gibt", async () => {
-  const mitZahlen = await desktop.$$eval(".dx-firma > div", (ns) => ns.length);
-  assert(mitZahlen >= 3, "fuer NVDA fehlen die Geschaeftszahlen");
-  const text = await desktop.textContent(".dx-firma");
-  assert(/Mrd|Mio/.test(text), "die Umsatzzahl ist nicht lesbar formatiert: " + text);
-
-  /* Und die Gegenprobe: ein Titel ohne Fundamentaldaten erfindet keine.
-     Welcher das ist, sagen die Daten (kein CIK im Consumer-Index), nicht
-     eine feste Liste - seit die SEC-Bundles das Produktuniversum abdecken,
-     hat fast jeder bekannte Name Geschaeftszahlen. */
-  /* Gefragt wird die AUSLIEFERUNG, nicht die Quelle dahinter: ob ein Titel
-     Geschaeftszahlen hat, steht in seiner eigenen Detaildatei. Frueher las
-     diese Pruefung den Consumer-Index der SEC-Schicht - den liefert die
-     Produktion seit dem Quant-2.0-Release nicht mehr aus (die
-     Release-Projektion laesst quant/data/sec/ bewusst weg), und ein Abruf
-     ins Leere erzeugte hier einen 404 samt Konsolenfehler, den niemand
-     ausser dieser Pruefung verursacht hat. Die Detaildateien sagen
-     dasselbe, und sie sind das, was der Browser wirklich liest. */
-  const ohneSymbol = await desktop.evaluate(async () => {
-    const hatKeine = (d) => !!(d && d.geschaeftszahlen && d.geschaeftszahlen.status !== "CALCULATED");
-    const leaders = await (await fetch("/discover/data/rows/US_REAL/market-leaders.json")).json();
-    for (const c of (leaders.cards || [])) {
-      const d = await (await fetch("/discover/data/stocks/US_REAL/" + c.symbol + ".json")).json().catch(() => null);
-      if (hatKeine(d)) return c.symbol;
-    }
-    const alle = await (await fetch("/discover/data/search/US_REAL.json")).json();
-    for (const e of (alle.entries || []).slice(0, 400)) {
-      const s = e.symbol || e.s; if (!s) continue;
-      const d = await (await fetch("/discover/data/stocks/US_REAL/" + s + ".json")).json().catch(() => null);
-      if (hatKeine(d)) return s;
-    }
-    return null;
-  });
-  assert(ohneSymbol, "kein Titel ohne Geschaeftszahlen gefunden");
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/" + ohneSymbol, { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-30", { timeout: 12000 });
-  const ohne = await desktop.$$(".dx-firma > div");
-  assert(ohne.length === 0, "fuer einen Titel ohne Geschaeftszahlen stehen trotzdem welche da");
-  const grund = await desktop.textContent(".dx-chapter .dx-why-empty");
-  assert(/keine Geschäftszahlen/.test(grund || ""), "der fehlende Grund wird nicht genannt");
-  const leer = await desktop.$$eval(".dx-30-wert--leer", (ns) => ns.length);
-  assert(leer >= 1, "eine fehlende Einordnung wird nicht als fehlend gezeigt");
-});
-
-await check("die Analyse steht unter einer sichtbaren Grenze", async () => {
-  await desktop.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await desktop.waitForSelector(".dx-trenner", { timeout: 12000 });
-  const y = (sel) => desktop.$eval(sel, (n) => Math.round(n.getBoundingClientRect().top + window.scrollY));
-  const trenner = await y(".dx-trenner");
-  const dreissig = await y(".dx-30");
-  const waage = await y(".dx-waage");
-  assert(dreissig < trenner && waage < trenner,
-    "die Einordnung steht unter der Analysegrenze");
-  /* Die Einzelbefunde gibt es nur bei einem Discovery-Signal; sonst steht
-     unter der Grenze die Analyse (Panels). */
-  const belegeNode = await desktop.$(".dx-chapter .dx-why-grid");
-  if (belegeNode) assert((await y(".dx-chapter .dx-why-grid")) > trenner, "die Einzelbefunde stehen ueber der Analysegrenze");
-  else assert((await y(".dx-panels")) > trenner, "die Analyse steht ueber der Grenze");
-});
-
-/* ===================================================== SWIPE UND FEED */
-
-await check("die Reihen lassen sich mit der Tastatur bedienen", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(3000);
-  const vorher = await desktop.$eval(".dx-rail", (t) => { t.focus(); return t.scrollLeft; });
-  await desktop.keyboard.press("ArrowRight");
-  await desktop.waitForTimeout(700);
-  const nachher = await desktop.$eval(".dx-rail", (t) => t.scrollLeft);
-  assert(nachher > vorher + 100, "die Pfeiltaste bewegt die Reihe nicht");
-  await desktop.keyboard.press("Home");
-  await desktop.waitForTimeout(600);
-  assert((await desktop.$eval(".dx-rail", (t) => t.scrollLeft)) < 20, "Pos1 fuehrt nicht zurueck");
-});
-
-await check("jede Reihe zeigt, dass es weitergeht", async () => {
-  const baender = await desktop.$$eval(".dx-swipe-band", (ns) => ns.map((n) => ({
-    versteckt: n.hidden, breite: n.firstChild ? n.firstChild.style.width : null
-  })));
-  assert(baender.length >= 4, "die Fortschrittsbaender fehlen");
-  const sichtbar = baender.filter((b) => !b.versteckt);
-  assert(sichtbar.length >= 3, "kein Band zeigt an, dass die Reihe weitergeht");
-  assert(sichtbar.every((b) => parseFloat(b.breite) < 99),
-    "ein Band ist voll, obwohl die Reihe scrollt");
-});
-
-await check("die naechste Karte ist immer angeschnitten sichtbar", async () => {
-  await mobilVorschau.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await mobilVorschau.waitForSelector(".dx-rail", { timeout: 12000 });
-  await mobilVorschau.waitForTimeout(1200);
-  for (const seite of [desktop, mobilVorschau]) {
-    const mass = await seite.$eval(".dx-rail", (t) => {
-      const erste = t.firstElementChild;
-      const breite = erste.getBoundingClientRect().width;
-      const luecke = parseFloat(getComputedStyle(t).gap) || 0;
-      const passen = (t.clientWidth + luecke) / (breite + luecke);
-      return { rest: passen - Math.floor(passen), breite: Math.round(breite),
-               sicht: Math.round(t.clientWidth) };
-    });
-    /* Geht eine Reihe exakt auf, sieht sie aus wie eine Tabelle: nichts
-       deutet an, dass rechts noch etwas kommt. */
-    assert(mass.rest > 0.08 && mass.rest < 0.92,
-      "die Karten gehen fast genau auf (" + JSON.stringify(mass) + ")");
-  }
-});
-
-await check("Einzeln entdecken: eine Aktie pro Bildschirm", async () => {
-  await mobilVorschau.goto(BASE + "/discover/#/einzeln/US_REAL", { waitUntil: "networkidle" });
-  await mobilVorschau.waitForSelector(".dx-feed-screen", { timeout: 12000 });
-  await mobilVorschau.waitForTimeout(900);
-  const mass = await mobilVorschau.evaluate(() => {
-    const spur = document.querySelector(".dx-feed-spur");
-    const screen = document.querySelector(".dx-feed-screen");
-    const r = screen.getBoundingClientRect();
-    return { spur: Math.round(spur.clientHeight), screen: Math.round(r.height),
-             unten: Math.round(r.bottom), fenster: window.innerHeight,
-             snap: getComputedStyle(spur).scrollSnapType,
-             anzahl: document.querySelectorAll(".dx-feed-screen[data-index]").length };
-  });
-  assert(/y/.test(mass.snap), "kein vertikales Einrasten");
-  assert(Math.abs(mass.screen - mass.spur) <= 2,
-    "ein Bildschirm ist nicht so hoch wie die Flaeche (" + JSON.stringify(mass) + ")");
-  assert(mass.unten <= mass.fenster + 2, "der Bildschirm reicht unter die Sichtflaeche");
-  assert(mass.anzahl >= 5, "zu wenige Titel im Einzelmodus");
-});
-
-await check("Einzeln entdecken: weiterwischen, zaehlen, zurueck", async () => {
-  await mobilVorschau.evaluate(() => {
-    const spur = document.querySelector(".dx-feed-spur");
-    spur.scrollTop = spur.clientHeight;
-  });
-  await mobilVorschau.waitForTimeout(900);
-  const zaehler = await mobilVorschau.textContent(".dx-feed-zaehler");
-  assert(/^2 von/.test(zaehler.trim()), "der Zaehler zaehlt nicht mit: " + zaehler);
-  const zurueck = await mobilVorschau.getAttribute(".dx-feed-zurueck", "href");
-  assert(/#\/u\//.test(zurueck || ""), "kein Weg zurueck aus dem Modus");
-  await shot(mobilVorschau, "19-mobil-einzeln");
-});
-
-await check("Einzeln entdecken bleibt ein Angebot, kein Zwang", async () => {
-  await mobilVorschau.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await mobilVorschau.waitForTimeout(2500);
-  const feed = await mobilVorschau.$$(".dx-feed");
-  assert(feed.length === 0, "der Einzelmodus draengt sich auf der Startseite auf");
-  const einstieg = await mobilVorschau.$(".dx-fnav-entdecken, .dx-entdecken");
-  assert(einstieg, "es gibt keinen Einstieg in den Einzelmodus");
-  const text = await mobilVorschau.evaluate(() => document.body.innerText);
-  assert(!/jetzt kaufen|nicht verpassen|nur heute/i.test(text),
-    "der Modus wirbt mit Dringlichkeit");
-});
-
-await check("kein horizontaler Überlauf auf dem Desktop", async () => {
-  await desktop.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-  await desktop.waitForTimeout(2600);
-  const ueber = await ueberstand(desktop);
-  assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
-});
-
-await check("nirgends steht ein rohes Objekt in der Oberflaeche", async () => {
-  /* "[object Object]" ist der sichtbare Rest einer Zeile, die ein Objekt
-     dort einsetzt, wo ein Satz stehen sollte. Es faellt in keinem Test
-     auf, weil nichts abstuerzt - nur auf dem Bildschirm steht Unsinn.
-     Geprueft werden die Startseite und eine Detailseite mit vollem
-     Technical-Intelligence-Befund. */
-  for (const pfad of ["/discover/", "/discover/#/s/US_REAL/NVDA",
-                      "/discover/#/c/US_REAL/market-leaders"]) {
-    await desktop.goto(BASE + pfad, { waitUntil: "networkidle" });
-    await desktop.waitForTimeout(2600);
-    const text = await desktop.evaluate(() => document.body.innerText);
-    assert(!/\[object /.test(text), "auf " + pfad + " steht ein rohes Objekt");
-    assert(!/undefined|NaN(?![a-z])/.test(text), "auf " + pfad + " steht undefined oder NaN");
-  }
-});
-
-await check("keine Konsolenfehler auf dem Desktop", async () => {
-  assert(desktop.__errors.length === 0, desktop.__errors.join(" | "));
-});
-
-/* ============================================================== TELEFON */
-const mobil = await openPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-await mobil.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-await mobil.waitForTimeout(3200);
-
-await check("mobil: nichts läuft seitlich aus dem Bild", async () => {
-  const ueber = await ueberstand(mobil);
-  assert(ueber <= 2, "die Seite ist " + ueber + " px zu breit");
-  await shot(mobil, "13-mobil-start");
-});
-
-await check("mobil: die Eingangsfläche lässt Platz für Inhalt", async () => {
-  const hoehe = await mobil.$eval(".dx-hero", (n) => n.getBoundingClientRect().height);
-  assert(hoehe < 1100, "die Eingangsfläche ist mit " + Math.round(hoehe) + " px zu hoch");
-  const zahl = await mobil.$eval(".dx-hero-zahl b", (n) => n.getBoundingClientRect());
-  assert(zahl.height >= 30, "die grosse Zahl ist auf dem Telefon zu klein");
-  const belege = await mobil.$$(".dx-hero-belege li");
-  assert(belege.length >= 2, "die Belege fehlen auf dem Telefon");
-});
-
-await check("mobil: kein Hover-Vorhang", async () => {
-  const sichtbar = await mobil.$$eval(".dx-reveal",
-    (ns) => ns.filter((n) => getComputedStyle(n).display !== "none").length);
-  assert(sichtbar === 0, "der Hover-Vorhang ist auf dem Telefon vorhanden");
-});
-
-await check("mobil: die Reihen lassen sich wischen", async () => {
-  const messung = await mobil.$eval(".dx-rail", (r) => ({ scroll: r.scrollWidth, sicht: r.clientWidth }));
-  assert(messung.scroll > messung.sicht + 40, "die Reihe scrollt nicht");
-  await mobil.$eval(".dx-rail", (r) => { r.scrollLeft = 260; });
-  await mobil.waitForTimeout(400);
-  assert((await mobil.$eval(".dx-rail", (r) => r.scrollLeft)) > 100, "die Reihe bewegt sich nicht");
-  await shot(mobil, "14-mobil-reihen");
-});
-
-await check("mobil: die naechste Entdeckungsebene beginnt im Bild", async () => {
-  /* §23: Nach der Eingangsflaeche muss zu sehen sein, dass es weitergeht -
-     sonst endet die Seite fuer den Daumen beim ersten Titel. */
-  const kopf = await mobil.$eval(".dx-rail-head",
-    (n) => Math.round(n.getBoundingClientRect().top));
-  assert(kopf < 844, "die erste Reihe beginnt erst bei " + kopf + " px");
-});
-
-await check("mobil: der Datenhinweis ist verstaut, nicht abgeschnitten", async () => {
-  /* Bei voller Abdeckung gibt es keinen Hinweis - dann ist nichts abgeschnitten. */
-  if (!(await mobil.$(".dx-inline-note"))) return;
-  const hinweis = await mobil.$eval(".dx-inline-note", (n) => ({
-    tag: n.tagName, offen: n.hasAttribute("open"),
-    voll: (n.querySelector("p") || {}).textContent || "",
-    geklemmt: getComputedStyle(n).webkitLineClamp
-  }));
-  assert(hinweis.tag === "DETAILS", "der Hinweis ist nicht aufklappbar");
-  assert(!hinweis.offen, "der Hinweis ist auf dem Telefon aufgeklappt");
-  assert(hinweis.voll.length > 40, "der vollstaendige Wortlaut fehlt im Dokument");
-  await mobil.click(".dx-inline-note summary");
-  await mobil.waitForTimeout(300);
-  assert(await mobil.$eval(".dx-inline-note", (n) => n.hasAttribute("open")),
-    "der Hinweis laesst sich nicht oeffnen");
-  await mobil.click(".dx-inline-note summary");
-});
-
-await check("mobil: die Karte liest sich Name, Zahl, Aussage, Bild (V4 §26)", async () => {
-  const reihenfolge = await mobil.$eval(".dx-rail-section .dx-poster", (p) => {
-    const y = (sel) => {
-      const n = p.querySelector(sel);
-      return n ? Math.round(n.getBoundingClientRect().top) : null;
-    };
-    return { name: y(".dx-poster-name"), story: y(".dx-story"),
-             zahl: y(".dx-zahl"), bild: y(".dx-poster-media") };
-  });
-  assert(reihenfolge.name !== null && reihenfolge.story !== null &&
-         reihenfolge.zahl !== null && reihenfolge.bild !== null,
-    "auf der Karte fehlt ein Bestandteil: " + JSON.stringify(reihenfolge));
-  /* V4 §6/§26: UNTERNEHMEN, KENNZAHL, KLARTEXT, CHART. */
-  assert(reihenfolge.name < reihenfolge.zahl, "der Name steht nicht zuerst");
-  assert(reihenfolge.zahl < reihenfolge.story, "die Zahl steht unter der Aussage");
-  assert(reihenfolge.story < reihenfolge.bild, "die Aussage steht unter dem Bild");
-  await hinScrollen(mobil, ".dx-rail-section", 2, 160);
-  await shot(mobil, "15-mobil-poster");
-});
-
-await check("mobil: Suche als Vollbild mit Farbwelt je Treffer", async () => {
-  /* V4.1 §14: auf dem Telefon oeffnet die schwebende Leiste die Suche;
-     der Knopf im Kopf ist dort nicht mehr sichtbar. */
-  await mobil.evaluate(() => window.scrollTo(0, 0));
-  await mobil.waitForTimeout(300);
-  await mobil.click(".dx-fnav-suchen");
-  await mobil.waitForTimeout(600);
-  const box = await mobil.$eval(".dx-search", (n) => n.getBoundingClientRect().toJSON());
-  assert(box.width >= 380 && box.height >= 700, "das Overlay füllt den Bildschirm nicht");
-  await mobil.fill(".dx-search input", "A");
-  await mobil.waitForTimeout(700);
-  assert((await mobil.$$(".dx-result")).length > 0, "keine Treffer");
-  const welten = await mobil.$$eval(".dx-result", (ns) =>
-    ns.slice(0, 12).map((n) => getComputedStyle(n).getPropertyValue("--w").trim()));
-  assert(welten.every(Boolean), "ein Treffer traegt keine Farbwelt");
-  /* Verschiedene Farbwelten sind bei einer breiten Suche wahrscheinlich, aber
-     keine Regel: gefordert ist, dass jeder Treffer eine traegt. */
-  assert(new Set(welten).size >= 1, "kein Treffer traegt eine Farbwelt");
-  await shot(mobil, "16-mobil-suche");
-  await mobil.keyboard.press("Escape");
-  await mobil.waitForTimeout(400);
-});
-
-await check("mobil: Detail und Chart passen in die Breite", async () => {
-  await mobil.goto(BASE + "/discover/#/s/US_REAL/NVDA", { waitUntil: "networkidle" });
-  await mobil.waitForSelector(".dx-chart svg", { timeout: 12000 });
-  await mobil.waitForTimeout(900);
-  const breite = await mobil.$eval(".dx-chart svg", (s) => s.getBoundingClientRect().width);
-  assert(breite <= 390, "der Chart ist " + Math.round(breite) + " px breit");
-  const ueber = await ueberstand(mobil);
-  assert(ueber <= 2, "die Detailseite ist " + ueber + " px zu breit");
-  const knopf = await mobil.$eval(".dx-tf button", (b) => b.getBoundingClientRect().height);
-  assert(knopf >= 30, "die Zeitraumknöpfe sind mit " + Math.round(knopf) + " px zu klein");
-  await shot(mobil, "17-mobil-detail-kopf");
-  await mobil.evaluate(() => {
-    const c = document.querySelector(".dx-chart");
-    if (c) c.scrollIntoView({ block: "center" });
-  });
-  await mobil.waitForTimeout(600);
-  await shot(mobil, "18-mobil-detail-chart");
-});
-
-await check("keine Konsolenfehler auf dem Telefon", async () => {
-  assert(mobil.__errors.length === 0, mobil.__errors.join(" | "));
-  assert(mobilVorschau.__errors.length === 0, mobilVorschau.__errors.join(" | "));
-});
-
-/* ================================================= REDUZIERTE BEWEGUNG */
-const ruhig = await openPage({ viewport: { width: 1440, height: 900 },
-                               reducedMotion: "reduce" });
-await ruhig.goto(BASE + "/discover/", { waitUntil: "networkidle" });
-await ruhig.waitForTimeout(3000);
-
-await check("reduzierte Bewegung: Inhalte sind sofort sichtbar", async () => {
-  const unsichtbar = await ruhig.$$eval(".dx-fade",
-    (ns) => ns.filter((n) => Number(getComputedStyle(n).opacity) < 0.9).length);
-  assert(unsichtbar === 0, unsichtbar + " Abschnitte bleiben unsichtbar");
-});
-
-await check("reduzierte Bewegung: die Eingangsfläche wechselt nicht von selbst", async () => {
-  const vorher = await ruhig.textContent(".dx-hero-title");
-  await ruhig.waitForTimeout(11000);
-  const nachher = await ruhig.textContent(".dx-hero-title");
-  assert(vorher === nachher, "die Eingangsfläche wechselt trotz reduzierter Bewegung");
-});
-
-await check("reduzierte Bewegung: keine Konsolenfehler", async () => {
-  assert(ruhig.__errors.length === 0, ruhig.__errors.join(" | "));
-});
-
-await browser.close();
-
-console.log("\nVision Universe DISCOVER — Browser-QA\n");
-for (const [status, name] of results) console.log(`  ${status}  ${name}`);
-console.log(`\n  ${results.length - failures}/${results.length} bestanden`);
-if (stromUnerreichbar) {
-  console.log(`  Hinweis: ${stromUnerreichbar} Konsolenzeile(n) ueber den nicht erreichbaren Strom ` +
-              `(${STROM_URL}) - diese Umgebung kommt nicht bis Cloudflare. Der Nachweis, dass der ` +
-              `Strom laeuft, steht in scripts/discover/browser-qa-realtime.mjs.`);
-}
-console.log("");
-process.exit(failures ? 1 : 0);
+await check('no uncaught page errors',async()=>assert.deepEqual(errors,[]));
+}catch(e){checks.push({name:'browser suite completion',pass:false,error:e.stack||e.message});}finally{await browser.close();}
+const report={status:checks.every(x=>x.pass)?'PASS':'FAIL',checks,errors,shots,performance,designEvidence,limitations:['Five-second check is an automated content heuristic, not an independent human usability test.','Premium feel still requires the documented screenshot critique; material and composition checks only provide objective evidence.','A closed-market run cannot prove receipt of a new regular-session realtime tick.','Automated structural checks are not a WCAG certification.','Local resource measurements are not a production latency SLA.']};
+report.engine=engine;report.firstScreenEvidence=firstScreenEvidence;report.interactionEvidence=interactionEvidence;report.screenshotEvidence=screenshotEvidence;
+await writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,totalChecks:checks.length,passed:checks.filter(c=>c.pass).length,failed:checks.filter(c=>!c.pass),screenshots:shots.length,firstScreenMilliseconds:firstScreenEvidence.map(e=>({key:e.key,milliseconds:e.milliseconds})),totalCheckMilliseconds:checks.reduce((n,c)=>n+(c.milliseconds||0),0)},null,2));if(report.status!=='PASS')process.exitCode=1;
+await writeFile(out+'/accessibility.json',JSON.stringify(accessibility,null,2));

@@ -50,6 +50,8 @@ html[data-theme=light] body.dv2{--v2-bg:#f5f3ed;--v2-ink:#171819;--v2-muted:#5d6
 .dv2.v2-feed-active .v2-dock{position:fixed;top:98px;bottom:auto;left:50%;background:var(--v2-bg);border-radius:30px;z-index:6}
 body.dv2.v2-feed-active .v2-main{padding-top:62px;height:calc(100dvh - 88px)}
 .dv2 .dx-feed-bar{background:var(--v2-bg);padding:2px 24px}.dv2 .dx-feed-inner{padding-top:12px}.dv2 .dx-feed-name{font-weight:850;letter-spacing:-.055em}.dv2 .dx-feed-zahl b{font-size:clamp(50px,8vw,88px);letter-spacing:-.065em}.dv2 .dx-feed-screen .dx-btn{border-radius:30px;min-height:46px}.dv2 .dx-feed-bg{background:radial-gradient(ellipse at 85% 45%,color-mix(in srgb,var(--w) 16%,transparent),transparent 65%)}
+/* Die Leiste richtete Waehrung und Darstellung am Vergleichslink nach rechts aus; seit es nur noch ein Discover gibt, uebernimmt das das erste Element nach der Wortmarke. */
+@media(min-width:1091px){.dv2 .v2-bar>.v2-wordmark+*{margin-left:auto}}
 @media(min-width:761px) and (max-width:1090px){.dv2 .v2-compare{display:none}.dv2 .v2-theme{margin-left:auto}.dv2 .v2-dock .v2-nav-item{padding:12px 9px}}
 @media(max-width:760px){
   .dv2 .v2-bar{padding:10px 20px}.dv2 .v2-main{padding-top:6px;padding-bottom:105px}.dv2 .v2-preview{font-size:9px}.dv2 .v2-theme{padding:7px 10px;min-height:38px}

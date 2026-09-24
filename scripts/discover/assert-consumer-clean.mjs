@@ -41,7 +41,8 @@ const SEITEN = /\.html$/i;
 
 /* Die Oberflaechenmodule, die Text fuer den Nutzer erzeugen. Fuer §18
    zaehlt jedes davon; fuer §14 nur die von Discover (siehe unten). */
-const UI_DATEIEN = ["discover/app.js", "discover/ui", "discover/engines",
+const UI_DATEIEN = ["discover/app.js", "discover/home.js", "discover/detail.js", "discover/themes.js",
+                    "discover/ui", "discover/engines",
                     "assets/site-navigation.js", "quant/ui"];
 
 /* §18: die Plakette. */

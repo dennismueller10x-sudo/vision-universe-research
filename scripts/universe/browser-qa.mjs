@@ -106,7 +106,9 @@ console.log(`Vision Universe — Browser-QA der Universe Expansion  (${BASE})\n`
   if (extern.length) console.log(`        (fremde Hosts, Umgebung: ${extern.length} — ${extern[0]})`);
 
   /* §49: die Startseite darf das Universum NICHT rendern. */
-  const karten = await page.locator(".dx-poster, .dx-card, .dx-rank").count();
+  /* .v2-stock: die Aktienkachel des kanonischen Discover (bis zur
+     Konsolidierung /discover-v2/); .dx-* bleiben fuer geteilte Flaechen. */
+  const karten = await page.locator(".v2-stock, .dx-poster, .dx-card, .dx-rank").count();
   check("Startseite rendert eine Handvoll Karten, nicht das Universum",
         karten > 0 && karten < 400, `${karten} Karten`);
   const startBytes = anfragen.reduce((a, r) => a + r.bytes, 0);
@@ -192,11 +194,11 @@ console.log(`Vision Universe — Browser-QA der Universe Expansion  (${BASE})\n`
 
   await page.goto(BASE + "/discover/#/s/US_REAL/GIBTESNICHT", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
-  const leer = await page.locator(".dx-detail").first().innerText().catch(() => "");
+  const leer = await page.locator(".dx-detail, .v2-message").first().innerText().catch(() => "");
   /* Gross-/Kleinschreibung ignorieren: die Ueberschrift wird per CSS in
      Versalien gesetzt, und innerText liefert, was zu sehen ist. */
   check("Ein Kuerzel ohne Instrument sagt genau das",
-        /kein titel mit dem kürzel/i.test(leer), leer.slice(0, 90).replace(/\s+/g, " "));
+        /kein titel mit dem kürzel|aktie nicht gefunden/i.test(leer), leer.slice(0, 90).replace(/\s+/g, " "));
   await ctx.close();
 }
 

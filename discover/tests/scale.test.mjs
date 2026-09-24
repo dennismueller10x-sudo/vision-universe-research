@@ -110,7 +110,7 @@ test("SC6 · Intraday-Snapshots (falls vorhanden): valide, im Umfang, Sitzung = 
 });
 
 test("SC7 · der Client haelt keine Titelzahl: Hub, Karten, Aktienseite ohne 498/500", () => {
-  for (const f of ["live-hub.js", "cards.js", "detail.js", "hero.js", "microchart.js"]) {
+  for (const f of ["live-hub.js", "cards.js", "detail.js", "microchart.js", "../app.js"]) {
     const code = readFileSync(join(root, "discover", "ui", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
     assert.ok(!/\b(498|500|5684|7004)\b/.test(code), f + " traegt eine Titelzahl");
   }
