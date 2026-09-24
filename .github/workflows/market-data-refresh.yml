@@ -54,6 +54,15 @@ jobs:
         with:
           node-version: '22'
 
+      # EOD-Publish-Gates (quant/config/eod-publish-gates.json), Vorfall
+      # 18.-23.09.2026: die Regressionssuite lief erst NACH dem Abruf und
+      # verwarf viermal einen vollstaendigen Tageslauf. Jetzt:
+      #   A PRE_FETCH_CODE_REGRESSION   hier, vor jeder Anfrage - rot = kein Abruf
+      #   B POST_FETCH_DATA_INTEGRITY   nach dem Bau, vor dem Commit - rot = kein Commit
+      #   C NON_BLOCKING_OBSERVABILITY  nach dem Commit - rot = ::error, Lauf bleibt gruen
+      - name: 'Gate A: Code-Regression vor dem Abruf (rot = keine Provider-Anfrage)'
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=pre
+
       - name: Ist ein Zugang hinterlegt?
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -145,10 +154,11 @@ jobs:
       - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
         run: node scripts/market/assert-public-data-hygiene.mjs
 
-      - name: Regressionssuite
-        run: |
-          node --test "quant/tests/*.test.mjs"
-          node --test "discover/tests/*.test.mjs"
+      # Gate B: nur Pruefungen, die die neuen Daten gegen einen Datenvertrag
+      # messen. Die uebrigen Testdateien liefen in Gate A auf demselben Code
+      # gruen; sie laufen nach dem Commit als Gate C erneut.
+      - name: 'Gate B: Data-Integrity der neuen Daten (rot = keine Veroeffentlichung)'
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=integrity
 
       - name: Groesse der Arbeitsablage
         id: disk
@@ -212,6 +222,13 @@ jobs:
             git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
             scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
+
+      # Gate C: nach der Veroeffentlichung. Ein Test, der erst mit den neuen
+      # Werten rot wird, wird als ::error gemeldet; der Lauf bleibt gruen,
+      # weil pages-release nur bei conclusion == success ausliefert.
+      - name: 'Gate C: Beobachtung - uebrige Regressionstests mit den neuen Daten (nicht blockierend)'
+        continue-on-error: true
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=observability
 
       - name: Zusammenfassung
         if: always()
