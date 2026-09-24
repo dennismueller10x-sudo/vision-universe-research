@@ -239,6 +239,21 @@ if (!primary) {
 } else {
   w("Stichtag **" + primary.cutoffDate + "**, " + int(primary.securitiesWithCutoff) + " Titel mit ausreichender Historie.");
   w();
+  const ausgeschlossen = study.cutoffs.reduce((sum, c) => sum + (c.excludedForUnexplainedAdjustment || 0), 0);
+  if (ausgeschlossen > 0) {
+    w("**Ausgeschlossen, weil die Gesamtrendite-Reihe in genau diesem Fenster nicht belegt ist:**");
+    w();
+    w("| Stichtag | Titel im Fenster | ausgeschlossen | verglichen | betroffene Titel |");
+    w("|---|---:|---:|---:|---|");
+    for (const c of study.cutoffs) {
+      w("| " + c.cutoffDate + " | " + int(c.securitiesBeforeExclusion) + " | " +
+        int(c.excludedForUnexplainedAdjustment) + " | " + int(c.securitiesWithCutoff) + " | " +
+        (c.excludedForUnexplainedAdjustmentTickers || []).join(", ") + " |");
+    }
+    w();
+    w("Diese Titel tragen einen Bereinigungstag, den die Prüfung oben nicht erklären kann, **innerhalb** des Fensters, über das hier gerechnet wird. Ihre Gesamtrendite-Reihe ist dort nicht belegt — also hat sie in einem Vergleich beider Basen nichts verloren. Die Alternative wäre eine Toleranz gewesen; die Zahl steht hier, damit sichtbar bleibt, wie klein der Ausschluss ist. Wären es viele, taugte die Studie nichts.");
+    w();
+  }
   w("Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb ist die Rangverschiebung die Messung und der Wertunterschied nur der Zwischenschritt.");
   w();
   w("| Messgröße | `UNIVERSE_N` | ρ | Median Rang | P90 | P95 | Max | ≥1 Pz | ≥5 Pz | ≥10 Pz | Dezil ab/zu |");

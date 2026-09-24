@@ -277,6 +277,19 @@ test("entscheidungsreif heisst: kein unerklaerter Tag im Messfenster", () => {
   }
   assert.ok("UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW" in report.gateStatus);
 
+  /* Nach dem Ausschluss muss das Feld an jedem Stichtag null sein -
+     sonst hat der Ausschluss nicht gegriffen, und die Zahl wuerde eine
+     Sauberkeit behaupten, die es nicht gibt. */
+  for (const cutoff of report.cutoffs) {
+    assert.equal(cutoff.unexplainedInsideWindow, 0,
+      "Stichtag " + cutoff.cutoffDate + ": beruehrte Titel sind noch in der Messung");
+    assert.ok(Number.isFinite(cutoff.excludedForUnexplainedAdjustment));
+    assert.equal(cutoff.securitiesWithCutoff + cutoff.excludedForUnexplainedAdjustment,
+      cutoff.securitiesBeforeExclusion, "Ausschlussbilanz geht nicht auf");
+    /* Und jeder Ausschluss ist benannt, nicht nur gezaehlt. */
+    assert.equal((cutoff.excludedForUnexplainedAdjustmentTickers || []).length,
+      cutoff.excludedForUnexplainedAdjustment, "ausgeschlossene Titel nicht vollstaendig benannt");
+  }
   const beruehrt = report.cutoffs.some((c) => c.unexplainedInsideWindow > 0);
   const garNichtBereinigt = (report.totalReturnVerification.failureClasses || {}).NO_ADJUSTMENT_AT_ALL || 0;
   if (beruehrt || garNichtBereinigt > 0) {

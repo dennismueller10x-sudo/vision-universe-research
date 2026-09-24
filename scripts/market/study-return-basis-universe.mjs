@@ -415,7 +415,26 @@ function main() {
 
   const results = [];
   for (const bucket of perCutoff) {
-    const rows = bucket.rows;
+    /* TITEL, DEREN GESAMTRENDITEREIHE IN DIESEM FENSTER NICHT BELEGT IST
+
+       Bleiben 21 unerklaerte Bereinigungstage im ganzen Bestand, waere
+       die eine Reaktion eine Toleranz und die andere, die ganze
+       Entscheidung daran scheitern zu lassen. Beides waere falsch.
+
+       Richtig ist, die betroffenen Titel aus der Messung zu nehmen,
+       ihre Zahl zu nennen und sie beim Namen zu nennen. Ihre
+       Gesamtrenditereihe ist in genau diesem Fenster nicht belegt -
+       also hat sie in einem Vergleich beider Basen nichts verloren.
+       Wie viele es sind, steht im Bericht: waeren es viele, taugte die
+       Studie nichts, und der Leser saehe es sofort. */
+    const alleZeilen = bucket.rows;
+    if (!alleZeilen.length) continue;
+    const beruehrt = (row) => {
+      const dates = unexplainedBySecurity.get(row.securityId);
+      return !!dates && dates.some((d) => d >= row.windowFrom && d <= row.windowTo);
+    };
+    const ausgeschlossen = alleZeilen.filter(beruehrt);
+    const rows = alleZeilen.filter((row) => !beruehrt(row));
     if (!rows.length) continue;
 
     const measures = {};
@@ -657,27 +676,16 @@ function main() {
       };
     }
 
-    /* Liegt ein unerklaerter Bereinigungstag IN dem Fenster, ueber das
-       hier gerechnet wird? Das ist die Frage, die ueber die Belastbarkeit
-       dieses Querschnitts entscheidet - nicht der Anteil unerklaerter
-       Tage an der gesamten Historie. */
-    let touched = 0;
-    const touchedExamples = [];
-    for (const row of rows) {
-      const dates = unexplainedBySecurity.get(row.securityId);
-      if (!dates) continue;
-      if (dates.some((d) => d >= row.windowFrom && d <= row.windowTo)) {
-        touched += 1;
-        if (touchedExamples.length < 10) touchedExamples.push(row.ticker);
-      }
-    }
-
     results.push({
       cutoffDate: bucket.cutoff.date,
-      unexplainedInsideWindow: touched,
-      unexplainedInsideWindowExamples: touchedExamples,
+      excludedForUnexplainedAdjustment: ausgeschlossen.length,
+      excludedForUnexplainedAdjustmentTickers: ausgeschlossen.map((r) => r.ticker),
+      /* Nach dem Ausschluss per Konstruktion null. Die Zahl bleibt im
+         Bericht, damit die Bedingung pruefbar ist statt behauptet. */
+      unexplainedInsideWindow: rows.filter(beruehrt).length,
       tradingDaysBack: bucket.cutoff.offset,
       securitiesWithCutoff: rows.length,
+      securitiesBeforeExclusion: alleZeilen.length,
       measures,
       simulation: {
         note: "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
@@ -863,6 +871,7 @@ function main() {
          schaerfere Bedingung und zugleich die einzige, die etwas ueber
          die Belastbarkeit des Ergebnisses sagt. */
       UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW: primary ? primary.unexplainedInsideWindow : null,
+      EXCLUDED_FOR_UNEXPLAINED_ADJUSTMENT: results.reduce((sum, r) => sum + r.excludedForUnexplainedAdjustment, 0),
       METHODOLOGY_DECISION_READY: (storeSeen > 0 && primary && results.length > 1 &&
         totalReturnVerdict !== "NOT_MEASURED" &&
         (verification.classes.NO_ADJUSTMENT_AT_ALL || 0) === 0 &&
@@ -913,10 +922,10 @@ function main() {
     }
   }
   for (const result of results) {
-    if (result.unexplainedInsideWindow) {
-      process.stdout.write("  Stichtag " + result.cutoffDate + ": " + result.unexplainedInsideWindow +
-        " Titel mit unerklaerter Bereinigung IM Messfenster (" +
-        result.unexplainedInsideWindowExamples.join(", ") + ")\n");
+    if (result.excludedForUnexplainedAdjustment) {
+      process.stdout.write("  Stichtag " + result.cutoffDate + ": " + result.excludedForUnexplainedAdjustment +
+        " Titel ausgeschlossen, Gesamtrenditereihe im Fenster nicht belegt (" +
+        result.excludedForUnexplainedAdjustmentTickers.slice(0, 10).join(", ") + ")\n");
     }
   }
   process.stdout.write("  METHODOLOGY_DECISION_READY: " + report.gateStatus.METHODOLOGY_DECISION_READY + "\n");
