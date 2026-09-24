@@ -1,11 +1,13 @@
 {
  "schemaVersion": "vu-multi-asset-snapshot-1.0.0",
  "contractVersion": "multi-asset-contract-1.0.0",
- "generatedAt": "2026-09-24T13:54:26.006Z",
- "asOfRun": "2026-09-24T13:43:04.210Z",
+ "generatedAt": "2026-09-24T15:53:03.763Z",
+ "asOfRun": "2026-09-24T15:52:29.322Z",
  "note": "Product Contract des Multi-Asset-Segments. Freshness ist zum Bauzeitpunkt bewertet; Consumer bewerten sie mit VUMultiAssetContract.refresh() zur Anzeigezeit neu.",
  "summary": {
-  "INDEX:CAPABILITY_GAP": 13,
+  "INDEX:WITHHELD_LICENSE": 6,
+  "INDEX:CAPABILITY_GAP": 6,
+  "INDEX:AVAILABLE": 1,
   "PRECIOUS_METAL:WITHHELD_LICENSE": 4,
   "COMMODITY:AVAILABLE": 3,
   "COMMODITY:CAPABILITY_GAP": 1,
@@ -32,10 +34,10 @@
     "country": "US",
     "timezone": "America/New_York",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -46,8 +48,8 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
@@ -60,29 +62,31 @@
     "calendarCoverage": true
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^GSPC"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "aheadOfClock",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:29.328Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:29.328Z"
     }
    },
    "history": {
@@ -90,8 +94,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -100,7 +104,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -121,18 +125,11 @@
      "VOO"
     ]
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -185,7 +182,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -269,10 +266,10 @@
     "country": "US",
     "timezone": "America/New_York",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -283,8 +280,8 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
@@ -297,29 +294,31 @@
     "calendarCoverage": true
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^DJI"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "aheadOfClock",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:29.943Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:29.943Z"
     }
    },
    "history": {
@@ -327,8 +326,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -337,7 +336,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -356,18 +355,11 @@
      "DIA"
     ]
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -406,7 +398,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XETR",
     "publisherProfile": null,
@@ -420,7 +412,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -504,10 +496,10 @@
     "country": "EU",
     "timezone": "Europe/Berlin",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -518,13 +510,13 @@
     "decimals": 2,
     "nativeCurrency": "EUR",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XETR",
     "publisherProfile": null,
@@ -532,29 +524,31 @@
     "calendarCoverage": true
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^STOXX50E"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "LAST_SESSION",
+     "reason": "lastCompletedSession",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "LAST_SESSION",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:30.074Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:30.074Z"
     }
    },
    "history": {
@@ -562,8 +556,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -572,7 +566,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -591,18 +585,11 @@
      "FEZ"
     ]
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -621,10 +608,10 @@
     "country": "GB",
     "timezone": "Europe/London",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -635,13 +622,13 @@
     "decimals": 2,
     "nativeCurrency": "GBP",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XLON",
     "publisherProfile": null,
@@ -649,29 +636,31 @@
     "calendarCoverage": true
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^FTSE"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "LAST_SESSION",
+     "reason": "lastCompletedSession",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "LAST_SESSION",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:30.197Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:30.197Z"
     }
    },
    "history": {
@@ -679,8 +668,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -689,7 +678,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -708,18 +697,11 @@
      "EWU (MSCI UK - anderer Index)"
     ]
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -738,13 +720,13 @@
     "country": "JP",
     "timezone": "Asia/Tokyo",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "ACTIVE"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "AVAILABLE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
-    "value": null,
+    "value": 65513.99,
     "range": null,
     "unit": "INDEX_POINTS",
     "unitId": "POINTS",
@@ -752,10 +734,14 @@
     "decimals": 2,
     "nativeCurrency": "JPY",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
-    "change": null,
-    "changeReferenceDate": null
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
+    "change": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 495.04,
+     "percent": 0.76
+    },
+    "changeReferenceDate": "2026-09-18"
    },
    "market": {
     "state": "CLOSED",
@@ -766,47 +752,367 @@
     "calendarCoverage": false
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fred-index",
+    "sourceKind": "INSTITUTIONAL_MIRROR",
+    "sourceInstrument": {
+     "fred": "NIKKEI225",
+     "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "LAST_SESSION",
+     "reason": "lastCompletedSession",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "LAST_SESSION",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:30.325Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
-     "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "sourceId": "fred-index",
+     "provider": "Federal Reserve Bank of St. Louis (FRED)",
+     "product": "FRED Graph CSV - Indexreihen der Lizenzklasse 'Copyrighted: Citation required'",
+     "licenseState": "CITATION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:30.325Z"
     }
    },
    "history": {
-    "available": false,
-    "availableFrom": null,
-    "availableTo": null,
-    "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "available": true,
+    "availableFrom": "1949-05-16",
+    "availableTo": "2026-09-24",
+    "observations": 19205,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
-    "intervals": {},
-    "recent": [],
-    "path": null
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-18",
+      71053.49
+     ],
+     [
+      "2026-06-19",
+      71250.06
+     ],
+     [
+      "2026-06-22",
+      72353.96
+     ],
+     [
+      "2026-06-23",
+      69788.38
+     ],
+     [
+      "2026-06-24",
+      69174.97
+     ],
+     [
+      "2026-06-25",
+      72366.34
+     ],
+     [
+      "2026-06-26",
+      69360.88
+     ],
+     [
+      "2026-06-29",
+      69468.11
+     ],
+     [
+      "2026-06-30",
+      70062.32
+     ],
+     [
+      "2026-07-01",
+      70474.96
+     ],
+     [
+      "2026-07-02",
+      68733.15
+     ],
+     [
+      "2026-07-03",
+      69744.07
+     ],
+     [
+      "2026-07-06",
+      69737.69
+     ],
+     [
+      "2026-07-07",
+      68256.96
+     ],
+     [
+      "2026-07-08",
+      66819.05
+     ],
+     [
+      "2026-07-09",
+      67743.85
+     ],
+     [
+      "2026-07-10",
+      68557.73
+     ],
+     [
+      "2026-07-13",
+      67242.73
+     ],
+     [
+      "2026-07-14",
+      67743.5
+     ],
+     [
+      "2026-07-15",
+      68751.51
+     ],
+     [
+      "2026-07-16",
+      66835.54
+     ],
+     [
+      "2026-07-17",
+      64141.12
+     ],
+     [
+      "2026-07-21",
+      66232.19
+     ],
+     [
+      "2026-07-22",
+      66115.6
+     ],
+     [
+      "2026-07-23",
+      66422.6
+     ],
+     [
+      "2026-07-24",
+      64611.15
+     ],
+     [
+      "2026-07-27",
+      64931.19
+     ],
+     [
+      "2026-07-28",
+      62364.92
+     ],
+     [
+      "2026-07-29",
+      61434.19
+     ],
+     [
+      "2026-07-30",
+      61867.43
+     ],
+     [
+      "2026-07-31",
+      64362.02
+     ],
+     [
+      "2026-08-03",
+      63754.9
+     ],
+     [
+      "2026-08-04",
+      63957.53
+     ],
+     [
+      "2026-08-05",
+      66300.44
+     ],
+     [
+      "2026-08-06",
+      65683.26
+     ],
+     [
+      "2026-08-07",
+      65606.71
+     ],
+     [
+      "2026-08-10",
+      66970.22
+     ],
+     [
+      "2026-08-12",
+      67524.06
+     ],
+     [
+      "2026-08-13",
+      68308.59
+     ],
+     [
+      "2026-08-14",
+      68713.8
+     ],
+     [
+      "2026-08-17",
+      69220.25
+     ],
+     [
+      "2026-08-18",
+      67460.73
+     ],
+     [
+      "2026-08-19",
+      65326.42
+     ],
+     [
+      "2026-08-20",
+      66216.79
+     ],
+     [
+      "2026-08-21",
+      66016.36
+     ],
+     [
+      "2026-08-24",
+      65528.09
+     ],
+     [
+      "2026-08-25",
+      65856.43
+     ],
+     [
+      "2026-08-26",
+      66262.16
+     ],
+     [
+      "2026-08-27",
+      66131.98
+     ],
+     [
+      "2026-08-28",
+      66405.56
+     ],
+     [
+      "2026-08-31",
+      66311.93
+     ],
+     [
+      "2026-09-01",
+      66215.34
+     ],
+     [
+      "2026-09-02",
+      64325.64
+     ],
+     [
+      "2026-09-03",
+      64214.48
+     ],
+     [
+      "2026-09-04",
+      65020.94
+     ],
+     [
+      "2026-09-07",
+      66399.84
+     ],
+     [
+      "2026-09-08",
+      65269.33
+     ],
+     [
+      "2026-09-09",
+      65142.78
+     ],
+     [
+      "2026-09-10",
+      65270.95
+     ],
+     [
+      "2026-09-11",
+      64011.34
+     ],
+     [
+      "2026-09-14",
+      63492.99
+     ],
+     [
+      "2026-09-15",
+      63484.1
+     ],
+     [
+      "2026-09-16",
+      63923
+     ],
+     [
+      "2026-09-17",
+      64136.25
+     ],
+     [
+      "2026-09-18",
+      65018.95
+     ],
+     [
+      "2026-09-24",
+      65513.99
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/N225.json"
    },
-   "performance": {},
+   "performance": {
+    "1W": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 1377.74,
+     "percent": 2.15,
+     "fromDate": "2026-09-17"
+    },
+    "1M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -342.44,
+     "percent": -0.52,
+     "fromDate": "2026-08-25"
+    },
+    "3M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -6852.35,
+     "percent": -9.47,
+     "fromDate": "2026-06-25"
+    },
+    "1Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 19883.68,
+     "percent": 43.58,
+     "fromDate": "2025-09-24"
+    },
+    "5Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 35265.18,
+     "percent": 116.58,
+     "fromDate": "2021-09-24"
+    },
+    "10Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 48759.97,
+     "percent": 291.03,
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 65337.78,
+     "percent": 37079.5,
+     "fromDate": "1949-05-16"
+    }
+   },
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -823,17 +1129,7 @@
     "represents": null,
     "knownProxiesNotUsed": []
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
+   "gap": null,
    "license": null
   },
   {
@@ -853,10 +1149,10 @@
     "country": "US",
     "timezone": "America/New_York",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -867,8 +1163,8 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
@@ -881,29 +1177,31 @@
     "calendarCoverage": true
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^RUT"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "aheadOfClock",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:31.488Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:31.488Z"
     }
    },
    "history": {
@@ -911,8 +1209,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -921,7 +1219,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -940,18 +1238,11 @@
      "IWM"
     ]
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -1004,7 +1295,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1108,7 +1399,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XPAR",
     "publisherProfile": null,
@@ -1122,7 +1413,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1223,7 +1514,7 @@
     "changeReferenceDate": null
    },
    "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "sessionProfile": "INDEX_EU",
     "sessionExchange": "XSWX",
     "publisherProfile": null,
@@ -1237,7 +1528,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1318,10 +1609,10 @@
     "country": "HK",
     "timezone": "Asia/Hong_Kong",
     "tenorYears": null,
-    "status": "CAPABILITY_GAP"
+    "status": "LICENSE_PENDING"
    },
    "quote": {
-    "state": "CAPABILITY_GAP",
+    "state": "WITHHELD_LICENSE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
     "value": null,
@@ -1332,8 +1623,8 @@
     "decimals": 2,
     "nativeCurrency": "HKD",
     "currencyContext": null,
-    "asOf": null,
-    "observationDate": null,
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
    },
@@ -1346,29 +1637,31 @@
     "calendarCoverage": false
    },
    "data": {
-    "source": null,
-    "sourceKind": null,
-    "sourceInstrument": {},
-    "freshness": {
-     "state": "UNAVAILABLE",
-     "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+    "source": "fmp-index",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "fmp": "^HSI"
     },
-    "sourceState": "UNAVAILABLE",
-    "frequency": null,
-    "checkedAt": null,
+    "freshness": {
+     "state": "LAST_SESSION",
+     "reason": "lastCompletedSession",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
+    },
+    "sourceState": "LAST_SESSION",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:31.652Z",
     "realtime": false,
     "delayed": false,
-    "eod": false,
+    "eod": true,
     "provenance": {
-     "sourceId": null,
-     "provider": null,
-     "product": null,
-     "licenseState": null,
+     "sourceId": "fmp-index",
+     "provider": "Financial Modeling Prep",
+     "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
      "publicDisplay": false,
-     "attribution": null,
-     "priceSemantics": null,
-     "fetchedAt": null
+     "attribution": "Daten: Financial Modeling Prep",
+     "priceSemantics": "INDEX_CLOSE_DAILY",
+     "fetchedAt": "2026-09-24T15:52:31.652Z"
     }
    },
    "history": {
@@ -1376,8 +1669,8 @@
     "availableFrom": null,
     "availableTo": null,
     "observations": 0,
-    "frequency": null,
-    "representation": null,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
     "observedThrough": null,
     "scheduledChange": null,
     "intervals": {},
@@ -1386,7 +1679,7 @@
    },
    "performance": {},
    "capabilities": {
-    "eod": false,
+    "eod": true,
     "intraday": false,
     "realtime": false,
     "websocket": false,
@@ -1403,18 +1696,11 @@
     "represents": null,
     "knownProxiesNotUsed": []
    },
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
-   },
-   "license": null
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt."
+   }
   },
   {
    "contractVersion": "multi-asset-contract-1.0.0",
@@ -1467,7 +1753,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1562,8 +1848,8 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:43:04.372000+00:00",
-    "observationDate": "2026-09-24",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
     "change": null,
     "changeReferenceDate": null
    },
@@ -1582,16 +1868,16 @@
      "tiingo": "xauusd"
     },
     "freshness": {
-     "state": "CURRENT",
-     "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "state": "STALE",
+     "reason": "ageExceedsLimit",
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
-    "sourceState": "CURRENT",
-    "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:04.267Z",
+    "sourceState": "STALE",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T15:52:31.775Z",
     "realtime": false,
-    "delayed": true,
-    "eod": false,
+    "delayed": false,
+    "eod": true,
     "provenance": {
      "sourceId": "tiingo-fx-metals",
      "provider": "tiingo",
@@ -1600,7 +1886,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-09-24T13:43:04.267Z"
+     "fetchedAt": "2026-09-24T15:52:31.775Z"
     }
    },
    "history": {
@@ -1676,7 +1962,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:43:04.534000+00:00",
+    "asOf": "2026-09-24T15:52:32.539000+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -1698,11 +1984,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:04.614Z",
+    "checkedAt": "2026-09-24T15:52:32.797Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -1714,7 +2000,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-09-24T13:43:04.614Z"
+     "fetchedAt": "2026-09-24T15:52:32.797Z"
     }
    },
    "history": {
@@ -1789,7 +2075,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:43:04.354000+00:00",
+    "asOf": "2026-09-24T15:52:25.575000+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -1811,11 +2097,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:04.863Z",
+    "checkedAt": "2026-09-24T15:52:33.393Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -1827,7 +2113,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-09-24T13:43:04.863Z"
+     "fetchedAt": "2026-09-24T15:52:33.393Z"
     }
    },
    "history": {
@@ -1901,7 +2187,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:43:04.667000+00:00",
+    "asOf": "2026-09-24T15:52:24.862000+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -1923,11 +2209,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:05.045Z",
+    "checkedAt": "2026-09-24T15:52:33.827Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -1939,7 +2225,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-09-24T13:43:05.045Z"
+     "fetchedAt": "2026-09-24T15:52:33.827Z"
     }
    },
    "history": {
@@ -2039,11 +2325,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:43:05.245Z",
+    "checkedAt": "2026-09-24T15:52:34.265Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -2055,7 +2341,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-09-24T13:43:05.245Z"
+     "fetchedAt": "2026-09-24T15:52:34.265Z"
     }
    },
    "history": {
@@ -2470,11 +2756,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:43:05.271Z",
+    "checkedAt": "2026-09-24T15:52:34.285Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -2486,7 +2772,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-09-24T13:43:05.271Z"
+     "fetchedAt": "2026-09-24T15:52:34.285Z"
     }
    },
    "history": {
@@ -2894,7 +3180,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -3018,11 +3304,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:43:05.289Z",
+    "checkedAt": "2026-09-24T15:52:34.300Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -3034,7 +3320,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_DAILY",
-     "fetchedAt": "2026-09-24T13:43:05.289Z"
+     "fetchedAt": "2026-09-24T15:52:34.300Z"
     }
    },
    "history": {
@@ -3423,7 +3709,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:40:00+00:00",
+    "asOf": "2026-09-24T15:50:00+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -3445,11 +3731,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:05.302Z",
+    "checkedAt": "2026-09-24T15:52:34.315Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3461,7 +3747,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-09-24T13:43:05.302Z"
+     "fetchedAt": "2026-09-24T15:52:34.315Z"
     }
    },
    "history": {
@@ -3537,7 +3823,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:40:00+00:00",
+    "asOf": "2026-09-24T15:50:00+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -3559,11 +3845,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:06.364Z",
+    "checkedAt": "2026-09-24T15:52:35.668Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3575,7 +3861,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-09-24T13:43:06.364Z"
+     "fetchedAt": "2026-09-24T15:52:35.668Z"
     }
    },
    "history": {
@@ -3649,7 +3935,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:40:00+00:00",
+    "asOf": "2026-09-24T15:50:00+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -3671,11 +3957,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:07.703Z",
+    "checkedAt": "2026-09-24T15:52:37.208Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3687,7 +3973,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-09-24T13:43:07.703Z"
+     "fetchedAt": "2026-09-24T15:52:37.208Z"
     }
    },
    "history": {
@@ -3759,7 +4045,7 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-09-24T13:40:00+00:00",
+    "asOf": "2026-09-24T15:50:00+00:00",
     "observationDate": "2026-09-24",
     "change": null,
     "changeReferenceDate": null
@@ -3781,11 +4067,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-09-24T13:43:08.750Z",
+    "checkedAt": "2026-09-24T15:52:38.203Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3797,7 +4083,7 @@
      "publicDisplay": false,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-09-24T13:43:08.750Z"
+     "fetchedAt": "2026-09-24T15:52:38.203Z"
     }
    },
    "history": {
@@ -3895,7 +4181,7 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "withinFxLimit",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
@@ -4327,11 +4613,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:43:09.835Z",
+    "checkedAt": "2026-09-24T15:52:39.511Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4343,7 +4629,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-09-24T13:43:09.835Z"
+     "fetchedAt": "2026-09-24T15:52:39.511Z"
     }
    },
    "history": {
@@ -4773,11 +5059,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:20.216Z",
+    "checkedAt": "2026-09-24T15:52:56.887Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4789,7 +5075,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-09-24T13:54:20.216Z"
+     "fetchedAt": "2026-09-24T15:52:56.887Z"
     }
    },
    "history": {
@@ -5217,11 +5503,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:20.234Z",
+    "checkedAt": "2026-09-24T15:52:56.902Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -5233,7 +5519,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-09-24T13:54:20.234Z"
+     "fetchedAt": "2026-09-24T15:52:56.902Z"
     }
    },
    "history": {
@@ -5664,11 +5950,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:20.252Z",
+    "checkedAt": "2026-09-24T15:52:56.916Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -5680,7 +5966,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-09-24T13:54:20.252Z"
+     "fetchedAt": "2026-09-24T15:52:56.916Z"
     }
    },
    "history": {
@@ -6108,11 +6394,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:20.264Z",
+    "checkedAt": "2026-09-24T15:52:56.931Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -6124,7 +6410,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-09-24T13:54:20.264Z"
+     "fetchedAt": "2026-09-24T15:52:56.931Z"
     }
    },
    "history": {
@@ -6552,11 +6838,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:21.701Z",
+    "checkedAt": "2026-09-24T15:52:58.910Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -6568,7 +6854,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-09-24T13:54:21.701Z"
+     "fetchedAt": "2026-09-24T15:52:58.910Z"
     }
    },
    "history": {
@@ -6996,11 +7282,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:22.605Z",
+    "checkedAt": "2026-09-24T15:52:59.855Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -7012,7 +7298,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-09-24T13:54:22.605Z"
+     "fetchedAt": "2026-09-24T15:52:59.855Z"
     }
    },
    "history": {
@@ -7443,11 +7729,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-09-24T13:54:23.445Z",
+    "checkedAt": "2026-09-24T15:53:00.578Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -7459,7 +7745,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "POLICY_TARGET_RANGE",
-     "fetchedAt": "2026-09-24T13:54:23.445Z"
+     "fetchedAt": "2026-09-24T15:53:00.578Z"
     }
    },
    "history": {
@@ -7755,11 +8041,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-09-24T13:54:24.198Z",
+    "checkedAt": "2026-09-24T15:53:01.369Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -7771,7 +8057,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "VOLUME_WEIGHTED_MEDIAN",
-     "fetchedAt": "2026-09-24T13:54:24.198Z"
+     "fetchedAt": "2026-09-24T15:53:01.369Z"
     }
    },
    "history": {
@@ -8199,11 +8485,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-09-24T13:43:04.210Z"
+     "checkedAt": "2026-09-24T15:52:29.322Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-09-24T13:54:24.204Z",
+    "checkedAt": "2026-09-24T15:53:01.381Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8215,7 +8501,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Europaeische Zentralbank",
      "priceSemantics": "POLICY_RATE",
-     "fetchedAt": "2026-09-24T13:54:24.204Z"
+     "fetchedAt": "2026-09-24T15:53:01.381Z"
     }
    },
    "history": {
