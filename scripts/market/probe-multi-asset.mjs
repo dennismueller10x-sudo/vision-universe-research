@@ -39,7 +39,7 @@
      node scripts/market/probe-multi-asset.mjs --dry-run      (keine Abrufe)
      node scripts/market/probe-multi-asset.mjs --no-ws        (ohne WebSocket)
    ========================================================================= */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -223,9 +223,22 @@ async function probeTiingoIndices() {
     /* Ein Treffer zaehlt nur, wenn der Name den Index nennt und die
        Gattung kein ETF/Fonds ist. Ein Treffer mit ETF-Gattung ist ein
        Proxy und wird hier ausdruecklich NICHT als Index gewertet. */
+    /* Erster Lauf (36002559332): `spx` loeste auf "Spenda Limited" (ASX)
+       auf, `px1` auf "Plexure Group", `dax` auf den Global-X-DAX-ETF.
+       Ein Treffer auf das Kuerzel ist keine Identitaet. Gezaehlt wird
+       nur, was den Indexnamen traegt und keine Gattung eines
+       Wertpapiers (Aktie, Fonds, ETF). */
+    const NOT_AN_INDEX = /\b(ETF|ETN|FUND|TRUST|INC|LTD|LIMITED|GROUP|CORP|PLC|HOLDINGS?|SHARES|UCITS)\b/i;
+    const nameKey = String(inst.nameDe || inst.name).toUpperCase().replace(/[^A-Z0-9& ]/g, " ").split(/\s+/).filter((w) => w.length > 1);
+    const namesIndex = (n) => {
+      const u = String(n || "").toUpperCase();
+      return nameKey.every((w) => u.includes(w)) && !NOT_AN_INDEX.test(u);
+    };
     const searchIndex = (entry.search && entry.search.candidates || [])
-      .filter((c) => c.assetType && !/etf|fund|stock/i.test(c.assetType));
-    const metaIndex = entry.metadata.filter((m) => m.found && !/etf/i.test(m.name || ""));
+      .filter((c) => c.assetType && !/etf|fund|stock/i.test(c.assetType) && namesIndex(c.name));
+    const metaIndex = entry.metadata.filter((m) => m.found && namesIndex(m.name));
+    entry.sameTickerOtherInstrument = entry.metadata.filter((m) => m.found && !namesIndex(m.name))
+      .map((m) => ({ ticker: m.ticker, resolvesTo: m.name, exchangeCode: m.exchangeCode }));
     entry.indexLevelFound = searchIndex.length > 0 || metaIndex.length > 0;
     entry.etfProxiesSeen = (entry.search && entry.search.candidates || [])
       .filter((c) => /etf/i.test(c.assetType || "")).map((c) => c.ticker);
@@ -250,20 +263,31 @@ async function probeTiingoFxFamily() {
     (t.fxTickers || []).forEach((x) => candidates.add(x));
   }
   const list = [...candidates];
-  const res = await tiingo(`/tiingo/fx/top?tickers=${list.join(",")}`);
-  const served = Array.isArray(res.json) ? res.json : [];
-  const servedTickers = new Set(served.map((r) => String(r.ticker || "").toLowerCase()));
+  /* Erster Lauf: die Sammelabfrage lieferte 6 Zeilen fuer 18 Symbole -
+     OHNE Tickerfeld (Felder: index, quoteTimestamp, bid/ask, midPrice).
+     Welche 6 es waren, laesst sich daraus nicht sagen; dieselbe
+     Unentscheidbarkeit hatte schon tiingo-fx-probe.json (fxBulkQuotes
+     null). Deshalb eine Anfrage je Symbol. */
+  const bulk = await tiingo(`/tiingo/fx/top?tickers=${list.join(",")}`);
+  const quotes = {};
+  for (const t of list) {
+    const r = await tiingo(`/tiingo/fx/top?tickers=${t}`);
+    const row = Array.isArray(r.json) && r.json.length ? r.json[0] : null;
+    if (row) quotes[t] = row;
+  }
+  const servedTickers = new Set(Object.keys(quotes));
+  const any = Object.values(quotes)[0] || null;
   const top = {
-    requested: list, ...shape(res),
+    requested: list, bulk: { ...shape(bulk), tickerFieldPresent: Array.isArray(bulk.json) && bulk.json[0] ? "ticker" in bulk.json[0] : null },
     served: [...servedTickers],
-    quoteFields: served[0] ? Object.keys(served[0]) : [],
-    quoteTimestampSemantics: served[0] ? timestampSemantics(served[0].quoteTimestamp) : null,
-    ages: Object.fromEntries(served.map((r) => [String(r.ticker).toLowerCase(),
+    quoteFields: any ? Object.keys(any) : [],
+    quoteTimestampSemantics: any ? timestampSemantics(any.quoteTimestamp) : null,
+    ages: Object.fromEntries(Object.entries(quotes).map(([t, r]) => [t,
       r.quoteTimestamp ? Math.round((Date.now() - Date.parse(r.quoteTimestamp)) / 1000) : null]))
   };
   const perTicker = {};
   for (const ticker of servedTickers) {
-    const q = served.find((r) => String(r.ticker).toLowerCase() === ticker);
+    const q = quotes[ticker];
     const mid = q ? (typeof q.midPrice === "number" ? q.midPrice : null) : null;
     /* Der FX-Probe-Lauf hat gezeigt: ein Startdatum vor der Historie
        beantwortet der Anbieter mit HTTP 400, nicht mit einer kuerzeren
@@ -365,6 +389,23 @@ async function probeTiingoCrypto() {
       }
     }
   }
+  /* Zwei Fragen, die der erste Lauf offen liess:
+     1. Die Tagesreihe ab 2009 endete am 2022-09-10 - eine Zeilengrenze
+        je Anfrage, kein Ende der Historie. Gemessen wird deshalb die
+        juengste Jahresscheibe getrennt.
+     2. Das Intraday-Fenster lag Montag bis Donnerstag. Ob am Wochenende
+        Bars kommen, zeigt nur ein Fenster, das eines enthaelt. */
+  const sat = (() => { const d = new Date(); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7 || 7)); return d.toISOString().slice(0, 10); })();
+  const mon = new Date(Date.parse(sat) + 2 * 86400000).toISOString().slice(0, 10);
+  const recent = await tiingo(`/tiingo/crypto/prices?tickers=btcusd&startDate=${isoDaysAgo(400)}&resampleFreq=1day`);
+  const rrows = Array.isArray(recent.json) && recent.json[0] ? recent.json[0].priceData || [] : [];
+  const wk = await tiingo(`/tiingo/crypto/prices?tickers=btcusd&startDate=${sat}&endDate=${mon}&resampleFreq=60min`);
+  const wrows = Array.isArray(wk.json) && wk.json[0] ? wk.json[0].priceData || [] : [];
+  out.dailyRowLimit = { note: "Eine Anfrage ab 2009 endet vor der Gegenwart - die Ingest-Strecke muss in Scheiben abrufen.",
+                        fullRangeRows: out.perTicker.btcusd ? out.perTicker.btcusd.daily.observations : null,
+                        fullRangeLastDate: out.perTicker.btcusd ? out.perTicker.btcusd.daily.lastDate : null,
+                        recent400Days: { ...shape(recent), ...coverage(rrows.map((r) => r.date)) } };
+  out.weekendIntraday = { window: { from: sat, to: mon }, ...shape(wk), ...coverage(wrows.map((r) => r.date)) };
   return out;
 }
 
@@ -553,8 +594,10 @@ async function probeEia() {
     RNGWHHD: "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm"
   })) {
     const r = await httpGet(url);
-    const cells = (r.text.match(/class="?B3"?[^>]*>\s*[\d.]+\s*</g) || []).length;
-    const weeks = r.text.match(/class="?B6"?[^>]*>\s*([^<]+)</g) || [];
+    /* Erster Lauf: 0 Zellen - die Tabelle rueckt mit &nbsp; ein. */
+    const txt = String(r.text || "").replace(/&nbsp;/g, " ");
+    const cells = (txt.match(/class="?B3"?[^>]*>\s*-?[\d.]+\s*</g) || []).length;
+    const weeks = txt.match(/class="?B6"?[^>]*>\s*([^<]+)</g) || [];
     const lastWeek = weeks.length ? weeks[weeks.length - 1].replace(/^[^>]*>\s*/, "").replace(/<$/, "").trim() : null;
     const firstWeek = weeks.length ? weeks[0].replace(/^[^>]*>\s*/, "").replace(/<$/, "").trim() : null;
     html[id] = { url, ...shape({ ...r, json: null }), text: undefined, numericCells: cells,
@@ -646,6 +689,14 @@ async function main() {
     O.ecb = await probeEcb();
     O.bundesbank = await probeBundesbank();
     O.eia = await probeEia();
+    /* Die Umwandlung der EIA-Tabellen laeuft vorher im Workflow
+       (eia-xls-to-csv.py). Hier wird nur ihr Ergebnis gelesen: Titel,
+       Anzahl, erster und letzter Tag - keine Werte. */
+    O.eia.xlsConverted = {};
+    for (const series of ["RWTC", "RBRTE", "RNGWHHD"]) {
+      const f = resolve(root, ".market-cache", "multi-asset", "eia", `${series}.meta.json`);
+      O.eia.xlsConverted[series] = existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { converted: false };
+    }
     O.fred = await probeFred();
   }
   report.tiingo.matrix = tiingoMatrix();

@@ -64,6 +64,7 @@ on:
       - 'quant/tests/multi-asset-*.test.mjs'
       - 'scripts/market/probe-multi-asset.mjs'
       - 'scripts/market/ingest-multi-asset.mjs'
+      - 'scripts/market/eia-xls-to-csv.py'
       - 'scripts/quality/verify-multi-asset.mjs'
       - '.github/workflows/multi-asset-data.yml'
   # Auf dem Default-Branch: viermal am Tag. Krypto laeuft 24/7, die
@@ -137,6 +138,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: EIA-Primaertabellen lesbar machen (.xls -> CSV, Arbeitsstand)
+        run: |
+          pip install --quiet xlrd==2.0.1
+          python3 scripts/market/eia-xls-to-csv.py .market-cache/multi-asset/eia RWTC RBRTE RNGWHHD
       - name: Faehigkeiten messen (Tiingo + offizielle Quellen)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
