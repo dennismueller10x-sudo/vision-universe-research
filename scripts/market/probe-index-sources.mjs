@@ -69,9 +69,10 @@ const TARGETS = {
 };
 
 let requests = 0;
-async function get(url, { ua = VU_UA, accept = null, referer = null, timeoutMs = 30000 } = {}) {
+async function get(url, { ua = VU_UA, accept = null, referer = null, token = null, timeoutMs = 30000 } = {}) {
   requests++;
   const headers = { "User-Agent": ua };
+  if (token) headers["X-Finnhub-Token"] = token;
   if (accept) headers.Accept = accept;
   if (referer) headers.Referer = referer;
   const ctrl = new AbortController();
@@ -88,7 +89,7 @@ async function get(url, { ua = VU_UA, accept = null, referer = null, timeoutMs =
   } finally { clearTimeout(t); }
 }
 
-function redactUrl(u) { return String(u).replace(/apikey=[^&]+/i, "apikey=[REDACTED]"); }
+function redactUrl(u) { return String(u).replace(/(apikey|api_token|token)=[^&]+/gi, "$1=[REDACTED]"); }
 function shape(r) {
   const o = { httpStatus: r.status, ms: r.ms, contentType: r.type || null, bytes: r.bytes || 0 };
   if (r.error) o.error = r.error.slice(0, 160);
@@ -504,6 +505,53 @@ async function commercial() {
   report.sources.commercial = out;
 }
 
+/* ------------------------------------------------ Runde 4: vorhandene Zugaenge FMP und Finnhub */
+
+/* Beide Schluessel liegen bereits im Repository (update-fundamentals,
+   update-analyst-ratings). Gemessen wird, ob der vorhandene Tarif echte
+   Indexstaende liefert - Name und Groessenordnung muessen passen. */
+const FMP_KEY = process.env.FMP_API_KEY || "";
+const FINNHUB_KEY = process.env.FINNHUB_API_KEY || "";
+const CARET = { SPX: "^GSPC", NDX: "^NDX", DJI: "^DJI", DAX: "^GDAXI", SX5E: "^STOXX50E", UKX: "^FTSE", N225: "^N225",
+                PX1: "^FCHI", SMI: "^SSMI", HSI: "^HSI", RUT: "^RUT" };
+async function fmp() {
+  const src = { priority: 1, kind: "EXISTING_PROVIDER", keyPresent: Boolean(FMP_KEY) };
+  report.sources.fmp = src;
+  if (!FMP_KEY) { src.result = "NOT_MEASURED_NO_KEY"; return; }
+  const q = (path) => get(`https://financialmodelingprep.com${path}${path.includes("?") ? "&" : "?"}apikey=${FMP_KEY}`);
+  const list = await q("/stable/index-list");
+  const rows = Array.isArray(list.json) ? list.json : [];
+  src.indexList = { ...shape(list), rows: rows.length, message: !Array.isArray(list.json) ? String(list.text).slice(0, 200) : null };
+  for (const [id, sym] of Object.entries(CARET)) {
+    const listed = rows.find((r) => r.symbol === sym) || null;
+    const quote = await q(`/stable/quote?symbol=${encodeURIComponent(sym)}`);
+    const qd = Array.isArray(quote.json) ? quote.json[0] : null;
+    const eod = await q(`/stable/historical-price-eod/light?symbol=${encodeURIComponent(sym)}&from=${daysAgo(3650)}`);
+    const er = Array.isArray(eod.json) ? eod.json : [];
+    const intr = await q(`/stable/historical-chart/5min?symbol=${encodeURIComponent(sym)}`);
+    const ir = Array.isArray(intr.json) ? intr.json : [];
+    hit(id, "fmp", { symbol: sym, listedName: listed ? String(listed.name).slice(0, 60) : null, listedExchange: listed ? listed.exchange || null : null,
+      quote: { ...shape(quote), name: qd ? String(qd.name || "").slice(0, 60) : null, exchange: qd ? qd.exchange || null : null,
+               timestamp: qd ? qd.timestamp || null : null, magnitude: qd ? magnitude(num(qd.price), TARGETS[id].range) : null,
+               message: !Array.isArray(quote.json) ? String(quote.text).slice(0, 200) : null },
+      eod: { ...shape(eod), ...cover(er.map((r) => r.date)), magnitude: er[0] ? magnitude(num(er[0].price), TARGETS[id].range) : null,
+             message: !Array.isArray(eod.json) ? String(eod.text).slice(0, 200) : null },
+      intraday: { ...shape(intr), bars: ir.length, lastBar: ir[0] ? ir[0].date : null, message: !Array.isArray(intr.json) ? String(intr.text).slice(0, 200) : null } });
+  }
+}
+async function finnhub() {
+  const src = { priority: 1, kind: "EXISTING_PROVIDER", keyPresent: Boolean(FINNHUB_KEY) };
+  report.sources.finnhub = src;
+  if (!FINNHUB_KEY) { src.result = "NOT_MEASURED_NO_KEY"; return; }
+  for (const [id, sym] of Object.entries({ SPX: "^GSPC", NDX: "^NDX", DAX: "^GDAXI", N225: "^N225" })) {
+    const r = await get(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}`, { accept: "application/json" , ua: VU_UA, token: FINNHUB_KEY });
+    const d = r.json || null;
+    hit(id, "finnhub", { symbol: sym, ...shape(r), message: d && d.error ? String(d.error).slice(0, 160) : null,
+      magnitude: d && typeof d.c === "number" ? magnitude(d.c, TARGETS[id].range) : null, timestamp: d && d.t ? new Date(d.t * 1000).toISOString() : null });
+    await sleep(1100);
+  }
+}
+
 /* ------------------------------------------------ 3. Institutioneller Spiegel */
 async function fred() {
   report.sources.fred = { priority: 3, kind: "INSTITUTIONAL_MIRROR" };
@@ -532,11 +580,12 @@ async function stooq() {
 }
 
 async function main() {
-  for (const step of [twelveData, nikkei, nikkeiTerms, stoxx, nasdaq, nasdaqMore, spdji, msci, euronext, misc, lsegPages, ecbDirect, cboe, snb, fred, fredLegal, termsPages, commercial, reach]) {
+  for (const step of [twelveData, fmp, finnhub, nikkei, nikkeiTerms, stoxx, nasdaq, nasdaqMore, spdji, msci, euronext, misc, lsegPages, ecbDirect, cboe, snb, fred, fredLegal, termsPages, commercial, reach]) {
     try { await step(); } catch (e) { report.sources["error_" + step.name] = String(e && e.message || e).slice(0, 200); }
   }
   report.requests = requests;
-  const json = JSON.stringify(report, null, 1).split(TD_KEY || "\u0000never\u0000").join("[REDACTED]");
+  let json = JSON.stringify(report, null, 1);
+  for (const k of [TD_KEY, FMP_KEY, FINNHUB_KEY]) if (k) json = json.split(k).join("[REDACTED]");
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, json + "\n");
   console.log(`Index-Quellen-Sondierung: ${OUT.replace(root + "/", "")} (${requests} Anfragen)`);

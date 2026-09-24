@@ -214,17 +214,22 @@ jobs:
       - name: Index-Quellen sondieren
         env:
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
         run: node scripts/market/probe-index-sources.mjs --publish
       - name: Der Bericht enthaelt keinen Schluessel und keine Indexstaende
         env:
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
         run: |
           node -e '
             const fs = require("fs");
             const raw = fs.readFileSync("quant/data/market/capabilities/index-source-probe.json", "utf8");
-            const key = process.env.TWELVE_DATA_API_KEY;
-            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
-            if (/apikey=(?!\[REDACTED\])/i.test(raw)) { console.error("ABBRUCH: apikey in einer URL."); process.exit(1); }
+            for (const key of [process.env.TWELVE_DATA_API_KEY, process.env.FMP_API_KEY, process.env.FINNHUB_API_KEY]) {
+              if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            }
+            if (/(apikey|api_token|token)=(?!\[REDACTED\]|demo\b)/i.test(raw)) { console.error("ABBRUCH: Schluessel in einer URL."); process.exit(1); }
             const verboten = ["close","open","high","low","value","price","level","level_eod","indexvalue","lastsaleprice"];
             const treffer = [];
             (function walk(v, p) { if (!v || typeof v !== "object") return;
