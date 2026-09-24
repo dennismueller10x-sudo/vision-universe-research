@@ -282,6 +282,7 @@ function initialFromFor(security) {
 }
 
 const perSecurity = {};
+let anschlussAusAbrufCount = 0;
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
 /* Wer wurde wegen welcher Klasse zurueckgestellt, und wer bekam nach einer
    Ablehnung einen neuen Versuch - beides gehoert in den Statusbericht,
@@ -321,9 +322,20 @@ for (const security of SECURITIES) {
   }
 
   const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
-  const from = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
+  const fromGeplant = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
     ? initialFromFor(security)
     : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
+  /* EIN TAG UEBERLAPPUNG, KEINE ZUSAETZLICHE ANFRAGE
+
+     nextFetchFrom beginnt bewusst einen Tag nach dem letzten
+     gespeicherten - dieselbe Bar zweimal zu holen waere eine Dublette.
+     Fuer die Konsistenzpruefung ist aber genau dieser Vortag noetig, und
+     zwar mit der Bereinigung von HEUTE (siehe unten beim
+     validationInput). Er kommt in derselben Antwort mit; die Anfrage
+     kostet nichts extra, und die Dublette faengt der Filter weiter
+     unten ab. */
+  const gespeichertBis = INITIAL ? null : store.lastStoredDate(id);
+  const from = gespeichertBis && gespeichertBis < fromGeplant ? gespeichertBis : fromGeplant;
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
@@ -404,7 +416,33 @@ for (const security of SECURITIES) {
     store.saveCheckpoint(checkpoint);
     continue;
   }
-  const validationInput = [...anschluss, ...neueBars];
+  /* DER ANSCHLUSSBAR MUSS AUS DERSELBEN BEREINIGUNG STAMMEN
+
+     Er kam bisher aus dem Speicher - also mit der Bereinigung des
+     VORIGEN Laufs. Die neuen Bars tragen die von heute. Liegt ein
+     Ex-Tag dazwischen, hat der Anbieter die Historie rueckwirkend
+     nachbereinigt: der frisch geholte Vortag steht dann bei einem
+     anderen adjustedClose als der gespeicherte.
+
+     Die Konsistenzpruefung sieht daraufhin ein Verhaeltnis, das sich am
+     Ex-Tag nicht bewegt, meldet dividend_not_in_adjusted und - weil der
+     Anbieter TOTAL_RETURN behauptet - adjustment_status_contradicted.
+     Der Titel wird abgelehnt, seine Reihe altert, und beim naechsten
+     Lauf passiert dasselbe.
+
+     Genau das hat SPY seit dem 17. September blockiert und mit ihm 531
+     Titel in der Ausschuettungssaison. Der Pruefer hatte recht; sein
+     Eingang war widerspruechlich.
+
+     Deshalb: liefert die Antwort den Vortag mit, wird ER benutzt. Nur
+     wenn nicht, bleibt der gespeicherte - dann ist das Fenster so gut
+     wie vorher und nicht schlechter. */
+  const anschlussAusAbruf = anschlussDatumRoh
+    ? bars.filter((bar) => String(bar.date).slice(0, 10) === anschlussDatumRoh)
+    : [];
+  const anschlussFuerPruefung = anschlussAusAbruf.length ? anschlussAusAbruf : anschluss;
+  if (anschlussAusAbruf.length) anschlussAusAbrufCount++;
+  const validationInput = [...anschlussFuerPruefung, ...neueBars];
   const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus

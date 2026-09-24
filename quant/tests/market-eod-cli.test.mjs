@@ -29,7 +29,15 @@ test('strict CLI restores a lagging history despite an ahead checkpoint and resu
  const f=fixture(t);f.store.mergeBars(f.id,[{date:'2026-09-08',open:100,high:102,low:99,close:101,volume:1000,splitFactor:1,dividend:0}]);
  const checkpoint=f.store.loadCheckpoint('strict-eod-2026-09-09');checkpoint.done.push(f.id);f.store.saveCheckpoint(checkpoint);
  const first=f.run([raw('2026-09-09')]);assert.equal(first.status,0,first.stdout+first.stderr);assert.equal(f.store.lastStoredDate(f.id),'2026-09-09');assert.equal(f.store.readBars(f.id).bars.length,2);
- const requests=readFileSync(join(f.root,'requests.txt'),'utf8');assert.match(requests,/startDate=2026-09-09/);assert.match(requests,/endDate=2026-09-09/);
+ const requests=readFileSync(join(f.root,'requests.txt'),'utf8');
+ /* Der Abruf beginnt beim letzten GESPEICHERTEN Tag, nicht einen danach.
+    Die Ueberlappung ist gewollt: der Vortag wird fuer die
+    Konsistenzpruefung gebraucht, und zwar mit der Bereinigung von heute.
+    Kam er aus dem Speicher, trug er die des vorigen Laufs - ueber einen
+    Ex-Tag hinweg ergab das einen Widerspruch, der SPY und 531 weitere
+    Titel blockiert hat. Eine zusaetzliche Anfrage kostet es nicht, und
+    die Dublette faengt der Filter ab: es bleiben zwei Bars. */
+ assert.match(requests,/startDate=2026-09-08/);assert.match(requests,/endDate=2026-09-09/);
  const second=f.run([]);assert.equal(second.status,0,second.stdout+second.stderr);assert.equal(readFileSync(join(f.root,'requests.txt'),'utf8'),requests);assert.equal(f.store.readBars(f.id).bars.length,2);
 });
 
