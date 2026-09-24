@@ -19,7 +19,7 @@
       el('b',{text:'VISION UNIVERSE®'}),
       el('p',{text:'Aktien entdecken. Unternehmen verstehen.'}),
       el('p',{text:meta.disclaimer || 'Informationen zur eigenen Recherche.'}),
-      el('a',{href:'#/daten',text:'Daten & Quellen'})
+      el('p',{},[el('a',{href:'#/maerkte',text:'Märkte'}),document.createTextNode(' · '),el('a',{href:'#/daten',text:'Daten & Quellen'})])
     ]);
   }
   function navigation() {
@@ -186,6 +186,9 @@
           feedHost.querySelector('.dx-feed-bar').insertBefore(continuation,feedHost.querySelector('.dx-feed-zaehler'));
           feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
         }
+      } else if(parts[0]==='maerkte'){
+        document.title='Märkte — Discover — Vision Universe®';
+        await D.Markets.render(root,{calendar,isActive:active});
       } else if(parts[0]==='daten'){
         root.append(D.Daten.render({meta,universe:meta.universes.find(u=>u.universeId===ctx.universeId),calendar}));
       } else {
