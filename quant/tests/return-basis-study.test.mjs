@@ -247,13 +247,24 @@ test("der Vollstaendigkeitspruefer nennt den Stand des Audits", () => {
      der Audit nie ueber den kanonischen Bestand gelaufen ist und jede
      Aussage darueber wieder aus fuenf Titeln stammt. */
   const output = execFileSync("node", ["scripts/quant/assert-product-completeness.mjs"], { encoding: "utf8" });
-  assert.match(output, /RETURN_BASIS_AUDIT_PARTIAL|RETURN_BASIS_AUDIT_NOT_RUN|RETURN_BASIS_AUDIT_INCOMPLETE|RETURN_BASIS_DECISION_WITH_OWNER/);
   assert.match(output, /CRITICAL_PRODUCT_GAPS = 0/);
-  /* Und der Befund zu den zwei Komponenten verschwindet nicht dadurch,
-     dass die Entscheidung noch offen ist. */
-  if (report.specImplementationFindings.length) {
-    assert.match(output, /MOMENTUM_SPEC_MISMATCH/);
-    assert.match(output, /keine stille Korrektur/);
+  const contract = JSON.parse(readFileSync("quant/methodology/return-semantics-v1.json", "utf8"));
+  if (contract.gateStatus.QUANT_V2_MOMENTUM_BASIS === "PENDING_METHODOLOGY_DECISION") {
+    /* Solange offen: der Bericht nennt den Stand des Audits. */
+    assert.match(output, /RETURN_BASIS_AUDIT_PARTIAL|RETURN_BASIS_AUDIT_NOT_RUN|RETURN_BASIS_AUDIT_INCOMPLETE|RETURN_BASIS_DECISION_WITH_OWNER/);
+  } else {
+    /* Entschieden: dann zaehlt nur noch, ob das Veroeffentlichte der
+       Entscheidung folgt - und solange nicht, muss genau das dastehen.
+       Eine Entscheidung, deren Umsetzung unsichtbar aussteht, ist die
+       gefaehrlichere Lage: die alte Zahl sieht aus wie die neue. */
+    const summary = JSON.parse(readFileSync("quant/data/product/factor-evidence-v1/summary.json", "utf8"));
+    if (summary.methodologyVersion !== "vu-factor-evidence-2.0.0") {
+      assert.match(output, /MOMENTUM_BASIS_REMATERIALIZATION_PENDING/);
+      assert.match(output, /METHODOLOGY_VERSION_SUPERSEDED/);
+    }
+    /* Und die Methodik darf sich nicht selbst widersprechen. */
+    assert.doesNotMatch(output, /MOMENTUM_SPEC_CONTRADICTS_ITSELF/);
+    assert.doesNotMatch(output, /MOMENTUM_COMPONENT_NAMES_STALE/);
   }
 });
 

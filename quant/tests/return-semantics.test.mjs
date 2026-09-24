@@ -182,11 +182,16 @@ test("historical universe membership is not substituted by the current one", () 
   assert.match(output, /BACKTEST · Backtest integration stays shut/);
   assert.match(output, /historical index membership \(1 snapshot per index\)/);
   assert.match(output, /No measurement creates it retroactively/);
-  /* And the settled return basis did not quietly move the backtest closer
-     to open: total return is reported separately, as a decision. */
-  assert.match(output, /TOTAL_RETURN_AVAILABLE_BUT_NOT_PUBLISHED/);
+  /* Und die entschiedene Return-Basis hat den Backtest nicht
+     stillschweigend naeher an OPEN gerueckt: die Gesamtrendite wird
+     getrennt gefuehrt, nicht gegen diesen Blocker verrechnet. Seit
+     Option C ist sie ein eigenes Modul - dass es existiert, ist die
+     Bedingung dafuer, dass die alte OPEN-Zeile verschwinden darf. */
   assert.equal(/BACKTEST[^\n]*\n[^\n]*total-return/.test(output), false,
     "total return is still counted against the backtest blocker");
+  const contract = JSON.parse(readFileSync(new URL("quant/methodology/return-semantics-v1.json", ROOT), "utf8"));
+  assert.ok(contract.modules.some((m) => m.id === "investorReturnEvidence" && m.basis === "TOTAL_RETURN"),
+    "Ohne eigenes Anlegerrendite-Modul darf die offene Zeile nicht entfallen");
 });
 
 test("an existing caller that names no module keeps computing what it computed", () => {
