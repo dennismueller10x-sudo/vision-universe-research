@@ -68,14 +68,45 @@
    * falsche Zahl. Liegt keine belastbare bereinigte Spalte vor, wird auf
    * der rohen gerechnet - und der Basiswert steht im Ergebnis.
    */
-  function priceBasis(bars, adjustmentStatus) {
+  var Semantics = (typeof module !== "undefined" && module.exports)
+    ? require("./return-semantics.js")
+    : (typeof global !== "undefined" ? global.VUReturnSemantics : null);
+
+  function priceBasis(bars, adjustmentStatus, moduleId) {
+    var hatSpalte = bars.some(function (b) {
+      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
+    });
+
+    /* SEIT DEM RETURN-SEMANTICS-VERTRAG entscheidet nicht mehr die beste
+       verfuegbare Spalte, sondern das Modul.
+
+       Vorher stand hier: nimm adjustedClose, sobald die Stufe belastbar
+       ist - und "belastbar" umfasste 'adjusted' (Gesamtrendite) genauso
+       wie 'splitAdjusted'. Solange der Anbieter splitAdjusted meldet,
+       faellt das nicht auf. Wird die Stufe auf 'adjusted' gehoben, kippen
+       Technical, Setup und Momentum still auf Gesamtrendite, ohne dass
+       eine Zeile Code sich aendert und ohne dass eine veroeffentlichte
+       Zahl es ansagt. Genau das schliesst der Vertrag aus.
+
+       Ohne moduleId bleibt das alte Verhalten erhalten, damit bestehende
+       Aufrufer nicht stillschweigend etwas anderes rechnen - wer die
+       Trennung will, nennt sein Modul. */
+    if (moduleId && Semantics) {
+      var resolved = Semantics.resolveColumn(moduleId, adjustmentStatus, hatSpalte);
+      if (!resolved.ok) {
+        var fehler = new Error("return basis refused for '" + moduleId + "': " + resolved.reason);
+        fehler.reason = resolved.reason;
+        fehler.wanted = resolved.basis;
+        fehler.served = resolved.served || null;
+        throw fehler;
+      }
+      return resolved.column;
+    }
+
     var stufe = String(adjustmentStatus || "").toUpperCase();
     var belastbar = stufe === "TOTAL_RETURN" || stufe === "SPLIT_ADJUSTED" ||
                     adjustmentStatus === "adjusted" || adjustmentStatus === "splitAdjusted";
-    var hatSpalte = belastbar && bars.some(function (b) {
-      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
-    });
-    return hatSpalte ? "adjustedClose" : "close";
+    return (belastbar && hatSpalte) ? "adjustedClose" : "close";
   }
 
   function column(bars, field, fallbackField) {

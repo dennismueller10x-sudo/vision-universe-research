@@ -545,6 +545,45 @@ the mapping decision is then taken against measurement rather than against a pla
 
 ## OWNER_DECISIONS
 
+### 2026-09-24 — Return Semantics
+
+```
+RETURN_SEMANTICS_CONTRACT_ACTIVE = PASS
+PRICE_MODULES_BASIS              = SPLIT_ADJUSTED_PRICE   (chart, technical, setup, elliott)
+PERFORMANCE_MODULES_BASIS        = TOTAL_RETURN           (backtest, portfolio, benchmark)
+QUANT_V1                         = LEGACY_IMMUTABLE
+QUANT_V2_MOMENTUM_BASIS          = PENDING_METHODOLOGY_DECISION
+```
+
+`quant/methodology/return-semantics-v1.json`, enforced by
+`quant/tests/return-semantics.test.mjs`. **Nothing published was redefined**: the contract is
+enforced where a module names itself, and an unnamed caller keeps computing exactly what it
+computed before — changing every caller at once would have been the silent redefinition the
+decision forbids.
+
+**What this closes.** `market-factors.priceBasis()` took `adjustedClose` whenever a trustworthy
+adjusted column existed and did **not** distinguish split-adjusted from total-return. The
+provider reports `splitAdjusted` today, so nothing looked wrong. Raising that capability to
+`adjusted` would have switched technical structure, setup states and the momentum factor to
+total return with no code change and no published number announcing it. A module now declares
+its basis and a series that cannot serve it is refused. Verified in both directions and by
+breaking the contract three separate ways — flipping `technical` to total return, deciding
+momentum silently, disabling the enforcement — each caught.
+
+**Quant V2 momentum stays undecided, with the evidence gathered**
+(`quant/data/providers/momentum-return-basis-study.json`). Measured over the five series that
+carry both columns: every one is higher on total return, and the gap follows the payout —
+Spearman ρ = 0.90 between dividend yield and the 12m1m difference; XOM (2.20 % yield) +4.44
+percentage points, NVDA (0.18 %) +0.16. **Direction, not magnitude**: momentum is a percentile
+among peers, so what decides it is whether the *ranking* moves, and a ranking study needs both
+columns across the universe — they exist for 5 of 6,403 titles. The report says so itself
+(`canDecideTheFactor: false`) rather than implying a conclusion. Until then the published basis
+is unchanged.
+
+**Historical universe membership stays its own certification gap** and is not substituted by
+current membership: the backtest's basis being settled does not move it closer to open. A test
+asserts that the completeness checker still reports it separately.
+
 ### 2026-09-23 — `total_debt` = OPTION_B
 
 ```
