@@ -50,6 +50,8 @@ const Treasury = require(join(root, "providers/us-treasury/adapter.js"));
 const NyFed = require(join(root, "providers/nyfed/adapter.js"));
 const Bundesbank = require(join(root, "providers/bundesbank/adapter.js"));
 const Eia = require(join(root, "providers/eia/adapter.js"));
+const Fred = require(join(root, "providers/fred/adapter.js"));
+const Nikkei = require(join(root, "providers/nikkei/adapter.js"));
 const CONFIG = require(join(root, "quant/config/multi-asset.json"));
 const CALENDAR = require(join(root, "quant/config/market-calendar.json"));
 const RAW_CATALOG = require(join(root, "quant/config/multi-asset-instruments.json"));
@@ -189,6 +191,23 @@ async function fetchSeries(inst) {
       const meta = readJson(join(CACHE_DIR, "eia", `${id.eia}.meta.json`)) || {};
       return { points: Eia.parseCsv(readFileSync(f, "utf8")), frequency: "DAILY", fetchedAt, seriesTitle: meta.title || null };
     }
+    case "fred-index": {
+      /* Die Lizenzklasse wird bei jedem Lauf auf der Reihenseite gelesen.
+         Weicht sie von der gemessenen ab, wird nichts ausgeliefert. */
+      const spec = Fred.SERIES[inst.symbol];
+      if (!spec) throw new Error(`keine FRED-Reihe fuer ${inst.symbol}`);
+      const lic = Fred.licenseOf(await getText(Fred.seriesPageUrl(spec.series)));
+      if (lic !== spec.licenseClass) throw new Error(`FRED-Lizenzklasse ${lic || "nicht lesbar"} statt ${spec.licenseClass}`);
+      const parsed = Fred.parseCsv(await getText(Fred.seriesUrl(spec.series)));
+      let crossCheck = null;
+      if (inst.symbol === "N225") {
+        try {
+          const ref = Nikkei.parseDailyCsv(await getText(Nikkei.DAILY_CSV));
+          crossCheck = Object.assign({ against: "Nikkei Inc. (offizielle Tagesdatei)" }, Nikkei.crossCheck(parsed.points, ref.points));
+        } catch (e) { crossCheck = { against: "Nikkei Inc. (offizielle Tagesdatei)", ok: null, error: e.message }; }
+      }
+      return { points: parsed.points, frequency: "DAILY", fetchedAt, licenseClass: lic, seriesTitle: spec.series, crossCheck };
+    }
     case "ecb-fx-reference": {
       /* Kein Abruf: der Currency Core liefert diese Reihe bereits aus. */
       const s = readJson(join(root, "quant/data/market/fx/ecb/EURUSD.json"));
@@ -249,6 +268,7 @@ function validate(symbol, s, expectedRange) {
   const latest = s.latest ? s.latest.value : (pts.length ? pts[pts.length - 1][1] : null);
   if (expectedRange && typeof latest === "number" && (latest < expectedRange[0] || latest > expectedRange[1])) f.push("latestOutsideExpectedRange");
   if (!pts.length && !s.latest) f.push("empty");
+  if (s.crossCheck && s.crossCheck.ok === false) f.push(`crossCheckMismatch(${s.crossCheck.maxRelativeDeviation}@${s.crossCheck.worstDate})`);
   return f;
 }
 
@@ -338,7 +358,8 @@ async function main() {
                      seriesTitle: series.seriesTitle || null, observedThrough: series.observedThrough || null,
                      from: series.points.length ? series.points[0][0] : null,
                      to: series.points.length ? series.points[series.points.length - 1][0] : null,
-                     observations: series.points.length, fetchedAt: series.fetchedAt };
+                     observations: series.points.length, fetchedAt: series.fetchedAt,
+                     licenseClass: series.licenseClass || null, crossCheck: series.crossCheck || null };
       const pts = series.rangePoints || series.points;
       writeFile(join(CACHE_DIR, "series", seriesFile), seriesJson(Object.assign({ internalOnly: !isPublic }, head), pts));
       if (series.intraday && series.intraday.length) {

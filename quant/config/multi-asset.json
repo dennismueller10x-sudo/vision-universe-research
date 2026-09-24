@@ -83,6 +83,17 @@
       "licenseNote": "FRED spiegelt Reihen anderer Herausgeber. Nach §12 hat die Primaerquelle Vorrang; FRED dient nur dem Abgleich und wird nicht ausgeliefert.",
       "attribution": "Quelle: FRED, Federal Reserve Bank of St. Louis"
     },
+    "fred-index": {
+      "provider": "Federal Reserve Bank of St. Louis (FRED)",
+      "product": "FRED Graph CSV - Indexreihen der Lizenzklasse 'Copyrighted: Citation required'",
+      "kind": "INSTITUTIONAL_MIRROR",
+      "priority": 3,
+      "publicDisplay": true,
+      "licenseState": "CITATION_REQUIRED",
+      "licenseNote": "Gemessen (index-source-probe.json, fred.stlouisfed.org/legal): Reihen der Klasse 'Citation required' duerfen beim Anzeigen oder Veroeffentlichen mit Quellenangabe und dem Hinweis auf FRED verwendet werden. Nur solche Reihen stehen in providers/fred/adapter.js#SERIES; der Ingest liest die Klasse bei jedem Lauf auf der Reihenseite neu und liefert bei Abweichung nichts aus. SP500, DJIA und NASDAQ100 tragen 'Pre-approval required' (nur nicht-kommerziell) und werden NICHT verwendet.",
+      "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
+      "crossCheck": "Nikkei Inc. offizielle Tagesdatei (nur Gegenprobe, nicht ausgeliefert - Lizenz UNKNOWN)"
+    },
     "ecb-fx-reference": {
       "provider": "Europaeische Zentralbank",
       "product": "Euro-Referenzkurse (bestehender Currency Core, quant/data/market/fx/ecb/)",
@@ -289,18 +300,24 @@
       }
     },
     "N225": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-        "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+      "status": "ACTIVE",
+      "sourceId": "fred-index",
+      "role": "PRIMARY_EOD",
+      "providerIdentifiers": {
+        "fred": "NIKKEI225",
+        "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
+      },
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "1949-05-16..(taeglich)",
+        "licenseClass": "CITATION_REQUIRED",
+        "identity": "Name 'Nikkei Stock Average, Nikkei 225' und Groessenordnung geprueft; Gegenprobe gegen die offizielle Nikkei-Tagesdatei je Lauf"
+      },
+      "intraday": {
+        "state": "NOT_AVAILABLE_FREE",
+        "finding": "Kein frei nutzbarer Intraday-Pfad gemessen: Twelve Data Basic liefert N225 nicht (404), Nikkei-Seiten fuer Nutzungsbedingungen 403. Anzeige ist Tagesschluss."
       }
     },
     "RUT": {
@@ -718,5 +735,5 @@
     }
   },
   "sourcesDecidedAt": "2026-09-24",
-  "sourcesNote": "Entscheidungen aus zwei Messlaeufen (Actions 36002559332, 36003261084). Vorrang nach §12: Tiingo, wo es liefert (Krypto, Edelmetalle); sonst offizielle Primaerquelle (Treasury, Bundesbank, NY Fed, EZB, EIA). FRED nur Vergleich. LICENSE_PENDING = technisch angebunden, oeffentliche Anzeige erst nach Owner-Freigabe (sourceRegistry.<id>.publicDisplay)."
+  "sourcesNote": "Entscheidungen aus zwei Messlaeufen (Actions 36002559332, 36003261084). Vorrang nach §12: Tiingo, wo es liefert (Krypto, Edelmetalle); sonst offizielle Primaerquelle (Treasury, Bundesbank, NY Fed, EZB, EIA). FRED nur Vergleich. LICENSE_PENDING = technisch angebunden, oeffentliche Anzeige erst nach Owner-Freigabe (sourceRegistry.<id>.publicDisplay). Index P0 (2026-09-24, index-source-probe.json): N225 ueber FRED (Lizenzklasse Citation required, gemessen) mit Gegenprobe gegen Nikkei Inc.; FRED ist hier nicht Vergleich, sondern die einzige Quelle mit gemessener Anzeige-Erlaubnis."
 }
