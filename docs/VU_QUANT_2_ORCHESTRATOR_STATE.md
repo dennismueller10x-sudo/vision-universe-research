@@ -34,6 +34,8 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M6 | Backtest integration | **BLOCKED, measured** — historical index membership only; the total-return half of this blocker was wrong and is corrected (see KNOWN_BLOCKERS) |
 | M7 | Market Regime | **LIVE (point-in-time tier)** — six breadth measures, exact pre-set thresholds; transitions behind their own gate |
 | M8 | Full Quant experience | OPEN |
+| M13 | Option C · Kursstärke/Anlegerrendite getrennt | **DONE** — quant-v2.1.0 / vu-factor-evidence-2.0.0 ausgeliefert, Smoke 30/30 |
+| M14 | Benchmark-Frische | **DONE** — `BENCHMARK_STALE` statt falscher Vorsprung; SPY-Erholung offen und benannt |
 | M9 | Setup screening (state index + parity) | **DONE** (this section) — one artifact, 6.8 KB, Aktienseite/Radar/Screener |
 
 ## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
@@ -598,6 +600,73 @@ is unchanged.
 **Historical universe membership stays its own certification gap** and is not substituted by
 current membership: the backtest's basis being settled does not move it closer to open. A test
 asserts that the completeness checker still reports it separately.
+
+### 2026-09-24 — Option C: Kursstärke und Anlegerrendite getrennt (APPROVED, umgesetzt)
+
+```
+QUANT_V2_MOMENTUM_RETURN_BASIS = SPLIT_ADJUSTED_PRICE
+TOTAL_RETURN_EVIDENCE          = SEPARATE
+METHODOLOGY_DECISION           = APPROVED
+```
+
+Owner-Entscheidung auf Grundlage der Full-Universe-Studie. Methodik versioniert:
+`quant-v2.0.0 → quant-v2.1.0`, `vu-factor-evidence-1.0.0 → 2.0.0`. Die alten Beobachtungen
+stehen unverändert unter ihrer eigenen Reihe; die Snapshot-Historie schlüsselt nach
+Methodikversion.
+
+| Was | Stand |
+|---|---|
+| Komponenten umbenannt | `totalReturn12m1m/6m/3m` → `priceReturn*` — ein Name, der etwas anderes behauptet als der Inhalt, war der eigentliche Fehler |
+| `distanceTo52wHigh`, `distanceToSma200` | laufen endlich auf der Basis, als die sie immer beschrieben waren |
+| Kursreihe | **konstruiert**, nicht ausgewählt: der Anbieter liefert keine splitbereinigte Spalte |
+| Ausgelieferte Zeilen | 6.358, davon **6.358** auf `SPLIT_ADJUSTED_PRICE / RECONSTRUCTED_FROM_SPLIT_FACTOR` |
+| wegen Return-Basis verworfen | **0** |
+| Anlegerrendite | eigene Größe, `isFactorComponent: false` |
+
+**Gemessene Wirkung** (`quant/data/product/methodology-change-v1.json`): Momentum ρ 0,9812,
+Median 121 Ränge, P95 603, 1.312 Titel ≥5 Perzentilpunkte, Dezilwechsel 50.
+Strategien: `momentum-leader` 163 → 169, `future-leader` 10 → 13, `value-momentum` 119 → 123.
+
+**Die Gegenprobe hat angeschlagen — und das ist der Punkt.** Auch Qualität, Wachstum, Wert,
+Profitabilität und Risiko haben sich bewegt. Kein Leck: die Beobachtungen stammen vom 21. und
+vom 23., das Universum ging von 6.403 auf 6.358. Perzentile sind relativ. Die sechs nicht
+geänderten Faktoren sind der Kontrollversuch — ihr Median liegt bei **2,5 Rängen**, der des
+Momentums bei **121** (48-fach). Der Bericht führt das als eigenen Block und verweist auf die
+unkonfundierte Messung (beide Basen, selber Stichtag, selbes Universum).
+
+**Frontend.** „Kursstärke" und „Anlegerrendite" nebeneinander, nur für Zeiträume mit beiden
+Zahlen. Production Smoke prüft, dass dort **verschiedene** Werte stehen — falsifiziert:
+gleiche Werte melden `RETURN_KIND_IDENTISCH` an allen vier Stellen. 30/30 sauber, 1440px und
+390px.
+
+### 2026-09-24 — Benchmark-Frische: gemessen, gegated, nicht überspielt
+
+**Warum SPY zurückliegt.** Er steht im Abrufumfang (`resolveScope` nimmt den Benchmark
+ausdrücklich auf, 6.876 Titel) und wird jeden Lauf angefragt — und jeden Lauf abgelehnt:
+`adjustment_status_contradicted`, Klasse `TEMPORARY_REJECT`, Frist 20 h. Die
+Bereinigungsprüfung widerlegt seine deklarierte Stufe, weil eine Dividende nicht in der
+bereinigten Spalte ankam. **531 Titel** stehen aus demselben Grund im Register. Diese Prüfung
+bleibt unangetastet — sie hat recht, und eine rückwirkende Methodikänderung war ausgeschlossen.
+
+**Der Produktfehler lag woanders.** Die Ausrichtung nahm den letzten Benchmarktag *bis* zum
+Stichtag des Titels. Das schützt vor „alter Kurs gegen frischen Index" und ließ die
+Gegenrichtung offen: ein Titel bis zum 23. gegen einen Index vom 17. Sechs Tage Marktbewegung
+landeten als Vorsprung in jeder Zeile, ohne dass etwas es ansagte.
+
+Jetzt wird der Abstand in **Handelstagen des Titels** gezählt — ein Wochenende ist keine
+Veralterung. Über `MAX_BENCHMARK_LAG_SESSIONS = 1` gibt es keine relative Stärke mehr, sondern
+`BENCHMARK_STALE` mit Grund und Nutzertext („Vergleich noch nicht möglich"). Das Gate kostet
+**nur** die relative Stärke: ein veralteter Index sagt nichts über die Kursentwicklung des
+Titels selbst.
+
+Der Faktorbau weist die Frische aus: `lagBehindNewestSessions`,
+`securitiesWithoutRelativeStrength`, `state: CURRENT|STALE`. Sieben Regressionstests, darunter
+der reale SPY-Fall (vier Sitzungen) und der Grenzfall (eine Sitzung, erlaubt); durch
+Falsifikation belegt.
+
+**Offen und benannt:** ob SPY sich über den bestehenden Refresh-Pfad fängt. Solange nicht,
+fehlt die relative Stärke universumsweit — 0,20 Gewicht der Momentumnote, das der
+Faktorengine innerhalb des Faktors renormalisiert. Sichtbar statt still.
 
 ### 2026-09-24 — Full-universe return-basis audit (running)
 
