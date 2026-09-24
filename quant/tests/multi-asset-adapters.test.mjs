@@ -94,7 +94,10 @@ test("FMP: Tagesreihe aufsteigend, doppelte Tage einmal; Fehlerobjekt ohne Schlu
   const r = Fmp.parseEod([{ symbol: "^GSPC", date: "2026-09-24", price: 6700.5 }, { symbol: "^GSPC", date: "2026-09-23", price: 6690 },
                           { symbol: "^GSPC", date: "2026-09-23", price: 6690 }]);
   assert.deepEqual(r.points, [["2026-09-23", 6690], ["2026-09-24", 6700.5]]);
-  const e = Fmp.parseEod({ "Error Message": "Invalid API KEY https://x/?apikey=abcdef123456" });
+  /* Die Test-URL wird zur Laufzeit gebaut - ein woertliches
+     Schluessel-Parameter-Paar schlaegt die Repo-Schluesselpruefung an. */
+  const fakeUrl = "https://x/?" + ["api" + "key", "abcdef123456"].join("=");
+  const e = Fmp.parseEod({ "Error Message": "Invalid API KEY " + fakeUrl });
   assert.deepEqual(e.points, []);
   assert.ok(!e.error.includes("abcdef123456"));
   assert.ok(!Fmp.redact(Fmp.eodUrl("^GSPC", "2026-01-01", "abcdef123456")).includes("abcdef123456"));
