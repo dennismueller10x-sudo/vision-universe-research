@@ -106,7 +106,7 @@ historische Berichte.
 | Delivery-Check (jede Anfrage, 404) | 18/18, 0 fehlerhafte Anfragen |
 | Live-/Intraday-QA | 33/33 |
 | Deep Links `/discover-v2/` + `''`, `#/`, `#/welten`, `#/thema/…`, `#/c/…`, `#/einzeln/…`, `#/s/…`, `#/daten` | 8/8 → `/discover/` mit identischem Hash, 0 Konsolenfehler, 0 px Überlauf; `window.VUDiscoverV2` undefined, `VUDiscover.Views` = Themes/Home/Detail |
-| WebKit | über `discover-frontend-ci.yml` im PR (lokal nur Chromium verfügbar) |
+| CI-Nachweis `discover-frontend-ci.yml` auf Commit `04d0a80d0` (Lauf 35997315131, Pages-Release-Build) | Consolidation-Gate + Contract-Tests PASS; Chromium 186/186; **WebKit 33/33** |
 
 ## 14. Data-Core-Freeze-Proof
 
