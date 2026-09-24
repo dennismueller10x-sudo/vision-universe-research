@@ -25,11 +25,11 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | ✅ |
 | 16 | Raumfahrt | `16-raumfahrt` | ✅ |
 | 17 | Satelliten & Konnektivität | `17-satelliten-konnektivitaet` | ✅ |
-| 18 | Defense & Aerospace | `18-defense-aerospace` | offen |
-| 19 | Biotechnologie | `19-biotechnologie` | offen |
-| 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | offen |
-| 21 | Medizintechnik | `21-medizintechnik` | offen |
-| 22 | Pharma & Wirkstoffforschung | `22-pharma-wirkstoffforschung` | offen |
+| 18 | Defense & Aerospace | `18-defense-aerospace` | ✅ |
+| 19 | Biotechnologie | `19-biotechnologie` | ✅ |
+| 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | ✅ |
+| 21 | Medizintechnik | `21-medizintechnik` | ✅ |
+| 22 | Pharma & Wirkstoffforschung | `22-pharma-wirkstoffforschung` | ✅ |
 | 23 | Longevity & Präzisionsmedizin | `23-longevity-praezisionsmedizin` | offen |
 | 24 | Landwirtschaft & AgTech | `24-landwirtschaft-agtech` | offen |
 | 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | offen |
