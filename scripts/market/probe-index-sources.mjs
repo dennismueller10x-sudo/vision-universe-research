@@ -224,7 +224,16 @@ async function stoxx() {
       if (rows.length && !best) best = f;
     }
     const page = await get(`https://stoxx.com/index/${id.toLowerCase()}/`, { ua: BROWSER_UA });
-    hit(id, "stoxxOfficial", { tried, resolved: best ? best.url : null,
+    /* Runde 5: die Downloadverweise, die die Indexseite selbst nennt. */
+    const links = [...new Set((String(page.text).match(/https?:\/\/[^"'\s<>]+|\/[^"'\s<>]*(?:download|historical|\.txt|\.csv|\.xlsx?)[^"'\s<>]*/gi) || [])
+      .filter((u) => /(download|historical|\.txt\b|\.csv\b|\.xlsx?\b|api)/i.test(u) && !/\.(js|css|png|svg|woff2?)\b/i.test(u)))].slice(0, 30);
+    const followed = [];
+    for (const l of links.filter((u) => /(\.txt|\.csv|download)/i.test(u)).slice(0, 6)) {
+      const u = l.startsWith("/") ? "https://stoxx.com" + l : l;
+      const r = await get(u, { ua: BROWSER_UA });
+      followed.push({ url: u.slice(0, 200), ...shape(r), head: r.ok && !/html/.test(r.type || "") ? String(r.text).slice(0, 120).replace(/[0-9]{3,}[.,][0-9]+/g, "#") : null });
+    }
+    hit(id, "stoxxOfficial", { tried, resolved: best ? best.url : null, pageLinks: links, followed,
       indexPage: { ...shape(page), mentionsName: new RegExp(TARGETS[id].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(page.text) },
       terms: excerpt(page.text, LICENSE_RE) });
   }
