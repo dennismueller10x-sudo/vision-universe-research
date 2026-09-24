@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
   const S = global.QuantShell, D = global.VUDiscover;
-  const V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};
+  const V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   const el = S.el, BASE = '/discover/data/';
   let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose;
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };

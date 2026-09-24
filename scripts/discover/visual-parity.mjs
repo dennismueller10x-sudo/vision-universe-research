@@ -12,7 +12,11 @@ const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:process.argv
 const mode=process.argv[2];
 const ROUTES=[
   ['home','#/'],['welten','#/welten'],['thema','#/thema/kuenstliche-intelligenz'],['thema-ohne-reihe','#/thema/quantencomputing'],
-  ['sammlung','#/c/US_REAL/market-leaders'],['feed','#/einzeln/US_REAL'],['aktie','#/s/US_REAL/NVDA'],['daten','#/daten']
+  ['sammlung','#/c/US_REAL/market-leaders'],['feed','#/einzeln/US_REAL'],['aktie','#/s/US_REAL/NVDA'],['daten','#/daten'],
+  ['thema-farbig','#/thema/elektromobilitaet'],
+  ['fundamentals','#/s/US_REAL/NVDA',async page=>{await page.locator('#journey').scrollIntoViewIfNeeded();await page.waitForTimeout(900);}],
+  // Zuletzt: die Suche bleibt als Overlay offen.
+  ['suche','#/',async page=>{await page.keyboard.press('/');await page.waitForSelector('.dx-search.on input');await page.fill('.dx-search.on input','NVIDIA');await page.waitForTimeout(900);}]
 ];
 const VIEWPORTS=[['320',320,720],['390',390,844],['1440',1440,900]];
 const THEMES=['dark','light'];
@@ -30,9 +34,10 @@ if(mode==='capture'){
     await context.route(u=>!u.href.startsWith(base),r=>r.abort());
     const page=await context.newPage();
     page.on('pageerror',e=>errors.push({vk,theme,error:e.message}));
-    for(const [rk,hash] of ROUTES){
+    for(const [rk,hash,action] of ROUTES){
       await page.goto(base+path+hash,{waitUntil:'networkidle',timeout:60000});
       await page.waitForFunction(()=>document.querySelector('[aria-busy="false"]'),{},{timeout:30000}).catch(()=>{});
+      if(action)await action(page);
       await page.evaluate(()=>document.fonts.ready);
       await page.waitForTimeout(600);
       await page.screenshot({path:`${out}/${rk}-${vk}-${theme}.png`,fullPage:false,animations:'disabled'});

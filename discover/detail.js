@@ -4,7 +4,7 @@
  * only composes their DOM. */
 (function (global) {
   "use strict";
-  var V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};
+  var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   var cleanup = null;
   var serial = 0;
 

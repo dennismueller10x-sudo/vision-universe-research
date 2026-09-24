@@ -1,4 +1,4 @@
-/* Strictly scoped presentation overrides. Never style Discover 1.0. */
+/* Strictly scoped presentation overrides for the Discover stock page (body.dv2). */
 body.dv2 .v2-main.dx-detail{padding:0;max-width:1296px}
 body.dv2 .dv2-stock{max-width:1140px;margin:0 auto;padding:24px 32px 96px;--w:var(--discover-text);--w-soft:var(--discover-line);--discover-dim:var(--v2-muted);--discover-muted:var(--v2-muted)}
 html[data-theme="light"] body.dv2 .dv2-stock{--discover-up:#08713c;--discover-down:#b52d30}
@@ -184,7 +184,7 @@ body.dv2 .dv2-stock .dv2-stock-neighbors .dx-rail-head p{white-space:normal;over
   body.dv2 .dv2-stock .dx-waage-spalte{padding:20px}
 }
 
-/* Discover 2.1 Premium: clear paper, restrained gold and a single cinema
+/* Discover Premium: clear paper, restrained gold and a single cinema
    stage. The chart remains a semantic market visual, never a world color. */
 html[data-theme="light"] body.dv2:has(.dv2-stock),
 html[data-theme="light"] body.dv2 .v2-main.dx-detail,
@@ -339,7 +339,7 @@ body.dv2 .dv2-stock .dv2-stock-next .dx-poster{--discover-surface:#1a1c1f;--disc
 }
 
 /* Premium QA convergence. This stylesheet loads last, so these rules also
-   protect the shell material from older Discover 2.0 cascade rules. */
+   protect the shell material from earlier cascade rules in the same file. */
 body.dv2 .v2-main{overflow-x:clip}
 @media(min-width:761px){body.dv2 .v2-dock{z-index:320}body.dv2 .v2-journey{min-height:calc(100vh - 280px)}}
 @media(max-width:760px){
