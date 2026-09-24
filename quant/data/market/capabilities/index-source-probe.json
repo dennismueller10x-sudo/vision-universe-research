@@ -1,6 +1,6 @@
 {
  "schemaVersion": "1.0.0",
- "generatedAtUtc": "2026-09-24T14:55:16.859Z",
+ "generatedAtUtc": "2026-09-24T15:03:39.414Z",
  "purpose": "Index Coverage P0: echte Indexstaende je Quelle gemessen. Keine ETF, keine Futures, keine Eigenberechnung.",
  "valuesIncluded": false,
  "sources": {
@@ -10,18 +10,18 @@
    "keyPresent": true,
    "apiUsage": {
     "httpStatus": 200,
-    "ms": 225,
+    "ms": 411,
     "contentType": "application/json",
     "bytes": 132,
     "finalUrl": "https://api.twelvedata.com/api_usage?apikey=[REDACTED]",
     "planCategory": "basic",
     "planLimit": 8,
-    "dailyUsage": 17,
+    "dailyUsage": 42,
     "planDailyLimit": 800
    },
    "indicesList": {
     "httpStatus": 200,
-    "ms": 928,
+    "ms": 1255,
     "contentType": "application/json",
     "bytes": 161869,
     "finalUrl": "https://api.twelvedata.com/indices?apikey=[REDACTED]",
@@ -601,41 +601,6 @@
    ],
    "callVariants": [
     {
-     "query": "symbol=N225",
-     "httpStatus": 404,
-     "code": 404,
-     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
-     "name": null,
-     "type": null,
-     "magnitudeN225": null
-    },
-    {
-     "query": "symbol=N225&country=Japan",
-     "httpStatus": 404,
-     "code": 404,
-     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
-     "name": null,
-     "type": null,
-     "magnitudeN225": null
-    },
-    {
-     "query": "symbol=N225&mic_code=XJPX",
-     "httpStatus": 404,
-     "code": 404,
-     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
-     "name": null,
-     "type": null,
-     "magnitudeN225": null
-    },
-    {
-     "query": "symbol=FTSE&country=United%20Kingdom",
-     "httpStatus": 404,
-     "code": 404,
-     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
-     "name": null,
-     "type": null
-    },
-    {
      "query": "symbol=SPX",
      "httpStatus": 404,
      "code": 404,
@@ -660,7 +625,7 @@
      "type": null
     },
     {
-     "query": "symbol=GDAXI",
+     "query": "symbol=GDAXI&mic_code=XETR",
      "httpStatus": 404,
      "code": 404,
      "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
@@ -668,7 +633,24 @@
      "type": null
     },
     {
-     "query": "symbol=DAX&country=Germany",
+     "query": "symbol=N225&mic_code=XJPX",
+     "httpStatus": 404,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "name": null,
+     "type": null,
+     "magnitudeN225": null
+    },
+    {
+     "query": "symbol=FTSE&mic_code=XLON",
+     "httpStatus": 404,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "name": null,
+     "type": null
+    },
+    {
+     "query": "symbol=STOXX50E",
      "httpStatus": 404,
      "code": 404,
      "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
@@ -682,7 +664,7 @@
    "kind": "OFFICIAL_INDEX_PROVIDER",
    "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
    "httpStatus": 200,
-   "ms": 625,
+   "ms": 584,
    "contentType": "text/csv",
    "bytes": 52996,
    "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
@@ -691,7 +673,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/terms",
      "httpStatus": 403,
-     "ms": 24,
+     "ms": 28,
      "contentType": "text/html",
      "bytes": 5691,
      "finalUrl": "https://indexes.nikkei.co.jp/en/terms",
@@ -700,7 +682,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/nkave/about/terms",
      "httpStatus": 403,
-     "ms": 47,
+     "ms": 38,
      "contentType": "text/html",
      "bytes": 5727,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/about/terms",
@@ -709,7 +691,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/",
      "httpStatus": 403,
-     "ms": 60,
+     "ms": 38,
      "contentType": "text/html",
      "bytes": 5655,
      "finalUrl": "https://indexes.nikkei.co.jp/en/",
@@ -718,7 +700,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/nkave",
      "httpStatus": 403,
-     "ms": 51,
+     "ms": 30,
      "contentType": "text/html",
      "bytes": 5691,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave",
@@ -735,17 +717,17 @@
    "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
    "terms": {
     "httpStatus": 404,
-    "ms": 3350,
+    "ms": 2437,
     "contentType": "text/html",
-    "bytes": 137280,
+    "bytes": 137271,
     "finalUrl": "https://www.nasdaq.com/nasdaq-terms-use",
     "excerpt": "etters Privacy Policy Cookies Legal Do Not Sell or Share My Personal Information Visit Nasdaq on Facebook Visit Nasdaq on X Visit Nasdaq on LinkedIn Visit Nasdaq on Instagram Visit Nasdaq on YouTube © 2026, Nasdaq, Inc. All Rights Reserved. My Quotes My Quotes My European Quotes"
    },
    "globalIndexesPage": {
     "httpStatus": 200,
-    "ms": 328,
+    "ms": 1112,
     "contentType": "text/html",
-    "bytes": 69140,
+    "bytes": 69141,
     "finalUrl": "https://indexes.nasdaqomx.com/Index/History/NDX",
     "mentionsExport": true
    }
@@ -755,7 +737,7 @@
    "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
    "terms": {
     "httpStatus": 403,
-    "ms": 68,
+    "ms": 86,
     "contentType": "text/html",
     "bytes": 2010,
     "finalUrl": "https://www.spglobal.com/spdji/en/terms-of-use/",
@@ -790,26 +772,12 @@
    "priority": 2,
    "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
   },
-  "ecbDataPortal": {
-   "priority": 2,
-   "kind": "OFFICIAL_INSTITUTIONAL",
-   "wildcard": {
-    "httpStatus": 404,
-    "ms": 937,
-    "contentType": "application/problem+json",
-    "bytes": 426,
-    "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/D....EI..HSTA?lastNObservations=1&format=csvdata",
-    "series": 0,
-    "headerHasTitle": false
-   },
-   "catalog": []
-  },
   "cboeOfficial": {
    "priority": 2,
    "kind": "OFFICIAL_EXCHANGE_DELAYED",
    "terms": {
     "httpStatus": 404,
-    "ms": 1143,
+    "ms": 455,
     "contentType": "text/html",
     "bytes": 617130,
     "finalUrl": "https://www.cboe.com/us/options/market_statistics/terms/",
@@ -820,28 +788,375 @@
    "priority": 2,
    "kind": "OFFICIAL_INSTITUTIONAL"
   },
-  "bundesbankIndices": {
-   "priority": 2,
-   "kind": "OFFICIAL_INSTITUTIONAL"
-  },
   "fred": {
    "priority": 3,
    "kind": "INSTITUTIONAL_MIRROR"
   },
   "fredLegal": {
    "httpStatus": 200,
-   "ms": 32,
+   "ms": 25,
    "contentType": "text/html",
    "bytes": 131214,
    "finalUrl": "https://fred.stlouisfed.org/legal/",
    "preApproval": "s copyright status you will encounter in FRED: Copyrighted: Pre-approval required These series are under copyright by a third party. Without first obtaining the express written permission of the copyright holder, the information may only be, these series may only be used for non-commercial educational or personal use. For any other use, you must obtain permission from the copyright holder and include proper attribution of ownership. Neither the Federal Reserve Bank of St. Louis nor FRED can provide permission(s) on",
    "citationRequired": "t such permission(s) on your behalf. Link to these series . Copyrighted: Citation required These series are under copyright; but, provided you have not engaged in any prohibited uses, you may use these data series with proper attribution of the source and acknowledgment that you obtained the data from FRED (example, “ Source: BLS via FRED ”) when displaying or publishing it. We recommend using the citation provided in the series notes. Graphs and maps downloaded from FRED are self-citing and do not require a separa"
   },
+  "termsPages": {
+   "nasdaq": [
+    {
+     "url": "https://www.nasdaq.com/terms-of-use",
+     "httpStatus": 404,
+     "ms": 3021,
+     "contentType": "text/html",
+     "bytes": 137259,
+     "finalUrl": "https://www.nasdaq.com/terms-of-use",
+     "excerpt": null
+    },
+    {
+     "url": "https://www.nasdaq.com/legal/terms-of-use",
+     "httpStatus": 404,
+     "ms": 2355,
+     "contentType": "text/html",
+     "bytes": 137514,
+     "finalUrl": "https://www.nasdaq.com/legal/terms-of-use",
+     "excerpt": null
+    },
+    {
+     "url": "https://www.nasdaq.com/about/terms-of-use",
+     "httpStatus": 404,
+     "ms": 3327,
+     "contentType": "text/html",
+     "bytes": 135937,
+     "finalUrl": "https://www.nasdaq.com/about/terms-of-use",
+     "excerpt": null
+    }
+   ],
+   "cboe": [
+    {
+     "url": "https://www.cboe.com/about/legal/",
+     "httpStatus": 404,
+     "ms": 373,
+     "contentType": "text/html",
+     "bytes": 617110,
+     "finalUrl": "https://www.cboe.com/about/legal/",
+     "excerpt": null
+    },
+    {
+     "url": "https://www.cboe.com/legal/website-terms-and-conditions/",
+     "httpStatus": 404,
+     "ms": 468,
+     "contentType": "text/html",
+     "bytes": 617110,
+     "finalUrl": "https://www.cboe.com/legal/website-terms-and-conditions/",
+     "excerpt": null
+    },
+    {
+     "url": "https://www.cboe.com/us/options/market_statistics/",
+     "httpStatus": 200,
+     "ms": 211,
+     "contentType": "text/html",
+     "bytes": 376656,
+     "finalUrl": "https://www.cboe.com/markets/us/options/market-statistics",
+     "excerpt": "Use of Content Your Privacy Choices Do Not Sell or Share My Personal Information (self.__next_f=self.__next_f||[]).push([0]) self.__next_f.push([1,\"1:\\\"$Sreact.fragment\\\"\\n2:I[41016,[\\\"/_next/static/chunks/17mqpdwcdpgwu.js\\\",\\\"/_next/static/chunks/0rccp16vjjw89.js\\\"],\\\"\\\"]\\n3:I[164171,[\\\"/_next/static/chunks/17mqpdwcdpgwu.js\\\",\\\"/_next/static/chunks/0rccp16vjjw89.js\\\"],\\\"GTMProvider\\\"]\\n4:I[334307,[\\\"/_next/static/chunks/17mqpdwcdpgwu.js\\\",\\\"/_next/static/chunks/0rccp16vjjw89"
+    }
+   ],
+   "stoxx": [
+    {
+     "url": "https://stoxx.com/terms-of-use/",
+     "httpStatus": 404,
+     "ms": 886,
+     "contentType": "text/html",
+     "bytes": 126782,
+     "finalUrl": "https://stoxx.com/terms-of-use/",
+     "excerpt": null
+    },
+    {
+     "url": "https://stoxx.com/legal/",
+     "httpStatus": 200,
+     "ms": 924,
+     "contentType": "text/html",
+     "bytes": 132051,
+     "finalUrl": "https://stoxx.com/legal/legal-portal/",
+     "excerpt": null
+    },
+    {
+     "url": "https://stoxx.com/data-dissemination/",
+     "httpStatus": 404,
+     "ms": 735,
+     "contentType": "text/html",
+     "bytes": 126782,
+     "finalUrl": "https://stoxx.com/data-dissemination/",
+     "excerpt": null
+    }
+   ],
+   "euronext": [
+    {
+     "url": "https://www.euronext.com/en/terms-use",
+     "httpStatus": 200,
+     "ms": 1201,
+     "contentType": "text/html",
+     "bytes": 410726,
+     "finalUrl": "https://www.euronext.com/en/terms-use",
+     "excerpt": "pyrights, or other proprietary material without the express written permission of Euronext or such other party as may own the proprietary rights therein and any rights not expressly granted herein are reserved to Euronext or its Third Party Providers, as applicable. All right, title and interest in and to the Content are owned, licensed or controlled by Euronext, its applicable affiliate, or the relevant third party (“Third Party Provider”) credited as the owner or lawful pro"
+    },
+    {
+     "url": "https://live.euronext.com/en/terms-use",
+     "httpStatus": 404,
+     "ms": 282,
+     "contentType": "text/html",
+     "bytes": 246539,
+     "finalUrl": "https://live.euronext.com/en/terms-use",
+     "excerpt": null
+    }
+   ],
+   "msci": [
+    {
+     "url": "https://www.msci.com/terms-of-use",
+     "httpStatus": 200,
+     "ms": 1073,
+     "contentType": "text/html",
+     "bytes": 690454,
+     "finalUrl": "https://www.msci.com/legal/terms-of-use",
+     "excerpt": "alytics_storage: 'granted',\\n ad_user_data: 'granted',\\n ad_personalization: 'granted',\\n wait_for_update: 500\\n });\\n\\n // EMEA override — denied, opt-in required under GDPR / UK GDPR\\n gtag('consent', 'default', {\\n region: [\\n 'AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI',\\n 'FR','GR','HR','HU','IE','IT','LT','LU','LV','MT',\\n 'NL','PL','PT','RO','SE','SI','SK',\\n 'IS','LI','NO',\\n 'GB'\\n ],\\n ad_storage: 'denied',\\n analytics_storage: 'denied',\\n ad_user_data: 'denied"
+    }
+   ],
+   "nikkei": [
+    {
+     "url": "https://indexes.nikkei.co.jp/en/nkave/about/copyright",
+     "httpStatus": 403,
+     "ms": 31,
+     "contentType": "text/html",
+     "bytes": 5760,
+     "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/about/copyright",
+     "excerpt": null
+    },
+    {
+     "url": "https://www.nikkei.co.jp/nikkeiinfo/en/terms/",
+     "httpStatus": 403,
+     "ms": 389,
+     "contentType": "text/html",
+     "bytes": 5800,
+     "finalUrl": "https://www.nikkei.co.jp/nikkeiinfo/en/terms/",
+     "excerpt": null
+    }
+   ]
+  },
+  "commercial": {
+   "twelveData": {
+    "url": "https://twelvedata.com/pricing",
+    "httpStatus": 200,
+    "ms": 1320,
+    "contentType": "text/html",
+    "bytes": 428139,
+    "finalUrl": "https://twelvedata.com/pricing",
+    "pricesSeen": [
+     "$ 1,99",
+     "$ 9,99",
+     "$ 458",
+     "$ 2,29",
+     "$ 158",
+     "$ 790",
+     "$ 0",
+     "$329 /mo",
+     "$99 /mo",
+     "$29 /mo"
+    ],
+    "mentionsIndices": false
+   },
+   "eodhd": {
+    "url": "https://eodhd.com/pricing",
+    "httpStatus": 200,
+    "ms": 440,
+    "contentType": "text/html",
+    "bytes": 216837,
+    "finalUrl": "https://eodhd.com/pricing",
+    "pricesSeen": [
+     "$99.99",
+     "$83.33 /mo",
+     "$999.90",
+     "$19.99",
+     "$16.58 /mo",
+     "$199.00",
+     "$29.99",
+     "$24.99 /mo",
+     "$299.90",
+     "$59.99",
+     "$49.99 /mo",
+     "$599.90",
+     "$39.99",
+     "$50"
+    ],
+    "mentionsIndices": true
+   },
+   "fmp": {
+    "url": "https://site.financialmodelingprep.com/developer/docs/pricing",
+    "httpStatus": 200,
+    "ms": 70,
+    "contentType": "text/html",
+    "bytes": 727780,
+    "finalUrl": "https://site.financialmodelingprep.com/developer/docs/pricing",
+    "pricesSeen": [
+     "$ 22",
+     "$ 59",
+     "$ 149"
+    ],
+    "mentionsIndices": false
+   },
+   "massivePolygon": {
+    "url": "https://polygon.io/pricing?product=indices",
+    "httpStatus": 200,
+    "ms": 791,
+    "contentType": "text/html",
+    "bytes": 255066,
+    "finalUrl": "https://massive.com/pricing?product=indices",
+    "pricesSeen": [
+     "$99",
+     "$199",
+     "$29",
+     "$49",
+     "$0",
+     "$1",
+     "$4",
+     "$7",
+     "$24",
+     "$26",
+     "$55",
+     "$65",
+     "$67"
+    ],
+    "mentionsIndices": true
+   },
+   "finnhub": {
+    "url": "https://finnhub.io/pricing",
+    "httpStatus": 200,
+    "ms": 303,
+    "contentType": "text/html",
+    "bytes": 10685,
+    "finalUrl": "https://finnhub.io/pricing",
+    "pricesSeen": [],
+    "mentionsIndices": false
+   },
+   "marketstack": {
+    "url": "https://marketstack.com/pricing",
+    "httpStatus": 200,
+    "ms": 492,
+    "contentType": "text/html",
+    "bytes": 175509,
+    "finalUrl": "https://marketstack.com/pricing",
+    "pricesSeen": [
+     "$0",
+     "$9.99",
+     "$8.99",
+     "$49.99",
+     "$43.99",
+     "$149.99",
+     "$127.99"
+    ],
+    "mentionsIndices": true
+   },
+   "alphaVantage": {
+    "url": "https://www.alphavantage.co/premium/",
+    "httpStatus": 200,
+    "ms": 223,
+    "contentType": "text/html",
+    "bytes": 38307,
+    "finalUrl": "https://www.alphavantage.co/premium/",
+    "pricesSeen": [
+     "$49.99/mo",
+     "$99.99/mo",
+     "$149.99/mo",
+     "$199.99/mo",
+     "$249.99/mo",
+     "$499/mo",
+     "$999/mo",
+     "$1499/mo",
+     "$1999/mo",
+     "$2499/mo"
+    ],
+    "mentionsIndices": true
+   },
+   "barchart": {
+    "url": "https://www.barchart.com/ondemand/pricing",
+    "httpStatus": 202,
+    "ms": 184,
+    "contentType": "text/html",
+    "bytes": 0,
+    "finalUrl": "https://www.barchart.com/ondemand/pricing",
+    "pricesSeen": [],
+    "mentionsIndices": false
+   },
+   "eodhdDemo": {
+    "SPX": {
+     "ticker": "GSPC.INDX",
+     "httpStatus": 403,
+     "ms": 38,
+     "contentType": "text/html",
+     "bytes": 9,
+     "finalUrl": "https://eodhd.com/api/eod/GSPC.INDX?api_token=demo&fmt=json&from=2026-09-14",
+     "rows": 0,
+     "message": "Forbidden",
+     "magnitude": null
+    },
+    "DAX": {
+     "ticker": "GDAXI.INDX",
+     "httpStatus": 403,
+     "ms": 63,
+     "contentType": "text/html",
+     "bytes": 9,
+     "finalUrl": "https://eodhd.com/api/eod/GDAXI.INDX?api_token=demo&fmt=json&from=2026-09-14",
+     "rows": 0,
+     "message": "Forbidden",
+     "magnitude": null
+    },
+    "SX5E": {
+     "ticker": "STOXX50E.INDX",
+     "httpStatus": 403,
+     "ms": 40,
+     "contentType": "text/html",
+     "bytes": 9,
+     "finalUrl": "https://eodhd.com/api/eod/STOXX50E.INDX?api_token=demo&fmt=json&from=2026-09-14",
+     "rows": 0,
+     "message": "Forbidden",
+     "magnitude": null
+    },
+    "UKX": {
+     "ticker": "FTSE.INDX",
+     "httpStatus": 403,
+     "ms": 41,
+     "contentType": "text/html",
+     "bytes": 9,
+     "finalUrl": "https://eodhd.com/api/eod/FTSE.INDX?api_token=demo&fmt=json&from=2026-09-14",
+     "rows": 0,
+     "message": "Forbidden",
+     "magnitude": null
+    },
+    "N225": {
+     "ticker": "N225.INDX",
+     "httpStatus": 403,
+     "ms": 36,
+     "contentType": "text/html",
+     "bytes": 9,
+     "finalUrl": "https://eodhd.com/api/eod/N225.INDX?api_token=demo&fmt=json&from=2026-09-14",
+     "rows": 0,
+     "message": "Forbidden",
+     "magnitude": null
+    }
+   },
+   "fmpDemo": {
+    "httpStatus": 401,
+    "ms": 294,
+    "contentType": "application/json",
+    "bytes": 184,
+    "finalUrl": "https://financialmodelingprep.com/api/v3/quote/%5EGSPC?apikey=[REDACTED]",
+    "message": "{\"Error Message\":\"Invalid API KEY. Feel free to create a Free API Key or visit https://site.financialmodelingprep.com/faqs?search=why-is-my-api-key-invalid for ",
+    "rows": 0
+   }
+  },
   "reachability": [
    {
     "url": "https://www.stoxx.com/",
     "httpStatus": null,
-    "ms": 33,
+    "ms": 20,
     "contentType": null,
     "bytes": 0,
     "error": "fetch failed"
@@ -849,7 +1164,7 @@
    {
     "url": "https://stoxx.com/",
     "httpStatus": 200,
-    "ms": 155,
+    "ms": 123,
     "contentType": "text/html",
     "bytes": 162042,
     "finalUrl": "https://stoxx.com/"
@@ -857,7 +1172,7 @@
    {
     "url": "https://www.hsi.com.hk/data/eng/indexes/00001.00/chart.json",
     "httpStatus": 200,
-    "ms": 343,
+    "ms": 437,
     "contentType": "application/json",
     "bytes": 76186,
     "finalUrl": "https://www.hsi.com.hk/data/eng/indexes/00001.00/chart.json"
@@ -875,7 +1190,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 3168,
+     "ms": 2036,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/SPX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -894,7 +1209,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 2131,
+     "ms": 1136,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/SPX/info?assetclass=index",
@@ -907,23 +1222,44 @@
    "spdjiOfficial": {
     "indexId": 340,
     "httpStatus": 403,
-    "ms": 124,
+    "ms": 130,
     "contentType": "text/html",
-    "bytes": 505,
+    "bytes": 503,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=340&language_id=1",
     "jsonKeys": null,
     "observations": 0,
     "magnitude": null
    },
-   "ecbDataPortal": {
-    "matched": false
+   "ecbDataPortalFM": {
+    "tried": [
+     {
+      "key": "D.US.USD.DS.EI.S_PCOMP.HSTA",
+      "httpStatus": 404,
+      "ms": 233,
+      "contentType": "application/problem+json",
+      "bytes": 460,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/D.US.USD.DS.EI.S_PCOMP.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 0,
+      "lastPeriod": null
+     },
+     {
+      "key": "M.US.USD.DS.EI.S_PCOMP.HSTA",
+      "httpStatus": 200,
+      "ms": 316,
+      "contentType": "text/csv",
+      "bytes": 1285,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.US.USD.DS.EI.S_PCOMP.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 3,
+      "lastPeriod": "2026-08"
+     }
+    ]
    },
    "cboeOfficial": {
     "symbol": "_SPX",
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 150,
+     "ms": 165,
      "contentType": "application/json",
      "bytes": 539,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_SPX.json",
@@ -939,7 +1275,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 410,
+     "ms": 382,
      "contentType": "application/json",
      "bytes": 1704391,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_SPX.json",
@@ -958,7 +1294,7 @@
    "fred": {
     "series": "SP500",
     "httpStatus": 200,
-    "ms": 98,
+    "ms": 53,
     "contentType": "application/csv",
     "bytes": 48903,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500",
@@ -985,7 +1321,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 3677,
+     "ms": 2283,
      "contentType": "application/json",
      "bytes": 277854,
      "finalUrl": "https://api.nasdaq.com/api/quote/NDX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1007,13 +1343,13 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 2088,
+     "ms": 2083,
      "contentType": "application/json",
      "bytes": 721,
      "finalUrl": "https://api.nasdaq.com/api/quote/NDX/info?assetclass=index",
      "companyName": "NASDAQ-100",
      "isRealTime": false,
-     "lastTradeTimestamp": "Sep 24, 2026 10:57 AM ET",
+     "lastTradeTimestamp": "Sep 24, 2026 11:05 AM ET",
      "magnitude": {
       "expectedRange": [
        5000,
@@ -1023,15 +1359,12 @@
      }
     }
    },
-   "ecbDataPortal": {
-    "matched": false
-   },
    "cboeOfficial": {
     "symbol": "_NDX",
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 118,
+     "ms": 225,
      "contentType": "application/json",
      "bytes": 533,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_NDX.json",
@@ -1047,7 +1380,7 @@
     },
     "historical": {
      "httpStatus": 403,
-     "ms": 240,
+     "ms": 232,
      "contentType": "application/xml",
      "bytes": 263,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_NDX.json",
@@ -1058,7 +1391,7 @@
    "fred": {
     "series": "NASDAQ100",
     "httpStatus": 200,
-    "ms": 57,
+    "ms": 133,
     "contentType": "application/csv",
     "bytes": 208146,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100",
@@ -1085,7 +1418,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 3075,
+     "ms": 3060,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/INDU/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1104,7 +1437,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 3112,
+     "ms": 2112,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/INDU/info?assetclass=index",
@@ -1114,26 +1447,53 @@
      "magnitude": null
     }
    },
+   "nasdaqOfficial_DJIA": {
+    "httpStatus": 200,
+    "ms": 2584,
+    "contentType": "application/json",
+    "bytes": 142,
+    "finalUrl": "https://api.nasdaq.com/api/quote/DJIA/info?assetclass=index",
+    "companyName": null,
+    "status": "[{\"code\":1001,\"errorMessage\":\"Symbol not exists.\"}]",
+    "magnitude": null
+   },
+   "nasdaqOfficial_DJI": {
+    "httpStatus": 200,
+    "ms": 1141,
+    "contentType": "application/json",
+    "bytes": 142,
+    "finalUrl": "https://api.nasdaq.com/api/quote/DJI/info?assetclass=index",
+    "companyName": null,
+    "status": "[{\"code\":1001,\"errorMessage\":\"Symbol not exists.\"}]",
+    "magnitude": null
+   },
+   "nasdaqOfficial_.DJI": {
+    "httpStatus": 200,
+    "ms": 2116,
+    "contentType": "application/json",
+    "bytes": 142,
+    "finalUrl": "https://api.nasdaq.com/api/quote/.DJI/info?assetclass=index",
+    "companyName": null,
+    "status": "[{\"code\":1001,\"errorMessage\":\"Symbol not exists.\"}]",
+    "magnitude": null
+   },
    "spdjiOfficial": {
     "indexId": 1720,
     "httpStatus": 403,
-    "ms": 84,
+    "ms": 243,
     "contentType": "text/html",
-    "bytes": 503,
+    "bytes": 505,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=1720&language_id=1",
     "jsonKeys": null,
     "observations": 0,
     "magnitude": null
-   },
-   "ecbDataPortal": {
-    "matched": false
    },
    "cboeOfficial": {
     "symbol": "_DJX",
     "note": "DJX = Dow Jones Industrial Average / 100 - NICHT der DJIA-Stand",
     "quote": {
      "httpStatus": 200,
-     "ms": 102,
+     "ms": 110,
      "contentType": "application/json",
      "bytes": 508,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_DJX.json",
@@ -1149,7 +1509,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 482,
+     "ms": 601,
      "contentType": "application/json",
      "bytes": 935622,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_DJX.json",
@@ -1168,7 +1528,7 @@
    "fred": {
     "series": "DJIA",
     "httpStatus": 200,
-    "ms": 25,
+    "ms": 24,
     "contentType": "application/csv",
     "bytes": 51414,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DJIA",
@@ -1195,9 +1555,29 @@
    "stoxxOfficial": {
     "tried": [
      {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
+      "httpStatus": null,
+      "ms": 650,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
       "httpStatus": null,
-      "ms": 31,
+      "ms": 21,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt",
+      "httpStatus": null,
+      "ms": 724,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1207,7 +1587,27 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt",
       "httpStatus": null,
-      "ms": 25,
+      "ms": 19,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_gdaxi.txt",
+      "httpStatus": null,
+      "ms": 506,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_gdaxi.txt",
+      "httpStatus": null,
+      "ms": 18,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1217,67 +1617,35 @@
     ],
     "resolved": null,
     "indexPage": {
-     "httpStatus": null,
-     "ms": 27,
-     "contentType": null,
-     "bytes": 0,
-     "error": "fetch failed",
-     "mentionsName": false
+     "httpStatus": 200,
+     "ms": 72,
+     "contentType": "text/html",
+     "bytes": 875000,
+     "finalUrl": "https://stoxx.com/index/dax/",
+     "mentionsName": true
     },
-    "terms": null
+    "terms": "orts Monthly data Simulation files Services Index licensing License agreement form Academic data iNAV Announcements Index updates Dissemination Methodology Systems & IT Help --> --> Index Regulations Index regulations Complaints Legal Trademarks Disclaimers Third party disclaimer"
    },
    "deutscheBoerseOfficial": {
     "httpStatus": 200,
-    "ms": 1306,
+    "ms": 1561,
     "contentType": "application/json",
     "bytes": 2,
     "finalUrl": "https://api.boerse-frankfurt.de/v1/data/price_history?isin=DE0008469008&mic=XETR&minDate=2026-01-01&maxDate=2026-09-24&offset=0&limit=50",
     "jsonKeys": [],
     "mentionsName": false
    },
-   "ecbDataPortal": {
-    "matched": false
-   },
-   "bundesbankIndices": {
+   "ecbDataPortalFM": {
     "tried": [
      {
-      "tsId": "BBK01.WU3140",
-      "httpStatus": 200,
-      "ms": 910,
-      "contentType": "text/csv",
-      "bytes": 66,
-      "finalUrl": "https://www.bundesbank.de/statistic-rmi/StatisticDownload?tsId=BBK01.WU3140&its_csvFormat=en&its_fileFormat=csv&mode=its",
-      "header": [
-       "Die Zeitreihe BBK01.WU3140 ist nicht gültig oder nicht vorhanden.",
-       ""
-      ],
-      "observations": 0
-     },
-     {
-      "tsId": "BBK01.WU3141",
-      "httpStatus": 200,
-      "ms": 708,
-      "contentType": "text/csv",
-      "bytes": 66,
-      "finalUrl": "https://www.bundesbank.de/statistic-rmi/StatisticDownload?tsId=BBK01.WU3141&its_csvFormat=en&its_fileFormat=csv&mode=its",
-      "header": [
-       "Die Zeitreihe BBK01.WU3141 ist nicht gültig oder nicht vorhanden.",
-       ""
-      ],
-      "observations": 0
-     },
-     {
-      "tsId": "BBK01.WU001A",
-      "httpStatus": 200,
-      "ms": 154,
-      "contentType": "text/csv",
-      "bytes": 66,
-      "finalUrl": "https://www.bundesbank.de/statistic-rmi/StatisticDownload?tsId=BBK01.WU001A&its_csvFormat=en&its_fileFormat=csv&mode=its",
-      "header": [
-       "Die Zeitreihe BBK01.WU001A ist nicht gültig oder nicht vorhanden.",
-       ""
-      ],
-      "observations": 0
+      "key": "M.DE.EUR.DS.EI.DAXINDX.HSTA",
+      "httpStatus": 404,
+      "ms": 244,
+      "contentType": "application/problem+json",
+      "bytes": 460,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.DE.EUR.DS.EI.DAXINDX.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 0,
+      "lastPeriod": null
      }
     ]
    }
@@ -1292,9 +1660,49 @@
    "stoxxOfficial": {
     "tried": [
      {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
+      "httpStatus": null,
+      "ms": 667,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
       "httpStatus": null,
-      "ms": 71,
+      "ms": 18,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/hbrbcpe.txt",
+      "httpStatus": 200,
+      "ms": 737,
+      "contentType": "text/html",
+      "bytes": 162042,
+      "finalUrl": "https://stoxx.com/",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/hbrbcpe.txt",
+      "httpStatus": null,
+      "ms": 22,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
+      "httpStatus": null,
+      "ms": 587,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1304,7 +1712,17 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 26,
+      "ms": 17,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://stoxx.com/download/historical_values/h_sx5e.txt",
+      "httpStatus": null,
+      "ms": 570,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1314,7 +1732,7 @@
      {
       "url": "https://www.stoxx.com/download/historical_values/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 33,
+      "ms": 21,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1324,17 +1742,38 @@
     ],
     "resolved": null,
     "indexPage": {
-     "httpStatus": null,
-     "ms": 36,
-     "contentType": null,
-     "bytes": 0,
-     "error": "fetch failed",
-     "mentionsName": false
+     "httpStatus": 200,
+     "ms": 124,
+     "contentType": "text/html",
+     "bytes": 669731,
+     "finalUrl": "https://stoxx.com/index/sx5e/",
+     "mentionsName": true
     },
-    "terms": null
+    "terms": "orts Monthly data Simulation files Services Index licensing License agreement form Academic data iNAV Announcements Index updates Dissemination Methodology Systems & IT Help --> --> Index Regulations Index regulations Complaints Legal Trademarks Disclaimers Third party disclaimer"
    },
-   "ecbDataPortal": {
-    "matched": false
+   "ecbDataPortalFM": {
+    "tried": [
+     {
+      "key": "D.U2.EUR.DS.EI.DJES50I.HSTA",
+      "httpStatus": 404,
+      "ms": 1172,
+      "contentType": "application/problem+json",
+      "bytes": 460,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/D.U2.EUR.DS.EI.DJES50I.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 0,
+      "lastPeriod": null
+     },
+     {
+      "key": "M.U2.EUR.DS.EI.DJES50I.HSTA",
+      "httpStatus": 200,
+      "ms": 699,
+      "contentType": "text/csv",
+      "bytes": 1256,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.DS.EI.DJES50I.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 3,
+      "lastPeriod": "2026-08"
+     }
+    ]
    }
   },
   "UKX": {
@@ -1350,7 +1789,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 118,
+     "ms": 127,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&country=United%20Kingdom&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -1363,7 +1802,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 119,
+     "ms": 141,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&country=United%20Kingdom&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -1374,7 +1813,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 115,
+     "ms": 141,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=FTSE&country=United%20Kingdom&apikey=[REDACTED]",
@@ -1385,7 +1824,7 @@
    },
    "lsegOfficial": {
     "httpStatus": 404,
-    "ms": 534,
+    "ms": 606,
     "contentType": null,
     "bytes": 49,
     "finalUrl": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX",
@@ -1394,8 +1833,62 @@
     ],
     "mentionsName": false
    },
-   "ecbDataPortal": {
-    "matched": false
+   "lsegPages": {
+    "tried": [
+     {
+      "url": "https://api.londonstockexchange.com/api/v1/pages?path=indices%2Fftse-100&parameters=indexname%3Dftse-100",
+      "httpStatus": 404,
+      "ms": 321,
+      "contentType": "application/json",
+      "bytes": 91,
+      "finalUrl": "https://api.londonstockexchange.com/api/v1/pages?path=indices%2Fftse-100&parameters=indexname%3Dftse-100",
+      "mentionsName": false,
+      "jsonKeys": [
+       "id",
+       "layout",
+       "info",
+       "meta",
+       "components",
+       "sharedComponents"
+      ]
+     },
+     {
+      "url": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX?worlds=quotes",
+      "httpStatus": 404,
+      "ms": 235,
+      "contentType": null,
+      "bytes": 49,
+      "finalUrl": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX?worlds=quotes",
+      "mentionsName": false,
+      "jsonKeys": [
+       "message"
+      ]
+     },
+     {
+      "url": "https://www.londonstockexchange.com/indices/ftse-100",
+      "httpStatus": 200,
+      "ms": 999,
+      "contentType": "text/html",
+      "bytes": 54995,
+      "finalUrl": "https://www.londonstockexchange.com/indices/ftse-100",
+      "mentionsName": false,
+      "jsonKeys": null
+     }
+    ]
+   },
+   "ecbDataPortalFM": {
+    "tried": [
+     {
+      "key": "M.GB.GBP.DS.EI.FTSE100.HSTA",
+      "httpStatus": 404,
+      "ms": 249,
+      "contentType": "application/problem+json",
+      "bytes": 460,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.GB.GBP.DS.EI.FTSE100.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 0,
+      "lastPeriod": null
+     }
+    ]
    }
   },
   "N225": {
@@ -1411,7 +1904,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 116,
+     "ms": 110,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&country=Japan&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -1424,7 +1917,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 111,
+     "ms": 119,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&country=Japan&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -1435,7 +1928,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 120,
+     "ms": 146,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=N225&country=Japan&apikey=[REDACTED]",
@@ -1446,7 +1939,7 @@
    },
    "nikkeiOfficial": {
     "httpStatus": 200,
-    "ms": 625,
+    "ms": 584,
     "contentType": "text/csv",
     "bytes": 52996,
     "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
@@ -1462,20 +1955,31 @@
     },
     "terms": {
      "httpStatus": 404,
-     "ms": 940,
+     "ms": 484,
      "contentType": "text/html",
      "bytes": 1803,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/terms",
      "excerpt": null
     }
    },
-   "ecbDataPortal": {
-    "matched": false
+   "ecbDataPortalFM": {
+    "tried": [
+     {
+      "key": "M.JP.JPY.DS.EI.JAPDOWA.HSTA",
+      "httpStatus": 200,
+      "ms": 314,
+      "contentType": "text/csv",
+      "bytes": 1327,
+      "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.JP.JPY.DS.EI.JAPDOWA.HSTA?format=csvdata&lastNObservations=3",
+      "rows": 3,
+      "lastPeriod": "2026-08"
+     }
+    ]
    },
    "fred": {
     "series": "NIKKEI225",
     "httpStatus": 200,
-    "ms": 489,
+    "ms": 30,
     "contentType": "application/csv",
     "bytes": 383312,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NIKKEI225",
@@ -1505,7 +2009,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 108,
+     "ms": 136,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&country=France&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -1518,7 +2022,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 112,
+     "ms": 132,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&country=France&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -1529,7 +2033,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 106,
+     "ms": 129,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=FCHI&country=France&apikey=[REDACTED]",
@@ -1540,7 +2044,7 @@
    },
    "euronextOfficial": {
     "httpStatus": 200,
-    "ms": 2711,
+    "ms": 526,
     "contentType": "text/csv",
     "bytes": 34236,
     "finalUrl": "https://live.euronext.com/en/ajax/AwlHistoricalPrice/getFullDownloadAjax/FR0003500008-XPAR?format=csv&decimal_separator=.&date_form=d/m/Y&op=&adjusted=&base100=&startdate=2016-09-26&enddate=2026-09-24",
@@ -1565,7 +2069,7 @@
    },
    "sixOfficial": {
     "httpStatus": 400,
-    "ms": 501,
+    "ms": 637,
     "contentType": "text/html",
     "bytes": 137,
     "finalUrl": "https://www.six-group.com/fqs/snap.json?select=ValorId,ClosingPrice,ClosingDate&where=ValorId=998089",
@@ -1574,7 +2078,7 @@
    },
    "snbDataPortal": {
     "httpStatus": 200,
-    "ms": 2866,
+    "ms": 2999,
     "contentType": "text/csv",
     "bytes": 3411408,
     "finalUrl": "https://data.snb.ch/api/cube/capchstocki/data/csv/en",
@@ -1618,7 +2122,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 137,
+     "ms": 142,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=HSI&country=Hong%20Kong&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -1631,7 +2135,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 113,
+     "ms": 120,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=HSI&country=Hong%20Kong&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -1642,7 +2146,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 111,
+     "ms": 126,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=HSI&country=Hong%20Kong&apikey=[REDACTED]",
@@ -1653,7 +2157,7 @@
    },
    "hangSengOfficial": {
     "httpStatus": 200,
-    "ms": 791,
+    "ms": 600,
     "contentType": "application/json",
     "bytes": 3305,
     "finalUrl": "https://www.hsi.com.hk/data/eng/rt/index-series/hsi/performance.do",
@@ -1681,7 +2185,7 @@
     ],
     "timeSeries": {
      "httpStatus": 200,
-     "ms": 571,
+     "ms": 711,
      "contentType": "application/json",
      "bytes": 580837,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&country=China&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -1708,7 +2212,7 @@
     },
     "intraday": {
      "httpStatus": 200,
-     "ms": 142,
+     "ms": 158,
      "contentType": "application/json",
      "bytes": 3921,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&country=China&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -1719,7 +2223,7 @@
     },
     "quote": {
      "httpStatus": 200,
-     "ms": 196,
+     "ms": 217,
      "contentType": "application/json",
      "bytes": 602,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=000001&country=China&apikey=[REDACTED]",
@@ -1730,11 +2234,11 @@
     }
    },
    "sseOfficial": {
-    "httpStatus": null,
-    "ms": 694,
-    "contentType": null,
-    "bytes": 0,
-    "error": "fetch failed",
+    "httpStatus": 200,
+    "ms": 3794,
+    "contentType": "application/json",
+    "bytes": 130,
+    "finalUrl": "https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_ZS_INDEX_HIS_L&INDEX_CODE=000001",
     "jsonKeys": null,
     "mentionsName": false
    }
@@ -1749,7 +2253,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 2058,
+     "ms": 2091,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/RUT/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1768,7 +2272,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 3108,
+     "ms": 3140,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/RUT/info?assetclass=index",
@@ -1783,7 +2287,7 @@
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 105,
+     "ms": 238,
      "contentType": "application/json",
      "bytes": 526,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_RUT.json",
@@ -1799,7 +2303,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 351,
+     "ms": 324,
      "contentType": "application/json",
      "bytes": 194244,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_RUT.json",
@@ -1825,7 +2329,7 @@
    },
    "msciOfficial": {
     "httpStatus": 200,
-    "ms": 438,
+    "ms": 832,
     "contentType": "application/json",
     "bytes": 139606,
     "finalUrl": "https://app2.msci.com/products/service/index/indexmaster/getLevelDataForGraph?currency_symbol=USD&index_variant=STRD&start_date=20160926&end_date=20260924&data_frequency=DAILY&index_codes=990100",
@@ -1842,13 +2346,25 @@
     }
    }
   },
+  "COMP": {
+   "nasdaqOfficial_COMP": {
+    "httpStatus": 200,
+    "ms": 2122,
+    "contentType": "application/json",
+    "bytes": 734,
+    "finalUrl": "https://api.nasdaq.com/api/quote/COMP/info?assetclass=index",
+    "companyName": "NASDAQ Composite Index",
+    "status": null,
+    "magnitude": null
+   }
+  },
   "MID": {
    "spdjiOfficial": {
     "indexId": 92030,
     "httpStatus": 403,
-    "ms": 59,
+    "ms": 155,
     "contentType": "text/html",
-    "bytes": 503,
+    "bytes": 505,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=92030&language_id=1",
     "jsonKeys": null,
     "observations": 0,
@@ -1856,5 +2372,5 @@
    }
   }
  },
- "requests": 86
+ "requests": 131
 }
