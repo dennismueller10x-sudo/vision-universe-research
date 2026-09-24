@@ -111,3 +111,28 @@ test("ohne Beobachtung der neuen Methodik bricht nichts ab", () => {
   assert.match(output, /Vergleich nicht moeglich/);
   assert.equal(existsSync(join(dir, "x.json")), false);
 });
+
+test("der Bericht sagt, was er nicht trennen kann", () => {
+  /* Zwei Beobachtungen von verschiedenen Tagen ueber ein veraendertes
+     Universum tragen beides: Methodik und Datenlage. Der Bericht muss
+     das benennen, sonst liest jemand 121 Raenge als reine Methodik -
+     und die saubere Zahl steht woanders. */
+  const report = JSON.parse(readFileSync("quant/data/product/methodology-change-v1.json", "utf8"));
+  const k = report.confounding;
+  assert.ok(k, "kein Konfundierungsblock");
+  assert.equal(typeof k.sameDay, "boolean");
+  assert.equal(typeof k.sameUniverse, "boolean");
+  assert.ok(k.cleanMeasurement, "der Bericht verweist nicht auf die unkonfundierte Messung");
+  if (!k.sameDay || !k.sameUniverse) {
+    assert.ok(Number.isFinite(k.CONTROL_FACTOR_MEDIAN_RANK_CHANGE),
+      "ohne Kontrollwert ist die Momentumzahl nicht einzuordnen");
+    assert.ok(Number.isFinite(k.MOMENTUM_MEDIAN_RANK_CHANGE));
+  }
+  /* Und die Bewegung der nicht geaenderten Faktoren muss klein bleiben
+     gegen die des Momentums. Waere sie es nicht, waere die Umstellung
+     nicht das, was hier gemessen wird. */
+  if (Number.isFinite(k.MOMENTUM_OVER_CONTROL)) {
+    assert.ok(k.MOMENTUM_OVER_CONTROL > 5,
+      "Momentum bewegt sich kaum staerker als die Kontrollfaktoren - dann misst dieser Bericht die Datenlage, nicht die Methodik");
+  }
+});

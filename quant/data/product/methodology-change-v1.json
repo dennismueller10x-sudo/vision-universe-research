@@ -1,6 +1,6 @@
 {
  "schemaVersion": "methodology-change-1.0.0",
- "generatedAt": "2026-09-24T18:06:42.000Z",
+ "generatedAt": "2026-09-24T18:15:57.000Z",
  "versions": {
   "measurement_logic": "1.0.0",
   "comparison": "vu-return-basis-comparison-1.0.0"
@@ -336,30 +336,45 @@
    "enteringTickers": []
   }
  },
+ "confounding": {
+  "sameDay": false,
+  "sameUniverse": false,
+  "daysApart": 2,
+  "CONTROL_FACTOR_MEDIAN_RANK_CHANGE": 2.5,
+  "MOMENTUM_MEDIAN_RANK_CHANGE": 121,
+  "MOMENTUM_OVER_CONTROL": 48.4,
+  "note": "Die sechs nicht geaenderten Faktoren sind der Kontrollversuch. Ihre Bewegung ist Datenlage und Abdeckung, nicht Methodik. Nur der Abstand dazwischen gehoert der Umstellung.",
+  "cleanMeasurement": "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md - dort beide Basen am selben Stichtag ueber dasselbe Universum."
+ },
  "unexpectedFactorMovement": [
   {
    "factor": "quality",
    "titlesMoving5Percentiles": 4,
+   "medianRankChange": 2.5,
    "spearman": 0.999623
   },
   {
    "factor": "growth",
    "titlesMoving5Percentiles": 16,
+   "medianRankChange": 3,
    "spearman": 0.999644
   },
   {
    "factor": "value",
    "titlesMoving5Percentiles": 1,
+   "medianRankChange": 1.5,
    "spearman": 0.999832
   },
   {
    "factor": "profitability",
    "titlesMoving5Percentiles": 2,
+   "medianRankChange": 1.5,
    "spearman": 0.999777
   },
   {
    "factor": "risk",
    "titlesMoving5Percentiles": 98,
+   "medianRankChange": 22.5,
    "spearman": 0.997141
   }
  ]

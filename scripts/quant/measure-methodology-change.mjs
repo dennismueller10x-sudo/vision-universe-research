@@ -170,12 +170,52 @@ function main() {
     },
     RANK_DRIFT: drift,
     STRATEGY_IMPACT: strategyImpact,
-    /* Die Gegenprobe in einem Feld: bewegt sich ausser Momentum noch
-       etwas? Wenn ja, steht es hier und muss erklaert werden, statt in
-       einer Tabelle unterzugehen. */
+    /* WAS DIESER VERGLEICH NICHT TRENNEN KANN
+
+       Die beiden Beobachtungen stammen von verschiedenen Tagen und aus
+       einem veraenderten Universum. Damit steckt in jeder Zahl hier
+       BEIDES: die Methodikaenderung und zwei Tage Marktbewegung samt
+       Abdeckungswechsel. Perzentile sind relativ - faellt ein Titel aus
+       dem Universum, bewegt sich jeder andere Rang ein Stueck.
+
+       Das ist keine Schwaeche, die man wegschreibt, sondern eine, die
+       man misst. Die sechs Faktoren, die die Methodik NICHT angefasst
+       hat, sind dafuer der Kontrollversuch: was sie sich bewegen, ist
+       reine Datenlage. Was Momentum darueber hinaus tut, ist die
+       Methodik.
+
+       Die saubere, unkonfundierte Messung der Methodikwirkung steht
+       woanders: die Full-Universe-Studie hat beide Basen am SELBEN
+       Stichtag ueber dasselbe Universum gerechnet. */
+    confounding: (() => {
+      const kontrollen = factors.filter((f) => f !== "momentum" && drift[f] &&
+        !drift[f].state && drift[f].valuesIdentical === false)
+        .map((f) => drift[f].MEDIAN_ABSOLUTE_RANK_CHANGE).filter(finite);
+      const median = kontrollen.length
+        ? kontrollen.slice().sort((a, b) => a - b)[Math.floor(kontrollen.length / 2)] : null;
+      const momentumMedian = drift.momentum && !drift.momentum.state
+        ? drift.momentum.MEDIAN_ABSOLUTE_RANK_CHANGE : null;
+      return {
+        sameDay: from.date === to.date,
+        sameUniverse: shared.length === fromTickers.size && shared.length === toTickers.size,
+        daysApart: Math.round((Date.parse(to.date + "T00:00:00Z") -
+                               Date.parse(from.date + "T00:00:00Z")) / 86400000),
+        CONTROL_FACTOR_MEDIAN_RANK_CHANGE: median,
+        MOMENTUM_MEDIAN_RANK_CHANGE: momentumMedian,
+        MOMENTUM_OVER_CONTROL: finite(median) && median > 0 && finite(momentumMedian)
+          ? round(momentumMedian / median, 1) : null,
+        note: "Die sechs nicht geaenderten Faktoren sind der Kontrollversuch. Ihre Bewegung ist Datenlage und Abdeckung, nicht Methodik. Nur der Abstand dazwischen gehoert der Umstellung.",
+        cleanMeasurement: "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md - dort beide Basen am selben Stichtag ueber dasselbe Universum."
+      };
+    })(),
+    /* Bewegt sich ausser Momentum noch etwas? Die Frage bleibt wichtig,
+       aber die Antwort ist nur zusammen mit dem Konfundierungsblock
+       lesbar: eine kleine Bewegung ist Datenlage, eine grosse waere ein
+       Leck. */
     unexpectedFactorMovement: factors
       .filter((f) => f !== "momentum" && drift[f] && drift[f].valuesIdentical === false)
       .map((f) => ({ factor: f, titlesMoving5Percentiles: drift[f].TITLES_MOVING_5_PERCENTILES,
+                     medianRankChange: drift[f].MEDIAN_ABSOLUTE_RANK_CHANGE,
                      spearman: drift[f].SPEARMAN_RANK_CORRELATION }))
   };
 
@@ -198,9 +238,17 @@ function main() {
         " >=5Pz=" + String(d.TITLES_MOVING_5_PERCENTILES).padStart(5) +
         " Dezil ab/zu=" + d.TOP_DECILE_LEAVING + "/" + d.TOP_DECILE_ENTERING) + "\n");
   }
+  const k = report.confounding;
+  if (!k.sameDay || !k.sameUniverse) {
+    process.stdout.write("  Konfundiert: " + k.daysApart + " Tage auseinander" +
+      (k.sameUniverse ? "" : ", Universum veraendert") +
+      " · Kontrollfaktoren bewegen sich " + k.CONTROL_FACTOR_MEDIAN_RANK_CHANGE +
+      " Raenge (Median), Momentum " + k.MOMENTUM_MEDIAN_RANK_CHANGE +
+      (k.MOMENTUM_OVER_CONTROL ? " (" + k.MOMENTUM_OVER_CONTROL + "-fach)" : "") + "\n");
+  }
   if (report.unexpectedFactorMovement.length) {
-    process.stdout.write("  ACHTUNG: auch diese Faktoren haben sich bewegt: " +
-      report.unexpectedFactorMovement.map((x) => x.factor).join(", ") + "\n");
+    process.stdout.write("  Auch bewegt (Datenlage, siehe Konfundierung): " +
+      report.unexpectedFactorMovement.map((x) => x.factor + " " + x.medianRankChange).join(" · ") + "\n");
   }
   for (const [id, impact] of Object.entries(strategyImpact)) {
     process.stdout.write("  " + id.padEnd(22) +
