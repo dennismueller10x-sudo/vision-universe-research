@@ -73,9 +73,51 @@
         "elektrisches Blau, Zukunftsoptimismus" },
     { id: "ENERGY", label: "Energie",
       begriffe: ["energie", "solarenergie", "wind kraft", "windkraft", "erneuerbare",
-        "batteriespeicher", "stromnetz", "kernenergie"],
-      motiv: "grosse Energieinfrastruktur: Solarfeld, Windpark oder Stromnetz bei " +
-        "goldenem Licht, Massstab und Zukunftskraft" }
+        "batteriespeicher", "stromnetz", "kernenergie", "raffinerie", "pipeline",
+        "erdoel", "erdgas", "oel-", " opec"],
+      motiv: "grosse Energieinfrastruktur: Raffinerie, Pipeline, Solarfeld, Windpark " +
+        "oder Stromnetz bei goldenem Licht, Massstab und Zukunftskraft" },
+    /* -------------------------------------------------------------------
+       DIE FEHLENDEN THEMENWELTEN — OWNER-DIREKTIVE "WEB-FIRST +
+       FULL-POST-GENERATION" (24.09.), §3.2
+
+       Realer Befund: "10-year U.S. Treasury yield tops 5.1%, marking its
+       highest level since 2007" fiel durch alle acht bisherigen
+       Themenwelten (thema=null) und landete beim generischen
+       Rechenzentrums-Motiv — genau der Motiv-Bruch, den §3.2 ausdruecklich
+       verbietet (Treasury/Zinsen/Makro darf KEIN Rechenzentrum sein). */
+    { id: "MACRO_RATES", label: "Zinsen / Anleihen / Makro",
+      begriffe: ["zins", "leitzins", "anleihe", "staatsanleihe", "treasury", "bond yield",
+        "rendite", "inflation", "notenbank", "zentralbank", "federal reserve", " fed ",
+        "fed-", "ezb", "rezession", "konjunktur", "bruttoinlandsprodukt", " bip "],
+      motiv: "Finanzwelt der Zinsen und Anleihen: Trading Floor, Kursmonitore mit " +
+        "Zinskurven, Zentralbankgebaeude oder Boersenlicht bei Nacht — kein " +
+        "Rechenzentrum, kein Serverraum, kein Technologie-Motiv" },
+    { id: "MARKETS", label: "Boerse / Maerkte",
+      begriffe: ["aktienmarkt", "boerse", "index", "s&p 500", "nasdaq", "dow jones",
+        "dax", "aktienkurs", "boersenkurs", "handelstag", "marktkapitalisierung"],
+      motiv: "Trading Floor, Kurstafeln, Broker in Bewegung, dynamisches Boersenlicht, " +
+        "Finanzdistrikt bei Nacht" },
+    { id: "AUTOMOTIVE", label: "Automobil",
+      begriffe: ["automobil", "autohersteller", "fahrzeugproduktion", "automesse",
+        "autoindustrie", "pkw", "neuwagen", "bmw", "mercedes", "volkswagen", "porsche"],
+      motiv: "Automobil-Fertigungslinie oder Premium-Fahrzeugdesign im Studiolicht, " +
+        "praezise Linienfuehrung, industrielle Eleganz" },
+    { id: "LUXURY", label: "Luxus / Mode",
+      begriffe: ["luxus", "luxusmarke", "premiummarke", "mode", "modehaus", "lvmh",
+        "haute couture", "designerlabel", "boutique"],
+      motiv: "Premium-Editorial-Szene: Boutique, Laufsteg oder Atelier, warmes " +
+        "gedaempftes Licht, edle Materialitaet, kein Technologie-Motiv" },
+    { id: "CONSUMER", label: "Konsum / Einzelhandel",
+      begriffe: ["einzelhandel", "konsumverhalten", "konsumausgaben", "verbrauchermarkt",
+        "handelskette", "e-commerce", "onlinehandel"],
+      motiv: "Einzelhandels- oder Konsumwelt: belebte Ladenzeile, Logistikzentrum oder " +
+        "Regalreihen bei warmem Licht, Massstab des Handels" },
+    { id: "TRAVEL", label: "Reisen / Verkehr",
+      begriffe: ["reisebranche", "tourismus", "fluggesellschaft", "airline", "flughafen",
+        "kreuzfahrt", "reiseverkehr", "bahnverkehr"],
+      motiv: "Reise- und Verkehrswelt: Flughafenterminal, Bahnhof oder Destination bei " +
+        "dynamischem Licht, Bewegung und Aufbruch" }
   ];
 
   /* Wortgrenzen-sicherer Begriffs-Treffer. Ein reiner indexOf() traf im

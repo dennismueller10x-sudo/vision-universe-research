@@ -14,11 +14,16 @@
    UNVERAENDERT weiterbenutzt (beide sind bereits generisch auf
    contentId, siehe deren eigene Dateien).
 
-   Der Hook selbst wird NICHT vom Agenten erbeten — web-research.js hat
-   ihn bereits deterministisch aus echtem Quelltext gewaehlt. Der Agent
-   liefert ausschliesslich die texfreie, logofreie Bildwelt (Stufe A);
-   der bereits gewaehlte Hook wird in Stufe B (render-asset.mjs,
-   unveraendert) aufgesetzt.
+   DEUTSCHER HOOK — OWNER-DIREKTIVE "WEB-FIRST + FULL-POST-GENERATION"
+   (24.09.), §5.1: alle sichtbaren Texte im Post sind Deutsch. Die
+   Quelle liefert den Hook oft englisch (z.B. Seeking Alpha Market
+   Currents) — genau das war der reale Befund bei cand_20260924_d052c375
+   ("10-year U.S. Treasury yield tops 5.1%..." unveraendert als Hook).
+   web-research.js waehlt den Hook weiterhin deterministisch aus echtem
+   Quelltext (Grounding, Anti-Halluzination) — aber als ENGLISCHES
+   Belegmaterial (`grounding_hook_en`). Die deutsche Uebersetzung/
+   Adaption liefert der Agent, grounded an denselben `evidence`-Belegen;
+   der Text wird in Stufe B (render-asset.mjs, unveraendert) aufgesetzt.
 
    Ausfuehren:
      node scripts/social/request-creative-web.mjs
@@ -107,11 +112,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const agentBrief = ChatGptWork.buildAgentBrief(vuBrief, {
     contentId, variants: 1,
-    hookType: "web_story_fixed",
-    hookStrategyId: "vu-web-story-fixed-hook-v1",
+    hookType: "web_story_grounded_de",
+    hookStrategyId: "vu-web-story-grounded-de-v1",
     hookInstruction:
-      "Der Hook-Text steht bereits fest und wird NICHT vom Agenten formuliert (siehe " +
-      "`fixed_hook`). Liefere ausschliesslich die Bildwelt gemaess `visual_instruction`.",
+      "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook " +
+      "(siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE " +
+      "Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses " +
+      "Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine " +
+      "neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — " +
+      "Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive " +
+      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
     palette: auswahl.motiv.palette,
@@ -119,10 +129,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     width: 1080, height: 1350,
     objective: "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, " +
       "thematisch passende Bildwelt erzeugen — kein Diagramm, kein Dashboard, kein " +
-      "Bildschirmfoto, kein generischer Boersenticker.",
+      "Bildschirmfoto, kein generischer Boersenticker. Hook und Caption durchgehend " +
+      "auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
     audience: "Anleger, die aktuelle Marktentwicklungen verfolgen"
   });
-  agentBrief.fixed_hook = auswahl.hook;
+  agentBrief.grounding_hook_en = auswahl.hook;
   agentBrief.evidence = baueEvidenzAusStory(auswahl).map(function (e, i) {
     return { id: "ev" + (i + 1), statement: e.statement, value: e.value, unit: e.unit,
       entity: e.entity, metric: e.metric, source: e.source.source,

@@ -61,9 +61,18 @@ function transportFuer(root) {
   };
 }
 
-/** Aus einer materialisierten VERIFIED-Story das Bild-Asset holen —
-    derselbe Weg, den run-social-cycle.mjs fuer den Quant-Pfad benutzt
-    (AutorChatGptWork.createChatGptWorkAuthor(...).write()). */
+/** Aus einer materialisierten VERIFIED-Story das Bild-Asset UND den vom
+    Agenten gelieferten deutschen Hook/Caption holen — derselbe Weg, den
+    run-social-cycle.mjs fuer den Quant-Pfad benutzt
+    (AutorChatGptWork.createChatGptWorkAuthor(...).write()).
+
+    DEUTSCHER TEXT KOMMT VOM AGENTEN (Owner-Direktive "WEB-FIRST +
+    FULL-POST-GENERATION", 24.09., §5.1): web-research.js waehlt den
+    Hook weiterhin deterministisch aus echtem Quelltext (Grounding),
+    aber nur als englisches Belegmaterial (`grounding_hook_en`, siehe
+    request-creative-web.mjs). Die deutsche Uebersetzung liefert der
+    Agent als hook_variants[0]/caption — FAIL CLOSED, wenn keine
+    Variante vorliegt: kein Rueckfall auf den englischen Quelltext. */
 export function holeAsset(contentId, root) {
   const autor = AutorChatGptWork.createChatGptWorkAuthor({
     transport: transportFuer(root), variants: 1 });
@@ -71,7 +80,13 @@ export function holeAsset(contentId, root) {
   if (!ergebnis || !ergebnis.asset) {
     return { ok: false, reason: (ergebnis && ergebnis.reason) || "Kein Bild-Asset im Ergebnis." };
   }
-  return { ok: true, asset: ergebnis.asset };
+  const variante = (ergebnis.variants || [])[0];
+  if (!variante || !variante.hook || !variante.caption) {
+    return { ok: false, reason: "Kein deutscher Hook/Caption vom Creative Agent im " +
+      "Ergebnis (hook_variants leer oder unvollstaendig) — kein Rueckfall auf den " +
+      "englischen Quelltext." };
+  }
+  return { ok: true, asset: ergebnis.asset, hook: variante.hook, caption: variante.caption };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -116,7 +131,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const bild = assetBefund.asset;
 
   /* --------------------------------------------------------- STUFE B */
-  const pkg = { hook: auswahl.hook, packageId: contentId, caption: auswahl.caption };
+  const pkg = { hook: assetBefund.hook, packageId: contentId, caption: assetBefund.caption };
   const bildplan = AssetRenderer.planGeschichte(pkg, {
     asset_path: bild.asset_path, state: bild.state,
     asset_sha256: bild.asset_sha256, mime_type: bild.mime_type
@@ -144,7 +159,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const imageUrl = SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + ".jpg";
   const inhalt = { contentId: pkg.packageId, imageUrl, caption:
-    auswahl.caption + (auswahl.hashtags.length ? "\n\n" +
+    pkg.caption + (auswahl.hashtags.length ? "\n\n" +
       auswahl.hashtags.map((t) => "#" + t).join(" ") : "") };
   const abdruck = ContentHash.contentHash(inhalt);
   const candidateId = "cand_" + NOW.slice(0, 10).replace(/-/g, "") + "_" +
@@ -180,8 +195,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     createdAt: NOW, state: "AWAITING_APPROVAL",
     content: inhalt, contentHash: abdruck,
     presentation: {
-      topic: auswahl.story.title, hook: auswahl.hook, caption: inhalt.caption,
-      captionBase: auswahl.caption,
+      topic: auswahl.story.title, hook: pkg.hook, caption: inhalt.caption,
+      captionBase: pkg.caption,
       hashtags: auswahl.hashtags, hashtagDetail: auswahl.hashtagDetail,
       hashtagVerworfen: auswahl.hashtagVerworfen, hashtagSatz: auswahl.hashtagSatz,
       visualType: "GENERATIVE", mediaFormat: "IMAGE",
@@ -196,16 +211,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       expectedPrimaryMetric: { metric: "reach", baseline: null, expectation: null,
         note: "Erster Web-First-Beitrag dieser Kohorte — keine Vergleichsbasis." },
       authoring: { briefId: null, authorId: "chatgpt-work", editorialCorrection: null,
-        textAuthor: "web-research", reason: "Hook und Caption stammen aus " +
-          "social/engines/web-research.js (Hook-Wettbewerb gegen echten Quelltext), " +
-          "nicht vom Creative Agent — der lieferte ausschliesslich die Bildwelt." },
+        textAuthor: "chatgpt-work", reason: "web-research.js waehlt den Hook " +
+          "deterministisch aus echtem Quelltext (Grounding), liefert ihn aber nur als " +
+          "englisches Belegmaterial (grounding_hook_en). Die deutsche Uebersetzung/" +
+          "Adaption von Hook und Caption liefert der Creative Agent, grounded an " +
+          "denselben Belegen (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, " +
+          "24.09., §5.1)." },
       visualOrigin: "generative", visualQuality: visuelleGuete({ origin: "generative" })
     },
     provenance: {
       signalIds: [], opportunityId: null, strategyVersion: "web-research-1.0",
       visualDirection: null, visualDirectionReady: true, visualDirectionFailureType: null,
       audienceFrame: null, learningDimensions: null,
-      archetype: "WEB_STORY", hook: auswahl.hook, mediaFormat: "IMAGE", visualType: "GENERATIVE",
+      archetype: "WEB_STORY", hook: pkg.hook, mediaFormat: "IMAGE", visualType: "GENERATIVE",
       visual: { origin: "generative", variantId: bild.visual_variant_id || null,
         strategy: bild.visual_strategy || null, assetPath: bild.asset_path,
         assetSha256: bild.asset_sha256, mimeType: bild.mime_type },

@@ -127,3 +127,26 @@ test("CG15 · Mehrere Verstoesse werden alle gemeldet, nicht nur der erste", () 
   assert.equal(r.ok, false);
   assert.ok(r.verstoesse.length >= 2);
 });
+
+test("CG16 · Der reale englische Web-First-Hook faellt an HOOK_CAPTION_GERMAN durch (§5.1)", () => {
+  /* Realer Befund cand_20260924_d052c375, 24.09.: der Seeking-Alpha-
+     Titel wurde woertlich, unuebersetzt als Hook uebernommen. */
+  const r = CG.pruefe(kandidat({ hook:
+    "10-year U.S. Treasury yield tops 5.1%, marking its highest level since 2007." }),
+    OK_OPTIONEN);
+  assert.equal(r.ok, false);
+  assert.ok(r.verstoesse.some((v) => v.id === "HOOK_CAPTION_GERMAN"));
+  assert.equal(r.befund.HOOK_CAPTION_GERMAN, false);
+});
+
+test("CG17 · Englische Kontamination in der Caption faellt ebenso durch", () => {
+  const r = CG.pruefe(kandidat({ captionBase:
+    "Die Rendite steigt, and das aendert die Richtung fuer Anleger." }), OK_OPTIONEN);
+  assert.equal(r.ok, false);
+  assert.ok(r.verstoesse.some((v) => v.id === "HOOK_CAPTION_GERMAN"));
+});
+
+test("CG18 · Ein durchgehend deutscher Hook besteht HOOK_CAPTION_GERMAN", () => {
+  const r = CG.pruefe(kandidat(), OK_OPTIONEN);
+  assert.equal(r.befund.HOOK_CAPTION_GERMAN, true);
+});

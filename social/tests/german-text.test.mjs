@@ -177,3 +177,23 @@ test("GT22 · Bezeichner bleiben unberuehrt", () => {
    "brief_00b861f_pruef"].forEach((id) =>
     assert.equal(G.normalize(id), id, "Bezeichner veraendert: " + id));
 });
+
+test("GT23 · Der reale englische Quelltitel wird als Kontamination erkannt", () => {
+  /* Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION" (24.09.), §5.1 —
+     realer Befund: cand_20260924_d052c375 trug diesen Titel woertlich
+     als Hook. */
+  const treffer = G.englischeKontamination(
+    "10-year U.S. Treasury yield tops 5.1%, marking its highest level since 2007.");
+  assert.deepEqual(treffer, ["its", "since"]);
+});
+
+test("GT24 · Echtes Deutsch meldet keine englische Kontamination", () => {
+  const t = "Die Rendite zehnjaehriger US-Staatsanleihen steigt ueber 5,1 Prozent — " +
+    "das hoechste Niveau seit 2007. Fuer Anleger zaehlt jetzt die Richtung.";
+  assert.deepEqual(G.englischeKontamination(t), []);
+});
+
+test("GT25 · Eigennamen und Ticker allein loesen keinen Treffer aus", () => {
+  assert.deepEqual(G.englischeKontamination(
+    "MSFT und der S&P 500 legten am Freitag zu."), []);
+});

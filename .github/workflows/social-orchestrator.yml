@@ -259,37 +259,22 @@ jobs:
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
       # =====================================================================
-      # DIE PLATTE — DAS BREITE CONTENT UNIVERSE, FRISCH
-      #
-      # build-opportunity-slate.mjs lief bis hierher in KEINEM Workflow.
-      # Die Datei auf der Platte stammte vom Vortag, und der
-      # Owner-Bericht zeigte ihre 32 Themen aus fuenf Familien, waehrend
-      # der Zyklus aus vier Quant-Signalen drei STOCK_STORY-Pakete
-      # baute. Wer den Bericht las, schloss auf eine Breite, die im
-      # Lauf keine Rolle spielte.
-      #
-      # Der Schritt ist lesend und netzfrei: er ruft keine externe
-      # Quelle und schon gar keine der beiden vom Owner nicht
-      # aktivierten. Er schreibt genau eine Datei.
-      #
-      # VOR dem Messen, weil die Platte den Datenstand beschreibt, auf
-      # dem dieser Lauf entscheidet - nicht den von gestern.
-      # =====================================================================
-      # DIRECT CREATIVE GOLDEN PATH (Owner-Direktive "DIRECT CREATIVE
-      # GOLDEN PATH — FINAL GO/NO-GO", 23.09.): JETZT POST ERSTELLEN und
-      # POST ZU THEMA laufen NICHT mehr ueber die Platte, den Quant-
-      # gestuetzten Zyklus oder die alte CREATIVE JOB/VORBEREITEN-Kette -
-      # diese Schritte werden fuer diese zwei Modi uebersprungen, nicht
-      # umgebaut (§1/§20/§23 der Direktive: Discovery/Quant/Opportunity
-      # Slate NICHT anfassen, NICHT als Fallback benutzen). Ihr eigener
-      # Weg steht weiter unten ("WEB RESEARCH" / "CREATIVE JOB (WEB)" /
-      # "VORBEREITEN (WEB)"). AUTO und JETZT PRUEFEN bleiben unveraendert
-      # auf diesem, bestehenden Pfad (§22: AUTO jetzt nicht umbauen).
-      - name: DIE PLATTE — Content Universe in voller Breite
-        if: >-
-          inputs.nur_entscheiden != true &&
-          steps.plan.outputs.modus != 'MANUAL_NOW' &&
-          steps.plan.outputs.modus != 'MANUAL_TOPIC'
+      # WEB-FIRST FULL-POST GENERATION — STANDARDPFAD (Owner-Direktive
+      # "VISION UNIVERSE SOCIAL OS — WEB-FIRST + FULL-POST-GENERATION",
+      # 24.09.): Discovery/Quant/Opportunity Slate/Ranking duerfen ab
+      # jetzt fuer KEINEN Modus mehr Inhaltsquelle fuer einen Post sein -
+      # nicht nur fuer MANUAL_NOW/MANUAL_TOPIC (§2.1, §7.2/§7.3 der
+      # Direktive). Die Platte, der Quant-gestuetzte Zyklus und die
+      # alte CREATIVE JOB/VORBEREITEN-Kette sind deshalb fuer ALLE Modi
+      # (JETZT_PRUEFEN, MANUAL_NOW, MANUAL_TOPIC, Zeitplan) stillgelegt -
+      # nicht geloescht (die Skripte bleiben als geteilte Abhaengigkeiten
+      # bestehen, z.B. teilt request-creative-web.mjs sich Funktionen mit
+      # request-creative.mjs), nur nie mehr als Auswahlweg fuer einen
+      # neuen Kandidaten aufgerufen. Der einzige Weg zu einem Kandidaten
+      # ist jetzt "WEB RESEARCH" / "CREATIVE JOB (WEB)" / "VORBEREITEN
+      # (WEB)" weiter unten, fuer jeden Modus gleich.
+      - name: DIE PLATTE — Content Universe in voller Breite (stillgelegt)
+        if: false
         run: |
           set -euo pipefail
           node scripts/social/build-opportunity-slate.mjs \
@@ -317,30 +302,15 @@ jobs:
             --provider mock --data social/data --out social/data | tail -30
 
       # =====================================================================
-      # CREATIVE JOB — DER SCHRITT, DEN BISHER EIN MENSCH GETAN HAT
-      #
-      # Er laeuft NUR, wenn der Orchestrator ihn beschlossen hat. Ein
-      # Scheduler-Lauf erzeugt keinen Creative Job, nur weil er laeuft:
-      # `creative` ist ja genau dann, wenn ein Kandidat faellig ist, zum
-      # Inhalt kein Ergebnis und kein offener Job vorliegt, die Evidenz
-      # eine Geschichte traegt und das Budget den Dispatch zulaesst.
-      #
-      # Die drei Skripte sind die BESTEHENDEN. Hier wird kein zweiter
-      # Ausloesemechanismus gebaut - nur der letzte Schritt getan, den
-      # dispatch-creative-job.mjs seit jeher ankuendigt.
-      #
-      # EIN VERWEIGERTES TOR IST KEIN FEHLER. Jedes der drei Skripte
-      # endet bei einer Verweigerung mit 4. Das ist eine Antwort und
-      # kein Ausfall - der Lauf geht weiter, und der Grund steht im
-      # Protokoll.
+      # CREATIVE JOB (QUANT-PFAD) — STILLGELEGT (Owner-Direktive
+      # "WEB-FIRST + FULL-POST-GENERATION", 24.09.): dispatchte einen
+      # Creative Job aus einem technischen Quant-Bundle (steps.plan.
+      # outputs.creative). Discovery/Quant duerfen ab jetzt fuer keinen
+      # Modus mehr Inhaltsquelle sein - der Ersatz ist "CREATIVE JOB
+      # (WEB)" weiter unten, fuer alle Modi gleich.
       # =====================================================================
-      - name: CREATIVE JOB — Brief, Register, Request-PR
-        if: >-
-          steps.plan.outputs.creative == 'ja' &&
-          steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true &&
-          steps.plan.outputs.modus != 'MANUAL_NOW' &&
-          steps.plan.outputs.modus != 'MANUAL_TOPIC'
+      - name: CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)
+        if: false
         env:
           GH_TOKEN: ${{ github.token }}
           SYMBOL: ${{ steps.plan.outputs.creative_symbol }}
@@ -393,75 +363,33 @@ jobs:
           node scripts/social/verify-creative-dispatch.mjs \
             --branch "authoring/request/$CONTENT_ID"
 
-      - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus
-        if: >-
-          steps.plan.outputs.prepare == 'ja' &&
-          steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true &&
-          steps.plan.outputs.modus != 'MANUAL_NOW' &&
-          steps.plan.outputs.modus != 'MANUAL_TOPIC'
-        # VU_SOCIAL_MODUS reist hier weiter, mit demselben Namen, unter
-        # dem run-orchestrator.mjs ihn gelesen und sein Urteil schon
-        # gefaellt hat (steps.plan.outputs.modus). make-publish-
-        # candidate.mjs trifft KEINE zweite Kadenzentscheidung - es
-        # fragt dieselbe AUFHEBBAR-Tabelle aus manual-mode.js, die der
-        # Orchestrator schon benutzt hat. Fehlt der Auftrag (Zeitplan),
-        # ist der Wert "ZEITPLAN" und kein bekannter Modus: das
-        # Verhalten bleibt exakt das von AUTO.
-        #
-        # THEMA_FREITEXT bei MANUAL_TOPIC UND MANUAL_NOW: manual-mode.js
-        # nennt POST ZU THEMA ausdruecklich "der Owner nennt das Thema
-        # STATT DER GELEGENHEITSBEWERTUNG". Der rohe Text aus inputs.thema
-        # reist unveraendert mit (run-social-cycle.mjs::themaVomOwner()
-        # prueft zuerst eine Platten-Ueberschrift, dann ein
-        # Instrumentensymbol - dieselbe Ticker-Erkennung wie beim
-        # Creative-Job-Dispatch, siehe dort). Die Modus-Bedingung
-        # verhindert, dass ein automatischer Lauf dieselbe Ersetzung
-        # versehentlich uebernimmt. Wie beim "Was ist jetzt dran?"-Schritt:
-        # fremder Text nur ueber die Umgebung, nie in die Shell
-        # interpoliert.
-        #
-        # JETZT POST ERSTELLEN OHNE THEMA (MANUAL_NOW): "Was ist jetzt
-        # dran?" hat storyBestesThema() bereits berechnet und als
-        # steps.plan.outputs.manual_now_thema ausgegeben - dasselbe
-        # Instrument, das dort schon den Creative-Job-Dispatch entschied
-        # (Owner-Direktive "FINAL GOLDEN PATH SIMPLIFICATION", 23.09.,
-        # §2/§17: MANUAL_NOW haengt nicht an der internen
-        # Gelegenheitsbewertung). Ohne diese Zeile liest VORBEREITEN kein
-        # Thema, faellt auf die Ladder (ContentLadder, Opportunity.score)
-        # zurueck und kann ein Ranglisten-/Screener-Thema waehlen - genau
-        # der real beobachtete Rueckfall auf die vom Owner benannte
-        # NEGATIVE HOOK FIXTURE "420 von 5954 geprueften Titeln".
-        env:
-          VU_SOCIAL_MODUS: ${{ steps.plan.outputs.modus }}
-          VU_SOCIAL_THEMA_FREITEXT: >-
-            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema
-                || (steps.plan.outputs.modus == 'MANUAL_NOW' && steps.plan.outputs.manual_now_thema)
-                || '' }}
+      # =====================================================================
+      # VORBEREITEN (QUANT-PFAD) — STILLGELEGT (Owner-Direktive
+      # "WEB-FIRST + FULL-POST-GENERATION", 24.09.): baute den Kandidaten
+      # aus der Content Ladder / Opportunity.score. Discovery/Quant
+      # duerfen ab jetzt fuer keinen Modus mehr Inhaltsquelle sein - der
+      # Ersatz ist "VORBEREITEN (WEB)" weiter unten, fuer alle Modi
+      # gleich.
+      # =====================================================================
+      - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)
+        if: false
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
-          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
-
-          node scripts/social/run-social-cycle.mjs \
-            --provider mock --data social/data --out social/data --render \
-            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"}
-          node scripts/social/make-publish-candidate.mjs --data social/data --write \
-            | tail -40
+          echo "stillgelegt"
 
       # =====================================================================
-      # DIRECT CREATIVE GOLDEN PATH — WEB-FIRST CONTENT RESEARCH
-      # (Owner-Direktive "DIRECT CREATIVE GOLDEN PATH — FINAL GO/NO-GO",
-      # 23.09.)
+      # WEB-FIRST FULL-POST GENERATION (Owner-Direktive "DIRECT CREATIVE
+      # GOLDEN PATH — FINAL GO/NO-GO", 23.09., erweitert durch "WEB-FIRST
+      # + FULL-POST-GENERATION", 24.09.)
       #
-      # Der einzige Themenpfad fuer JETZT POST ERSTELLEN und POST ZU
-      # THEMA. Kein Discovery, kein Quant, kein Opportunity Slate, kein
-      # Screener - research-web-story.mjs kennt quant/ nicht und liest
-      # es nicht. Themen kommen ausschliesslich aus oeffentlichen,
-      # schluessellosen Nachrichten-Feeds (social/engines/web-research.js
-      # waehlt Story, Hook, Caption und Hashtags rein und ohne Netz;
-      # das Skript hier macht nur den Netzabruf).
+      # Der EINZIGE Themenpfad, fuer JEDEN Modus (JETZT_PRUEFEN,
+      # MANUAL_NOW, MANUAL_TOPIC, Zeitplan). Kein Discovery, kein Quant,
+      # kein Opportunity Slate, kein Screener - research-web-story.mjs
+      # kennt quant/ nicht und liest es nicht. Themen kommen
+      # ausschliesslich aus oeffentlichen, schluessellosen Nachrichten-
+      # Feeds (social/engines/web-research.js waehlt Story, Hook,
+      # Caption und Hashtags rein und ohne Netz; das Skript hier macht
+      # nur den Netzabruf).
       #
       # FAIL CLOSED: findet sich keine aktuelle, grounded Story, endet
       # das Skript mit 4 (begruendete Verweigerung) und es entsteht
@@ -470,8 +398,6 @@ jobs:
       - name: WEB RESEARCH — aktuelle Story finden
         id: webresearch
         if: >-
-          (steps.plan.outputs.modus == 'MANUAL_NOW' ||
-           steps.plan.outputs.modus == 'MANUAL_TOPIC') &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
           inputs.nur_entscheiden != true
         env:
