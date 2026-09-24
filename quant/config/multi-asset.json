@@ -83,6 +83,27 @@
       "licenseNote": "FRED spiegelt Reihen anderer Herausgeber. Nach §12 hat die Primaerquelle Vorrang; FRED dient nur dem Abgleich und wird nicht ausgeliefert.",
       "attribution": "Quelle: FRED, Federal Reserve Bank of St. Louis"
     },
+    "fred-index": {
+      "provider": "Federal Reserve Bank of St. Louis (FRED)",
+      "product": "FRED Graph CSV - Indexreihen der Lizenzklasse 'Copyrighted: Citation required'",
+      "kind": "INSTITUTIONAL_MIRROR",
+      "priority": 3,
+      "publicDisplay": true,
+      "licenseState": "CITATION_REQUIRED",
+      "licenseNote": "Gemessen (index-source-probe.json, fred.stlouisfed.org/legal): Reihen der Klasse 'Citation required' duerfen beim Anzeigen oder Veroeffentlichen mit Quellenangabe und dem Hinweis auf FRED verwendet werden. Nur solche Reihen stehen in providers/fred/adapter.js#SERIES; der Ingest liest die Klasse bei jedem Lauf auf der Reihenseite neu und liefert bei Abweichung nichts aus. SP500, DJIA und NASDAQ100 tragen 'Pre-approval required' (nur nicht-kommerziell) und werden NICHT verwendet.",
+      "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
+      "crossCheck": "Nikkei Inc. offizielle Tagesdatei (nur Gegenprobe, nicht ausgeliefert - Lizenz UNKNOWN)"
+    },
+    "fmp-index": {
+      "provider": "Financial Modeling Prep",
+      "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+      "kind": "LICENSED_PROVIDER",
+      "priority": 1,
+      "publicDisplay": false,
+      "licenseState": "OWNER_DECISION_REQUIRED",
+      "licenseNote": "Vorhandener Zugang (update-fundamentals, update-analyst-ratings). Technisch gemessen (index-source-probe.json): Tagesschluss 10 Jahre fuer S&P 500, Dow Jones Industrial Average, Euro STOXX 50, FTSE 100, Nikkei 225, Hang Seng, Russell 2000 - Name und Groessenordnung je Index geprueft. Die Anzeige-Erlaubnis fuer Indexstaende im kostenlosen Tarif ist NICHT gemessen (UNKNOWN); dieselbe Lesart wie Tiingo-Krypto: technisch angebunden, nicht ausgeliefert, bis der Owner freigibt oder einen Anzeige-Tarif waehlt.",
+      "attribution": "Daten: Financial Modeling Prep"
+    },
     "ecb-fx-reference": {
       "provider": "Europaeische Zentralbank",
       "product": "Euro-Referenzkurse (bestehender Currency Core, quant/data/market/fx/ecb/)",
@@ -199,18 +220,29 @@
   },
   "sources": {
     "SPX": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^GSPC"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^GSPC als 'S&P 500'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "NDX": {
@@ -229,18 +261,29 @@
       }
     },
     "DJI": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^DJI"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^DJI als 'Dow Jones Industrial Average'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "DAX": {
@@ -259,63 +302,102 @@
       }
     },
     "SX5E": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^STOXX50E"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^STOXX50E als 'Euro STOXX 50'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "UKX": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^FTSE"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^FTSE als 'FTSE 100'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "N225": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-        "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+      "status": "ACTIVE",
+      "sourceId": "fred-index",
+      "role": "PRIMARY_EOD",
+      "providerIdentifiers": {
+        "fred": "NIKKEI225",
+        "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
+      },
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "1949-05-16..(taeglich)",
+        "licenseClass": "CITATION_REQUIRED",
+        "identity": "Name 'Nikkei Stock Average, Nikkei 225' und Groessenordnung geprueft; Gegenprobe gegen die offizielle Nikkei-Tagesdatei je Lauf"
+      },
+      "intraday": {
+        "state": "NOT_AVAILABLE_FREE",
+        "finding": "Kein frei nutzbarer Intraday-Pfad gemessen: Twelve Data Basic liefert N225 nicht (404), Nikkei-Seiten fuer Nutzungsbedingungen 403. Anzeige ist Tagesschluss."
       }
     },
     "RUT": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^RUT"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^RUT als 'Russell 2000'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "MID": {
@@ -364,18 +446,29 @@
       }
     },
     "HSI": {
-      "status": "CAPABILITY_GAP",
-      "sourceId": null,
-      "gap": {
-        "kind": "PROVIDER_CAPABILITY_GAP",
-        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+      "status": "LICENSE_PENDING",
+      "sourceId": "fmp-index",
+      "role": "PRIMARY_EOD",
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "intraday": {
+        "state": "NOT_IN_PLAN",
+        "finding": "FMP historical-chart/5min: 'Restricted Endpoint' im vorhandenen Tarif."
+      },
+      "providerIdentifiers": {
+        "fmp": "^HSI"
+      },
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "2016-09-26..2026-09-24 (taeglich)",
+        "identity": "FMP-Indexliste fuehrt ^HSI als 'Hang Seng Index'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+      },
+      "license": {
+        "state": "OWNER_DECISION_REQUIRED",
         "ownerOptions": [
-          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-        ],
-        "notDone": "Kein ETF wird still als Index ausgegeben."
+          "FMP-Indexstaende im vorhandenen Tarif fuer die Anzeige freigeben (nach Pruefung der FMP-Bedingungen)",
+          "Anzeige-faehigen Tarif waehlen (Kostenentscheidung, siehe docs/VU_INDEX_COVERAGE_P0.md)"
+        ]
       }
     },
     "SHCOMP": {
@@ -718,5 +811,5 @@
     }
   },
   "sourcesDecidedAt": "2026-09-24",
-  "sourcesNote": "Entscheidungen aus zwei Messlaeufen (Actions 36002559332, 36003261084). Vorrang nach §12: Tiingo, wo es liefert (Krypto, Edelmetalle); sonst offizielle Primaerquelle (Treasury, Bundesbank, NY Fed, EZB, EIA). FRED nur Vergleich. LICENSE_PENDING = technisch angebunden, oeffentliche Anzeige erst nach Owner-Freigabe (sourceRegistry.<id>.publicDisplay)."
+  "sourcesNote": "Entscheidungen aus zwei Messlaeufen (Actions 36002559332, 36003261084). Vorrang nach §12: Tiingo, wo es liefert (Krypto, Edelmetalle); sonst offizielle Primaerquelle (Treasury, Bundesbank, NY Fed, EZB, EIA). FRED nur Vergleich. LICENSE_PENDING = technisch angebunden, oeffentliche Anzeige erst nach Owner-Freigabe (sourceRegistry.<id>.publicDisplay). Index P0 (2026-09-24, index-source-probe.json): N225 ueber FRED (Lizenzklasse Citation required, gemessen) mit Gegenprobe gegen Nikkei Inc.; FRED ist hier nicht Vergleich, sondern die einzige Quelle mit gemessener Anzeige-Erlaubnis. FMP (vorhandener Zugang): SPX, DJI, SX5E, UKX, HSI, RUT technisch aufgeloest (Tagesschluss), LICENSE_PENDING bis zur Owner-Freigabe."
 }

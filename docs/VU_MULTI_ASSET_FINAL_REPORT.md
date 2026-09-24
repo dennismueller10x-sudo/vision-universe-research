@@ -100,12 +100,21 @@ EQUITY, INDEX, COMMODITY, PRECIOUS_METAL, CRYPTO, FX, YIELD, RATE (+ ETF, FUTURE
 vorbereitet, nicht als Ersatz genutzt). `valueSemantics`: INDEX_LEVEL, PRICE,
 YIELD, POLICY_RATE, FX_RATE. Yield-Arten: REFERENCE_YIELD, MARKET_YIELD, POLICY_RATE.
 
-## 9. Index-Ergebnisse — CAPABILITY_GAP_DOCUMENTED
+## 9. Index-Ergebnisse — Index Coverage P0 (Nachtrag 2026-09-24)
 
 13 Indizes (7 Pflicht, 6 optional) katalogisiert inkl. Price/Total-Return-
-Unterscheidung (DAX = Performanceindex). Keine Quelle: Tiingo NOT_AVAILABLE
-(MEASURED), keine freie offizielle Quelle (INFERRED: Indexstaende sind
-lizenzierte Daten der Indexanbieter). Kein ETF-Proxy.
+Unterscheidung (DAX = Performanceindex). Tiingo fuehrt keine Indexstaende
+(MEASURED) - das war nicht das Ende: sechs Messrunden ueber vorhandene
+Zugaenge, offizielle Quellen und FRED (docs/VU_INDEX_COVERAGE_P0.md).
+
+- Nikkei 225: ACTIVE, ausgeliefert - FRED `NIKKEI225`, Lizenzklasse
+  "Citation required" (MEASURED), Gegenprobe gegen die Nikkei-Tagesdatei.
+- S&P 500, Dow Jones, Euro Stoxx 50, FTSE 100 (+ Hang Seng, Russell 2000):
+  DATA_SOURCE_RESOLVED ueber den vorhandenen FMP-Zugang (Tagesschluss 10 J.,
+  Identitaet je Lauf), LICENSE_PENDING - Anzeige-Erlaubnis UNKNOWN.
+- Nasdaq 100, DAX: im vorhandenen Tarif gesperrt (FMP 402, Twelve Data
+  "ab Grow", STOXX-API 401) - Anbieter-Matrix mit Kosten fuer den Owner.
+Kein ETF-Proxy, kein Future, keine Eigenberechnung.
 
 ## 10. Commodity-Ergebnisse
 
@@ -207,7 +216,7 @@ performance, capabilities, displaySemantics, proxy, gap, license.
   Gewinn-/Verlustfarbe, Zins-Verlaeufe neutral.
 - Frische wird zur Anzeigezeit neu bewertet (`VUMultiAssetContract.refresh`);
   EUR-Anzeige nur fuer monetaere Einheiten ueber `VUFx.layer`.
-- Indizes, Kupfer: Hinweis statt Wert; Gold, Silber, BTC, ETH: "oeffentliche
+- Nikkei 225 mit Wert (Quelle Nikkei Inc. via FRED); uebrige Indizes, Kupfer: Hinweis statt Wert; Gold, Silber, BTC, ETH: "oeffentliche
   Anzeige noch nicht freigegeben".
 - Gemessen im Browser (Chromium): 23 Karten, 0 Konsolenfehler, kein
   horizontaler Ueberlauf bei 320/390/1440 px, axe WCAG 2.1 AA ohne
@@ -251,7 +260,8 @@ Waehrungsformat auf Punkten oder Prozent.
 ## 26. Provider-/Lizenz-Gaps
 
 1. Tiingo Krypto + FX-Edelmetalle: oeffentliche Anzeige nicht gedeckt.
-2. Indexstaende: keine Quelle ohne Lizenz/Kosten.
+2. Indexstaende: Nikkei 225 frei mit Quellenangabe; SPX/DJI/SX5E/UKX technisch
+   ueber FMP, Anzeige-Erlaubnis UNKNOWN; NDX/DAX nur in Bezahltarifen.
 3. Kupfer: Semantik der einzigen Tagesquelle unbekannt.
 4. EIA-Spotpreise: Weiterverwendung erlaubt (EIA), Ursprung Refinitiv — vor
    kommerzieller Vermarktung bestaetigen.
@@ -300,7 +310,10 @@ Backtests, Quant-2.0-Vertraege, SEC, Social, Worker.
 
 1. Lizenzfreigabe (oder Entwicklungs-Risikoakzeptanz) Tiingo Krypto + Edelmetalle
    -> `sourceRegistry.tiingo-crypto|tiingo-fx-metals.publicDisplay = true`.
-2. Indexquelle: lizenzierter Anbieter (Kosten) oder gekennzeichneter ETF-Proxy.
+2. Indexquelle: (a) FMP-Tagesschluss fuer SPX/DJI/SX5E/UKX zur Anzeige freigeben
+   -> `sourceRegistry.fmp-index.publicDisplay = true` (nach Pruefung der
+   FMP-Bedingungen); (b) fuer NDX/DAX ein Bezahltarif (FMP $22/$59/$149 oder
+   Twelve Data Grow $29, Abdeckung vor Abschluss per `[ma-index-probe]` messen).
 3. Kupfer: Tiingo-Referenz mit Kennzeichnung, IMF-Monatswert oder LME/COMEX.
 4. Currency-Spur: Zeitplan fuer die EZB-Referenzreihe (EUR/USD wird sonst nach
    4 Tagen ehrlich STALE).
@@ -314,7 +327,7 @@ Backtests, Quant-2.0-Vertraege, SEC, Social, Worker.
 | ONE_DATA_CORE_PRINCIPLE | PRESERVED |
 | INSTRUMENT_MASTER | PASS |
 | EQUITY_SUPPORT | PRESERVED (1472 Quant-Tests, Discover-Daten unveraendert) |
-| INDEX_SUPPORT | CAPABILITY_GAP_DOCUMENTED |
+| INDEX_SUPPORT | N225 PASS (ausgeliefert) · SPX/DJI/SX5E/UKX DATA_SOURCE_RESOLVED, LICENSE_PENDING · NDX/DAX BLOCKED_BY_PLAN (Owner-Matrix) |
 | COMMODITY_SUPPORT | PASS (WTI, Brent, Henry Hub) · Kupfer CAPABILITY_GAP_DOCUMENTED |
 | PRECIOUS_METALS_SUPPORT | technisch PASS, oeffentlich LICENSE_PENDING (Owner) |
 | CRYPTO_SUPPORT | technisch PASS, oeffentlich LICENSE_PENDING (Owner) |

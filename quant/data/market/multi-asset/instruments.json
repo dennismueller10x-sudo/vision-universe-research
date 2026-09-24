@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-multi-asset-master-1.0.0",
  "catalogId": "vu-multi-asset-catalog-v1",
- "generatedAt": "2026-09-24T13:54:26.006Z",
+ "generatedAt": "2026-09-24T15:53:03.763Z",
  "idNamespace": {
   "provider": "vu-core",
   "exchangeField": "assetClass",
@@ -23,36 +23,32 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^GSPC"
+   },
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "SPY",
     "IVV",
     "VOO"
    ],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^GSPC als 'S&P 500'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -116,34 +112,30 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^DJI"
+   },
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "DIA"
    ],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^DJI als 'Dow Jones Industrial Average'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -207,34 +199,30 @@
    "currencyContext": null,
    "country": "EU",
    "timezone": "Europe/Berlin",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^STOXX50E"
+   },
    "sessionProfile": "INDEX_EU",
    "sessionExchange": "XETR",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "FEZ"
    ],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^STOXX50E als 'Euro STOXX 50'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -252,34 +240,30 @@
    "currencyContext": null,
    "country": "GB",
    "timezone": "Europe/London",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^FTSE"
+   },
    "sessionProfile": "INDEX_EU",
    "sessionExchange": "XLON",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "EWU (MSCI UK - anderer Index)"
    ],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^FTSE als 'FTSE 100'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -297,32 +281,30 @@
    "currencyContext": null,
    "country": "JP",
    "timezone": "Asia/Tokyo",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fred": "NIKKEI225",
+    "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
+   },
    "sessionProfile": "INDEX_ASIA",
    "sessionExchange": "XTKS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fred-index",
+   "status": "ACTIVE",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "1949-05-16..(taeglich)",
+    "licenseClass": "CITATION_REQUIRED",
+    "identity": "Name 'Nikkei Stock Average, Nikkei 225' und Groessenordnung geprueft; Gegenprobe gegen die offizielle Nikkei-Tagesdatei je Lauf"
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -340,34 +322,30 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^RUT"
+   },
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [
     "IWM"
    ],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^RUT als 'Russell 2000'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -517,32 +495,28 @@
    "currencyContext": null,
    "country": "HK",
    "timezone": "Asia/Hong_Kong",
-   "providerIdentifiers": {},
+   "providerIdentifiers": {
+    "fmp": "^HSI"
+   },
    "sessionProfile": "INDEX_ASIA",
    "sessionExchange": "XHKG",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": null,
+   "priceSemantics": "INDEX_CLOSE_DAILY",
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": null,
-   "status": "CAPABILITY_GAP",
+   "source": "fmp-index",
+   "status": "LICENSE_PENDING",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [],
-   "gap": {
-    "kind": "PROVIDER_CAPABILITY_GAP",
-    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
-    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
-    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
-    "ownerOptions": [
-     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
-     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
-    ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/index-source-probe.json",
+    "history": "2016-09-26..2026-09-24 (taeglich)",
+    "identity": "FMP-Indexliste fuehrt ^HSI als 'Hang Seng Index'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
    },
-   "measured": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },

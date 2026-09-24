@@ -50,6 +50,9 @@ const Treasury = require(join(root, "providers/us-treasury/adapter.js"));
 const NyFed = require(join(root, "providers/nyfed/adapter.js"));
 const Bundesbank = require(join(root, "providers/bundesbank/adapter.js"));
 const Eia = require(join(root, "providers/eia/adapter.js"));
+const Fred = require(join(root, "providers/fred/adapter.js"));
+const Nikkei = require(join(root, "providers/nikkei/adapter.js"));
+const Fmp = require(join(root, "providers/fmp/adapter.js"));
 const CONFIG = require(join(root, "quant/config/multi-asset.json"));
 const CALENDAR = require(join(root, "quant/config/market-calendar.json"));
 const RAW_CATALOG = require(join(root, "quant/config/multi-asset-instruments.json"));
@@ -60,6 +63,7 @@ const BACKFILL = args.includes("--backfill");
 const ONLY = (args.find((a) => a.startsWith("--only=")) || "").slice(7).split(",").filter(Boolean);
 const NOW = process.env.VU_NOW ? new Date(process.env.VU_NOW) : new Date();
 const KEY = process.env.TIINGO_API_KEY || "";
+const FMP_KEY = process.env.FMP_API_KEY || "";
 const UA = "VisionUniverse-DataCore/1.0 (+https://research.visionuniverse.de)";
 
 const PUBLIC_DIR = resolve(root, "quant/data/market/multi-asset");
@@ -70,8 +74,9 @@ const SCHEMA = "vu-multi-asset-series-1.0.0";
 function iso(d) { return d.toISOString().slice(0, 10); }
 function daysAgo(n) { return iso(new Date(NOW.getTime() - n * 86400000)); }
 function redact(v) {
-  if (!KEY || KEY.length < 8) return v;
-  return JSON.parse(JSON.stringify(v).split(KEY).join("[REDACTED]"));
+  let text = JSON.stringify(v);
+  for (const k of [KEY, FMP_KEY]) if (k && k.length >= 8) text = text.split(k).join("[REDACTED]");
+  return JSON.parse(text);
 }
 
 const log = [];
@@ -115,6 +120,24 @@ function mergePoints(old, fresh) {
    mit --backfill; sonst das laufende Jahr (im Januar zusaetzlich das
    Vorjahr - die letzten Dezembertage kommen sonst nie an). */
 let treasuryCache = null;
+/* FMP: die Indexliste einmal je Lauf - sie ist der Identitaetsbeleg. */
+let fmpList = null, fmpRequests = 0;
+async function fmpText(url) {
+  fmpRequests++;
+  const res = await fetch(url, { headers: { "User-Agent": UA } });
+  const text = await res.text();
+  let json = null; try { json = JSON.parse(text); } catch { /* */ }
+  return { status: res.status, json };
+}
+async function fmpIndexList() {
+  if (!fmpList) {
+    const r = await fmpText(Fmp.indexListUrl(FMP_KEY));
+    fmpList = Fmp.parseIndexList(r.json);
+    if (!fmpList.size) throw new Error(`FMP-Indexliste leer (HTTP ${r.status})`);
+  }
+  return fmpList;
+}
+
 async function treasuryAll() {
   if (treasuryCache) return treasuryCache;
   const year = NOW.getUTCFullYear();
@@ -189,6 +212,35 @@ async function fetchSeries(inst) {
       const meta = readJson(join(CACHE_DIR, "eia", `${id.eia}.meta.json`)) || {};
       return { points: Eia.parseCsv(readFileSync(f, "utf8")), frequency: "DAILY", fetchedAt, seriesTitle: meta.title || null };
     }
+    case "fred-index": {
+      /* Die Lizenzklasse wird bei jedem Lauf auf der Reihenseite gelesen.
+         Weicht sie von der gemessenen ab, wird nichts ausgeliefert. */
+      const spec = Fred.SERIES[inst.symbol];
+      if (!spec) throw new Error(`keine FRED-Reihe fuer ${inst.symbol}`);
+      const lic = Fred.licenseOf(await getText(Fred.seriesPageUrl(spec.series)));
+      if (lic !== spec.licenseClass) throw new Error(`FRED-Lizenzklasse ${lic || "nicht lesbar"} statt ${spec.licenseClass}`);
+      const parsed = Fred.parseCsv(await getText(Fred.seriesUrl(spec.series)));
+      let crossCheck = null;
+      if (inst.symbol === "N225") {
+        try {
+          const ref = Nikkei.parseDailyCsv(await getText(Nikkei.DAILY_CSV));
+          crossCheck = Object.assign({ against: "Nikkei Inc. (offizielle Tagesdatei)" }, Nikkei.crossCheck(parsed.points, ref.points));
+        } catch (e) { crossCheck = { against: "Nikkei Inc. (offizielle Tagesdatei)", ok: null, error: e.message }; }
+      }
+      return { points: parsed.points, frequency: "DAILY", fetchedAt, licenseClass: lic, seriesTitle: spec.series, crossCheck };
+    }
+    case "fmp-index": {
+      if (!FMP_KEY) throw new Error("kein FMP_API_KEY");
+      const idc = Fmp.identity(inst.symbol, await fmpIndexList());
+      if (!idc.ok) throw new Error(`FMP-Identitaet ${idc.reason}${idc.listedName ? " (" + idc.listedName + ")" : ""}`);
+      /* Eine Anfrage je Index und Lauf (Tarif: 250/Tag, geteilt mit
+         Fundamentaldaten und Analystenurteilen). */
+      const r = await fmpText(Fmp.eodUrl(idc.fmpSymbol, daysAgo(3650), FMP_KEY));
+      const parsed = Fmp.parseEod(r.json);
+      if (parsed.error) throw new Error(`FMP HTTP ${r.status}: ${parsed.error}`);
+      const daily = parsed.points.filter((p) => p[0] <= iso(NOW));
+      return { points: daily, frequency: "DAILY", fetchedAt, identity: { fmpSymbol: idc.fmpSymbol, listedName: idc.listedName } };
+    }
     case "ecb-fx-reference": {
       /* Kein Abruf: der Currency Core liefert diese Reihe bereits aus. */
       const s = readJson(join(root, "quant/data/market/fx/ecb/EURUSD.json"));
@@ -249,6 +301,7 @@ function validate(symbol, s, expectedRange) {
   const latest = s.latest ? s.latest.value : (pts.length ? pts[pts.length - 1][1] : null);
   if (expectedRange && typeof latest === "number" && (latest < expectedRange[0] || latest > expectedRange[1])) f.push("latestOutsideExpectedRange");
   if (!pts.length && !s.latest) f.push("empty");
+  if (s.crossCheck && s.crossCheck.ok === false) f.push(`crossCheckMismatch(${s.crossCheck.maxRelativeDeviation}@${s.crossCheck.worstDate})`);
   return f;
 }
 
@@ -338,7 +391,8 @@ async function main() {
                      seriesTitle: series.seriesTitle || null, observedThrough: series.observedThrough || null,
                      from: series.points.length ? series.points[0][0] : null,
                      to: series.points.length ? series.points[series.points.length - 1][0] : null,
-                     observations: series.points.length, fetchedAt: series.fetchedAt };
+                     observations: series.points.length, fetchedAt: series.fetchedAt,
+                     licenseClass: series.licenseClass || null, crossCheck: series.crossCheck || null };
       const pts = series.rangePoints || series.points;
       writeFile(join(CACHE_DIR, "series", seriesFile), seriesJson(Object.assign({ internalOnly: !isPublic }, head), pts));
       if (series.intraday && series.intraday.length) {
@@ -372,13 +426,13 @@ async function main() {
     idNamespace: RAW_CATALOG.idNamespace, sourcesDecidedAt: CONFIG.sourcesDecidedAt || null, instruments: master
   };
   writeFile(join(CACHE_DIR, "internal-snapshot.json"), JSON.stringify(redact(Object.assign({}, snapshot, { instruments: internalContracts })), null, 1) + "\n");
-  writeFile(join(CACHE_DIR, "ingest-log.json"), JSON.stringify(redact({ at: snapshot.generatedAt, officialRequests, tiingo: tiingo ? tiingo.stats() : null, log }), null, 1) + "\n");
+  writeFile(join(CACHE_DIR, "ingest-log.json"), JSON.stringify(redact({ at: snapshot.generatedAt, officialRequests, fmpRequests, tiingo: tiingo ? tiingo.stats() : null, log }), null, 1) + "\n");
   if (PUBLISH && !ONLY.length) {
     writeFile(join(PUBLIC_DIR, "snapshot.json"), JSON.stringify(redact(snapshot), null, 1) + "\n");
     writeFile(join(PUBLIC_DIR, "instruments.json"), JSON.stringify(redact(masterDoc), null, 1) + "\n");
   }
   console.log("Zusammenfassung:", JSON.stringify(summary));
-  console.log(`Offizielle Anfragen: ${officialRequests}${tiingo ? ", Tiingo: " + JSON.stringify(tiingo.stats()) : ""}`);
+  console.log(`Offizielle Anfragen: ${officialRequests}, FMP: ${fmpRequests}${tiingo ? ", Tiingo: " + JSON.stringify(tiingo.stats()) : ""}`);
 }
 
 main().catch((e) => { console.error(redact(String(e && e.stack || e))); process.exit(1); });

@@ -92,7 +92,7 @@ async function main() {
     if (cls === "INDEX") {
       gate("INDEX_SEMANTICS", q.unit === "INDEX_POINTS" && q.valueSemantics === "INDEX_LEVEL", `${s}: Index nicht in Punkten`);
       gate("INDEX_SEMANTICS", c.capabilities.currencyConversion === "NOT_CONVERTIBLE", `${s}: Index wuerde umgerechnet`);
-      gate("INDEX_SEMANTICS", available || !!c.gap, `${s}: kein Wert und keine benannte Luecke`);
+      gate("INDEX_SEMANTICS", available || !!c.gap || q.state === "WITHHELD_LICENSE", `${s}: kein Wert und keine benannte Luecke`);
     }
     if (cls === "COMMODITY" || cls === "PRECIOUS_METAL") {
       gate("COMMODITY_SEMANTICS", !available || c.instrument.subType !== "UNRESOLVED", `${s}: Wert ohne Instrumentdefinition`);
