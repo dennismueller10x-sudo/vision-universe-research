@@ -1,0 +1,981 @@
+{
+ "schemaVersion": "1.0.0",
+ "generatedAtUtc": "2026-09-24T14:46:28.204Z",
+ "purpose": "Index Coverage P0: echte Indexstaende je Quelle gemessen. Keine ETF, keine Futures, keine Eigenberechnung.",
+ "valuesIncluded": false,
+ "sources": {
+  "twelveData": {
+   "priority": 1,
+   "kind": "EXISTING_PROVIDER",
+   "keyPresent": true,
+   "apiUsage": {
+    "httpStatus": 200,
+    "ms": 173,
+    "contentType": "application/json",
+    "bytes": 131,
+    "finalUrl": "https://api.twelvedata.com/api_usage?apikey=[REDACTED]",
+    "planCategory": "basic",
+    "planLimit": 8,
+    "dailyUsage": 1,
+    "planDailyLimit": 800
+   },
+   "indicesList": {
+    "httpStatus": 200,
+    "ms": 804,
+    "contentType": "application/json",
+    "bytes": 161869,
+    "finalUrl": "https://api.twelvedata.com/indices?apikey=[REDACTED]",
+    "rows": 1297,
+    "errorCode": null,
+    "errorMessage": null
+   }
+  },
+  "nikkeiOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER",
+   "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
+   "httpStatus": 200,
+   "ms": 573,
+   "contentType": "text/csv",
+   "bytes": 52996,
+   "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
+   "header": "Date of Data,Close,Open,High,Low"
+  },
+  "stoxxOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER"
+  },
+  "nasdaqOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
+   "terms": {
+    "httpStatus": 404,
+    "ms": 5124,
+    "contentType": "text/html",
+    "bytes": 137275,
+    "finalUrl": "https://www.nasdaq.com/nasdaq-terms-use",
+    "excerpt": "etters Privacy Policy Cookies Legal Do Not Sell or Share My Personal Information Visit Nasdaq on Facebook Visit Nasdaq on X Visit Nasdaq on LinkedIn Visit Nasdaq on Instagram Visit Nasdaq on YouTube © 2026, Nasdaq, Inc. All Rights Reserved. My Quotes My Quotes My European Quotes"
+   },
+   "globalIndexesPage": {
+    "httpStatus": 200,
+    "ms": 497,
+    "contentType": "text/html",
+    "bytes": 69140,
+    "finalUrl": "https://indexes.nasdaqomx.com/Index/History/NDX",
+    "mentionsExport": true
+   }
+  },
+  "spdjiOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
+   "terms": {
+    "httpStatus": 403,
+    "ms": 29,
+    "contentType": "text/html",
+    "bytes": 2010,
+    "finalUrl": "https://www.spglobal.com/spdji/en/terms-of-use/",
+    "excerpt": null
+   }
+  },
+  "msciOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API"
+  },
+  "euronextOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_DOWNLOAD"
+  },
+  "lsegOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
+  },
+  "deutscheBoerseOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
+  },
+  "sixOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
+  },
+  "hangSengOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
+  },
+  "sseOfficial": {
+   "priority": 2,
+   "kind": "OFFICIAL_EXCHANGE_WEBSITE_API"
+  },
+  "fred": {
+   "priority": 3,
+   "kind": "INSTITUTIONAL_MIRROR"
+  },
+  "stooq": {
+   "priority": 4,
+   "kind": "THIRD_PARTY_AGGREGATOR",
+   "note": "Nur gemessen. Anbindung nur mit Owner-Entscheidung (§12 Stufe 4)."
+  }
+ },
+ "perIndex": {
+  "SPX": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "nasdaqOfficial": {
+    "historical": {
+     "httpStatus": 200,
+     "ms": 1248,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/SPX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
+     "observations": 0,
+     "magnitude": null,
+     "status": {
+      "rCode": 400,
+      "bCodeMessage": [
+       {
+        "code": 1001,
+        "errorMessage": "Symbol not exists."
+       }
+      ],
+      "developerMessage": null
+     }
+    },
+    "info": {
+     "httpStatus": 200,
+     "ms": 1146,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/SPX/info?assetclass=index",
+     "companyName": null,
+     "isRealTime": null,
+     "lastTradeTimestamp": null,
+     "magnitude": null
+    }
+   },
+   "spdjiOfficial": {
+    "indexId": 340,
+    "httpStatus": 403,
+    "ms": 42,
+    "contentType": "text/html",
+    "bytes": 505,
+    "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=340&language_id=1",
+    "jsonKeys": null,
+    "observations": 0,
+    "magnitude": null
+   },
+   "fred": {
+    "series": "SP500",
+    "httpStatus": 200,
+    "ms": 24,
+    "contentType": "application/csv",
+    "bytes": 48903,
+    "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500",
+    "observations": 2512,
+    "firstDate": "2016-09-26",
+    "lastDate": "2026-09-23",
+    "magnitude": {
+     "expectedRange": [
+      2000,
+      15000
+     ],
+     "within": true
+    },
+    "licenseNote": ": \"Dataset\", \"license\": \"https://fred.stlouisfed.org/legal/#copyright-pre-approval\", \"name\": \"S&P 500\", \"description\": \"View data of the S&amp;P 500, an index of the stocks of 500 leading companies in the US economy, which provides a gauge of the U.S. equity market.\", \"keywords\": \"s&amp;p, s&amp;p dow jones indices llc, stock market, copyrighted: pre-approva"
+   },
+   "stooq": {
+    "symbol": "^spx",
+    "httpStatus": 403,
+    "ms": 665,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Espx&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "NDX": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "nasdaqOfficial": {
+    "historical": {
+     "httpStatus": 200,
+     "ms": 3073,
+     "contentType": "application/json",
+     "bytes": 277854,
+     "finalUrl": "https://api.nasdaq.com/api/quote/NDX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
+     "observations": 2512,
+     "firstDate": "2016-09-26",
+     "lastDate": "2026-09-23",
+     "magnitude": {
+      "expectedRange": [
+       5000,
+       50000
+      ],
+      "within": true
+     },
+     "status": {
+      "rCode": 200,
+      "bCodeMessage": null,
+      "developerMessage": null
+     }
+    },
+    "info": {
+     "httpStatus": 200,
+     "ms": 1196,
+     "contentType": "application/json",
+     "bytes": 721,
+     "finalUrl": "https://api.nasdaq.com/api/quote/NDX/info?assetclass=index",
+     "companyName": "NASDAQ-100",
+     "isRealTime": false,
+     "lastTradeTimestamp": "Sep 24, 2026 10:46 AM ET",
+     "magnitude": {
+      "expectedRange": [
+       5000,
+       50000
+      ],
+      "within": true
+     }
+    }
+   },
+   "fred": {
+    "series": "NASDAQ100",
+    "httpStatus": 200,
+    "ms": 706,
+    "contentType": "application/csv",
+    "bytes": 208146,
+    "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100",
+    "observations": 10262,
+    "firstDate": "1986-01-02",
+    "lastDate": "2026-09-23",
+    "magnitude": {
+     "expectedRange": [
+      5000,
+      50000
+     ],
+     "within": true
+    },
+    "licenseNote": ": \"Dataset\", \"license\": \"https://fred.stlouisfed.org/legal/#copyright-pre-approval\", \"name\": \"NASDAQ-100\", \"description\": \"Graph and download economic data for NASDAQ-100 (NASDAQ100) from 1986-01-02 to 2026-09-23 about stock market, NASDAQ, indexes, and USA.\", \"keywords\": \"stock market, nasdaq, nasdaq inc., copyrighted: pre-approval required, daily, indexes,"
+   },
+   "stooq": {
+    "symbol": "^ndx",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Endx&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "DJI": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "nasdaqOfficial": {
+    "historical": {
+     "httpStatus": 200,
+     "ms": 3122,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/INDU/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
+     "observations": 0,
+     "magnitude": null,
+     "status": {
+      "rCode": 400,
+      "bCodeMessage": [
+       {
+        "code": 1001,
+        "errorMessage": "Symbol not exists."
+       }
+      ],
+      "developerMessage": null
+     }
+    },
+    "info": {
+     "httpStatus": 200,
+     "ms": 2159,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/INDU/info?assetclass=index",
+     "companyName": null,
+     "isRealTime": null,
+     "lastTradeTimestamp": null,
+     "magnitude": null
+    }
+   },
+   "spdjiOfficial": {
+    "indexId": 1720,
+    "httpStatus": 403,
+    "ms": 51,
+    "contentType": "text/html",
+    "bytes": 505,
+    "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=1720&language_id=1",
+    "jsonKeys": null,
+    "observations": 0,
+    "magnitude": null
+   },
+   "fred": {
+    "series": "DJIA",
+    "httpStatus": 200,
+    "ms": 72,
+    "contentType": "application/csv",
+    "bytes": 51414,
+    "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DJIA",
+    "observations": 2512,
+    "firstDate": "2016-09-26",
+    "lastDate": "2026-09-23",
+    "magnitude": {
+     "expectedRange": [
+      15000,
+      100000
+     ],
+     "within": true
+    },
+    "licenseNote": ": \"Dataset\", \"license\": \"https://fred.stlouisfed.org/legal/#copyright-pre-approval\", \"name\": \"Dow Jones Industrial Average\", \"description\": \"Graph and download economic data for Dow Jones Industrial Average (DJIA) from 2016-09-26 to 2026-09-23 about stock market, average, industry, and USA.\", \"keywords\": \"dow, dj, s&amp;p dow jones indices llc, stock market,"
+   },
+   "stooq": {
+    "symbol": "^dji",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Edji&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "DAX": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "stoxxOfficial": {
+    "tried": [
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
+      "httpStatus": null,
+      "ms": 12,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt",
+      "httpStatus": null,
+      "ms": 30,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     }
+    ],
+    "resolved": null,
+    "indexPage": {
+     "httpStatus": null,
+     "ms": 12,
+     "contentType": null,
+     "bytes": 0,
+     "error": "fetch failed",
+     "mentionsName": false
+    },
+    "terms": null
+   },
+   "deutscheBoerseOfficial": {
+    "httpStatus": 200,
+    "ms": 1397,
+    "contentType": "application/json",
+    "bytes": 2,
+    "finalUrl": "https://api.boerse-frankfurt.de/v1/data/price_history?isin=DE0008469008&mic=XETR&minDate=2026-01-01&maxDate=2026-09-24&offset=0&limit=50",
+    "jsonKeys": [],
+    "mentionsName": false
+   },
+   "stooq": {
+    "symbol": "^dax",
+    "httpStatus": 403,
+    "ms": 160,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Edax&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "SX5E": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "stoxxOfficial": {
+    "tried": [
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
+      "httpStatus": null,
+      "ms": 47,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
+      "httpStatus": null,
+      "ms": 11,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     },
+     {
+      "url": "https://www.stoxx.com/download/historical_values/h_sx5e.txt",
+      "httpStatus": null,
+      "ms": 11,
+      "contentType": null,
+      "bytes": 0,
+      "error": "fetch failed",
+      "observations": 0,
+      "magnitude": null
+     }
+    ],
+    "resolved": null,
+    "indexPage": {
+     "httpStatus": null,
+     "ms": 15,
+     "contentType": null,
+     "bytes": 0,
+     "error": "fetch failed",
+     "mentionsName": false
+    },
+    "terms": null
+   },
+   "stooq": {
+    "symbol": "^stx50e",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Estx50e&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "UKX": {
+   "twelveData": {
+    "listed": [
+     {
+      "symbol": "FTSE",
+      "name": "FTSE 100",
+      "country": "United Kingdom",
+      "exchange": "LSE",
+      "currency": "GBP"
+     }
+    ],
+    "timeSeries": {
+     "httpStatus": 404,
+     "ms": 87,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&exchange=LSE&interval=1day&outputsize=5000&apikey=[REDACTED]",
+     "observations": 0,
+     "status": "error",
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "meta": null,
+     "magnitude": null
+    },
+    "intraday": {
+     "httpStatus": 404,
+     "ms": 100,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&exchange=LSE&interval=5min&outputsize=30&apikey=[REDACTED]",
+     "bars": 0,
+     "lastBar": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    },
+    "quote": {
+     "httpStatus": 404,
+     "ms": 90,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/quote?symbol=FTSE&exchange=LSE&apikey=[REDACTED]",
+     "timestamp": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    }
+   },
+   "lsegOfficial": {
+    "httpStatus": 404,
+    "ms": 247,
+    "contentType": null,
+    "bytes": 49,
+    "finalUrl": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX",
+    "jsonKeys": [
+     "message"
+    ],
+    "mentionsName": false
+   },
+   "stooq": {
+    "symbol": "^ukx",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Eukx&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "N225": {
+   "twelveData": {
+    "listed": [
+     {
+      "symbol": "N225",
+      "name": "Nikkei 225",
+      "country": "Japan",
+      "exchange": "JPX",
+      "currency": "JPY"
+     }
+    ],
+    "timeSeries": {
+     "httpStatus": 404,
+     "ms": 95,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&exchange=JPX&interval=1day&outputsize=5000&apikey=[REDACTED]",
+     "observations": 0,
+     "status": "error",
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "meta": null,
+     "magnitude": null
+    },
+    "intraday": {
+     "httpStatus": 404,
+     "ms": 93,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&exchange=JPX&interval=5min&outputsize=30&apikey=[REDACTED]",
+     "bars": 0,
+     "lastBar": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    },
+    "quote": {
+     "httpStatus": 404,
+     "ms": 98,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/quote?symbol=N225&exchange=JPX&apikey=[REDACTED]",
+     "timestamp": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    }
+   },
+   "nikkeiOfficial": {
+    "httpStatus": 200,
+    "ms": 573,
+    "contentType": "text/csv",
+    "bytes": 52996,
+    "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
+    "observations": 910,
+    "firstDate": "2023-01-04",
+    "lastDate": "2026-09-24",
+    "magnitude": {
+     "expectedRange": [
+      10000,
+      100000
+     ],
+     "within": true
+    },
+    "terms": {
+     "httpStatus": 404,
+     "ms": 1247,
+     "contentType": "text/html",
+     "bytes": 1803,
+     "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/terms",
+     "excerpt": null
+    }
+   },
+   "fred": {
+    "series": "NIKKEI225",
+    "httpStatus": 200,
+    "ms": 712,
+    "contentType": "application/csv",
+    "bytes": 383312,
+    "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NIKKEI225",
+    "observations": 19205,
+    "firstDate": "1949-05-16",
+    "lastDate": "2026-09-24",
+    "magnitude": {
+     "expectedRange": [
+      10000,
+      100000
+     ],
+     "within": true
+    },
+    "licenseNote": ": \"Dataset\", \"license\": \"https://fred.stlouisfed.org/legal/#copyright-citation-required\", \"name\": \"Nikkei Stock Average, Nikkei 225\", \"description\": \"Graph and download economic data for Nikkei Stock Average, Nikkei 225 (NIKKEI225) from 1949-05-16 to 2026-09-24 about stocks, stock market, Japan, and indexes.\", \"keywords\": \"nikkei inc., stocks, stock market,"
+   },
+   "stooq": {
+    "symbol": "^nkx",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Enkx&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "PX1": {
+   "twelveData": {
+    "listed": [
+     {
+      "symbol": "FCHI",
+      "name": "CAC 40",
+      "country": "France",
+      "exchange": "Euronext",
+      "currency": "EUR"
+     }
+    ],
+    "timeSeries": {
+     "httpStatus": 404,
+     "ms": 96,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&exchange=Euronext&interval=1day&outputsize=5000&apikey=[REDACTED]",
+     "observations": 0,
+     "status": "error",
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "meta": null,
+     "magnitude": null
+    },
+    "intraday": {
+     "httpStatus": 404,
+     "ms": 92,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&exchange=Euronext&interval=5min&outputsize=30&apikey=[REDACTED]",
+     "bars": 0,
+     "lastBar": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    },
+    "quote": {
+     "httpStatus": 404,
+     "ms": 88,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/quote?symbol=FCHI&exchange=Euronext&apikey=[REDACTED]",
+     "timestamp": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    }
+   },
+   "euronextOfficial": {
+    "httpStatus": 200,
+    "ms": 2721,
+    "contentType": "text/csv",
+    "bytes": 34236,
+    "finalUrl": "https://live.euronext.com/en/ajax/AwlHistoricalPrice/getFullDownloadAjax/FR0003500008-XPAR?format=csv&decimal_separator=.&date_form=d/m/Y&op=&adjusted=&base100=&startdate=2016-09-26&enddate=2026-09-24",
+    "observations": 509,
+    "firstDate": "2024-09-25",
+    "lastDate": "2026-09-23",
+    "magnitude": {
+     "expectedRange": [
+      3000,
+      15000
+     ],
+     "within": true
+    }
+   },
+   "stooq": {
+    "symbol": "^cac",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Ecac&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "SMI": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "sixOfficial": {
+    "httpStatus": 400,
+    "ms": 540,
+    "contentType": "text/html",
+    "bytes": 137,
+    "finalUrl": "https://www.six-group.com/fqs/snap.json?select=ValorId,ClosingPrice,ClosingDate&where=ValorId=998089",
+    "jsonKeys": null,
+    "mentionsName": false
+   },
+   "stooq": {
+    "symbol": "^smi",
+    "httpStatus": 403,
+    "ms": 158,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Esmi&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "HSI": {
+   "twelveData": {
+    "listed": [
+     {
+      "symbol": "HSI",
+      "name": "HANG SENG INDEX",
+      "country": "Hong Kong",
+      "exchange": "HKEX",
+      "currency": "HKD"
+     }
+    ],
+    "timeSeries": {
+     "httpStatus": 404,
+     "ms": 105,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=HSI&exchange=HKEX&interval=1day&outputsize=5000&apikey=[REDACTED]",
+     "observations": 0,
+     "status": "error",
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "meta": null,
+     "magnitude": null
+    },
+    "intraday": {
+     "httpStatus": 404,
+     "ms": 98,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=HSI&exchange=HKEX&interval=5min&outputsize=30&apikey=[REDACTED]",
+     "bars": 0,
+     "lastBar": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    },
+    "quote": {
+     "httpStatus": 404,
+     "ms": 117,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/quote?symbol=HSI&exchange=HKEX&apikey=[REDACTED]",
+     "timestamp": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    }
+   },
+   "hangSengOfficial": {
+    "httpStatus": 200,
+    "ms": 607,
+    "contentType": "application/json",
+    "bytes": 3305,
+    "finalUrl": "https://www.hsi.com.hk/data/eng/rt/index-series/hsi/performance.do",
+    "jsonKeys": [
+     "requestName",
+     "requestDate",
+     "dateFormat",
+     "duration",
+     "indexSeriesList",
+     "refreshFrequency"
+    ],
+    "mentionsName": true
+   },
+   "stooq": {
+    "symbol": "^hsi",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Ehsi&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "SHCOMP": {
+   "twelveData": {
+    "listed": [
+     {
+      "symbol": "000001",
+      "name": "SSE Composite Index",
+      "country": "China",
+      "exchange": "SSE",
+      "currency": "CNY"
+     }
+    ],
+    "timeSeries": {
+     "httpStatus": 404,
+     "ms": 163,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&exchange=SSE&interval=1day&outputsize=5000&apikey=[REDACTED]",
+     "observations": 0,
+     "status": "error",
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data",
+     "meta": null,
+     "magnitude": null
+    },
+    "intraday": {
+     "httpStatus": 404,
+     "ms": 91,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&exchange=SSE&interval=5min&outputsize=30&apikey=[REDACTED]",
+     "bars": 0,
+     "lastBar": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    },
+    "quote": {
+     "httpStatus": 404,
+     "ms": 86,
+     "contentType": "application/json",
+     "bytes": 202,
+     "finalUrl": "https://api.twelvedata.com/quote?symbol=000001&exchange=SSE&apikey=[REDACTED]",
+     "timestamp": null,
+     "code": 404,
+     "message": "**symbol** or **figi** parameter is missing or invalid. Please provide a valid symbol according to API documentation: https://twelvedata.com/docs#reference-data"
+    }
+   },
+   "sseOfficial": {
+    "httpStatus": 403,
+    "ms": 1981,
+    "contentType": "text/html",
+    "bytes": 727,
+    "finalUrl": "https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_ZS_INDEX_HIS_L&INDEX_CODE=000001",
+    "jsonKeys": null,
+    "mentionsName": false
+   },
+   "stooq": {
+    "symbol": "^shc",
+    "httpStatus": 403,
+    "ms": 159,
+    "contentType": "text/html",
+    "bytes": 226,
+    "finalUrl": "https://stooq.com/q/d/l/?s=%5Eshc&i=d",
+    "observations": 0,
+    "magnitude": null,
+    "bodyHint": "<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-t"
+   }
+  },
+  "RUT": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "nasdaqOfficial": {
+    "historical": {
+     "httpStatus": 200,
+     "ms": 2152,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/RUT/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
+     "observations": 0,
+     "magnitude": null,
+     "status": {
+      "rCode": 400,
+      "bCodeMessage": [
+       {
+        "code": 1001,
+        "errorMessage": "Symbol not exists."
+       }
+      ],
+      "developerMessage": null
+     }
+    },
+    "info": {
+     "httpStatus": 200,
+     "ms": 2122,
+     "contentType": "application/json",
+     "bytes": 142,
+     "finalUrl": "https://api.nasdaq.com/api/quote/RUT/info?assetclass=index",
+     "companyName": null,
+     "isRealTime": null,
+     "lastTradeTimestamp": null,
+     "magnitude": null
+    }
+   }
+  },
+  "MSCIW": {
+   "twelveData": {
+    "listed": [],
+    "timeSeries": null,
+    "intraday": null,
+    "quote": null
+   },
+   "msciOfficial": {
+    "httpStatus": 200,
+    "ms": 670,
+    "contentType": "application/json",
+    "bytes": 139606,
+    "finalUrl": "https://app2.msci.com/products/service/index/indexmaster/getLevelDataForGraph?currency_symbol=USD&index_variant=STRD&start_date=20160926&end_date=20260924&data_frequency=DAILY&index_codes=990100",
+    "variant": "STRD (Price, USD)",
+    "observations": 2608,
+    "firstDate": "2016-09-26",
+    "lastDate": "2026-09-23",
+    "magnitude": {
+     "expectedRange": [
+      1000,
+      10000
+     ],
+     "within": true
+    }
+   }
+  },
+  "MID": {
+   "spdjiOfficial": {
+    "indexId": 92030,
+    "httpStatus": 403,
+    "ms": 32,
+    "contentType": "text/html",
+    "bytes": 505,
+    "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=92030&language_id=1",
+    "jsonKeys": null,
+    "observations": 0,
+    "magnitude": null
+   }
+  }
+ },
+ "requests": 66
+}
