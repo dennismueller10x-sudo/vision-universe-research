@@ -127,12 +127,46 @@ test("jede Messgroesse des Auftrags steht im Bericht", () => {
   for (const measure of ["3M", "6M", "12M", "12M-1M", "RELATIVE_STRENGTH"]) {
     const m = primary.measures[measure];
     assert.ok(m, "Messgroesse fehlt: " + measure);
+    /* Eine Messgroesse darf fehlen - aber nur mit Zustand UND Grund.
+       Eine leere Zeile ohne beides waere genau das stille Weglassen,
+       das dieser Test verhindert. */
+    if (m.state) {
+      assert.ok(m.reason, measure + ": Zustand ohne Grund");
+      assert.ok(m.note, measure + ": Zustand ohne Erklaerung");
+      continue;
+    }
     for (const key of ["UNIVERSE_N", "SPEARMAN_RANK_CORRELATION", "MEDIAN_ABSOLUTE_RANK_CHANGE",
                        "P90_RANK_CHANGE", "P95_RANK_CHANGE", "MAX_RANK_CHANGE",
                        "TITLES_MOVING_1_PERCENTILE", "TITLES_MOVING_5_PERCENTILES",
                        "TITLES_MOVING_10_PERCENTILES", "DIVIDEND_BIAS", "SECTOR_BIAS"]) {
       assert.ok(key in m, `${measure}: ${key} fehlt`);
     }
+  }
+});
+
+test("relative Staerke ohne Benchmark wird bewiesen, nicht weggelassen", () => {
+  /* Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich.
+     Relative Staerke ist dann die Zwoelfmonatsrendite minus einer
+     Konstante - und eine Konstante verschiebt keinen Rang. Der Test
+     rechnet das nach, statt der Behauptung im Bericht zu glauben. */
+  const Series = require("../engines/return-series.js");
+  const titles = ["AAPL", "JPM", "MSFT", "NVDA", "XOM"]
+    .map((t) => `quant/data/market/golden-preview/daily/ref_${t}.json`)
+    .filter((f) => existsSync(f))
+    .map((f) => Series.build(JSON.parse(readFileSync(f, "utf8"))));
+  if (titles.length < 3) return;
+  const last = titles[0].bars - 1;
+  const twelve = Compare.rankField(titles.map((t) => Compare.momentumAt(t.total, last, null, -1)["12M"])).ranks;
+  for (const shape of [(i) => 100 + i * 0.03, (i) => 500 + i * 0.9, (i) => 50 * Math.exp(i / 5000)]) {
+    const bench = titles[0].total.map((_, i) => shape(i));
+    const rs = Compare.rankField(titles.map((t) => Compare.momentumAt(t.total, last, bench, last).RELATIVE_STRENGTH)).ranks;
+    assert.deepEqual(rs, twelve,
+      "Die Rangfolge der relativen Staerke weicht von der Zwoelfmonatsrendite ab - dann traegt die Zeile 12M sie nicht mehr");
+  }
+  const measure = report.cutoffs[0].measures.RELATIVE_STRENGTH;
+  if (measure.state) {
+    assert.equal(measure.state, "RANK_EQUIVALENT_TO_12M");
+    assert.equal(measure.rankStatisticsIdenticalTo, "12M");
   }
 });
 

@@ -179,3 +179,87 @@ test("relative Staerke ohne Benchmark bleibt leer statt null-wertig", () => {
   const series = Array.from({ length: 300 }, (_, i) => 100 + i);
   assert.equal(Compare.momentumAt(series, 299, null, -1).RELATIVE_STRENGTH, null);
 });
+
+/* -------------------------------------------- Der Total-Return-Nachweis
+
+   Er entscheidet, ob Reihe B ueberhaupt eine Gesamtrendite-Reihe ist,
+   und damit ueber das Urteil der ganzen Studie. Deshalb hier gegen
+   konstruierte Bars, bei denen die richtige Antwort feststeht. */
+
+const bar = (date, close, adjustedClose, dividend = 0, splitFactor = 1) =>
+  ({ date, close, adjustedClose, dividend, splitFactor });
+
+test("eine sauber bereinigte Bardividende zaehlt als konsistent", () => {
+  const bars = [bar("2026-01-01", 100, 99), bar("2026-01-02", 99, 99, 1)];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.checked, 1);
+  assert.equal(r.consistent, 1);
+  assert.deepEqual(r.classes, {});
+});
+
+test("eine gar nicht bereinigte Dividende ist kein Formelproblem", () => {
+  /* Der Fall, der ein Urteil kippen muss: die Spalte hat den Abschlag
+     einfach stehen lassen. Dann ist sie an diesem Tag keine
+     Gesamtrendite, und keine Einordnung darf das wegerklaeren. */
+  const bars = [bar("2026-01-01", 100, 100), bar("2026-01-02", 99, 99, 1)];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.consistent, 0);
+  assert.equal(r.classes.NO_ADJUSTMENT_AT_ALL, 1);
+  assert.equal(r.samples[0].impliedDistribution, 0);
+});
+
+test("wird mehr bereinigt als ausgeschuettet, traegt das die Signatur einer Abspaltung", () => {
+  /* Eine Abspaltung bereinigt der Anbieter, sie steht aber nicht
+     vollstaendig in der Dividendenspalte. Die implizite Ausschuettung
+     liegt dann UEBER der gemeldeten - das ist etwas anderes als eine
+     fehlende Bereinigung, und beides gleich zu zaehlen waere der Fehler. */
+  const bars = [bar("2026-01-01", 100, 90), bar("2026-01-02", 95, 90, 1)];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.consistent, 0);
+  assert.equal(r.classes.ADJUSTMENT_EXCEEDS_CASH_DIVIDEND, 1);
+  assert.ok(r.samples[0].impliedOverDividend > 1);
+});
+
+test("wird weniger bereinigt als ausgeschuettet, ist das ein echter Widerspruch", () => {
+  /* Zwei ausgeschuettet, eins bereinigt. Die Spalte hat den Abschlag
+     zur Haelfte stehen lassen - keine Abspaltung erklaert das, und die
+     Reihe ist an diesem Tag keine vollstaendige Gesamtrendite. */
+  const bars = [bar("2026-01-01", 100, 99), bar("2026-01-02", 98, 98, 2)];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.consistent, 0);
+  assert.equal(r.classes.ADJUSTMENT_BELOW_CASH_DIVIDEND, 1);
+  assert.ok(r.samples[0].impliedOverDividend < 1 && r.samples[0].impliedOverDividend > 0,
+    "implizite Ausschuettung: " + r.samples[0].impliedOverDividend);
+});
+
+test("ein Splittag wird uebersprungen statt falsch beurteilt", () => {
+  /* An einem Splittag traegt das Verhaeltnis den Split mit. Es als
+     Dividendenpruefung zu lesen erzeugte einen Fehlschlag, den es nicht
+     gibt. */
+  const bars = [bar("2026-01-01", 100, 99), bar("2026-01-02", 50, 49.5, 1, 2)];
+  assert.equal(Series.verifyTotalReturn(bars, 10).checked, 0);
+});
+
+test("eine um einen Tag versetzte Bereinigung wird als solche erkannt", () => {
+  const bars = [
+    bar("2026-01-01", 100, 99),
+    bar("2026-01-02", 99, 99),
+    bar("2026-01-03", 98, 98, 1)
+  ];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.classes.ADJUSTMENT_ON_NEIGHBOURING_DAY, 1);
+});
+
+test("die Golden Five bestehen den Nachweis ohne Ausnahme", (t) => {
+  if (!existsSync(goldenPath("XOM"))) return t.skip("Golden Preview nicht im Baum");
+  let events = 0, consistent = 0;
+  for (const ticker of GOLDEN) {
+    const payload = JSON.parse(readFileSync(goldenPath(ticker), "utf8"));
+    const r = Series.verifyTotalReturn(payload.bars, 999);
+    events += r.checked;
+    consistent += r.consistent;
+    assert.deepEqual(r.classes, {}, `${ticker}: ${JSON.stringify(r.classes)}`);
+  }
+  assert.ok(events >= 30, "zu wenige Ereignisse fuer ein Urteil: " + events);
+  assert.equal(consistent, events);
+});

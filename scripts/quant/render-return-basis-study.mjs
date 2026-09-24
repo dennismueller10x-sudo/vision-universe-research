@@ -140,9 +140,30 @@ w("| davon konsistent | " + int(v.eventsConsistent) + " |");
 w("| schlechtester Fehler | " + pct(v.worstError, 4) + " |");
 w("| Toleranz | " + pct(v.tolerance, 2) + " |");
 w();
+if (v.failureClasses && Object.keys(v.failureClasses).length) {
+  w("**Nicht jeder Fehlschlag ist ein Befund.** Die Formel gilt für eine Bardividende und sonst nichts. Eine Abspaltung, eine Sachausschüttung, ein Bezugsrecht — jedes davon bereinigt der Anbieter, und keines steht vollständig in der Dividendenspalte. Deshalb wird jede Abweichung eingeordnet statt gezählt: die **implizite Ausschüttung** ist das, was die Bereinigung tatsächlich herausgenommen hat.");
+  w();
+  const erklaerung = {
+    ADJUSTMENT_EXCEEDS_CASH_DIVIDEND: "bereinigt **mehr** als die gemeldete Dividende — Signatur einer zusätzlichen Ausschüttung (Abspaltung, Sachdividende)",
+    ADJUSTMENT_ON_NEIGHBOURING_DAY: "bereinigt am Nachbartag — ein Datumsversatz, keine fehlende Bereinigung",
+    NO_ADJUSTMENT_AT_ALL: "**gar nicht bereinigt** — an diesem Tag ist die Spalte keine Gesamtrendite",
+    ADJUSTMENT_BELOW_CASH_DIVIDEND: "bereinigt **weniger** als die Bardividende — ein echter Widerspruch"
+  };
+  w("| Einordnung | Ereignisse | |");
+  w("|---|---:|---|");
+  for (const [klass, count] of Object.entries(v.failureClasses).sort((a, b) => b[1] - a[1])) {
+    w("| `" + klass + "` | " + int(count) + " | " + (erklaerung[klass] || "") + " |");
+  }
+  w();
+  w("**Erklärt: " + int(v.explainedByCorporateAction) + " · unerklärt: " + int(v.unexplained) +
+    "** (" + pct(v.unexplainedShare, 3) + " aller geprüften Ereignisse). Das Urteil steht auf den unerklärten: eine Reihe, die eine Dividende gar nicht oder nur zum Teil herausrechnet, ist an diesem Tag keine Gesamtrendite-Reihe, und keine Einordnung erklärt das weg.");
+  w();
+}
 if (v.inconsistentSecurities && v.inconsistentSecurities.length) {
-  w("Nicht konsistent: " + v.inconsistentSecurities.map((s) => "`" + s.securityId + "` (" +
-    s.consistent + "/" + s.checked + ")").join(", ") + ".");
+  w("Titel mit Abweichungen (erste " + Math.min(10, v.inconsistentSecurities.length) + " von " +
+    int(v.inconsistentSecurities.length) + " aufgezeichneten): " +
+    v.inconsistentSecurities.slice(0, 10).map((s) => "`" + s.securityId + "` " +
+      s.consistent + "/" + s.checked).join(" · ") + ".");
   w();
 }
 
@@ -201,6 +222,10 @@ if (!primary) {
   for (const measure of MEASURES) {
     const m = primary.measures[measure];
     if (!m) continue;
+    if (m.state) {
+      w("| `" + measure + "` | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 |");
+      continue;
+    }
     w("| `" + measure + "` | " + int(m.UNIVERSE_N) + " | " + num(m.SPEARMAN_RANK_CORRELATION, 4) + " | " +
       int(m.MEDIAN_ABSOLUTE_RANK_CHANGE) + " | " + int(m.P90_RANK_CHANGE) + " | " + int(m.P95_RANK_CHANGE) + " | " +
       int(m.MAX_RANK_CHANGE) + " | " + int(m.TITLES_MOVING_1_PERCENTILE) + " | " +
@@ -208,11 +233,18 @@ if (!primary) {
       int(m.topDecile.LEAVING) + " / " + int(m.topDecile.ENTERING) + " |");
   }
   w();
+  for (const measure of MEASURES) {
+    const m = primary.measures[measure];
+    if (m && m.state) {
+      w("> **`" + measure + "` · `" + m.state + "`** (`" + m.reason + "`). " + m.note);
+      w();
+    }
+  }
   w("`ρ` ist die Spearman-Rangkorrelation zwischen beiden Basen, `Pz` Perzentilpunkte, `Dezil ab/zu` der Wechsel im obersten Zehntel. Aus einem Median allein folgt nichts: ein Median von null Rängen und ein P95 von mehreren hundert sind gleichzeitig wahr, und nur der zweite Wert entscheidet, ob ein Titel aus dem obersten Dezil fällt.");
   w();
 
   const leader = primary.measures["12M-1M"] || primary.measures["12M"];
-  if (leader && leader.largestPercentileMoves && leader.largestPercentileMoves.length) {
+  if (leader && !leader.state && leader.largestPercentileMoves && leader.largestPercentileMoves.length) {
     w("**Die größten Perzentilbewegungen** (Messgröße `" + (primary.measures["12M-1M"] ? "12M-1M" : "12M") + "`, die schwerste Momentumkomponente der Produktion)");
     w();
     w("| Titel | Sektor | Segment | Rendite Kurs | Rendite gesamt | Pz Kurs | Pz gesamt | Δ Pz | Δ Rang |");
@@ -233,7 +265,7 @@ if (!primary) {
   w();
   for (const measure of ["12M-1M", "12M"]) {
     const m = primary.measures[measure];
-    if (!m) continue;
+    if (!m || m.state) continue;
     w("**`" + measure + "`**");
     w();
     w("| Segment | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |");
@@ -273,7 +305,7 @@ if (!primary) {
     }
     w();
   };
-  if (sectorMeasure) {
+  if (sectorMeasure && !sectorMeasure.state) {
     if (sectorMeasure.NAMED_SECTOR_BIAS) {
       sectorTable(sectorMeasure.NAMED_SECTOR_BIAS, "Die acht benannten Sektoren des Auftrags");
       if (taxonomy && taxonomy.namedSectors) {
@@ -342,7 +374,7 @@ if (!primary) {
   w("|---|---:|---:|---:|---:|---:|---:|---|");
   for (const cutoff of study.cutoffs) {
     const m = cutoff.measures["12M-1M"] || cutoff.measures["12M"];
-    if (!m) continue;
+    if (!m || m.state) continue;
     w("| " + cutoff.cutoffDate + " | " + int(cutoff.tradingDaysBack) + " | " + int(cutoff.securitiesWithCutoff) + " | " +
       num(m.SPEARMAN_RANK_CORRELATION, 4) + " | " + int(m.MEDIAN_ABSOLUTE_RANK_CHANGE) + " | " +
       int(m.P95_RANK_CHANGE) + " | " + int(m.TITLES_MOVING_5_PERCENTILES) + " | " +

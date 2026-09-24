@@ -112,9 +112,95 @@
     };
   }
 
+  /* ------------------------------------------- Total-Return-Nachweis
+
+     Die Gesamtrendite-Reihe ist nur dann eine, wenn die adjClose-Spalte
+     die Dividende wirklich traegt. Das wurde bisher an fuenf Titeln
+     gezeigt. Hier laeuft derselbe Test ueber jeden Titel, den der Audit
+     anfasst - eine Eigenschaft der Datenquelle, die man ueber das
+     Universum misst und nicht von fuenf Reihen hochrechnet.
+
+     An einem Ex-Tag ohne Split gilt bei Gesamtrendite-Bereinigung:
+       (adj_prev/close_prev) / (adj_now/close_now) = 1 - dividend/close_prev
+     Bei reiner Splitbereinigung stuende dort 1. */
+  function verifyTotalReturn(bars, maxEvents) {
+    const TOLERANCE = 0.002;
+    let checked = 0, consistent = 0, worst = 0;
+    const classes = {};
+    const samples = [];
+    for (let i = bars.length - 1; i > 0 && checked < maxEvents; i--) {
+      const bar = bars[i], prev = bars[i - 1];
+      if (!finite(bar.dividend) || bar.dividend <= 0) continue;
+      if (finite(bar.splitFactor) && bar.splitFactor !== 1) continue;
+      if (!finite(bar.adjustedClose) || !finite(prev.adjustedClose) ||
+          !finite(bar.close) || !finite(prev.close) || prev.close <= 0 || bar.close <= 0) continue;
+      const ratio = (prev.adjustedClose / prev.close) / (bar.adjustedClose / bar.close);
+      const expected = 1 - bar.dividend / prev.close;
+      const error = Math.abs(ratio - expected);
+      checked += 1;
+      if (error <= TOLERANCE) { consistent += 1; if (error > worst) worst = error; continue; }
+      if (error > worst) worst = error;
+
+      /* EIN FEHLSCHLAG IST NOCH KEIN BEFUND
+
+         Die Formel gilt fuer eine Bardividende und sonst nichts. Eine
+         Abspaltung, eine Sachausschuettung, ein Bezugsrecht - jedes davon
+         bereinigt der Anbieter, und keines steht vollstaendig in der
+         Dividendenspalte. Ein solcher Tag scheitert an der Formel, ohne
+         dass die Spalte falsch waere.
+
+         Also wird jeder Fehlschlag eingeordnet statt gezaehlt. Die
+         implizite Ausschuettung ist das, was die Bereinigung tatsaechlich
+         herausgenommen hat:
+
+           impliedDistribution = (1 - ratio) * close_vor
+
+         Liegt sie UEBER der gemeldeten Dividende, hat der Anbieter mehr
+         bereinigt, als die Spalte ausweist - das ist die Signatur einer
+         zusaetzlichen Ausschuettung. Liegt sie DARUNTER oder bei null, hat
+         er weniger oder gar nicht bereinigt, und dann ist die Spalte an
+         diesem Tag wirklich keine Gesamtrendite.
+
+         Der Unterschied entscheidet die ganze Studie, deshalb wird er
+         gemessen und nicht vermutet. */
+      const impliedDistribution = (1 - ratio) * prev.close;
+      const relativeToDividend = bar.dividend > 0 ? impliedDistribution / bar.dividend : null;
+
+      /* Wurde am Nachbartag bereinigt statt an diesem? Dann ist es ein
+         Datumsversatz und keine fehlende Bereinigung. */
+      let neighbour = false;
+      for (const j of [i - 1, i + 1]) {
+        const a = bars[j], b = bars[j - 1];
+        if (!a || !b || !finite(a.adjustedClose) || !finite(b.adjustedClose) ||
+            !finite(a.close) || !finite(b.close) || b.close <= 0 || a.close <= 0) continue;
+        if (finite(a.splitFactor) && a.splitFactor !== 1) continue;
+        const r = (b.adjustedClose / b.close) / (a.adjustedClose / a.close);
+        if (Math.abs(r - (1 - bar.dividend / b.close)) <= TOLERANCE) { neighbour = true; break; }
+      }
+
+      let klass;
+      if (neighbour) klass = "ADJUSTMENT_ON_NEIGHBOURING_DAY";
+      else if (Math.abs(ratio - 1) <= TOLERANCE) klass = "NO_ADJUSTMENT_AT_ALL";
+      else if (relativeToDividend !== null && relativeToDividend > 1) klass = "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND";
+      else klass = "ADJUSTMENT_BELOW_CASH_DIVIDEND";
+      classes[klass] = (classes[klass] || 0) + 1;
+      if (samples.length < 3) {
+        samples.push({
+          date: bar.date, klass,
+          close: bar.close, previousClose: prev.close, dividend: bar.dividend,
+          impliedDistribution: Math.round(impliedDistribution * 1e6) / 1e6,
+          impliedOverDividend: relativeToDividend === null ? null : Math.round(relativeToDividend * 1e4) / 1e4,
+          error: Math.round(error * 1e6) / 1e6
+        });
+      }
+    }
+    return { checked, consistent, worst, classes, samples };
+  }
+
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
     splitAdjusted: splitAdjusted,
+    verifyTotalReturn: verifyTotalReturn,
     totalReturn: totalReturn,
     build: build
   };

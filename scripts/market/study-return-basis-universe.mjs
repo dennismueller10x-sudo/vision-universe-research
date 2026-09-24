@@ -164,35 +164,10 @@ function strategyProfiles() {
   return (payload.profiles || []).filter((p) => wanted.includes(p.profileId));
 }
 
-/* --------------------------------------------- Total-Return-Nachweis
-
-   Die Gesamtrendite-Reihe ist nur dann eine, wenn die adjClose-Spalte
-   die Dividende wirklich traegt. Das wurde bisher an fuenf Titeln
-   gezeigt. Hier laeuft derselbe Test ueber jeden Titel, den der Audit
-   anfasst - eine Eigenschaft der Datenquelle, die man ueber das
-   Universum misst und nicht von fuenf Reihen hochrechnet.
-
-   An einem Ex-Tag ohne Split gilt bei Gesamtrendite-Bereinigung:
-     (adj_prev/close_prev) / (adj_now/close_now) = 1 - dividend/close_prev
-   Bei reiner Splitbereinigung stuende dort 1. */
-function verifyTotalReturn(bars, maxEvents) {
-  const TOLERANCE = 0.002;
-  let checked = 0, consistent = 0, worst = 0;
-  for (let i = bars.length - 1; i > 0 && checked < maxEvents; i--) {
-    const bar = bars[i], prev = bars[i - 1];
-    if (!finite(bar.dividend) || bar.dividend <= 0) continue;
-    if (finite(bar.splitFactor) && bar.splitFactor !== 1) continue;
-    if (!finite(bar.adjustedClose) || !finite(prev.adjustedClose) ||
-        !finite(bar.close) || !finite(prev.close) || prev.close <= 0 || bar.close <= 0) continue;
-    const ratio = (prev.adjustedClose / prev.close) / (bar.adjustedClose / bar.close);
-    const expected = 1 - bar.dividend / prev.close;
-    const error = Math.abs(ratio - expected);
-    checked += 1;
-    if (error <= TOLERANCE) consistent += 1;
-    if (error > worst) worst = error;
-  }
-  return { checked, consistent, worst };
-}
+/* Der Total-Return-Nachweis liegt in der Reihen-Engine, damit ihn ein
+   Test mit konstruierten Bars gegen jede Kante fahren kann - er
+   entscheidet ueber das Urteil der ganzen Studie. */
+const verifyTotalReturn = Series.verifyTotalReturn;
 
 /* -------------------------------------------------------- Hilfsgroessen */
 
@@ -346,7 +321,8 @@ function main() {
   };
   const exclusions = {};
   const bySource = {};
-  const verification = { securities: 0, events: 0, consistent: 0, worstError: 0, inconsistentSecurities: [] };
+  const verification = { securities: 0, events: 0, consistent: 0, worstError: 0,
+    classes: {}, inconsistentSecurities: [] };
 
   for (const security of universe) {
     const found = readSeries(security.securityId);
@@ -368,10 +344,14 @@ function main() {
       verification.events += check.checked;
       verification.consistent += check.consistent;
       if (check.worst > verification.worstError) verification.worstError = check.worst;
+      for (const [klass, count] of Object.entries(check.classes)) {
+        verification.classes[klass] = (verification.classes[klass] || 0) + count;
+      }
       if (check.consistent < check.checked && verification.inconsistentSecurities.length < 50) {
         verification.inconsistentSecurities.push({
           securityId: security.securityId, checked: check.checked,
-          consistent: check.consistent, worstError: round(check.worst, 6)
+          consistent: check.consistent, worstError: round(check.worst, 6),
+          classes: check.classes, samples: check.samples
         });
       }
     }
@@ -424,6 +404,31 @@ function main() {
 
     const measures = {};
     for (const measure of MEASURES) {
+      /* RELATIVE STAERKE OHNE BENCHMARK
+
+         Bei festem Stichtag ist der Benchmarkterm fuer JEDEN Titel
+         derselbe: RS_i = log(P_i(t)/P_i(t-252)) - log(B(t)/B(t-252)).
+         Der zweite Summand haengt nicht von i ab. Eine Konstante
+         verschiebt aber keinen Rang - die Rangfolge der relativen
+         Staerke ist damit exakt die Rangfolge der Zwoelfmonatsrendite,
+         und diese Studie misst ausschliesslich Raenge.
+
+         Die Benchmark liegt nicht im kanonischen Bestand: SPY ist kein
+         Universumsmitglied, und die Repositoriumskopie traegt eine
+         Spalte und rund 270 Punkte - fuer eine Gesamtrenditereihe
+         reicht das nicht. Statt hier eine leere Zeile zu lassen oder
+         die 12M-Zahlen unter fremdem Namen zu wiederholen, steht der
+         Grund da, warum die Zeile 12M die Antwort ist. */
+      if (measure === "RELATIVE_STRENGTH" && !(bench && bench.usable)) {
+        measures[measure] = {
+          state: "RANK_EQUIVALENT_TO_12M",
+          reason: "BENCHMARK_NOT_IN_CANONICAL_STORE",
+          rankStatisticsIdenticalTo: "12M",
+          note: "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+          benchmark: BENCHMARK
+        };
+        continue;
+      }
       const a = Compare.rankField(rows.map((r) => r.price[measure]));
       const b = Compare.rankField(rows.map((r) => r.total[measure]));
       a.values = rows.map((r) => r.price[measure]);
@@ -678,9 +683,34 @@ function main() {
 
   const storeSeen = bySource.CANONICAL_STORE || 0;
   const primary = results[0] || null;
-  const totalReturnVerdict = verification.events >= 30 && verification.consistent === verification.events
-    ? "TOTAL_RETURN_CONFIRMED"
-    : (verification.events === 0 ? "NOT_MEASURED" : "TOTAL_RETURN_NOT_UNIFORM");
+  /* DAS URTEIL
+
+     Bestaetigt ist die Gesamtrendite-Eigenschaft, wenn jedes gepruefte
+     Ereignis passt - oder wenn die Ausnahmen ausschliesslich die
+     Signatur einer zusaetzlichen Ausschuettung tragen beziehungsweise um
+     einen Tag versetzt bereinigt wurden. Beides heisst: bereinigt
+     wurde, nur nicht nach der einfachen Formel.
+
+     Nicht bestaetigt ist sie, sobald ein Ereignis GAR NICHT oder
+     WENIGER als die Bardividende bereinigt wurde. Das ist kein
+     Formelproblem, sondern eine Reihe, die an diesem Tag keine
+     Gesamtrendite ist.
+
+     Die Schwelle ist bewusst hart: eine einzige unerklaerte Nicht-
+     bereinigung reicht nicht, um alles zu verwerfen - dafuer steht der
+     Anteil daneben -, aber sie steht im Urteil und faellt nicht unter
+     eine Toleranz. */
+  const unexplained = (verification.classes.NO_ADJUSTMENT_AT_ALL || 0) +
+                      (verification.classes.ADJUSTMENT_BELOW_CASH_DIVIDEND || 0);
+  const explained = (verification.classes.ADJUSTMENT_EXCEEDS_CASH_DIVIDEND || 0) +
+                    (verification.classes.ADJUSTMENT_ON_NEIGHBOURING_DAY || 0);
+  const totalReturnVerdict = verification.events < 30
+    ? "NOT_MEASURED"
+    : (verification.consistent === verification.events
+        ? "TOTAL_RETURN_CONFIRMED"
+        : (unexplained === 0
+            ? "TOTAL_RETURN_CONFIRMED_WITH_CORPORATE_ACTIONS"
+            : "TOTAL_RETURN_NOT_UNIFORM"));
 
   const report = {
     schemaVersion: "return-basis-universe-study-1.0.0",
@@ -725,6 +755,10 @@ function main() {
       eventsConsistent: verification.consistent,
       worstError: round(verification.worstError, 6),
       tolerance: 0.002,
+      failureClasses: verification.classes,
+      explainedByCorporateAction: explained,
+      unexplained,
+      unexplainedShare: verification.events ? round(unexplained / verification.events, 6) : null,
       inconsistentSecurities: verification.inconsistentSecurities
     },
     /* Wo die veroeffentlichte Methodik etwas anderes sagt als der Code
@@ -762,7 +796,9 @@ function main() {
         entries: published.size,
         priceBasisCounts: basisCounts,
         measuredQuantV2MomentumBasis: basisCounts.adjustedClose === published.size && published.size > 0 &&
-          totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ? "TOTAL_RETURN" : "MIXED_OR_UNCONFIRMED"
+          (totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ||
+           totalReturnVerdict === "TOTAL_RETURN_CONFIRMED_WITH_CORPORATE_ACTIONS")
+          ? "TOTAL_RETURN" : "MIXED_OR_UNCONFIRMED"
       };
     })(),
     cutoffs: results,
@@ -770,7 +806,9 @@ function main() {
       FULL_UNIVERSE_RETURN_AUDIT: storeSeen > 0 ? "PASS" : "REPOSITORY_ONLY",
       DUAL_RETURN_SERIES_CAPABLE_UNIVERSE: counters.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE,
       PRICE_VS_TOTAL_RANK_CORRELATION: primary
-        ? Object.fromEntries(MEASURES.map((m) => [m, primary.measures[m].SPEARMAN_RANK_CORRELATION]))
+        ? Object.fromEntries(MEASURES.map((m) => [m,
+            primary.measures[m].state ? primary.measures[m].state
+                                      : primary.measures[m].SPEARMAN_RANK_CORRELATION]))
         : null,
       DIVIDEND_BIAS: primary ? "MEASURED" : "NOT_MEASURED",
       SECTOR_BIAS: primary ? "MEASURED" : "NOT_MEASURED",
@@ -780,7 +818,8 @@ function main() {
          den kanonischen Bestand, an mehr als einem Stichtag. Es heisst
          NICHT, dass eine Basis gewonnen hat - das entscheidet der Owner. */
       METHODOLOGY_DECISION_READY: (storeSeen > 0 && primary && results.length > 1 &&
-        totalReturnVerdict === "TOTAL_RETURN_CONFIRMED") ? "PASS" : "FAIL",
+        (totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ||
+         totalReturnVerdict === "TOTAL_RETURN_CONFIRMED_WITH_CORPORATE_ACTIONS")) ? "PASS" : "FAIL",
       QUANT_V2_MOMENTUM_RETURN_BASIS: "PENDING_METHOD_DECISION"
     },
     runtimeMs: Date.now() - started
@@ -797,11 +836,16 @@ function main() {
     " (" + verification.consistent + "/" + verification.events + " Ereignisse, " +
     verification.securities + " Titel, schlechtester Fehler " +
     round(verification.worstError * 100, 4) + "%)\n");
+  if (Object.keys(verification.classes).length) {
+    process.stdout.write("    Abweichungen: " + Object.entries(verification.classes)
+      .map(([k, n]) => k + " " + n).join(" · ") + "\n");
+  }
   process.stdout.write("  Veroeffentlichte Basis: " + report.publishedBasis.measuredQuantV2MomentumBasis + "\n");
   for (const result of results) {
     process.stdout.write("  Stichtag " + result.cutoffDate + " (" + result.securitiesWithCutoff + " Titel)\n");
     for (const measure of MEASURES) {
       const m = result.measures[measure];
+      if (m.state) { process.stdout.write("    " + measure.padEnd(18) + " " + m.state + " (" + m.reason + ")\n"); continue; }
       process.stdout.write("    " + measure.padEnd(18) +
         " rho=" + String(m.SPEARMAN_RANK_CORRELATION).padEnd(9) +
         " medRang=" + String(m.MEDIAN_ABSOLUTE_RANK_CHANGE).padStart(6) +
