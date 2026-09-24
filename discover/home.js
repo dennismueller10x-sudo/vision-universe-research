@@ -282,6 +282,7 @@
     var actions = node('div', 'v2-intro-actions');
     actions.appendChild(link('Jetzt entdecken →', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-dark v2-intro-cta'));
     actions.appendChild(link('Themenwelten', '#/welten', 'v2-pill v2-pill-ghost'));
+    actions.appendChild(link('Märkte', '#/maerkte', 'v2-pill v2-pill-ghost'));
     introCopy.appendChild(actions);
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);

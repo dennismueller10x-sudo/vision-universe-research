@@ -1,0 +1,29 @@
+/* Discover — Märkte (Multi-Asset Data Core). Eigene Datei: die Seite
+   beruehrt keine bestehende Regel und keine bestehende Zeile. */
+.dv2 .dx-maerkte h1{font-size:clamp(28px,4vw,40px);margin:18px 0 8px;letter-spacing:-.02em}
+.dv2 .dx-maerkte-lead{max-width:70ch;color:var(--v2-muted);font-size:15px;line-height:1.6;margin:0 0 12px}
+.dv2 .dx-maerkte-gruppe{padding:22px 0;border-top:1px solid var(--v2-line)}
+.dv2 .dx-maerkte-gruppe h2{font-size:18px;margin:0 0 14px}
+.dv2 .dx-maerkte-raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px}
+.dv2 .dx-markt-karte{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--v2-line);border-radius:18px;background:var(--v2-panel);min-height:150px}
+.dv2 .dx-markt-kopf h3{font-size:15px;margin:2px 0 0;line-height:1.3}
+.dv2 .dx-markt-klasse{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--v2-muted)}
+.dv2 .dx-markt-wert{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:4px 0 0;font-variant-numeric:tabular-nums}
+.dv2 .dx-markt-veraenderung{margin:0;font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-markt-veraenderung b{color:var(--v2-ink);font-variant-numeric:tabular-nums}
+.dv2 .dx-markt-veraenderung.is-up b{color:var(--discover-up)}
+.dv2 .dx-markt-veraenderung.is-down b{color:var(--discover-down)}
+.dv2 .dx-markt-chart{margin-top:2px;color:var(--v2-ink)}
+.dv2 .dx-markt-chart svg{width:100%;height:auto;display:block}
+.dv2 .dx-markt-leer,.dv2 .dx-markt-semantik{margin:0;font-size:12.5px;line-height:1.5;color:var(--v2-muted)}
+.dv2 .dx-markt-fuss{margin-top:auto;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--v2-muted)}
+.dv2 .dx-markt-frische{font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-markt-frische.is-stale{color:var(--discover-down)}
+.dv2 .dx-markt-karte.is-capability_gap,.dv2 .dx-markt-karte.is-withheld_license,.dv2 .dx-markt-karte.is-source_missing{background:transparent;border-style:dashed}
+.dv2 .dx-maerkte-stand{margin-top:18px;font-size:12px;color:var(--v2-muted)}
+@media(max-width:760px){.dv2 .dx-markt-wert{font-size:21px}.dv2 .dx-maerkte-raster{grid-template-columns:1fr}}
+/* Zinsen: Verlauf ohne Gewinn-/Verlustfarbe - die Richtung einer Rendite ist keine Wertung. */
+.dv2 .dx-markt-karte[data-asset-class=YIELD] .dx-micro,.dv2 .dx-markt-karte[data-asset-class=RATE] .dx-micro{color:var(--v2-ink)}
+.dv2 .dx-markt-karte[data-asset-class=YIELD] .dx-art-line,.dv2 .dx-markt-karte[data-asset-class=RATE] .dx-art-line{stroke:var(--v2-muted)!important}
+.dv2 .dx-markt-karte[data-asset-class=YIELD] .dx-art-fill,.dv2 .dx-markt-karte[data-asset-class=RATE] .dx-art-fill{display:none}
+.dv2 .dx-markt-veraenderung.is-neutral b{color:var(--v2-ink)}
