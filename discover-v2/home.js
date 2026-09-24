@@ -195,7 +195,7 @@
   }
   function themesRail(ctx) {
     var section = node('section', 'v2-world v2-themes');
-    section.dataset.archetype = 'themes'; section.dataset.block = 'themenwelten';
+    section.dataset.archetype = 'themes'; section.dataset.block = 'themenwelten'; section.dataset.surface = 'themenwelten'; section.dataset.surfaceType = 'themes';
     var header = node('div', 'v2-world-head'), intro = node('div', '');
     intro.appendChild(node('h2', '', 'Themenwelten'));
     intro.appendChild(node('p', 'v2-world-subtitle', 'Megatrends heute. Chancen für morgen. ' + T().all.length + ' Welten zum Entdecken.'));
@@ -293,8 +293,8 @@
     intro.appendChild(visual);
     page.appendChild(intro);
     // Themenwelten mit Fotos direkt unter dem Einstieg - vor den Aktien-Reihen.
-    if (T()) page.appendChild(themesRail(ctx));
     var body = node('div', 'v2-journey'); page.appendChild(body);
+    if (T()) body.appendChild(themesRail(ctx));
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
