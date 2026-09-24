@@ -267,12 +267,12 @@
     },
     {
      "id": "momentum",
-     "internal": "momentum / momentumScore",
+     "internal": "momentum / momentumScore (quant-v2.1.0, Kursbasis)",
      "userLabel": "Kursstärke",
      "question": "Läuft der Kurs besser als der Rest?",
-     "beginner": "Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt.",
+     "beginner": "Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite.",
      "professionalLabel": "Momentum (quantV2.factorEvidence.momentum)",
-     "tooltip": "Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch.",
+     "tooltip": "Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. Gemessen wird die Kursbewegung selbst, ohne Ausschüttungen.",
      "negative": "Der Kurs läuft schwächer als bei den meisten anderen.",
      "unavailable": "Zur Kursstärke reicht die Kurshistorie nicht aus."
     },
@@ -319,6 +319,45 @@
      "tooltip": "Ein hoher Wert bedeutet weniger Schwankung als bei anderen, nicht mehr.",
      "negative": "Dieser Titel schwankt stärker als die meisten anderen.",
      "unavailable": "Zum Risiko reicht die Kurshistorie nicht aus."
+    }
+   ]
+  },
+  {
+   "id": "returnKind",
+   "label": "Kursstärke und Anlegerrendite",
+   "terms": [
+    {
+     "id": "priceStrength",
+     "internal": "quantV2Momentum / SPLIT_ADJUSTED_PRICE",
+     "userLabel": "Kursstärke",
+     "question": "Wie stark entwickelt sich die Aktie am Markt?",
+     "beginner": "Nur die Kursbewegung. Zahlt ein Unternehmen eine Dividende, fällt der Kurs am Auszahlungstag um diesen Betrag — das ist eine echte Kursbewegung und wird hier so gezeigt, wie sie war.",
+     "professionalLabel": "Kursmomentum auf splitbereinigter Basis",
+     "tooltip": "Misst die Bewegung des Kurses, nicht den Ertrag für den Anleger.",
+     "negative": "Der Kurs entwickelt sich schwächer als bei den meisten anderen.",
+     "unavailable": "Für die Kursstärke reicht die Kurshistorie nicht aus."
+    },
+    {
+     "id": "investorReturn",
+     "internal": "investorReturnEvidence / TOTAL_RETURN",
+     "userLabel": "Anlegerrendite",
+     "question": "Wie hoch war die Rendite inklusive Ausschüttungen?",
+     "beginner": "Was mit einer Aktie tatsächlich verdient wurde — Kursveränderung plus die Dividenden, die in der Zeit gezahlt wurden.",
+     "professionalLabel": "Gesamtrendite (Rendite inkl. Ausschüttungen)",
+     "tooltip": "Kursveränderung plus Ausschüttungen über denselben Zeitraum.",
+     "negative": "Auch mit Ausschüttungen blieb unter dem Strich ein Verlust.",
+     "unavailable": "Für die Anlegerrendite fehlt die Ausschüttungshistorie."
+    },
+    {
+     "id": "priceStrengthVsInvestorReturn",
+     "internal": "quantV2Momentum vs investorReturnEvidence",
+     "userLabel": "Warum zwei Zahlen?",
+     "question": "Warum unterscheiden sich Kursstärke und Anlegerrendite?",
+     "beginner": "Weil sie zwei verschiedene Fragen beantworten. Die Kursstärke sagt, wie kräftig sich der Kurs bewegt. Die Anlegerrendite sagt, was dabei für dich herauskam. Bei einer Aktie ohne Dividende sind beide gleich; bei einem hohen Zahler liegt die Anlegerrendite deutlich darüber.",
+     "professionalLabel": "Trennung von Kursmomentum und Gesamtrendite",
+     "tooltip": "Zwei Fragen, zwei Zahlen. Eine Dividende ist keine Kursbewegung.",
+     "negative": "Bei dieser Aktie sind beide Zahlen gleich — sie hat im Zeitraum nichts ausgeschüttet.",
+     "unavailable": "Der Vergleich braucht beide Zahlen."
     }
    ]
   },
@@ -917,7 +956,18 @@
   "Technical Intelligence",
   "Intelligence",
   "Pattern Match",
-  "Setup State V1"
+  "Setup State V1",
+  "adjustedClose",
+  "split adjusted",
+  "splitbereinigt",
+  "total return",
+  "Total Return",
+  "total return basis",
+  "TOTAL_RETURN",
+  "SPLIT_ADJUSTED_PRICE",
+  "Return-Basis",
+  "priceReturn12m1m",
+  "investorReturn"
  ],
  "forbiddenNote": "Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können."
 }

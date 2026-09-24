@@ -388,6 +388,15 @@ function create(options){
    return {state:'AVAILABLE',ticker,name:i.companyName||ticker,
     methodologyVersion:shard.methodologyVersion,derivedFrom:shard.derivedFrom,
     asOf:record.asOf,dataCutoff:record.dataCutoff,priceBasis:record.priceBasis,
+    /* Kursstaerke und Anlegerrendite nebeneinander - die beiden Fragen,
+       die Option C getrennt haelt. Fehlt die Anlegerrendite im Artefakt
+       (Bestand vor quant-v2.1.0), steht das da statt einer leeren
+       Zahl. */
+    returnBasis:record.returnBasis||null,
+    investorReturn:record.investorReturn
+     ?{state:record.investorReturn.state,reason:record.investorReturn.reason||null,
+       returns:record.investorReturn.returns||{},return12M1M:record.investorReturn.return12M1M??null}
+     :{state:'UNAVAILABLE',reason:'NOT_IN_THIS_METHODOLOGY_VERSION',returns:{},return12M1M:null},
     fundamentalsAsOf:record.fundamentalsAsOf,fundamentalsAvailableAt:record.fundamentalsAvailableAt,
     marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
     publication:shard.publication,composite:record.composite,

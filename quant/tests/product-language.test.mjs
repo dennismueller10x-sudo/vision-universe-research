@@ -337,3 +337,33 @@ test("the journey starts with the market and ends at a share", () => {
     assert.ok(regimeAt < at, "the market is placed after '" + later + "'");
   }
 });
+
+test("Kursstaerke und Anlegerrendite stehen als eigene Begriffe da", () => {
+  /* Option C trennt zwei Fragen. Wenn nur eine davon einen Namen hat,
+     ist die Trennung im Produkt nicht angekommen - dann sieht der Leser
+     zwei Zahlen und keinen Grund. */
+  for (const id of ["priceStrength", "investorReturn", "priceStrengthVsInvestorReturn"]) {
+    assert.ok(Language.has(id), "Begriff fehlt: " + id);
+    assert.notEqual(Language.label(id), id);
+    assert.ok(Language.question(id).endsWith("?"), id + " stellt keine Frage");
+    assert.ok(Language.beginner(id).length > 40, id + " hat keine Einsteigererklaerung");
+  }
+  assert.equal(Language.label("priceStrength"), "Kursstärke");
+  assert.equal(Language.label("investorReturn"), "Anlegerrendite");
+  /* Und die Einsteigertexte muessen den Unterschied wirklich nennen,
+     nicht nur zwei Namen tragen. */
+  assert.match(Language.beginner("priceStrength"), /Dividende|Ausschüttung/);
+  assert.match(Language.beginner("investorReturn"), /Dividend|Ausschüttung/);
+});
+
+test("die technischen Woerter der Return-Basis sind in der Oberflaeche verboten", () => {
+  /* Der Owner hat sie ausdruecklich in die Methodik-/Fachschicht
+     verwiesen. Ein Verbot, das nur im Dokument steht, ist keins - hier
+     wird es gegen den Prueftext gefahren. */
+  for (const wort of ["adjustedClose", "split adjusted", "total return", "SPLIT_ADJUSTED_PRICE"]) {
+    assert.ok(Language.violatesPrimaryCopy("Die Kennzahl beruht auf " + wort + "."),
+      "nicht verboten: " + wort);
+  }
+  /* Die Nutzerbegriffe selbst duerfen natuerlich vorkommen. */
+  assert.equal(Language.violatesPrimaryCopy("Kursstärke und Anlegerrendite über 6 Monate"), null);
+});

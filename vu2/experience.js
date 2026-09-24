@@ -979,6 +979,13 @@ async function quantPage(ticker){
   el('p',{class:'muted',text:'Tippe auf eine Eigenschaft, um zu sehen, woran sie gemessen wurde.'}),
   el('div',{class:'dna-list'},data.factors.map(factorRow)),
   el('p',{class:'muted',text:'Ein Gesamtscore wird bewusst nicht gebildet: '+(data.composite?.reason==='QUANT_V2_NOT_ACTIVE'?'die Methodik verlangt alle sieben Faktoren, und der Erwartungstrend fehlt ohne lizenzierte Datenquelle.':'die Methodik ist noch nicht freigegeben.')})]));
+ /* KURSSTAERKE UND ANLEGERRENDITE
+
+    Die beiden Fragen, die Option C getrennt haelt, stehen hier
+    nebeneinander - weil sie nur nebeneinander verstaendlich sind. Wer
+    nur die Kursstaerke sieht, haelt sie fuer den Ertrag; wer nur den
+    Ertrag sieht, haelt ihn fuer die Kursbewegung. */
+ main.append(returnKindSection(data));
  /* CHANGE */
  const change=data.change,grouped=['IMPROVING','DETERIORATING','STABLE'].map(id=>[id,L(id)]);
  const changeSection=el('section',{class:'section change-section'},sectionHead('Bewegung','changeEngine'));
@@ -1210,6 +1217,64 @@ const LN=id=>VUProductLanguage.negative(id);
 /* Eine Sektionsueberschrift besteht immer aus Nutzerbegriff und Frage -
    nie aus dem internen Namen. Der steht, wenn er gebraucht wird, in der
    eingeklappten Methodik darunter. */
+
+/* Die Kursrendite kommt aus den Momentumkomponenten, die Anlegerrendite
+   aus ihrer eigenen Evidenz. Gezeigt werden nur die Zeitraeume, fuer die
+   BEIDE eine Zahl haben - ein halbes Paar erklaert den Unterschied
+   nicht, sondern verdeckt ihn. */
+function returnKindSection(data){
+ const fenster=[['3M','3 Monate','priceReturn3m','3M'],
+                ['6M','6 Monate','priceReturn6m','6M'],
+                ['12M1M','12 Monate ohne den letzten','priceReturn12m1m',null]];
+ const momentum=data.factors?.find?.(f=>f.id==='momentum')||null;
+ const komponente=id=>{
+  const c=(momentum&&momentum.components||[]).find(x=>x.id===id);
+  return c&&c.state==='AVAILABLE'&&Number.isFinite(c.raw)?c.raw:null;
+ };
+ const investor=data.investorReturn||{state:'UNAVAILABLE'};
+ const anleger=(key)=>{
+  if(investor.state!=='AVAILABLE')return null;
+  const v=key===null?investor.return12M1M:investor.returns?.[key];
+  return Number.isFinite(v)?v:null;
+ };
+ const zeilen=fenster
+  .map(([id,label,priceId,investorKey])=>({id,label,kurs:komponente(priceId),rendite:anleger(investorKey)}))
+  .filter(z=>Number.isFinite(z.kurs)&&Number.isFinite(z.rendite));
+
+ const section=el('section',{class:'section return-kind-section'},
+  sectionHead('Kurs und Ertrag','priceStrengthVsInvestorReturn'));
+
+ if(!zeilen.length){
+  section.append(notice(L('investorReturn')+' nicht verfügbar',
+   investor.state==='AVAILABLE'
+    ? 'Für diesen Titel liegen nicht beide Zahlen über denselben Zeitraum vor. Eine einzelne davon würde den Unterschied verdecken statt ihn zu zeigen.'
+    : VUProductLanguage.unavailable('investorReturn')));
+  return section;
+ }
+
+ section.append(el('div',{class:'return-kind-grid'},[
+  el('div',{class:'row eyebrow'},[el('span',{text:'Zeitraum'}),
+   el('span',{class:'number',text:L('priceStrength')}),
+   el('span',{class:'number',text:L('investorReturn')})]),
+  ...zeilen.map(z=>el('div',{class:'row'},[
+   el('span',{text:z.label}),
+   el('span',{class:'number '+(z.kurs>=0?'positive':'negative'),text:pct1(z.kurs)}),
+   el('span',{class:'number '+(z.rendite>=0?'positive':'negative'),text:pct1(z.rendite)})]))]));
+
+ /* Der Unterschied selbst, in Worten. Bei einem Titel ohne Ausschuettung
+    ist er null - und genau das ist die Aussage, nicht ein Fehler. */
+ const groesste=zeilen.reduce((a,z)=>Math.abs(z.rendite-z.kurs)>Math.abs(a.rendite-a.kurs)?z:a,zeilen[0]);
+ const abstand=groesste.rendite-groesste.kurs;
+ section.append(el('p',{class:'muted',
+  text:Math.abs(abstand)<0.0005
+   ? VUProductLanguage.negative('priceStrengthVsInvestorReturn')
+   : 'Über '+groesste.label.toLowerCase()+' lagen die Ausschüttungen bei '+pct1(Math.abs(abstand))+
+     ' — so viel mehr, als die reine Kursbewegung zeigt.'}));
+ section.append(el('details',{},[el('summary',{text:VUProductLanguage.question('priceStrengthVsInvestorReturn')}),
+  el('p',{text:VUProductLanguage.beginner('priceStrengthVsInvestorReturn')})]));
+ return section;
+}
+
 function sectionHead(eyebrow,termId,intro){
  const parts=[el('span',{class:'eyebrow',text:eyebrow}),el('h2',{text:LQ(termId)})];
  if(intro!==false)parts.push(el('p',{class:'muted',text:intro||LB(termId)}));

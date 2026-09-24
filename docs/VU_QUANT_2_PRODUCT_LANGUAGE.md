@@ -316,13 +316,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 | Feld | Inhalt |
 |---|---|
-| Interner Begriff | `momentum / momentumScore` |
+| Interner Begriff | `momentum / momentumScore (quant-v2.1.0, Kursbasis)` |
 | Schlüssel | `momentum` |
 | **User Label** | **Kursstärke** |
 | Als Frage | Läuft der Kurs besser als der Rest? |
-| Erklärung für Einsteiger | Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. |
+| Erklärung für Einsteiger | Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite. |
 | Professional Label | Momentum (quantV2.factorEvidence.momentum) |
-| Tooltip | Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. |
+| Tooltip | Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. Gemessen wird die Kursbewegung selbst, ohne Ausschüttungen. |
 | Negativer Zustand | Der Kurs läuft schwächer als bei den meisten anderen. |
 | Nicht verfügbar | Zur Kursstärke reicht die Kurshistorie nicht aus. |
 
@@ -381,6 +381,50 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Tooltip | Ein hoher Wert bedeutet weniger Schwankung als bei anderen, nicht mehr. |
 | Negativer Zustand | Dieser Titel schwankt stärker als die meisten anderen. |
 | Nicht verfügbar | Zum Risiko reicht die Kurshistorie nicht aus. |
+
+## Kursstärke und Anlegerrendite
+
+### Kursstärke
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `quantV2Momentum / SPLIT_ADJUSTED_PRICE` |
+| Schlüssel | `priceStrength` |
+| **User Label** | **Kursstärke** |
+| Als Frage | Wie stark entwickelt sich die Aktie am Markt? |
+| Erklärung für Einsteiger | Nur die Kursbewegung. Zahlt ein Unternehmen eine Dividende, fällt der Kurs am Auszahlungstag um diesen Betrag — das ist eine echte Kursbewegung und wird hier so gezeigt, wie sie war. |
+| Professional Label | Kursmomentum auf splitbereinigter Basis |
+| Tooltip | Misst die Bewegung des Kurses, nicht den Ertrag für den Anleger. |
+| Negativer Zustand | Der Kurs entwickelt sich schwächer als bei den meisten anderen. |
+| Nicht verfügbar | Für die Kursstärke reicht die Kurshistorie nicht aus. |
+
+### Anlegerrendite
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `investorReturnEvidence / TOTAL_RETURN` |
+| Schlüssel | `investorReturn` |
+| **User Label** | **Anlegerrendite** |
+| Als Frage | Wie hoch war die Rendite inklusive Ausschüttungen? |
+| Erklärung für Einsteiger | Was mit einer Aktie tatsächlich verdient wurde — Kursveränderung plus die Dividenden, die in der Zeit gezahlt wurden. |
+| Professional Label | Gesamtrendite (Rendite inkl. Ausschüttungen) |
+| Tooltip | Kursveränderung plus Ausschüttungen über denselben Zeitraum. |
+| Negativer Zustand | Auch mit Ausschüttungen blieb unter dem Strich ein Verlust. |
+| Nicht verfügbar | Für die Anlegerrendite fehlt die Ausschüttungshistorie. |
+
+### Warum zwei Zahlen?
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `quantV2Momentum vs investorReturnEvidence` |
+| Schlüssel | `priceStrengthVsInvestorReturn` |
+| **User Label** | **Warum zwei Zahlen?** |
+| Als Frage | Warum unterscheiden sich Kursstärke und Anlegerrendite? |
+| Erklärung für Einsteiger | Weil sie zwei verschiedene Fragen beantworten. Die Kursstärke sagt, wie kräftig sich der Kurs bewegt. Die Anlegerrendite sagt, was dabei für dich herauskam. Bei einer Aktie ohne Dividende sind beide gleich; bei einem hohen Zahler liegt die Anlegerrendite deutlich darüber. |
+| Professional Label | Trennung von Kursmomentum und Gesamtrendite |
+| Tooltip | Zwei Fragen, zwei Zahlen. Eine Dividende ist keine Kursbewegung. |
+| Negativer Zustand | Bei dieser Aktie sind beide Zahlen gleich — sie hat im Zeitraum nichts ausgeschüttet. |
+| Nicht verfügbar | Der Vergleich braucht beide Zahlen. |
 
 ## Setup-Zustände
 
@@ -1119,6 +1163,17 @@ Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip od
 - `Intelligence`
 - `Pattern Match`
 - `Setup State V1`
+- `adjustedClose`
+- `split adjusted`
+- `splitbereinigt`
+- `total return`
+- `Total Return`
+- `total return basis`
+- `TOTAL_RETURN`
+- `SPLIT_ADJUSTED_PRICE`
+- `Return-Basis`
+- `priceReturn12m1m`
+- `investorReturn`
 
 Ein Test prüft `vu2/experience.js` gegen diese Liste: keiner dieser Begriffe darf in einer
 Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen.
