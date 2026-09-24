@@ -125,12 +125,31 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
     palette: auswahl.motiv.palette,
-    visualComposition: "portrait 4:5, centered, generous negative space for a headline",
+    /* KOMPOSITIONS-BEWUSSTE FREIFLAECHE (§3.1/§4, Owner-Direktive 24.09.):
+       Stufe B (render-asset.mjs) setzt Logo, Atlas und Hook-Text danach
+       IMMER an dieselben drei Stellen — deterministisch, damit Marken-
+       Bitmap und Hook-Text pixelgenau bleiben (kein KI-Modell reproduziert
+       ein konkretes Logo zuverlaessig). Damit das fertige Bild wie EIN
+       Entwurf wirkt statt "Bild plus draufgeklebter Text", muss die
+       generierte Szene genau dort ruhig bleiben, wo die Ueberlagerung
+       spaeter hinkommt — nicht generisch "irgendwo Freiflaeche". */
+    visualComposition: "portrait 4:5. Reserve calm, uncluttered negative space in exactly " +
+      "three zones for a deterministic brand overlay added afterward: (1) TOP-LEFT " +
+      "corner — small quiet area, no busy detail, for a brand logo; (2) a horizontal " +
+      "band from the upper third to the middle-left — calm, low-contrast background " +
+      "(not behind bright highlights or complex texture) for a bold headline; (3) " +
+      "BOTTOM-RIGHT corner — a modest quiet area for a small brand mascot silhouette, " +
+      "not the visual focal point. The main subject/action occupies the center and " +
+      "right-of-center, calmer toward those three zones. It must still read as ONE " +
+      "cohesive, intentionally composed photograph — not a scene with empty holes cut " +
+      "out of it.",
     width: 1080, height: 1350,
     objective: "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, " +
-      "thematisch passende Bildwelt erzeugen — kein Diagramm, kein Dashboard, kein " +
-      "Bildschirmfoto, kein generischer Boersenticker. Hook und Caption durchgehend " +
-      "auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
+      "thematisch passende Bildwelt erzeugen, die als Teil EINES fertigen Markenposts " +
+      "komponiert ist (nicht als spaeter zutextendes Rohbild) — kein Diagramm, kein " +
+      "Dashboard, kein Bildschirmfoto, kein generischer Boersenticker. Hook und Caption " +
+      "durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, " +
+      "24.09., §5.1).",
     audience: "Anleger, die aktuelle Marktentwicklungen verfolgen"
   });
   agentBrief.grounding_hook_en = auswahl.hook;
