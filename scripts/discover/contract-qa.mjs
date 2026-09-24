@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Discover 2.1 frontend contract gate.
+/* Discover frontend contract gate (canonical /discover/, formerly /discover-v2/).
  * It verifies reuse and presentation boundaries. It does not recalculate
  * rankings, freshness, eligibility or realtime semantics. */
 import assert from 'node:assert/strict';
@@ -11,9 +11,10 @@ const Eligibility=require('../../discover/engines/discovery-eligibility.js');
 
 const read=path=>readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
-const html=read('discover-v2/index.html');
-const home=read('discover-v2/home.js');
-const app=read('discover-v2/app.js');
+const html=read('discover/index.html');
+const home=read('discover/home.js');
+const app=read('discover/app.js');
+const legacyAlias=read('discover-v2/index.html');
 const sharedCards=read('discover/ui/cards.js');
 const sharedFeed=read('discover/ui/feed.js');
 const sharedDetail=read('discover/ui/detail.js');
@@ -77,9 +78,16 @@ check('B4 realtime event semantics are variable and therefore stay tick-aligned'
   assert.match(worker,/schemaVersion:\s*UPDATE_SCHEMA,\s*v:\s*nutz,\s*semantics/);
 });
 
-check('B5 preview route remains noindex and comparison route remains present',()=>{
-  assert.match(html,/<meta\s+name="robots"\s+content="noindex, nofollow">/);
-  assert.match(app,/href:\s*['"]\/discover\/['"]/);
+check('B5 one canonical Discover: indexable, no version labels, legacy alias only forwards',()=>{
+  assert.doesNotMatch(html,/name="robots"[^>]*noindex/,'canonical /discover/ must be indexable');
+  for(const [name,src] of [['index.html',html],['app.js',app],['home.js',home]]){
+    assert.doesNotMatch(src,/Discover\s+(1\.0|2\.0|2\.1|2\b)|Discover Preview/,name+' still names a Discover version');
+    assert.doesNotMatch(src,/\/discover-v2\//,name+' still loads from /discover-v2/');
+  }
+  assert.match(legacyAlias,/location\.replace\("\/discover\/"\+location\.search\+location\.hash\)/,'legacy alias must forward with its hash route');
+  assert.match(legacyAlias,/noindex/);
+  const aliasScripts=[...legacyAlias.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]);
+  assert.deepEqual(aliasScripts,['/assets/site-navigation.js'],'legacy alias must not carry a second implementation');
 });
 
 check('Zero-cost visibility boundary is unchanged',()=>{

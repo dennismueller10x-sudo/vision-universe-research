@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-formatting-baseline-1.0.0",
-  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag - ausser die Stelle ist der beibehaltene Rueckfall einer migrierten Darstellung (Klasse F im Debt Register). discover-v2/detail.js ist so ein Fall: die Datei kam mit dem Merge aus main, brachte eine eigene Skalenleiter mit und wurde im Folgeschritt nach dem Kern-Merge migriert - getrennt vom Kern, damit der Discover-2.0-Vorschau-Gate seine Grundlinie behaelt und nicht fuer einen querliegenden Umbau aufgeweicht werden muss. Was hier zaehlt, ist nur noch ihr Rueckfall.",
+  "note": "Stellen mit fest verdrahteter Waehrungsdarstellung, die der Currency Layer nach und nach uebernimmt. Die Zahl je Datei darf sinken und nicht steigen. Neue Dateien mit solchen Stellen sind ein Fehlschlag - ausser die Stelle ist der beibehaltene Rueckfall einer migrierten Darstellung (Klasse F im Debt Register). discover/detail.js (bis zur Discover-Konsolidierung discover-v2/detail.js) ist so ein Fall: die Datei kam mit dem Merge aus main, brachte eine eigene Skalenleiter mit und wurde im Folgeschritt nach dem Kern-Merge migriert - getrennt vom Kern, damit der Discover-2.0-Vorschau-Gate seine Grundlinie behaelt und nicht fuer einen querliegenden Umbau aufgeweicht werden muss. Was hier zaehlt, ist nur noch ihr Rueckfall.",
   "updatedAt": "2026-09-22",
   "total": 33,
   "byFile": {
@@ -10,7 +10,7 @@
     "discover/ui/detail-fundamentals.js": 4,
     "discover/ui/detail.js": 2,
     "discover/ui/surfaces.js": 4,
-    "discover-v2/home.js": 1,
+    "discover/home.js": 1,
     "vu2/experience.js": 2,
     "quant/api/portfolio-workspace.js": 1,
     "dashboard/app.js": 1,
@@ -19,7 +19,7 @@
     "morning/2026-09-05/index.html": 1,
     "morning/2026-09-08/index.html": 1,
     "hedgefonds/index.html": 5,
-    "discover-v2/detail.js": 4
+    "discover/detail.js": 4
   },
   "suspectTotal": 2,
   "suspectsByFile": {

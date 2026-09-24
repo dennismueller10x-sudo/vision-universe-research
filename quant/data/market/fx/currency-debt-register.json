@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-09-24T09:42:19.253Z",
+  "generatedAtUtc": "2026-09-24T10:18:22.449Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -34,9 +34,9 @@
   },
   "total": 33,
   "byClass": {
+    "F": 22,
     "C": 5,
     "UNCLASSIFIED": 1,
-    "F": 22,
     "B": 4,
     "E": 1
   },
@@ -44,7 +44,7 @@
   "migrationOrder": [],
   "migratedFiles": [
     "dashboard/app.js",
-    "discover-v2/detail.js",
+    "discover/detail.js",
     "discover/ui/cards.js",
     "discover/ui/detail-fundamentals.js",
     "discover/ui/detail.js",
@@ -54,6 +54,50 @@
   ],
   "openClassA": 0,
   "entries": [
+    {
+      "file": "discover/detail.js",
+      "line": 267,
+      "rule": "trailingDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "var abs = Math.abs(value), scale = 1, suffix = \" $\";"
+    },
+    {
+      "file": "discover/detail.js",
+      "line": 268,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "if (abs >= 1e12) { scale = 1e12; suffix = \" Bio. $\"; }"
+    },
+    {
+      "file": "discover/detail.js",
+      "line": 269,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e9) { scale = 1e9; suffix = \" Mrd. $\"; }"
+    },
+    {
+      "file": "discover/detail.js",
+      "line": 270,
+      "rule": "germanScaleDollar",
+      "class": "F",
+      "label": "MIGRATED_FALLBACK",
+      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "else if (abs >= 1e6) { scale = 1e6; suffix = \" Mio. $\"; }"
+    },
     {
       "file": "discover/engines/fundamentals.js",
       "line": 75,
@@ -75,6 +119,17 @@
       "confidence": "NONE",
       "declaredReason": null,
       "text": "out.omitted.marginExpansion3y = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatzbasis in FY\" + (latest - 3) + \" oder FY\" + latest + \" unter \" + PLAUSIBILITY.minRe"
+    },
+    {
+      "file": "discover/home.js",
+      "line": 257,
+      "rule": "trailingDollar",
+      "class": "B",
+      "label": "PERCENTAGE_OR_RATIO",
+      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
+      "confidence": "HIGH",
+      "declaredReason": null,
+      "text": "function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleSt"
     },
     {
       "file": "discover/ui/cards.js",
@@ -218,61 +273,6 @@
       "confidence": "HIGH",
       "declaredReason": null,
       "text": "return Math.round(v).toLocaleString(\"de-DE\") + \" $\";"
-    },
-    {
-      "file": "discover-v2/detail.js",
-      "line": 267,
-      "rule": "trailingDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "var abs = Math.abs(value), scale = 1, suffix = \" $\";"
-    },
-    {
-      "file": "discover-v2/detail.js",
-      "line": 268,
-      "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "if (abs >= 1e12) { scale = 1e12; suffix = \" Bio. $\"; }"
-    },
-    {
-      "file": "discover-v2/detail.js",
-      "line": 269,
-      "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "else if (abs >= 1e9) { scale = 1e9; suffix = \" Mrd. $\"; }"
-    },
-    {
-      "file": "discover-v2/detail.js",
-      "line": 270,
-      "rule": "germanScaleDollar",
-      "class": "F",
-      "label": "MIGRATED_FALLBACK",
-      "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "else if (abs >= 1e6) { scale = 1e6; suffix = \" Mio. $\"; }"
-    },
-    {
-      "file": "discover-v2/home.js",
-      "line": 257,
-      "rule": "trailingDollar",
-      "class": "B",
-      "label": "PERCENTAGE_OR_RATIO",
-      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleSt"
     },
     {
       "file": "vu2/experience.js",

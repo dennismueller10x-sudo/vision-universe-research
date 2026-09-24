@@ -49,7 +49,10 @@ jobs:
           set -o pipefail
           SITE='${{ inputs.site }}'
           fehlt=0
-          for seite in /discover/ /discover-v2/; do
+          # /discover-v2/ ist seit der Discover-Konsolidierung nur noch ein
+          # Weiterleitungs-Alias ohne eigene Skripte; gezaehlt wird die eine
+          # kanonische Seite.
+          for seite in /discover/; do
             n=$(curl -sf --max-time 30 "$SITE$seite" | grep -o 'quant/engines/fx/[a-z-]*\.js' | sort -u | wc -l)
             echo "$seite laedt $n Kernmodule"
             [ "$n" -ge 11 ] || { echo "ABBRUCH: $seite laedt nur $n von 11"; fehlt=1; }

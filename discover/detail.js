@@ -1,6 +1,7 @@
-/* Discover 2.0 is a view of the canonical Discover detail contract.
+/* The Discover stock page: a view of the canonical Discover detail contract.
  * All series, source states, valuation and fundamental charts are rendered
- * by Discover 1.0's shared modules. This adapter only composes their DOM. */
+ * by the shared Discover modules (discover/ui, discover/engines). This adapter
+ * only composes their DOM. */
 (function (global) {
   "use strict";
   var V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};

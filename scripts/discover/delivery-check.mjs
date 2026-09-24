@@ -142,10 +142,14 @@ const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 
 const d = await seite(desktop, "desktop");
 await d.goto(BASE + "/discover/", { waitUntil: "networkidle" });
 
-pruef("1 Discover-Startseite: Reihen", (await d.locator(".dx-rail").count()) >= 3,
-  "Reihen: " + (await d.locator(".dx-rail").count()));
-pruef("1 Discover-Startseite: Karten", (await d.locator(".dx-poster").count()) >= 10,
-  "Karten: " + (await d.locator(".dx-poster").count()));
+/* Seit der Discover-Konsolidierung liefert /discover/ das Frontend aus,
+   das bis dahin unter /discover-v2/ lief: Reihen sind .v2-track, die
+   Aktienkacheln .v2-stock. Die Abnahmepunkte selbst sind unveraendert. */
+const REIHE = ".v2-track", KARTE = ".v2-stock";
+pruef("1 Discover-Startseite: Reihen", (await d.locator(REIHE).count()) >= 3,
+  "Reihen: " + (await d.locator(REIHE).count()));
+pruef("1 Discover-Startseite: Karten", (await d.locator(KARTE).count()) >= 10,
+  "Karten: " + (await d.locator(KARTE).count()));
 pruef("6 Gemeinsame Navigation mit Discover-Eintrag", await d.evaluate(() => {
   const n = document.querySelector("vu-navigation");
   return !!(n && n.shadowRoot &&
@@ -165,7 +169,7 @@ pruef("6 Navigation folgt dem Farbschema der Seite", await d.evaluate(() => {
 if (SHOTS) await d.screenshot({ path: SHOTS + "/01-discover-desktop.png" });
 
 const spur = await d.evaluate(async () => {
-  const r = document.querySelectorAll(".dx-rail")[1];
+  const r = document.querySelectorAll(".v2-track")[1];
   if (!r) return null;
   const vor = r.scrollLeft; r.scrollLeft = vor + 600;
   await new Promise((ok) => setTimeout(ok, 250));
@@ -176,7 +180,7 @@ pruef("4 Swipe-Reihe scrollt horizontal",
 if (SHOTS) await d.screenshot({ path: SHOTS + "/02-swipe-desktop.png" });
 
 const route = await d.evaluate(() => {
-  const a = document.querySelector(".dx-poster");
+  const a = document.querySelector(".v2-stock");
   return a ? a.getAttribute("href") : null;
 });
 pruef("2 Karte traegt Hash-Route", !!route && /^#\/s\//.test(route), String(route));
@@ -185,7 +189,7 @@ await d.waitForTimeout(1200);
 pruef("2 Aktienseite rendert",
   ((await d.locator(".dx-dhero").first().textContent()) || "").trim().length > 20);
 pruef("3 Chart mit gezeichnetem Pfad", await d.evaluate(() => {
-  const c = document.querySelector("#d-root svg path, #d-root canvas");
+  const c = document.querySelector("#v2-shell svg path, #v2-shell canvas");
   if (!c) return false;
   return c.tagName === "path" ? (c.getAttribute("d") || "").length > 40 : c.width > 100;
 }));
@@ -208,8 +212,8 @@ let ueber = await m.evaluate(() =>
   ({ seite: document.documentElement.scrollWidth, fenster: window.innerWidth }));
 pruef("7 Mobil Discover: kein horizontaler Ueberlauf",
   ueber.seite - ueber.fenster <= 1, JSON.stringify(ueber));
-pruef("7 Mobil Discover: Karten sichtbar", (await m.locator(".dx-poster").count()) >= 5,
-  "Karten: " + (await m.locator(".dx-poster").count()));
+pruef("7 Mobil Discover: Karten sichtbar", (await m.locator(KARTE).count()) >= 5,
+  "Karten: " + (await m.locator(KARTE).count()));
 if (SHOTS) await m.screenshot({ path: SHOTS + "/04-discover-iphone.png" });
 
 await m.goto(BASE + "/discover/#/einzeln/US_REAL", { waitUntil: "networkidle" });

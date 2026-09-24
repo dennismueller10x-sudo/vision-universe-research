@@ -102,7 +102,10 @@ const sichtbar = await d.evaluate(() => [...document.querySelectorAll(".dx-poste
 ok("Abonnements nur fuer sichtbare Karten (Abonnenten <= sichtbare Kartenbilder + Hero)", s1.subscribers <= sichtbar + 2, "subscribers " + s1.subscribers + ", sichtbar " + sichtbar);
 ok("Ein Verzeichnis-Abruf, jeder Snapshot hoechstens einmal geholt (requests == cached, keine Fehler)",
    s1.indexLoads === 1 && s1.snapshotRequests === s1.cachedSnapshots && s1.failures === 0, JSON.stringify(s1));
-ok("Hero traegt den Tagesverlauf", (await d.locator(".dx-hero-live svg").count()) >= 1);
+/* Seit der Discover-Konsolidierung ist der Einstieg die Hero-Reihe des
+   kanonischen Discover (.v2-hero-track); .dx-hero-live war der Hero des
+   abgeloesten Discover 1. */
+ok("Hero traegt den Tagesverlauf", (await d.locator('.dx-hero-live svg, .v2-hero-track [data-art="intraday"]').count()) >= 1);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-01-home-desktop.png" });
 /* Scrollen: Abmeldungen passieren, Anzahl bleibt begrenzt */
 for (let i = 0; i < 8; i++) { await d.mouse.wheel(0, 1400); await warten(d, 300); }
@@ -110,7 +113,7 @@ await warten(d, 600);
 const s2 = await stats(d);
 ok("Beim Scrollen werden Abonnements gekuendigt", s2.unsubscriptions > 0, "unsubscriptions " + s2.unsubscriptions);
 ok("Abonnenten bleiben begrenzt (<= 40 nach 8 Bildschirmen)", s2.subscribers <= 40, "subscribers " + s2.subscribers + ", cached " + s2.cachedSnapshots);
-ok("Snapshot-Abrufe bleiben unter der Kartenzahl", s2.snapshotRequests < (await d.evaluate(() => document.querySelectorAll(".dx-poster").length)), "requests " + s2.snapshotRequests);
+ok("Snapshot-Abrufe bleiben unter der Kartenzahl", s2.snapshotRequests < (await d.evaluate(() => document.querySelectorAll(".dx-poster, .v2-stock").length)), "requests " + s2.snapshotRequests);
 const nachlade = await d.evaluate(() => [...document.querySelectorAll("[data-live]")].length);
 ok("Nachgeladene Karten zeigen ebenfalls Tagesverlauf", nachlade > intra, nachlade + " > " + intra);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-02-home-scrolled-desktop.png" });

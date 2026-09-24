@@ -1,0 +1,62 @@
+name: Discover Frontend Quality Gates
+# Das eine kanonische Discover (/discover/). Bis zur Discover-Konsolidierung
+# lief hier "Discover 2.0 Preview Quality Gates" gegen /discover-v2/; die
+# Pruefungen sind dieselben, nur die Adresse ist jetzt die kanonische.
+on:
+  pull_request:
+    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
+  push:
+    branches: [main]
+    paths: ['discover/**', 'discover-v2/**', 'scripts/discover/**', 'assets/site-navigation.js', 'assets/themen/**', '.github/workflows/discover-frontend-ci.yml']
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Optional deployed origin for production smoke; empty uses local release'
+        type: string
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: discover-frontend-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: One Discover (single implementation, legacy alias, navigation, contract)
+        run: node scripts/discover/consolidation-gate.mjs
+      - name: Existing contract and navigation tests
+        run: node --test discover/tests/*.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Browser quality dependencies
+        run: |
+          npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-release"
+      - name: Browser, accessibility, performance and screenshot gates
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+          SITE: ${{ inputs.site }}
+        run: |
+          mkdir -p /tmp/discover-evidence
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/discover-release" > /tmp/discover-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence || chromium_status=$?
+          node scripts/discover/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshot and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-browser-evidence
+          path: /tmp/discover-evidence
+          if-no-files-found: warn
