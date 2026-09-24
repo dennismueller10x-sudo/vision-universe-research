@@ -1,8 +1,8 @@
 {
  "schemaVersion": "vu-multi-asset-proof-1.0.0",
- "checkedAt": "2026-09-24T19:16:17.764Z",
+ "checkedAt": "2026-09-24T23:55:40.969Z",
  "against": "repository",
- "snapshotGeneratedAt": "2026-09-24T19:16:17.674Z",
+ "snapshotGeneratedAt": "2026-09-24T23:55:40.899Z",
  "gates": {
   "INSTRUMENT_MASTER": "PASS",
   "ASSET_CLASS_MODEL": "PASS",
@@ -36,8 +36,8 @@
    "value": null,
    "range": null,
    "asOf": "2026-09-24",
-   "freshness": "CURRENT",
-   "marketState": "OPEN",
+   "freshness": "LAST_SESSION",
+   "marketState": "CLOSED",
    "history": null,
    "change": null,
    "currencyConversion": "NOT_CONVERTIBLE",
@@ -47,7 +47,7 @@
    "internalProof": {
     "quoteState": "AVAILABLE",
     "asOf": "2026-09-24",
-    "freshness": "CURRENT",
+    "freshness": "LAST_SESSION",
     "history": "2016-09-26..2026-09-24",
     "technical": "PASS"
    }
@@ -64,7 +64,7 @@
    "range": null,
    "asOf": null,
    "freshness": "UNAVAILABLE",
-   "marketState": "OPEN",
+   "marketState": "CLOSED",
    "history": null,
    "change": null,
    "currencyConversion": "NOT_CONVERTIBLE",
@@ -102,7 +102,7 @@
    "quoteState": "WITHHELD_LICENSE",
    "value": null,
    "range": null,
-   "asOf": "2026-09-24T19:15:49.118000+00:00",
+   "asOf": "2026-09-24T23:55:08.437000+00:00",
    "freshness": "CURRENT",
    "marketState": "OPEN",
    "history": null,
@@ -113,7 +113,7 @@
    "verdict": "LICENSE_PENDING",
    "internalProof": {
     "quoteState": "AVAILABLE",
-    "asOf": "2026-09-24T19:15:49.118000+00:00",
+    "asOf": "2026-09-24T23:55:08.437000+00:00",
     "freshness": "CURRENT",
     "history": "2021-10-20..2026-09-23",
     "technical": "PASS"
@@ -149,7 +149,7 @@
    "quoteState": "WITHHELD_LICENSE",
    "value": null,
    "range": null,
-   "asOf": "2026-09-24T19:15:00+00:00",
+   "asOf": "2026-09-24T23:55:00+00:00",
    "freshness": "CURRENT",
    "marketState": "OPEN",
    "history": null,
@@ -160,7 +160,7 @@
    "verdict": "LICENSE_PENDING",
    "internalProof": {
     "quoteState": "AVAILABLE",
-    "asOf": "2026-09-24T19:15:00+00:00",
+    "asOf": "2026-09-24T23:55:00+00:00",
     "freshness": "CURRENT",
     "history": "2011-08-19..2026-09-23",
     "technical": "PASS"
@@ -176,7 +176,7 @@
    "quoteState": "WITHHELD_LICENSE",
    "value": null,
    "range": null,
-   "asOf": "2026-09-24T19:15:00+00:00",
+   "asOf": "2026-09-24T23:55:00+00:00",
    "freshness": "CURRENT",
    "marketState": "OPEN",
    "history": null,
@@ -187,7 +187,7 @@
    "verdict": "LICENSE_PENDING",
    "internalProof": {
     "quoteState": "AVAILABLE",
-    "asOf": "2026-09-24T19:15:00+00:00",
+    "asOf": "2026-09-24T23:55:00+00:00",
     "freshness": "CURRENT",
     "history": "2015-08-08..2026-09-23",
     "technical": "PASS"
@@ -201,13 +201,13 @@
    "subType": "GOVERNMENT_BOND_YIELD_CMT",
    "unitId": "PERCENT",
    "quoteState": "AVAILABLE",
-   "value": 5.11,
+   "value": 5.18,
    "range": null,
-   "asOf": "2026-09-23",
+   "asOf": "2026-09-24",
    "freshness": "CURRENT",
    "marketState": "PUBLICATION_SCHEDULE",
-   "history": "1990-01-02..2026-09-23 (9188)",
-   "change": "15 bp",
+   "history": "1990-01-02..2026-09-24 (9189)",
+   "change": "7 bp",
    "currencyConversion": "NOT_CONVERTIBLE",
    "realtimeClaim": false,
    "source": "us-treasury",
