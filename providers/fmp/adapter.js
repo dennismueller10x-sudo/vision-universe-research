@@ -43,7 +43,9 @@ function eodUrl(fmpSymbol, from, key) {
   return `${BASE}/historical-price-eod/light?symbol=${encodeURIComponent(fmpSymbol)}` + (from ? `&from=${from}` : "") + `&apikey=${key}`;
 }
 function indexListUrl(key) { return `${BASE}/index-list?apikey=${key}`; }
-function redact(s) { return String(s).replace(/apikey=[^&\s"]+/gi, "apikey=[REDACTED]"); }
+/* Entfernt den Schluesselparameter ganz (auch maskiert waere er fuer
+   assert-no-secrets eine Anbieter-URL mit apikey=). */
+function redact(s) { return String(s).replace(/[?&]apikey=[^&\s"]*/gi, ""); }
 
 /** index-list JSON -> Map fmpSymbol -> name */
 function parseIndexList(json) {

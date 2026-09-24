@@ -89,7 +89,11 @@ async function get(url, { ua = VU_UA, accept = null, referer = null, token = nul
   } finally { clearTimeout(t); }
 }
 
-function redactUrl(u) { return String(u).replace(/(apikey|api_token|token)=[^&]+/gi, "$1=[REDACTED]"); }
+/* Der Schluesselparameter wird entfernt, nicht maskiert: auch eine
+   maskierte Anbieter-URL mit "apikey=" schlaegt assert-no-secrets an. */
+function redactUrl(u) {
+  return String(u).replace(/([?&])(apikey|token)=[^&]*&?/gi, (m, sep) => (sep === "?" ? "?" : "&")).replace(/[?&]$/, "");
+}
 function shape(r) {
   const o = { httpStatus: r.status, ms: r.ms, contentType: r.type || null, bytes: r.bytes || 0 };
   if (r.error) o.error = r.error.slice(0, 160);
@@ -642,6 +646,7 @@ async function main() {
   report.requests = requests;
   let json = JSON.stringify(report, null, 1);
   for (const k of [TD_KEY, FMP_KEY, FINNHUB_KEY]) if (k) json = json.split(k).join("[REDACTED]");
+  json = json.replace(/https?:\/\/[^\s"']*/g, (u) => redactUrl(u));
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, json + "\n");
   console.log(`Index-Quellen-Sondierung: ${OUT.replace(root + "/", "")} (${requests} Anfragen)`);
