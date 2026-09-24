@@ -37,6 +37,11 @@ on:
         description: 'Daten holen und veroeffentlichen'
         type: boolean
         default: true
+      proof_site:
+        description: 'Production Proof gegen die ausgelieferte Seite (z. B. https://research.visionuniverse.de) - leer = kein Proof'
+        type: string
+        default: ''
+
   pull_request:
     paths:
       - 'quant/engines/multi-asset/**'
@@ -233,3 +238,31 @@ jobs:
           bash scripts/ci/commit-and-push.sh \
             "Multi-Asset-Daten aktualisiert (automatischer Lauf)" \
             quant/data/market/multi-asset
+
+  # PRODUCTION PROOF (§57): prueft den tatsaechlich ausgelieferten Stand,
+  # nicht das Repository. Laeuft nur auf ausdruecklichen Dispatch mit
+  # einer Adresse - ein Nachweis gegen eine geratene URL waere keiner.
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [contract]
+    if: github.event_name == 'workflow_dispatch' && inputs.proof_site != ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quality Gates gegen die ausgelieferte Seite
+        env:
+          PROOF_SITE: ${{ inputs.proof_site }}
+        run: node scripts/quality/verify-multi-asset.mjs --site="$PROOF_SITE" --publish
+      - name: Nachweis in den Zweig
+        if: always()
+        run: |
+          if [ -f quant/data/market/multi-asset/production-proof.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Multi-Asset Production Proof gegen die ausgelieferte Seite (automatischer Lauf)" \
+              quant/data/market/multi-asset/production-proof.json
+          fi
