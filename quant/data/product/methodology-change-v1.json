@@ -1,0 +1,366 @@
+{
+ "schemaVersion": "methodology-change-1.0.0",
+ "generatedAt": "2026-09-24T18:06:42.000Z",
+ "versions": {
+  "measurement_logic": "1.0.0",
+  "comparison": "vu-return-basis-comparison-1.0.0"
+ },
+ "change": {
+  "from": {
+   "methodologyVersion": "vu-factor-evidence-1.0.0",
+   "derivedFrom": "quant-v2.0.0",
+   "asOf": "2026-09-21"
+  },
+  "to": {
+   "methodologyVersion": "vu-factor-evidence-2.0.0",
+   "derivedFrom": "quant-v2.1.0",
+   "asOf": "2026-09-23"
+  },
+  "what": "Momentum von TOTAL_RETURN auf SPLIT_ADJUSTED_PRICE; Gesamtrendite als eigene Anlegerevidenz.",
+  "decidedBy": "Owner, 2026-09-24, Option C"
+ },
+ "coverage": {
+  "ROWS_BEFORE": 6403,
+  "ROWS_AFTER": 6358,
+  "SHARED": 6349,
+  "ONLY_BEFORE": 54,
+  "ONLY_AFTER": 9,
+  "onlyBeforeTickers": [
+   "AIG",
+   "ANY",
+   "ARES",
+   "ASO",
+   "BPRE",
+   "CHSCL",
+   "CHSCM",
+   "CHSCN",
+   "CHSCO",
+   "CHSCP",
+   "CNNE",
+   "CRBG",
+   "DIN",
+   "DLY",
+   "DOLE",
+   "EVC",
+   "FG",
+   "FINS",
+   "FNF",
+   "FSK",
+   "FSOL",
+   "GWRS",
+   "HCA",
+   "HERZ",
+   "HMN",
+   "HRZN",
+   "ICE",
+   "MEOH",
+   "MRTN",
+   "MSI",
+   "MSIF",
+   "NMFC",
+   "NXPI",
+   "OLED",
+   "OXLCM",
+   "OXLCN",
+   "OXLCO",
+   "OXSQ",
+   "PAGS",
+   "PDCC",
+   "PDPA",
+   "PLD",
+   "PR",
+   "RNST",
+   "RYN",
+   "SELF",
+   "SPG-P-J",
+   "STRW",
+   "TCPC",
+   "TNL"
+  ],
+  "onlyAfterTickers": [
+   "CNL",
+   "HYGD",
+   "HYGU",
+   "LQDD",
+   "LQDU",
+   "PLCI",
+   "SITX",
+   "SNSC",
+   "VOGX"
+  ]
+ },
+ "RANK_DRIFT": {
+  "quality": {
+   "scoredBefore": 2714,
+   "scoredAfter": 2714,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 2714,
+   "SPEARMAN_RANK_CORRELATION": 0.999623,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 2.5,
+   "P95_RANK_CHANGE": 19.2,
+   "MAX_RANK_CHANGE": 948.5,
+   "TITLES_MOVING_5_PERCENTILES": 4,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 3,
+   "TOP_DECILE_ENTERING": 3
+  },
+  "growth": {
+   "scoredBefore": 3158,
+   "scoredAfter": 3159,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 3158,
+   "SPEARMAN_RANK_CORRELATION": 0.999644,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 3,
+   "P95_RANK_CHANGE": 25,
+   "MAX_RANK_CHANGE": 582.5,
+   "TITLES_MOVING_5_PERCENTILES": 16,
+   "TITLES_MOVING_10_PERCENTILES": 3,
+   "TOP_DECILE_LEAVING": 1,
+   "TOP_DECILE_ENTERING": 1
+  },
+  "momentum": {
+   "scoredBefore": 5529,
+   "scoredAfter": 5533,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 5529,
+   "SPEARMAN_RANK_CORRELATION": 0.981206,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 121,
+   "P95_RANK_CHANGE": 603.3,
+   "MAX_RANK_CHANGE": 5104.5,
+   "TITLES_MOVING_5_PERCENTILES": 1312,
+   "TITLES_MOVING_10_PERCENTILES": 357,
+   "TOP_DECILE_LEAVING": 50,
+   "TOP_DECILE_ENTERING": 50
+  },
+  "value": {
+   "scoredBefore": 1991,
+   "scoredAfter": 1991,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 1991,
+   "SPEARMAN_RANK_CORRELATION": 0.999832,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1.5,
+   "P95_RANK_CHANGE": 14,
+   "MAX_RANK_CHANGE": 347,
+   "TITLES_MOVING_5_PERCENTILES": 1,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 1,
+   "TOP_DECILE_ENTERING": 1
+  },
+  "profitability": {
+   "scoredBefore": 1179,
+   "scoredAfter": 1179,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 1179,
+   "SPEARMAN_RANK_CORRELATION": 0.999777,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1.5,
+   "P95_RANK_CHANGE": 9,
+   "MAX_RANK_CHANGE": 97,
+   "TITLES_MOVING_5_PERCENTILES": 2,
+   "TITLES_MOVING_10_PERCENTILES": 0,
+   "TOP_DECILE_LEAVING": 0,
+   "TOP_DECILE_ENTERING": 0
+  },
+  "revisions": {
+   "scoredBefore": 0,
+   "scoredAfter": 0,
+   "valuesIdentical": true,
+   "UNIVERSE_N": 0,
+   "SPEARMAN_RANK_CORRELATION": null,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+   "P95_RANK_CHANGE": null,
+   "MAX_RANK_CHANGE": null,
+   "TITLES_MOVING_5_PERCENTILES": 0,
+   "TITLES_MOVING_10_PERCENTILES": 0,
+   "TOP_DECILE_LEAVING": 0,
+   "TOP_DECILE_ENTERING": 0
+  },
+  "risk": {
+   "scoredBefore": 5529,
+   "scoredAfter": 5533,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 5529,
+   "SPEARMAN_RANK_CORRELATION": 0.997141,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 22.5,
+   "P95_RANK_CHANGE": 157.3,
+   "MAX_RANK_CHANGE": 3428,
+   "TITLES_MOVING_5_PERCENTILES": 98,
+   "TITLES_MOVING_10_PERCENTILES": 24,
+   "TOP_DECILE_LEAVING": 38,
+   "TOP_DECILE_ENTERING": 38
+  }
+ },
+ "STRATEGY_IMPACT": {
+  "quality-compounder": {
+   "label": "Quality Compounder",
+   "MEMBERS_BEFORE": 5,
+   "MEMBERS_AFTER": 6,
+   "LEAVING": 0,
+   "ENTERING": 1,
+   "leavingTickers": [],
+   "enteringTickers": [
+    "MAMA"
+   ]
+  },
+  "momentum-leader": {
+   "label": "Momentum Leader",
+   "MEMBERS_BEFORE": 163,
+   "MEMBERS_AFTER": 169,
+   "LEAVING": 18,
+   "ENTERING": 24,
+   "leavingTickers": [
+    "ABNB",
+    "AIZ",
+    "ANAB",
+    "CNXN",
+    "CTO",
+    "DJCO",
+    "INNV",
+    "KARO",
+    "KSPI",
+    "MGTX",
+    "PR",
+    "SPHR",
+    "TD",
+    "THG",
+    "TPC",
+    "VIRT",
+    "VISN",
+    "YARW"
+   ],
+   "enteringTickers": [
+    "AHR",
+    "ANET",
+    "ASML",
+    "BOW",
+    "CURB",
+    "ENIC",
+    "EZPW",
+    "FCFS",
+    "GCT",
+    "MEDP",
+    "MITK",
+    "MOG-B",
+    "NEM",
+    "NMR",
+    "PAYS",
+    "PLGO",
+    "PWR",
+    "QCRH",
+    "ROST",
+    "SEIC",
+    "SUN",
+    "TNGX",
+    "UFPT",
+    "WSFS"
+   ]
+  },
+  "quality-momentum": {
+   "label": "Quality Momentum",
+   "MEMBERS_BEFORE": 18,
+   "MEMBERS_AFTER": 19,
+   "LEAVING": 0,
+   "ENTERING": 1,
+   "leavingTickers": [],
+   "enteringTickers": [
+    "JOE"
+   ]
+  },
+  "garp": {
+   "label": "GARP · Wachstum zu vernünftigem Preis",
+   "MEMBERS_BEFORE": 99,
+   "MEMBERS_AFTER": 100,
+   "LEAVING": 1,
+   "ENTERING": 2,
+   "leavingTickers": [
+    "PR"
+   ],
+   "enteringTickers": [
+    "FSTR",
+    "OSIS"
+   ]
+  },
+  "future-leader": {
+   "label": "Future Leader",
+   "MEMBERS_BEFORE": 10,
+   "MEMBERS_AFTER": 13,
+   "LEAVING": 0,
+   "ENTERING": 3,
+   "leavingTickers": [],
+   "enteringTickers": [
+    "APH",
+    "JOE",
+    "PLTR"
+   ]
+  },
+  "defensive-quality": {
+   "label": "Defensive Quality",
+   "MEMBERS_BEFORE": 12,
+   "MEMBERS_AFTER": 12,
+   "LEAVING": 0,
+   "ENTERING": 0,
+   "leavingTickers": [],
+   "enteringTickers": []
+  },
+  "value-momentum": {
+   "label": "Value Momentum",
+   "MEMBERS_BEFORE": 119,
+   "MEMBERS_AFTER": 123,
+   "LEAVING": 5,
+   "ENTERING": 9,
+   "leavingTickers": [
+    "HNNA",
+    "PR",
+    "PRG",
+    "TCMD",
+    "ZBH"
+   ],
+   "enteringTickers": [
+    "AVY",
+    "EML",
+    "GCO",
+    "MGM",
+    "MHK",
+    "NVEC",
+    "SCHL",
+    "SIG",
+    "ULBI"
+   ]
+  },
+  "earnings-revision-leader": {
+   "label": "Earnings Revision Leader",
+   "MEMBERS_BEFORE": 0,
+   "MEMBERS_AFTER": 0,
+   "LEAVING": 0,
+   "ENTERING": 0,
+   "leavingTickers": [],
+   "enteringTickers": []
+  }
+ },
+ "unexpectedFactorMovement": [
+  {
+   "factor": "quality",
+   "titlesMoving5Percentiles": 4,
+   "spearman": 0.999623
+  },
+  {
+   "factor": "growth",
+   "titlesMoving5Percentiles": 16,
+   "spearman": 0.999644
+  },
+  {
+   "factor": "value",
+   "titlesMoving5Percentiles": 1,
+   "spearman": 0.999832
+  },
+  {
+   "factor": "profitability",
+   "titlesMoving5Percentiles": 2,
+   "spearman": 0.999777
+  },
+  {
+   "factor": "risk",
+   "titlesMoving5Percentiles": 98,
+   "spearman": 0.997141
+  }
+ ]
+}

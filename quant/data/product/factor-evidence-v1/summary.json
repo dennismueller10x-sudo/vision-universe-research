@@ -1,10 +1,10 @@
 {
  "schemaVersion": "factor-evidence-summary-1.0.0",
- "methodologyVersion": "vu-factor-evidence-1.0.0",
- "derivedFrom": "quant-v2.0.0",
+ "methodologyVersion": "vu-factor-evidence-2.0.0",
+ "derivedFrom": "quant-v2.1.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-24T12:07:12.000Z",
- "asOf": "2026-09-21",
+ "generatedAt": "2026-09-24T18:06:40.000Z",
+ "asOf": "2026-09-23",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -140,7 +140,7 @@
    "window": "two YoY intervals",
    "input": "current revenue YoY growth-previous revenue YoY growth"
   },
-  "momentum:totalReturn12m1m": {
+  "momentum:priceReturn12m1m": {
    "label": "Kursentwicklung 12 Monate ohne letzten Monat",
    "weight": 0.3,
    "direction": "higher",
@@ -148,9 +148,9 @@
    "basis": null,
    "note": null,
    "window": "252/21 sessions",
-   "input": "total return T-252 to T-21"
+   "input": "split-adjusted price return T-252 to T-21"
   },
-  "momentum:totalReturn6m": {
+  "momentum:priceReturn6m": {
    "label": "Kursentwicklung 6 Monate",
    "weight": 0.2,
    "direction": "higher",
@@ -158,9 +158,9 @@
    "basis": null,
    "note": null,
    "window": "126 sessions",
-   "input": "total return"
+   "input": "split-adjusted price return"
   },
-  "momentum:totalReturn3m": {
+  "momentum:priceReturn3m": {
    "label": "Kursentwicklung 3 Monate",
    "weight": 0.1,
    "direction": "higher",
@@ -168,7 +168,7 @@
    "basis": null,
    "note": null,
    "window": "63 sessions",
-   "input": "total return"
+   "input": "split-adjusted price return"
   },
   "momentum:relativeStrength12m1m": {
    "label": "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat",
@@ -178,7 +178,7 @@
    "basis": null,
    "note": "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle.",
    "window": "252/21 sessions",
-   "input": "security 12-1 total return minus certified broad benchmark 12-1 total return"
+   "input": "security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return"
   },
   "momentum:distanceTo52wHigh": {
    "label": "Abstand zum 52-Wochen-Hoch",
@@ -352,29 +352,21 @@
   }
  },
  "snapshotHistory": {
-  "methodologyVersion": "vu-factor-evidence-1.0.0",
+  "methodologyVersion": "vu-factor-evidence-2.0.0",
   "dates": [
-   "2026-09-18",
-   "2026-09-21"
+   "2026-09-23"
   ],
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": false,
-  "recomputationDrift": {
-   "asOf": "2026-09-21",
-   "publishedHash": "c8cab6fe3ab4791b",
-   "recomputedHash": "e3479d91e0dca5d7",
-   "rowsDiffering": 2653,
-   "rowsTotal": 6403,
-   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
-  }
+  "recomputationDrift": null
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-09-22T19:04:38.196Z",
-   "securities": 6403,
+   "generatedAt": "2026-09-24T17:39:42.219Z",
+   "securities": 6358,
    "benchmark": {
     "id": "SPY",
     "bars": 930,
@@ -383,11 +375,11 @@
   },
   "fundamentals": {
    "schema": "vu-consumer-fundamentals-1.0.0",
-   "issuersRead": 4723
+   "issuersRead": 4690
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5357,
+   "rows": 5312,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
@@ -397,86 +389,86 @@
  },
  "counts": {
   "productUniverse": 6875,
-  "priceFactorSecurities": 6403,
-  "published": 6403,
-  "withFundamentals": 5010,
-  "withMarketCap": 3917
+  "priceFactorSecurities": 6358,
+  "published": 6358,
+  "withFundamentals": 4972,
+  "withMarketCap": 3882
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 2731,
-   "UNAVAILABLE": 2705,
-   "NOT_APPLICABLE": 967
+   "AVAILABLE": 2714,
+   "UNAVAILABLE": 2685,
+   "NOT_APPLICABLE": 959
   },
   "growth": {
-   "AVAILABLE": 3189,
-   "UNAVAILABLE": 3214,
+   "AVAILABLE": 3163,
+   "UNAVAILABLE": 3195,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
-   "AVAILABLE": 5581,
-   "UNAVAILABLE": 822,
+   "AVAILABLE": 5533,
+   "UNAVAILABLE": 825,
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2000,
-   "UNAVAILABLE": 3436,
-   "NOT_APPLICABLE": 967
+   "AVAILABLE": 1991,
+   "UNAVAILABLE": 3408,
+   "NOT_APPLICABLE": 959
   },
   "profitability": {
-   "AVAILABLE": 1186,
-   "UNAVAILABLE": 4250,
-   "NOT_APPLICABLE": 967
+   "AVAILABLE": 1179,
+   "UNAVAILABLE": 4220,
+   "NOT_APPLICABLE": 959
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6403,
+   "UNAVAILABLE": 6358,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5581,
-   "UNAVAILABLE": 822,
+   "AVAILABLE": 5533,
+   "UNAVAILABLE": 825,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 2017,
-  "BLOCKED_EXTERNAL": 6403,
-  "INSUFFICIENT_COMPONENTS": 3974,
-  "INPUT_NOT_MATERIALIZED": 9236,
-  "SECTOR_TEMPLATE_MISSING": 2901,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2002,
+  "BLOCKED_EXTERNAL": 6358,
+  "INSUFFICIENT_COMPONENTS": 3955,
+  "INPUT_NOT_MATERIALIZED": 9179,
+  "SECTOR_TEMPLATE_MISSING": 2877,
   "MANDATORY_COMPONENT_MISSING": 22
  },
  "componentCoverage": {
-  "quality:accrualRatio": 2972,
-  "quality:equityToAssets": 3867,
-  "quality:positiveFcfYears": 3145,
-  "quality:operatingMarginStability": 2875,
-  "growth:revenueCagr3y": 3640,
-  "growth:epsCagr3y": 2038,
-  "growth:fcfCagr3y": 1929,
-  "growth:revenueGrowthTtmYoy": 3079,
-  "growth:operatingMarginExpansion3y": 3125,
-  "growth:revenueGrowthAcceleration": 3855,
-  "momentum:totalReturn12m1m": 5581,
-  "momentum:totalReturn6m": 5929,
-  "momentum:totalReturn3m": 6306,
-  "momentum:relativeStrength12m1m": 5581,
-  "momentum:distanceTo52wHigh": 5585,
-  "momentum:distanceToSma200": 5689,
-  "value:fcfYield": 2020,
-  "value:earningsYield": 2516,
-  "value:bookToMarket": 3072,
-  "profitability:roicMedian3y": 534,
-  "profitability:operatingMarginTtm": 2331,
-  "profitability:fcfMarginTtm": 2206,
-  "profitability:roaTtm": 3005,
-  "risk:realizedVolatility252d": 5581,
-  "risk:downsideVolatility252d": 5581,
-  "risk:maxDrawdown252d": 5585,
-  "risk:beta252d": 5604,
-  "quality:netDebtToAssets": 462,
-  "profitability:grossProfitabilityTtm": 1348,
+  "quality:accrualRatio": 2949,
+  "quality:equityToAssets": 3837,
+  "quality:positiveFcfYears": 3122,
+  "quality:operatingMarginStability": 2856,
+  "growth:revenueCagr3y": 3610,
+  "growth:epsCagr3y": 2013,
+  "growth:fcfCagr3y": 1915,
+  "growth:revenueGrowthTtmYoy": 3052,
+  "growth:operatingMarginExpansion3y": 3101,
+  "growth:revenueGrowthAcceleration": 3825,
+  "momentum:priceReturn12m1m": 5533,
+  "momentum:priceReturn6m": 5879,
+  "momentum:priceReturn3m": 6281,
+  "momentum:relativeStrength12m1m": 5533,
+  "momentum:distanceTo52wHigh": 5533,
+  "momentum:distanceToSma200": 5641,
+  "value:fcfYield": 2011,
+  "value:earningsYield": 2500,
+  "value:bookToMarket": 3053,
+  "profitability:roicMedian3y": 529,
+  "profitability:operatingMarginTtm": 2317,
+  "profitability:fcfMarginTtm": 2191,
+  "profitability:roaTtm": 2982,
+  "risk:realizedVolatility252d": 5533,
+  "risk:downsideVolatility252d": 5533,
+  "risk:maxDrawdown252d": 5533,
+  "risk:beta252d": 5552,
+  "quality:netDebtToAssets": 459,
+  "profitability:grossProfitabilityTtm": 1341,
   "value:ebitdaYield": 83,
   "value:salesYield": 97,
   "profitability:roicTtm": 58
@@ -485,7 +477,7 @@
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6403,
+  "rows": 6358,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -501,9 +493,9 @@
   {
    "id": "COMPONENT_INPUT_NARROW",
    "blocks": [
-    "profitability:roicMedian3y (534)",
+    "profitability:roicMedian3y (529)",
     "profitability:roicTtm (58)",
-    "quality:netDebtToAssets (462)",
+    "quality:netDebtToAssets (459)",
     "value:ebitdaYield (83)",
     "value:salesYield (97)"
    ],
@@ -536,8 +528,8 @@
  ],
  "gapCounts": {
   "IDENTITY_UNRESOLVED": 1046,
-  "FUNDAMENTALS_DOCUMENT_MISSING": 347
+  "FUNDAMENTALS_DOCUMENT_MISSING": 340
  },
- "runtimeMs": 17242,
- "contentHash": "a58604d0eb469d76"
+ "runtimeMs": 16822,
+ "contentHash": "bd08f9a7c8df9144"
 }
