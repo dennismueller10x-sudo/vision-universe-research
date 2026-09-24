@@ -139,13 +139,32 @@ async function twelveData() {
   const rows = list.json && Array.isArray(list.json.data) ? list.json.data : [];
   src.indicesList = { ...shape(list), rows: rows.length, errorCode: list.json && list.json.code || null,
                       errorMessage: list.json && list.json.message ? String(list.json.message).slice(0, 200) : null };
+  /* Runde 2: die Liste nach allen Familiennamen durchsuchen (nur Namen,
+     keine Werte) - Runde 1 fand S&P, Nasdaq, Dow, DAX, STOXX, SMI nicht. */
+  const FAMILY = /S&P|NASDAQ|DOW JONES|DAX|STOXX|FTSE 100|NIKKEI|SMI|SWISS|RUSSELL|MSCI WORLD|CAC|HANG SENG/i;
+  src.familyCandidates = rows.filter((r) => FAMILY.test(String(r.name || ""))).slice(0, 80)
+    .map((r) => ({ symbol: r.symbol, name: String(r.name).slice(0, 60), country: r.country, exchange: r.exchange || null, mic: r.mic_code || null }));
+  src.fieldNames = rows[0] ? Object.keys(rows[0]) : [];
+  /* Aufrufvarianten fuer ein gelistetes Symbol: nur symbol, symbol+country,
+     symbol+mic_code. Runde 1: symbol+exchange -> 404. */
+  const variants = [];
+  for (const q of ["symbol=N225", "symbol=N225&country=Japan", "symbol=N225&mic_code=XJPX", "symbol=FTSE&country=United%20Kingdom", "symbol=SPX", "symbol=NDX", "symbol=DJI", "symbol=GDAXI", "symbol=DAX&country=Germany"]) {
+    const r = await td(`/quote?${q}`);
+    variants.push({ query: q, httpStatus: r.status, code: r.json && r.json.code || null,
+                    message: r.json && r.json.message ? String(r.json.message).slice(0, 160) : null,
+                    name: r.json && r.json.name ? String(r.json.name).slice(0, 60) : null,
+                    type: r.json && r.json.type || null,
+                    magnitudeN225: q.includes("N225") && r.json ? magnitude(num(r.json.close), TARGETS.N225.range) : undefined });
+  }
+  src.callVariants = variants;
   for (const [id, t] of Object.entries(TARGETS)) {
     const cands = rows.filter((r) => t.re.test(String(r.name || ""))).slice(0, 4)
       .map((r) => ({ symbol: r.symbol, name: r.name, country: r.country, exchange: r.exchange || r.mic_code || null, currency: r.currency || null }));
     const f = { listed: cands, timeSeries: null, intraday: null, quote: null };
     const c = cands[0];
     if (c) {
-      const q = `symbol=${encodeURIComponent(c.symbol)}${c.exchange ? "&exchange=" + encodeURIComponent(c.exchange) : ""}`;
+      /* Runde 1 mit exchange= lieferte 404; Runde 2 grenzt ueber country ein. */
+      const q = `symbol=${encodeURIComponent(c.symbol)}${c.country ? "&country=" + encodeURIComponent(c.country) : ""}`;
       const ts = await td(`/time_series?${q}&interval=1day&outputsize=5000`);
       const vals = ts.json && Array.isArray(ts.json.values) ? ts.json.values : [];
       f.timeSeries = { ...shape(ts), ...cover(vals.map((v) => v.datetime)), status: ts.json && ts.json.status || null,
@@ -285,6 +304,111 @@ async function misc() {
   }
 }
 
+/* ------------------------------------------------ Runde 2: weitere offizielle Quellen */
+
+/* EZB Data Portal, Datensatz FM: Aktienindizes (Datastream, DS.EI). Ein
+   Wildcard-Abruf liefert alle Reihen samt Titel - Metadaten, keine Werte. */
+async function ecbStockIndices() {
+  report.sources.ecbDataPortal = { priority: 2, kind: "OFFICIAL_INSTITUTIONAL" };
+  const r = await get("https://data-api.ecb.europa.eu/service/data/FM/D....EI..HSTA?lastNObservations=1&format=csvdata");
+  const lines = String(r.text).split(/\r?\n/).filter(Boolean);
+  const split = (l) => { const o = []; let c = "", q = false; for (let i = 0; i < l.length; i++) { const ch = l[i];
+    if (q) { if (ch === '"' && l[i + 1] === '"') { c += '"'; i++; } else if (ch === '"') q = false; else c += ch; }
+    else if (ch === '"') q = true; else if (ch === ",") { o.push(c); c = ""; } else c += ch; } o.push(c); return o; };
+  const h = lines.length ? split(lines[0]) : [];
+  const iKey = h.indexOf("KEY"), iT = h.indexOf("TIME_PERIOD"), iTitle = h.indexOf("TITLE"), iCompl = h.indexOf("TITLE_COMPL"),
+        iSrc = h.indexOf("SOURCE_AGENCY"), iPub = h.indexOf("SOURCE_PUB");
+  const series = lines.slice(1).map(split).map((c) => ({ key: c[iKey], title: iTitle >= 0 ? String(c[iTitle]).slice(0, 90) : null,
+    titleCompl: iCompl >= 0 ? String(c[iCompl]).slice(0, 200) : null, lastPeriod: c[iT],
+    sourceAgency: iSrc >= 0 ? c[iSrc] : null, sourcePub: iPub >= 0 ? String(c[iPub]).slice(0, 120) : null }));
+  report.sources.ecbDataPortal.wildcard = { ...shape(r), series: series.length, headerHasTitle: iTitle >= 0 };
+  report.sources.ecbDataPortal.catalog = series.slice(0, 120);
+  /* Zuordnung je Ziel ueber den Titel, danach die Tiefe der Reihe. */
+  const want = { SX5E: /EURO STOXX 50/i, SPX: /S&P ?500|S&P COMPOSITE|STANDARD (&|AND) POOR/i, N225: /NIKKEI|JAPAN.*225/i,
+                 UKX: /FTSE 100|FTSE-100|UK.*100/i, DAX: /\bDAX\b|GERMANY.*(DAX|CDAX)/i, DJI: /DOW JONES INDUSTRIAL/i, NDX: /NASDAQ/i };
+  for (const [id, re] of Object.entries(want)) {
+    const m = series.find((x) => re.test((x.title || "") + " " + (x.titleCompl || "")));
+    if (!m) { hit(id, "ecbDataPortal", { matched: false }); continue; }
+    const full = await get(`https://data-api.ecb.europa.eu/service/data/FM/${m.key.replace(/^FM\./, "")}?format=csvdata`);
+    const fl = String(full.text).split(/\r?\n/).filter(Boolean);
+    const fh = fl.length ? split(fl[0]) : [];
+    const fT = fh.indexOf("TIME_PERIOD"), fV = fh.indexOf("OBS_VALUE");
+    const obs = fl.slice(1).map(split).filter((c) => /^\d{4}-\d{2}-\d{2}$/.test(c[fT]) && isFinite(parseFloat(c[fV])));
+    hit(id, "ecbDataPortal", { matched: true, key: m.key, title: m.title, titleCompl: m.titleCompl, sourceAgency: m.sourceAgency, sourcePub: m.sourcePub,
+      ...shape(full), ...cover(obs.map((c) => c[fT])), magnitude: obs.length ? magnitude(parseFloat(obs[obs.length - 1][fV]), TARGETS[id].range) : null });
+  }
+}
+
+/* Cboe: offizielle verzoegerte Indexkurse (Cboe verbreitet SPX, NDX, RUT
+   als Basiswert seiner Indexoptionen). DJX ist 1/100 des Dow - ein
+   anderes Instrument und wird nur als solches benannt. */
+async function cboe() {
+  report.sources.cboeOfficial = { priority: 2, kind: "OFFICIAL_EXCHANGE_DELAYED" };
+  for (const [id, sym] of Object.entries({ SPX: "_SPX", NDX: "_NDX", RUT: "_RUT", DJI: "_DJX" })) {
+    const q = await get(`https://cdn.cboe.com/api/global/delayed_quotes/quotes/${sym}.json`, { ua: BROWSER_UA, accept: "application/json" });
+    const d = q.json && q.json.data || null;
+    const h = await get(`https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/${sym}.json`, { ua: BROWSER_UA, accept: "application/json" });
+    const rows = h.json && h.json.data && Array.isArray(h.json.data) ? h.json.data : [];
+    const range = id === "DJI" ? [150, 1000] : TARGETS[id].range;
+    hit(id, "cboeOfficial", { symbol: sym, note: id === "DJI" ? "DJX = Dow Jones Industrial Average / 100 - NICHT der DJIA-Stand" : null,
+      quote: { ...shape(q), lastTradeTime: d ? String(d.last_trade_time || "").slice(0, 40) : null, delayMinutes: q.json ? q.json.delay || null : null,
+               magnitude: d ? magnitude(num(d.current_price), range) : null },
+      historical: { ...shape(h), ...cover(rows.map((x) => x.date)), magnitude: rows.length ? magnitude(num(rows[rows.length - 1].close), range) : null } });
+  }
+  const terms = await get("https://www.cboe.com/us/options/market_statistics/terms/", { ua: BROWSER_UA });
+  report.sources.cboeOfficial.terms = { ...shape(terms), excerpt: excerpt(terms.text, /(delayed|personal|redistribut|commercial)/i) };
+}
+
+/* SNB (Schweizerische Nationalbank): Aktienindizes im Kapitalmarktwuerfel. */
+async function snb() {
+  report.sources.snbDataPortal = { priority: 2, kind: "OFFICIAL_INSTITUTIONAL" };
+  const r = await get("https://data.snb.ch/api/cube/capchstocki/data/csv/en");
+  const lines = String(r.text).split(/\r?\n/);
+  const rows = lines.map((l) => l.replace(/"/g, "").split(";")).filter((c) => /^\d{4}-\d{2}(-\d{2})?$/.test(c[0]));
+  const dims = [...new Set(rows.map((c) => c[1]))].slice(0, 20);
+  hit("SMI", "snbDataPortal", { ...shape(r), header: lines.slice(0, 3).map((l) => l.slice(0, 160)), dimensions: dims,
+    ...cover(rows.map((c) => c[0].length === 7 ? c[0] + "-01" : c[0])), frequencyHint: rows[0] && rows[0][0].length === 7 ? "MONTHLY" : "DAILY" });
+}
+
+/* Bundesbank: klassische Zeitreihen-Downloads fuer Aktienindizes. */
+async function bundesbankIndices() {
+  report.sources.bundesbankIndices = { priority: 2, kind: "OFFICIAL_INSTITUTIONAL" };
+  const out = [];
+  for (const ts of ["BBK01.WU3140", "BBK01.WU3141", "BBK01.WU001A"]) {
+    const r = await get(`https://www.bundesbank.de/statistic-rmi/StatisticDownload?tsId=${ts}&its_csvFormat=en&its_fileFormat=csv&mode=its`, { ua: BROWSER_UA });
+    const lines = String(r.text).split(/\r?\n/);
+    const rows = lines.map((l) => l.split(/[;,]/)).filter((c) => /^\d{4}-\d{2}(-\d{2})?$/.test((c[0] || "").trim()));
+    out.push({ tsId: ts, ...shape(r), header: lines.slice(0, 2).map((l) => l.slice(0, 160)), ...cover(rows.map((c) => c[0].trim().length === 7 ? c[0].trim() + "-01" : c[0].trim())) });
+  }
+  hit("DAX", "bundesbankIndices", { tried: out });
+}
+
+/* FRED: was die Lizenzklassen bedeuten - vom Herausgeber selbst. */
+async function fredLegal() {
+  const r = await get("https://fred.stlouisfed.org/legal/");
+  report.sources.fredLegal = { ...shape(r),
+    preApproval: excerpt(r.text, /pre-?approval/i, 520),
+    citationRequired: excerpt(r.text, /citation required|copyrighted: citation/i, 520) };
+}
+
+async function nikkeiTerms() {
+  const tried = [];
+  for (const u of ["https://indexes.nikkei.co.jp/en/terms", "https://indexes.nikkei.co.jp/en/nkave/about/terms", "https://indexes.nikkei.co.jp/en/", "https://indexes.nikkei.co.jp/en/nkave"]) {
+    const r = await get(u, { ua: BROWSER_UA });
+    tried.push({ url: u, ...shape(r), excerpt: excerpt(r.text, /(copyright|reprodu|redistribut|permission|license)/i, 320) });
+  }
+  report.sources.nikkeiOfficial = Object.assign(report.sources.nikkeiOfficial || {}, { termsTried: tried });
+}
+
+async function reach() {
+  const out = [];
+  for (const u of ["https://www.stoxx.com/", "https://stoxx.com/", "https://www.hsi.com.hk/data/eng/indexes/00001.00/chart.json"]) {
+    const r = await get(u, { ua: BROWSER_UA });
+    out.push({ url: u, ...shape(r) });
+  }
+  report.sources.reachability = out;
+}
+
 /* ------------------------------------------------ 3. Institutioneller Spiegel */
 async function fred() {
   report.sources.fred = { priority: 3, kind: "INSTITUTIONAL_MIRROR" };
@@ -313,7 +437,7 @@ async function stooq() {
 }
 
 async function main() {
-  for (const step of [twelveData, nikkei, stoxx, nasdaq, spdji, msci, euronext, misc, fred, stooq]) {
+  for (const step of [twelveData, nikkei, nikkeiTerms, stoxx, nasdaq, spdji, msci, euronext, misc, ecbStockIndices, cboe, snb, bundesbankIndices, fred, fredLegal, reach]) {
     try { await step(); } catch (e) { report.sources["error_" + step.name] = String(e && e.message || e).slice(0, 200); }
   }
   report.requests = requests;
