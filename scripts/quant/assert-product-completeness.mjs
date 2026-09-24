@@ -137,6 +137,51 @@ if (trVerdict === "TOTAL_RETURN_CONFIRMED" && publishedTR === 0) {
     "Run scripts/market/verify-total-return-capability.mjs before recording it as missing.");
 }
 
+/* Der Full-Universe-Return-Basis-Audit. Er ist kein Gap im Produkt,
+   sondern die Grundlage einer offenen Methodikentscheidung - und genau
+   deshalb steht er hier: solange er nicht ueber den kanonischen Bestand
+   gelaufen ist, waere jede Aussage ueber die Return-Basis wieder eine aus
+   fuenf Titeln. */
+function returnBasisStudy() {
+  const path = join(ROOT, "quant/data/providers/return-basis-universe-study.json");
+  if (!existsSync(path)) return null;
+  try { return readJSON("quant/data/providers/return-basis-universe-study.json"); }
+  catch { return null; }
+}
+const basisStudy = returnBasisStudy();
+if (!basisStudy) {
+  add("OPEN", "RETURN_BASIS_AUDIT_NOT_RUN",
+    "Der Full-Universe-Return-Basis-Audit hat noch nicht geschrieben. Erst messen, dann ueber " +
+    "die Return-Basis reden.");
+} else if (basisStudy.scope !== "CANONICAL_HISTORY") {
+  add("OPEN", "RETURN_BASIS_AUDIT_PARTIAL",
+    "Der Audit lief auf '" + basisStudy.scope + "' und sieht damit nicht das Universum. " +
+    basisStudy.scopeNote);
+} else if (basisStudy.gateStatus.METHODOLOGY_DECISION_READY !== "PASS") {
+  add("OPEN", "RETURN_BASIS_AUDIT_INCOMPLETE",
+    "Der Audit lief ueber den kanonischen Bestand, ist aber nicht entscheidungsreif: " +
+    "METHODOLOGY_DECISION_READY = " + basisStudy.gateStatus.METHODOLOGY_DECISION_READY +
+    " (Total-Return-Nachweis " + basisStudy.totalReturnVerification.verdict + ", " +
+    basisStudy.cutoffs.length + " Stichtage).");
+} else {
+  add("OPEN", "RETURN_BASIS_DECISION_WITH_OWNER",
+    "Gemessen ueber " + basisStudy.gateStatus.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE + " Titel an " +
+    basisStudy.cutoffs.length + " Stichtagen. QUANT_V2_MOMENTUM_RETURN_BASIS steht auf " +
+    basisStudy.gateStatus.QUANT_V2_MOMENTUM_RETURN_BASIS + " - das ist ein Owner-Gate, keine " +
+    "Luecke im Produkt. Grundlage: docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md");
+}
+/* Der Befund, den der Audit nebenbei gefunden hat: zwei Momentum-
+   komponenten sind anders beschrieben als gerechnet. Er verschwindet
+   nicht dadurch, dass die Entscheidung noch offen ist. */
+if (basisStudy && (basisStudy.specImplementationFindings || []).length) {
+  add("OPEN", "MOMENTUM_SPEC_MISMATCH",
+    basisStudy.specImplementationFindings.map((f) => f.component).join(", ") +
+    " sind in componentSpecs als splitbereinigter Kurs beschrieben und werden auf der " +
+    "gesamtrenditebereinigten Spalte gerechnet (" +
+    basisStudy.specImplementationFindings.reduce((sum, f) => sum + (f.weightInFactor || 0), 0).toFixed(2) +
+    " Gewicht der Momentumnote). Teil der offenen Methodikentscheidung, keine stille Korrektur.");
+}
+
 const screening = readGZ("quant/data/product/factor-evidence-v1/screening.json.gz");
 const revisionsIndex = (screening.fields || []).indexOf("quantV2.factorEvidence.revisions");
 const revisionsCovered = revisionsIndex === -1 ? 0

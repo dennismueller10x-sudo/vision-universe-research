@@ -169,3 +169,19 @@ test("das Dokument nennt jede Messgroesse des Auftrags", () => {
     assert.ok(src.includes(abschnitt), "Abschnitt fehlt im Renderer: " + abschnitt);
   }
 });
+
+test("der Vollstaendigkeitspruefer nennt den Stand des Audits", () => {
+  /* Die Return-Basis ist kein Produktloch, sondern ein Owner-Gate. Sie
+     muss trotzdem im Bericht stehen: sonst faellt niemandem auf, wenn
+     der Audit nie ueber den kanonischen Bestand gelaufen ist und jede
+     Aussage darueber wieder aus fuenf Titeln stammt. */
+  const output = execFileSync("node", ["scripts/quant/assert-product-completeness.mjs"], { encoding: "utf8" });
+  assert.match(output, /RETURN_BASIS_AUDIT_PARTIAL|RETURN_BASIS_AUDIT_NOT_RUN|RETURN_BASIS_AUDIT_INCOMPLETE|RETURN_BASIS_DECISION_WITH_OWNER/);
+  assert.match(output, /CRITICAL_PRODUCT_GAPS = 0/);
+  /* Und der Befund zu den zwei Komponenten verschwindet nicht dadurch,
+     dass die Entscheidung noch offen ist. */
+  if (report.specImplementationFindings.length) {
+    assert.match(output, /MOMENTUM_SPEC_MISMATCH/);
+    assert.match(output, /keine stille Korrektur/);
+  }
+});
