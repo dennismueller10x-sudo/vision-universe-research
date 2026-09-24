@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-23T20:02:09.581Z",
+  "generatedAt": "2026-09-24T01:04:24.758Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5622,
     "historicalQualityAccepted": 6508,
-    "intradayAvailable": 518,
-    "liveCapable": 518,
+    "intradayAvailable": 5195,
+    "liveCapable": 519,
     "factorEligible": 6404,
     "fundamentals": 5378,
     "fundamentals10y": 2261,
@@ -36,7 +36,8 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 6349,
+    "NOT_IN_LIVE_SCOPE": 4676,
+    "NO_IEX_BARS": 1680,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 921,
     "INSUFFICIENT_HISTORY": 823,
@@ -51,7 +52,6 @@
     "NO_COMPACT_SERIES": 63,
     "NAME_MISSING": 20,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 16,
-    "NO_IEX_BARS": 8,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
     "NO_FACTOR_ROW": 3,
