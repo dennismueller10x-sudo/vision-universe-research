@@ -90,7 +90,8 @@ try {
   const befunde = Object.keys(entries).map((sym) => {
     const e = entries[sym];
     return befund({ symbol: sym, securityId: e.securityId, sessionDate: e.sessionDate, asOf: e.asOf, asOfLocal: e.asOfLocal,
-                    regularComplete: e.regularComplete }, "intraday");
+                    regularComplete: e.regularComplete, fetchedAfterClose: e.fetchedAfterClose,
+                    lastRegularLocal: e.lastRegularLocal }, "intraday");
   });
   const summe = Freshness.summarize(befunde);
   /* Datenstand des Verzeichnisses: dataSession (neu) oder aus den Sitzungen
@@ -99,7 +100,8 @@ try {
   const ds = idx.dataSession || (sitzungen.length ? { sessionDate: sitzungen[sitzungen.length - 1], asOf: null,
                                                       regularComplete: null, universe: null } : null);
   const stand = ds ? befund({ symbol: "INDEX", sessionDate: ds.sessionDate, asOf: ds.asOf, asOfLocal: ds.asOfLocal,
-                              regularComplete: ds.regularComplete !== false }, "intraday") : befund(null, "intraday");
+                              regularComplete: ds.regularComplete !== false,
+                              fetchedAfterClose: ds.fetchedAfterClose }, "intraday") : befund(null, "intraday");
   /* Universumsdeckung: liegt die letzte abgeschlossene Sitzung fuer das
      Universum vor (Aktienseiten ausserhalb der Flaechen)? */
   const universeSessions = idx.universeSessions || [];
@@ -150,14 +152,29 @@ try {
     stichprobe = { sample: befunde.length, byState: s.byState, byReason: s.byReason, staleSample: s.stale.slice(0, 25),
                    seriesIndexCount: idxSeries ? idxSeries.count : null };
   } catch (e) { stichprobe = { error: String(e.message) }; }
+  /* WAS ZAEHLT: DIE REIHEN, NICHT DIE ZUSAMMENFASSUNG.
+     meta.json ist ein Summary; der Verbraucher liest die Reihen
+     (discover-series). Das Urteil kommt aus der Stichprobe; weicht das
+     Summary davon ab, ist das ein eigener Befund - ein kaputter
+     Summary-Pfad ist nicht dasselbe wie eine kaputte Kursversorgung.
+     Nur ohne lesbare Stichprobe traegt das Summary das Urteil. */
+  const reihenStand = stichprobe && stichprobe.byState && stichprobe.sample
+    ? (stichprobe.byState.STALE > stichprobe.sample / 2 ? "STALE"
+       : stichprobe.byState.UNAVAILABLE > stichprobe.sample / 2 ? "UNAVAILABLE" : "LAST_SESSION")
+    : null;
+  const urteil = reihenStand || universumsStand.freshnessState;
   report.daily = {
     universeAsOf: u.asOf || null, generatedAt: meta.generatedAt || null,
-    state: universumsStand.freshnessState, reason: universumsStand.reason, label: universumsStand.label.label,
+    state: urteil, basis: reihenStand ? "series" : "summary",
+    summaryState: universumsStand.freshnessState, reason: universumsStand.reason, label: universumsStand.label.label,
+    seriesState: reihenStand,
+    summaryContradictsSeries: !!(reihenStand && (reihenStand === "STALE") !== (universumsStand.freshnessState === "STALE")),
     expectedSession: last ? last.sessionDate : null, sample: stichprobe
   };
   console.log(`\n  Tageskurse: Universum asOf ${u.asOf} -> ${universumsStand.freshnessState} (${universumsStand.reason}) · "${universumsStand.label.label}"`);
-  if (stichprobe && stichprobe.byState) console.log(`              Stichprobe ${stichprobe.sample} Reihen: ${JSON.stringify(stichprobe.byState)}`);
-  if (universumsStand.freshnessState === "STALE") report.findings.push(`Tageskurse STALE: asOf ${u.asOf}, erwartet ${last ? last.sessionDate : "?"} (${universumsStand.reason})`);
+  if (stichprobe && stichprobe.byState) console.log(`              Stichprobe ${stichprobe.sample} Reihen: ${JSON.stringify(stichprobe.byState)} -> ${reihenStand}`);
+  if (urteil === "STALE") report.findings.push(`Tageskurse STALE: ${reihenStand ? "Reihen " + JSON.stringify(stichprobe.byReason) + ", " : ""}Summary asOf ${u.asOf}, erwartet ${last ? last.sessionDate : "?"} (${universumsStand.reason})`);
+  if (report.daily.summaryContradictsSeries) report.findings.push(`Summary widerspricht den Reihen: meta.json asOf ${u.asOf} -> ${universumsStand.freshnessState}, Reihen -> ${reihenStand}`);
 } catch (err) {
   report.daily = { state: "UNAVAILABLE", error: String(err.message) };
   report.findings.push("Discover-Meta nicht lesbar: " + err.message);

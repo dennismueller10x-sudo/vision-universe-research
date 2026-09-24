@@ -213,13 +213,31 @@
     return { chosen: next, reason: np > pp ? "grown" : "refreshed" };
   }
 
+  /**
+   * Traegt `next` gegenueber `prev` nichts Neues? Dann muss nichts
+   * geschrieben werden - ein Commit ohne neue Kurse waere Rauschen.
+   *
+   * fetchedAfterClose gehoert dazu: ein illiquider Titel hat nach dem
+   * Schluss dieselben Punkte wie am Mittag. Fehlte das Feld im Vergleich,
+   * blieb der Mittags-Snapshot stehen, und der Titel trug fuer immer
+   * "Schluss fehlt noch" (23.09.2026: 7 Titel, u. a. RFAI mit letztem
+   * Kurs 10:55, geholt 10:52).
+   */
+  function unchanged(prev, next) {
+    if (!prev || !next) return false;
+    return JSON.stringify(prev.points) === JSON.stringify(next.points) &&
+      JSON.stringify(prev.extended) === JSON.stringify(next.extended) &&
+      prev.regularComplete === next.regularComplete &&
+      prev.fetchedAfterClose === next.fetchedAfterClose;
+  }
+
   /** Cache-Schluessel: Titel + Sitzung + Intervall. */
   function cacheKey(securityId, sessionDate, interval) {
     return securityId + "|" + sessionDate + "|" + (interval || "5min");
   }
 
   var api = { SCHEMA: SCHEMA, SERIES_TYPE: SERIES_TYPE, build: build, validate: validate,
-              merge: merge, cacheKey: cacheKey, minutesOf: minutesOf };
+              merge: merge, unchanged: unchanged, cacheKey: cacheKey, minutesOf: minutesOf };
   if (isNode) module.exports = api;
   else {
     global.VURealtime = global.VURealtime || {};
