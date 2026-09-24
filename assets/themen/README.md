@@ -20,11 +20,11 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 10 | Autonomes Fahren | `10-autonomes-fahren` | ✅ |
 | 11 | Batterien & Energiespeicher | `11-batterien-energiespeicher` | ✅ |
 | 12 | Erneuerbare Energien | `12-erneuerbare-energien` | ✅ |
-| 13 | Wasserstoff | `13-wasserstoff` | offen |
-| 14 | Kernenergie & Uran | `14-kernenergie-uran` | offen |
-| 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | offen |
-| 16 | Raumfahrt | `16-raumfahrt` | offen |
-| 17 | Satelliten & Konnektivität | `17-satelliten-konnektivitaet` | offen |
+| 13 | Wasserstoff | `13-wasserstoff` | ✅ |
+| 14 | Kernenergie & Uran | `14-kernenergie-uran` | ✅ |
+| 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | ✅ |
+| 16 | Raumfahrt | `16-raumfahrt` | ✅ |
+| 17 | Satelliten & Konnektivität | `17-satelliten-konnektivitaet` | ✅ |
 | 18 | Defense & Aerospace | `18-defense-aerospace` | offen |
 | 19 | Biotechnologie | `19-biotechnologie` | offen |
 | 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | offen |
