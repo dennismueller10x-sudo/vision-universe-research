@@ -99,31 +99,6 @@ jobs:
           node-version: '22'
 
       # =====================================================================
-      # TESTS UND ISOLATION, BEVOR IRGENDETWAS GESCHIEHT
-      #
-      # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
-      # Produktionsdaten. Deshalb zuerst - und mit demselben Messer wie
-      # in der CI.
-      #
-      # Hier standen zwei Schritte, die je einen STRING in $GITHUB_OUTPUT
-      # schrieben ("gruen=social/tests (Zeitpunkt)"), den der Reifebericht
-      # dann als --suites-green bekam. Das war ehrlicher als in der CI -
-      # der Schritt brach oben ab, wenn die Suite rot war - aber es blieb
-      # eine Behauptung in Textform: keine Zahl, kein Stand, und 14
-      # uebersprungene Tests waeren darin unsichtbar geblieben.
-      #
-      # verify-suites.mjs laesst beide Suiten und beide Isolationslaeufe
-      # laufen und schreibt, was herauskam, samt Commit. Der Bericht liest
-      # das und vergleicht den Commit mit HEAD.
-      #
-      # Der Schritt scheitert bei roter Suite oder veraenderten
-      # Produktionsdaten - der Lauf kommt dann gar nicht erst zum
-      # Schreiben.
-      # =====================================================================
-      - name: Tests und Isolation, bevor irgendetwas geschieht
-        run: node scripts/social/verify-suites.mjs
-
-      # =====================================================================
       # DIE FEHLENDE ERSTE LINIE — DAS ERGEBNIS VOM REQUEST-BRANCH HOLEN
       #
       # PR #170 (vu-nvda-20260918) trug seit Stunden ein echtes,
@@ -156,7 +131,8 @@ jobs:
         run: node scripts/social/ingest-open-creative-jobs.mjs --write
 
       # =====================================================================
-      # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR DEM ZAEHLEN
+      # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR MAX_OPEN_CREATIVE_JOBS
+      # (Owner-Direktive "WORKFLOW-ORDERING-FIX", 24.09.)
       #
       # Ein Creative Job stand 51 Stunden auf CREATIVE_JOB_IN_FLIGHT und
       # blockierte MAX_OPEN_CREATIVE_JOBS = 1, obwohl sein Ergebnis seit
@@ -167,16 +143,29 @@ jobs:
       # Der Schritt oben ist seitdem die ERSTE Linie und holt das
       # Ergebnis wirklich vom Request-Branch. Das hier ist die ZWEITE:
       # verpasst der Ingest den Rueckweg — weil ein Lauf abbrach, weil
-      # der Branch zwischenzeitlich geloescht wurde —, holt ihn der
-      # naechste Orchestratorlauf aus dem lokal bereits vorliegenden
-      # Ergebnis nach, bevor er zaehlt.
+      # der Branch zwischenzeitlich geloescht wurde, oder weil ein
+      # Dispatch nie einen Request-PR bekam (DISPATCH_NIE_ERFOLGT) —,
+      # holt ihn dieser Abgleich aus der real feststellbaren Evidenz
+      # nach, bevor irgendetwas zaehlt.
       #
-      # Er schliesst NIE einen Job wegen seines Alters. Nur harte
-      # Evidenz mit identischem processing_key zaehlt; die Liste steht
-      # in creative-job.js und weist alles andere benannt zurueck.
+      # DIESER SCHRITT STAND FRUEHER NACH "Tests und Isolation" — und
+      # genau das war der Fehler: MAX_OPEN_CREATIVE_JOBS (Teil der
+      # harten Invarianten, gemessen von check-hard-invariants.mjs
+      # INNERHALB der Testsuite) zaehlte dann den ungeklaerten Zustand
+      # VOR dem Abgleich. Ein einzelner verwaister Job (Register-Eintrag
+      # ohne je geoeffneten Request-PR) konnte so die gesamte Pipeline
+      # dauerhaft blockieren, obwohl genau dieser Abgleich ihn anhand
+      # realer Evidenz haette schliessen koennen (creative-job.js:
+      # DISPATCH_NIE_ERFOLGT -> CREATIVE_JOB_FAILED). Jetzt: erst
+      # laden, erst abgleichen, erst der reconcilierte Zustand
+      # persistiert (--write schreibt das Register auf der Platte, vor
+      # dem Testlauf, der es liest) — DANACH erst die Testsuite, die
+      # MAX_OPEN_CREATIVE_JOBS auswertet, und danach alles Weitere.
       #
-      # VOR "Was ist jetzt dran?", weil genau dort die offenen Jobs
-      # gezaehlt werden. Danach waere er ein Tor neben dem Weg.
+      # Er schliesst NIE einen Job wegen seines Alters allein. Nur
+      # harte Evidenz mit identischem processing_key zaehlt; die Liste
+      # steht in creative-job.js und weist alles andere benannt zurueck
+      # (UNGEMESSEN bleibt offen, nicht geschlossen — fail-closed).
       # =====================================================================
       - name: Creative Jobs gegen die Evidenz abgleichen
         # GH_TOKEN, weil eine der Evidenzarten eine Tatsache ueber die
@@ -188,6 +177,44 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      # =====================================================================
+      # TESTS UND ISOLATION, BEVOR IRGENDETWAS GESCHIEHT
+      #
+      # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
+      # Produktionsdaten. Deshalb so frueh wie moeglich - und mit
+      # demselben Messer wie in der CI.
+      #
+      # NACH dem Evidenz-Abgleich oben (Owner-Direktive
+      # "WORKFLOW-ORDERING-FIX", 24.09.): MAX_OPEN_CREATIVE_JOBS wird
+      # als Teil dieser Suite gemessen (check-hard-invariants.mjs) und
+      # braucht den bereits reconcilierten Registerstand, sonst zaehlt
+      # es einen verwaisten Job mit, den der Abgleich laengst haette
+      # schliessen koennen. Der Abgleich selbst schreibt keine
+      # Content-/Publishing-Zustaende — nur Register-Buchhaltung anhand
+      # bereits vorliegender, externer Evidenz — und faellt deshalb
+      # nicht unter "roter Code schreibt keine Produktionsdaten" (AD29):
+      # er entscheidet nichts, was von der Korrektheit DIESES Commits
+      # abhinge, sondern nur, ob ein frueherer Dispatch nachweislich nie
+      # ausgeliefert wurde.
+      #
+      # Hier standen zwei Schritte, die je einen STRING in $GITHUB_OUTPUT
+      # schrieben ("gruen=social/tests (Zeitpunkt)"), den der Reifebericht
+      # dann als --suites-green bekam. Das war ehrlicher als in der CI -
+      # der Schritt brach oben ab, wenn die Suite rot war - aber es blieb
+      # eine Behauptung in Textform: keine Zahl, kein Stand, und 14
+      # uebersprungene Tests waeren darin unsichtbar geblieben.
+      #
+      # verify-suites.mjs laesst beide Suiten und beide Isolationslaeufe
+      # laufen und schreibt, was herauskam, samt Commit. Der Bericht liest
+      # das und vergleicht den Commit mit HEAD.
+      #
+      # Der Schritt scheitert bei roter Suite oder veraenderten
+      # Produktionsdaten - der Lauf kommt dann gar nicht erst zum
+      # Schreiben.
+      # =====================================================================
+      - name: Tests und Isolation, bevor irgendetwas geschieht
+        run: node scripts/social/verify-suites.mjs
 
       - name: Was ist jetzt dran?
         id: plan
