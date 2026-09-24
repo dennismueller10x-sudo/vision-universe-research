@@ -30,11 +30,11 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | ✅ |
 | 21 | Medizintechnik | `21-medizintechnik` | ✅ |
 | 22 | Pharma & Wirkstoffforschung | `22-pharma-wirkstoffforschung` | ✅ |
-| 23 | Longevity & Präzisionsmedizin | `23-longevity-praezisionsmedizin` | offen |
-| 24 | Landwirtschaft & AgTech | `24-landwirtschaft-agtech` | offen |
-| 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | offen |
-| 26 | Industrie & Maschinenbau | `26-industrie-maschinenbau` | offen |
-| 27 | Logistik & Automation | `27-logistik-automation` | offen |
+| 23 | Longevity & Präzisionsmedizin | `23-longevity-praezisionsmedizin` | ✅ |
+| 24 | Landwirtschaft & AgTech | `24-landwirtschaft-agtech` | ✅ |
+| 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | ✅ |
+| 26 | Industrie & Maschinenbau | `26-industrie-maschinenbau` | ✅ |
+| 27 | Logistik & Automation | `27-logistik-automation` | ✅ |
 | 28 | Infrastruktur | `28-infrastruktur` | offen |
 | 29 | Banken & Fintech | `29-banken-fintech` | offen |
 | 30 | Versicherungen | `30-versicherungen` | offen |
