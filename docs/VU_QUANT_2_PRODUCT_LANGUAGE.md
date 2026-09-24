@@ -1126,6 +1126,20 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Zur Marktbreite wird derzeit nichts behauptet. |
 | Nicht verfügbar | Eine der zugrunde liegenden Zählungen ist nicht schlüssig; deshalb wird kein Marktumfeld genannt. |
 
+### Vergleich noch nicht möglich
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BENCHMARK_STALE (market-factors relativeStrength)` |
+| Schlüssel | `BENCHMARK_STALE` |
+| **User Label** | **Vergleich noch nicht möglich** |
+| Als Frage | Warum fehlt der Vergleich zum Markt? |
+| Erklärung für Einsteiger | Der Marktvergleich braucht einen Indexstand vom selben Tag. Der liegt für diesen Stichtag noch nicht vor, deshalb zeigen wir hier lieber nichts als eine Zahl, die nur den Zeitunterschied misst. |
+| Professional Label | Vergleichsreihe älter als der Stichtag des Titels |
+| Tooltip | Ohne gleich aktuellen Index wäre der Vorsprung nur Marktbewegung. |
+| Negativer Zustand | Für diesen Zeitraum lässt sich kein Marktvergleich zeigen. |
+| Nicht verfügbar | Der Marktvergleich ruht, bis der Index nachgezogen ist. |
+
 ## Begriffe, die nicht an den Anfang gehören
 
 Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können.

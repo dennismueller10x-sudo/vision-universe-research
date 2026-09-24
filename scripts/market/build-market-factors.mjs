@@ -146,6 +146,9 @@ const rows = [];
 const skipped = [];
 const fieldCoverage = {};
 
+/* Gesammelt waehrend des Laufs, ausgewiesen am Ende. */
+const benchmarkFreshness = { staleSecurities: 0, maxLagSessions: 0, newestSecurityDate: null };
+
 function countField(name, status) {
   const c = (fieldCoverage[name] = fieldCoverage[name] ||
     { CALCULATED: 0, INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0, NOT_APPLICABLE: 0 });
@@ -198,6 +201,18 @@ for (const sec of universe.securities) {
   if (factors.status !== "OK") {
     skipped.push({ ticker: sec.ticker, reason: "UNAVAILABLE", message: factors.statusReason });
     continue;
+  }
+
+  if (factors.benchmarkStale) {
+    benchmarkFreshness.staleSecurities += 1;
+    if (Number.isFinite(factors.benchmarkLagSessions) &&
+        factors.benchmarkLagSessions > benchmarkFreshness.maxLagSessions) {
+      benchmarkFreshness.maxLagSessions = factors.benchmarkLagSessions;
+    }
+  }
+  if (factors.asOf && (!benchmarkFreshness.newestSecurityDate ||
+      factors.asOf > benchmarkFreshness.newestSecurityDate)) {
+    benchmarkFreshness.newestSecurityDate = factors.asOf;
   }
 
   const publicFactors = MarketFactors.stripPriceLevels(factors);
@@ -333,7 +348,28 @@ const provenance = {
   universeFile: universe.universeFile || null,
   provider: "tiingo",
   engine: MarketFactors.VERSION,
-  benchmark: benchmark ? { id: benchmark.id, bars: benchmark.bars, last: benchmark.last }
+  benchmark: benchmark ? {
+                           id: benchmark.id, bars: benchmark.bars, last: benchmark.last,
+                           returnBasis: benchmark.returnBasis, priceSource: benchmark.priceSource,
+                           /* DIE FRISCHE DER VERGLEICHSREIHE
+
+                              Ein Benchmark, der hinter den Titeln
+                              zurueckliegt, ist kein fehlender Benchmark -
+                              er ist ein falscher. Die relative Staerke
+                              verglich sonst Kursbewegung bis heute gegen
+                              einen Index von vorletzter Woche und wies
+                              die Differenz als Vorsprung aus.
+
+                              Deshalb steht hier, wie viele Titel ihre
+                              relative Staerke deswegen NICHT bekommen
+                              haben. Null ist die Aussage "der Vergleich
+                              trug"; alles andere nennt den Preis. */
+                           maxLagSessions: MarketFactors.MAX_BENCHMARK_LAG_SESSIONS,
+                           newestSecurityDate: benchmarkFreshness.newestSecurityDate,
+                           lagBehindNewestSessions: benchmarkFreshness.maxLagSessions,
+                           securitiesWithoutRelativeStrength: benchmarkFreshness.staleSecurities,
+                           state: benchmarkFreshness.staleSecurities > 0 ? "STALE" : "CURRENT"
+                         }
                        : { id: BENCHMARK, status: "SOURCE_MISSING",
                            note: "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke " +
                                  "bleibt fuer alle Titel leer." },
@@ -430,6 +466,21 @@ questions.forEach((q) => {
                 (q.top.length ? `  Spitze: ${q.top[0].ticker}` : ""));
   }
 });
+/* Die Frische der Vergleichsreihe gehoert in die Zusammenfassung des
+   Laufs, nicht nur ins Artefakt: ein Benchmark, der zurueckliegt, kostet
+   Titel ihre relative Staerke, und das soll man sehen, ohne eine Datei
+   zu oeffnen. */
+if (benchmark) {
+  if (benchmarkFreshness.staleSecurities > 0) {
+    console.log(`\n  Vergleichsreihe zu alt: ${benchmark.id} endet am ${benchmark.last}, ` +
+      `juengster Titel am ${benchmarkFreshness.newestSecurityDate} ` +
+      `(${benchmarkFreshness.maxLagSessions} Sitzungen). ` +
+      `${benchmarkFreshness.staleSecurities} Titel ohne relative Staerke.`);
+  } else {
+    console.log(`\n  Vergleichsreihe aktuell: ${benchmark.id} bis ${benchmark.last}.`);
+  }
+}
+
 console.log(`\n  ${summaryFile.replace(root + "/", "")}`);
 console.log(`  ${detailFile.replace(root + "/", "")}` +
             (detailInRepo ? "" : "   (Arbeitsablage - zu gross fuer die Auslieferung)"));

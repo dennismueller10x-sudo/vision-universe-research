@@ -45,8 +45,19 @@
   var SMA_PERIODS = [20, 50, 100, 200];
   var YEAR_WINDOW = 252;
 
+  /* Wie viele Handelstage darf die Vergleichsreihe hinter dem Titel
+     liegen, bevor ein Vorsprung gegen sie nichts mehr aussagt? Einer -
+     der Titel kann an einem Tag handeln, an dem der Index es nicht tut,
+     aber mehr ist Veralterung und keine Kalenderfrage. Die Zahl steht
+     hier als benannte Konstante, damit eine Lockerung im Diff sichtbar
+     wird. */
+  var MAX_BENCHMARK_LAG_SESSIONS = 1;
+
   var STATUS = {
     CALCULATED: "CALCULATED",
+    /* Die Vergleichsreihe ist zu alt. Kein fehlender Wert, kein zu
+       kurzer Verlauf - eine Aussage ueber den Benchmark. */
+    BENCHMARK_STALE: "BENCHMARK_STALE",
     INSUFFICIENT_HISTORY: "INSUFFICIENT_HISTORY",
     SOURCE_MISSING: "SOURCE_MISSING",
     NOT_APPLICABLE: "NOT_APPLICABLE"
@@ -498,6 +509,31 @@
       for (var bd = 0; bd < benchDates.length && benchDates[bd] <= asOfDate; bd++) benchIndex = bd;
     }
 
+    /* UND WIE ALT IST DIESER BENCHMARKTAG?
+
+       Die Regel oben nimmt den letzten Benchmarktag bis zum Stichtag des
+       Titels. Sie schuetzt vor dem einen Fehler - alter Kurs gegen
+       frischen Index - und laesst den anderen offen: frischer Kurs gegen
+       alten Index. Genau der stand hier. SPY faellt seit Tagen durch die
+       Bereinigungspruefung und altert im Arbeitsbestand; die relative
+       Staerke verglich eine Kursentwicklung bis zum 23. gegen einen Index
+       vom 17. Sechs Tage Marktbewegung landeten so im Vorsprung jedes
+       einzelnen Titels, ohne dass eine Zeile es ansagte.
+
+       Gezaehlt wird in Handelstagen des TITELS: wie viele seiner eigenen
+       Sitzungen liegen nach dem benutzten Benchmarktag? Ein Kalendertag
+       waere hier das falsche Mass - ein Wochenende ist keine
+       Veralterung. */
+    var benchmarkLagSessions = null;
+    if (bench && benchDates && asOfDate && benchIndex >= 0) {
+      benchmarkLagSessions = 0;
+      for (var lb = i; lb > 0 && bars[lb - 1] && bars[lb].date > benchDates[benchIndex]; lb--) {
+        benchmarkLagSessions += 1;
+      }
+    }
+    var benchmarkStale = benchmarkLagSessions !== null &&
+                         benchmarkLagSessions > MAX_BENCHMARK_LAG_SESSIONS;
+
     Object.keys(HORIZONS).forEach(function (h) {
       var w = HORIZONS[h];
       if (!bench) {
@@ -510,6 +546,13 @@
            keine zu kurze Historie, sondern eine fehlende Ueberschneidung. */
         values.relativeStrength[h] = null;
         fieldStatus.relativeStrength[h] = STATUS.NOT_APPLICABLE;
+        return;
+      }
+      if (benchmarkStale) {
+        /* Lieber keine Zahl als eine, die Marktbewegung fuer Vorsprung
+           haelt. */
+        values.relativeStrength[h] = null;
+        fieldStatus.relativeStrength[h] = STATUS.BENCHMARK_STALE;
         return;
       }
       var bi = benchIndex;
@@ -537,6 +580,9 @@
     } else if (benchIndex < 0) {
       values.relativeStrength12M1M = null;
       fieldStatus.relativeStrength12M1M = STATUS.NOT_APPLICABLE;
+    } else if (benchmarkStale) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.BENCHMARK_STALE;
     } else if (i - 252 < 0 || benchIndex - 252 < 0 ||
                !isNum(close[i - 21]) || !isNum(close[i - 252]) || close[i - 252] <= 0 ||
                !isNum(bench[benchIndex - 21]) || !isNum(bench[benchIndex - 252]) || bench[benchIndex - 252] <= 0) {
@@ -603,6 +649,11 @@
       /* Gegen welchen Benchmark-Tag verglichen wurde. Ohne diese Angabe
          laesst sich eine relative Staerke nicht einordnen. */
       benchmarkAsOf: bench && benchDates && benchIndex >= 0 ? benchDates[benchIndex] : null,
+      /* Und wie weit der zurueckliegt. Ohne diese Zahl laesst sich
+         BENCHMARK_STALE nicht nachvollziehen, und mit ihr sieht man
+         auch den Grenzfall. */
+      benchmarkLagSessions: benchmarkLagSessions,
+      benchmarkStale: benchmarkStale,
       /* Der Kurs selbst gehoert NICHT in die ausgelieferte Faktorzeile
          (§34: keine Rohkursweitergabe). Er steht hier, weil derselbe
          Aufruf auch intern benutzt wird; das Schreibskript laesst ihn
@@ -710,6 +761,7 @@
     STATUS: STATUS,
     PRICE_LEVEL_FIELDS: PRICE_LEVEL_FIELDS,
     MINIMUM_VALID_RETURNS: MINIMUM_VALID_RETURNS,
+    MAX_BENCHMARK_LAG_SESSIONS: MAX_BENCHMARK_LAG_SESSIONS,
     priceBasis: priceBasis,
     priceSeries: priceSeries,
     investorReturn: investorReturn,

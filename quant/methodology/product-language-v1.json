@@ -919,6 +919,17 @@
      "tooltip": "Mehr Treffer als Beobachtungen wäre ein Fehler in der Zählung, kein Befund über den Markt.",
      "negative": "Zur Marktbreite wird derzeit nichts behauptet.",
      "unavailable": "Eine der zugrunde liegenden Zählungen ist nicht schlüssig; deshalb wird kein Marktumfeld genannt."
+    },
+    {
+     "id": "BENCHMARK_STALE",
+     "internal": "BENCHMARK_STALE (market-factors relativeStrength)",
+     "userLabel": "Vergleich noch nicht möglich",
+     "question": "Warum fehlt der Vergleich zum Markt?",
+     "beginner": "Der Marktvergleich braucht einen Indexstand vom selben Tag. Der liegt für diesen Stichtag noch nicht vor, deshalb zeigen wir hier lieber nichts als eine Zahl, die nur den Zeitunterschied misst.",
+     "professionalLabel": "Vergleichsreihe älter als der Stichtag des Titels",
+     "tooltip": "Ohne gleich aktuellen Index wäre der Vorsprung nur Marktbewegung.",
+     "negative": "Für diesen Zeitraum lässt sich kein Marktvergleich zeigen.",
+     "unavailable": "Der Marktvergleich ruht, bis der Index nachgezogen ist."
     }
    ]
   }
