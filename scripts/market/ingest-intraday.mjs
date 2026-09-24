@@ -359,8 +359,7 @@ async function einer(ticker) {
   if (m.chosen === vorher) { bilanz.unchanged++; perSymbol[ticker] = { ok: true, reason: m.reason, points: vorher.pointCount }; return; }
   /* Gleiche Punkte, nur neuer Abrufzeitpunkt: nichts neu schreiben - ein
      Commit ohne neue Kurse waere Rauschen in der Historie. */
-  if (m.reason === "refreshed" && vorher && JSON.stringify(vorher.points) === JSON.stringify(snap.points) &&
-      JSON.stringify(vorher.extended) === JSON.stringify(snap.extended) && vorher.regularComplete === snap.regularComplete) {
+  if (m.reason === "refreshed" && Snapshot.unchanged(vorher, snap)) {
     bilanz.unchanged++; perSymbol[ticker] = { ok: true, reason: "unchanged", points: vorher.pointCount }; return;
   }
   mkdirSync(sessionDir, { recursive: true });
@@ -441,6 +440,7 @@ function writeIndex() {
         if (!alt || alt.sessionDate < date) {
           entries[sym] = { securityId: snap.securityId, sessionDate: date, asOf: snap.asOf, asOfLocal: snap.asOfLocal,
                            points: snap.pointCount, regularComplete: !!snap.regularComplete,
+                           fetchedAfterClose: snap.fetchedAfterClose, lastRegularLocal: snap.lastRegularLocal,
                            path: "/" + INTRADAY_DIR + "/" + date + "/" + snap.securityId + ".json" };
         }
       }
@@ -455,7 +455,8 @@ function writeIndex() {
   const befunde = Object.keys(entries).map((sym) => {
     const e = entries[sym];
     return Freshness.assess({ resolution: lage, series: { symbol: sym, securityId: e.securityId, sessionDate: e.sessionDate,
-                                                          asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: e.regularComplete },
+                                                          asOf: e.asOf, asOfLocal: e.asOfLocal, regularComplete: e.regularComplete,
+                                                          fetchedAfterClose: e.fetchedAfterClose, lastRegularLocal: e.lastRegularLocal },
                               kind: "intraday", now: NOW, calendar: CALENDAR, options: { refreshMinutes: REFRESH_MINUTES } });
   });
   befunde.forEach((b) => { entries[b.symbol].freshnessState = b.freshnessState; });
@@ -464,15 +465,24 @@ function writeIndex() {
   const neueste = sitzungen[sitzungen.length - 1] || null;
   let dataSession = null;
   if (neueste) {
-    let asOfMax = null, asOfLocalMax = null, komplett = 0, gesamt = 0;
+    let asOfMax = null, asOfLocalMax = null, komplett = 0, gesamt = 0, nachSchluss = 0;
     for (const name of readdirSync(join(OUT_DIR, neueste)).filter((n) => n.endsWith(".json"))) {
       let snap; try { snap = JSON.parse(readFileSync(join(OUT_DIR, neueste, name), "utf8")); } catch (e) { continue; }
       gesamt++;
       if (snap.regularComplete) komplett++;
+      if (snap.fetchedAfterClose !== undefined ? snap.fetchedAfterClose : snap.regularComplete) nachSchluss++;
       if (snap.asOf && (!asOfMax || snap.asOf > asOfMax)) { asOfMax = snap.asOf; asOfLocalMax = snap.asOfLocal; }
     }
     dataSession = { sessionDate: neueste, asOf: asOfMax, asOfLocal: asOfLocalMax,
                     regularComplete: gesamt > 0 && komplett === gesamt, snapshots: gesamt,
+                    /* Ist die Sitzung als Datenstand abgeschlossen? regularComplete
+                       ueber ALLE verlangt auch von jedem illiquiden Titel einen
+                       Kurs um 15:55 - am 23.09.2026 fehlte er bei 562 von 5.196,
+                       der Stand galt damit fuer immer als closeMissing. Massgeblich
+                       ist, ob nach dem Schluss geholt wurde (wie source-state.js),
+                       mit derselben Schwelle wie die Universumsdeckung. */
+                    fetchedAfterClose: gesamt > 0 && nachSchluss >= gesamt * UNIVERSE_COVERAGE,
+                    afterCloseSnapshots: nachSchluss, finalSlotSnapshots: komplett,
                     universe: universeSessions.includes(neueste) };
   }
   const last = lage.lastCompletedSession;

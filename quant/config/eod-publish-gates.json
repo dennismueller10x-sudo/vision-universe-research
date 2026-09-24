@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "eod-publish-gates-1.0.0",
+  "workflow": ".github/workflows/market-data-refresh.yml",
+  "auftrag": "Owner 24.09.2026 P0: Ein einzelner, datenabhaengig instabiler Regressionstest darf nach erfolgreichem Abruf keinen vollstaendigen EOD-Lauf (6.000+ Anfragen) mehr verwerfen. Ein echter Data-Integrity-Fehler verhindert die Veroeffentlichung weiterhin.",
+  "incident": "18./21./22./23.09.2026: Abruf, Freshness-Check und Lebenszyklus-Waechter gruen; die Regressionssuite vor 'Commit und Push' scheiterte an Tests, die Werte des gerade fortgeschriebenen Bestands zaehlten (zuletzt market-signal-contract.test.mjs, 5 !== 4). Vier Tagesstaende verworfen.",
+  "suites": ["quant/tests/*.test.mjs", "discover/tests/*.test.mjs"],
+  "classes": {
+    "PRE_FETCH_CODE_REGRESSION": {
+      "blocking": true,
+      "when": "vor dem ersten Provider-Abruf, auf dem ausgecheckten Stand",
+      "scope": "die vollstaendigen Suiten - derselbe Code, der gleich die Daten baut. Rot: kein Abruf, keine Anfrage.",
+      "files": "ALL"
+    },
+    "POST_FETCH_DATA_INTEGRITY": {
+      "blocking": true,
+      "when": "nach Abruf und Bau, vor 'Commit und Push'",
+      "scope": "Pruefungen, deren Aussage die neu geschriebenen Daten gegen einen Datenvertrag misst: Herkunft, Umfang, keine Rohbars/Schluessel in ausgelieferten Pfaden, keine Mock-/Zukunftswerte, reproduzierbare Projektionen, kein Widerspruch zwischen ausgelieferter Aussage und eigener Zahl.",
+      "scripts": [
+        "scripts/technical/verify-technical-data.mjs",
+        "scripts/discover/verify-discover-data.mjs",
+        "scripts/market/assert-no-secrets.mjs",
+        "scripts/market/assert-daily-lifecycle-health.mjs --strict",
+        "scripts/market/assert-public-data-hygiene.mjs"
+      ],
+      "files": [
+        "quant/tests/public-data-hygiene.test.mjs",
+        "quant/tests/secrets.test.mjs",
+        "quant/tests/discover-series-hygiene.test.mjs",
+        "quant/tests/capability-matrix.test.mjs",
+        "quant/tests/product-capabilities.test.mjs",
+        "quant/tests/sic-peer-taxonomy.test.mjs",
+        "quant/tests/sec-quant-panel.test.mjs",
+        "quant/tests/daily-lifecycle-health.test.mjs",
+        "discover/tests/data.test.mjs",
+        "discover/tests/scale.test.mjs",
+        "discover/tests/v3.test.mjs",
+        "discover/tests/klartext.test.mjs"
+      ]
+    },
+    "NON_BLOCKING_OBSERVABILITY": {
+      "blocking": false,
+      "when": "nach 'Commit und Push'",
+      "scope": "alle uebrigen Testdateien der Suiten. Sie waren vor dem Abruf auf DEMSELBEN Code gruen; wird eine davon erst mit den neuen Daten rot, haengt ihre Erwartung an Werten des fortgeschriebenen Bestands, nicht an einem Datenvertrag. Der Befund wird als ::error annotiert und im Summary gemeldet; der Lauf bleibt gruen, damit Pages ausliefert (pages-release verlangt conclusion == success).",
+      "scripts": ["scripts/market/check-freshness.mjs"],
+      "files": "ALL minus POST_FETCH_DATA_INTEGRITY"
+    }
+  }
+}
