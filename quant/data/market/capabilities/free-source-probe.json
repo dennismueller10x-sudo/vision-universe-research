@@ -13,9 +13,10 @@
    "auth": "NO_AUTH",
    "format": "csv",
    "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
-   "note": "offizielle Cboe-Tagesdatei VIX",
+   "note": null,
+   "round": 2,
    "httpStatus": 200,
-   "ms": 395,
+   "ms": 308,
    "contentType": "text/csv",
    "bytes": 472921,
    "lastModified": "Wed, 23 Sep 2026 01:51:09 GMT",
@@ -24,6 +25,12 @@
     "lines": 9279,
     "header": "DATE,OPEN,HIGH,LOW,CLOSE",
     "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 9278,
+    "firstDate": "1990-01-02",
+    "lastDate": "2026-09-22",
+    "futureDates": 0
    }
   },
   "cboe-spx-history": {
@@ -34,9 +41,10 @@
    "auth": "NO_AUTH",
    "format": "csv",
    "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/SPX_History.csv",
-   "note": "gleiches Verzeichnis, S&P 500?",
+   "note": "offizielle Cboe-Tagesdatei S&P 500 (Runde 2: Datumsabdeckung)",
+   "round": 2,
    "httpStatus": 200,
-   "ms": 297,
+   "ms": 513,
    "contentType": "text/csv",
    "bytes": 292826,
    "lastModified": "Wed, 23 Sep 2026 01:51:08 GMT",
@@ -45,6 +53,12 @@
     "lines": 13040,
     "header": "DATE,SPX",
     "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 13039,
+    "firstDate": "1975-01-02",
+    "lastDate": "2026-09-22",
+    "futureDates": 0
    }
   },
   "cboe-ndx-history": {
@@ -72,8 +86,9 @@
    "format": "csv",
    "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/RUT_History.csv",
    "note": null,
+   "round": 2,
    "httpStatus": 200,
-   "ms": 251,
+   "ms": 241,
    "contentType": "text/csv",
    "bytes": 33589,
    "lastModified": "Wed, 23 Sep 2026 01:51:07 GMT",
@@ -82,6 +97,12 @@
     "lines": 1461,
     "header": "DATE,RUT",
     "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 1460,
+    "firstDate": "2020-11-27",
+    "lastDate": "2026-09-22",
+    "futureDates": 0
    }
   },
   "cboe-djx-history": {
@@ -438,13 +459,14 @@
    "priority": 1,
    "auth": "NO_AUTH",
    "format": "json",
-   "url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page[size]=2",
+   "url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=2",
    "note": null,
+   "round": 2,
    "httpStatus": 404,
-   "ms": 503,
+   "ms": 529,
    "contentType": "text/html",
    "bytes": 743,
-   "finalUrl": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page[size]=2",
+   "finalUrl": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=2",
    "bodyStart": "404 Error: The requested page could not be found We are sorry, but the page you are looking for may not exist, may have been removed, had its name changed, or i"
   },
   "fed-h41-ddp": {
@@ -736,13 +758,14 @@
    "priority": 3,
    "auth": "NO_AUTH",
    "format": "csv",
-   "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
+   "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
    "note": null,
+   "round": 2,
    "httpStatus": 500,
-   "ms": 1393,
+   "ms": 1407,
    "contentType": "text/plain",
    "bytes": 21,
-   "finalUrl": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
+   "finalUrl": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
    "bodyStart": "Internal server error"
   },
   "worldbank-gdp": {
@@ -1118,13 +1141,15 @@
    "priority": 1,
    "auth": "NO_AUTH",
    "format": "zip",
-   "url": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q2_form345.zip",
+   "url": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q1_form345.zip",
    "note": null,
-   "httpStatus": 404,
-   "ms": 137,
-   "contentType": "text/html",
-   "bytes": 53435,
-   "finalUrl": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q2_form345.zip"
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 180,
+   "contentType": "application/octet-stream",
+   "bytes": 13874904,
+   "lastModified": "Tue, 07 Apr 2026 11:43:35 GMT",
+   "finalUrl": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q1_form345.zip"
   },
   "sec-insider-datasets-page": {
    "cats": [
@@ -1356,8 +1381,9 @@
    "format": "csv",
    "url": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ",
    "note": null,
+   "round": 2,
    "httpStatus": 406,
-   "ms": 78,
+   "ms": 216,
    "contentType": null,
    "bytes": 0,
    "finalUrl": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ"
@@ -1946,6 +1972,513 @@
      "name"
     ]
    }
+  },
+  "cboe-historical-page": {
+   "cats": [
+    "A",
+    "AH"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.cboe.com/tradable_products/vix/vix_historical_data/",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 5795,
+   "contentType": "text/html",
+   "bytes": 412181,
+   "finalUrl": "https://www.cboe.com/tradable-products/vix/vix-historical-data",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Cboe Global Markets"
+   },
+   "officialLinks": []
+  },
+  "nasdaq-datalink-ndx-anon": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX.csv?rows=5",
+   "note": "Nasdaq Data Link, anonym",
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 194,
+   "contentType": "text/html",
+   "bytes": 883,
+   "finalUrl": "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX.csv?rows=5",
+   "bodyStart": "Request unsuccessful. Incapsula incident ID: 100000320373862451-326336069037721644"
+  },
+  "nasdaq-datalink-ndx-meta": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX/metadata.json",
+   "note": null,
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 88,
+   "contentType": "text/html",
+   "bytes": 882,
+   "finalUrl": "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX/metadata.json",
+   "bodyStart": "Request unsuccessful. Incapsula incident ID: 100000320373862451-87844291801778208"
+  },
+  "treasury-fiscaldata-avg-rates": {
+   "cats": [
+    "D"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/avg_interest_rates?sort=-record_date&page%5Bsize%5D=2",
+   "note": null,
+   "round": 2,
+   "httpStatus": 404,
+   "ms": 510,
+   "contentType": "text/html",
+   "bytes": 743,
+   "finalUrl": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/avg_interest_rates?sort=-record_date&page%5Bsize%5D=2",
+   "bodyStart": "404 Error: The requested page could not be found We are sorry, but the page you are looking for may not exist, may have been removed, had its name changed, or i"
+  },
+  "oecd-dataflows": {
+   "cats": [
+    "E"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 519,
+   "contentType": "application/vnd.sdmx.structure+xml",
+   "bytes": 6720,
+   "lastModified": "2024-05-31",
+   "finalUrl": "https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest",
+   "markup": {
+    "root": "message:Structure",
+    "items": 0,
+    "entries": 0,
+    "title": null
+   }
+  },
+  "destatis-genesis-logincheck": {
+   "cats": [
+    "E"
+   ],
+   "priority": 1,
+   "auth": "FREE_ACCOUNT",
+   "format": "json",
+   "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/logincheck?username=GAST&password=GAST&language=de",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 3531,
+   "contentType": "text/html",
+   "bytes": 2506,
+   "lastModified": "Mon, 10 Aug 2026 06:58:40 GMT",
+   "finalUrl": "https://genesis.destatis.de/datenbank/online/announcement?username=GAST&password=GAST&language=de",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "GENESIS-Online"
+   }
+  },
+  "eurostat-calendar-ics": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "ics",
+   "url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 2242,
+   "contentType": "text/plain",
+   "bytes": 690401,
+   "finalUrl": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+   "ics": {
+    "events": 2445
+   },
+   "coverage": {
+    "datesSeen": 7430,
+    "firstDate": "1904-06-01",
+    "lastDate": "2029-03-01",
+    "futureDates": 2725
+   }
+  },
+  "eurostat-euro-indicators-page": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://ec.europa.eu/eurostat/news/release-calendar",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 195,
+   "contentType": "text/html",
+   "bytes": 204834,
+   "finalUrl": "https://ec.europa.eu/eurostat/news/release-calendar",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Release calendar - Eurostat"
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2021-03-01",
+    "lastDate": "2021-03-01",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "statistical",
+    "canonical",
+    "getCanonicalURL:",
+    "Statistical",
+    "/eurostat/data/statistical-themes",
+    "GISCO:Geographical",
+    "/eurostat/publications/statistical-working-papers",
+    "/eurostat/publications/statistical-reports"
+   ]
+  },
+  "bls-schedule-page": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.bls.gov/schedule/news_release/",
+   "note": null,
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 117,
+   "contentType": "text/html",
+   "bytes": 1323,
+   "finalUrl": "https://www.bls.gov/schedule/news_release/",
+   "bodyStart": "Access Denied .centerDiv { width: 60%; height:200px; margin: 0 auto; background-color:#FFFFFF ; } Bureau of Labor Statistics Access Denied The BLS is committed ",
+   "officialLinks": []
+  },
+  "imf-pcps-copper-csv": {
+   "cats": [
+    "B"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://api.imf.org/external/sdmx/2.1/data/PCPS/M.W00.PCOPP.USD?startPeriod=2024-01&format=csv",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 607,
+   "contentType": "application/xml",
+   "bytes": 2898,
+   "finalUrl": "https://api.imf.org/external/sdmx/2.1/data/PCPS/M.W00.PCOPP.USD?startPeriod=2024-01&format=csv",
+   "markup": {
+    "root": "message:StructureSpecificData",
+    "items": 0,
+    "entries": 0,
+    "title": null
+   }
+  },
+  "worldbank-pinksheet-current": {
+   "cats": [
+    "B",
+    "C"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "xlsx",
+   "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 319,
+   "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+   "bytes": 586735,
+   "lastModified": "Wed, 02 Sep 2026 20:17:37 GMT",
+   "finalUrl": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+   "isZipContainer": true,
+   "isXls": false
+  },
+  "sec-13f-dataset-latest": {
+   "cats": [
+    "R",
+    "S"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/files/structureddata/data/form-13f-data-sets/01mar2026-31may2026_form13f.zip",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 95,
+   "contentType": "application/octet-stream",
+   "bytes": 99411274,
+   "lastModified": "Thu, 04 Jun 2026 17:38:20 GMT",
+   "finalUrl": "https://www.sec.gov/files/structureddata/data/form-13f-data-sets/01mar2026-31may2026_form13f.zip"
+  },
+  "sec-nport-dataset-latest": {
+   "cats": [
+    "T",
+    "S"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q2_nport.zip",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 88,
+   "contentType": "application/octet-stream",
+   "bytes": 440699889,
+   "lastModified": "Thu, 09 Jul 2026 15:11:37 GMT",
+   "finalUrl": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q2_nport.zip"
+  },
+  "sec-ftd-latest": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202608b.zip",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 86,
+   "contentType": "application/octet-stream",
+   "bytes": 1393881,
+   "lastModified": "Tue, 15 Sep 2026 13:09:21 GMT",
+   "finalUrl": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202608b.zip"
+  },
+  "sec-form4-xml-sample": {
+   "cats": [
+    "Q"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://efts.sec.gov/LATEST/search-index?forms=4&dateRange=custom&startdt=2026-09-22&enddt=2026-09-24",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 1329,
+   "contentType": "application/json",
+   "bytes": 74156,
+   "finalUrl": "https://efts.sec.gov/LATEST/search-index?forms=4&dateRange=custom&startdt=2026-09-22&enddt=2026-09-24",
+   "json": {
+    "keys": [
+     "took",
+     "timed_out",
+     "_shards",
+     "hits",
+     "aggregations",
+     "query"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 202,
+    "firstDate": "2026-04-17",
+    "lastDate": "2026-09-24",
+    "futureDates": 0
+   }
+  },
+  "finra-short-interest-files": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 333,
+   "contentType": "text/html",
+   "bytes": 88435,
+   "lastModified": "Thu, 24 Sep 2026 19:19:57 GMT",
+   "finalUrl": "https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Equity Short Interest Files | FINRA.org"
+   },
+   "coverage": {
+    "datesSeen": 2,
+    "firstDate": "2014-01-01",
+    "lastDate": "2018-11-03",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "https://cdn.finra.org/equity/otcmarket/biweekly/shrt20260831.csv",
+    "https://cdn.finra.org/equity/otcmarket/biweekly/shrt20260814.csv"
+   ]
+  },
+  "finra-api-short-interest-recent": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.finra.org/data/group/otcMarket/name/consolidatedShortInterest",
+   "note": null,
+   "round": 2,
+   "httpStatus": 400,
+   "ms": 386,
+   "contentType": "application/json",
+   "bytes": 519,
+   "finalUrl": "https://api.finra.org/data/group/otcMarket/name/consolidatedShortInterest",
+   "bodyStart": "{\"statusCode\":400,\"statusDescription\":\"Bad Request\",\"requestId\":\"8f86de00-5f98-409d-8a67-c3ea0b06a826\",\"message\":\"Sorting is allowed only if all partitions keys"
+  },
+  "house-clerk-fd-index-txt": {
+   "cats": [
+    "AD",
+    "AE"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2026FD.zip",
+   "note": "Index (TXT/XML) der Meldungen; PTR selbst als PDF",
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 80,
+   "contentType": "application/x-zip-compressed",
+   "bytes": 60550,
+   "lastModified": "Wed, 23 Sep 2026 13:00:14 GMT",
+   "finalUrl": "https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2026FD.zip",
+   "isZip": true
+  },
+  "house-clerk-ptr-pdf-dir": {
+   "cats": [
+    "AD",
+    "AE"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/",
+   "note": null,
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 92,
+   "contentType": "text/html",
+   "bytes": 1233,
+   "finalUrl": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/",
+   "bodyStart": "403 - Forbidden: Access is denied. Server Error 403 - Forbidden: Access is denied. You do not have permission to view this directory or page using the credentia"
+  },
+  "nasdaq-ndx-constituents-official-page": {
+   "cats": [
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.nasdaq.com/solutions/global-indexes/nasdaq-100/companies",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 5289,
+   "contentType": "text/html",
+   "bytes": 170540,
+   "finalUrl": "https://www.nasdaq.com/products/global-indexes/nasdaq-100/companies",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Nasdaq-100® Companies - Sector Breakdown | Nasdaq"
+   }
+  },
+  "spdji-index-page-spx": {
+   "cats": [
+    "A",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+   "note": null,
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 104,
+   "contentType": "text/html",
+   "bytes": 2011,
+   "finalUrl": "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+   "bodyStart": "Error | S&amp body { font-family: \"arial\"; } #header {margin-bottom: 50px;} #wrap { max-width: 800px; background: #f5f5f5; margin-top: 50px; padding: 50px; text"
+  },
+  "cme-settlements": {
+   "cats": [
+    "AI"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://www.cmegroup.com/CmeWS/mvc/Settlements/Futures/Settlements/437/FUT?tradeDate=&strategy=DEFAULT",
+   "note": null,
+   "round": 2,
+   "httpStatus": 403,
+   "ms": 97,
+   "contentType": "application/json",
+   "bytes": 602,
+   "finalUrl": "https://www.cmegroup.com/CmeWS/mvc/Settlements/Futures/Settlements/437/FUT?tradeDate=&strategy=DEFAULT",
+   "bodyStart": "{\"message\": \"This IP address is blocked due to suspected web scraping activity associated with it on this CMEgroup.com page. Use of scripts, software, spiders, "
+  },
+  "sec-company-facts-bulk": {
+   "cats": [
+    "G"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 49,
+   "contentType": "application/zip",
+   "bytes": 1409389023,
+   "lastModified": "Thu, 24 Sep 2026 04:24:14 GMT",
+   "finalUrl": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip"
+  },
+  "sec-submissions-bulk": {
+   "cats": [
+    "H"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+   "note": null,
+   "round": 2,
+   "httpStatus": 200,
+   "ms": 117,
+   "contentType": "application/zip",
+   "bytes": 1565294470,
+   "lastModified": "Thu, 24 Sep 2026 04:31:44 GMT",
+   "finalUrl": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip"
   }
  },
  "fred": {
@@ -2144,13 +2677,15 @@
    "url": "https://www.sec.gov/about/privacy-information",
    "httpStatus": 200,
    "finalUrl": "https://www.sec.gov/about/privacy-information",
-   "excerpt": "mplaints and inquiries. Comments made in response to a Request for Comments are public information and are posted on the site in the rulemaking section. SEC uses GovDelivery to send e-newsletters, alerts and other messages to visitors who subscribe to them. To subscribe to an SEC product, you must provide an email address and indicate your subscription preferences, including the items you want to receive. The email s"
+   "excerpt": "enalty or forfeiture. Website Dissemination Information presented on sec.gov is considered public information and may be copied or further distributed by users of the web site without the SEC’s permission. Please consider appropriate citation to the SEC as the source. Videos, social media posts, and other educational materials on sec.gov are printed, published, or produced and disseminated at U.S. taxpayer expense. P",
+   "round": 2
   },
   "sec-access": {
    "url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
    "httpStatus": 200,
    "finalUrl": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
-   "excerpt": "I am getting an \"Undeclared Automated Tool\" error message. How do I declare my user agent? Do you provide API data services? Why am I receiving an “Access Denied” message? I want to programmatically download EDGAR filings. Can you help with coding guidance? What is the lag time between the filing acceptance time from the EDGAR Filer System and availability of the documents on sec.gov? How do I get filings as quickly"
+   "excerpt": "EDGAR Data Developer Resources Note that our current maximum access rate is 10 requests per second. This is carefully monitored to preserve equitable access for all users. See: Internet Security Policy . Please declare your user agent in request headers: Sample Declared Bot Request Headers: User-Agent: Sample Company Name AdminContact@&lt;sample company domain&gt;.com Accept-Encoding: gzip, deflate Host: www.sec.gov",
+   "round": 2
   },
   "bls": {
    "url": "https://www.bls.gov/opub/copyright-information.htm",
@@ -2186,13 +2721,15 @@
    "url": "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
    "httpStatus": 200,
    "finalUrl": "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
-   "excerpt": "Disclaimer &amp; copyright Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we use and the impact they"
+   "excerpt": "s the information taken from this website, that the information may be obtained free of charge through this website. If the information is modified by the user (e.g. by seasonal adjustment of statistical data or calculation of growth rates) this must be stated explicitly. When linking to this website from business sites or for promotional purposes, this website must load into the browser's entire window (i.e. it must",
+   "round": 2
   },
   "eurostat": {
-   "url": "https://ec.europa.eu/eurostat/about-us/policies/copyright",
-   "httpStatus": 404,
-   "finalUrl": "https://ec.europa.eu/eurostat/about-us/policies/copyright",
-   "excerpt": null
+   "url": "https://ec.europa.eu/eurostat/web/main/help/copyright-notice",
+   "httpStatus": 200,
+   "finalUrl": "https://ec.europa.eu/eurostat/web/main/help/copyright-notice",
+   "excerpt": "Copyright notice and free re-use of data - Eurostat Skip to Main Content Log in English English Select your language Close Human translation de Deutsch en English fr français Machine translation bg български es español cs čeština da dansk et eesti el ελληνικά ga Gaeilge hr hrvatski it italiano lv latviešu lt lietuvių hu magyar mt Malti nl Nederlands pl polski pt português ru pусский ro română sk slovenčina sl sloven",
+   "round": 2
   },
   "worldbank": {
    "url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets",
@@ -2204,19 +2741,22 @@
    "url": "https://www.oecd.org/en/about/terms-conditions.html",
    "httpStatus": 403,
    "finalUrl": "https://www.oecd.org/en/about/terms-conditions.html",
-   "excerpt": null
+   "excerpt": null,
+   "round": 2
   },
   "imf": {
    "url": "https://www.imf.org/en/About/copyright-and-terms",
    "httpStatus": 403,
    "finalUrl": "https://www.imf.org/en/About/copyright-and-terms",
-   "excerpt": null
+   "excerpt": null,
+   "round": 2
   },
   "destatis": {
-   "url": "https://www.destatis.de/DE/Service/Impressum/nutzungsbedingungen.html",
-   "httpStatus": 404,
-   "finalUrl": "https://www.destatis.de/DE/Service/Impressum/nutzungsbedingungen.html",
-   "excerpt": null
+   "url": "https://www.destatis.de/DE/Service/Impressum/_inhalt.html",
+   "httpStatus": 200,
+   "finalUrl": "https://www.destatis.de/DE/Service/Impressum/_inhalt.html",
+   "excerpt": "e der Datenbank Genesis-Online gilt: © Statistisches Bundesamt (Destatis), 2026 Datenlizenz Deutschland - Namensnennung - Version 2.0 Mehr... Allgemeine Geschäftsbedingungen (AGB) Es gelten die Allgemeine Geschäftsbedingungen des Statistischen Bundesamtes (Stand 01.03.2020) für die Vertriebsabwicklung im Verkauf der gedruckten Ausgaben des Jahresgutachtens des Sachverständigenrates zur Begutachtung der gesamtwirtscha",
+   "round": 2
   },
   "bundesbank": {
    "url": "https://www.bundesbank.de/en/homepage/terms-of-use",
@@ -2231,16 +2771,18 @@
    "excerpt": "e other than that set out above, please contact enquiries@bankofengland.co.uk . Copyright Unless otherwise stated, the copyright and any other rights in the contents of the Resources, including but not limited to images, text and data, are owned by the Governor and Company of the Bank of England. The Bank will endeavour to acknowledge third-party copyright. If third-party copyright has not been properly acknowledged,"
   },
   "snb": {
-   "url": "https://data.snb.ch/en/help/copyright",
+   "url": "https://data.snb.ch/en/copyright",
    "httpStatus": 200,
-   "finalUrl": "https://data.snb.ch/en/help/copyright",
-   "excerpt": null
+   "finalUrl": "https://data.snb.ch/en/copyright",
+   "excerpt": null,
+   "round": 2
   },
   "cftc": {
    "url": "https://www.cftc.gov/Disclaimers/index.htm",
    "httpStatus": 404,
    "finalUrl": "https://www.cftc.gov/Disclaimers/index.htm",
-   "excerpt": null
+   "excerpt": null,
+   "round": 2
   },
   "finra": {
    "url": "https://www.finra.org/finra-data/terms-of-use",
@@ -2249,10 +2791,11 @@
    "excerpt": null
   },
   "nasdaqtrader": {
-   "url": "https://www.nasdaqtrader.com/Trader.aspx?id=TermsOfUse",
+   "url": "https://www.nasdaqtrader.com/Trader.aspx?id=SymbolDirDefs",
    "httpStatus": 200,
-   "finalUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=http404",
-   "excerpt": null
+   "finalUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=SymbolDirDefs",
+   "excerpt": null,
+   "round": 2
   },
   "cboe": {
    "url": "https://www.cboe.com/about/legal/website-terms-of-use/",
@@ -2261,16 +2804,18 @@
    "excerpt": null
   },
   "lbma": {
-   "url": "https://www.lbma.org.uk/prices-and-data/lbma-prices-terms-of-use",
-   "httpStatus": 404,
-   "finalUrl": "https://www.lbma.org.uk/prices-and-data/lbma-prices-terms-of-use",
-   "excerpt": null
+   "url": "https://www.lbma.org.uk/prices-and-data/precious-metal-prices",
+   "httpStatus": 200,
+   "finalUrl": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
+   "excerpt": "n global economy, highlights governance updates within LBMA, and more. Read now IBA to Administer LBMA Platinum and Palladium Price Benchmarks from 1 July 2026 A licence from IBA is required in order to obtain, use or redistribute real-time or historical LBMA Platinum and Palladium Price data from that date. Find out more Events Events Read the latest news, upcoming events and resources. Events and Webinars Upcoming",
+   "round": 2
   },
   "ishares": {
-   "url": "https://www.ishares.com/us/terms-conditions",
+   "url": "https://www.ishares.com/us/terms-and-conditions",
    "httpStatus": 404,
-   "finalUrl": "https://www.ishares.com/us/terms-conditions",
-   "excerpt": null
+   "finalUrl": "https://www.ishares.com/us/terms-and-conditions",
+   "excerpt": null,
+   "round": 2
   },
   "ssga": {
    "url": "https://www.ssga.com/us/en/intermediary/terms-of-use",
@@ -2279,34 +2824,39 @@
    "excerpt": "ng the risk of loss of principal. The whole or any part of this work may not be reproduced, copied or transmitted or any of its contents disclosed to third parties without SSGA’s express written consent. Diversification does not ensure a profit or guarantee against loss. All information is from SSGA unless otherwise noted and has been obtained from sources believed to be reliable, but its accuracy is not guaranteed."
   },
   "invesco": {
-   "url": "https://www.invesco.com/us/en/terms-of-use.html",
+   "url": "https://www.invesco.com/corporate/en/legal.html",
    "httpStatus": 406,
-   "finalUrl": "https://www.invesco.com/us/en/terms-of-use.html",
-   "excerpt": null
+   "finalUrl": "https://www.invesco.com/corporate/en/legal.html",
+   "excerpt": null,
+   "round": 2
   },
   "ark": {
-   "url": "https://www.ark-funds.com/terms-of-use",
+   "url": "https://www.ark-funds.com/terms-and-conditions",
    "httpStatus": 403,
-   "finalUrl": "https://www.ark-funds.com/terms-of-use",
-   "excerpt": null
+   "finalUrl": "https://www.ark-funds.com/terms-and-conditions",
+   "excerpt": null,
+   "round": 2
   },
   "house-clerk": {
    "url": "https://disclosures-clerk.house.gov/FinancialDisclosure",
    "httpStatus": 200,
    "finalUrl": "https://disclosures-clerk.house.gov/FinancialDisclosure",
-   "excerpt": null
+   "excerpt": null,
+   "round": 2
   },
   "french": {
    "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
    "httpStatus": 200,
    "finalUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
-   "excerpt": "he December 2024 data release. Beginning with the January 2025 data release, we use the new Stock and Indexes Flat File Format 2.0 (CIZ) files to generate US research returns. Historical data based on the Legacy (FIZ) format can be found here . More details of the new Flat File Format 2.0 (CIZ) and the differences with the Legacy (FIZ) format can be found in the executive summary and the cross reference guide provide"
+   "excerpt": "Kenneth R. French - Data Library Current Research Returns CRSP's Stock and Indexes Legacy Format (FIZ) files were discontinued after the December 2024 data release. Beginning with the January 2025 data release, we use the new Stock and Indexes Flat File Format 2.0 (CIZ) files to generate US research returns. Historical data based on the Legacy (FIZ) format can be found here . More details of the new Flat File Format",
+   "round": 2
   },
   "coingecko": {
    "url": "https://www.coingecko.com/en/api_terms",
    "httpStatus": 200,
    "finalUrl": "https://www.coingecko.com/en/api_terms",
-   "excerpt": "he industry. From large companies wearing the Penguin, to being featured in ETF commercials, to garnering millions of followers and over 100 billion views, the Pengu has become a cultural icon making PENGU the world’s social currency.&quot;}}}},{&quot;item&quot;:{&quot;id&quot;:&quot;edel&quot;,&quot;coin_id&quot;:70661,&quot;name&quot;:&quot;Edel&quot;,&quot;symbol&quot;:&quot;EDEL&quot;,&quot;market_cap_rank&quot;:"
+   "excerpt": "he industry. From large companies wearing the Penguin, to being featured in ETF commercials, to garnering millions of followers and over 100 billion views, the Pengu has become a cultural icon making PENGU the world’s social currency.&quot;}}}},{&quot;item&quot;:{&quot;id&quot;:&quot;edel&quot;,&quot;coin_id&quot;:70661,&quot;name&quot;:&quot;Edel&quot;,&quot;symbol&quot;:&quot;EDEL&quot;,&quot;market_cap_rank&quot;:",
+   "round": 2
   },
   "fmp": {
    "url": "https://site.financialmodelingprep.com/terms-of-service",
@@ -2319,6 +2869,111 @@
    "httpStatus": 200,
    "finalUrl": "https://finnhub.io/terms-of-service",
    "excerpt": "to evaluate and enhance performance of the Website and to study usage patterns. Redistribution Rights and Personal Use You hereby agree to not redistribute or share access to data or derived results from the data obtained from Finnhub with anyone or any 3rd party without written approval from Finnhub. All plan listed on Finnhub website is strictly for personal use unless explicitly stated otherwise. Personal plan can"
+  },
+  "ecb-data-portal": {
+   "url": "https://data.ecb.europa.eu/help/terms-use",
+   "httpStatus": 404,
+   "finalUrl": "https://data.ecb.europa.eu/help/terms-use",
+   "excerpt": null,
+   "round": 2
+  },
+  "worldbank-commodity-dataset": {
+   "url": "https://datacatalog.worldbank.org/search/dataset/0037798",
+   "httpStatus": 200,
+   "finalUrl": "https://datacatalog.worldbank.org/search/dataset/0037798/global-economic-monitor",
+   "excerpt": "assification Policy. Users inside and outside the Bank can access this dataset. License : Creative Commons Attribution 4.0 This dataset is licensed under Creative Commons Attribution 4.0 Contact data@worldbank.org Topics Economic Growth Trade Related Links Global Outlook Global Economic Monitor Tools iSimulate Statistics Views ( 86,238 ) Downloads ( 19,999 ) Share Metadata The information on this page (the dataset me",
+   "round": 2
+  },
+  "worldbank-data-terms": {
+   "url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets",
+   "httpStatus": 200,
+   "finalUrl": "https://www.worldbank.org/ext/en/legal/terms-conditions",
+   "excerpt": "s. The content available on this platform is provided for informational and non-commercial purposes only, unless otherwise stated. We encourage you to read these terms carefully before using the site or downloading any available materials. lp-heading-top-xxlarge lp-heading-bottom-xlarge col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xs-12 col-sm-12 col-md-12 col-lg-12 More in this section Using Our Site Datasets Open Know",
+   "round": 2
+  },
+  "treasury-fiscaldata-license": {
+   "url": "https://fiscaldata.treasury.gov/about-us/#licensing",
+   "httpStatus": 200,
+   "finalUrl": "https://fiscaldata.treasury.gov/about-us/",
+   "excerpt": "l Monetary Fund... Data Sources Understanding the Data Development and Releases Licensing More Information FAQs How often is the data updated? How is data being rolled out... How can I learn about... When is new data uploaded... Why do some datasets... I’m new to using APIs... Where can I find information... Who can I contact if... Contact Us About Fiscal Data Fiscal Data is your one-stop shop for federal financial d",
+   "round": 2
+  },
+  "cftc-2": {
+   "url": "https://www.cftc.gov/Privacy/index.htm",
+   "httpStatus": 404,
+   "finalUrl": "https://www.cftc.gov/Privacy/index.htm",
+   "excerpt": null,
+   "round": 2
+  },
+  "finra-data-terms": {
+   "url": "https://www.finra.org/finra-data/about-finra-data/terms-of-use",
+   "httpStatus": 404,
+   "finalUrl": "https://www.finra.org/finra-data/about-finra-data/terms-of-use",
+   "excerpt": null,
+   "round": 2
+  },
+  "finra-api-terms": {
+   "url": "https://developer.finra.org/terms",
+   "httpStatus": 404,
+   "finalUrl": "https://developer.finra.org/terms",
+   "excerpt": null,
+   "round": 2
+  },
+  "cboe-legal": {
+   "url": "https://www.cboe.com/legal/",
+   "httpStatus": 200,
+   "finalUrl": "https://www.cboe.com/markets/us/options/regulation",
+   "excerpt": "ms &amp; Conditions Use of Content Your Privacy Choices Do Not Sell or Share My Personal Information",
+   "round": 2
+  },
+  "cboe-data-terms": {
+   "url": "https://www.cboe.com/about/legal/terms_of_use/",
+   "httpStatus": 404,
+   "finalUrl": "https://www.cboe.com/about/legal/terms_of_use/",
+   "excerpt": null,
+   "round": 2
+  },
+  "nasdaq-datalink": {
+   "url": "https://data.nasdaq.com/terms",
+   "httpStatus": 200,
+   "finalUrl": "https://data.nasdaq.com/terms",
+   "excerpt": null,
+   "round": 2
+  },
+  "bundesbank-reproduction": {
+   "url": "https://www.bundesbank.de/en/homepage/reproduction-regulations",
+   "httpStatus": 404,
+   "finalUrl": "https://www.bundesbank.de/en/homepage/reproduction-regulations",
+   "excerpt": null,
+   "round": 2
+  },
+  "boe-statistics": {
+   "url": "https://www.bankofengland.co.uk/statistics/details/further-details-about-data-terms-and-conditions",
+   "httpStatus": 404,
+   "finalUrl": "https://www.bankofengland.co.uk/error/404.html?item=%2fstatistics%2fdetails%2ffurther-details-about-data-terms-and-conditions",
+   "excerpt": null,
+   "round": 2
+  },
+  "boj": {
+   "url": "https://www.boj.or.jp/en/about/services/notice.htm",
+   "httpStatus": 404,
+   "finalUrl": "https://www.boj.or.jp/en/about/services/notice.htm",
+   "excerpt": null,
+   "round": 2
+  },
+  "senate-efd": {
+   "url": "https://efdsearch.senate.gov/search/home/",
+   "httpStatus": 200,
+   "finalUrl": "https://efdsearch.senate.gov/search/home/",
+   "excerpt": "e Building Washington, D.C. 20510-7116 phone (202) 224-0322 Get Access You must agree to the following to be able to search reports. Title 1 of the Ethics in Government Act of 1978, as amended, 5 U.S.C. app. § 105(c), states that: It shall be unlawful for any person to obtain or use a report: for any unlawful purpose; for any commercial purpose, other than by news and communications media for dissemination to the gen",
+   "round": 2
+  },
+  "occ": {
+   "url": "https://www.theocc.com/terms-of-use",
+   "httpStatus": 403,
+   "finalUrl": "https://www.theocc.com/terms-of-use",
+   "excerpt": null,
+   "round": 2
   }
  },
  "fmpBenchmark": {
@@ -3043,5 +3698,6 @@
    "message": "You don't have access to this resource."
   }
  },
- "requests": 204
+ "requests": 63,
+ "round2AtUtc": "2026-09-24T19:35:23.712Z"
 }
