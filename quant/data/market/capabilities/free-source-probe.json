@@ -1,0 +1,3047 @@
+{
+ "schemaVersion": "1.0.0",
+ "generatedAtUtc": "2026-09-24T19:29:08.220Z",
+ "purpose": "Free Data Source Discovery: kostenlose, moeglichst offizielle Quellen je Capability gemessen; FMP- und Finnhub-Abdeckung des vorhandenen Zugangs als Vergleich. Keine Werte.",
+ "valuesIncluded": false,
+ "sources": {
+  "cboe-vix-history": {
+   "cats": [
+    "A",
+    "AH"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+   "note": "offizielle Cboe-Tagesdatei VIX",
+   "httpStatus": 200,
+   "ms": 395,
+   "contentType": "text/csv",
+   "bytes": 472921,
+   "lastModified": "Wed, 23 Sep 2026 01:51:09 GMT",
+   "finalUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+   "table": {
+    "lines": 9279,
+    "header": "DATE,OPEN,HIGH,LOW,CLOSE",
+    "delimiter": ","
+   }
+  },
+  "cboe-spx-history": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/SPX_History.csv",
+   "note": "gleiches Verzeichnis, S&P 500?",
+   "httpStatus": 200,
+   "ms": 297,
+   "contentType": "text/csv",
+   "bytes": 292826,
+   "lastModified": "Wed, 23 Sep 2026 01:51:08 GMT",
+   "finalUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/SPX_History.csv",
+   "table": {
+    "lines": 13040,
+    "header": "DATE,SPX",
+    "delimiter": ","
+   }
+  },
+  "cboe-ndx-history": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/NDX_History.csv",
+   "note": "gleiches Verzeichnis, Nasdaq-100?",
+   "httpStatus": 403,
+   "ms": 258,
+   "contentType": "application/xml",
+   "bytes": 243,
+   "finalUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/NDX_History.csv",
+   "bodyStart": "AccessDenied Access Denied 1DNCEHASNZDQ9MGB KrCVZZeqkVvXUMj/v5d9bIR5ieiohNVtLNZ66NOKxdZU73oM7CrU+raId7vZii1MsOz6wpx9KRA="
+  },
+  "cboe-rut-history": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/RUT_History.csv",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 251,
+   "contentType": "text/csv",
+   "bytes": 33589,
+   "lastModified": "Wed, 23 Sep 2026 01:51:07 GMT",
+   "finalUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/RUT_History.csv",
+   "table": {
+    "lines": 1461,
+    "header": "DATE,RUT",
+    "delimiter": ","
+   }
+  },
+  "cboe-djx-history": {
+   "cats": [
+    "A"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/DJX_History.csv",
+   "note": "DJX = DJIA/100 - anderes Instrument",
+   "httpStatus": 200,
+   "ms": 239,
+   "contentType": "text/csv",
+   "bytes": 159178,
+   "lastModified": "Wed, 23 Sep 2026 01:51:05 GMT",
+   "finalUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/DJX_History.csv",
+   "table": {
+    "lines": 7291,
+    "header": "DATE,DJX",
+    "delimiter": ","
+   }
+  },
+  "nasdaq-giw-ndx-export": {
+   "cats": [
+    "A",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://indexes.nasdaqomx.com/Index/History/NDX",
+   "note": "Nasdaq Global Index Watch",
+   "httpStatus": 200,
+   "ms": 402,
+   "contentType": "text/html",
+   "bytes": 69145,
+   "finalUrl": "https://indexes.nasdaqomx.com/Index/History/NDX",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "History for NDX"
+   }
+  },
+  "nasdaq-giw-ndx-weighting": {
+   "cats": [
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://indexes.nasdaqomx.com/Index/Weighting/NDX",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 222,
+   "contentType": "text/html",
+   "bytes": 55600,
+   "finalUrl": "https://indexes.nasdaqomx.com/Index/Weighting/NDX",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Weighting for NDX"
+   }
+  },
+  "worldbank-pinksheet-monthly": {
+   "cats": [
+    "B",
+    "C"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "xlsx",
+   "url": "https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx",
+   "note": "World Bank Commodity Price Data (Pink Sheet)",
+   "httpStatus": 200,
+   "ms": 177,
+   "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+   "bytes": 778415,
+   "lastModified": "Wed, 14 Jan 2026 22:11:45 GMT",
+   "finalUrl": "https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx",
+   "isZipContainer": true,
+   "isXls": false
+  },
+  "worldbank-pinksheet-page": {
+   "cats": [
+    "B",
+    "C"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.worldbank.org/en/research/commodity-markets",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 125,
+   "contentType": "text/html",
+   "bytes": 55840,
+   "lastModified": "Mon, 21 Sep 2026 14:36:29 GMT",
+   "finalUrl": "https://www.worldbank.org/en/research/commodity-markets",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Commodity Markets"
+   },
+   "officialLinks": [
+    "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+    "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Annual.xlsx"
+   ]
+  },
+  "imf-pcps-sdmx": {
+   "cats": [
+    "B",
+    "C"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.imf.org/external/sdmx/2.1/data/PCPS/M.W00.PCOPP.USD?startPeriod=2024-01&format=jsondata",
+   "note": "IMF Primary Commodity Prices, Kupfer",
+   "httpStatus": 200,
+   "ms": 520,
+   "contentType": "application/xml",
+   "bytes": 2898,
+   "finalUrl": "https://api.imf.org/external/sdmx/2.1/data/PCPS/M.W00.PCOPP.USD?startPeriod=2024-01&format=jsondata",
+   "markup": {
+    "root": "message:StructureSpecificData",
+    "items": 0,
+    "entries": 0,
+    "title": null
+   }
+  },
+  "lbma-gold-json": {
+   "cats": [
+    "C"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://prices.lbma.org.uk/json/gold_pm.json",
+   "note": "LBMA Gold Price PM",
+   "httpStatus": 200,
+   "ms": 1040,
+   "contentType": "application/json",
+   "bytes": 914923,
+   "lastModified": "Thu, 24 Sep 2026 19:25:04 GMT",
+   "finalUrl": "https://prices.lbma.org.uk/json/gold_pm.json",
+   "json": {
+    "array": 14689,
+    "fieldNames": [
+     "is_cms_locked",
+     "d",
+     "v"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 14689,
+    "firstDate": "1968-04-01",
+    "lastDate": "2026-09-23",
+    "futureDates": 0
+   }
+  },
+  "cftc-cot-legacy-futures": {
+   "cats": [
+    "AI",
+    "B"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.cftc.gov/dea/newcot/deafut.txt",
+   "note": "Commitments of Traders, woechentlich",
+   "httpStatus": 200,
+   "ms": 100,
+   "contentType": "text/plain",
+   "bytes": 424417,
+   "lastModified": "Fri, 18 Sep 2026 19:27:44 GMT",
+   "finalUrl": "https://www.cftc.gov/dea/newcot/deafut.txt",
+   "table": {
+    "lines": 371,
+    "header": "\"WHEAT-SRW - CHICAGO BOARD OF TRADE\",260915,2026-09-15,001602,CBT ,00,001 ,  485138,  126842,  125614,  154655,  166996,  171795,  448493,  452064,   36645,   33074,  410279,  119891,  138446,  118064,  139553,  129102, ",
+    "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 371,
+    "firstDate": "2026-09-15",
+    "lastDate": "2026-09-15",
+    "futureDates": 0
+   }
+  },
+  "cftc-socrata-cot": {
+   "cats": [
+    "AI",
+    "B"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$limit=2&$order=report_date_as_yyyy_mm_dd%20DESC",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 580,
+   "contentType": "application/json",
+   "bytes": 9325,
+   "lastModified": "Fri, 18 Sep 2026 19:30:08 GMT",
+   "finalUrl": "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$limit=2&$order=report_date_as_yyyy_mm_dd%20DESC",
+   "json": {
+    "array": 2,
+    "fieldNames": [
+     "id",
+     "market_and_exchange_names",
+     "report_date_as_yyyy_mm_dd",
+     "yyyy_report_week_ww",
+     "contract_market_name",
+     "cftc_contract_market_code",
+     "cftc_market_code",
+     "cftc_region_code",
+     "cftc_commodity_code",
+     "commodity_name",
+     "open_interest_all",
+     "noncomm_positions_long_all",
+     "noncomm_positions_short_all",
+     "noncomm_postions_spread_all",
+     "comm_positions_long_all",
+     "comm_positions_short_all",
+     "tot_rept_positions_long_all",
+     "tot_rept_positions_short",
+     "nonrept_positions_long_all",
+     "nonrept_positions_short_all"
+    ]
+   }
+  },
+  "bls-api-v1-cpi": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/CUUR0000SA0",
+   "note": "BLS Public API v1 (ohne Schluessel, Tageslimit)",
+   "httpStatus": 200,
+   "ms": 360,
+   "contentType": "application/json",
+   "bytes": 3199,
+   "finalUrl": "https://api.bls.gov/publicAPI/v1/timeseries/data/CUUR0000SA0",
+   "json": {
+    "keys": [
+     "status",
+     "responseTime",
+     "message",
+     "Results"
+    ]
+   },
+   "message": "[]"
+  },
+  "bls-api-v1-payrolls": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/CES0000000001",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 230,
+   "contentType": "application/json",
+   "bytes": 2985,
+   "finalUrl": "https://api.bls.gov/publicAPI/v1/timeseries/data/CES0000000001",
+   "json": {
+    "keys": [
+     "status",
+     "responseTime",
+     "message",
+     "Results"
+    ]
+   },
+   "message": "[]"
+  },
+  "bls-api-v1-unrate": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/LNS14000000",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 222,
+   "contentType": "application/json",
+   "bytes": 3065,
+   "finalUrl": "https://api.bls.gov/publicAPI/v1/timeseries/data/LNS14000000",
+   "json": {
+    "keys": [
+     "status",
+     "responseTime",
+     "message",
+     "Results"
+    ]
+   },
+   "message": "[]"
+  },
+  "bea-api-nokey": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "FREE_API_KEY",
+   "format": "json",
+   "url": "https://apps.bea.gov/api/data?method=GETDATASETLIST&ResultFormat=JSON",
+   "note": "ohne UserID - erwartet Fehler",
+   "httpStatus": 200,
+   "ms": 332,
+   "contentType": "text/plain",
+   "bytes": 0,
+   "finalUrl": "https://apps.bea.gov/api/data?method=GETDATASETLIST&ResultFormat=JSON"
+  },
+  "census-eits-retail": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.census.gov/data/timeseries/eits/marts?get=cell_value,time_slot_id,category_code,data_type_code&for=us:*&time=from+2025",
+   "note": "Advance Retail Sales",
+   "httpStatus": 200,
+   "ms": 653,
+   "contentType": "text/html",
+   "bytes": 8531,
+   "lastModified": "Tue, 28 Jul 2026 17:16:04 GMT",
+   "finalUrl": "https://api.census.gov/data/missing_key.html",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Missing Key"
+   }
+  },
+  "treasury-fiscaldata-debt": {
+   "cats": [
+    "E",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page[size]=2",
+   "note": null,
+   "httpStatus": 404,
+   "ms": 503,
+   "contentType": "text/html",
+   "bytes": 743,
+   "finalUrl": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page[size]=2",
+   "bodyStart": "404 Error: The requested page could not be found We are sorry, but the page you are looking for may not exist, may have been removed, had its name changed, or i"
+  },
+  "fed-h41-ddp": {
+   "cats": [
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H41&series=ae2d1d0e9ec6e6c9e7a3e8de54dc3b30&lastobs=5&from=&to=&filetype=csv&label=include&layout=seriescolumn",
+   "note": "Fed Data Download Program - Serien-Hash geraten",
+   "httpStatus": 200,
+   "ms": 359,
+   "contentType": "text/html",
+   "bytes": 0,
+   "lastModified": "Thu, 24 Sep 2026 19:29:15 GMT",
+   "finalUrl": "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H41&series=ae2d1d0e9ec6e6c9e7a3e8de54dc3b30&lastobs=5&from=&to=&filetype=csv&label=include&layout=seriescolumn"
+  },
+  "fed-ddp-choose-h15": {
+   "cats": [
+    "D",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.federalreserve.gov/datadownload/Choose.aspx?rel=H15",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 229,
+   "contentType": "text/html",
+   "bytes": 84003,
+   "finalUrl": "https://www.federalreserve.gov/datadownload/Choose.aspx?rel=H15",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Federal Reserve Board - H15 - Data Download Program - Choose"
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2026-07-16",
+    "lastDate": "2026-07-16",
+    "futureDates": 0
+   }
+  },
+  "ecb-hicp": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?format=csvdata&lastNObservations=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 755,
+   "contentType": "text/csv",
+   "bytes": 1512,
+   "lastModified": "Mon, 19 Jan 2026 10:05:23 GMT",
+   "finalUrl": "https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?format=csvdata&lastNObservations=3",
+   "table": {
+    "lines": 4,
+    "header": "KEY,FREQ,REF_AREA,ADJUSTMENT,ICP_ITEM,STS_INSTITUTION,ICP_SUFFIX,TIME_PERIOD,OBS_VALUE,OBS_STATUS,OBS_CONF,OBS_PRE_BREAK,OBS_COM,TIME_FORMAT,BREAKS,COLLECTION,COMPILING_ORG,DATA_COMP,DISS_ORG,DOM_SER_IDS,PUBL_ECB,PUBL_MU",
+    "delimiter": ","
+   }
+  },
+  "ecb-m3": {
+   "cats": [
+    "E",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://data-api.ecb.europa.eu/service/data/BSI/M.U2.Y.V.M30.X.I.U2.2300.Z01.A?format=csvdata&lastNObservations=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 1110,
+   "contentType": "text/csv",
+   "bytes": 1915,
+   "lastModified": "Thu, 24 Sep 2026 19:29:17 GMT",
+   "finalUrl": "https://data-api.ecb.europa.eu/service/data/BSI/M.U2.Y.V.M30.X.I.U2.2300.Z01.A?format=csvdata&lastNObservations=3",
+   "table": {
+    "lines": 4,
+    "header": "KEY,FREQ,REF_AREA,ADJUSTMENT,BS_REP_SECTOR,BS_ITEM,MATURITY_ORIG,DATA_TYPE,COUNT_AREA,BS_COUNT_SECTOR,CURRENCY_TRANS,BS_SUFFIX,TIME_PERIOD,OBS_VALUE,OBS_STATUS,OBS_CONF,OBS_PRE_BREAK,OBS_COM,TIME_FORMAT,BREAKS,COLLECTION",
+    "delimiter": ","
+   }
+  },
+  "ecb-balance-sheet": {
+   "cats": [
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://data-api.ecb.europa.eu/service/data/ILM/W.U2.C.T000000.Z5.Z01?format=csvdata&lastNObservations=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 1504,
+   "contentType": "text/csv",
+   "bytes": 1202,
+   "lastModified": "Tue, 22 Sep 2026 13:18:04 GMT",
+   "finalUrl": "https://data-api.ecb.europa.eu/service/data/ILM/W.U2.C.T000000.Z5.Z01?format=csvdata&lastNObservations=3",
+   "table": {
+    "lines": 4,
+    "header": "KEY,FREQ,REF_AREA,BS_REP_SECTOR,BS_ITEM,COUNT_AREA,CURRENCY_TRANS,TIME_PERIOD,OBS_VALUE,OBS_STATUS,OBS_CONF,OBS_PRE_BREAK,OBS_COM,TIME_FORMAT,BREAKS,COLLECTION,COMPILING_ORG,DISS_ORG,PUBL_ECB,PUBL_MU,PUBL_PUBLIC,AGG_EQUN",
+    "delimiter": ","
+   }
+  },
+  "eurostat-hicp": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=EA&coicop=CP00&lastTimePeriod=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 579,
+   "contentType": "application/json",
+   "bytes": 3219,
+   "finalUrl": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?geo=EA&coicop=CP00&lastTimePeriod=3",
+   "json": {
+    "keys": [
+     "version",
+     "class",
+     "label",
+     "source",
+     "updated",
+     "value",
+     "id",
+     "size",
+     "dimension",
+     "extension"
+    ],
+    "firstArray": {
+     "key": "id",
+     "length": 5,
+     "fieldNames": null
+    }
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2023-01-19",
+    "lastDate": "2023-01-19",
+    "futureDates": 0
+   }
+  },
+  "eurostat-gdp": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=EA20&unit=CLV_PCH_PRE&s_adj=SCA&na_item=B1GQ&lastTimePeriod=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 546,
+   "contentType": "application/json",
+   "bytes": 3210,
+   "finalUrl": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/namq_10_gdp?geo=EA20&unit=CLV_PCH_PRE&s_adj=SCA&na_item=B1GQ&lastTimePeriod=3",
+   "json": {
+    "keys": [
+     "version",
+     "class",
+     "label",
+     "source",
+     "updated",
+     "value",
+     "id",
+     "size",
+     "dimension",
+     "extension"
+    ],
+    "firstArray": {
+     "key": "id",
+     "length": 6,
+     "fieldNames": null
+    }
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2023-01-23",
+    "lastDate": "2023-01-23",
+    "futureDates": 0
+   }
+  },
+  "eurostat-unemployment": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?geo=EA20&s_adj=SA&age=TOTAL&sex=T&unit=PC_ACT&lastTimePeriod=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 205,
+   "contentType": "application/json",
+   "bytes": 3649,
+   "finalUrl": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?geo=EA20&s_adj=SA&age=TOTAL&sex=T&unit=PC_ACT&lastTimePeriod=3",
+   "json": {
+    "keys": [
+     "version",
+     "class",
+     "label",
+     "source",
+     "updated",
+     "value",
+     "id",
+     "size",
+     "dimension",
+     "extension"
+    ],
+    "firstArray": {
+     "key": "id",
+     "length": 7,
+     "fieldNames": null
+    }
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2023-01-19",
+    "lastDate": "2023-01-19",
+    "futureDates": 0
+   }
+  },
+  "destatis-genesis-guest": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "text",
+   "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/tablefile?username=GAST&password=GAST&name=61111-0002&area=all&format=ffcsv&language=de",
+   "note": "Gastzugang Verbraucherpreisindex",
+   "httpStatus": 200,
+   "ms": 3474,
+   "contentType": "text/html",
+   "bytes": 2506,
+   "lastModified": "Mon, 10 Aug 2026 06:58:40 GMT",
+   "finalUrl": "https://genesis.destatis.de/datenbank/online/announcement?username=GAST&password=GAST&name=61111-0002&area=all&format=ffcsv&language=de",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "GENESIS-Online"
+   }
+  },
+  "bundesbank-api-cpi": {
+   "cats": [
+    "E"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://api.statistiken.bundesbank.de/rest/data/BBDP1/M.DE.N.VPI.C.A00000.I20.A?format=csv&lang=en&lastNObservations=3",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 998,
+   "contentType": "application/vnd.bbk.data+csv",
+   "bytes": 346,
+   "finalUrl": "https://api.statistiken.bundesbank.de/rest/data/BBDP1/M.DE.N.VPI.C.A00000.I20.A?format=csv&lang=en&lastNObservations=3",
+   "table": {
+    "lines": 13,
+    "header": "﻿\"\",BBDP1.M.DE.N.VPI.C.A00000.I20.A,BBDP1.M.DE.N.VPI.C.A00000.I20.A_FLAGS",
+    "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2026-09-10",
+    "lastDate": "2026-09-10",
+    "futureDates": 0
+   }
+  },
+  "oecd-cli": {
+   "cats": [
+    "E",
+    "F"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
+   "note": null,
+   "httpStatus": 500,
+   "ms": 1393,
+   "contentType": "text/plain",
+   "bytes": 21,
+   "finalUrl": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels",
+   "bodyStart": "Internal server error"
+  },
+  "worldbank-gdp": {
+   "cats": [
+    "E"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.worldbank.org/v2/country/US;DE;JP/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=6&mrv=2",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 2027,
+   "contentType": "application/json",
+   "bytes": 1386,
+   "lastModified": "Thu, 24 Sep 2026 19:29:28 GMT",
+   "finalUrl": "https://api.worldbank.org/v2/country/US;DE;JP/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=6&mrv=2",
+   "json": {
+    "array": 2,
+    "fieldNames": [
+     "page",
+     "pages",
+     "per_page",
+     "total",
+     "sourceid",
+     "lastupdated"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2026-07-13",
+    "lastDate": "2026-07-13",
+    "futureDates": 0
+   }
+  },
+  "imf-weo-datamapper": {
+   "cats": [
+    "E"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH/USA/DEU",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 533,
+   "contentType": "application/json",
+   "bytes": 121723,
+   "finalUrl": "https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH/USA/DEU",
+   "json": {
+    "keys": [
+     "values",
+     "api"
+    ]
+   }
+  },
+  "boe-iadb-bankrate": {
+   "cats": [
+    "D",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp?csv.x=yes&Datefrom=01/Jan/2025&Dateto=now&SeriesCodes=IUDBEDR&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 1078,
+   "contentType": "application/csv",
+   "bytes": 7536,
+   "finalUrl": "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp?csv.x=yes&Datefrom=01/Jan/2025&Dateto=now&SeriesCodes=IUDBEDR&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N",
+   "table": {
+    "lines": 438,
+    "header": "DATE,IUDBEDR",
+    "delimiter": ","
+   }
+  },
+  "snb-policy-rate": {
+   "cats": [
+    "D",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 2143,
+   "contentType": "text/csv",
+   "bytes": 997161,
+   "finalUrl": "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en",
+   "table": {
+    "lines": 40883,
+    "header": "﻿\"CubeId\";\"snbgwdzid\"",
+    "delimiter": ";"
+   },
+   "coverage": {
+    "datesSeen": 40881,
+    "firstDate": "2004-05-03",
+    "lastDate": "2026-09-21",
+    "futureDates": 0
+   }
+  },
+  "boj-api": {
+   "cats": [
+    "D",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=FM01&code=STRDCLUCON",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 943,
+   "contentType": "application/json",
+   "bytes": 154824,
+   "finalUrl": "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=FM01&code=STRDCLUCON",
+   "json": {
+    "keys": [
+     "STATUS",
+     "MESSAGEID",
+     "MESSAGE",
+     "DATE",
+     "PARAMETER",
+     "NEXTPOSITION",
+     "RESULTSET"
+    ],
+    "firstArray": {
+     "key": "RESULTSET",
+     "length": 1,
+     "fieldNames": [
+      "SERIES_CODE",
+      "NAME_OF_TIME_SERIES",
+      "UNIT",
+      "FREQUENCY",
+      "CATEGORY",
+      "LAST_UPDATE",
+      "VALUES"
+     ]
+    }
+   },
+   "coverage": {
+    "datesSeen": 10484,
+    "firstDate": "1998-01-05",
+    "lastDate": "2026-09-24",
+    "futureDates": 0
+   }
+  },
+  "sec-company-tickers-exchange": {
+   "cats": [
+    "H",
+    "AB",
+    "V"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://www.sec.gov/files/company_tickers_exchange.json",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 157,
+   "contentType": "application/json",
+   "bytes": 524826,
+   "lastModified": "Tue, 22 Sep 2026 21:37:29 GMT",
+   "finalUrl": "https://www.sec.gov/files/company_tickers_exchange.json",
+   "json": {
+    "keys": [
+     "fields",
+     "data"
+    ],
+    "firstArray": {
+     "key": "fields",
+     "length": 4,
+     "fieldNames": null
+    }
+   }
+  },
+  "sec-submissions-aapl": {
+   "cats": [
+    "H",
+    "V",
+    "AB"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 120,
+   "contentType": "application/json",
+   "bytes": 164033,
+   "finalUrl": "https://data.sec.gov/submissions/CIK0000320193.json",
+   "json": {
+    "keys": [
+     "cik",
+     "entityType",
+     "sic",
+     "sicDescription",
+     "ownerOrg",
+     "insiderTransactionForOwnerExists",
+     "insiderTransactionForIssuerExists",
+     "name",
+     "tickers",
+     "exchanges",
+     "ein",
+     "lei",
+     "description",
+     "website",
+     "investorWebsite",
+     "category"
+    ],
+    "firstArray": {
+     "key": "tickers",
+     "length": 1,
+     "fieldNames": null
+    }
+   },
+   "coverage": {
+    "datesSeen": 1825,
+    "firstDate": "1994-01-26",
+    "lastDate": "2026-09-22",
+    "futureDates": 0
+   }
+  },
+  "sec-daily-form-index": {
+   "cats": [
+    "H",
+    "O",
+    "AF",
+    "Q"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "text",
+   "url": "https://www.sec.gov/Archives/edgar/daily-index/2026/QTR3/form.20260923.idx",
+   "note": "Tagesindex nach Formular (S-1, 424B4, S-4, 425, DEFM14A, 4, 13F-HR)",
+   "httpStatus": 200,
+   "ms": 79,
+   "contentType": "application/octet-stream",
+   "bytes": 630335,
+   "lastModified": "Thu, 24 Sep 2026 02:01:39 GMT",
+   "finalUrl": "https://www.sec.gov/Archives/edgar/daily-index/2026/QTR3/form.20260923.idx",
+   "table": {
+    "lines": 3243,
+    "header": "Description:           Daily Index of EDGAR Dissemination Feed by Form Type",
+    "delimiter": ","
+   },
+   "coverage": {
+    "datesSeen": 3236,
+    "firstDate": "2026-02-26",
+    "lastDate": "2026-09-23",
+    "futureDates": 0
+   }
+  },
+  "sec-current-8k-atom": {
+   "cats": [
+    "Y",
+    "L",
+    "H"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&count=40&output=atom",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 20903,
+   "contentType": "application/atom+xml",
+   "bytes": 29219,
+   "finalUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&count=40&output=atom",
+   "markup": {
+    "root": "feed",
+    "items": 0,
+    "entries": 40,
+    "title": "Latest Filings - Thu, 24 Sep 2026 15:29:55 EDT"
+   },
+   "coverage": {
+    "datesSeen": 40,
+    "firstDate": "2026-09-24",
+    "lastDate": "2026-09-24",
+    "futureDates": 0
+   }
+  },
+  "sec-efts-fulltext": {
+   "cats": [
+    "H",
+    "Y",
+    "L"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://efts.sec.gov/LATEST/search-index?q=%22Item%202.02%22&forms=8-K&dateRange=custom&startdt=2026-09-17&enddt=2026-09-24",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 482,
+   "contentType": "application/json",
+   "bytes": 25844,
+   "finalUrl": "https://efts.sec.gov/LATEST/search-index?q=%22Item%202.02%22&forms=8-K&dateRange=custom&startdt=2026-09-17&enddt=2026-09-24",
+   "json": {
+    "keys": [
+     "took",
+     "timed_out",
+     "_shards",
+     "hits",
+     "aggregations",
+     "query"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 92,
+    "firstDate": "2026-09-15",
+    "lastDate": "2026-09-24",
+    "futureDates": 0
+   }
+  },
+  "sec-financial-statement-datasets": {
+   "cats": [
+    "G"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/files/dera/data/financial-statement-data-sets/2026q2.zip",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 437,
+   "contentType": "application/octet-stream",
+   "bytes": 60419016,
+   "lastModified": "Wed, 19 Aug 2026 01:09:50 GMT",
+   "finalUrl": "https://www.sec.gov/files/dera/data/financial-statement-data-sets/2026q2.zip"
+  },
+  "sec-companyfacts-aapl": {
+   "cats": [
+    "G",
+    "AA"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/dei/EntityCommonStockSharesOutstanding.json",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 849,
+   "contentType": "application/json",
+   "bytes": 10629,
+   "finalUrl": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/dei/EntityCommonStockSharesOutstanding.json",
+   "json": {
+    "keys": [
+     "cik",
+     "taxonomy",
+     "tag",
+     "label",
+     "description",
+     "entityName",
+     "units"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 140,
+    "firstDate": "2009-06-27",
+    "lastDate": "2026-07-31",
+    "futureDates": 0
+   }
+  },
+  "sec-insider-datasets": {
+   "cats": [
+    "Q"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q2_form345.zip",
+   "note": null,
+   "httpStatus": 404,
+   "ms": 137,
+   "contentType": "text/html",
+   "bytes": 53435,
+   "finalUrl": "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q2_form345.zip"
+  },
+  "sec-insider-datasets-page": {
+   "cats": [
+    "Q"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 847,
+   "contentType": "text/html",
+   "bytes": 131240,
+   "lastModified": "Thu, 24 Sep 2026 19:29:58 GMT",
+   "finalUrl": "https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "SEC.gov | Insider Transactions Data Sets"
+   },
+   "coverage": {
+    "datesSeen": 3,
+    "firstDate": "2009-12-16",
+    "lastDate": "2013-05-17",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "/files/structureddata/data/insider-transactions-data-sets/2026q1_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2025q4_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2025q3_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2025q2_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2025q1_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2024q4_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2024q3_form345.zip",
+    "/files/structureddata/data/insider-transactions-data-sets/2024q2_form345.zip"
+   ]
+  },
+  "sec-13f-datasets-page": {
+   "cats": [
+    "R",
+    "S"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 759,
+   "contentType": "text/html",
+   "bytes": 108485,
+   "lastModified": "Thu, 24 Sep 2026 19:29:59 GMT",
+   "finalUrl": "https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "SEC.gov | Form 13F Data Sets"
+   },
+   "coverage": {
+    "datesSeen": 3,
+    "firstDate": "2009-12-16",
+    "lastDate": "2013-05-17",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "/files/structureddata/data/form-13f-data-sets/01mar2026-31may2026_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01dec2025-28feb2026_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01sep2025-30nov2025_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01jun2025-31aug2025_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01mar2025-31may2025_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01dec2024-28feb2025_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01sep2024-30nov2024_form13f.zip",
+    "/files/structureddata/data/form-13f-data-sets/01jun2024-31aug2024_form13f.zip"
+   ]
+  },
+  "sec-nport-datasets-page": {
+   "cats": [
+    "T",
+    "S"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 741,
+   "contentType": "text/html",
+   "bytes": 87281,
+   "lastModified": "Thu, 24 Sep 2026 19:30:00 GMT",
+   "finalUrl": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "SEC.gov | Form N-PORT Data Sets"
+   },
+   "coverage": {
+    "datesSeen": 3,
+    "firstDate": "2009-12-16",
+    "lastDate": "2013-05-17",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "/files/dera/data/form-n-port-data-sets/2026q2_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2026q1_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2025q4_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2025q3_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2025q2_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2025q1_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2024q4_nport.zip",
+    "/files/dera/data/form-n-port-data-sets/2024q3_nport.zip"
+   ]
+  },
+  "sec-13f-securities-list": {
+   "cats": [
+    "S"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.sec.gov/rules-regulations/staff-guidance/division-investment-management-frequently-asked-questions/official-list-section-13f-securities",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 344,
+   "contentType": "text/html",
+   "bytes": 86760,
+   "lastModified": "Thu, 24 Sep 2026 17:04:32 GMT",
+   "finalUrl": "https://www.sec.gov/rules-regulations/staff-guidance/official-list-section-13f-securities",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "SEC.gov | Official List of Section 13(f) Securities"
+   },
+   "coverage": {
+    "datesSeen": 3,
+    "firstDate": "2009-12-16",
+    "lastDate": "2013-05-17",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "/files/investment/13flist2026q2.pdf",
+    "/files/investment/13flist2026q1.pdf",
+    "/files/investment/13flist2026q1.txt",
+    "/files/investment/13flist2025q4.pdf",
+    "/files/investment/13flist2025q4.txt",
+    "/files/investment/13flist2025q3.pdf",
+    "/files/investment/13flist2025q2.pdf",
+    "/files/investment/13flist2025q2.txt"
+   ]
+  },
+  "ishares-ivv-holdings": {
+   "cats": [
+    "T",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf/1467271812596.ajax?fileType=csv&fileName=IVV_holdings&dataType=fund",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 2122,
+   "contentType": "text/csv",
+   "bytes": 2251366,
+   "finalUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf/1467271812596.ajax?fileType=csv&fileName=IVV_holdings&dataType=fund",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "iShares Core S&amp;P 500 ETF | IVV"
+   },
+   "coverage": {
+    "datesSeen": 14514,
+    "firstDate": "2000-05-15",
+    "lastDate": "2026-09-23",
+    "futureDates": 0
+   }
+  },
+  "ssga-spy-holdings": {
+   "cats": [
+    "T",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "xlsx",
+   "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 494,
+   "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+   "bytes": 54443,
+   "lastModified": "Thu, 24 Sep 2026 12:46:35 GMT",
+   "finalUrl": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
+   "isZipContainer": true,
+   "isXls": false
+  },
+  "ssga-dia-holdings": {
+   "cats": [
+    "T",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "xlsx",
+   "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-dia.xlsx",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 307,
+   "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+   "bytes": 19185,
+   "lastModified": "Thu, 24 Sep 2026 10:38:22 GMT",
+   "finalUrl": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-dia.xlsx",
+   "isZipContainer": true,
+   "isXls": false
+  },
+  "invesco-qqq-holdings": {
+   "cats": [
+    "T",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ",
+   "note": null,
+   "httpStatus": 406,
+   "ms": 78,
+   "contentType": null,
+   "bytes": 0,
+   "finalUrl": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ"
+  },
+  "ark-arkk-holdings": {
+   "cats": [
+    "T"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 336,
+   "contentType": "application/octet-stream",
+   "bytes": 6275,
+   "lastModified": "Thu, 24 Sep 2026 06:05:12 GMT",
+   "finalUrl": "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
+   "table": {
+    "lines": 48,
+    "header": "date,fund,company,ticker,cusip,shares,market value ($),weight (%)",
+    "delimiter": ","
+   }
+  },
+  "ishares-exs1-dax-holdings": {
+   "cats": [
+    "T",
+    "U"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://www.ishares.com/de/privatanleger/de/produkte/251464/ishares-dax-ucits-etf-de-fund/1478358465952.ajax?fileType=csv&fileName=EXS1_holdings&dataType=fund",
+   "note": null,
+   "httpStatus": 404,
+   "ms": 275,
+   "contentType": "text/html",
+   "bytes": 15,
+   "finalUrl": "https://www.ishares.com/de/privatanleger/de/produkte/251464/ishares-dax-ucits-etf-de-fund/1478358465952.ajax?fileType=csv&fileName=EXS1_holdings&dataType=fund",
+   "bodyStart": "File not found."
+  },
+  "finra-regsho-daily": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "text",
+   "url": "https://cdn.finra.org/equity/regsho/daily/CNMSshvol20260923.txt",
+   "note": "Reg SHO Daily Short Sale Volume (nicht Short Interest)",
+   "httpStatus": 200,
+   "ms": 240,
+   "contentType": "text/plain",
+   "bytes": 550068,
+   "lastModified": "Wed, 23 Sep 2026 21:18:22 GMT",
+   "finalUrl": "https://cdn.finra.org/equity/regsho/daily/CNMSshvol20260923.txt",
+   "table": {
+    "lines": 12373,
+    "header": "Date|Symbol|ShortVolume|ShortExemptVolume|TotalVolume|Market",
+    "delimiter": "|"
+   },
+   "coverage": {
+    "datesSeen": 12372,
+    "firstDate": "2026-09-23",
+    "lastDate": "2081-06-21",
+    "futureDates": 1
+   }
+  },
+  "finra-api-short-interest": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.finra.org/data/group/otcMarket/name/consolidatedShortInterest?limit=2",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 634,
+   "contentType": "application/json",
+   "bytes": 846,
+   "finalUrl": "https://api.finra.org/data/group/otcMarket/name/consolidatedShortInterest?limit=2",
+   "json": {
+    "array": 2,
+    "fieldNames": [
+     "stockSplitFlag",
+     "previousShortPositionQuantity",
+     "averageDailyVolumeQuantity",
+     "issueName",
+     "currentShortPositionQuantity",
+     "changePreviousNumber",
+     "accountingYearMonthNumber",
+     "settlementDate",
+     "marketClassCode",
+     "symbolCode",
+     "daysToCoverQuantity",
+     "issuerServicesGroupExchangeCode",
+     "revisionFlag",
+     "changePercent"
+    ]
+   },
+   "coverage": {
+    "datesSeen": 4,
+    "firstDate": "2020-04-15",
+    "lastDate": "2020-04-15",
+    "futureDates": 0
+   }
+  },
+  "sec-fails-to-deliver-page": {
+   "cats": [
+    "Z"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 236,
+   "contentType": "text/html",
+   "bytes": 418828,
+   "lastModified": "Thu, 24 Sep 2026 19:30:01 GMT",
+   "finalUrl": "https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "SEC.gov | Fails-to-Deliver Data"
+   },
+   "coverage": {
+    "datesSeen": 3,
+    "firstDate": "2009-12-16",
+    "lastDate": "2013-05-17",
+    "futureDates": 0
+   },
+   "officialLinks": [
+    "/files/data/fails-deliver-data/cnsfails202608b.zip",
+    "/files/data/fails-deliver-data/cnsfails202608a.zip",
+    "/files/data/fails-deliver-data/cnsfails202607b.zip",
+    "/files/data/fails-deliver-data/cnsfails202607a.zip",
+    "/files/data/fails-deliver-data/cnsfails202606b.zip",
+    "/files/data/fails-deliver-data/cnsfails202606a.zip",
+    "/files/data/fails-deliver-data/cnsfails202604b.zip",
+    "/files/data/fails-deliver-data/cnsfails202604a.zip"
+   ]
+  },
+  "nasdaqtrader-nasdaqlisted": {
+   "cats": [
+    "AB",
+    "V"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "text",
+   "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 154,
+   "contentType": "text/plain",
+   "bytes": 349612,
+   "lastModified": "Thu, 24 Sep 2026 18:01:46 GMT",
+   "finalUrl": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+   "table": {
+    "lines": 5635,
+    "header": "Symbol|Security Name|Market Category|Test Issue|Financial Status|Round Lot Size|ETF|NextShares",
+    "delimiter": "|"
+   }
+  },
+  "nasdaqtrader-otherlisted": {
+   "cats": [
+    "AB"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "text",
+   "url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 77,
+   "contentType": "text/plain",
+   "bytes": 542714,
+   "lastModified": "Thu, 24 Sep 2026 18:01:46 GMT",
+   "finalUrl": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+   "table": {
+    "lines": 7652,
+    "header": "ACT Symbol|Security Name|Exchange|CQS Symbol|ETF|Round Lot Size|Test Issue|NASDAQ Symbol",
+    "delimiter": "|"
+   }
+  },
+  "bls-schedule-ics": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "ics",
+   "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+   "note": null,
+   "httpStatus": 403,
+   "ms": 111,
+   "contentType": "text/html",
+   "bytes": 1325,
+   "finalUrl": "https://www.bls.gov/schedule/news_release/bls.ics",
+   "bodyStart": "Access Denied .centerDiv { width: 60%; height:200px; margin: 0 auto; background-color:#FFFFFF ; } Bureau of Labor Statistics Access Denied The BLS is committed "
+  },
+  "bea-schedule-json": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://apps.bea.gov/API/signup/release_dates.json",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 309,
+   "contentType": "application/json",
+   "bytes": 9053,
+   "lastModified": "Tue, 14 Jul 2026 10:33:20 GMT",
+   "finalUrl": "https://apps.bea.gov/API/signup/release_dates.json",
+   "json": {
+    "keys": [
+     "U.S. International Trade in Goods and Services",
+     "Gross Domestic Product",
+     "Personal Income and Outlays",
+     "Travel and Tourism Satellite Account",
+     "U.S. International Transactions",
+     "U.S. International Investment Position",
+     "Gross Domestic Product by State and Personal Income by State",
+     "Space Economy Statellite Account",
+     "Arts and Cultural Production Satellite Account",
+     "Integrated BEA-BLS Industry-Level Production Account",
+     "Marine Economy Satellite Account",
+     "Trade in Value Added",
+     "U.S. Trade in Services Detailed Tables",
+     "Prototype Distribution of State Personal Income",
+     "New Foreign Direct Investment in the United States",
+     "Direct Investment by Country and Industry"
+    ]
+   }
+  },
+  "census-econ-calendar": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.census.gov/economic-indicators/calendar-listview.html",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 327,
+   "contentType": "text/html",
+   "bytes": 91396,
+   "lastModified": "Thu, 24 Sep 2026 19:30:07 GMT",
+   "finalUrl": "https://www.census.gov/economic-indicators/calendar-listview.html",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "US Census Bureau: Economic Indicator Release Schedule: List View"
+   },
+   "coverage": {
+    "datesSeen": 2,
+    "firstDate": "2005-03-01",
+    "lastDate": "2008-03-03",
+    "futureDates": 0
+   }
+  },
+  "fed-fomc-calendar": {
+   "cats": [
+    "P",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 134,
+   "contentType": "text/html",
+   "bytes": 165460,
+   "lastModified": "Wed, 16 Sep 2026 19:37:22 GMT",
+   "finalUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "The Fed - Meeting calendars and information"
+   }
+  },
+  "ecb-calendar-ics": {
+   "cats": [
+    "P",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 1192,
+   "contentType": "text/html",
+   "bytes": 106396,
+   "finalUrl": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Meetings of the Governing Council and the General Council"
+   },
+   "coverage": {
+    "datesSeen": 1,
+    "firstDate": "2026-09-23",
+    "lastDate": "2026-09-23",
+    "futureDates": 0
+   },
+   "officialLinks": []
+  },
+  "eurostat-release-calendar": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/catalogue/calendar?format=json&from=2026-09-24&to=2026-10-24",
+   "note": null,
+   "httpStatus": 404,
+   "ms": 559,
+   "contentType": "text/html",
+   "bytes": 9,
+   "finalUrl": "https://ec.europa.eu/eurostat/api/dissemination/catalogue/calendar?format=json&from=2026-09-24&to=2026-10-24",
+   "bodyStart": "Not Found"
+  },
+  "destatis-calendar": {
+   "cats": [
+    "P"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://www.destatis.de/DE/Presse/Termine/_inhalt.html",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 1219,
+   "contentType": "text/html",
+   "bytes": 68013,
+   "finalUrl": "https://www.destatis.de/DE/Presse/Termine/_inhalt.html",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "Veröffentlichungskalender  -  Statistisches Bundesamt"
+   }
+  },
+  "fed-press-rss": {
+   "cats": [
+    "Y",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 110,
+   "contentType": "text/xml",
+   "bytes": 14561,
+   "lastModified": "Thu, 24 Sep 2026 18:30:16 GMT",
+   "finalUrl": "https://www.federalreserve.gov/feeds/press_all.xml",
+   "markup": {
+    "root": "rss",
+    "items": 20,
+    "entries": 0,
+    "title": "FRB: Press Release - All Releases"
+   }
+  },
+  "ecb-press-rss": {
+   "cats": [
+    "Y",
+    "AG"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://www.ecb.europa.eu/rss/press.html",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 150,
+   "contentType": "application/rss+xml",
+   "bytes": 5688,
+   "finalUrl": "https://www.ecb.europa.eu/rss/press.html",
+   "markup": {
+    "root": "rss",
+    "items": 15,
+    "entries": 0,
+    "title": "ECB - European Central Bank"
+   }
+  },
+  "sec-press-rss": {
+   "cats": [
+    "Y"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://www.sec.gov/news/pressreleases.rss",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 38,
+   "contentType": "application/rss+xml",
+   "bytes": 18377,
+   "lastModified": "Thu, 24 Sep 2026 19:26:41 GMT",
+   "finalUrl": "https://www.sec.gov/news/pressreleases.rss",
+   "markup": {
+    "root": "rss",
+    "items": 25,
+    "entries": 0,
+    "title": "Press Releases"
+   }
+  },
+  "bls-news-rss": {
+   "cats": [
+    "Y",
+    "E"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "xml",
+   "url": "https://www.bls.gov/feed/bls_latest.rss",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 128,
+   "contentType": "application/rss+xml",
+   "bytes": 5331,
+   "lastModified": "Fri, 18 Sep 2026 14:02:04 GMT",
+   "finalUrl": "https://www.bls.gov/feed/bls_latest.rss",
+   "markup": {
+    "root": "rss",
+    "items": 1,
+    "entries": 0,
+    "title": "Major Economic Indicators Latest Numbers"
+   }
+  },
+  "house-clerk-fd-zip": {
+   "cats": [
+    "AD",
+    "AE"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2026FD.zip",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 64,
+   "contentType": "application/x-zip-compressed",
+   "bytes": 60794,
+   "lastModified": "Thu, 24 Sep 2026 13:00:17 GMT",
+   "finalUrl": "https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2026FD.zip",
+   "isZip": true
+  },
+  "senate-efd-search": {
+   "cats": [
+    "AD",
+    "AE"
+   ],
+   "priority": 1,
+   "auth": "NO_AUTH",
+   "format": "html",
+   "url": "https://efdsearch.senate.gov/search/",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 884,
+   "contentType": "text/html",
+   "bytes": 11880,
+   "finalUrl": "https://efdsearch.senate.gov/search/home/",
+   "markup": {
+    "root": "html",
+    "items": 0,
+    "entries": 0,
+    "title": "eFD: Home"
+   }
+  },
+  "cboe-putcall-daily": {
+   "cats": [
+    "AH",
+    "W"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "csv",
+   "url": "https://cdn.cboe.com/resources/options/volume_and_call_put_ratios/totalpc.csv",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 155,
+   "contentType": "text/csv",
+   "bytes": 139830,
+   "lastModified": "Fri, 30 Oct 2020 12:31:08 GMT",
+   "finalUrl": "https://cdn.cboe.com/resources/options/volume_and_call_put_ratios/totalpc.csv",
+   "table": {
+    "lines": 3256,
+    "header": "Volume and Put/Call Ratio data is compiled for the convenience of site visitors and is furnished without responsibility for accuracy and is accepted by the site visitor on the condition that transmission or omissions sha",
+    "delimiter": ","
+   }
+  },
+  "occ-volume": {
+   "cats": [
+    "AH"
+   ],
+   "priority": 2,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://marketdata.theocc.com/volume-query?reportDate=20260923&format=csv&volumeQueryType=O&symbolType=ALL&symbol=&reportType=D&accountType=ALL&productKind=ALL&porc=BOTH",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 2076,
+   "contentType": "application/octet-stream",
+   "bytes": 4516081,
+   "finalUrl": "https://marketdata.theocc.com/volume-query?reportDate=20260923&format=csv&volumeQueryType=O&symbolType=ALL&symbol=&reportType=D&accountType=ALL&productKind=ALL&porc=BOTH",
+   "table": {
+    "lines": 137945,
+    "header": "quantity,underlying,symbol,actype,porc,exchange,actdate",
+    "delimiter": ","
+   }
+  },
+  "french-data-library": {
+   "cats": [
+    "V",
+    "W"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 770,
+   "contentType": "application/x-zip-compressed",
+   "bytes": 178044,
+   "lastModified": "Fri, 04 Sep 2026 14:47:39 GMT",
+   "finalUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+   "isZip": true
+  },
+  "french-industry-portfolios": {
+   "cats": [
+    "V"
+   ],
+   "priority": 3,
+   "auth": "NO_AUTH",
+   "format": "zip",
+   "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/12_Industry_Portfolios_daily_CSV.zip",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 949,
+   "contentType": "application/x-zip-compressed",
+   "bytes": 1092395,
+   "lastModified": "Fri, 04 Sep 2026 14:48:10 GMT",
+   "finalUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/12_Industry_Portfolios_daily_CSV.zip",
+   "isZip": true
+  },
+  "coingecko-list": {
+   "cats": [
+    "AK"
+   ],
+   "priority": 5,
+   "auth": "NO_AUTH",
+   "format": "json",
+   "url": "https://api.coingecko.com/api/v3/coins/list",
+   "note": null,
+   "httpStatus": 200,
+   "ms": 77,
+   "contentType": "application/json",
+   "bytes": 1395956,
+   "finalUrl": "https://api.coingecko.com/api/v3/coins/list",
+   "json": {
+    "array": 21551,
+    "fieldNames": [
+     "id",
+     "symbol",
+     "name"
+    ]
+   }
+  }
+ },
+ "fred": {
+  "CPIAUCSL": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 955,
+   "firstDate": "1947-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Bureau of Labor Statistics Release: Consumer Price Index Units: Ind"
+  },
+  "PCEPI": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 811,
+   "firstDate": "1959-01-01",
+   "lastDate": "2026-07-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Bureau of Economic Analysis Release: Personal Income and Outlays Un"
+  },
+  "UNRATE": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 943,
+   "firstDate": "1948-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Bureau of Labor Statistics Release: Employment Situation Units: Per"
+  },
+  "PAYEMS": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 1052,
+   "firstDate": "1939-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Bureau of Labor Statistics Release: Employment Situation Units: Tho"
+  },
+  "GDPC1": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 318,
+   "firstDate": "1947-01-01",
+   "lastDate": "2026-04-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Bureau of Economic Analysis Release: Gross Domestic Product Units:"
+  },
+  "INDPRO": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 1292,
+   "firstDate": "1919-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Board of Governors of the Federal Reserve System (US) Release: G.17 Indu"
+  },
+  "RSAFS": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 416,
+   "firstDate": "1992-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Census Bureau Release: Advance Monthly Sales for Retail and Food Se"
+  },
+  "HOUST": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 812,
+   "firstDate": "1959-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Census Bureau Source: U.S. Department of Housing and Urban Developm"
+  },
+  "UMCSENT": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 675,
+   "firstDate": "1952-11-01",
+   "lastDate": "2026-07-01",
+   "licenseClass": "copyright-citation-required",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: University of Michigan Release: Surveys of Consumers Units: Index 1966:Q"
+  },
+  "M2SL": {
+   "cat": "E",
+   "httpStatus": 200,
+   "observations": 812,
+   "firstDate": "1959-01-01",
+   "lastDate": "2026-08-01",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Board of Governors of the Federal Reserve System (US) Release: H.6 Money"
+  },
+  "WALCL": {
+   "cat": "AG",
+   "httpStatus": 200,
+   "observations": 1240,
+   "firstDate": "2002-12-18",
+   "lastDate": "2026-09-16",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Board of Governors of the Federal Reserve System (US) Release: H.4.1 Fac"
+  },
+  "DFF": {
+   "cat": "D",
+   "httpStatus": 200,
+   "observations": 26382,
+   "firstDate": "1954-07-01",
+   "lastDate": "2026-09-22",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Board of Governors of the Federal Reserve System (US) Release: H.15 Sele"
+  },
+  "T10Y2Y": {
+   "cat": "D",
+   "httpStatus": 200,
+   "observations": 12575,
+   "firstDate": "1976-06-01",
+   "lastDate": "2026-09-23",
+   "licenseClass": "copyright-citation-required",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Federal Reserve Bank of St. Louis Release: Interest Rate Spreads Units:"
+  },
+  "BAMLH0A0HYM2": {
+   "cat": "D",
+   "httpStatus": 200,
+   "observations": 787,
+   "firstDate": "2023-09-25",
+   "lastDate": "2026-09-23",
+   "licenseClass": "copyright-pre-approval",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Ice Data Indices, LLC Release: ICE BofA Indices Units: Percent , Not Sea"
+  },
+  "BAA10Y": {
+   "cat": "D",
+   "httpStatus": 200,
+   "observations": 10181,
+   "firstDate": "1986-01-02",
+   "lastDate": "2026-09-22",
+   "licenseClass": "copyright-citation-required",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Federal Reserve Bank of St. Louis Release: Interest Rate Spreads Units:"
+  },
+  "DCOILWTICO": {
+   "cat": "B",
+   "httpStatus": 200,
+   "observations": 9507,
+   "firstDate": "1986-01-02",
+   "lastDate": "2026-09-22",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: U.S. Energy Information Administration Release: Spot Prices Units: Dolla"
+  },
+  "GOLDAMGBD228NLBM": {
+   "cat": "C",
+   "httpStatus": 404,
+   "observations": 0,
+   "firstDate": null,
+   "lastDate": null,
+   "licenseClass": null,
+   "sourceLine": null
+  },
+  "PCOPPUSDM": {
+   "cat": "B",
+   "httpStatus": 200,
+   "observations": 415,
+   "firstDate": "1992-01-01",
+   "lastDate": "2026-07-01",
+   "licenseClass": "copyright-citation-required",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: International Monetary Fund Release: Primary Commodity Prices Units: U.S"
+  },
+  "VIXCLS": {
+   "cat": "AH",
+   "httpStatus": 200,
+   "observations": 9279,
+   "firstDate": "1990-01-02",
+   "lastDate": "2026-09-22",
+   "licenseClass": "copyright-citation-required",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Chicago Board Options Exchange Release: CBOE Market Statistics Units: In"
+  },
+  "NASDAQCOM": {
+   "cat": "A",
+   "httpStatus": 200,
+   "observations": 14026,
+   "firstDate": "1971-02-05",
+   "lastDate": "2026-09-23",
+   "licenseClass": "copyright-pre-approval",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Nasdaq, Inc. Release: Nasdaq Daily Index Data Units: Index Feb 5, 1971=1"
+  },
+  "DEXUSEU": {
+   "cat": "AJ",
+   "httpStatus": 200,
+   "observations": 6950,
+   "firstDate": "1999-01-04",
+   "lastDate": "2026-09-18",
+   "licenseClass": "copyright-public-domain",
+   "sourceLine": "ph Image Link Account Tools Add to Data List Get Email Notification &nbsp Notes Source: Board of Governors of the Federal Reserve System (US) Release: H.10 Fore"
+  }
+ },
+ "terms": {
+  "sec": {
+   "url": "https://www.sec.gov/about/privacy-information",
+   "httpStatus": 200,
+   "finalUrl": "https://www.sec.gov/about/privacy-information",
+   "excerpt": "mplaints and inquiries. Comments made in response to a Request for Comments are public information and are posted on the site in the rulemaking section. SEC uses GovDelivery to send e-newsletters, alerts and other messages to visitors who subscribe to them. To subscribe to an SEC product, you must provide an email address and indicate your subscription preferences, including the items you want to receive. The email s"
+  },
+  "sec-access": {
+   "url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+   "httpStatus": 200,
+   "finalUrl": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+   "excerpt": "I am getting an \"Undeclared Automated Tool\" error message. How do I declare my user agent? Do you provide API data services? Why am I receiving an “Access Denied” message? I want to programmatically download EDGAR filings. Can you help with coding guidance? What is the lag time between the filing acceptance time from the EDGAR Filer System and availability of the documents on sec.gov? How do I get filings as quickly"
+  },
+  "bls": {
+   "url": "https://www.bls.gov/opub/copyright-information.htm",
+   "httpStatus": 403,
+   "finalUrl": "https://www.bls.gov/opub/copyright-information.htm",
+   "excerpt": null
+  },
+  "bea": {
+   "url": "https://www.bea.gov/help/guidelines-for-citing-bea",
+   "httpStatus": 200,
+   "finalUrl": "https://www.bea.gov/help/guidelines-for-citing-bea",
+   "excerpt": "unwieldy for printed documents. Online documents - Please link directly to the cited item. Citing Examples News Releases Our suggestion… U.S. Bureau of Economic Analysis, [“Title of the news release,”] news release (Date of the release), URL. Some examples… U.S. Bureau of Economic Analysis, “Personal Income and Outlays, July 2012,” news release (August 30, 2012), www.bea.gov/sites/default/files/newsreleases/national"
+  },
+  "census": {
+   "url": "https://www.census.gov/about/policies/citation.html",
+   "httpStatus": 200,
+   "finalUrl": "https://www.census.gov/about/policies/citation.html",
+   "excerpt": "e their own estimates using data from disseminated tables and other data should cite the Census Bureau as the source of the original data only. Conclusions drawn from any analysis of these data are the sole responsibility of the performing party. Citation Information and Examples Use the suggested citation if one is provided with the publication, data, code, or tool. Citations formatting and structure vary based on a"
+  },
+  "fed": {
+   "url": "https://www.federalreserve.gov/disclaimer.htm",
+   "httpStatus": 200,
+   "finalUrl": "https://www.federalreserve.gov/disclaimer.htm",
+   "excerpt": "dorsement, a recommendation, or a favoring by the U.S. government or the Board. Copyright/trademark Unless otherwise indicated, information on Board's website is in the public domain and may be copied and distributed without permission. Please cite to the Board as the source of the information. For any photo, graphic, or other material that is identified as being associated with a non-Board (such as materials with a"
+  },
+  "treasury-fiscaldata": {
+   "url": "https://fiscaldata.treasury.gov/about-us/",
+   "httpStatus": 200,
+   "finalUrl": "https://fiscaldata.treasury.gov/about-us/",
+   "excerpt": "tents About Fiscal Data Mission Who We Are What Makes Fiscal Data... Background Open Data Policy International Monetary Fund... Data Sources Understanding the Data Development and Releases Licensing More Information FAQs How often is the data updated? How is data being rolled out... How can I learn about... When is new data uploaded... Why do some datasets... I’m new to using APIs... Where can I find information... W"
+  },
+  "ecb": {
+   "url": "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
+   "httpStatus": 200,
+   "finalUrl": "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
+   "excerpt": "Disclaimer &amp; copyright Skip to: Skip to navigation Skip to content Skip to footer EN Български Čeština Dansk Deutsch Eλληνικά English Español Eesti keel Suomi Français Gaeilge Hrvatski Magyar Italiano Lietuvių Latviešu Malti Nederlands Polski Português Română Slovenčina Slovenščina Svenska Menu Monetary policy & markets Monetary policy & markets Our monetary policy strategy, the tools we use and the impact they"
+  },
+  "eurostat": {
+   "url": "https://ec.europa.eu/eurostat/about-us/policies/copyright",
+   "httpStatus": 404,
+   "finalUrl": "https://ec.europa.eu/eurostat/about-us/policies/copyright",
+   "excerpt": null
+  },
+  "worldbank": {
+   "url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets",
+   "httpStatus": 200,
+   "finalUrl": "https://www.worldbank.org/ext/en/legal/terms-conditions",
+   "excerpt": "s. The content available on this platform is provided for informational and non-commercial purposes only, unless otherwise stated. We encourage you to read these terms carefully before using the site or downloading any available materials. lp-heading-top-xxlarge lp-heading-bottom-xlarge col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xs-12 col-sm-12 col-md-12 col-lg-12 More in this section Using Our Site Datasets Open Know"
+  },
+  "oecd": {
+   "url": "https://www.oecd.org/en/about/terms-conditions.html",
+   "httpStatus": 403,
+   "finalUrl": "https://www.oecd.org/en/about/terms-conditions.html",
+   "excerpt": null
+  },
+  "imf": {
+   "url": "https://www.imf.org/en/About/copyright-and-terms",
+   "httpStatus": 403,
+   "finalUrl": "https://www.imf.org/en/About/copyright-and-terms",
+   "excerpt": null
+  },
+  "destatis": {
+   "url": "https://www.destatis.de/DE/Service/Impressum/nutzungsbedingungen.html",
+   "httpStatus": 404,
+   "finalUrl": "https://www.destatis.de/DE/Service/Impressum/nutzungsbedingungen.html",
+   "excerpt": null
+  },
+  "bundesbank": {
+   "url": "https://www.bundesbank.de/en/homepage/terms-of-use",
+   "httpStatus": 200,
+   "finalUrl": "https://www.bundesbank.de/en/homepage/user-information",
+   "excerpt": "recycling Legal framework Cash processing systems Environmental sustainability Reproduction regulations Events Payment systems back Overview Payment systems Digital euro back Overview Digital euro At a glance State of Play FAQ – Digital euro TARGET back Overview TARGET TARGET Services Common components of TARGET Services Legal framework Committee work Restricted service area T2 TARGET2-Securities TIPS ECMS Other col"
+  },
+  "boe": {
+   "url": "https://www.bankofengland.co.uk/legal",
+   "httpStatus": 200,
+   "finalUrl": "https://www.bankofengland.co.uk/legal",
+   "excerpt": "e other than that set out above, please contact enquiries@bankofengland.co.uk . Copyright Unless otherwise stated, the copyright and any other rights in the contents of the Resources, including but not limited to images, text and data, are owned by the Governor and Company of the Bank of England. The Bank will endeavour to acknowledge third-party copyright. If third-party copyright has not been properly acknowledged,"
+  },
+  "snb": {
+   "url": "https://data.snb.ch/en/help/copyright",
+   "httpStatus": 200,
+   "finalUrl": "https://data.snb.ch/en/help/copyright",
+   "excerpt": null
+  },
+  "cftc": {
+   "url": "https://www.cftc.gov/Disclaimers/index.htm",
+   "httpStatus": 404,
+   "finalUrl": "https://www.cftc.gov/Disclaimers/index.htm",
+   "excerpt": null
+  },
+  "finra": {
+   "url": "https://www.finra.org/finra-data/terms-of-use",
+   "httpStatus": 404,
+   "finalUrl": "https://www.finra.org/finra-data/terms-of-use",
+   "excerpt": null
+  },
+  "nasdaqtrader": {
+   "url": "https://www.nasdaqtrader.com/Trader.aspx?id=TermsOfUse",
+   "httpStatus": 200,
+   "finalUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=http404",
+   "excerpt": null
+  },
+  "cboe": {
+   "url": "https://www.cboe.com/about/legal/website-terms-of-use/",
+   "httpStatus": 404,
+   "finalUrl": "https://www.cboe.com/about/legal/website-terms-of-use/",
+   "excerpt": null
+  },
+  "lbma": {
+   "url": "https://www.lbma.org.uk/prices-and-data/lbma-prices-terms-of-use",
+   "httpStatus": 404,
+   "finalUrl": "https://www.lbma.org.uk/prices-and-data/lbma-prices-terms-of-use",
+   "excerpt": null
+  },
+  "ishares": {
+   "url": "https://www.ishares.com/us/terms-conditions",
+   "httpStatus": 404,
+   "finalUrl": "https://www.ishares.com/us/terms-conditions",
+   "excerpt": null
+  },
+  "ssga": {
+   "url": "https://www.ssga.com/us/en/intermediary/terms-of-use",
+   "httpStatus": 200,
+   "finalUrl": "https://www.ssga.com/us/en/intermediary",
+   "excerpt": "ng the risk of loss of principal. The whole or any part of this work may not be reproduced, copied or transmitted or any of its contents disclosed to third parties without SSGA’s express written consent. Diversification does not ensure a profit or guarantee against loss. All information is from SSGA unless otherwise noted and has been obtained from sources believed to be reliable, but its accuracy is not guaranteed."
+  },
+  "invesco": {
+   "url": "https://www.invesco.com/us/en/terms-of-use.html",
+   "httpStatus": 406,
+   "finalUrl": "https://www.invesco.com/us/en/terms-of-use.html",
+   "excerpt": null
+  },
+  "ark": {
+   "url": "https://www.ark-funds.com/terms-of-use",
+   "httpStatus": 403,
+   "finalUrl": "https://www.ark-funds.com/terms-of-use",
+   "excerpt": null
+  },
+  "house-clerk": {
+   "url": "https://disclosures-clerk.house.gov/FinancialDisclosure",
+   "httpStatus": 200,
+   "finalUrl": "https://disclosures-clerk.house.gov/FinancialDisclosure",
+   "excerpt": null
+  },
+  "french": {
+   "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+   "httpStatus": 200,
+   "finalUrl": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+   "excerpt": "he December 2024 data release. Beginning with the January 2025 data release, we use the new Stock and Indexes Flat File Format 2.0 (CIZ) files to generate US research returns. Historical data based on the Legacy (FIZ) format can be found here . More details of the new Flat File Format 2.0 (CIZ) and the differences with the Legacy (FIZ) format can be found in the executive summary and the cross reference guide provide"
+  },
+  "coingecko": {
+   "url": "https://www.coingecko.com/en/api_terms",
+   "httpStatus": 200,
+   "finalUrl": "https://www.coingecko.com/en/api_terms",
+   "excerpt": "he industry. From large companies wearing the Penguin, to being featured in ETF commercials, to garnering millions of followers and over 100 billion views, the Pengu has become a cultural icon making PENGU the world’s social currency.&quot;}}}},{&quot;item&quot;:{&quot;id&quot;:&quot;edel&quot;,&quot;coin_id&quot;:70661,&quot;name&quot;:&quot;Edel&quot;,&quot;symbol&quot;:&quot;EDEL&quot;,&quot;market_cap_rank&quot;:"
+  },
+  "fmp": {
+   "url": "https://site.financialmodelingprep.com/terms-of-service",
+   "httpStatus": 200,
+   "finalUrl": "https://site.financialmodelingprep.com/terms-of-service",
+   "excerpt": "/Sheets Add-on Documentation Function Explorer Third-Party Integrations Pricing Personal Use Commercial Use Sign In Sign Up Terms of Service - FMP API Last updated: August 1, 2023 THIS SERVICES SUBSCRIPTION AGREEMENT (the &quot;Agreement&quot;) is made and entered into by and between FMP (“FMP”) and Customer (as defined in the applicable Order Form or customer account). This Agreement describes the terms under which"
+  },
+  "finnhub": {
+   "url": "https://finnhub.io/terms-of-service",
+   "httpStatus": 200,
+   "finalUrl": "https://finnhub.io/terms-of-service",
+   "excerpt": "to evaluate and enhance performance of the Website and to study usage patterns. Redistribution Rights and Personal Use You hereby agree to not redistribute or share access to data or derived results from the data obtained from Finnhub with anyone or any 3rd party without written approval from Finnhub. All plan listed on Finnhub website is strictly for personal use unless explicitly stated otherwise. Personal plan can"
+  }
+ },
+ "fmpBenchmark": {
+  "/stable/index-list": {
+   "cat": "A",
+   "httpStatus": 200,
+   "rows": 427,
+   "fieldNames": [
+    "symbol",
+    "name",
+    "exchange",
+    "currency"
+   ],
+   "message": null
+  },
+  "/stable/historical-price-eod/light?%5EGSPC": {
+   "cat": "A",
+   "httpStatus": 200,
+   "rows": 9,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "price",
+    "volume"
+   ],
+   "message": null
+  },
+  "/stable/commodities-list": {
+   "cat": "B",
+   "httpStatus": 200,
+   "rows": 40,
+   "fieldNames": [
+    "symbol",
+    "name",
+    "exchange",
+    "tradeMonth",
+    "currency"
+   ],
+   "message": null
+  },
+  "/stable/historical-price-eod/light?GCUSD": {
+   "cat": "B",
+   "httpStatus": 200,
+   "rows": 9,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "price",
+    "volume"
+   ],
+   "message": null
+  },
+  "/stable/treasury-rates": {
+   "cat": "D",
+   "httpStatus": 200,
+   "rows": 63,
+   "fieldNames": [
+    "date",
+    "month1",
+    "month2",
+    "month3",
+    "month6",
+    "year1",
+    "year2",
+    "year3",
+    "year5",
+    "year7",
+    "year10",
+    "year20",
+    "year30"
+   ],
+   "message": null
+  },
+  "/stable/economic-indicators": {
+   "cat": "AG",
+   "httpStatus": 200,
+   "rows": 3,
+   "fieldNames": [
+    "name",
+    "date",
+    "value"
+   ],
+   "message": null
+  },
+  "/stable/economic-calendar": {
+   "cat": "P",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/income-statement?AAPL": {
+   "cat": "G",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "date",
+    "symbol",
+    "reportedCurrency",
+    "cik",
+    "filingDate",
+    "acceptedDate",
+    "fiscalYear",
+    "period",
+    "revenue",
+    "costOfRevenue",
+    "grossProfit",
+    "researchAndDevelopmentExpenses",
+    "generalAndAdministrativeExpenses",
+    "sellingAndMarketingExpenses",
+    "sellingGeneralAndAdministrativeExpenses",
+    "otherExpenses",
+    "operatingExpenses",
+    "costAndExpenses"
+   ],
+   "message": null
+  },
+  "/stable/key-metrics-ttm?AAPL": {
+   "cat": "G",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "marketCap",
+    "enterpriseValueTTM",
+    "evToSalesTTM",
+    "evToOperatingCashFlowTTM",
+    "evToFreeCashFlowTTM",
+    "evToEBITDATTM",
+    "netDebtToEBITDATTM",
+    "currentRatioTTM",
+    "incomeQualityTTM",
+    "grahamNumberTTM",
+    "grahamNetNetTTM",
+    "taxBurdenTTM",
+    "interestBurdenTTM",
+    "workingCapitalTTM",
+    "investedCapitalTTM",
+    "returnOnAssetsTTM",
+    "operatingReturnOnAssetsTTM"
+   ],
+   "message": null
+  },
+  "/stable/profile?SAP": {
+   "cat": "G",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "price",
+    "marketCap",
+    "beta",
+    "lastDividend",
+    "range",
+    "change",
+    "changePercentage",
+    "volume",
+    "averageVolume",
+    "companyName",
+    "currency",
+    "cik",
+    "isin",
+    "cusip",
+    "exchangeFullName",
+    "exchange",
+    "industry"
+   ],
+   "message": null
+  },
+  "/stable/income-statement?SAP": {
+   "cat": "G",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Premium Query Parameter: 'Special Endpoint : This value set for 'symbol' is not available under your current subscription please visit our subscription page to "
+  },
+  "/stable/sec-filings-search/symbol?AAPL": {
+   "cat": "H",
+   "httpStatus": 200,
+   "rows": 11,
+   "fieldNames": [
+    "symbol",
+    "cik",
+    "filingDate",
+    "acceptedDate",
+    "formType",
+    "link",
+    "finalLink"
+   ],
+   "message": null
+  },
+  "/stable/analyst-estimates?AAPL": {
+   "cat": "I",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "revenueLow",
+    "revenueHigh",
+    "revenueAvg",
+    "ebitdaLow",
+    "ebitdaHigh",
+    "ebitdaAvg",
+    "ebitLow",
+    "ebitHigh",
+    "ebitAvg",
+    "netIncomeLow",
+    "netIncomeHigh",
+    "netIncomeAvg",
+    "sgaExpenseLow",
+    "sgaExpenseHigh",
+    "sgaExpenseAvg",
+    "epsAvg"
+   ],
+   "message": null
+  },
+  "/stable/grades?AAPL": {
+   "cat": "J",
+   "httpStatus": 200,
+   "rows": 1802,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "gradingCompany",
+    "previousGrade",
+    "newGrade",
+    "action"
+   ],
+   "message": null
+  },
+  "/stable/grades-consensus?AAPL": {
+   "cat": "J",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "strongBuy",
+    "buy",
+    "hold",
+    "sell",
+    "strongSell",
+    "consensus"
+   ],
+   "message": null
+  },
+  "/stable/price-target-consensus?AAPL": {
+   "cat": "K",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "targetHigh",
+    "targetLow",
+    "targetConsensus",
+    "targetMedian"
+   ],
+   "message": null
+  },
+  "/stable/earnings-calendar": {
+   "cat": "L",
+   "httpStatus": 200,
+   "rows": 75,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "epsActual",
+    "epsEstimated",
+    "revenueActual",
+    "revenueEstimated",
+    "lastUpdated"
+   ],
+   "message": null
+  },
+  "/stable/dividends-calendar": {
+   "cat": "M",
+   "httpStatus": 200,
+   "rows": 45,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "recordDate",
+    "paymentDate",
+    "declarationDate",
+    "adjDividend",
+    "dividend",
+    "yield",
+    "frequency"
+   ],
+   "message": null
+  },
+  "/stable/splits-calendar": {
+   "cat": "N",
+   "httpStatus": 200,
+   "rows": 0,
+   "fieldNames": null,
+   "message": null
+  },
+  "/stable/ipos-calendar": {
+   "cat": "O",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/insider-trading/latest": {
+   "cat": "Q",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "filingDate",
+    "transactionDate",
+    "reportingCik",
+    "companyCik",
+    "transactionType",
+    "securitiesOwned",
+    "reportingName",
+    "typeOfOwner",
+    "acquisitionOrDisposition",
+    "directOrIndirect",
+    "formType",
+    "securitiesTransacted",
+    "price",
+    "securityName",
+    "url"
+   ],
+   "message": null
+  },
+  "/stable/institutional-ownership/symbol-positions-summary?AAPL": {
+   "cat": "R",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/institutional-ownership/latest": {
+   "cat": "S",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/etf/holdings?SPY": {
+   "cat": "T",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/sp500-constituent": {
+   "cat": "U",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/nasdaq-constituent": {
+   "cat": "U",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/dowjones-constituent": {
+   "cat": "U",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/sector-performance-snapshot": {
+   "cat": "V",
+   "httpStatus": 200,
+   "rows": 11,
+   "fieldNames": [
+    "date",
+    "sector",
+    "exchange",
+    "averageChange"
+   ],
+   "message": null
+  },
+  "/stable/historical-sector-performance": {
+   "cat": "W",
+   "httpStatus": 200,
+   "rows": 21,
+   "fieldNames": [
+    "date",
+    "sector",
+    "exchange",
+    "averageChange"
+   ],
+   "message": null
+  },
+  "/stable/biggest-gainers": {
+   "cat": "X",
+   "httpStatus": 200,
+   "rows": 50,
+   "fieldNames": [
+    "symbol",
+    "price",
+    "name",
+    "change",
+    "changesPercentage",
+    "exchange"
+   ],
+   "message": null
+  },
+  "/stable/most-actives": {
+   "cat": "X",
+   "httpStatus": 200,
+   "rows": 50,
+   "fieldNames": [
+    "symbol",
+    "price",
+    "name",
+    "change",
+    "changesPercentage",
+    "exchange"
+   ],
+   "message": null
+  },
+  "/stable/news/stock-latest": {
+   "cat": "Y",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/news/press-releases-latest": {
+   "cat": "Y",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/shares-float?AAPL": {
+   "cat": "Z",
+   "httpStatus": 200,
+   "rows": 1,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "freeFloat",
+    "floatShares",
+    "outstandingShares",
+    "source"
+   ],
+   "message": null
+  },
+  "/stable/shares-float-all": {
+   "cat": "AA",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "freeFloat",
+    "floatShares",
+    "outstandingShares"
+   ],
+   "message": null
+  },
+  "/stable/symbol-change": {
+   "cat": "AB",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/delisted-companies": {
+   "cat": "AB",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "companyName",
+    "exchange",
+    "ipoDate",
+    "delistedDate"
+   ],
+   "message": null
+  },
+  "/stable/esg-disclosures?AAPL": {
+   "cat": "AC",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/senate-latest": {
+   "cat": "AD",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "senateID",
+    "disclosureDate",
+    "transactionDate",
+    "firstName",
+    "lastName",
+    "office",
+    "district",
+    "owner",
+    "assetDescription",
+    "assetType",
+    "type",
+    "amount",
+    "comment",
+    "link"
+   ],
+   "message": null
+  },
+  "/stable/house-latest": {
+   "cat": "AE",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "senateID",
+    "disclosureDate",
+    "transactionDate",
+    "firstName",
+    "lastName",
+    "office",
+    "district",
+    "owner",
+    "assetDescription",
+    "assetType",
+    "type",
+    "amount",
+    "capitalGainsOver200USD",
+    "comment",
+    "link"
+   ],
+   "message": null
+  },
+  "/stable/mergers-acquisitions-latest": {
+   "cat": "AF",
+   "httpStatus": 200,
+   "rows": 5,
+   "fieldNames": [
+    "symbol",
+    "companyName",
+    "cik",
+    "targetedCompanyName",
+    "targetedCik",
+    "targetedSymbol",
+    "transactionDate",
+    "acceptedDate",
+    "link"
+   ],
+   "message": null
+  },
+  "/stable/historical-price-eod/light?%5EVIX": {
+   "cat": "AH",
+   "httpStatus": 200,
+   "rows": 9,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "price",
+    "volume"
+   ],
+   "message": null
+  },
+  "/stable/batch-commodity-quotes": {
+   "cat": "AI",
+   "httpStatus": 402,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financial"
+  },
+  "/stable/forex-list": {
+   "cat": "AJ",
+   "httpStatus": 200,
+   "rows": 1551,
+   "fieldNames": [
+    "symbol",
+    "fromCurrency",
+    "toCurrency",
+    "fromName",
+    "toName"
+   ],
+   "message": null
+  },
+  "/stable/cryptocurrency-list": {
+   "cat": "AK",
+   "httpStatus": 200,
+   "rows": 4793,
+   "fieldNames": [
+    "symbol",
+    "name",
+    "exchange",
+    "icoDate",
+    "circulatingSupply",
+    "totalSupply"
+   ],
+   "message": null
+  }
+ },
+ "finnhubBenchmark": {
+  "/calendar/earnings": {
+   "cat": "L",
+   "httpStatus": 200,
+   "rows": 109,
+   "fieldNames": [
+    "symbol",
+    "date",
+    "hour",
+    "quarter",
+    "year",
+    "epsEstimate",
+    "epsActual",
+    "revenueEstimate",
+    "revenueActual"
+   ],
+   "message": null
+  },
+  "/calendar/ipo": {
+   "cat": "O",
+   "httpStatus": 200,
+   "rows": 4,
+   "fieldNames": [
+    "date",
+    "exchange",
+    "name",
+    "numberOfShares",
+    "price",
+    "status",
+    "symbol",
+    "totalSharesValue"
+   ],
+   "message": null
+  },
+  "/stock/recommendation": {
+   "cat": "J",
+   "httpStatus": 200,
+   "rows": 4,
+   "fieldNames": [
+    "symbol",
+    "period",
+    "strongBuy",
+    "buy",
+    "hold",
+    "sell",
+    "strongSell"
+   ],
+   "message": null
+  },
+  "/stock/price-target": {
+   "cat": "K",
+   "httpStatus": 403,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "You don't have access to this resource."
+  },
+  "/stock/eps-estimate": {
+   "cat": "I",
+   "httpStatus": 403,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "You don't have access to this resource."
+  },
+  "/stock/insider-transactions": {
+   "cat": "Q",
+   "httpStatus": 200,
+   "rows": 116,
+   "fieldNames": [
+    "name",
+    "share",
+    "change",
+    "filingDate",
+    "transactionDate",
+    "transactionCode",
+    "transactionPrice",
+    "id",
+    "symbol",
+    "source",
+    "isDerivative",
+    "currency"
+   ],
+   "message": null
+  },
+  "/company-news": {
+   "cat": "Y",
+   "httpStatus": 200,
+   "rows": 228,
+   "fieldNames": [
+    "category",
+    "datetime",
+    "headline",
+    "id",
+    "image",
+    "related",
+    "source",
+    "summary",
+    "url"
+   ],
+   "message": null
+  },
+  "/calendar/economic": {
+   "cat": "P",
+   "httpStatus": 403,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "You don't have access to this resource."
+  },
+  "/index/constituents": {
+   "cat": "U",
+   "httpStatus": 403,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "You don't have access to this resource."
+  },
+  "/stock/ownership": {
+   "cat": "R",
+   "httpStatus": 403,
+   "rows": 0,
+   "fieldNames": null,
+   "message": "You don't have access to this resource."
+  }
+ },
+ "requests": 204
+}
