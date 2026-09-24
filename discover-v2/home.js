@@ -189,7 +189,6 @@
     if (options.evidence) copy.appendChild(node('p', 'v2-world-evidence', options.evidence));
     if (options.href) copy.appendChild(link(options.cta || 'Themenwelt entdecken →', options.href, 'v2-pill v2-pill-light'));
     box.appendChild(copy);
-    box.appendChild(node('p', 'v2-theme-banner-tag', theme.tagline));
     return box;
   }
   function themesRail(ctx) {
@@ -309,9 +308,11 @@
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
     intro.appendChild(introCopy);
-    var orb = node('div', 'v2-intro-visual'); orb.setAttribute('aria-hidden', 'true');
-    orb.appendChild(node('span', 'v2-orb', '')); orb.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
-    intro.appendChild(orb);
+    // Hero-Bild 16:9 (1672×941): die Flaeche hat dasselbe Seitenverhaeltnis, es wird nichts beschnitten.
+    var visual = node('div', 'v2-intro-visual'); visual.setAttribute('aria-hidden', 'true');
+    visual.appendChild(el('img', { src: '/assets/themen/00-discovery-hero.webp', alt: '', width: '1672', height: '941', decoding: 'async', fetchpriority: 'high' }));
+    visual.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
+    intro.appendChild(visual);
     page.appendChild(intro);
     var filter = 'alle';
     function applyFilter() {
