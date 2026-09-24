@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-24T09:31:29.550Z",
+  "generatedAt": "2026-09-24T11:58:00.604Z",
   "loopProtection": "LOOP_PROTECTION_OPERATIONALLY_SUPPORTED",
   "loopProtectionNote": "Kein rekursiver Result-Commit beobachtet. Die verfuegbare Schnittstelle liefert keine vollstaendige Run-Historie; FORMALLY_EXHAUSTIVE_RUN_COUNT_PROVEN ist damit NICHT erreicht. Alle Schutzschichten bleiben aktiv.",
   "entries": [
@@ -587,6 +587,19 @@
       "observed": true,
       "timestampProvenance": "observed",
       "note": "Ergebnis und Asset bestaetigt."
+    },
+    {
+      "processingKey": "brief_49ed4ea774f950db:vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:1.0",
+      "state": "REQUESTED",
+      "at": "2026-09-24T11:58:00.604Z",
+      "contentId": "vu-web-8854f83d5a3bdb8f-20260924",
+      "briefId": "brief_49ed4ea774f950db",
+      "briefBlobSha": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+      "pullRequest": null,
+      "deliveryId": null,
+      "observed": false,
+      "timestampProvenance": "hand-entered-approximate",
+      "note": "Web-Story-Brief geschrieben nach authoring/requests/vu-web-8854f83d5a3bdb8f-20260924/authoring-brief.json. PR folgt."
     }
   ],
   "latencyObservations": []
