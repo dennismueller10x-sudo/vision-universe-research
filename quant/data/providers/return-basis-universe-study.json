@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-09-24T11:04:34.000Z",
+ "generatedAt": "2026-09-24T11:28:01.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -1776,11 +1776,20 @@
   "priceBasisCounts": {
    "adjustedClose": 6403
   },
-  "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
+  "measuredQuantV2MomentumBasis": "TOTAL_RETURN"
  },
  "cutoffs": [
   {
    "cutoffDate": "2026-09-10",
+   "unexplainedInsideWindow": 6,
+   "unexplainedInsideWindowExamples": [
+    "FFNW",
+    "ARI",
+    "VISN",
+    "SBT",
+    "GOCOQ",
+    "DVXE"
+   ],
    "tradingDaysBack": 0,
    "securitiesWithCutoff": 6003,
    "measures": {
@@ -3503,6 +3512,12 @@
   },
   {
    "cutoffDate": "2025-09-09",
+   "unexplainedInsideWindow": 3,
+   "unexplainedInsideWindowExamples": [
+    "SVA",
+    "FFNW",
+    "SBT"
+   ],
    "tradingDaysBack": 252,
    "securitiesWithCutoff": 5568,
    "measures": {
@@ -5157,6 +5172,8 @@
   },
   {
    "cutoffDate": "2024-09-05",
+   "unexplainedInsideWindow": 0,
+   "unexplainedInsideWindowExamples": [],
    "tradingDaysBack": 504,
    "securitiesWithCutoff": 5322,
    "measures": {
@@ -6811,6 +6828,8 @@
   },
   {
    "cutoffDate": "2023-09-05",
+   "unexplainedInsideWindow": 0,
+   "unexplainedInsideWindowExamples": [],
    "tradingDaysBack": 756,
    "securitiesWithCutoff": 5135,
    "measures": {
@@ -8465,6 +8484,8 @@
   },
   {
    "cutoffDate": "2022-09-01",
+   "unexplainedInsideWindow": 0,
+   "unexplainedInsideWindowExamples": [],
    "tradingDaysBack": 1008,
    "securitiesWithCutoff": 4745,
    "measures": {
@@ -10132,8 +10153,9 @@
   "SECTOR_BIAS": "MEASURED",
   "STRATEGY_IMPACT": "MEASURED",
   "HISTORICAL_ROBUSTNESS": "MEASURED",
+  "UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW": 6,
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 34017
+ "runtimeMs": 31666
 }

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-09-24T11:04:34.000Z |
+| Stand der Messung | 2026-09-24T11:28:01.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -96,7 +96,7 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | Artefakt | `quant/data/product/factor-evidence-v1` |
 | Einträge | 6.403 |
 | Preisbasis | `adjustedClose` 6.403 |
-| gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
+| gemessene Quant-V2-Momentumbasis | **TOTAL_RETURN** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
 
@@ -268,6 +268,7 @@ An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-mom
 | `SECTOR_BIAS` | `MEASURED` |
 | `STRATEGY_IMPACT` | `MEASURED` |
 | `HISTORICAL_ROBUSTNESS` | `MEASURED` |
+| `UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW` | `6` |
 | `METHODOLOGY_DECISION_READY` | `FAIL` |
 | `QUANT_V2_MOMENTUM_RETURN_BASIS` | `PENDING_METHOD_DECISION` |
 
