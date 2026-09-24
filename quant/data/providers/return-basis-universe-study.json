@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-09-24T10:40:51.000Z",
+ "generatedAt": "2026-09-24T11:04:34.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -286,13 +286,30 @@
   "worstError": 7.606027,
   "tolerance": 0.002,
   "failureClasses": {
-   "ADJUSTMENT_BELOW_CASH_DIVIDEND": 465,
-   "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 326,
+   "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 770,
+   "ADJUSTMENT_INCONSISTENT": 21,
    "ADJUSTMENT_ON_NEIGHBOURING_DAY": 2
   },
-  "explainedByCorporateAction": 328,
-  "unexplained": 465,
-  "unexplainedShare": 0.007398,
+  "byDistributionSize": {
+   "LARGE_DISTRIBUTION": {
+    "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 517,
+    "ADJUSTMENT_INCONSISTENT": 15,
+    "ADJUSTMENT_ON_NEIGHBOURING_DAY": 2
+   },
+   "ORDINARY_DIVIDEND": {
+    "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 253,
+    "ADJUSTMENT_INCONSISTENT": 6
+   }
+  },
+  "adjustmentBand": [
+   0.6,
+   1.4
+  ],
+  "affectedSecurities": 451,
+  "affectedSecuritiesShare": 0.135884,
+  "explainedByCorporateAction": 772,
+  "unexplained": 21,
+  "unexplainedShare": 0.000334,
   "inconsistentSecurities": [
    {
     "securityId": "ref_MMM",
@@ -300,12 +317,13 @@
     "consistent": 23,
     "worstError": 0.007854,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2024-04-01",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.163925,
       "close": 94.02,
       "previousClose": 106.07,
       "dividend": 17.3875,
@@ -321,12 +339,13 @@
     "consistent": 23,
     "worstError": 0.003822,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2025-11-03",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.581751,
       "close": 34.69,
       "previousClose": 81.65,
       "dividend": 47.5,
@@ -342,12 +361,13 @@
     "consistent": 1,
     "worstError": 0.019906,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "1990-06-18",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.168011,
       "close": 14.38,
       "previousClose": 14.88,
       "dividend": 2.5,
@@ -357,7 +377,8 @@
      },
      {
       "date": "1990-03-15",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.150331,
       "close": 16.63,
       "previousClose": 16.63,
       "dividend": 2.5,
@@ -373,12 +394,13 @@
     "consistent": 5,
     "worstError": 0.00202,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2007-08-08",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.026724,
       "close": 33.79,
       "previousClose": 37.42,
       "dividend": 1,
@@ -394,12 +416,13 @@
     "consistent": 23,
     "worstError": 0.002552,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2025-08-27",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.037378,
       "close": 20.23,
       "previousClose": 22.51,
       "dividend": 0.841381,
@@ -415,13 +438,13 @@
     "consistent": 22,
     "worstError": 0.020102,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2008-06-19",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.054496,
       "close": 3.25,
       "previousClose": 3.67,
       "dividend": 0.2,
@@ -431,7 +454,8 @@
      },
      {
       "date": "1996-11-12",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.369805,
       "close": 12,
       "previousClose": 17.45,
       "dividend": 6.4531,
@@ -447,12 +471,13 @@
     "consistent": 23,
     "worstError": 0.002506,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-09-14",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.042301,
       "close": 12.84,
       "previousClose": 12.58,
       "dividend": 0.5321413,
@@ -468,13 +493,13 @@
     "consistent": 16,
     "worstError": 0.00931,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2,
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2001-05-24",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.045455,
       "close": 4,
       "previousClose": 3.3,
       "dividend": 0.15,
@@ -484,7 +509,8 @@
      },
      {
       "date": "1999-05-12",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.016842,
       "close": 5.75,
       "previousClose": 4.75,
       "dividend": 0.08,
@@ -494,7 +520,8 @@
      },
      {
       "date": "1993-04-26",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.02,
       "close": 0.4375,
       "previousClose": 0.5,
       "dividend": 0.01,
@@ -510,12 +537,13 @@
     "consistent": 4,
     "worstError": 0.094725,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 6
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 6
     },
     "samples": [
      {
       "date": "2014-09-03",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.202304,
       "close": 53.24,
       "previousClose": 64.25,
       "dividend": 12.998,
@@ -525,7 +553,8 @@
      },
      {
       "date": "2012-10-25",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.126976,
       "close": 23.6,
       "previousClose": 26.19,
       "dividend": 3.3255,
@@ -535,7 +564,8 @@
      },
      {
       "date": "2008-10-02",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.180099,
       "close": 18.86,
       "previousClose": 22.21,
       "dividend": 4,
@@ -551,12 +581,13 @@
     "consistent": 23,
     "worstError": 0.002679,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2022-03-22",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.073386,
       "close": 18.22,
       "previousClose": 20.44,
       "dividend": 1.5,
@@ -572,13 +603,13 @@
     "consistent": 2,
     "worstError": 0.00488,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2026-05-15",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.080519,
       "close": 3.32,
       "previousClose": 3.85,
       "dividend": 0.31,
@@ -588,7 +619,8 @@
      },
      {
       "date": "2026-01-05",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.088645,
       "close": 4.78,
       "previousClose": 5.02,
       "dividend": 0.445,
@@ -604,12 +636,13 @@
     "consistent": 23,
     "worstError": 0.006103,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-04-04",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.652683,
       "close": 40.82,
       "previousClose": 114.42,
       "dividend": 74.68,
@@ -625,12 +658,13 @@
     "consistent": 23,
     "worstError": 0.003325,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2021-08-03",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.191815,
       "close": 66,
       "previousClose": 79.92,
       "dividend": 15.329847,
@@ -646,12 +680,13 @@
     "consistent": 23,
     "worstError": 0.034118,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2015-09-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.71368,
       "close": 11.9,
       "previousClose": 49.44,
       "dividend": 35.2843216897,
@@ -667,12 +702,13 @@
     "consistent": 22,
     "worstError": 0.002868,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2025-04-03",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.033408,
       "close": 4.01,
       "previousClose": 4.49,
       "dividend": 0.15,
@@ -682,7 +718,8 @@
      },
      {
       "date": "2023-10-03",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.034169,
       "close": 3.9,
       "previousClose": 4.39,
       "dividend": 0.15,
@@ -698,12 +735,13 @@
     "consistent": 23,
     "worstError": 0.018447,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-12-26",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.563777,
       "close": 6.67,
       "previousClose": 14.19,
       "dividend": 8,
@@ -719,12 +757,13 @@
     "consistent": 21,
     "worstError": 0.003666,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2025-11-17",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.057143,
       "close": 7.93,
       "previousClose": 8.75,
       "dividend": 0.5,
@@ -734,7 +773,8 @@
      },
      {
       "date": "2025-05-19",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.051282,
       "close": 8.88,
       "previousClose": 9.75,
       "dividend": 0.5,
@@ -744,7 +784,8 @@
      },
      {
       "date": "2023-11-16",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.051099,
       "close": 17.26,
       "previousClose": 19.57,
       "dividend": 1,
@@ -760,12 +801,13 @@
     "consistent": 23,
     "worstError": 0.004576,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2024-10-11",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.114061,
       "close": 20.43,
       "previousClose": 24.11,
       "dividend": 2.75,
@@ -781,12 +823,13 @@
     "consistent": 23,
     "worstError": 0.002383,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2012-11-20",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.01771,
       "close": 30.48,
       "previousClose": 35.29,
       "dividend": 0.625,
@@ -802,12 +845,13 @@
     "consistent": 23,
     "worstError": 0.002899,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-10-02",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.113609,
       "close": 213.74,
       "previousClose": 248.1,
       "dividend": 28.186385,
@@ -823,12 +867,13 @@
     "consistent": 23,
     "worstError": 0.004347,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-08-17",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.024708,
       "close": 12.03,
       "previousClose": 14.57,
       "dividend": 0.36,
@@ -844,12 +889,13 @@
     "consistent": 23,
     "worstError": 0.00348,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2008-08-28",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.052198,
       "close": 3.71,
       "previousClose": 3.64,
       "dividend": 0.19,
@@ -865,12 +911,13 @@
     "consistent": 21,
     "worstError": 0.049376,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 3
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "1991-05-23",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.276284,
       "close": 3.85,
       "previousClose": 4.09,
       "dividend": 1.13,
@@ -880,7 +927,8 @@
      },
      {
       "date": "1991-05-13",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.233471,
       "close": 4.97,
       "previousClose": 4.84,
       "dividend": 1.13,
@@ -890,7 +938,8 @@
      },
      {
       "date": "1990-04-25",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.116883,
       "close": 1.57,
       "previousClose": 1.54,
       "dividend": 0.18,
@@ -906,12 +955,13 @@
     "consistent": 21,
     "worstError": 0.015009,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2025-01-30",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.175879,
       "close": 25.22,
       "previousClose": 33.83,
       "dividend": 5.95,
@@ -921,7 +971,8 @@
      },
      {
       "date": "2022-07-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.028767,
       "close": 25.91,
       "previousClose": 29.2,
       "dividend": 0.84,
@@ -931,7 +982,8 @@
      },
      {
       "date": "2021-10-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.050841,
       "close": 23.3,
       "previousClose": 27.93,
       "dividend": 1.42,
@@ -947,12 +999,13 @@
     "consistent": 21,
     "worstError": 0.003015,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2023-02-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.052833,
       "close": 68.63,
       "previousClose": 75.71,
       "dividend": 4,
@@ -962,7 +1015,8 @@
      },
      {
       "date": "2021-02-26",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.055202,
       "close": 102.33,
       "previousClose": 113.22,
       "dividend": 6.25,
@@ -972,7 +1026,8 @@
      },
      {
       "date": "2018-02-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.058968,
       "close": 90.8,
       "previousClose": 101.75,
       "dividend": 6,
@@ -988,12 +1043,13 @@
     "consistent": 20,
     "worstError": 0.004813,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 4
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 4
     },
     "samples": [
      {
       "date": "2025-08-15",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.045375,
       "close": 5.12,
       "previousClose": 5.73,
       "dividend": 0.26,
@@ -1003,7 +1059,8 @@
      },
      {
       "date": "2023-05-18",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.066751,
       "close": 13.68,
       "previousClose": 15.73,
       "dividend": 1.05,
@@ -1013,7 +1070,8 @@
      },
      {
       "date": "2023-02-16",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.064392,
       "close": 13.45,
       "previousClose": 15.53,
       "dividend": 1,
@@ -1029,12 +1087,13 @@
     "consistent": 23,
     "worstError": 0.003203,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2009-03-30",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.048616,
       "close": 14.58,
       "previousClose": 16.39,
       "dividend": 0.796824,
@@ -1050,13 +1109,13 @@
     "consistent": 1,
     "worstError": 0.014747,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2,
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2025-04-03",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.113924,
       "close": 51.06,
       "previousClose": 55.3,
       "dividend": 6.3,
@@ -1066,7 +1125,8 @@
      },
      {
       "date": "2016-05-06",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.104563,
       "close": 24.76,
       "previousClose": 26.3,
       "dividend": 2.75,
@@ -1076,7 +1136,8 @@
      },
      {
       "date": "2015-01-28",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.155862,
       "close": 28.05,
       "previousClose": 37.02,
       "dividend": 5.77,
@@ -1092,13 +1153,13 @@
     "consistent": 22,
     "worstError": 0.005,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1,
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2024-12-09",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.931829,
       "close": 1.5,
       "previousClose": 20.39,
       "dividend": 19,
@@ -1108,7 +1169,8 @@
      },
      {
       "date": "2023-02-22",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.164156,
       "close": 21.28,
       "previousClose": 25.89,
       "dividend": 4.25,
@@ -1124,12 +1186,13 @@
     "consistent": 17,
     "worstError": 0.003636,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "1993-12-27",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.04,
       "close": 1.06,
       "previousClose": 1,
       "dividend": 0.04,
@@ -1145,12 +1208,13 @@
     "consistent": 22,
     "worstError": 0.003297,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2025-04-09",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.037303,
       "close": 12.61,
       "previousClose": 11.9,
       "dividend": 0.443907,
@@ -1160,7 +1224,8 @@
      },
      {
       "date": "2020-04-07",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.055047,
       "close": 3.09,
       "previousClose": 3.14,
       "dividend": 0.172848,
@@ -1176,12 +1241,13 @@
     "consistent": 23,
     "worstError": 0.002309,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2020-06-11",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.027196,
       "close": 15.61,
       "previousClose": 17.45,
       "dividend": 0.474575,
@@ -1197,12 +1263,13 @@
     "consistent": 23,
     "worstError": 0.002631,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-12-14",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.051674,
       "close": 387.8,
       "previousClose": 387.04,
       "dividend": 20,
@@ -1218,12 +1285,13 @@
     "consistent": 11,
     "worstError": 0.024854,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2006-08-01",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.866955,
       "close": 2.44,
       "previousClose": 15.01,
       "dividend": 13.013,
@@ -1239,12 +1307,13 @@
     "consistent": 23,
     "worstError": 0.01242,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2020-12-21",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.2978,
       "close": 15.25,
       "previousClose": 20.45,
       "dividend": 6.09,
@@ -1260,12 +1329,13 @@
     "consistent": 22,
     "worstError": 0.004835,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2025-07-14",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.16538,
       "close": 14.74,
       "previousClose": 18.14,
       "dividend": 3,
@@ -1275,7 +1345,8 @@
      },
      {
       "date": "2020-03-16",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.031201,
       "close": 5.35,
       "previousClose": 6.41,
       "dividend": 0.2,
@@ -1291,12 +1362,13 @@
     "consistent": 3,
     "worstError": 0.040789,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 9
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 9
     },
     "samples": [
      {
       "date": "2005-07-27",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.038653,
       "close": 24.25,
       "previousClose": 23.85,
       "dividend": 0.921875,
@@ -1306,7 +1378,8 @@
      },
      {
       "date": "2005-01-27",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.047939,
       "close": 19.18,
       "previousClose": 19.23,
       "dividend": 0.921875,
@@ -1316,7 +1389,8 @@
      },
      {
       "date": "2004-07-28",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.105117,
       "close": 9.31,
       "previousClose": 8.77,
       "dividend": 0.921875,
@@ -1332,13 +1406,13 @@
     "consistent": 5,
     "worstError": 0.013881,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2024-04-19",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.146119,
       "close": 1.68,
       "previousClose": 2.19,
       "dividend": 0.32,
@@ -1348,7 +1422,8 @@
      },
      {
       "date": "1996-12-12",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.1136,
       "close": 1.25,
       "previousClose": 1.25,
       "dividend": 0.142,
@@ -1364,12 +1439,13 @@
     "consistent": 23,
     "worstError": 0.004976,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2008-11-19",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.01912,
       "close": 4.05,
       "previousClose": 5.23,
       "dividend": 0.1,
@@ -1385,12 +1461,13 @@
     "consistent": 23,
     "worstError": 0.02085,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2016-03-04",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.788666,
       "close": 4.04,
       "previousClose": 16.94,
       "dividend": 13.36,
@@ -1406,12 +1483,13 @@
     "consistent": 22,
     "worstError": 0.053136,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2015-04-01",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.036206,
       "close": 24.15,
       "previousClose": 28.44,
       "dividend": 1.0297,
@@ -1421,7 +1499,8 @@
      },
      {
       "date": "2008-07-01",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.869978,
       "close": 3.01,
       "previousClose": 41.54,
       "dividend": 36.1388714734,
@@ -1437,12 +1516,13 @@
     "consistent": 23,
     "worstError": 0.008659,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2021-10-18",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.414692,
       "close": 5.12,
       "previousClose": 8.44,
       "dividend": 3.5,
@@ -1458,12 +1538,13 @@
     "consistent": 23,
     "worstError": 0.026396,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2017-06-14",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.10929,
       "close": 6.37,
       "previousClose": 9.15,
       "dividend": 1,
@@ -1479,12 +1560,13 @@
     "consistent": 23,
     "worstError": 0.007358,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2025-11-17",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.065305,
       "close": 28.97,
       "previousClose": 34.76,
       "dividend": 2.27,
@@ -1500,12 +1582,13 @@
     "consistent": 23,
     "worstError": 0.00714,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2023-12-01",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.383543,
       "close": 45.56,
       "previousClose": 71.7,
       "dividend": 27.5,
@@ -1521,12 +1604,13 @@
     "consistent": 23,
     "worstError": 0.002793,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2020-06-11",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.055695,
       "close": 38.65,
       "previousClose": 43.11,
       "dividend": 2.401,
@@ -1542,12 +1626,13 @@
     "consistent": 1,
     "worstError": 0.003803,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2005-02-23",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.026667,
       "close": 2.3,
       "previousClose": 2.25,
       "dividend": 0.06,
@@ -1563,12 +1648,13 @@
     "consistent": 17,
     "worstError": 0.068622,
     "classes": {
-     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 3
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 3
     },
     "samples": [
      {
       "date": "2014-12-03",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.073801,
       "close": 2.728,
       "previousClose": 2.71,
       "dividend": 0.2,
@@ -1578,7 +1664,8 @@
      },
      {
       "date": "2012-12-13",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.283019,
       "close": 1.54,
       "previousClose": 2.12,
       "dividend": 0.6,
@@ -1588,7 +1675,8 @@
      },
      {
       "date": "2012-11-23",
-      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.298507,
       "close": 2.01,
       "previousClose": 2.01,
       "dividend": 0.6,
@@ -1604,12 +1692,13 @@
     "consistent": 23,
     "worstError": 0.002349,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 1
     },
     "samples": [
      {
       "date": "2021-03-04",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.034008,
       "close": 81.9,
       "previousClose": 90.86,
       "dividend": 3.09,
@@ -1625,12 +1714,13 @@
     "consistent": 22,
     "worstError": 0.002713,
     "classes": {
-     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+     "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT": 2
     },
     "samples": [
      {
       "date": "2026-03-13",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.0283,
       "close": 45.54,
       "previousClose": 50.95,
       "dividend": 1.441897,
@@ -1640,7 +1730,8 @@
      },
      {
       "date": "2020-03-12",
-      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "klass": "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT",
+      "dividendToPrice": 0.011089,
       "close": 4.77,
       "previousClose": 6.02,
       "dividend": 0.066753,
@@ -10044,5 +10135,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 27922
+ "runtimeMs": 34017
 }
