@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAtUtc": "2026-09-24T13:00:12.496Z",
+  "generatedAtUtc": "2026-09-24T13:06:32.760Z",
   "purpose": "Multi-Asset Capability Audit (§9/§10/§13). Gemessen, nicht angenommen.",
   "valuesIncluded": false,
   "valuesNote": "Der Bericht enthaelt keine Kurse, Renditen oder Zinssaetze. Identitaet wird ueber magnitude.within belegt.",
@@ -20,7 +20,7 @@
           "search": {
             "query": "S&P 500 index",
             "httpStatus": 200,
-            "durationMs": 343,
+            "durationMs": 515,
             "contentType": "application/json",
             "arrayLength": 20,
             "results": 20,
@@ -83,7 +83,7 @@
             {
               "ticker": "spx",
               "httpStatus": 200,
-              "durationMs": 57,
+              "durationMs": 352,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -101,7 +101,7 @@
             {
               "ticker": "^gspc",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 71,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -115,7 +115,7 @@
             {
               "ticker": "$spx",
               "httpStatus": 404,
-              "durationMs": 30,
+              "durationMs": 82,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -129,7 +129,7 @@
             {
               "ticker": "inx",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 77,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -141,7 +141,14 @@
               "startDate": null
             }
           ],
-          "indexLevelFound": true,
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "spx",
+              "resolvesTo": "Spenda Limited",
+              "exchangeCode": "ASX"
+            }
+          ],
+          "indexLevelFound": false,
           "etfProxiesSeen": [
             "BZSPF",
             "VFVXF"
@@ -151,7 +158,7 @@
           "search": {
             "query": "Nasdaq 100 index",
             "httpStatus": 200,
-            "durationMs": 171,
+            "durationMs": 216,
             "contentType": "application/json",
             "arrayLength": 11,
             "results": 11,
@@ -173,13 +180,13 @@
                 "countryCode": "CA"
               },
               {
-                "ticker": "XQQU-U",
+                "ticker": "XQQU",
                 "assetType": "ETF",
                 "name": "iShares Nasdaq 100 Index ETF",
                 "countryCode": "CA"
               },
               {
-                "ticker": "XQQU",
+                "ticker": "XQQU-U",
                 "assetType": "ETF",
                 "name": "iShares Nasdaq 100 Index ETF",
                 "countryCode": "CA"
@@ -214,7 +221,7 @@
             {
               "ticker": "ndx",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 80,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -228,7 +235,7 @@
             {
               "ticker": "^ndx",
               "httpStatus": 404,
-              "durationMs": 37,
+              "durationMs": 80,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -242,7 +249,7 @@
             {
               "ticker": "$ndx",
               "httpStatus": 404,
-              "durationMs": 27,
+              "durationMs": 77,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -254,12 +261,13 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "QQCFF",
             "QQC",
-            "XQQU-U",
             "XQQU",
+            "XQQU-U",
             "QQQQ",
             "QQC-F",
             "QQCE"
@@ -269,7 +277,7 @@
           "search": {
             "query": "Dow Jones Industrial Average",
             "httpStatus": 200,
-            "durationMs": 168,
+            "durationMs": 217,
             "contentType": "application/json",
             "arrayLength": 9,
             "results": 9,
@@ -332,7 +340,7 @@
             {
               "ticker": "dji",
               "httpStatus": 404,
-              "durationMs": 31,
+              "durationMs": 86,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -346,7 +354,7 @@
             {
               "ticker": "^dji",
               "httpStatus": 404,
-              "durationMs": 33,
+              "durationMs": 79,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -360,7 +368,7 @@
             {
               "ticker": "$dji",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 79,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -374,7 +382,7 @@
             {
               "ticker": "djia",
               "httpStatus": 200,
-              "durationMs": 30,
+              "durationMs": 76,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -390,6 +398,13 @@
               "startDate": "2022-02-24"
             }
           ],
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "djia",
+              "resolvesTo": "GLOBAL X DOW 30 COVERED CALL ETF ",
+              "exchangeCode": "NYSE"
+            }
+          ],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "DIA",
@@ -403,7 +418,7 @@
           "search": {
             "query": "DAX index",
             "httpStatus": 200,
-            "durationMs": 175,
+            "durationMs": 227,
             "contentType": "application/json",
             "arrayLength": 1,
             "results": 1,
@@ -423,7 +438,7 @@
             {
               "ticker": "^gdaxi",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 79,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -437,7 +452,7 @@
             {
               "ticker": "gdaxi",
               "httpStatus": 404,
-              "durationMs": 35,
+              "durationMs": 76,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -451,7 +466,7 @@
             {
               "ticker": "dax",
               "httpStatus": 200,
-              "durationMs": 51,
+              "durationMs": 89,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -467,6 +482,13 @@
               "startDate": "2014-10-23"
             }
           ],
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "dax",
+              "resolvesTo": "GLOBAL X DAX GERMANY ETF ",
+              "exchangeCode": "NASDAQ"
+            }
+          ],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "159561"
@@ -476,7 +498,7 @@
           "search": {
             "query": "Euro Stoxx 50",
             "httpStatus": 200,
-            "durationMs": 191,
+            "durationMs": 207,
             "contentType": "application/json",
             "arrayLength": 4,
             "results": 4,
@@ -514,7 +536,7 @@
             {
               "ticker": "sx5e",
               "httpStatus": 404,
-              "durationMs": 29,
+              "durationMs": 70,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -528,7 +550,7 @@
             {
               "ticker": "^stoxx50e",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 82,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -540,6 +562,7 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "FEZ",
@@ -552,7 +575,7 @@
           "search": {
             "query": "FTSE 100",
             "httpStatus": 200,
-            "durationMs": 180,
+            "durationMs": 213,
             "contentType": "application/json",
             "arrayLength": 4,
             "results": 4,
@@ -590,7 +613,7 @@
             {
               "ticker": "ukx",
               "httpStatus": 404,
-              "durationMs": 33,
+              "durationMs": 80,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -604,7 +627,7 @@
             {
               "ticker": "^ftse",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 76,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -616,6 +639,7 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "VUKEF",
@@ -628,7 +652,7 @@
           "search": {
             "query": "Nikkei 225",
             "httpStatus": 200,
-            "durationMs": 173,
+            "durationMs": 220,
             "contentType": "application/json",
             "arrayLength": 2,
             "results": 2,
@@ -655,7 +679,7 @@
             {
               "ticker": "n225",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 70,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -669,7 +693,7 @@
             {
               "ticker": "^n225",
               "httpStatus": 404,
-              "durationMs": 37,
+              "durationMs": 80,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -681,6 +705,7 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "ISHNF"
@@ -690,7 +715,7 @@
           "search": {
             "query": "Russell 2000",
             "httpStatus": 200,
-            "durationMs": 169,
+            "durationMs": 208,
             "contentType": "application/json",
             "arrayLength": 20,
             "results": 20,
@@ -753,7 +778,7 @@
             {
               "ticker": "rut",
               "httpStatus": 404,
-              "durationMs": 32,
+              "durationMs": 83,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -767,7 +792,7 @@
             {
               "ticker": "^rut",
               "httpStatus": 404,
-              "durationMs": 33,
+              "durationMs": 70,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -779,6 +804,7 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": [
             "IWM",
@@ -792,7 +818,7 @@
           "search": {
             "query": "S&P MidCap 400",
             "httpStatus": 200,
-            "durationMs": 160,
+            "durationMs": 220,
             "contentType": "application/json",
             "arrayLength": 17,
             "results": 17,
@@ -855,7 +881,7 @@
             {
               "ticker": "mid",
               "httpStatus": 200,
-              "durationMs": 42,
+              "durationMs": 93,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -873,7 +899,7 @@
             {
               "ticker": "^mid",
               "httpStatus": 404,
-              "durationMs": 27,
+              "durationMs": 78,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -883,6 +909,13 @@
               "name": null,
               "exchangeCode": null,
               "startDate": null
+            }
+          ],
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "mid",
+              "resolvesTo": "American Century Mid Cap Growth Impact ETF",
+              "exchangeCode": "NYSE ARCA"
             }
           ],
           "indexLevelFound": false,
@@ -898,7 +931,7 @@
           "search": {
             "query": "CAC 40",
             "httpStatus": 200,
-            "durationMs": 160,
+            "durationMs": 216,
             "contentType": "application/json",
             "arrayLength": 1,
             "results": 1,
@@ -918,7 +951,7 @@
             {
               "ticker": "^fchi",
               "httpStatus": 404,
-              "durationMs": 25,
+              "durationMs": 79,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -932,7 +965,7 @@
             {
               "ticker": "px1",
               "httpStatus": 200,
-              "durationMs": 43,
+              "durationMs": 88,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -948,7 +981,14 @@
               "startDate": null
             }
           ],
-          "indexLevelFound": true,
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "px1",
+              "resolvesTo": "PLEXURE GROUP LTD",
+              "exchangeCode": "ASX"
+            }
+          ],
+          "indexLevelFound": false,
           "etfProxiesSeen": [
             "LYXRF"
           ]
@@ -957,7 +997,7 @@
           "search": {
             "query": "Swiss Market Index",
             "httpStatus": 200,
-            "durationMs": 181,
+            "durationMs": 202,
             "contentType": "application/json",
             "arrayLength": 0,
             "results": 0,
@@ -968,7 +1008,7 @@
             {
               "ticker": "^ssmi",
               "httpStatus": 404,
-              "durationMs": 36,
+              "durationMs": 75,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -982,7 +1022,7 @@
             {
               "ticker": "smi",
               "httpStatus": 200,
-              "durationMs": 56,
+              "durationMs": 80,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -998,6 +1038,13 @@
               "startDate": "2021-09-10"
             }
           ],
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "smi",
+              "resolvesTo": "VanEck HIP Sustainable Muni ETF",
+              "exchangeCode": "BATS"
+            }
+          ],
           "indexLevelFound": false,
           "etfProxiesSeen": []
         },
@@ -1005,7 +1052,7 @@
           "search": {
             "query": "Hang Seng index",
             "httpStatus": 200,
-            "durationMs": 161,
+            "durationMs": 202,
             "contentType": "application/json",
             "arrayLength": 0,
             "results": 0,
@@ -1016,7 +1063,7 @@
             {
               "ticker": "^hsi",
               "httpStatus": 404,
-              "durationMs": 43,
+              "durationMs": 71,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -1030,7 +1077,7 @@
             {
               "ticker": "hsi",
               "httpStatus": 200,
-              "durationMs": 42,
+              "durationMs": 94,
               "contentType": "application/json",
               "objectKeys": [
                 "ticker",
@@ -1046,14 +1093,21 @@
               "startDate": null
             }
           ],
-          "indexLevelFound": true,
+          "sameTickerOtherInstrument": [
+            {
+              "ticker": "hsi",
+              "resolvesTo": "HOME SECURITY INTERNATIONAL INC",
+              "exchangeCode": "NYSE"
+            }
+          ],
+          "indexLevelFound": false,
           "etfProxiesSeen": []
         },
         "vu_7326d3ec863e5a": {
           "search": {
             "query": "Shanghai Composite",
             "httpStatus": 200,
-            "durationMs": 157,
+            "durationMs": 219,
             "contentType": "application/json",
             "arrayLength": 0,
             "results": 0,
@@ -1064,7 +1118,7 @@
             {
               "ticker": "000001.ss",
               "httpStatus": 404,
-              "durationMs": 32,
+              "durationMs": 76,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -1078,7 +1132,7 @@
             {
               "ticker": "shcomp",
               "httpStatus": 404,
-              "durationMs": 32,
+              "durationMs": 78,
               "contentType": "application/json",
               "objectKeys": [
                 "detail"
@@ -1090,6 +1144,7 @@
               "startDate": null
             }
           ],
+          "sameTickerOtherInstrument": [],
           "indexLevelFound": false,
           "etfProxiesSeen": []
         }
@@ -1116,15 +1171,23 @@
             "natgasusd",
             "ngusd"
           ],
-          "httpStatus": 200,
-          "durationMs": 126,
-          "contentType": "application/json",
-          "arrayLength": 6,
+          "bulk": {
+            "httpStatus": 200,
+            "durationMs": 152,
+            "contentType": "application/json",
+            "arrayLength": 6,
+            "tickerFieldPresent": false
+          },
           "served": [
-            ""
+            "xauusd",
+            "xagusd",
+            "xptusd",
+            "xpdusd",
+            "copperusd",
+            "natgasusd"
           ],
           "quoteFields": [
-            "index",
+            "ticker",
             "quoteTimestamp",
             "bidPrice",
             "bidSize",
@@ -1134,22 +1197,37 @@
           ],
           "quoteTimestampSemantics": "OFFSET_TIMESTAMP",
           "ages": {
-            "undefined": 1
+            "xauusd": 2,
+            "xagusd": 3,
+            "xptusd": 2,
+            "xpdusd": 3,
+            "copperusd": 2,
+            "natgasusd": 2
           }
         },
         "perTicker": {
-          "": {
-            "magnitude": null,
-            "midPricePresent": false,
-            "daily": {
-              "httpStatus": 400,
-              "durationMs": 28,
-              "contentType": "application/json",
-              "objectKeys": [
-                "detail"
+          "xauusd": {
+            "quoteAgeSeconds": 2,
+            "magnitude": {
+              "expectedRange": [
+                1000,
+                10000
               ],
-              "errorDetail": "Error: Tickers parameter was not supplied.",
-              "observations": 0,
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 327,
+              "contentType": "application/json",
+              "arrayLength": 1552,
+              "observations": 1552,
+              "firstDate": "2021-09-26T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 255,
+              "saturday": 0,
+              "sunday": 255,
+              "maxGapDays": 3,
               "depthAttempts": [
                 {
                   "startDate": "1990-01-01",
@@ -1163,28 +1241,353 @@
                 },
                 {
                   "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 1552
+                }
+              ],
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 412,
+              "contentType": "application/json",
+              "arrayLength": 1195,
+              "observations": 1195,
+              "firstDate": "2026-09-20T00:05:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 188,
+              "saturday": 0,
+              "sunday": 188,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
+            }
+          },
+          "xagusd": {
+            "quoteAgeSeconds": 3,
+            "magnitude": {
+              "expectedRange": [
+                5,
+                250
+              ],
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 210,
+              "contentType": "application/json",
+              "arrayLength": 1552,
+              "observations": 1552,
+              "firstDate": "2021-09-26T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 254,
+              "saturday": 0,
+              "sunday": 254,
+              "maxGapDays": 3,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
                   "httpStatus": 400,
                   "rows": null
                 },
                 {
-                  "startDate": "2025-09-24",
+                  "startDate": "2016-09-26",
                   "httpStatus": 400,
                   "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 1552
                 }
               ],
-              "timestampSemantics": null,
-              "fields": []
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
             },
             "intraday5min": {
-              "httpStatus": 400,
-              "durationMs": 23,
+              "httpStatus": 200,
+              "durationMs": 281,
               "contentType": "application/json",
-              "objectKeys": [
-                "detail"
+              "arrayLength": 1195,
+              "observations": 1195,
+              "firstDate": "2026-09-20T00:05:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 188,
+              "saturday": 0,
+              "sunday": 188,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
+            }
+          },
+          "xptusd": {
+            "quoteAgeSeconds": 2,
+            "magnitude": {
+              "expectedRange": [
+                300,
+                6000
               ],
-              "errorDetail": "Error: Tickers parameter was not supplied.",
-              "observations": 0,
-              "timestampSemantics": null
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 121,
+              "contentType": "application/json",
+              "arrayLength": 1467,
+              "observations": 1467,
+              "firstDate": "2021-12-27T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 235,
+              "saturday": 0,
+              "sunday": 235,
+              "maxGapDays": 4,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2016-09-26",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 1467
+                }
+              ],
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 241,
+              "contentType": "application/json",
+              "arrayLength": 1010,
+              "observations": 1010,
+              "firstDate": "2026-09-20T22:00:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 24,
+              "saturday": 0,
+              "sunday": 24,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
+            }
+          },
+          "xpdusd": {
+            "quoteAgeSeconds": 3,
+            "magnitude": {
+              "expectedRange": [
+                300,
+                6000
+              ],
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 130,
+              "contentType": "application/json",
+              "arrayLength": 1462,
+              "observations": 1462,
+              "firstDate": "2021-12-27T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 234,
+              "saturday": 0,
+              "sunday": 234,
+              "maxGapDays": 4,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2016-09-26",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 1462
+                }
+              ],
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 247,
+              "contentType": "application/json",
+              "arrayLength": 1010,
+              "observations": 1010,
+              "firstDate": "2026-09-20T22:00:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 24,
+              "saturday": 0,
+              "sunday": 24,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
+            }
+          },
+          "copperusd": {
+            "quoteAgeSeconds": 2,
+            "magnitude": {
+              "expectedRange": [
+                1,
+                20000
+              ],
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 128,
+              "contentType": "application/json",
+              "arrayLength": 944,
+              "observations": 944,
+              "firstDate": "2023-09-15T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 157,
+              "saturday": 0,
+              "sunday": 157,
+              "maxGapDays": 3,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2016-09-26",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 944
+                }
+              ],
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 254,
+              "contentType": "application/json",
+              "arrayLength": 1195,
+              "observations": 1195,
+              "firstDate": "2026-09-20T00:05:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 188,
+              "saturday": 0,
+              "sunday": 188,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
+            }
+          },
+          "natgasusd": {
+            "quoteAgeSeconds": 2,
+            "magnitude": {
+              "expectedRange": [
+                0.5,
+                50
+              ],
+              "within": true
+            },
+            "midPricePresent": true,
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 120,
+              "contentType": "application/json",
+              "arrayLength": 203,
+              "observations": 203,
+              "firstDate": "2026-01-30T00:00:00.000Z",
+              "lastDate": "2026-09-24T00:00:00.000Z",
+              "weekendObservations": 34,
+              "saturday": 0,
+              "sunday": 34,
+              "maxGapDays": 3,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2016-09-26",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 200,
+                  "rows": 203
+                }
+              ],
+              "timestampSemantics": "UTC_MIDNIGHT_DATE",
+              "fields": [
+                "date",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close"
+              ]
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 245,
+              "contentType": "application/json",
+              "arrayLength": 1195,
+              "observations": 1195,
+              "firstDate": "2026-09-20T00:05:00.000Z",
+              "lastDate": "2026-09-24T13:05:00.000Z",
+              "weekendObservations": 188,
+              "saturday": 0,
+              "sunday": 188,
+              "maxGapDays": 1,
+              "timestampSemantics": "UTC_TIMESTAMP"
             }
           }
         }
@@ -1192,7 +1595,7 @@
       "crypto": {
         "metadata": {
           "httpStatus": 200,
-          "durationMs": 23,
+          "durationMs": 75,
           "contentType": "application/json",
           "arrayLength": 4,
           "served": [
@@ -1210,7 +1613,7 @@
         },
         "top": {
           "httpStatus": 200,
-          "durationMs": 221,
+          "durationMs": 264,
           "contentType": "application/json",
           "arrayLength": 4,
           "served": [
@@ -1244,7 +1647,7 @@
           "btcusd": {
             "daily": {
               "httpStatus": 200,
-              "durationMs": 398,
+              "durationMs": 442,
               "contentType": "application/json",
               "arrayLength": 1,
               "observations": 4008,
@@ -1271,17 +1674,17 @@
             },
             "intraday5min": {
               "httpStatus": 200,
-              "durationMs": 278,
+              "durationMs": 336,
               "contentType": "application/json",
               "arrayLength": 1,
-              "observations": 1021,
+              "observations": 1022,
               "firstDate": "2026-09-21T00:00:00+00:00",
-              "lastDate": "2026-09-24T13:00:00+00:00",
+              "lastDate": "2026-09-24T13:05:00+00:00",
               "weekendObservations": 0,
               "saturday": 0,
               "sunday": 0,
               "maxGapDays": 1,
-              "lastBarAgeSeconds": 17
+              "lastBarAgeSeconds": 105
             },
             "magnitude": {
               "expectedRange": [
@@ -1294,7 +1697,7 @@
           "ethusd": {
             "daily": {
               "httpStatus": 200,
-              "durationMs": 305,
+              "durationMs": 310,
               "contentType": "application/json",
               "arrayLength": 1,
               "observations": 2571,
@@ -1321,17 +1724,17 @@
             },
             "intraday5min": {
               "httpStatus": 200,
-              "durationMs": 262,
+              "durationMs": 286,
               "contentType": "application/json",
               "arrayLength": 1,
-              "observations": 1021,
+              "observations": 1022,
               "firstDate": "2026-09-21T00:00:00+00:00",
-              "lastDate": "2026-09-24T13:00:00+00:00",
+              "lastDate": "2026-09-24T13:05:00+00:00",
               "weekendObservations": 0,
               "saturday": 0,
               "sunday": 0,
               "maxGapDays": 1,
-              "lastBarAgeSeconds": 18
+              "lastBarAgeSeconds": 106
             },
             "magnitude": {
               "expectedRange": [
@@ -1344,7 +1747,7 @@
           "solusd": {
             "daily": {
               "httpStatus": 200,
-              "durationMs": 98,
+              "durationMs": 136,
               "contentType": "application/json",
               "arrayLength": 1,
               "observations": 710,
@@ -1371,17 +1774,17 @@
             },
             "intraday5min": {
               "httpStatus": 200,
-              "durationMs": 249,
+              "durationMs": 282,
               "contentType": "application/json",
               "arrayLength": 1,
-              "observations": 1021,
+              "observations": 1022,
               "firstDate": "2026-09-21T00:00:00+00:00",
-              "lastDate": "2026-09-24T13:00:00+00:00",
+              "lastDate": "2026-09-24T13:05:00+00:00",
               "weekendObservations": 0,
               "saturday": 0,
               "sunday": 0,
               "maxGapDays": 1,
-              "lastBarAgeSeconds": 18
+              "lastBarAgeSeconds": 106
             },
             "magnitude": {
               "expectedRange": [
@@ -1394,7 +1797,7 @@
           "xrpusd": {
             "daily": {
               "httpStatus": 200,
-              "durationMs": 263,
+              "durationMs": 283,
               "contentType": "application/json",
               "arrayLength": 1,
               "observations": 2566,
@@ -1421,17 +1824,17 @@
             },
             "intraday5min": {
               "httpStatus": 200,
-              "durationMs": 245,
+              "durationMs": 275,
               "contentType": "application/json",
               "arrayLength": 1,
-              "observations": 1021,
+              "observations": 1022,
               "firstDate": "2026-09-21T00:00:00+00:00",
-              "lastDate": "2026-09-24T13:00:00+00:00",
+              "lastDate": "2026-09-24T13:05:00+00:00",
               "weekendObservations": 0,
               "saturday": 0,
               "sunday": 0,
               "maxGapDays": 1,
-              "lastBarAgeSeconds": 19
+              "lastBarAgeSeconds": 107
             },
             "magnitude": {
               "expectedRange": [
@@ -1441,13 +1844,48 @@
               "within": true
             }
           }
+        },
+        "dailyRowLimit": {
+          "note": "Eine Anfrage ab 2009 endet vor der Gegenwart - die Ingest-Strecke muss in Scheiben abrufen.",
+          "fullRangeRows": 4008,
+          "fullRangeLastDate": "2022-09-10T00:00:00+00:00",
+          "recent400Days": {
+            "httpStatus": 200,
+            "durationMs": 186,
+            "contentType": "application/json",
+            "arrayLength": 1,
+            "observations": 401,
+            "firstDate": "2025-08-20T00:00:00+00:00",
+            "lastDate": "2026-09-24T00:00:00+00:00",
+            "weekendObservations": 114,
+            "saturday": 57,
+            "sunday": 57,
+            "maxGapDays": 1
+          }
+        },
+        "weekendIntraday": {
+          "window": {
+            "from": "2026-09-19",
+            "to": "2026-09-21"
+          },
+          "httpStatus": 200,
+          "durationMs": 236,
+          "contentType": "application/json",
+          "arrayLength": 1,
+          "observations": 49,
+          "firstDate": "2026-09-19T00:00:00+00:00",
+          "lastDate": "2026-09-21T00:00:00+00:00",
+          "weekendObservations": 48,
+          "saturday": 24,
+          "sunday": 24,
+          "maxGapDays": 1
         }
       },
       "yieldSearch": {
         "treasury yield": {
           "query": "treasury yield",
           "httpStatus": 200,
-          "durationMs": 163,
+          "durationMs": 215,
           "contentType": "application/json",
           "arrayLength": 0,
           "results": 0,
@@ -1457,7 +1895,7 @@
         "10 year treasury": {
           "query": "10 year treasury",
           "httpStatus": 200,
-          "durationMs": 158,
+          "durationMs": 215,
           "contentType": "application/json",
           "arrayLength": 12,
           "results": 12,
@@ -1520,7 +1958,7 @@
         "bund yield": {
           "query": "bund yield",
           "httpStatus": 200,
-          "durationMs": 176,
+          "durationMs": 208,
           "contentType": "application/json",
           "arrayLength": 0,
           "results": 0,
@@ -1530,7 +1968,7 @@
         "fed funds": {
           "query": "fed funds",
           "httpStatus": 200,
-          "durationMs": 160,
+          "durationMs": 207,
           "contentType": "application/json",
           "arrayLength": 0,
           "results": 0,
@@ -1541,7 +1979,7 @@
       "errorSemantics": {
         "missingDaily": {
           "httpStatus": 404,
-          "durationMs": 33,
+          "durationMs": 81,
           "contentType": "application/json",
           "objectKeys": [
             "detail"
@@ -1550,13 +1988,13 @@
         },
         "missingFx": {
           "httpStatus": 200,
-          "durationMs": 32,
+          "durationMs": 89,
           "contentType": "application/json",
           "arrayLength": 0
         },
         "missingCrypto": {
           "httpStatus": 200,
-          "durationMs": 48,
+          "durationMs": 91,
           "contentType": "application/json",
           "arrayLength": 0
         }
@@ -1570,16 +2008,16 @@
         ],
         "seconds": 20,
         "opened": true,
-        "messages": 66,
+        "messages": 70,
         "messageTypes": {
           "I": 1,
           "H": 1,
-          "A": 64
+          "A": 68
         },
-        "dataMessages": 64,
+        "dataMessages": 68,
         "perTicker": {
-          "btcusd": 32,
-          "ethusd": 32
+          "ethusd": 30,
+          "btcusd": 38
         },
         "subscribeAck": {
           "code": 200,
@@ -1596,16 +2034,16 @@
         ],
         "seconds": 20,
         "opened": true,
-        "messages": 95,
+        "messages": 70,
         "messageTypes": {
           "I": 1,
           "H": 1,
-          "A": 93
+          "A": 68
         },
-        "dataMessages": 93,
+        "dataMessages": 68,
         "perTicker": {
-          "xauusd": 57,
-          "eurusd": 36
+          "eurusd": 24,
+          "xauusd": 44
         },
         "subscribeAck": {
           "code": 200,
@@ -1617,27 +2055,27 @@
     },
     "matrix": {
       "INDEX": {
+        "HISTORY": "UNSUPPORTED",
+        "DAILY": "UNSUPPORTED",
+        "INTRADAY": "UNSUPPORTED",
+        "LATEST": "UNSUPPORTED",
+        "REALTIME": "UNSUPPORTED",
+        "WEBSOCKET": "UNSUPPORTED"
+      },
+      "PRECIOUS_METAL": {
+        "HISTORY": "SUPPORTED",
+        "DAILY": "SUPPORTED",
+        "INTRADAY": "SUPPORTED",
+        "LATEST": "SUPPORTED",
+        "REALTIME": "SUPPORTED",
+        "WEBSOCKET": "PARTIAL"
+      },
+      "COMMODITY": {
         "HISTORY": "PARTIAL",
         "DAILY": "PARTIAL",
         "INTRADAY": "PARTIAL",
         "LATEST": "PARTIAL",
         "REALTIME": "PARTIAL",
-        "WEBSOCKET": "PARTIAL"
-      },
-      "PRECIOUS_METAL": {
-        "HISTORY": "UNSUPPORTED",
-        "DAILY": "UNSUPPORTED",
-        "INTRADAY": "UNSUPPORTED",
-        "LATEST": "UNSUPPORTED",
-        "REALTIME": "UNSUPPORTED",
-        "WEBSOCKET": "PARTIAL"
-      },
-      "COMMODITY": {
-        "HISTORY": "UNSUPPORTED",
-        "DAILY": "UNSUPPORTED",
-        "INTRADAY": "UNSUPPORTED",
-        "LATEST": "UNSUPPORTED",
-        "REALTIME": "UNSUPPORTED",
         "WEBSOCKET": "PARTIAL"
       },
       "CRYPTO": {
@@ -1675,7 +2113,7 @@
         "1990": {
           "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1990/all?type=daily_treasury_yield_curve&...",
           "httpStatus": 200,
-          "durationMs": 20188,
+          "durationMs": 17474,
           "contentType": "text/csv",
           "textBytes": 14069,
           "header": [
@@ -1714,7 +2152,7 @@
         "2026": {
           "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&...",
           "httpStatus": 200,
-          "durationMs": 19145,
+          "durationMs": 18381,
           "contentType": "text/csv",
           "textBytes": 14933,
           "header": [
@@ -1759,7 +2197,7 @@
       "nyFed": {
         "latest": {
           "httpStatus": 200,
-          "durationMs": 294,
+          "durationMs": 198,
           "contentType": "application/json",
           "objectKeys": [
             "refRates"
@@ -1795,7 +2233,7 @@
         },
         "history": {
           "httpStatus": 200,
-          "durationMs": 501,
+          "durationMs": 468,
           "contentType": "application/json",
           "objectKeys": [
             "refRates"
@@ -1814,7 +2252,7 @@
         "DFR_B": {
           "key": "FM/B.U2.EUR.4F.KR.DFR.LEV",
           "httpStatus": 200,
-          "durationMs": 642,
+          "durationMs": 886,
           "contentType": "text/csv",
           "textBytes": 20943,
           "observations": 69,
@@ -1836,7 +2274,7 @@
         "DFR_D": {
           "key": "FM/D.U2.EUR.4F.KR.DFR.LEV",
           "httpStatus": 200,
-          "durationMs": 1354,
+          "durationMs": 2025,
           "contentType": "text/csv",
           "textBytes": 3008345,
           "observations": 10129,
@@ -1858,7 +2296,7 @@
         "MRO_B": {
           "key": "FM/B.U2.EUR.4F.KR.MRR_FR.LEV",
           "httpStatus": 200,
-          "durationMs": 146,
+          "durationMs": 171,
           "contentType": "text/csv",
           "textBytes": 18254,
           "observations": 48,
@@ -1889,7 +2327,7 @@
             }
           ],
           "httpStatus": 200,
-          "durationMs": 1461,
+          "durationMs": 2006,
           "contentType": "text/csv",
           "textBytes": 232257,
           "observations": 10647,
@@ -1926,7 +2364,7 @@
             }
           ],
           "httpStatus": 200,
-          "durationMs": 754,
+          "durationMs": 912,
           "contentType": "text/csv",
           "textBytes": 230975,
           "observations": 10647,
@@ -1963,7 +2401,7 @@
             }
           ],
           "httpStatus": 200,
-          "durationMs": 782,
+          "durationMs": 827,
           "contentType": "text/csv",
           "textBytes": 206615,
           "observations": 9551,
@@ -1994,7 +2432,7 @@
       "eia": {
         "apiV2WithoutKey": {
           "httpStatus": 403,
-          "durationMs": 400,
+          "durationMs": 196,
           "contentType": "application/json",
           "objectKeys": [
             "error"
@@ -2002,19 +2440,19 @@
         },
         "xlsWti": {
           "httpStatus": 200,
-          "durationMs": 115,
+          "durationMs": 187,
           "contentType": "application/vnd.ms-excel",
           "textBytes": 468746
         },
         "xlsBrent": {
           "httpStatus": 200,
-          "durationMs": 97,
+          "durationMs": 110,
           "contentType": "application/vnd.ms-excel",
           "textBytes": 449991
         },
         "xlsHenryHub": {
           "httpStatus": 200,
-          "durationMs": 137,
+          "durationMs": 125,
           "contentType": "application/vnd.ms-excel",
           "textBytes": 294383
         },
@@ -2022,7 +2460,7 @@
           "RWTC": {
             "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=D",
             "httpStatus": 200,
-            "durationMs": 162,
+            "durationMs": 272,
             "contentType": "text/html",
             "textBytes": 468649,
             "numericCells": 0,
@@ -2033,7 +2471,7 @@
           "RBRTE": {
             "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=D",
             "httpStatus": 200,
-            "durationMs": 146,
+            "durationMs": 265,
             "contentType": "text/html",
             "textBytes": 451930,
             "numericCells": 0,
@@ -2044,7 +2482,7 @@
           "RNGWHHD": {
             "url": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
             "httpStatus": 200,
-            "durationMs": 65,
+            "durationMs": 129,
             "contentType": "text/html",
             "textBytes": 307685,
             "numericCells": 0,
@@ -2052,12 +2490,38 @@
             "firstWeekLabel": null,
             "lastWeekLabel": null
           }
+        },
+        "xlsConverted": {
+          "RWTC": {
+            "series": "RWTC",
+            "url": "https://www.eia.gov/dnav/pet/hist_xls/RWTCd.xls",
+            "title": "Data 1: Cushing, OK WTI Spot Price FOB (Dollars per Barrel)",
+            "observations": 9507,
+            "firstDate": "1986-01-02",
+            "lastDate": "2026-09-22"
+          },
+          "RBRTE": {
+            "series": "RBRTE",
+            "url": "https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+            "title": "Data 1: Europe Brent Spot Price FOB (Dollars per Barrel)",
+            "observations": 9092,
+            "firstDate": "1987-05-20",
+            "lastDate": "2026-09-22"
+          },
+          "RNGWHHD": {
+            "series": "RNGWHHD",
+            "url": "https://www.eia.gov/dnav/ng/hist_xls/RNGWHHDd.xls",
+            "title": "Data 1: Henry Hub Natural Gas Spot Price (Dollars per Million Btu)",
+            "observations": 5692,
+            "firstDate": "1997-01-07",
+            "lastDate": "2026-09-22"
+          }
         }
       },
       "fred": {
         "DGS10": {
           "httpStatus": 200,
-          "durationMs": 108,
+          "durationMs": 246,
           "contentType": "application/csv",
           "textBytes": 268807,
           "observations": 16166,
@@ -2071,7 +2535,7 @@
         },
         "DCOILWTICO": {
           "httpStatus": 200,
-          "durationMs": 87,
+          "durationMs": 72,
           "contentType": "application/csv",
           "textBytes": 175612,
           "observations": 9507,
@@ -2085,7 +2549,7 @@
         },
         "DCOILBRENTEU": {
           "httpStatus": 200,
-          "durationMs": 35,
+          "durationMs": 28,
           "contentType": "application/csv",
           "textBytes": 169823,
           "observations": 9092,
@@ -2099,7 +2563,7 @@
         },
         "DHHNGSP": {
           "httpStatus": 200,
-          "durationMs": 64,
+          "durationMs": 30,
           "contentType": "application/csv",
           "textBytes": 115913,
           "observations": 5692,
@@ -2113,7 +2577,7 @@
         },
         "DFEDTARU": {
           "httpStatus": 200,
-          "durationMs": 45,
+          "durationMs": 49,
           "contentType": "application/csv",
           "textBytes": 103898,
           "observations": 6492,
@@ -2127,7 +2591,7 @@
         },
         "DFEDTARL": {
           "httpStatus": 200,
-          "durationMs": 32,
+          "durationMs": 29,
           "contentType": "application/csv",
           "textBytes": 103898,
           "observations": 6492,
@@ -2141,7 +2605,7 @@
         },
         "PCOPPUSDM": {
           "httpStatus": 200,
-          "durationMs": 21,
+          "durationMs": 44,
           "contentType": "application/csv",
           "textBytes": 12076,
           "observations": 415,
@@ -2160,8 +2624,8 @@
     "vu_4d4d20a3258d46": {
       "instrumentId": "vu_4d4d20a3258d46",
       "tiingo": {
-        "indexLevel": "PARTIAL",
-        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
       }
     },
     "vu_35bbbedc545d44": {
@@ -2223,8 +2687,8 @@
     "vu_ad8a9c09c56420": {
       "instrumentId": "vu_ad8a9c09c56420",
       "tiingo": {
-        "indexLevel": "PARTIAL",
-        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
       }
     },
     "vu_1030cbb1ec0636": {
@@ -2237,8 +2701,8 @@
     "vu_afe15da269200d": {
       "instrumentId": "vu_afe15da269200d",
       "tiingo": {
-        "indexLevel": "PARTIAL",
-        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
       }
     },
     "vu_7326d3ec863e5a": {
@@ -2251,45 +2715,73 @@
     "vu_b2abb03aadceb0": {
       "instrumentId": "vu_b2abb03aadceb0",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xauusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "xauusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            1000,
+            10000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2021-09-26T00:00:00.000Z",
+        "dailyObservations": 1552,
+        "intradayObservations": 1195,
+        "quoteAgeSeconds": 2
       }
     },
     "vu_e86da358da49ef": {
       "instrumentId": "vu_e86da358da49ef",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xagusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "xagusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            5,
+            250
+          ],
+          "within": true
+        },
+        "dailyFirst": "2021-09-26T00:00:00.000Z",
+        "dailyObservations": 1552,
+        "intradayObservations": 1195,
+        "quoteAgeSeconds": 3
       }
     },
     "vu_2ff2f92c5cbccb": {
       "instrumentId": "vu_2ff2f92c5cbccb",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xptusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "xptusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            300,
+            6000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2021-12-27T00:00:00.000Z",
+        "dailyObservations": 1467,
+        "intradayObservations": 1010,
+        "quoteAgeSeconds": 2
       }
     },
     "vu_26f07ebccf5620": {
       "instrumentId": "vu_26f07ebccf5620",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xpdusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "xpdusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            300,
+            6000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2021-12-27T00:00:00.000Z",
+        "dailyObservations": 1462,
+        "intradayObservations": 1010,
+        "quoteAgeSeconds": 3
       }
     },
     "vu_b4e9008d384bf7": {
@@ -2323,27 +2815,37 @@
     "vu_84785b46b6f3c1": {
       "instrumentId": "vu_84785b46b6f3c1",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xcuusd",
-          "copperusd",
-          "hgusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "copperusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            1,
+            20000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2023-09-15T00:00:00.000Z",
+        "dailyObservations": 944,
+        "intradayObservations": 1195,
+        "quoteAgeSeconds": 2
       }
     },
     "vu_21bcc5bf8b2280": {
       "instrumentId": "vu_21bcc5bf8b2280",
       "tiingoFx": {
-        "ticker": null,
-        "status": "UNSUPPORTED",
-        "tried": [
-          "xngusd",
-          "natgasusd",
-          "ngusd"
-        ],
-        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+        "ticker": "natgasusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            0.5,
+            50
+          ],
+          "within": true
+        },
+        "dailyFirst": "2026-01-30T00:00:00.000Z",
+        "dailyObservations": 203,
+        "intradayObservations": 1195,
+        "quoteAgeSeconds": 2
       }
     },
     "vu_e970712c167d9d": {
@@ -2361,9 +2863,9 @@
         "dailyFirst": "2011-08-19T00:00:00+00:00",
         "dailyObservations": 4008,
         "weekendDaily": 1144,
-        "intradayObservations": 1021,
+        "intradayObservations": 1022,
         "intradayWeekend": 0,
-        "lastBarAgeSeconds": 17,
+        "lastBarAgeSeconds": 105,
         "quoteCurrency": "usd"
       }
     },
@@ -2382,9 +2884,9 @@
         "dailyFirst": "2015-08-08T00:00:00+00:00",
         "dailyObservations": 2571,
         "weekendDaily": 732,
-        "intradayObservations": 1021,
+        "intradayObservations": 1022,
         "intradayWeekend": 0,
-        "lastBarAgeSeconds": 18,
+        "lastBarAgeSeconds": 106,
         "quoteCurrency": "usd"
       }
     },
@@ -2403,9 +2905,9 @@
         "dailyFirst": "2020-08-23T00:00:00+00:00",
         "dailyObservations": 710,
         "weekendDaily": 201,
-        "intradayObservations": 1021,
+        "intradayObservations": 1022,
         "intradayWeekend": 0,
-        "lastBarAgeSeconds": 18,
+        "lastBarAgeSeconds": 106,
         "quoteCurrency": "usd"
       }
     },
@@ -2424,15 +2926,15 @@
         "dailyFirst": "2015-02-26T00:00:00+00:00",
         "dailyObservations": 2566,
         "weekendDaily": 732,
-        "intradayObservations": 1021,
+        "intradayObservations": 1022,
         "intradayWeekend": 0,
-        "lastBarAgeSeconds": 19,
+        "lastBarAgeSeconds": 107,
         "quoteCurrency": "usd"
       }
     }
   },
   "requests": {
-    "tiingo": 68,
+    "tiingo": 107,
     "official": 24
   }
 }
