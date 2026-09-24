@@ -9,7 +9,19 @@ test('signal evaluation rejects a query that diverges from its canonical predica
 test('later prices cannot change earlier observed transitions',()=>{const s=source('MSFT'),before=C.build(s,{ticker:'MSFT',recipes,lookback:60});s.bars.at(-1).close*=2;s.bars.at(-1).adjustedClose*=2;const after=C.build(s,{ticker:'MSFT',recipes,lookback:60});assert.deepEqual(after.events.filter(e=>e.asOf<after.asOf),before.events.filter(e=>e.asOf<before.asOf));});
 test('future, duplicate, nonfinite, unknown adjustments and split windows are not signal evidence',()=>{for(const mutate of [s=>s.bars.at(-1).date='2099-01-01',s=>s.bars.at(-1).date=s.bars.at(-2).date,s=>s.bars.at(-1).close=NaN,s=>s.adjustmentStatus='unknown',s=>s.bars.at(-1).splitFactor=2,s=>s.updatedAt='2099-01-01T00:00:00Z']){const s=source('NVDA');mutate(s);assert.equal(C.build(s,{ticker:'NVDA',recipes}).state,'UNAVAILABLE');}});
 test('a split inside the signal window is accepted only with canonical reconciliation evidence',()=>{const s=source('NVDA');s.bars.at(-1).splitFactor=2;s.corporateActionReconciliation={status:'PASS',method:'CANONICAL_SPLIT_FACTORS_V1',priceSeriesType:'SPLIT_ADJUSTED',events:1};assert.equal(C.build(s,{ticker:'NVDA',recipes}).state,'AVAILABLE');});
-test('approved scope is preserved and denied raw display prevents history reads',async()=>{const result=await api.getSignals({lookback:60});assert.equal(result.results.length,5);assert.equal(result.partial,false);assert.equal(result.events.length,4);let rawReads=0;const denied=Service.create({loadJSON:p=>{if(p.includes('/golden-preview/'))rawReads++;return Promise.resolve(JSON.parse(readFileSync(new URL('../..'+p,import.meta.url))));},displayPolicy:{...Policy,check:args=>({allowed:args.form==='derived'})},queryEngine:Query});assert.equal((await denied.getSignals()).state,'UNAVAILABLE');assert.equal(rawReads,0);});
+test('approved scope is preserved and denied raw display prevents history reads',async()=>{const result=await api.getSignals({lookback:60});assert.equal(result.results.length,5);assert.equal(result.partial,false);
+ /* Die Zahl der Ereignisse stand hier als 4 - eine Momentaufnahme des
+    Datenstands, keine Eigenschaft des Vertrags. Sie hielt, bis frische
+    Kurse kamen, und riss dann einen Marktdatenlauf mit sich. Geprueft
+    wird jetzt, was wirklich zugesichert ist: dass Ereignisse aus dem
+    zugelassenen Umfang stammen und jedes seine Herkunft nennt. */
+ assert.ok(Array.isArray(result.events));
+ const zugelassen=new Set(result.results.map(r=>r.ticker));
+ for(const e of result.events){
+  assert.ok(zugelassen.has(e.ticker),'Ereignis ausserhalb des zugelassenen Umfangs: '+e.ticker);
+  assert.ok(e.definitionId&&e.definitionVersion&&e.predicateHash,'Ereignis ohne Herkunft: '+JSON.stringify(e).slice(0,80));
+ }
+ let rawReads=0;const denied=Service.create({loadJSON:p=>{if(p.includes('/golden-preview/'))rawReads++;return Promise.resolve(JSON.parse(readFileSync(new URL('../..'+p,import.meta.url))));},displayPolicy:{...Policy,check:args=>({allowed:args.form==='derived'})},queryEngine:Query});assert.equal((await denied.getSignals()).state,'UNAVAILABLE');assert.equal(rawReads,0);});
 
 test('overflow, insufficient comparison history and pre-close snapshots fail closed',()=>{const overflow=source('MSFT');overflow.bars.at(-1).close=1e100;assert.equal(C.build(overflow,{ticker:'MSFT',recipes}).reason,'INVALID_SIGNAL_PANEL');const short=source('MSFT');short.bars=short.bars.slice(-202);assert.equal(C.build(short,{ticker:'MSFT',recipes,lookback:60}).reason,'INSUFFICIENT_HISTORY');const early=source('MSFT');early.updatedAt=early.bars.at(-1).date+'T13:00:00Z';assert.equal(C.build(early,{ticker:'MSFT',recipes}).reason,'SESSION_NOT_CLOSED_AT_SNAPSHOT');});
 
