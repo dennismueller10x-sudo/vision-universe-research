@@ -208,28 +208,27 @@ test("eine gar nicht bereinigte Dividende ist kein Formelproblem", () => {
   assert.equal(r.samples[0].impliedDistribution, 0);
 });
 
-test("wird mehr bereinigt als ausgeschuettet, traegt das die Signatur einer Abspaltung", () => {
-  /* Eine Abspaltung bereinigt der Anbieter, sie steht aber nicht
-     vollstaendig in der Dividendenspalte. Die implizite Ausschuettung
-     liegt dann UEBER der gemeldeten - das ist etwas anderes als eine
-     fehlende Bereinigung, und beides gleich zu zaehlen waere der Fehler. */
+test("das Fuenffache der gemeldeten Dividende ist keine Bereinigung dieser Dividende", () => {
+  /* Die erste Fassung las jede Ueberbereinigung als Abspaltung. Das
+     ist zu grosszuegig: wer das Fuenffache herausrechnet, rechnet etwas
+     anderes heraus, und was das ist, weiss diese Pruefung nicht. */
   const bars = [bar("2026-01-01", 100, 90), bar("2026-01-02", 95, 90, 1)];
   const r = Series.verifyTotalReturn(bars, 10);
   assert.equal(r.consistent, 0);
-  assert.equal(r.classes.ADJUSTMENT_EXCEEDS_CASH_DIVIDEND, 1);
-  assert.ok(r.samples[0].impliedOverDividend > 1);
+  assert.equal(r.classes.ADJUSTMENT_INCONSISTENT, 1);
+  assert.ok(r.samples[0].impliedOverDividend > Series.ADJUSTMENT_BAND[1]);
 });
 
-test("wird weniger bereinigt als ausgeschuettet, ist das ein echter Widerspruch", () => {
-  /* Zwei ausgeschuettet, eins bereinigt. Die Spalte hat den Abschlag
-     zur Haelfte stehen lassen - keine Abspaltung erklaert das, und die
-     Reihe ist an diesem Tag keine vollstaendige Gesamtrendite. */
+test("die Haelfte herausgerechnet bleibt ein Widerspruch", () => {
+  /* Zwei ausgeschuettet, eins bereinigt. Ein Betrag, der um fuenf
+     Prozent danebenliegt, ist eine Bewertungsfrage; die Haelfte ist
+     keine. Die Reihe ist an diesem Tag keine vollstaendige
+     Gesamtrendite, und das Band faengt sie nicht auf. */
   const bars = [bar("2026-01-01", 100, 99), bar("2026-01-02", 98, 98, 2)];
   const r = Series.verifyTotalReturn(bars, 10);
   assert.equal(r.consistent, 0);
-  assert.equal(r.classes.ADJUSTMENT_BELOW_CASH_DIVIDEND, 1);
-  assert.ok(r.samples[0].impliedOverDividend < 1 && r.samples[0].impliedOverDividend > 0,
-    "implizite Ausschuettung: " + r.samples[0].impliedOverDividend);
+  assert.equal(r.classes.ADJUSTMENT_INCONSISTENT, 1);
+  assert.ok(r.samples[0].impliedOverDividend < Series.ADJUSTMENT_BAND[0]);
 });
 
 test("ein Splittag wird uebersprungen statt falsch beurteilt", () => {
@@ -262,4 +261,35 @@ test("die Golden Five bestehen den Nachweis ohne Ausnahme", (t) => {
   }
   assert.ok(events >= 30, "zu wenige Ereignisse fuer ein Urteil: " + events);
   assert.equal(consistent, events);
+});
+
+test("eine Bereinigung um 95 Prozent der Ausschuettung ist eine Bereinigung", () => {
+  /* Der Fall, der die erste Fassung des Klassifikators widerlegt hat:
+     MMM am Tag der Solventum-Abspaltung. 17,39 gemeldet, 16,55
+     herausgerechnet. Das als "keine Gesamtrendite" zu fuehren waere
+     falsch - bereinigt wurde, nur nicht nach dem Betrag in der Spalte. */
+  const bars = [bar("2024-03-28", 106.07, 90), bar("2024-04-01", 94.02, 90, 17.3875)];
+  const r = Series.verifyTotalReturn(bars, 10);
+  assert.equal(r.classes.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT, 1);
+  assert.equal(r.buckets.LARGE_DISTRIBUTION.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT, 1);
+});
+
+test("das Band ist eng und seine Kanten sind festgenagelt", () => {
+  /* Ohne diesen Test koennte das Band stillschweigend wachsen, bis
+     jeder Lauf bestaetigt. Beide Kanten werden abgefahren. */
+  const [low, high] = Series.ADJUSTMENT_BAND;
+  assert.ok(low >= 0.5 && high <= 1.5, "Band zu weit: " + JSON.stringify(Series.ADJUSTMENT_BAND));
+
+  /* Knapp innerhalb: bereinigt. Die implizite Ausschuettung ist
+     (1 - ratio) * prevClose; hier wird sie ueber adjustedClose gesetzt. */
+  const mitAnteil = (anteil) => {
+    const prevClose = 100, dividend = 10;
+    const ratio = 1 - (dividend * anteil) / prevClose;
+    /* adj_prev/adj_now so waehlen, dass das Verhaeltnis genau ratio ergibt */
+    return [bar("a", prevClose, 100 * ratio), bar("b", 90, 90, dividend)];
+  };
+  assert.equal(Series.verifyTotalReturn(mitAnteil(low + 0.02), 10).classes.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT, 1);
+  assert.equal(Series.verifyTotalReturn(mitAnteil(low - 0.02), 10).classes.ADJUSTMENT_INCONSISTENT, 1);
+  assert.equal(Series.verifyTotalReturn(mitAnteil(high - 0.02), 10).classes.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT, 1);
+  assert.equal(Series.verifyTotalReturn(mitAnteil(high + 0.02), 10).classes.ADJUSTMENT_INCONSISTENT, 1);
 });

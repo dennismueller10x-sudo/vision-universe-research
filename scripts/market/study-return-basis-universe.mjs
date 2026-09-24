@@ -322,7 +322,7 @@ function main() {
   const exclusions = {};
   const bySource = {};
   const verification = { securities: 0, events: 0, consistent: 0, worstError: 0,
-    classes: {}, inconsistentSecurities: [] };
+    classes: {}, buckets: {}, affectedSecurities: 0, inconsistentSecurities: [] };
 
   for (const security of universe) {
     const found = readSeries(security.securityId);
@@ -347,6 +347,13 @@ function main() {
       for (const [klass, count] of Object.entries(check.classes)) {
         verification.classes[klass] = (verification.classes[klass] || 0) + count;
       }
+      for (const [bucket, byClass] of Object.entries(check.buckets || {})) {
+        verification.buckets[bucket] = verification.buckets[bucket] || {};
+        for (const [klass, count] of Object.entries(byClass)) {
+          verification.buckets[bucket][klass] = (verification.buckets[bucket][klass] || 0) + count;
+        }
+      }
+      if (check.consistent < check.checked) verification.affectedSecurities += 1;
       if (check.consistent < check.checked && verification.inconsistentSecurities.length < 50) {
         verification.inconsistentSecurities.push({
           securityId: security.securityId, checked: check.checked,
@@ -701,8 +708,8 @@ function main() {
      Anteil daneben -, aber sie steht im Urteil und faellt nicht unter
      eine Toleranz. */
   const unexplained = (verification.classes.NO_ADJUSTMENT_AT_ALL || 0) +
-                      (verification.classes.ADJUSTMENT_BELOW_CASH_DIVIDEND || 0);
-  const explained = (verification.classes.ADJUSTMENT_EXCEEDS_CASH_DIVIDEND || 0) +
+                      (verification.classes.ADJUSTMENT_INCONSISTENT || 0);
+  const explained = (verification.classes.ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT || 0) +
                     (verification.classes.ADJUSTMENT_ON_NEIGHBOURING_DAY || 0);
   const totalReturnVerdict = verification.events < 30
     ? "NOT_MEASURED"
@@ -756,6 +763,14 @@ function main() {
       worstError: round(verification.worstError, 6),
       tolerance: 0.002,
       failureClasses: verification.classes,
+      /* Getrennt nach Groesse der Ausschuettung: eine gewoehnliche
+         Quartalsdividende liegt unter zwei Prozent des Kurses, alles ab
+         fuenf ist der Sache nach etwas anderes. */
+      byDistributionSize: verification.buckets,
+      adjustmentBand: Series.ADJUSTMENT_BAND,
+      affectedSecurities: verification.affectedSecurities,
+      affectedSecuritiesShare: verification.securities
+        ? round(verification.affectedSecurities / verification.securities, 6) : null,
       explainedByCorporateAction: explained,
       unexplained,
       unexplainedShare: verification.events ? round(unexplained / verification.events, 6) : null,

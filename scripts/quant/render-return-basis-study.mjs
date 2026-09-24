@@ -144,10 +144,10 @@ if (v.failureClasses && Object.keys(v.failureClasses).length) {
   w("**Nicht jeder Fehlschlag ist ein Befund.** Die Formel gilt für eine Bardividende und sonst nichts. Eine Abspaltung, eine Sachausschüttung, ein Bezugsrecht — jedes davon bereinigt der Anbieter, und keines steht vollständig in der Dividendenspalte. Deshalb wird jede Abweichung eingeordnet statt gezählt: die **implizite Ausschüttung** ist das, was die Bereinigung tatsächlich herausgenommen hat.");
   w();
   const erklaerung = {
-    ADJUSTMENT_EXCEEDS_CASH_DIVIDEND: "bereinigt **mehr** als die gemeldete Dividende — Signatur einer zusätzlichen Ausschüttung (Abspaltung, Sachdividende)",
+    ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT: "bereinigt, aber nicht um den gemeldeten Barbetrag — die Signatur einer Abspaltung: der Anbieter rechnet den Wert der verteilten Anteile am Ex-Tag heraus, nicht die Zahl in der Dividendenspalte",
     ADJUSTMENT_ON_NEIGHBOURING_DAY: "bereinigt am Nachbartag — ein Datumsversatz, keine fehlende Bereinigung",
     NO_ADJUSTMENT_AT_ALL: "**gar nicht bereinigt** — an diesem Tag ist die Spalte keine Gesamtrendite",
-    ADJUSTMENT_BELOW_CASH_DIVIDEND: "bereinigt **weniger** als die Bardividende — ein echter Widerspruch"
+    ADJUSTMENT_INCONSISTENT: "bereinigt, aber weit außerhalb des Bandes um die Ausschüttung — was dort herausgerechnet wurde, erklärt diese Prüfung nicht"
   };
   w("| Einordnung | Ereignisse | |");
   w("|---|---:|---|");
@@ -155,6 +155,30 @@ if (v.failureClasses && Object.keys(v.failureClasses).length) {
     w("| `" + klass + "` | " + int(count) + " | " + (erklaerung[klass] || "") + " |");
   }
   w();
+  if (v.adjustmentBand) {
+    w("Als *bereinigt* zählt ein Tag, dessen implizite Ausschüttung zwischen dem " +
+      num(v.adjustmentBand[0], 2) + "- und dem " + num(v.adjustmentBand[1], 2) +
+      "-fachen der gemeldeten liegt. Die Grenze entscheidet die Frage \"wurde überhaupt bereinigt\", nicht \"stimmt der Betrag\".");
+    w();
+  }
+  if (v.byDistributionSize && Object.keys(v.byDistributionSize).length) {
+    w("| Größe der Ausschüttung | " + Object.keys(erklaerung).filter((k) =>
+      Object.values(v.byDistributionSize).some((b) => b[k])).map((k) => "`" + k + "`").join(" | ") + " |");
+    const spalten = Object.keys(erklaerung).filter((k) =>
+      Object.values(v.byDistributionSize).some((b) => b[k]));
+    w("|---" + spalten.map(() => "|---:").join("") + "|");
+    for (const [bucket, byClass] of Object.entries(v.byDistributionSize)) {
+      w("| `" + bucket + "` | " + spalten.map((k) => int(byClass[k] || 0)).join(" | ") + " |");
+    }
+    w();
+    w("`ORDINARY_DIVIDEND` ist eine Ausschüttung unter fünf Prozent des Kurses, `LARGE_DISTRIBUTION` alles darüber — der Sache nach meist eine Abspaltung oder Sonderausschüttung.");
+    w();
+  }
+  if (finite(v.affectedSecurities)) {
+    w("Betroffen sind " + int(v.affectedSecurities) + " von " + int(v.securitiesChecked) +
+      " geprüften Titeln (" + pct(v.affectedSecuritiesShare, 2) + ").");
+    w();
+  }
   w("**Erklärt: " + int(v.explainedByCorporateAction) + " · unerklärt: " + int(v.unexplained) +
     "** (" + pct(v.unexplainedShare, 3) + " aller geprüften Ereignisse). Das Urteil steht auf den unerklärten: eine Reihe, die eine Dividende gar nicht oder nur zum Teil herausrechnet, ist an diesem Tag keine Gesamtrendite-Reihe, und keine Einordnung erklärt das weg.");
   w();

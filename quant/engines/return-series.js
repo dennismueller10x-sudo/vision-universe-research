@@ -123,10 +123,17 @@
      An einem Ex-Tag ohne Split gilt bei Gesamtrendite-Bereinigung:
        (adj_prev/close_prev) / (adj_now/close_now) = 1 - dividend/close_prev
      Bei reiner Splitbereinigung stuende dort 1. */
+  /* Innerhalb dieses Bandes um die gemeldete Ausschuettung gilt der Tag
+     als bereinigt - der Betrag weicht ab, die Bereinigung fand statt.
+     Ausserhalb nicht. Die Zahlen stehen hier und nicht verstreut im
+     Code, damit eine Aenderung daran im Diff sichtbar ist. */
+  var ADJUSTMENT_BAND = [0.60, 1.40];
+
   function verifyTotalReturn(bars, maxEvents) {
     const TOLERANCE = 0.002;
     let checked = 0, consistent = 0, worst = 0;
     const classes = {};
+    const buckets = {};
     const samples = [];
     for (let i = bars.length - 1; i > 0 && checked < maxEvents; i--) {
       const bar = bars[i], prev = bars[i - 1];
@@ -178,15 +185,52 @@
         if (Math.abs(r - (1 - bar.dividend / b.close)) <= TOLERANCE) { neighbour = true; break; }
       }
 
-      let klass;
-      if (neighbour) klass = "ADJUSTMENT_ON_NEIGHBOURING_DAY";
-      else if (Math.abs(ratio - 1) <= TOLERANCE) klass = "NO_ADJUSTMENT_AT_ALL";
-      else if (relativeToDividend !== null && relativeToDividend > 1) klass = "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND";
-      else klass = "ADJUSTMENT_BELOW_CASH_DIVIDEND";
-      classes[klass] = (classes[klass] || 0) + 1;
-      if (samples.length < 3) {
+      /* WELCHE FRAGE HIER WIRKLICH ZAEHLT
+
+       Nicht: weicht der Betrag ab. Sondern: wurde ueberhaupt bereinigt.
+
+       Die erste Fassung dieses Klassifikators entschied nach der
+       Richtung - mehr bereinigt als gemeldet galt als Abspaltung,
+       weniger als Widerspruch. Der Lauf ueber 62.859 Ereignisse hat das
+       widerlegt: bei jedem einzelnen aufgezeichneten Fall waren
+       zwischen 77 und 99 Prozent der Ausschuettung herausgerechnet, in
+       beiden Richtungen, und die grossen Abweichungen trugen
+       ausnahmslos Ausschuettungen von 15 bis 90 Prozent des Kurses -
+       MMM/Solventum, DD/Qnity, Crane, BBWI. Das sind Abspaltungen, und
+       der Anbieter bereinigt sie nach dem Wert der verteilten Anteile am
+       Ex-Tag, nicht nach dem Betrag in der Dividendenspalte. Eine
+       Bereinigung um 95 Prozent der Ausschuettung "keine Gesamtrendite"
+       zu nennen waere falsch.
+
+       Also entscheidet die Frage, ob bereinigt wurde: liegt die
+       implizite Ausschuettung in einem Band um die gemeldete, ist die
+       Reihe an diesem Tag gesamtrenditebereinigt, nur nicht nach der
+       einfachen Formel. Liegt sie bei null oder weit daneben, ist sie
+       es nicht.
+
+       Das Band ist bewusst eng und steht als Konstante da, damit es
+       niemand stillschweigend weitet, wenn ein Lauf unbequem ausfaellt.
+       Tests fahren beide Kanten ab. */
+    let klass;
+    if (neighbour) klass = "ADJUSTMENT_ON_NEIGHBOURING_DAY";
+    else if (Math.abs(ratio - 1) <= TOLERANCE) klass = "NO_ADJUSTMENT_AT_ALL";
+    else if (relativeToDividend !== null &&
+             relativeToDividend >= ADJUSTMENT_BAND[0] && relativeToDividend <= ADJUSTMENT_BAND[1]) {
+      klass = "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT";
+    } else klass = "ADJUSTMENT_INCONSISTENT";
+    classes[klass] = (classes[klass] || 0) + 1;
+
+    /* Wie gross war die Ausschuettung gemessen am Kurs? Eine gewoehnliche
+       Quartalsdividende liegt unter zwei Prozent; alles darueber ist der
+       Sache nach etwas anderes. Der Bericht zeigt beide Gruppen
+       getrennt, damit sichtbar bleibt, wo die Abweichungen sitzen. */
+    const bucket = bar.dividend / prev.close >= 0.05 ? "LARGE_DISTRIBUTION" : "ORDINARY_DIVIDEND";
+    buckets[bucket] = buckets[bucket] || {};
+    buckets[bucket][klass] = (buckets[bucket][klass] || 0) + 1;
+    if (samples.length < 3) {
         samples.push({
           date: bar.date, klass,
+          dividendToPrice: Math.round((bar.dividend / prev.close) * 1e6) / 1e6,
           close: bar.close, previousClose: prev.close, dividend: bar.dividend,
           impliedDistribution: Math.round(impliedDistribution * 1e6) / 1e6,
           impliedOverDividend: relativeToDividend === null ? null : Math.round(relativeToDividend * 1e4) / 1e4,
@@ -194,13 +238,14 @@
         });
       }
     }
-    return { checked, consistent, worst, classes, samples };
+    return { checked, consistent, worst, classes, buckets, samples };
   }
 
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
     splitAdjusted: splitAdjusted,
     verifyTotalReturn: verifyTotalReturn,
+    ADJUSTMENT_BAND: ADJUSTMENT_BAND,
     totalReturn: totalReturn,
     build: build
   };
