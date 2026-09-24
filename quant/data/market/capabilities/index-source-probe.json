@@ -1,6 +1,6 @@
 {
  "schemaVersion": "1.0.0",
- "generatedAtUtc": "2026-09-24T15:17:23.949Z",
+ "generatedAtUtc": "2026-09-24T15:23:44.715Z",
  "purpose": "Index Coverage P0: echte Indexstaende je Quelle gemessen. Keine ETF, keine Futures, keine Eigenberechnung.",
  "valuesIncluded": false,
  "sources": {
@@ -10,18 +10,18 @@
    "keyPresent": true,
    "apiUsage": {
     "httpStatus": 200,
-    "ms": 284,
+    "ms": 303,
     "contentType": "application/json",
-    "bytes": 132,
+    "bytes": 133,
     "finalUrl": "https://api.twelvedata.com/api_usage?apikey=[REDACTED]",
     "planCategory": "basic",
     "planLimit": 8,
-    "dailyUsage": 88,
+    "dailyUsage": 111,
     "planDailyLimit": 800
    },
    "indicesList": {
     "httpStatus": 200,
-    "ms": 662,
+    "ms": 688,
     "contentType": "application/json",
     "bytes": 161869,
     "finalUrl": "https://api.twelvedata.com/indices?apikey=[REDACTED]",
@@ -665,25 +665,69 @@
    "keyPresent": true,
    "indexList": {
     "httpStatus": 200,
-    "ms": 169,
+    "ms": 332,
     "contentType": "application/json",
     "bytes": 54723,
     "finalUrl": "https://financialmodelingprep.com/stable/index-list?apikey=[REDACTED]",
     "rows": 427,
     "message": null
-   }
+   },
+   "terms": [
+    {
+     "url": "https://site.financialmodelingprep.com/terms-of-service",
+     "httpStatus": 200,
+     "ms": 308,
+     "contentType": "text/html",
+     "bytes": 83186,
+     "finalUrl": "https://site.financialmodelingprep.com/terms-of-service",
+     "display": "op{background-color:#ffffff;} .css-chz7cr{position:relative;display:-webkit-inline-box;display:-webkit-inline-flex;display:-ms-inline-flexbox;display:inline-flex;vertical-align:middle;-webkit-flex-shrink:0;-ms-flex-negative:0;flex-shrink:0;} Datasets .css-q7mezt{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:1em;height:1em;display:inline-block;-webkit-flex-shrink:0;-ms-flex-negative:0;flex-shrink:0;-webkit-transition:fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;transition:",
+     "personal": "entation Function Explorer Third-Party Integrations Pricing Personal Use Commercial Use Sign In Sign Up .css-1u6jjiw{display:block;background-color:rgba(0, 0, 0, 0.11);height:1.2em;position:relative;overflow:hidden;-webkit-mask-image:-webkit-radial-gradient(white, black);background-color:#16161689;}.css-1u6jjiw::after{background:linear-gradient( 90deg, transparent, rgba(0, 0, 0, 0.04), transparent );content:\"\";positi"
+    },
+    {
+     "url": "https://site.financialmodelingprep.com/developer/docs/terms-of-service",
+     "httpStatus": 200,
+     "ms": 232,
+     "contentType": "text/html",
+     "bytes": 83732,
+     "finalUrl": "https://site.financialmodelingprep.com/developer/docs/terms-of-service",
+     "display": "op{background-color:#ffffff;} .css-chz7cr{position:relative;display:-webkit-inline-box;display:-webkit-inline-flex;display:-ms-inline-flexbox;display:inline-flex;vertical-align:middle;-webkit-flex-shrink:0;-ms-flex-negative:0;flex-shrink:0;} Datasets .css-q7mezt{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:1em;height:1em;display:inline-block;-webkit-flex-shrink:0;-ms-flex-negative:0;flex-shrink:0;-webkit-transition:fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;transition:",
+     "personal": "entation Function Explorer Third-Party Integrations Pricing Personal Use Commercial Use Sign In Sign Up .css-1u6jjiw{display:block;background-color:rgba(0, 0, 0, 0.11);height:1.2em;position:relative;overflow:hidden;-webkit-mask-image:-webkit-radial-gradient(white, black);background-color:#16161689;}.css-1u6jjiw::after{background:linear-gradient( 90deg, transparent, rgba(0, 0, 0, 0.04), transparent );content:\"\";positi"
+    },
+    {
+     "url": "https://site.financialmodelingprep.com/data-display-licensing",
+     "httpStatus": 404,
+     "ms": 146,
+     "contentType": "text/html",
+     "bytes": 4997,
+     "finalUrl": "https://site.financialmodelingprep.com/data-display-licensing",
+     "display": null,
+     "personal": null
+    }
+   ]
   },
   "finnhub": {
    "priority": 1,
    "kind": "EXISTING_PROVIDER",
    "keyPresent": true
   },
+  "stoxxQuotes": {
+   "priority": 2,
+   "kind": "OFFICIAL_INDEX_PROVIDER_DELAYED_API",
+   "legalPortal": {
+    "httpStatus": 200,
+    "ms": 160,
+    "contentType": "text/html",
+    "bytes": 132051,
+    "finalUrl": "https://stoxx.com/legal/legal-portal/",
+    "excerpt": "{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{word-wrap:normal!important;border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.screen-reader-text:focu"
+   }
+  },
   "nikkeiOfficial": {
    "priority": 2,
    "kind": "OFFICIAL_INDEX_PROVIDER",
    "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
    "httpStatus": 200,
-   "ms": 662,
+   "ms": 557,
    "contentType": "text/csv",
    "bytes": 52996,
    "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
@@ -692,7 +736,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/terms",
      "httpStatus": 403,
-     "ms": 32,
+     "ms": 52,
      "contentType": "text/html",
      "bytes": 5691,
      "finalUrl": "https://indexes.nikkei.co.jp/en/terms",
@@ -701,25 +745,25 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/nkave/about/terms",
      "httpStatus": 403,
-     "ms": 60,
+     "ms": 32,
      "contentType": "text/html",
-     "bytes": 5748,
+     "bytes": 5727,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/about/terms",
      "excerpt": null
     },
     {
      "url": "https://indexes.nikkei.co.jp/en/",
      "httpStatus": 403,
-     "ms": 68,
+     "ms": 52,
      "contentType": "text/html",
-     "bytes": 5676,
+     "bytes": 5655,
      "finalUrl": "https://indexes.nikkei.co.jp/en/",
      "excerpt": null
     },
     {
      "url": "https://indexes.nikkei.co.jp/en/nkave",
      "httpStatus": 403,
-     "ms": 59,
+     "ms": 32,
      "contentType": "text/html",
      "bytes": 5691,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave",
@@ -736,17 +780,17 @@
    "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
    "terms": {
     "httpStatus": 404,
-    "ms": 3808,
+    "ms": 2353,
     "contentType": "text/html",
-    "bytes": 137279,
+    "bytes": 137276,
     "finalUrl": "https://www.nasdaq.com/nasdaq-terms-use",
     "excerpt": "etters Privacy Policy Cookies Legal Do Not Sell or Share My Personal Information Visit Nasdaq on Facebook Visit Nasdaq on X Visit Nasdaq on LinkedIn Visit Nasdaq on Instagram Visit Nasdaq on YouTube © 2026, Nasdaq, Inc. All Rights Reserved. My Quotes My Quotes My European Quotes"
    },
    "globalIndexesPage": {
     "httpStatus": 200,
-    "ms": 398,
+    "ms": 1286,
     "contentType": "text/html",
-    "bytes": 69140,
+    "bytes": 69141,
     "finalUrl": "https://indexes.nasdaqomx.com/Index/History/NDX",
     "mentionsExport": true
    }
@@ -756,7 +800,7 @@
    "kind": "OFFICIAL_INDEX_PROVIDER_WEBSITE_API",
    "terms": {
     "httpStatus": 403,
-    "ms": 187,
+    "ms": 35,
     "contentType": "text/html",
     "bytes": 2010,
     "finalUrl": "https://www.spglobal.com/spdji/en/terms-of-use/",
@@ -796,7 +840,7 @@
    "kind": "OFFICIAL_EXCHANGE_DELAYED",
    "terms": {
     "httpStatus": 404,
-    "ms": 207,
+    "ms": 413,
     "contentType": "text/html",
     "bytes": 617130,
     "finalUrl": "https://www.cboe.com/us/options/market_statistics/terms/",
@@ -813,7 +857,7 @@
   },
   "fredLegal": {
    "httpStatus": 200,
-   "ms": 300,
+   "ms": 211,
    "contentType": "text/html",
    "bytes": 131214,
    "finalUrl": "https://fred.stlouisfed.org/legal/",
@@ -825,27 +869,27 @@
     {
      "url": "https://www.nasdaq.com/terms-of-use",
      "httpStatus": 404,
-     "ms": 4470,
+     "ms": 4468,
      "contentType": "text/html",
-     "bytes": 137259,
+     "bytes": 137251,
      "finalUrl": "https://www.nasdaq.com/terms-of-use",
      "excerpt": null
     },
     {
      "url": "https://www.nasdaq.com/legal/terms-of-use",
      "httpStatus": 404,
-     "ms": 2400,
+     "ms": 4339,
      "contentType": "text/html",
-     "bytes": 137527,
+     "bytes": 137522,
      "finalUrl": "https://www.nasdaq.com/legal/terms-of-use",
      "excerpt": null
     },
     {
      "url": "https://www.nasdaq.com/about/terms-of-use",
      "httpStatus": 404,
-     "ms": 3433,
+     "ms": 3011,
      "contentType": "text/html",
-     "bytes": 135936,
+     "bytes": 135937,
      "finalUrl": "https://www.nasdaq.com/about/terms-of-use",
      "excerpt": null
     }
@@ -854,7 +898,7 @@
     {
      "url": "https://www.cboe.com/about/legal/",
      "httpStatus": 404,
-     "ms": 200,
+     "ms": 769,
      "contentType": "text/html",
      "bytes": 617110,
      "finalUrl": "https://www.cboe.com/about/legal/",
@@ -863,7 +907,7 @@
     {
      "url": "https://www.cboe.com/legal/website-terms-and-conditions/",
      "httpStatus": 404,
-     "ms": 199,
+     "ms": 715,
      "contentType": "text/html",
      "bytes": 617110,
      "finalUrl": "https://www.cboe.com/legal/website-terms-and-conditions/",
@@ -872,7 +916,7 @@
     {
      "url": "https://www.cboe.com/us/options/market_statistics/",
      "httpStatus": 200,
-     "ms": 241,
+     "ms": 151,
      "contentType": "text/html",
      "bytes": 376656,
      "finalUrl": "https://www.cboe.com/markets/us/options/market-statistics",
@@ -883,7 +927,7 @@
     {
      "url": "https://stoxx.com/terms-of-use/",
      "httpStatus": 404,
-     "ms": 578,
+     "ms": 960,
      "contentType": "text/html",
      "bytes": 126782,
      "finalUrl": "https://stoxx.com/terms-of-use/",
@@ -892,7 +936,7 @@
     {
      "url": "https://stoxx.com/legal/",
      "httpStatus": 200,
-     "ms": 264,
+     "ms": 161,
      "contentType": "text/html",
      "bytes": 132051,
      "finalUrl": "https://stoxx.com/legal/legal-portal/",
@@ -901,7 +945,7 @@
     {
      "url": "https://stoxx.com/data-dissemination/",
      "httpStatus": 404,
-     "ms": 541,
+     "ms": 838,
      "contentType": "text/html",
      "bytes": 126782,
      "finalUrl": "https://stoxx.com/data-dissemination/",
@@ -912,7 +956,7 @@
     {
      "url": "https://www.euronext.com/en/terms-use",
      "httpStatus": 200,
-     "ms": 893,
+     "ms": 900,
      "contentType": "text/html",
      "bytes": 410726,
      "finalUrl": "https://www.euronext.com/en/terms-use",
@@ -921,7 +965,7 @@
     {
      "url": "https://live.euronext.com/en/terms-use",
      "httpStatus": 404,
-     "ms": 570,
+     "ms": 463,
      "contentType": "text/html",
      "bytes": 246539,
      "finalUrl": "https://live.euronext.com/en/terms-use",
@@ -932,7 +976,7 @@
     {
      "url": "https://www.msci.com/terms-of-use",
      "httpStatus": 200,
-     "ms": 1235,
+     "ms": 1080,
      "contentType": "text/html",
      "bytes": 690454,
      "finalUrl": "https://www.msci.com/legal/terms-of-use",
@@ -943,7 +987,7 @@
     {
      "url": "https://indexes.nikkei.co.jp/en/nkave/about/copyright",
      "httpStatus": 403,
-     "ms": 52,
+     "ms": 54,
      "contentType": "text/html",
      "bytes": 5760,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/about/copyright",
@@ -952,7 +996,7 @@
     {
      "url": "https://www.nikkei.co.jp/nikkeiinfo/en/terms/",
      "httpStatus": 403,
-     "ms": 586,
+     "ms": 504,
      "contentType": "text/html",
      "bytes": 5800,
      "finalUrl": "https://www.nikkei.co.jp/nikkeiinfo/en/terms/",
@@ -964,9 +1008,9 @@
    "twelveData": {
     "url": "https://twelvedata.com/pricing",
     "httpStatus": 200,
-    "ms": 1390,
+    "ms": 1425,
     "contentType": "text/html",
-    "bytes": 428133,
+    "bytes": 428134,
     "finalUrl": "https://twelvedata.com/pricing",
     "pricesSeen": [
      "$ 1,99",
@@ -985,9 +1029,9 @@
    "eodhd": {
     "url": "https://eodhd.com/pricing",
     "httpStatus": 200,
-    "ms": 344,
+    "ms": 410,
     "contentType": "text/html",
-    "bytes": 216852,
+    "bytes": 216837,
     "finalUrl": "https://eodhd.com/pricing",
     "pricesSeen": [
      "$99.99",
@@ -1010,7 +1054,7 @@
    "fmp": {
     "url": "https://site.financialmodelingprep.com/developer/docs/pricing",
     "httpStatus": 200,
-    "ms": 173,
+    "ms": 82,
     "contentType": "text/html",
     "bytes": 727780,
     "finalUrl": "https://site.financialmodelingprep.com/developer/docs/pricing",
@@ -1024,9 +1068,9 @@
    "massivePolygon": {
     "url": "https://polygon.io/pricing?product=indices",
     "httpStatus": 200,
-    "ms": 554,
+    "ms": 764,
     "contentType": "text/html",
-    "bytes": 255036,
+    "bytes": 255037,
     "finalUrl": "https://massive.com/pricing?product=indices",
     "pricesSeen": [
      "$99",
@@ -1048,7 +1092,7 @@
    "finnhub": {
     "url": "https://finnhub.io/pricing",
     "httpStatus": 200,
-    "ms": 130,
+    "ms": 126,
     "contentType": "text/html",
     "bytes": 10685,
     "finalUrl": "https://finnhub.io/pricing",
@@ -1058,7 +1102,7 @@
    "marketstack": {
     "url": "https://marketstack.com/pricing",
     "httpStatus": 200,
-    "ms": 432,
+    "ms": 553,
     "contentType": "text/html",
     "bytes": 175509,
     "finalUrl": "https://marketstack.com/pricing",
@@ -1076,7 +1120,7 @@
    "alphaVantage": {
     "url": "https://www.alphavantage.co/premium/",
     "httpStatus": 200,
-    "ms": 132,
+    "ms": 286,
     "contentType": "text/html",
     "bytes": 38307,
     "finalUrl": "https://www.alphavantage.co/premium/",
@@ -1097,7 +1141,7 @@
    "barchart": {
     "url": "https://www.barchart.com/ondemand/pricing",
     "httpStatus": 202,
-    "ms": 218,
+    "ms": 164,
     "contentType": "text/html",
     "bytes": 0,
     "finalUrl": "https://www.barchart.com/ondemand/pricing",
@@ -1108,7 +1152,7 @@
     "SPX": {
      "ticker": "GSPC.INDX",
      "httpStatus": 403,
-     "ms": 50,
+     "ms": 36,
      "contentType": "text/html",
      "bytes": 9,
      "finalUrl": "https://eodhd.com/api/eod/GSPC.INDX?api_token=[REDACTED]&fmt=json&from=2026-09-14",
@@ -1119,7 +1163,7 @@
     "DAX": {
      "ticker": "GDAXI.INDX",
      "httpStatus": 403,
-     "ms": 49,
+     "ms": 38,
      "contentType": "text/html",
      "bytes": 9,
      "finalUrl": "https://eodhd.com/api/eod/GDAXI.INDX?api_token=[REDACTED]&fmt=json&from=2026-09-14",
@@ -1130,7 +1174,7 @@
     "SX5E": {
      "ticker": "STOXX50E.INDX",
      "httpStatus": 403,
-     "ms": 77,
+     "ms": 37,
      "contentType": "text/html",
      "bytes": 9,
      "finalUrl": "https://eodhd.com/api/eod/STOXX50E.INDX?api_token=[REDACTED]&fmt=json&from=2026-09-14",
@@ -1141,7 +1185,7 @@
     "UKX": {
      "ticker": "FTSE.INDX",
      "httpStatus": 403,
-     "ms": 59,
+     "ms": 41,
      "contentType": "text/html",
      "bytes": 9,
      "finalUrl": "https://eodhd.com/api/eod/FTSE.INDX?api_token=[REDACTED]&fmt=json&from=2026-09-14",
@@ -1163,7 +1207,7 @@
    },
    "fmpDemo": {
     "httpStatus": 401,
-    "ms": 177,
+    "ms": 290,
     "contentType": "application/json",
     "bytes": 184,
     "finalUrl": "https://financialmodelingprep.com/api/v3/quote/%5EGSPC?apikey=[REDACTED]",
@@ -1175,7 +1219,7 @@
    {
     "url": "https://www.stoxx.com/",
     "httpStatus": null,
-    "ms": 25,
+    "ms": 19,
     "contentType": null,
     "bytes": 0,
     "error": "fetch failed"
@@ -1183,7 +1227,7 @@
    {
     "url": "https://stoxx.com/",
     "httpStatus": 200,
-    "ms": 295,
+    "ms": 120,
     "contentType": "text/html",
     "bytes": 162042,
     "finalUrl": "https://stoxx.com/"
@@ -1191,7 +1235,7 @@
    {
     "url": "https://www.hsi.com.hk/data/eng/indexes/00001.00/chart.json",
     "httpStatus": 200,
-    "ms": 513,
+    "ms": 371,
     "contentType": "application/json",
     "bytes": 76186,
     "finalUrl": "https://www.hsi.com.hk/data/eng/indexes/00001.00/chart.json"
@@ -1212,13 +1256,13 @@
     "listedExchange": "SNP",
     "quote": {
      "httpStatus": 200,
-     "ms": 614,
+     "ms": 85,
      "contentType": "application/json",
      "bytes": 436,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EGSPC&apikey=[REDACTED]",
      "name": "S&P 500",
      "exchange": "INDEX",
-     "timestamp": 1790263251,
+     "timestamp": 1790263632,
      "magnitude": {
       "expectedRange": [
        2000,
@@ -1230,7 +1274,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 97,
+     "ms": 265,
      "contentType": "application/json",
      "bytes": 263713,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EGSPC&from=2016-09-26&apikey=[REDACTED]",
@@ -1248,7 +1292,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 76,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EGSPC&apikey=[REDACTED]",
@@ -1260,7 +1304,7 @@
    "finnhub": {
     "symbol": "^GSPC",
     "httpStatus": 200,
-    "ms": 174,
+    "ms": 294,
     "contentType": "application/json",
     "bytes": 62,
     "finalUrl": "https://finnhub.io/api/v1/quote?symbol=%5EGSPC",
@@ -1271,7 +1315,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 3129,
+     "ms": 1067,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/SPX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1290,7 +1334,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 2139,
+     "ms": 2627,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/SPX/info?assetclass=index",
@@ -1303,9 +1347,9 @@
    "spdjiOfficial": {
     "indexId": 340,
     "httpStatus": 403,
-    "ms": 224,
+    "ms": 63,
     "contentType": "text/html",
-    "bytes": 505,
+    "bytes": 503,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=340&language_id=1",
     "jsonKeys": null,
     "observations": 0,
@@ -1316,7 +1360,7 @@
      {
       "key": "D.US.USD.DS.EI.S_PCOMP.HSTA",
       "httpStatus": 404,
-      "ms": 207,
+      "ms": 230,
       "contentType": "application/problem+json",
       "bytes": 460,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/D.US.USD.DS.EI.S_PCOMP.HSTA?format=csvdata&lastNObservations=3",
@@ -1326,7 +1370,7 @@
      {
       "key": "M.US.USD.DS.EI.S_PCOMP.HSTA",
       "httpStatus": 200,
-      "ms": 158,
+      "ms": 191,
       "contentType": "text/csv",
       "bytes": 1285,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.US.USD.DS.EI.S_PCOMP.HSTA?format=csvdata&lastNObservations=3",
@@ -1340,7 +1384,7 @@
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 228,
+     "ms": 168,
      "contentType": "application/json",
      "bytes": 539,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_SPX.json",
@@ -1356,7 +1400,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 305,
+     "ms": 454,
      "contentType": "application/json",
      "bytes": 1704391,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_SPX.json",
@@ -1375,7 +1419,7 @@
    "fred": {
     "series": "SP500",
     "httpStatus": 200,
-    "ms": 247,
+    "ms": 234,
     "contentType": "application/csv",
     "bytes": 48903,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500",
@@ -1405,7 +1449,7 @@
     "listedExchange": "NASDAQ",
     "quote": {
      "httpStatus": 402,
-     "ms": 144,
+     "ms": 304,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5ENDX&apikey=[REDACTED]",
@@ -1417,7 +1461,7 @@
     },
     "eod": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 79,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5ENDX&from=2016-09-26&apikey=[REDACTED]",
@@ -1427,7 +1471,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 33,
+     "ms": 72,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5ENDX&apikey=[REDACTED]",
@@ -1439,7 +1483,7 @@
    "finnhub": {
     "symbol": "^NDX",
     "httpStatus": 200,
-    "ms": 54,
+    "ms": 92,
     "contentType": "application/json",
     "bytes": 62,
     "finalUrl": "https://finnhub.io/api/v1/quote?symbol=%5ENDX",
@@ -1450,7 +1494,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 1691,
+     "ms": 1147,
      "contentType": "application/json",
      "bytes": 277854,
      "finalUrl": "https://api.nasdaq.com/api/quote/NDX/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1472,13 +1516,13 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 2044,
+     "ms": 3819,
      "contentType": "application/json",
      "bytes": 721,
      "finalUrl": "https://api.nasdaq.com/api/quote/NDX/info?assetclass=index",
      "companyName": "NASDAQ-100",
      "isRealTime": false,
-     "lastTradeTimestamp": "Sep 24, 2026 11:18 AM ET",
+     "lastTradeTimestamp": "Sep 24, 2026 11:25 AM ET",
      "magnitude": {
       "expectedRange": [
        5000,
@@ -1493,7 +1537,7 @@
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 60,
+     "ms": 211,
      "contentType": "application/json",
      "bytes": 533,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_NDX.json",
@@ -1509,9 +1553,9 @@
     },
     "historical": {
      "httpStatus": 403,
-     "ms": 109,
+     "ms": 216,
      "contentType": "application/xml",
-     "bytes": 263,
+     "bytes": 243,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_NDX.json",
      "observations": 0,
      "magnitude": null
@@ -1520,7 +1564,7 @@
    "fred": {
     "series": "NASDAQ100",
     "httpStatus": 200,
-    "ms": 197,
+    "ms": 119,
     "contentType": "application/csv",
     "bytes": 208146,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100",
@@ -1550,13 +1594,13 @@
     "listedExchange": "NASDAQ",
     "quote": {
      "httpStatus": 200,
-     "ms": 42,
+     "ms": 81,
      "contentType": "application/json",
-     "bytes": 464,
+     "bytes": 465,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EDJI&apikey=[REDACTED]",
      "name": "Dow Jones Industrial Average",
      "exchange": "INDEX",
-     "timestamp": 1790263252,
+     "timestamp": 1790263633,
      "magnitude": {
       "expectedRange": [
        15000,
@@ -1568,7 +1612,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 73,
+     "ms": 139,
      "contentType": "application/json",
      "bytes": 267665,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EDJI&from=2016-09-26&apikey=[REDACTED]",
@@ -1586,7 +1630,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 76,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EDJI&apikey=[REDACTED]",
@@ -1598,7 +1642,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 2132,
+     "ms": 2070,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/INDU/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -1617,7 +1661,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 3119,
+     "ms": 3354,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/INDU/info?assetclass=index",
@@ -1629,7 +1673,7 @@
    },
    "nasdaqOfficial_DJIA": {
     "httpStatus": 200,
-    "ms": 2305,
+    "ms": 3289,
     "contentType": "application/json",
     "bytes": 142,
     "finalUrl": "https://api.nasdaq.com/api/quote/DJIA/info?assetclass=index",
@@ -1639,7 +1683,7 @@
    },
    "nasdaqOfficial_DJI": {
     "httpStatus": 200,
-    "ms": 2128,
+    "ms": 2228,
     "contentType": "application/json",
     "bytes": 142,
     "finalUrl": "https://api.nasdaq.com/api/quote/DJI/info?assetclass=index",
@@ -1649,7 +1693,7 @@
    },
    "nasdaqOfficial_.DJI": {
     "httpStatus": 200,
-    "ms": 1217,
+    "ms": 2334,
     "contentType": "application/json",
     "bytes": 142,
     "finalUrl": "https://api.nasdaq.com/api/quote/.DJI/info?assetclass=index",
@@ -1660,9 +1704,9 @@
    "spdjiOfficial": {
     "indexId": 1720,
     "httpStatus": 403,
-    "ms": 112,
+    "ms": 45,
     "contentType": "text/html",
-    "bytes": 505,
+    "bytes": 503,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=1720&language_id=1",
     "jsonKeys": null,
     "observations": 0,
@@ -1673,7 +1717,7 @@
     "note": "DJX = Dow Jones Industrial Average / 100 - NICHT der DJIA-Stand",
     "quote": {
      "httpStatus": 200,
-     "ms": 61,
+     "ms": 240,
      "contentType": "application/json",
      "bytes": 508,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_DJX.json",
@@ -1689,7 +1733,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 318,
+     "ms": 229,
      "contentType": "application/json",
      "bytes": 935622,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_DJX.json",
@@ -1708,7 +1752,7 @@
    "fred": {
     "series": "DJIA",
     "httpStatus": 200,
-    "ms": 161,
+    "ms": 119,
     "contentType": "application/csv",
     "bytes": 51414,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DJIA",
@@ -1738,7 +1782,7 @@
     "listedExchange": "XETRA",
     "quote": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 75,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EGDAXI&apikey=[REDACTED]",
@@ -1750,7 +1794,7 @@
     },
     "eod": {
      "httpStatus": 402,
-     "ms": 34,
+     "ms": 77,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EGDAXI&from=2016-09-26&apikey=[REDACTED]",
@@ -1760,7 +1804,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 33,
+     "ms": 71,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EGDAXI&apikey=[REDACTED]",
@@ -1772,7 +1816,7 @@
    "finnhub": {
     "symbol": "^GDAXI",
     "httpStatus": 200,
-    "ms": 51,
+    "ms": 93,
     "contentType": "application/json",
     "bytes": 62,
     "finalUrl": "https://finnhub.io/api/v1/quote?symbol=%5EGDAXI",
@@ -1780,12 +1824,60 @@
     "magnitude": null,
     "timestamp": null
    },
+   "stoxxQuotes": {
+    "isin": "DE0008469008",
+    "tried": [
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed/series?isin=DE0008469008",
+      "httpStatus": 401,
+      "ms": 172,
+      "contentType": "application/json",
+      "bytes": 77,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed/series?isin=DE0008469008",
+      "keys": {
+       "error_message": "string",
+       "error_timestamp": "string"
+      },
+      "mentionsName": false,
+      "datesSeen": {
+       "observations": 1,
+       "firstDate": "2026-09-24",
+       "lastDate": "2026-09-24"
+      },
+      "numericFieldsInRange": []
+     },
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed?isin=DE0008469008",
+      "httpStatus": 404,
+      "ms": 171,
+      "contentType": "text/html",
+      "bytes": 548,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed?isin=DE0008469008",
+      "keys": null,
+      "mentionsName": false,
+      "datesSeen": null,
+      "numericFieldsInRange": []
+     },
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed/history?isin=DE0008469008",
+      "httpStatus": 404,
+      "ms": 171,
+      "contentType": null,
+      "bytes": 0,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed/history?isin=DE0008469008",
+      "keys": null,
+      "mentionsName": false,
+      "datesSeen": null,
+      "numericFieldsInRange": []
+     }
+    ]
+   },
    "stoxxOfficial": {
     "tried": [
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
       "httpStatus": null,
-      "ms": 102,
+      "ms": 49,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1795,7 +1887,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
       "httpStatus": null,
-      "ms": 31,
+      "ms": 20,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1805,7 +1897,7 @@
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt",
       "httpStatus": null,
-      "ms": 101,
+      "ms": 49,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1815,7 +1907,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt",
       "httpStatus": null,
-      "ms": 38,
+      "ms": 18,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1825,7 +1917,7 @@
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_gdaxi.txt",
       "httpStatus": null,
-      "ms": 106,
+      "ms": 47,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1835,7 +1927,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_gdaxi.txt",
       "httpStatus": null,
-      "ms": 34,
+      "ms": 18,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1853,7 +1945,7 @@
      {
       "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/otherinformation/esgreporting/dax_equity_index_family_esg_reports.csv",
       "httpStatus": null,
-      "ms": 40,
+      "ms": 18,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1862,9 +1954,9 @@
     ],
     "indexPage": {
      "httpStatus": 200,
-     "ms": 104,
+     "ms": 66,
      "contentType": "text/html",
-     "bytes": 875000,
+     "bytes": 878962,
      "finalUrl": "https://stoxx.com/index/dax/",
      "mentionsName": true
     },
@@ -1872,7 +1964,7 @@
    },
    "deutscheBoerseOfficial": {
     "httpStatus": 200,
-    "ms": 1465,
+    "ms": 2025,
     "contentType": "application/json",
     "bytes": 2,
     "finalUrl": "https://api.boerse-frankfurt.de/v1/data/price_history?isin=DE0008469008&mic=XETR&minDate=2026-01-01&maxDate=2026-09-24&offset=0&limit=50",
@@ -1884,7 +1976,7 @@
      {
       "key": "M.DE.EUR.DS.EI.DAXINDX.HSTA",
       "httpStatus": 404,
-      "ms": 189,
+      "ms": 230,
       "contentType": "application/problem+json",
       "bytes": 460,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.DE.EUR.DS.EI.DAXINDX.HSTA?format=csvdata&lastNObservations=3",
@@ -1907,13 +1999,13 @@
     "listedExchange": "SIX",
     "quote": {
      "httpStatus": 200,
-     "ms": 44,
+     "ms": 85,
      "contentType": "application/json",
      "bytes": 436,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5ESTOXX50E&apikey=[REDACTED]",
      "name": "Euro STOXX 50",
      "exchange": "INDEX",
-     "timestamp": 1790263247,
+     "timestamp": 1790263632,
      "magnitude": {
       "expectedRange": [
        2000,
@@ -1925,7 +2017,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 74,
+     "ms": 133,
      "contentType": "application/json",
      "bytes": 279142,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5ESTOXX50E&from=2016-09-26&apikey=[REDACTED]",
@@ -1943,7 +2035,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 35,
+     "ms": 78,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5ESTOXX50E&apikey=[REDACTED]",
@@ -1952,12 +2044,60 @@
      "message": "Restricted Endpoint: This endpoint is not available under your current subscription please visit our subscription page to upgrade your plan at https://financialmodelingprep.com/"
     }
    },
+   "stoxxQuotes": {
+    "isin": "EU0009658145",
+    "tried": [
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed/series?isin=EU0009658145",
+      "httpStatus": 401,
+      "ms": 1390,
+      "contentType": "application/json",
+      "bytes": 77,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed/series?isin=EU0009658145",
+      "keys": {
+       "error_message": "string",
+       "error_timestamp": "string"
+      },
+      "mentionsName": false,
+      "datesSeen": {
+       "observations": 1,
+       "firstDate": "2026-09-24",
+       "lastDate": "2026-09-24"
+      },
+      "numericFieldsInRange": []
+     },
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed?isin=EU0009658145",
+      "httpStatus": 404,
+      "ms": 734,
+      "contentType": "text/html",
+      "bytes": 548,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed?isin=EU0009658145",
+      "keys": null,
+      "mentionsName": false,
+      "datesSeen": null,
+      "numericFieldsInRange": []
+     },
+     {
+      "url": "https://quotes.stoxx.com/api/v2/quote/delayed/history?isin=EU0009658145",
+      "httpStatus": 404,
+      "ms": 161,
+      "contentType": null,
+      "bytes": 0,
+      "finalUrl": "https://quotes.stoxx.com/api/v2/quote/delayed/history?isin=EU0009658145",
+      "keys": null,
+      "mentionsName": false,
+      "datesSeen": null,
+      "numericFieldsInRange": []
+     }
+    ]
+   },
    "stoxxOfficial": {
     "tried": [
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
       "httpStatus": null,
-      "ms": 424,
+      "ms": 87,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1967,7 +2107,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
       "httpStatus": null,
-      "ms": 24,
+      "ms": 19,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1977,7 +2117,7 @@
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/hbrbcpe.txt",
       "httpStatus": 200,
-      "ms": 264,
+      "ms": 195,
       "contentType": "text/html",
       "bytes": 162042,
       "finalUrl": "https://stoxx.com/",
@@ -1987,7 +2127,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/hbrbcpe.txt",
       "httpStatus": null,
-      "ms": 44,
+      "ms": 20,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -1997,7 +2137,7 @@
      {
       "url": "https://stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 104,
+      "ms": 47,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -2007,7 +2147,7 @@
      {
       "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 38,
+      "ms": 18,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -2017,7 +2157,7 @@
      {
       "url": "https://stoxx.com/download/historical_values/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 104,
+      "ms": 47,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -2027,7 +2167,7 @@
      {
       "url": "https://www.stoxx.com/download/historical_values/h_sx5e.txt",
       "httpStatus": null,
-      "ms": 22,
+      "ms": 17,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -2045,7 +2185,7 @@
      {
       "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/otherinformation/esgreporting/stoxx_equity_index_family_esg_reports.csv",
       "httpStatus": null,
-      "ms": 33,
+      "ms": 21,
       "contentType": null,
       "bytes": 0,
       "error": "fetch failed",
@@ -2054,7 +2194,7 @@
     ],
     "indexPage": {
      "httpStatus": 200,
-     "ms": 183,
+     "ms": 94,
      "contentType": "text/html",
      "bytes": 669731,
      "finalUrl": "https://stoxx.com/index/sx5e/",
@@ -2067,7 +2207,7 @@
      {
       "key": "D.U2.EUR.DS.EI.DJES50I.HSTA",
       "httpStatus": 404,
-      "ms": 715,
+      "ms": 905,
       "contentType": "application/problem+json",
       "bytes": 460,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/D.U2.EUR.DS.EI.DJES50I.HSTA?format=csvdata&lastNObservations=3",
@@ -2077,7 +2217,7 @@
      {
       "key": "M.U2.EUR.DS.EI.DJES50I.HSTA",
       "httpStatus": 200,
-      "ms": 390,
+      "ms": 683,
       "contentType": "text/csv",
       "bytes": 1256,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.DS.EI.DJES50I.HSTA?format=csvdata&lastNObservations=3",
@@ -2100,7 +2240,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 78,
+     "ms": 123,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&country=United%20Kingdom&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -2113,7 +2253,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 82,
+     "ms": 108,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FTSE&country=United%20Kingdom&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -2124,7 +2264,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 133,
+     "ms": 117,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=FTSE&country=United%20Kingdom&apikey=[REDACTED]",
@@ -2139,13 +2279,13 @@
     "listedExchange": "FGI",
     "quote": {
      "httpStatus": 200,
-     "ms": 39,
+     "ms": 128,
      "contentType": "application/json",
-     "bytes": 438,
+     "bytes": 436,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EFTSE&apikey=[REDACTED]",
      "name": "FTSE 100",
      "exchange": "INDEX",
-     "timestamp": 1790262352,
+     "timestamp": 1790262734,
      "magnitude": {
       "expectedRange": [
        4000,
@@ -2157,7 +2297,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 70,
+     "ms": 157,
      "contentType": "application/json",
      "bytes": 248033,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EFTSE&from=2016-09-26&apikey=[REDACTED]",
@@ -2175,7 +2315,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 38,
+     "ms": 77,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EFTSE&apikey=[REDACTED]",
@@ -2186,7 +2326,7 @@
    },
    "lsegOfficial": {
     "httpStatus": 404,
-    "ms": 2529,
+    "ms": 624,
     "contentType": null,
     "bytes": 49,
     "finalUrl": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX",
@@ -2200,7 +2340,7 @@
      {
       "url": "https://api.londonstockexchange.com/api/v1/pages?path=indices%2Fftse-100&parameters=indexname%3Dftse-100",
       "httpStatus": 404,
-      "ms": 250,
+      "ms": 270,
       "contentType": "application/json",
       "bytes": 91,
       "finalUrl": "https://api.londonstockexchange.com/api/v1/pages?path=indices%2Fftse-100&parameters=indexname%3Dftse-100",
@@ -2217,7 +2357,7 @@
      {
       "url": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX?worlds=quotes",
       "httpStatus": 404,
-      "ms": 151,
+      "ms": 235,
       "contentType": null,
       "bytes": 49,
       "finalUrl": "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX?worlds=quotes",
@@ -2229,7 +2369,7 @@
      {
       "url": "https://www.londonstockexchange.com/indices/ftse-100",
       "httpStatus": 200,
-      "ms": 453,
+      "ms": 2927,
       "contentType": "text/html",
       "bytes": 54995,
       "finalUrl": "https://www.londonstockexchange.com/indices/ftse-100",
@@ -2243,7 +2383,7 @@
      {
       "key": "M.GB.GBP.DS.EI.FTSE100.HSTA",
       "httpStatus": 404,
-      "ms": 172,
+      "ms": 230,
       "contentType": "application/problem+json",
       "bytes": 460,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.GB.GBP.DS.EI.FTSE100.HSTA?format=csvdata&lastNObservations=3",
@@ -2266,7 +2406,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 84,
+     "ms": 111,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&country=Japan&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -2279,7 +2419,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 136,
+     "ms": 137,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=N225&country=Japan&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -2290,7 +2430,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 71,
+     "ms": 114,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=N225&country=Japan&apikey=[REDACTED]",
@@ -2305,7 +2445,7 @@
     "listedExchange": "OSA",
     "quote": {
      "httpStatus": 200,
-     "ms": 35,
+     "ms": 76,
      "contentType": "application/json",
      "bytes": 438,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EN225&apikey=[REDACTED]",
@@ -2323,7 +2463,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 74,
+     "ms": 204,
      "contentType": "application/json",
      "bytes": 254337,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EN225&from=2016-09-26&apikey=[REDACTED]",
@@ -2341,7 +2481,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 38,
+     "ms": 126,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EN225&apikey=[REDACTED]",
@@ -2353,7 +2493,7 @@
    "finnhub": {
     "symbol": "^N225",
     "httpStatus": 200,
-    "ms": 48,
+    "ms": 89,
     "contentType": "application/json",
     "bytes": 62,
     "finalUrl": "https://finnhub.io/api/v1/quote?symbol=%5EN225",
@@ -2363,7 +2503,7 @@
    },
    "nikkeiOfficial": {
     "httpStatus": 200,
-    "ms": 662,
+    "ms": 557,
     "contentType": "text/csv",
     "bytes": 52996,
     "finalUrl": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_daily_en.csv",
@@ -2379,7 +2519,7 @@
     },
     "terms": {
      "httpStatus": 404,
-     "ms": 1153,
+     "ms": 1204,
      "contentType": "text/html",
      "bytes": 1803,
      "finalUrl": "https://indexes.nikkei.co.jp/en/nkave/terms",
@@ -2391,7 +2531,7 @@
      {
       "key": "M.JP.JPY.DS.EI.JAPDOWA.HSTA",
       "httpStatus": 200,
-      "ms": 164,
+      "ms": 179,
       "contentType": "text/csv",
       "bytes": 1327,
       "finalUrl": "https://data-api.ecb.europa.eu/service/data/FM/M.JP.JPY.DS.EI.JAPDOWA.HSTA?format=csvdata&lastNObservations=3",
@@ -2403,7 +2543,7 @@
    "fred": {
     "series": "NIKKEI225",
     "httpStatus": 200,
-    "ms": 100,
+    "ms": 78,
     "contentType": "application/csv",
     "bytes": 383312,
     "finalUrl": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NIKKEI225",
@@ -2433,7 +2573,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 124,
+     "ms": 133,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&country=France&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -2446,7 +2586,7 @@
     },
     "intraday": {
      "httpStatus": 404,
-     "ms": 134,
+     "ms": 125,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=FCHI&country=France&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -2457,7 +2597,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 114,
+     "ms": 131,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=FCHI&country=France&apikey=[REDACTED]",
@@ -2472,7 +2612,7 @@
     "listedExchange": "EURONEXT",
     "quote": {
      "httpStatus": 402,
-     "ms": 282,
+     "ms": 958,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EFCHI&apikey=[REDACTED]",
@@ -2484,7 +2624,7 @@
     },
     "eod": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 77,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EFCHI&from=2016-09-26&apikey=[REDACTED]",
@@ -2494,7 +2634,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 32,
+     "ms": 72,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EFCHI&apikey=[REDACTED]",
@@ -2505,7 +2645,7 @@
    },
    "euronextOfficial": {
     "httpStatus": 200,
-    "ms": 625,
+    "ms": 2743,
     "contentType": "text/csv",
     "bytes": 34236,
     "finalUrl": "https://live.euronext.com/en/ajax/AwlHistoricalPrice/getFullDownloadAjax/FR0003500008-XPAR?format=csv&decimal_separator=.&date_form=d/m/Y&op=&adjusted=&base100=&startdate=2016-09-26&enddate=2026-09-24",
@@ -2534,7 +2674,7 @@
     "listedExchange": "SIX",
     "quote": {
      "httpStatus": 402,
-     "ms": 38,
+     "ms": 84,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5ESSMI&apikey=[REDACTED]",
@@ -2546,7 +2686,7 @@
     },
     "eod": {
      "httpStatus": 402,
-     "ms": 32,
+     "ms": 69,
      "contentType": "application/json",
      "bytes": 215,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5ESSMI&from=2016-09-26&apikey=[REDACTED]",
@@ -2556,7 +2696,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 37,
+     "ms": 76,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5ESSMI&apikey=[REDACTED]",
@@ -2567,7 +2707,7 @@
    },
    "sixOfficial": {
     "httpStatus": 400,
-    "ms": 398,
+    "ms": 548,
     "contentType": "text/html",
     "bytes": 137,
     "finalUrl": "https://www.six-group.com/fqs/snap.json?select=ValorId,ClosingPrice,ClosingDate&where=ValorId=998089",
@@ -2576,7 +2716,7 @@
    },
    "snbDataPortal": {
     "httpStatus": 200,
-    "ms": 2211,
+    "ms": 2855,
     "contentType": "text/csv",
     "bytes": 3411408,
     "finalUrl": "https://data.snb.ch/api/cube/capchstocki/data/csv/en",
@@ -2620,7 +2760,7 @@
     ],
     "timeSeries": {
      "httpStatus": 404,
-     "ms": 142,
+     "ms": 119,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=HSI&country=Hong%20Kong&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -2644,7 +2784,7 @@
     },
     "quote": {
      "httpStatus": 404,
-     "ms": 83,
+     "ms": 135,
      "contentType": "application/json",
      "bytes": 202,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=HSI&country=Hong%20Kong&apikey=[REDACTED]",
@@ -2659,7 +2799,7 @@
     "listedExchange": "HKSE",
     "quote": {
      "httpStatus": 200,
-     "ms": 36,
+     "ms": 76,
      "contentType": "application/json",
      "bytes": 434,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5EHSI&apikey=[REDACTED]",
@@ -2677,7 +2817,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 80,
+     "ms": 139,
      "contentType": "application/json",
      "bytes": 258332,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5EHSI&from=2016-09-26&apikey=[REDACTED]",
@@ -2695,7 +2835,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 36,
+     "ms": 78,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5EHSI&apikey=[REDACTED]",
@@ -2706,7 +2846,7 @@
    },
    "hangSengOfficial": {
     "httpStatus": 200,
-    "ms": 877,
+    "ms": 686,
     "contentType": "application/json",
     "bytes": 3305,
     "finalUrl": "https://www.hsi.com.hk/data/eng/rt/index-series/hsi/performance.do",
@@ -2734,7 +2874,7 @@
     ],
     "timeSeries": {
      "httpStatus": 200,
-     "ms": 540,
+     "ms": 710,
      "contentType": "application/json",
      "bytes": 580837,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&country=China&interval=1day&outputsize=5000&apikey=[REDACTED]",
@@ -2761,7 +2901,7 @@
     },
     "intraday": {
      "httpStatus": 200,
-     "ms": 556,
+     "ms": 167,
      "contentType": "application/json",
      "bytes": 3921,
      "finalUrl": "https://api.twelvedata.com/time_series?symbol=000001&country=China&interval=5min&outputsize=30&apikey=[REDACTED]",
@@ -2772,7 +2912,7 @@
     },
     "quote": {
      "httpStatus": 200,
-     "ms": 204,
+     "ms": 210,
      "contentType": "application/json",
      "bytes": 602,
      "finalUrl": "https://api.twelvedata.com/quote?symbol=000001&country=China&apikey=[REDACTED]",
@@ -2783,10 +2923,10 @@
     }
    },
    "sseOfficial": {
-    "httpStatus": 403,
-    "ms": 2942,
-    "contentType": "text/html",
-    "bytes": 727,
+    "httpStatus": 200,
+    "ms": 1507,
+    "contentType": "application/json",
+    "bytes": 130,
     "finalUrl": "https://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_ZS_INDEX_HIS_L&INDEX_CODE=000001",
     "jsonKeys": null,
     "mentionsName": false
@@ -2805,13 +2945,13 @@
     "listedExchange": "CBOE",
     "quote": {
      "httpStatus": 200,
-     "ms": 38,
+     "ms": 77,
      "contentType": "application/json",
      "bytes": 450,
      "finalUrl": "https://financialmodelingprep.com/stable/quote?symbol=%5ERUT&apikey=[REDACTED]",
      "name": "Russell 2000",
      "exchange": "INDEX",
-     "timestamp": 1790263250,
+     "timestamp": 1790263635,
      "magnitude": {
       "expectedRange": [
        800,
@@ -2823,7 +2963,7 @@
     },
     "eod": {
      "httpStatus": 200,
-     "ms": 79,
+     "ms": 132,
      "contentType": "application/json",
      "bytes": 268365,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-price-eod/light?symbol=%5ERUT&from=2016-09-26&apikey=[REDACTED]",
@@ -2841,7 +2981,7 @@
     },
     "intraday": {
      "httpStatus": 402,
-     "ms": 35,
+     "ms": 78,
      "contentType": "application/json",
      "bytes": 177,
      "finalUrl": "https://financialmodelingprep.com/stable/historical-chart/5min?symbol=%5ERUT&apikey=[REDACTED]",
@@ -2853,7 +2993,7 @@
    "nasdaqOfficial": {
     "historical": {
      "httpStatus": 200,
-     "ms": 3114,
+     "ms": 2106,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/RUT/historical?assetclass=index&fromdate=2016-09-26&todate=2026-09-24&limit=9999",
@@ -2872,7 +3012,7 @@
     },
     "info": {
      "httpStatus": 200,
-     "ms": 1138,
+     "ms": 2575,
      "contentType": "application/json",
      "bytes": 142,
      "finalUrl": "https://api.nasdaq.com/api/quote/RUT/info?assetclass=index",
@@ -2887,7 +3027,7 @@
     "note": null,
     "quote": {
      "httpStatus": 200,
-     "ms": 127,
+     "ms": 233,
      "contentType": "application/json",
      "bytes": 526,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/quotes/_RUT.json",
@@ -2903,7 +3043,7 @@
     },
     "historical": {
      "httpStatus": 200,
-     "ms": 170,
+     "ms": 259,
      "contentType": "application/json",
      "bytes": 194244,
      "finalUrl": "https://cdn.cboe.com/api/global/delayed_quotes/charts/historical/_RUT.json",
@@ -2929,7 +3069,7 @@
    },
    "msciOfficial": {
     "httpStatus": 200,
-    "ms": 592,
+    "ms": 632,
     "contentType": "application/json",
     "bytes": 139606,
     "finalUrl": "https://app2.msci.com/products/service/index/indexmaster/getLevelDataForGraph?currency_symbol=USD&index_variant=STRD&start_date=20160926&end_date=20260924&data_frequency=DAILY&index_codes=990100",
@@ -2949,7 +3089,7 @@
   "COMP": {
    "nasdaqOfficial_COMP": {
     "httpStatus": 200,
-    "ms": 3051,
+    "ms": 2049,
     "contentType": "application/json",
     "bytes": 734,
     "finalUrl": "https://api.nasdaq.com/api/quote/COMP/info?assetclass=index",
@@ -2962,9 +3102,9 @@
    "spdjiOfficial": {
     "indexId": 92030,
     "httpStatus": 403,
-    "ms": 51,
+    "ms": 39,
     "contentType": "text/html",
-    "bytes": 505,
+    "bytes": 503,
     "finalUrl": "https://www.spglobal.com/spdji/en/util/redesign/index-data/get-performance-data-for-datawidget-redesign.dot?indexId=92030&language_id=1",
     "jsonKeys": null,
     "observations": 0,
@@ -2972,5 +3112,5 @@
    }
   }
  },
- "requests": 171
+ "requests": 181
 }
