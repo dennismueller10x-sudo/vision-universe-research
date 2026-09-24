@@ -1,0 +1,3010 @@
+{
+ "schemaVersion": "return-basis-universe-study-1.0.0",
+ "generatedAt": "2026-09-24T09:45:28.000Z",
+ "versions": {
+  "study_logic": "1.0.0",
+  "return_series": "vu-return-series-1.0.0",
+  "comparison": "vu-return-basis-comparison-1.0.0"
+ },
+ "scope": "REPOSITORY_ONLY",
+ "scopeNote": "Der kanonische Barstore war nicht verfuegbar. Gemessen wurde ausschliesslich, was im Repository liegt. Dieser Lauf ist KEINE Universumsstudie und darf nicht als eine gelesen werden.",
+ "inputs": {
+  "universeFile": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+  "barsDir": "./.market-cache/tiingo/daily",
+  "benchmark": {
+   "id": "SPY",
+   "state": "SOURCE_MISSING"
+  },
+  "calendarSource": "LONGEST_SERIES:ref_AAPL",
+  "cutoffOffsets": [
+   0,
+   252,
+   504,
+   756,
+   1008
+  ]
+ },
+ "counters": {
+  "CANONICAL_PRODUCT_UNIVERSE": 6875,
+  "SERIES_FOUND": 5,
+  "DUAL_RETURN_SERIES_CAPABLE_UNIVERSE": 5
+ },
+ "bySource": {
+  "GOLDEN_PREVIEW": 5
+ },
+ "exclusions": {
+  "NO_SERIES": 6870
+ },
+ "totalReturnVerification": {
+  "verdict": "TOTAL_RETURN_CONFIRMED",
+  "securitiesChecked": 5,
+  "eventsChecked": 120,
+  "eventsConsistent": 120,
+  "worstError": 0.0005,
+  "tolerance": 0.002,
+  "inconsistentSecurities": []
+ },
+ "specImplementationFindings": [
+  {
+   "component": "momentum:distanceTo52wHigh",
+   "weightInFactor": 0.1,
+   "declaredInput": "(high252-current split-adjusted close)/high252",
+   "computedOn": "adjustedClose",
+   "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
+   "note": "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
+  },
+  {
+   "component": "momentum:distanceToSma200",
+   "weightInFactor": 0.1,
+   "declaredInput": "(split-adjusted close-SMA200)/SMA200",
+   "computedOn": "adjustedClose",
+   "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
+   "note": "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
+  }
+ ],
+ "publishedBasis": {
+  "artefact": "quant/data/product/factor-evidence-v1",
+  "entries": 6403,
+  "priceBasisCounts": {
+   "adjustedClose": 6403
+  },
+  "measuredQuantV2MomentumBasis": "TOTAL_RETURN"
+ },
+ "cutoffs": [
+  {
+   "cutoffDate": "2026-09-21",
+   "tradingDaysBack": 0,
+   "securitiesWithCutoff": 5,
+   "measures": {
+    "3M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 4,
+       "MOMENTUM_DELTA_MEDIAN": 0.0019151416411509192,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007292853663191323,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012476730553758753,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.004717035672574088,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007292853663191323,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0037,
+       "PRICE_RETURN_VALUE": 0.141308,
+       "TOTAL_RETURN_VALUE": 0.142308,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0082,
+       "PRICE_RETURN_VALUE": 0.36552,
+       "TOTAL_RETURN_VALUE": 0.368102,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0024,
+       "PRICE_RETURN_VALUE": 0.089768,
+       "TOTAL_RETURN_VALUE": 0.091015,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0189,
+       "PRICE_RETURN_VALUE": 0.062025,
+       "TOTAL_RETURN_VALUE": 0.066742,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": 0.143208,
+       "TOTAL_RETURN_VALUE": 0.150501,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "6M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 4,
+       "MOMENTUM_DELTA_MEDIAN": 0.004178206212039903,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.012832131242119571,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.003014443764227215,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.011721276158603189,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.012832131242119571,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0037,
+       "PRICE_RETURN_VALUE": 0.36691,
+       "TOTAL_RETURN_VALUE": 0.369369,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0082,
+       "PRICE_RETURN_VALUE": 0.313562,
+       "TOTAL_RETURN_VALUE": 0.318904,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0024,
+       "PRICE_RETURN_VALUE": 0.316618,
+       "TOTAL_RETURN_VALUE": 0.319633,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0189,
+       "PRICE_RETURN_VALUE": 0.228504,
+       "TOTAL_RETURN_VALUE": 0.240225,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": -0.00858,
+       "TOTAL_RETURN_VALUE": 0.004252,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 4,
+       "MOMENTUM_DELTA_MEDIAN": 0.0067285249145063175,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.039888653434931864,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005294345380920662,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.021338964830549312,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.039888653434931864,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0037,
+       "PRICE_RETURN_VALUE": 0.425004,
+       "TOTAL_RETURN_VALUE": 0.430299,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0082,
+       "PRICE_RETURN_VALUE": -0.013453,
+       "TOTAL_RETURN_VALUE": -0.00529,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0024,
+       "PRICE_RETURN_VALUE": 0.290172,
+       "TOTAL_RETURN_VALUE": 0.293266,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0189,
+       "PRICE_RETURN_VALUE": 0.123903,
+       "TOTAL_RETURN_VALUE": 0.145242,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": 0.38945,
+       "TOTAL_RETURN_VALUE": 0.429338,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M-1M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 4,
+       "MOMENTUM_DELTA_MEDIAN": 0.006345892545557619,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04186670731657571,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.004862026423625654,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.02130926339671535,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04186670731657571,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0037,
+       "PRICE_RETURN_VALUE": 0.308643,
+       "TOTAL_RETURN_VALUE": 0.313505,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0082,
+       "PRICE_RETURN_VALUE": -0.053693,
+       "TOTAL_RETURN_VALUE": -0.045863,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0024,
+       "PRICE_RETURN_VALUE": 0.230424,
+       "TOTAL_RETURN_VALUE": 0.231965,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0189,
+       "PRICE_RETURN_VALUE": 0.122338,
+       "TOTAL_RETURN_VALUE": 0.143647,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": 0.458352,
+       "TOTAL_RETURN_VALUE": 0.500218,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "RELATIVE_STRENGTH": {
+     "priceRanked": 0,
+     "totalRanked": 0,
+     "UNIVERSE_N": 0,
+     "SPEARMAN_RANK_CORRELATION": null,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+     "P90_RANK_CHANGE": null,
+     "P95_RANK_CHANGE": null,
+     "MAX_RANK_CHANGE": null,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 0,
+      "TOP_DECILE_TOTAL": 0,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 4,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "largestPercentileMoves": []
+    }
+   },
+   "simulation": {
+    "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+    "contemporaneousWithPublishedEvidence": true,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.7,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.7,
+    "publishedScored": 5,
+    "simulatedScoredOnPrice": 5,
+    "simulatedScoredOnTotal": 5,
+    "momentumScoreShift": {
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0
+    }
+   },
+   "STRATEGY_IMPACT": {
+    "momentum-leader": {
+     "label": "Momentum Leader",
+     "MEMBERS_ON_PRICE_RETURN": 1,
+     "MEMBERS_ON_TOTAL_RETURN": 1,
+     "LEAVING": 0,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": 0,
+     "leavingExamples": [],
+     "enteringExamples": []
+    },
+    "quality-momentum": {
+     "label": "Quality Momentum",
+     "MEMBERS_ON_PRICE_RETURN": 0,
+     "MEMBERS_ON_TOTAL_RETURN": 0,
+     "LEAVING": 0,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": null,
+     "leavingExamples": [],
+     "enteringExamples": []
+    },
+    "future-leader": {
+     "label": "Future Leader",
+     "MEMBERS_ON_PRICE_RETURN": 1,
+     "MEMBERS_ON_TOTAL_RETURN": 1,
+     "LEAVING": 0,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": 0,
+     "leavingExamples": [],
+     "enteringExamples": []
+    },
+    "value-momentum": {
+     "label": "Value Momentum",
+     "MEMBERS_ON_PRICE_RETURN": 0,
+     "MEMBERS_ON_TOTAL_RETURN": 0,
+     "LEAVING": 0,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": null,
+     "leavingExamples": [],
+     "enteringExamples": []
+    }
+   }
+  },
+  {
+   "cutoffDate": "2025-09-18",
+   "tradingDaysBack": 252,
+   "securitiesWithCutoff": 5,
+   "measures": {
+    "3M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0013849109590029496,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.007382562585572683,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0013849109590029496,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.0054076990920586265,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.00935742607908674,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0046,
+       "PRICE_RETURN_VALUE": 0.210093,
+       "TOTAL_RETURN_VALUE": 0.211477,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0075,
+       "PRICE_RETURN_VALUE": 0.058741,
+       "TOTAL_RETURN_VALUE": 0.060484,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 0.211438,
+       "TOTAL_RETURN_VALUE": 0.211506,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0225,
+       "PRICE_RETURN_VALUE": 0.143342,
+       "TOTAL_RETURN_VALUE": 0.14875,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0358,
+       "PRICE_RETURN_VALUE": 0.006538,
+       "TOTAL_RETURN_VALUE": 0.015895,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "6M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 0.9,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 1,
+     "P95_RANK_CHANGE": 1,
+     "MAX_RANK_CHANGE": 1,
+     "TITLES_MOVING_1_PERCENTILE": 2,
+     "TITLES_MOVING_5_PERCENTILES": 2,
+     "TITLES_MOVING_10_PERCENTILES": 2,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0026296036884201346,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.016610294470748854,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_P95": 23.75
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0026296036884201346,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.014958705843605147,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.01826188309789256,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0075,
+       "PRICE_RETURN_VALUE": 0.311046,
+       "TOTAL_RETURN_VALUE": 0.31561,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 1,
+       "PERCENTILE_DELTA": -25
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0225,
+       "PRICE_RETURN_VALUE": 0.309983,
+       "TOTAL_RETURN_VALUE": 0.324942,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": -1,
+       "PERCENTILE_DELTA": 25
+      },
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0046,
+       "PRICE_RETURN_VALUE": 0.105185,
+       "TOTAL_RETURN_VALUE": 0.107815,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 0.49966,
+       "TOTAL_RETURN_VALUE": 0.499849,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0358,
+       "PRICE_RETURN_VALUE": -0.012824,
+       "TOTAL_RETURN_VALUE": 0.005438,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 0.9,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 1,
+     "P95_RANK_CHANGE": 1,
+     "MAX_RANK_CHANGE": 1,
+     "TITLES_MOVING_1_PERCENTILE": 2,
+     "TITLES_MOVING_5_PERCENTILES": 2,
+     "TITLES_MOVING_10_PERCENTILES": 2,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 1,
+      "ENTERING": 1
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005042493785117008,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.0354551664982673,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_P95": 23.75
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005042493785117008,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03418445686620153,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03672587613033307,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 0.509163,
+       "TOTAL_RETURN_VALUE": 0.509588,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 1,
+       "PERCENTILE_DELTA": -25
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0225,
+       "PRICE_RETURN_VALUE": 0.506928,
+       "TOTAL_RETURN_VALUE": 0.541112,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": -1,
+       "PERCENTILE_DELTA": 25
+      },
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0046,
+       "PRICE_RETURN_VALUE": 0.099667,
+       "TOTAL_RETURN_VALUE": 0.10471,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0075,
+       "PRICE_RETURN_VALUE": 0.178768,
+       "TOTAL_RETURN_VALUE": 0.187614,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0358,
+       "PRICE_RETURN_VALUE": 0.010824,
+       "TOTAL_RETURN_VALUE": 0.04755,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M-1M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.004887327085335347,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.033174309695130466,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.004887327085335347,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03172127265209501,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03462734673816592,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0046,
+       "PRICE_RETURN_VALUE": 0.065828,
+       "TOTAL_RETURN_VALUE": 0.070716,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0075,
+       "PRICE_RETURN_VALUE": 0.181829,
+       "TOTAL_RETURN_VALUE": 0.18874,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 0.504025,
+       "TOTAL_RETURN_VALUE": 0.504364,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0225,
+       "PRICE_RETURN_VALUE": 0.398345,
+       "TOTAL_RETURN_VALUE": 0.430066,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0358,
+       "PRICE_RETURN_VALUE": -0.046935,
+       "TOTAL_RETURN_VALUE": -0.012307,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "RELATIVE_STRENGTH": {
+     "priceRanked": 0,
+     "totalRanked": 0,
+     "UNIVERSE_N": 0,
+     "SPEARMAN_RANK_CORRELATION": null,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+     "P90_RANK_CHANGE": null,
+     "P95_RANK_CHANGE": null,
+     "MAX_RANK_CHANGE": null,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 0,
+      "TOP_DECILE_TOTAL": 0,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "largestPercentileMoves": []
+    }
+   },
+   "simulation": {
+    "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+    "contemporaneousWithPublishedEvidence": false,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
+    "publishedScored": null,
+    "simulatedScoredOnPrice": 5,
+    "simulatedScoredOnTotal": 5,
+    "momentumScoreShift": {
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0
+    }
+   },
+   "STRATEGY_IMPACT": {
+    "state": "NOT_APPLICABLE",
+    "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-21 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+   }
+  },
+  {
+   "cutoffDate": "2024-09-16",
+   "tradingDaysBack": 504,
+   "securitiesWithCutoff": 5,
+   "measures": {
+    "3M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0011699815857528773,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.007144437850419516,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0011699815857528773,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.006023529834733532,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.0082653458661055,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0051,
+       "PRICE_RETURN_VALUE": 0.018024,
+       "TOTAL_RETURN_VALUE": 0.019194,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0074,
+       "PRICE_RETURN_VALUE": -0.025375,
+       "TOTAL_RETURN_VALUE": -0.023638,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": -0.114498,
+       "TOTAL_RETURN_VALUE": -0.114424,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.025,
+       "PRICE_RETURN_VALUE": 0.07266,
+       "TOTAL_RETURN_VALUE": 0.078683,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0346,
+       "PRICE_RETURN_VALUE": 0.032994,
+       "TOTAL_RETURN_VALUE": 0.04126,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "6M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.003153674716670274,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.014469098356578614,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.003153674716670274,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.012589957576075061,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.016348239137082166,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0051,
+       "PRICE_RETURN_VALUE": 0.253157,
+       "TOTAL_RETURN_VALUE": 0.256311,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0074,
+       "PRICE_RETURN_VALUE": 0.035829,
+       "TOTAL_RETURN_VALUE": 0.039514,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 0.329516,
+       "TOTAL_RETURN_VALUE": 0.329737,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.025,
+       "PRICE_RETURN_VALUE": 0.092275,
+       "TOTAL_RETURN_VALUE": 0.104865,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0346,
+       "PRICE_RETURN_VALUE": 0.012941,
+       "TOTAL_RETURN_VALUE": 0.02929,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.00625679296591386,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.034194388145156684,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.00625679296591386,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03509686068223661,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03329191560807676,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0051,
+       "PRICE_RETURN_VALUE": 0.230909,
+       "TOTAL_RETURN_VALUE": 0.237166,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0074,
+       "PRICE_RETURN_VALUE": 0.273516,
+       "TOTAL_RETURN_VALUE": 0.282985,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 1.562032,
+       "TOTAL_RETURN_VALUE": 1.562799,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.025,
+       "PRICE_RETURN_VALUE": 0.392697,
+       "TOTAL_RETURN_VALUE": 0.427794,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0346,
+       "PRICE_RETURN_VALUE": -0.049021,
+       "TOTAL_RETURN_VALUE": -0.015729,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M-1M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006499752751806254,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.035394997803278705,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006499752751806254,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.035719911850448094,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.035070083756109316,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0051,
+       "PRICE_RETURN_VALUE": 0.278707,
+       "TOTAL_RETURN_VALUE": 0.285207,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0074,
+       "PRICE_RETURN_VALUE": 0.243076,
+       "TOTAL_RETURN_VALUE": 0.252319,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0003,
+       "PRICE_RETURN_VALUE": 1.695421,
+       "TOTAL_RETURN_VALUE": 1.696001,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.025,
+       "PRICE_RETURN_VALUE": 0.41742,
+       "TOTAL_RETURN_VALUE": 0.45314,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0346,
+       "PRICE_RETURN_VALUE": 0.001772,
+       "TOTAL_RETURN_VALUE": 0.036842,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "RELATIVE_STRENGTH": {
+     "priceRanked": 0,
+     "totalRanked": 0,
+     "UNIVERSE_N": 0,
+     "SPEARMAN_RANK_CORRELATION": null,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+     "P90_RANK_CHANGE": null,
+     "P95_RANK_CHANGE": null,
+     "MAX_RANK_CHANGE": null,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 0,
+      "TOP_DECILE_TOTAL": 0,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "largestPercentileMoves": []
+    }
+   },
+   "simulation": {
+    "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+    "contemporaneousWithPublishedEvidence": false,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
+    "publishedScored": null,
+    "simulatedScoredOnPrice": 5,
+    "simulatedScoredOnTotal": 5,
+    "momentumScoreShift": {
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0
+    }
+   },
+   "STRATEGY_IMPACT": {
+    "state": "NOT_APPLICABLE",
+    "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-21 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+   }
+  },
+  {
+   "cutoffDate": "2023-09-14",
+   "tradingDaysBack": 756,
+   "securitiesWithCutoff": 5,
+   "measures": {
+    "3M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 0.9,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 1,
+     "P95_RANK_CHANGE": 1,
+     "MAX_RANK_CHANGE": 1,
+     "TITLES_MOVING_1_PERCENTILE": 2,
+     "TITLES_MOVING_5_PERCENTILES": 2,
+     "TITLES_MOVING_10_PERCENTILES": 2,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012896585498910484,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.00838762213270905,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_P95": 23.75
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012896585498910484,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007292898682082827,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009482345583335272,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0006,
+       "PRICE_RETURN_VALUE": 0.060097,
+       "TOTAL_RETURN_VALUE": 0.060187,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 1,
+       "PERCENTILE_DELTA": -25
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0312,
+       "PRICE_RETURN_VALUE": 0.054845,
+       "TOTAL_RETURN_VALUE": 0.062138,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": -1,
+       "PERCENTILE_DELTA": 25
+      },
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0059,
+       "PRICE_RETURN_VALUE": -0.044632,
+       "TOTAL_RETURN_VALUE": -0.043342,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0096,
+       "PRICE_RETURN_VALUE": 0.004032,
+       "TOTAL_RETURN_VALUE": 0.006162,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0328,
+       "PRICE_RETURN_VALUE": 0.127045,
+       "TOTAL_RETURN_VALUE": 0.136527,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "6M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0031503448919842914,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.01861296274089952,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0031503448919842914,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.017227019806578925,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.019998905675220113,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0059,
+       "PRICE_RETURN_VALUE": 0.148703,
+       "TOTAL_RETURN_VALUE": 0.151853,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0096,
+       "PRICE_RETURN_VALUE": 0.275995,
+       "TOTAL_RETURN_VALUE": 0.281472,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0006,
+       "PRICE_RETURN_VALUE": 0.881336,
+       "TOTAL_RETURN_VALUE": 0.881696,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0312,
+       "PRICE_RETURN_VALUE": 0.163652,
+       "TOTAL_RETURN_VALUE": 0.180879,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0328,
+       "PRICE_RETURN_VALUE": 0.166306,
+       "TOTAL_RETURN_VALUE": 0.186305,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006784411889440234,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.04089497423869215,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006784411889440234,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04047371986852655,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04131622860885775,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0059,
+       "PRICE_RETURN_VALUE": 0.142356,
+       "TOTAL_RETURN_VALUE": 0.14914,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0096,
+       "PRICE_RETURN_VALUE": 0.344101,
+       "TOTAL_RETURN_VALUE": 0.357086,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0006,
+       "PRICE_RETURN_VALUE": 2.471251,
+       "TOTAL_RETURN_VALUE": 2.473334,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0312,
+       "PRICE_RETURN_VALUE": 0.282327,
+       "TOTAL_RETURN_VALUE": 0.3228,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0328,
+       "PRICE_RETURN_VALUE": 0.24326,
+       "TOTAL_RETURN_VALUE": 0.284576,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M-1M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 0.9,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 1,
+     "P95_RANK_CHANGE": 1,
+     "MAX_RANK_CHANGE": 1,
+     "TITLES_MOVING_1_PERCENTILE": 2,
+     "TITLES_MOVING_5_PERCENTILES": 2,
+     "TITLES_MOVING_10_PERCENTILES": 2,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006850426139721089,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": 0.03930345214895614,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_P95": 23.75
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006850426139721089,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04090218537856982,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03770471891934246,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0059,
+       "PRICE_RETURN_VALUE": 0.153471,
+       "TOTAL_RETURN_VALUE": 0.160322,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 1,
+       "PERCENTILE_DELTA": -25
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0328,
+       "PRICE_RETURN_VALUE": 0.134585,
+       "TOTAL_RETURN_VALUE": 0.17229,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": -1,
+       "PERCENTILE_DELTA": 25
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0096,
+       "PRICE_RETURN_VALUE": 0.277273,
+       "TOTAL_RETURN_VALUE": 0.286881,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0006,
+       "PRICE_RETURN_VALUE": 2.34628,
+       "TOTAL_RETURN_VALUE": 2.348003,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0312,
+       "PRICE_RETURN_VALUE": 0.295902,
+       "TOTAL_RETURN_VALUE": 0.336804,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "RELATIVE_STRENGTH": {
+     "priceRanked": 0,
+     "totalRanked": 0,
+     "UNIVERSE_N": 0,
+     "SPEARMAN_RANK_CORRELATION": null,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+     "P90_RANK_CHANGE": null,
+     "P95_RANK_CHANGE": null,
+     "MAX_RANK_CHANGE": null,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 0,
+      "TOP_DECILE_TOTAL": 0,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "MEDIUM_YIELD": {
+       "N": 2,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "largestPercentileMoves": []
+    }
+   },
+   "simulation": {
+    "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+    "contemporaneousWithPublishedEvidence": false,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
+    "publishedScored": null,
+    "simulatedScoredOnPrice": 5,
+    "simulatedScoredOnTotal": 5,
+    "momentumScoreShift": {
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 0.974679,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0.5,
+     "MAX_RANK_CHANGE": 0.5,
+     "TITLES_MOVING_5_PERCENTILES": 2,
+     "TITLES_MOVING_10_PERCENTILES": 2
+    }
+   },
+   "STRATEGY_IMPACT": {
+    "state": "NOT_APPLICABLE",
+    "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-21 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+   }
+  },
+  {
+   "cutoffDate": "2022-09-13",
+   "tradingDaysBack": 1008,
+   "securitiesWithCutoff": 5,
+   "measures": {
+    "3M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.001622609332567304,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.00891003883147734,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "HIGH_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009391843263986677,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.001622609332567304,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.00891003883147734,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009391843263986677,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0056,
+       "PRICE_RETURN_VALUE": 0.166515,
+       "TOTAL_RETURN_VALUE": 0.168138,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0085,
+       "PRICE_RETURN_VALUE": 0.040163,
+       "TOTAL_RETURN_VALUE": 0.042377,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0008,
+       "PRICE_RETURN_VALUE": -0.160798,
+       "TOTAL_RETURN_VALUE": -0.160553,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": 0.003449,
+       "TOTAL_RETURN_VALUE": 0.012359,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.0445,
+       "PRICE_RETURN_VALUE": -0.005425,
+       "TOTAL_RETURN_VALUE": 0.003967,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "6M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.002916426304242048,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.01470467418012078,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "HIGH_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.022978338826063593,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.002916426304242048,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.01470467418012078,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.022978338826063593,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0056,
+       "PRICE_RETURN_VALUE": 0.021378,
+       "TOTAL_RETURN_VALUE": 0.024295,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0085,
+       "PRICE_RETURN_VALUE": -0.088446,
+       "TOTAL_RETURN_VALUE": -0.084277,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0008,
+       "PRICE_RETURN_VALUE": -0.384388,
+       "TOTAL_RETURN_VALUE": -0.384077,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": -0.105862,
+       "TOTAL_RETURN_VALUE": -0.091157,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.0445,
+       "PRICE_RETURN_VALUE": 0.164265,
+       "TOTAL_RETURN_VALUE": 0.187243,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005755985886344517,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.02090680095404973,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "HIGH_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.07787384454385227,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005755985886344517,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.02090680095404973,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.07787384454385227,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0056,
+       "PRICE_RETURN_VALUE": 0.028686,
+       "TOTAL_RETURN_VALUE": 0.034442,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0085,
+       "PRICE_RETURN_VALUE": -0.15152,
+       "TOTAL_RETURN_VALUE": -0.144314,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0008,
+       "PRICE_RETURN_VALUE": -0.407232,
+       "TOTAL_RETURN_VALUE": -0.406758,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": -0.271925,
+       "TOTAL_RETURN_VALUE": -0.251019,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.0445,
+       "PRICE_RETURN_VALUE": 0.72169,
+       "TOTAL_RETURN_VALUE": 0.799564,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "12M-1M": {
+     "priceRanked": 5,
+     "totalRanked": 5,
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P90_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 1,
+      "TOP_DECILE_TOTAL": 1,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006243212958284783,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.021937860645421248,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "HIGH_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.07678738473747382,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006243212958284783,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.021937860645421248,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.07678738473747382,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "AAPL",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0056,
+       "PRICE_RETURN_VALUE": 0.150786,
+       "TOTAL_RETURN_VALUE": 0.157225,
+       "PRICE_RETURN_PERCENTILE": 75,
+       "TOTAL_RETURN_PERCENTILE": 75,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "MSFT",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0085,
+       "PRICE_RETURN_VALUE": -0.017105,
+       "TOTAL_RETURN_VALUE": -0.010862,
+       "PRICE_RETURN_PERCENTILE": 50,
+       "TOTAL_RETURN_PERCENTILE": 50,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "NVDA",
+       "sector": "Technology",
+       "segment": "LOW_YIELD",
+       "trailingYield": 0.0008,
+       "PRICE_RETURN_VALUE": -0.155426,
+       "TOTAL_RETURN_VALUE": -0.154998,
+       "PRICE_RETURN_PERCENTILE": 25,
+       "TOTAL_RETURN_PERCENTILE": 25,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "JPM",
+       "sector": "Financials",
+       "segment": "MEDIUM_YIELD",
+       "trailingYield": 0.0284,
+       "PRICE_RETURN_VALUE": -0.236019,
+       "TOTAL_RETURN_VALUE": -0.214081,
+       "PRICE_RETURN_PERCENTILE": 0,
+       "TOTAL_RETURN_PERCENTILE": 0,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      },
+      {
+       "ticker": "XOM",
+       "sector": "Energy",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.0445,
+       "PRICE_RETURN_VALUE": 0.69767,
+       "TOTAL_RETURN_VALUE": 0.774458,
+       "PRICE_RETURN_PERCENTILE": 100,
+       "TOTAL_RETURN_PERCENTILE": 100,
+       "RANK_DELTA": 0,
+       "PERCENTILE_DELTA": 0
+      }
+     ]
+    },
+    "RELATIVE_STRENGTH": {
+     "priceRanked": 0,
+     "totalRanked": 0,
+     "UNIVERSE_N": 0,
+     "SPEARMAN_RANK_CORRELATION": null,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+     "P90_RANK_CHANGE": null,
+     "P95_RANK_CHANGE": null,
+     "MAX_RANK_CHANGE": null,
+     "TITLES_MOVING_1_PERCENTILE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 0,
+      "TOP_DECILE_TOTAL": 0,
+      "LEAVING": 0,
+      "ENTERING": 0
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "MEDIUM_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "HIGH_YIELD": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "SECTOR_BIAS": {
+      "Technology": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Financials": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "Energy": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "largestPercentileMoves": []
+    }
+   },
+   "simulation": {
+    "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+    "contemporaneousWithPublishedEvidence": false,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
+    "publishedScored": null,
+    "simulatedScoredOnPrice": 5,
+    "simulatedScoredOnTotal": 5,
+    "momentumScoreShift": {
+     "UNIVERSE_N": 5,
+     "SPEARMAN_RANK_CORRELATION": 1,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 0,
+     "P95_RANK_CHANGE": 0,
+     "MAX_RANK_CHANGE": 0,
+     "TITLES_MOVING_5_PERCENTILES": 0,
+     "TITLES_MOVING_10_PERCENTILES": 0
+    }
+   },
+   "STRATEGY_IMPACT": {
+    "state": "NOT_APPLICABLE",
+    "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-21 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+   }
+  }
+ ],
+ "gateStatus": {
+  "FULL_UNIVERSE_RETURN_AUDIT": "REPOSITORY_ONLY",
+  "DUAL_RETURN_SERIES_CAPABLE_UNIVERSE": 5,
+  "PRICE_VS_TOTAL_RANK_CORRELATION": {
+   "3M": 1,
+   "6M": 1,
+   "12M": 1,
+   "12M-1M": 1,
+   "RELATIVE_STRENGTH": null
+  },
+  "DIVIDEND_BIAS": "MEASURED",
+  "SECTOR_BIAS": "MEASURED",
+  "STRATEGY_IMPACT": "MEASURED",
+  "HISTORICAL_ROBUSTNESS": "MEASURED",
+  "METHODOLOGY_DECISION_READY": "FAIL",
+  "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
+ },
+ "runtimeMs": 742
+}

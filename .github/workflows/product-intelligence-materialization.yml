@@ -78,6 +78,18 @@ jobs:
           node scripts/market/audit-return-basis.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # FULL-UNIVERSE RETURN-BASIS AUDIT, Schritte 2 bis 9.
+      #
+      # Baut beide Return-Reihen ueber dasselbe Universum, vergleicht die
+      # Momentumraenge, misst Dividenden- und Sektorschieflage und
+      # simuliert die Strategiewirkung neben der Produktion. Entscheidet
+      # nichts: QUANT_V2_MOMENTUM_RETURN_BASIS bleibt
+      # PENDING_METHOD_DECISION.
+      - name: Return basis study over the canonical history
+        run: >-
+          node --max-old-space-size=6144 scripts/market/study-return-basis-universe.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
       - name: Materialize Technical, Signals and Elliott Product Data
         run: >-
           node scripts/technical/materialize-product-intelligence.mjs
@@ -150,7 +162,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
@@ -180,5 +192,7 @@ jobs:
             quant/data/product/pattern-research-v1/study.json
             quant/data/product/pattern-research-fundamentals-v1/study.json
             quant/data/product/pattern-match-v1/summary.json
+            quant/data/providers/return-basis-input-audit.json
+            quant/data/providers/return-basis-universe-study.json
           if-no-files-found: warn
           retention-days: 30

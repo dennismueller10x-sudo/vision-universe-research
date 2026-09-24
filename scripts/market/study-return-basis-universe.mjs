@@ -1,0 +1,691 @@
+#!/usr/bin/env node
+/* =========================================================================
+   FULL-UNIVERSE RETURN-BASIS AUDIT — Schritte 2 bis 9.
+
+   Baut ueber das gesamte identifizierbare Universum BEIDE Return-Reihen,
+   rechnet dieselben Momentumgroessen zweimal und misst, was sich
+   zwischen den beiden Basen bewegt: Werte, Perzentile, Raenge,
+   Dividenden- und Sektorschieflage, Strategiewirkung, und das Ganze an
+   mehreren historischen Stichtagen.
+
+   WAS DIESES SKRIPT NICHT TUT
+
+   Es entscheidet nichts. QUANT_V2_MOMENTUM_RETURN_BASIS bleibt
+   PENDING_METHOD_DECISION; hier entstehen die Zahlen, auf denen die
+   Entscheidung dann steht. Es schreibt auch keine Produktionszahl um:
+   die Strategiewirkung ist eine Simulation neben der Produktion, kein
+   Eingriff in sie.
+
+   KEINE NEUE PIPELINE
+
+   Gelesen wird derselbe wiederhergestellte kanonische Barstore, den die
+   Materialisierung ohnehin liest, dazu das veroeffentlichte Factor
+   Evidence und die bestehenden Strategieprofile. Kein Anbieter wird
+   angefragt, keine Reihe geholt.
+   ========================================================================= */
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { readdirSync } from "node:fs";
+import zlib from "node:zlib";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Series = require(join(ROOT, "quant/engines/return-series.js"));
+const Compare = require(join(ROOT, "quant/engines/return-basis-comparison.js"));
+
+function arg(name, fallback) {
+  const at = process.argv.indexOf(name);
+  return at === -1 ? fallback : process.argv[at + 1];
+}
+const WORK_DIR = arg("--work-dir", join(ROOT, ".market-cache"));
+const PROVIDER = arg("--provider", "tiingo");
+const BENCHMARK = arg("--benchmark", "SPY");
+const BARS_DIR = join(WORK_DIR, PROVIDER, "daily");
+const GOLDEN = join(ROOT, "quant/data/market/golden-preview/daily");
+const OUT = join(ROOT, "quant/data/providers/return-basis-universe-study.json");
+
+/* Die historischen Stichtage als Abstand in Handelstagen vom letzten
+   Benchmarktag. Null ist heute, 252 ein Jahr zurueck. Jeder Stichtag
+   sieht ausschliesslich Bars bis zu seinem eigenen Datum - der Rest der
+   Reihe existiert fuer ihn nicht, sonst waere es Future Leakage. */
+const CUTOFF_OFFSETS = arg("--cutoffs", "0,252,504,756,1008")
+  .split(",").map((x) => parseInt(x.trim(), 10)).filter((x) => Number.isFinite(x) && x >= 0);
+
+const MEASURES = ["3M", "6M", "12M", "12M-1M", "RELATIVE_STRENGTH"];
+const finite = (v) => typeof v === "number" && Number.isFinite(v);
+const round = (v, d) => (finite(v) ? Math.round(v * 10 ** d) / 10 ** d : null);
+
+/* ------------------------------------------------------------- Eingaenge */
+
+function productUniverse() {
+  const file = join(ROOT, "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json");
+  const payload = JSON.parse(readFileSync(file, "utf8"));
+  return payload.securities || [];
+}
+
+function readSeries(securityId) {
+  const fromStore = join(BARS_DIR, securityId + ".json");
+  if (existsSync(fromStore)) return { source: "CANONICAL_STORE", payload: JSON.parse(readFileSync(fromStore, "utf8")) };
+  const fromGolden = join(GOLDEN, securityId + ".json");
+  if (existsSync(fromGolden)) return { source: "GOLDEN_PREVIEW", payload: JSON.parse(readFileSync(fromGolden, "utf8")) };
+  return null;
+}
+
+/* Das veroeffentlichte Factor Evidence: gebraucht werden die
+   Faktorwerte, die NICHT vom Momentum abhaengen. Die Simulation tauscht
+   nur das Momentum aus und laesst alles andere so, wie es heute
+   ausgeliefert wird. */
+function publishedFactors() {
+  const dir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  const map = new Map();
+  map.asOf = null;
+  if (!existsSync(dir)) return map;
+  const summaryFile = join(dir, "summary.json");
+  if (existsSync(summaryFile)) {
+    map.asOf = JSON.parse(readFileSync(summaryFile, "utf8")).asOf || null;
+  }
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json.gz"))) {
+    const shard = JSON.parse(zlib.gunzipSync(readFileSync(join(dir, file))));
+    for (const key of Object.keys(shard.securities || {})) {
+      const entry = shard.securities[key];
+      const scores = {};
+      for (const [name, factor] of Object.entries(entry.factors || {})) {
+        scores[name] = factor && factor.state === "AVAILABLE" && finite(factor.score) ? factor.score : null;
+      }
+      map.set(entry.securityId, { scores, priceBasis: entry.priceBasis || null });
+    }
+  }
+  return map;
+}
+
+function strategyProfiles() {
+  const file = join(ROOT, "quant/methodology/strategy-profiles-v1.json");
+  const payload = JSON.parse(readFileSync(file, "utf8"));
+  /* Der Auditauftrag nennt vier Strategien. Die Profile heissen im
+     Produkt teils anders - gematcht wird ueber die Profil-Id, damit hier
+     keine zweite Strategiedefinition entsteht. */
+  const wanted = ["momentum-leader", "quality-momentum", "value-momentum", "future-leader"];
+  return (payload.profiles || []).filter((p) => wanted.includes(p.profileId));
+}
+
+/* --------------------------------------------- Total-Return-Nachweis
+
+   Die Gesamtrendite-Reihe ist nur dann eine, wenn die adjClose-Spalte
+   die Dividende wirklich traegt. Das wurde bisher an fuenf Titeln
+   gezeigt. Hier laeuft derselbe Test ueber jeden Titel, den der Audit
+   anfasst - eine Eigenschaft der Datenquelle, die man ueber das
+   Universum misst und nicht von fuenf Reihen hochrechnet.
+
+   An einem Ex-Tag ohne Split gilt bei Gesamtrendite-Bereinigung:
+     (adj_prev/close_prev) / (adj_now/close_now) = 1 - dividend/close_prev
+   Bei reiner Splitbereinigung stuende dort 1. */
+function verifyTotalReturn(bars, maxEvents) {
+  const TOLERANCE = 0.002;
+  let checked = 0, consistent = 0, worst = 0;
+  for (let i = bars.length - 1; i > 0 && checked < maxEvents; i--) {
+    const bar = bars[i], prev = bars[i - 1];
+    if (!finite(bar.dividend) || bar.dividend <= 0) continue;
+    if (finite(bar.splitFactor) && bar.splitFactor !== 1) continue;
+    if (!finite(bar.adjustedClose) || !finite(prev.adjustedClose) ||
+        !finite(bar.close) || !finite(prev.close) || prev.close <= 0 || bar.close <= 0) continue;
+    const ratio = (prev.adjustedClose / prev.close) / (bar.adjustedClose / bar.close);
+    const expected = 1 - bar.dividend / prev.close;
+    const error = Math.abs(ratio - expected);
+    checked += 1;
+    if (error <= TOLERANCE) consistent += 1;
+    if (error > worst) worst = error;
+  }
+  return { checked, consistent, worst };
+}
+
+/* -------------------------------------------------------- Hilfsgroessen */
+
+function sliceMax(series, from, to) {
+  let peak = -Infinity;
+  for (let i = from; i <= to; i++) if (finite(series[i]) && series[i] > peak) peak = series[i];
+  return peak === -Infinity ? null : peak;
+}
+
+function sma(series, i, window) {
+  if (i + 1 < window) return null;
+  let sum = 0;
+  for (let k = i - window + 1; k <= i; k++) {
+    if (!finite(series[k])) return null;
+    sum += series[k];
+  }
+  return sum / window;
+}
+
+/* Die beiden Komponenten, die das Produkt als Kursstruktur fuehrt.
+   Sie stehen hier mit, weil die Momentumnote der Produktion sie zu
+   zwanzig Prozent traegt - eine Simulation ohne sie waere nicht die
+   Groesse, die ueber die Strategiezugehoerigkeit entscheidet. */
+function structureComponents(series, i) {
+  const high = i >= 251 ? sliceMax(series, i - 251, i) : null;
+  const mean = sma(series, i, 200);
+  return {
+    distanceTo52wHigh: finite(high) && high > 0 && finite(series[i]) ? (high - series[i]) / high : null,
+    distanceToSma200: finite(mean) && mean > 0 && finite(series[i]) ? (series[i] - mean) / mean : null
+  };
+}
+
+/* Nachlaufende Dividendenrendite ueber ein Jahr.
+
+   Jede Ausschuettung wird gegen den Kurs IHRES Tages gerechnet und die
+   Quotienten summiert. Das ist splitfest ohne Bereinigung: ein Split
+   teilt Dividende und Kurs im selben Verhaeltnis, der Quotient bleibt.
+   Eine Summe der Betraege geteilt durch den heutigen Kurs waere ueber
+   einen Split hinweg falsch. */
+function trailingYield(bars, i) {
+  let sum = 0, events = 0;
+  for (let k = Math.max(0, i - 251); k <= i; k++) {
+    const bar = bars[k];
+    if (finite(bar.dividend) && bar.dividend > 0 && finite(bar.close) && bar.close > 0) {
+      sum += bar.dividend / bar.close;
+      events += 1;
+    }
+  }
+  return { yield: sum, events };
+}
+
+function yieldSegment(y, events) {
+  if (events === 0) return "NO_DIVIDEND";
+  if (y < 0.02) return "LOW_YIELD";
+  if (y < 0.04) return "MEDIUM_YIELD";
+  return "HIGH_YIELD";
+}
+
+/* --------------------------------------- Methodiktext gegen Implementierung
+
+   Die veroeffentlichten componentSpecs nennen fuer jede Komponente ihre
+   Eingabe. Zwei der sechs Momentumkomponenten sind dort als
+   "split-adjusted close" beschrieben, gerechnet wird aber - wie
+   priceBasis in jedem Eintrag ausweist - auf adjustedClose. Solange
+   diese Spalte splitbereinigt waere, faellt das nicht auf; sie ist
+   nachweislich gesamtrenditebereinigt, also ist es ein Unterschied.
+
+   Das Skript entscheidet nichts daran. Es schreibt den Befund auf. */
+function specFindings() {
+  const summaryFile = join(ROOT, "quant/data/product/factor-evidence-v1/summary.json");
+  if (!existsSync(summaryFile)) return [];
+  const summary = JSON.parse(readFileSync(summaryFile, "utf8"));
+  const specs = summary.componentSpecs || {};
+  const findings = [];
+  for (const [id, spec] of Object.entries(specs)) {
+    if (!id.startsWith("momentum:")) continue;
+    const declaresSplitAdjusted = /split-adjusted/i.test(String(spec.input || "") + " " + String(spec.note || ""));
+    if (!declaresSplitAdjusted) continue;
+    findings.push({
+      component: id,
+      weightInFactor: spec.weight,
+      declaredInput: spec.input,
+      computedOn: "adjustedClose",
+      finding: "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
+      note: "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
+    });
+  }
+  return findings;
+}
+
+/* ----------------------------------------------------------- Hauptlauf */
+
+function main() {
+  const started = Date.now();
+  const universe = productUniverse();
+  const published = publishedFactors();
+  const profiles = strategyProfiles();
+
+  /* Die Benchmark traegt beide Basen. Eine Gesamtrenditereihe gegen
+     einen Kursindex zu halten waere ein Vergleich zweier Massstaebe -
+     die relative Staerke misst dann die Dividendenrendite des Index
+     mit, nicht die Staerke des Titels. */
+  const benchFound = readSeries("ref_" + BENCHMARK);
+  const bench = benchFound ? Series.build(benchFound.payload) : null;
+  if (!bench || !bench.usable) {
+    process.stdout.write("Benchmark " + BENCHMARK + " nicht verfuegbar - relative Staerke bleibt leer.\n");
+  }
+  const benchDates = bench && bench.usable ? bench.dates : null;
+
+  /* Der Handelskalender. Er kommt von der Benchmark, sonst haette jeder
+     Titel seinen eigenen Stichtag und die Querschnitte waeren nicht
+     vergleichbar.
+
+     Fehlt die Benchmark, wird ersatzweise die laengste gefundene Reihe
+     zum Kalender - der Vergleich beider Basen braucht keine Benchmark,
+     nur die relative Staerke tut es, und die bleibt dann leer statt
+     geraten. Welcher Kalender es war, steht im Bericht. */
+  let calendar = benchDates, calendarSource = "BENCHMARK";
+  if (!calendar) {
+    let longest = null;
+    for (const security of universe) {
+      const found = readSeries(security.securityId);
+      if (!found) continue;
+      const built = Series.build(found.payload);
+      if (!built.usable) continue;
+      if (!longest || built.bars > longest.bars) longest = { bars: built.bars, dates: built.dates, id: security.securityId };
+      if (longest.bars > 3000) break;
+    }
+    if (longest) { calendar = longest.dates; calendarSource = "LONGEST_SERIES:" + longest.id; }
+  }
+
+  const cutoffs = [];
+  if (calendar) {
+    for (const offset of CUTOFF_OFFSETS) {
+      const at = calendar.length - 1 - offset;
+      if (at >= 252) cutoffs.push({ offset, date: calendar[at], benchIndex: benchDates ? at : -1 });
+    }
+  }
+  if (!cutoffs.length) {
+    process.stdout.write("Kein Stichtag mit ausreichender Historie - Studie nicht moeglich.\n");
+  }
+
+  const perCutoff = cutoffs.map((c) => ({
+    cutoff: c, rows: [], sectors: new Map(), segments: new Map()
+  }));
+
+  const counters = {
+    CANONICAL_PRODUCT_UNIVERSE: universe.length,
+    SERIES_FOUND: 0,
+    DUAL_RETURN_SERIES_CAPABLE_UNIVERSE: 0
+  };
+  const exclusions = {};
+  const bySource = {};
+  const verification = { securities: 0, events: 0, consistent: 0, worstError: 0, inconsistentSecurities: [] };
+
+  for (const security of universe) {
+    const found = readSeries(security.securityId);
+    if (!found) { exclusions.NO_SERIES = (exclusions.NO_SERIES || 0) + 1; continue; }
+    bySource[found.source] = (bySource[found.source] || 0) + 1;
+    counters.SERIES_FOUND += 1;
+
+    const built = Series.build(found.payload);
+    if (!built.usable) {
+      exclusions[built.reason] = (exclusions[built.reason] || 0) + 1;
+      continue;
+    }
+    counters.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE += 1;
+
+    const bars = found.payload.bars;
+    const check = verifyTotalReturn(bars, 24);
+    if (check.checked > 0) {
+      verification.securities += 1;
+      verification.events += check.checked;
+      verification.consistent += check.consistent;
+      if (check.worst > verification.worstError) verification.worstError = check.worst;
+      if (check.consistent < check.checked && verification.inconsistentSecurities.length < 50) {
+        verification.inconsistentSecurities.push({
+          securityId: security.securityId, checked: check.checked,
+          consistent: check.consistent, worstError: round(check.worst, 6)
+        });
+      }
+    }
+
+    const sector = security.sector || "(unclassified)";
+
+    for (let ci = 0; ci < cutoffs.length; ci++) {
+      const cutoff = cutoffs[ci];
+      /* Der letzte Bar bis einschliesslich zum Stichtag - nie ein
+         spaeterer. Das ist die einzige Stelle, an der Future Leakage
+         entstehen koennte, und sie ist eine Zeile lang. */
+      let i = -1;
+      for (let k = 0; k < built.dates.length && built.dates[k] <= cutoff.date; k++) i = k;
+      if (i < 252) continue;
+
+      const priceMomentum = Compare.momentumAt(built.price, i, bench && bench.price, cutoff.benchIndex);
+      const totalMomentum = Compare.momentumAt(built.total, i, bench && bench.total, cutoff.benchIndex);
+      const priceStructure = structureComponents(built.price, i);
+      const totalStructure = structureComponents(built.total, i);
+      const yieldInfo = trailingYield(bars, i);
+
+      perCutoff[ci].rows.push({
+        securityId: security.securityId,
+        ticker: security.ticker,
+        sector,
+        segment: yieldSegment(yieldInfo.yield, yieldInfo.events),
+        trailingYield: yieldInfo.yield,
+        price: priceMomentum,
+        total: totalMomentum,
+        priceStructure,
+        totalStructure
+      });
+    }
+  }
+
+  /* ------------------------------------------------- Auswertung je Stichtag */
+
+  const results = [];
+  for (const bucket of perCutoff) {
+    const rows = bucket.rows;
+    if (!rows.length) continue;
+
+    const measures = {};
+    for (const measure of MEASURES) {
+      const a = Compare.rankField(rows.map((r) => r.price[measure]));
+      const b = Compare.rankField(rows.map((r) => r.total[measure]));
+      a.values = rows.map((r) => r.price[measure]);
+      b.values = rows.map((r) => r.total[measure]);
+      const stats = Compare.shiftStatistics(a, b);
+      const churn = Compare.decileChurn(a, b);
+
+      /* Segmentierte Schieflage: nach Dividendenrendite (Schritt 6) und
+         nach Sektor (Schritt 7). Die Gruppen kommen aus den Zeilen, die
+         Engine rechnet nur, was in ihnen passiert. */
+      const bySegment = {}, bySector = {};
+      rows.forEach((row, idx) => {
+        (bySegment[row.segment] = bySegment[row.segment] || []).push(idx);
+        (bySector[row.sector] = bySector[row.sector] || []).push(idx);
+      });
+
+      const largest = stats.UNIVERSE_N
+        ? rows.map((r, idx) => ({ idx, delta: finite(a.percentiles[idx]) && finite(b.percentiles[idx])
+              ? b.percentiles[idx] - a.percentiles[idx] : null }))
+            .filter((x) => finite(x.delta))
+            .sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta))
+            .slice(0, 15)
+            .map((x) => ({
+              ticker: rows[x.idx].ticker, sector: rows[x.idx].sector,
+              segment: rows[x.idx].segment,
+              trailingYield: round(rows[x.idx].trailingYield, 4),
+              PRICE_RETURN_VALUE: round(a.values[x.idx], 6),
+              TOTAL_RETURN_VALUE: round(b.values[x.idx], 6),
+              PRICE_RETURN_PERCENTILE: round(a.percentiles[x.idx], 2),
+              TOTAL_RETURN_PERCENTILE: round(b.percentiles[x.idx], 2),
+              RANK_DELTA: round(b.ranks[x.idx] - a.ranks[x.idx], 1),
+              PERCENTILE_DELTA: round(x.delta, 2)
+            }))
+        : [];
+
+      measures[measure] = {
+        priceRanked: a.n,
+        totalRanked: b.n,
+        UNIVERSE_N: stats.UNIVERSE_N,
+        SPEARMAN_RANK_CORRELATION: round(stats.SPEARMAN_RANK_CORRELATION, 6),
+        MEDIAN_ABSOLUTE_RANK_CHANGE: round(stats.MEDIAN_ABSOLUTE_RANK_CHANGE, 1),
+        P90_RANK_CHANGE: round(stats.P90_RANK_CHANGE, 1),
+        P95_RANK_CHANGE: round(stats.P95_RANK_CHANGE, 1),
+        MAX_RANK_CHANGE: round(stats.MAX_RANK_CHANGE, 1),
+        TITLES_MOVING_1_PERCENTILE: stats.TITLES_MOVING_1_PERCENTILE,
+        TITLES_MOVING_5_PERCENTILES: stats.TITLES_MOVING_5_PERCENTILES,
+        TITLES_MOVING_10_PERCENTILES: stats.TITLES_MOVING_10_PERCENTILES,
+        topDecile: {
+          TOP_DECILE_PRICE: churn.TOP_DECILE_A,
+          TOP_DECILE_TOTAL: churn.TOP_DECILE_B,
+          LEAVING: churn.LEAVING,
+          ENTERING: churn.ENTERING
+        },
+        DIVIDEND_BIAS: Compare.segmentStatistics(bySegment, a, b),
+        SECTOR_BIAS: Compare.segmentStatistics(bySector, a, b),
+        largestPercentileMoves: largest
+      };
+    }
+
+    /* ---------------------------------------- Schritt 8: Strategiewirkung
+
+       Die Momentumnote wird auf beiden Basen mit denselben sechs
+       Komponenten und denselben Gewichten wie in der Produktion
+       nachgebaut - aber ausschliesslich auf Universumsperzentilen. Die
+       Produktion mischt zusaetzlich Peergruppen dazu; das ist hier nicht
+       nachgebaut, und deshalb steht neben dem Ergebnis, wie nah die
+       Simulation an der veroeffentlichten Note liegt. Ohne diese Zahl
+       waere die Strategiewirkung eine Behauptung ueber ein Modell, das
+       niemand geprueft hat. */
+    const COMPONENT_WEIGHTS = Compare.PRODUCTION_MOMENTUM_WEIGHTS;
+    const DIRECTION_LOWER = new Set(Compare.LOWER_IS_BETTER);
+
+    function simulatedMomentum(basis) {
+      const fields = {};
+      for (const component of Object.keys(COMPONENT_WEIGHTS)) {
+        const key = Compare.COMPONENT_SOURCE[component];
+        const values = rows.map((r) => {
+          if (key === "distanceTo52wHigh" || key === "distanceToSma200") {
+            return (basis === "price" ? r.priceStructure : r.totalStructure)[key];
+          }
+          return (basis === "price" ? r.price : r.total)[key];
+        });
+        const ranked = Compare.rankField(values);
+        fields[component] = DIRECTION_LOWER.has(component)
+          ? ranked.percentiles.map((p) => (finite(p) ? 100 - p : null))
+          : ranked.percentiles;
+      }
+      return rows.map((_, idx) => {
+        let weighted = 0, weight = 0;
+        for (const [key, w] of Object.entries(COMPONENT_WEIGHTS)) {
+          const p = fields[key][idx];
+          if (!finite(p)) continue;
+          weighted += p * w; weight += w;
+        }
+        /* Dieselbe Regel wie im Faktorengine: fehlende Komponenten
+           werden nicht mit null gefuellt, sondern aus dem Gewicht
+           genommen - und unter halber Abdeckung gibt es keine Note. */
+        return weight >= 0.5 ? weighted / weight : null;
+      });
+    }
+
+    const simPrice = simulatedMomentum("price");
+    const simTotal = simulatedMomentum("total");
+    const simPriceRank = Compare.rankField(simPrice);
+    const simTotalRank = Compare.rankField(simTotal);
+
+    /* Die veroeffentlichte Momentumnote gilt fuer EINEN Stichtag. An
+       einem historischen Stichtag gegen sie zu vergleichen hiesse, die
+       Zukunft danebenzulegen - deshalb gibt es Treue und
+       Strategiewirkung nur dort, wo das veroeffentlichte Evidence
+       wirklich gleichzeitig ist. */
+    const contemporaneous = published.asOf !== null && published.asOf === bucket.cutoff.date;
+    const publishedScores = rows.map((r) => {
+      const entry = published.get(r.securityId);
+      return entry && finite(entry.scores.momentum) ? entry.scores.momentum : null;
+    });
+    const publishedRank = Compare.rankField(publishedScores);
+    const fidelity = contemporaneous ? Compare.spearman(simTotalRank.ranks, publishedRank.ranks) : null;
+    const fidelityPrice = contemporaneous ? Compare.spearman(simPriceRank.ranks, publishedRank.ranks) : null;
+
+    /* Dasselbe Argument fuer die Strategiewirkung: sie mischt
+       veroeffentlichte Qualitaets-, Wachstums- und Risikonoten von heute
+       mit einem Momentum von damals. An einem historischen Stichtag
+       waere das Future Leakage, und ein Ergebnis daraus waere schlimmer
+       als keines. */
+    const strategyImpact = contemporaneous ? {} : {
+      state: "NOT_APPLICABLE",
+      reason: "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
+      note: "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag " +
+            (published.asOf || "(unbekannt)") + " vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    };
+    for (const profile of (contemporaneous ? profiles : [])) {
+      function members(momentumPercentiles) {
+        const list = [];
+        rows.forEach((row, idx) => {
+          const entry = published.get(row.securityId);
+          if (!entry) return;
+          let ok = true;
+          for (const condition of profile.conditions) {
+            const factorName = String(condition.field).split(".").pop();
+            const value = factorName === "momentum" ? momentumPercentiles[idx] : entry.scores[factorName];
+            /* Ein Titel ohne Wert erfuellt die Bedingung NICHT. Er
+               faellt nicht durch, weil er schlecht ist, sondern weil er
+               nicht gemessen ist - und beides an dieser Stelle gleich zu
+               behandeln waere eine erfundene Aussage. Der Unterschied
+               zaehlt hier trotzdem nicht, weil er auf beiden Basen
+               identisch wirkt. */
+            if (!finite(value)) { ok = false; break; }
+            if (condition.operator === "gte" && !(value >= condition.value)) { ok = false; break; }
+            if (condition.operator === "lte" && !(value <= condition.value)) { ok = false; break; }
+          }
+          if (ok) list.push(idx);
+        });
+        return list;
+      }
+      const onPrice = members(simPriceRank.percentiles);
+      const onTotal = members(simTotalRank.percentiles);
+      const setPrice = new Set(onPrice), setTotal = new Set(onTotal);
+      const leaving = onPrice.filter((i) => !setTotal.has(i));
+      const entering = onTotal.filter((i) => !setPrice.has(i));
+      strategyImpact[profile.profileId] = {
+        label: profile.label,
+        MEMBERS_ON_PRICE_RETURN: onPrice.length,
+        MEMBERS_ON_TOTAL_RETURN: onTotal.length,
+        LEAVING: leaving.length,
+        ENTERING: entering.length,
+        MEMBERSHIP_CHURN_SHARE: onPrice.length
+          ? round((leaving.length + entering.length) / Math.max(onPrice.length, onTotal.length), 4) : null,
+        leavingExamples: leaving.slice(0, 10).map((i) => rows[i].ticker),
+        enteringExamples: entering.slice(0, 10).map((i) => rows[i].ticker)
+      };
+    }
+
+    results.push({
+      cutoffDate: bucket.cutoff.date,
+      tradingDaysBack: bucket.cutoff.offset,
+      securitiesWithCutoff: rows.length,
+      measures,
+      simulation: {
+        note: "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
+        contemporaneousWithPublishedEvidence: contemporaneous,
+        SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED: contemporaneous ? round(fidelity, 6) : null,
+        SIMULATION_FIDELITY_PRICE_VS_PUBLISHED: contemporaneous ? round(fidelityPrice, 6) : null,
+        publishedScored: contemporaneous ? publishedRank.n : null,
+        simulatedScoredOnPrice: simPriceRank.n,
+        simulatedScoredOnTotal: simTotalRank.n,
+        momentumScoreShift: (() => {
+          const s = Compare.shiftStatistics(simPriceRank, simTotalRank);
+          return {
+            UNIVERSE_N: s.UNIVERSE_N,
+            SPEARMAN_RANK_CORRELATION: round(s.SPEARMAN_RANK_CORRELATION, 6),
+            MEDIAN_ABSOLUTE_RANK_CHANGE: round(s.MEDIAN_ABSOLUTE_RANK_CHANGE, 1),
+            P95_RANK_CHANGE: round(s.P95_RANK_CHANGE, 1),
+            MAX_RANK_CHANGE: round(s.MAX_RANK_CHANGE, 1),
+            TITLES_MOVING_5_PERCENTILES: s.TITLES_MOVING_5_PERCENTILES,
+            TITLES_MOVING_10_PERCENTILES: s.TITLES_MOVING_10_PERCENTILES
+          };
+        })()
+      },
+      STRATEGY_IMPACT: strategyImpact
+    });
+  }
+
+  /* ------------------------------------------------------------- Bericht */
+
+  const storeSeen = bySource.CANONICAL_STORE || 0;
+  const primary = results[0] || null;
+  const totalReturnVerdict = verification.events >= 30 && verification.consistent === verification.events
+    ? "TOTAL_RETURN_CONFIRMED"
+    : (verification.events === 0 ? "NOT_MEASURED" : "TOTAL_RETURN_NOT_UNIFORM");
+
+  const report = {
+    schemaVersion: "return-basis-universe-study-1.0.0",
+    generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z"),
+    versions: {
+      study_logic: "1.0.0",
+      return_series: Series.ENGINE_VERSION,
+      comparison: Compare.ENGINE_VERSION
+    },
+    scope: storeSeen > 0 ? "CANONICAL_HISTORY" : "REPOSITORY_ONLY",
+    scopeNote: storeSeen > 0
+      ? "Gelesen wurde der wiederhergestellte kanonische Barstore."
+      : "Der kanonische Barstore war nicht verfuegbar. Gemessen wurde ausschliesslich, was im Repository liegt. Dieser Lauf ist KEINE Universumsstudie und darf nicht als eine gelesen werden.",
+    inputs: {
+      universeFile: "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+      barsDir: BARS_DIR.replace(ROOT, "."),
+      benchmark: bench && bench.usable
+        ? { id: BENCHMARK, bars: bench.bars, last: bench.dates[bench.dates.length - 1] }
+        : { id: BENCHMARK, state: "SOURCE_MISSING" },
+      calendarSource,
+      cutoffOffsets: CUTOFF_OFFSETS
+    },
+    counters,
+    bySource,
+    exclusions,
+    /* Der Total-Return-Nachweis ueber das Universum statt ueber fuenf
+       Titel. Ohne ihn waere Reihe B eine Annahme. */
+    totalReturnVerification: {
+      verdict: totalReturnVerdict,
+      securitiesChecked: verification.securities,
+      eventsChecked: verification.events,
+      eventsConsistent: verification.consistent,
+      worstError: round(verification.worstError, 6),
+      tolerance: 0.002,
+      inconsistentSecurities: verification.inconsistentSecurities
+    },
+    /* Wo die veroeffentlichte Methodik etwas anderes sagt als der Code
+       tut. Kein Befund aus dem Vergleich, sondern aus dem Nebeneinander
+       von componentSpecs und priceBasis - aber er gehoert genau hierher,
+       weil er dieselbe Frage betrifft. */
+    specImplementationFindings: specFindings(),
+    /* Was die Produktion heute rechnet - gemessen, nicht angenommen.
+       Solange das offen war, stand im Vertrag UNKNOWN_UNTIL_MEASURED. */
+    publishedBasis: (() => {
+      const basisCounts = {};
+      for (const entry of published.values()) {
+        basisCounts[entry.priceBasis || "(none)"] = (basisCounts[entry.priceBasis || "(none)"] || 0) + 1;
+      }
+      return {
+        artefact: "quant/data/product/factor-evidence-v1",
+        entries: published.size,
+        priceBasisCounts: basisCounts,
+        measuredQuantV2MomentumBasis: basisCounts.adjustedClose === published.size && published.size > 0 &&
+          totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ? "TOTAL_RETURN" : "MIXED_OR_UNCONFIRMED"
+      };
+    })(),
+    cutoffs: results,
+    gateStatus: {
+      FULL_UNIVERSE_RETURN_AUDIT: storeSeen > 0 ? "PASS" : "REPOSITORY_ONLY",
+      DUAL_RETURN_SERIES_CAPABLE_UNIVERSE: counters.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE,
+      PRICE_VS_TOTAL_RANK_CORRELATION: primary
+        ? Object.fromEntries(MEASURES.map((m) => [m, primary.measures[m].SPEARMAN_RANK_CORRELATION]))
+        : null,
+      DIVIDEND_BIAS: primary ? "MEASURED" : "NOT_MEASURED",
+      SECTOR_BIAS: primary ? "MEASURED" : "NOT_MEASURED",
+      STRATEGY_IMPACT: primary ? "MEASURED" : "NOT_MEASURED",
+      HISTORICAL_ROBUSTNESS: results.length > 1 ? "MEASURED" : "SINGLE_CUTOFF_ONLY",
+      /* Entscheidungsreif heisst: alle sieben Messungen liegen vor, ueber
+         den kanonischen Bestand, an mehr als einem Stichtag. Es heisst
+         NICHT, dass eine Basis gewonnen hat - das entscheidet der Owner. */
+      METHODOLOGY_DECISION_READY: (storeSeen > 0 && primary && results.length > 1 &&
+        totalReturnVerdict === "TOTAL_RETURN_CONFIRMED") ? "PASS" : "FAIL",
+      QUANT_V2_MOMENTUM_RETURN_BASIS: "PENDING_METHOD_DECISION"
+    },
+    runtimeMs: Date.now() - started
+  };
+
+  mkdirSync(dirname(OUT), { recursive: true });
+  writeFileSync(OUT, JSON.stringify(report, null, 1) + "\n");
+
+  process.stdout.write("FULL-UNIVERSE RETURN-BASIS AUDIT · Schritte 2-9\n");
+  process.stdout.write("  Bestand: " + report.scope + "\n");
+  process.stdout.write("  Reihen gefunden: " + counters.SERIES_FOUND +
+    " · beide Basen baubar: " + counters.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE + "\n");
+  process.stdout.write("  Total-Return-Nachweis: " + totalReturnVerdict +
+    " (" + verification.consistent + "/" + verification.events + " Ereignisse, " +
+    verification.securities + " Titel, schlechtester Fehler " +
+    round(verification.worstError * 100, 4) + "%)\n");
+  process.stdout.write("  Veroeffentlichte Basis: " + report.publishedBasis.measuredQuantV2MomentumBasis + "\n");
+  for (const result of results) {
+    process.stdout.write("  Stichtag " + result.cutoffDate + " (" + result.securitiesWithCutoff + " Titel)\n");
+    for (const measure of MEASURES) {
+      const m = result.measures[measure];
+      process.stdout.write("    " + measure.padEnd(18) +
+        " rho=" + String(m.SPEARMAN_RANK_CORRELATION).padEnd(9) +
+        " medRang=" + String(m.MEDIAN_ABSOLUTE_RANK_CHANGE).padStart(6) +
+        " p95=" + String(m.P95_RANK_CHANGE).padStart(6) +
+        " >5Pz=" + String(m.TITLES_MOVING_5_PERCENTILES).padStart(5) +
+        " Dezil ab/zu=" + m.topDecile.LEAVING + "/" + m.topDecile.ENTERING + "\n");
+    }
+    process.stdout.write("    Simulation rho zur Produktion: " +
+      (result.simulation.contemporaneousWithPublishedEvidence
+        ? result.simulation.SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED
+        : "entfaellt (Evidence nicht gleichzeitig)") + "\n");
+    for (const [id, impact] of Object.entries(result.STRATEGY_IMPACT)) {
+      if (!impact || typeof impact !== "object" || !("MEMBERS_ON_PRICE_RETURN" in impact)) continue;
+      process.stdout.write("    " + id.padEnd(18) + " Kurs " +
+        String(impact.MEMBERS_ON_PRICE_RETURN).padStart(5) + " · Gesamt " +
+        String(impact.MEMBERS_ON_TOTAL_RETURN).padStart(5) +
+        " · ab " + impact.LEAVING + " zu " + impact.ENTERING + "\n");
+    }
+  }
+  process.stdout.write("  METHODOLOGY_DECISION_READY: " + report.gateStatus.METHODOLOGY_DECISION_READY + "\n");
+  process.stdout.write("  Bericht: " + OUT.replace(ROOT, ".") + "\n");
+}
+
+main();
