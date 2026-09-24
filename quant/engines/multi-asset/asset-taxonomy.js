@@ -88,7 +88,7 @@
      aus einem Anzeigetext rekonstruieren muss. */
   function unitId(unit, currency, quantity) {
     var u = UNITS[unit];
-    if (!u) return "UNRESOLVED";
+    if (!u || unit === "UNRESOLVED") return "UNRESOLVED";
     if (unit === "INDEX_POINTS") return "POINTS";
     if (unit === "PERCENT") return "PERCENT";
     if (unit === "BASIS_POINTS") return "BASIS_POINTS";

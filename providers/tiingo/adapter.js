@@ -860,6 +860,103 @@ function createTiingoProvider(options) {
       });
     },
 
+    /**
+     * Krypto-Bars (Multi-Asset Core). Tiingo aggregiert ueber mehrere
+     * Handelsplaetze; die Quote-Waehrung kommt aus der Antwort, nicht aus
+     * dem Symbol.
+     *
+     * GEMESSEN (multi-asset-probe.json): eine Tagesanfrage ab 2009 endet
+     * vor der Gegenwart (Zeilengrenze je Anfrage). Wer die ganze Historie
+     * will, fragt in Scheiben - das macht der Aufrufer, nicht der Adapter.
+     *
+     * @param {string} ticker  z. B. "btcusd"
+     * @param {object} opts {from, to, interval: "1day"|"5min"|"60min"}
+     */
+    getCryptoBars: function (ticker, opts) {
+      opts = opts || {};
+      if (!apiKey) return Promise.resolve(notConfigured("Krypto-Kurse"));
+      const params = { tickers: String(ticker).toLowerCase(), resampleFreq: opts.interval || "1day" };
+      if (opts.from) params.startDate = opts.from;
+      if (opts.to) params.endDate = opts.to;
+      return client.request({
+        kind: params.resampleFreq === "1day" ? "historicalBars" : "intradayBars",
+        url: url("/tiingo/crypto/prices", params),
+        params: params,
+        headers: headers(),
+        detectError: detectSeriesError,
+        maxWaitMs: opts.maxWaitMs || 65000,
+        parse: function (body) {
+          const row = body[0] || null;
+          const list = row && Array.isArray(row.priceData) ? row.priceData : [];
+          return {
+            providerSymbol: row ? row.ticker || params.tickers : params.tickers,
+            interval: params.resampleFreq,
+            baseCurrency: row && row.baseCurrency ? String(row.baseCurrency).toUpperCase() : null,
+            quoteCurrency: row && row.quoteCurrency ? String(row.quoteCurrency).toUpperCase() : null,
+            bars: list.map((r) => ({
+              timestamp: r.date || null, date: String(r.date || "").slice(0, 10),
+              open: num(r.open), high: num(r.high), low: num(r.low), close: num(r.close),
+              volume: num(r.volume), dataSourceId: DATA_SOURCE_ID
+            })).filter((b) => b.close !== null)
+          };
+        }
+      }).then((res) => toEnvelope(res, null, "raw"));
+    },
+
+    /**
+     * FX-Endpunkt-Bars fuer Nicht-Waehrungspaare, die der Anbieter dort
+     * fuehrt (Edelmetalle). Waehrungspaare selbst gehoeren dem Currency
+     * Core (scripts/market/build-fx-history.mjs) und laufen nicht hier.
+     *
+     * @param {string} ticker  z. B. "xauusd"
+     * @param {object} opts {from, to, interval}
+     */
+    getFxEndpointBars: function (ticker, opts) {
+      opts = opts || {};
+      if (!apiKey) return Promise.resolve(notConfigured("FX-Endpunkt"));
+      const params = { resampleFreq: opts.interval || "1day" };
+      if (opts.from) params.startDate = opts.from;
+      if (opts.to) params.endDate = opts.to;
+      return client.request({
+        kind: params.resampleFreq === "1day" ? "historicalBars" : "intradayBars",
+        url: url("/tiingo/fx/" + encodeURIComponent(String(ticker).toLowerCase()) + "/prices", params),
+        params: params,
+        headers: headers(),
+        detectError: detectSeriesError,
+        maxWaitMs: opts.maxWaitMs || 65000,
+        parse: function (body) {
+          return {
+            providerSymbol: String(ticker).toLowerCase(),
+            interval: params.resampleFreq,
+            bars: body.map((r) => ({
+              timestamp: r.date || null, date: String(r.date || "").slice(0, 10),
+              open: num(r.open), high: num(r.high), low: num(r.low), close: num(r.close),
+              dataSourceId: DATA_SOURCE_ID
+            })).filter((b) => b.close !== null)
+          };
+        }
+      }).then((res) => toEnvelope(res, null, "raw"));
+    },
+
+    /** Aktueller Mittelkurs eines FX-Endpunkt-Symbols (eine Anfrage je Symbol -
+        die Sammelantwort traegt kein Tickerfeld, gemessen). */
+    getFxEndpointTop: function (ticker) {
+      if (!apiKey) return Promise.resolve(notConfigured("FX-Endpunkt"));
+      const t = String(ticker).toLowerCase();
+      return client.request({
+        kind: "quote",
+        url: url("/tiingo/fx/top", { tickers: t }),
+        headers: headers(),
+        detectError: detectSeriesError,
+        parse: function (body) {
+          const r = body[0] || null;
+          if (!r) return null;
+          return { providerSymbol: t, mid: num(r.midPrice), bid: num(r.bidPrice), ask: num(r.askPrice),
+                   quoteTimestamp: r.quoteTimestamp || null, dataSourceId: DATA_SOURCE_ID };
+        }
+      }).then((res) => toEnvelope(res, null, "raw"));
+    },
+
     /* Diagnose. Traegt bewusst keinen Bezug zu Zugangsdaten. */
     stats: function () { return client.stats(); },
     quota: function () { return client.quota(); },

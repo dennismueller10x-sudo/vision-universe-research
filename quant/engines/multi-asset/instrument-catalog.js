@@ -107,12 +107,13 @@
     i.sourceRole = decision.role || null;
     i.providerIdentifiers = decision.providerIdentifiers || {};
     /* Wo die Quelle die Semantik festlegt (Rohstoffe), gewinnt sie. */
-    ["subType", "exchangeOrVenue", "sessionProfile", "publisherProfile", "unit", "quantity", "timezone"].forEach(function (k) {
+    ["subType", "exchangeOrVenue", "sessionProfile", "publisherProfile", "unit", "quantity", "timezone", "name", "nameDe"].forEach(function (k) {
       if (decision[k] !== undefined && decision[k] !== null) i[k] = decision[k];
     });
     i.priceSemantics = decision.priceSemantics || null;   /* z. B. SPOT_REFERENCE, MID, CLOSE */
     i.frequency = decision.frequency || null;
     i.gap = decision.gap || null;
+    i.measured = decision.measured || decision.alsoMeasured || null;
     i.findings = Taxonomy.validateInstrument(i);
     i.unitId = Taxonomy.unitId(i.unit, i.currency, i.quantity);
     i.changeSemantics = Taxonomy.changeSemantics(i.valueSemantics);

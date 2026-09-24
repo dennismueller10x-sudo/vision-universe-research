@@ -67,12 +67,13 @@ on:
       - 'scripts/market/eia-xls-to-csv.py'
       - 'scripts/quality/verify-multi-asset.mjs'
       - '.github/workflows/multi-asset-data.yml'
-  # Auf dem Default-Branch: viermal am Tag. Krypto laeuft 24/7, die
+  # Auf dem Default-Branch: alle drei Stunden. Krypto laeuft 24/7, die
   # Referenzreihen erscheinen zu verschiedenen Tageszeiten in New York
   # und Frankfurt - ein Takt, der beides abdeckt, ohne Kontingent zu
-  # verbrennen (~20 Anfragen je Lauf).
+  # verbrennen (~20 Tiingo-Anfragen, ~10 offizielle Abrufe je Lauf).
+  # Die Frische-Schwelle fuer Krypto (6 h) ist auf diesen Takt abgestimmt.
   schedule:
-    - cron: '20 6,12,18,23 * * *'
+    - cron: '20 */3 * * *'
 
 permissions:
   contents: write
@@ -179,3 +180,56 @@ jobs:
             quant/data/market/capabilities/multi-asset-probe.json
       - name: Matrix ins Protokoll
         run: node -e 'const r=require("./quant/data/market/capabilities/multi-asset-probe.json"); console.log(JSON.stringify({tiingo:r.tiingo.matrix, instruments:r.instruments, requests:r.requests}, null, 1))'
+
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [contract, marker]
+    if: needs.marker.outputs.ingest == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: EIA-Primaertabellen lesbar machen (.xls -> CSV, Arbeitsstand)
+        run: |
+          pip install --quiet xlrd==2.0.1
+          python3 scripts/market/eia-xls-to-csv.py .market-cache/multi-asset/eia RWTC RBRTE RNGWHHD
+      - name: Daten holen, pruefen, Vertrag bauen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/ingest-multi-asset.mjs --publish
+      - name: Quality Gates und Nachweis (inkl. Arbeitsstand der lizenzausstehenden Instrumente)
+        run: node scripts/quality/verify-multi-asset.mjs --internal --publish
+      - name: Keine Zugangsdaten und keine lizenzausstehenden Werte im Auslieferungspfad
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs"), path = require("path");
+            const dir = "quant/data/market/multi-asset";
+            const key = process.env.TIINGO_API_KEY;
+            const walk = (d) => fs.readdirSync(d).flatMap((f) => { const p = path.join(d, f); return fs.statSync(p).isDirectory() ? walk(p) : [p]; });
+            for (const f of walk(dir)) {
+              const raw = fs.readFileSync(f, "utf8");
+              if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel in " + f); process.exit(1); }
+              if (/"internalOnly"/.test(raw) && f.includes("/series/")) { console.error("ABBRUCH: interne Reihe " + f); process.exit(1); }
+            }
+            const snap = JSON.parse(fs.readFileSync(dir + "/snapshot.json", "utf8"));
+            for (const c of snap.instruments) {
+              if (c.quote.state === "WITHHELD_LICENSE" && (c.quote.value !== null || (c.history.recent || []).length)) {
+                console.error("ABBRUCH: lizenzausstehender Wert ausgeliefert: " + c.instrument.symbol); process.exit(1);
+              }
+            }
+            console.log("Auslieferungspfad sauber (" + walk(dir).length + " Dateien).");
+          '
+      - name: Ergebnis in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Multi-Asset-Daten aktualisiert (automatischer Lauf)" \
+            quant/data/market/multi-asset
