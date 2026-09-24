@@ -1,6 +1,6 @@
 (function (global) {
   'use strict';
-  var V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};
+  var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   var D = global.VUDiscover, S = global.QuantShell, el = S.el;
   function node(tag, cls, text) { return el(tag, { class: cls, text: text }); }
   function link(text, href, cls) { return el('a', { class: cls, href: href, text: text }); }

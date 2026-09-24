@@ -24,7 +24,7 @@
      UI6  Der MAX-Chart in Euro beginnt spaeter als in Dollar (O-15)
           und sagt es dem Nutzer.
      UI7  Keine Konsolenfehler, keine 404 auf Produktpfaden.
-     UI8  Discover 1.0 und Discover 2.1 benutzen denselben Vertrag.
+     UI8  Die Legacy-Adresse /discover-v2/ fuehrt auf Discover und denselben Vertrag.
 
    Ausfuehren:
      node scripts/quality/verify-currency-ui.mjs [--url BASE] [--ticker AAPL]

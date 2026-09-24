@@ -10,7 +10,7 @@
  * gesetzt ist. Ohne Foto zeigt die Kachel einen dunklen Farbverlauf. */
 (function (global) {
   'use strict';
-  var V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};
+  var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   // n, slug, Titel, Kurztext, Zeile fuer Karten, Leitsatz (Banner), Ton, Gruppe, rowId, Foto
   var list = [
     [1, 'kuenstliche-intelligenz', 'Künstliche Intelligenz', 'AI-Modelle, Software, Computing', 'Intelligentere Software. Neue Wertschöpfung.', 'Intelligentere Märkte. Größere Möglichkeiten.', '#6d4bff', 'tech', 'thema-ki', true],
