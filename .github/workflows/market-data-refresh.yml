@@ -94,6 +94,42 @@ jobs:
           node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
             --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
+      # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
+      # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
+      # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle
+      # Titel ihre relative Staerke - sichtbar, aber nur wenn jemand
+      # hinsieht. Diese Zeile sorgt dafuer, dass man hinsehen muss.
+      - name: Zustand der Vergleichsreihe
+        run: |
+          node -e '
+            const fs = require("fs");
+            const status = JSON.parse(fs.readFileSync("quant/data/market/tiingo-status.json", "utf8"));
+            const spy = (status.securities || {}).ref_SPY || (status.securities || {}).SPY || null;
+            const store = ".market-cache/tiingo/daily/ref_SPY.json";
+            const bars = fs.existsSync(store) ? JSON.parse(fs.readFileSync(store, "utf8")).bars : null;
+            const letzter = bars && bars.length ? bars[bars.length - 1].date : null;
+            let juengster = null;
+            const dir = ".market-cache/tiingo/daily";
+            if (fs.existsSync(dir)) {
+              for (const f of fs.readdirSync(dir).slice(0, 400)) {
+                try {
+                  const b = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8")).bars;
+                  const d = b && b.length ? b[b.length - 1].date : null;
+                  if (d && (!juengster || d > juengster)) juengster = d;
+                } catch {}
+              }
+            }
+            console.log("Vergleichsreihe SPY");
+            console.log("  Abrufergebnis: " + JSON.stringify(spy));
+            console.log("  gespeichert bis: " + letzter);
+            console.log("  juengster Titel (Stichprobe 400): " + juengster);
+            if (letzter && juengster && letzter < juengster) {
+              console.log("  ZURUECK: die relative Staerke faellt damit universumsweit aus.");
+            } else if (letzter) {
+              console.log("  aktuell.");
+            }
+          '
+
       - name: Faktorzeilen fuer das ganze Universum
         run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE --product-universe
 
