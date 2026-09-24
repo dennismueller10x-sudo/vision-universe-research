@@ -31,7 +31,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M3 | Strategy Match | **DONE** — 8 profiles over the V2 namespace, ranking and history withheld |
 | M4 | Pattern Research Engine | **DONE** — two pre-registered families over 967k observations, 1992–2026 |
 | M5 | Pattern Match product | **DONE** — 249 robuste Muster je Titel, Verlustseite neben Gewinnseite |
-| M6 | Backtest integration | **BLOCKED, measured** — no total-return series, no historical index membership (see KNOWN_BLOCKERS) |
+| M6 | Backtest integration | **BLOCKED, measured** — historical index membership only; the total-return half of this blocker was wrong and is corrected (see KNOWN_BLOCKERS) |
 | M7 | Market Regime | **LIVE (point-in-time tier)** — six breadth measures, exact pre-set thresholds; transitions behind their own gate |
 | M8 | Full Quant experience | OPEN |
 | M9 | Setup screening (state index + parity) | **DONE** (this section) — one artifact, 6.8 KB, Aktienseite/Radar/Screener |
@@ -599,6 +599,48 @@ is unchanged.
 current membership: the backtest's basis being settled does not move it closer to open. A test
 asserts that the completeness checker still reports it separately.
 
+### 2026-09-24 — Full-universe return-basis audit (running)
+
+The owner **stopped** the methodology decision: five Golden-Preview titles are a technical
+direction finding, not a basis for the Quant V2 momentum method. The audit measures over the
+canonical product universe instead. `QUANT_V2_MOMENTUM_RETURN_BASIS` stays
+`PENDING_METHOD_DECISION` throughout, and a test holds that the study does not set it in
+passing.
+
+**Built and pushed** (no new pipeline, no new provider, no new R2 API, Discovery untouched —
+everything reads the canonical bar store the materialization already restores):
+
+| Piece | What it does |
+|---|---|
+| `quant/engines/return-series.js` | Builds both series from **one** set of bars. `SPLIT_ADJUSTED_PRICE` is reconstructed backwards from `close` and `splitFactor`, deliberately **not** from the provider's `adjClose` — that column is total-return adjusted and carries exactly what a price series must not. The split jump comes out, the dividend gap stays in. |
+| `quant/engines/return-basis-comparison.js` | Ranks, Spearman, shift distribution, decile churn, segment statistics. Compares only the **intersection** of both bases: if A ranked 6,000 titles and B 5,800, the measured difference would be an artifact of coverage, not of method. |
+| `scripts/market/study-return-basis-universe.mjs` | Sections 2–9 in one pass over the store. |
+| `scripts/quant/render-return-basis-study.mjs` | Section 10. Renders the document from the artifacts and **refuses to write** when the canonical store was absent. |
+
+**Three things the work already established, independent of the run:**
+
+1. **The published Quant V2 momentum basis is no longer unknown.** All **6,403** factor-evidence
+   entries carry `priceBasis: "adjustedClose"` — measured across every shard, not sampled. What
+   remains to confirm over the universe is that this column is total-return adjusted everywhere
+   (proven for five series so far), which the study now checks per title rather than
+   extrapolating.
+2. **The methodology text and the computation disagree on two components.**
+   `momentum:distanceTo52wHigh` and `momentum:distanceToSma200` (0.20 of the momentum factor
+   between them) are published as *"split-adjusted close"* and are computed on `adjustedClose`.
+   While that column was believed split-adjusted this was invisible. It is not a silent fix —
+   it goes into the decision.
+3. **No look-ahead in the historical cutoffs.** The strategy simulation mixes published quality,
+   growth and risk scores with a simulated momentum. Those scores exist for one date only, so at
+   any earlier cutoff the report carries `PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME`
+   instead of a number. Proven by falsification: forcing the contemporaneity flag true fails the
+   test.
+
+**Pending the materialization run**: `CANONICAL_HISTORY_UNIVERSE`,
+`RETURN_BASIS_IDENTIFIABLE_UNIVERSE`, `DUAL_RETURN_SERIES_CAPABLE_UNIVERSE`, every rank
+correlation, both bias tables, the strategy impact and `METHODOLOGY_DECISION_READY`. A local run
+sees five titles and says so in its own report (`scope: "REPOSITORY_ONLY"`); it is not a universe
+audit and is not read as one.
+
 ### 2026-09-23 — `total_debt` = OPTION_B
 
 ```
@@ -725,8 +767,10 @@ checks are the ones the activation gate measures.
    assignment as a watchlist filter and as an alert predicate, since a state change on a
    `predicateHash` is already what the alert contract describes.
 5. **M6 (Backtest) is shut on measured grounds** (see KNOWN_BLOCKERS) and is not the next step.
-   Two inputs would have to be acquired first: a dividend-adjusted price series and a historical
-   index-membership series. Neither is a build task.
+   **One** input would have to be acquired first: a historical index-membership series. The
+   second half of this entry — "no total-return series" — was wrong and is struck in
+   KNOWN_BLOCKERS: the basis is obtainable and now verified over the universe, not over five
+   titles. Acquiring a membership history is not a build task.
 6. Market Regime stays on the Owner gate.
 
 ## RESUME_STATE
