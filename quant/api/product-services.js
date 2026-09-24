@@ -189,7 +189,7 @@ function create(options){
    ['revisions','Revisions','Wie verändern sich Analystenerwartungen?',[metric('earningsRevisions','Earnings Revisions',null,'percent','LICENSED_ANALYST_PIT_NOT_AVAILABLE')]],
    ['risk','Risk','Welche Risiken zeigen die Kursdaten?',[metric('volatility','Volatilität',finite(stock.volatility?.value)?stock.volatility.value*100:null,'pct'),metric('maxDrawdown','Maximaler Drawdown',finite(stock.drawdown?.value)?Math.abs(stock.drawdown.value*100):null,'pct')]]
   ];
-  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.0.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.1.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
  }
  async function setupFor(stock){
   if(!SetupState||!stock)return null;
@@ -214,7 +214,13 @@ function create(options){
   if(!screeningPromise)screeningPromise=(async()=>{
    try{
     const payload=await compressedJSON('/quant/data/product/factor-evidence-v1/screening.json.gz');
-    if(!FactorEvidence.validScreening(payload))return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
+    const versionState=FactorEvidence.screeningVersionState(payload);
+    /* Ein Artefakt aus der vorigen Methodikversion ist nicht kaputt,
+       sondern veraltet - und das sagt es auch. Beides als INVALID zu
+       melden hiesse, bei jedem Versionswechsel einen Defekt
+       anzuzeigen. */
+    if(versionState==='SUPERSEDED')return {state:'UNAVAILABLE',reason:'METHODOLOGY_VERSION_SUPERSEDED',publishedMethodology:payload.methodologyVersion,expectedMethodology:FactorEvidence.METHODOLOGY_VERSION,rows:[]};
+    if(versionState!=='CURRENT')return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
     const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
     return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
      asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
@@ -509,7 +515,7 @@ function create(options){
  async function getPortfolioIntelligence(positions){try{const universe=await getUniverse(),c=await init();return PortfolioWorkspace.build(positions,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,marketState:'UNAVAILABLE'})});}catch{return unavailable('INVALID_PORTFOLIO');}}
  async function getStrategyContext(){
   try{const [quant,backtest,quantV2,universe]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json'),load('/quant/methodology/quant-v2.json'),getUniverse()]);
-   if(quantV2?.methodologyVersion!=='quant-v2.0.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
+   if(quantV2?.methodologyVersion!=='quant-v2.1.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
    Methodology.configure({quant,backtest,quantV2});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
     currentSelection:{state:universe.state,scope:universe.scope,selectable:universe.productUniverseSize||universe.stocks.length,filterEngine:'CANONICAL_QUERY_ENGINE',ranking:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'}},
     quantV2:{methodologyVersion:quantV2.methodologyVersion,status:quantV2.status,publicationAllowed:false,factorOrder:quantV2.factorOrder.slice(),factorReadiness:Object.fromEntries(quantV2.factorOrder.map(id=>[id,quantV2.factors[id].readiness]))},

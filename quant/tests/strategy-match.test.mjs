@@ -235,7 +235,13 @@ test("a query stays inside one methodology and says which one", () => {
 
 test("the screening table publishes canonical field ids and no composite", () => {
   const payload = JSON.parse(gunzipSync(readFileSync(SCREENING)));
-  assert.ok(FactorEvidence.validScreening(payload));
+  /* Traegt die veroeffentlichte Tabelle noch die vorige Methodikversion,
+     ist sie nicht kaputt, sondern wartet auf den naechsten Lauf. Die
+     Feld- und Zeilenpruefungen darunter gelten trotzdem - was sich
+     geaendert hat, ist die Momentumbasis, nicht der Aufbau der Tabelle. */
+  const versionState = FactorEvidence.screeningVersionState(payload);
+  assert.notEqual(versionState, "INVALID", "die Screening-Tabelle ist strukturell kaputt");
+  if (versionState === "CURRENT") assert.ok(FactorEvidence.validScreening(payload));
   assert.equal(payload.namespace, "quantV2.factorEvidence");
   payload.fields.forEach((id) => {
     assert.ok(Catalog.field(id), "column '" + id + "' is not a catalog field");

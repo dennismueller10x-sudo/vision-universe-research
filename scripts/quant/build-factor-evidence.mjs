@@ -52,9 +52,15 @@ const round = (value, digits = 6) => (finite(value) ? Math.round(value * 10 ** d
    --------------------------------------------------------------------------- */
 const PRICE_COMPONENTS = {
   momentum: [
-    { id: "totalReturn12m1m", weight: 0.30, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
-    { id: "totalReturn6m", weight: 0.20, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
-    { id: "totalReturn3m", weight: 0.10, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
+    /* Seit quant-v2.1.0 heissen diese drei nach dem, was sie messen.
+       Sie hiessen totalReturn*, weil sie auf der gesamtrenditebereinigten
+       Spalte liefen; seit der Owner-Entscheidung (Option C) laufen sie auf
+       splitbereinigten Kursen, und ein Name, der etwas anderes behauptet
+       als der Inhalt, ist genau die stille Umdefinition, die hier
+       ausgeschlossen wird. */
+    { id: "priceReturn12m1m", weight: 0.30, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
+    { id: "priceReturn6m", weight: 0.20, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
+    { id: "priceReturn3m", weight: 0.10, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
     { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.relativeStrength12M1M,
       note: "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle." },
     { id: "distanceTo52wHigh", weight: 0.10, direction: "lower", label: "Abstand zum 52-Wochen-Hoch", unit: "ratio", read: (v) => (finite(v.distanceTo52wHigh) ? -v.distanceTo52wHigh : null) },
@@ -432,6 +438,25 @@ function main() {
       asOf: record.security.asOf,
       dataCutoff: cutoff,
       priceBasis: record.security.basis,
+      /* WORAUF gerechnet wurde, nicht nur WELCHE SPALTE. Seit
+         quant-v2.1.0 ist das der Unterschied zwischen Kursstaerke und
+         Anlegerrendite, und er darf nicht aus der Spalte erraten werden
+         muessen. */
+      returnBasis: record.security.returnBasis || null,
+      priceSource: record.security.priceSource || null,
+      /* Die Anlegerrendite: eigene Evidenz neben dem Faktor, nie darin.
+         Sie beantwortet "Was haette ein Anleger inklusive Ausschuettungen
+         verdient?" - der Momentumfaktor beantwortet "Wie stark bewegt
+         sich der Kurs?". Option C, Owner-Entscheidung 2026-09-24. */
+      investorReturn: record.security.investorReturn
+        ? { state: record.security.investorReturn.state,
+            reason: record.security.investorReturn.reason || null,
+            basis: record.security.investorReturn.basis,
+            returns: record.security.investorReturn.returns || {},
+            return12M1M: record.security.investorReturn.return12M1M ?? null,
+            isFactorComponent: false }
+        : { state: "UNAVAILABLE", reason: "NOT_MATERIALIZED", basis: "TOTAL_RETURN",
+            returns: {}, return12M1M: null, isFactorComponent: false },
       bars: record.security.bars,
       dataQuality: record.security.dataQuality,
       fundamentalsAsOf: record.fundamentals?.fundamentalsAsOf || null,
@@ -693,7 +718,7 @@ function snapshotHash(snapshot) {
 
 function mandatoryUnmet(factorId, components) {
   const has = (id) => components.some((component) => component.id === id && component.state === "AVAILABLE");
-  if (factorId === "momentum") return !has("totalReturn12m1m");
+  if (factorId === "momentum") return !has("priceReturn12m1m");
   if (factorId === "risk") return !has("realizedVolatility252d");
   if (factorId === "quality") return !(has("accrualRatio") || has("positiveFcfYears")) || !(has("netDebtToAssets") || has("equityToAssets"));
   if (factorId === "growth") return !(has("revenueCagr3y") || has("revenueGrowthTtmYoy"));

@@ -110,35 +110,30 @@ console.log(`  Titel: ${universe.securities.length}`);
 let benchmark = null;
 const benchPayload = store.readBars("ref_" + BENCHMARK, "working");
 if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length) {
-  /* NOCH NICHT an den Vertrag gebunden, und das ist Absicht.
-  
-     Der Vertrag wuerde hier SPLIT_ADJUSTED_PRICE verlangen. Ob die
-     Produktionsreihen das liefern, ist NICHT gemessen: der Barstore liegt
-     in R2, und die einzigen eingecheckten Reihen - die Golden Preview -
-     melden adjustmentStatus "adjusted", also Gesamtrendite. Die
-     Commercial-Plan-Faehigkeiten melden adjustedPrices: true, was
-     dieselbe Richtung nahelegt.
-  
-     Eine Bindung wuerde also entweder nichts aendern oder die
-     veroeffentlichten Zahlen umstellen - und welches von beidem, weiss
-     hier niemand. Deshalb wird erst der tatsaechliche Stand mitgeschrieben
-     (siehe adjustmentStatus unten) und danach gebunden. Zu binden, bevor
-     das gemessen ist, waere genau die stille Umdefinition, die der
-     Vertrag ausschliesst - nur in die andere Richtung. */
-  const basis = MarketFactors.priceBasis(benchPayload.bars, benchPayload.adjustmentStatus);
+  /* SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-24 GEBUNDEN.
+
+     Die Vergleichsreihe der relativen Staerke traegt dieselbe Basis wie
+     der Titel, gegen den sie verglichen wird: splitbereinigter Kurs.
+     Eine Gesamtrenditereihe gegen einen Kursverlauf zu halten hiesse,
+     die Dividendenrendite des Index in die relative Staerke jedes Titels
+     hineinzurechnen.
+
+     Die Reihe wird konstruiert, nicht ausgewaehlt - der Anbieter
+     liefert Rohkurs und Splitfaktor, und daraus entsteht sie. */
+  const benchSeries = MarketFactors.priceSeries(
+    benchPayload.bars, benchPayload.adjustmentStatus, "relativeStrengthBenchmark");
   benchmark = {
     id: BENCHMARK,
+    returnBasis: benchSeries.basis,
+    priceSource: benchSeries.source,
     /* Die Datumsspalte gehoert dazu: ohne sie vergleicht ein Titel mit
        aelterem Stichtag gegen den heutigen Indexstand. */
     dates: benchPayload.bars.map((b) => b.date),
-    closes: benchPayload.bars.map((b) => {
-      const v = b[basis];
-      return typeof v === "number" && isFinite(v) && v > 0 ? v : b.close;
-    }),
+    closes: benchSeries.close.map((v) => (typeof v === "number" && isFinite(v) && v > 0 ? v : null)),
     last: benchPayload.bars[benchPayload.bars.length - 1].date,
     bars: benchPayload.bars.length
   };
-  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last})`);
+  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last}, ${benchmark.returnBasis} via ${benchmark.priceSource})`);
 } else {
   console.log(`  Benchmark: ${BENCHMARK} nicht in der Arbeitsablage - relative Staerke bleibt leer.`);
 }
@@ -176,18 +171,37 @@ for (const sec of universe.securities) {
     continue;
   }
 
-  /* Ebenfalls noch nicht gebunden, aus demselben Grund: welche Basis der
-     Momentumfaktor heute tatsaechlich benutzt, ist unmessbar, solange der
-     Stand nicht mitgeschrieben wird. Er wird es ab jetzt. */
-  const factors = MarketFactors.computeFactors(
-    Object.assign({ ticker: sec.ticker }, payload),
-    { benchmark: benchmark });
+  /* Gebunden. Die ganze Faktorzeile rechnet auf splitbereinigtem Kurs:
+     gleitende Durchschnitte, 52-Wochen-Hoch, Renditen, Volatilitaet,
+     relative Staerke. Sie beschreibt Kursstruktur, und dafuer ist die
+     Gesamtrendite die falsche Reihe - eine Dividende ist keine
+     Kursbewegung.
+
+     Was ein Anleger inklusive Ausschuettungen verdient haette, ist eine
+     andere Frage und bekommt unten ihre eigene Zahl. */
+  let factors;
+  try {
+    factors = MarketFactors.computeFactors(
+      Object.assign({ ticker: sec.ticker }, payload),
+      { benchmark: benchmark, module: "quantV2Momentum" });
+  } catch (error) {
+    /* Seit der Bindung kann die Basis verweigert werden: wer keinen
+       Splitfaktor mitbringt, bekommt keine splitbereinigte Reihe und
+       auch keinen Ersatz. Das ist die gewollte Haerte - aber sie darf
+       einen Titel kosten und nicht den ganzen Lauf. Der Grund steht im
+       Bericht, damit aus dem Ausfall eine Zahl wird und keine Luecke. */
+    skipped.push({ ticker: sec.ticker,
+      reason: error.reason || "RETURN_BASIS_UNAVAILABLE",
+      message: error.message });
+    continue;
+  }
   if (factors.status !== "OK") {
     skipped.push({ ticker: sec.ticker, reason: "UNAVAILABLE", message: factors.statusReason });
     continue;
   }
 
   const publicFactors = MarketFactors.stripPriceLevels(factors);
+  const investor = MarketFactors.investorReturn(payload.bars, payload.adjustmentStatus);
 
   Object.keys(factors.fieldStatus).forEach((f) => {
     const st = factors.fieldStatus[f];
@@ -216,9 +230,20 @@ for (const sec of universe.securities) {
        Momentumfaktors nicht nachtraeglich feststellen - was genau die
        Luecke war, die eine voreilige Bindung beinahe verdeckt haette. */
     adjustmentStatus: payload.adjustmentStatus || null,
-    returnBasis: Semantics.basisOfAdjustmentStatus(payload.adjustmentStatus),
+    /* Was der Anbieter liefert - und daneben, worauf wirklich gerechnet
+       wurde. Seit Option C sind das zwei verschiedene Dinge: geliefert
+       wird eine gesamtrenditebereinigte Spalte, gerechnet wird auf der
+       daraus nicht ableitbaren, sondern aus Rohkurs und Splitfaktor
+       rekonstruierten splitbereinigten Reihe. */
+    providedBasis: Semantics.basisOfAdjustmentStatus(payload.adjustmentStatus),
+    returnBasis: factors.returnBasis,
+    priceSource: factors.priceSource,
     values: publicFactors.values,
-    fieldStatus: publicFactors.fieldStatus
+    fieldStatus: publicFactors.fieldStatus,
+    /* Die Anlegerrendite steht NEBEN den Faktorwerten, nicht in ihnen.
+       Sie beantwortet eine andere Frage und geht in keine Faktornote
+       ein - genau das ist Option C. */
+    investorReturn: investor
   });
 }
 

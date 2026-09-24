@@ -110,6 +110,9 @@ function totalReturnVerdict() {
   try { return readJSON("quant/data/providers/total-return-verification.json").verdict; }
   catch { return "NOT_MEASURED"; }
 }
+/* Der Return-Semantics-Vertrag wird an mehreren Stellen gebraucht und
+   deshalb einmal oben gelesen. */
+const semantics = readJSON("quant/methodology/return-semantics-v1.json");
 const snapshots = membershipSnapshots();
 const publishedTR = publishedTotalReturnSeries();
 const trVerdict = totalReturnVerdict();
@@ -127,10 +130,15 @@ if (snapshots > 1) {
    provider's adjusted series is confirmed total-return, so this is a
    published-basis decision rather than a missing input. */
 if (trVerdict === "TOTAL_RETURN_CONFIRMED" && publishedTR === 0) {
-  add("OPEN", "TOTAL_RETURN_AVAILABLE_BUT_NOT_PUBLISHED",
-    "The provider's adjusted series is verified total-return, while the published product series " +
-    "remain SPLIT_ADJUSTED. Switching the published basis changes every momentum and drawdown " +
-    "figure, so it is a versioned decision - not a missing input.");
+  /* Seit Option C ist das keine offene Entscheidung mehr, sondern eine
+     Trennung: die Kursreihen BLEIBEN splitbereinigt, und die
+     Gesamtrendite erscheint als eigene Anlegerevidenz daneben. Offen ist
+     nur noch, ob sie dort auch wirklich steht. */
+  const investorEvidence = (semantics.modules || []).find((m) => m.id === "investorReturnEvidence");
+  if (!investorEvidence) {
+    add("OPEN", "TOTAL_RETURN_AVAILABLE_BUT_NOT_PUBLISHED",
+      "Die Gesamtrendite ist nachgewiesen verfuegbar, aber es gibt kein Modul, das sie fuehrt.");
+  }
 } else if (trVerdict === "NOT_MEASURED") {
   add("OPEN", "TOTAL_RETURN_NOT_MEASURED",
     "Whether the provider's adjusted series is total-return has not been measured. " +
@@ -149,37 +157,63 @@ function returnBasisStudy() {
   catch { return null; }
 }
 const basisStudy = returnBasisStudy();
-if (!basisStudy) {
-  add("OPEN", "RETURN_BASIS_AUDIT_NOT_RUN",
-    "Der Full-Universe-Return-Basis-Audit hat noch nicht geschrieben. Erst messen, dann ueber " +
-    "die Return-Basis reden.");
-} else if (basisStudy.scope !== "CANONICAL_HISTORY") {
-  add("OPEN", "RETURN_BASIS_AUDIT_PARTIAL",
-    "Der Audit lief auf '" + basisStudy.scope + "' und sieht damit nicht das Universum. " +
-    basisStudy.scopeNote);
-} else if (basisStudy.gateStatus.METHODOLOGY_DECISION_READY !== "PASS") {
-  add("OPEN", "RETURN_BASIS_AUDIT_INCOMPLETE",
-    "Der Audit lief ueber den kanonischen Bestand, ist aber nicht entscheidungsreif: " +
-    "METHODOLOGY_DECISION_READY = " + basisStudy.gateStatus.METHODOLOGY_DECISION_READY +
-    " (Total-Return-Nachweis " + basisStudy.totalReturnVerification.verdict + ", " +
-    basisStudy.cutoffs.length + " Stichtage).");
+const momentumSpec = readJSON("quant/methodology/quant-v2.json").factors.momentum;
+const evidenceSummary = readJSON("quant/data/product/factor-evidence-v1/summary.json");
+
+/* Die Return-Basis ist entschieden. Was hier noch stehen kann, ist nicht
+   mehr die Entscheidung, sondern ihre Umsetzung - und die wird gemessen,
+   nicht angenommen. */
+const entschieden = semantics.gateStatus.QUANT_V2_MOMENTUM_BASIS;
+if (entschieden === "PENDING_METHODOLOGY_DECISION") {
+  if (!basisStudy) {
+    add("OPEN", "RETURN_BASIS_AUDIT_NOT_RUN",
+      "Der Full-Universe-Return-Basis-Audit hat noch nicht geschrieben. Erst messen, dann ueber " +
+      "die Return-Basis reden.");
+  } else if (basisStudy.scope !== "CANONICAL_HISTORY") {
+    add("OPEN", "RETURN_BASIS_AUDIT_PARTIAL",
+      "Der Audit lief auf '" + basisStudy.scope + "' und sieht damit nicht das Universum. " +
+      basisStudy.scopeNote);
+  } else {
+    add("OPEN", "RETURN_BASIS_DECISION_WITH_OWNER",
+      "Gemessen ueber " + basisStudy.gateStatus.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE + " Titel. " +
+      "Die Entscheidung liegt beim Owner - ein Gate, keine Luecke im Produkt.");
+  }
 } else {
-  add("OPEN", "RETURN_BASIS_DECISION_WITH_OWNER",
-    "Gemessen ueber " + basisStudy.gateStatus.DUAL_RETURN_SERIES_CAPABLE_UNIVERSE + " Titel an " +
-    basisStudy.cutoffs.length + " Stichtagen. QUANT_V2_MOMENTUM_RETURN_BASIS steht auf " +
-    basisStudy.gateStatus.QUANT_V2_MOMENTUM_RETURN_BASIS + " - das ist ein Owner-Gate, keine " +
-    "Luecke im Produkt. Grundlage: docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md");
-}
-/* Der Befund, den der Audit nebenbei gefunden hat: zwei Momentum-
-   komponenten sind anders beschrieben als gerechnet. Er verschwindet
-   nicht dadurch, dass die Entscheidung noch offen ist. */
-if (basisStudy && (basisStudy.specImplementationFindings || []).length) {
-  add("OPEN", "MOMENTUM_SPEC_MISMATCH",
-    basisStudy.specImplementationFindings.map((f) => f.component).join(", ") +
-    " sind in componentSpecs als splitbereinigter Kurs beschrieben und werden auf der " +
-    "gesamtrenditebereinigten Spalte gerechnet (" +
-    basisStudy.specImplementationFindings.reduce((sum, f) => sum + (f.weightInFactor || 0), 0).toFixed(2) +
-    " Gewicht der Momentumnote). Teil der offenen Methodikentscheidung, keine stille Korrektur.");
+  /* Entschieden. Jetzt zaehlt nur noch, ob das Veroeffentlichte der
+     Entscheidung schon folgt. Solange die Methodikversion des Artefakts
+     hinter der Engine liegt, steht die Umstellung aus - und zwar
+     sichtbar, damit niemand die alte Zahl fuer die neue haelt. */
+  const engineMethodology = "vu-factor-evidence-2.0.0";
+  if (evidenceSummary.methodologyVersion !== engineMethodology) {
+    add("OPEN", "MOMENTUM_BASIS_REMATERIALIZATION_PENDING",
+      "Die Methodik steht auf " + entschieden + " (" +
+      semantics.gateStatus.QUANT_V2_MOMENTUM_DECISION + "), das veroeffentlichte Factor Evidence " +
+      "traegt aber noch " + evidenceSummary.methodologyVersion + ". Bis zum naechsten Lauf ueber " +
+      "frische Marktfaktoren gilt der alte Bestand - und die Dienste melden ihn als " +
+      "METHODOLOGY_VERSION_SUPERSEDED statt ihn als aktuell auszugeben.");
+  }
+
+  /* Und die Gegenprobe: sagt die Methodik selbst noch irgendwo etwas
+     anderes, als sie rechnet? Gemessen an der Spezifikation von heute,
+     nicht an einer Studie von gestern. */
+  const widerspruch = (momentumSpec.components || []).filter((component) => {
+    const text = String(component.input || "");
+    return /total return/i.test(text) && !/split-adjusted/i.test(text);
+  });
+  if (momentumSpec.returnBasis === "SPLIT_ADJUSTED_PRICE" && widerspruch.length) {
+    add("CRITICAL", "MOMENTUM_SPEC_CONTRADICTS_ITSELF",
+      "Die Momentummethodik nennt als Basis SPLIT_ADJUSTED_PRICE, beschreibt aber " +
+      widerspruch.map((c) => c.id).join(", ") + " weiter als Gesamtrendite.");
+  }
+  /* Namen, die etwas anderes behaupten als der Inhalt, sind genau die
+     stille Umdefinition, die der Owner ausgeschlossen hat. */
+  const falscheNamen = (momentumSpec.components || [])
+    .filter((c) => /^totalReturn/.test(c.id));
+  if (momentumSpec.returnBasis === "SPLIT_ADJUSTED_PRICE" && falscheNamen.length) {
+    add("CRITICAL", "MOMENTUM_COMPONENT_NAMES_STALE",
+      falscheNamen.map((c) => c.id).join(", ") + " heissen weiter nach der Gesamtrendite, " +
+      "rechnen aber auf Kursbasis.");
+  }
 }
 
 const screening = readGZ("quant/data/product/factor-evidence-v1/screening.json.gz");

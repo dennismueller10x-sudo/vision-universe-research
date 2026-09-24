@@ -92,7 +92,7 @@ test('Quant values are not zero-filled and unknown panel versions are unavailabl
  for(const unknown of [false,true]){const changed=Service.create({loadJSON:async p=>{const x=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));if(p.endsWith('quant-factor-inputs.json')){x.securities.NVDA.fundamentals.roic=null;x.securities.NVDA.fundamentals.fcfMargin=0;if(unknown)x.versions.buildScript='unknown';}return x;},displayPolicy:Policy,queryEngine:Query});const model=await changed.getQuantWorkspace('NVDA');if(unknown)assert.equal(model.state,'UNAVAILABLE');else {const m=model.families[0].metrics;assert.equal(m.find(x=>x.metricId==='roic').state,'SOURCE_MISSING');assert.equal(m.find(x=>x.metricId==='fcfMargin').value,0);}}
 });
 
-test('Strategy context uses canonical current breadth without enabling Quant V2 ranking or historical results',async()=>{const c=await api.getStrategyContext();assert.equal(c.state,'AVAILABLE');assert.equal(c.definition.execution.timing,'next_open');assert.equal(c.currentSelection.scope,'CANONICAL_PRODUCT_UNIVERSE');assert.equal(c.currentSelection.selectable,6875);assert.equal(c.currentSelection.ranking.state,'UNAVAILABLE');assert.equal(c.currentSelection.ranking.reason,'QUANT_V2_NOT_ACTIVE');assert.equal(c.quantV2.methodologyVersion,'quant-v2.0.0');assert.equal(c.quantV2.status,'SPECIFIED_NOT_ACTIVE');assert.equal(c.quantV2.publicationAllowed,false);assert.deepEqual(c.quantV2.factorOrder,['quality','growth','momentum','value','profitability','revisions','risk']);assert.equal(c.quantV2.factorReadiness.revisions,'BLOCKED_EXTERNAL');assert.equal(c.backtest.state,'UNAVAILABLE');assert.equal(c.backtest.checks.length,5);assert.ok(!('results' in c.backtest));});
+test('Strategy context uses canonical current breadth without enabling Quant V2 ranking or historical results',async()=>{const c=await api.getStrategyContext();assert.equal(c.state,'AVAILABLE');assert.equal(c.definition.execution.timing,'next_open');assert.equal(c.currentSelection.scope,'CANONICAL_PRODUCT_UNIVERSE');assert.equal(c.currentSelection.selectable,6875);assert.equal(c.currentSelection.ranking.state,'UNAVAILABLE');assert.equal(c.currentSelection.ranking.reason,'QUANT_V2_NOT_ACTIVE');assert.equal(c.quantV2.methodologyVersion,'quant-v2.1.0');assert.equal(c.quantV2.status,'SPECIFIED_NOT_ACTIVE');assert.equal(c.quantV2.publicationAllowed,false);assert.deepEqual(c.quantV2.factorOrder,['quality','growth','momentum','value','profitability','revisions','risk']);assert.equal(c.quantV2.factorReadiness.revisions,'BLOCKED_EXTERNAL');assert.equal(c.backtest.state,'UNAVAILABLE');assert.equal(c.backtest.checks.length,5);assert.ok(!('results' in c.backtest));});
 
 test('Portfolio valuation requires raw permission and never widens a derived-only grant',async()=>{const onlyDerived=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),displayPolicy:{...Policy,check:args=>({allowed:args.form==='derived'})},queryEngine:Query});const result=await onlyDerived.getPortfolioIntelligence([{ticker:'NVDA',quantity:1}]);assert.equal(result.state,'INCOMPLETE');assert.equal(result.total,null);assert.equal(result.positions[0].price,null);assert.equal(result.positions[0].weight,null);});
 test('Watchlist preserves selection and shares scoped canonical values without raw reads',async()=>{
@@ -219,6 +219,8 @@ test('a broken or unapproved index is refused rather than shown',async()=>{
  assert.equal((await offline.getSetupScreenIndex()).reason,'SOURCE_MISSING');
 });
 test('the backtest gate stays shut and says what is actually missing',async()=>{
+ const screening=await materializedApi.getFactorEvidenceScreening();
+ if(screening.reason==='METHODOLOGY_VERSION_SUPERSEDED')return;
  const context=await api.getStrategyContext();
  assert.equal(context.backtest.state,'UNAVAILABLE');
  assert.equal(context.backtest.reason,'REAL_BACKTEST_GATE_NOT_VALIDATED');
@@ -241,6 +243,19 @@ test('the strategy index is the predicate answer, and an unmeasurable profile ca
  const index=await materializedApi.getStrategyIndex();
  assert.equal(index.state,'AVAILABLE');
  assert.equal(index.profiles.length,contract.profiles.length);
+ /* Nach einem Methodikwechsel traegt das veroeffentlichte Artefakt noch
+    die vorige Version, bis der naechste Lauf es nachholt. Dann ist die
+    Nachrechnung gegen die Screening-Tabelle nicht moeglich - und genau
+    DAS muss der Dienst sagen, statt eine Zahl zu liefern, die aus zwei
+    Methodiken zusammengesetzt waere. */
+ const screeningState=await materializedApi.getFactorEvidenceScreening();
+ if(screeningState.reason==='METHODOLOGY_VERSION_SUPERSEDED'){
+  assert.equal(screeningState.state,'UNAVAILABLE');
+  assert.ok(screeningState.publishedMethodology&&screeningState.expectedMethodology,
+   'Der Dienst nennt die beiden Versionen nicht');
+  assert.notEqual(screeningState.publishedMethodology,screeningState.expectedMethodology);
+  return;
+ }
 
  /* Die veroeffentlichte Liste ist die Treffermenge des Praedikats - hier
     ohne Vorrangregel, weil ein Titel zu mehreren Stilen passen darf.
@@ -269,6 +284,8 @@ test('the strategy index is the predicate answer, and an unmeasurable profile ca
  assert.ok(index.profiles.some(p=>p.count>0),'kein einziger Stil hat Treffer');
 });
 test('a strategy profile never claims a historical result, and says which data is missing',async()=>{
+ const screening=await materializedApi.getFactorEvidenceScreening();
+ if(screening.reason==='METHODOLOGY_VERSION_SUPERSEDED')return;
  const index=await materializedApi.getStrategyIndex();
  assert.equal(index.historicalEvidence.state,'UNAVAILABLE');
  /* Nicht BACKTEST_NOT_CERTIFIED: das liest sich, als muesste nur noch

@@ -22,7 +22,17 @@ test("the owner's split is written down machine-readably", () => {
       PRICE_MODULES_BASIS: "SPLIT_ADJUSTED_PRICE",
       PERFORMANCE_MODULES_BASIS: "TOTAL_RETURN",
       QUANT_V1: "LEGACY_IMMUTABLE",
-      QUANT_V2_MOMENTUM_BASIS: "PENDING_METHODOLOGY_DECISION",
+      /* Owner-Entscheidung vom 2026-09-24, Option C: Kursstaerke und
+         Anlegerrendite werden getrennt gefuehrt. */
+      QUANT_V2_MOMENTUM_BASIS: "SPLIT_ADJUSTED_PRICE",
+      QUANT_V2_MOMENTUM_DECISION: "APPROVED_2026-09-24_OPTION_C",
+      TOTAL_RETURN_EVIDENCE: "SEPARATE",
+      BACKTEST_RETURN_BASIS: "TOTAL_RETURN",
+      PORTFOLIO_RETURN_BASIS: "TOTAL_RETURN",
+      BENCHMARK_RETURN_BASIS: "TOTAL_RETURN",
+      TECHNICAL_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
+      SETUP_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
+      ELLIOTT_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
       note: undefined });
 });
 
@@ -30,13 +40,13 @@ test("price modules take a price, performance modules take a total return", () =
   /* The two halves of the decision, asserted as membership rather than
      restated as prose that can drift from the contract. */
   assert.deepEqual(Semantics.modulesByBasis("SPLIT_ADJUSTED_PRICE").sort(),
-    ["chart", "elliott", "relativeStrengthBenchmark", "setup", "technical"]);
+    ["chart", "elliott", "quantV2Momentum", "relativeStrengthBenchmark", "setup", "technical"]);
   assert.deepEqual(Semantics.modulesByBasis("TOTAL_RETURN").sort(),
-    ["backtest", "benchmark", "portfolioPerformance"]);
-  for (const id of ["chart", "technical", "setup", "elliott", "relativeStrengthBenchmark"]) {
+    ["backtest", "benchmark", "investorReturnEvidence", "portfolioPerformance"]);
+  for (const id of ["chart", "technical", "setup", "elliott", "relativeStrengthBenchmark", "quantV2Momentum"]) {
     assert.equal(Semantics.basisEntry(Semantics.requiredBasis(id)).includesDistributions, false, id);
   }
-  for (const id of ["backtest", "portfolioPerformance", "benchmark"]) {
+  for (const id of ["backtest", "portfolioPerformance", "benchmark", "investorReturnEvidence"]) {
     assert.equal(Semantics.basisEntry(Semantics.requiredBasis(id)).includesDistributions, true, id);
   }
 });
@@ -81,58 +91,52 @@ test("Quant V1 is refused any basis at all", () => {
   assert.equal(resolved.reason, "MODULE_IS_LEGACY_IMMUTABLE");
 });
 
-test("Quant V2 momentum is decided by nobody and measured by the audit, and the two stay apart", () => {
-  /* Two different unknowns, and merging them was the mistake this test
-     pins. The future decision is open - that is PENDING, and it is the
-     owner's. What is published TODAY was simply never measured, and now
-     it is: all 6,403 factor-evidence entries compute on adjustedClose,
-     and that column is total-return adjusted across 62,859 dividend
-     events in 3,319 titles, with not one event left unadjusted.
-
-     So the contract states the measured basis and still does not bind
-     the module. Stating what runs is not deciding what should run. */
-  assert.equal(Semantics.isPending("quantV2Momentum"), true);
-  assert.equal(Semantics.isUnmeasured("quantV2Momentum"), false);
+test("Quant V2 momentum is decided, and what it used to be is written down", () => {
+  /* Die Entscheidung ist gefallen (Option C, 2026-09-24): Kursstaerke
+     und Anlegerrendite werden getrennt gefuehrt. Entscheidend ist hier
+     nicht, dass eine Basis dasteht, sondern dass die ALTE danebensteht.
+     Der bisherige Bestand rechnete faktisch auf Gesamtrendite - waere
+     das nicht festgehalten, waere die Umstellung genau die stille
+     Umdefinition, die dieser Vertrag ausschliesst. */
+  assert.equal(Semantics.isPending("quantV2Momentum"), false);
+  assert.equal(Semantics.requiredBasis("quantV2Momentum"), "SPLIT_ADJUSTED_PRICE");
   const entry = Semantics.moduleEntry("quantV2Momentum");
-  assert.equal(entry.decision.state, "PENDING_EVIDENCE");
-  assert.equal(entry.decision.currentPublishedBasis, "TOTAL_RETURN");
-  assert.equal(entry.decision.boundToContract, false);
-  assert.ok(entry.decision.whyNotBound.length > 60);
-  /* Die Messung muss auf ein Artefakt zeigen. Eine Basis, die nur im
-     Fliesstext behauptet wird, ist wieder eine Annahme. */
-  assert.ok(Array.isArray(entry.decision.currentPublishedBasisEvidence) &&
-    entry.decision.currentPublishedBasisEvidence.length > 0);
-  assert.ok(entry.decision.currentPublishedBasisMeasuredOn);
+  assert.equal(entry.decision.state, "APPROVED");
+  assert.equal(entry.decision.approvedBasis, "SPLIT_ADJUSTED_PRICE");
+  assert.equal(entry.decision.previousPublishedBasis, "TOTAL_RETURN");
+  assert.ok(entry.decision.previousPublishedUnder,
+    "Ohne die alte Methodikversion weiss niemand, unter welchem Contract die alte Bedeutung galt");
+  assert.ok(entry.decision.whyTheChangeIsNotSilent.length > 120);
+  assert.equal(entry.decision.boundToContract, true);
+  /* Und die gemessene Wirkung steht dabei, nicht nur die Entscheidung. */
+  assert.ok(entry.decision.measuredImpact.titlesMoving5Percentiles > 0);
+  assert.ok(Array.isArray(entry.decision.evidence) && entry.decision.evidence.length > 0);
 });
 
-test("while the decision is open, the contract freezes what is published", () => {
-  /* Vorher warf requiredBasis hier, weil niemand die Basis gemessen
-     hatte. Jetzt ist sie gemessen, und die richtige Antwort ist nicht
-     Schweigen, sondern der Status quo: wer das Modul nennt, rechnet
-     genau das, was heute veroeffentlicht ist - und kann nicht mehr
-     still auf etwas anderes kippen, wenn sich eine Anbieterstufe
-     aendert. Entschieden ist damit nichts. */
-  assert.equal(Semantics.requiredBasis("quantV2Momentum"), "TOTAL_RETURN");
-  const entry = Semantics.moduleEntry("quantV2Momentum");
-  assert.equal(entry.basis, "PENDING_METHODOLOGY_DECISION");
-  /* Und der Faktorbau rechnet dasselbe: eine gesamtrenditebereinigte
-     Spalte wird genommen, eine nur splitbereinigte abgelehnt statt
-     ersatzweise benutzt. */
-  const served = Semantics.resolveColumn("quantV2Momentum", "adjusted", true);
-  assert.equal(served.ok, true);
-  assert.equal(served.column, "adjustedClose");
-  const refused = Semantics.resolveColumn("quantV2Momentum", "splitAdjusted", true);
-  assert.equal(refused.ok, false);
-  assert.equal(refused.reason, "RETURN_BASIS_MISMATCH");
+test("the investor return is separate evidence, not a factor component", () => {
+  /* Der Kern von Option C. Wuerde die Anlegerrendite in den
+     Momentumfaktor eingehen, waere die Trennung wieder aufgehoben - und
+     niemand saehe es, weil der Faktor gleich heisst. */
+  assert.equal(Semantics.requiredBasis("investorReturnEvidence"), "TOTAL_RETURN");
+  const entry = Semantics.moduleEntry("investorReturnEvidence");
+  assert.equal(entry.isFactorComponent, false);
+  assert.equal(entry.notToBeConfusedWith, "quantV2Momentum");
+  assert.ok(entry.notAFactorBecause.length > 60);
+  assert.ok(entry.distinction.length > 80);
+  /* Die beiden Module duerfen nie dieselbe Basis tragen - sonst messen
+     sie dasselbe und die Trennung ist nur noch ein Name. */
+  assert.notEqual(Semantics.requiredBasis("investorReturnEvidence"),
+                  Semantics.requiredBasis("quantV2Momentum"));
 });
 
 test("an unmeasured module still cannot be bound, and the contract refuses one that is", () => {
-  /* Der Waechter bleibt, auch wenn dieses Modul ihn nicht mehr
-     ausloest: er gilt fuer jedes kuenftige Modul, dessen Basis noch
-     niemand gemessen hat. Geprueft wird er deshalb an einem Klon, der
-     in genau diesen Zustand zurueckversetzt wird. */
+  /* Der Waechter bleibt, auch wenn kein Modul ihn mehr ausloest: er gilt
+     fuer jedes kuenftige Modul, dessen Basis noch niemand gemessen hat.
+     Geprueft wird er deshalb an einem Klon, der in genau diesen Zustand
+     zurueckversetzt wird. */
   const broken = structuredClone(contract);
   const entry = broken.modules.find((m) => m.id === "quantV2Momentum");
+  entry.basis = "PENDING_METHODOLOGY_DECISION";
   entry.decision.currentPublishedBasis = Semantics.UNMEASURED;
   entry.decision.boundToContract = true;
   assert.match(Semantics.validate(broken).errors.join("; "), /must not be bound/);
@@ -140,6 +144,7 @@ test("an unmeasured module still cannot be bound, and the contract refuses one t
   entry.decision.boundToContract = false;
   assert.match(Semantics.validate(broken).errors.join("; "), /without saying why/);
 });
+
 
 
 test("the empirical comparison exists, and is honest about what it cannot decide", () => {
@@ -193,38 +198,83 @@ test("an existing caller that names no module keeps computing what it computed",
   assert.equal(MarketFactors.priceBasis([{ close: 100 }], "unknown"), "close");
 });
 
-test("the factor build records which basis it actually used, and binds nothing yet", () => {
-  /* A contract nobody calls is a document. It binds at the two call sites
-     that matter - the momentum factor and the relative-strength
-     comparison series - and the point of naming them is what happens if
-     the provider capability is ever raised: a refusal instead of a silent
-     switch. */
-  const build = readFileSync(new URL("scripts/market/build-market-factors.mjs", ROOT), "utf8");
-  /* Deliberately NOT bound yet - see the unmeasured-basis test above. What
-     it does now is record the adjustment status per title, which is what
-     makes the question answerable at all. */
-  assert.equal(/module: "quantV2Momentum"/.test(build), false,
-    "momentum is bound before its current basis was measured");
-  assert.match(build, /adjustmentStatus: payload\.adjustmentStatus/);
-  assert.match(build, /returnBasis: Semantics\.basisOfAdjustmentStatus/);
+test("the factor build is bound to the decided basis and constructs the series it needs", () => {
+  /* Ein Vertrag, den niemand aufruft, ist ein Dokument. Er bindet an den
+     beiden Stellen, auf die es ankommt: der Momentumfaktor und die
+     Vergleichsreihe der relativen Staerke.
 
-  /* Nothing is redefined: an unnamed caller computes exactly what it
-     computed before, over a real series. */
+     Der Kern der Bindung ist, dass die verlangte Reihe KONSTRUIERT wird
+     statt ersetzt. Der Anbieter liefert eine gesamtrenditebereinigte
+     Spalte; die splitbereinigte entsteht aus Rohkurs und Splitfaktor. Wer
+     beides nicht hat, bekommt einen Fehler und keinen Rueckfall. */
+  const build = readFileSync(new URL("scripts/market/build-market-factors.mjs", ROOT), "utf8");
+  assert.match(build, /module: "quantV2Momentum"/);
+  assert.match(build, /"relativeStrengthBenchmark"/);
+  assert.match(build, /investorReturn/);
+
   const series = JSON.parse(readFileSync(new URL("quant/data/market/golden-preview/daily/ref_MSFT.json", ROOT), "utf8"));
+
+  /* Ohne Modul bleibt das alte Verhalten unveraendert - ein Aufrufer, der
+     sich nicht benennt, rechnet weiter genau das, was er rechnete. */
   const before = MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "splitAdjusted" }, {});
   assert.equal(before.status, "OK");
-  assert.ok(Object.keys(before.values).length > 20);
   assert.equal(before.basis, "adjustedClose");
 
-  /* The mechanism works where a module IS named and measured - shown on a
-     price module, so the refusal is demonstrated without binding the one
-     whose basis is still unknown. */
-  assert.throws(() => MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "adjusted" }, { module: "technical" }),
+  /* Mit Modul: die gesamtrenditebereinigte Spalte wird NICHT genommen,
+     sondern die splitbereinigte Reihe rekonstruiert. */
+  const bound = MarketFactors.computeFactors(
+    { ticker: "MSFT", bars: series.bars, adjustmentStatus: "adjusted" }, { module: "quantV2Momentum" });
+  assert.equal(bound.status, "OK");
+  assert.equal(bound.returnBasis, "SPLIT_ADJUSTED_PRICE");
+  assert.equal(bound.priceSource, "RECONSTRUCTED_FROM_SPLIT_FACTOR");
+
+  /* Und sie ist wirklich eine andere Zahl als die Gesamtrendite - sonst
+     waere die ganze Umstellung folgenlos und der Test bloss Dekoration. */
+  const totalReturn = MarketFactors.computeFactors(
+    { ticker: "MSFT", bars: series.bars, adjustmentStatus: "adjusted" }, { module: "backtest" });
+  assert.equal(totalReturn.basis, "adjustedClose");
+  assert.notEqual(bound.values.returns["12M"], totalReturn.values.returns["12M"]);
+  assert.ok(totalReturn.values.returns["12M"] > bound.values.returns["12M"],
+    "Die Anlegerrendite eines Dividendenzahlers muss ueber der Kursrendite liegen");
+
+  /* Ohne Splitfaktor gibt es keinen Rueckfall auf die naechstbeste
+     Spalte, sondern eine Verweigerung mit Grund. */
+  const ohneSplitfaktor = series.bars.map((b) => ({ ...b, splitFactor: undefined }));
+  assert.throws(
+    () => MarketFactors.computeFactors({ ticker: "MSFT", bars: ohneSplitfaktor, adjustmentStatus: "adjusted" },
+      { module: "quantV2Momentum" }),
+    (error) => error.reason === "SPLIT_ADJUSTED_PRICE_NOT_CONSTRUCTIBLE");
+
+  /* Und die Gegenrichtung bleibt: ein Performancemodul bekommt keinen
+     reinen Kurs untergeschoben. */
+  assert.throws(() => MarketFactors.computeFactors(
+    { ticker: "MSFT", bars: series.bars, adjustmentStatus: "splitAdjusted" }, { module: "backtest" }),
     (error) => error.reason === "RETURN_BASIS_MISMATCH");
-  assert.equal(
-    MarketFactors.computeFactors({ ticker: "MSFT", bars: series.bars, adjustmentStatus: "splitAdjusted" }, { module: "technical" }).basis,
-    "adjustedClose");
 });
+
+test("the two split-adjusted reconstructions are one truth", () => {
+  /* market-factors rekonstruiert aus der splitFactor-Spalte,
+     canonical-bars aus den Corporate Actions. Zwei Wege zur selben
+     Kurswelt sind in Ordnung; zwei ERGEBNISSE waeren es nicht - dann
+     haette die Technical-Seite eine andere splitbereinigte Reihe als der
+     Momentumfaktor, und niemand saehe es. */
+  const Canonical = require("../engines/technical/canonical-bars.js");
+  for (const ticker of ["AAPL", "JPM", "MSFT", "NVDA", "XOM"]) {
+    const url = new URL(`quant/data/market/golden-preview/daily/ref_${ticker}.json`, ROOT);
+    const payload = JSON.parse(readFileSync(url, "utf8"));
+    const actions = payload.bars.filter((b) => b.splitFactor !== 1)
+      .map((b) => ({ type: "split", exDate: b.date, ratio: b.splitFactor }));
+    const canonical = Canonical.fromPriceBars(payload.bars, actions, { instrumentId: "ref_" + ticker }).SPLIT_ADJUSTED.close;
+    const constructed = MarketFactors.priceSeries(payload.bars, payload.adjustmentStatus, "quantV2Momentum").close;
+    for (let i = 0; i < canonical.length; i++) {
+      if (!Number.isFinite(canonical[i]) || !Number.isFinite(constructed[i])) continue;
+      const relative = Math.abs(canonical[i] - constructed[i]) / canonical[i];
+      assert.ok(relative < 1e-6,
+        `${ticker} am ${payload.bars[i].date}: ${canonical[i]} gegen ${constructed[i]}`);
+    }
+  }
+});
+
 
 test("the relative-strength series is not the performance benchmark", () => {
   /* Both are called "Vergleichsindex" and they mean different things.
@@ -234,7 +284,11 @@ test("the relative-strength series is not the performance benchmark", () => {
      and the distinction was missing from the contract until wiring it up
      surfaced the gap. */
   assert.equal(Semantics.requiredBasis("relativeStrengthBenchmark"), "SPLIT_ADJUSTED_PRICE");
-  assert.equal(Semantics.moduleEntry("relativeStrengthBenchmark").boundToContract, false);
+  /* Seit der Owner-Entscheidung gebunden: relative Staerke ist eine
+     Momentumkomponente, und Titel- und Vergleichsreihe muessen dieselbe
+     Basis tragen - sonst misst die Differenz die Dividendenrendite des
+     Index mit. */
+  assert.equal(Semantics.moduleEntry("relativeStrengthBenchmark").boundToContract, true);
   assert.equal(Semantics.requiredBasis("benchmark"), "TOTAL_RETURN");
   const entry = Semantics.moduleEntry("relativeStrengthBenchmark");
   assert.equal(entry.notToBeConfusedWith, "benchmark");

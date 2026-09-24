@@ -24,8 +24,14 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var METHODOLOGY_VERSION = "vu-factor-evidence-1.0.0";
-  var DERIVED_FROM = "quant-v2.0.0";
+    /* 2.0.0 seit der Owner-Entscheidung vom 2026-09-24 (Option C): der
+     Momentumfaktor rechnet auf splitbereinigten Kursen, drei seiner
+     Komponenten heissen anders, und die Gesamtrendite steht als eigene
+     Anlegerevidenz daneben. Eine neue Bedeutung bekommt eine neue
+     Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
+     eigenen Reihe stehen. */
+  var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
+  var DERIVED_FROM = "quant-v2.1.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
@@ -283,6 +289,32 @@
     return row;
   }
 
+  /* WARTET DAS ARTEFAKT NOCH AUF DEN NEUBAU, ODER IST ES KAPUTT?
+
+     Zwei sehr verschiedene Lagen, die ohne diese Unterscheidung
+     denselben Fehler ergeben. Nach einem Methodikwechsel traegt das
+     veroeffentlichte Artefakt noch die vorige Version - strukturell
+     einwandfrei, nur nicht mehr aktuell. Das ist ein Zustand mit einem
+     Ablaufdatum ("der naechste Lauf holt es nach") und keine
+     Datenstoerung.
+
+     Ein Artefakt, dessen Aufbau nicht stimmt, ist etwas anderes, und
+     beides gleich zu melden hiesse, bei jedem Versionswechsel einen
+     Defekt anzuzeigen - bis niemand mehr hinschaut. */
+  function screeningVersionState(payload) {
+    if (!payload || payload.schemaVersion !== SCREENING_SCHEMA || payload.namespace !== NAMESPACE ||
+        !Array.isArray(payload.fields) || !payload.fields.length ||
+        !payload.rows || typeof payload.rows !== "object" ||
+        !payload.publication || payload.publication.compositeAllowed !== false ||
+        payload.publication.rankingAllowed !== false) {
+      return "INVALID";
+    }
+    if (payload.methodologyVersion === METHODOLOGY_VERSION && payload.derivedFrom === DERIVED_FROM) {
+      return "CURRENT";
+    }
+    return "SUPERSEDED";
+  }
+
   function validScreening(payload) {
     if (!payload || payload.schemaVersion !== SCREENING_SCHEMA) return false;
     if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
@@ -426,6 +458,7 @@
     validShard: validShard,
     validSummary: validSummary,
     validScreening: validScreening,
+    screeningVersionState: screeningVersionState,
     screeningRow: screeningRow,
     publicationViolations: publicationViolations,
     hydrate: hydrate,

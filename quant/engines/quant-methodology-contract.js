@@ -11,8 +11,12 @@
   function close(a, b) { return Math.abs(a - b) < 1e-9; }
   function validate(config) {
     var errors = [];
-    if (!config || config.methodologyVersion !== "quant-v2.0.0" ||
-        config.modelProfileId !== "quant-v2.0.0-full-7f") errors.push("VERSION");
+    /* Die Version ist gepinnt, damit keine stille Aenderung durchgeht.
+       Seit 2026-09-24 traegt die Momentummethodik die Basis
+       SPLIT_ADJUSTED_PRICE (Owner-Entscheidung, Option C); die alte
+       Bedeutung laeuft unter quant-v2.0.0 weiter und nicht hier. */
+    if (!config || config.methodologyVersion !== "quant-v2.1.0" ||
+        config.modelProfileId !== "quant-v2.1.0-full-7f") errors.push("VERSION");
     if (JSON.stringify(config && config.factorOrder) !== JSON.stringify(FACTORS)) errors.push("FACTOR_ORDER");
     var sum = 0, componentOwners = Object.create(null);
     FACTORS.forEach(function (id) {

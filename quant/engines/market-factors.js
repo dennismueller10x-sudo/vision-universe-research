@@ -71,6 +71,9 @@
   var Semantics = (typeof module !== "undefined" && module.exports)
     ? require("./return-semantics.js")
     : (typeof global !== "undefined" ? global.VUReturnSemantics : null);
+  var Series = (typeof module !== "undefined" && module.exports)
+    ? require("./return-series.js")
+    : (typeof global !== "undefined" ? global.VUReturnSeries : null);
 
   function priceBasis(bars, adjustmentStatus, moduleId) {
     var hatSpalte = bars.some(function (b) {
@@ -107,6 +110,122 @@
     var belastbar = stufe === "TOTAL_RETURN" || stufe === "SPLIT_ADJUSTED" ||
                     adjustmentStatus === "adjusted" || adjustmentStatus === "splitAdjusted";
     return (belastbar && hatSpalte) ? "adjustedClose" : "close";
+  }
+
+  /**
+   * DIE REIHE, AUF DER GERECHNET WIRD - nicht mehr nur die Spalte.
+   *
+   * Bis zur Owner-Entscheidung vom 2026-09-24 genuegte es, eine Spalte
+   * auszuwaehlen: der Anbieter lieferte eine bereinigte, und welche
+   * Bereinigung das war, entschied der Vertrag. Seit Option C verlangt
+   * der Momentumfaktor SPLIT_ADJUSTED_PRICE, und genau diese Reihe
+   * liefert der Anbieter nicht: adjustedClose ist gesamtrenditebereinigt.
+   *
+   * Sie ist aber konstruierbar, weil jeder kanonische Bar den Rohkurs
+   * und den Splitfaktor traegt. Also wird sie konstruiert - mit
+   * derselben Rekonstruktion, die return-series.js benutzt, und nicht
+   * mit einer zweiten.
+   *
+   * Was NICHT passiert: ein Rueckfall auf die naechstbeste Spalte. Wer
+   * die splitbereinigte Reihe verlangt und weder sie noch ihre Bausteine
+   * bekommt, bekommt einen Fehler.
+   */
+  function priceSeries(bars, adjustmentStatus, moduleId) {
+    var verlangt = null;
+    if (moduleId && Semantics) {
+      try { verlangt = Semantics.requiredBasis(moduleId); }
+      catch (e) { verlangt = null; }
+    }
+
+    if (verlangt === "SPLIT_ADJUSTED_PRICE") {
+      var stufe = String(adjustmentStatus || "");
+      var schonSplitbereinigt = stufe === "splitAdjusted" || stufe.toUpperCase() === "SPLIT_ADJUSTED";
+      var hatSpalte = bars.some(function (b) { return b && isNum(b.adjustedClose) && b.adjustedClose > 0; });
+      if (schonSplitbereinigt && hatSpalte) {
+        /* Der Anbieter liefert bereits genau diese Reihe. */
+        return { column: "adjustedClose", source: "PROVIDER_SPLIT_ADJUSTED_COLUMN",
+                 basis: "SPLIT_ADJUSTED_PRICE",
+                 close: column(bars, "adjustedClose", "close"),
+                 high: column(bars, "adjustedHigh", "high"),
+                 low: column(bars, "adjustedLow", "low") };
+      }
+      var hatBausteine = bars.every(function (b) {
+        return b && isNum(b.close) && b.close > 0 && b.splitFactor !== null && b.splitFactor !== undefined;
+      });
+      if (!hatBausteine) {
+        var fehlt = new Error("return basis refused for '" + moduleId +
+          "': SPLIT_ADJUSTED_PRICE is neither served nor constructible");
+        fehlt.reason = "SPLIT_ADJUSTED_PRICE_NOT_CONSTRUCTIBLE";
+        fehlt.wanted = "SPLIT_ADJUSTED_PRICE";
+        fehlt.served = adjustmentStatus || null;
+        throw fehlt;
+      }
+      return { column: "close", source: "RECONSTRUCTED_FROM_SPLIT_FACTOR",
+               basis: "SPLIT_ADJUSTED_PRICE",
+               close: Series.splitAdjustedColumn(bars, "close").map(nanIfNull),
+               high: Series.splitAdjustedColumn(bars, "high").map(nanIfNull),
+               low: Series.splitAdjustedColumn(bars, "low").map(nanIfNull) };
+    }
+
+    /* Alles andere wie bisher: der Vertrag waehlt die Spalte, und ohne
+       Modul bleibt das alte Verhalten unveraendert. */
+    var spalte = priceBasis(bars, adjustmentStatus, moduleId);
+    return { column: spalte, source: "PROVIDER_COLUMN", basis: verlangt,
+             close: column(bars, spalte, spalte === "adjustedClose" ? "close" : null),
+             high: column(bars, spalte === "adjustedClose" ? "adjustedHigh" : "high", "high"),
+             low: column(bars, spalte === "adjustedClose" ? "adjustedLow" : "low", "low") };
+  }
+
+  function nanIfNull(v) { return isNum(v) ? v : NaN; }
+
+  /**
+   * DIE ANLEGERRENDITE - Option C, die andere Haelfte.
+   *
+   * Beantwortet: "Was haette ein Anleger inklusive Ausschuettungen
+   * tatsaechlich verdient?" Das ist eine andere Frage als "Wie stark
+   * bewegt sich der Kurs?", und seit der Owner-Entscheidung vom
+   * 2026-09-24 bekommt sie ihre eigene Zahl statt in den Momentumfaktor
+   * hineingerechnet zu werden.
+   *
+   * Bewusst KEIN Faktor und kein Faktoreingang: wuerde dieser Wert in
+   * die Momentumnote eingehen, waere die Trennung wieder aufgehoben -
+   * und niemand saehe es, weil der Faktor gleich hiesse.
+   */
+  function investorReturn(bars, adjustmentStatus, asOfIndex) {
+    var leer = { state: "UNAVAILABLE", reason: "TOTAL_RETURN_SERIES_UNAVAILABLE",
+                 basis: "TOTAL_RETURN", returns: {}, return12M1M: null };
+    if (!bars || !bars.length) return leer;
+    var serie;
+    try { serie = priceSeries(bars, adjustmentStatus, "investorReturnEvidence"); }
+    catch (e) { return leer; }
+    if (serie.column !== "adjustedClose") return leer;
+
+    var close = serie.close;
+    var n = close.length;
+    var i = asOfIndex === undefined ? n - 1 : asOfIndex;
+    if (i < 0 || i >= n) i = n - 1;
+
+    var out = { state: "AVAILABLE", reason: null, basis: "TOTAL_RETURN",
+                priceSource: serie.source, returns: {}, return12M1M: null,
+                fieldStatus: {} };
+    Object.keys(HORIZONS).forEach(function (h) {
+      var w = HORIZONS[h];
+      if (i - w < 0 || !isNum(close[i]) || !isNum(close[i - w]) || close[i - w] <= 0) {
+        out.returns[h] = null;
+        out.fieldStatus["returns." + h] = STATUS.INSUFFICIENT_HISTORY;
+        return;
+      }
+      out.returns[h] = round(close[i] / close[i - w] - 1, 6);
+      out.fieldStatus["returns." + h] = STATUS.CALCULATED;
+    });
+    if (i - YEAR_WINDOW >= 0 && isNum(close[i - 21]) && isNum(close[i - YEAR_WINDOW]) &&
+        close[i - YEAR_WINDOW] > 0) {
+      out.return12M1M = round(close[i - 21] / close[i - YEAR_WINDOW] - 1, 6);
+      out.fieldStatus.return12M1M = STATUS.CALCULATED;
+    } else {
+      out.fieldStatus.return12M1M = STATUS.INSUFFICIENT_HISTORY;
+    }
+    return out;
   }
 
   function column(bars, field, fallbackField) {
@@ -147,10 +266,9 @@
     /* opts.module bindet den Return-Semantics-Vertrag an diesen Lauf.
        Ohne ihn bleibt das alte Verhalten - ein Aufrufer, der sich nicht
        benennt, rechnet weiter genau das, was er bisher rechnete. */
-    var basis = priceBasis(bars, payload.adjustmentStatus, opts.module);
-    var close = column(bars, basis, basis === "adjustedClose" ? "close" : null);
-    var high = column(bars, basis === "adjustedClose" ? "adjustedHigh" : "high", "high");
-    var low = column(bars, basis === "adjustedClose" ? "adjustedLow" : "low", "low");
+    var serie = priceSeries(bars, payload.adjustmentStatus, opts.module);
+    var basis = serie.column;
+    var close = serie.close, high = serie.high, low = serie.low;
     var volume = bars.map(function (b) { return isNum(b.volume) ? b.volume : NaN; });
     var n = close.length;
     var i = opts.asOfIndex === undefined ? n - 1 : opts.asOfIndex;
@@ -475,6 +593,12 @@
       /* Auf welcher Spalte gerechnet wurde. Ohne diese Angabe laesst sich
          ein SMA200 nicht einordnen. */
       basis: basis,
+      /* Und in welcher Kurswelt. Die Spalte allein genuegt seit Option C
+         nicht mehr: 'close' kann der Rohkurs sein oder die daraus
+         rekonstruierte splitbereinigte Reihe, und das ist der
+         Unterschied zwischen einem Splitsprung im SMA200 und keinem. */
+      returnBasis: serie.basis || null,
+      priceSource: serie.source,
       adjustmentStatus: payload.adjustmentStatus || null,
       /* Gegen welchen Benchmark-Tag verglichen wurde. Ohne diese Angabe
          laesst sich eine relative Staerke nicht einordnen. */
@@ -587,6 +711,8 @@
     PRICE_LEVEL_FIELDS: PRICE_LEVEL_FIELDS,
     MINIMUM_VALID_RETURNS: MINIMUM_VALID_RETURNS,
     priceBasis: priceBasis,
+    priceSeries: priceSeries,
+    investorReturn: investorReturn,
     computeFactors: computeFactors,
     downsideVolatility: downsideVolatility,
     betaAgainst: betaAgainst,

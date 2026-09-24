@@ -48,22 +48,41 @@
    * Die splitbereinigte Reihe. Rueckwaerts: der letzte Kurs bleibt der
    * gehandelte, frueheren wird der kumulierte Splitfaktor herausgerechnet.
    */
-  function splitAdjusted(bars) {
+  /**
+   * Der kumulierte Splitfaktor je Bar: das Produkt aller Splits NACH
+   * diesem Tag. Eine eigene Funktion, weil close, high und low denselben
+   * Faktor tragen muessen - drei Reihen mit drei Faktoren waeren drei
+   * verschiedene Kurswelten in einem Bundle.
+   */
+  function splitFactors(bars) {
     var out = new Array(bars.length);
-    if (!bars.length) return out;
-    out[bars.length - 1] = finite(bars[bars.length - 1].close) ? bars[bars.length - 1].close : null;
     var factor = 1;
-    for (var i = bars.length - 1; i > 0; i--) {
+    for (var i = bars.length - 1; i >= 0; i--) {
+      out[i] = factor;
       var sf = bars[i].splitFactor;
-      /* Ein Split wirkt AB seinem Tag. Der Faktor wird deshalb aufgenommen,
-         bevor der Vortag gerechnet wird - andersherum verschoebe sich die
-         ganze Reihe um einen Tag, was an einem 1:7 sofort sichtbar waere
-         und an einem 1:1.05 nie. */
+      /* Ein Split wirkt AB seinem Tag. Der Faktor wird deshalb erst
+         aufgenommen, nachdem dieser Tag seinen eigenen bekommen hat -
+         andersherum verschoebe sich die ganze Reihe um einen Tag, was an
+         einem 1:7 sofort sichtbar waere und an einem 1:1.05 nie. */
       if (finite(sf) && sf > 0 && sf !== 1) factor *= sf;
-      var previous = bars[i - 1].close;
-      out[i - 1] = finite(previous) && previous > 0 ? previous / factor : null;
     }
     return out;
+  }
+
+  /**
+   * Eine beliebige Kursspalte auf dieselbe splitbereinigte Geometrie
+   * gebracht. `field` ist close, high oder low.
+   */
+  function splitAdjustedColumn(bars, field) {
+    var factors = splitFactors(bars);
+    return bars.map(function (bar, i) {
+      var value = bar ? bar[field] : null;
+      return finite(value) && value > 0 ? value / factors[i] : null;
+    });
+  }
+
+  function splitAdjusted(bars) {
+    return splitAdjustedColumn(bars, "close");
   }
 
   function totalReturn(bars) {
@@ -252,6 +271,8 @@
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
     splitAdjusted: splitAdjusted,
+    splitFactors: splitFactors,
+    splitAdjustedColumn: splitAdjustedColumn,
     verifyTotalReturn: verifyTotalReturn,
     ADJUSTMENT_BAND: ADJUSTMENT_BAND,
     totalReturn: totalReturn,

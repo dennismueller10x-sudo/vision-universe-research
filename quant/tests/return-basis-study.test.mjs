@@ -23,17 +23,35 @@ function run() {
 }
 const report = run();
 
-test("die Gewichte der Simulation sind die der Produktion", () => {
-  const summary = JSON.parse(readFileSync("quant/data/product/factor-evidence-v1/summary.json", "utf8"));
+test("die Gewichte der Simulation sind die der Methodik", () => {
+  /* Verglichen wird gegen die Methodikdatei, nicht gegen das
+     veroeffentlichte Artefakt: die Datei ist die Autoritaet, das
+     Artefakt ein Bauergebnis. Nach einem Versionswechsel traegt das
+     Artefakt eine Weile noch die alte Fassung, und ein Test, der
+     dagegen prueft, meldete dann einen Fehler, den es nicht gibt. */
+  const spec = JSON.parse(readFileSync("quant/methodology/quant-v2.json", "utf8"));
+  const components = spec.factors.momentum.components;
   for (const [component, weight] of Object.entries(Compare.PRODUCTION_MOMENTUM_WEIGHTS)) {
-    const spec = summary.componentSpecs["momentum:" + component];
-    assert.ok(spec, `Komponente momentum:${component} gibt es im veroeffentlichten Evidence nicht`);
-    assert.equal(spec.weight, weight,
-      `Gewicht von ${component}: Simulation ${weight}, Produktion ${spec.weight}`);
+    const entry = components.find((c) => c.id === component);
+    assert.ok(entry, `Komponente ${component} gibt es in der Methodik nicht`);
+    assert.equal(entry.weight, weight,
+      `Gewicht von ${component}: Simulation ${weight}, Methodik ${entry.weight}`);
   }
-  const published = Object.keys(summary.componentSpecs).filter((k) => k.startsWith("momentum:"));
-  assert.equal(published.length, Object.keys(Compare.PRODUCTION_MOMENTUM_WEIGHTS).length,
-    "Die Produktion hat Momentumkomponenten, die die Simulation nicht kennt: " + published.join(", "));
+  assert.equal(components.length, Object.keys(Compare.PRODUCTION_MOMENTUM_WEIGHTS).length,
+    "Die Methodik hat Momentumkomponenten, die die Simulation nicht kennt: " +
+    components.map((c) => c.id).join(", "));
+
+  /* Und wenn das veroeffentlichte Artefakt dieselbe Methodikversion
+     traegt, muss es auch dasselbe sagen - sonst ist der Bau von der
+     Methodik abgewichen. */
+  const summary = JSON.parse(readFileSync("quant/data/product/factor-evidence-v1/summary.json", "utf8"));
+  if (summary.derivedFrom === spec.methodologyVersion) {
+    for (const entry of components) {
+      const published = summary.componentSpecs["momentum:" + entry.id];
+      assert.ok(published, `Der Bau kennt momentum:${entry.id} nicht`);
+      assert.equal(published.weight, entry.weight);
+    }
+  }
 });
 
 test("jede Komponente der Simulation hat eine benannte Quelle", () => {
@@ -50,13 +68,20 @@ test("ein Lauf ohne kanonischen Bestand gibt sich nicht als Universumsstudie aus
   assert.equal(report.gateStatus.METHODOLOGY_DECISION_READY, "FAIL");
 });
 
-test("die Methodikentscheidung bleibt offen, solange sie niemand getroffen hat", () => {
-  /* Der Owner hat sie ausdruecklich gestoppt. Eine Studie, die sie
-     nebenbei setzt, waere genau der stille Umstieg, den der
-     Return-Semantics-Vertrag ausschliesst. */
+test("die Studie setzt die Methodikentscheidung nicht selbst", () => {
+  /* Die Studie misst; entschieden hat der Owner. Ihr eigener Report
+     bleibt deshalb auf PENDING - er beschreibt den Stand IHRER Messung,
+     nicht den des Vertrags. Was gilt, steht im Vertrag, und dort steht
+     seit dem 2026-09-24 Option C. */
   assert.equal(report.gateStatus.QUANT_V2_MOMENTUM_RETURN_BASIS, "PENDING_METHOD_DECISION");
   const contract = JSON.parse(readFileSync("quant/methodology/return-semantics-v1.json", "utf8"));
-  assert.equal(contract.gateStatus.QUANT_V2_MOMENTUM_BASIS, "PENDING_METHODOLOGY_DECISION");
+  assert.equal(contract.gateStatus.QUANT_V2_MOMENTUM_BASIS, "SPLIT_ADJUSTED_PRICE");
+  assert.equal(contract.gateStatus.QUANT_V2_MOMENTUM_DECISION, "APPROVED_2026-09-24_OPTION_C");
+  assert.equal(contract.gateStatus.TOTAL_RETURN_EVIDENCE, "SEPARATE");
+  /* Und die alte Basis steht daneben, sonst waere die Umstellung
+     still. */
+  const entry = contract.modules.find((m) => m.id === "quantV2Momentum");
+  assert.equal(entry.decision.previousPublishedBasis, "TOTAL_RETURN");
 });
 
 test("an historischen Stichtagen gibt es keine Strategiewirkung aus heutigen Fundamentaldaten", () => {

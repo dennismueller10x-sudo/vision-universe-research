@@ -235,11 +235,13 @@
      veroeffentlichten componentSpecs festhalten kann.
 
      Die Schluessel sind die Komponenten-Ids der Produktion; woraus jede
-     hier gerechnet wird, entscheidet das Studienskript. */
+     hier gerechnet wird, entscheidet das Studienskript. Seit
+     quant-v2.1.0 heissen die drei Renditekomponenten priceReturn*, weil
+     sie auf splitbereinigten Kursen rechnen. */
   var PRODUCTION_MOMENTUM_WEIGHTS = {
-    totalReturn12m1m: 0.30,
-    totalReturn6m: 0.20,
-    totalReturn3m: 0.10,
+    priceReturn12m1m: 0.30,
+    priceReturn6m: 0.20,
+    priceReturn3m: 0.10,
     relativeStrength12m1m: 0.20,
     distanceTo52wHigh: 0.10,
     distanceToSma200: 0.10
@@ -248,9 +250,9 @@
   /* Welche Messgroesse dieser Studie welche Produktionskomponente
      nachbaut. */
   var COMPONENT_SOURCE = {
-    totalReturn12m1m: "12M-1M",
-    totalReturn6m: "6M",
-    totalReturn3m: "3M",
+    priceReturn12m1m: "12M-1M",
+    priceReturn6m: "6M",
+    priceReturn3m: "3M",
     relativeStrength12m1m: "RELATIVE_STRENGTH_12M_1M",
     distanceTo52wHigh: "distanceTo52wHigh",
     distanceToSma200: "distanceToSma200"

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-semantics-1.0.0",
- "methodologyVersion": "return-semantics-v1.0.0",
+ "methodologyVersion": "return-semantics-1.1.0",
  "status": "APPROVED",
  "effectiveFrom": "2026-09-24",
  "approval": {
@@ -136,8 +136,9 @@
    ],
    "notToBeConfusedWith": "benchmark",
    "distinction": "benchmark misst, was ein Anleger verdient hätte, und rechnet deshalb auf Gesamtrendite. Diese Reihe misst, ob sich ein Kurs besser bewegt hat als ein anderer Kurs. Dieselbe Reihe für beides zu nehmen wäre genau die Vermischung, die dieser Vertrag trennt.",
-   "boundToContract": false,
-   "whyNotBound": "Dieselbe offene Messung wie beim Momentumfaktor: beide lesen denselben Barstore."
+   "boundToContract": true,
+   "boundOn": "2026-09-24",
+   "boundBecause": "Dieselbe Owner-Entscheidung. Relative Staerke ist eine Momentumkomponente und vergleicht Kursbewegung mit Kursbewegung; Titel- und Vergleichsreihe muessen dieselbe Basis tragen, sonst misst die Differenz die Dividendenrendite des Index mit."
   },
   {
    "id": "quantV1",
@@ -151,27 +152,52 @@
   },
   {
    "id": "quantV2Momentum",
-   "label": "Quant V2 · Momentum",
-   "basis": "PENDING_METHODOLOGY_DECISION",
-   "why": "Momentum ist der eine Faktor, bei dem die Basis das Ergebnis verändern KANN und die Antwort nicht vorab feststeht. Er wird deshalb nicht stillschweigend mitentschieden.",
+   "label": "Quant V2 Kursstärke (Momentumfaktor)",
+   "basis": "SPLIT_ADJUSTED_PRICE",
+   "why": "Der Momentumfaktor misst Kursstärke, Trenddynamik und Marktbestätigung. Eine Dividende ist keine Kursbewegung, also darf sie den Momentumrang nicht heben. Owner-Entscheidung vom 2026-09-24 (Option C) auf Grundlage der Full-Universe-Studie.",
    "surfaces": [
-    "factor-evidence-v1"
+    "factor-evidence-v1 factors.momentum",
+    "market-factors returns"
    ],
    "decision": {
-    "state": "PENDING_EVIDENCE",
+    "state": "APPROVED",
+    "approvedOn": "2026-09-24",
+    "approvedBasis": "SPLIT_ADJUSTED_PRICE",
     "question": "Ist der Quant-V2-Momentumfaktor auf Kursbasis oder auf Gesamtrendite zu rechnen?",
-    "currentPublishedBasis": "TOTAL_RETURN",
-    "currentPublishedBasisMeasuredOn": "2026-09-24",
-    "currentPublishedBasisEvidence": [
+    "answer": "Auf Kursbasis. Gesamtrendite wird daneben als eigene Anlegerevidenz gefuehrt, nicht im Faktor.",
+    "previousPublishedBasis": "TOTAL_RETURN",
+    "previousPublishedBasisMeasuredOn": "2026-09-24",
+    "previousPublishedUnder": "vu-factor-evidence-1.0.0 / quant-v2.0.0",
+    "whyTheChangeIsNotSilent": "Der bisherige Bestand rechnete faktisch auf Gesamtrendite - gemessen, nicht vermutet: alle 6.403 Eintraege auf adjustedClose, und diese Spalte ist ueber 62.859 Dividendenereignisse als gesamtrenditebereinigt belegt. Die neue Basis erscheint deshalb NICHT unter derselben Methodikversion und nicht unter denselben Komponentennamen. Die alten Beobachtungen bleiben unveraendert unter ihrer Version stehen.",
+    "evidence": [
      "quant/data/providers/return-basis-universe-study.json",
      "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md"
     ],
-    "requiresEmpiricalComparison": true,
-    "report": "quant/data/providers/return-basis-universe-study.json",
-    "note": "Gemessen statt angenommen. Alle 6.403 Factor-Evidence-Eintraege rechnen auf adjustedClose, und diese Spalte ist ueber 62.859 Dividendenereignisse in 3.319 Titeln als gesamtrenditebereinigt belegt: kein einziges Ereignis blieb unbereinigt. Die veroeffentlichte Quant-V2-Momentumbasis ist damit TOTAL_RETURN. Das ist die Antwort auf die Frage, was HEUTE gerechnet wird - nicht die Entscheidung, was kuenftig gerechnet werden soll. Die bleibt offen.",
-    "boundToContract": false,
-    "whyNotBound": "Die Messung liegt jetzt vor, die Entscheidung nicht. Eine Bindung an TOTAL_RETURN waere heute folgenlos - sie schriebe fest, was ohnehin laeuft - aber sie naehme dem Owner genau die Wahl, die er sich ausdruecklich vorbehalten hat. Eine Bindung an SPLIT_ADJUSTED_PRICE verschoebe 5.997 Raenge auf einmal. Gebunden wird nach der Entscheidung, nicht vorher."
+    "measuredImpact": {
+     "universe": 5997,
+     "spearmanRankCorrelation": 0.991319,
+     "medianAbsoluteRankChange": 68,
+     "p95RankChange": 478,
+     "titlesMoving5Percentiles": 703,
+     "titlesMoving10Percentiles": 178,
+     "note": "Momentumnote ueber alle sechs Komponenten, Stichtag 2026-09-10."
+    },
+    "boundToContract": true
    }
+  },
+  {
+   "id": "investorReturnEvidence",
+   "label": "Anlegerrendite (Rendite inkl. Ausschüttungen)",
+   "basis": "TOTAL_RETURN",
+   "why": "Die Frage 'Was haette ein Anleger inklusive Dividenden tatsaechlich verdient?' ist eine andere als 'Wie stark bewegt sich der Kurs?'. Sie verschwindet nicht dadurch, dass der Momentumfaktor sie nicht mehr beantwortet - sie bekommt ihre eigene, benannte Zahl.",
+   "surfaces": [
+    "factor-evidence-v1 investorReturn"
+   ],
+   "notToBeConfusedWith": "quantV2Momentum",
+   "distinction": "quantV2Momentum misst Kursstaerke und laesst Ausschuettungen bewusst aussen vor. Dieses Modul misst genau die Ausschuettungen mit. Beide nebeneinander zu zeigen ist der Sinn der Trennung; eines fuer das andere zu halten war der Fehler, den sie behebt.",
+   "boundToContract": true,
+   "isFactorComponent": false,
+   "notAFactorBecause": "Wuerde die Anlegerrendite in den Momentumfaktor eingehen, waere die Trennung wieder aufgehoben. Sie steht daneben, nicht darin."
   }
  ],
  "enforcement": {
@@ -185,7 +211,15 @@
   "PRICE_MODULES_BASIS": "SPLIT_ADJUSTED_PRICE",
   "PERFORMANCE_MODULES_BASIS": "TOTAL_RETURN",
   "QUANT_V1": "LEGACY_IMMUTABLE",
-  "QUANT_V2_MOMENTUM_BASIS": "PENDING_METHODOLOGY_DECISION",
-  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss."
+  "QUANT_V2_MOMENTUM_BASIS": "SPLIT_ADJUSTED_PRICE",
+  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss.",
+  "QUANT_V2_MOMENTUM_DECISION": "APPROVED_2026-09-24_OPTION_C",
+  "TOTAL_RETURN_EVIDENCE": "SEPARATE",
+  "BACKTEST_RETURN_BASIS": "TOTAL_RETURN",
+  "PORTFOLIO_RETURN_BASIS": "TOTAL_RETURN",
+  "BENCHMARK_RETURN_BASIS": "TOTAL_RETURN",
+  "TECHNICAL_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
+  "SETUP_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
+  "ELLIOTT_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE"
  }
 }

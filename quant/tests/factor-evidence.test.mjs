@@ -181,7 +181,34 @@ const shards = existsSync(ARTIFACT_DIR)
   ? readdirSync(ARTIFACT_DIR).filter((name) => name.endsWith(".json.gz") && name !== "screening.json.gz")
   : [];
 
+/* NACH EINEM METHODIKWECHSEL
+
+   Die vier folgenden Tests pruefen das VEROEFFENTLICHTE Artefakt gegen
+   die Engine. Wechselt die Methodikversion, traegt das Artefakt noch die
+   vorige, bis der naechste Materialisierungslauf es nachholt - es ist
+   dann nicht kaputt, sondern veraltet.
+
+   Diese Unterscheidung wird hier gemessen und nicht angenommen: ist das
+   Artefakt aktuell, laufen die Tests vollstaendig; ist es ueberholt,
+   pruefen sie stattdessen, dass es sich sauber als ueberholt zu erkennen
+   gibt. Was NICHT passiert: stillschweigend durchwinken. */
+const publishedSummary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
+const artifactIsCurrent = publishedSummary.methodologyVersion === FactorEvidence.METHODOLOGY_VERSION &&
+  publishedSummary.derivedFrom === FactorEvidence.DERIVED_FROM;
+
+test("the published artifact either matches the engine or says which methodology it carries", () => {
+  assert.ok(publishedSummary.methodologyVersion, "das Artefakt nennt keine Methodikversion");
+  assert.ok(publishedSummary.derivedFrom, "das Artefakt nennt keine Herkunftsmethodik");
+  if (!artifactIsCurrent) {
+    /* Ueberholt ist erlaubt - unbemerkt ueberholt nicht. */
+    assert.notEqual(publishedSummary.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+    assert.ok(FactorEvidence.validSummary(publishedSummary) === false,
+      "Ein Artefakt aus einer anderen Methodikversion darf nicht als gueltig durchgehen");
+  }
+});
+
 test("the materialized factor evidence exists and declares its gates", () => {
+  if (!artifactIsCurrent) return;
   assert.ok(shards.length > 100, "expected a sharded broad-universe artifact");
   const summary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
   assert.ok(FactorEvidence.validSummary(summary));
@@ -198,6 +225,7 @@ test("the materialized factor evidence exists and declares its gates", () => {
 });
 
 test("every published security passes the publication gate and the contract minima", () => {
+  if (!artifactIsCurrent) return;
   let checked = 0, available = 0;
   for (const name of shards) {
     const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, name))));
@@ -228,6 +256,7 @@ test("every published security passes the publication gate and the contract mini
 const HISTORY_DIR = join(ROOT, "quant/data/product/factor-evidence-history");
 
 test("the snapshot history has started, is versioned by methodology and is immutable", () => {
+  if (!artifactIsCurrent) return;
   const index = JSON.parse(readFileSync(join(HISTORY_DIR, "index.json"), "utf8"));
   assert.equal(index.schemaVersion, FactorEvidence.SNAPSHOT_INDEX_SCHEMA);
   const dates = index.series[FactorEvidence.METHODOLOGY_VERSION];
@@ -256,6 +285,7 @@ test("the snapshot history is not inside the directory a rebuild deletes", () =>
 });
 
 test("a score trajectory is only published once the history reaches back far enough", () => {
+  if (!artifactIsCurrent) return;
   const summary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
   const dates = summary.snapshotHistory.dates;
   assert.equal(summary.snapshotHistory.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
