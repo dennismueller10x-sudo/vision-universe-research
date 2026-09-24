@@ -1,0 +1,99 @@
+{
+ "schemaVersion": "return-basis-input-audit-1.0.0",
+ "generatedAt": "2026-09-24T09:30:19.000Z",
+ "versions": {
+  "audit_logic": "1.0.0"
+ },
+ "universeFile": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
+ "barsDir": "./.market-cache/tiingo/daily",
+ "scope": "REPOSITORY_ONLY",
+ "scopeNote": "Der kanonische Barstore war nicht verfuegbar. Gemessen wurde ausschliesslich, was im Repository liegt - das sind die fuenf Golden-Preview-Reihen. Dieser Lauf ist KEIN Universumsaudit und darf nicht als einer gelesen werden.",
+ "counters": {
+  "CANONICAL_PRODUCT_UNIVERSE": 6875,
+  "CANONICAL_HISTORY_UNIVERSE": 5,
+  "RAW_CLOSE_AVAILABLE": 5,
+  "SPLIT_FACTOR_AVAILABLE": 5,
+  "DIVIDEND_COLUMN_AVAILABLE": 5,
+  "DIVIDEND_EVENTS_AVAILABLE": 5,
+  "ADJUSTED_CLOSE_AVAILABLE": 5,
+  "TRADING_DATES_AVAILABLE": 5,
+  "ADJUSTMENT_STATUS_PRESENT": 5,
+  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 5
+ },
+ "bySource": {
+  "GOLDEN_PREVIEW": 5
+ },
+ "byAdjustmentStatus": {
+  "adjusted": 5
+ },
+ "exclusions": {
+  "NO_SERIES": 6870
+ },
+ "identifiableBySector": {
+  "Technology": 3,
+  "Financials": 1,
+  "Energy": 1
+ },
+ "series": [
+  {
+   "securityId": "ref_AAPL",
+   "ticker": "AAPL",
+   "sector": "Technology",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "splitEvents": 1,
+   "adjustmentStatus": "adjusted",
+   "source": "GOLDEN_PREVIEW"
+  },
+  {
+   "securityId": "ref_MSFT",
+   "ticker": "MSFT",
+   "sector": "Technology",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "splitEvents": 0,
+   "adjustmentStatus": "adjusted",
+   "source": "GOLDEN_PREVIEW"
+  },
+  {
+   "securityId": "ref_NVDA",
+   "ticker": "NVDA",
+   "sector": "Technology",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "splitEvents": 2,
+   "adjustmentStatus": "adjusted",
+   "source": "GOLDEN_PREVIEW"
+  },
+  {
+   "securityId": "ref_JPM",
+   "ticker": "JPM",
+   "sector": "Financials",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "splitEvents": 0,
+   "adjustmentStatus": "adjusted",
+   "source": "GOLDEN_PREVIEW"
+  },
+  {
+   "securityId": "ref_XOM",
+   "ticker": "XOM",
+   "sector": "Energy",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "splitEvents": 0,
+   "adjustmentStatus": "adjusted",
+   "source": "GOLDEN_PREVIEW"
+  }
+ ]
+}

@@ -65,6 +65,19 @@ jobs:
           --work-dir "$RUNNER_TEMP/canonical-history"
           --report "$RUNNER_TEMP/product-intelligence-sync.json"
 
+      # FULL-UNIVERSE RETURN-BASIS AUDIT, Schritt 1.
+      #
+      # Laeuft genau hier, weil der kanonische Barstore in diesem Moment
+      # wiederhergestellt und noch vorhanden ist. Er ist runner-privat und
+      # im Repository nicht einsehbar; ein lokaler Lauf sieht fuenf
+      # Golden-Preview-Reihen und sagt das selbst. Gelesen wird derselbe
+      # Store, den die Materialisierung ohnehin liest - keine neue
+      # Pipeline, kein neuer Anbieter.
+      - name: Return basis input audit over the canonical history
+        run: >-
+          node scripts/market/audit-return-basis.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
       - name: Materialize Technical, Signals and Elliott Product Data
         run: >-
           node scripts/technical/materialize-product-intelligence.mjs
@@ -137,7 +150,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
