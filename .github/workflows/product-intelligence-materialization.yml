@@ -90,6 +90,13 @@ jobs:
           node --max-old-space-size=6144 scripts/market/study-return-basis-universe.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # Schritt 10: das Dokument. Es wird gerendert, nicht geschrieben -
+      # und es entsteht gar nicht erst, wenn der kanonische Bestand
+      # gefehlt hat, damit nie ein Papier mit der Ueberschrift
+      # "ueber das Produktuniversum" auf fuenf Titeln steht.
+      - name: Render the return basis study document
+        run: node scripts/quant/render-return-basis-study.mjs
+
       - name: Materialize Technical, Signals and Elliott Product Data
         run: >-
           node scripts/technical/materialize-product-intelligence.mjs
@@ -162,7 +169,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

@@ -132,3 +132,40 @@ test("die Dividendensegmente sind benannt und nicht geraten", () => {
       "unbekanntes Segment: " + segment);
   }
 });
+
+test("das Studiendokument entsteht nicht aus einer Teilmessung", () => {
+  /* Ein Papier mit der Ueberschrift "ueber das Produktuniversum", das
+     fuenf Titel gesehen hat, ist schlimmer als keines: der Warnkasten
+     oben wird ueberlesen, die Tabellen darunter nicht. */
+  assert.equal(report.scope, "REPOSITORY_ONLY", "Vorbedingung dieses Tests");
+  let failed = false;
+  try {
+    execFileSync("node", ["scripts/quant/render-return-basis-study.mjs"], { stdio: "pipe" });
+  } catch (error) {
+    failed = true;
+    assert.match(String(error.stderr), /NICHT geschrieben/);
+  }
+  assert.ok(failed, "Der Renderer haette die Teilmessung ablehnen muessen");
+  assert.ok(!existsSync("docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md") ||
+    readFileSync("docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md", "utf8").includes("CANONICAL_HISTORY"),
+    "Ein Studiendokument aus einer Teilmessung liegt im Baum");
+});
+
+test("das Dokument nennt jede Messgroesse des Auftrags", () => {
+  /* Gegen den Renderer selbst, nicht gegen ein erzeugtes Dokument -
+     sonst bestaetigte der Test nur, dass jemand einmal gerendert hat. */
+  const src = readFileSync("scripts/quant/render-return-basis-study.mjs", "utf8");
+  for (const flag of ["FULL_UNIVERSE_RETURN_AUDIT", "DUAL_RETURN_SERIES_CAPABLE_UNIVERSE",
+                      "PRICE_VS_TOTAL_RANK_CORRELATION", "DIVIDEND_BIAS", "SECTOR_BIAS",
+                      "STRATEGY_IMPACT", "METHODOLOGY_DECISION_READY"]) {
+    assert.ok(report.gateStatus[flag] !== undefined, "Flag fehlt im Artefakt: " + flag);
+  }
+  /* Der Flag-Block wird vollstaendig aus gateStatus gerendert; es reicht
+     zu pruefen, dass er es aus dem Artefakt nimmt statt aus einer
+     eigenen Liste. */
+  assert.match(src, /Object\.entries\(study\.gateStatus\)/);
+  for (const abschnitt of ["Dividendenschieflage", "Sektorschieflage", "Strategiewirkung",
+                           "Historische Robustheit", "Die drei Alternativen"]) {
+    assert.ok(src.includes(abschnitt), "Abschnitt fehlt im Renderer: " + abschnitt);
+  }
+});
